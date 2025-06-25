@@ -30,7 +30,7 @@ def PrimeSpectrum.tensorProductTo (x : PrimeSpectrum (S ⊗[R] T)) :
 
 @[fun_prop]
 lemma PrimeSpectrum.continuous_tensorProductTo : Continuous (tensorProductTo R S T) :=
-  (comap _).2.prod_mk (comap _).2
+  (comap _).2.prodMk (comap _).2
 
 variable (hRT : (algebraMap R T).SurjectiveOnStalks)
 include hRT

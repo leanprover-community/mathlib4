@@ -386,11 +386,11 @@ instance HasBinaryBiproduct.hasColimit_pair [HasBinaryBiproduct P Q] : HasColimi
 
 instance (priority := 100) hasBinaryProducts_of_hasBinaryBiproducts [HasBinaryBiproducts C] :
     HasBinaryProducts C where
-  has_limit F := hasLimitOfIso (diagramIsoPair F).symm
+  has_limit F := hasLimit_of_iso (diagramIsoPair F).symm
 
 instance (priority := 100) hasBinaryCoproducts_of_hasBinaryBiproducts [HasBinaryBiproducts C] :
     HasBinaryCoproducts C where
-  has_colimit F := hasColimitOfIso (diagramIsoPair F)
+  has_colimit F := hasColimit_of_iso (diagramIsoPair F)
 
 /-- The isomorphism between the specified binary product and the specified binary coproduct for
 a pair for a binary biproduct. -/
@@ -559,7 +559,7 @@ theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBipr
   · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, biprod.inl_fst_assoc,
       Category.assoc, ← BinaryBicone.toCone_π_app_left, ← BinaryBiproduct.bicone_fst, ←
       BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl]
-    dsimp; simp
+    simp
   · simp only [mapPair_left, IsColimit.ι_map, IsLimit.map_π, zero_comp, biprod.inl_snd_assoc,
       Category.assoc, ← BinaryBicone.toCone_π_app_right, ← BinaryBiproduct.bicone_snd, ←
       BinaryBicone.toCocone_ι_app_left, ← BinaryBiproduct.bicone_inl]

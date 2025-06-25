@@ -55,7 +55,7 @@ abbrev of : Sequential.{u} where
 def sequentialToTop : Sequential.{u} ⥤ TopCat.{u} :=
   inducedFunctor _
 
-/-- The functor to `TopCat` is indeed fully faithful.-/
+/-- The functor to `TopCat` is indeed fully faithful. -/
 def fullyFaithfulSequentialToTop : sequentialToTop.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
@@ -93,11 +93,5 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : Sequential.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 end Sequential

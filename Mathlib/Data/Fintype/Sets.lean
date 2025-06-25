@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Finset.SymmDiff
 import Mathlib.Data.Fintype.OfMap
 
 /-!
@@ -77,6 +78,9 @@ theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toF
 @[mono]
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp [Finset.subset_iff, Set.subset_def]
+
+@[gcongr]
+alias ⟨_, toFinset_subset_toFinset_of_subset⟩ := toFinset_subset_toFinset
 
 @[simp]
 theorem toFinset_ssubset [Fintype s] {t : Finset α} : s.toFinset ⊂ t ↔ s ⊂ t := by
@@ -187,7 +191,7 @@ theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) [Fintype (S
   ext
   simp
 
-@[simp] -- Porting note: new attribute
+@[simp]
 theorem toFinset_singleton (a : α) [Fintype ({a} : Set α)] : ({a} : Set α).toFinset = {a} := by
   ext
   simp

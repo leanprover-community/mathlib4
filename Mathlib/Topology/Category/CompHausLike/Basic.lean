@@ -3,8 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 /-!
 
 # Categories of Compact Hausdorff Spaces
@@ -171,7 +172,9 @@ variable (P)
 /-- The fully faithful embedding of `CompHausLike P` in `TopCat`. -/
 @[simps! map]
 def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
-  inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
+  inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     toCompHausLike h ⋙ compHausLikeToTop P' = compHausLikeToTop P := rfl
@@ -255,8 +258,6 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A constant map as a morphism in `CompHausLike` -/
 def const {P : TopCat.{u} → Prop}

@@ -26,6 +26,11 @@ and `t`.
 * `card_mul_le_card_mul`, `card_mul_le_card_mul'`: Double counting the edges of a bipartite graph
   from below and from above.
 * `card_mul_eq_card_mul`: Equality combination of the previous.
+
+## Implementation notes
+
+For the formulation of double-counting arguments where a bipartite graph is considered as a
+bipartite simple graph `G : SimpleGraph V`, see `Mathlib/Combinatorics/SimpleGraph/Bipartite.lean`.
 -/
 
 assert_not_exists Field
@@ -80,7 +85,7 @@ theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (
   simp_rw [card_eq_sum_ones, sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow]
 
 section OrderedSemiring
-variable [OrderedSemiring R] {m n : R}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {m n : R}
 
 /-- **Double counting** argument.
 
@@ -107,8 +112,8 @@ theorem card_nsmul_le_card_nsmul' [∀ a b, Decidable (r a b)]
 end OrderedSemiring
 
 section StrictOrderedSemiring
-variable [StrictOrderedSemiring R] (r : α → β → Prop) {s : Finset α} {t : Finset β}
-  (a b) {m n : R}
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] (r : α → β → Prop)
+  {s : Finset α} {t : Finset β} (a b) {m n : R}
 
 /-- **Double counting** argument.
 
@@ -197,8 +202,6 @@ theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s �
 end Bipartite
 
 end Finset
-
-open Finset
 
 namespace Fintype
 

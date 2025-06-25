@@ -140,7 +140,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   have hsize : #P.parts ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
   have hPα : #P.parts * 16 ^ #P.parts ≤ card α :=
-    (Nat.mul_le_mul hsize (Nat.pow_le_pow_of_le_right (by norm_num) hsize)).trans hα
+    (Nat.mul_le_mul hsize (Nat.pow_le_pow_right (by norm_num) hsize)).trans hα
   -- We return the increment equipartition of `P`, which has energy `≥ ε ^ 5 / 4 * (i + 1)`.
   refine ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, ?_, ?_, Or.inr <| le_trans ?_ <|
     energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε.le hε₁⟩
@@ -149,4 +149,4 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   · rw [card_increment hPα huniform, iterate_succ_apply']
     exact stepBound_mono hP₃
   · rw [Nat.cast_succ, mul_add, mul_one]
-    exact add_le_add_right hP₄ _
+    gcongr

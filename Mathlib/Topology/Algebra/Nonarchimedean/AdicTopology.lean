@@ -224,8 +224,8 @@ instance (priority := 100) : NonarchimedeanRing R :=
 instance (priority := 100) : UniformSpace R :=
   IsTopologicalAddGroup.toUniformSpace R
 
-instance (priority := 100) : UniformAddGroup R :=
-  comm_topologicalAddGroup_is_uniform
+instance (priority := 100) : IsUniformAddGroup R :=
+  isUniformAddGroup_of_addCommGroup
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
