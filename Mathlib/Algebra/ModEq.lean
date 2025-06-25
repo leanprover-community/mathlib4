@@ -153,6 +153,10 @@ alias ⟨ModEq.nsmul_cancel, _⟩ := nsmul_modEq_nsmul
 
 namespace ModEq
 
+protected theorem congr (ha : a₁ ≡ a₂ [PMOD p]) (hb : b₁ ≡ b₂ [PMOD p]) :
+    a₁ ≡ b₁ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p] :=
+  ⟨(ha.symm.trans <| ·.trans hb), (ha.trans <| ·.trans hb.symm)⟩
+
 @[simp]
 protected theorem add_iff_left :
     a₁ ≡ b₁ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
@@ -298,6 +302,19 @@ alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
 alias ⟨_root_.Nat.ModEq.of_natCast, ModEq.natCast⟩ := natCast_modEq_natCast
 
 end AddCommGroupWithOne
+
+section Ring
+variable [Ring α] {a b c p : α}
+
+@[simp] lemma _root_.IsRightRegular.mul_modEq_mul_right (hc : IsRightRegular c) :
+    a * c ≡ b * c [PMOD (p * c)] ↔ a ≡ b [PMOD p] := by
+  simp_rw [ModEq, ← sub_mul, zsmul_eq_mul, ← mul_assoc, hc.eq_iff]
+
+@[simp] lemma _root_.IsLeftRegular.mul_modEq_mul_left (hc : IsLeftRegular c) :
+    c * a ≡ c * b [PMOD (c * p)] ↔ a ≡ b [PMOD p] := by
+  simp_rw [ModEq, ← mul_sub, zsmul_eq_mul, Int.cast_commute _ c |>.left_comm, hc.eq_iff]
+
+end Ring
 
 section DivisionRing
 variable [DivisionRing α] {a b c p : α}
