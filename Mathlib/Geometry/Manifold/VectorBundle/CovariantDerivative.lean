@@ -11,7 +11,7 @@ open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-section local_frame
+section localFrame
 
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
@@ -31,7 +31,7 @@ set_option linter.style.commandStart false
 
 namespace Basis
 
-noncomputable def local_frame_toBasis_at {ι : Type*}
+noncomputable def localFrame_toBasis_at {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) {x : M} (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
@@ -39,23 +39,23 @@ noncomputable def local_frame_toBasis_at {ι : Type*}
 
 open scoped Classical in
 -- If x is outside of `e.baseSet`, this returns the junk value 0.
-noncomputable def local_frame {ι : Type*}
+noncomputable def localFrame {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) : ι → (x : M) → V x := fun i x ↦
   -- idea: take the vector b i and apply the trivialisation e to it.
-  if hx : x ∈ e.baseSet then b.local_frame_toBasis_at e hx i else 0
+  if hx : x ∈ e.baseSet then b.localFrame_toBasis_at e hx i else 0
 
-lemma local_frame_toBasis_at_coe {ι : Type*}
+lemma localFrame_toBasis_at_coe {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) {x : M} (i : ι) (hx : x ∈ e.baseSet) :
-    b.local_frame_toBasis_at e hx i = b.local_frame e i x := by
-  simp [local_frame_toBasis_at, local_frame, hx]
+    b.localFrame_toBasis_at e hx i = b.localFrame e i x := by
+  simp [localFrame_toBasis_at, localFrame, hx]
 
 -- XXX: is this result actually needed now? perhaps not, because of the toBasis definition?
 /-- At each point `x ∈ M`, the sections `{sⁱ(x)}` of a local frame form a basis for `V x`. -/
-def isBasis_local_frame {ι : Type*}
+def isBasis_localFrame {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) : sorry := by
@@ -64,39 +64,39 @@ def isBasis_local_frame {ι : Type*}
   sorry
 
 open scoped Classical in
-/-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.local_frame e i` -/
+/-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i` -/
 -- If x is outside of `e.baseSet`, this returns the junk value 0.
-noncomputable def local_frame_repr {ι : Type*}
+noncomputable def localFrame_repr {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) (s : Π x : M, V x) : ι → M → 𝕜 :=
-  fun i x ↦ if hx : x ∈ e.baseSet then (b.local_frame_toBasis_at e hx).repr (s x) i else 0
+  fun i x ↦ if hx : x ∈ e.baseSet then (b.localFrame_toBasis_at e hx).repr (s x) i else 0
 
 -- uniqueness of the decomposition: will follow from the IsBasis property above
 
-lemma local_frame_repr_spec {ι : Type*} [Fintype ι] {x : M}
+lemma localFrame_repr_spec {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F)
     (s : Π x : M,  V x) :
-    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.local_frame_repr e s i x') • b.local_frame e i x' := by
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e s i x') • b.localFrame e i x' := by
   have {x'} (hx : x' ∈ e.baseSet) :
-      s x' = (∑ i, (b.local_frame_repr e s i x') • b.local_frame e i x') := by
-    simp [Basis.local_frame_repr, local_frame, local_frame_toBasis_at, hx]
+      s x' = (∑ i, (b.localFrame_repr e s i x') • b.localFrame e i x') := by
+    simp [Basis.localFrame_repr, localFrame, localFrame_toBasis_at, hx]
     sorry -- some simp'ing and a property of bases
   exact eventually_nhds_iff.mpr ⟨e.baseSet, fun y a ↦ this a, e.open_baseSet, hxe⟩
 
 -- uniqueness implies this, but it also follows from our definition
-lemma Basis.local_frame_repr_add {ι : Type*} [Fintype ι] {x : M}
+lemma Basis.localFrame_repr_add {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F) (s s' : Π x : M,  V x) (i : ι) :
-    b.local_frame_repr e (s + s') i =
-      (b.local_frame_repr e (s + s') i) + (b.local_frame_repr e (s + s') i) := by
+    b.localFrame_repr e (s + s') i =
+      (b.localFrame_repr e (s + s') i) + (b.localFrame_repr e (s + s') i) := by
   by_cases hx : x ∈ e.baseSet; swap
   · exact False.elim (hx hxe)
-  simp-- [local_frame_repr]
-  unfold local_frame_repr
+  simp-- [localFrame_repr]
+  unfold localFrame_repr
   sorry -- need some _apply simp lemmas... simp [hx]
 
 end Basis
@@ -104,37 +104,37 @@ end Basis
 -- corollary of this and uniqueness
 
 -- TODO: better name!
-lemma Basis.local_frame_repr_apply_zero_at {ι : Type*} [Fintype ι] {x : M}
+lemma Basis.localFrame_repr_apply_zero_at {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
-    b.local_frame_repr e s i x = 0 := sorry
+    b.localFrame_repr e s i x = 0 := sorry
 
 -- TODO: better name
-lemma Basis.local_frame_repr_apply_zero {ι : Type*} [Fintype ι] {x : M}
+lemma Basis.localFrame_repr_apply_zero {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F) (i : ι) :
-    b.local_frame_repr e 0 i = 0 := sorry
+    b.localFrame_repr e 0 i = 0 := sorry
 
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
-lemma Basis.local_frame_repr_congr {ι : Type*} [Fintype ι] {x : M}
+lemma Basis.localFrame_repr_congr {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F) (s s' : Π x : M,  V x) (i : ι) (hss' : s x = s' x) :
-    b.local_frame_repr e s i x = b.local_frame_repr e s' i x := sorry
+    b.localFrame_repr e s i x = b.localFrame_repr e s' i x := sorry
 
 variable {n}
 
-lemma Basis.contMDiffAt_local_frame_repr {ι : Type*} {x : M}
+lemma Basis.contMDiffAt_localFrame_repr {ι : Type*} {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
-    (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.local_frame_repr e s i) x := sorry
+    (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.localFrame_repr e s i) x := sorry
 
-end local_frame
+end localFrame
 
 section
 
@@ -333,14 +333,14 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
   let n : ℕ := Module.finrank ℝ E
   let b : Basis (Fin n) ℝ E := Module.finBasis ℝ E
   let e := trivializationAt E (TangentSpace I) x
-  let Xi (i : Fin n) := b.local_frame e i
+  let Xi (i : Fin n) := b.localFrame e i
   -- Write X in coordinates: X = ∑ i, a i • Xi i near `x`.
-  let a := b.local_frame_repr e X
+  let a := b.localFrame_repr e X
   have : x ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.local_frame_repr_spec this X
+  have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.localFrame_repr_spec this X
   -- have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
   --   refine ⟨_, aux, by simp⟩
-  have (i : Fin n) : a i x = 0 := b.local_frame_repr_apply_zero_at this hX i
+  have (i : Fin n) : a i x = 0 := b.localFrame_repr_apply_zero_at this hX i
   calc cov X σ x
     _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
     _ = ∑ i, cov (a i • Xi i) σ x := by rw [cov.sum_X]; simp
