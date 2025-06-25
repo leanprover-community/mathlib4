@@ -30,23 +30,23 @@ variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 
 ## Main definitions
 
- * `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
-   localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
-   localization map (satisfying the above properties).
- * `IsLocalization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
- * `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
-   which maps elements of `M` to invertible elements of the codomain.
- * `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
-   of `M` to elements of `T`
- * `IsLocalization.ringEquivOfRingEquiv`: if `R` and `P` are isomorphic by an isomorphism
-   sending `M` to `T`, then `S` and `Q` are isomorphic
+* `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
+  localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
+  localization map (satisfying the above properties).
+* `IsLocalization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
+* `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
+  which maps elements of `M` to invertible elements of the codomain.
+* `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
+  of `M` to elements of `T`
+* `IsLocalization.ringEquivOfRingEquiv`: if `R` and `P` are isomorphic by an isomorphism
+  sending `M` to `T`, then `S` and `Q` are isomorphic
 
 ## Main results
 
- * `Localization M S`, a construction of the localization as a quotient type, defined in
-   `GroupTheory.MonoidLocalization`, has `CommRing`, `Algebra R` and `IsLocalization M`
-   instances if `R` is a ring. `Localization.Away`, `Localization.AtPrime` and `FractionRing`
-   are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
+* `Localization M S`, a construction of the localization as a quotient type, defined in
+  `GroupTheory.MonoidLocalization`, has `CommRing`, `Algebra R` and `IsLocalization M`
+  instances if `R` is a ring. `Localization.Away`, `Localization.AtPrime` and `FractionRing`
+  are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
 
 ## Implementation notes
 

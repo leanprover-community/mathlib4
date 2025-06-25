@@ -17,10 +17,10 @@ Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an 
 This is expressed here by writing `I = J.comap f`.
 -/
 
--- for going-up results about integral extensions, see `Mathlib.RingTheory.Ideal.GoingUp`
+-- for going-up results about integral extensions, see `Mathlib/RingTheory/Ideal/GoingUp.lean`
 assert_not_exists Algebra.IsIntegral
 
--- for results about finiteness, see `Mathlib.RingTheory.Finiteness.Quotient`
+-- for results about finiteness, see `Mathlib/RingTheory/Finiteness/Quotient.lean`
 assert_not_exists Module.Finite
 
 variable {R : Type*} [CommRing R]
@@ -90,6 +90,7 @@ section Semiring
 
 variable (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
   [Algebra A C] (P : Ideal B) {Q : Ideal C} (p : Ideal A)
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G)
 
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
 abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
@@ -100,8 +101,7 @@ instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
   hP.comap (algebraMap A B)
 
 @[simp]
-lemma under_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G) :
-    (g • P : Ideal B).under A = P.under A := by
+lemma under_smul : (g • P : Ideal B).under A = P.under A := by
   ext a
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
@@ -143,6 +143,10 @@ theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
   rw [← show _ = P.map σ from comap_symm (σ : B ≃+* C)] at h
   exact of_eq_comap p (σ : B ≃ₐ[A] C).symm h
+
+variable {p} in
+instance LiesOver.smul [h : P.LiesOver p] : (g • P).LiesOver p :=
+  ⟨h.over.trans (under_smul A P g).symm⟩
 
 variable (P) (Q)
 
@@ -208,6 +212,11 @@ variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
 instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
   algebraQuotientOfLEComap (le_of_eq (P.over_def p))
+
+@[simp]
+lemma algebraMap_mk_of_liesOver (x : A) :
+    algebraMap (A ⧸ p) (B ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (algebraMap _ _ x) :=
+  rfl
 
 instance isScalarTower_of_liesOver : IsScalarTower R (A ⧸ p) (B ⧸ P) :=
   IsScalarTower.of_algebraMap_eq' <|
