@@ -122,34 +122,46 @@ lemma Basis.localFrame_repr_add [Fintype ι] {x : M} (hxe : x ∈ e.baseSet)
 
 end Basis
 
+variable {ι : Type*} [Fintype ι] {x : M}
+  {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+  [MemTrivializationAtlas e]
+
 -- corollary of linearity and uniqueness, or follows directly
 -- TODO: better name!
-lemma Basis.localFrame_repr_apply_zero_at {ι : Type*} [Fintype ι] {x : M}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
+lemma Basis.localFrame_repr_apply_zero_at
     (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
-    b.localFrame_repr e s i x = 0 := sorry
+    b.localFrame_repr e s i x = 0 := by
+  by_cases hxe : x ∈ e.baseSet; swap
+  · simp [localFrame_repr, hxe]
+  have : (e { proj := x, snd := 0 }).2 = 0 := sorry -- use linearity of e?
+  simp [localFrame_repr, localFrame_toBasis_at, hxe, hs, this]
 
 -- TODO: better name
-lemma Basis.localFrame_repr_apply_zero {ι : Type*} [Fintype ι] {x : M}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
-    (b : Basis ι 𝕜 F) (i : ι) :
-    b.localFrame_repr e 0 i = 0 := sorry
+lemma Basis.localFrame_repr_apply_zero (b : Basis ι 𝕜 F) (i : ι) :
+    b.localFrame_repr e 0 i x = 0 :=
+  b.localFrame_repr_apply_zero_at (s := 0) (by simp) i
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
-lemma Basis.localFrame_repr_congr {ι : Type*} [Fintype ι] {x : M}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
-    (b : Basis ι 𝕜 F) (s s' : Π x : M,  V x) (i : ι) (hss' : s x = s' x) :
-    b.localFrame_repr e s i x = b.localFrame_repr e s' i x := sorry
+lemma Basis.localFrame_repr_congr (b : Basis ι 𝕜 F)
+    (s s' : Π x : M,  V x) (i : ι) (hss' : s x = s' x) :
+    b.localFrame_repr e s i x = b.localFrame_repr e s' i x := by
+  by_cases hxe : x ∈ e.baseSet
+  · simp [localFrame_repr, hxe, localFrame_toBasis_at]
+    congr
+  · simp [localFrame_repr, hxe]
 
 variable {n}
 
-lemma Basis.contMDiffAt_localFrame_repr {ι : Type*} {x : M}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
-    (b : Basis ι 𝕜 F)
+lemma Basis.continuous (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x}
+    (hs : ContinuousAt (fun x ↦ TotalSpace.mk' F x (s x)) x) (i : ι) :
+    ContinuousAt (b.localFrame_repr e s i) x := by
+  unfold localFrame_repr
+  -- near x, we always take the positive branch... how to formalise this nicely?
+  sorry
+
+lemma Basis.contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
     (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.localFrame_repr e s i) x := sorry
@@ -360,7 +372,7 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
   have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.localFrame_repr_spec this X
   -- have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
   --   refine ⟨_, aux, by simp⟩
-  have (i : Fin n) : a i x = 0 := b.localFrame_repr_apply_zero_at this hX i
+  have (i : Fin n) : a i x = 0 := b.localFrame_repr_apply_zero_at hX i
   calc cov X σ x
     _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
     _ = ∑ i, cov (a i • Xi i) σ x := by rw [cov.sum_X]; simp
