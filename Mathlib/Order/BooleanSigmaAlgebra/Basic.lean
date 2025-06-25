@@ -110,4 +110,12 @@ theorem lt_σsSup_of_lt (hs : s.Countable) (ha : a ∈ s) (h : b < a) : b < sSup
 theorem σsInf_lt_of_lt (hs : s.Countable) (ha : a ∈ s) (h : a < b) : sInf s < b :=
   lt_σsSup_of_lt (α := αᵒᵈ) hs ha h
 
+@[simp]
+theorem σsSup_singleton : sSup {a} = a :=
+  IsLUB.σsSup_eq isLUB_singleton (Set.countable_singleton a)
+
+@[simp]
+theorem σsInf_singleton : sInf {a} = a :=
+  σsSup_singleton (α := αᵒᵈ)
+
 end BooleanSigmaAlgebra
