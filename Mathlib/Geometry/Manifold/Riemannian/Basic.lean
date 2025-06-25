@@ -142,9 +142,15 @@ variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 [IsManifold I 1 M]
 [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
 
+attribute [local instance 2000]
+  Bundle.instNormedAddCommGroupOfRiemannianBundle Bundle.instInnerProductSpaceReal
+
+set_option trace.profiler true in
 variable (I) in
 lemma bloo (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
     ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ < C := sorry
+
+#exit
 
 variable (I) in
 lemma blok (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝 x,
