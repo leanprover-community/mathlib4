@@ -620,3 +620,12 @@ info: Con
 -/
 #guard_msgs in
 #print_fun_prop_theorems HAdd.hAdd Con
+
+
+def fst (x : α×β) := x.1
+def snd (x : α×β) := x.2
+
+-- make sure that `fun_prop` can't see through `fst` and `snd`
+example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x) (snd x)) := by
+  fail_if_success fun_prop
+  apply silentSorry
