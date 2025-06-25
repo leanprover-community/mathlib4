@@ -86,6 +86,17 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 lemma restrictScalars_traceDual {I : Submodule B L} :
   Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
+/--
+If the module `I` is spanned by the basis `b`, then its `traceDual` module is spanned by
+`b.traceDual`.
+-/
+theorem traceDual_span_of_basis [FiniteDimensional K L] [Algebra.IsSeparable K L]
+    (I : Submodule B L) {ι : Type*} [Finite ι] [DecidableEq ι] (b : Basis ι K L)
+    (hb : I.restrictScalars A = Submodule.span A (Set.range b)) :
+    (traceDual A K I).restrictScalars A = span A (Set.range b.traceDual) := by
+  rw [restrictScalars_traceDual, hb]
+  exact (traceForm K L).dualSubmodule_span_of_basis (traceForm_nondegenerate K L) b
+
 @[simp]
 lemma traceDual_bot :
     (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
@@ -506,7 +517,7 @@ lemma traceForm_dualSubmodule_adjoin
     ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
   have pbgen : pb.gen = x := by simp [pb]
   have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
-    _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
+    _root_.funext (Basis.traceDual_powerBasis_eq pb)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
     rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]
