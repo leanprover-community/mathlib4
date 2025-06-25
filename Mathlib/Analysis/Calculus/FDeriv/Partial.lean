@@ -124,24 +124,23 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousOn_prod_open
     f (x,y) - f z - (f'xz (x - z.1) + (f'y z) (y - z.2))
       = f (x,y) - f (x,z.2)
       + f (x,z.2) - f (z.1,z.2) - (f'xz (x - z.1) + (f'y z) (y - z.2)) := by
-        simp only [map_sub, sub_add_cancel, Prod.mk.eta]
+        abel
     _ = f (x,y) - f (x,z.2) - (f'y z) (y - z.2)
       + f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1) := by
-        rw [add_comm _ (f'y _ _), ← sub_sub]
-        rw [sub_right_comm _ _ (f'y _ _), add_sub_right_comm _ _ (f'y _ _)]
+        abel
     _ = f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)
       + (f'y (x,z.2)) (y - z.2) - (f'y z) (y - z.2)
       + f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1) := by
-        simp only [map_sub, Prod.mk.eta, sub_add_cancel]
+        abel
     _ = f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)
       + (f'y (x,z.2) - f'y z) (y - z.2)
       + f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1) := by
         rw [ContinuousLinearMap.sub_apply]
-        simp only [map_sub, sub_add_cancel, Prod.mk.eta, sub_add_sub_cancel]
+        abel
     _ = f (x,y) - f (x,z.2) - (f'y (x,z.2)) (y - z.2)
       + (f'y (x,z.2) - f'y z) (y - z.2)
       + (f (x,z.2) - f (z.1,z.2) - f'xz (x - z.1)) := by
-        rw [add_sub_assoc _ (f _) _, add_sub_assoc _ ((f _) - _) _]
+        abel
   -- set up the hypotheses and use the inequality version of the Mean Value Theorem
   have mvt_diff : ∀ y ∈ ball z.2 (min δy δt),
       HasFDerivWithinAt (f ∘ (x,·)) (f'y (x,y)) (ball z.2 (min δy δt)) y := by
