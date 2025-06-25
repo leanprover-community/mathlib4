@@ -224,7 +224,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (f : ℝ → ℝ) 
     (hf : Tendsto (deriv f) (𝓝[>] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Ioi a) a := by
   intro h
   have hf' : Tendsto (deriv (-f)) (𝓝[>] a) atTop := by
-    rw [Pi.neg_def, deriv.fun_neg']
+    rw [deriv.neg']
     exact tendsto_neg_atBot_atTop.comp hf
   exact not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (-f) hf' h.neg
 
@@ -266,7 +266,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Iio (f : ℝ → ℝ) 
     (hf : Tendsto (deriv f) (𝓝[<] a) atTop) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
   intro h
   have hf' : Tendsto (deriv (-f)) (𝓝[<] a) atBot := by
-    rw [Pi.neg_def, deriv.fun_neg']
+    rw [deriv.neg']
     exact tendsto_neg_atTop_atBot.comp hf
   exact not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (-f) hf' h.neg
 
