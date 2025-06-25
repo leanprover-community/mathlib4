@@ -720,6 +720,11 @@ lemma equiv_apply_basis (i : ι) : b.equiv b' e (b i) = b' (e i) := by
   ext j
   simp [Equiv.symm_apply_eq]
 
+@[simp]
+lemma equiv_self_rfl : b.equiv b (.refl ι) = .refl 𝕜 E := by
+  apply b.toBasis.ext_linearIsometryEquiv
+  simp
+
 lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
   nth_rw 1 [← b.sum_repr x, map_sum]
   simp_rw [map_smul, equiv_apply_basis]
