@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.RingTheory.Polynomial.Basic
@@ -23,11 +23,11 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 `S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
 polynomial map `S → S` is also surjective on `S`.
 * `ax_grothendieck_univ`: Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
-algberaically closed field.
+  algberaically closed field.
 * `ax_grothendieck_of_definable`: Any injective polynomial map `S → S` is also surjective on `S` if
 `K` is an algebraically closed field and `S` is a definable subset of `K^n`.
 * `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
-whenever `R` is an algebraic extension of a finite field.
+  whenever `R` is an algebraic extension of a finite field.
 
 ## References
 
@@ -94,7 +94,7 @@ open MvPolynomial FreeCommRing Language Field Ring BoundedFormula Theory.Functio
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
 /-- The collection of first order formulas corresponding to the Ax-Grothendieck theorem. -/
-noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
+noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     (φ : ring.Formula (α ⊕ ι))
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
   let T : Language.ring.Theory := ∅
@@ -109,7 +109,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
     Formula.relabel Sum.inr ((mapsTo f' φ' φ').imp <| (injOn f' φ').imp <| surjOn f' φ' φ')
 
 theorem realize_genericPolyMapSurjOnOfInjOn
-    [Fintype ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
+    [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
         let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
@@ -127,7 +127,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr]
 
-theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
+theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Finite ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
   classical
@@ -142,7 +142,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
   exact ax_grothendieck_of_locally_finite (K := ZMod p) (ι := ι) f _
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
-    [Fintype ι] {p : ℕ} (hp : p.Prime ∨ p = 0)
+    [Finite ι] {p : ℕ} (hp : p.Prime ∨ p = 0)
     (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
   rcases hp with hp | rfl
