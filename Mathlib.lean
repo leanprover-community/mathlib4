@@ -92,6 +92,7 @@ import Mathlib.Algebra.Category.CoalgCat.Basic
 import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
 import Mathlib.Algebra.Category.CommAlgCat.Basic
+import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
 import Mathlib.Algebra.Category.FGModuleCat.Limits
@@ -469,6 +470,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.ProdHom
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
@@ -851,6 +853,7 @@ import Mathlib.Algebra.Order.Interval.Set.SuccPred
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.Module.Algebra
+import Mathlib.Algebra.Order.Module.Basic
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Order.Module.OrderedSMul
@@ -6515,6 +6518,7 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.VectorBundle.Basic
 import Mathlib.Topology.VectorBundle.Constructions
 import Mathlib.Topology.VectorBundle.Hom
+import Mathlib.Topology.VectorBundle.Riemannian
 import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertExists
 import Mathlib.Util.AssertExistsExt
