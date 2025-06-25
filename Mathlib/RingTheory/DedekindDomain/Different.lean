@@ -86,6 +86,7 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 lemma restrictScalars_traceDual {I : Submodule B L} :
   Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
+variable (A) in
 /--
 If the module `I` is spanned by the basis `b`, then its `traceDual` module is spanned by
 `b.traceDual`.
