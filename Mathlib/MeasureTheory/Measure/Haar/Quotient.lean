@@ -174,7 +174,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
   symm
   suffices (μ' V / ν (QuotientGroup.mk ⁻¹' V ∩ s)) = 1 by rw [this, one_smul]
   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
-  · convert ENNReal.div_self ..
+  · convert ENNReal.div_self _ _
     · exact trans hV.symm neZeroV
     · exact trans hV.symm neTopV
   exact measurableSet_quotient.mp meas_V
@@ -188,7 +188,7 @@ theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteM
     [hasFun : HasFundamentalDomain Γ.op G ν]
     (h : covolume Γ.op G ν = μ univ) : QuotientMeasureEqMeasurePreimage ν μ := by
   obtain ⟨s, fund_dom_s⟩ := hasFun.ExistsIsFundamentalDomain
-  have finiteCovol : μ univ < ⊤ := measure_lt_top μ univ
+  have finiteCovol : μ univ < ⊤ := by finiteness
   rw [fund_dom_s.covolume_eq_volume] at h
   by_cases meas_s_ne_zero : ν s = 0
   · convert fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero meas_s_ne_zero
@@ -311,7 +311,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
   · exact K.interior_nonempty
   · exact hμK
   · rw [hμK]
-    exact c_ne_top
+    finiteness
 
 end haarMeasure
 

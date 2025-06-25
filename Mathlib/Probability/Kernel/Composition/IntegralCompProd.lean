@@ -116,7 +116,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
   rw [this]
   · intro h2f; rw [lintegral_congr_ae]
     filter_upwards [h2f] with x hx
-    rw [ofReal_toReal]; finiteness
+    rw [ofReal_toReal]
   · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.enorm.lintegral_kernel_prod_right''
 
 theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
@@ -320,7 +320,6 @@ theorem hasFiniteIntegral_comp_iff ⦃f : γ → E⦄ (hf : StronglyMeasurable f
     rw [lintegral_congr_ae]
     filter_upwards [h] with x hx
     rw [ofReal_toReal]
-    finiteness
   · exact fun h ↦ ae_lt_top hf.enorm.lintegral_kernel h.ne
 
 theorem hasFiniteIntegral_comp_iff' ⦃f : γ → E⦄ (hf : AEStronglyMeasurable f ((η ∘ₖ κ) a)) :

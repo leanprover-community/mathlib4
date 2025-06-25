@@ -79,9 +79,7 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     filter_upwards [h1, h2] with x h1 h2
     rw [h1, Pi.smul_apply, smul_eq_mul, h2]
     simp only [inv_inv, Pi.smul_apply, smul_eq_mul]
-    rw [← mul_assoc, ENNReal.inv_mul_cancel, one_mul]
-    · simp [hν]
-    · simp
+    rw [← mul_assoc, ENNReal.inv_mul_cancel (by simp [hν]), one_mul]
   have h_eq : ∫ x, f (μ'.rnDeriv ν' x).toReal ∂ν'
       = (ν.real univ)⁻¹ * ∫ x, f ((μ.rnDeriv ν x).toReal) ∂ν := by
     rw [integral_smul_measure, smul_eq_mul, ENNReal.toReal_inv]

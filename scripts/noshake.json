@@ -99,6 +99,7 @@
   "Mathlib.Tactic.FastInstance",
   "Mathlib.Tactic.FieldSimp",
   "Mathlib.Tactic.FinCases",
+  "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.GCongr",

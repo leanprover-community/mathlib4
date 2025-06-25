@@ -101,7 +101,7 @@ theorem uniformOn_inter_self (hs : s.Finite) : uniformOn s (s ∩ t) = uniformOn
   rw [uniformOn, cond_inter_self hs.measurableSet]
 
 theorem uniformOn_self (hs : s.Finite) (hs' : s.Nonempty) : uniformOn s s = 1 := by
-  rw [uniformOn, cond_apply hs.measurableSet, Set.inter_self, ENNReal.inv_mul_cancel]
+  rw [uniformOn, cond_apply hs.measurableSet, Set.inter_self, ENNReal.inv_mul_cancel _ _]
   · rwa [Measure.count_ne_zero_iff]
   · exact (Measure.count_apply_lt_top.2 hs).ne
 
@@ -136,8 +136,8 @@ theorem uniformOn_inter (hs : s.Finite) :
       uniformOn_eq_zero_iff hs, ← Set.inter_assoc, hst, Set.empty_inter]
   rw [uniformOn, uniformOn, cond_apply hs.measurableSet, cond_apply hs.measurableSet,
     cond_apply (hs.inter_of_left _).measurableSet, mul_comm _ (Measure.count (s ∩ t)),
-    ← mul_assoc, mul_comm _ (Measure.count (s ∩ t)), ← mul_assoc, ENNReal.mul_inv_cancel, one_mul,
-    mul_comm, Set.inter_assoc]
+    ← mul_assoc, mul_comm _ (Measure.count (s ∩ t)), ← mul_assoc, ENNReal.mul_inv_cancel _ _,
+    one_mul, mul_comm, Set.inter_assoc]
   · rwa [← Measure.count_eq_zero_iff] at hst
   · exact (Measure.count_apply_lt_top.2 <| hs.inter_of_left _).ne
 
@@ -172,8 +172,8 @@ theorem uniformOn_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint
       mul_comm (Measure.count (s ∪ t))⁻¹, mul_comm (Measure.count (s ∪ t))⁻¹, ← mul_assoc,
       ← mul_assoc, mul_comm _ (Measure.count s), mul_comm _ (Measure.count t), ← mul_assoc,
       ← mul_assoc]
-  rw [ENNReal.mul_inv_cancel, ENNReal.mul_inv_cancel, one_mul, one_mul, ← add_mul, ← measure_union,
-    Set.union_inter_distrib_right, mul_comm]
+  rw [ENNReal.mul_inv_cancel _ _, ENNReal.mul_inv_cancel _ _, one_mul, one_mul, ← add_mul,
+    ← measure_union, Set.union_inter_distrib_right, mul_comm]
   exacts [hst.mono inf_le_left inf_le_left, (ht.inter_of_left _).measurableSet,
     Measure.count_ne_zero ht', (Measure.count_apply_lt_top.2 ht).ne, Measure.count_ne_zero hs',
     (Measure.count_apply_lt_top.2 hs).ne]

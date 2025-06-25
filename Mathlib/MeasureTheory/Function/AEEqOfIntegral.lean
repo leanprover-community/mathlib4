@@ -192,7 +192,7 @@ theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg {f : α �
 theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → 0 ≤ ∫ x in s, f x ∂μ) {t : Set α}
-    (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : 0 ≤ᵐ[μ.restrict t] f := by
+    (ht : MeasurableSet t) (hμt : μ t ≠ ∞ := by finiteness) : 0 ≤ᵐ[μ.restrict t] f := by
   refine
     ae_nonneg_restrict_of_forall_setIntegral_nonneg_inter
       (hf_int_finite t ht (lt_top_iff_ne_top.mpr hμt)) fun s hs _ => ?_
@@ -202,7 +202,7 @@ theorem ae_nonneg_restrict_of_forall_setIntegral_nonneg {f : α → ℝ}
 theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real {f : α → ℝ}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}
-    (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : f =ᵐ[μ.restrict t] 0 := by
+    (ht : MeasurableSet t) (hμt : μ t ≠ ∞ := by finiteness) : f =ᵐ[μ.restrict t] 0 := by
   suffices h_and : f ≤ᵐ[μ.restrict t] 0 ∧ 0 ≤ᵐ[μ.restrict t] f from
     h_and.1.mp (h_and.2.mono fun x hx1 hx2 => le_antisymm hx2 hx1)
   refine
@@ -225,7 +225,7 @@ end Real
 theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}
-    (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : f =ᵐ[μ.restrict t] 0 := by
+    (ht : MeasurableSet t) (hμt : μ t ≠ ∞ := by finiteness) : f =ᵐ[μ.restrict t] 0 := by
   rcases (hf_int_finite t ht hμt.lt_top).aestronglyMeasurable.isSeparable_ae_range with
     ⟨u, u_sep, hu⟩
   refine ae_eq_zero_of_forall_dual_of_isSeparable ℝ u_sep (fun c => ?_) hu
@@ -240,7 +240,7 @@ theorem ae_eq_restrict_of_forall_setIntegral_eq {f g : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn g s μ)
     (hfg_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
-    {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : f =ᵐ[μ.restrict t] g := by
+    {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞ := by finiteness) : f =ᵐ[μ.restrict t] g := by
   rw [← sub_ae_eq_zero]
   have hfg' : ∀ s : Set α, MeasurableSet s → μ s < ∞ → (∫ x in s, (f - g) x ∂μ) = 0 := by
     intro s hs hμs
@@ -310,12 +310,14 @@ theorem AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq {f g : α → E}
   exact (hf.sub hg).ae_eq_zero_of_forall_setIntegral_eq_zero hfg_int hfg
 
 theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero (f : Lp E p μ) (hp_ne_zero : p ≠ 0)
-    (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
+    (hp_ne_top : p ≠ ∞ := by finiteness)
+    (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 :=
   AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero hf_int_finite hf_zero
     (Lp.finStronglyMeasurable _ hp_ne_zero hp_ne_top).aefinStronglyMeasurable
 
-theorem Lp.ae_eq_of_forall_setIntegral_eq (f g : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+theorem Lp.ae_eq_of_forall_setIntegral_eq (f g : Lp E p μ) (hp_ne_zero : p ≠ 0)
+    (hp_ne_top : p ≠ ∞ := by finiteness)
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn g s μ)
     (hfg : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ) :

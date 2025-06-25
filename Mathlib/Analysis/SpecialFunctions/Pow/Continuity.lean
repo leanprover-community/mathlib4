@@ -440,7 +440,7 @@ end NNReal
 
 namespace ENNReal
 
-theorem eventually_pow_one_div_le {x : ℝ≥0∞} (hx : x ≠ ∞) {y : ℝ≥0∞} (hy : 1 < y) :
+theorem eventually_pow_one_div_le {x : ℝ≥0∞} (hx : x ≠ ∞ := by finiteness) {y : ℝ≥0∞} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
   lift x to ℝ≥0 using hx
   by_cases h : y = ∞
@@ -474,7 +474,8 @@ theorem continuous_rpow_const {y : ℝ} : Continuous fun a : ℝ≥0∞ => a ^ y
     simp_rw [hz, rpow_neg]
     exact continuous_inv.continuousAt.comp (continuousAt_rpow_const_of_pos z_pos)
 
-theorem tendsto_const_mul_rpow_nhds_zero_of_pos {c : ℝ≥0∞} (hc : c ≠ ∞) {y : ℝ} (hy : 0 < y) :
+theorem tendsto_const_mul_rpow_nhds_zero_of_pos {c : ℝ≥0∞} (hc : c ≠ ∞ := by finiteness)
+    {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0∞ => c * x ^ y) (𝓝 0) (𝓝 0) := by
   convert ENNReal.Tendsto.const_mul (ENNReal.continuous_rpow_const.tendsto 0) _
   · simp [hy]

@@ -142,7 +142,6 @@ lemma memLp_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) (p : ℝ≥
   rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top]
   rotate_left
   · simp [hp]
-  · simp
   simp_rw [ENNReal.coe_toReal, ← ofReal_norm_eq_enorm, norm_eq_abs,
     ENNReal.ofReal_rpow_of_nonneg (x := |X _|) (p := p) (abs_nonneg (X _)) p.2]
   refine Integrable.lintegral_lt_top ?_

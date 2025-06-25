@@ -177,10 +177,8 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     · refine Measurable.stronglyMeasurable ?_
       exact Finset.measurable_prod s (fun i hi ↦ measurable_condExpKernel (hπ i _ (hf i hi)))
     filter_upwards [h_eq s f hf, h_inter_eq s f hf, h] with ω h_eq h_inter_eq h
-    have h_ne_top : condExpKernel μ m' ω (⋂ i ∈ s, f i) ≠ ∞ :=
-      (measure_ne_top (condExpKernel μ m' ω) _)
-    have : (∏ i ∈ s, condExpKernel μ m' ω (f i)) ≠ ∞ :=
-      ENNReal.prod_ne_top fun _ _ ↦ measure_ne_top (condExpKernel μ m' ω) _
+    have h_ne_top : condExpKernel μ m' ω (⋂ i ∈ s, f i) ≠ ∞ := by finiteness
+    have : (∏ i ∈ s, condExpKernel μ m' ω (f i)) ≠ ∞ := ENNReal.prod_ne_top fun _ _ ↦ by finiteness
     rw [← ENNReal.ofReal_toReal h_ne_top, h_inter_eq, h, Finset.prod_apply,
       ← ENNReal.ofReal_toReal this, ENNReal.toReal_prod]
     congr 1
@@ -206,11 +204,9 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
       ((measurable_condExpKernel (hs1 s hs)).mul
         (measurable_condExpKernel (hs2 t ht))).stronglyMeasurable).mpr ?_
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h] with ω hs_eq ht_eq hst_eq h
-    have h_ne_top : condExpKernel μ m' ω (s ∩ t) ≠ ∞ := measure_ne_top (condExpKernel μ m' ω) _
+    have h_ne_top : condExpKernel μ m' ω (s ∩ t) ≠ ∞ := by finiteness
     rw [← ENNReal.ofReal_toReal h_ne_top, hst_eq, h, Pi.mul_apply, ← hs_eq, ← ht_eq,
       ← ENNReal.toReal_mul, ENNReal.ofReal_toReal]
-    exact ENNReal.mul_ne_top (measure_ne_top (condExpKernel μ m' ω) s)
-      (measure_ne_top (condExpKernel μ m' ω) t)
 
 lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableSet (s i))
     (μ : Measure Ω) [IsFiniteMeasure μ] :

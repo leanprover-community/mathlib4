@@ -88,8 +88,9 @@ theorem Convex.average_mem [IsFiniteMeasure μ] [NeZero μ] (hs : Convex ℝ s) 
 /-- If `μ` is a non-zero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
 `⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
-theorem Convex.set_average_mem (hs : Convex ℝ s) (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞)
-    (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s) (hfi : IntegrableOn f t μ) : (⨍ x in t, f x ∂μ) ∈ s :=
+theorem Convex.set_average_mem (hs : Convex ℝ s) (hsc : IsClosed s) (h0 : μ t ≠ 0)
+    (ht : μ t ≠ ∞ := by finiteness) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
+    (hfi : IntegrableOn f t μ) : (⨍ x in t, f x ∂μ) ∈ s :=
   have := Fact.mk ht.lt_top
   have := NeZero.mk h0
   hs.average_mem hsc hfs hfi
@@ -97,8 +98,8 @@ theorem Convex.set_average_mem (hs : Convex ℝ s) (hsc : IsClosed s) (h0 : μ t
 /-- If `μ` is a non-zero finite measure on `α`, `s` is a convex set in `E`, and `f` is an integrable
 function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `closure s`:
 `⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
-theorem Convex.set_average_mem_closure (hs : Convex ℝ s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞)
-    (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s) (hfi : IntegrableOn f t μ) :
+theorem Convex.set_average_mem_closure (hs : Convex ℝ s) (h0 : μ t ≠ 0)
+    (ht : μ t ≠ ∞ := by finiteness) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s) (hfi : IntegrableOn f t μ) :
     (⨍ x in t, f x ∂μ) ∈ closure s :=
   hs.closure.set_average_mem isClosed_closure h0 ht (hfs.mono fun _ hx => subset_closure hx) hfi
 
@@ -146,7 +147,8 @@ set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a func
 less than or equal to the average value of `g ∘ f` over `t` provided that both `f` and `g ∘ f` are
 integrable. -/
 theorem ConvexOn.set_average_mem_epigraph (hg : ConvexOn ℝ s g) (hgc : ContinuousOn g s)
-    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
+    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞ := by finiteness)
+    (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
     (hfi : IntegrableOn f t μ) (hgi : IntegrableOn (g ∘ f) t μ) :
     (⨍ x in t, f x ∂μ, ⨍ x in t, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ g p.1 ≤ p.2} :=
   have := Fact.mk ht.lt_top
@@ -159,7 +161,8 @@ set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a func
 equal to the value of `g` at the average value of `f` over `t` provided that both `f` and `g ∘ f`
 are integrable. -/
 theorem ConcaveOn.set_average_mem_hypograph (hg : ConcaveOn ℝ s g) (hgc : ContinuousOn g s)
-    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
+    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞ := by finiteness)
+    (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
     (hfi : IntegrableOn f t μ) (hgi : IntegrableOn (g ∘ f) t μ) :
     (⨍ x in t, f x ∂μ, ⨍ x in t, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ p.2 ≤ g p.1} := by
   simpa only [mem_setOf_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
@@ -171,7 +174,8 @@ set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a func
 less than or equal to the average value of `g ∘ f` over `t` provided that both `f` and `g ∘ f` are
 integrable. -/
 theorem ConvexOn.map_set_average_le (hg : ConvexOn ℝ s g) (hgc : ContinuousOn g s)
-    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
+    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞ := by finiteness)
+    (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
     (hfi : IntegrableOn f t μ) (hgi : IntegrableOn (g ∘ f) t μ) :
     g (⨍ x in t, f x ∂μ) ≤ ⨍ x in t, g (f x) ∂μ :=
   (hg.set_average_mem_epigraph hgc hsc h0 ht hfs hfi hgi).2
@@ -182,7 +186,8 @@ set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a func
 equal to the value of `g` at the average value of `f` over `t` provided that both `f` and `g ∘ f`
 are integrable. -/
 theorem ConcaveOn.le_map_set_average (hg : ConcaveOn ℝ s g) (hgc : ContinuousOn g s)
-    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
+    (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞ := by finiteness)
+    (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
     (hfi : IntegrableOn f t μ) (hgi : IntegrableOn (g ∘ f) t μ) :
     (⨍ x in t, g (f x) ∂μ) ≤ g (⨍ x in t, f x ∂μ) :=
   (hg.set_average_mem_hypograph hgc hsc h0 ht hfs hfi hgi).2
@@ -334,8 +339,8 @@ theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e. on a set `t` of finite measure, then either this function is a.e. equal to its average value on
 `t`, or the norm of its integral over `t` is strictly less than `μ.real t * C`. -/
-theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace ℝ E] (ht : μ t ≠ ∞)
-    (h_le : ∀ᵐ x ∂μ.restrict t, ‖f x‖ ≤ C) :
+theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace ℝ E]
+    (ht : μ t ≠ ∞ := by finiteness) (h_le : ∀ᵐ x ∂μ.restrict t, ‖f x‖ ≤ C) :
     f =ᵐ[μ.restrict t] const α (⨍ x in t, f x ∂μ) ∨ ‖∫ x in t, f x ∂μ‖ < μ.real t * C := by
   haveI := Fact.mk ht.lt_top
   rw [← measureReal_restrict_apply_univ]

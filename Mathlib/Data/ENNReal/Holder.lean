@@ -110,7 +110,8 @@ variable {r} in
 lemma unique_of_ne_zero (q' : ℝ≥0∞) (hr : r ≠ 0) [HolderTriple p q' r] : q = q' := by
   rw [← inv_inj, ← inv_sub_inv_eq_inv q p hr, ← inv_sub_inv_eq_inv q' p hr]
 
-lemma holderConjugate_div_div (hr₀ : r ≠ 0) (hr : r ≠ ∞) : HolderConjugate (p / r) (q / r) where
+lemma holderConjugate_div_div (hr₀ : r ≠ 0) (hr : r ≠ ∞ := by finiteness) :
+    HolderConjugate (p / r) (q / r) where
   inv_add_inv_eq_inv := by
     rw [ENNReal.inv_div (.inl hr) (.inl hr₀), ENNReal.inv_div (.inl hr) (.inl hr₀), div_eq_mul_inv,
       div_eq_mul_inv, ← mul_add, inv_add_inv_eq_inv p q r, ENNReal.mul_inv_cancel hr₀ hr, inv_one]

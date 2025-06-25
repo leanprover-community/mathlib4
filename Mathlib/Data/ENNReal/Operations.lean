@@ -37,7 +37,7 @@ protected lemma pow_right_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a
   WithTop.pow_lt_pow_left hab hn
 
 -- TODO: generalize to `WithTop`
-theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
+theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞ := by finiteness) : StrictMono (a * ·) := by
   lift a to ℝ≥0 using hinf
   rw [coe_ne_zero] at h0
   intro x y h
@@ -54,39 +54,41 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
 
 -- TODO: generalize to `WithTop`
-protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
+protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞ := by finiteness) :
+    a * b = a * c ↔ b = c :=
   (mul_left_strictMono h0 hinf).injective.eq_iff
 
 @[deprecated (since := "2025-01-20")]
 alias mul_eq_mul_left := ENNReal.mul_right_inj
 
 -- TODO: generalize to `WithTop`
-protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
+protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞ := by finiteness) :
+    a * c = b * c ↔ a = b :=
   mul_comm c a ▸ mul_comm c b ▸ ENNReal.mul_right_inj h0 hinf
 
 @[deprecated (since := "2025-01-20")]
 alias mul_eq_mul_right := ENNReal.mul_left_inj
 
 -- TODO: generalize to `WithTop`
-theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
+theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞ := by finiteness) : a * b ≤ a * c ↔ b ≤ c :=
   (mul_left_strictMono h0 hinf).le_iff_le
 
 -- TODO: generalize to `WithTop`
 theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ b) :=
-  mul_comm c a ▸ mul_comm c b ▸ mul_le_mul_left
+  mul_comm c a ▸ mul_comm c b ▸ (fun h _ ↦ mul_le_mul_left h)
 
 -- TODO: generalize to `WithTop`
-theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=
+theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞ := by finiteness) : a * b < a * c ↔ b < c :=
   (mul_left_strictMono h0 hinf).lt_iff_lt
 
 -- TODO: generalize to `WithTop`
 theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :=
-  mul_comm c a ▸ mul_comm c b ▸ mul_lt_mul_left
+  mul_comm c a ▸ mul_comm c b ▸ (fun h h' ↦ mul_lt_mul_left h)
 
-protected lemma mul_eq_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * b = a ↔ b = 1 := by
+protected lemma mul_eq_left (ha₀ : a ≠ 0) (ha : a ≠ ∞ := by finiteness) : a * b = a ↔ b = 1 := by
   simpa using ENNReal.mul_right_inj ha₀ ha (c := 1)
 
-protected lemma mul_eq_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b = b ↔ a = 1 := by
+protected lemma mul_eq_right (hb₀ : b ≠ 0) (hb : b ≠ ∞ := by finiteness) : a * b = b ↔ a = 1 := by
   simpa using ENNReal.mul_left_inj hb₀ hb (b := 1)
 
 end Mul
@@ -134,7 +136,7 @@ protected theorem add_lt_add_of_lt_of_le : c ≠ ∞ → a < b → c ≤ d → a
 instance addLeftReflectLT : AddLeftReflectLT ℝ≥0∞ :=
   WithTop.addLeftReflectLT
 
-theorem lt_add_right (ha : a ≠ ∞) (hb : b ≠ 0) : a < a + b := by
+theorem lt_add_right (ha : a ≠ ∞ := by finiteness) (hb : b ≠ 0) : a < a + b := by
   rwa [← pos_iff_ne_zero, ← ENNReal.add_lt_add_iff_left ha, add_zero] at hb
 
 end OperationsAndOrder
@@ -147,7 +149,7 @@ variable {α : Type*} {n : ℕ}
 
 @[simp] theorem add_lt_top : a + b < ∞ ↔ a < ∞ ∧ b < ∞ := WithTop.add_lt_top
 
-theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂ ≠ ∞) :
+theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞ := by finiteness) (h₂ : r₂ ≠ ∞ := by finiteness) :
     (r₁ + r₂).toNNReal = r₁.toNNReal + r₂.toNNReal := by
   lift r₁ to ℝ≥0 using h₁
   lift r₂ to ℝ≥0 using h₂
@@ -164,7 +166,8 @@ theorem toReal_le_add' (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = 
 /-- If `a ≤ b + c`, `b ≠ ∞`, and `c ≠ ∞`, then
 `ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
 triangle-like inequalities from `ENNReal`s to `Real`s. -/
-theorem toReal_le_add (hle : a ≤ b + c) (hb : b ≠ ∞) (hc : c ≠ ∞) :
+theorem toReal_le_add (hle : a ≤ b + c)
+    (hb : b ≠ ∞ := by finiteness) (hc : c ≠ ∞ := by finiteness) :
     a.toReal ≤ b.toReal + c.toReal :=
   toReal_le_add' hle (flip absurd hb) (flip absurd hc)
 
@@ -173,7 +176,8 @@ theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff
 theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using add_lt_top
 
 @[aesop (rule_sets := [finiteness]) safe apply]
-protected lemma Finiteness.add_ne_top {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a + b ≠ ∞ :=
+protected lemma Finiteness.add_ne_top (ha : a ≠ ∞ := by finiteness) (hb : b ≠ ∞ := by finiteness) :
+    a + b ≠ ∞ :=
   ENNReal.add_ne_top.2 ⟨ha, hb⟩
 
 theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert WithTop.mul_top' a
@@ -195,10 +199,10 @@ theorem mul_lt_top : a < ∞ → b < ∞ → a * b < ∞ := WithTop.mul_lt_top
 @[aesop (rule_sets := [finiteness]) unsafe 75% apply]
 theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := WithTop.mul_ne_top
 
-theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞) (hb : b ≠ 0) : a < ∞ :=
+theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞ := by finiteness) (hb : b ≠ 0) : a < ∞ :=
   lt_top_iff_ne_top.2 fun ha => h <| mul_eq_top.2 (Or.inr ⟨ha, hb⟩)
 
-theorem lt_top_of_mul_ne_top_right (h : a * b ≠ ∞) (ha : a ≠ 0) : b < ∞ :=
+theorem lt_top_of_mul_ne_top_right (h : a * b ≠ ∞ := by finiteness) (ha : a ≠ 0) : b < ∞ :=
   lt_top_of_mul_ne_top_left (by rwa [mul_comm]) ha
 
 theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ ∨ a = 0 ∨ b = 0 := by
@@ -262,7 +266,7 @@ theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ 
     apply ENNReal.le_of_add_le_add_left h hbc
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
-theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
+theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞ := by finiteness) : AddLECancellable a :=
   addLECancellable_iff_ne.mpr h
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
@@ -277,10 +281,10 @@ theorem cancel_of_lt' {a b : ℝ≥0∞} (h : a < b) : AddLECancellable a :=
 theorem cancel_coe {a : ℝ≥0} : AddLECancellable (a : ℝ≥0∞) :=
   cancel_of_ne coe_ne_top
 
-theorem add_right_inj (h : a ≠ ∞) : a + b = a + c ↔ b = c :=
+theorem add_right_inj (h : a ≠ ∞ := by finiteness) : a + b = a + c ↔ b = c :=
   (cancel_of_ne h).inj
 
-theorem add_left_inj (h : a ≠ ∞) : b + a = c + a ↔ b = c :=
+theorem add_left_inj (h : a ≠ ∞ := by finiteness) : b + a = c + a ↔ b = c :=
   (cancel_of_ne h).inj_left
 
 end Cancel
@@ -296,7 +300,8 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
 /-- This is a special case of `WithTop.top_sub_coe` in the `ENNReal` namespace -/
 @[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := WithTop.top_sub_coe
 
-@[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
+@[simp] lemma top_sub (ha : a ≠ ∞ := by finiteness) : ∞ - a = ∞ := by
+  lift a to ℝ≥0 using ha; exact top_sub_coe
 
 /-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
 @[simp] theorem sub_top : a - ∞ = 0 := WithTop.sub_top
@@ -314,41 +319,41 @@ theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
 
 /-- See `ENNReal.sub_eq_of_eq_add'` for a version assuming that `a = c + b` itself is finite rather
 than `b`. -/
-protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
+protected theorem sub_eq_of_eq_add (hb : b ≠ ∞ := by finiteness) : a = c + b → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add
 
 /-- Weaker version of `ENNReal.sub_eq_of_eq_add` assuming that `a = c + b` itself is finite rather
 han `b`. -/
-protected lemma sub_eq_of_eq_add' (ha : a ≠ ∞) : a = c + b → a - b = c :=
+protected lemma sub_eq_of_eq_add' (ha : a ≠ ∞ := by finiteness) : a = c + b → a - b = c :=
   (cancel_of_ne ha).tsub_eq_of_eq_add'
 
 /-- See `ENNReal.eq_sub_of_add_eq'` for a version assuming that `b = a + c` itself is finite rather
 than `c`. -/
-protected theorem eq_sub_of_add_eq (hc : c ≠ ∞) : a + c = b → a = b - c :=
+protected theorem eq_sub_of_add_eq (hc : c ≠ ∞ := by finiteness) : a + c = b → a = b - c :=
   (cancel_of_ne hc).eq_tsub_of_add_eq
 
 /-- Weaker version of `ENNReal.eq_sub_of_add_eq` assuming that `b = a + c` itself is finite rather
 than `c`. -/
-protected lemma eq_sub_of_add_eq' (hb : b ≠ ∞) : a + c = b → a = b - c :=
+protected lemma eq_sub_of_add_eq' (hb : b ≠ ∞ := by finiteness) : a + c = b → a = b - c :=
   (cancel_of_ne hb).eq_tsub_of_add_eq'
 
 /-- See `ENNReal.sub_eq_of_eq_add_rev'` for a version assuming that `a = b + c` itself is finite
 rather than `b`. -/
-protected theorem sub_eq_of_eq_add_rev (hb : b ≠ ∞) : a = b + c → a - b = c :=
+protected theorem sub_eq_of_eq_add_rev (hb : b ≠ ∞ := by finiteness) : a = b + c → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add_rev
 
 /-- Weaker version of `ENNReal.sub_eq_of_eq_add_rev` assuming that `a = b + c` itself is finite
 rather than `b`. -/
-protected lemma sub_eq_of_eq_add_rev' (ha : a ≠ ∞) : a = b + c → a - b = c :=
+protected lemma sub_eq_of_eq_add_rev' (ha : a ≠ ∞ := by finiteness) : a = b + c → a - b = c :=
   (cancel_of_ne ha).tsub_eq_of_eq_add_rev'
 
-protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b := by
+protected theorem add_sub_cancel_left (ha : a ≠ ∞ := by finiteness) : a + b - a = b := by
   simp [ha]
 
-protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a := by
+protected theorem add_sub_cancel_right (hb : b ≠ ∞ := by finiteness) : a + b - b = a := by
   simp [hb]
 
-protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
+protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞ := by finiteness) :
     a - b + c = a + c - b := by
   by_cases c_top : c = ∞
   · simpa [c_top] using ENNReal.eq_sub_of_add_eq b_ne_top rfl
@@ -365,31 +370,33 @@ protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < 
 protected theorem lt_add_of_sub_lt_right (h : a ≠ ∞ ∨ c ≠ ∞) : a - c < b → a < b + c :=
   add_comm c b ▸ ENNReal.lt_add_of_sub_lt_left h
 
-theorem le_sub_of_add_le_left (ha : a ≠ ∞) : a + b ≤ c → b ≤ c - a :=
+theorem le_sub_of_add_le_left (ha : a ≠ ∞ := by finiteness) : a + b ≤ c → b ≤ c - a :=
   (cancel_of_ne ha).le_tsub_of_add_le_left
 
-theorem le_sub_of_add_le_right (hb : b ≠ ∞) : a + b ≤ c → a ≤ c - b :=
+theorem le_sub_of_add_le_right (hb : b ≠ ∞ := by finiteness) : a + b ≤ c → a ≤ c - b :=
   (cancel_of_ne hb).le_tsub_of_add_le_right
 
 protected theorem sub_lt_of_lt_add (hac : c ≤ a) (h : a < b + c) : a - c < b :=
   ((cancel_of_lt' <| hac.trans_lt h).tsub_lt_iff_right hac).mpr h
 
-protected theorem sub_lt_iff_lt_right (hb : b ≠ ∞) (hab : b ≤ a) : a - b < c ↔ a < c + b :=
+protected theorem sub_lt_iff_lt_right (hb : b ≠ ∞ := by finiteness) (hab : b ≤ a) :
+    a - b < c ↔ a < c + b :=
   (cancel_of_ne hb).tsub_lt_iff_right hab
 
-protected theorem sub_lt_self (ha : a ≠ ∞) (ha₀ : a ≠ 0) (hb : b ≠ 0) : a - b < a :=
+protected theorem sub_lt_self (ha : a ≠ ∞ := by finiteness) (ha₀ : a ≠ 0) (hb : b ≠ 0) :
+    a - b < a :=
   (cancel_of_ne ha).tsub_lt_self (pos_iff_ne_zero.2 ha₀) (pos_iff_ne_zero.2 hb)
 
-protected theorem sub_lt_self_iff (ha : a ≠ ∞) : a - b < a ↔ 0 < a ∧ 0 < b :=
+protected theorem sub_lt_self_iff (ha : a ≠ ∞ := by finiteness) : a - b < a ↔ 0 < a ∧ 0 < b :=
   (cancel_of_ne ha).tsub_lt_self_iff
 
 theorem sub_lt_of_sub_lt (h₂ : c ≤ a) (h₃ : a ≠ ∞ ∨ b ≠ ∞) (h₁ : a - b < c) : a - c < b :=
   ENNReal.sub_lt_of_lt_add h₂ (add_comm c b ▸ ENNReal.lt_add_of_sub_lt_right h₃ h₁)
 
-theorem sub_sub_cancel (h : a ≠ ∞) (h2 : b ≤ a) : a - (a - b) = b :=
+theorem sub_sub_cancel (h : a ≠ ∞ := by finiteness) (h2 : b ≤ a) : a - (a - b) = b :=
   (cancel_of_ne <| sub_ne_top h).tsub_tsub_cancel_of_le h2
 
-theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc : c ≤ a) :
+theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞ := by finiteness) (hb : b ≤ a) (hc : c ≤ a) :
     a - b = a - c ↔ b = c :=
   (cancel_of_ne ha).tsub_right_inj (cancel_of_ne <| ne_top_of_le_ne_top ha hb)
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
@@ -403,11 +410,12 @@ protected theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a 
   simp only [mul_comm a]
   exact ENNReal.sub_mul h
 
-theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
+theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞ := by finiteness) :
     (a - b ≤ a - c) ↔ c ≤ b :=
   (cancel_of_ne h').tsub_le_tsub_iff_left (cancel_of_ne (ne_top_of_le_ne_top h' h)) h
 
-theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal ≤ (a - b).toReal := by
+theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞ := by finiteness) :
+    a.toReal - b.toReal ≤ (a - b).toReal := by
   lift b to ℝ≥0 using hb
   induction a
   · simp
@@ -415,11 +423,12 @@ theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal 
     exact le_max_left _ _
 
 @[simp]
-lemma toNNReal_sub (hb : b ≠ ∞) : (a - b).toNNReal = a.toNNReal - b.toNNReal := by
+lemma toNNReal_sub (hb : b ≠ ∞ := by finiteness) : (a - b).toNNReal = a.toNNReal - b.toNNReal := by
   lift b to ℝ≥0 using hb; induction a <;> simp [← coe_sub]
 
 @[simp]
-lemma toReal_sub_of_le (hba : b ≤ a) (ha : a ≠ ∞) : (a - b).toReal = a.toReal - b.toReal := by
+lemma toReal_sub_of_le (hba : b ≤ a) (ha : a ≠ ∞ := by finiteness) :
+    (a - b).toReal = a.toReal - b.toReal := by
   simp [ENNReal.toReal, ne_top_of_le_ne_top ha hba, toNNReal_mono ha hba]
 
 theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :

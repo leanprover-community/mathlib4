@@ -107,10 +107,10 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
   have h_le : (minkowskiBound K I) ≤ volume (convexBodySum K B) := by
     refine le_of_eq ?_
     rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_natCast,
-      ← Real.rpow_mul toReal_nonneg, div_mul_cancel₀, Real.rpow_one, ofReal_toReal, mul_comm,
+      ← Real.rpow_mul toReal_nonneg, div_mul_cancel₀, Real.rpow_one, ofReal_toReal _, mul_comm,
       mul_assoc, ← coe_mul, inv_mul_cancel₀ (convexBodySumFactor_ne_zero K), ENNReal.coe_one,
       mul_one]
-    · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
+    · exact mul_ne_top (minkowskiBound_lt_top K I).ne coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
   convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
   rw [div_pow B, ← Real.rpow_natCast B, ← Real.rpow_mul (by positivity), div_mul_cancel₀ _

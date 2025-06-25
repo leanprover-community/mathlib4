@@ -141,7 +141,7 @@ theorem HasFPowerSeriesOnBall.r_eq_top_of_exists {f : 𝕜 → E} {r : ℝ≥0�
   { r_le := ENNReal.le_of_forall_pos_nnreal_lt fun r hr _ =>
       let ⟨_, hp'⟩ := h' r hr
       (h.exchange_radius hp').r_le
-    r_pos := ENNReal.coe_lt_top
+    r_pos := by finiteness
     hasSum := fun {y} _ =>
       let ⟨r', hr'⟩ := exists_gt ‖y‖₊
       let ⟨_, hp'⟩ := h' r' hr'.ne_bot.bot_lt
@@ -182,7 +182,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     have := hp.changeOrigin (A.trans_le ENNReal.half_le_self)
     simp only [add_sub_cancel] at this
     apply this.mono (ENNReal.half_pos hp.r_pos.ne')
-    apply ENNReal.le_sub_of_add_le_left ENNReal.coe_ne_top
+    apply ENNReal.le_sub_of_add_le_left (by finiteness)
     apply (add_le_add A.le (le_refl (r / 2))).trans (le_of_eq _)
     exact ENNReal.add_halves _
   have M : EMetric.ball y (r / 2) ∈ 𝓝 x := EMetric.isOpen_ball.mem_nhds hxy

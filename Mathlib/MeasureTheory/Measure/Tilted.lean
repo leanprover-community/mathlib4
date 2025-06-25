@@ -64,7 +64,7 @@ lemma tilted_const' (μ : Measure α) (c : ℝ) :
       ENNReal.ofReal_zero, zero_smul, ENNReal.inv_top]
     congr
     rw [div_eq_mul_inv, mul_inv, mul_comm, mul_assoc, inv_mul_cancel₀ (exp_pos _).ne', mul_one,
-      measureReal_def, ← ENNReal.toReal_inv, ENNReal.ofReal_toReal]
+      measureReal_def, ← ENNReal.toReal_inv, ENNReal.ofReal_toReal _]
     simp [h0.out]
 
 lemma tilted_const (μ : Measure α) [IsProbabilityMeasure μ] (c : ℝ) :
@@ -129,7 +129,6 @@ lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f
     ENNReal.mul_inv_cancel]
   · simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
     exact integral_exp_pos hf
-  · simp
 
 instance isZeroOrProbabilityMeasure_tilted : IsZeroOrProbabilityMeasure (μ.tilted f) := by
   rcases eq_zero_or_neZero μ with hμ | hμ
