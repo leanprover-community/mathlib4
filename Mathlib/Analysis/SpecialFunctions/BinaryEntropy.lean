@@ -245,8 +245,8 @@ lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
   unfold qaryEntropy
   rw [deriv_fun_add]
-  · simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_id', deriv_mul_const,
-      deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
+  · simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_fun_id,
+      deriv_mul_const, deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
   all_goals fun_prop (disch := assumption)
 
 /-- Binary entropy has derivative `log (1 - p) - log p`. -/
@@ -332,7 +332,7 @@ lemma deriv2_qaryEntropy :
         deriv (fun p ↦ (qaryEntropy q) p) y = log (q - 1) + log (1 - y) - log y by
       refine (Filter.EventuallyEq.deriv_eq this).trans ?_
       rw [deriv_fun_sub ?_ (differentiableAt_log xne0)]
-      · rw [deriv.log differentiableAt_id' xne0]
+      · rw [deriv.log differentiableAt_fun_id xne0]
         simp only [deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
           have d_oneminus (p : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) p = -1 := by
