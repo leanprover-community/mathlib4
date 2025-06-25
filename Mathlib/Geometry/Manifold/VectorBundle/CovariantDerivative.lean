@@ -31,7 +31,9 @@ set_option linter.style.commandStart false
 
 namespace Basis
 
-noncomputable def localFrame_toBasis_at {ι : Type*}
+variable {ι : Type*}
+
+noncomputable def localFrame_toBasis_at
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) {x : M} (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
@@ -39,23 +41,39 @@ noncomputable def localFrame_toBasis_at {ι : Type*}
 
 open scoped Classical in
 -- If x is outside of `e.baseSet`, this returns the junk value 0.
-noncomputable def localFrame {ι : Type*}
+noncomputable def localFrame
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) : ι → (x : M) → V x := fun i x ↦
   -- idea: take the vector b i and apply the trivialisation e to it.
   if hx : x ∈ e.baseSet then b.localFrame_toBasis_at e hx i else 0
 
-lemma localFrame_toBasis_at_coe {ι : Type*}
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+@[simp]
+lemma localFrame_apply_of_mem_baseSet
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} {x : M} (hx : x ∈ e.baseSet) :
+    b.localFrame e i x = b.localFrame_toBasis_at e hx i := by
+  simp [localFrame, hx]
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+@[simp]
+lemma localFrame_apply_of_notMem
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} {x : M} (hx : x ∉ e.baseSet) :
+    b.localFrame e i x = 0 := by
+  simp [localFrame, hx]
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma localFrame_toBasis_at_coe
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) {x : M} (i : ι) (hx : x ∈ e.baseSet) :
-    b.localFrame_toBasis_at e hx i = b.localFrame e i x := by
-  simp [localFrame_toBasis_at, localFrame, hx]
+    b.localFrame_toBasis_at e hx i = b.localFrame e i x := by simp [hx]
 
 -- XXX: is this result actually needed now? perhaps not, because of the toBasis definition?
 /-- At each point `x ∈ M`, the sections `{sⁱ(x)}` of a local frame form a basis for `V x`. -/
-def isBasis_localFrame {ι : Type*}
+def isBasis_localFrame
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) : sorry := by
@@ -66,31 +84,39 @@ def isBasis_localFrame {ι : Type*}
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i` -/
 -- If x is outside of `e.baseSet`, this returns the junk value 0.
-noncomputable def localFrame_repr {ι : Type*}
+noncomputable def localFrame_repr
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) (s : Π x : M, V x) : ι → M → 𝕜 :=
   fun i x ↦ if hx : x ∈ e.baseSet then (b.localFrame_toBasis_at e hx).repr (s x) i else 0
 
+variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] {b : Basis ι 𝕜 F}
+
+variable (e b) in
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+@[simp]
+lemma localFrame_repr_apply_of_notMem_baseSet {x : M}
+    (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) : b.localFrame_repr e s i x = 0 := by
+  simpa [localFrame_repr] using fun hx' ↦ (hx hx').elim
+
+#exit
 -- uniqueness of the decomposition: will follow from the IsBasis property above
 
-lemma localFrame_repr_spec {ι : Type*} [Fintype ι] {x : M}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
-    (b : Basis ι 𝕜 F)
-    (s : Π x : M,  V x) :
+
+
+variable (b) in
+lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e s i x') • b.localFrame e i x' := by
   have {x'} (hx : x' ∈ e.baseSet) :
       s x' = (∑ i, (b.localFrame_repr e s i x') • b.localFrame e i x') := by
-    simp [Basis.localFrame_repr, localFrame, localFrame_toBasis_at, hx]
-    sorry -- some simp'ing and a property of bases
+    simp [Basis.localFrame_repr, hx]
+    exact (sum_repr (localFrame_toBasis_at e b hx) (s x')).symm
   exact eventually_nhds_iff.mpr ⟨e.baseSet, fun y a ↦ this a, e.open_baseSet, hxe⟩
 
 -- uniqueness implies this, but it also follows from our definition
-lemma Basis.localFrame_repr_add {ι : Type*} [Fintype ι] {x : M}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
-    (b : Basis ι 𝕜 F) (s s' : Π x : M,  V x) (i : ι) :
+lemma Basis.localFrame_repr_add [Fintype ι] {x : M} (hxe : x ∈ e.baseSet)
+    (s s' : Π x : M,  V x) (i : ι) :
     b.localFrame_repr e (s + s') i =
       (b.localFrame_repr e (s + s') i) + (b.localFrame_repr e (s + s') i) := by
   by_cases hx : x ∈ e.baseSet; swap
