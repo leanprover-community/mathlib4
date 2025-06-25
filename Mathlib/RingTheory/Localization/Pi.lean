@@ -10,7 +10,6 @@ import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
