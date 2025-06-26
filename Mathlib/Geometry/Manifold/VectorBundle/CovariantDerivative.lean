@@ -61,7 +61,7 @@ lemma contMDiffOn_localFrame_baseSet
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) n
       (fun x ↦ TotalSpace.mk' F x (b.localFrame e i x)) e.baseSet := by
-  rw [contMDiffOn_section_of_mem_baseSet]
+  rw [contMDiffOn_section_of_mem_baseSet₀]
   apply (contMDiffOn_const (c := b i)).congr
   intro y hy
   simp [localFrame, hy, localFrame_toBasis_at]
@@ -151,8 +151,13 @@ lemma Basis.localFrame_repr_apply_zero_at
     b.localFrame_repr e s i x = 0 := by
   by_cases hxe : x ∈ e.baseSet; swap
   · simp [localFrame_repr, hxe]
-  have : (e { proj := x, snd := 0 }).2 = 0 := sorry -- same sorry as above
-  simp [localFrame_repr, localFrame_toBasis_at, hxe, hs, this]
+  simp [localFrame_repr, localFrame_toBasis_at, hxe, hs]
+  have : e.symm x = 0 := sorry
+  have : (e { proj := x, snd := 0 }).2 = 0 := by
+    trans (e { proj := x, snd := e.symm x 0 }).2
+    · simp [this]
+    · simp [e.apply_mk_symm hxe]
+  simp [this]
 
 -- TODO: better name
 lemma Basis.localFrame_repr_apply_zero (b : Basis ι 𝕜 F) (i : ι) :
