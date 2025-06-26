@@ -85,7 +85,7 @@ set_option linter.deprecated false in
 @[deprecated hasFDerivAt_ofLp (since := "2025-05-07")]
 theorem hasFDerivAt_equiv (f : PiLp p E) :
     HasFDerivAt (WithLp.equiv _ _) (ofLpContinuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
-  hasFDerivAt_ofLp f
+  hasFDerivAt_ofLp _ f
 
 theorem hasFDerivAt_toLp (f : ∀ i, E i) :
     HasFDerivAt (toLp p) (ofLpContinuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
@@ -96,7 +96,7 @@ set_option linter.deprecated false in
 theorem hasFDerivAt_equiv_symm (f : ∀ i, E i) :
     HasFDerivAt (WithLp.equiv _ _).symm
       (ofLpContinuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
-  hasFDerivAt_toLp f
+  hasFDerivAt_toLp _ f
 
 nonrec theorem hasFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
