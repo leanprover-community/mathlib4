@@ -2172,7 +2172,6 @@ import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.Constructions.FormalProducts
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
@@ -2192,6 +2191,7 @@ import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Final.ParallelPair
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.FintypeCat
+import Mathlib.CategoryTheory.Limits.FormalCoproducts
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
