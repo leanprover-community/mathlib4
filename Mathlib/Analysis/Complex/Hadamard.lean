@@ -119,11 +119,11 @@ lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
     DiffContOnCl ℂ (fun z ↦ invInterpStrip f z ε) (verticalStrip 0 1) := by
   apply Differentiable.diffContOnCl
   apply Differentiable.mul
-  · apply Differentiable.const_cpow (Differentiable.sub_const (differentiable_id') 1) _
+  · apply Differentiable.const_cpow (Differentiable.sub_const differentiable_id 1) _
     left
     rw [← ofReal_add, ofReal_ne_zero]
     simp only [ne_eq, ne_of_gt (sSupNormIm_eps_pos f hε 0), not_false_eq_true]
-  · apply Differentiable.const_cpow (Differentiable.neg differentiable_id')
+  · apply Differentiable.const_cpow (Differentiable.neg differentiable_id)
     apply Or.inl
     rw [← ofReal_add, ofReal_ne_zero]
     exact (ne_of_gt (sSupNormIm_eps_pos f hε 1))
@@ -296,10 +296,10 @@ lemma diffContOnCl_interpStrip :
     simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
       (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
     refine DifferentiableAt.mul ?_ ?_
-    · apply DifferentiableAt.const_cpow (DifferentiableAt.const_sub (differentiableAt_id') 1) _
+    · apply DifferentiableAt.const_cpow (DifferentiableAt.const_sub differentiableAt_id 1) _
       left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
     · refine DifferentiableAt.const_cpow ?_ ?_
-      · apply differentiableAt_id'
+      · apply differentiableAt_id
       · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
 
 /-- The correct generalization of `interpStrip` to produce bounds in the general case. -/
@@ -585,7 +585,7 @@ lemma scale_diffContOnCl {f : ℂ → E} {l u : ℝ} (hul : l < u)
   apply DiffContOnCl.comp (s := verticalStrip l u) hd
   · apply DiffContOnCl.const_add
     apply DiffContOnCl.smul_const
-    exact Differentiable.diffContOnCl differentiable_id'
+    exact Differentiable.diffContOnCl differentiable_id
   · rw [MapsTo]
     intro z hz
     exact scale_id_mem_verticalStrip_of_mem_verticalStrip hul hz
