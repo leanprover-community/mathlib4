@@ -86,7 +86,6 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, of _X, _ => fun f _g => PEmpty.elim f
   | _, star, of _Y => fun _f g => PEmpty.elim g
   | star, star, star => fun _ _ => PUnit.unit
-attribute [nolint simpNF] comp.eq_3
 attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithTerminal C) where
@@ -476,7 +475,6 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
   | of _Y, star, _ => fun f _g => PEmpty.elim f
   | star, star, star => fun _ _ => PUnit.unit
 attribute [nolint simpNF] comp.eq_3
-attribute [nolint simpNF] comp.eq_4
 
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y

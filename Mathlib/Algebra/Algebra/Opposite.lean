@@ -110,8 +110,6 @@ This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
   toFun f := { RingHom.op f.toRingHom with commutes' := fun r => unop_injective <| f.commutes r }
   invFun f := { RingHom.unop f.toRingHom with commutes' := fun r => op_injective <| f.commutes r }
-  left_inv _f := AlgHom.ext fun _a => rfl
-  right_inv _f := AlgHom.ext fun _a => rfl
 
 theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingHom :=
   rfl
@@ -141,8 +139,6 @@ def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
   invFun f :=
     { RingEquiv.unop f.toRingEquiv with
       commutes' := fun r => MulOpposite.op_injective <| f.commutes r }
-  left_inv _f := AlgEquiv.ext fun _a => rfl
-  right_inv _f := AlgEquiv.ext fun _a => rfl
 
 theorem toAlgHom_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toAlgHom = AlgHom.op f.toAlgHom :=

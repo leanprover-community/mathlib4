@@ -19,7 +19,7 @@ This file defines cubic polynomials over a semiring and their discriminants over
 ## Main statements
 
 * `Cubic.disc_ne_zero_iff_roots_nodup`: the cubic discriminant is not equal to zero if and only if
-    the cubic has no duplicate roots.
+  the cubic has no duplicate roots.
 
 ## References
 

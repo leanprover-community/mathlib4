@@ -1,5 +1,7 @@
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
+set_option linter.style.commandStart false
+
 #guard_expr !₂[] = (WithLp.equiv 2 (∀ _ : Fin 0, _)).symm ![]
 #guard_expr !₂[1, 2, 3] = (WithLp.equiv 2 (∀ _ : Fin 3, ℕ)).symm ![1, 2, 3]
 #guard_expr !₁[1, 2, (3 : ℝ)] = (WithLp.equiv 1 (∀ _ : Fin 3, ℝ)).symm ![1, 2, 3]

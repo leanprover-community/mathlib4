@@ -239,7 +239,6 @@ def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
     toFun := fun _ ↦ a
     inj' x y h := by simp [Unique.uniq inferInstance] }
   left_inv f := by ext; simp [Unique.uniq]
-  right_inv a := rfl
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
@@ -371,8 +370,6 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
     { f : α → β // Injective f } ≃ (α ↪ β) where
   toFun f := ⟨f.val, f.property⟩
   invFun f := ⟨f, f.injective⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/

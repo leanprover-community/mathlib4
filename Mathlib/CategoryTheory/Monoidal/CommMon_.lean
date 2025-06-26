@@ -118,7 +118,7 @@ end
 section
 
 variable {M N : CommMon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat)
+  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `CommMon_ C`. -/
 def mkIso : M ≅ N :=
@@ -157,7 +157,7 @@ def mapCommMon : CommMon_ C ⥤ CommMon_ D where
   obj A :=
     { F.mapMon.obj A.toMon_ with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
@@ -197,14 +197,14 @@ variable (C D) in
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
   obj F := F.mapCommMon
-  map α := { app := fun A => { hom := α.hom.app A.X } }
+  map α := { app A := .mk' (α.hom.app A.X) }
   map_comp _ _ := rfl
 
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
 noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
     F.mapCommMon ⟶ F'.mapCommMon where
-  app X := .mk (f.app _)
+  app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[simps!]
@@ -261,8 +261,8 @@ def commMonToLaxBraidedObj (A : CommMon_ C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X
 
 instance (A : CommMon_ C) : (commMonToLaxBraidedObj A).LaxMonoidal where
-  ε' := η[A.X]
-  μ' _ _ := μ[A.X]
+  ε := η[A.X]
+  «μ» _ _ := μ[A.X]
 
 open Functor.LaxMonoidal
 
