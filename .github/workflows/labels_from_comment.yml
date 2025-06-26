@@ -15,14 +15,14 @@ permissions:
 
 jobs:
   update-label:
+    env:
+      COMMENT: ${{ github.event.comment.body }}
     runs-on: ubuntu-latest
 
     steps:
     - name: Add / remove label based on comment
       run: |
         labelArray=("awaiting-author" "WIP" "easy")
-
-        COMMENT="${{ github.event.comment.body }}"
 
         # we strip `\r` since line endings from GitHub contain this character
         COMMENT="${COMMENT//$'\r'/}"
