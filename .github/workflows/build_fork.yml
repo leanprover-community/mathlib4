@@ -460,10 +460,6 @@ jobs:
           lake exe cache get Archive Counterexamples
 
       - name: verify that everything was available in the cache
-        # FIXME: This step is skipped for mathlib4-nightly-testing repository
-        # because the cache verification fails in that environment. This needs
-        # to be investigated and properly fixed.
-        if: github.repository != 'leanprover-community/mathlib4-nightly-testing'
         run: |
           lake build --no-build Mathlib
           lake build --no-build Archive
