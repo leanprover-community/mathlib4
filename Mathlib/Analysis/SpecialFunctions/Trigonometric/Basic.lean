@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Algebra.Field.NegOnePow
 import Mathlib.Algebra.Field.Periodic
+import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.SpecialFunctions.Exp
 
@@ -489,42 +490,52 @@ theorem sin_eq_zero_iff_of_lt_of_lt {x : ℝ} (hx₁ : -π < x) (hx₂ : x < π)
     | inr h0 => exact (sin_pos_of_pos_of_lt_pi h0 hx₂).ne',
   fun h => by simp [h]⟩
 
-theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ ∃ n : ℤ, (n : ℝ) * π = x :=
-  ⟨fun h =>
-    ⟨⌊x / π⌋,
-      le_antisymm (sub_nonneg.1 (Int.sub_floor_div_mul_nonneg _ pi_pos))
+theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ x ≡ 0 [PMOD π] := by
+  simp_rw [AddCommGroup.modEq_zero_left_iff_eq_zsmul, zsmul_eq_mul]
+  refine ⟨fun h => ?_, fun ⟨_, hn⟩ => hn ▸ ?_⟩
+  · exact ⟨⌊x / π⌋,
+      le_antisymm
         (sub_nonpos.1 <|
           le_of_not_gt fun h₃ =>
             (sin_pos_of_pos_of_lt_pi h₃ (Int.sub_floor_div_mul_lt _ pi_pos)).ne
-              (by simp [sub_eq_add_neg, sin_add, h, sin_int_mul_pi]))⟩,
-    fun ⟨_, hn⟩ => hn ▸ sin_int_mul_pi _⟩
+              (by simp [sub_eq_add_neg, sin_add, h, sin_int_mul_pi]))
+        (sub_nonneg.1 (Int.sub_floor_div_mul_nonneg _ pi_pos))⟩
+  · exact sin_int_mul_pi _
 
 theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π ≠ x := by
-  rw [← not_exists, not_iff_not, sin_eq_zero_iff]
+  simp_rw [ne_eq, sin_eq_zero_iff, AddCommGroup.modEq_zero_left_iff_eq_zsmul, not_exists,
+    zsmul_eq_mul, eq_comm]
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq, ← sub_eq_iff_eq_add, sub_self]
   exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 
-theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
-  ⟨fun h =>
-    let ⟨n, hn⟩ := sin_eq_zero_iff.1 (sin_eq_zero_iff_cos_eq.2 (Or.inl h))
-    ⟨n / 2,
-      (Int.emod_two_eq_zero_or_one n).elim
-        (fun hn0 => by
-          rwa [← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
-            Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0)])
-        fun hn1 => by
-        rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
-              mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
-        rw [← hn, cos_int_mul_two_pi_add_pi] at h
-        exact absurd h (by norm_num)⟩,
-    fun ⟨_, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
+theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ x ≡ 0 [PMOD (2 * π)] := by
+  have := sin_eq_zero_iff (x := x)
+  rw [AddCommGroup.modEq_zero_left_iff_eq_zsmul] at this ⊢
+  simp_rw [zsmul_eq_mul] at this ⊢
+  refine
+    ⟨fun h =>
+      let ⟨n, hn⟩ := this.1 (sin_eq_zero_iff_cos_eq.2 (Or.inl h))
+      ⟨n / 2,
+        (Int.emod_two_eq_zero_or_one n).elim
+          (fun hn0 => by
+            rwa [← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
+              Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0)])
+          fun hn1 => by
+          rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
+                mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
+          rw [hn, cos_int_mul_two_pi_add_pi] at h
+          exact absurd h (by norm_num)⟩,
+      fun ⟨_, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
 
+-- TODO: this is really a statement about `PMOD` when things are bounded
 theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x < 2 * π) :
     cos x = 1 ↔ x = 0 :=
   ⟨fun h => by
-    rcases (cos_eq_one_iff _).1 h with ⟨n, rfl⟩
+    rw [cos_eq_one_iff, AddCommGroup.modEq_zero_left_iff_eq_zsmul] at h
+    simp_rw [zsmul_eq_mul] at h
+    rcases h with ⟨n, rfl⟩
     rw [mul_lt_iff_lt_one_left two_pi_pos] at hx₂
     rw [neg_lt, neg_mul_eq_neg_mul, mul_lt_iff_lt_one_left two_pi_pos] at hx₁
     norm_cast at hx₁ hx₂
@@ -799,7 +810,7 @@ theorem quadratic_root_cos_pi_div_five :
   set s := sin θ
   suffices 2 * c = 4 * c ^ 2 - 1 by simp [this]
   have hs : s ≠ 0 := by
-    rw [ne_eq, sin_eq_zero_iff, hθ]
+    rw [ne_eq, sin_eq_zero_iff, hθ, AddCommGroup.modEq_zero_left_iff_eq_zsmul]
     push_neg
     intro n hn
     replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn

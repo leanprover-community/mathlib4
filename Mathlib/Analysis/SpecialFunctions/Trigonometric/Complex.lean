@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 /-!
 # Complex trigonometric functions
@@ -26,90 +26,91 @@ open Set Filter
 
 open scoped Real
 
-theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 := by
+theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ θ ≡ π / 2 [PMOD ↑π] := by
   have h : (exp (θ * I) + exp (-θ * I)) / 2 = 0 ↔ exp (2 * θ * I) = -1 := by
     rw [@div_eq_iff _ _ (exp (θ * I) + exp (-θ * I)) 2 0 two_ne_zero, zero_mul,
       add_eq_zero_iff_eq_neg, neg_eq_neg_one_mul, ← div_eq_iff (exp_ne_zero _), ← exp_sub]
     ring_nf
-  rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
-  refine exists_congr fun x => ?_
-  refine (iff_of_eq <| congr_arg _ ?_).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
-  field_simp; ring
+  rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_modEq, mul_right_comm]
+  have : IsRegular (2 * I) := isRegular_of_ne_zero (mul_ne_zero two_ne_zero I_ne_zero)
+  conv_rhs => rw [← this.left.mul_modEq_mul_left]
+  congr! 1
+  · ring
+  · field_simp; ring
 
-theorem cos_ne_zero_iff {θ : ℂ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
-  rw [← not_exists, not_iff_not, cos_eq_zero_iff]
-
-theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := by
-  rw [← Complex.cos_sub_pi_div_two, cos_eq_zero_iff]
-  constructor
-  · rintro ⟨k, hk⟩
-    use k + 1
-    field_simp [eq_add_of_sub_eq hk]
-    ring
-  · rintro ⟨k, rfl⟩
-    use k - 1
-    field_simp
-    ring
-
-theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π := by
-  rw [← not_exists, not_iff_not, sin_eq_zero_iff]
+theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ θ ≡ 0 [PMOD ↑π] := by
+  rw [← Complex.cos_sub_pi_div_two, cos_eq_zero_iff, AddCommGroup.sub_modEq_iff_modEq_add]
+  exact AddCommGroup.ModEq.congr (by rfl) (by simp)
 
 /-- The tangent of a complex number is equal to zero
 iff this number is equal to `k * π / 2` for an integer `k`.
 
 Note that this lemma takes into account that we use zero as the junk value for division by zero.
 See also `Complex.tan_eq_zero_iff'`. -/
-theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ := by
+theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ θ ≡ 0 [PMOD (π / 2 : ℂ)] := by
   rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← mul_right_inj' two_ne_zero, mul_zero,
-    ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff]
-  field_simp [mul_comm, eq_comm]
+    ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff, ← AddCommGroup.mul_modEq_mul_left two_ne_zero,
+    mul_zero]
+
+theorem cos_ne_zero_iff {θ : ℂ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
+  rw [ne_eq, cos_eq_zero_iff, AddCommGroup.modEq_comm, AddCommGroup.modEq_iff_eq_add_zsmul,
+    not_exists]
+  field_simp; ring_nf
+
+theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π := by
+  rw [ne_eq, sin_eq_zero_iff, AddCommGroup.modEq_zero_left_iff_eq_zsmul, not_exists]
+  simp_rw [zsmul_eq_mul]
 
 theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, (k * π / 2 : ℂ) ≠ θ := by
-  rw [← not_exists, not_iff_not, tan_eq_zero_iff]
+  rw [ne_eq, tan_eq_zero_iff, AddCommGroup.modEq_zero_left_iff_eq_zsmul, not_exists]
+  simp_rw [zsmul_eq_mul, mul_div_assoc, ne_comm]
 
 theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
-  tan_eq_zero_iff.mpr (by use n)
+  tan_eq_zero_iff.mpr (.symm <| by use n; simp [zsmul_eq_mul, mul_div_assoc])
 
 /-- If the tangent of a complex number is well-defined,
 then it is equal to zero iff the number is equal to `k * π` for an integer `k`.
 
 See also `Complex.tan_eq_zero_iff` for a version that takes into account junk values of `θ`. -/
-theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
+theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ θ ≡ 0 [PMOD (π : ℂ)] := by
   simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
-theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
+theorem cos_eq_cos_iff {x y : ℂ} :
+    cos x = cos y ↔ x ≡ y [PMOD (2 * π : ℂ)] ∨ x ≡ -y [PMOD (2 * π : ℂ)] :=
   calc
     cos x = cos y ↔ cos x - cos y = 0 := sub_eq_zero.symm
     _ ↔ -2 * sin ((x + y) / 2) * sin ((x - y) / 2) = 0 := by rw [cos_sub_cos]
     _ ↔ sin ((x + y) / 2) = 0 ∨ sin ((x - y) / 2) = 0 := by simp [(by norm_num : (2 : ℂ) ≠ 0)]
     _ ↔ sin ((x - y) / 2) = 0 ∨ sin ((x + y) / 2) = 0 := or_comm
-    _ ↔ (∃ k : ℤ, y = 2 * k * π + x) ∨ ∃ k : ℤ, y = 2 * k * π - x := by
-      apply or_congr <;>
-        field_simp [sin_eq_zero_iff, (by norm_num : -(2 : ℂ) ≠ 0), eq_sub_iff_add_eq',
-          sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
-      constructor <;> · rintro ⟨k, rfl⟩; use -k; simp
-    _ ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x := exists_or.symm
+    _ ↔ _ := by
+      field_simp [sin_eq_zero_iff, (by norm_num : -(2 : ℂ) ≠ 0),
+        sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
+      rw [← zero_div 2, AddCommGroup.div_modEq_div two_ne_zero,
+        AddCommGroup.div_modEq_div two_ne_zero,
+        AddCommGroup.sub_modEq_iff_modEq_add, zero_add, ← zero_sub,
+        AddCommGroup.modEq_sub_iff_add_modEq]
+
 
 theorem sin_eq_sin_iff {x y : ℂ} :
-    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
-  simp only [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, sub_eq_iff_eq_add]
-  refine exists_congr fun k => or_congr ?_ ?_ <;> refine Eq.congr rfl ?_ <;> field_simp <;> ring
+    sin x = sin y ↔ x ≡ y [PMOD (2 * π : ℂ)] ∨ x ≡ π - y [PMOD (2 * π : ℂ)] := by
+  simp_rw [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, AddCommGroup.ModEq.sub_iff_right .rfl,
+    neg_sub, AddCommGroup.sub_modEq_iff_modEq_add]
+  ring_nf
 
-theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x := by
-  rw [← cos_zero, eq_comm, cos_eq_cos_iff]
-  simp [mul_assoc, mul_left_comm, eq_comm]
+theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ x ≡ 0 [PMOD (2 * π : ℂ)] := by
+  rw [← cos_zero, cos_eq_cos_iff, neg_zero, or_self]
 
-theorem cos_eq_neg_one_iff {x : ℂ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x := by
-  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff]
-  simp only [eq_sub_iff_add_eq']
+theorem cos_eq_neg_one_iff {x : ℂ} : cos x = -1 ↔ x ≡ π [PMOD (2 * π : ℂ)] := by
+  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff, AddCommGroup.sub_modEq_iff_modEq_add,
+    zero_add]
 
-theorem sin_eq_one_iff {x : ℂ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x := by
-  rw [← cos_sub_pi_div_two, cos_eq_one_iff]
-  simp only [eq_sub_iff_add_eq']
+theorem sin_eq_one_iff {x : ℂ} : sin x = 1 ↔ x ≡ π / 2 [PMOD (2 * π : ℂ)] := by
+  rw [← cos_sub_pi_div_two, cos_eq_one_iff, AddCommGroup.sub_modEq_iff_modEq_add,
+    zero_add]
 
-theorem sin_eq_neg_one_iff {x : ℂ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x := by
-  rw [← neg_eq_iff_eq_neg, ← cos_add_pi_div_two, cos_eq_one_iff]
-  simp only [← sub_eq_neg_add, sub_eq_iff_eq_add]
+theorem sin_eq_neg_one_iff {x : ℂ} : sin x = -1 ↔ x ≡ -(π / 2) [PMOD (2 * π : ℂ)] := by
+  rw [← neg_eq_iff_eq_neg, ← cos_add_pi_div_two, cos_eq_one_iff,
+    ← AddCommGroup.modEq_sub_iff_add_modEq, zero_sub]
 
 theorem tan_add {x y : ℂ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
@@ -203,13 +204,14 @@ namespace Real
 
 open scoped Real
 
-theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 :=
+theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ θ ≡ π / 2 [PMOD ↑π] :=
   mod_cast @Complex.cos_eq_zero_iff θ
 
 theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 :=
   mod_cast @Complex.cos_ne_zero_iff θ
 
-theorem cos_eq_cos_iff {x y : ℝ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
+theorem cos_eq_cos_iff {x y : ℝ} :
+    cos x = cos y ↔ x ≡ y [PMOD (2 * π)] ∨ x ≡ -y [PMOD (2 * π)]  :=
   mod_cast @Complex.cos_eq_cos_iff x y
 
 theorem sin_eq_sin_iff {x y : ℝ} :

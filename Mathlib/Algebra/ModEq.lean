@@ -57,6 +57,8 @@ theorem modEq_refl (a : α) : a ≡ a [PMOD p] :=
 theorem modEq_rfl : a ≡ a [PMOD p] :=
   modEq_refl _
 
+alias ModEq.rfl := modEq_rfl
+
 theorem modEq_comm : a ≡ b [PMOD p] ↔ b ≡ a [PMOD p] :=
   (Equiv.neg _).exists_congr_left.trans <| by simp [ModEq, ← neg_eq_iff_eq_neg]
 
@@ -153,6 +155,10 @@ alias ⟨ModEq.nsmul_cancel, _⟩ := nsmul_modEq_nsmul
 
 namespace ModEq
 
+protected theorem congr (ha : a₁ ≡ a₂ [PMOD p]) (hb : b₁ ≡ b₂ [PMOD p]) :
+    a₁ ≡ b₁ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p] :=
+  ⟨(ha.symm.trans <| ·.trans hb), (ha.trans <| ·.trans hb.symm)⟩
+
 @[simp]
 protected theorem add_iff_left :
     a₁ ≡ b₁ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
@@ -222,6 +228,9 @@ theorem sub_modEq_iff_modEq_add : a - b ≡ c [PMOD p] ↔ a ≡ c + b [PMOD p] 
 @[simp]
 theorem sub_modEq_zero : a - b ≡ 0 [PMOD p] ↔ a ≡ b [PMOD p] := by simp [sub_modEq_iff_modEq_add]
 
+theorem add_modEq_zero_iff_modEq_neg : a + b ≡ 0 [PMOD p] ↔ a ≡ -b [PMOD p] := by
+  rw [← zero_sub, modEq_comm, ← sub_modEq_iff_modEq_add, modEq_comm]
+
 @[simp]
 theorem add_modEq_left : a + b ≡ a [PMOD p] ↔ b ≡ 0 [PMOD p] := by simp [← modEq_sub_iff_add_modEq']
 
@@ -230,6 +239,10 @@ theorem add_modEq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [
 
 theorem modEq_iff_eq_add_zsmul : a ≡ b [PMOD p] ↔ ∃ z : ℤ, b = a + z • p := by
   simp_rw [ModEq, sub_eq_iff_eq_add']
+
+theorem modEq_zero_left_iff_eq_zsmul : a ≡ 0 [PMOD p] ↔ ∃ z : ℤ, a = z • p := by
+  rw [modEq_comm, modEq_iff_eq_add_zsmul]
+  simp_rw [zero_add]
 
 theorem not_modEq_iff_ne_add_zsmul : ¬a ≡ b [PMOD p] ↔ ∀ z : ℤ, b ≠ a + z • p := by
   rw [modEq_iff_eq_add_zsmul, not_exists]
@@ -241,6 +254,26 @@ theorem modEq_iff_eq_mod_zmultiples : a ≡ b [PMOD p] ↔ (b : α ⧸ AddSubgro
 theorem not_modEq_iff_ne_mod_zmultiples :
     ¬a ≡ b [PMOD p] ↔ (b : α ⧸ AddSubgroup.zmultiples p) ≠ a :=
   modEq_iff_eq_mod_zmultiples.not
+
+/-- If `a ≡ b [PMOD p]`, then mod `n • p` there are `n` cases. -/
+theorem modEq_nsmul_cases (n : ℕ) (hn : n ≠ 0) :
+    a ≡ b [PMOD p] ↔ ∃ i < n, a ≡ b + i • p [PMOD (n • p)] := by
+  simp_rw [← sub_modEq_iff_modEq_add, modEq_comm (b := b)]
+  simp_rw [AddCommGroup.ModEq, sub_right_comm, sub_eq_iff_eq_add (b := _ • _), ← natCast_zsmul,
+    smul_smul, ← add_smul]
+  constructor
+  · rintro ⟨k, hk⟩
+    refine ⟨(k % n).toNat, ?_⟩
+    rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ (mod_cast hn))]
+    refine ⟨?_, k / n, ?_⟩
+    · refine Int.emod_lt_of_pos _ ?_
+      omega
+    · rw [hk, Int.ediv_add_emod']
+  · rintro ⟨k, _, j, hj⟩
+    rw [hj]
+    exact ⟨_, rfl⟩
+
+alias ⟨ModEq.nsmul_cases, _⟩ := AddCommGroup.modEq_nsmul_cases
 
 end AddCommGroup
 
@@ -271,6 +304,19 @@ alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
 alias ⟨_root_.Nat.ModEq.of_natCast, ModEq.natCast⟩ := natCast_modEq_natCast
 
 end AddCommGroupWithOne
+
+section Ring
+variable [Ring α] {a b c p : α}
+
+@[simp] lemma _root_.IsRightRegular.mul_modEq_mul_right (hc : IsRightRegular c) :
+    a * c ≡ b * c [PMOD (p * c)] ↔ a ≡ b [PMOD p] := by
+  simp_rw [ModEq, ← sub_mul, zsmul_eq_mul, ← mul_assoc, hc.eq_iff]
+
+@[simp] lemma _root_.IsLeftRegular.mul_modEq_mul_left (hc : IsLeftRegular c) :
+    c * a ≡ c * b [PMOD (c * p)] ↔ a ≡ b [PMOD p] := by
+  simp_rw [ModEq, ← mul_sub, zsmul_eq_mul, Int.cast_commute _ c |>.left_comm, hc.eq_iff]
+
+end Ring
 
 section DivisionRing
 variable [DivisionRing α] {a b c p : α}

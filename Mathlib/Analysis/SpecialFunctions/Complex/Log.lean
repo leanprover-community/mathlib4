@@ -141,13 +141,25 @@ theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * 
 theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y) = 1 := by
   rw [exp_sub, div_eq_one_iff_eq (exp_ne_zero _)]
 
-theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
+theorem exp_eq_exp_iff_modEq {x y : ℂ} : exp x = exp y ↔ x ≡ y [PMOD (2 * π * I)] := by
   simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
+  rw [AddCommGroup.modEq_comm, AddCommGroup.modEq_iff_eq_add_zsmul]
+  simp_rw [zsmul_eq_mul]
 
+@[deprecated exp_eq_exp_iff_modEq (since := "2025-06-25")]
+theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
+  rw [exp_eq_exp_iff_modEq, AddCommGroup.modEq_comm, AddCommGroup.modEq_iff_eq_add_zsmul]
+  simp_rw [zsmul_eq_mul]
+
+
+theorem log_exp_modEq (z : ℂ) : log (exp z) ≡ z [PMOD (2 * π * I)] := by
+  rw [← exp_eq_exp_iff_modEq, exp_log]
+  exact exp_ne_zero z
+
+@[deprecated log_exp_modEq (since := "2025-06-25")]
 theorem log_exp_exists (z : ℂ) :
     ∃ n : ℤ, log (exp z) = z + n * (2 * π * I) := by
-  rw [← exp_eq_exp_iff_exists_int, exp_log]
-  exact exp_ne_zero z
+  simpa [AddCommGroup.modEq_iff_eq_add_zsmul] using log_exp_modEq z |>.symm
 
 @[simp]
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
@@ -159,7 +171,8 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
   · rw [← Set.biUnion_preimage_singleton]
     refine hs.biUnion fun z hz => ?_
     rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
-    · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
+    · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_modEq, Set.setOf_exists,
+        AddCommGroup.modEq_comm, AddCommGroup.modEq_iff_eq_add_zsmul]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
     · push_neg at hne
       simp [Set.preimage, hne]
