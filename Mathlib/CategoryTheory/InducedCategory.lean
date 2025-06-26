@@ -68,6 +68,8 @@ instance : Category.{v} (InducedCategory D F) where
   id X := { hom := 𝟙 _}
   comp f g := { hom := f.hom ≫ g.hom }
 
+attribute [reassoc] comp_hom
+
 @[ext]
 lemma hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
   Hom.ext h
