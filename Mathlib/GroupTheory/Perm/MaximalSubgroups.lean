@@ -10,11 +10,21 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
 
-* `Equiv.Perm.is_maximal_stab` : the stabilizer of `s : set α` is
-  a maximal subgroup of the symmetric group `equiv.perm α` when `α`
-  is finite and the cardinality of `s` is not half of that of `α`.
+* `Equiv.Perm.isCoatom_stabilizer`: when `s : set α` is
+  not empty, nor its complementary subset,
+  and if the cardinality of `s` is not half of that of `α`,
+  then `MulAction.stabilizer (Equiv.Perm α) s` is
+  a maximal subgroup of the symmetric group `Equiv.Perm α`.
 
   This is the *intransitive case* of the O'Nan-Scott classification.
+
+## TODO
+
+  * Appplication to primitivity of the action
+    of `Equiv.Perm α` on finite combinations of `α`.
+
+  * Finish the classification
+
 -/
 
 open scoped Pointwise
