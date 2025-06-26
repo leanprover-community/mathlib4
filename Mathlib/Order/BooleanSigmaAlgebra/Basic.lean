@@ -128,4 +128,10 @@ theorem σsSup_singleton : sSup {a} = a :=
 theorem σsInf_singleton : sInf {a} = a :=
   σsSup_singleton (α := αᵒᵈ)
 
+theorem σsSup_pair (a b : α) : sSup {a, b} = a ⊔ b :=
+  (@isLUB_pair _ _ a b).σsSup_eq <| by simp
+
+theorem σsInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
+  σsSup_pair (α := αᵒᵈ) a b
+
 end SigmaCompleteLattice
