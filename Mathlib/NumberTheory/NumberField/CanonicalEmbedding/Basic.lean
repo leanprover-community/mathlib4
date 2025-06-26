@@ -73,11 +73,11 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-  obtain hr | hr := lt_or_le r 0
+  obtain hr | hr := lt_or_ge r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
-    · exact (hr.trans_le (norm_nonneg _)).not_le
-    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact (hr.trans_le (norm_nonneg _)).not_ge
+    · exact fun h => hr.not_ge (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -90,7 +90,7 @@ def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
-  obtain hr | _ := lt_or_le r 0
+  obtain hr | _ := lt_or_ge r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
