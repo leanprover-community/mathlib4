@@ -5,9 +5,9 @@ Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.CatCommSq
 
-/-! # Categorical pullback squares
+/-! # Categorical pullbacks
 
-This file defines the basic properties of categorical pullback squares.
+This file defines the basic properties of categorical pullbacks.
 
 Given a pair of functors `(F : A ⥤ B, G : C ⥤ B)`, we define the category
 `CategoricalPullback F G` as the category of triples
@@ -25,9 +25,9 @@ equivalent to `CatCommSqOver F G X`.
 ## Main declarations
 
 * `CategoricalPullback F G`: the type of the categorical pullback.
-* `πₗ F G : CategoricalPullback F G` and `πᵣ F G : CategoricalPullback F G`: the canonical
+* `π₁ F G : CategoricalPullback F G` and `π₂ F G : CategoricalPullback F G`: the canonical
   projections.
-* `CategoricalPullback.catCommSq`: the canonical `CatCommSq (πₗ F G) (πᵣ F G) F G` which exhibits
+* `CategoricalPullback.catCommSq`: the canonical `CatCommSq (π₁ F G) (π₂ F G) F G` which exhibits
   `CategoricalPullback F G` as the pullback (in the (2,1)-categorical sense)
   of the cospan of `F` and `G`.
 * `CategoricalPullback.functorEquiv F G X`: the equivalence of categories between functors
@@ -73,12 +73,12 @@ Morphisms `(a, c, e) ⟶ (a', c', e')` are pairs of morphisms
 isomorphisms. -/
 @[kerodon 032Z]
 structure CategoricalPullback where
-  /-- the left element -/
-  left : A
-  /-- the right element -/
-  right : C
-  /-- the structural isomorphism `F.obj left ≅ G.obj right` -/
-  iso : F.obj left ≅ G.obj right
+  /-- the first component element -/
+  fst : A
+  /-- the second component element -/
+  snd : C
+  /-- the structural isomorphism `F.obj fst ≅ G.obj snd` -/
+  iso : F.obj fst ≅ G.obj snd
 
 namespace CategoricalPullback
 
@@ -89,85 +89,99 @@ variable {F G}
 
 /-- The Hom types for the categorical pullback are given by pairs of maps compatible with the
 structural isomorphisms. -/
+@[ext]
 structure Hom (x y : F ⊡ G) where
-  /-- the left component of `f : Hom x y` is a morphism `x.left ⟶ y.left` -/
-  left : x.left ⟶ y.left
-  /-- the right component of `f : Hom x y` is a morphism `x.right ⟶ y.right` -/
-  right : x.right ⟶ y.right
-  /-- the compatibility condition on `left` and `right` with respect to the structure
+  /-- the first component of `f : Hom x y` is a morphism `x.fst ⟶ y.fst` -/
+  fst : x.fst ⟶ y.fst
+  /-- the second component of `f : Hom x y` is a morphism `x.snd ⟶ y.snd` -/
+  snd : x.snd ⟶ y.snd
+  /-- the compatibility condition on `fst` and `snd` with respect to the structure
   isompophisms -/
-  w : F.map left ≫ y.iso.hom = x.iso.hom ≫ G.map right := by aesop_cat
+  w : F.map fst ≫ y.iso.hom = x.iso.hom ≫ G.map snd := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.w
 
-@[simps! id_left id_right comp_left comp_right]
+@[simps! id_fst id_snd comp_fst comp_snd]
 instance : Category (CategoricalPullback F G) where
   Hom x y := CategoricalPullback.Hom x y
   id x :=
-    { left := 𝟙 x.left
-      right := 𝟙 x.right }
+    { fst := 𝟙 x.fst
+      snd := 𝟙 x.snd }
   comp f g :=
-    { left := f.left ≫ g.left
-      right := f.right ≫ g.right }
+    { fst := f.fst ≫ g.fst
+      snd := f.snd ≫ g.snd }
 
-attribute [reassoc] comp_left comp_right
+attribute [reassoc] comp_fst comp_snd
 
 /-- Naturality square for morphisms in the inverse direction. -/
 @[reassoc (attr := simp)]
 lemma Hom.w' {x y : F ⊡ G} (f : x ⟶ y) :
-    G.map f.right ≫ y.iso.inv = x.iso.inv ≫ F.map f.left := by
+    G.map f.snd ≫ y.iso.inv = x.iso.inv ≫ F.map f.fst := by
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, f.w]
 
-attribute [local ext] Hom in
 /-- Extensionnality principle for morphisms in `CategoricalPullback F G`. -/
 @[ext]
 theorem hom_ext {x y : F ⊡ G} {f g : x ⟶ y}
-    (hₗ : f.left = g.left) (hᵣ : f.right = g.right) : f = g := by
+    (hₗ : f.fst = g.fst) (hᵣ : f.snd = g.snd) : f = g := by
   apply Hom.ext <;> assumption
 
 section
 
 variable (F G)
 
-/-- `CategoricalPullback.πₗ F G` is the left projection `CategoricalPullback F G ⥤ A`. -/
+/-- `CategoricalPullback.π₁ F G` is the first projection `CategoricalPullback F G ⥤ A`. -/
 @[simps]
-def πₗ : F ⊡ G ⥤ A where
-  obj x := x.left
-  map f := f.left
+def π₁ : F ⊡ G ⥤ A where
+  obj x := x.fst
+  map f := f.fst
 
-/-- `CategoricalPullback.πᵣ F G` is the right projection `CategoricalPullback F G ⥤ C`. -/
+/-- `CategoricalPullback.π₂ F G` is the second projection `CategoricalPullback F G ⥤ C`. -/
 @[simps]
-def πᵣ : F ⊡ G ⥤ C where
-  obj x := x.right
-  map f := f.right
+def π₂ : F ⊡ G ⥤ C where
+  obj x := x.snd
+  map f := f.snd
 
 /-- The canonical categorical commutative square in which `CategoricalPullback F G` sits. -/
-instance catCommSq : CatCommSq (πₗ F G) (πᵣ F G) F G where
-  iso' := NatIso.ofComponents (fun x ↦ x.iso)
-
-@[simp]
-lemma catCommSq_iso_hom_app (x : F ⊡ G) :
-    (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).hom.app x = x.iso.hom := rfl
-
-@[simp]
-lemma catCommSq_iso_inv_app (x : F ⊡ G) :
-    (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).inv.app x = x.iso.inv := rfl
+@[simps!]
+instance catCommSq : CatCommSq (π₁ F G) (π₂ F G) F G where
+  iso := NatIso.ofComponents (fun x ↦ x.iso)
 
 variable {F G} in
 /-- Constructor for isomorphisms in `CategoricalPullback F G`. -/
 @[simps!]
 def mkIso {x y : F ⊡ G}
-    (eₗ : x.left ≅ y.left) (eᵣ : x.right ≅ y.right)
+    (eₗ : x.fst ≅ y.fst) (eᵣ : x.snd ≅ y.snd)
     (w : F.map eₗ.hom ≫ y.iso.hom = x.iso.hom ≫ G.map eᵣ.hom := by aesop_cat) :
     x ≅ y where
   hom := ⟨eₗ.hom, eᵣ.hom, w⟩
   inv := ⟨eₗ.inv, eᵣ.inv, by simpa using F.map eₗ.inv ≫= w.symm =≫ G.map eᵣ.inv⟩
 
-instance {x y : F ⊡ G} (f : x ⟶ y) [IsIso f] : IsIso f.left :=
-  inferInstanceAs (IsIso ((πₗ _ _).mapIso (asIso f)).hom)
+section
 
-instance {x y : F ⊡ G} (f : x ⟶ y) [IsIso f] : IsIso f.right :=
-  inferInstanceAs (IsIso ((πᵣ _ _).mapIso (asIso f)).hom)
+variable {x y : F ⊡ G} (f : x ⟶ y) [IsIso f]
+
+instance : IsIso f.fst :=
+  inferInstanceAs (IsIso ((π₁ _ _).mapIso (asIso f)).hom)
+
+instance : IsIso f.snd :=
+  inferInstanceAs (IsIso ((π₂ _ _).mapIso (asIso f)).hom)
+
+lemma inv_fst : (inv f).fst = inv f.fst := by
+  symm
+  apply IsIso.inv_eq_of_hom_inv_id
+  simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.fst) (IsIso.hom_inv_id f)
+
+lemma inv_snd : (inv f).snd = inv f.snd := by
+  symm
+  apply IsIso.inv_eq_of_hom_inv_id
+  simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.snd) (IsIso.hom_inv_id f)
+
+end
+
+lemma isIso_iff {x y : F ⊡ G} (f : x ⟶ y) :
+    IsIso f ↔ (IsIso f.fst ∧ IsIso f.snd) where
+  mp h := ⟨inferInstance, inferInstance⟩
+  mpr | ⟨h₁, h₂⟩ => ⟨⟨inv f.fst, inv f.snd, by aesop_cat⟩, by aesop_cat⟩
 
 end
 
@@ -189,33 +203,33 @@ namespace CatCommSqOver
 
 /-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps!]
-def asSquare (S : CatCommSqOver F G X) : CatCommSq S.left S.right F G where
-  iso' := S.iso
+def asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
+  iso := S.iso
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
-   F.map (S.left.map f) ≫ S.iso.hom.app x' =
-   S.iso.hom.app x ≫ G.map (S.right.map f) :=
+   F.map (S.fst.map f) ≫ S.iso.hom.app x' =
+   S.iso.hom.app x ≫ G.map (S.snd.map f) :=
   S.iso.hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma w_app {S S' : CatCommSqOver F G X} (φ : S ⟶ S') (x : X) :
-    F.map (φ.left.app x) ≫ S'.iso.hom.app x =
-    S.iso.hom.app x ≫ G.map (φ.right.app x) :=
+    F.map (φ.fst.app x) ≫ S'.iso.hom.app x =
+    S.iso.hom.app x ≫ G.map (φ.snd.app x) :=
   NatTrans.congr_app φ.w x
 
 variable (F G)
 
-/-- The "left projection" of a CatCommSqOver as a functor. -/
-abbrev L : CatCommSqOver F G X ⥤ X ⥤ A := πₗ _ _
+/-- The "first projection" of a CatCommSqOver as a functor. -/
+abbrev fstFunctor : CatCommSqOver F G X ⥤ X ⥤ A := π₁ _ _
 
-/-- The "right projection" of a CatCommSqOver as a functor. -/
-abbrev R : CatCommSqOver F G X ⥤ X ⥤ C := πᵣ _ _
+/-- The "second projection" of a CatCommSqOver as a functor. -/
+abbrev sndFunctor : CatCommSqOver F G X ⥤ X ⥤ C := π₂ _ _
 
 /-- The structure isompophism of a `CatCommSqOver` as a natural transformation. -/
 abbrev e :
-    (L F G X) ⋙ (whiskeringRight X A B|>.obj F) ≅
-    (R F G X) ⋙ (whiskeringRight X C B|>.obj G) :=
+    (fstFunctor F G X) ⋙ (whiskeringRight X A B|>.obj F) ≅
+    (sndFunctor F G X) ⋙ (whiskeringRight X C B|>.obj G) :=
   NatIso.ofComponents
     (fun S ↦ S.iso)
 
@@ -231,15 +245,15 @@ variable (F G)
 @[simps!]
 def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
   obj J :=
-    { left := J ⋙ πₗ F G
-      right := J ⋙ πᵣ F G
+    { fst := J ⋙ π₁ F G
+      snd := J ⋙ π₂ F G
       iso :=
         Functor.associator _ _ _ ≪≫
           isoWhiskerLeft J (catCommSq F G).iso ≪≫
           (Functor.associator _ _ _).symm }
   map {J J'} F :=
-    { left := whiskerRight F (πₗ _ _)
-      right := whiskerRight F (πᵣ _ _) }
+    { fst := whiskerRight F (π₁ _ _)
+      snd := whiskerRight F (π₂ _ _) }
 
 /-- Interpret a `CatCommSqOver` as a functor to the categorical pullback. -/
 @[simps!]
@@ -247,16 +261,16 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
     (CatCommSqOver F G X) ⥤ X ⥤ F ⊡ G where
   obj S :=
     { obj x :=
-        { left := S.left.obj x
-          right := S.right.obj x
+        { fst := S.fst.obj x
+          snd := S.snd.obj x
           iso := S.iso.app x }
       map {x y} f :=
-        { left := S.left.map f
-          right := S.right.map f } }
+        { fst := S.fst.map f
+          snd := S.snd.map f } }
   map {S S'} φ :=
     { app x :=
-        { left := φ.left.app x
-          right := φ.right.app x } }
+        { fst := φ.fst.app x
+          snd := φ.snd.app x } }
 
 /-- The unit of `CategoricalPullback.functorEquiv`. -/
 @[simps!]
@@ -293,13 +307,13 @@ construct such an isomorphism, it suffices to produce isomorphisms after whisker
 the projections, and compatible with the canonical 2-commutative square . -/
 @[simps!]
 def mkNatIso {J K : X ⥤ F ⊡ G}
-    (e₁ : J ⋙ πₗ F G ≅ K ⋙ πₗ F G) (e₂ : J ⋙ πᵣ F G ≅ K ⋙ πᵣ F G)
+    (e₁ : J ⋙ π₁ F G ≅ K ⋙ π₁ F G) (e₂ : J ⋙ π₂ F G ≅ K ⋙ π₂ F G)
     (coh :
       whiskerRight e₁.hom F ≫ (Functor.associator _ _ _).hom ≫
-        whiskerLeft K (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).hom ≫
+        whiskerLeft K (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (Functor.associator _ _ _).inv =
       (Functor.associator _ _ _).hom ≫
-        whiskerLeft J (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).hom ≫
+        whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (Functor.associator _ _ _).inv ≫
         whiskerRight e₂.hom G := by aesop_cat) :
     J ≅ K :=
@@ -316,8 +330,8 @@ suffices to do so after whiskering with the projections. -/
 @[ext]
 lemma natTrans_ext
     {J K : X ⥤ F ⊡ G} {α β : J ⟶ K}
-    (e₁ : whiskerRight α (πₗ F G) = whiskerRight β (πₗ F G))
-    (e₂ : whiskerRight α (πᵣ F G) = whiskerRight β (πᵣ F G)) :
+    (e₁ : whiskerRight α (π₁ F G) = whiskerRight β (π₁ F G))
+    (e₂ : whiskerRight α (π₂ F G) = whiskerRight β (π₂ F G)) :
     α = β := by
   ext x
   · exact congrArg (fun t ↦ t.app x) e₁
@@ -326,13 +340,13 @@ lemma natTrans_ext
 /-- Comparing mkNatIso with the corresponding construction one can deduce from
 `functorEquiv`. -/
 lemma mkNatIso_eq {J K : X ⥤ F ⊡ G}
-    (e₁ : J ⋙ πₗ F G ≅ K ⋙ πₗ F G) (e₂ : J ⋙ πᵣ F G ≅ K ⋙ πᵣ F G)
+    (e₁ : J ⋙ π₁ F G ≅ K ⋙ π₁ F G) (e₂ : J ⋙ π₂ F G ≅ K ⋙ π₂ F G)
     (coh :
       whiskerRight e₁.hom F ≫ (Functor.associator _ _ _).hom ≫
-        whiskerLeft K (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).hom ≫
+        whiskerLeft K (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (Functor.associator _ _ _).inv =
       (Functor.associator _ _ _).hom ≫
-        whiskerLeft J (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).hom ≫
+        whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (Functor.associator _ _ _).inv ≫
         whiskerRight e₂.hom G := by aesop_cat) :
   mkNatIso e₁ e₂ coh =
