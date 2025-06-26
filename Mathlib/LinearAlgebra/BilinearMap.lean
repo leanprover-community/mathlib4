@@ -222,18 +222,16 @@ end Semiring
 
 section Semiring'
 
-variable {R : Type*} [Semiring R] {R₂ : Type*} [Semiring R₂]
-variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
-variable {R₃ : Type*} [Semiring R₃] {R₄ : Type*} [Semiring R₄]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
+variable {R R₂ R₃ R₄ R₅ : Type*}
+variable {M N P Q : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄] [Semiring R₅]
+variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
+variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q] [Module R₅ P]
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
-variable {R₅ : Type*} [Semiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
+variable [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
 
-variable (P σ₂₃ R₅)
+variable (R₅ P σ₂₃)
 
 /-- Composing a semilinear map `M → N` and a semilinear map `N → P` to form a semilinear map
 `M → P` is itself a linear map. -/
@@ -245,12 +243,12 @@ variable {P σ₂₃ R₅}
 
 @[simp]
 theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
-    lcompₛₗ P σ₂₃ R₅ f g x = g (f x) := rfl
+    lcompₛₗ R₅ P σ₂₃ f g x = g (f x) := rfl
 
 /-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
 form a bilinear map `M → Q → P`. -/
 def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
-  toFun a := (lcompₛₗ P σ₂₃ R₅ g) (h a)
+  toFun a := (lcompₛₗ R₅ P σ₂₃ g) (h a)
   map_add' _ _ := by
     simp [map_add]
   map_smul' _ _ := by
@@ -302,7 +300,7 @@ variable [Module A Pₗ] [SMulCommClass R A Pₗ]
 
 /-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
 `Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
-def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[A] M →ₗ[R] Pₗ := lcompₛₗ Pₗ _ _ f
+def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[A] M →ₗ[R] Pₗ := lcompₛₗ _ _ _ f
 
 variable {A Pₗ}
 
