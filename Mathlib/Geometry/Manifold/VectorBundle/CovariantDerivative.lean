@@ -146,15 +146,13 @@ lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π 
     exact (sum_repr (localFrame_toBasis_at e b hx) (s x')).symm
   exact eventually_nhds_iff.mpr ⟨e.baseSet, fun y a ↦ this a, e.open_baseSet, hxe⟩
 
-end Basis
-
 variable {ι : Type*} [Fintype ι] {x : M}
   {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
   [MemTrivializationAtlas e]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
-lemma Basis.localFrame_repr_congr (b : Basis ι 𝕜 F)
+lemma localFrame_repr_congr (b : Basis ι 𝕜 F)
     {s s' : Π x : M,  V x} {i : ι} (hss' : s x = s' x) :
     b.localFrame_repr e i s x = b.localFrame_repr e i s' x := by
   by_cases hxe : x ∈ e.baseSet
@@ -163,7 +161,7 @@ lemma Basis.localFrame_repr_congr (b : Basis ι 𝕜 F)
   · simp [localFrame_repr, hxe]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
-lemma Basis.localFrame_repr_apply_zero_at
+lemma localFrame_repr_apply_zero_at
     (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
     b.localFrame_repr e i s x = 0 := by
   rw [b.localFrame_repr_congr (s' := 0) (by simp [hs])]
@@ -181,41 +179,54 @@ lemma Basis.localFrame_repr_apply_zero_at
 
 variable {n}
 
--- TODO: good name!
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
-lemma foo (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i : ι} {s : Π x : M, V x} :
+lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i : ι} {s : Π x : M, V x} :
     b.localFrame_repr e i s x = b.repr (e (s x)).2 i := by
   simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
-lemma Basis.contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
+lemma contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
-    (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.localFrame_repr e i s) x := by
-  -- "check this locally, then it's very easy"
+    (i : ι) : ContMDiffAt I 𝓘(𝕜) k (b.localFrame_repr e i s) x := by
+  -- This boils down to computing the frame coefficients in a local trivialisation.
   classical
-  -- step 1: on e.baseSet, can compute this expression very well
+  -- step 1: on e.baseSet, can compute the coefficient very well
   let aux := fun x ↦ b.repr (e (s x)).2 i
   -- Since e.baseSet is open, this is sufficient.
-  suffices ContMDiffAt I 𝓘(𝕜) n aux x by
+  suffices ContMDiffAt I 𝓘(𝕜) k aux x by
     apply this.congr_of_eventuallyEq_of_mem ?_ trivial
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, hy, foo hy]
+    simp [aux, hy, Basis.localFrame_repr_eq_repr hy]
   simp only [aux]
-  -- (2) s in trivialisation e is contmdiff
-  -- (3) b.repr is a continuous linear map, so the composition is smooth
-  sorry
 
-lemma Basis.contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
+  -- step 2: `s` read in trivialization `e` is `C^k`
+  have h₁ : ContMDiffAt I 𝓘(𝕜, F) k (fun x ↦ (e (s x)).2) x := by
+    -- XXX: make e and s implicit!
+    rw [contMDiffAt_section_of_mem_baseSet _ _ hxe] at hs
+    exact hs
+  -- step 3: `b.repr` is a linear map, so the composition is smooth
+  let bas := fun v ↦ b.repr v i
+  have : IsLinearMap 𝕜 bas := sorry
+  have hbas : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k bas (e (s x)).2 := by
+    -- exact? should do it now
+    sorry
+  exact hbas.comp x h₁
+
+-- XXX: upgrade the above proof to contMDiffOn, and deduce contMDiffAt from it?
+
+lemma contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n) {t : Set M}
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
-    ContMDiffOn I 𝓘(𝕜) n (b.localFrame_repr e i s) t :=
+    ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t :=
   fun _ hx ↦ (b.contMDiffAt_localFrame_repr I (ht' hx) hk
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
+
+end Basis
 
 end localFrame
 
