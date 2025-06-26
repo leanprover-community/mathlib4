@@ -81,13 +81,22 @@ theorem hasFDerivAt_ofLp (f : PiLp p E) :
     HasFDerivAt ofLp (ofLpContinuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
   (hasStrictFDerivAt_ofLp p f).hasFDerivAt
 
-@[deprecated (since := "2025-05-07")] alias hasFDerivAt_equiv := hasFDerivAt_ofLp
+set_option linter.deprecated false in
+@[deprecated hasFDerivAt_ofLp (since := "2025-05-07")]
+theorem hasFDerivAt_equiv (f : PiLp p E) :
+    HasFDerivAt (WithLp.equiv _ _) (ofLpContinuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
+  hasFDerivAt_ofLp f
 
 theorem hasFDerivAt_toLp (f : ∀ i, E i) :
     HasFDerivAt (toLp p) (ofLpContinuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
   (hasStrictFDerivAt_toLp p f).hasFDerivAt
 
-@[deprecated (since := "2025-05-07")] alias hasFDerivAt_equiv_symm := hasFDerivAt_toLp
+set_option linter.deprecated false in
+@[deprecated hasFDerivAt_toLp (since := "2025-05-07")]
+theorem hasFDerivAt_equiv_symm (f : ∀ i, E i) :
+    HasFDerivAt (WithLp.equiv _ _).symm
+      (ofLpContinuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
+  hasFDerivAt_toLp f
 
 nonrec theorem hasFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
