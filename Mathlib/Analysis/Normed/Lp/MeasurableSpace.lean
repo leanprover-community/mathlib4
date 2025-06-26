@@ -58,19 +58,19 @@ namespace MeasurableEquiv
 
 /-- The map from `X` to `WithLp p X` as a measurable equivalence. -/
 protected def toLp : X ≃ᵐ (WithLp p X) where
-  toEquiv := (WithLp.equiv p X).symm
+  toEquiv := WithLp.toLp p
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 
-lemma coe_toLp : ⇑(MeasurableEquiv.toLp p X) = ⇑(WithLp.equiv p X).symm := rfl
+lemma coe_toLp : ⇑(MeasurableEquiv.toLp p X) = WithLp.toLp p := rfl
 
-lemma coe_toLp_symm : ⇑(MeasurableEquiv.toLp p X).symm = ⇑(WithLp.equiv p X) := rfl
+lemma coe_toLp_symm : ⇑(MeasurableEquiv.toLp p X).symm = WithLp.ofLp := rfl
 
 @[simp]
-lemma toLp_apply (x : X) : MeasurableEquiv.toLp p X x = (WithLp.equiv p X).symm x := rfl
+lemma toLp_apply (x : X) : MeasurableEquiv.toLp p X x = WithLp.toLp p x := rfl
 
 @[simp]
 lemma toLp_symm_apply (x : WithLp p X) :
-    (MeasurableEquiv.toLp p X).symm x = WithLp.equiv p X x := rfl
+    (MeasurableEquiv.toLp p X).symm x = WithLp.ofLp x := rfl
 
 end MeasurableEquiv

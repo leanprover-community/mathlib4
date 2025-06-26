@@ -337,7 +337,7 @@ where the RHS is equipped with the euclidean norm rather than the supremum norm.
 abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
   (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
-    WithLp.prodContinuousLinearEquiv _ _ _ _
+    WithLp.ofLpProdContinuousLinearEquiv _ _ _ _
 
 /-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (Fin (n + m))` and
 `EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m)`. -/
