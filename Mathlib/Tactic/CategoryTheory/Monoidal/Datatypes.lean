@@ -128,7 +128,7 @@ theorem structuralIsoOfExpr_whiskerRight {f g : C} (h : C)
 theorem structuralIsoOfExpr_horizontalComp {f₁ g₁ f₂ g₂ : C}
     (η : f₁ ⟶ g₁) (η' : f₁ ≅ g₁) (ih_η : η'.hom = η)
     (θ : f₂ ⟶ g₂) (θ' : f₂ ≅ g₂) (ih_θ : θ'.hom = θ) :
-    (η' ⊗ θ').hom = η ⊗ θ := by
+    (η' ⊗ᵢ θ').hom = η ⊗ₘ θ := by
   simp [ih_η, ih_θ]
 
 end
@@ -371,7 +371,7 @@ instance : MonadMor₂ MonoidalM where
         let eq := q(structuralIsoOfExpr_horizontalComp _ _ $η_iso_eq _ _ $θ_iso_eq)
         return .some ⟨← horizontalCompM η_iso.e θ_iso.e, eq⟩
       | _ => return none)
-    let e : Q($f₁_e ⊗ $f₂_e ⟶ $g₁_e ⊗ $g₂_e) := q($η_e ⊗ $θ_e)
+    let e : Q($f₁_e ⊗ $f₂_e ⟶ $g₁_e ⊗ $g₂_e) := q($η_e ⊗ₘ $θ_e)
     return .horizontalComp e iso_lift? f₁ g₁ f₂ g₂ η θ
   coherenceCompM α η θ := do
     let ctx ← read

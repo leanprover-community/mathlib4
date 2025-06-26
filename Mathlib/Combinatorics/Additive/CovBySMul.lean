@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Data.Real.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Relation of covering by cosets

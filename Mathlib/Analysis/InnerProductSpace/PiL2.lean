@@ -109,7 +109,7 @@ open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
 
 /-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
-`(WithLp.equiv 2 _ _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
+`(WithLp.equiv 2 _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
 
 This also works for other subscripts. -/
 syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
@@ -316,6 +316,27 @@ theorem EuclideanSpace.piLpCongrLeft_single
   LinearIsometryEquiv.piLpCongrLeft_single e i' _
 
 end DecEq
+
+section finAddEquivProd
+
+/-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (ι ⊕ κ)` and
+`EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`.
+
+See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
+where the RHS is equipped with the euclidean norm rather than the supremum norm. -/
+abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
+    EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
+  (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
+    WithLp.prodContinuousLinearEquiv _ _ _ _
+
+/-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (Fin (n + m))` and
+`EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m)`. -/
+abbrev EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
+    EuclideanSpace 𝕜 (Fin (n + m)) ≃L[𝕜] EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m) :=
+  (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 finSumFinEquiv.symm).toContinuousLinearEquiv.trans
+    sumEquivProd
+
+end finAddEquivProd
 
 variable (ι 𝕜 E)
 variable [Fintype ι]
