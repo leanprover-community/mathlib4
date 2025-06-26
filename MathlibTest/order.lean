@@ -125,6 +125,9 @@ trace: [order] Working on type α
 example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
   order
 
+example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
+  order
+
 -- This used to work when a different matching strategy was used in `order`.
 -- This example is now considered outside the scope of the `order` tactic.
 /-- error: No contradiction found -/

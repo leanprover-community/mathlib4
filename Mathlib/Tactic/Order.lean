@@ -230,8 +230,7 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
     return some .pre
   return none
 
-#check String.intercalate
-
+/-- Necessary for tracing below. -/
 local instance : Ord (Nat × Expr) where
   compare x y := compare x.1 y.1
 
@@ -266,6 +265,8 @@ elab "order" : tactic => focus do
         let some pf ← findContradictionWithNe graph idxToAtom facts | continue
         g.assign pf
         return
-    throwError "No contradiction found"
+    throwError ("No contradiction found.\n\n" ++
+      "Additional diagnostic information may be available using " ++
+      "the `set_option trace.order true` command.")
 
 end Mathlib.Tactic.Order
