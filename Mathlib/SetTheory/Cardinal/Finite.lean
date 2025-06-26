@@ -17,8 +17,6 @@ import Mathlib.SetTheory.Cardinal.ENat
   If `α` is infinite, `Nat.card α = 0`.
 * `ENat.card α` is the cardinality of `α` as an  extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
-* `PartENat.card α` is the cardinality of `α` as an extended natural number
-  (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
 assert_not_exists Field
