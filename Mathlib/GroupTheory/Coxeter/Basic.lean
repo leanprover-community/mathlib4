@@ -403,7 +403,7 @@ theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
     rw [alternatingWord]
     nth_rw 1 [ih i' i]
     rw [alternatingWord]
-    simp [Nat.even_add_one]
+    simp [Nat.even_add_one, -Nat.not_even_iff_odd]
 
 @[simp]
 theorem length_alternatingWord (i i' : B) (m : ℕ) :

@@ -285,8 +285,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         Vector.head_cons, PFun.coe_val, Vector.tail_val]
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
-        simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some,
-          pure x = [x] from fun _ => rfl, Bind.bind]
+        simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some, Bind.bind]
       | succ n _ =>
       suffices ∀ a b, a + b = n →
         (n.succ :: 0 ::

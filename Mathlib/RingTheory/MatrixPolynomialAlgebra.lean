@@ -141,7 +141,7 @@ variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
 
 lemma evalRingHom_mapMatrix_comp_polyToMatrix :
     (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by
-  ext <;> simp [RingHom.polyToMatrix, diagonal, apply_ite]
+  ext <;> simp [RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
 
 lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
     (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =

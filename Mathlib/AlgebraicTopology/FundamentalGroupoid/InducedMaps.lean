@@ -184,8 +184,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
   dsimp only [prodToProdTopI, uhpath01, hcast]
   refine (@conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
     (FundamentalGroupoid.ext <| H.apply_one x).symm).mpr ?_
-  simp only [map_eq←
-    Path.Homotopic.map_lift]
+  simp only [map_eq]
   apply Path.Homotopic.hpath_hext; intro; rfl
 
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`

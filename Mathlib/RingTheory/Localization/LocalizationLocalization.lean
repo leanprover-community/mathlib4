@@ -214,7 +214,6 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
         simp only [IsScalarTower.algebraMap_apply R S T] at h₁ h₂
         simp only [IsScalarTower.algebraMap_apply R S T, map_mul, ← e₁, ← e₂, ← mul_assoc,
           mul_right_comm _ (algebraMap R S s₂),
-         
           (IsLocalization.map_units S s₁).mul_left_inj,
           (IsLocalization.map_units S s₂).mul_left_inj] at this
         rw [h₂, h₁] at this

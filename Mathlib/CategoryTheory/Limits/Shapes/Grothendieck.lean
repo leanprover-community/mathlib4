@@ -156,10 +156,7 @@ def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsC
   desc s := hc.desc <| Cocone.mk s.pt <|
     { app := fun X => colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
   uniq s m hm := hc.hom_ext <| fun X => by
-    simp only [fiberwiseColimit_obj, Functor.const_obj_obj,
-     
-     
-      IsColimit.fac]
+    simp only [fiberwiseColimit_obj, Functor.const_obj_obj, IsColimit.fac]
     simp only [coconeOfCoconeFiberwiseColimit_pt, Functor.const_obj_obj,
       coconeOfCoconeFiberwiseColimit_ι_app, Category.assoc] at hm
     ext d

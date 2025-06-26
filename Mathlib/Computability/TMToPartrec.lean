@@ -736,9 +736,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
   simp only [trList, trNat.eq_1, Nat.cast_succ, Num.add_one]
   rcases (n : Num) with - | a
   · refine TransGen.head rfl ?_
-    simp only [Option.mem_def,
-     
-      ]
+    simp only [Option.mem_def]
     convert unrev_ok using 1
     simp only [elim_update_rev, elim_rev, elim_main, List.reverseAux_nil, elim_update_main]
     rfl

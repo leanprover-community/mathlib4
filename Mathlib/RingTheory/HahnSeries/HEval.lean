@@ -130,10 +130,8 @@ theorem hsum_powerSeriesFamily_mul {x : HahnSeries Γ V} (a b : PowerSeries R) :
           (PowerSeries.coeff R j a • (x ^ j * x ^ k).coeff g) = 0 := by
         intro m n
         contrapose!
-        simp only [powers_of_orderTop_pos h,
-         
-          Set.Finite.coe_toFinset, Set.mem_image, Function.mem_support, ne_eq, Prod.exists,
-          not_exists, not_and] at his
+        simp only [powers_of_orderTop_pos h, Set.Finite.coe_toFinset, Set.mem_image,
+          Function.mem_support, ne_eq, Prod.exists, not_exists, not_and] at his
         exact his m n
       simp only [mem_sigma, mem_antidiagonal] at hi
       rw [mul_comm ((PowerSeries.coeff R i.snd.1) a), ← hi.2, mul_smul, pow_add]

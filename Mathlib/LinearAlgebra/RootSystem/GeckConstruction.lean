@@ -142,7 +142,7 @@ lemma ω_mul_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support)
   · simp only [ω, e, f, mul_ite, mul_zero, Fintype.sum_sum_type, Matrix.mul_apply, Matrix.of_apply,
       Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₂, Finset.sum_ite_eq']
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
-    simp [← ite_and, and_comm, neg_eq_iff_eq_neg]
+    simp [← ite_and, and_comm, - indexNeg_neg, neg_eq_iff_eq_neg]
   · simp [ω, e, f]
   · simp only [ω, e, f, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₁,
       Matrix.fromBlocks_apply₂₂, Matrix.of_apply, mul_ite, ← neg_eq_iff_eq_neg (a := k)]
@@ -275,7 +275,7 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
       simp only [not_and]
       rintro contra rfl rfl
       simp [P.ne_zero] at contra
-    simp [e, f, h, h₁, h₂, ← ite_and]
+    simp [e, f, h, h₁, h₂, - indexNeg_neg, ← ite_and]
   · simp [e, f, h]
   · rcases eq_or_ne k i with rfl | hki
     · have hx (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ P.root i = P.root x - P.root i) := by

@@ -319,7 +319,7 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
   let H := invMulSubgroup A h
   refine ⟨H, inferInstance, ?_, fun a ha ↦ ⟨?_, ?_⟩⟩
-  · simp [← Nat.card_eq_fintype_card, invMulSubgroup, ← coe_mul, H]
+  · simp [← Nat.card_eq_fintype_card, invMulSubgroup, ← coe_mul, - coe_inv, H]
     rwa [Nat.card_eq_finsetCard, card_inv_mul_of_doubling_lt_three_halves h]
   · rw [invMulSubgroup_eq_inv_mul]
     exact_mod_cast A_subset_aH a ha

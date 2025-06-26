@@ -48,10 +48,8 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   -- Porting note: pulled the next two lines out of the long `simp only` below.
   simp only [LinearMap.compMultilinearMap_apply]
   rw [LinearMap.compr₂_apply, ← gMul_eq_coe_linearMap]
-  simp only [LinearMap.mul_apply', LinearMap.compl₂_apply,
-    LinearMap.comp_apply,
-    TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply←
-    gMul_eq_coe_linearMap]
+  simp only [tprod_mul_tprod, toTensorAlgebra_tprod, TensorAlgebra.tprod_apply,
+    LinearMap.comp_apply, LinearMap.compl₂_apply, LinearMap.mul_apply']
   refine Eq.trans ?_ List.prod_append
   congr
   -- Porting note: `erw` for `Function.comp`

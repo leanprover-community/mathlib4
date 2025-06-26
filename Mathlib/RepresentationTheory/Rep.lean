@@ -485,9 +485,8 @@ def leftRegularTensorTrivialIsoFree :
     finsuppProdLEquiv k).toModuleIso fun _ =>
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
         ext
-        simp [Action_ρ_eq_ρ, tensorObj_def, ModuleCat.endRingEquiv,
-         
-          tensorObj_def, ModuleCat.MonoidalCategory.tensorObj]
+        simp [Action_ρ_eq_ρ, tensorObj_def, ModuleCat.endRingEquiv, tensorObj_def,
+          ModuleCat.MonoidalCategory.tensorObj]
 
 variable {α}
 

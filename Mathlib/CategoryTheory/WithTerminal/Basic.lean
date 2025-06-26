@@ -226,9 +226,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
         map_map, down_id, Functor.map_id, Cat.whiskerLeft_app, mapComp_inv_app, Iso.refl_inv,
         Category.comp_id, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, map_obj,
-       
-        Category.comp_id]
+      simp only [Cat.comp_obj, map_obj, Category.comp_id]
     · rfl
   map₂_left_unitor := by
     intros
@@ -438,10 +436,8 @@ def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.cons
       (fun {x y} f ↦ by ext t; cases t <;> simp [incl])
   counitIso := NatIso.ofComponents (fun F ↦ Iso.refl _)
   functor_unitIso_comp x := by
-    simp only [Functor.id_obj,
-     
-      Functor.comp_obj, liftUnique, lift_obj,
-      NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id]
+    simp only [Functor.id_obj, Functor.comp_obj, liftUnique, lift_obj, NatIso.ofComponents_hom_app,
+      Iso.refl_hom, Category.comp_id]
     ext <;> rfl
 
 end
@@ -823,10 +819,8 @@ def equivComma : (WithInitial C ⥤ D) ≌ Comma (Functor.const C) (𝟭 (C ⥤ 
       (fun {x y} f ↦ by ext t; cases t <;> simp [incl])
   counitIso := NatIso.ofComponents (fun F ↦ Iso.refl _)
   functor_unitIso_comp x := by
-    simp only [Functor.id_obj,
-     
-      Functor.comp_obj, liftUnique, lift_obj,
-      NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id]
+    simp only [Functor.id_obj, Functor.comp_obj, liftUnique, lift_obj, NatIso.ofComponents_hom_app,
+      Iso.refl_hom, Category.comp_id]
     ext <;> rfl
 
 end

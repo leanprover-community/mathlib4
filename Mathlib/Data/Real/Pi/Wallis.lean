@@ -56,9 +56,7 @@ theorem W_pos (k : ℕ) : 0 < W k := by
 theorem W_eq_factorial_ratio (n : ℕ) :
     W n = 2 ^ (4 * n) * n ! ^ 4 / ((2 * n)! ^ 2 * (2 * n + 1)) := by
   induction' n with n IH
-  · simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero,
-     
-      ]
+  · simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero]
     norm_num
   · unfold W at IH ⊢
     rw [prod_range_succ, IH, _root_.div_mul_div_comm, _root_.div_mul_div_comm]

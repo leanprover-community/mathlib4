@@ -256,7 +256,6 @@ lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Na
   cases nonempty_fintype V
   rw [Nat.card_eq_fintype_card]
   simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
-   
     ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
   rw [Finset.card_biUnion
     (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]

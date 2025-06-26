@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Data.Finset.Sym
 

@@ -250,9 +250,7 @@ noncomputable def toKaroubiNondegComplexFunctorIsoN₁ :
   NatIso.ofComponents (fun S => S.s.toKaroubiNondegComplexIsoN₁) fun Φ => by
     ext n
     dsimp
-    simp only [
-     
-      assoc, PInfty_f_idem_assoc]
+    simp only [assoc, PInfty_f_idem_assoc]
     erw [← Split.cofan_inj_naturality_symm_assoc Φ (Splitting.IndexSet.id (op ⦋n⦌))]
     rw [PInfty_f_naturality]
 

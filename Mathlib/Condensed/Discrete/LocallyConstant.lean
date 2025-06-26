@@ -329,9 +329,8 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
   counit := counit P hs
   left_triangle_components := by
     intro X
-    simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj,
-      sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj,
-      ]
+    simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
+      functor_obj_val, functorToPresheaves_obj_obj]
     apply Sheaf.hom_ext
     rw [Sheaf.comp_val, Sheaf.id_val]
     exact adjunction_left_triangle P hs X
@@ -339,7 +338,6 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     intro X
     ext (x : X.val.obj _)
     simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
-     
       functor_obj_val, functorToPresheaves_obj_obj, types_id_apply,
       Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val]
     have := CompHausLike.preregular hs
