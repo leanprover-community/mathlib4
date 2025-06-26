@@ -22,7 +22,6 @@ morphisms `i`, `j` and `s` are weak equivalences.
 (We also obtain the dual results about morphisms
 between fibrant objects.)
 
-
 -/
 
 open CategoryTheory Limits MorphismProperty
