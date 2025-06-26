@@ -350,7 +350,8 @@ theorem compl₁₂_id_id [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] 
   ext
   simp_rw [compl₁₂_apply, id_coe, _root_.id]
 
-theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
+theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
+    {f₁ f₂ : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ} {g : Qₗ →ₗ[R₁] Mₗ} {g' : Qₗ' →ₗ[R₂] N}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
     f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ := by
   constructor <;> intro h
