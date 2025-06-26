@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
@@ -39,15 +37,5 @@ theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (hn : (n : α) 
   rcases n_dvd with ⟨k, rfl⟩
   have : n ≠ 0 := by rintro rfl; simp at hn
   rw [Int.mul_ediv_cancel_left _ this, mul_comm n, Int.cast_mul, mul_div_cancel_right₀ _ hn]
-
-theorem cast_div_le [DivisionRing α] [LinearOrder α] [IsStrictOrderedRing α] {m n : ℤ}
-    (hn : 0 ≤ n) :
-    ((m / n : ℤ) : α) ≤ (m : α) / (n : α) := by
-  by_cases hn_zero : n = 0
-  · simp [hn_zero]
-  replace hn : 0 < n := by omega
-  rw [le_div_iff₀, ← Int.cast_mul, Int.cast_le]
-  · exact Int.ediv_mul_le m hn_zero
-  · exact cast_pos.mpr hn
 
 end Int
