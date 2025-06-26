@@ -211,17 +211,18 @@ theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
--- XXX: naming and doc comment!
-/-- Continuity of a `C^n` section at `x` can be shown against any trivialisation whose `baseSet`
-contains `x` -/
+/-- Continuity of a `C^n` section at `x` can be determined
+using any trivialisation whose `baseSet` contains `x`. -/
 theorem contMDiffAt_section_of_mem_baseSet (s : ∀ x, E x) {x₀ : B}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
-  sorry
+  sorry -- use the WithinAt version
 
-theorem contMDiffOn_section_of_mem_baseSet2 (s : ∀ x, E x) {a : Set B}
+/-- Continuity of a `C^n` section on `s` can be determined
+using any trivialisation whose `baseSet` contains `s`. -/
+theorem contMDiffOn_section_of_mem_baseSet (s : ∀ x, E x) {a : Set B}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
@@ -237,12 +238,14 @@ theorem contMDiffOn_section_of_mem_baseSet2 (s : ∀ x, E x) {a : Set B}
       (h x hx).contMDiffAt <| ha.mem_nhds hx
     exact ((contMDiffAt_section_of_mem_baseSet s e (ha' hx)).mpr this).contMDiffWithinAt
 
-theorem contMDiffOn_section_of_mem_baseSet (s : ∀ x, E x)
+/-- For any trivialization `e`, the continuity of a `C^n` section on `e.baseSet`
+can be determined using `e`. -/
+theorem contMDiffOn_section_of_mem_baseSet₀ (s : ∀ x, E x)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] :
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
       ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
-  contMDiffOn_section_of_mem_baseSet2 s e (a := e.baseSet) e.open_baseSet (subset_refl _)
+  contMDiffOn_section_of_mem_baseSet s e e.open_baseSet (subset_refl _)
 
 variable (E)
 
