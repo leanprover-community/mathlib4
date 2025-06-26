@@ -72,6 +72,7 @@ jobs:
         with:
           ref: master
           path: master-branch
+          fetch-depth: 0
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
@@ -79,6 +80,7 @@ jobs:
         with:
           ref: "${{ PR_BRANCH_REF }}"
           path: pr-branch
+          fetch-depth: 0
 
       - name: Prepare DownstreamTest directory
         shell: bash
@@ -432,6 +434,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: "${{ PR_BRANCH_REF }}"
+          fetch-depth: 0
 
       - name: Configure Lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
