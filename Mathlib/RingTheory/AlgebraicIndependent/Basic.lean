@@ -362,10 +362,6 @@ theorem AlgEquiv.trdeg_eq {A' : Type v} [CommRing A'] [Algebra R A'] (e : A ≃�
 
 end trdeg
 
-lemma AlgebraicIndepOn.mono {s t : Set ι} (H : AlgebraicIndepOn R x t) (hst : s ⊆ t) :
-    AlgebraicIndepOn R x s := by
-  simpa [Function.comp] using H.comp (Set.inclusion hst) (Set.inclusion_injective hst)
-
 theorem algebraicIndependent_comp_subtype {s : Set ι} :
     AlgebraicIndependent R (x ∘ (↑) : s → A) ↔
       ∀ p ∈ MvPolynomial.supported R s, aeval x p = 0 → p = 0 := by
