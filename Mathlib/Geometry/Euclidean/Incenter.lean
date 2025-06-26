@@ -325,7 +325,7 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
 
 /-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
 def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
-  ((s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs))
+  (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)
 
 lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
