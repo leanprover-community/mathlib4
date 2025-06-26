@@ -210,23 +210,29 @@ example : Int.fract (2 : ℚ) = 0 := by
 /-- `norm_num` extension for `Int.fract` -/
 @[norm_num (Int.fract _)]
 def evalIntFract : NormNumExt where eval {u αZ} e := do
-  match u, αZ, e with
-  | 0, ~q($α), ~q(@Int.fract _ $instR $instO $instF $x) =>
+  match e with
+  | ~q(@Int.fract _ $instR $instO $instF $x) =>
     match ← derive x with
     | .isBool .. => failure
     | .isNat _ _ pb => do
       let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
-      return .isNat q(inferInstance) _ q(isNat_intFract $x _ $pb)
+      have z : Q(ℕ) := Lean.mkRawNatLit 0
+      letI : $z =Q 0 := ⟨⟩
+      return .isNat _ z q(isNat_intFract $x _ $pb)
     | .isNegNat _ _ pb => do
       let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
-      return .isNat q(inferInstance) _ q(isInt_intFract _ _ $pb)
+      have z : Q(ℕ) := Lean.mkRawNatLit 0
+      letI : $z =Q 0 := ⟨⟩
+      return .isNat _ z q(isInt_intFract _ _ $pb)
     | .isRat _ q n d h => do
       let _i ← synthInstanceQ q(Field $α)
       let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
-      return .isRat q(inferInstance) (Int.fract q) _ d q(isInt_intFract_of_isRat _ $n $d $h)
+      have n' : Q(ℤ) := mkRawIntLit (q.num % q.den)
+      letI : $n' =Q $n % $d := ⟨⟩
+      return .isRat _ (Int.fract q) n' d q(isInt_intFract_of_isRat _ $n $d $h)
   | _, _, _ => failure
 
 example : Int.fract (3 / 2 : ℚ) = 1 / 2 := by
