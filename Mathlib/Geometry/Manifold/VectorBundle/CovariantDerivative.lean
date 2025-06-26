@@ -102,11 +102,19 @@ def isBasis_localFrame
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i` -/
 -- If x is outside of `e.baseSet`, this returns the junk value 0.
+-- NB. We don't use simps here, as we prefer to have dedicated `_apply` lemmas for the separate
+-- cases.
 noncomputable def localFrame_repr
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) (s : Π x : M, V x) : ι → M → 𝕜 :=
-  fun i x ↦ if hx : x ∈ e.baseSet then (b.localFrame_toBasis_at e hx).repr (s x) i else 0
+    (b : Basis ι 𝕜 F) (i : ι) : (Π x : M, V x) →ₗ[𝕜] M → 𝕜 where
+  toFun s x := if hx : x ∈ e.baseSet then (b.localFrame_toBasis_at e hx).repr (s x) i else 0
+  map_add' s s' := by
+    ext x
+    by_cases hx : x ∈ e.baseSet <;> simp [hx]
+  map_smul' c s := by
+    ext x
+    by_cases hx : x ∈ e.baseSet <;> simp [hx]
 
 variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] {b : Basis ι 𝕜 F}
@@ -115,28 +123,27 @@ variable (e b) in
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 @[simp]
 lemma localFrame_repr_apply_of_notMem_baseSet {x : M}
-    (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) : b.localFrame_repr e s i x = 0 := by
+    (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) : b.localFrame_repr e i s x = 0 := by
   simpa [localFrame_repr] using fun hx' ↦ (hx hx').elim
 
--- uniqueness of the decomposition: will follow from the IsBasis property above
+variable (e b) in
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+@[simp]
+lemma localFrame_repr_apply_of_mem_baseSet {x : M}
+    (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
+    b.localFrame_repr e i s x = (b.localFrame_toBasis_at e hx).repr (s x) i := by
+  simp [localFrame_repr, hx]
+
+-- uniqueness of the decomposition: follows from the IsBasis property above
 
 variable (b) in
 lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
-    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e s i x') • b.localFrame e i x' := by
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x' := by
   have {x'} (hx : x' ∈ e.baseSet) :
-      s x' = (∑ i, (b.localFrame_repr e s i x') • b.localFrame e i x') := by
+      s x' = (∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x') := by
     simp [Basis.localFrame_repr, hx]
     exact (sum_repr (localFrame_toBasis_at e b hx) (s x')).symm
   exact eventually_nhds_iff.mpr ⟨e.baseSet, fun y a ↦ this a, e.open_baseSet, hxe⟩
-
--- uniqueness implies this, but it also follows from our definition
-lemma Basis.localFrame_repr_add [Fintype ι] {x : M} (hxe : x ∈ e.baseSet)
-    (s s' : Π x : M,  V x) (i : ι) :
-    b.localFrame_repr e (s + s') i x =
-      (b.localFrame_repr e s i x) + (b.localFrame_repr e s' i x) := by
-  by_cases hx : x ∈ e.baseSet; swap
-  · exact False.elim (hx hxe)
-  · simp [localFrame_repr, hx]
 
 end Basis
 
@@ -148,7 +155,7 @@ variable {ι : Type*} [Fintype ι] {x : M}
 -- TODO: better name!
 lemma Basis.localFrame_repr_apply_zero_at
     (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
-    b.localFrame_repr e s i x = 0 := by
+    b.localFrame_repr e i s x = 0 := by
   by_cases hxe : x ∈ e.baseSet; swap
   · simp [localFrame_repr, hxe]
   simp [localFrame_repr, localFrame_toBasis_at, hxe, hs]
@@ -159,16 +166,11 @@ lemma Basis.localFrame_repr_apply_zero_at
     · simp [e.apply_mk_symm hxe]
   simp [this]
 
--- TODO: better name
-lemma Basis.localFrame_repr_apply_zero (b : Basis ι 𝕜 F) (i : ι) :
-    b.localFrame_repr e 0 i x = 0 :=
-  b.localFrame_repr_apply_zero_at (s := 0) (by simp) i
-
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma Basis.localFrame_repr_congr (b : Basis ι 𝕜 F)
     (s s' : Π x : M,  V x) (i : ι) (hss' : s x = s' x) :
-    b.localFrame_repr e s i x = b.localFrame_repr e s' i x := by
+    b.localFrame_repr e i s x = b.localFrame_repr e i s' x := by
   by_cases hxe : x ∈ e.baseSet
   · simp [localFrame_repr, hxe, localFrame_toBasis_at]
     congr
@@ -179,7 +181,7 @@ variable {n}
 lemma Basis.contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
-    (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.localFrame_repr e s i) x := by
+    (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.localFrame_repr e i s) x := by
   -- "check this locally, then it's very easy"
   -- more precisely: (1) we have the following lemma:
   -- suppose e is a compat. trivialisation and x ∈ e.baseSet, then on e.baseSet
@@ -192,7 +194,7 @@ lemma Basis.contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι �
 lemma Basis.contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n) {t : Set M} (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
-    ContMDiffOn I 𝓘(𝕜) n (b.localFrame_repr e s i) t :=
+    ContMDiffOn I 𝓘(𝕜) n (b.localFrame_repr e i s) t :=
   fun _ hx ↦ (b.contMDiffAt_localFrame_repr I (ht' hx) hk
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
@@ -412,7 +414,7 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
   let e := trivializationAt E (TangentSpace I) x
   let Xi (i : Fin n) := b.localFrame e i
   -- Write X in coordinates: X = ∑ i, a i • Xi i near `x`.
-  let a := b.localFrame_repr e X
+  let a := fun i ↦ b.localFrame_repr e i X
   have : x ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.localFrame_repr_spec this X
   -- have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
