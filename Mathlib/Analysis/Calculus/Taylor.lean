@@ -223,7 +223,7 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   have : ∀ (i : ℕ) {c : ℝ} {c' : E},
       HasDerivAt (fun x ↦ (c * (x - x₀) ^ i) • c') ((c * (i * (x - x₀) ^ (i - 1) * 1)) • c') x :=
     fun _ _ ↦ hasDerivAt_id _ |>.sub_const _ |>.pow _ |>.const_mul _ |>.smul_const _
-  apply HasDerivAt.sum (fun i _ => this i) |>.congr_deriv
+  apply HasDerivAt.fun_sum (fun i _ => this i) |>.congr_deriv
   rw [Finset.sum_range_succ', Nat.cast_zero, zero_mul, zero_mul, mul_zero, zero_smul, add_zero]
   apply Finset.sum_congr rfl
   intro i _
