@@ -199,7 +199,7 @@ f"""  {FAIL} Consider adding a {workflow_name} workflow.
     if workflow_contents is None:
         if not silent:
             print(
-f"""  {FAIL} {workflow_name} workflow file `{workflow_filename}` could not be fetched.
+f"""  {FAIL} Workflow {workflow_name}, file `{workflow_filename}` could not be fetched.
     Please ensure Mathlib's `scripts/downstream_repos.yml` refers to the correct file name (of the form `{workflow_name}.yml`).""")
         return False
     try:
@@ -207,19 +207,19 @@ f"""  {FAIL} {workflow_name} workflow file `{workflow_filename}` could not be fe
     except Exception:
         if not silent:
             print(
-f"""  {FAIL} {workflow_name} workflow defined in `scripts/downstream_repos.yml` could not be parsed.
+f"""  {FAIL} Workflow {workflow_name} defined in `scripts/downstream_repos.yml` could not be parsed.
     Please ensure Mathlib's `scripts/downstream_repos.yml` refers to the correct file name (of the form `{workflow_name}.yml`).""")
         return False
 
     action_references = set(action.split('@')[0] for action in workflow_actions(workflow))
     if expected_action in action_references:
         if not silent:
-            print(f"  {PASS} {workflow_name} workflow installed, using the action: {expected_action}")
+            print(f"  {PASS} Workflow {workflow_name} installed, using the action: {expected_action}")
         return True
     else:
         if not silent:
             print(
-f"""  {WARN} {workflow_name} workflow installed.
+f"""  {WARN} Workflow {workflow_name} installed.
     A GitHub Action exists to handle this workflow for you.
     See https://github.com/{expected_action}/blob/HEAD/README.md for installation instructions.""")
         return False
@@ -240,12 +240,12 @@ def main():
         # Check toolchain versions.
         latest = get_latest_version(repo)
         if latest:
-            print(f"  {PASS} toolchain tag: {latest}")
+            print(f"  {PASS} Latest toolchain tag: {latest}")
         else:
             success = False
             current = get_current_toolchain(repo)
             print(
-f"""  {FAIL} no toolchain tags found.
+f"""  {FAIL} No toolchain tags found.
     Adding a tag for new releases helps users of your project to synchronize versions.
     A GitHub Action exists to handle tagging new releases for you.
     See https://github.com/leanprover-community/lean-release-tag/blob/HEAD/README.md for installation instructions.""")
@@ -255,7 +255,7 @@ f"""  {FAIL} no toolchain tags found.
         success = check_workflow_uses_action(repo, 'release-tag', 'leanprover-community/lean-release-tag') and success
         # We have two actions that can do auto-updating; handle these checks manually.
         if check_workflow_uses_action(repo, 'update', 'leanprover-community/lean-update', silent=True):
-            print(f"  {PASS} update workflow installed, using the action: leanprover-community/lean-update")
+            print(f"  {PASS} Update workflow installed, using the action: leanprover-community/lean-update")
         else:
             # Report failure for mathlib-update-action, since that has more features.
             success = check_workflow_uses_action(repo, 'update', 'leanprover-community/mathlib-update-action') and success
@@ -263,11 +263,11 @@ f"""  {FAIL} no toolchain tags found.
         license = fetch_file_contents(repo, 'LICENSE')
         if license is not None:
             first_line = license.split('\n')[0].strip()
-            print(f"  {PASS} license: {first_line}")
+            print(f"  {PASS} License: {first_line}")
         else:
             success = False
             print(
-f"""  {FAIL} no license file found.
+f"""  {FAIL} Consider adding a license.
     Choosing a license for your project makes it open-source and encourages contribution and reuse.
     Lean and Mathlib are open-source projects available under the Apache License 2.0: https://choosealicense.com/licenses/apache-2.0/
     For instructions on how to apply a license, please see: https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository""")
@@ -282,29 +282,29 @@ f"""  {FAIL} no license file found.
             if lakefile is None:
                 success = False
                 print(
-f"""  {FAIL} no lakefile found.
+f"""  {FAIL} No lakefile found.
     This may be caused by a temporary network error. Try running the script again.""")
                 continue
         # We're not going to parse the whole lakefile to check for these options.
         if 'lintDriver' in lakefile or 'lint_driver' in lakefile:
-            print(f"  {PASS} linting enabled.")
+            print(f"  {PASS} Linting enabled.")
         else:
             success = False
             print(
-f"""  {FAIL} no lint driver defined in the lakefile.
+f"""  {FAIL} Consider adding a lint driver.
     You can configure the `lake lint` command to automatically report code quality suggestions.
     Linters are included with Mathlib or Batteries.
     For instructions on enabling a linter, please see: https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-linter""")
         if 'linter.mathlibStandard' in lakefile:
             # These linter options are quite strict, so don't complain if they are not enabled.
-            print(f"  {PASS} linting to Mathlib's standards.")
+            print(f"  {PASS} Linting to Mathlib's standards.")
         if 'testDriver' in lakefile or 'test_driver' in lakefile:
-            print(f"  {PASS} testing enabled.")
+            print(f"  {PASS} Testing enabled.")
         else:
             success = False
             # A warning, since a lot of projects seem to be their own test-suite.
             print(
-f"""  {WARN} no test driver defined in the lakefile.
+f"""  {WARN} Consider adding a test driver.
     You can configure the `lake test` command to build and run test files.
     For instructions on creating a test suite, please see: https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-test-driver""")
 
