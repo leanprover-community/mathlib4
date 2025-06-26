@@ -75,7 +75,7 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete
 
 lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
 
-lemma valueGroup_IsCyclic [IsDiscrete v] : IsCyclic <| valueGroup v := by
+instance [IsDiscrete v] : IsCyclic <| valueGroup v := by
   rw [isCyclic_iff_exists_zpowers_eq_top, ← generator_zpowers_eq_valueGroup]
   use ⟨generator v, by simp⟩
   rw [eq_top_iff]
