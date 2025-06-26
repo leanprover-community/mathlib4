@@ -7,6 +7,8 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Order.SuccPred.Basic
+import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.PNat.Equiv
 
 /-!
@@ -26,6 +28,7 @@ instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
 instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
 instance instCancelCommMonoid : CancelCommMonoid ℕ+ := ⟨fun _ _ _ ↦ mul_left_cancel⟩
 instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
+
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -369,5 +372,18 @@ theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   intro hzero
   rw [hzero] at h
   exact PNat.ne_zero n (eq_zero_of_zero_dvd h)
+
+
+/-- Order related instances for `ℕ+`.
+-/
+
+instance instSuccOrder : SuccOrder ℕ+  :=
+  SuccOrder.ofSuccLeIff (fun n => succPNat n) (by rfl)
+
+instance instSuccAddOrder : SuccAddOrder ℕ+ where
+  succ_eq_add_one x := by rfl
+
+instance instNoMaxOrder : NoMaxOrder ℕ+ where
+  exists_gt n := ⟨succPNat n, lt_succ_self n⟩
 
 end PNat
