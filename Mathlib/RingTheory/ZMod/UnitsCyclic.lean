@@ -41,7 +41,7 @@ modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
 
 * `ZMod.isCyclic_units_two_pow_iff` : `(ZMod (2 ^ n))ˣ` is cyclic iff `n ≤ 2`.
 
-The proofs mostyly follow [Ireland and Rosen,
+The proofs mostly follow [Ireland and Rosen,
   *A classical introduction to modern number theory*, chapter 4]
   [IrelandRosen1990].
 
