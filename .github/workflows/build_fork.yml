@@ -455,9 +455,21 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
+      # TODO: this step should not be necessary, "Configure Lean" above should already achieve this.
+      - name: get cache for Mathlib
+        run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
+          lake exe cache get
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+
+
       - name: get cache for Archive and Counterexamples
         run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get Archive Counterexamples
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         run: |
