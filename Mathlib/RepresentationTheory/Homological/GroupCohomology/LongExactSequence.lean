@@ -30,7 +30,7 @@ namespace groupCohomology
 
 open CategoryTheory ShortComplex
 
-variable {k G : Type u} [CommRing k] [Group G] [DecidableEq G]
+variable {k G : Type u} [CommRing k] [Group G]
   {X : ShortComplex (Rep k G)} (hX : ShortExact X)
 
 include hX
@@ -113,7 +113,6 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using hx) (j + 1) (by simp)
 
-omit [DecidableEq G] in
 theorem mem_oneCocycles_of_comp_eq_dZero
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = dZero X.X₂ y) :
     x ∈ oneCocycles X.X₁ := by
@@ -131,7 +130,6 @@ theorem δ₀_apply (z : X.X₃.ρ.invariants) (y : X.X₂)
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_1_comp_oneCochainsIso (MonoidHom.id G) X.f⟩).w) x)) g
 
-omit [DecidableEq G] in
 theorem mem_twoCocycles_of_comp_eq_dOne
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = dOne X.X₂ y) :
     x ∈ twoCocycles X.X₁ := by

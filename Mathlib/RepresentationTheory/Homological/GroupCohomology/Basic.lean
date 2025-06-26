@@ -5,7 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
