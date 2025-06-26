@@ -211,8 +211,7 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
     apply lt_of_le_of_ne
     · rwa [succ_le_iff]
     · rintro rfl
-      rw [totient_one, tsub_self] at h
-      exact one_ne_zero h
+      contradiction
   rw [totient_eq_card_coprime, range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico hp.le,
     Finset.filter_insert, if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)),
     ← Nat.card_Ico 1 p] at h

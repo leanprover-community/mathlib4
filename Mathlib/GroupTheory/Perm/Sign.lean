@@ -452,7 +452,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
         have : s l.prod = 1 := by
           rw [← l.prod_hom s, List.eq_replicate_length.2 this, List.prod_replicate, one_pow]
         rw [hl.1, hg] at this
-        exact absurd this (by simp_all)
+        contradiction
   MonoidHom.ext fun f => by
     let ⟨l, hl₁, hl₂⟩ := (truncSwapFactors f).out
     have hsl : ∀ a ∈ l.map s, a = (-1 : ℤˣ) := fun a ha =>

@@ -68,7 +68,7 @@ theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
 @[simp]
 theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   induction x
-  · exfalso; exact h (Eq.refl ⊥)
+  · contradiction
   · exact top_add_coe _
   · exact top_add_top
 
@@ -77,8 +77,7 @@ if and only if `x` is not `⊥`. -/
 theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
   constructor <;> intro h
   · rintro rfl
-    rw [add_bot] at h
-    exact bot_ne_top h
+    contradiction
   · cases x with
     | bot => contradiction
     | top => rfl
