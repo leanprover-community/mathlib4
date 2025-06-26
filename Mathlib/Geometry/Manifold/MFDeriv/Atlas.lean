@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+
 
 /-!
 # Differentiability of models with corners and (extended) charts
@@ -348,5 +350,28 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
     (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
+
+theorem TangentBundle.continuousLinearMapAt_trivializationAt
+    {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
+    (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
+      mfderiv I 𝓘(𝕜, E) (extChartAt I b₀) b := by
+  have : MDifferentiableAt I 𝓘(𝕜, E) (extChartAt I b₀) b := mdifferentiableAt_extChartAt hb
+  simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe] at this
+  simp [hb, mfderiv, this]
+
+theorem TangentBundle.symmL_trivializationAt
+    {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
+    (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
+      mfderivWithin 𝓘(𝕜, E) I (extChartAt I b₀).symm (range I) (extChartAt I b₀ b) := by
+  have : MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I b₀).symm
+      (range I) (extChartAt I b₀ b) :=
+    mdifferentiableWithinAt_extChartAt_symm (by simp [hb])
+  simp? at this says
+    simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans_symm,
+      PartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+      Function.comp_apply] at this
+  simp [hb, mfderivWithin, this]
 
 end extChartAt

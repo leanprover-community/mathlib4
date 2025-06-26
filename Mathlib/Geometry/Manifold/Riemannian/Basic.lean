@@ -120,7 +120,8 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
     exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
   · let γ := ContinuousAffineMap.lineMap (R := ℝ) x y
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ pathELength 𝓘(ℝ, F) γ 0 1 := by
-      apply riemannianEDist_le_pathELength ?_ (by simp [γ]) (by simp [γ]) zero_le_one
+      apply riemannianEDist_le_pathELength ?_ (by simp [γ, ContinuousAffineMap.coe_lineMap_eq])
+        (by simp [γ, ContinuousAffineMap.coe_lineMap_eq]) zero_le_one
       rw [contMDiffOn_iff_contDiffOn]
       exact γ.contDiff.contDiffOn
     apply this.trans_eq
@@ -144,6 +145,20 @@ variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 attribute [local instance 2000]
   Bundle.instNormedAddCommGroupOfRiemannianBundle Bundle.instInnerProductSpaceReal
+
+--set_option trace.profiler true in
+variable (I) in
+lemma bloops (x : M) : ∃ C > 0, ∀ᶠ y in 𝓝 x,
+    ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ < C := by
+  rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
+    with ⟨C, C_pos, hC⟩
+  refine ⟨C, C_pos, ?_⟩
+  filter_upwards [hC] with y hy
+  convert hy
+
+
+#exit
+
 
 set_option trace.profiler true in
 variable (I) in

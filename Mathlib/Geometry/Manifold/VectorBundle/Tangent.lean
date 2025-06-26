@@ -250,14 +250,18 @@ theorem coe_chartAt_symm_fst (p : H × E) (q : TM) :
     ((chartAt (ModelProd H E) q).symm p).1 = ((chartAt H q.1).symm : H → M) p.1 :=
   rfl
 
-@[mfld_simps]
-theorem trivializationAt_continuousLinearMapAt {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
+/-- The trivialization of the tangent space can be expressed in terms of the tangent bundle core.
+To write it as the manifold derivative of `extChartAt`, see
+`TangentBundle.continuousLinearMapAt_trivializationAt`. -/
+theorem continuousLinearMapAt_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b := by
   simp [hb]
 
-@[mfld_simps]
-theorem trivializationAt_symmL {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
+/-- The inverse trivialization of the tangent space can be expressed in terms of the tangent bundle
+core. To write it as the manifold derivative of `(extChartAt I b₀).symm`, see
+`TangentBundle.symmL_trivializationAt`. -/
+theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b := by
   simp [hb]
@@ -273,14 +277,14 @@ theorem coordChange_model_space (b b' x : F) :
 @[simp high, mfld_simps]
 theorem symmL_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).symmL 𝕜 b' = (1 : F →L[𝕜] F) := by
-  rw [TangentBundle.trivializationAt_symmL, coordChange_model_space]
+  rw [TangentBundle.symmL_trivializationAt_eq_core, coordChange_model_space]
   apply mem_univ
 
 -- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem continuousLinearMapAt_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).continuousLinearMapAt 𝕜 b' = (1 : F →L[𝕜] F) := by
-  rw [TangentBundle.trivializationAt_continuousLinearMapAt, coordChange_model_space]
+  rw [TangentBundle.continuousLinearMapAt_trivializationAt_eq_core, coordChange_model_space]
   apply mem_univ
 
 end TangentBundle
