@@ -15,6 +15,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 ## Main definitions
 
 * `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
+* `matrixEquivTensorMatrix : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A)`
 * `Matrix.kroneckerTMulAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
@@ -118,17 +119,11 @@ theorem toTensorMatrixLin_tmul_single (k : K) (i : m) (j : n) (a : A) :
     toTensorMatrixLin K F A m n (k ⊗ₜ .single i j a) = .single i j (k ⊗ₜ a) := by
   simp_rw [toTensorMatrixLin_tmul, ← mk_apply, map_single]
 
-
-private def invFun_toFun_bilinear (i : m) (j : n) : K →ₗ[F] A →ₗ[F] K ⊗[F] Matrix m n A :=
-  AlgebraTensorModule.mk F F K (Matrix m n A) |>.compl₂ (Matrix.singleLinearMap _ i j)
-
-@[simp]
-lemma invFun_toFun_bilinear_apply (i : m) (j : n) (k : K) (a : A) :
-    invFun_toFun_bilinear K F A m n i j k a = k ⊗ₜ single i j a := rfl
-
 private abbrev invFun_toFun (i : m) (j : n) : K ⊗[F] A →ₗ[F] K ⊗[F] Matrix m n A :=
-  TensorProduct.lift <| invFun_toFun_bilinear K F A m n i j
+  AlgebraTensorModule.lift <|
+    AlgebraTensorModule.mk F F K (Matrix m n A) |>.compl₂ (Matrix.singleLinearMap _ i j)
 
+-- TODO: can we construct this by composition / lifting?
 private abbrev invFun_Klinear (i : m) (j : n) : K ⊗[F] A →ₗ[K] K ⊗[F] Matrix m n A where
   __ := invFun_toFun K F A m n i j
   map_smul' k tensor := by
@@ -182,6 +177,7 @@ abbrev toTensorMatrix : K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) 
     (by simp [Algebra.TensorProduct.one_def])
     (toTensorMatrixLin_mul _ _ _ _)
 
+/-- Base change of matrices. -/
 def matrixEquivTensorMatrix : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A) where
   __ := toTensorMatrix R K F A n
   __ := linearEquivTensor K F A n n
