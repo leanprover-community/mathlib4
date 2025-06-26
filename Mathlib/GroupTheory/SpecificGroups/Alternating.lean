@@ -357,8 +357,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     · -- The case `n = 4` leads to contradiction, as no element of $A_5$ includes a 4-cycle.
       have con := mem_alternatingGroup.1 gA
       rw [sign_of_cycleType, cycleType_of_card_le_mem_cycleType_add_two (by decide) ng] at con
-      have : Odd 5 := by decide
-      simp [this] at con
+      contradiction
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
