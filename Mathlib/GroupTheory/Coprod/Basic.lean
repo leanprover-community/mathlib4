@@ -661,9 +661,9 @@ variable {K : Type*} [Group K]
 
 end Group
 
-end Coprod
+end Monoid.Coprod
 
-open Coprod
+open Monoid Coprod
 
 namespace MulEquiv
 
@@ -731,35 +731,15 @@ theorem coprodAssoc_symm_apply_inr_inr (x : P) :
 variable (M)
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! -fullyApplied]
+@[to_additive (attr := simps! -fullyApplied)
+  "Isomorphism between `AddMonoid.Coprod M PUnit` and `M`."]
 def coprodPUnit : M ∗ PUnit ≃* M :=
   MonoidHom.toMulEquiv fst inl (hom_ext rfl <| Subsingleton.elim _ _) fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! -fullyApplied]
+@[to_additive (attr := simps! -fullyApplied)
+  "Isomorphism between `AddMonoid.Coprod PUnit M` and `M`."]
 def punitCoprod : PUnit ∗ M ≃* M :=
   MonoidHom.toMulEquiv snd inr (hom_ext (Subsingleton.elim _ _) rfl) snd_comp_inr
 
 end MulEquiv
-
--- TODO: use `to_additive` to generate the next 2 `AddEquiv`s
-
-namespace AddEquiv
-
-variable {M : Type*} [AddMonoid M]
-
-/-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! -fullyApplied]
-def coprodUnit : AddMonoid.Coprod M PUnit ≃+ M :=
-  AddMonoidHom.toAddEquiv AddMonoid.Coprod.fst AddMonoid.Coprod.inl
-    (AddMonoid.Coprod.hom_ext rfl <| Subsingleton.elim _ _) AddMonoid.Coprod.fst_comp_inl
-
-/-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! -fullyApplied]
-def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
-  AddMonoidHom.toAddEquiv AddMonoid.Coprod.snd AddMonoid.Coprod.inr
-    (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr
-
-end AddEquiv
-
-end Monoid

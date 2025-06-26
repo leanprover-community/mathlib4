@@ -44,9 +44,9 @@ variable {R : Type u} [CommRing R]
 noncomputable instance (X : CoalgCat R) : Comon_Class (ModuleCat.of R X) where
   counit := ModuleCat.ofHom Coalgebra.counit
   comul := ModuleCat.ofHom Coalgebra.comul
-  counit_comul' := ModuleCat.hom_ext <| by simpa using Coalgebra.rTensor_counit_comp_comul
-  comul_counit' := ModuleCat.hom_ext <| by simpa using Coalgebra.lTensor_counit_comp_comul
-  comul_assoc' := ModuleCat.hom_ext <| by simp_rw [ModuleCat.of_coe]; exact Coalgebra.coassoc.symm
+  counit_comul := ModuleCat.hom_ext <| by simpa using Coalgebra.rTensor_counit_comp_comul
+  comul_counit := ModuleCat.hom_ext <| by simpa using Coalgebra.lTensor_counit_comp_comul
+  comul_assoc := ModuleCat.hom_ext <| by simp_rw [ModuleCat.of_coe]; exact Coalgebra.coassoc.symm
 
 /-- An `R`-coalgebra is a comonoid object in the category of `R`-modules. -/
 @[simps X]
@@ -134,7 +134,7 @@ theorem tensorObj_comul (K L : CoalgCat R) :
   rfl
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
-    (CoalgCat.ofHom f ⊗ CoalgCat.ofHom g).1.toLinearMap
+    (CoalgCat.ofHom f ⊗ₘ CoalgCat.ofHom g).1.toLinearMap
       = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
 
 theorem associator_hom_toLinearMap :

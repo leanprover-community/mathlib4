@@ -38,7 +38,7 @@ namespace groupCohomology
 open CategoryTheory Finsupp TensorProduct Rep
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G}
-  [DecidableRel (QuotientGroup.rightRel S)] [Fintype (G ⧸ S)] (A : Rep k S)
+  [DecidableRel (QuotientGroup.rightRel S)] [S.FiniteIndex] (A : Rep k S)
 
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a finite index
 subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism

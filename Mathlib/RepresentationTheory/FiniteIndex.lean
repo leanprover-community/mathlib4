@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+import Mathlib.GroupTheory.Index
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Induced
 
@@ -102,7 +103,9 @@ noncomputable abbrev indToCoind :
   Representation.Coinvariants.lift _ (TensorProduct.lift <| linearCombination _ fun g =>
     LinearMap.codRestrict _ (indToCoindAux A g) fun _ _ _ => by simp) fun _ => by ext; simp
 
-variable [Fintype (G ⧸ S)]
+variable [S.FiniteIndex]
+
+attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
 variable (A) in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of

@@ -126,7 +126,7 @@ noncomputable def coinvariantsTensorIndNatIso :
 
 end
 
-variable (S : Subgroup G) [DecidableRel (QuotientGroup.rightRel S)] [Fintype (G ⧸ S)]
+variable (S : Subgroup G) [DecidableRel (QuotientGroup.rightRel S)] [S.FiniteIndex]
 variable (A : Rep k S)
 
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a finite index

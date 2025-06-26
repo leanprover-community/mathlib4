@@ -126,6 +126,10 @@ theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬Is
 theorem span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span_singleton_eq_bot]
 
 @[simp]
+theorem span_insert_zero {s : Set α} : span (insert (0 : α) s) = span s :=
+  Submodule.span_insert_zero
+
+@[simp]
 theorem span_one : span (1 : Set α) = ⊤ := by rw [← Set.singleton_one, span_singleton_one]
 
 theorem span_eq_top_iff_finite (s : Set α) :
