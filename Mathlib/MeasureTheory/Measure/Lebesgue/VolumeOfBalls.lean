@@ -333,7 +333,7 @@ theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
       measurableSet_ball.nullMeasurableSet]
     simp only [Set.preimage, ball_zero_eq _ zero_le_one, one_pow, Set.mem_setOf_eq]
     convert volume_sum_rpow_lt_one ι one_le_two using 4
-    · simp [one_pow, Real.rpow_two, sq_abs, EuclideanSpace.measurableEquiv]
+    · simp [one_pow, Real.rpow_two, sq_abs, EuclideanSpace.measurableOfLp]
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
