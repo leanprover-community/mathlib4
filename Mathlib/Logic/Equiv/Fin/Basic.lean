@@ -248,7 +248,7 @@ theorem finSumFinEquiv_symm_last : finSumFinEquiv.symm (Fin.last n) = Sum.inr 0 
   finSumFinEquiv_symm_apply_natAdd 0
 
 /-- Equivalence between `Fin n ⊕ ℕ` and `ℕ` that sends `inl (a : Fin n)` to
-`(a : ℕ)` and `inr a` to `a + n`. -/
+`(a : ℕ)` and `inr a` to `n + a`. -/
 def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
   toFun := Sum.elim Fin.val (n + ·)
   invFun i := if hi : i < n then .inl ⟨i, hi⟩ else .inr (i - n)
@@ -273,21 +273,19 @@ def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
     (finSumNatEquiv n).symm i = .inr (i - n) := dif_neg (Nat.not_lt_of_ge hi)
 
 theorem finSumNatEquiv_symm_apply_fin (i : Fin n) :
-    (finSumNatEquiv n).symm i = Sum.inl i := by simp
+    (finSumNatEquiv n).symm i = .inl i := by simp
 
 theorem finSumNatEquiv_symm_apply_add_left (i : ℕ) :
     (finSumNatEquiv n).symm (i + n) = .inr i := by simp
 
 theorem finSumNatEquiv_symm_apply_add_right (i : ℕ) :
-    (finSumNatEquiv n).symm (n + i) = Sum.inr i := by simp
+    (finSumNatEquiv n).symm (n + i) = .inr i := by simp
 
 @[simp] theorem isLeft_finSumNatEquiv_symm_apply (i : ℕ) :
     ((finSumNatEquiv n).symm i).isLeft = decide (i < n) := by
   rcases i.lt_or_ge n with hi | hi
-  · simp_rw [finSumNatEquiv_symm_apply_of_lt hi, hi]
-    rfl
-  · simp_rw [finSumNatEquiv_symm_apply_of_ge hi, hi.not_gt]
-    rfl
+  · simp_rw [finSumNatEquiv_symm_apply_of_lt hi, hi, Sum.isLeft_inl, decide_true]
+  · simp_rw [finSumNatEquiv_symm_apply_of_ge hi, hi.not_gt, Sum.isLeft_inr, decide_false]
 
 @[simp] theorem isRight_finSumNatEquiv_symm_apply (i : ℕ) :
     ((finSumNatEquiv n).symm i).isRight = decide (n ≤ i) := by
