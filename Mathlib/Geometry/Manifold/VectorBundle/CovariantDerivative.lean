@@ -542,26 +542,35 @@ lemma foo (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M
   -- use the previous two lemmas: they prove that differenceAux is tensorial
   sorry
 
--- TODO: generalise this to any section in a vector bundle
+-- TODO: either change `localFrame` to make sure it is everywhere smooth
+-- or introduce a cut-off here. First option is probaly better.
+variable (F) in
+noncomputable def extend [FiniteDimensional ℝ F] {x : M} (v : V x) : (x' : M) → V x' :=
+  letI b := Basis.ofVectorSpace ℝ F
+  letI t := trivializationAt F V x
+  letI bV := b.localFrame_toBasis_at t (FiberBundle.mem_baseSet_trivializationAt F V x)
+  fun x' ↦ ∑ i, bV.repr v i • b.localFrame t i x'
 
-/-- Extend a tangent vector `X₀` at `x₀ ∈ M` to *some* vector field `X` on `M` with `X x = X₀`. -/
-def extend {x : M} (X₀ : TangentSpace I x) : (x : M) → TangentSpace I x :=
-  -- idea: choose a local frame, and choose X to have constant coefficients in that frame
-  -- cap with a smooth bump function, to make it smooth everywhere
-  sorry
-
-@[simp]
-lemma extend_apply {x : M} (X₀ : TangentSpace I x) : (extend X₀) x = X₀ := sorry
+-- TODO: cleanup this proof by adding simp lemmas to the localFrame stuff
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+@[simp] lemma extend_apply_self [FiniteDimensional ℝ F] {x : M} (v : V x) :
+    extend F v x = v := by
+  letI b := Basis.ofVectorSpace ℝ F
+  letI t := trivializationAt F V x
+  have x_mem : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt F V x
+  letI bV := b.localFrame_toBasis_at t x_mem
+  change ∑ i, bV.repr v i • b.localFrame t i x = v
+  conv_rhs => rw [←bV.sum_repr v]
+  simp [bV, Basis.localFrame_toBasis_at, Basis.localFrame, x_mem]
 
 /-lemma-/ def contMDiff_extend  {x : M} (X₀ : TangentSpace I x) :
   sorry /- ContMDiff I I.tangent 2 (extend X₀) doesn't type-check -/ := sorry
 
 -- The difference of two covariant derivatives, as a tensorial map
-def difference (cov cov' : CovariantDerivative I F V) :
+noncomputable def difference [FiniteDimensional ℝ F] [FiniteDimensional ℝ E] [IsManifold I 1 M]
+    (cov cov' : CovariantDerivative I F V) :
     Π x : M, TangentSpace I x → V x → V x :=
-  fun x X₀ σ₀ ↦
-  let σ : (x : M) → V x := sorry -- `extend σ₀` once generalized
-  differenceAux cov cov' (extend X₀) σ x
+  fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀) (extend F σ₀) x
 
 end real
 
