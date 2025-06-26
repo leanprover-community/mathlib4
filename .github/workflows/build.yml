@@ -94,13 +94,7 @@ jobs:
       - name: Checkout PR branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # We used to use ${{ github.sha }} here, but this just gives us a SHA,
-          # and we end up in a detached HEAD state.
-          # Instead, we use `github.head_ref`,
-          # which for pull requests will resolve to a branch name, falling back to `github.ref`
-          # when this is not available.
-          # This helps `lake exe cache get` determine the correct cache source.
-          ref: ${{ github.head_ref || github.ref }}
+          ref: "${{ github.sha }}"
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
@@ -454,8 +448,7 @@ jobs:
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # See note in the build step explaining the choice of reference here.
-          ref: ${{ github.head_ref || github.ref }}
+          ref: "${{ github.sha }}"
 
       - name: Configure Lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
@@ -465,9 +458,21 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
+      # TODO: this step should not be necessary, "Configure Lean" above should already achieve this.
+      - name: get cache for Mathlib
+        run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
+          lake exe cache get
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+
+
       - name: get cache for Archive and Counterexamples
         run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get Archive Counterexamples
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         run: |
