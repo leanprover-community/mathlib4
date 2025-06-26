@@ -28,6 +28,7 @@ open Int
 namespace Rat
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
 
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]
@@ -190,26 +191,21 @@ def evalIntCeil : NormNumExt where eval {u αZ} e := do
       return .isInt q(inferInstance) z ⌈q⌉ q(isInt_intCeil_ofIsRat _ $n $d $h)
   | _, _, _ => failure
 
-theorem isNat_intFract {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-    (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fract r) 0 := by
+theorem isNat_intFract_of_isNat (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intFract {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-    (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
+theorem isNat_intFract_of_isInt (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intFract_of_isRat (r : α) (n : ℤ) (d : ℕ) :
+theorem isRat_intFract_of_isRat (r : α) (n : ℤ) (d : ℕ) :
     IsRat r n d → IsRat (Int.fract r) (n % d) d := by
   rintro ⟨inv, rfl⟩
   refine ⟨inv, ?_⟩
   simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod]
 
-example : Int.fract (2 : ℚ) = 0 := by
-  simp
-
 /-- `norm_num` extension for `Int.fract` -/
 @[norm_num (Int.fract _)]
-def evalIntFract : NormNumExt where eval {u αZ} e := do
+def evalIntFract : NormNumExt where eval {u α} e := do
   match e with
   | ~q(@Int.fract _ $instR $instO $instF $x) =>
     match ← derive x with
@@ -219,40 +215,21 @@ def evalIntFract : NormNumExt where eval {u αZ} e := do
       assertInstancesCommute
       have z : Q(ℕ) := Lean.mkRawNatLit 0
       letI : $z =Q 0 := ⟨⟩
-      return .isNat _ z q(isNat_intFract $x _ $pb)
+      return .isNat _ z q(isNat_intFract_of_isNat $x _ $pb)
     | .isNegNat _ _ pb => do
       let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have z : Q(ℕ) := Lean.mkRawNatLit 0
       letI : $z =Q 0 := ⟨⟩
-      return .isNat _ z q(isInt_intFract _ _ $pb)
+      return .isNat _ z q(isNat_intFract_of_isInt _ _ $pb)
     | .isRat _ q n d h => do
       let _i ← synthInstanceQ q(Field $α)
       let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have n' : Q(ℤ) := mkRawIntLit (q.num % q.den)
       letI : $n' =Q $n % $d := ⟨⟩
-      return .isRat _ (Int.fract q) n' d q(isInt_intFract_of_isRat _ $n $d $h)
+      return .isRat _ (Int.fract q) n' d q(isRat_intFract_of_isRat _ $n $d $h)
   | _, _, _ => failure
-
-example : Int.fract (3 / 2 : ℚ) = 1 / 2 := by
-  norm_num1
-
-example (x : ℤ) : (x : ℚ) ≠ 2⁻¹ := by
-  apply ne_of_apply_ne Int.fract
-  simp only [fract_intCast, ne_eq]
-  exact
-    isRat_eq_false
-      (IsNat.to_isRat (isNat_ofNat ℚ (Eq.refl 0)))
-      (isInt_intFract_of_isRat 2⁻¹ (ofNat 1) 2
-        (isRat_inv_pos (IsNat.to_isRat (isNat_ofNat ℚ (Eq.refl 2)))))
-      (by simp_rw [ofNat_eq_coe, Nat.cast_zero, Nat.cast_ofNat, Int.mul_def, zero_mul,
-        Nat.cast_one, one_emod_two, mul_one, zero_ne_one, decide_false])
-
-example (x : ℤ) : (x : ℚ) ≠ 2⁻¹ := by
-  apply ne_of_apply_ne Int.fract
-  show_term norm_num1
-  sorry
 
 end NormNum
 
