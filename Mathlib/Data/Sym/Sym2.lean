@@ -608,7 +608,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]
-          first | done | apply List.Perm.swap'; rfl }
+          first | done | constructor }
 
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
 def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where

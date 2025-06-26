@@ -198,7 +198,7 @@ variable [AddMonoidWithOne R]
 
 instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
   obtain hp | ⟨hp⟩ := ‹ExpChar R p›
-  · have := Prod.charZero_of_left R S; exact .zero
+  · constructor
   obtain _ | _ := ‹ExpChar S p›
   · exact (Nat.not_prime_one hp).elim
   · have := Prod.charP R S p; exact .prime hp
