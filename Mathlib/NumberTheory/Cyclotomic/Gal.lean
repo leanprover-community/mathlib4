@@ -75,13 +75,11 @@ end IsPrimitiveRoot
 
 namespace IsCyclotomicExtension
 
+@[deprecated (since := "2025-06-26")]
+alias Aut.commGroup := isMulCommutative
+
 variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
   [IsCyclotomicExtension {n} K L]
-
-/-- Cyclotomic extensions are abelian. -/
-noncomputable def Aut.commGroup : CommGroup (L ≃ₐ[K] L) :=
-  ((zeta_spec n K L).autToPow_injective K).commGroup _ (map_one _) (map_mul _) (map_inv _)
-    (map_div _) (map_pow _) (map_zpow _)
 
 variable {K} (L)
 
