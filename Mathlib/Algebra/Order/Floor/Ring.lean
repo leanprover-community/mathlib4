@@ -472,9 +472,8 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self_right]
 
 theorem floor_div_nonneg_intCast (a : k) {n : ℤ} (hn : 0 ≤ n) : ⌊a / n⌋ = ⌊a⌋ / n := by
-  by_cases hn_zero : n = 0
-  · simp [hn_zero]
-  replace hn : 0 < n := by omega
+  obtain rfl | hn := hn.eq_or_lt
+  · simp
   rw [floor_eq_iff]
   constructor
   · calc
