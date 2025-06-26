@@ -136,6 +136,7 @@ lemma localFrame_repr_apply_of_mem_baseSet {x : M}
 
 -- uniqueness of the decomposition: follows from the IsBasis property above
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 variable (b) in
 lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x' := by
@@ -151,30 +152,32 @@ variable {ι : Type*} [Fintype ι] {x : M}
   {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
   [MemTrivializationAtlas e]
 
--- corollary of linearity and uniqueness, or follows directly
--- TODO: better name!
-lemma Basis.localFrame_repr_apply_zero_at
-    (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
-    b.localFrame_repr e i s x = 0 := by
-  by_cases hxe : x ∈ e.baseSet; swap
-  · simp [localFrame_repr, hxe]
-  simp [localFrame_repr, localFrame_toBasis_at, hxe, hs]
-  have : e.symm x = 0 := sorry
-  have : (e { proj := x, snd := 0 }).2 = 0 := by
-    trans (e { proj := x, snd := e.symm x 0 }).2
-    · simp [this]
-    · simp [e.apply_mk_symm hxe]
-  simp [this]
-
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma Basis.localFrame_repr_congr (b : Basis ι 𝕜 F)
-    (s s' : Π x : M,  V x) (i : ι) (hss' : s x = s' x) :
+    {s s' : Π x : M,  V x} {i : ι} (hss' : s x = s' x) :
     b.localFrame_repr e i s x = b.localFrame_repr e i s' x := by
   by_cases hxe : x ∈ e.baseSet
   · simp [localFrame_repr, hxe, localFrame_toBasis_at]
     congr
   · simp [localFrame_repr, hxe]
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
+lemma Basis.localFrame_repr_apply_zero_at
+    (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
+    b.localFrame_repr e i s x = 0 := by
+  rw [b.localFrame_repr_congr (s' := 0) (by simp [hs])]
+  simp
+  -- This proof may indicate a missing simp lemma.
+  -- by_cases hxe : x ∈ e.baseSet; swap
+  -- · simp [localFrame_repr, hxe]
+  -- simp [localFrame_repr, localFrame_toBasis_at, hxe, hs]
+  -- have : e.symm x = 0 := sorry
+  -- have : (e { proj := x, snd := 0 }).2 = 0 := by
+  --   trans (e { proj := x, snd := e.symm x 0 }).2
+  --   · simp [this]
+  --   · simp [e.apply_mk_symm hxe]
+  -- simp [this]
 
 variable {n}
 
@@ -192,7 +195,8 @@ lemma Basis.contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι �
   sorry
 
 lemma Basis.contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n) {t : Set M} (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n) {t : Set M}
+    (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) n (b.localFrame_repr e i s) t :=
   fun _ hx ↦ (b.contMDiffAt_localFrame_repr I (ht' hx) hk
