@@ -3,52 +3,91 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.GroupWithZero.Int
+import Mathlib.Algebra.GroupWithZero.Range
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Discrete Valuations
 
-A valuation `v : A → ℤₘ₀` on a ring `A` is said to be a (normalized) discrete valuation if
-`ofAdd (-1 : ℤ)` belongs to the image of `v`. Note that valuations in Mathlib are multiplicative;
-if `a : A → ℤ ∪ {infty}` is the additive valuation associated to `v`, this is equivalent to asking
-that `1 : ℤ` belongs to the image of `a`.
+Given a linearly ordered commutative group with zero `Γ`, a valuation `v : A → Γ` on a ring `A` is
+*discrete*, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
+implemented as `MonoidHomWithZero.valueGroup v`. When `Γ := ℤₘ₀` (defined in
+`Multiplicative.termℤₘ₀`), `γ` = ofAdd (-1)` and the condition of being discrete is
+equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to asking that
+`1 : ℤ` belongs to the image of the corresponding *additive* valuation.
+
 
 ## Main Definitions
-* `IsDiscrete`: We define a valuation to be discrete if it is `ℤₘ₀`-valued and `ofAdd (-1 : ℤ)`
-  belongs to the image.
+* `IsDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if if there is an element
+`γ : Γˣ` that is `< 1` and generated the range of `v`,
 
 ## TODO
-* Define (pre)uniformizers for nontrivial `ℤₘ₀`-valued valuations.
-* Relate discrete valuations and discrete valuation rings.
-
+* Define (pre)uniformizers for nontrivial discrete valuations.
+* Relate discrete valuations and discrete valuation rings (contained in the project
+  <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/
 
 namespace Valuation
 
-open Function Multiplicative Set
+open Set LinearOrderedCommGroup MonoidHomWithZero
 
-variable {A : Type*} [Ring A]
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
-/-- A valuation `v` on a ring `A` is (normalized) discrete if it is `ℤₘ₀`-valued and
-  `ofAdd (-1 : ℤ)` belongs to the image. Note that the latter is equivalent to
-  asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
-class IsDiscrete (v : Valuation A ℤₘ₀) : Prop where
-  one_mem_range : (↑(ofAdd (-1 : ℤ)) : ℤₘ₀) ∈ range v
+variable {A : Type*} [Ring A] (v : Valuation A Γ)
 
-variable {K : Type*} [Field K]
+/-- Given a linearly ordered commutative group with zero `Γ` such that `Γˣ` is
+nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
+`genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
+asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
+class IsDiscrete : Prop where
+  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = (valueGroup v) ∧ γ < 1
 
-/-- A discrete valuation on a field `K` is surjective. -/
-lemma IsDiscrete.surj (v : Valuation K ℤₘ₀) [hv : IsDiscrete v] :
-    Surjective v := by
-  intro c
-  obtain ⟨π, hπ⟩ := hv
-  refine WithZero.cases_on c ⟨0, map_zero _⟩ fun a ↦ ⟨π ^ (-a.toAdd), ?_⟩
-  simp [hπ, ← WithZero.ofAdd_zpow]
+namespace IsDiscrete
 
-/-- A `ℤₘ₀`-valued valuation on a field `K` is discrete if and only if it is surjective. -/
-lemma isDiscrete_iff_surjective (v : Valuation K ℤₘ₀) :
-    IsDiscrete v ↔ Surjective v :=
-  ⟨fun _ ↦ IsDiscrete.surj v, fun hv ↦ ⟨hv _⟩⟩
+lemma exists_generator_lt_one [IsDiscrete v] :
+    ∃ (γ : Γˣ), Subgroup.zpowers γ = valueGroup v ∧ γ < 1 :=
+  exists_generator_lt_one'
+
+/-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
+group that is `< 1`. -/
+noncomputable def generator [IsDiscrete v] : Γˣ := (exists_generator_lt_one v).choose
+
+lemma generator_zpowers_eq_valueGroup [IsDiscrete v] :
+    (Subgroup.zpowers (generator v)) = valueGroup v :=
+  (exists_generator_lt_one v).choose_spec.1
+
+lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
+  (exists_generator_lt_one v).choose_spec.2
+
+lemma generator_ne_one [IsDiscrete v] : (generator v) ≠ 1 :=
+  ne_of_lt <| generator_lt_one v
+
+lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
+    Units.val '' (Subgroup.zpowers (generator w)) = range w \ {0} := by
+  rw [generator_zpowers_eq_valueGroup, valueGroup_eq_range]
+
+lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
+    ↑(generator w) ∈ range w := by
+  apply diff_subset
+  rw [← generator_zpowers_eq_range]
+  exact ⟨generator w, by simp⟩
+
+lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
+
+instance [IsDiscrete v] : IsCyclic <| valueGroup v := by
+  rw [isCyclic_iff_exists_zpowers_eq_top, ← generator_zpowers_eq_valueGroup]
+  use ⟨generator v, by simp⟩
+  rw [eq_top_iff]
+  rintro ⟨g, k, hk⟩
+  simp only [Subgroup.mem_top, forall_const]
+  use k
+  ext
+  simp [← hk]
+
+instance [IsDiscrete v] : Nontrivial (valueGroup v) :=
+  ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
+
+end IsDiscrete
 
 end Valuation
