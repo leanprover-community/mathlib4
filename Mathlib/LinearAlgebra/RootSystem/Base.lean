@@ -222,6 +222,34 @@ lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
 
 @[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
+lemma linearIndepOn_rootSpanMem (S : Type*) [CommRing S] [Algebra S R] [Module S M]
+    [IsScalarTower S R M] [FaithfulSMul S R] :
+    LinearIndepOn S (P.rootSpanMem S) b.support :=
+  LinearIndepOn.restrict_scalars_span b.support b.linearIndepOn_root
+
+section BaseCombination
+
+variable (S : Type*) [CommRing S] [Module S M]
+
+/-- Produce an integer linear combination of base vectors, from a finsupp on the base. -/
+def rootCombination (f : b.support →₀ S) :=
+    Finsupp.linearCombination S (P.rootSpanMem S)
+      (f.embDomain (Embedding.subtype fun x ↦ x ∈ b.support))
+
+lemma rootCombination_apply (f : b.support →₀ S) :
+    b.rootCombination S f = f.sum fun i m ↦ m • P.rootSpanMem S i :=
+  Finsupp.sum_embDomain
+
+lemma rootCombination_ne_zero [Algebra S R] [IsScalarTower S R M] [FaithfulSMul S R]
+    {f : b.support →₀ S} (hf : f ≠ 0) :
+    b.rootCombination S f ≠ 0 := by
+  contrapose! hf
+  simp only [rootCombination_apply, SetLike.mk_smul_mk] at hf
+  apply b.linearIndepOn_rootSpanMem S
+  simpa using hf
+
+end BaseCombination
+
 end RootPairing
 
 section RootSystem
