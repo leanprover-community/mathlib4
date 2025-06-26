@@ -489,7 +489,7 @@ lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n
 theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
   simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by omega) a
 
-theorem mul_cast_floor_div_natCast_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
+theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
   rw [mul_comm, natCast_mul_floor_div_cancel hn]
 
 end LinearOrderedField
