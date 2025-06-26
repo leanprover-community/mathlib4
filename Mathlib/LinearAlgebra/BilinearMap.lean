@@ -268,7 +268,7 @@ end Semiring'
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {R₂ : Type*} [Semiring R₂]
+variable {R R₁ R₂ : Type*} [CommSemiring R] [Semiring R₁] [Semiring R₂]
 variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
@@ -277,6 +277,8 @@ variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
 variable [Module R M]
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
+variable [Module R₁ Mₗ] [Module R₂ N] [Module R₁ Pₗ] [Module R₁ Qₗ]
+variable [Module R₂ Pₗ] [Module R₂ Qₗ']
 variable (R)
 
 /-- Create a bilinear map from a function that is linear in each component.
@@ -332,18 +334,19 @@ end
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/
-def compl₁₂ {R₁ : Type*} [Semiring R₁] [Module R₂ N] [Module R₂ Pₗ] [Module R₁ Pₗ]
-    [Module R₁ Mₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
+def compl₁₂ [SMulCommClass R₂ R₁ Pₗ]
     (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) :
     Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ :=
   (f.comp g).compl₂ g'
 
 @[simp]
-theorem compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] Mₗ) (g' : Qₗ' →ₗ[R] Nₗ) (x : Qₗ)
+theorem compl₁₂_apply [SMulCommClass R₂ R₁ Pₗ]
+    (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (x : Qₗ)
     (y : Qₗ') : f.compl₁₂ g g' x y = f (g x) (g' y) := rfl
 
 @[simp]
-theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f := by
+theorem compl₁₂_id_id [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) :
+    f.compl₁₂ LinearMap.id LinearMap.id = f := by
   ext
   simp_rw [compl₁₂_apply, id_coe, _root_.id]
 
