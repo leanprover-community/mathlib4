@@ -9,8 +9,6 @@ import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Size
 
 /-!
 # Prime numbers
