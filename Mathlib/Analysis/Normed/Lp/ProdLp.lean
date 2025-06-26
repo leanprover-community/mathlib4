@@ -484,6 +484,11 @@ variable [T0Space α] [T0Space β]
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
   Prod.instT0Space
 
+variable [SecondCountableTopology α] [SecondCountableTopology β]
+
+instance secondCountableTopology : SecondCountableTopology (WithLp p (α × β)) :=
+  inferInstanceAs <| SecondCountableTopology (α × β)
+
 end TopologicalSpace
 
 section UniformSpace
@@ -980,7 +985,7 @@ instance instProdNormSMulClass [SeminormedRing 𝕜] [Module 𝕜 α] [Module �
     [NormSMulClass 𝕜 α] [NormSMulClass 𝕜 β] : NormSMulClass 𝕜 (WithLp p (α × β)) :=
   .of_nnnorm_smul fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul, nnnorm_smul]
+    · simp only [← prod_nnnorm_ofLp, WithLp.ofLp_smul, nnnorm_smul]
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',

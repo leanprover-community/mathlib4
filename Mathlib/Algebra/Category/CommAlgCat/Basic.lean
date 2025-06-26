@@ -158,8 +158,6 @@ def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
 def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
   toFun := ofIso
   invFun := isoMk
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by

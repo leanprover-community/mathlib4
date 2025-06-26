@@ -390,7 +390,7 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
       rw [Nat.succ_sub hi.le]
       simp [getVert]
     next hi =>
-      obtain rfl | hi' := Nat.eq_or_lt_of_not_lt hi
+      obtain rfl | hi' := eq_or_lt_of_not_gt hi
       · simp [getVert]
       · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
         simp [getVert]
@@ -574,20 +574,6 @@ theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
   intro h
   simp +contextual only [mem_support_append_iff, or_true, imp_true_iff]
 
-lemma getVert_eq_support_get? {u v n} (p : G.Walk u v) (h2 : n ≤ p.length) :
-    p.getVert n = p.support[n]? := by
-  match p with
-  | .nil => simp_all
-  | .cons h q =>
-    simp only [Walk.support_cons]
-    by_cases hn : n = 0
-    · simp only [hn, getVert_zero, List.length_cons, Nat.zero_lt_succ, List.getElem?_eq_getElem,
-      List.getElem_cons_zero]
-    · push_neg at hn
-      nth_rewrite 2 [← Nat.sub_one_add_one hn]
-      rw [Walk.getVert_cons q h hn, List.getElem?_cons_succ]
-      exact getVert_eq_support_get? q (Nat.sub_le_of_le_add (Walk.length_cons _ _ ▸ h2))
-
 theorem coe_support {u v : V} (p : G.Walk u v) :
     (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
 
@@ -769,12 +755,29 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
+lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
+    p.getVert n = p.support[n]'(p.length_support ▸ Nat.lt_add_one_of_le h) := by
+  cases p with
+  | nil => simp
+  | cons => cases n with
+    | zero => simp
+    | succ n =>
+      simp_rw [support_cons, getVert_cons _ _ n.zero_ne_add_one.symm, List.getElem_cons]
+      exact getVert_eq_support_getElem _ (Nat.sub_le_of_le_add h)
+
+lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
+    some (p.getVert n) = p.support[n]? := by
+  rw [getVert_eq_support_getElem p h, ← List.getElem?_eq_getElem]
+
+@[deprecated (since := "2025-06-10")]
+alias getVert_eq_support_get? := getVert_eq_support_getElem?
+
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   rw [Walk.support_reverse]
   refine List.nodup_tail_reverse p.support ?h
-  rw [← getVert_eq_support_get? _ (by omega), List.getLast?_eq_getElem?,
-    ← getVert_eq_support_get? _ (by rw [Walk.length_support]; omega)]
+  rw [← getVert_eq_support_getElem? _ (by omega), List.getLast?_eq_getElem?,
+    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; omega)]
   aesop
 
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
@@ -1091,6 +1094,49 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | .cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
+
+lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
+    p = q := by
+  induction q with
+  | nil =>
+    rw [← nil_iff_eq_nil, nil_iff_support_eq]
+    exact support_nil ▸ h
+  | cons ha q ih =>
+    cases p with
+    | nil => simp at h
+    | cons _ p =>
+      simp only [support_cons, List.cons.injEq, true_and] at h
+      apply List.getElem_of_eq at h
+      specialize h (i := 0) (by simp)
+      rw [List.getElem_zero, List.getElem_zero, p.head_support, q.head_support] at h
+      have : (p.copy h rfl).support = q.support := by simpa
+      simp [← ih this]
+
+lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
+    (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
+    p = q := by
+  suffices ∀ k : ℕ, p.support[k]? = q.support[k]? by
+    exact ext_support <| List.ext_getElem?_iff.mpr this
+  intro k
+  cases le_or_gt k p.length with
+  | inl hk =>
+    rw [← getVert_eq_support_getElem? p hk, ← getVert_eq_support_getElem? q (hl ▸ hk)]
+    exact congrArg some (h k hk)
+  | inr hk =>
+    replace hk : p.length + 1 ≤ k := hk
+    have ht : q.length + 1 ≤ k := hl ▸ hk
+    rw [← length_support, ← List.getElem?_eq_none_iff] at hk ht
+    rw [hk, ht]
+
+lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
+    p = q := by
+  wlog hpq : p.length ≤ q.length generalizing p q
+  · exact (this (fun k ↦ (h k).symm) (le_of_not_ge hpq)).symm
+  have : q.length ≤ p.length := by
+    by_contra!
+    exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
+  exact ext_getVert_le_length (hpq.antisymm this) fun k _ ↦ h k
+
 end Walk
 
 /-! ### Mapping walks -/

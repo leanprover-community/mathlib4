@@ -215,7 +215,7 @@ theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
 
 theorem eval₂_dvd : p ∣ q → eval₂ f x p ∣ eval₂ f x q :=
-  (eval₂RingHom f x).map_dvd
+  map_dvd (eval₂RingHom f x)
 
 theorem eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (h : p ∣ q) (h0 : eval₂ f x p = 0) :
     eval₂ f x q = 0 :=
@@ -524,7 +524,7 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 --TODO rename to `map_dvd_map`
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
-  (mapRingHom f).map_dvd
+  _root_.map_dvd (mapRingHom f)
 
 lemma mapRingHom_comp_C {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) :
     (mapRingHom f).comp C = C.comp f := by ext; simp

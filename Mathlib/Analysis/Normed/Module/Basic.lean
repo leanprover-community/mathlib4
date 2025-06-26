@@ -174,7 +174,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
   let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
   let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
-  hx.not_le (hR x trivial)
+  hx.not_ge (hR x trivial)
 
 protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
   rw [neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ]

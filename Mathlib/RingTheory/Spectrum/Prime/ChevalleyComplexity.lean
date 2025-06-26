@@ -238,7 +238,7 @@ private lemma induction_structure (n : ℕ)
           comp_apply, smul_eq_mul]
         refine ((degree_mul_le _ _).trans (add_le_add degree_C_le degree_map_le)).trans ?_
         simp
-      rw [lt_iff_le_not_le]
+      rw [lt_iff_le_not_ge]
       simp only [coe_mapRingHom, funext_iff, InductionObj.ofLex_degree_fst, Pi.smul_apply,
         comp_apply, smul_eq_mul, show (ofLex e.degree).2 from H,
         le_Prop_eq, implies_true, true_implies, true_and]
@@ -440,7 +440,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           by_cases hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
           · exact ⟨f.natDegree + 1, by simp,
-              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hi)]⟩
+              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
         · ext; simp [eq_comm]
     · simp
   · intros R _ g i hi hi_min _ R₀ _ f

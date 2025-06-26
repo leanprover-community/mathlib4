@@ -340,8 +340,6 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIso : R[X] ≃+* R[ℕ] where
   toFun := toFinsupp
   invFun := ofFinsupp
-  left_inv := fun ⟨_p⟩ => rfl
-  right_inv _p := rfl
   map_mul' := toFinsupp_mul
   map_add' := toFinsupp_add
 
@@ -1051,6 +1049,17 @@ theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n 
   classical
   simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
+
+@[simp]
+theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
+  refine ⟨?_, fun h ↦ by simp [h]⟩
+  contrapose!
+  intro h
+  rw [← support_nonempty] at h
+  obtain ⟨n, hn⟩ := h
+  rw [mem_support_iff] at hn
+  rw [← nonempty_iff_ne_empty]
+  exact ⟨p.coeff n, coeff_mem_coeffs p n hn⟩
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]

@@ -43,7 +43,7 @@ variable {E F}
 
 @[simp]
 theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
-    ⟪x, y⟫_𝕜 = ⟪x.fst, y.fst⟫_𝕜 + ⟪x.snd, y.snd⟫_𝕜 := rfl
+    ⟪x, y⟫_𝕜 = ⟪(ofLp x).fst, (ofLp y).fst⟫_𝕜 + ⟪(ofLp x).snd, (ofLp y).snd⟫_𝕜 := rfl
 
 end WithLp
 

@@ -70,12 +70,12 @@ lemma degree_le_of_dvd (h1 : p ∣ q) (h2 : q ≠ 0) : degree p ≤ degree q := 
 
 lemma eq_zero_of_dvd_of_degree_lt (h₁ : p ∣ q) (h₂ : degree q < degree p) : q = 0 := by
   by_contra hc
-  exact (lt_iff_not_ge _ _).mp h₂ (degree_le_of_dvd h₁ hc)
+  exact lt_iff_not_ge.mp h₂ (degree_le_of_dvd h₁ hc)
 
 lemma eq_zero_of_dvd_of_natDegree_lt (h₁ : p ∣ q) (h₂ : natDegree q < natDegree p) :
     q = 0 := by
   by_contra hc
-  exact (lt_iff_not_ge _ _).mp h₂ (natDegree_le_of_dvd h₁ hc)
+  exact lt_iff_not_ge.mp h₂ (natDegree_le_of_dvd h₁ hc)
 
 lemma not_dvd_of_degree_lt (h0 : q ≠ 0) (hl : q.degree < p.degree) : ¬p ∣ q := by
   by_contra hcontra

@@ -495,20 +495,20 @@ theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i,
 
 end Pi
 
-/-! #### Pointwise multiplication/addition of two paths in a topological (additive) group -/
+/-! #### Pointwise operations on paths in a topological (additive) group -/
 
 
-/-- Pointwise multiplication of paths in a topological group. The additive version is probably more
-useful. -/
-@[to_additive "Pointwise addition of paths in a topological additive group."]
+/-- Pointwise multiplication of paths in a topological group. -/
+@[to_additive (attr := simps!) "Pointwise addition of paths in a topological additive group."]
 protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁) (γ₂ : Path a₂ b₂) :
     Path (a₁ * a₂) (b₁ * b₂) :=
   (γ₁.prod γ₂).map continuous_mul
 
-@[to_additive (attr := simp)]
-protected theorem mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁)
-    (γ₂ : Path a₂ b₂) (t : unitInterval) : (γ₁.mul γ₂) t = γ₁ t * γ₂ t :=
-  rfl
+/-- Pointwise inversion of paths in a topological group. -/
+@[to_additive (attr := simps!) "Pointwise negation of paths in a topological group."]
+def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
+    Path a⁻¹ b⁻¹ :=
+  γ.map continuous_inv
 
 /-! #### Truncating a path -/
 

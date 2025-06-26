@@ -189,7 +189,7 @@ theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : L
 theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     (l.rotate n)[m]? = l[(m + n) % l.length]? := by
   rw [rotate_eq_drop_append_take_mod]
-  rcases lt_or_le m (l.drop (n % l.length)).length with hm | hm
+  rcases lt_or_ge m (l.drop (n % l.length)).length with hm | hm
   · rw [getElem?_append_left hm, getElem?_drop, ← add_mod_mod]
     rw [length_drop, Nat.lt_sub_iff_add_lt] at hm
     rw [mod_eq_of_lt hm, Nat.add_comm]

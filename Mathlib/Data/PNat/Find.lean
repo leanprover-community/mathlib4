@@ -57,7 +57,7 @@ protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
   @(PNat.findX h).prop.right
 
 protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
-  le_of_not_lt fun l => PNat.find_min h l hm
+  le_of_not_gt fun l => PNat.find_min h l hm
 
 variable {n m : ℕ+}
 
