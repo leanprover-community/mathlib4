@@ -74,6 +74,10 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
+@[ext]
+theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app) : α = β :=
+  NatTrans.ext w
+
 @[simp]
 theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
   rfl
@@ -99,6 +103,11 @@ theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X 
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
 @[simp]
+theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
+    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
+  CategoryTheory.eqToHom_app h X
+
+@[simp]
 lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).app X = η.app (F.obj X) :=
   rfl
@@ -107,11 +116,6 @@ lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H)
 lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).app X = H.map (η.app X) :=
   rfl
-
-@[simp]
-theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
-    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
-  CategoryTheory.eqToHom_app h X
 
 lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
   rfl
