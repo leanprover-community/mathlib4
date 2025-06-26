@@ -408,8 +408,9 @@ def putFiles
     let out ← IO.runCurl (stderrAsErr := false) (args ++ #[
       "--retry", "5", -- there seem to be some intermittent failures
       "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
-    IO.println s!"Output from curl:"
-    IO.println out
+    if out.trim != "" then
+      IO.println s!"Output from curl:"
+      IO.println out
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
