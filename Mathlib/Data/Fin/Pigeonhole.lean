@@ -17,23 +17,41 @@ namespace Fin
 variable {m n : ℕ}
 
 /--
-If we have an injective map from `Fin m` to `Fin n`, we must have that `m ≤ n`. See also
-`Fintype.card_le_of_injective` for the generalisation to arbitrary finite types.
+If we have an injective map from `Fin m` to `Fin n`, then `m ≤ n`.
+See also `Fintype.card_le_of_injective` for the generalisation to arbitrary finite types.
 -/
 theorem le_of_injective (f : Fin m → Fin n) (hf : f.Injective) : m ≤ n :=
   Fintype.card_fin m ▸ Fintype.card_fin n ▸ Fintype.card_le_of_injective f hf
 
+/--
+If we have an embedding from `Fin m` to `Fin n`, then `m ≤ n`.
+See also `Fintype.card_le_of_embedding` for the generalisation to arbitrary finite types.
+-/
 theorem le_of_embedding (f : Fin m ↪ Fin n) : m ≤ n :=
   Fintype.card_fin m ▸ Fintype.card_fin n ▸ Fintype.card_le_of_embedding f
 
+/--
+If we have an injective map from `Fin m` to `Fin n` whose image does not contain everything,
+then `m < n`. See also `Fintype.card_lt_of_injective_of_notMem` for the generalisation to
+arbitrary finite types.
+-/
 theorem lt_of_injective_of_notMem (f : Fin m → Fin n) (hf : f.Injective) {b : Fin n}
     (hb : b ∉ Set.range f) : m < n :=
   Fintype.card_fin m ▸ Fintype.card_fin n ▸ Fintype.card_lt_of_injective_of_notMem f hf hb
 
+/--
+If we have a surjective map from `Fin m` to `Fin n`, then `m ≥ n`.
+See also `Fintype.card_le_of_surjective` for the generalisation to arbitrary finite types.
+-/
 theorem le_of_surjective (f : Fin m → Fin n) (hf : Function.Surjective f) : n ≤ m :=
   Fintype.card_fin m ▸ Fintype.card_fin n ▸ Fintype.card_le_of_surjective f hf
 
-theorem card_range_le (f : Fin m → Fin n) : Fintype.card (Set.range f) ≤ m := by
+/--
+Any map from `Fin m` reaches at most `m` different values.
+See also `Fintype.card_range_le` for the generalisation to an arbitrary finite type.
+-/
+theorem card_range_le {α : Type*} [Fintype α] [DecidableEq α] (f : Fin m → α) :
+    Fintype.card (Set.range f) ≤ m := by
   convert Fintype.card_range_le f
   exact (Fintype.card_fin m).symm
 
