@@ -204,8 +204,7 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
   rcases n with - | n
-  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
-      ]
+  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation]
     apply solution_spec' _ ha₁
   · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP,
       frobeniusRotation]

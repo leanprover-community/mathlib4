@@ -335,8 +335,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
   generalize P.jacobiMatrix i j = p
   induction p using MvPolynomial.induction_on with
   | C a =>
-    simp only [algHom_C, algebraMap_eq, eval₂_C,
-      ]
+    simp only [algHom_C, algebraMap_eq, eval₂_C]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i hp =>
     simp only [map_mul, eval₂_mul, hp]

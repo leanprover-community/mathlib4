@@ -38,8 +38,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   map T :=
     { app := fun X => (T.app X.1).app X.2
       naturality := fun X Y f => by
-        simp only [Category.assoc,
-          ]
+        simp only [Category.assoc]
         slice_lhs 2 3 => rw [NatTrans.naturality]
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
         rw [Category.assoc] }

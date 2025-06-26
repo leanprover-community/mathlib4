@@ -81,8 +81,8 @@ lemma ι_appTop :
 lemma ι_appLE (V W e) :
     U.ι.appLE V W e =
       X.presheaf.map (homOfLE (x := U.ι ''ᵁ W) (Set.image_subset_iff.mpr ‹_›)).op := by
-  simp only [Hom.appLE, ι_app, toScheme_presheaf_map,
-    Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE, ← Functor.map_comp]
+  simp only [Hom.appLE, ι_app, toScheme_presheaf_map, Quiver.Hom.unop_op,
+    Hom.opensFunctor_map_homOfLE, ← Functor.map_comp]
   rfl
 
 @[simp]

@@ -209,8 +209,7 @@ def adj.counit.app (C : Type u) [Category.{max u v} C] :
     intro x y f g rel
     cases rel
     unfold pathComposition
-    simp only [
-      composePath_toPath]
+    simp only [composePath_toPath]
     rfl)
 
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. -/

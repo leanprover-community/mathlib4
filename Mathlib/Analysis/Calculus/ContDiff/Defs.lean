@@ -205,8 +205,8 @@ theorem contDiffWithinAt_infty :
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
   have := h.of_le (zero_le _)
-  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero,
-    forall_eq, CharP.cast_eq_zero] at this
+  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero, forall_eq, CharP.cast_eq_zero]
+    at this
   rcases this with ⟨u, hu, p, H⟩
   rw [mem_nhdsWithin_insert] at hu
   exact (H.continuousOn.continuousWithinAt hu.1).mono_of_mem_nhdsWithin hu.2

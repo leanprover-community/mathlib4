@@ -443,7 +443,7 @@ irreducible_def lift {r : R → R → Prop} :
       simp only [preLift_def]
       ext
       simp only [mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-                 Function.comp_apply] }
+        Function.comp_apply] }
 
 @[simp]
 theorem lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
@@ -592,8 +592,8 @@ irreducible_def liftAlgHom {s : A → A → Prop} :
     left_inv := fun f ↦ by
       ext
       simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
-                 AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
-                 MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
+        AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Function.comp_apply]
     right_inv := fun F ↦ by
       ext
       simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,

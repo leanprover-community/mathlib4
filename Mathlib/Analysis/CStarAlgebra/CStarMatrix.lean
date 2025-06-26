@@ -399,8 +399,7 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
   { reindexₗ R A e e with
     map_mul' M N := by
       ext i j
-      simp only [
-        mul_apply]
+      simp only [mul_apply]
       refine Fintype.sum_equiv e _ _ ?_
       intro k
       simp
@@ -759,8 +758,7 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
           _ = ‖M * star M‖ * ‖v‖ ^ 2 := by
                     congr
                     apply MulOpposite.op_injective
-                    simp only [← toCLMNonUnitalAlgHom_eq_toCLM,
-                      map_mul]
+                    simp only [← toCLMNonUnitalAlgHom_eq_toCLM, map_mul]
                     rfl
       have h₂ : ‖v‖ = √(‖v‖ ^ 2) := by simp
       rw [h₂, ← Real.sqrt_mul]

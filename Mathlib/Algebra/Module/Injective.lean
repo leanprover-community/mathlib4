@@ -262,8 +262,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd' (h : Module.Baer R Q) {y : N} (r 
     apply Submodule.zero_mem _
   rw [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h y r this]
   dsimp [ExtensionOfMaxAdjoin.idealTo]
-  simp only [eq1, ← ZeroMemClass.zero_def,
-    (extensionOfMax i f).toLinearPMap.map_zero]
+  simp only [eq1, ← ZeroMemClass.zero_def, (extensionOfMax i f).toLinearPMap.map_zero]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r' : R)
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =

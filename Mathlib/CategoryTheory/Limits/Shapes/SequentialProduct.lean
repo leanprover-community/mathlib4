@@ -96,8 +96,7 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
   | succ m =>
       rw [← functorMap_commSq_succ f (m + 1)]
       simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, dite_eq_ite,
-        Functor.ofOpSequence_map_homOfLE_succ,
-        ]
+        Functor.ofOpSequence_map_homOfLE_succ]
       have : homOfLE (by omega : n ≤ m + 1 + 1) =
           homOfLE (by omega : n ≤ m + 1) ≫ homOfLE (by omega : m + 1 ≤ m + 1 + 1) := by simp
       rw [this, op_comp, Functor.map_comp]

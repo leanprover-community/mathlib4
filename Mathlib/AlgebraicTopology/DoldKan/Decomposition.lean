@@ -68,12 +68,10 @@ theorem decomposition_Q (n q : ℕ) :
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
       · have hnaq' : n = a + q := by omega
-        simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
-          q'.rev_eq hnaq', neg_neg]
+        simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq', q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
-        simp only [q', Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
-          Finset.mem_filter,
+        simp only [q', Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ, Finset.mem_filter,
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
         aesop
 

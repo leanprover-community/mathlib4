@@ -210,8 +210,7 @@ theorem uniqueBaseOn_isBase_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).IsBase B �
 
 theorem uniqueBaseOn_inter_ground_eq (I E : Set α) :
     uniqueBaseOn (I ∩ E) E = uniqueBaseOn I E := by
-  simp only [uniqueBaseOn, restrict_eq_restrict_iff, freeOn_indep_iff, subset_inter_iff,
-    ]
+  simp only [uniqueBaseOn, restrict_eq_restrict_iff, freeOn_indep_iff, subset_inter_iff]
   tauto
 
 @[simp] theorem uniqueBaseOn_indep_iff' : (uniqueBaseOn I E).Indep J ↔ J ⊆ I ∩ E := by

@@ -513,8 +513,7 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
-  simp only [mem_properDivisors, mem_map, mem_range, Function.Embedding.coeFn_mk,
-    ]
+  simp only [mem_properDivisors, mem_map, mem_range, Function.Embedding.coeFn_mk]
   have := mem_properDivisors_prime_pow pp k (x := a)
   rw [mem_properDivisors] at this
   rw [this]

@@ -248,8 +248,7 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
       RingHom.comp_apply]
   · intros p q hp hq
     rw [Ideal.Quotient.lift_mk] at hp hq ⊢
-    simp only [eval₂_add, RingHom.map_add, coe_eval₂Hom,
-      ] at hp hq ⊢
+    simp only [eval₂_add, RingHom.map_add, coe_eval₂Hom] at hp hq ⊢
     rw [hp, hq]
   · intros p i hp
     simp only [coe_eval₂Hom, Ideal.Quotient.lift_mk,

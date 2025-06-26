@@ -153,8 +153,7 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
     intro n
     dsimp [N₁, toKaroubi]
     simp only [← Splitting.cofan_inj_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
-      PInfty_f_idem_assoc,
-      PInfty_f_naturality_assoc,
+      PInfty_f_idem_assoc, PInfty_f_naturality_assoc,
       NatTrans.naturality, Splitting.IndexSet.id_fst, unop_op, len_mk]
 
 end Γ₂N₁

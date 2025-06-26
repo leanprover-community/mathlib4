@@ -124,8 +124,7 @@ lemma map_comp (f : Hom P P') (g : Hom P' P'') :
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero,
-        ]
+    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul => simp only [Derivation.tensorProductTo_tmul, tmul_smul, smul_tmul', map_tmul,
@@ -212,8 +211,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
       Cotangent.val_mk, Cotangent.val_add, Cotangent.val_smul''', ← map_smul, ← map_add,
-      Ideal.toCotangent_eq,
-      ]
+      Ideal.toCotangent_eq]
     exact Hom.sub_aux f g x y
 
 variable [IsScalarTower R S S']
@@ -242,8 +240,7 @@ lemma CotangentSpace.map_sub_map (f g : Hom P P') :
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero,
-        ]
+    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul =>

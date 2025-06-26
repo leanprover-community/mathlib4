@@ -152,8 +152,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     rw [sourceAffineLocally_morphismRestrict]
     intro U hU
     have : X.basicOpen (f.appLE ⊤ U (by simp) r) = U := by
-      simp only [Scheme.Hom.appLE, Opens.map_top, CommRingCat.comp_apply,
-        ]
+      simp only [Scheme.Hom.appLE, Opens.map_top, CommRingCat.comp_apply]
       rw [Scheme.basicOpen_res]
       simpa using hU
     rw [← f.appLE_congr _ rfl this (fun f => P f.hom),
@@ -397,10 +396,8 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
     apply IsLocalAtSource.of_openCover (Scheme.affineOpenCoverOfSpanRangeEqTop
       (fun i : s ↦ (i : S)) (by simpa)).openCover
     intro i
-    simp only [CommRingCat.coe_of,
-      Scheme.AffineOpenCover.openCover_obj,
-      Scheme.AffineOpenCover.openCover_map, Scheme.affineOpenCoverOfSpanRangeEqTop_map,
-      ← Spec.map_comp]
+    simp only [CommRingCat.coe_of, Scheme.AffineOpenCover.openCover_obj, ← Spec.map_comp,
+      Scheme.AffineOpenCover.openCover_map, Scheme.affineOpenCoverOfSpanRangeEqTop_map]
     exact H i
   · intro R S _ _  f s hs H
     apply IsLocalAtTarget.of_iSup_eq_top _ (PrimeSpectrum.iSup_basicOpen_eq_top_iff

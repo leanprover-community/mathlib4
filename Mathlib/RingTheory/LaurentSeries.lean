@@ -1153,8 +1153,7 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
 completion of `RatFunc K`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers (RatFunc K) := by
-  simp only [
-    mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
+  simp only [mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
     valuation_compare, val_le_one_iff_eq_coe]
   exact ⟨F, rfl⟩
 
@@ -1178,8 +1177,7 @@ theorem powerSeries_ext_subring :
   · simp only [ValuationSubring.mem_toSubring, ← hF, ← coe_F]
     apply mem_integers_of_powerSeries
   · obtain ⟨F, hF⟩ := exists_powerSeries_of_memIntegers K H
-    simp only [
-      Subring.mem_map]
+    simp only [Subring.mem_map]
     exact ⟨F, ⟨F, trivial, rfl⟩, hF⟩
 
 /-- The ring isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of

@@ -111,8 +111,7 @@ lemma exists_mem_of_isClosed_of_nonempty
   let ι : D' ⟶ D := { app i := subschemeι _, naturality _ _ _ := by simp [D'] }
   haveI {i j} (f : i ⟶ j) : IsAffineHom (D'.map f) := by
     suffices IsAffineHom (D'.map f ≫ ι.app j) from .of_comp _ (ι.app j)
-    simp only [
-      subschemeMap_subschemeι, D', ι]
+    simp only [subschemeMap_subschemeι, D', ι]
     infer_instance
   haveI (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
   haveI (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)

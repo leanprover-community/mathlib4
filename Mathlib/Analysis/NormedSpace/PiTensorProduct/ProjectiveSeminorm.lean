@@ -126,8 +126,7 @@ theorem norm_eval_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) (G : Type*) [Semi
   rw [mem_lifts_iff] at hp
   conv_lhs => rw [← hp, ← List.sum_map_hom, ← Multiset.sum_coe]
   refine le_trans (norm_multiset_sum_le _) ?_
-  simp only [Multiset.map_coe, List.map_map, Multiset.sum_coe,
-    ]
+  simp only [Multiset.map_coe, List.map_map, Multiset.sum_coe]
   rw [mul_comm, ← smul_eq_mul, List.smul_sum]
   refine List.Forall₂.sum_le_sum ?_
   simp only [smul_eq_mul, List.map_map, List.forall₂_map_right_iff, Function.comp_apply,

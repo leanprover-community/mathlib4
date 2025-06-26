@@ -346,8 +346,7 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
     Substructure.coe_subtype, Embedding.equivRange_apply] at hgn
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding]
   erw [Substructure.coe_inclusion, Substructure.coe_inclusion]
-  simp only [
-    Embedding.equivRange_apply, hgn]
+  simp only [Embedding.equivRange_apply, hgn]
   -- This used to be `simp only [...]` before https://github.com/leanprover/lean4/pull/2644
   erw [Embedding.comp_apply, Equiv.coe_toEmbedding,
     Embedding.equivRange_apply]

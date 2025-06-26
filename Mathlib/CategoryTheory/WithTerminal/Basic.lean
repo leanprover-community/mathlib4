@@ -219,8 +219,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
-      simp only [
-        map_obj, Cat.comp_obj,
+      simp only [map_obj, Cat.comp_obj,
         Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom,
         map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
         map_map, down_id, Functor.map_id, Cat.whiskerLeft_app, mapComp_inv_app, Iso.refl_inv,

@@ -283,8 +283,7 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     r = s.circumradius := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
-  simp only [hp, Sphere.ext_iff,
-    ] at h
+  simp only [hp, Sphere.ext_iff] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
   simp only [hr, forall_const,

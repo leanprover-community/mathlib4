@@ -173,8 +173,7 @@ theorem IsUniversalColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIs
   apply (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
     (hα.comp (NatTrans.equifibered_of_isIso _)))
   intro j
-  simp only [Functor.const_obj_obj, NatTrans.comp_app,
-    ]
+  simp only [Functor.const_obj_obj, NatTrans.comp_app]
   rw [← Category.comp_id f]
   exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨Category.comp_id _⟩)
 
@@ -372,8 +371,7 @@ theorem IsUniversalColimit.map_reflective
       (isColimitOfPreserves Gl Hc'').ofIsoColimit (asIso cf).symm⟩
   · ext j
     dsimp [c'']
-    simp only [
-      pullback.lift_snd]
+    simp only [pullback.lift_snd]
   · intro j
     apply IsPullback.of_right _ _ (IsPullback.of_hasPullback _ _)
     · dsimp [α', c'']
@@ -389,8 +387,7 @@ theorem IsUniversalColimit.map_reflective
       simp only [Category.comp_id, Adjunction.right_triangle_components, Category.id_comp,
         Category.assoc]
     · dsimp [c'']
-      simp only [
-        pullback.lift_snd]
+      simp only [pullback.lift_snd]
 
 theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]

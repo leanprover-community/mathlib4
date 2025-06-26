@@ -260,16 +260,14 @@ protected theorem cfc (f : C(S, R)) (halg : IsUniformEmbedding (algebraMap R S))
       constructor
       · rintro ⟨y, hy⟩
         have := congr_arg f hy
-        simp only [
-          comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
+        simp only [comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
           at this
         rw [((h a).mp ha).2.left_inv _, ((h a).mp ha).2.left_inv _] at this
         exact ⟨_, this⟩
       · rintro ⟨y, rfl⟩
         rw [Set.mem_preimage]
         refine ⟨⟨algebraMap R S y, quasispectrum.algebraMap_mem S y.prop⟩, ?_⟩
-        simp only [
-          comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
+        simp only [comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
         congr
         exact Subtype.ext (((h a).mp ha).2.left_inv y)
     case predicate_hom =>

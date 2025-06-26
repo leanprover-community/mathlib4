@@ -190,8 +190,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨hI, hinj⟩ := comap_indep_iff.1 h.indep
     refine ⟨hI.isBasis_of_forall_insert (image_subset f h.subset) fun e he ↦ ?_, hinj, h.subset⟩
-    simp only [mem_diff, mem_image, not_exists, not_and,
-      ] at he
+    simp only [mem_diff, mem_image, not_exists, not_and] at he
     obtain ⟨⟨e, heX, rfl⟩, he⟩ := he
     have heI : e ∉ I := fun heI ↦ (he e heI rfl)
     replace h := h.insert_dep ⟨heX, heI⟩

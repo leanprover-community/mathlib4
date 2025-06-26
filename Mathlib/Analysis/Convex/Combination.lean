@@ -98,8 +98,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
     s.centerMass (fun i => a * w₁ i + b * w₂ i) z := by
   have hw : (∑ i ∈ s, (a * w₁ i + b * w₂ i)) = 1 := by
     simp only [← mul_sum, sum_add_distrib, mul_one, *]
-  simp only [Finset.centerMass_eq_of_sum_1,
-    smul_sum, sum_add_distrib, add_smul, mul_smul, *]
+  simp only [Finset.centerMass_eq_of_sum_1, smul_sum, sum_add_distrib, add_smul, mul_smul, *]
 
 theorem Finset.centerMass_ite_eq [DecidableEq ι] (hi : i ∈ t) :
     t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i := by

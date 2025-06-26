@@ -195,8 +195,7 @@ instance preservesLimitsOfShape_plusFunctor
     conv_lhs => dsimp
     simp only [Category.assoc]
     rw [ι_colimitLimitIso_limit_π_assoc]
-    simp only [colimitObjIsoColimitCompEvaluation_ι_app_hom,
-      ]
+    simp only [colimitObjIsoColimitCompEvaluation_ι_app_hom]
     conv_lhs =>
       dsimp [IsLimit.conePointUniqueUpToIso]
     rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]

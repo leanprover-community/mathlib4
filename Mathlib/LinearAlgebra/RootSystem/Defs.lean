@@ -440,8 +440,7 @@ of a root / coroot. -/
     apply P.root.injective
     simp only [root_reflectionPerm, reflection_apply, PerfectPairing.flip_apply_apply,
       root_coroot_eq_pairing, pairing_same, map_sub, map_smul, coroot_reflectionPerm,
-      coreflection_apply_self, map_neg,
-      ]
+      coreflection_apply_self, map_neg]
     module
 
 lemma ne_neg [NeZero (2 : R)] [IsDomain R] :

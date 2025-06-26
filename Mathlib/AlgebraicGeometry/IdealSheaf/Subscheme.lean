@@ -74,8 +74,7 @@ open scoped Set.Notation in
 lemma range_glueDataObjι (U : X.affineOpens) :
     Set.range (I.glueDataObjι U).base =
       U.2.isoSpec.inv.base '' PrimeSpectrum.zeroLocus (I.ideal U) := by
-  simp only [glueDataObjι, Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp,
-    ]
+  simp only [glueDataObjι, Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
   erw [range_comap_of_surjective]
   swap; · exact Ideal.Quotient.mk_surjective
   simp only [Ideal.mk_ker, CommRingCat.hom_ofHom]
@@ -188,8 +187,7 @@ def glueDataT (U V : X.affineOpens) :
     V.2.isoSpec.hom).liftQuotient _ ?_) (F ≫ X.homOfLE (by simp)) ?_
   · intro x hx
     simp only [comp_app, comp_coeBase, TopologicalSpace.Opens.map_comp_obj,
-      TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc,
-      RingHom.mem_ker]
+      TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc, RingHom.mem_ker]
     convert_to (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
       (by rw [← Scheme.preimage_comp, Category.assoc, X.homOfLE_ι]
           exact fun x _ ↦ by simpa using (F.base x).2.2)).hom x = 0 using 3
@@ -466,15 +464,13 @@ instance : QuasiCompact I.subschemeι := by
 
 @[simp]
 lemma range_subschemeι : Set.range I.subschemeι.base = I.support := by
-  simp [← range_gluedTo, I.subschemeι_def, Set.range_comp,
-    ]
+  simp [← range_gluedTo, I.subschemeι_def, Set.range_comp]
 
 private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
     (I.glueData.ι U ≫ I.subschemeIso.inv).opensRange = I.subschemeι ⁻¹ᵁ U := by
   ext1
-  simp [Set.range_comp, I.range_glueData_ι, subschemeι_def,
-    ← coe_homeoOfIso_symm, ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv,
-    ← Set.preimage_equiv_eq_image_symm]
+  simp [Set.range_comp, I.range_glueData_ι, subschemeι_def, ← coe_homeoOfIso_symm,
+    ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv, ← Set.preimage_equiv_eq_image_symm]
 
 /-- The subscheme associated to an ideal sheaf `I` is covered by `Spec(Γ(X, U)/I(U))`. -/
 noncomputable

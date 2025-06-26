@@ -625,8 +625,8 @@ theorem sub_dvd_eval_sub (a b : R) (p : R[X]) : a - b ∣ p.eval a - p.eval b :=
 theorem rootMultiplicity_eq_zero_iff {p : R[X]} {x : R} :
     rootMultiplicity x p = 0 ↔ IsRoot p x → p = 0 := by
   classical
-  simp only [rootMultiplicity_eq_multiplicity, ite_eq_left_iff,
-    multiplicity_eq_zero, dvd_iff_isRoot, not_imp_not]
+  simp only [rootMultiplicity_eq_multiplicity, ite_eq_left_iff, multiplicity_eq_zero,
+    dvd_iff_isRoot, not_imp_not]
 
 theorem rootMultiplicity_eq_zero {p : R[X]} {x : R} (h : ¬IsRoot p x) : rootMultiplicity x p = 0 :=
   rootMultiplicity_eq_zero_iff.2 fun h' => (h h').elim

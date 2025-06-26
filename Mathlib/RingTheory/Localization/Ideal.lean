@@ -205,8 +205,7 @@ lemma map_radical (I : Ideal R) :
   refine (I.map_radical_le (algebraMap R S)).antisymm ?_
   rintro x ⟨n, hn⟩
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
-  simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M,
-    ] at hn ⊢
+  simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
   refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
 

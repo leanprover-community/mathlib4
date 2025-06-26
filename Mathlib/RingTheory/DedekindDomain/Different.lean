@@ -132,8 +132,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
   rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]
   ext x
-  simp only [
-    traceDual, Submodule.mem_comap,
+  simp only [traceDual, Submodule.mem_comap,
     Submodule.mem_mk]
   apply (FractionRing.algEquiv B L).forall_congr
   simp only [restrictScalars_mem, LinearEquiv.coe_coe, AlgEquiv.coe_symm_toLinearEquiv,

@@ -1044,8 +1044,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
     simp only [p1, p2, LinearIsometry.norm_map,
-      ContinuousLinearMap.coe_coe, Submodule.coe_norm,
-      ]
+      ContinuousLinearMap.coe_coe, Submodule.coe_norm]
   exact
     { toLinearMap := M
       norm_map' := M_norm_map }

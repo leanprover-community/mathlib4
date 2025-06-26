@@ -137,8 +137,7 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
   rw [filter_add_filter, filter_eq_self.2, filter_eq_nil.2]
   · simp only [Multiset.add_zero]
   · simp [-Bool.not_eq_true, -not_and]
-  · simp only [
-      implies_true, Decidable.em]
+  · simp only [implies_true, Decidable.em]
 
 theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
   Quot.inductionOn s fun l => by simp [List.filter_map]; rfl

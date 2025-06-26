@@ -541,15 +541,13 @@ theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x 
     refine ⟨q, q + 1, (lt_add_iff_pos_right _).2 zero_lt_one, ?_, ?_⟩
     · refine fun hcon => hR ?_
       filter_upwards [hcon] with x hx using not_lt.2 (lt_of_lt_of_le hq (not_lt.1 hx)).le
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, not_exists,
-        ] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, not_exists] at hbdd
       refine fun hcon => hbdd ↑(q + 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
   · obtain ⟨R, hR⟩ := exists_frequently_lt_of_liminf_ne_top' hf
     obtain ⟨q, hq⟩ := exists_rat_lt R
     refine ⟨q - 1, q, (sub_lt_self_iff _).2 zero_lt_one, ?_, ?_⟩
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, not_exists,
-        ] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, not_exists] at hbdd
       refine fun hcon => hbdd ↑(q - 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
     · refine fun hcon => hR ?_

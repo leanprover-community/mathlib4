@@ -1170,8 +1170,7 @@ def map : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[R] N') where
     simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
   map_smul' r h := by
     apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
-    simp only [lift_comp, LinearMap.smul_comp,
-      LinearMap.comp_smul, RingHom.id_apply]
+    simp only [lift_comp, LinearMap.smul_comp, LinearMap.comp_smul, RingHom.id_apply]
 
 lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
   lift_comp S f (g ∘ₗ h) (IsLocalizedModule.map_units g)

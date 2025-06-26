@@ -158,8 +158,7 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
       naturality := fun P Q φ => by
         ext
         dsimp
-        simp only [
-          HomologicalComplex.comp_p_d, HomologicalComplex.p_comp_d] }
+        simp only [HomologicalComplex.comp_p_d, HomologicalComplex.p_comp_d] }
   hom_inv_id := by
     ext
     dsimp
@@ -167,8 +166,7 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
   inv_hom_id := by
     ext
     dsimp
-    simp only [HomologicalComplex.p_idem,
-      ]
+    simp only [HomologicalComplex.p_idem]
 
 end KaroubiHomologicalComplexEquivalence
 

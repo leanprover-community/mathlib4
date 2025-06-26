@@ -129,8 +129,7 @@ open TensorProduct in
       (derivedSeriesOfIdeal R L k I).baseChange A := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih,
-    LieSubmodule.lie_baseChange]
+  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, LieSubmodule.lie_baseChange]
 
 open TensorProduct in
 @[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :

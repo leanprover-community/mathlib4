@@ -296,8 +296,7 @@ theorem mul_antipode₁ (A : C) [Hopf_Class A] :
     rw [associator_naturality_left]
   slice_lhs 8 9 =>
     rw [← tensorHom_def]
-  simp only [Category.assoc, pentagon_inv_inv_hom_hom_inv_assoc,
-    ]
+  simp only [Category.assoc, pentagon_inv_inv_hom_hom_inv_assoc]
   slice_lhs 1 7 =>
     rw [Bimon_.compatibility]
   slice_lhs 2 4 =>

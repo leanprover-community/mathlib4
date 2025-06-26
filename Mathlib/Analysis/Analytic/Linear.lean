@@ -124,8 +124,7 @@ protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] 
     r_pos := ENNReal.coe_lt_top
     hasSum := fun _ =>
       (hasSum_nat_add_iff' 3).1 <| by
-        simp only [Finset.sum_range_succ, Prod.fst_add, Prod.snd_add,
-          f.map_add_add]
+        simp only [Finset.sum_range_succ, Prod.fst_add, Prod.snd_add, f.map_add_add]
         simp [fpowerSeriesBilinear, hasSum_zero] }
 
 protected theorem hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :

@@ -729,8 +729,7 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum {a : A} (ha : p a) :
   intro f
   simp only [cfcₙHom_of_cfcHom]
   rw [quasispectrum_eq_spectrum_union_zero]
-  simp only [NonUnitalStarAlgHom.comp_apply,
-    NonUnitalStarAlgHom.coe_coe]
+  simp only [NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_coe]
   rw [cfcHom_map_spectrum ha]
   ext x
   constructor

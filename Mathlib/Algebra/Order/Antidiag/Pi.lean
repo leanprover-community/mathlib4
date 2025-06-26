@@ -211,8 +211,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
     n •ℕ piAntidiag s m = {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
   ext f
   refine mem_smul_finset.trans ?_
-  simp only [mem_filter, mem_piAntidiag,
-    and_assoc]
+  simp only [mem_filter, mem_piAntidiag, and_assoc]
   constructor
   · rintro ⟨f, rfl, hf, rfl⟩
     simpa [← mul_sum, hn] using hf

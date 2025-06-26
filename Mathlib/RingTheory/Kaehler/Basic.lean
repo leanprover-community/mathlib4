@@ -848,8 +848,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       TensorProduct.tmul_sum]
     apply sum_mem
     intro c _
-    simp only [
-      LinearMap.mem_range]
+    simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,

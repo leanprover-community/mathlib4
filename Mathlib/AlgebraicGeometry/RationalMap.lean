@@ -221,8 +221,7 @@ lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
     refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
       inf_le_right.trans hW₂r, ?_⟩
     dsimp at e₁ e₂
-    simp only [restrict_domain, restrict_hom,
-      ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
+    simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
       Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
     simp only [homOfLE_homOfLE_assoc]
 
@@ -248,8 +247,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
-    simp only [
-      restrict_hom, ← Category.assoc] at e ⊢
+    simp only [restrict_hom, ← Category.assoc] at e ⊢
     convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
   · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H

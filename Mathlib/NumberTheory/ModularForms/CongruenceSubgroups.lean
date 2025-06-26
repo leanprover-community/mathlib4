@@ -135,8 +135,7 @@ theorem Gamma1_to_Gamma0_mem {N} (A : Gamma0 N) :
       Int.cast_mul, ha, Gamma0_mem.mp A.property, and_self_iff, and_true, mul_one, mul_zero,
       sub_zero] using adet
   · intro ha
-    simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk,
-      ]
+    simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk]
     exact ha.2.1
 
 /-- The congruence subgroup `Gamma1` of `SL(2, ℤ)` consisting of matrices
@@ -159,8 +158,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     simp_rw [Gamma1, Subgroup.mem_map]
     have hA : A ∈ Gamma0 N := by simp [ha.right.right, Gamma0_mem]
     have HA : (⟨A, hA⟩ : Gamma0 N) ∈ Gamma1' N := by
-      simp only [Gamma1_to_Gamma0_mem,
-        ]
+      simp only [Gamma1_to_Gamma0_mem]
       exact ha
     refine ⟨(⟨(⟨A, hA⟩ : Gamma0 N), HA⟩ : (Gamma1' N : Subgroup (Gamma0 N))), ?_⟩
     simp

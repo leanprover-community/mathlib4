@@ -236,11 +236,10 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
     one_mul := fun f => by
-      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero,
-        one_mul, sum_single]
+      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, one_mul,
+        sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero,
-        mul_one, sum_single] }
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, mul_one, sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
@@ -1000,8 +999,8 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, add_zero,
-        mul_one, sum_single] }
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, add_zero, mul_one,
+        sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl

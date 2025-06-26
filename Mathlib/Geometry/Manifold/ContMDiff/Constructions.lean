@@ -454,8 +454,7 @@ lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
       rw [contMDiffAt_iff] at hf'
       simpa using hf'.2
     apply this.congr_of_eventuallyEq
-    · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl,
-        ]
+    · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl]
       filter_upwards with a
       congr
     · -- They agree at the image of x.
@@ -470,8 +469,7 @@ lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
       rw [contMDiffAt_iff] at hg'
       simpa using hg'.2
     apply this.congr_of_eventuallyEq
-    · simp only [extChartAt, Sum.elim_inr, ChartedSpace.sum_chartAt_inr,
-        ]
+    · simp only [extChartAt, Sum.elim_inr, ChartedSpace.sum_chartAt_inr]
       filter_upwards with a
       congr
     · -- They agree at the image of x.

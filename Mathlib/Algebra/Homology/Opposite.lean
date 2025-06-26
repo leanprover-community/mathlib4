@@ -198,8 +198,7 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
   counitIso := unopCounitIso V c
   functor_unitIso_comp X := by
     ext
-    simp only [comp_f,
-      ]
+    simp only [comp_f]
     exact Category.comp_id _
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :

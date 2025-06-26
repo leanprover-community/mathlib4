@@ -74,8 +74,8 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
           Pi.cone_pt, iX, iY]
         ext g j
         change _ = (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _
-        simp only [Discrete.functor_obj_eq_as, productIsProduct',
-          limit.lift_π, Fan.mk_pt, Fan.mk_π_app, Pi.map_apply]
+        simp only [Discrete.functor_obj_eq_as, productIsProduct', limit.lift_π, Fan.mk_pt,
+          Fan.mk_π_app, Pi.map_apply]
         change _ = (_ ≫ _ ≫ limit.π Y ⟨j⟩) _
         simp
       suffices Epi (iX.hom ≫ (iX.inv ≫ lim.map f ≫ iY.hom) ≫ iY.inv) by simpa using this

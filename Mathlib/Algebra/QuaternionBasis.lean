@@ -180,8 +180,7 @@ def lift : Basis A c₁ c₂ c₃ ≃ (ℍ[R,c₁,c₂,c₃] →ₐ[R] A) where
     ext
     dsimp [Basis.lift]
     rw [← F.commutes]
-    simp only [← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero,
-      algebraMap_eq]
+    simp only [← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero, algebraMap_eq]
     congr <;> simp
 
 /-- Two `R`-algebra morphisms from a quaternion algebra are equal if they agree on `i` and `j`. -/

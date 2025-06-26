@@ -118,8 +118,7 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
               Category.assoc]
             have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)
             dsimp at this
-            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id,
-              ] at this
+            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id] at this
             exact this) }
 
 /-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
@@ -166,8 +165,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
               Category.assoc]
             have := @NatTrans.naturality _ _ _ _ _ _ c.ι (j, k) (j', k) (f, 𝟙 k)
             dsimp at this
-            simp only [Category.comp_id, CategoryTheory.Functor.map_id,
-              ] at this
+            simp only [Category.comp_id, CategoryTheory.Functor.map_id] at this
             exact this) }
 
 /-- Given a diagram `D` of colimit cocones under the `curry.obj G j`, and a cocone under `G`,

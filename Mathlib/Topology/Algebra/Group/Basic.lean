@@ -121,8 +121,7 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
   suffices {g} = (g⁻¹ * ·) ⁻¹' {1} by
     rw [this]
     exact (continuous_mul_left g⁻¹).isOpen_preimage _ h
-  simp only [mul_one, Set.preimage_mul_left_singleton, inv_inv,
-    ]
+  simp only [mul_one, Set.preimage_mul_left_singleton, inv_inv]
 
 @[to_additive]
 theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=

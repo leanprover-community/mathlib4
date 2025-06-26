@@ -180,9 +180,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
         (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
-  simp only [transAssocReparamAux, Path.trans_apply,
-    Function.comp_apply, mul_ite,
-    Path.coe_reparam]
+  simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, mul_ite, Path.coe_reparam]
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
   · rfl

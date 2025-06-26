@@ -319,8 +319,7 @@ theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
     v.measurableEmbedding).1 A
   ext x
   simp only [v, Homeomorph.neg, sub_eq_add_neg, val_toAddUnits_apply, Homeomorph.trans_apply,
-    Equiv.neg_apply, Homeomorph.homeomorph_mk_coe,
-    Homeomorph.coe_addLeft]
+    Equiv.neg_apply, Homeomorph.homeomorph_mk_coe, Homeomorph.coe_addLeft]
 
 theorem _root_.HasCompactSupport.convolutionExists_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : Continuous g) : ConvolutionExists f g L μ := by
@@ -1080,8 +1079,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     · have H : (p, x) ∈ t := by
         apply hε
         refine mem_thickening_iff.2 ⟨(q₀.1, x), ?_, ?_⟩
-        · simp only [hx, singleton_prod, mem_image, Prod.mk_inj, true_and,
-            exists_eq_right]
+        · simp only [hx, singleton_prod, mem_image, Prod.mk_inj, true_and, exists_eq_right]
         · rw [← dist_eq_norm] at hp
           simpa only [Prod.dist_eq, εpos, dist_self, max_lt_iff, and_true] using hp
       have : g' (p, x) ∈ closedBall (0 : P × G →L[𝕜] E') C := hC (mem_image_of_mem _ H)
@@ -1271,8 +1269,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
   have : isoF ∘ R ∘ (isoP.prodCongr isoG).symm = fun q : P × G => (f ⋆[L, μ] g q.1) q.2 := by
     apply funext
     rintro ⟨p, x⟩
-    simp only [(· ∘ ·), ContinuousLinearEquiv.prodCongr_symm,
-      ContinuousLinearEquiv.prodCongr_apply]
+    simp only [(· ∘ ·), ContinuousLinearEquiv.prodCongr_symm, ContinuousLinearEquiv.prodCongr_apply]
     simp only [R, convolution]
     rw [IsClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     · rfl

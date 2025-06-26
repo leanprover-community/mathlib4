@@ -39,8 +39,7 @@ def argAux (a : Option α) (b : α) : Option α :=
 @[simp]
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
-    simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil_iff,
-      ]
+    simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil_iff]
     cases foldl (argAux r) o tl
     · simp
     · simp only

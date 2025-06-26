@@ -78,10 +78,9 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         dsimp [P_zero]
         rw [comp_id, Fin.sum_univ_two,
           Fin.sum_univ_succ, Fin.sum_univ_two]
-        simp only [Fin.val_zero, pow_zero, pow_one, pow_add, one_smul, neg_smul,
-          Fin.val_succ, Fin.val_one,
-          mul_neg, one_mul, neg_mul, neg_neg, id_comp, add_comp,
-          comp_add, neg_comp, comp_neg, Fin.succ_zero_eq_one]
+        simp only [Fin.val_zero, pow_zero, pow_one, pow_add, one_smul, neg_smul, Fin.val_succ,
+          Fin.val_one, mul_neg, one_mul, neg_mul, neg_neg, id_comp, add_comp, comp_add, neg_comp,
+          comp_neg, Fin.succ_zero_eq_one]
         rw [← Fin.castSucc_one, SimplicialObject.δ_comp_σ_self, ← Fin.castSucc_zero (n := 1),
           SimplicialObject.δ_comp_σ_self_assoc,
           SimplicialObject.δ_comp_σ_succ, comp_id, ← Fin.castSucc_zero (n := 2),

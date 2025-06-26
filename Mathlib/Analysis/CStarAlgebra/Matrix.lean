@@ -59,8 +59,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
       simp only [Finset.mem_univ_val, and_self_iff]
   -- The L2 norm of a row is a diagonal entry of U * Uᴴ
   have diag_eq_norm_sum : (U * Uᴴ) i i = (∑ x : n, ‖U i x‖ ^ 2 : ℝ) := by
-    simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, RCLike.mul_conj,
-      ]; norm_cast
+    simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, RCLike.mul_conj]; norm_cast
   -- The L2 norm of a row is a diagonal entry of U * Uᴴ, real part
   have re_diag_eq_norm_sum : RCLike.re ((U * Uᴴ) i i) = ∑ x : n, ‖U i x‖ ^ 2 := by
     rw [RCLike.ext_iff] at diag_eq_norm_sum

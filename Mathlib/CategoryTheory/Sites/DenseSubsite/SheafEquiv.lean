@@ -73,8 +73,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
         rcases h with ⟨g, rfl⟩
         have h : ∃ i' : W₂ ⟶ W₁, i = i'.op := ⟨i.unop, rfl⟩
         rcases h with ⟨i, rfl⟩
-        simp only [
-          unop_comp, Quiver.Hom.unop_op, Category.id_comp]
+        simp only [unop_comp, Quiver.Hom.unop_op, Category.id_comp]
         apply Y.2.hom_ext ⟨_, IsDenseSubsite.imageSieve_mem J K G (G.map i ≫ g)⟩
         intro I
         simp only [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← Functor.map_comp, ← op_comp]

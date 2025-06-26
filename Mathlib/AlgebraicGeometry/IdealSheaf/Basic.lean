@@ -216,8 +216,8 @@ lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
   have := I.map_ideal_basicOpen_of_eq (V := X.affineBasicOpen g) f (Subtype.ext hfg.symm)
   rw [← I.map_ideal_basicOpen] at this
   apply_fun Ideal.map (X.presheaf.germ (X.basicOpen g) x (hfg ▸ hxf)).hom at this
-  simp only [Ideal.map_map, ← CommRingCat.hom_comp,
-    affineBasicOpen_coe, X.presheaf.germ_res] at this ⊢
+  simp only [Ideal.map_map, ← CommRingCat.hom_comp, affineBasicOpen_coe, X.presheaf.germ_res]
+    at this ⊢
   simp only [homOfLE_leOfHom, TopCat.Presheaf.germ_res', this]
 
 /-- A form of `map_ideal` that is easier to rewrite with. -/

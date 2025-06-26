@@ -68,8 +68,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       by_cases hp : p = 0; · simp [hp]
       by_cases hq : q = 0; · simp [hq]
       have hpq : p * q ≠ 0 := mul_ne_zero hp hq
-      simp only [hpq, hp, hq, if_false, Polynomial.natDegree_mul hp hq,
-        pow_add] }
+      simp only [hpq, hp, hq, if_false, Polynomial.natDegree_mul hp hq, pow_add] }
 
 theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
     cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p := by

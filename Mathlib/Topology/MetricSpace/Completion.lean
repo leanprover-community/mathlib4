@@ -118,8 +118,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     let r : Set (ℝ × ℝ) := { p | dist p.1 p.2 < ε }
     have : r ∈ uniformity ℝ := Metric.dist_mem_uniformity εpos
     have T := uniformContinuous_def.1 (@Completion.uniformContinuous_dist α _) r this
-    simp only [uniformity_prod_eq_prod, mem_prod_iff, Filter.mem_map,
-      ] at T
+    simp only [uniformity_prod_eq_prod, mem_prod_iff, Filter.mem_map] at T
     rcases T with ⟨t1, ht1, t2, ht2, ht⟩
     refine mem_of_superset ht1 ?_
     have A : ∀ a b : Completion α, (a, b) ∈ t1 → dist a b < ε := by

@@ -457,8 +457,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, ComposableArrows.hom, Fhk']
       rw [Fhk.map'_comp 0 1 2] at lem1
       refine eq_of_heq (lem1.trans (heq_comp ?_ ?_ ?_ lem2.symm lem0.symm)) <;>
-        simp [uF', nerveFunctor₂, SSet.truncation,
-          ReflQuiv.comp_eq_comp, uF, Fhk] <;>
+        simp [uF', nerveFunctor₂, SSet.truncation, ReflQuiv.comp_eq_comp, uF, Fhk] <;>
         [let ι := ι0₂; let ι := ι1₂; let ι := ι2₂] <;>
       · replace := congr_arg (·.obj 0) (congr_fun (F.naturality ι.op) hk)
         dsimp [oneTruncation₂, ComposableArrows.left, SimplicialObject.truncation,

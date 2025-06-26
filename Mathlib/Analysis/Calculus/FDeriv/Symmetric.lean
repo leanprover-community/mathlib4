@@ -357,8 +357,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   convert TA1.sub TA2 using 1
   ext h
   simp only [two_smul, smul_add, ← add_assoc, ContinuousLinearMap.map_add,
-    ContinuousLinearMap.add_apply,
-    ]
+    ContinuousLinearMap.add_apply]
   abel
 
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is

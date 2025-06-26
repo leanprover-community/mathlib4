@@ -62,8 +62,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : A
       LinearMap.toFun_eq_coe]
     simp only [map_mul, sub_mul, mul_sub, Algebra.smul_def] at this ⊢
     rw [sub_eq_iff_eq_add, sub_eq_iff_eq_add] at this
-    simp only [this,
-      ]
+    simp only [this]
     ring
 
 variable (hI : I ^ 2 = ⊥)

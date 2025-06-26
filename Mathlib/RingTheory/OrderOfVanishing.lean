@@ -174,8 +174,7 @@ def ordFrac : K →*₀ ℤₘ₀ :=
     (ordMonoidWithZeroHom R)
   haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
     intro y
-    simp only [
-      isUnit_iff_ne_zero, ne_eq]
+    simp only [isUnit_iff_ne_zero, ne_eq]
     simp [ordMonoidWithZeroHom, ord]
     have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
     have : ∀ k,

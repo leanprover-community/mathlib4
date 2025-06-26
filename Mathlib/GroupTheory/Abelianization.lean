@@ -336,8 +336,7 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
     rw [← Subgroup.normalClosure_subset_iff]
     rintro x ⟨p, q, rfl⟩
     rw [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def]
-    simp only [
-      QuotientGroup.mk_mul, QuotientGroup.mk_inv]
+    simp only [QuotientGroup.mk_mul, QuotientGroup.mk_inv]
     simp only [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm]
     apply hcomm.comm
   · intro hGN

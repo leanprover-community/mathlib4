@@ -229,9 +229,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
   fac c j := by
     ext
     rcases j with ⟨⟨⟩⟩ <;>
-    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right,
-      ] <;>
-    rfl
+    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right] <;> rfl
   uniq s m h := by
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)

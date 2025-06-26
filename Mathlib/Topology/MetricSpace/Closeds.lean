@@ -130,8 +130,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
       mem_iInter.2 fun k =>
         mem_closure_of_tendsto y_lim
           (by
-            simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop,
-              ]
+            simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
             exact ⟨k, fun m hm => ⟨n + m, by omega, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`

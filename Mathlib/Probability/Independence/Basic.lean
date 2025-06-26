@@ -601,8 +601,7 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
     [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) μ := by
-  simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg,
-    ]
+  simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg]
 
 theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)

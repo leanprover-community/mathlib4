@@ -255,8 +255,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
       id_apply_one, ContinuousLinearEquiv.coe_apply, continuousMultilinearCurryFin1_symm_apply]
   | n + 2 =>
     have N : 0 < n + 2 := by norm_num
-    simp [comp_rightInv_aux1 N, h, rightInv,
-      comp_rightInv_aux2, -Set.toFinset_setOf]
+    simp [comp_rightInv_aux1 N, h, rightInv, comp_rightInv_aux2, -Set.toFinset_setOf]
 
 theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
     (n : ℕ) (hn : 2 ≤ n) :

@@ -244,9 +244,8 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- From this we deduce that there exists an `n` such that `⁅x, _⁆ ^ n` vanishes on `⁅x, z⁆`.
     -- On the other hand, our goal is to show `z = 0` in `Q`,
     -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
-    simp only [LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule,
-      mem_engel_iff, LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q]
-      at this ⊢
+    simp only [LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule, mem_engel_iff,
+      LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
     -- Hence we win.
     obtain ⟨n, hn⟩ := this
     use n+1

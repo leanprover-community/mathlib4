@@ -374,8 +374,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
   parts_strictMono := by
     convert strictMono_succ.comp c.parts_strictMono with m
     rcases eq_or_ne m k with rfl | hm
-    · simp only [↓reduceDIte, update_self, add_tsub_cancel_right, comp_apply, cast_mk,
-        ]
+    · simp only [↓reduceDIte, update_self, add_tsub_cancel_right, comp_apply, cast_mk]
       let a : Fin (c.partSize m + 1) := ⟨c.partSize m, lt_add_one (c.partSize m)⟩
       let b : Fin (c.partSize m) := ⟨c.partSize m - 1, Nat.sub_one_lt_of_lt (c.partSize_pos m)⟩
       change (cases (motive := fun _ ↦ Fin (n + 1)) 0 (succ ∘ c.emb m)) a = succ (c.emb m b)

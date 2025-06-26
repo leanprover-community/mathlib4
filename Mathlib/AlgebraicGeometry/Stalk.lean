@@ -310,11 +310,9 @@ lemma germ_stalkClosedPointTo_Spec_fromSpecStalk
   have : (Spec.map f ≫ X.fromSpecStalk x).base (closedPoint R) = x := by
     rw [comp_base_apply, Spec_closedPoint, fromSpecStalk_closedPoint]
   have : x ∈ U := this ▸ hU
-  simp only [
-    germ_stalkClosedPointTo, comp_app,
-    fromSpecStalk_app (X := X) (x := x) this, Category.assoc, Iso.trans_hom,
-    Functor.mapIso_hom,
-    (Spec.map f).app_eq_appLE, Hom.appLE_map_assoc, Hom.map_appLE_assoc]
+  simp only [germ_stalkClosedPointTo, comp_app,
+    fromSpecStalk_app (X := X) (x := x) this, Category.assoc, Iso.trans_hom, Functor.mapIso_hom,
+      (Spec.map f).app_eq_appLE, Hom.appLE_map_assoc, Hom.map_appLE_assoc]
   simp_rw [← Opens.map_top (Spec.map f).base]
   rw [← (Spec.map f).app_eq_appLE, ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
 

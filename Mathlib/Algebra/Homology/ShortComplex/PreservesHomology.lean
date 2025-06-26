@@ -494,8 +494,8 @@ lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
   dsimp only [mapHomologyIso, homologyIso, ShortComplex.leftHomologyIso,
     leftHomologyMapIso', leftHomologyIso, Functor.mapIso,
     Iso.symm, Iso.trans, Iso.refl]
-  simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id,
-    Functor.map_id, Functor.mapShortComplex_obj]
+  simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, Functor.map_id,
+    Functor.mapShortComplex_obj]
 
 lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesRightHomologyOf S] :

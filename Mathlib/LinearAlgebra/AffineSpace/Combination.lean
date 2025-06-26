@@ -968,8 +968,7 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
           simp_rw [Pi.sub_apply, Finset.sum_sub_distrib,
             Finset.sum_update_of_mem (Finset.mem_insert_self _ _),
             Finset.sum_insert_of_eq_zero_if_notMem Finsupp.notMem_support_iff.1]
-          simp only [
-            Function.const_apply, Finset.sum_const_zero, add_zero, sub_self]
+          simp only [Function.const_apply, Finset.sum_const_zero, add_zero, sub_self]
         use hw
         have hz : w i0 • (p i0 -ᵥ p i0 : V) = 0 := (vsub_self (p i0)).symm ▸ smul_zero _
         change (fun i => w i • (p i -ᵥ p i0 : V)) i0 = 0 at hz

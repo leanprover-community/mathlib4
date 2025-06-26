@@ -210,8 +210,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     simp only [op_unop, functorToPresheaves_obj_obj, types_comp_apply, functorToPresheaves_obj_map,
       incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
     simp only [FunctorToTypes.map_comp_apply, incl_of_counitAppApp]
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      ]
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp]
     apply congrArg
     exact image_eq_image_mk (g := g.unop) (a := a)
 

@@ -207,8 +207,7 @@ private lemma induction_structure (n : ℕ)
         apply hP₃ R e i j hi i_min (.symm hj) (H_IH _ ?_ _ rfl)
         refine .left _ _ (lt_of_le_of_ne (b := (ofLex v).1) ?_ ?_)
         · intro k
-          simp only [comp_apply, update_apply, hv,
-            ]
+          simp only [comp_apply, update_apply, hv]
           split_ifs with hjk
           · rw [hjk]
             exact (degree_modByMonic_le _ hi).trans i_min
@@ -253,8 +252,7 @@ private lemma induction_structure (n : ℕ)
     · rw [hv]
       refine .left _ _ (lt_of_le_of_ne ?_ ?_)
       · intro j; simpa using degree_map_le
-      simp only [coe_mapRingHom, ne_eq,
-        ]
+      simp only [coe_mapRingHom, ne_eq]
       intro h_eq
       replace h_eq := congr_fun h_eq i
       simp only [Ideal.Quotient.algebraMap_eq, comp_apply, degree_map_eq_iff,
@@ -716,8 +714,7 @@ lemma chevalley_mvPolynomialC
         · intro d
           simp only [finSuccEquiv_coeff_coeff]
           exact (hS _ hxS _).1 _
-        · simp only [B,
-            ]
+        · simp only [B]
           replace hS := (hS _ hxS j).2
           simp only [Submodule.coe_restrictScalars, SetLike.mem_coe, mem_degreesLE,
             Multiset.le_iff_count, Finsupp.count_toMultiset, Finsupp.comapDomain_apply,

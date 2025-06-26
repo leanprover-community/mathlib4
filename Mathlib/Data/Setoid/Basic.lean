@@ -443,8 +443,7 @@ end Setoid
 
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
-  simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
-    ]
+  simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]
   refine Quotient.mk'_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quotient.mk'_surjective.forall.trans (forall_congr' fun b => ?_)
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']

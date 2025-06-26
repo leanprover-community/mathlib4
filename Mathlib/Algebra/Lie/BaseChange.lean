@@ -194,14 +194,12 @@ lemma mem_baseChange_iff {m : A ⊗[R] M} :
 
 @[simp]
 lemma baseChange_bot : (⊥ : LieSubmodule R L M).baseChange A = ⊥ := by
-  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot,
-    ]
+  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot]
   rfl
 
 @[simp]
 lemma baseChange_top : (⊤ : LieSubmodule R L M).baseChange A = ⊤ := by
-  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top,
-    ]
+  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top]
   rfl
 
 lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
