@@ -116,7 +116,7 @@ example (a : K) (ha : 1.0 ≤ a) : 1 ≤ a := by linarith
 end cancel_denoms
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
-  linarith (discharger := do Lean.Elab.Tactic.evalTactic (←`(tactic| ring1)))
+  linarith (config := {discharger := do Lean.Elab.Tactic.evalTactic (←`(tactic| ring1))})
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
   linarith
@@ -297,7 +297,7 @@ this now (November 2024) takes 1647 heartbeats (63 ms on a good laptop). -/
 set_option maxHeartbeats 2000 in
 example {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
     (h : x + y = 10) (h' : x + 2 * y ≤ 18) (h : x < 2) : False := by
-  linarith (discharger := testSorryTac)
+  linarith (config := {discharger := testSorryTac})
 
 example (u v x y A B : ℚ)
     (a : 0 < A)
