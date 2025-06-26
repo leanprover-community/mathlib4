@@ -41,7 +41,7 @@ jobs:
         printf '%s' "${COMMENT}" | hexdump -cC
         printf 'Comment:"%s"\n' "${COMMENT}"
 
-        for i in ${!labelArray[@]}; do
+        for i in "${!labelArray[@]}"; do
           inComment=""
           label="${labelArray[$i]}"
           printf $'\nProcessing label \'%s\'\n' "${label}"
@@ -61,7 +61,7 @@ jobs:
             # we use curl rather than octokit/request-action so that the job won't fail
             # (and send an annoying email) if the labels don't exist
             curl --request "${req}" \
-              --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels/"${label}" \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels/${label}" \
               --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
             printf $'%s %s done\n' "${inComment}" "${req}"
 
