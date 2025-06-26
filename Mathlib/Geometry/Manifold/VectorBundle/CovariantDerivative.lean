@@ -181,15 +181,30 @@ lemma Basis.localFrame_repr_apply_zero_at
 
 variable {n}
 
+-- TODO: good name!
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
+/-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
+Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
+equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
+lemma foo (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i : ι} {s : Π x : M, V x} :
+    b.localFrame_repr e i s x = b.repr (e (s x)).2 i := by
+  simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
+
 lemma Basis.contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
     (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.localFrame_repr e i s) x := by
   -- "check this locally, then it's very easy"
-  -- more precisely: (1) we have the following lemma:
-  -- suppose e is a compat. trivialisation and x ∈ e.baseSet, then on e.baseSet
-  -- b.localFrame_repr e s i equals the coefficient of "s x in trivialisation e" ∈ E for b i,
-  -- the RHS is (b.repr i) (s in trivialisation e).2
+  classical
+  -- step 1: on e.baseSet, can compute this expression very well
+  let aux := fun x ↦ b.repr (e (s x)).2 i
+  -- Since e.baseSet is open, this is sufficient.
+  suffices ContMDiffAt I 𝓘(𝕜) n aux x by
+    apply this.congr_of_eventuallyEq_of_mem ?_ trivial
+    apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
+    intro y hy
+    simp [aux, hy, foo hy]
+  simp only [aux]
   -- (2) s in trivialisation e is contmdiff
   -- (3) b.repr is a continuous linear map, so the composition is smooth
   sorry
