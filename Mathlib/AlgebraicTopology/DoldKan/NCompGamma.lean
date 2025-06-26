@@ -116,8 +116,7 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
       exact h (congr_arg SimplexCategory.len h'.symm)
     rw [PInfty_comp_map_mono_eq_zero]
     · exact h
-    · by_contra h'
-      exact hi h'
+    · assumption
 
 variable [HasFiniteCoproducts C]
 

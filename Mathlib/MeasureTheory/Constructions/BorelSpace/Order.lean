@@ -761,8 +761,7 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
   · rintro b ⟨c, hc⟩
     apply isLUB_ciSup
     refine ⟨c, ?_⟩
-    rintro d ⟨i, rfl⟩
-    exact hc (mem_range_self i)
+    assumption
   · intro b hb
     apply csSup_of_not_bddAbove
     exact hb

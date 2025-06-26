@@ -632,8 +632,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     apply compPartialSumTargetSet_image_compPartialSumSource m M N i
     simpa [compPartialSumTarget] using hi
   -- 4 - show that the composition gives the `compAlongComposition` application
-  · rintro ⟨k, blocks_fun⟩ H
-    rw [h]
+  · assumption
 
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
 all possible compositions. -/
