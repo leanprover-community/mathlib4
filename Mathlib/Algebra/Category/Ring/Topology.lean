@@ -64,6 +64,8 @@ lemma continuous_precomp (f : A ⟶ B) :
 @[simps]
 def precompHomeomorph (f : A ≅ B) :
     (B ⟶ R) ≃ₜ (A ⟶ R) where
+  toFun φ := _
+  invFun φ := _
   continuous_toFun := continuous_precomp f.hom
   continuous_invFun := continuous_precomp f.inv
   left_inv _ := by simp
