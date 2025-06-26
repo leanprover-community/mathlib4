@@ -1,4 +1,5 @@
 import Lean.Linter.Sets -- for the definition of linter sets
+import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
@@ -60,10 +61,11 @@ register_linter_set linter.mathlibStandardSet :=
   linter.allScriptsDocumented
   linter.checkInitImports
 
+  linter.hashCommand
   linter.oldObtain
   linter.style.cases
   linter.style.refine
-  linter.hashCommand
+  linter.style.commandStart
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax

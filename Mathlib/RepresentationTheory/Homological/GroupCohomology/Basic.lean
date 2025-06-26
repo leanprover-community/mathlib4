@@ -30,8 +30,8 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`, which gives simpler
-expressions for `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`, which provides API
+specialized to `H⁰`, `H¹`, `H²`.
 
 ## Main definitions
 
@@ -54,8 +54,6 @@ possible scalar action diamonds.
 
 ## TODO
 
-* API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
-  the inflation-restriction exact sequence.
 * The long exact sequence in cohomology attached to a short exact sequence of representations.
 * Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.
@@ -121,7 +119,7 @@ end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] [DecidableEq G] (n) (A : Rep k G)
+variable [Group G] (n) (A : Rep k G)
 
 open inhomogeneousCochains Rep
 
@@ -131,6 +129,7 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
+    classical
     simp only [d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
@@ -151,7 +150,7 @@ theorem inhomogeneousCochains.d_comp_d :
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousCochainsIso :
+def inhomogeneousCochainsIso [DecidableEq G] :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
     (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
@@ -178,12 +177,12 @@ open groupCohomology
 
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
-def groupCohomology [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
+def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupCohomology.π [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
+abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
@@ -191,7 +190,7 @@ abbrev groupCohomology.π [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
 noncomputable alias groupCohomologyπ := groupCohomology.π
 
 @[elab_as_elim]
-theorem groupCohomology_induction_on [Group G] [DecidableEq G] {A : Rep k G} {n : ℕ}
+theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
     {C : groupCohomology A n → Prop} (x : groupCohomology A n)
     (h : ∀ x : cocycles A n, C (π A n x)) : C x := by
   rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩

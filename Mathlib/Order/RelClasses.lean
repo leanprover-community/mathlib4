@@ -659,11 +659,11 @@ theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → 
   ssubset_imp_ssubset h₂ h₁
 
 @[gcongr]
-theorem ssuperset_imp_ssuperset_left  (h : a ⊆ b) : c ⊃ b → c ⊃ a :=
+theorem ssuperset_imp_ssuperset_left (h : a ⊆ b) : c ⊃ b → c ⊃ a :=
   ssubset_of_subset_of_ssubset h
 
 @[gcongr]
-theorem ssuperset_imp_ssuperset_right  (h : a ⊆ b) : a ⊃ c → b ⊃ c :=
+theorem ssuperset_imp_ssuperset_right (h : a ⊆ b) : a ⊃ c → b ⊃ c :=
   ssubset_imp_ssubset_right h
 
 /-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/

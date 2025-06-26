@@ -259,7 +259,8 @@ end LinearMap
 variable (f g) in
 lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
     Function.Exact (e ∘ₗ f) (g ∘ₗ (e.symm : N' →ₗ[R] N)) ↔ Exact f g := by
-  simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← e.map_eq_comap, LinearMap.range_comp]
+  simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← Submodule.map_equiv_eq_comap_symm,
+    LinearMap.range_comp]
   exact (Submodule.map_injective_of_injective e.injective).eq_iff
 
 namespace Function
