@@ -127,6 +127,17 @@ theorem prodEquivOfIsCompl_symm_apply_snd_eq_zero (h : IsCompl p q) {x : E} :
   rw [coe_prodEquivOfIsCompl', Submodule.add_mem_iff_right _ (Submodule.coe_mem _),
     mem_left_iff_eq_zero_of_disjoint h.disjoint]
 
+theorem prodEquivOfIsCompl_symm_apply (h : IsCompl p q)
+      (x y z : E) (hy : y ∈ p) (hz : z ∈ q) (hx : x = y + z) :
+    (prodEquivOfIsCompl p q h).symm x = ⟨⟨y, hy⟩, ⟨z, hz⟩⟩ := by
+  rw [LinearEquiv.symm_apply_eq, coe_prodEquivOfIsCompl', hx]
+
+theorem prodEquivOfIsCompl_symm_add (h : IsCompl p q) (x : E) :
+    x = ((prodEquivOfIsCompl p q h).symm x).1.val + ((prodEquivOfIsCompl p q h).symm x).2.val := by
+  obtain ⟨y, hy, z, hz, hx⟩ := Submodule.exists_add_eq_of_codisjoint h.codisjoint x
+  rw [prodEquivOfIsCompl_symm_apply p q h x y z hy hz hx.symm]
+  exact hx.symm
+
 @[simp]
 theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
     LinearEquiv.prodComm R q p ≪≫ₗ prodEquivOfIsCompl p q h = prodEquivOfIsCompl q p h.symm :=
