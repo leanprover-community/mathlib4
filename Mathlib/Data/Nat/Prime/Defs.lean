@@ -281,6 +281,15 @@ theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
   let ⟨f2, fd, a⟩ := minFac_has_prop n1
   prime_def_lt'.2 ⟨f2, fun m m2 l d => not_le_of_gt l (a m m2 (d.trans fd))⟩
 
+@[simp]
+theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
+  constructor
+  · intro h n_ne
+    subst n_ne
+    exact prime_one_false h
+  · intro h
+    exact minFac_prime h
+
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
   · exact fun m2 _ => n1.symm ▸ le_trans (by simp) m2
