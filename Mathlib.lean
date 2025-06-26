@@ -92,6 +92,7 @@ import Mathlib.Algebra.Category.CoalgCat.Basic
 import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
 import Mathlib.Algebra.Category.CommAlgCat.Basic
+import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
 import Mathlib.Algebra.Category.FGModuleCat.Limits
@@ -470,6 +471,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.ProdHom
 import Mathlib.Algebra.GroupWithZero.Range
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
@@ -852,6 +854,7 @@ import Mathlib.Algebra.Order.Interval.Set.SuccPred
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.Module.Algebra
+import Mathlib.Algebra.Order.Module.Basic
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Order.Module.OrderedSMul
@@ -1926,6 +1929,7 @@ import Mathlib.CategoryTheory.Adjunction.Triple
 import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Balanced
+import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 import Mathlib.CategoryTheory.Bicategory.Basic
@@ -2913,6 +2917,7 @@ import Mathlib.Data.EReal.Operations
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.FlagRange
 import Mathlib.Data.Fin.Parity
@@ -3011,6 +3016,7 @@ import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Notation
+import Mathlib.Data.Finsupp.Option
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finsupp.Pointwise
@@ -6516,6 +6522,7 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.VectorBundle.Basic
 import Mathlib.Topology.VectorBundle.Constructions
 import Mathlib.Topology.VectorBundle.Hom
+import Mathlib.Topology.VectorBundle.Riemannian
 import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertExists
 import Mathlib.Util.AssertExistsExt
