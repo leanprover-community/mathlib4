@@ -526,7 +526,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
   _ = 1 / (-I * τ) ^ (1 / 2 : ℂ) *
         (deriv (fun z ↦ cexp (-π * I * z ^ 2 / τ)) z * jacobiTheta₂ (z / τ) (-1 / τ)
          + cexp (-π * I * z ^ 2 / τ) * deriv (fun z ↦ jacobiTheta₂ (z / τ) (-1 / τ)) z) := by
-    rw [deriv_mul _ hj.differentiableAt]
+    rw [deriv_fun_mul _ hj.differentiableAt]
     exact (((differentiableAt_pow 2).const_mul _).mul_const _).cexp
   _ = _ := by
     rw [hj.deriv]
