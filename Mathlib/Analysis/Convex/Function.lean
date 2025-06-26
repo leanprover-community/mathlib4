@@ -448,7 +448,7 @@ section Module
 
 variable [Module 𝕜 E] [Module 𝕜 F] [SMul 𝕜 β]
 
-/-- If `g` is convex on `s`, so is `(f ∘ g)` on `f ⁻¹' s` for a linear `f`. -/
+/-- If `f` is convex on `s`, so is `(f ∘ g)` on `g ⁻¹' s` for a linear `g`. -/
 theorem ConvexOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConvexOn 𝕜 s f) (g : E →ₗ[𝕜] F) :
     ConvexOn 𝕜 (g ⁻¹' s) (f ∘ g) :=
   ⟨hf.1.linear_preimage _, fun x hx y hy a b ha hb hab =>
@@ -456,7 +456,7 @@ theorem ConvexOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConvexOn 𝕜 s
       f (g (a • x + b • y)) = f (a • g x + b • g y) := by rw [g.map_add, g.map_smul, g.map_smul]
       _ ≤ a • f (g x) + b • f (g y) := hf.2 hx hy ha hb hab⟩
 
-/-- If `g` is concave on `s`, so is `(g ∘ f)` on `f ⁻¹' s` for a linear `f`. -/
+/-- If `f` is concave on `s`, so is `(g ∘ f)` on `g ⁻¹' s` for a linear `g`. -/
 theorem ConcaveOn.comp_linearMap {f : F → β} {s : Set F} (hf : ConcaveOn 𝕜 s f) (g : E →ₗ[𝕜] F) :
     ConcaveOn 𝕜 (g ⁻¹' s) (f ∘ g) :=
   hf.dual.comp_linearMap g
