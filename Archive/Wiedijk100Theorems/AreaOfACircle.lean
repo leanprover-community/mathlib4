@@ -99,10 +99,11 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   have hderiv : ∀ x ∈ Ioo (-r : ℝ) r, HasDerivAt F (2 * f x) x := by
     rintro x ⟨hx1, hx2⟩
     convert
-      ((hasDerivAt_const x ((r : ℝ) ^ 2)).mul
+      ((hasDerivAt_const x ((r : ℝ) ^ 2)).fun_mul
             ((hasDerivAt_arcsin _ _).comp x
-              ((hasDerivAt_const x (r : ℝ)⁻¹).mul (hasDerivAt_id' x)))).add
-        ((hasDerivAt_id' x).mul ((((hasDerivAt_id' x).pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
+              ((hasDerivAt_const x (r : ℝ)⁻¹).fun_mul (hasDerivAt_id' x)))).fun_add
+        ((hasDerivAt_id' x).fun_mul
+          ((((hasDerivAt_id' x).fun_pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
       using 1
     · have h₁ : (r:ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
       have h : sqrt ((r:ℝ) ^ 2 - x ^ 2) ^ 3 = ((r:ℝ) ^ 2 - x ^ 2) * sqrt ((r: ℝ) ^ 2 - x ^ 2) := by
