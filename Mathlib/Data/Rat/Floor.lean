@@ -190,6 +190,64 @@ def evalIntCeil : NormNumExt where eval {u αZ} e := do
       return .isInt q(inferInstance) z ⌈q⌉ q(isInt_intCeil_ofIsRat _ $n $d $h)
   | _, _, _ => failure
 
+theorem isNat_intFract {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+    (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fract r) 0 := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+
+theorem isInt_intFract {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+    (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+
+theorem isInt_intFract_of_isRat (r : α) (n : ℤ) (d : ℕ) :
+    IsRat r n d → IsRat (Int.fract r) (n % d) d := by
+  rintro ⟨inv, rfl⟩
+  refine ⟨inv, ?_⟩
+  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod]
+
+example : Int.fract (2 : ℚ) = 0 := by
+  simp
+
+/-- `norm_num` extension for `Int.fract` -/
+@[norm_num (Int.fract _)]
+def evalIntFract : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q($α), ~q(@Int.fract _ $instR $instO $instF $x) =>
+    match ← derive x with
+    | .isBool .. => failure
+    | .isNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      return .isNat q(inferInstance) _ q(isNat_intFract $x _ $pb)
+    | .isNegNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      return .isNat q(inferInstance) _ q(isInt_intFract _ _ $pb)
+    | .isRat _ q n d h => do
+      let _i ← synthInstanceQ q(Field $α)
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      return .isRat q(inferInstance) (Int.fract q) _ d q(isInt_intFract_of_isRat _ $n $d $h)
+  | _, _, _ => failure
+
+example : Int.fract (3 / 2 : ℚ) = 1 / 2 := by
+  norm_num1
+
+example (x : ℤ) : (x : ℚ) ≠ 2⁻¹ := by
+  apply ne_of_apply_ne Int.fract
+  simp only [fract_intCast, ne_eq]
+  exact
+    isRat_eq_false
+      (IsNat.to_isRat (isNat_ofNat ℚ (Eq.refl 0)))
+      (isInt_intFract_of_isRat 2⁻¹ (ofNat 1) 2
+        (isRat_inv_pos (IsNat.to_isRat (isNat_ofNat ℚ (Eq.refl 2)))))
+      (by simp_rw [ofNat_eq_coe, Nat.cast_zero, Nat.cast_ofNat, Int.mul_def, zero_mul,
+        Nat.cast_one, one_emod_two, mul_one, zero_ne_one, decide_false])
+
+example (x : ℤ) : (x : ℚ) ≠ 2⁻¹ := by
+  apply ne_of_apply_ne Int.fract
+  show_term norm_num1
+  sorry
+
 end NormNum
 
 end Rat
