@@ -19,7 +19,7 @@ We show that the Laplacian is `ℂ`-linear on continuously differentiable functi
 standard formula for computing the Laplacian in terms of orthonormal bases of `E`.
 -/
 
-open Filter InnerProductSpace TensorProduct Topology
+open Filter TensorProduct Topology
 
 section secondDerivativeAPI
 
@@ -43,38 +43,36 @@ variable (𝕜) in
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
 `E →ₗ[ℝ] E →ₗ[ℝ] ℝ
 -/
-noncomputable def bilinear_of_iteratedFDeriv_two (f : E → F) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
+noncomputable def bilinearIteratedFDerivTwo (f : E → F) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
   fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₂
 
 /--
-Expression of `bilinear_of_iteratedFDeriv_two` in terms of `iteratedFDeriv`.
+Expression of `bilinearIteratedFDerivTwo` in terms of `iteratedFDeriv`.
 -/
-lemma bilinear_of_iteratedFDeriv_two_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) :
-    bilinear_of_iteratedFDeriv_two 𝕜 f e e₁ e₂ = iteratedFDeriv 𝕜 2 f e ![e₁, e₂] := by
-  simp [iteratedFDeriv_two_apply f e ![e₁, e₂], bilinear_of_iteratedFDeriv_two]
+lemma bilinearIteratedFDerivTwo_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) :
+    bilinearIteratedFDerivTwo 𝕜 f e e₁ e₂ = iteratedFDeriv 𝕜 2 f e ![e₁, e₂] := by
+  simp [iteratedFDeriv_two_apply f e ![e₁, e₂], bilinearIteratedFDerivTwo]
 
 variable (𝕜) in
 /--
 Convenience reformulation of the second iterated derivative, as a map from `E` to linear maps
 `E ⊗[𝕜] E →ₗ[𝕜] F`.
 -/
-noncomputable def tensor_of_iteratedFDeriv_two (f : E → F) : E → E ⊗[𝕜] E →ₗ[𝕜] F :=
-  fun e ↦ lift (bilinear_of_iteratedFDeriv_two 𝕜 f e)
+noncomputable def tensorIteratedFDerivTwo (f : E → F) : E → E ⊗[𝕜] E →ₗ[𝕜] F :=
+  fun e ↦ lift (bilinearIteratedFDerivTwo 𝕜 f e)
 
 /--
-Expression of `tensor_of_iteratedFDeriv_two` in terms of `iteratedFDeriv`.
+Expression of `tensorIteratedFDerivTwo` in terms of `iteratedFDeriv`.
 -/
-lemma tensor_of_iteratedFDeriv_two_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) :
-    tensor_of_iteratedFDeriv_two 𝕜 f e (e₁ ⊗ₜ[𝕜] e₂) = iteratedFDeriv 𝕜 2 f e ![e₁, e₂] := by
-  rw [← bilinear_of_iteratedFDeriv_two_eq_iteratedFDeriv, tensor_of_iteratedFDeriv_two]
+lemma tensorIteratedFDerivTwo_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) :
+    tensorIteratedFDerivTwo 𝕜 f e (e₁ ⊗ₜ[𝕜] e₂) = iteratedFDeriv 𝕜 2 f e ![e₁, e₂] := by
+  rw [← bilinearIteratedFDerivTwo_eq_iteratedFDeriv, tensorIteratedFDerivTwo]
   rfl
 
 end secondDerivativeAPI
 
 /-!
 ## Definition of the Laplacian
-
-Use `open InnerProductSpace` to access the notation `Δ` for `InnerProductSpace.Laplacian`.
 -/
 
 variable
@@ -83,15 +81,18 @@ variable
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f f₁ f₂ : E → F} {x : E}
 
+namespace InnerProductSpace
+
 variable (f) in
 /--
-Laplacian for functions on real inner product spaces.
+Laplacian for functions on real inner product spaces. Use `open InnerProductSpace` to access the
+notation `Δ` for `InnerProductSpace.Laplacian`.
 -/
-noncomputable def InnerProductSpace.Laplacian : E → F :=
-  fun x ↦ tensor_of_iteratedFDeriv_two ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
+noncomputable def laplacian : E → F :=
+  fun x ↦ tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
 
 @[inherit_doc]
-scoped[InnerProductSpace] notation "Δ" => InnerProductSpace.Laplacian
+scoped[InnerProductSpace] notation "Δ" => laplacian
 
 /-!
 ## Computation of Δ in Terms of Orthonormal Bases
@@ -101,31 +102,31 @@ variable (f) in
 /--
 Standard formula, computing the Laplacian from any orthonormal basis.
 -/
-theorem laplace_eq_iteratedFDeriv_orthonormalBasis {ι : Type*} [Fintype ι]
+theorem laplacian_eq_iteratedFDeriv_orthonormalBasis {ι : Type*} [Fintype ι]
     (v : OrthonormalBasis ι ℝ E) :
     Δ f = fun x ↦ ∑ i, iteratedFDeriv ℝ 2 f x ![v i, v i] := by
   ext x
-  simp [InnerProductSpace.Laplacian, canonicalCovariantTensor_eq_sum E v,
-    tensor_of_iteratedFDeriv_two_eq_iteratedFDeriv]
+  simp [InnerProductSpace.laplacian, canonicalCovariantTensor_eq_sum E v,
+    tensorIteratedFDerivTwo_eq_iteratedFDeriv]
 
 variable (f) in
 /--
 Standard formula, computing the Laplacian from the standard orthonormal basis of a real inner
 product space.
 -/
-theorem laplace_eq_iteratedFDeriv_stdOrthonormalBasis :
+theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
     Δ f = fun x ↦
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
-  laplace_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
+  laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
 
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
 structure.
 -/
-theorem laplace_eq_iteratedFDeriv_complexPlane (f : ℂ → F) :
+theorem laplacian_eq_iteratedFDeriv_complexPlane (f : ℂ → F) :
     Δ f = fun x ↦
       iteratedFDeriv ℝ 2 f x ![1, 1] + iteratedFDeriv ℝ 2 f x ![Complex.I, Complex.I] := by
-  simp [laplace_eq_iteratedFDeriv_orthonormalBasis f Complex.orthonormalBasisOneI]
+  simp [laplacian_eq_iteratedFDeriv_orthonormalBasis f Complex.orthonormalBasisOneI]
 
 /-!
 ## Congruence Lemma for Δ
@@ -134,30 +135,30 @@ theorem laplace_eq_iteratedFDeriv_complexPlane (f : ℂ → F) :
 /--
 If two functions agree in a neighborhood of a point, then so do their Laplacians.
 -/
-theorem laplace_congr_nhds (h : f₁ =ᶠ[𝓝 x] f₂) :
+theorem laplacian_congr_nhds (h : f₁ =ᶠ[𝓝 x] f₂) :
     Δ f₁ =ᶠ[𝓝 x] Δ f₂ := by
   filter_upwards [EventuallyEq.iteratedFDeriv ℝ h 2] with x hx
-  simp [laplace_eq_iteratedFDeriv_stdOrthonormalBasis, hx]
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, hx]
 
 /-!
-## ℂ-Linearity of Δ on Continuously Differentiable Functions
+## ℝ-Linearity of Δ on Continuously Differentiable Functions
 -/
 
 /-- The Laplacian commutes with addition. -/
-theorem ContDiffAt.laplace_add (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
+theorem _root_.ContDiffAt.laplacian_add (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
     Δ (f₁ + f₂) x = (Δ f₁) x + (Δ f₂) x := by
-  simp [laplace_eq_iteratedFDeriv_stdOrthonormalBasis,
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis,
     ← Finset.sum_add_distrib, iteratedFDeriv_add_apply h₁ h₂]
 
 /-- The Laplacian commutes with addition. -/
-theorem ContDiffAt.laplace_add_nhd (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
+theorem _root_.ContDiffAt.laplacian_add_nhd (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
     Δ (f₁ + f₂) =ᶠ[𝓝 x] (Δ f₁) + (Δ f₂):= by
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp)] with x h₁x h₂x
-  exact h₁x.laplace_add h₂x
+  exact h₁x.laplacian_add h₂x
 
 /-- The Laplacian commutes with scalar multiplication. -/
-theorem laplace_smul (v : ℝ) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = v • (Δ f) x := by
-  simp [laplace_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_smul_apply hf,
+theorem laplacian_smul (v : ℝ) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = v • (Δ f) x := by
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_smul_apply hf,
     Finset.smul_sum]
 
 /-!
@@ -168,13 +169,15 @@ commutes with taking real and imaginary parts of complex-valued functions.
 -/
 
 /-- The Laplacian commutes with left composition by continuous linear maps. -/
-theorem ContDiffAt.laplace_CLM_comp_left {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
+theorem _root_.ContDiffAt.laplacian_CLM_comp_left {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
     Δ (l ∘ f) x = (l ∘ (Δ f)) x := by
-  simp [laplace_eq_iteratedFDeriv_stdOrthonormalBasis,
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis,
     l.iteratedFDeriv_comp_left h, (by rfl : (2 : ℕ∞) = (2 : ℕ))]
 
 /-- The Laplacian commutes with left composition by continuous linear equivalences. -/
-theorem laplace_CLE_comp_left {l : F ≃L[ℝ] G} :
+theorem laplacian_CLE_comp_left {l : F ≃L[ℝ] G} :
     Δ (l ∘ f) = l ∘ (Δ f) := by
   ext x
-  simp [laplace_eq_iteratedFDeriv_stdOrthonormalBasis, l.iteratedFDeriv_comp_left]
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, l.iteratedFDeriv_comp_left]
+
+end InnerProductSpace
