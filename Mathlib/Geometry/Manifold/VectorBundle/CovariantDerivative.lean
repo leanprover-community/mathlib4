@@ -55,16 +55,11 @@ lemma contMDiffOn_localFrame_baseSet
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) n
       (fun x ↦ TotalSpace.mk' F x (b.localFrame e i x)) e.baseSet := by
-  -- TODO: add contMDiffOn_section, for a set contained in a single trivialisation domain
-  intro x hx
-  refine (contMDiffWithinAt_section (localFrame e b i) e.baseSet x).mpr ?_
-  apply (contMDiffWithinAt_const (c := b i)).congr_of_mem ?_ hx
+  rw [contMDiffOn_section_of_mem_baseSet]
+  apply (contMDiffOn_const (c := b i)).congr
   intro y hy
   simp [localFrame, hy, localFrame_toBasis_at]
-  -- TODO: add version of contMDiffFoo_section, with any compatible trivialisation!
-  -- then apply e there, and this should cancel like so
-  have almost : (e { proj := y, snd := e.symm y (b i) }).2 = b i := sorry
-  -- convert almost -- now, that's false
+  guard_target = (e { proj := y, snd := e.symm y (b i) }).2 = b i -- should be obvious
   sorry
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
@@ -152,7 +147,7 @@ lemma Basis.localFrame_repr_apply_zero_at
     b.localFrame_repr e s i x = 0 := by
   by_cases hxe : x ∈ e.baseSet; swap
   · simp [localFrame_repr, hxe]
-  have : (e { proj := x, snd := 0 }).2 = 0 := sorry -- use linearity of e?
+  have : (e { proj := x, snd := 0 }).2 = 0 := sorry -- same sorry as above
   simp [localFrame_repr, localFrame_toBasis_at, hxe, hs, this]
 
 -- TODO: better name
