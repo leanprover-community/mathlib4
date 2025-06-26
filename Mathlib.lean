@@ -3269,7 +3269,6 @@ import Mathlib.Data.Nat.Hyperoperation
 import Mathlib.Data.Nat.Init
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.LogFueled
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
