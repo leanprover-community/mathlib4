@@ -145,7 +145,7 @@ lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
   -- The key idea: Let `X = Spec B` and `Y = Spec C`.
   -- We want to show `(X × Y)(R)` has the subspace topology from `X(R) × Y(R)`.
   -- We already know that `X(R) × Y(R)` is a subspace of `𝔸ᴮ(R) × 𝔸ᶜ(R)` and by explicit calculation
-  -- this is isomorphic to `𝔸ᴮ⁺ᶜ(R)` which `(X × Y)(R)` embedds into.
+  -- this is isomorphic to `𝔸ᴮ⁺ᶜ(R)` which `(X × Y)(R)` embeds into.
   let PB := CommRingCat.of (MvPolynomial B A)
   let PC := CommRingCat.of (MvPolynomial C A)
   let fB : PB ⟶ B := CommRingCat.ofHom (MvPolynomial.eval₂Hom φ.hom id)
