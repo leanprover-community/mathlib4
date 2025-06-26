@@ -107,7 +107,8 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
     {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
 
   if currentBranch.exitCode == 0 then
-    let branchName := currentBranch.stdout.trim
+    let branchName := currentBranch.stdout.trim.stripPrefix "heads/"
+    IO.println s!"Current branch: {branchName}"
     -- Check if we're on a branch that should use nightly-testing remote
     let shouldUseNightlyTesting := branchName == "nightly-testing" ||
                                   branchName.startsWith "lean-pr-testing-" ||
@@ -142,10 +143,19 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
                   let useFirst := if owner == "leanprover-community" then false else true
                   return {repo := repo, useFirst := useFirst}
 
-  -- Fall back to the original logic using origin remote
-  let repo ← getRepoFromRemote mathlibDepPath "origin"
-    "Ensure Git is installed and Mathlib's `origin` remote points to its GitHub repository."
-  IO.println s!"Using cache from origin: {repo}"
+  -- Fall back to using the remote that the current branch is tracking
+  let trackingRemote ← IO.Process.output
+    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trim}.remote"], cwd := mathlibDepPath}
+
+  let remoteName := if trackingRemote.exitCode == 0 then
+    trackingRemote.stdout.trim
+  else
+    -- If no tracking remote is configured, fall back to origin
+    "origin"
+
+  let repo ← getRepoFromRemote mathlibDepPath remoteName
+    s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
+  IO.println s!"Using cache from {remoteName}: {repo}"
   return {repo := repo, useFirst := false}
 
 -- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
