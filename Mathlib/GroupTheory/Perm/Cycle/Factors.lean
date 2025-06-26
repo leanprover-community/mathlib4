@@ -339,7 +339,7 @@ theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
   rw [← cycleOf_zpow_apply_self g x, cycle_zpow_mem_support_iff]
   · rw [← Int.dvd_iff_emod_eq_zero]
   · exact isCycle_cycleOf g hx
-  · simp only [mem_support, cycleOf_apply_self]; exact hx
+  · simp only [cycleOf_apply_self]; exact hx
 
 end CycleOf
 

@@ -328,7 +328,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
     ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
     LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
     ContinuousLinearMap.coe_sum', Finset.sum_apply,
-    Matrix.zero_empty]
+    ]
   rfl
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. Version

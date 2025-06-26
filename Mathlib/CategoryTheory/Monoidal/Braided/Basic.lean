@@ -609,7 +609,7 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
   clear this
   slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight,
     leftUnitor_inv_braiding]
-  simp [tensorHom_id, id_tensorHom, tensorHom_def]
+  simp [tensorHom_def]
 
 @[reassoc]
 theorem tensor_right_unitality (X₁ X₂ : C) :
@@ -626,7 +626,7 @@ theorem tensor_right_unitality (X₁ X₂ : C) :
   clear this
   slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight,
     rightUnitor_inv_braiding]
-  simp [tensorHom_id, id_tensorHom, tensorHom_def]
+  simp [tensorHom_def]
 
 @[reassoc]
 theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :

@@ -252,7 +252,7 @@ lemma toGenerators_comp : (Q.comp P).toGenerators = Q.toGenerators.comp P.toGene
 the sum of the dimensions. -/
 lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite σ] [Finite σ'] :
     (Q.comp P).dimension = Q.dimension + P.dimension := by
-  simp only [Presentation.dimension, toPresentation_comp, Presentation.toGenerators_comp]
+  simp only [Presentation.dimension]
   have : Nat.card σ ≤ Nat.card ι :=
     card_relations_le_card_vars_of_isFinite P
   have : Nat.card σ' ≤ Nat.card ι' :=
@@ -336,7 +336,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
   induction p using MvPolynomial.induction_on with
   | C a =>
     simp only [algHom_C, algebraMap_eq, eval₂_C,
-      ← Presentation.toGenerators_comp, ← toPresentation_comp]
+      ]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i hp =>
     simp only [map_mul, eval₂_mul, hp]
@@ -393,7 +393,7 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
     ext i j : 1
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply,
-      Presentation.baseChange_toGenerators, baseChange_toPresentation, MvPolynomial.pderiv_map]
+      Presentation.baseChange_toGenerators, MvPolynomial.pderiv_map]
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
   rw [P.algebraMap_apply]
@@ -419,7 +419,7 @@ lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
     (P.reindex e f).jacobiMatrix =
       (P.jacobiMatrix.reindex f.symm f.symm).map (MvPolynomial.rename e.symm) := by
   ext i j : 1
-  simp [jacobiMatrix_apply, PreSubmersivePresentation.reindex_map,
+  simp [jacobiMatrix_apply,
     MvPolynomial.pderiv_rename e.symm.injective, reindex, Presentation.reindex]
 
 @[simp]

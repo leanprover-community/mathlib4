@@ -1224,7 +1224,7 @@ def monoidOf : Submonoid.LocalizationMap S (Localization S) :=
       isUnit_iff_exists_inv.2 ⟨mk 1 y, by rw [mk_mul, mul_one, one_mul, mk_self]⟩
     surj' := fun z ↦ induction_on z fun x ↦
       ⟨x, by rw [mk_mul, mul_comm x.fst, ← mk_mul, mk_self, one_mul]⟩
-    exists_of_eq := fun x y ↦ Iff.mp <| mk_eq_mk_iff.trans <| r_iff_exists.trans <| by simp [r] }
+    exists_of_eq := fun x y ↦ Iff.mp <| mk_eq_mk_iff.trans <| r_iff_exists.trans <| by simp }
 
 @[to_additive]
 theorem mk_one_eq_monoidOf_mk (x) : mk x 1 = (monoidOf S).toMap x := rfl

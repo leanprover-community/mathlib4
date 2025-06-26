@@ -881,7 +881,7 @@ theorem prod_eq_bot_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊥ ↔
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
-  simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← mrange_eq_map, mrange_fst,
+  simp only [eq_top_iff, le_prod_iff, ← mrange_eq_map, mrange_fst,
     mrange_snd]
 
 @[to_additive (attr := simp)]

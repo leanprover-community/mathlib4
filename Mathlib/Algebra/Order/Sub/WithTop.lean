@@ -51,7 +51,7 @@ theorem sub_top {a : WithTop α} : a - ⊤ = (⊥ : α) := by cases a <;> rfl
 
 @[simp] theorem sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := by
   induction a <;> induction b <;>
-    simp only [← coe_sub, coe_ne_top, sub_top, zero_ne_top, top_sub_coe, false_and, Ne,
+    simp only [← coe_sub, coe_ne_top, sub_top, top_sub_coe, false_and, Ne,
       not_true_eq_false, not_false_eq_true, and_false, and_self]
 
 lemma sub_ne_top_iff {a b : WithTop α} : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := by simp [or_iff_not_imp_left]

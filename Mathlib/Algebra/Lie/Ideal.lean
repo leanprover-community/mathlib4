@@ -376,7 +376,7 @@ theorem coe_map_of_surjective (h : Function.Surjective f) :
         obtain ⟨z₂, hz₂, rfl⟩ := hy'
         obtain ⟨z₁, rfl⟩ := h x
         simp only [LieHom.coe_toLinearMap, SetLike.mem_coe, Set.mem_image,
-          LieSubmodule.mem_toSubmodule, Submodule.mem_carrier, Submodule.map_coe]
+          Submodule.mem_carrier, Submodule.map_coe]
         use ⁅z₁, z₂⁆
         exact ⟨I.lie_mem hz₂, f.map_lie z₁ z₂⟩ }
   rw [map, toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff]

@@ -68,7 +68,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   /- Then the union of boxes `J ∈ π` such that `π.tag ∈ s` includes `F` and is included by `U`,
     hence its measure is `ε`-close to the measure of `s`. -/
   dsimp [integralSum]
-  simp only [mem_closedBall, dist_eq_norm, ← indicator_const_smul_apply,
+  simp only [dist_eq_norm, ← indicator_const_smul_apply,
     sum_indicator_eq_sum_filter, ← sum_smul, ← sub_smul, norm_smul, Real.norm_eq_abs, ←
     Prepartition.filter_boxes, ← Prepartition.measure_iUnion_toReal]
   gcongr

@@ -242,12 +242,12 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
     apply IsPreprimitive.of_isTrivialBlock_base a
     intro B haB hB
     rcases h_bot_or_top ⟨B, haB, hB⟩ with hB' | hB' <;>
-      simp only [← Subtype.coe_inj, Subtype.coe_mk] at hB'
+      simp only [← Subtype.coe_inj] at hB'
     · left; rw [hB']; exact Set.subsingleton_singleton
     · right; rw [hB']; rfl
   · intro hGX'; apply IsSimpleOrder.mk
     rintro ⟨B, haB, hB⟩
-    simp only [← Subtype.coe_inj, Subtype.coe_mk]
+    simp only [← Subtype.coe_inj]
     cases hGX'.isTrivialBlock_of_isBlock hB with
     | inl h =>
       simp [BlockMem.coe_bot, h.eq_singleton_of_mem haB]
@@ -331,7 +331,7 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
   suffices Set.ncard B < 2 by simpa [Nat.lt_succ] using this
   -- We reduce to proving that (Set.range f).ncard ≤ (orbit N B).ncard
   apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (zero_le _)
-  simp only [← Nat.card_eq_fintype_card, ← hB.ncard_block_mul_ncard_orbit_eq hB']
+  simp only [← hB.ncard_block_mul_ncard_orbit_eq hB']
   apply Nat.mul_le_mul_left
   -- We reduce to proving that (Set.range f ∩ g • B).ncard ≤ 1 for every g
   have hfin := Fintype.ofFinite (Set.range fun g : H ↦ g • B)
@@ -348,7 +348,7 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
     -- the preimage is a block which is not ⊤
     apply Or.resolve_right (isTrivialBlock_of_isBlock ((hB.translate g).preimage f))
     intro h
-    simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
+    simp only [Set.preimage_eq_univ_iff] at h
     -- We will prove that B is large, which will contradict the assumption that it is not ⊤
     apply hB_ne_top
     apply hB.eq_univ_of_card_lt

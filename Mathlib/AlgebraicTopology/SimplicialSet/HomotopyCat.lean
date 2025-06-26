@@ -160,7 +160,7 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
   intro X
   unfold nerveEquiv nerveHomEquiv
   simp only [Cat.of_α, op_obj, ComposableArrows.obj', Fin.zero_eta, Fin.isValue, Equiv.coe_fn_mk,
-    nerveEquiv_apply, Nat.reduceAdd, id_edge, SimplexCategory.len_mk, id_eq, eqToHom_refl, comp_id,
+    nerveEquiv_apply, Nat.reduceAdd, id_edge, eqToHom_refl, comp_id,
     id_comp, ReflQuiver.id_eq_id]
   unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
   -- the following was obtained by `simp?`
@@ -186,9 +186,9 @@ def OneTruncation₂.ofNerve₂.natIso :
       unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
         nerveFunctor toReflPrefunctor
       simp only [comp_obj, whiskeringLeft_obj_obj, ReflQuiv.of_val, Functor.comp_map,
-        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, whiskeringRight_obj_obj, ofNerve₂,
+        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, ofNerve₂,
         Cat.of_α, nerveEquiv, ComposableArrows.obj', Fin.zero_eta, Fin.isValue,
-        ReflQuiv.comp_eq_comp, Nat.reduceAdd, SimplexCategory.len_mk, id_eq, op_map,
+        ReflQuiv.comp_eq_comp, Nat.reduceAdd, op_map,
         Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
       simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])

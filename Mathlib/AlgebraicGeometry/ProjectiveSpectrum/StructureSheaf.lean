@@ -322,7 +322,7 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
   ext ⟨t, ht⟩
   rw [Proj.res_apply, Proj.res_apply]
   simp [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
-    IsLocalization.mk'_eq_iff_eq, e t ht]
+    e t ht]
 
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by

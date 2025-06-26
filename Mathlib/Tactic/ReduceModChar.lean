@@ -94,7 +94,7 @@ lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ)
     (k : R) = (k % p : ℤ) := by
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
-    _ = ↑(k % p) := by simp [CharP.cast_eq_zero R]
+    _ = ↑(k % p) := by simp
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/

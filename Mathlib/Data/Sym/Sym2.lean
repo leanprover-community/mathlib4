@@ -306,7 +306,7 @@ instance : SetLike (Sym2 α) α where
     obtain ⟨x, y⟩ := z
     obtain ⟨x', y'⟩ := z'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
-    simp only [mem_iff', eq_self_iff_true] at hx hy hx' hy'
+    simp only [mem_iff'] at hx hy hx' hy'
     aesop
 
 @[simp]
@@ -737,7 +737,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     {a ∈ (s ×ˢ s).image Sym2.mk | a.IsDiag} = s.diag.image Sym2.mk := by
   ext ⟨x, y⟩
-  simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
+  simp only [mem_image, mem_diag, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
     rw [← h, Sym2.mk_isDiag_iff] at hab

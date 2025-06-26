@@ -1137,7 +1137,7 @@ theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by
   refine diff_subset_comm.2 fun x hx a ha => ?_
   simp only [mem_diff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not,
-    eval_apply] at hx
+    ] at hx
   exact hx.2 _ ha (hx.1 _ ha)
 
 theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
@@ -1151,7 +1151,7 @@ section Directed
 
 theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
+  simp only [DirectedOn, mem_iUnion, exists_imp]
   exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
     let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
     let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)

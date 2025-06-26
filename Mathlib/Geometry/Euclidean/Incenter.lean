@@ -138,7 +138,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
     rw [Submodule.span_singleton_le_iff_mem, direction_affineSpan]
     simp only [Finset.mem_erase, Finset.mem_univ, and_true] at hj
     refine vsub_mem_vectorSpan _ ?_ ?_ <;>
-      simp only [range_faceOpposite_points, Set.mem_image, Set.mem_setOf_eq]
+      simp only [range_faceOpposite_points, Set.mem_image]
     · exact ⟨i, hj.1.symm, rfl⟩
     · exact ⟨0, hj.2.symm, rfl⟩
   · rw [inner_smul_right, inner_smul_right, inner_vsub_vsub_altitudeFoot_eq_height_sq _ hi,
@@ -262,7 +262,7 @@ def inradius : ℝ :=
 
 @[simp] lemma exsphere_univ : s.exsphere Finset.univ = s.insphere := by
   rw [exsphere, ← Finset.compl_empty, excenterWeightsUnnorm_compl, excenterWeights_compl]
-  simp only [Finset.mem_univ, Pi.neg_apply, Finset.sum_neg_distrib, inv_neg, abs_neg]
+  simp only [Pi.neg_apply, Finset.sum_neg_distrib, inv_neg, abs_neg]
   rfl
 
 @[simp] lemma excenter_univ : s.excenter Finset.univ = s.incenter := by
@@ -321,7 +321,7 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
     signedInfDist_affineCombination _ _ h.sum_excenterWeights_eq_one, excenterWeights,
     Pi.smul_apply, ← dist_eq_norm_vsub, excenterWeightsUnnorm]
   rw [← altitudeFoot, ← height]
-  simp [mul_assoc, (s.height_pos i).ne']
+  simp [(s.height_pos i).ne']
 
 variable {s} in
 /-- The signed distance between the excenter and its projection in the plane of each face is the
@@ -414,7 +414,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedInfDist i p = -r}, ?_⟩
     apply (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).1
     refine ⟨r, ?_⟩
-    simp only [Set.mem_setOf_eq, ite_mul, neg_mul, one_mul]
+    simp only [ite_mul, neg_mul, one_mul]
     intro i
     split_ifs with hi
     · simpa using hi

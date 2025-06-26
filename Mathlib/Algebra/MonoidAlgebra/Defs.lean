@@ -236,10 +236,10 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
     one_mul := fun f => by
-      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
+      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero,
         one_mul, sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero,
         mul_one, sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
@@ -932,7 +932,7 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
     nsmul_zero := by
       intros
       refine Finsupp.ext fun _ => ?_
-      simp [-nsmul_eq_mul, add_smul]
+      simp [-nsmul_eq_mul]
     nsmul_succ := by
       intros
       refine Finsupp.ext fun _ => ?_
@@ -1000,7 +1000,7 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, add_zero,
         mul_one, sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
@@ -1356,7 +1356,7 @@ def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
   { singleAddHom 0 with
     toFun := single 0
     map_one' := rfl
-    map_mul' := fun x y => by simp only [Finsupp.singleAddHom, single_mul_single, zero_add] }
+    map_mul' := fun x y => by simp only [single_mul_single, zero_add] }
 
 /-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
 and `single 0 b`, then they are equal. -/

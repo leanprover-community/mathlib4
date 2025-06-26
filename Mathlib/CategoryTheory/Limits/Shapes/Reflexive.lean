@@ -414,7 +414,7 @@ def mkNatTrans : F ⟶ G where
       dsimp
       simp only [Functor.map_id, Category.id_comp, Category.comp_id,
         Functor.map_comp, h₁, h₂, h₃, reassoc_of% h₁, reassoc_of% h₂,
-        reflexivePair_map_reflexion, reflexivePair_map_left, reflexivePair_map_right,
+       
         Category.assoc]
 
 @[simp]

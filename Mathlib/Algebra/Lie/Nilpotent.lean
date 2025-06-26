@@ -191,7 +191,7 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
   · simp
   · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
-    simp only [LieSubmodule.top_coe, Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and,
+    simp only [Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and,
       Set.mem_setOf]
     exact ⟨x, m, rfl⟩
 
@@ -628,7 +628,7 @@ theorem lieModule_lcs_map_le (k : ℕ) :
     (lowerCentralSeries R L M k : Submodule R M).map g ≤ lowerCentralSeries R L₂ M₂ k := by
   induction k with
   | zero =>
-    simp [LinearMap.range_eq_top, Submodule.map_top]
+    simp [Submodule.map_top]
   | succ k ih =>
     rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', Submodule.map_span,
       Submodule.span_le]
@@ -783,7 +783,7 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
   induction k with
   | zero =>
     simp only [LieModule.lowerCentralSeries_zero, LieSubmodule.top_toSubmodule,
-      LieIdeal.top_toLieSubalgebra, LieSubalgebra.top_toSubmodule]
+      ]
   | succ k ih =>
     simp only [LieModule.lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span]
     congr

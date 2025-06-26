@@ -95,6 +95,6 @@ instance orderedSub [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
   ⟨by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩
     simp only [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, toNonneg_le,
-      Subtype.coe_mk]⟩
+      ]⟩
 
 end Nonneg

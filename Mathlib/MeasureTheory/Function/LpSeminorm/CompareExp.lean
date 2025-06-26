@@ -68,7 +68,7 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
   by_cases hq_top : q = ∞
   · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top,
-      GroupWithZero.inv_zero]
+      ]
     by_cases hp_top : p = ∞
     · simp [hp_top]
     rw [eLpNorm_eq_eLpNorm' hp0 hp_top]

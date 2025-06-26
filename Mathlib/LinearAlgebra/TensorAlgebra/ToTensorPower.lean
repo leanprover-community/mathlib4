@@ -48,9 +48,9 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   -- Porting note: pulled the next two lines out of the long `simp only` below.
   simp only [LinearMap.compMultilinearMap_apply]
   rw [LinearMap.compr₂_apply, ← gMul_eq_coe_linearMap]
-  simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', LinearMap.compl₂_apply,
-    LinearMap.comp_apply, LinearMap.compMultilinearMap_apply, PiTensorProduct.lift.tprod,
-    TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply, ←
+  simp only [LinearMap.mul_apply', LinearMap.compl₂_apply,
+    LinearMap.comp_apply,
+    TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply←
     gMul_eq_coe_linearMap]
   refine Eq.trans ?_ List.prod_append
   congr
@@ -96,7 +96,7 @@ theorem toDirectSum_ι (x : M) :
 theorem ofDirectSum_comp_toDirectSum :
     ofDirectSum.comp toDirectSum = AlgHom.id R (TensorAlgebra R M) := by
   ext
-  simp [DirectSum.lof_eq_of, tprod_apply]
+  simp [tprod_apply]
 
 @[simp]
 theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :

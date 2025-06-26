@@ -64,7 +64,7 @@ theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X +
 theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r :=
   show (lcoeff R n).comp (taylor r) f = (leval r).comp (hasseDeriv n) f by
     congr 1; clear! f; ext i
-    simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, coeff_C_mul,
+    simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply,
       hasseDeriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i,
       map_sum]
     simp only [lcoeff_apply, ← C_eq_natCast, mul_assoc, ← C_pow, ← C_mul, coeff_mul_C,
@@ -148,7 +148,7 @@ theorem taylor_pow (n : ℕ) : taylor r (f ^ n) = taylor r f ^ n :=
   rfl
 
 theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
-  simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
+  simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, add_assoc]
 
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]

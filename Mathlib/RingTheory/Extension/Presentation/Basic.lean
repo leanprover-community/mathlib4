@@ -198,7 +198,7 @@ lemma _root_.Algebra.Generators.ker_localizationAway :
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
   rw [Generators.ker_eq_ker_aeval_val, this, AlgEquiv.toAlgHom_eq_coe, ← RingHom.ker_coe_toRingHom,
     AlgHom.comp_toRingHom, ← RingHom.comap_ker]
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
+  simp only [
     AlgEquiv.toAlgHom_toRingHom]
   show Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r)) = Ideal.span {C r * X () - 1}
   simp [RingHom.ker_equiv, ← RingHom.ker_eq_comap_bot]
@@ -216,7 +216,7 @@ noncomputable def localizationAway : Presentation R S Unit Unit where
 
 @[simp]
 lemma localizationAway_dimension_zero : (localizationAway S r).dimension = 0 := by
-  simp [Presentation.dimension, localizationAway]
+  simp [Presentation.dimension]
 
 end Localization
 
@@ -233,7 +233,7 @@ private lemma span_range_relation_eq_ker_baseChange :
     have Z := aeval_val_relation P y
     apply_fun TensorProduct.includeRight (R := R) (A := T) at Z
     rw [map_zero] at Z
-    simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy, algebraMap_apply,
+    simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy,
       TensorProduct.includeRight_apply]
     erw [aeval_map_algebraMap T P.baseChange.val (P.relation y)]
     show _ = TensorProduct.includeRight.toRingHom _
@@ -251,11 +251,11 @@ private lemma span_range_relation_eq_ker_baseChange :
       clear hx
       induction x using MvPolynomial.induction_on with
       | C a =>
-        simp only [Generators.algebraMap_apply, algHom_C, TensorProduct.algebraMap_apply,
+        simp only [algHom_C, TensorProduct.algebraMap_apply,
           id.map_eq_id, RingHom.id_apply, e]
         rw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
         simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
-          TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one, algebraMap_eq]
+          TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one]
       | add p q hp hq => simp only [map_add, hp, hq]
       | mul_X p i hp =>
         simp only [map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul, map_one,
@@ -344,7 +344,7 @@ private lemma aux_X (i : ι' ⊕ ι) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val
 /-- The pre-images constructed in `comp_relation_aux` are indeed pre-images under `aux`. -/
 private lemma comp_relation_aux_map (r : σ') :
     (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
-  simp only [aux, comp_relation_aux, Sum.elim_inl, map_finsuppSum]
+  simp only [aux, comp_relation_aux, map_finsuppSum]
   simp only [map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
   conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
   congr
