@@ -34,16 +34,16 @@ deriving Inhabited, BEq
 -- For debugging purposes.
 instance : ToString AtomicFact where
   toString fa := match fa with
-  | .eq lhs rhs _ => s!"{lhs} = {rhs}"
-  | .ne lhs rhs _ => s!"{lhs} ≠ {rhs}"
-  | .le lhs rhs _ => s!"{lhs} ≤ {rhs}"
-  | .nle lhs rhs _ => s!"¬ {lhs} ≤ {rhs}"
-  | .lt lhs rhs _ => s!"{lhs} < {rhs}"
-  | .nlt lhs rhs _ => s!"¬ {lhs} < {rhs}"
-  | .isTop idx => s!"{idx} = ⊤"
-  | .isBot idx => s!"{idx} = ⊥"
-  | .isInf lhs rhs res => s!"{lhs} ⊓ {rhs} = {res}"
-  | .isSup lhs rhs res => s!"{lhs} ⊔ {rhs} = {res}"
+  | .eq lhs rhs _ => s!"#{lhs} = #{rhs}"
+  | .ne lhs rhs _ => s!"#{lhs} ≠ #{rhs}"
+  | .le lhs rhs _ => s!"#{lhs} ≤ #{rhs}"
+  | .nle lhs rhs _ => s!"¬ #{lhs} ≤ #{rhs}"
+  | .lt lhs rhs _ => s!"#{lhs} < #{rhs}"
+  | .nlt lhs rhs _ => s!"¬ #{lhs} < #{rhs}"
+  | .isTop idx => s!"#{idx} := ⊤"
+  | .isBot idx => s!"#{idx} := ⊥"
+  | .isInf lhs rhs res => s!"#{res} := #{lhs} ⊓ #{rhs}"
+  | .isSup lhs rhs res => s!"#{res} := #{lhs} ⊔ #{rhs}"
 
 /-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
 pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their

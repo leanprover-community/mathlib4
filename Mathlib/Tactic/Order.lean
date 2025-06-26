@@ -143,6 +143,8 @@ namespace Mathlib.Tactic.Order
 
 open Lean Qq Elab Meta Tactic
 
+initialize registerTraceClass `order
+
 /-- Finds a contradictory `≠`-fact whose `.lhs` and `.rhs` belong to the same strongly connected
 component in the `≤`-graph, implying they must be equal, and then uses it to derive `False`. -/
 def findContradictionWithNe (graph : Graph) (idxToAtom : Std.HashMap Nat Expr)
@@ -152,22 +154,22 @@ def findContradictionWithNe (graph : Graph) (idxToAtom : Std.HashMap Nat Expr)
     let .ne lhs rhs neProof := fact | continue
     if scc[lhs]! != scc[rhs]! then
       continue
-    let .some pf1 ← graph.buildTransitiveLeProof idxToAtom lhs rhs
+    let some pf1 ← graph.buildTransitiveLeProof idxToAtom lhs rhs
       | throwError "Bug: Cannot find path in strongly connected component"
-    let .some pf2 ← graph.buildTransitiveLeProof idxToAtom rhs lhs
+    let some pf2 ← graph.buildTransitiveLeProof idxToAtom rhs lhs
       | throwError "Bug: Cannot find path in strongly connected component"
     let pf3 ← mkAppM ``le_antisymm #[pf1, pf2]
-    return .some <| mkApp neProof pf3
-  return .none
+    return some <| mkApp neProof pf3
+  return none
 
 /-- Using the `≤`-graph `g`, find a contradiction with some `≰`-fact. -/
 def findContradictionWithNle (g : Graph) (idxToAtom : Std.HashMap ℕ Expr)
     (facts : Array AtomicFact) : MetaM <| Option Expr := do
   for fact in facts do
     if let .nle lhs rhs proof := fact then
-      let .some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
-      return .some <| mkApp proof pf
-  return .none
+      let some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
+      return some <| mkApp proof pf
+  return none
 
 /-- Adds edges to the `≤`-graph using two types of facts:
 1. Each fact `¬ (x < y)` allows to add the edge `(x, y)` when `y` is reachable from `x` in the
@@ -188,7 +190,7 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
       if usedNltFacts[i] then
         continue
       let .nlt lhs rhs proof := nltFacts[i] | throwError "Bug: Non-nlt fact in nltFacts."
-      let .some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
+      let some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
       g := g.addEdge ⟨rhs, lhs, ← mkAppM ``le_of_not_lt_le #[proof, pf]⟩
       changed := true
       usedNltFacts := usedNltFacts.set i true
@@ -196,14 +198,14 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
       for idx in [:g.size] do
         match fact with
         | .isSup lhs rhs sup =>
-          let .some pf1 ← g.buildTransitiveLeProof idxToAtom lhs idx | continue
-          let .some pf2 ← g.buildTransitiveLeProof idxToAtom rhs idx | continue
+          let some pf1 ← g.buildTransitiveLeProof idxToAtom lhs idx | continue
+          let some pf2 ← g.buildTransitiveLeProof idxToAtom rhs idx | continue
           if (← g.buildTransitiveLeProof idxToAtom sup idx).isNone then
             g := g.addEdge ⟨sup, idx, ← mkAppM ``sup_le #[pf1, pf2]⟩
             changed := true
         | .isInf lhs rhs inf =>
-          let .some pf1 ← g.buildTransitiveLeProof idxToAtom idx lhs | continue
-          let .some pf2 ← g.buildTransitiveLeProof idxToAtom idx rhs | continue
+          let some pf1 ← g.buildTransitiveLeProof idxToAtom idx lhs | continue
+          let some pf2 ← g.buildTransitiveLeProof idxToAtom idx rhs | continue
           if (← g.buildTransitiveLeProof idxToAtom idx inf).isNone then
             g := g.addEdge ⟨idx, inf, ← mkAppM ``le_inf #[pf1, pf2]⟩
             changed := true
@@ -221,34 +223,47 @@ deriving BEq
 order, and a partial order is preferred over a preorder. -/
 def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
   if (← synthInstance? (← mkAppM ``LinearOrder #[type])).isSome then
-    return .some .lin
+    return some .lin
   if (← synthInstance? (← mkAppM ``PartialOrder #[type])).isSome then
-    return .some .part
+    return some .part
   if (← synthInstance? (← mkAppM ``Preorder #[type])).isSome then
-    return .some .pre
-  return .none
+    return some .pre
+  return none
+
+#check String.intercalate
+
+local instance : Ord (Nat × Expr) where
+  compare x y := compare x.1 y.1
 
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
   let g ← getMainGoal
-  let .some g ← g.falseOrByContra | return
+  let some g ← g.falseOrByContra | return
   g.withContext do
     let TypeToAtoms ← collectFacts
     for (type, (idxToAtom, facts)) in TypeToAtoms do
-      let .some orderType ← findBestOrderInstance type | continue
+      let some orderType ← findBestOrderInstance type | continue
       let facts : Array AtomicFact ← match orderType with
       | .pre => preprocessFactsPreorder facts
       | .part => preprocessFactsPartial facts idxToAtom
       | .lin => preprocessFactsLinear facts idxToAtom
+      let mut msg := m!"Working on type {← ppExpr type}\n"
+      let atomsMsg := String.intercalate "\n\t" <| Array.toList <|
+        ← idxToAtom.toArray.sortDedup.mapM
+          fun ⟨idx, atom⟩ => do return s!"#{idx} := {← ppExpr atom}"
+      msg := msg.compose m!"Collected atoms:\n\t{atomsMsg}\n"
+      let factsMsg := String.intercalate "\n\t" (facts.map toString).toList
+      msg := msg.compose m!"Collected facts:\n\t{factsMsg}"
+      trace[order] msg
       let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
       graph ← updateGraphWithNltInfSup graph idxToAtom facts
       if orderType == .pre then
-        let .some pf ← findContradictionWithNle graph idxToAtom facts | continue
+        let some pf ← findContradictionWithNle graph idxToAtom facts | continue
         g.assign pf
         return
       else
-        let .some pf ← findContradictionWithNe graph idxToAtom facts | continue
+        let some pf ← findContradictionWithNe graph idxToAtom facts | continue
         g.assign pf
         return
     throwError "No contradiction found"
