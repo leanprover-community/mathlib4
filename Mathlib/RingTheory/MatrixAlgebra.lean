@@ -96,7 +96,7 @@ suppress_compilation
 
 open scoped TensorProduct
 
-variable (R K F A m n: Type*) [CommSemiring R] [Semiring K] [CommSemiring F] [Algebra R K]
+variable (R K F A m n : Type*) [CommSemiring R] [Semiring K] [CommSemiring F] [Algebra R K]
     [Algebra F K] [Semiring A] [Algebra F A] [SMulCommClass F R K]
 
 open Matrix
@@ -140,13 +140,12 @@ private abbrev invFun_Klinear (i : m) (j : n) : K ⊗[F] A →ₗ[K] K ⊗[F] Ma
 variable [Fintype m] [Fintype n]
 
 private def invFun_linearMap : Matrix m n (K ⊗[F] A) →ₗ[K] K ⊗[F] Matrix m n A :=
-  (LinearMap.lsum K _ ℕ fun ii => LinearMap.lsum K _ ℕ fun jj =>
-    invFun_Klinear K F A m n ii jj) ∘ₗ (ofLinearEquiv K).symm.toLinearMap
+  Matrix.liftLinear ℕ (invFun_Klinear K F A m n)
 
 @[simp]
 theorem invFun_linearMap_single_tmul (i : m) (j : n) (k : K) (a : A) :
     invFun_linearMap K F A m n (.single i j (k ⊗ₜ a)) = k ⊗ₜ .single i j a := by
-  simp [invFun_linearMap, -LinearMap.lsum_apply, LinearMap.lsum_piSingle]
+  simp [invFun_linearMap]
 
 attribute [local ext] AlgebraTensorModule.ext Matrix.ext_linearMap in
 def linearEquivTensor : K ⊗[F] Matrix m n A ≃ₗ[K] Matrix m n (K ⊗[F] A) :=
@@ -208,13 +207,13 @@ def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :
     matrixEquivTensor n R A M = ∑ i : n, ∑ j : n, M i j ⊗ₜ single i j 1 := by
-  simp [matrixEquivTensor, invFun_linearMap]
+  simp [matrixEquivTensor, invFun_linearMap, liftLinear_apply]
 
 -- Porting note: short circuiting simplifier from simplifying left hand side
 @[simp (high)]
 theorem matrixEquivTensor_apply_single (i j : n) (x : A) :
     matrixEquivTensor n R A (single i j x) = x ⊗ₜ single i j 1 := by
-  simp [matrixEquivTensor, -LinearMap.lsum_apply, toTensorMatrixLin_tmul_single]
+  simp [matrixEquivTensor, toTensorMatrixLin_tmul_single]
 
 @[deprecated (since := "2025-05-05")]
 alias matrixEquivTensor_apply_stdBasisMatrix := matrixEquivTensor_apply_single

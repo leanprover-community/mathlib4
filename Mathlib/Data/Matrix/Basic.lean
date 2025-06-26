@@ -204,10 +204,6 @@ theorem scalar_commute_iff {r : α} {M : Matrix n n α} :
 theorem scalar_commute (r : α) (hr : ∀ r', Commute r r') (M : Matrix n n α) :
     Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
 
-theorem scalar_commute' {n α : Type*} [Semiring α] [DecidableEq n] [Fintype n]
-    (r : α) (M : Matrix n n α) (hr : ∀ i j, Commute r (M i j))  :
-    Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _ _
-
 end Scalar
 
 end Semiring
