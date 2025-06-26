@@ -964,8 +964,7 @@ lemma antitoneOn_derivWithin (hfc : ConcaveOn ℝ S f) (hfd : DifferentiableOn �
 antitone (monotone decreasing) on `S`. -/
 theorem antitoneOn_deriv (hfc : ConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     AntitoneOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end ConcaveOn
 
@@ -1067,8 +1066,7 @@ lemma strictAntiOn_derivWithin (hfc : StrictConcaveOn ℝ S f) (hfd : Differenti
 
 theorem strictAntiOn_deriv (hfc : StrictConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     StrictAntiOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end StrictConcaveOn
 
