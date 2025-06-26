@@ -111,7 +111,7 @@ theorem stabilizer_ne_top (s : Set α) (hs : s.Nonempty) (hsc : sᶜ.Nonempty) :
   obtain ⟨a, ha⟩ := hs
   obtain ⟨b, hb⟩ := hsc
   intro h
-  rw [Set.mem_compl_iff] at hb ; apply hb
+  rw [Set.mem_compl_iff] at hb; apply hb
   have hg : swap a b ∈ stabilizer (Perm α) s := by rw [h]; apply Subgroup.mem_top
   rw [mem_stabilizer_iff] at hg
   rw [← hg]
