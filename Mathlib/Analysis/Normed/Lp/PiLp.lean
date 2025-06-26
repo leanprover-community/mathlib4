@@ -644,7 +644,7 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
   dsimp only [ofLp_apply]
 
 set_option linter.deprecated false in
-@[deprecated lipschitzWith_ofLp (since := "2024-04-27")]
+@[deprecated nnnorm_ofLp (since := "2024-04-27")]
 theorem nnnorm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
   rw [nnnorm_eq_ciSup, Pi.nnnorm_def, Finset.sup_univ_eq_ciSup]
   dsimp only [WithLp.equiv_pi_apply]
@@ -652,7 +652,7 @@ theorem nnnorm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖
 @[simp] lemma nnnorm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖₊ = ‖f‖₊ := (nnnorm_ofLp _).symm
 
 set_option linter.deprecated false in
-@[deprecated nnnorm_equiv_symm (since := "2024-04-27")]
+@[deprecated nnnorm_toLp (since := "2024-04-27")]
 theorem nnnorm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
   (nnnorm_equiv _).symm
 
