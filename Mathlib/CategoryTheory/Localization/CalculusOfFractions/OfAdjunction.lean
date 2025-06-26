@@ -56,6 +56,28 @@ lemma isLocalization_rightAdjoint [F.Full] [F.Faithful]
     G.IsLocalization W := by
   simpa using isLocalization_leftAdjoint adj.op W.op hW.op (fun X ↦ hW' X.unop)
 
+lemma functorCategory_inverseImage_isomorphisms_unit [F.Full] [F.Faithful] (adj : G ⊣ F) :
+    ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.unit := by
+  intro
+  simp only [Functor.id_obj, Functor.comp_obj, inverseImage_iff, isomorphisms.iff]
+  infer_instance
+
+lemma functorCategory_inverseImage_isomorphisms_counit [F.Full] [F.Faithful] (adj : F ⊣ G) :
+    ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.counit := by
+  intro
+  simp only [Functor.id_obj, Functor.comp_obj, inverseImage_iff, isomorphisms.iff]
+  infer_instance
+
+lemma isLocalization_leftAdjoint' [F.Full] [F.Faithful] (adj : G ⊣ F) :
+    G.IsLocalization ((isomorphisms C₂).inverseImage G) :=
+  adj.isLocalization_leftAdjoint _ (fun _ _ _ h ↦ h)
+    adj.functorCategory_inverseImage_isomorphisms_unit
+
+lemma isLocalization_rightAdjoint' [F.Full] [F.Faithful] (adj : F ⊣ G) :
+    G.IsLocalization ((isomorphisms C₂).inverseImage G) :=
+  adj.isLocalization_rightAdjoint _ (fun _ _ _ h ↦ h)
+    adj.functorCategory_inverseImage_isomorphisms_counit
+
 lemma hasLeftCalculusOfFractions (adj : G ⊣ F) (W : MorphismProperty C₁)
     [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory C₁) adj.unit) :
     W.HasLeftCalculusOfFractions where
@@ -79,9 +101,8 @@ lemma hasLeftCalculusOfFractions (adj : G ⊣ F) (W : MorphismProperty C₁)
 
 lemma hasLeftCalculusOfFractions' [F.Full] [F.Faithful] (adj : G ⊣ F) :
     ((isomorphisms C₂).inverseImage G).HasLeftCalculusOfFractions :=
-  hasLeftCalculusOfFractions adj _ (fun _ _ _ h ↦ h) (fun X ↦ by
-    rw [inverseImage_iff, isomorphisms.iff]
-    apply isIso_of_reflects_iso _ F)
+  hasLeftCalculusOfFractions adj _ (fun _ _ _ h ↦ h)
+    adj.functorCategory_inverseImage_isomorphisms_unit
 
 lemma hasRightCalculusOfFractions (adj : F ⊣ G) (W : MorphismProperty C₁)
     [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory _) adj.counit) :
@@ -91,9 +112,8 @@ lemma hasRightCalculusOfFractions (adj : F ⊣ G) (W : MorphismProperty C₁)
 
 lemma hasRightCalculusOfFractions' [F.Full] [F.Faithful] (adj : F ⊣ G) :
     ((isomorphisms C₂).inverseImage G).HasRightCalculusOfFractions :=
-  hasRightCalculusOfFractions adj _ (fun _ _ _ h ↦ h) (fun X ↦ by
-    rw [inverseImage_iff, isomorphisms.iff]
-    apply isIso_of_reflects_iso _ F)
+  hasRightCalculusOfFractions adj _ (fun _ _ _ h ↦ h)
+    adj.functorCategory_inverseImage_isomorphisms_counit
 
 end Adjunction
 
