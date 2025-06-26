@@ -358,8 +358,8 @@ theorem repr_injective :
   congr
 
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
-  coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
+instance instFunLike [DecidableEq ι]: FunLike (OrthonormalBasis ι 𝕜 E) ι E where
+  coe b i := b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
       classical
@@ -374,21 +374,19 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
           LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 
-@[simp]
-theorem coe_ofRepr [DecidableEq ι] (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
-    ⇑(OrthonormalBasis.ofRepr e) = fun i => e.symm (EuclideanSpace.single i (1 : 𝕜)) := by
-  dsimp only [DFunLike.coe]
-  funext
-  congr!
+section
+variable [DecidableEq ι]
 
 @[simp]
-protected theorem repr_symm_single [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    b.repr.symm (EuclideanSpace.single i (1 : 𝕜)) = b i := by
-  dsimp only [DFunLike.coe]
-  congr!
+theorem coe_ofRepr (e : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι) :
+    ⇑(OrthonormalBasis.ofRepr e) = fun i => e.symm (EuclideanSpace.single i (1 : 𝕜)) := rfl
 
 @[simp]
-protected theorem repr_self [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+protected theorem repr_symm_single (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    b.repr.symm (EuclideanSpace.single i (1 : 𝕜)) = b i := rfl
+
+@[simp]
+protected theorem repr_self (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     b.repr (b i) = EuclideanSpace.single i (1 : 𝕜) := by
   rw [← b.repr_symm_single i, LinearIsometryEquiv.apply_symm_apply]
 
@@ -426,16 +424,21 @@ lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) 
 lemma inner_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) : ⟪b i, b i⟫ = 1 := by
   simp [inner_self_eq_norm_sq_to_K]
 
-lemma inner_eq_ite [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i j : ι) :
+lemma inner_eq_ite (b : OrthonormalBasis ι 𝕜 E) (i j : ι) :
     ⟪b i, b j⟫ = if i = j then 1 else 0 := by
   by_cases h : i = j <;> simp [h]
+
+end
 
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
 
 @[simp]
-protected theorem coe_toBasis (b : OrthonormalBasis ι 𝕜 E) : (⇑b.toBasis : ι → E) = ⇑b := rfl
+protected theorem coe_toBasis [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) :
+    (⇑b.toBasis : ι → E) = ⇑b := by
+  cases Subsingleton.elim ‹_› (Classical.decEq ι)
+  rfl
 
 @[simp]
 protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
@@ -448,6 +451,9 @@ protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E
   rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr]
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [LinearIsometryEquiv.coe_toLinearEquiv]
+
+section
+variable [DecidableEq ι]
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]
@@ -493,7 +499,7 @@ theorem sum_sq_inner_right {E : Type*} [NormedAddCommGroup E]
 
 open scoped RealInnerProductSpace in
 theorem sum_sq_inner_left {ι E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] [Fintype ι] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    [InnerProductSpace ℝ E] [Fintype ι] [DecidableEq ι] (b : OrthonormalBasis ι ℝ E) (x : E) :
     ∑ i : ι, ⟪x, b i⟫ ^ 2 = ‖x‖ ^ 2 := by
   simp_rw [← b.sum_sq_inner_right, real_inner_comm]
 
@@ -528,12 +534,13 @@ protected theorem map_apply {G : Type*} [NormedAddCommGroup G] [InnerProductSpac
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) (i : ι) : b.map L i = L (b i) :=
   rfl
 
+omit [DecidableEq ι] in
 @[simp]
 protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) :
     (b.map L).toBasis = b.toBasis.map L.toLinearEquiv :=
   rfl
-
+end
 /-- A basis that is orthonormal is an orthonormal basis. -/
 def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     OrthonormalBasis ι 𝕜 E :=
@@ -548,6 +555,7 @@ def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜
         convert key
         · rw [← v.equivFun.symm_apply_apply x, v.equivFun_symm_apply]
         · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply])
+
 
 @[simp]
 theorem _root_.Basis.coe_toOrthonormalBasis_repr (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
@@ -565,7 +573,8 @@ theorem _root_.Basis.toBasis_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orth
   simp [Basis.toOrthonormalBasis, OrthonormalBasis.toBasis]
 
 @[simp]
-theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
+theorem _root_.Basis.coe_toOrthonormalBasis
+    [DecidableEq ι] (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜 v) :
     (v.toOrthonormalBasis hv : ι → E) = (v : ι → E) :=
   calc
     (v.toOrthonormalBasis hv : ι → E) = ((v.toOrthonormalBasis hv).toBasis : ι → E) := by
@@ -590,6 +599,7 @@ theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η �
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq η] {ι : η → Type*}
+    [∀ i, DecidableEq (ι i)]
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
     (j : (i : η) × (ι i)) :
@@ -621,7 +631,8 @@ protected def mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (
   (Basis.mk (Orthonormal.linearIndependent hon) hsp).toOrthonormalBasis (by rwa [Basis.coe_mk])
 
 @[simp]
-protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (Set.range v)) :
+protected theorem coe_mk [DecidableEq ι]
+    (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.span 𝕜 (Set.range v)) :
     ⇑(OrthonormalBasis.mk hon hsp) = v := by
   classical rw [OrthonormalBasis.mk, _root_.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
 
@@ -644,7 +655,8 @@ protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s
   e₀.map φ.symm
 
 @[simp]
-protected theorem span_apply [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι')
+protected theorem span_apply
+    [DecidableEq ι'] [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι')
     (i : s) : (OrthonormalBasis.span h s i : E) = v' i := by
   simp only [OrthonormalBasis.span, Basis.span_apply, LinearIsometryEquiv.ofEq_symm,
     OrthonormalBasis.map_apply, OrthonormalBasis.coe_mk, LinearIsometryEquiv.coe_ofEq_apply,
@@ -665,7 +677,7 @@ protected def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (
       rwa [orthogonal_eq_bot_iff] at hsp)
 
 @[simp]
-protected theorem coe_of_orthogonal_eq_bot_mk (hon : Orthonormal 𝕜 v)
+protected theorem coe_of_orthogonal_eq_bot_mk [DecidableEq ι] (hon : Orthonormal 𝕜 v)
     (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) : ⇑(OrthonormalBasis.mkOfOrthogonalEqBot hon hsp) = v :=
   OrthonormalBasis.coe_mk hon _
 
@@ -675,7 +687,8 @@ variable [Fintype ι']
 def reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') : OrthonormalBasis ι' 𝕜 E :=
   OrthonormalBasis.ofRepr (b.repr.trans (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 e))
 
-protected theorem reindex_apply (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') (i' : ι') :
+protected theorem reindex_apply
+    [DecidableEq ι] [DecidableEq ι'] (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') (i' : ι') :
     (b.reindex e) i' = b (e.symm i') := by
   classical
     dsimp [reindex]
@@ -689,7 +702,8 @@ theorem reindex_toBasis (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
     (b.reindex e).toBasis = b.toBasis.reindex e := Basis.eq_ofRepr_eq_repr fun _ ↦ congr_fun rfl
 
 @[simp]
-protected theorem coe_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
+protected theorem coe_reindex
+    [DecidableEq ι] [DecidableEq ι'] (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
     ⇑(b.reindex e) = b ∘ e.symm :=
   funext (b.reindex_apply e)
 
@@ -712,7 +726,7 @@ noncomputable def basisFun : OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι) :
 
 @[simp]
 theorem basisFun_apply [DecidableEq ι] (i : ι) : basisFun ι 𝕜 i = EuclideanSpace.single i 1 :=
-  PiLp.basisFun_apply _ _ _ _
+  rfl
 
 @[simp]
 theorem basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) : (basisFun ι 𝕜).repr x i = x i := rfl
@@ -804,7 +818,8 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
 /-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
 different index types. -/
 @[simp]
-theorem OrthonormalBasis.toMatrix_orthonormalBasis_self_mul_conjTranspose [Fintype ι']
+theorem OrthonormalBasis.toMatrix_orthonormalBasis_self_mul_conjTranspose
+    [DecidableEq ι'] [Fintype ι']
     (a : OrthonormalBasis ι 𝕜 E) (b : OrthonormalBasis ι' 𝕜 E) :
     a.toBasis.toMatrix b * (a.toBasis.toMatrix b)ᴴ = 1 := by
   classical
@@ -866,7 +881,8 @@ noncomputable def DirectSum.IsInternal.collectedOrthonormalBasis
     (v_family : ∀ i, OrthonormalBasis (α i) 𝕜 (A i)) : OrthonormalBasis (Σ i, α i) 𝕜 E :=
   (hV_sum.collectedBasis fun i => (v_family i).toBasis).toOrthonormalBasis <| by
     simpa using
-      hV.orthonormal_sigma_orthonormal (show ∀ i, Orthonormal 𝕜 (v_family i).toBasis by simp)
+      hV.orthonormal_sigma_orthonormal
+        (show ∀ i, Orthonormal 𝕜 (v_family i).toBasis by classical simp)
 
 theorem DirectSum.IsInternal.collectedOrthonormalBasis_mem [DecidableEq ι]
     (h : DirectSum.IsInternal A) {α : ι → Type*} [∀ i, Fintype (α i)]
