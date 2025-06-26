@@ -467,10 +467,9 @@ lemma ω_pow_trace [Fact (Prime q)] (odd : Odd (q : ℕ))
     (leg2: legendreSym q 2 = 1)
     (hq4 : 4 ∣ (q : ℕ) + 1) :
     (ω : X q) ^ (((q : ℕ) + 1)/ 4) + (ωb : X q) ^ (((q : ℕ) + 1)/ 4) = 0 := by
-  have := pow_ω odd leg3 leg2
   have : (ω : X q) ^ (((q : ℕ) + 1) / 2) * ωb ^ (((q : ℕ) + 1) / 4)
     = -ωb ^ (((q : ℕ) + 1) / 4) := by
-    rw [this]
+    rw [pow_ω odd leg3 leg2]
     ring
 
   have div4 : ((q : ℕ) + 1) / 2 = ((q : ℕ) + 1) / 4 + ((q : ℕ) + 1) / 4 := by
@@ -637,7 +636,7 @@ lemma mersenne_legendre_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
     omega
 
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
-lemma mersenne_legendre_three (p : ℕ) [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
+lemma mersenne_legendre_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
     legendreSym (mersenne p) 3 = -1 := by
   have : Fact ((3 : ℕ).Prime) := ⟨Nat.prime_three⟩
   rw [(by rfl : (3 : ℤ) = (3 : ℕ))]
@@ -672,8 +671,9 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
   have : Fact (mersenne (p' + 2)).Prime := by
     refine ⟨?_⟩
     rwa [← z]
-
-  have := X.ω_pow_trace (q := ⟨_, pos⟩) ?_ ?_ ?_ ?_
+  rw [z] at w odd
+  have := X.ω_pow_trace (q := ⟨_, pos⟩) ?_
+    (mersenne_legendre_three w odd) (mersenne_legendre_two w) ?_
   · simp only [PNat.mk_coe] at this
     have other : (2 ^ (p' + 2) - 1 + 1) / 4 = 2 ^ p' := by
       rw [Nat.sub_add_cancel, pow_add,
@@ -685,9 +685,6 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
   · simp only [PNat.mk_coe]
     apply mersenne_odd.mpr
     omega
-  · apply mersenne_legendre_three <;> rwa [← z]
-  · apply mersenne_legendre_two
-    rwa [← z]
   · simp only [PNat.mk_coe]
     use 2 ^ p'
     rw [mul_comm, (by norm_num : 4 = 2^2), ← pow_add]
