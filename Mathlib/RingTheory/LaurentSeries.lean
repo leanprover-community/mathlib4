@@ -267,7 +267,7 @@ theorem coe_algebraMap [CommSemiring R] :
   rfl
 
 /-- The localization map from power series to Laurent series. -/
-@[simps (config := { rhsMd := .all, simpRhs := true })]
+@[simps (rhsMd := .all) +simpRhs]
 instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : R⟦X⟧)) R⸨X⸩ where
   map_units' := by

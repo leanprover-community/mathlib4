@@ -689,7 +689,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
   (sigmaCongrRight F).trans (sigmaCongrLeft f)
 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
-@[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
+@[simps (attrs := [`mfld_simps]) apply symm_apply]
 def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
