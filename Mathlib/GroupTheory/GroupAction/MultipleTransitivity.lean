@@ -497,7 +497,7 @@ private theorem index_of_fixingSubgroup_aux
         (ofStabilizer.isMultiplyPretransitive.mp hmk) htcard
       all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
- /-- For a multiply pretransitive action,
+/-- For a multiply pretransitive action,
   computes the index of the fixing_subgroup of a subset
   of adequate cardinality -/
 theorem index_of_fixingSubgroup_eq_of_isMultiplyPretransitive
