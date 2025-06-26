@@ -5,6 +5,8 @@
 * Do they have a release tag for the latest Lean version?
 * How is their CI set up?
 * What linting and testing do they do?
+
+Based on the results, it makes actionable suggestions.
 """
 
 import yaml
@@ -17,9 +19,12 @@ import base64
 import shutil
 
 # Unicode symbols
+# We don't want to enforce that every project is set up the same,
+# just make a suggestion for tools that could be used.
+# So WARN/FAIL is really: "we have an easier way to do this" and "have you considered trying this?"
 PASS = "✅" # Success: check mark button
-WARN = "🟡" # Warning: yellow circle.
-FAIL = "❌" # Failure: cross mark
+WARN = "💡" # Warning: lightbulb
+FAIL = "🛠️" # Failure: work in progress
 
 def check_gh_installed():
     """Check if GitHub CLI (gh) is installed and accessible"""
@@ -184,19 +189,26 @@ def check_workflow_uses_action(repo: Dict[str, str], workflow_name: str, expecte
         workflow_filename = repo['workflows'][workflow_name]
     except KeyError:
         if not silent:
-            print(f"  {FAIL} {workflow_name} workflow is not defined (hint: after installing a workflow using {expected_action}, add the filename to `scripts/downstream_repos.yml`)")
+            print(
+f"""  {FAIL} Consider adding a {workflow_name} workflow.
+    See https://github.com/{expected_action}/blob/HEAD/README.md for installation instructions.
+    After installing a workflow, please add an entry to `scripts/downstream_repos.yml` in Mathlib.""")
         return False
     workflow_path = f'.github/workflows/{workflow_filename}'
     workflow_contents = fetch_file_contents(repo, workflow_path)
     if workflow_contents is None:
         if not silent:
-            print(f"  {FAIL} workflow {workflow_name}: could not fetch workflow file {workflow_path}")
+            print(
+f"""  {FAIL} {workflow_name} workflow file `{workflow_filename}` could not be fetched.
+    Please ensure Mathlib's `scripts/downstream_repos.yml` refers to the correct file name (of the form `{workflow_name}.yml`).""")
         return False
     try:
         workflow = yaml.safe_load(workflow_contents)
     except Exception:
         if not silent:
-            print(f"  {FAIL} workflow {workflow_name}: could not parse YAML at {workflow_path}")
+            print(
+f"""  {FAIL} {workflow_name} workflow defined in `scripts/downstream_repos.yml` could not be parsed.
+    Please ensure Mathlib's `scripts/downstream_repos.yml` refers to the correct file name (of the form `{workflow_name}.yml`).""")
         return False
 
     action_references = set(action.split('@')[0] for action in workflow_actions(workflow))
@@ -206,7 +218,10 @@ def check_workflow_uses_action(repo: Dict[str, str], workflow_name: str, expecte
         return True
     else:
         if not silent:
-            print(f"  {WARN} {workflow_name} workflow installed at {workflow_path} could be using action {expected_action}")
+            print(
+f"""  {WARN} {workflow_name} workflow installed.
+    A GitHub Action exists to handle this workflow for you.
+    See https://github.com/{expected_action}/blob/HEAD/README.md for installation instructions.""")
         return False
 
 def main():
@@ -229,7 +244,11 @@ def main():
         else:
             success = False
             current = get_current_toolchain(repo)
-            print(f"  {FAIL} no toolchain tags found (for more information, run `./scripts/downstream-tags.py {current})`")
+            print(
+f"""  {FAIL} no toolchain tags found.
+    Adding a tag for new releases helps users of your project to synchronize versions.
+    A GitHub Action exists to handle tagging new releases for you.
+    See https://github.com/leanprover-community/lean-release-tag/blob/HEAD/README.md for installation instructions.""")
         
         success = check_workflow_uses_action(repo, 'build', 'leanprover/lean-action') and success
         success = check_workflow_uses_action(repo, 'docs', 'leanprover-community/docgen-action') and success
@@ -247,7 +266,11 @@ def main():
             print(f"  {PASS} license: {first_line}")
         else:
             success = False
-            print(f"  {FAIL} no licence file found.")
+            print(
+f"""  {FAIL} no license file found.
+    Choosing a license for your project makes it open-source and encourages contribution and reuse.
+    Lean and Mathlib are open-source projects available under the Apache License 2.0: https://choosealicense.com/licenses/apache-2.0/
+    For instructions on how to apply a license, please see: https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository""")
 
         # Determine lakefile contents: this can be found either in `lakefile.lean` or `lakefile.toml`.
         # (Check in this order to match Lake's own behaviour.)
@@ -258,14 +281,20 @@ def main():
             lakefile = fetch_file_contents(repo, 'lakefile.toml')
             if lakefile is None:
                 success = False
-                print(f"  {FAIL} no lakefile found.")
+                print(
+f"""  {FAIL} no lakefile found.
+    This may be caused by a temporary network error. Try running the script again.""")
                 continue
         # We're not going to parse the whole lakefile to check for these options.
         if 'lintDriver' in lakefile or 'lint_driver' in lakefile:
             print(f"  {PASS} linting enabled.")
         else:
             success = False
-            print(f"  {FAIL} no lint driver defined in the lakefile.")
+            print(
+f"""  {FAIL} no lint driver defined in the lakefile.
+    You can configure the `lake lint` command to automatically report code quality suggestions.
+    Linters are included with Mathlib or Batteries.
+    For instructions on enabling a linter, please see: https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-linter""")
         if 'linter.mathlibStandard' in lakefile:
             # These linter options are quite strict, so don't complain if they are not enabled.
             print(f"  {PASS} linting to Mathlib's standards.")
@@ -273,7 +302,11 @@ def main():
             print(f"  {PASS} testing enabled.")
         else:
             success = False
-            print(f"  {FAIL} no test driver defined in the lakefile.")
+            # A warning, since a lot of projects seem to be their own test-suite.
+            print(
+f"""  {WARN} no test driver defined in the lakefile.
+    You can configure the `lake test` command to build and run test files.
+    For instructions on creating a test suite, please see: https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-test-driver""")
 
     sys.exit(0 if success else 1)
 
