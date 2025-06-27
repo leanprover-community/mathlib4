@@ -500,8 +500,7 @@ instance [Finite ι] (R : ι → CommRingCat.{u}) : IsIso (sigmaSpec R) := by
       (colimit.isoColimitCocone ⟨_,
         (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm _).symm (isColimitOfPreserves
           Scheme.Spec (Fan.IsLimit.op (CommRingCat.piFanIsLimit R)))⟩).hom := by
-    #adaptation_note /-- 2025-06-21 lean4#8914 `ext1` fails to find lemma; using apply/intro -/
-    apply Sigma.hom_ext; intro
+    ext1
     simp; rfl
   rw [this]
   infer_instance
