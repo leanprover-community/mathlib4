@@ -88,7 +88,3 @@ theorem withBotSucc_zero : WithBot.succ 0 = 1 := rfl
 
 @[simp]
 theorem withBotSucc_one : WithBot.succ 1 = 2 := rfl
-
-theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i j : Fin n} (hij : i < j) :
-    (i + 1).1 = i.1 + 1 := by
-  simpa [Fin.val_add] using ((Nat.mod_eq_iff_lt (Ne.symm (NeZero.ne' n))).mpr (by omega))
