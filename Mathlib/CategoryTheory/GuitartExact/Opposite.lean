@@ -58,12 +58,8 @@ def inverse :
       f.hom.right.op f.left.hom.op (Quiver.Hom.unop_inj (StructuredArrow.w f.hom)))
   map {f f'} φ :=
     (StructuredArrow.homMk
-      (CostructuredArrow.homMk (φ.left.right.op)
-        (Quiver.Hom.unop_inj (by exact StructuredArrow.w φ.left)))
-          (by
-            ext
-            exact Quiver.Hom.unop_inj
-              ((StructuredArrow.proj _ _).congr_map (CostructuredArrow.w φ)))).op
+      (CostructuredArrow.homMk (φ.left.right.op) (by ext; exact StructuredArrow.w φ.left))
+      (by ext; exact (StructuredArrow.proj _ _).congr_map (CostructuredArrow.w φ))).op
 
 end structuredArrowRightwardsOpEquivalence
 

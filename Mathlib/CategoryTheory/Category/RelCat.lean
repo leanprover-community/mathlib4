@@ -118,17 +118,6 @@ open Opposite
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {_ _} r := .op <| .ofRel r.rel.inv
-  map_id X := by
-    congr
-    simp only [unop_op, RelCat.rel_id]
-    ext x y
-    exact Eq.comm
-  map_comp {X Y Z} f g := by
-    unfold Category.opposite
-    congr
-    ext x y
-    apply exists_congr
-    exact fun a => And.comm
 
 /-- The other direction of `opFunctor`. -/
 def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
