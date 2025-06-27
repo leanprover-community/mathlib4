@@ -126,11 +126,6 @@ this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
 abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.c.app (op U)
 
-/-- Given a morphism of schemes `f : X ⟶ Y`,
-this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`. -/
-abbrev appTop : Γ(Y, ⊤) ⟶ Γ(X, ⊤) :=
-  f.app ⊤
-
 @[reassoc]
 lemma naturality (i : op U' ⟶ op U) :
     Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.base).map i.unop).op :=
@@ -176,6 +171,11 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
     (P : ∀ {R S : CommRingCat.{u}} (_ : R ⟶ S), Prop) :
     P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by
   subst e₁; subst e₂; rfl
+
+/-- Given a morphism of schemes `f : X ⟶ Y`,
+this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`. -/
+abbrev appTop : Γ(Y, ⊤) ⟶ Γ(X, ⊤) :=
+  f.appLE ⊤ ⊤ (by simp)
 
 /-- A morphism of schemes `f : X ⟶ Y` induces a local ring homomorphism from
 `Y.presheaf.stalk (f x)` to `X.presheaf.stalk x` for any `x : X`. -/
@@ -294,8 +294,8 @@ theorem id_app {X : Scheme} (U : X.Opens) :
 
 @[simp]
 theorem id_appTop {X : Scheme} :
-    (𝟙 X :).appTop = 𝟙 _ :=
-  rfl
+    (𝟙 X :).appTop = 𝟙 _ := by
+  simp [Hom.appTop, Hom.appLE]
 
 @[reassoc]
 theorem comp_toLRSHom {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -323,8 +323,8 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).appTop = g.appTop ≫ f.appTop :=
-  rfl
+    (f ≫ g).appTop = g.appTop ≫ f.appTop := by
+  simp [Hom.appTop, Hom.appLE]
 
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
@@ -375,6 +375,10 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
   NatIso.isIso_app_of_isIso f.c _
 
+instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.appTop := by
+  dsimp [Hom.appTop, Hom.appLE]
+  infer_instance
+
 @[simp]
 theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
     (inv f).app U =
@@ -384,7 +388,7 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
     Scheme.id_app, Category.id_comp]
 
 theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    (inv f).appTop = inv (f.appTop) := by simp
+    (inv f).appTop = inv (f.appTop) := by simp [Hom.appTop, Hom.appLE]
 
 @[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
 
@@ -514,11 +518,13 @@ theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
   rfl
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
+theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop := by
+  simp only [Γ_obj, Hom.appTop, Hom.appLE, Opens.map_top, homOfLE_refl, op_id,
+    CategoryTheory.Functor.map_id, Category.comp_id]
   rfl
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
-  rfl
+theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop := by
+  simp [Hom.appTop, Hom.appLE]
 
 /--
 The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as an isomorphism.
@@ -613,8 +619,8 @@ theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (r : �
   LocallyRingedSpace.preimage_basicOpen f.toLRSHom r
 
 theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
-    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.appTop r) :=
-  preimage_basicOpen ..
+    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.appTop r) := by
+  simp [Hom.appTop, Hom.appLE]
 
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
