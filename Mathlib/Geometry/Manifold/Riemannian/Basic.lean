@@ -86,17 +86,10 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
-attribute [local instance 5000] instNormedAddCommGroupOfRiemannianBundle
-
-
-set_option synthInstance.maxHeartbeats 50000 in
--- otherwise, the instance is not found!
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
     ‖v‖ = ‖show F from v‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
 
-set_option synthInstance.maxHeartbeats 50000 in
--- otherwise, the instance is not found!
 lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
     ‖v‖₊ = ‖show F from v‖₊ := by
   simp [nnnorm, norm_tangentSpace_vectorSpace]
@@ -170,71 +163,59 @@ def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace �
 
 attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
-attribute [local instance 5000] instNormedAddCommGroupOfRiemannianBundle
+variable (I)
 
-attribute [local instance 0] IsIsometricSMul.to_continuousConstSMul
-  UniformContinuousConstSMul.to_continuousConstSMul
-
---set_option synthInstance.maxHeartbeats 60000 in
---set_option diagnostics true in
---set_option trace.Meta.isDefEq true in
-set_option trace.Meta.synthInstance true in
-set_option trace.profiler true in
-variable (I) in
-def bloops (x : M) :
-    NormedAddCommGroup (TangentSpace I x) := by
-  infer_instance
-
-#print bloops
-
-
-#exit
-
-set_option synthInstance.maxHeartbeats 50000 in
-variable (I) in
-def bloops0 (x : M) :
-    NormedSpace ℝ (TangentSpace I x) := by
-  infer_instance
-
-
-#print bloops
-
-set_option synthInstance.maxHeartbeats 500000 in
-variable (I) in
-lemma bloops' (x : M) : ∃ C > 0, ∀ᶠ y in 𝓝 x,
-    (letI : NormedAddCommGroup (TangentSpace I y) := bloops I y;
-     letI : NormedSpace ℝ (TangentSpace I y) := by infer_instance;
-     ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ < C) := by
+lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
+    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ < C := by
   rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   have hx : (chartAt H x).source ∈ 𝓝 x := chart_source_mem_nhds H x
   filter_upwards [hC, hx] with y hy h'y
-  have : (trivializationAt E (TangentSpace I) x).continuousLinearMapAt ℝ y =
-      mfderiv I 𝓘(ℝ, E) (extChartAt I x) y :=
-    TangentBundle.continuousLinearMapAt_trivializationAt h'y
-  rwa [← this]
+  rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
+lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
+    ∃ C > 0, ∀ᶠ y in 𝓝 x,
+    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (extChartAt I x y)‖ < C := by
+  rcases eventually_norm_symmL_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
+    with ⟨C, C_pos, hC⟩
+  refine ⟨C, C_pos, ?_⟩
+  have hx : (chartAt H x).source ∈ 𝓝 x := chart_source_mem_nhds H x
+  filter_upwards [hC, hx] with y hy h'y
+  rw [TangentBundle.symmL_trivializationAt h'y] at hy
+  have A : (extChartAt I x).symm (extChartAt I x y) = y :=
+    (extChartAt I x).left_inv (by simpa using h'y)
+  convert hy using 3 <;> congr
 
+lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
+    ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
+    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ < C := by
+  rcases eventually_norm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
+  refine ⟨C, C_pos, ?_⟩
+  have : 𝓝 x = 𝓝 ((extChartAt I x).symm (extChartAt I x x)) := by simp
+  rw [this] at hC
+  have : ContinuousAt (extChartAt I x).symm (extChartAt I x x) := continuousAt_extChartAt_symm _
+  filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
+    extChartAt_target_mem_nhdsWithin x] with y hy h'y
+  have : (extChartAt I x).symm y ∈ (chartAt H x).source := by
+    convert (extChartAt I x).map_target h'y
+    simp
+  have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
+  simp [-extChartAt] at hy
+  convert hy
 
-
-
-
-
-
-#exit
-
-
-set_option trace.profiler true in
-variable (I) in
-lemma bloo (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
-    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ < C := sorry
-
-#exit
-
-variable (I) in
 lemma blok (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝 x,
-    riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := sorry
+    riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := by
+  obtain ⟨r, r_pos, hr⟩ : ∃ r > 0,
+      ball (extChartAt I x x) r ∩ range I ⊆ (extChartAt I x).target :=
+    mem_nhdsWithin_iff.1 (extChartAt_target_mem_nhdsWithin x)
+  have : (extChartAt I x) ⁻¹' (ball (extChartAt I x x) r ∩ range I) ∈ 𝓝 x := by
+    apply extChartAt_preimage_mem_nhds_of_mem_nhdsWithin
+
+
+
+
+#exit
 /-
   let γ (y : M) (t : ℝ) : M :=
     (extChartAt I x).symm
@@ -261,3 +242,5 @@ lemma foo (x : M) {c : ℝ≥0∞} (hc : 0 < c) : ∀ᶠ y in 𝓝 x, riemannian
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
+
+end
