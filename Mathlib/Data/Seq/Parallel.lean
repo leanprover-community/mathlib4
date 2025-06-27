@@ -192,8 +192,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     intro l
     induction' l with c l IH <;> simp only [parallel.aux2, List.foldr]
     · intro a h
-      rcases h with ⟨c, hn, _⟩
-      exact False.elim <| List.not_mem_nil hn
+      assumption
     · simp only [parallel.aux2] at IH
       -- Porting note: `revert IH` & `intro IH` are required.
       revert IH
