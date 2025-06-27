@@ -256,10 +256,14 @@ lemma card_compl_add_card {α : Type*} (S : Set α) [Finite α] :
   ext
   simp
 
-lemma card_singleton_compl {α : Type*} [Finite α] (i : α) {n : ℕ} (h : Nat.card α = n + 1) :
-    Nat.card ({i}ᶜ : Set α) = n := by
-  rw [← add_left_inj 1, ← h, ← Nat.card_compl_add_card {i}]
-  simp only [card_eq_fintype_card, Fintype.card_ofSubsingleton]
+lemma card_compl_of_card_eq_add {α : Type*} [Finite α] (S : Set α) {n : ℕ}
+    (h : Nat.card α = n + Nat.card S) :
+    Nat.card (Sᶜ : Set α) = n := by
+  rwa [← card_compl_add_card S, Nat.add_right_cancel_iff] at h
+
+lemma card_compl {α : Type*} (S : Set α) [Finite α] :
+    Nat.card (Sᶜ : Set α) = Nat.card α - Nat.card S := by
+  rw [← card_compl_add_card S, add_tsub_cancel_right]
 
 end Nat
 
