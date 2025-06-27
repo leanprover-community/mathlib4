@@ -129,6 +129,10 @@ theorem Monic.coeff_degree {f : MvPolynomial σ R} (hf : m.Monic f) : f.coeff (m
 theorem degree_zero : m.degree (0 : MvPolynomial σ R) = 0 := by
   simp [degree]
 
+theorem ne_zero_of_degree_ne_zero {f : MvPolynomial σ R} (h : m.degree f ≠ 0) : f ≠ 0 := by
+  by_contra h'
+  exact h (h'.symm ▸ m.degree_zero)
+
 @[simp, nontriviality]
 theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.degree f = 0 := by
@@ -252,6 +256,9 @@ theorem coeff_degree_ne_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) ≠ 0 ↔ f ≠ 0 :=
   m.leadingCoeff_ne_zero_iff
 
+theorem degree_mem_support_iff (f : MvPolynomial σ R) : m.degree f ∈ f.support ↔ f ≠ 0 :=
+  mem_support_iff.trans coeff_degree_ne_zero_iff
+
 @[simp]
 theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
@@ -291,6 +298,15 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
 
+theorem degree_eq_zero_iff {f : MvPolynomial σ R} :
+    m.degree f = 0 ↔ f = C (m.leadingCoeff f) := by
+  constructor
+  · intro h
+    apply MonomialOrder.eq_C_of_degree_eq_zero h
+  · intro h
+    rw [h]
+    simp
+
 theorem degree_add_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f + g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   conv_rhs => rw [← m.toSyn.apply_symm_apply (_ ⊔ _)]
@@ -304,6 +320,14 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     apply m.le_degree
     simp only [notMem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
+
+theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
+    (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x => (m.toSyn <| m.degree <| f x) := by
+  classical
+  induction' s using Finset.induction_on with a A haA h
+  · simp
+  · rw [Finset.sum_insert haA, Finset.sup_insert]
+    exact le_trans m.degree_add_le (max_le_max (le_refl _) h)
 
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.degree (f + g) = m.degree f := by
@@ -319,6 +343,11 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
     apply h
     simp only [degree_zero, map_zero]
     apply bot_le
+
+theorem degree_add_eq_right_of_degree_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.degree (f + g) = m.degree g := by
+  rw [add_comm]
+  exact degree_add_of_lt h
 
 theorem leadingCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.leadingCoeff (f + g) = m.leadingCoeff f := by
