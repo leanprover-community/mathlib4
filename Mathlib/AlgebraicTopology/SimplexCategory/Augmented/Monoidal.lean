@@ -3,7 +3,6 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-
 import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
 
@@ -56,7 +55,7 @@ def tensorObj (m n : AugmentedSimplexCategory) : AugmentedSimplexCategory :=
   | x, .star => x
 
 /-- The action of the tensor product on maps coming from `SimplexCategory`. -/
-def tensorHomOf {x₁ y₁ x₂ y₂: SimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
+def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
     tensorObjOf x₁ x₂ ⟶ tensorObjOf y₁ y₂ :=
   letI f₁ : Fin ((x₁.len + 1) + (x₂.len + 1)) →o Fin ((y₁.len + 1) + (y₂.len + 1)) :=
     { toFun i :=
@@ -79,7 +78,7 @@ def tensorHomOf {x₁ y₁ x₂ y₂: SimplexCategory} (f₁ : x₁ ⟶ y₁) (f
     eqToHom (congrArg _ (Nat.succ_add _ _)) : _ ⟶ ⦋y₁.len + y₂.len + 1⦌)
 
 /-- The action of the tensor product on maps of `AugmentedSimplexCategory`. -/
-def tensorHom {x₁ y₁ x₂ y₂: AugmentedSimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
+def tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
     tensorObj x₁ x₂ ⟶ tensorObj y₁ y₂ :=
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of _, .of _, .of _, .of _, f₁, f₂ => tensorHomOf f₁ f₂
