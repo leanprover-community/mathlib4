@@ -78,6 +78,7 @@ end prerequisites
 
 variable (x : M)
 
+@[ext]
 structure CovariantDerivative where
   toFun : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)
   addX : ∀ (X X' : Π x : M, TangentSpace I x) (σ : Π x : M, V x),
@@ -103,11 +104,6 @@ attribute [coe] toFun
 instance : CoeFun (CovariantDerivative I F V)
     fun _ ↦ (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
   ⟨fun e ↦ e.toFun⟩
-
--- TODO: prove this via a DFunLike instance
-lemma myext  (cov cov' : CovariantDerivative I F V)
-    (h : ∀ X : (Π x : M, TangentSpace I x), ∀ (σ : Π x : M, V x), ∀ (x : M), cov X σ x = cov' X σ x) :
-    cov = cov' := sorry
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [VectorBundle 𝕜 F V] in
@@ -320,6 +316,13 @@ def differenceAux (cov cov' : CovariantDerivative I F V) :
     (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
   fun X σ ↦ cov X σ - cov' X σ
 
+omit [FiniteDimensional ℝ E] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul ℝ (V x)] [VectorBundle ℝ F V] in
+@[simp]
+lemma differenceAux_apply (cov cov' : CovariantDerivative I F V)
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) :
+    differenceAux cov cov' X σ = cov X σ - cov' X σ := rfl
+
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] [FiniteDimensional ℝ E] in
 lemma differenceAux_smul_eq (cov cov' : CovariantDerivative I F V)
@@ -394,8 +397,6 @@ lemma extend_add_apply [FiniteDimensional ℝ F] {x : M} (v v' : V x) :
 lemma extend_smul_apply [FiniteDimensional ℝ F] {a : ℝ} (v  : V x) :
   extend F (a • v) = a • extend F v := sorry
 
-#exit
-
 -- TODO: cleanup this proof by adding simp lemmas to the localFrame stuff
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 @[simp] lemma extend_apply_self [FiniteDimensional ℝ F] {x : M} (v : V x) :
@@ -417,6 +418,17 @@ noncomputable def difference [FiniteDimensional ℝ F] [FiniteDimensional ℝ E]
     (cov cov' : CovariantDerivative I F V) :
     Π x : M, TangentSpace I x → V x → V x :=
   fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀) (extend F σ₀) x
+
+-- -- Note: we conciously register this lemma in unapplied form,
+-- -- but differenceAux_apply: this means the applied form should simplify down all the way,
+-- -- but hopefully a mere term difference not.
+-- omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+-- @[simp]
+-- lemma difference_toFun [FiniteDimensional ℝ F] [FiniteDimensional ℝ E] [IsManifold I 1 M]
+--     (cov cov' : CovariantDerivative I F V) :
+--     cov.difference cov' = fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀) (extend F σ₀) x := rfl
+
+-- show? the map differenceAux to difference is injective
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 @[simp]
@@ -486,10 +498,16 @@ noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDime
   map_add' y y' := by
     -- follows from the (not yet proven) smoothness
     have A : fderiv ℝ ((extend E' y  (x := x)) + extend E' y' (x := x)) x =
-      fderiv ℝ (extend E' y (x := x)) x + fderiv ℝ (extend E' y' (x := x)) x := sorry
+        fderiv ℝ (extend E' y (x := x)) x + fderiv ℝ (extend E' y' (x := x)) x := by
+      rw [fderiv_add]
+      · sorry -- apply (contMDiff_extend _ _).contMDiffAt.DifferentiableAt
+      · sorry -- similar
     have B : cov (extend E X (x := x)) (extend E' y  (x := x) + extend E' y' (x := x)) x =
       cov (extend E X (x := x)) (extend E' y (x := x)) x +
-        cov (extend E X (x := x)) (extend E' y' (x := x)) x := sorry
+        cov (extend E X (x := x)) (extend E' y' (x := x)) x := by
+      apply cov.addσ
+      · exact (contMDiff_extend _ _).mdifferentiableAt (n := 1) (hn := by norm_num)
+      · apply (contMDiff_extend _ _).mdifferentiableAt (n := 1) (hn := by norm_num)
     simp [A, B]
     module
   map_smul' a v := by
@@ -502,7 +520,7 @@ noncomputable def endomorph_of_trivial_aux' [FiniteDimensional ℝ E] [FiniteDim
   toLinearMap := cov.endomorph_of_trivial_aux x X
   cont := LinearMap.continuous_of_finiteDimensional _
 
-@[simps]
+-- Not marked simp, as unfolding this is not always desirable.
 noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x : E) : E →ₗ[ℝ] E' →L[ℝ] E' where
   toFun X := cov.endomorph_of_trivial_aux' x X
@@ -513,12 +531,14 @@ noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDi
   map_smul' t X := by
     ext Z
     simp
-    --expose_names
-    --have A : cov (t • extend E X (x := x)) (extend E' Z) x = t • cov (extend E X (x := x)) (extend E' Z) x := sorry
-    --simp [A]
-    --have aux := cov.smulX (extend E X (x := x)) (extend E' Z (x := x)) (f := fun _ ↦ t) --t
-    --simp [aux]
-    --module
+
+    -- The following lines should ideally mold into the simp call above.
+    trans t • (cov (extend E X (x := x)) (extend E' Z (x := x)) x)
+      - t • (fderiv ℝ (extend E' Z (x := x)) x) X
+    swap; · module
+    congr
+    -- TODO: this is almost the item we want, but not quite! not sure where the mismatch comes from
+    let asdf := cov.smulX (extend E X (x := x)) (extend E' Z (x := x)) (fun x ↦ t)
     sorry
 
 @[simps!]
@@ -534,14 +554,28 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) :
     ∃ (A : E → E →L[ℝ] E' →L[ℝ] E'), cov = .of_endomorphism A := by
   use cov.endomorph_of_trivial_aux'''
-  apply CovariantDerivative.myext
-  intro X σ x
-  -- These two statements are unfolding a bit too far: the first sorry holds,
-  -- but the second one does not.
-  -- However, the difference of these is true again.
-  have A : cov (extend E (X x)) (extend E' (σ x)) x = cov X σ x := sorry
-  have B : fderiv ℝ (extend E' (σ x) (x := x)) x (X x) = fderiv ℝ σ x (X x) := sorry
-  simp [A, B]
+  ext X σ x
+  -- TODO: this is unfolding too much; need to fix this manually below...
+  -- think about a better design that actually works...
+  simp only [of_endomorphism_toFun, endomorph_of_trivial_aux'''_apply_apply]
+
+  -- TODO: this case has a gap; if hσ is false, currently hσ' is still true...
+  have hσ : MDifferentiable 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
+      fun x ↦ TotalSpace.mk' E' x (σ x) := sorry
+  have hσ' : MDifferentiable 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
+      fun x' ↦ TotalSpace.mk' E' x' ((extend E' (σ x)) x') := sorry
+
+  rw [← CovariantDerivative.trivial_toFun]
+  have h₁ : cov X σ x - (trivial E E') X σ x = cov.difference (trivial E E') x (X x) (σ x) := by
+    -- Do not unfold differenceAux: we use the tensoriality of differenceAux.
+    rw [difference]
+    -- TODO:  should σ and σ' be implicit?
+    apply foo _ _ _ _ _ _ _ hσ hσ'
+  have h₂ : cov.difference (trivial E E') x (X x) (σ x) =
+      cov (extend E (X x)) (extend E' (σ x)) x - (fderiv ℝ (extend E' (σ x) (x := x)) x) (X x) := by
+    simp
+  rw [← h₂, ← h₁]
+  module
 
 end real
 
