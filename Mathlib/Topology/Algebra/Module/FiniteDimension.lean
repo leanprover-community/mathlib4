@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Topology.Algebra.Module.Determinant
+import Mathlib.Topology.Algebra.Module.ModuleTopology
 import Mathlib.Topology.Algebra.Module.Simple
 
 /-!
@@ -237,23 +238,25 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     change Continuous (ξ.coord i)
     exact H₂ (ξ.coord i)
 
+variable (E 𝕜) in
+theorem FiniteDimensional.isModuleTopology [T2Space E] [FiniteDimensional 𝕜 E] :
+    IsModuleTopology 𝕜 E :=
+  -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
+  -- use that it has the module topology
+  let b := Basis.ofVectorSpace 𝕜 E
+  have continuousEquiv : E ≃L[𝕜] (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜 := {
+    __ := b.equivFun
+    continuous_toFun := continuous_equivFun_basis_aux b
+    continuous_invFun := IsModuleTopology.continuous_of_linearMap (R:=𝕜)
+        (A:=(Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜) (B:=E) (b.equivFun.symm)
+  }
+  IsModuleTopology.iso continuousEquiv.symm
+
 /-- Any linear map on a finite dimensional space over a complete field is continuous. -/
 theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional 𝕜 E]
-    (f : E →ₗ[𝕜] F') : Continuous f := by
-  -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
-  -- argue that all linear maps there are continuous.
-  let b := Basis.ofVectorSpace 𝕜 E
-  have A : Continuous b.equivFun := continuous_equivFun_basis_aux b
-  have B : Continuous (f.comp (b.equivFun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E)) :=
-    LinearMap.continuous_on_pi _
-  have :
-    Continuous
-      (f.comp (b.equivFun.symm : (Basis.ofVectorSpaceIndex 𝕜 E → 𝕜) →ₗ[𝕜] E) ∘ b.equivFun) :=
-    B.comp A
-  convert this
-  ext x
-  dsimp
-  rw [Basis.equivFun_symm_apply, Basis.sum_repr]
+    (f : E →ₗ[𝕜] F') : Continuous f :=
+  have := FiniteDimensional.isModuleTopology
+  IsModuleTopology.continuous_of_linearMap f
 
 instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
     ContinuousLinearMapClass (E →ₗ[𝕜] F') 𝕜 E F' :=
@@ -321,15 +324,9 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
-    IsOpenMap f := by
-  obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf)
-  refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
-  · exact
-      ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add
-          continuous_const).continuousAt
-  · simp only
-    rw [sub_self, map_zero, zero_add]
-  · simp only [map_sub, map_add, ← comp_apply f g, hg, id_apply, sub_add_cancel]
+    IsOpenMap f :=
+  have := FiniteDimensional.isModuleTopology
+  IsModuleTopology.isOpenMap_of_surjective hf
 
 instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
   ⟨fun f _ => ⟨LinearMap.toContinuousLinearMap f, rfl⟩⟩
