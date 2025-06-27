@@ -303,19 +303,19 @@ end CompleteSpace
 
 section Pi
 
-variable {ι : Type*} {π : α → Type*} [∀ x, CommMonoid (π x)] [∀ x, TopologicalSpace (π x)]
+variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
 
 @[to_additive]
-theorem Pi.hasProd {f : ι → ∀ x, π x} {g : ∀ x, π x} :
+theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
     HasProd f g ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) := by
   simp only [HasProd, tendsto_pi_nhds, prod_apply]
 
 @[to_additive]
-theorem Pi.multipliable {f : ι → ∀ x, π x} : Multipliable f ↔ ∀ x, Multipliable fun i ↦ f i x := by
+theorem Pi.multipliable {f : ι → ∀ x, X x} : Multipliable f ↔ ∀ x, Multipliable fun i ↦ f i x := by
   simp only [Multipliable, Pi.hasProd, Classical.skolem]
 
 @[to_additive]
-theorem tprod_apply [∀ x, T2Space (π x)] {f : ι → ∀ x, π x} {x : α} (hf : Multipliable f) :
+theorem tprod_apply [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α} (hf : Multipliable f) :
     (∏' i, f i) x = ∏' i, f i x :=
   (Pi.hasProd.mp hf.hasProd x).tprod_eq.symm
 
