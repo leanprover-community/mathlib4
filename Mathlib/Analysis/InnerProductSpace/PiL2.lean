@@ -124,8 +124,8 @@ def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
     -- check that the `WithLp.toLp _` is present
     let p : Term ← withAppFn <| withAppArg do
-      let_expr WithLp.toLp _ := ← getExpr | failure
-      withNaryArg 2 <| withNaryArg 0 <| delab
+      let_expr WithLp.toLp _ _ := ← getExpr | failure
+      withNaryArg 0 <| delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
     let `(![$elems,*]) := ← withAppArg delab | failure

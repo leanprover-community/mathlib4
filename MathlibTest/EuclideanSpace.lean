@@ -8,12 +8,12 @@ set_option linter.style.commandStart false
 
 section delaborator
 
-/-- info: (WithLp.toLp 2) ![1, 2, 3] : WithLp 2 (Fin 3 → ℕ) -/
+/-- info: !₂[1, 2, 3] : WithLp 2 (Fin 3 → ℕ) -/
 #guard_msgs in
 #check !₂[1, 2, 3]
 
 set_option pp.mvars false in
-/-- info: (WithLp.toLp 0) ![] : WithLp 0 (Fin 0 → ?_) -/
+/-- info: !₀[] : WithLp 0 (Fin 0 → ?_) -/
 #guard_msgs in
 #check !₀[]
 
