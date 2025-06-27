@@ -297,7 +297,7 @@ noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
   map₂_associator := fun f g h => by
     dsimp
     simp only [← assoc]
-    rw [IsIso.eq_comp_inv, ← inv_whiskerLeft, IsIso.eq_comp_inv]
+    rw [IsIso.eq_comp_inv, ← Bicategory.inv_whiskerLeft, IsIso.eq_comp_inv]
     simp only [assoc, F.map₂_associator]
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
