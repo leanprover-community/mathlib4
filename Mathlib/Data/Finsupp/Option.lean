@@ -193,6 +193,10 @@ theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.
   ext
   simp
 
+theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
+    n = (embDomain Embedding.some m).update none i ↔ n none = i ∧ n.some = m :=
+  (optionEquiv.apply_eq_iff_eq_symm_apply (y := (_, _))).symm.trans Prod.ext_iff
+
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
@@ -212,6 +216,12 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
+
+@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
+  ext; rw [some_apply]; exact embDomain_apply _ _ _
+
+@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
+  embDomain_notin_range _ _ _ (by simp)
 
 end Option
 
