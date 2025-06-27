@@ -639,8 +639,8 @@ lemma Pi.ι_π (b c : β) :
   · subst h; simp
   · simp [Pi.ι_π_of_ne f h]
 
-instance (b : β) : Mono (Pi.ι f b) where
-  right_cancellation _ _ e := by simpa using congrArg (· ≫ Pi.π f b) e
+instance (b : β) : SplitMono (Pi.ι f b) where
+  retraction := Pi.π f b
 
 end PiIota
 
@@ -667,8 +667,8 @@ theorem Sigma.ι_π (b c : β) :
   · subst h; simp
   · simp [Sigma.ι_π_of_ne f h]
 
-instance (b : β) : Epi (Sigma.π f b) where
-  left_cancellation _ _ e := by simpa using congrArg (Sigma.ι f b ≫ ·) e
+instance (b : β) : SplitEpi (Sigma.π f b) where
+  section_ := Sigma.ι f b
 
 end SigmaPi
 
@@ -702,11 +702,11 @@ lemma prod.inr_fst : prod.inr X Y ≫ prod.fst = 0 := by
 lemma prod.inr_snd : prod.inr X Y ≫ prod.snd = 𝟙 Y := by
   simp [prod.inr]
 
-instance : Mono (prod.inl X Y) where
-  right_cancellation _ _ e := by simpa using congrArg (· ≫ prod.fst) e
+instance : SplitMono (prod.inl X Y) where
+  retraction := prod.fst
 
-instance : Mono (prod.inr X Y) where
-  right_cancellation _ _ e := by simpa using congrArg (· ≫ prod.snd) e
+instance : SplitMono (prod.inr X Y) where
+  retraction := prod.snd
 
 end ProdInlInr
 
@@ -740,11 +740,11 @@ lemma coprod.inl_snd : coprod.inl ≫ coprod.snd X Y = 0 := by
 lemma coprod.inr_snd : coprod.inr ≫ coprod.snd X Y = 𝟙 Y := by
   simp [coprod.snd]
 
-instance : Epi (coprod.fst X Y) where
-  left_cancellation _ _ e := by simpa using congrArg (coprod.inl ≫ ·) e
+instance : SplitEpi (coprod.fst X Y) where
+  section_ := coprod.inl
 
-instance : Epi (coprod.snd X Y) where
-  left_cancellation _ _ e := by simpa using congrArg (coprod.inr ≫ ·) e
+instance : SplitEpi (coprod.snd X Y) where
+  section_ := coprod.inr
 
 end CoprodFstSnd
 
