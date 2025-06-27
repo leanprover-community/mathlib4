@@ -1,5 +1,8 @@
 # This workflow allows any user to add or remove one of the labels in the array `labelArray`
 # by commenting on the PR or issue.
+# The script reacts to lines in the comment whose entire content is, up to whitespace,
+# the label name, optionally preceded by `-`.
+# For each label, the bot follows the instruction of the *last* line that matches the label.
 
 name: Label PR based on Comment
 
