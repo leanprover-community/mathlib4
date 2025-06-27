@@ -552,7 +552,8 @@ respect to `𝕜` is contained in the tangent cone of `s` at `x` with respect to
 -/
 theorem tangentConeAt_mono_field : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜' s x := by
   intro α hα
-  simp [tangentConeAt] at hα ⊢
+  simp only [tangentConeAt, eventually_atTop, ge_iff_le, tendsto_norm_atTop_iff_cobounded,
+    mem_setOf_eq] at hα ⊢
   obtain ⟨c, d, ⟨a, h₁a⟩, h₁, h₂⟩ := hα
   use ((algebraMap 𝕜 𝕜') ∘ c), d
   constructor
