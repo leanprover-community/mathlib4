@@ -24,6 +24,10 @@ In this file we construct the category of formal coproducts given a category.
   the universal property that a presheaf on `C` where the target category has arbitrary coproducts,
   can be extended to a presheaf on `FormalCoproduct C`.
 
+## TODO
+
+* `FormalCoproduct.of C : C ⥤ FormalCoproduct.{w} C` probably preserves every limit?
+
 -/
 
 
@@ -191,83 +195,102 @@ lemma inj_comp_coproductCoconeIsoSelf (i : X.I) :
 end Coproduct
 
 
-noncomputable
-instance [HasTerminal C] (X : FormalCoproduct.{w} C) : Unique (X ⟶ (of C).obj (⊤_ C)) :=
-  ⟨⟨⟨fun _ ↦ PUnit.unit, fun _ ↦ terminal.from _⟩⟩,
-  fun j ↦ hom_ext (funext fun _ ↦ rfl) (by aesop)⟩
+section Terminal
+
+def isTerminalOf (T : C) (ht : IsTerminal T) : IsTerminal ((of C).obj T) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ ⟨fun _ ↦ PUnit.unit, fun _ ↦ ht.from _⟩)
+    (fun _ _ ↦ hom_ext (funext fun _ ↦ rfl) (fun _ ↦ ht.hom_ext _ _))
 
 instance [HasTerminal C] : HasTerminal (FormalCoproduct.{w} C) :=
-  (IsTerminal.ofUnique <| (of C).obj (⊤_ C)).hasTerminal
+  (isTerminalOf (⊤_ C) terminalIsTerminal).hasTerminal
+
+end Terminal
 
 
-noncomputable section Pullback
+section Pullback
 
-variable [HasPullbacks C] (T : FormalCoproduct.{w} C)
-  {X Y Z : FormalCoproduct.{w} C} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : FormalCoproduct.{w} C} (f : X ⟶ Z) (g : Y ⟶ Z)
+  (pb : ∀ i : Function.Pullback f.f g.f,
+    PullbackCone (f.φ i.1.1 ≫ eqToHom (by rw [i.2])) (g.φ i.1.2))
+  (hpb : ∀ i, IsLimit (pb i))
+  (T : FormalCoproduct.{w} C)
 
 def pullbackCone : PullbackCone f g :=
-  .mk (W := ⟨Function.Pullback f.f g.f, fun xy ↦
-      Limits.pullback (f.φ xy.1.1 ≫ eqToHom (by rw [xy.2])) (g.φ xy.1.2)⟩)
-    ⟨fun i ↦ i.1.1, fun i ↦ pullback.fst _ _⟩
-    ⟨fun i ↦ i.1.2, fun i ↦ pullback.snd _ _⟩
-    (hom_ext (funext fun i ↦ i.2) (by simp [pullback.condition]))
+  .mk (W := ⟨Function.Pullback f.f g.f, fun i ↦ (pb i).pt⟩)
+    ⟨fun i ↦ i.1.fst, fun i ↦ (pb i).fst⟩
+    ⟨fun i ↦ i.1.snd, fun i ↦ (pb i).snd⟩
+    (hom_ext (funext fun i ↦ i.2) (fun i ↦ by simp [(pb i).condition]))
 
 section simp_lemmas
 
-@[simp] lemma pullbackCone_fst_f (i) : (pullbackCone f g).fst.f i = i.1.1 := rfl
+@[simp] lemma pullbackCone_fst_f (i) : (pullbackCone f g pb).fst.f i = i.1.1 := rfl
 
-@[simp] lemma pullbackCone_fst_φ (i) : (pullbackCone f g).fst.φ i = pullback.fst _ _ := rfl
+@[simp] lemma pullbackCone_fst_φ (i) : (pullbackCone f g pb).fst.φ i = (pb i).fst := rfl
 
-@[simp] lemma pullbackCone_snd_f (i) : (pullbackCone f g).snd.f i = i.1.2 := rfl
+@[simp] lemma pullbackCone_snd_f (i) : (pullbackCone f g pb).snd.f i = i.1.2 := rfl
 
-@[simp] lemma pullbackCone_snd_φ (i) : (pullbackCone f g).snd.φ i = pullback.snd _ _ := rfl
+@[simp] lemma pullbackCone_snd_φ (i) : (pullbackCone f g pb).snd.φ i = (pb i).snd := rfl
 
-@[simp] lemma pullbackCone_condition : (pullbackCone f g).fst ≫ f = (pullbackCone f g).snd ≫ g :=
-  (pullbackCone f g).condition
+@[simp] lemma pullbackCone_condition :
+    (pullbackCone f g pb).fst ≫ f = (pullbackCone f g pb).snd ≫ g :=
+  PullbackCone.condition _
 
 end simp_lemmas
 
-@[simps!] def homPullbackEquiv : (T ⟶ (pullbackCone f g).pt) ≃
+@[simps!] def homPullbackEquiv : (T ⟶ (pullbackCone f g pb).pt) ≃
     { p : (T ⟶ X) × (T ⟶ Y) // p.1 ≫ f = p.2 ≫ g } where
-  toFun m := ⟨⟨m ≫ (pullbackCone f g).fst, m ≫ (pullbackCone f g).snd⟩, by simp⟩
+  toFun m := ⟨⟨m ≫ (pullbackCone f g pb).fst, m ≫ (pullbackCone f g pb).snd⟩, by simp⟩
   invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congrFun (congrArg Hom.f s.2) i⟩,
-    fun i ↦ pullback.lift (s.1.1.φ i) (s.1.2.φ i) (by simpa using ((hom_ext_iff _ _).1 s.2).2 i)⟩
+    fun i ↦ (hpb _).lift (PullbackCone.mk (s.1.1.φ i) (s.1.2.φ i)
+      (by simpa using ((hom_ext_iff _ _).1 s.2).2 i))⟩
   left_inv m := hom_ext rfl (fun i ↦ by
     simp only [category_comp_f, category_comp_φ, eqToHom_refl, Category.comp_id]
-    exact pullback.hom_ext (pullback.lift_fst _ _ _) (pullback.lift_snd _ _ _))
+    exact (hpb _).hom_ext ((pb _).equalizer_ext (by simp; rfl) (by simp; rfl)))
   right_inv s := by ext <;> simp
 
-def isLimitPullback : IsLimit (pullbackCone f g) := by
-  refine PullbackCone.IsLimit.mk (fst := (pullbackCone f g).fst) (snd := (pullbackCone f g).snd) _
-    (fun s ↦ (homPullbackEquiv s.pt f g).2 ⟨⟨s.fst, s.snd⟩, s.condition⟩)
-    (fun s ↦ by ext <;> simp) (fun s ↦ by ext <;> simp)
+def isLimitPullback : IsLimit (pullbackCone f g pb) := by
+  refine PullbackCone.IsLimit.mk
+    (fst := (pullbackCone f g pb).fst) (snd := (pullbackCone f g pb).snd) _
+    (fun s ↦ (homPullbackEquiv f g pb hpb s.pt).2 ⟨(s.fst, s.snd), s.condition⟩)
+    (fun s ↦ congrArg (·.1.fst)
+      ((homPullbackEquiv f g pb hpb s.pt).right_inv ⟨(s.fst, s.snd), s.condition⟩))
+    (fun s ↦ congrArg (·.1.snd)
+      ((homPullbackEquiv f g pb hpb s.pt).right_inv ⟨(s.fst, s.snd), s.condition⟩))
     (fun s m h₁ h₂ ↦ ?_)
-  convert ((homPullbackEquiv s.pt f g).left_inv m).symm using 3
+  convert ((homPullbackEquiv f g pb hpb s.pt).left_inv m).symm using 3
   rw [← h₁, ← h₂]; rfl
 
 instance : HasPullback f g :=
-  ⟨⟨⟨_, isLimitPullback f g⟩⟩⟩
+  ⟨⟨⟨_, isLimitPullback f g pb hpb⟩⟩⟩
+
+omit pb
+variable [HasPullbacks C]
+
+instance : HasPullback f g :=
+  ⟨⟨⟨_, isLimitPullback f g (fun _ ↦ pullback.cone _ _) (fun _ ↦ pullback.isLimit _ _)⟩⟩⟩
 
 instance : HasPullbacks (FormalCoproduct.{w} C) :=
   hasPullbacks_of_hasLimit_cospan _
 
-def pullbackIsoPullback : pullback f g ≅ (pullbackCone f g).pt :=
-  limit.isoLimitCone ⟨_, isLimitPullback f g⟩
+include pb
+
+noncomputable def pullbackIsoPullback : pullback f g ≅ (pullbackCone f g pb).pt :=
+  limit.isoLimitCone ⟨_, isLimitPullback f g pb hpb⟩
 
 @[reassoc (attr := simp)] lemma pullbackIsoPullback_hom_fst :
-    (pullbackIsoPullback f g).hom ≫ (pullbackCone f g).fst = pullback.fst f g :=
+    (pullbackIsoPullback f g pb hpb).hom ≫ (pullbackCone f g pb).fst = pullback.fst f g :=
   limit.isoLimitCone_hom_π _ _
 
 @[reassoc (attr := simp)] lemma pullbackIsoPullback_inv_fst :
-    (pullbackIsoPullback f g).inv ≫ pullback.fst f g = (pullbackCone f g).fst :=
+    (pullbackIsoPullback f g pb hpb).inv ≫ pullback.fst f g = (pullbackCone f g pb).fst :=
   limit.isoLimitCone_inv_π _ _
 
 @[reassoc (attr := simp)] lemma pullbackIsoPullback_hom_snd :
-    (pullbackIsoPullback f g).hom ≫ (pullbackCone f g).snd = pullback.snd f g :=
+    (pullbackIsoPullback f g pb hpb).hom ≫ (pullbackCone f g pb).snd = pullback.snd f g :=
   limit.isoLimitCone_hom_π _ _
 
 @[reassoc (attr := simp)] lemma pullbackIsoPullback_inv_snd :
-    (pullbackIsoPullback f g).inv ≫ pullback.snd f g = (pullbackCone f g).snd :=
+    (pullbackIsoPullback f g pb hpb).inv ≫ pullback.snd f g = (pullbackCone f g pb).snd :=
   limit.isoLimitCone_inv_π _ _
 
 end Pullback
