@@ -449,7 +449,7 @@ theorem continuous_ofLp [∀ i, TopologicalSpace (β i)] : Continuous (@ofLp p (
 set_option linter.deprecated false in
 @[deprecated continuous_ofLp (since := "2024-04-27")]
 theorem continuous_equiv [∀ i, TopologicalSpace (β i)] : Continuous (WithLp.equiv p (Π i, β i)) :=
-  continuous_id
+  continuous_ofLp _ _
 
 @[fun_prop, continuity]
 theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (∀ i, β i)) :=
@@ -459,7 +459,7 @@ set_option linter.deprecated false in
 @[deprecated continuous_toLp (since := "2024-04-27")]
 theorem continuous_equiv_symm [∀ i, TopologicalSpace (β i)] :
     Continuous (WithLp.equiv p (Π i, β i)).symm :=
-  continuous_id
+  continuous_toLp _ _
 
 instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
     [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
@@ -476,7 +476,7 @@ set_option linter.deprecated false in
 @[deprecated uniformContinuous_ofLp (since := "2024-04-27")]
 theorem uniformContinuous_equiv [∀ i, UniformSpace (β i)] :
     UniformContinuous (WithLp.equiv p (∀ i, β i)) :=
-  uniformContinuous_id
+  uniformContinuous_ofLp _ _
 
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)).symm :=
@@ -486,7 +486,7 @@ set_option linter.deprecated false in
 @[deprecated uniformContinuous_toLp (since := "2024-04-27")]
 theorem uniformContinuous_equiv_symm [∀ i, UniformSpace (β i)] :
     UniformContinuous (WithLp.equiv p (∀ i, β i)).symm :=
-  uniformContinuous_id
+  uniformContinuous_toLp p _
 
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
@@ -582,11 +582,7 @@ set_option linter.deprecated false in
 @[deprecated isometry_ofLp_infty (since := "2024-04-27")]
 theorem infty_equiv_isometry [∀ i, PseudoEMetricSpace (β i)] :
     Isometry (WithLp.equiv ∞ (∀ i, β i)) :=
-  fun x y =>
-  le_antisymm (by simpa only [ENNReal.coe_one, one_mul] using lipschitzWith_equiv ∞ β x y)
-    (by
-      simpa only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero, ENNReal.coe_one,
-        one_mul] using antilipschitzWith_equiv ∞ β x y)
+  isometry_ofLp_infty _
 
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
@@ -645,30 +641,25 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 
 set_option linter.deprecated false in
 @[deprecated nnnorm_ofLp (since := "2024-04-27")]
-theorem nnnorm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
-  rw [nnnorm_eq_ciSup, Pi.nnnorm_def, Finset.sup_univ_eq_ciSup]
-  dsimp only [WithLp.equiv_pi_apply]
+theorem nnnorm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := nnnorm_ofLp _
 
 @[simp] lemma nnnorm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖₊ = ‖f‖₊ := (nnnorm_ofLp _).symm
 
 set_option linter.deprecated false in
 @[deprecated nnnorm_toLp (since := "2024-04-27")]
-theorem nnnorm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
-  (nnnorm_equiv _).symm
+theorem nnnorm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ := nnnorm_toLp _
 
 @[simp] lemma norm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖ = ‖f‖ := congr_arg NNReal.toReal <| nnnorm_ofLp f
 @[simp] lemma norm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖ = ‖f‖ := (norm_ofLp _).symm
 
 set_option linter.deprecated false in
 @[deprecated norm_ofLp (since := "2024-04-27")]
-theorem norm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
-  congr_arg NNReal.toReal <| nnnorm_equiv f
+theorem norm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ := norm_ofLp _
 
 
 set_option linter.deprecated false in
 @[deprecated norm_toLp (since := "2024-04-27")]
-theorem norm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
-  (norm_equiv _).symm
+theorem norm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ := norm_toLp _
 
 end Linfty
 
@@ -989,7 +980,7 @@ set_option linter.deprecated false in
 @[deprecated norm_toLp_single (since := "2024-04-27")]
 theorem norm_equiv_symm_single (i : ι) (b : β i) :
     ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖ = ‖b‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_single p β i b
+  norm_toLp_single _ _ _ _
 
 @[simp]
 lemma nndist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
@@ -1002,11 +993,9 @@ theorem nndist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
     nndist
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
-      nndist b₁ b₂ := by
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← WithLp.equiv_symm_sub, ← Pi.single_sub,
-    nnnorm_equiv_symm_single]
+      nndist b₁ b₂ :=
+  nndist_toLp_single_same _ _ _ _ _
 
-set_option linter.deprecated false in
 @[simp]
 lemma dist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
     dist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = dist b₁ b₂ :=
@@ -1019,7 +1008,7 @@ theorem dist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
       dist b₁ b₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_equiv_symm_single_same p β i b₁ b₂
+  dist_toLp_single_same _ _ _ _ _
 
 @[simp]
 lemma edist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
@@ -1032,8 +1021,8 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
     edist
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₁))
         ((WithLp.equiv p (∀ i, β i)).symm (Pi.single i b₂)) =
-      edist b₁ b₂ := by
-  simp only [edist_nndist, nndist_equiv_symm_single_same p β i b₁ b₂]
+      edist b₁ b₂ :=
+  edist_toLp_single_same _ _ _ _ _
 
 end Single
 
@@ -1055,8 +1044,8 @@ set_option linter.deprecated false in
 @[deprecated nnnorm_toLp_const (since := "2024-04-27")]
 theorem nnnorm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖₊ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
-  simpa using nnnorm_toLp_const hp b
+      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ :=
+  nnnorm_toLp_const hp _
 
 /-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
@@ -1074,8 +1063,8 @@ set_option linter.deprecated false in
 @[deprecated nnnorm_toLp_const' (since := "2024-04-27")]
 theorem nnnorm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖₊ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
-  simpa using nnnorm_toLp_const' b
+      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ :=
+  nnnorm_toLp_const' b
 
 /-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
@@ -1090,8 +1079,8 @@ set_option linter.deprecated false in
 @[deprecated norm_toLp_const (since := "2024-04-27")]
 theorem norm_equiv_symm_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖ =
-      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ := by
-  simpa using norm_toLp_const hp b
+      (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
+  norm_toLp_const hp  _
 
 /-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
@@ -1107,7 +1096,7 @@ set_option linter.deprecated false in
 theorem norm_equiv_symm_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖(WithLp.equiv p (ι → β)).symm (Function.const _ b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_equiv_symm_const' b).trans <| by simp
+  norm_toLp_const' _
 
 lemma nnnorm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖toLp p (1 : ι → β)‖₊ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
@@ -1118,7 +1107,7 @@ set_option linter.deprecated false in
 theorem nnnorm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖(WithLp.equiv p (ι → β)).symm 1‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
-  (nnnorm_equiv_symm_const hp (1 : β)).trans rfl
+  nnnorm_toLp_one hp
 
 lemma norm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖toLp p (1 : ι → β)‖ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖ :=
@@ -1128,7 +1117,7 @@ set_option linter.deprecated false in
 @[deprecated norm_toLp_one (since := "2024-04-27")]
 theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖(WithLp.equiv p (ι → β)).symm 1‖ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖ :=
-  (norm_equiv_symm_const hp (1 : β)).trans rfl
+  norm_toLp_one hp
 
 variable (𝕜 p)
 
