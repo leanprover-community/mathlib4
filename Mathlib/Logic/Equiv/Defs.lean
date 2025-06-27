@@ -96,15 +96,6 @@ instance : EquivLike (α ≃ β) α β where
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
-/-- Helper instance when inference gets stuck on following the normal chain
-`EquivLike → FunLike`.
-
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
--/
-instance : FunLike (α ≃ β) α β where
-  coe := Equiv.toFun
-  coe_injective' := DFunLike.coe_injective
-
 @[simp, norm_cast]
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
     ((e : α ≃ β) : α → β) = e := rfl
@@ -138,11 +129,22 @@ protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f 
 /-- Any type is equivalent to itself. -/
 @[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 
+instance : EquivLike.Refl (α ≃ α) where
+  id := Equiv.refl α
+
+theorem refl_eq_refl : Equiv.refl α = EquivLike.refl := rfl
+
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
 @[symm]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
+
+instance : EquivLike.Symm (α ≃ β) (β ≃ α) where
+  symm e := e.symm
+
+theorem symm_eq_symm (e : α ≃ β) :
+    e.symm = EquivLike.symm e := rfl
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
@@ -158,6 +160,12 @@ theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_i
 @[trans]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
+
+instance : EquivLike.Trans (α ≃ β) (β ≃ γ) (α ≃ γ) where
+  comp e₂ e₁ := e₁.trans e₂
+
+theorem trans_eq_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    e₁.trans e₂ = EquivLike.trans e₁ e₂ := rfl
 
 @[simps]
 instance : Trans Equiv Equiv Equiv where
@@ -233,9 +241,11 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 
 @[simp] theorem trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) := rfl
 
-@[simp] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
+@[simp] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x :=
+  EquivLike.apply_symm_apply
 
-@[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x := e.left_inv x
+@[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x :=
+  EquivLike.symm_apply_apply (E := α ≃ β)
 
 @[simp] theorem symm_comp_self (e : α ≃ β) : e.symm ∘ e = id := funext e.symm_apply_apply
 
@@ -257,16 +267,17 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
     e ∘ (e : α ≃ β).symm = id :=
   (e : α ≃ β).self_comp_symm
 
-@[simp] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
+@[simp] theorem symm_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g).symm = g.symm.trans f.symm := rfl
+
+theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
 
 theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 
 theorem apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
 
-theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y ↔ x = f.symm y := by
-  conv_lhs => rw [← apply_symm_apply f y]
-  rw [apply_eq_iff_eq]
+theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y ↔ x = f.symm y :=
+  EquivLike.eq_symm_apply.symm
 
 @[simp] theorem cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x := rfl
 
@@ -282,32 +293,35 @@ theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a
   subst h; simp [coe_refl]
 
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
-  ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
+  EquivLike.symm_apply_eq (E := α ≃ β)
 
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :=
-  (eq_comm.trans e.symm_apply_eq).trans eq_comm
+  EquivLike.eq_symm_apply (E := α ≃ β)
 
-@[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := rfl
+@[simp] theorem symm_symm : ∀ e : α ≃ β, e.symm.symm = e := EquivLike.symm_symm (E := α ≃ β)
 
 theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃ α) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+  EquivLike.symm_bijective
 
-@[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
+@[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := rfl
 
 @[simp] theorem refl_symm : (Equiv.refl α).symm = Equiv.refl α := rfl
 
-@[simp] theorem refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := by cases e; rfl
+@[simp] theorem refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := rfl
 
-@[simp] theorem symm_trans_self (e : α ≃ β) : e.symm.trans e = Equiv.refl β := ext <| by simp
+@[simp] theorem symm_trans_self (e : α ≃ β) : e.symm.trans e = Equiv.refl β :=
+  EquivLike.symm_trans_self (E := α ≃ β)
 
-@[simp] theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α := ext <| by simp
+@[simp] theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α :=
+  EquivLike.self_trans_symm (E := α ≃ β)
 
 theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
-    (ab.trans bc).trans cd = ab.trans (bc.trans cd) := Equiv.ext fun _ => rfl
+    (ab.trans bc).trans cd = ab.trans (bc.trans cd) :=
+  EquivLike.trans_assoc (E := α ≃ β) (F := β ≃ γ) (G := γ ≃ δ)
 
-theorem leftInverse_symm (f : Equiv α β) : LeftInverse f.symm f := f.left_inv
+theorem leftInverse_symm (f : Equiv α β) : LeftInverse f.symm f := EquivLike.left_inv f
 
-theorem rightInverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := f.right_inv
+theorem rightInverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := EquivLike.right_inv f
 
 theorem injective_comp (e : α ≃ β) (f : β → γ) : Injective (f ∘ e) ↔ Injective f :=
   EquivLike.injective_comp e f
@@ -715,40 +729,40 @@ end
 variable {p : α → Prop} {q : β → Prop} (e : α ≃ β)
 
 protected lemma forall_congr_right : (∀ a, q (e a)) ↔ ∀ b, q b :=
-  ⟨fun h a ↦ by simpa using h (e.symm a), fun h _ ↦ h _⟩
+  EquivLike.forall_congr_right e
 
 protected lemma forall_congr_left : (∀ a, p a) ↔ ∀ b, p (e.symm b) :=
-  e.symm.forall_congr_right.symm
+  EquivLike.forall_congr_left_symm e
 
 protected lemma forall_congr (h : ∀ a, p a ↔ q (e a)) : (∀ a, p a) ↔ ∀ b, q b :=
-  e.forall_congr_left.trans (by simp [h])
+  EquivLike.forall_congr e h
 
 protected lemma forall_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∀ a, p a) ↔ ∀ b, q b :=
-  e.forall_congr_left.trans (by simp [h])
+  EquivLike.forall_congr'_symm e h
 
 protected lemma exists_congr_right : (∃ a, q (e a)) ↔ ∃ b, q b :=
-  ⟨fun ⟨_, h⟩ ↦ ⟨_, h⟩, fun ⟨a, h⟩ ↦ ⟨e.symm a, by simpa using h⟩⟩
+  EquivLike.exists_congr_right e
 
 protected lemma exists_congr_left : (∃ a, p a) ↔ ∃ b, p (e.symm b) :=
-  e.symm.exists_congr_right.symm
+  EquivLike.exists_congr_left_symm e
 
 protected lemma exists_congr (h : ∀ a, p a ↔ q (e a)) : (∃ a, p a) ↔ ∃ b, q b :=
-  e.exists_congr_left.trans <| by simp [h]
+  EquivLike.exists_congr e h
 
 protected lemma exists_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃ a, p a) ↔ ∃ b, q b :=
-  e.exists_congr_left.trans <| by simp [h]
+  EquivLike.exists_congr'_symm e h
 
 protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
-  e.exists_congr <| by simpa using fun _ _ ↦ e.forall_congr (by simp)
+  EquivLike.existsUnique_congr_right e
 
 protected lemma existsUnique_congr_left : (∃! a, p a) ↔ ∃! b, p (e.symm b) :=
-  e.symm.existsUnique_congr_right.symm
+  EquivLike.existsUnique_congr_left e
 
 protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) ↔ ∃! b, q b :=
-  e.existsUnique_congr_left.trans <| by simp [h]
+  EquivLike.existsUnique_congr e h
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
-  e.existsUnique_congr_left.trans <| by simp [h]
+  EquivLike.existsUnique_congr'_symm e h
 
 -- We next build some higher arity versions of `Equiv.forall_congr`.
 -- Although they appear to just be repeated applications of `Equiv.forall_congr`,
