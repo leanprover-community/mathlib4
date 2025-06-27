@@ -41,7 +41,7 @@ section Semifield
 variable {β : Type} [Semifield β] [CharZero β]
 
 @[norm_cast]
-lemma coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : β) = (s.map (↑)).prod :=
+theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : β) = (s.map (↑)).prod :=
   map_multiset_prod (castHom _) _
 
 @[norm_cast]
