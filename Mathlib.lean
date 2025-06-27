@@ -6501,6 +6501,7 @@ import Mathlib.Topology.UniformSpace.Dini
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
+import Mathlib.Topology.UniformSpace.FineUniformity
 import Mathlib.Topology.UniformSpace.HeineCantor
 import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 import Mathlib.Topology.UniformSpace.Matrix
@@ -6516,6 +6517,7 @@ import Mathlib.Topology.UniformSpace.UniformApproximation
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.UniformSpace.Uniformizable
 import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.UrysohnsBounded
 import Mathlib.Topology.UrysohnsLemma
