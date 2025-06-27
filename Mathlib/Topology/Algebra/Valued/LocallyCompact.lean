@@ -206,7 +206,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     intro y
     simp only [U]
     split_ifs with hy
-    · refine IsOpen.mem_nhds ((Valued.isOpen_closedball _ hx.ne').preimage ?_) ?_
+    · refine IsOpen.mem_nhds ((Valued.isOpen_closedBall _ hx.ne').preimage ?_) ?_
       · exact continuous_subtype_val
       · simp [hy.le]
     · refine IsOpen.mem_nhds ((Valued.isOpen_sphere _ ?_).preimage ?_) ?_
