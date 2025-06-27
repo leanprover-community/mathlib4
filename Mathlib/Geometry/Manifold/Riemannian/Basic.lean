@@ -3,6 +3,7 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.Riemannian.PathELength
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -145,24 +146,75 @@ variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 section
 
-def glou (x : E) : NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
+/-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
+as in the vector space.
+
+Should not be a global instance, as it does not coincide definitionally with the Riemannian
+structure for inner product spaces, but can be activated locally. -/
+def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
+    NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
   inferInstanceAs (NormedAddCommGroup E)
 
-attribute [local instance] glou
+attribute [local instance] normedAddCommGroupTangentSpaceVectorSpace
 
-def gloups (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
+/-- Register on the tangent space to a normed vector space the same `NormedSpace` structure
+as in the vector space.
+
+Should not be a global instance, as it does not coincide definitionally with the Riemannian
+structure for inner product spaces, but can be activated locally. -/
+def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
   inferInstanceAs (NormedSpace ℝ E)
 
-attribute [local instance] gloups
+attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
-set_option synthInstance.maxHeartbeats 30000 in
+attribute [local instance 5000] instNormedAddCommGroupOfRiemannianBundle
+
+attribute [local instance 0] IsIsometricSMul.to_continuousConstSMul
+  UniformContinuousConstSMul.to_continuousConstSMul
+
+set_option synthInstance.maxHeartbeats 60000 in
+--set_option diagnostics true in
+--set_option trace.Meta.isDefEq true in
+set_option trace.Meta.synthInstance true in
+set_option trace.profiler true in
 variable (I) in
-lemma bloops (x : M) : ∃ C > 0, ∀ᶠ y in 𝓝 x,
-    ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ < C := by
+def bloops (x : M) :
+    NormedAddCommGroup (TangentSpace I x) := by
+  infer_instance
+
+#print bloops
+
+
+#exit
+
+set_option synthInstance.maxHeartbeats 50000 in
+variable (I) in
+def bloops0 (x : M) :
+    NormedSpace ℝ (TangentSpace I x) := by
+  infer_instance
+
+
+#print bloops
+
+set_option synthInstance.maxHeartbeats 500000 in
+variable (I) in
+lemma bloops' (x : M) : ∃ C > 0, ∀ᶠ y in 𝓝 x,
+    (letI : NormedAddCommGroup (TangentSpace I y) := bloops I y;
+     letI : NormedSpace ℝ (TangentSpace I y) := by infer_instance;
+     ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ < C) := by
   rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
-  filter_upwards [hC] with y hy
+  have hx : (chartAt H x).source ∈ 𝓝 x := chart_source_mem_nhds H x
+  filter_upwards [hC, hx] with y hy h'y
+  have : (trivializationAt E (TangentSpace I) x).continuousLinearMapAt ℝ y =
+      mfderiv I 𝓘(ℝ, E) (extChartAt I x) y :=
+    TangentBundle.continuousLinearMapAt_trivializationAt h'y
+  rwa [← this]
+
+
+
+
 
 
 
