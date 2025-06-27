@@ -44,6 +44,14 @@ variable (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i)
 variable (H : ∀ s : Finset K,
   LinearIndepOn k _root_.id (s : Set K) → LinearIndepOn k (· ^ p) (s : Set K))
 
+/- variable (a : ι → K) (s : Set ι) (n : ι) (hs : AlgebraicIndepOn k a s)
+variable (ha' : ¬ AlgebraicIndepOn k a (insert n s))
+
+lemma exists_algebraicIndepOn_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top :
+    ∃ i : ι, AlgebraicIndepOn k a (insert n s \ {i}) ∧
+      IsSeparable (IntermediateField.adjoin k (a '' (insert n s \ {i}))) (a i) := by
+  sorry -/
+
 set_option quotPrecheck false
 local notation "aevalAdjoin" i => aeval fun j : {j // j ≠ i} ↦
   (⟨a j, Algebra.subset_adjoin ⟨j, j.2, rfl⟩⟩ : Algebra.adjoin k (a '' {i}ᶜ))
@@ -194,22 +202,20 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
     IntermediateField.isSeparable_adjoin_simple_iff_isSeparable]
   let e := Hi.1.aevalEquiv.trans <| Subalgebra.equivOfEq _ _ <|
     congr_arg (Algebra.adjoin k) (Set.image_eq_range a {i}ᶜ).symm
-  have he : e.toAlgHom = aevalAdjoin i := by ext; simp [e]
   classical
   have hF₁irr := hFirr.map (renameEquiv k (Equiv.optionSubtypeNe i).symm)
     |>.map (optionEquivLeft k _) |>.map (Polynomial.mapAlgEquiv e)
   rw [← AlgEquiv.coe_algHom, AlgEquiv.toAlgHom_eq_coe, Polynomial.mapAlgEquiv_toAlgHom e,
-    ← AlgEquiv.toAlgHom_eq_coe, he] at hF₁irr
+    ← AlgEquiv.toAlgHom_eq_coe, show e.toAlgHom = aevalAdjoin i by ext; simp [e]] at hF₁irr
   have coeff_ne := coeff_aeval_ite_ne_zero_of_forall_aeval_eq_zero_totalDegree_le a F HF σ hσ i hσi
   -- By Gauss's lemma, `F` is still irrreducible over `k(x₁,...,xᵢ₋₁, xᵢ₊₁,...,xₙ₊₁)`.
-  have : UniqueFactorizationMonoid (Algebra.adjoin k (a '' {i}ᶜ)) :=
-    Set.image_eq_range a {i}ᶜ ▸ Hi.1.aevalEquiv.uniqueFactorizationMonoid inferInstance
+  have := e.uniqueFactorizationMonoid inferInstance
   open scoped IntermediateField.algebraAdjoinAdjoin in
   have hF₂irr := (hF₁irr.isPrimitive fun h ↦ coeff_ne <| Polynomial.coeff_eq_zero_of_natDegree_lt <|
     h.trans_lt <| Nat.pos_iff_ne_zero.2 hσi) |>.irreducible_iff_irreducible_map_fraction_map
     (K := k').1 hF₁irr
   -- And by the existence of `Xᵢᵈ` with `p ∤ d`, it is separable.
-  by_contra Hsep
+  contrapose! coeff_ne with Hsep
   have instExpChar : ExpChar k' p := expChar_of_injective_algebraMap (algebraMap k k').injective _
   have : CharP k' p := by
     cases instExpChar
@@ -219,30 +225,37 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
     (isAlgebraic_iff_isIntegral.mp <| IntermediateField.isAlgebraic_adjoin_iff.mpr alg)))
     |>.resolve_left Hsep).2
   replace eq := congr(Polynomial.coeff $eq (σ i))
-  rw [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
+  rwa [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
     (aeval_ite_aeval_eq_zero a F hFa i)), Polynomial.coeff_mul_C, Polynomial.coeff_expand hp.pos,
-    if_neg hi, eq_mul_inv_iff_mul_eq₀ (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm] at eq
-  apply coeff_ne
-  rwa [Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
+    if_neg hi, eq_mul_inv_iff_mul_eq₀ (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
+    Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
 
 open IntermediateField
+
+/- include hp H in
+lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux
+    (t : Set K) (x : K) (ht : IsTranscendenceBasis k ((↑) : t → K)) (hxt : x ∉ t) :
+    ∃ i ∈ insert x t, (IsTranscendenceBasis k ((↑) : ↥(insert x t \ {i}) → K)) ∧
+      IntermediateField.adjoin k (insert x t) ≤ (separableClosure
+        (IntermediateField.adjoin k (insert x t \ {i})) K).restrictScalars _ := by
+  sorry -/
 
 include hp H in
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux
     (t : Set K) (x : K) (ht : IsTranscendenceBasis k ((↑) : t → K)) (hxt : x ∉ t) :
-    ∃ (i : ↑(insert x t)), (IsTranscendenceBasis k fun (j : {j // j ≠ i}) ↦ j.1.1) ∧
-      IntermediateField.adjoin k (insert x ↑t : Set K) ≤ (separableClosure
+    ∃ (i : ↥(insert x t)), (IsTranscendenceBasis k fun (j : {j // j ≠ i}) ↦ j.1.1) ∧
+      IntermediateField.adjoin k (insert x t) ≤ (separableClosure
         (IntermediateField.adjoin k (Subtype.val '' {i}ᶜ)) K).restrictScalars _ := by
   classical
   have inst : ExpChar K p := expChar_of_injective_ringHom (algebraMap k K).injective p
-  letI K' := IntermediateField.adjoin k (insert x ↑t : Set K)
+  letI K' := IntermediateField.adjoin k (insert x t)
   have : Algebra.IsAlgebraic K' K := by
     have := ht.isAlgebraic_field
     rw [IntermediateField.isAlgebraic_adjoin_iff_top,
       ← AlgebraicIndependent.matroid_spanning_iff] at this ⊢
     exact .superset this (by simp)
-  letI tx : (insert x ↑t : Set K) → K' := fun a ↦ ⟨a.1, IntermediateField.subset_adjoin _ _ a.2⟩
-  have htx : K'.val '' Set.range tx = insert x ↑t := by
+  letI tx : ↥(insert x t) → K' := fun a ↦ ⟨a.1, IntermediateField.subset_adjoin _ _ a.2⟩
+  have htx : K'.val '' Set.range tx = insert x t := by
     rw [← Set.range_comp]
     exact Subtype.range_val
   have ⟨i, hi, H⟩ :=
@@ -278,45 +291,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux
     rw [← LinearMap.linearIndepOn_iff_of_injOn K'.val.toLinearMap Subtype.val_injective.injOn,
       ← LinearMap.linearIndepOn_iff_of_injOn K'.val.toLinearMap Subtype.val_injective.injOn]
     exact this
-
-/-- In a finitely generated field extension, there exists a maximal
-separably generated field extension. -/
-lemma exists_isTranscendenceBasis_forall_separableClosure_not_lt
-    (Hfg : IntermediateField.FG (F := k) (E := K) ⊤) :
-    ∃ t : Finset K, IsTranscendenceBasis k ((↑) : t → K) ∧
-      ∀ t' : Set K, IsTranscendenceBasis k ((↑) : t' → K) →
-      ¬ (separableClosure (IntermediateField.adjoin k (t : Set K)) K).restrictScalars k <
-        (separableClosure (IntermediateField.adjoin k t') K).restrictScalars k := by
-  classical
-  have Hexists : ∃ n : ℕ, ∃ t : Finset K, IsTranscendenceBasis k ((↑) : t → K) ∧
-      Field.finInsepDegree (IntermediateField.adjoin k (t : Set K)) K = n := by
-    obtain ⟨s, hs⟩ := Hfg
-    have : Algebra.IsAlgebraic (Algebra.adjoin k (s : Set K)) K := by
-      rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
-      refine Algebra.isIntegral_of_surjective topEquiv.surjective
-    obtain ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := k) (s : Set K)
-    have ht' : t.Finite := s.finite_toSet.subset hts
-    refine ⟨_, ht'.toFinset, (by convert ht <;> ext <;> simp), rfl⟩
-  let N := Nat.find Hexists
-  obtain ⟨t, ht, htN : _ = N⟩ := Nat.find_spec Hexists
-  refine ⟨t, ht, fun t' ht' H ↦ ?_⟩
-  have : t'.Finite := by
-    rw [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ← ht.cardinalMk_eq ht']
-    simp [Cardinal.nat_lt_aleph0]
-  lift t' to Finset K using this
-  have := htN.trans_le (Nat.find_min' Hexists ⟨t', ht', rfl⟩)
-  dsimp [Field.finInsepDegree] at this
-  have inst : Module.Finite (IntermediateField.adjoin k (t : Set K)) K := by
-    apply (config := { allowSynthFailures := true })
-      IntermediateField.finite_of_fg_of_isAlgebraic
-    · exact .of_restrictScalars (K := k) (by rwa [restrictScalars_top])
-    · convert IsTranscendenceBasis.isAlgebraic_field ht <;> simp
-  have inst : Module.Finite
-      ((separableClosure (↥(IntermediateField.adjoin k (t : Set K))) K).restrictScalars k) K := by
-    show Module.Finite (separableClosure (↥(IntermediateField.adjoin k (t : Set K))) K) K
-    infer_instance
-  exact (IntermediateField.finrank_lt_of_lt H).not_ge this
-
+ 
 include hp H in
 /--
 Suppose `k` has chararcteristic `p` and `K/k` is finitely generated.
@@ -329,30 +304,35 @@ TODO: show that this is an if and only if.
 -/
 @[stacks 030W "(2) ⇒ (1) finitely genenerated case"]
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
-    (Hfg : IntermediateField.FG (F := k) (E := K) ⊤) :
+    (Hfg : FG (F := k) (E := K) ⊤) :
     ∃ s : Finset K, IsTranscendenceBasis k ((↑) : s → K) ∧
-      Algebra.IsSeparable (IntermediateField.adjoin k (s : Set K)) K := by
+      Algebra.IsSeparable (adjoin k (s : Set K)) K := by
+  have ⟨t, ht⟩ := Hfg
+  let sc (t : Set K) := (separableClosure (adjoin k t) K).restrictScalars k
+  have : Algebra.IsAlgebraic (Algebra.adjoin k t.toSet) K := by
+    rw [← isAlgebraic_adjoin_iff_top, ht, Algebra.isAlgebraic_iff_isIntegral]
+    exact Algebra.isIntegral_of_surjective fun x ↦ ⟨⟨x, ⟨⟩⟩, rfl⟩
   classical
-  obtain ⟨t, ht, Ht⟩ := exists_isTranscendenceBasis_forall_separableClosure_not_lt Hfg
-  refine ⟨t, ht, ?_⟩
-  rw [Algebra.isSeparable_def]
+  have h := (t.finite_toSet.powerset.inter_of_left {s | IsTranscendenceBasis k ((↑) : s → K)}
+      |>.image sc).wellFoundedOn (r := (· > ·)).has_min Set.univ <|
+    have ⟨s, hs⟩ := exists_isTranscendenceBasis_subset (R := k) (s := t.toSet)
+    ⟨⟨_, (t.finite_toSet.subset hs.1).toFinset, by simp [hs], rfl⟩, ⟨⟩⟩
+  obtain ⟨⟨_, s, ⟨hst, hs⟩, rfl⟩, -, Hs⟩ := h
+  have fin := t.finite_toSet.subset hst
+  refine ⟨fin.toFinset, by rwa [← fin.coe_toFinset] at hs, ?_⟩
+  rw [fin.coe_toFinset, ← separableClosure.eq_top_iff,
+    ← (restrictScalars_injective k).eq_iff, restrictScalars_top, eq_top_iff, ← ht, adjoin_le_iff]
   by_contra!
-  obtain ⟨x, hx⟩ := this
-  have hxt : x ∉ t := by
-    contrapose! hx
-    exact isSeparable_algebraMap (F := IntermediateField.adjoin k (t : Set K))
-      ⟨x, IntermediateField.subset_adjoin _ _ hx⟩
+  obtain ⟨x, hxt, hx⟩ := Set.not_subset.mp this
+  have hxs : x ∉ s := fun h ↦ hx (isSeparable_algebraMap (F := adjoin k s) ⟨x, subset_adjoin _ _ h⟩)
   obtain ⟨i, hi₁, hi₂⟩ :=
-    exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux p hp H t x ht hxt
-  apply Ht (Set.range (Subtype.val ∘ Subtype.val)) hi₁.to_subtype_range
-  refine lt_of_lt_of_eq (b := restrictScalars k
-    (separableClosure (↥(IntermediateField.adjoin k (Subtype.val '' {i}ᶜ))) K)) ?_ ?_
-  · rw [SetLike.lt_iff_le_and_exists]
-    constructor
-    · rw [separableClosure_le_separableClosure_iff]
-      exact .trans (IntermediateField.gi.gc.monotone_l (Set.subset_insert _ _)) hi₂
-    · exact ⟨x, hi₂ (IntermediateField.subset_adjoin _ _ (Set.mem_insert _ _)), hx⟩
-  · rw [Set.range_comp]
-    congr! <;> simp <;> rfl
+    exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux p hp H s x hs hxs
+  refine Hs ⟨_, _, ⟨?_, hi₁.to_subtype_range⟩, rfl⟩ ⟨⟩ ?_
+  · rintro _ ⟨x, rfl⟩; exact Set.insert_subset hxt hst x.1.2
+  refine lt_of_lt_of_eq (b := sc (Subtype.val '' {i}ᶜ)) ?_ congr(sc $(Set.image_eq_range ..))
+  rw [SetLike.lt_iff_le_and_exists]
+  refine ⟨?_, x, hi₂ (subset_adjoin _ _ (Set.mem_insert _ _)), hx⟩
+  rw [separableClosure_le_separableClosure_iff]
+  exact (adjoin.mono _ _ _ (Set.subset_insert _ _)).trans hi₂
 
 end

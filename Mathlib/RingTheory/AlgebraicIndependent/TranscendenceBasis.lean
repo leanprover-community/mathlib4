@@ -541,7 +541,15 @@ variable (R S A)
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
   exact lift_trdeg_add_eq R S A
 
-variable {R S} in
+variable {R S}
+
+lemma AlgebraicIndepOn.of_isAlgebraic_adjoin_insert_diff
+    [FaithfulSMul R S] [NoZeroDivisors S] (s : Set ι) (i j : ι) (v : ι → S)
+    (H₁ : AlgebraicIndepOn R v s) (H₂ : ¬ AlgebraicIndepOn R v (insert i s))
+    (alg : IsAlgebraic (Algebra.adjoin R (v '' (insert i s \ {j}))) (v j)) :
+    AlgebraicIndepOn R v (insert i s \ {j}) := by
+  sorry
+
 /-- If `t ∪ {j}` is a transcendence basis and `j` is algebraic over `t ∪ {i}`, then `t ∪ {i}` is
 also a transcendence basis. -/
 lemma IsTranscendenceBasis.of_isAlgebraic_adjoin_image_compl
