@@ -1082,7 +1082,9 @@ variable [Fintype n] [DecidableEq n]
 
 /-- `Matrix.toLin'` adapted for `EuclideanSpace 𝕜 _`. -/
 def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
-  Matrix.toLin' ≪≫ₗ .arrowCongr (WithLp.linearEquiv ..).symm (WithLp.linearEquiv ..).symm
+  Matrix.toLin' ≪≫ₗ
+    LinearEquiv.arrowCongr (WithLp.linearEquiv _ 𝕜 (n → 𝕜)).symm
+      (WithLp.linearEquiv _ 𝕜 (m → 𝕜)).symm
 
 @[simp]
 lemma toEuclideanLin_toLp (A : Matrix m n 𝕜) (x : n → 𝕜) :

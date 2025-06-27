@@ -110,6 +110,12 @@ variable {K V}
 @[simp] lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
 @[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
 
+lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
+  Function.RightInverse.surjective <| ofLp_toLp _
+
+lemma toLp_surjective : Function.Surjective (@toLp p V) :=
+  Function.RightInverse.surjective <| toLp_ofLp _
+
 section AddCommGroup
 variable [AddCommGroup V]
 

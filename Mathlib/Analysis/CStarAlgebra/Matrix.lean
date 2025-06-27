@@ -128,7 +128,8 @@ lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
 
 @[deprecated ofLp_toEuclideanCLM (since := "2025-05-07")]
 lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ WithLp.equiv _ _ x := rfl
+    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ (WithLp.equiv _ _ x) :=
+  rfl
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/

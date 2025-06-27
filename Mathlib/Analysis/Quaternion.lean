@@ -165,7 +165,7 @@ theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
 @[simps apply symm_apply]
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (0 : ℝ) (-1 : ℝ)).trans
-      (WithLp.WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
+      (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
     toFun := fun a => !₂[a.1, a.2, a.3, a.4]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_toLp_equivTuple }
