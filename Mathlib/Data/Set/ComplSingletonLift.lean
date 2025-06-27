@@ -3,7 +3,8 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Operations
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Extending a function from the complement of a singleton
