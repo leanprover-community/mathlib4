@@ -350,11 +350,13 @@ def map_ofFixingSubgroupUnion :
     rw [← SetLike.coe_eq_coe, ← SetLike.coe_eq_coe]
     exact subgroup_smul_def ⟨m, hm⟩ x
 
+variable {M} in
 @[to_additive]
 theorem map_ofFixingSubgroupUnion_def (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :
     ((SubMulAction.map_ofFixingSubgroupUnion M s t) x : α) = x :=
   rfl
 
+variable {M} in
 @[to_additive]
 theorem map_ofFixingSubgroupUnion_bijective :
     Bijective (map_ofFixingSubgroupUnion M s t) := by
@@ -380,8 +382,9 @@ def ofFixingSubgroup_of_inclusion (hst : t ⊆ s) :
   toFun y := ⟨y.val, fun h => y.prop (hst h)⟩
   map_smul' _ _ := rfl
 
+variable {M} in
 @[to_additive]
-lemma ofFixingSubgroup_of_inclusion_injective (hst : t ⊆ s) :
+lemma ofFixingSubgroup_of_inclusion_injective {hst : t ⊆ s} :
     Injective (ofFixingSubgroup_of_inclusion M hst) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   rw [← SetLike.coe_eq_coe] at hxy ⊢
@@ -398,8 +401,9 @@ def ofFixingSubgroup_of_singleton (a : α) :
   toFun x := ⟨x, by simp⟩
   map_smul' _ _ := rfl
 
+variable {M} in
 @[to_additive]
-theorem ofFixingSubgroup_of_singleton_bijective (a : α) :
+theorem ofFixingSubgroup_of_singleton_bijective {a : α} :
     Bijective (ofFixingSubgroup_of_singleton M a) :=
   ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 
@@ -414,13 +418,15 @@ def ofFixingSubgroup_of_eq (hst : s = t) :
   toFun := fun ⟨x, hx⟩ => ⟨x, by rw [← hst]; exact hx⟩
   map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => rfl
 
+variable {M} in
 @[to_additive (attr := simp)]
-theorem ofFixingSubgroup_of_eq_apply (hst : s = t)
+theorem ofFixingSubgroup_of_eq_apply {hst : s = t}
     (x : ofFixingSubgroup M s) :
     ((ofFixingSubgroup_of_eq M hst x) : α) = x := rfl
 
+variable {M} in
 @[to_additive]
-theorem ofFixingSubgroup_of_eq_bijective (hst : s = t) :
+theorem ofFixingSubgroup_of_eq_bijective {hst : s = t} :
     Bijective (ofFixingSubgroup_of_eq M hst) :=
   ⟨fun _ _ hxy ↦ by simpa [← SetLike.coe_eq_coe] using hxy,
     fun ⟨x, hxt⟩ ↦ ⟨⟨x, by rwa [hst]⟩, by simp [← SetLike.coe_eq_coe]⟩⟩
