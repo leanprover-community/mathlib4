@@ -198,7 +198,6 @@ theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.
   ext
   simp
 
-
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
