@@ -89,6 +89,7 @@ variable {F G}
 
 /-- The Hom types for the categorical pullback are given by pairs of maps compatible with the
 structural isomorphisms. -/
+@[ext]
 structure Hom (x y : F ⊡ G) where
   /-- the left component of `f : Hom x y` is a morphism `x.left ⟶ y.left` -/
   left : x.left ⟶ y.left
@@ -118,7 +119,6 @@ lemma Hom.w' {x y : F ⊡ G} (f : x ⟶ y) :
     G.map f.right ≫ y.iso.inv = x.iso.inv ≫ F.map f.left := by
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, f.w]
 
-attribute [local ext] Hom in
 /-- Extensionnality principle for morphisms in `CategoricalPullback F G`. -/
 @[ext]
 theorem hom_ext {x y : F ⊡ G} {f g : x ⟶ y}
