@@ -450,7 +450,7 @@ from the weak-* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the funct
 instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
   TopologicalSpace.induced toWeakDualBCNN inferInstance
 
-theorem toWeakDualBCNN_continuous : Continuous (@toWeakDualBCNN Ω _ _ _) :=
+theorem toWeakDualBCNN_continuous : Continuous (toWeakDualBCNN (Ω := Ω)) :=
   continuous_induced_dom
 
 /-- Integration of (nonnegative bounded continuous) test functions against finite Borel measures
@@ -479,7 +479,7 @@ theorem tendsto_iff_forall_toWeakDualBCNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
       ∀ f : Ω →ᵇ ℝ≥0, Tendsto (fun i ↦ (μs i).toWeakDualBCNN f) F (𝓝 (μ.toWeakDualBCNN f)) := by
-  rw [tendsto_iff_weakDual_tendsto, tendsto_iff_forall_eval_tendsto_topDualPairing]; rfl
+  rw [tendsto_iff_weakDual_tendsto, WeakDual.tendsto_iff_forall_eval_tendsto_dualPairing]; rfl
 
 theorem tendsto_iff_forall_testAgainstNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :

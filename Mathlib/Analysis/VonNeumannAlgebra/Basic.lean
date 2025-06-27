@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Module.Dual
 
 /-!
 # Von Neumann algebras
@@ -25,6 +24,8 @@ that the concrete definition is equivalent to a *-closed subalgebra which is wea
 
 universe u v
 
+open ContinuousLinearMap
+
 /-- Sakai's definition of a von Neumann algebra as a C^* algebra with a Banach space predual.
 
 So that we can unambiguously talk about these "abstract" von Neumann algebras
@@ -43,7 +44,7 @@ class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
   to the `WStarAlgebra`. -/
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
-      Nonempty (NormedSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
+      Nonempty (Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,
