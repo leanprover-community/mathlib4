@@ -461,7 +461,7 @@ private lemma continuousAt_mul_top_top :
     exact lt_of_lt_of_le p1_gt_x this
   · exact IsOpen.prod isOpen_Ioi isOpen_Ioi
   · simp
-  · rw [Set.mem_Ioi, ← EReal.coe_one]; exact EReal.coe_lt_top 1
+  · decide
 
 private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (⊤, a) := by

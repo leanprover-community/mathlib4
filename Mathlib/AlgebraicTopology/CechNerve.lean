@@ -141,10 +141,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
       nth_rw 2 [← Category.id_comp A.left]
       congr 1
       convert X.left.map_id _
-      rw [← op_id]
-      congr 1
-      ext ⟨a, ha⟩
-      simp
+      decide
     · rfl
   right_inv := by
     intro A
@@ -301,8 +298,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       nth_rw 2 [← Category.comp_id A.right]
       congr 1
       convert X.right.map_id _
-      ext ⟨a, ha⟩
-      simp
+      decide
 
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/
 abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ ⥤ Arrow C) :=

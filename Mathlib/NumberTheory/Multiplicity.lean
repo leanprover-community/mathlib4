@@ -355,7 +355,6 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   · suffices emultiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm 1, ← add_assoc]
     norm_cast
     rw [FiniteMultiplicity.emultiplicity_self]
-    rw [Nat.finiteMultiplicity_iff]
     decide
   · rw [← even_iff_two_dvd, Int.not_even_iff_odd]
     apply Odd.pow

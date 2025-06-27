@@ -598,10 +598,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
     (by
       intro a; revert a; dsimp only [Fin.val_mk]
       refine Fin.consInduction ?_ ?_ n
-      · intro a
-        have : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
-          (finCongr <| prod_empty).subsingleton
-        subsingleton
+      · decide
       · intro n x xs ih a
         simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
         ext

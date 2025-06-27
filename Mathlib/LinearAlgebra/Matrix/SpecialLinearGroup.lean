@@ -491,10 +491,7 @@ theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
 lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
-  simp only [S, Int.reduceNeg, pow_two, coe_mul, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
-    vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
-    empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
-  exact Eq.symm (eta_fin_two (-1))
+  decide
 
 lemma T_S_rel : S • S • S • T • S • T • S = T⁻¹ := by
   ext i j

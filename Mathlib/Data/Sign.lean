@@ -76,7 +76,7 @@ instance decidableEq : DecidableEq SignType := fun a b => by
 
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
 private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
-  rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+  decide
 
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
