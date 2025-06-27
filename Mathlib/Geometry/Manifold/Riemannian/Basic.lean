@@ -194,22 +194,16 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
     (extChartAt I x).left_inv (by simpa using h'y)
   convert hy using 3 <;> congr
 
-lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
-    ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
-    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ < C := by
+lemma eventually_enorm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
+    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (extChartAt I x y)‖ₑ < C := by
   rcases eventually_norm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
+  lift C to ℝ≥0 using C_pos.le
+  simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
-  have : 𝓝 x = 𝓝 ((extChartAt I x).symm (extChartAt I x x)) := by simp
-  rw [this] at hC
-  have : ContinuousAt (extChartAt I x).symm (extChartAt I x x) := continuousAt_extChartAt_symm _
-  filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
-    extChartAt_target_mem_nhdsWithin x] with y hy h'y
-  have : (extChartAt I x).symm y ∈ (chartAt H x).source := by
-    convert (extChartAt I x).map_target h'y
-    simp
-  have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
-  simp [-extChartAt] at hy
-  convert hy
+  filter_upwards [hC] with y hy
+  simp only [enorm, nnnorm]
+  exact_mod_cast hy
 
 lemma blok (x : M) : ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
     riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := by
@@ -220,10 +214,8 @@ lemma blok (x : M) : ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
     apply extChartAt_preimage_mem_nhds_of_mem_nhdsWithin (by simp)
     rw [inter_comm]
     exact inter_mem_nhdsWithin _ (ball_mem_nhds _ r_pos)
-  rcases eventually_norm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
-  lift C to ℝ≥0 using C_pos.le
-  simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
-  refine ⟨C, by positivity, ?_⟩
+  rcases eventually_enorm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
+  refine ⟨C, C_pos, ?_⟩
   filter_upwards [A, hC, chart_source_mem_nhds H x] with y hy h'y h''y
   let η := ContinuousAffineMap.lineMap (R := ℝ) (extChartAt I x x) (extChartAt I x y)
   set γ := (extChartAt I x).symm ∘ η
@@ -258,12 +250,7 @@ lemma blok (x : M) : ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
   · have : extChartAt I x y = η t := sorry
     have W := h'y.le
     rw [this] at W
-    have : (extChartAt I x).symm (η t) = γ t := sorry
-    rw [← this]
-    convert W
-
-
-    sorry
+    convert W using 1
   · simp only [mfderivWithin_eq_fderivWithin]
     exact le_of_eq rfl
 
