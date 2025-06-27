@@ -117,6 +117,17 @@ variable
 
 namespace InnerProductSpace
 
+variable (f s) in
+/--
+Laplacian for functions on real inner product spaces, with respect to a set `s`. Use `open
+InnerProductSpace` to access the notation `Δ[s]` for `InnerProductSpace.LaplacianWithin`.
+-/
+noncomputable def laplacianWithin : E → F :=
+  fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
+
+@[inherit_doc]
+scoped[InnerProductSpace] notation "Δ[" s "]" f => laplacianWithin f s
+
 variable (f) in
 /--
 Laplacian for functions on real inner product spaces. Use `open InnerProductSpace` to access the
@@ -125,19 +136,18 @@ notation `Δ` for `InnerProductSpace.Laplacian`.
 noncomputable def laplacian : E → F :=
   fun x ↦ tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
 
-variable (f s) in
-/--
-Laplacian for functions on real inner product spaces. Use `open InnerProductSpace` to access the
-notation `Δ` for `InnerProductSpace.Laplacian`.
--/
-noncomputable def laplacianWithin : E → F :=
-  fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
-
 @[inherit_doc]
 scoped[InnerProductSpace] notation "Δ" => laplacian
 
-@[inherit_doc]
-scoped[InnerProductSpace] notation "Δ[" s "]" f => laplacianWithin f s
+/--
+The Laplacian equals the Laplacian with respect to `Set.univ`.
+-/
+@[simp]
+theorem laplacian_eq_laplacianWithin_univ :
+    (Δ[(Set.univ: Set E)] f) = Δ f := by
+  ext x
+  simp [laplacian, tensorIteratedFDerivTwo, bilinearIteratedFDerivTwo,
+    laplacianWithin, tensorIteratedFDerivWithinTwo, bilinearIteratedFDerivWithinTwo]
 
 /-!
 ## Computation of Δ in Terms of Orthonormal Bases
