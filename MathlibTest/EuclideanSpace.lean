@@ -19,7 +19,7 @@ set_option pp.mvars false in
 
 section var
 variable {p : ENNReal}
-/-- info: (WithLp.toLp p) ![1, 2, 3] : WithLp p (Fin 3 → ℕ) -/
+/-- info: WithLp.toLp p ![1, 2, 3] : WithLp p (Fin 3 → ℕ) -/
 #guard_msgs in#check !ₚ[1, 2, 3]
 end var
 
@@ -28,7 +28,7 @@ section tombstoned_var
 make the delaborator less conservative, it should not fire here since `✝` cannot
 be subscripted. -/
 variable {p : ENNReal} {x} (hx : x = !ₚ[1, 2, 3]) (p : True)
-/-- info: hx : x = (WithLp.toLp p✝) ![1, 2, 3] -/
+/-- info: hx : x = WithLp.toLp p✝ ![1, 2, 3] -/
 #guard_msgs in #check hx
 end tombstoned_var
 
