@@ -316,26 +316,24 @@ step to the right.
 
 namespace Fin
 
-local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
+local instance {n : ℕ} {i : Fin n} : NeZero (n - i) := NeZero.of_pos (by omega)
 
 variable {n : ℕ} {i j k : Fin n}
 
 /-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
 unchanged. In other words, it rotates elements in `[i, j]` one step to the right.
 -/
-def cycleIcc (hij : i ≤ j): Perm (Fin n) :=
+def cycleIcc (hij : i ≤ j) : Perm (Fin n) :=
   (cycleRange ((j - i).castLT (sub_val_lt_sub hij))).extendDomain
   (natAdd_castLEEmb n (sub_le_right i)).toEquivRange
 
-theorem cycleIcc_lt (hij : i ≤ j) (h : k < i) : (cycleIcc hij) k = k :=
-  Perm.extendDomain_apply_not_subtype ((j - i).castLT _).cycleRange
-    (natAdd_castLEEmb n _).toEquivRange (by simp; omega)
+theorem cycleIcc_of_lt (hij : i ≤ j) (h : k < i) : (cycleIcc hij) k = k :=
+  Perm.extendDomain_apply_not_subtype _ _ (by simp; omega)
 
 private lemma cycleIcc_aux (hij : i ≤ j) (h : i ≤ k) (kin : k ∈ Set.range ⇑(natAdd_castLEEmb n
     (sub_le_right i))) : (cycleIcc hij) k = (natAdd_castLEEmb n (sub_le_right i))
     (((j - i).castLT (sub_val_lt_sub hij)).cycleRange ((natAdd_castLEEmb n
     (sub_le_right i)).toEquivRange.symm ⟨k, kin⟩)) := by
-  have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (sub_le_right i)) := by simp; omega
   simp [cycleIcc, ((j - i).castLT (sub_val_lt_sub hij)).cycleRange.extendDomain_apply_subtype
     (natAdd_castLEEmb n _).toEquivRange kin]
 
@@ -452,4 +450,3 @@ theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   apply Finset.prod_comm' (by simp)
 
 end Sign
-
