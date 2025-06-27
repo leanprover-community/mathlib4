@@ -479,14 +479,14 @@ theorem uniformContinuous_equiv [∀ i, UniformSpace (β i)] :
   uniformContinuous_ofLp _ _
 
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
-    UniformContinuous (@toLp p (∀ i, β i)).symm :=
+    UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_id
 
 set_option linter.deprecated false in
 @[deprecated uniformContinuous_toLp (since := "2024-04-27")]
 theorem uniformContinuous_equiv_symm [∀ i, UniformSpace (β i)] :
     UniformContinuous (WithLp.equiv p (∀ i, β i)).symm :=
-  uniformContinuous_toLp p _
+  uniformContinuous_toLp _ _
 
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
