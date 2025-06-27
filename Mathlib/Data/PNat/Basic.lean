@@ -385,4 +385,7 @@ instance instSuccAddOrder : SuccAddOrder ℕ+ where
 instance instNoMaxOrder : NoMaxOrder ℕ+ where
   exists_gt n := ⟨succPNat n, lt_succ_self n⟩
 
+@[simp]
+lemma succ_eq_succPNat (n : ℕ+) : Order.succ n = succPNat n := rfl
+
 end PNat
