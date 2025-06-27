@@ -500,7 +500,8 @@ instance [Finite ι] (R : ι → CommRingCat.{u}) : IsIso (sigmaSpec R) := by
       (colimit.isoColimitCocone ⟨_,
         (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm _).symm (isColimitOfPreserves
           Scheme.Spec (Fan.IsLimit.op (CommRingCat.piFanIsLimit R)))⟩).hom := by
-    ext1; simp; rfl
+    ext1
+    simp; rfl
   rw [this]
   infer_instance
 

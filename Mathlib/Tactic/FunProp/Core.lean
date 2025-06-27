@@ -638,7 +638,7 @@ mutual
         letTelescope e fun xs b => do
           let .some r ← funProp b
             | return none
-          cacheResult e {proof := ← mkLambdaFVars xs r.proof }
+          cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
       | .forallE .. =>
         forallTelescope e fun xs b => do
           let .some r ← funProp b
@@ -663,9 +663,7 @@ mutual
 
     -- if function starts with let bindings move them the top of `e` and try again
     if f.isLet then
-      return ← letTelescope f fun xs b => do
-        let e' := e.setArg funPropDecl.funArgId b
-        funProp (← mkLambdaFVars xs e')
+      return ← funProp (← mapLetTelescope f fun _ b => pure <| e.setArg funPropDecl.funArgId b)
 
     match ← getFunctionData? f (← unfoldNamePred) with
     | .letE f =>

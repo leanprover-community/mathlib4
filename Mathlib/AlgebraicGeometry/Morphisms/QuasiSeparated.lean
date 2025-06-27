@@ -179,7 +179,7 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
   let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
-  have (i) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
+  have (i : _) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
   apply HasAffineProperty.of_openCover
     ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
@@ -278,12 +278,14 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     cases nonempty_fintype s
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
-      intro i; change (i : X.Opens) ≤ S
+      #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
+      intro i; -- change (i : X.Opens) ≤ S
       refine le_trans ?_ (inf_le_left (b := U.1))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
-      intro i; change (i : X.Opens) ≤ U
+      #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
+      intro i; -- change (i : X.Opens) ≤ U
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i

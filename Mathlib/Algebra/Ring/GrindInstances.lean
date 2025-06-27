@@ -14,7 +14,9 @@ open Lean
 
 variable (α : Type*)
 
-instance Semiring.toGrindSemiring [s : Semiring α] :
+-- This is a low priority instance so that the built-in `Lean.Grind.Semiring Nat` instance
+-- (which has a non-defeq `ofNat` instance) is used preferentially.
+instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     Grind.Semiring α :=
   { s with
     ofNat | 0 | 1 | n + 2 => inferInstance
@@ -38,12 +40,12 @@ instance Semiring.toGrindSemiring [s : Semiring α] :
       change Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
       rw [← AddMonoidWithOne.natCast_succ] }
 
-instance CommSemiring.toGrindCommSemiring [s : CommSemiring α] :
+instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α] :
     Grind.CommSemiring α :=
   { Semiring.toGrindSemiring α with
     mul_comm := s.mul_comm }
 
-instance Ring.toGrindRing [s : Ring α] :
+instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     Grind.Ring α :=
   { s, Semiring.toGrindSemiring α with
     natCast := inferInstance
@@ -55,7 +57,7 @@ instance Ring.toGrindRing [s : Ring α] :
     | _ + 2 => Int.cast_ofNat _
     intCast_neg := Int.cast_neg }
 
-instance CommRing.toGrindCommRing [s : CommRing α] :
+instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α] :
     Grind.CommRing α :=
   { Ring.toGrindRing α with
     mul_comm := s.mul_comm }
@@ -88,3 +90,9 @@ example (s : Grind.CommRing α) : CommRing α :=
     intCast_negSucc n := by
       rw [Int.negSucc_eq, Grind.Ring.intCast_neg,
         Grind.Ring.intCast_natCast_add_one, Grind.Semiring.natCast_succ] }
+
+-- Verify that we do not have a defeq problems in `Lean.Grind.Semiring` instances.
+example : (inferInstance : Lean.Grind.Semiring Nat) =
+    (Lean.Grind.CommSemiring.toSemiring : Lean.Grind.Semiring Nat) := rfl
+example : (inferInstance : Lean.Grind.Semiring UInt8) =
+    (Lean.Grind.CommSemiring.toSemiring : Lean.Grind.Semiring UInt8) := rfl

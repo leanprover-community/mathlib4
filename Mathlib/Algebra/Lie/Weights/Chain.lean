@@ -228,13 +228,15 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
+  #adaptation_note /-- 2025-06-18 (lean4#8804).
+    The `erw` causes a kernel timeout if there is no `subst`. -/
+  subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
-  simp_rw [N, LieSubmodule.toEnd_restrict_eq_toEnd]
-  dsimp [N]
+  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
   convert_to _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
-  simp_rw [a, b, trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
+  simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
     ← smul_assoc, Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra

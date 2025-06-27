@@ -365,7 +365,8 @@ lemma reindex_id : reindex id S = 𝟙 𝔸(n; S) := by
 @[simp, reassoc]
 lemma reindex_comp {n₁ n₂ n₃ : Type v} (i : n₁ → n₂) (j : n₂ → n₃) (S : Scheme.{max u v}) :
     reindex (j ∘ i) S = reindex j S ≫ reindex i S := by
-  have H₁ : reindex (j ∘ i) S ≫ 𝔸(n₁; S) ↘ S = (reindex j S ≫ reindex i S) ≫ 𝔸(n₁; S) ↘ S := by simp
+  have H₁ : reindex (j ∘ i) S ≫ 𝔸(n₁; S) ↘ S = (reindex j S ≫ reindex i S) ≫ 𝔸(n₁; S) ↘ S := by
+    simp
   have H₂ (k) : (reindex (j ∘ i) S).appTop (coord S k) =
       (reindex j S).appTop ((reindex i S).appTop (coord S k)) := by
     rw [reindex_appTop_coord, reindex_appTop_coord, reindex_appTop_coord]

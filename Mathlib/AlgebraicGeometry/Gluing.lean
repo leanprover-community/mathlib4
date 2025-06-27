@@ -790,7 +790,7 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=
-  have (i) : Mono ((F ⋙ forget).map (.init i)) :=
+  have (i : _) : Mono ((F ⋙ forget).map (.init i)) :=
     (mono_iff_injective _).mpr (F.map _).isOpenEmbedding.injective
   inferInstance
 

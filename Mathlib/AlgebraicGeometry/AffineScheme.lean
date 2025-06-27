@@ -758,7 +758,7 @@ include hU in
 lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
     s ∈ I ↔ ∀ (x : X) (h : x ∈ U), X.presheaf.germ U x h s ∈ I.map (X.presheaf.germ U x h).hom := by
   refine ⟨fun hs x hxU ↦ Ideal.mem_map_of_mem _ hs, fun H ↦ ?_⟩
-  letI (x) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec.base x)) :=
+  letI (x : _) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec.base x)) :=
     TopCat.Presheaf.algebra_section_stalk X.presheaf _
   have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalization.AtPrime _ P :=
       hU.isLocalization_stalk' ⟨P, hP⟩ (hU.isoSpec.inv.base _).2

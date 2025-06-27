@@ -1084,9 +1084,11 @@ instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
 instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
     Grind.IntModule α :=
   { s with
-    hMul := s.zsmul
+    hmulNat := ⟨s.nsmul⟩
+    hmulInt := ⟨s.zsmul⟩
     zero_hmul := SubNegMonoid.zsmul_zero'
     one_hmul := one_zsmul
     add_hmul n m a := add_zsmul a n m
     hmul_zero := zsmul_zero
-    hmul_add n a b := zsmul_add a b n }
+    hmul_add n a b := zsmul_add a b n
+    hmul_nat n a := by simp }

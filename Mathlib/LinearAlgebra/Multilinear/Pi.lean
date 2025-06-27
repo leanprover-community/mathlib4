@@ -45,7 +45,7 @@ theorem pi_ext [Finite ι] [∀ i, Finite (κ i)] [∀ i, DecidableEq (κ i)]
   ext x
   change f (fun i ↦ x i) = g (fun i ↦ x i)
   obtain ⟨i⟩ := nonempty_fintype ι
-  have (i) := (nonempty_fintype (κ i)).some
+  have (i : _) := (nonempty_fintype (κ i)).some
   have := Classical.decEq ι
   rw [funext (fun i ↦ Eq.symm (Finset.univ_sum_single (x i)))]
   simp_rw [MultilinearMap.map_sum_finset]
