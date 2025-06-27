@@ -178,7 +178,8 @@ lemma inv_snd : (inv f).snd = inv f.snd := by
 
 end
 
-lemma isIso_iff {x y : F ⊡ G} (f : x ⟶ y) : IsIso f ↔ (IsIso f.fst ∧ IsIso f.snd) where
+lemma isIso_iff {x y : F ⊡ G} (f : x ⟶ y) :
+    IsIso f ↔ (IsIso f.fst ∧ IsIso f.snd) where
   mp h := ⟨inferInstance, inferInstance⟩
   mpr | ⟨h₁, h₂⟩ => ⟨⟨inv f.fst, inv f.snd, by aesop_cat⟩, by aesop_cat⟩
 
