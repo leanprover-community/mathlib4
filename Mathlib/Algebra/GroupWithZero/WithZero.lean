@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -310,6 +310,91 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
   natCast_zero := rfl
   natCast_succ n := by cases n <;> simp
 
+/-!
+### Exponential and logarithm
+
+In valuation theory, valuations have codomain `{0} ∪ {c ^ n | n : ℤ}` for some `c > 1`, which we can
+formalise as `ℤₘ₀ := WithZero (Multiplicative ℤ)`. It is important to be able to talk about the maps
+n ↦ c ^ n` and `c ^ n ↦ n`. We define these as `exp : ℤ → ℤₘ₀` and `log : ℤₘ₀ → ℤ` with junk value
+log 0 = 0`. Junkless versions are defined as `expEquiv : ℤ ≃ ℤₘ₀ˣ` and `logEquiv : ℤₘ₀ˣ ≃ ℤ`. -/
+
+variable {M G : Type*}
+
+section AddMonoid
+
+local notation "Mₘ" => Multiplicative G
+local notation "Mₘ₀" => WithZero Mₘ
+
+/-- The exponential map as a function `G → WithZero (Multiplicative G)`. -/
+def exp (a : G) : Mₘ₀ := .coe <| Multiplicative.ofAdd a
+
+variable [AddMonoid G]
+
+/-- The logarithm as a function `WithZero (Multiplicative G) → G` with junk value `log 0 = 0`. -/
+def log (x : Mₘ₀) : G := x.recZeroCoe 0 Multiplicative.toAdd
+
+@[simp] lemma log_exp (a : G) : log (exp a) = a := rfl
+@[simp] lemma exp_log {x : Mₘ₀} (hx : x ≠ 0) : exp (log x) = x := by
+  lift x to Mₘ using hx; rfl
+
+@[simp] lemma log_zero : log 0 = (0 : G) := rfl
+
+@[simp] lemma exp_zero : exp (0 : G) = 1 := rfl
+@[simp] lemma log_one : log 1 = (0 : G) := rfl
+
+@[simp] lemma exp_add (a b : G) : exp (a + b) = exp a * exp b := rfl
+@[simp] lemma log_mul {x y : Mₘ₀} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
+  lift x to Mₘ using hx; lift y to Mₘ using hy; rfl
+
+@[simp] lemma exp_nsmul (n : ℕ) (a : G) : exp (n • a) = exp a ^ n := rfl
+@[simp] lemma log_pow : ∀ (x : Mₘ₀) (n : ℕ), log (x ^ n) = n • log x
+  | 0, 0 => by simp
+  | 0, n + 1 => by simp
+  | (x : Mₘ), n => rfl
+
+end AddMonoid
+
+section AddGroup
+variable [AddGroup G]
+
+local notation "Gₘ" => Multiplicative G
+local notation "Gₘ₀" => WithZero Gₘ
+
+/-- The exponential map as an equivalence between `G` and `(WithZero (Multiplicative G))ˣ`. -/
+def expEquiv : G ≃ Gₘ₀ˣ := Multiplicative.ofAdd.trans unitsWithZeroEquiv.symm.toEquiv
+
+/-- The logarithm as an equivalence between `(WithZero (Multiplicative G))ˣ` and `G`. -/
+def logEquiv : Gₘ₀ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicative.toAdd
+
+@[simp] lemma logEquiv_symm : (logEquiv (G := G)).symm = expEquiv := rfl
+@[simp] lemma expEquiv_symm : (expEquiv (G := G)).symm = logEquiv := rfl
+
+@[simp] lemma coe_expEquiv_apply (a : G) : expEquiv a = exp a := rfl
+
+@[simp] lemma logEquiv_apply (x : Gₘ₀ˣ) : logEquiv x = log x := by
+  obtain ⟨_ | a, _ | b, hab, hba⟩ := x
+  · cases hab
+  · cases hab
+  · cases hab
+  · rfl
+
+lemma logEquiv_unitsMk0 (x : Gₘ₀) (hx : x ≠ 0) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
+
+@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
+@[simp] lemma log_div {x y : Gₘ₀} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
+  lift x to Gₘ using hx; lift y to Gₘ using hy; rfl
+
+@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+@[simp] lemma log_inv : ∀ (x : Gₘ₀), log x⁻¹ = -log x
+  | 0 => by simp
+  | (x : Gₘ) => rfl
+
+@[simp] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
+@[simp] lemma log_zpow (x : Gₘ₀) : ∀ n : ℤ, log (x ^ n) = n • log x
+  | (n : ℕ) => by simp
+  | .negSucc n => by simp
+
+end AddGroup
 end WithZero
 
 namespace MonoidWithZeroHom
@@ -352,3 +437,13 @@ lemma comp_one {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀]
   ext <| apply_one_apply_eq _
 
 end MonoidWithZeroHom
+
+namespace Multiplicative
+
+/-- Notation for `WithZero (Multiplicative ℕ)`. -/
+scoped notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
+
+/-- Notation for `WithZero (Multiplicative ℤ)`. -/
+scoped notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
+
+end Multiplicative
