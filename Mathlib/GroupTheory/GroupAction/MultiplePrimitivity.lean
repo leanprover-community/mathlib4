@@ -205,7 +205,7 @@ acts `n-d`-primitively on the remaining (`d ≤ n`) -/
 @[to_additive]
 theorem ofFixingSubgroup.isMultiplyPreprimitive
     {m n : ℕ} [IsMultiplyPreprimitive M α n]
-    {s : Set α} [Finite s]  (hs : s.ncard + m = n) :
+    {s : Set α} [Finite s] (hs : s.ncard + m = n) :
     IsMultiplyPreprimitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m where
   isMultiplyPretransitive := by
     apply ofFixingSubgroup.isMultiplyPretransitive s hs
