@@ -86,13 +86,16 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
-set_option synthInstance.maxHeartbeats 30000 in
+attribute [local instance 5000] instNormedAddCommGroupOfRiemannianBundle
+
+
+set_option synthInstance.maxHeartbeats 50000 in
 -- otherwise, the instance is not found!
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
     ‖v‖ = ‖show F from v‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
 
-set_option synthInstance.maxHeartbeats 30000 in
+set_option synthInstance.maxHeartbeats 50000 in
 -- otherwise, the instance is not found!
 lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
     ‖v‖₊ = ‖show F from v‖₊ := by
@@ -172,7 +175,7 @@ attribute [local instance 5000] instNormedAddCommGroupOfRiemannianBundle
 attribute [local instance 0] IsIsometricSMul.to_continuousConstSMul
   UniformContinuousConstSMul.to_continuousConstSMul
 
-set_option synthInstance.maxHeartbeats 60000 in
+--set_option synthInstance.maxHeartbeats 60000 in
 --set_option diagnostics true in
 --set_option trace.Meta.isDefEq true in
 set_option trace.Meta.synthInstance true in
