@@ -139,6 +139,10 @@ def multifork (F : Cᵒᵖ ⥤ A) :
     dsimp
     simp only [← F.map_comp, ← op_comp, E.w])
 
+@[simp]
+lemma multifork_ι (F : Cᵒᵖ ⥤ A) (i₀ : E.I₀) :
+    (E.multifork F).ι i₀ = F.map (E.f i₀).op := rfl
+
 end PreOneHypercover
 
 namespace GrothendieckTopology

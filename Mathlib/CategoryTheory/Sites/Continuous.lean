@@ -184,7 +184,7 @@ variable [Functor.IsContinuous.{t} F J K]
 /-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `F.op ⋙ _`
 if `F` is a continuous functor.
 -/
-@[simps!]
+@[simps! obj_val map_val]
 def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A where
   obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
   map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
