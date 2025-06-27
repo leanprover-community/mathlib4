@@ -46,11 +46,14 @@ lemma equivTensorPiTensorComplSingleton_tprod (i₀ : ι) (m : ∀ i, M i) :
     equivTensorPiTensorComplSingleton R M i₀ (⨂ₜ[R] i, m i) =
       m i₀ ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) := by
   dsimp [equivTensorPiTensorComplSingleton]
-  erw [reindex_tprod (R := R) (s := M), tmulEquivDep_symm_apply]
-  erw [LinearEquiv.rTensor_tmul]
-  simp only [Set.sumSingletonComplEquiv_inl, Equiv.symm_symm, subsingletonEquiv_apply_tprod,
-    Set.sumSingletonComplEquiv_inr]
-  rfl
+  have h₁ : (reindex R M (Set.sumSingletonComplEquiv i₀).symm) (⨂ₜ[R] (i : ι), m i) =
+      ⨂ₜ[R] j, m ((Set.sumSingletonComplEquiv i₀) j) := by
+    simp_rw [reindex_tprod (R := R) (s := M), Equiv.symm_symm]
+  have h₂ := tmulEquivDep_symm_apply (R := R)
+    (N := fun i ↦ (M ((Set.sumSingletonComplEquiv i₀) i)))
+  dsimp at h₁ h₂
+  rw [h₁, h₂]
+  exact (LinearEquiv.rTensor_tmul _ _ _ _).trans (by congr; simp)
 
 @[simp]
 lemma equivTensorPiTensorComplSingleton_symm_tmul [DecidableEq ι] (i₀ : ι)
@@ -133,7 +136,7 @@ lemma _root_.MultilinearMap.ext_of_span_eq_top
   suffices lift φ = lift φ' by
     ext m
     simpa using DFunLike.congr_fun this (tprod _ m)
-  exact PiTensorProduct.ext_of_span_eq_top hg  (fun j ↦ by simpa using h j)
+  exact PiTensorProduct.ext_of_span_eq_top hg (fun j ↦ by simpa using h j)
 
 lemma submodule_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
