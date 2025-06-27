@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!
 # Additive operations on derivatives
@@ -135,6 +136,30 @@ theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
 theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
+
+/-- A version of `fderiv_const_smul` without differentiability hypothesis: in return, the constant
+`c` must be invertible, i.e. if `R` is a field. -/
+theorem fderiv_const_smul'' (c : R) [Invertible c] :
+    fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
+  by_cases h : DifferentiableAt 𝕜 f x
+  · exact (h.hasFDerivAt.const_smul c).fderiv
+  · obtain (rfl | hc) := eq_or_ne c 0
+    · simp [fderiv_zero]
+    -- make a separate lemma: f is differentiable at x iff c • f is?
+    have : ¬DifferentiableAt 𝕜 (c • f) x := by
+      contrapose! h
+      apply (h.const_smul ⅟ c).congr_of_eventuallyEq
+      filter_upwards with x
+      simp
+    simp [fderiv_zero_of_not_differentiableAt h, fderiv_zero_of_not_differentiableAt this]
+
+/-- Special case of `fderiv_const_smul''` over a field: any constant is allowed -/
+lemma fderiv_const_smul''' (c : 𝕜) : fderiv 𝕜 (c • f) = c • (fderiv 𝕜 f) := by
+  obtain (rfl | ha) := eq_or_ne c 0
+  · simp
+  · have : Invertible c := invertibleOfNonzero ha
+    ext x x'
+    simp [fderiv_const_smul'' c (f := f)]
 
 @[deprecated (since := "2025-06-14")] alias fderiv_const_smul' := fderiv_const_smul
 
