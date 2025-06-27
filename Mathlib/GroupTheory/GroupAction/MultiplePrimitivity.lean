@@ -214,7 +214,7 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
       (Set.preimage_image_eq _ Subtype.coe_injective).symm
     rw [htt']
     suffices IsPreprimitive (fixingSubgroup M (s ∪ t')) (ofFixingSubgroup M (s ∪ t')) by
-      apply IsPreprimitive.of_surjective (map_ofFixingSubgroupUnion_bijective M s t').surjective
+      apply IsPreprimitive.of_surjective map_ofFixingSubgroupUnion_bijective.surjective
     apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n
     rw [Set.encard_union_eq _]
     · rw [Subtype.coe_injective.encard_image, add_assoc, ht,
