@@ -394,6 +394,13 @@ theorem cycleType_cycleIcc (hij : i < j) :
   simpa [cycleIcc, cycleType_cycleRange (castLT_sub_nezero hij)] using sub_val_of_le
     (Fin.le_of_lt hij)
 
+theorem cycleIcc_zero_eq_cycleRange [NeZero n] : cycleIcc (zero_le i) = cycleRange i := by
+  ext x
+  rcases lt_trichotomy x i with ch | ch | ch
+  · simp [cycleIcc_of_ge_and_lt (zero_le x) ch, cycleRange_of_lt ch]
+  · simp [ch]
+  · simp [cycleIcc_of_gt (zero_le i) ch, cycleRange_of_gt ch]
+
 theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     (cycleIcc hij) ∘ (cycleIcc hjk) = (cycleIcc (Fin.le_trans hij hjk)) := by
   ext x
