@@ -716,6 +716,7 @@ end ComapDomain
 
 /-! ### Declarations about `Finsupp.filter` -/
 
+
 section Filter
 
 section Zero
