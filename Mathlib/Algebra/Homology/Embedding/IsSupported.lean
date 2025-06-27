@@ -57,8 +57,7 @@ lemma isStrictlySupported_op_iff :
   ⟨(fun _ ↦ ⟨fun i' hi' ↦ (K.op.isZero_X_of_isStrictlySupported e.op i' hi').unop⟩),
     (fun _ ↦ ⟨fun i' hi' ↦ (K.isZero_X_of_isStrictlySupported e i' hi').op⟩)⟩
 
-instance [K.IsStrictlySupported e] :
-    K.op.IsStrictlySupported e.op := by
+instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op := by
   rw [isStrictlySupported_op_iff]
   infer_instance
 
@@ -136,9 +135,6 @@ lemma isZero_iff_isStrictlySupported_and_isStrictlySupportedOutside :
     · obtain ⟨i, rfl⟩ := hn
       exact h₂.isZero i
     · exact K.isZero_X_of_isStrictlySupported e _ (by simpa using hn)
-
-instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op where
-  isZero j hj' := (K.isZero_X_of_isStrictlySupported e j hj').op
 
 end
 

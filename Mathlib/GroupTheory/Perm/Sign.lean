@@ -13,7 +13,6 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Data.Finset.Sigma

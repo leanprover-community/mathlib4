@@ -6,6 +6,7 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Solvable Groups
