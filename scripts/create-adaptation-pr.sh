@@ -37,7 +37,7 @@ setup_remotes() {
     git remote -v
     echo ""
     echo "Please add a remote for the main repository:"
-    echo "  git remote add origin https://github.com/leanprover-community/mathlib4.git"
+    echo "  git remote add upstream https://github.com/leanprover-community/mathlib4.git"
     exit 1
   fi
 
@@ -69,7 +69,7 @@ usage() {
 # Function to find remote for a given repository
 find_remote() {
   local repo_pattern="$1"
-  git remote -v | grep "$repo_pattern" | grep "(fetch)" | head -n1 | cut -f1
+  git remote -v | grep "$repo_pattern\.git" | grep "(fetch)" | head -n1 | cut -f1
 }
 
 # Parse arguments
