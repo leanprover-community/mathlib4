@@ -400,8 +400,8 @@ def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
     hom := (conjugateEquiv adj₁ adj₂).symm β.hom
     inv := (conjugateEquiv adj₂ adj₁).symm β.inv
   }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 end ConjugateIsomorphism
 
