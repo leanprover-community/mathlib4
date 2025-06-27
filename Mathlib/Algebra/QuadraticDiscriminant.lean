@@ -116,6 +116,41 @@ theorem discrim_eq_zero_iff (ha : a ≠ 0) :
 
 end Field
 
+section LinearOrderedRing
+
+variable {K : Type*} [CommRing K] [LinearOrder K] [IsStrictOrderedRing K] {a b c : K}
+
+theorem nonneg_of_pos_of_discrim_le_zero {x : K} (ha : 0 < a) (h : discrim a b c ≤ 0) :
+    0 ≤ a * (x * x) + b * x + c := by
+  refine nonneg_of_mul_nonneg_left ?_ (mul_pos zero_lt_four ha)
+  convert_to 0 ≤ (2 * a * x + b)^2 + - discrim a b c using 1
+  · simp [discrim]
+    ring
+  exact add_nonneg (sq_nonneg (2 * a * x + b)) (neg_nonneg.mpr h)
+
+lemma nonpos_of_neg_of_discrim_le_zero {x : K} (ha : a < 0) (h : discrim a b c ≤ 0) :
+    a * (x * x) + b * x + c ≤ 0 := by
+  apply neg_nonneg.mp
+  simp only [neg_add, ← neg_mul]
+  exact nonneg_of_pos_of_discrim_le_zero (Left.neg_pos_iff.mpr ha) (by simpa)
+
+theorem pos_of_pos_of_discrim_lt_zero {x : K} (ha : 0 < a) (h : discrim a b c < 0) :
+    0 < a * (x * x) + b * x + c := by
+  refine pos_of_mul_pos_left ?_ (mul_pos zero_lt_four ha).le
+  convert_to 0 < (2 * a * x + b)^2 + - discrim a b c using 1
+  · simp [discrim]
+    ring
+
+  exact add_pos_of_nonneg_of_pos (sq_nonneg (2 * a * x + b)) (neg_pos.mpr h)
+
+lemma neg_of_neg_of_discrim_lt_zero {x : K} (ha : a < 0) (h : discrim a b c < 0) :
+    a * (x * x) + b * x + c < 0 := by
+  apply neg_pos.mp
+  simp only [neg_add, ← neg_mul]
+  apply pos_of_pos_of_discrim_lt_zero (Left.neg_pos_iff.mpr ha) (by simpa)
+
+end LinearOrderedRing
+
 section LinearOrderedField
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {a b c : K}
