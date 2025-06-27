@@ -109,7 +109,7 @@ lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     refine (h W.left (W.hom ≫ g) (S.downward_closed hg _)).trans ?_
     have H := hx (𝟙 _) W.hom (S.downward_closed hg W.hom) hg (by simp)
     dsimp at H
-    simp only [Functor.map_id, FunctorToTypes.map_id_apply] at H
+    simp only [FunctorToTypes.map_id_apply] at H
     rw [H, presheafHom_map_app_op_mk_id]
     rfl
 
