@@ -100,6 +100,18 @@ lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
 
 open MeasureTheory Measure
 
+lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
+    ∫⁻ t in Icc 0 1, ‖fderivWithin ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) (Icc 0 1) t 1‖ₑ
+      = edist x y := by
+  have : edist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
+    simp [edist_comm x y, edist_eq_enorm_sub]
+  rw [this]
+  apply setLIntegral_congr_fun measurableSet_Icc (fun z hz ↦ ?_)
+  rw [show y - x = fderiv ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) z 1 by simp]
+  congr
+  exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
+    (ContinuousAffineMap.differentiableAt _)
+
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
@@ -122,14 +134,9 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       rw [contMDiffOn_iff_contDiffOn]
       exact γ.contDiff.contDiffOn
     apply this.trans_eq
-    rw [pathELength_eq_lintegral_mfderiv_Ioo]
-    simp only [mfderiv_eq_fderiv, enorm_tangentSpace_vectorSpace]
-    have : edist x y = ∫⁻ (x_1 : ℝ) in Ioo 0 1, ‖y - x‖ₑ := by
-      simp [edist_comm x y, edist_eq_enorm_sub]
-    rw [this]
-    apply lintegral_congr (fun z ↦ ?_)
-    rw [show y - x = fderiv ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) z 1 by simp]
-    rfl
+    rw [pathELength_eq_lintegral_mfderivWithin_Icc]
+    simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
+    exact lintegral_fderiv_lineMap_eq_edist
 
 end
 
@@ -204,13 +211,80 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   simp [-extChartAt] at hy
   convert hy
 
-lemma blok (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝 x,
+lemma blok (x : M) : ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
     riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := by
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0,
       ball (extChartAt I x x) r ∩ range I ⊆ (extChartAt I x).target :=
     mem_nhdsWithin_iff.1 (extChartAt_target_mem_nhdsWithin x)
-  have : (extChartAt I x) ⁻¹' (ball (extChartAt I x x) r ∩ range I) ∈ 𝓝 x := by
-    apply extChartAt_preimage_mem_nhds_of_mem_nhdsWithin
+  have A : (extChartAt I x) ⁻¹' (ball (extChartAt I x x) r ∩ range I) ∈ 𝓝 x := by
+    apply extChartAt_preimage_mem_nhds_of_mem_nhdsWithin (by simp)
+    rw [inter_comm]
+    exact inter_mem_nhdsWithin _ (ball_mem_nhds _ r_pos)
+  rcases eventually_norm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
+  lift C to ℝ≥0 using C_pos.le
+  simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
+  refine ⟨C, by positivity, ?_⟩
+  filter_upwards [A, hC, chart_source_mem_nhds H x] with y hy h'y h''y
+  let η := ContinuousAffineMap.lineMap (R := ℝ) (extChartAt I x x) (extChartAt I x y)
+  set γ := (extChartAt I x).symm ∘ η
+  have : riemannianEDist I x y ≤ pathELength I γ 0 1 := by
+    apply riemannianEDist_le_pathELength _ _ _ zero_le_one
+    · apply (contMDiffOn_extChartAt_symm x).comp
+      · apply ContMDiff.contMDiffOn
+        rw [contMDiff_iff_contDiff]
+        exact ContinuousAffineMap.contDiff _
+      · simp only [← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq,
+          ← segment_eq_image_lineMap, η]
+        apply Subset.trans _ hr
+        exact ((convex_ball _ _).inter I.convex_range).segment_subset (by simp [r_pos]) hy
+    · simp [γ, η, ContinuousAffineMap.coe_lineMap_eq]
+    · simp [γ, η, ContinuousAffineMap.coe_lineMap_eq, h''y]
+  apply this.trans
+  rw [← lintegral_fderiv_lineMap_eq_edist, pathELength_eq_lintegral_mfderivWithin_Icc,
+    ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
+  apply setLIntegral_mono' measurableSet_Icc (fun t ht ↦ ?_)
+  have : mfderivWithin 𝓘(ℝ) I γ (Icc 0 1) t =
+    (mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (η t)) ∘L
+    (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t) := by
+    sorry
+  have : mfderivWithin 𝓘(ℝ) I γ (Icc 0 1) t 1 =
+      (mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (η t))
+      (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t 1) := by
+    rw [this]
+    rfl
+  rw [this]
+  apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
+  gcongr
+  · have : extChartAt I x y = η t := sorry
+    have W := h'y.le
+    rw [this] at W
+    have : (extChartAt I x).symm (η t) = γ t := sorry
+    rw [← this]
+    convert W
+
+
+    sorry
+  · simp only [mfderivWithin_eq_fderivWithin]
+    exact le_of_eq rfl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
