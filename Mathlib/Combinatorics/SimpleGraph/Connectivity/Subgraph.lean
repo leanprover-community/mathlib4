@@ -251,10 +251,7 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
         use 0
         simp only [Walk.getVert_zero, zero_add, getVert_cons_succ]
         refine ⟨?_, by simp only [length_cons, Nat.zero_lt_succ]⟩
-        simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-        cases hl with
-        | inl h1 => left; exact ⟨h1.1, h1.2⟩
-        | inr h2 => right; exact ⟨h2.1, h2.2⟩
+        exact Sym2.eq_iff.mpr hl
       | inr hr =>
         obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
         use i + 1

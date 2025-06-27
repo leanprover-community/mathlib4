@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Tactic.Algebraize
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -124,6 +125,19 @@ lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
   (isPushout_tensorProduct R S A).of_iso (Iso.refl _) (Iso.refl _) (Iso.refl _)
     (Algebra.IsPushout.equiv R S A B).toCommRingCatIso (by simp) (by simp)
     (by ext; simp [Algebra.IsPushout.equiv_tmul]) (by ext; simp [Algebra.IsPushout.equiv_tmul])
+
+lemma closure_range_union_range_eq_top_of_isPushout
+    {R A B X : CommRingCat.{u}} {f : R ⟶ A} {g : R ⟶ B} {a : A ⟶ X} {b : B ⟶ X}
+    (H : IsPushout f g a b) :
+    Subring.closure (Set.range a ∪ Set.range b) = ⊤ := by
+  algebraize [f.hom, g.hom]
+  let e := ((isPushout_tensorProduct R A B).isoIsPushout _ _ H).commRingCatIsoToRingEquiv
+  rw [← Subring.comap_map_eq_self_of_injective e.symm.injective (.closure _), RingHom.map_closure,
+    ← top_le_iff, ← Subring.map_le_iff_le_comap, Set.image_union]
+  simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
+  rw [← hom_comp, ← hom_comp, IsPushout.inl_isoIsPushout_inv, IsPushout.inr_isoIsPushout_inv,
+    hom_ofHom, hom_ofHom]
+  exact le_top.trans (Algebra.TensorProduct.closure_range_union_range_eq_top R A B).ge
 
 end Pushout
 
