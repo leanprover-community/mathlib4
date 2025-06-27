@@ -246,4 +246,11 @@ noncomputable def Presentation.piTensor [Finite ι] (pres : ∀ i, Presentation 
   toSolution := .piTensor (fun i ↦ (pres i).toSolution)
   toIsPresentation := .piTensor (fun i ↦ (pres i).toIsPresentation)
 
+instance [Finite ι] (pres : ∀ i, Presentation R (M i))
+    [h : ∀ i, IsEmpty (pres i).R] :
+    IsEmpty (Presentation.piTensor pres).R where
+  false := by
+    rintro ⟨i, ⟨a, _⟩⟩
+    exact (h i).elim' a
+
 end Module

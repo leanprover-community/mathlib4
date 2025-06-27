@@ -98,3 +98,17 @@ lemma free_iff_exists_presentation :
     exact p.toIsPresentation.free
 
 end Module
+
+namespace Basis
+
+variable {A : Type u} [Ring A] {M : Type v} [AddCommGroup M] [Module A M] {ι : Type w}
+  (b : Basis ι A M)
+
+/-- The presentation of a module given by a basis. -/
+@[simps!]
+noncomputable def presentation : Module.Presentation A M :=
+  (Module.presentationFinsupp.{w, w} A ι).ofLinearEquiv b.repr.symm
+
+instance : IsEmpty (b.presentation.R) := by dsimp; infer_instance
+
+end Basis

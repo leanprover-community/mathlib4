@@ -4093,6 +4093,7 @@ import Mathlib.LinearAlgebra.PerfectPairing.Matrix
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 import Mathlib.LinearAlgebra.PiTensorProduct.Finite
 import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 import Mathlib.LinearAlgebra.Prod
