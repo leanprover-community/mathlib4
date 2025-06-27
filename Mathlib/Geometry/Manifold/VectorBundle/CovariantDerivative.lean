@@ -357,6 +357,19 @@ noncomputable def extend [FiniteDimensional ℝ F] {x : M} (v : V x) : (x' : M) 
   letI bV := b.localFrame_toBasis_at t (FiberBundle.mem_baseSet_trivializationAt F V x)
   fun x' ↦ ∑ i, bV.repr v i • b.localFrame t i x'
 
+-- FIXME: these two lemmas only hold for *very particular* choices of extensions of v
+-- (but there exist such choices, and our definition makes these ?! TODO check!!)
+-- so, one may argue this is mathematically wrong, but it encodes the "choice some extension
+-- with this and that property" nicely
+-- a different proof would be to argue only the value at a point matters for cov
+@[simp]
+lemma extend_add_apply [FiniteDimensional ℝ F] {x : M} (v v' : V x) :
+  extend F (v + v') = extend F v + extend F v' := sorry
+
+@[simp]
+lemma extend_smul_apply [FiniteDimensional ℝ F] {a : ℝ} (v  : V x) :
+  extend F (a • v) = a • extend F v := sorry
+
 -- TODO: cleanup this proof by adding simp lemmas to the localFrame stuff
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 @[simp] lemma extend_apply_self [FiniteDimensional ℝ F] {x : M} (v : V x) :
@@ -373,17 +386,25 @@ lemma contMDiff_extend [FiniteDimensional ℝ F] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) 1 (fun x ↦ TotalSpace.mk' F x (extend F σ₀ x)) := by
   sorry
 
--- The difference of two covariant derivatives, as a tensorial map
+/-- The difference of two covariant derivatives, as a tensorial map -/
 noncomputable def difference [FiniteDimensional ℝ F] [FiniteDimensional ℝ E] [IsManifold I 1 M]
     (cov cov' : CovariantDerivative I F V) :
     Π x : M, TangentSpace I x → V x → V x :=
   fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀) (extend F σ₀) x
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+@[simp]
+lemma difference_apply [FiniteDimensional ℝ F] [IsManifold I 1 M]
+    (cov cov' : CovariantDerivative I F V) (x : M) (X₀ : TangentSpace I x) (σ₀ : V x) :
+    difference cov cov' x X₀ σ₀ =
+      cov (extend E X₀) (extend F σ₀) x - cov' (extend E X₀) (extend F σ₀) x := rfl
 
 end real
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
+variable (E E') in
 @[simps]
 noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
@@ -426,6 +447,43 @@ noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
       fderiv_smul (by simp_all) (by simp_all)
     simp [this, bar, hσ, h]
     module
+
+section real
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+
+@[simps]
+noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
+    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x X : E) : E' →ₗ[ℝ] E' where
+  toFun := difference cov (CovariantDerivative.trivial E E') x X
+  map_add' y y' := by
+    -- follows from the (not yet proven) smoothness
+    have A : fderiv ℝ ((extend E' y  (x := x)) + extend E' y' (x := x)) x =
+      fderiv ℝ (extend E' y (x := x)) x + fderiv ℝ (extend E' y' (x := x)) x := sorry
+    have B : cov (extend E X (x := x)) (extend E' y  (x := x) + extend E' y' (x := x)) x =
+      cov (extend E X (x := x)) (extend E' y (x := x)) x +
+        cov (extend E X (x := x)) (extend E' y' (x := x)) x := sorry
+    simp [A, B]
+    module
+  map_smul' a v := by
+    simp [fderiv_section_smul, cov.smul_const_σ]
+    module
+
+@[simps!]
+noncomputable def endomorph_of_trivial_aux' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
+    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x X : E) : E' →L[ℝ] E' where
+  toLinearMap := cov.endomorph_of_trivial_aux x X
+  cont := LinearMap.continuous_of_finiteDimensional _
+
+/-- Classification of covariant derivatives over a trivial vector bundle: every connection
+is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
+-/
+lemma exists_endomorph (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) :
+    ∃ (A : E → E →L[ℝ] E' →L[ℝ] E'), cov = .of_endomorphism A := by
+  sorry
+
+end real
 
 end CovariantDerivative
 
