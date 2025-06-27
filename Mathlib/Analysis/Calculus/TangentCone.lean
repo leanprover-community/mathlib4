@@ -547,8 +547,8 @@ theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
   UniqueDiffOn.pi _ _ _ _ fun i _ => h i
 
 /--
-Given `x ∈ s` and a field extension `𝕜 ⊆ 𝕜'`, the tangent of `s` at `x` with
-respect to `𝕜` is contained in the tangent of `s` at `x` with respect to `𝕜'`.
+Given `x ∈ s` and a field extension `𝕜 ⊆ 𝕜'`, the tangent cone of `s` at `x` with
+respect to `𝕜` is contained in the tangent cone of `s` at `x` with respect to `𝕜'`.
 -/
 theorem tangentConeAt_mono_field : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜' s x := by
   intro α hα
