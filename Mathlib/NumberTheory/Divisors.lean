@@ -310,8 +310,7 @@ theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
 
 @[simp]
 theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
-  ext
-  simp [mul_eq_one, Prod.ext_iff]
+  decide
 
 @[simp high]
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :

@@ -901,9 +901,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
     rw [← mul_one (η : ℤₘ₀), mul_assoc, one_mul]
     gcongr
     · exact zero_lt_iff.2 η.ne_zero
-    rw [← WithZero.coe_one, coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
-      Multiplicative.ofAdd_lt]
-    exact Int.zero_lt_one
+    decide
 
 /-- For every Laurent series `f` and every `γ : ℤₘ₀` one can find a rational function `Q` such
 that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`. -/

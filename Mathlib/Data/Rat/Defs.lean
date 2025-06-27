@@ -266,7 +266,7 @@ protected theorem mul_add : a * (b + c) = a * b + a * c := by
   rw [Rat.mul_comm, Rat.add_mul, Rat.mul_comm, Rat.mul_comm c a]
 
 protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
-  rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> omega
+  decide
 
 attribute [simp] mkRat_eq_zero
 

@@ -46,8 +46,7 @@ open Affine
 namespace Finset
 
 theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
-  ext x
-  fin_cases x <;> simp
+  decide
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [S : AffineSpace V P]

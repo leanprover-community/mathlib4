@@ -233,7 +233,7 @@ theorem comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultil
   let c : Composition 0 := Composition.ones 0
   dsimp [FormalMultilinearSeries.comp]
   have : {c} = (Finset.univ : Finset (Composition 0)) := by
-    apply Finset.eq_of_subset_of_card_le <;> simp [Finset.card_univ, composition_card 0]
+    decide
   rw [← this, Finset.sum_singleton, compAlongComposition_apply]
   symm; congr! -- Porting note: needed the stronger `congr!`!
 
