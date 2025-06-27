@@ -153,8 +153,8 @@ end Find
 
 section FindGreatest
 
-/-- `Nat.findGreatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
-exists -/
+/-- `Nat.findGreatest P n` is the largest `i ≤ n` such that `P i` holds, or `0` if no such `i`
+exists. -/
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
   | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n
