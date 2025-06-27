@@ -103,18 +103,6 @@ def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
   left_inv P := by ext (_|a) <;> simp [Finsupp.update]
   right_inv P := by ext <;> simp [Finsupp.update]
 
-theorem eq_option_embedding_update_none_iff {n : Option α →₀ M} {m : α →₀ M} {i : M} :
-    (n = (embDomain Embedding.some m).update none i) ↔
-      n none = i ∧ n.some = m := by
-  classical
-  rw [Finsupp.ext_iff, Option.forall, Finsupp.ext_iff]
-  apply and_congr
-  · simp
-  · apply forall_congr'
-    intro
-    simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
-    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
-
 /--
 Extend a finitely supported function on `α` to a finitely supported function on `Option α`,
 provided a default value for `none`.
@@ -216,12 +204,6 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
-
-@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
-  ext; rw [some_apply]; exact embDomain_apply _ _ _
-
-@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
-  embDomain_notin_range _ _ _ (by simp)
 
 end Option
 
