@@ -208,8 +208,20 @@ lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     simp only [Fin.isValue, Fin.ofNat_eq_cast, Fin.natCast_eq_last]
     rfl
 
-instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
-  allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
+/-- The constant map `cont _ _ 0 : Δ ⟶ ⦋0⦌` is unique. -/
+instance unique_hom_zero (Δ : SimplexCategory) : Unique (Δ ⟶ ⦋0⦌) where
+  default := Δ.const _ 0
+  uniq f := by ext : 3; apply Subsingleton.elim (α := Fin 1)
+
+/-- The object `⦋0⦌` is terminal in `SimplexCategory`. -/
+def isTerminal_zero : IsTerminal ⦋0⦌ :=
+ IsTerminal.ofUnique ⦋0⦌
+
+instance : HasTerminal SimplexCategory :=
+  IsTerminal.hasTerminal isTerminal_zero
+
+noncomputable def top_iso_zero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
+  terminalIsoIsTerminal isTerminal_zero
 
 theorem hom_zero_zero (f : ⦋0⦌ ⟶ ⦋0⦌) : f = 𝟙 _ := by
   apply Subsingleton.elim
@@ -896,19 +908,17 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
 
 namespace Truncated
 
-instance final_inclusion (n : ℕ) : (inclusion n).Final := .mk fun Δ => by
+instance final_inclusion (n : ℕ) : (inclusion n).Final := .mk fun Δ =>
   have : Nonempty (StructuredArrow Δ (inclusion n)) := ⟨⟨⟨⟩⟩, ⦋0⦌ₙ, const _ _ 0⟩
-  apply zigzag_isConnected
-  rintro ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩
-  apply Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⦋0⦌ₙ, Δ.const ⦋0⦌ 0⟩)
+  zigzag_isConnected fun ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩ =>
+  Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⦋0⦌ₙ, Δ.const ⦋0⦌ 0⟩)
     (Zigzag.of_zag (.inl ⟨StructuredArrow.homMk (Δ₁.const _ 0) (by rfl)⟩))
     (Zigzag.of_zag (.inr ⟨StructuredArrow.homMk (Δ₂.const _ 0) (by rfl)⟩))
 
-instance final_incl (m n : ℕ) (h : m ≤ n) : (incl m n h).Final := .mk fun ⟨Δ, hΔ⟩ => by
+instance final_incl (m n : ℕ) (h : m ≤ n) : (incl m n h).Final := .mk fun ⟨Δ, hΔ⟩ =>
   have : Nonempty (StructuredArrow ⟨Δ, hΔ⟩ (incl m n h)) := ⟨⟨⟨⟩⟩, ⟨⦋0⦌, by simp⟩, const _ _ 0⟩
-  apply zigzag_isConnected
-  rintro ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩
-  apply Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⟨⦋0⦌, by simp⟩, Δ.const ⦋0⦌ 0⟩)
+  zigzag_isConnected fun ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩ =>
+  Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⟨⦋0⦌, by simp⟩, Δ.const ⦋0⦌ 0⟩)
     (Zigzag.of_zag (.inl ⟨StructuredArrow.homMk (Δ₁.const _ 0) (by rfl)⟩))
     (Zigzag.of_zag (.inr ⟨StructuredArrow.homMk (Δ₂.const _ 0) (by rfl)⟩))
 
