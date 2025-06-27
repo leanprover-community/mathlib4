@@ -77,7 +77,7 @@ noncomputable def piTensor : (Relations.piTensor relations).Solution (⨂[R] i, 
     by_cases hi : i = i₀
     · subst hi
       simp
-    · rw [embedding_apply_of_neq, Function.extendComplSingleton_of_neq _ _ _ _ hi]
+    · rw [embedding_apply_of_neq, Function.complSingletonLift_of_neq _ _ _ _ hi]
 
 namespace IsPresentation
 
@@ -124,7 +124,7 @@ lemma presInd_var (g₀ : (relations i₀).G)
     (g : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), (relations i).G) :
       (presInd h i₀ h₀).var ⟨g₀, g⟩ =
       ⨂ₜ[R] (i : ι), (solution i).var
-        (Function.extendComplSingleton (M := fun i ↦ (relations i).G) i₀ g g₀ i) := by
+        (Function.complSingletonLift (M := fun i ↦ (relations i).G) i₀ g g₀ i) := by
   dsimp [presInd]
   erw [equivTensorPiTensorComplSingleton_symm_tmul]
   congr
@@ -132,7 +132,7 @@ lemma presInd_var (g₀ : (relations i₀).G)
   by_cases hi : i = i₀
   · subst hi
     simp
-  · simp only [Function.extendComplSingleton_of_neq _ _ _ _ hi]
+  · simp only [Function.complSingletonLift_of_neq _ _ _ _ hi]
 
 lemma eq_presInd_var (g : ∀ i, (relations i).G):
     (⨂ₜ[R] (i : ι), (solution i).var (g i)) =
@@ -146,21 +146,21 @@ include h h₀ in
 noncomputable def isPresentationCore_induction_step :
     Solution.IsPresentationCore.{w'} (Solution.piTensor solution) where
   desc {N _ _ } s := (presInd h i₀ h₀).desc
-    { var := fun ⟨g₀, g⟩ ↦ s.var (Function.extendComplSingleton i₀ g g₀)
+    { var := fun ⟨g₀, g⟩ ↦ s.var (Function.complSingletonLift i₀ g g₀)
       linearCombination_var_relation := by
         rintro (⟨r₀, g⟩ | ⟨g₀, ⟨⟨i₁, h₁⟩, r₁, g⟩⟩)
         · simpa [presInd, Finsupp.linearCombination_embDomain]
             using s.linearCombination_var_relation ⟨i₀, r₀, g⟩
-        · erw [Set.mem_compl_iff, Set.not_mem_singleton_iff] at h₁
+        · erw [Set.mem_compl_iff, Set.notMem_singleton_iff] at h₁
           have := s.linearCombination_var_relation
-            ⟨i₁, r₁, Function.extendComplSingleton
+            ⟨i₁, r₁, Function.complSingletonLift
               (M := fun (i : ({i₁}ᶜ : Set ι)) ↦ (relations i).G) ⟨i₀, h₁.symm⟩
                 (fun ⟨⟨i, hi₁⟩, hi₀⟩ ↦ g ⟨⟨i, by
                   rw [Set.mem_compl_iff] at hi₀ ⊢
-                  erw [Set.not_mem_singleton_iff] at hi₀ ⊢
+                  erw [Set.notMem_singleton_iff] at hi₀ ⊢
                   simpa only [ne_eq, Subtype.mk.injEq] using hi₀⟩, (by
                   rw [Set.mem_compl_iff]
-                  erw [Set.not_mem_singleton_iff]
+                  erw [Set.notMem_singleton_iff]
                   simpa only [ne_eq, Subtype.mk.injEq] using hi₁)⟩) g₀⟩
           dsimp at this
           rw [Finsupp.linearCombination_embDomain] at this
@@ -174,17 +174,17 @@ noncomputable def isPresentationCore_induction_step :
           ext i
           by_cases hi₀ : i = i₀
           · subst hi₀
-            rw [Function.extendComplSingleton_self,
+            rw [Function.complSingletonLift_self,
               embedding_apply_of_neq _ _ _ _ _ h₁.symm,
-              Function.extendComplSingleton_self]
+              Function.complSingletonLift_self]
           · by_cases hi₁ : i = i₁
             · subst hi₁
-              rw [embedding_apply_self, Function.extendComplSingleton_of_neq _ _ _ _ h₁,
+              rw [embedding_apply_self, Function.complSingletonLift_of_neq _ _ _ _ h₁,
                 embedding_apply_self]
-            · rw [Function.extendComplSingleton_of_neq _ _ _ _ hi₀,
+            · rw [Function.complSingletonLift_of_neq _ _ _ _ hi₀,
                 embedding_apply_of_neq _ _ _ _ _ (by simpa using hi₁),
                 embedding_apply_of_neq _ _ _ _ _ hi₁,
-                Function.extendComplSingleton_of_neq _ _ _ _ (by simpa using hi₀)]
+                Function.complSingletonLift_of_neq _ _ _ _ (by simpa using hi₀)]
             }
   postcomp_desc s:= by
     ext g
@@ -196,7 +196,7 @@ noncomputable def isPresentationCore_induction_step :
     ext ⟨g₀, g⟩
     dsimp
     rw [presInd_var]
-    exact Solution.congr_var h' (Function.extendComplSingleton i₀ g g₀))
+    exact Solution.congr_var h' (Function.complSingletonLift i₀ g g₀))
 
 include h h₀ in
 lemma isPresentation_induction_step :
