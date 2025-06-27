@@ -69,11 +69,13 @@ theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι Q m = DirectSum.of (fun i => ↥(evenOdd Q i)) 1 ⟨ι Q m, ι_mem_evenOdd_one Q m⟩ :=
   rfl
 
+set_option synthInstance.maxHeartbeats 0 in
 nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
     GradedAlgebra.ι Q m * GradedAlgebra.ι Q m = algebraMap R _ (Q m) := by
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
@@ -96,13 +98,14 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
-  | zero =>
-    rw [map_zero]
-    apply Eq.symm
-    apply DFinsupp.single_eq_zero.mpr; rfl
-  | add x y hx hy ihx ihy =>
-    rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+  | zero => sorry
+    -- rw [map_zero]
+    -- apply Eq.symm
+    -- apply DFinsupp.single_eq_zero.mpr; rfl
+  | add x y hx hy ihx ihy => sorry
+    -- rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)

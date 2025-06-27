@@ -32,7 +32,7 @@ instance : GCDMonoid ℕ where
   gcd_dvd_left := Nat.gcd_dvd_left
   gcd_dvd_right := Nat.gcd_dvd_right
   dvd_gcd := Nat.dvd_gcd
-  gcd_mul_lcm a b := by rw [Nat.gcd_mul_lcm]; rfl
+  gcd_mul_lcm a b := by rw [Nat.gcd_mul_lcm]
   lcm_zero_left := Nat.lcm_zero_left
   lcm_zero_right := Nat.lcm_zero_right
 
