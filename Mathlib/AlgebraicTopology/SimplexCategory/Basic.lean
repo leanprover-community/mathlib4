@@ -220,6 +220,7 @@ def isTerminal_zero : IsTerminal ⦋0⦌ :=
 instance : HasTerminal SimplexCategory :=
   IsTerminal.hasTerminal isTerminal_zero
 
+/-- The isomorphism of the terminal objects in `SimplexCategory` and `⦋0⦌`. -/
 noncomputable def top_iso_zero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
   terminalIsoIsTerminal isTerminal_zero
 
