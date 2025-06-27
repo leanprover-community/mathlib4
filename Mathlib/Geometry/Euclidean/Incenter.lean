@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.SignedDist
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.Geometry.Euclidean.Sphere.Tangent
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
@@ -323,6 +323,14 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
   rw [← altitudeFoot, ← height]
   simp [mul_assoc, (s.height_pos i).ne']
 
+/-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
+def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
+  (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)
+
+lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
+  orthogonalProjection_mem _
+
 variable {s} in
 /-- The signed distance between the excenter and its projection in the plane of each face is the
 exradius. -/
@@ -343,14 +351,13 @@ lemma signedInfDist_incenter (i : Fin (n + 1)) : s.signedInfDist i s.incenter = 
   simp (discharger := positivity)
 
 variable {s} in
-/-- The distance between the excenter and its projection in the plane of each face is the exradius.
-
-In other words, the exsphere is tangent to the faces. -/
+/-- The distance between the excenter and its projection in the plane of each face is the
+exradius. -/
 lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
     (i : Fin (n + 1)) :
-    dist (s.excenter signs) ((s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)) =
-      s.exradius signs := by
-  rw [← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
+    dist (s.excenter signs) (s.touchpoint signs i) = s.exradius signs := by
+  rw [touchpoint,
+    ← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
     h.signedInfDist_excenter, abs_mul, abs_mul, abs_of_nonneg (s.exradius_nonneg signs)]
   simp only [abs_ite, abs_neg, abs_one, ite_self, one_mul]
   rcases lt_trichotomy 0 (∑ i, s.excenterWeightsUnnorm signs i) with h' | h' | h'
@@ -358,12 +365,46 @@ lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.Excente
   · simp [h h'.symm]
   · simp [h']
 
-/-- The distance between the incenter and its projection in the plane of each face is the inradius.
-
-In other words, the incenter is tangent to the faces. -/
+/-- The distance between the incenter and its projection in the plane of each face is the
+inradius. -/
 lemma dist_incenter (i : Fin (n + 1)) :
-    dist s.incenter ((s.faceOpposite i).orthogonalProjectionSpan s.incenter) = s.inradius :=
+    dist s.incenter (s.touchpoint ∅ i) = s.inradius :=
   s.excenterExists_empty.dist_excenter _
+
+variable {s} in
+lemma ExcenterExists.isTangentAt_touchpoint {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
+    (s.exsphere signs).IsTangentAt (s.touchpoint signs i)
+      (affineSpan ℝ (Set.range (s.faceOpposite i).points)) := by
+  rw [touchpoint, orthogonalProjectionSpan, excenter,
+    ← EuclideanGeometry.Sphere.dist_orthogonalProjection_eq_radius_iff_isTangentAt,
+    ← orthogonalProjectionSpan, ← excenter, ← exradius, ← touchpoint, h.dist_excenter]
+
+lemma isTangentAt_insphere_touchpoint (i : Fin (n + 1)) :
+    s.insphere.IsTangentAt (s.touchpoint ∅ i)
+      (affineSpan ℝ (Set.range (s.faceOpposite i).points)) :=
+  s.excenterExists_empty.isTangentAt_touchpoint i
+
+variable {s} in
+lemma eq_touchpoint_of_isTangentAt_exsphere {signs : Finset (Fin (n + 1))} {i : Fin (n + 1)} {p : P}
+    (ht : (s.exsphere signs).IsTangentAt p (affineSpan ℝ (Set.range (s.faceOpposite i).points))) :
+    p = s.touchpoint signs i := by
+  rw [ht.eq_orthogonalProjection, touchpoint, orthogonalProjectionSpan, excenter]
+
+variable {s} in
+lemma ExcenterExists.isTangentAt_exsphere_iff_eq_touchpoint {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} {p : P} :
+    (s.exsphere signs).IsTangentAt p (affineSpan ℝ (Set.range (s.faceOpposite i).points)) ↔
+      p = s.touchpoint signs i := by
+  refine ⟨eq_touchpoint_of_isTangentAt_exsphere, ?_⟩
+  rintro rfl
+  exact h.isTangentAt_touchpoint i
+
+variable {s} in
+lemma isTangentAt_insphere_iff_eq_touchpoint {i : Fin (n + 1)} {p : P} :
+    s.insphere.IsTangentAt p (affineSpan ℝ (Set.range (s.faceOpposite i).points)) ↔
+      p = s.touchpoint ∅ i :=
+  s.excenterExists_empty.isTangentAt_exsphere_iff_eq_touchpoint
 
 lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Finset (Fin (n + 1))} :
