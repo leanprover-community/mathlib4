@@ -62,7 +62,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       (-1) ^ ((p ^ (k + 1)).totient / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   haveI hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
   haveI mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
-  haveI se : Algebra.IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
+  haveI se : Algebra.IsSeparable K L := isSeparable {p ^ (k + 1)} K L
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _,
     ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, totient_prime_pow hp.out (succ_pos k),
     Nat.add_one_sub_one]

@@ -504,10 +504,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   have h1p : (p : ℝ) ≠ 1 := hq.lt.ne'
   have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
-  have h0p' : p' ≠ 0 := by
-    suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
-    rw [← inv_pos, hp', sub_pos]
-    exact inv_strictAnti₀ hq.pos h2p
+  have h0p' : p' ≠ 0 := by assumption
   have h2q : 1 / n' - 1 / q = 1 / p' := by
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]

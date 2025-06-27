@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Kim Morrison, Bolton Bailey
+Authors: Kim Morrison
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Algebra.Module.Defs
@@ -69,6 +69,11 @@ theorem some_single_some (a : α) (m : M) :
   classical
     ext b
     simp [single_apply]
+
+theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
+  ext
+  simp
+
 
 @[simp]
 lemma some_update_none (f : Option α →₀ M) (y : M) : (update f none y).some = f.some := by
@@ -193,6 +198,7 @@ theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.
   ext
   simp
 
+
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
@@ -212,6 +218,24 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
+
+theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
+    (n = (embDomain Embedding.some m).update none i) ↔
+      n none = i ∧ n.some = m := by
+  classical
+  rw [Finsupp.ext_iff, Option.forall, Finsupp.ext_iff]
+  apply and_congr
+  · simp
+  · apply forall_congr'
+    intro
+    simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
+    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
+
+@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
+  ext; rw [some_apply]; exact embDomain_apply _ _ _
+
+@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
+  embDomain_notin_range _ _ _ (by simp)
 
 end Option
 
