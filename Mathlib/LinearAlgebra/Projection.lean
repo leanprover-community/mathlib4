@@ -85,8 +85,7 @@ theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
     (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
   (quotientEquivOfIsCompl p q h).symm_apply_apply x
 
-/-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. It is the unique
-linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`. -/
+/-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. -/
 def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   apply LinearEquiv.ofBijective (p.subtype.coprod q.subtype)
   constructor
@@ -132,7 +131,8 @@ theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
     LinearEquiv.prodComm R q p ≪≫ₗ prodEquivOfIsCompl p q h = prodEquivOfIsCompl q p h.symm :=
   LinearEquiv.ext fun _ => add_comm _ _
 
-/-- Projection to a submodule along a complement.
+/-- Projection to a submodule along a complement. It is the unique
+linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
 
 See also `LinearMap.linearProjOfIsCompl`. -/
 def linearProjOfIsCompl (h : IsCompl p q) : E →ₗ[R] p :=
@@ -147,6 +147,10 @@ theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
 @[simp]
 theorem linearProjOfIsCompl_range (h : IsCompl p q) : range (linearProjOfIsCompl p q h) = ⊤ :=
   range_eq_of_proj (linearProjOfIsCompl_apply_left h)
+
+theorem linearProjOfIsCompl_surjective (h : IsCompl p q) :
+    Function.Surjective (linearProjOfIsCompl p q h) :=
+  range_eq_top.mp (linearProjOfIsCompl_range h)
 
 @[simp]
 theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
@@ -286,8 +290,7 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
 
 end
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify, but it does
--- It seems the side condition `hf` is not applied by `simpNF`.
+@[simp]
 theorem linearProjOfIsCompl_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
     p.linearProjOfIsCompl (ker f) (isCompl_of_proj hf) = f := by
   ext x
@@ -349,8 +352,6 @@ correspondence with linear maps to the submodule that restrict to the identity o
   invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
     ((range_comp_le_range _ _).trans_eq p.range_subtype)
     fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end Submodule
 

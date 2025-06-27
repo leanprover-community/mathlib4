@@ -41,9 +41,9 @@ coding theory, and representations of uniform matroids over finite fields.
 ## Main results
 
 * `det_vandermonde`: `det (vandermonde v)` is the product of `v j - v i`, where
-   `(i, j)` ranges over the set of pairs with `i < j`.
+  `(i, j)` ranges over the set of pairs with `i < j`.
 * `det_projVandermonde`: `det (projVandermonde v w)` is the product of `v j * w i - v i * w j`,
-    taken over all pairs with `i < j`.
+  taken over all pairs with `i < j`.
 
 ## Implementation notes
 

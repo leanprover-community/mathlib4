@@ -45,7 +45,7 @@ this file.
 
 * The classical form of Cauchy-Riemann equations
 * On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
-throughout or antiholomorphic throughout.
+  throughout or antiholomorphic throughout.
 -/
 
 

@@ -747,9 +747,7 @@ theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i,
 theorem reindex_symm (e : ι ≃ ι₂) :
     (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
   ext x
-  simp only [reindex, domDomCongrLinearEquiv', LinearEquiv.coe_symm_mk, LinearEquiv.coe_mk,
-    LinearEquiv.ofLinear_symm_apply, Equiv.symm_symm_apply, LinearEquiv.ofLinear_apply,
-    Equiv.piCongrLeft'_symm]
+  simp [reindex]
 
 @[simp]
 theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
@@ -901,8 +899,7 @@ def tmulEquiv :
 @[simp]
 theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
     tmulEquiv R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] ⨂ₜ[R] i, b i) = ⨂ₜ[R] i, Sum.elim a b i := by
-  simp [tmulEquiv]
-  rfl
+  simp [tmulEquiv, Sum.elim]
 
 @[simp]
 theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → M) :

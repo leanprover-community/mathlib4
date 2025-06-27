@@ -166,8 +166,9 @@ theorem closure_three_cycles_eq_alternating :
       rw [← two_mul] at hn
       exact hind n l hl hn
     intro n
-    induction' n with n ih <;> intro l hl hn
-    · simp [List.length_eq_zero_iff.1 hn, one_mem]
+    induction n with intro l hl hn
+    | zero => simp [List.length_eq_zero_iff.1 hn, one_mem]
+    | succ n ih =>
     rw [Nat.mul_succ] at hn
     obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.length_cons, Nat.succ_inj] at hn

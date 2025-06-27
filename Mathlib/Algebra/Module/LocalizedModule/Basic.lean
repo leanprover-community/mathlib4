@@ -32,7 +32,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 ## Future work
 
- * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
+* Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/
 
 
@@ -478,7 +478,7 @@ variable (S M)
 /-- The function `m ↦ m / 1` as an `R`-linear map.
 -/
 @[simps]
-def mkLinearMap : M →ₗ[R] LocalizedModule S M where
+noncomputable def mkLinearMap : M →ₗ[R] LocalizedModule S M where
   toFun m := mk m 1
   map_add' x y := by simp [mk_add_mk]
   map_smul' _ _ := (smul'_mk _ _ _).symm
@@ -488,7 +488,7 @@ end
 /-- For any `s : S`, there is an `R`-linear map given by `a/b ↦ a/(b*s)`.
 -/
 @[simps]
-def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
+noncomputable def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
   toFun p :=
     p.liftOn (fun p => mk p.1 (p.2 * s)) fun ⟨a, b⟩ ⟨a', b'⟩ ⟨c, eq1⟩ =>
       mk_eq.mpr ⟨c, by rw [mul_smul, mul_smul, smul_comm _ s, smul_comm _ s, eq1, smul_comm _ s,
@@ -500,7 +500,6 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
       smul_comm _ s, ← smul_add, mul_left_comm s t₁ t₂, mk_cancel_common_left s]
   map_smul' r x := by
     refine x.induction_on (fun _ _ ↦ ?_)
-    dsimp only
     change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
     simp_rw [liftOn_mk, mul_assoc, ← smul_def]
     congr!

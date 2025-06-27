@@ -116,7 +116,7 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   classical
   induction s using Finset.induction with
   | empty => simp [posLog]
-  | @insert a s ha hs =>
+  | insert a s ha hs =>
     calc log⁺ (∏ t ∈ insert a s, f t)
     _ = log⁺ (f a * ∏ t ∈ s, f t) := by rw [Finset.prod_insert ha]
     _ ≤ log⁺ (f a) + log⁺ (∏ t ∈ s, f t) := posLog_mul
@@ -158,5 +158,19 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 multiple summands. -/
 theorem posLog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
   convert posLog_sum Finset.univ ![a, b] using 1 <;> simp [add_assoc]
+
+/--
+Variant of `posLog_add` for norms of elements in normed additive commutative groups, using
+monotonicity of `log⁺` and the triangle inequality.
+-/
+lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (a b : E) :
+    log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
+  calc log⁺ ‖a + b‖
+  _ ≤ log⁺ (‖a‖ + ‖b‖) := by
+    apply monotoneOn_posLog _ _ (norm_add_le a b)
+    <;> simp [add_nonneg (norm_nonneg a) (norm_nonneg b)]
+  _ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
+    convert posLog_add using 1
+    ring
 
 end Real

@@ -87,8 +87,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
       dsimp [Fin.natAdd, Fin.cast]
       omega
     · intro h
-      rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
-      dsimp [Fin.cast] at h
+      replace h : a + 3 + k = 1 := by simp [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
       omega
     · dsimp [Fin.cast, Fin.pred]
       rw [Nat.add_right_comm, Nat.add_sub_assoc (by norm_num : 1 ≤ 3)]
@@ -141,7 +140,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
     -- All terms of the sum but the first two are zeros
     rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fintype.sum_eq_zero, add_zero]
     · simp only [Fin.val_zero, Fin.val_succ, Fin.coe_castSucc, zero_add, pow_zero, one_smul,
-        pow_one, neg_smul, comp_neg, ← Fin.castSucc_zero (n := n + 1), δ_comp_σ_self, δ_comp_σ_succ,
+        pow_one, neg_smul, comp_neg, ← Fin.castSucc_zero (n := n + 2), δ_comp_σ_self, δ_comp_σ_succ,
         add_neg_cancel]
     · intro j
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]

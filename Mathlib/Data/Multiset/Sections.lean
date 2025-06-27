@@ -20,7 +20,6 @@ section Sections
 /-- The sections of a multiset of multisets `s` consists of all those multisets
 which can be put in bijection with `s`, so each element is a member of the corresponding multiset.
 -/
-
 def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
   Multiset.recOn s {0} (fun s _ c => s.bind fun a => c.map (Multiset.cons a)) fun a₀ a₁ _ pi => by
     simp [map_bind, bind_bind a₀ a₁, cons_swap]

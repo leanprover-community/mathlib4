@@ -147,7 +147,7 @@ lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
 
 @[simp]
 lemma reps_zero_empty : reps 0 = ∅ := by
-  rw [reps, Set.eq_empty_iff_forall_not_mem]
+  rw [reps, Set.eq_empty_iff_forall_notMem]
   rintro A ⟨h₁, h₂, -, h₄⟩
   suffices |A.1 0 1| < 0 by linarith [abs_nonneg (A.1 0 1)]
   have := A_c_eq_zero h₁
@@ -224,10 +224,10 @@ private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B 
      ∀ B (n : ℤ), C (T^n • B) ↔ C B := by
   intro B n
   induction n with
-  | hz => simp only [zpow_zero, one_smul, imp_self]
-  | hp n hn =>
+  | zero => simp only [zpow_zero, one_smul, imp_self]
+  | succ n hn =>
     simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
-  | hn m hm =>
+  | pred m hm =>
     rwa [sub_eq_neg_add, zpow_add, zpow_neg_one, ← prop_red_T hS hT, mul_smul, smul_inv_smul]
 
 @[elab_as_elim]

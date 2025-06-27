@@ -132,6 +132,38 @@ theorem isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic [Nontrivial R]
   ⟨fun h ↦ ⟨h.1, h.1.isTranscendenceBasis_iff_isAlgebraic.mp h⟩,
     fun ⟨ind, alg⟩ ↦ ind.isTranscendenceBasis_iff_isAlgebraic.mpr alg⟩
 
+lemma IsTranscendenceBasis.algebraMap_comp
+    [Nontrivial R] [NoZeroDivisors S] [Algebra.IsAlgebraic S A] [FaithfulSMul S A]
+    {x : ι → S} (hx : IsTranscendenceBasis R x) : IsTranscendenceBasis R (algebraMap S A ∘ x) := by
+  let f := IsScalarTower.toAlgHom R S A
+  refine hx.1.map (f := f) (FaithfulSMul.algebraMap_injective S A).injOn
+    |>.isTranscendenceBasis_iff_isAlgebraic.mpr ?_
+  rw [Set.range_comp, ← AlgHom.map_adjoin]
+  set Rx := adjoin R (range x)
+  let e := Rx.equivMapOfInjective f (FaithfulSMul.algebraMap_injective S A)
+  letI := e.toRingHom.toAlgebra
+  haveI : IsScalarTower Rx (Rx.map f) A := .of_algebraMap_eq fun x ↦ rfl
+  have : Algebra.IsAlgebraic Rx S := hx.isAlgebraic
+  have : Algebra.IsAlgebraic Rx A := .trans _ S _
+  exact .extendScalars e.injective
+
+lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S] [NoZeroDivisors A]
+    {ι : Type*} {v : ι → A} (hv : IsTranscendenceBasis R v) :
+    Algebra.IsAlgebraic S A ↔ ∀ i, IsAlgebraic S (v i) := by
+  refine ⟨fun _ i ↦ Algebra.IsAlgebraic.isAlgebraic (v i), fun H ↦ ?_⟩
+  let Rv := adjoin R (range v)
+  let Sv := adjoin S (range v)
+  have : Algebra.IsAlgebraic S Sv := by
+    simpa [Sv, ← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
+  have le : Rv ≤ Sv.restrictScalars R := by
+    rw [Subalgebra.restrictScalars_adjoin]; exact le_sup_right
+  letI : Algebra Rv Sv := (Subalgebra.inclusion le).toAlgebra
+  have : IsScalarTower Rv Sv A := .of_algebraMap_eq fun x ↦ rfl
+  have := (algebraMap R S).domain_nontrivial
+  have := hv.isAlgebraic
+  have : Algebra.IsAlgebraic Sv A := .extendScalars (Subalgebra.inclusion_injective le)
+  exact .trans _ Sv _
+
 variable (ι R)
 
 theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
@@ -139,7 +171,7 @@ theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
   refine isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.2 ⟨algebraicIndependent_X .., ?_⟩
   rw [adjoin_range_X]
   set A := MvPolynomial ι R
-  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (A := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
+  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (B := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
   infer_instance
 
 theorem IsTranscendenceBasis.mvPolynomial' [Nonempty ι] :

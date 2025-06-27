@@ -61,7 +61,7 @@ lemma respectsIso : RespectsIso Flat := by
   exact of_bijective e.bijective
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Flat := by
-  apply IsStableUnderBaseChange.mk _ respectsIso
+  apply IsStableUnderBaseChange.mk respectsIso
   introv h
   replace h : Module.Flat R T := by
     rw [RingHom.Flat] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl

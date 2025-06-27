@@ -62,7 +62,8 @@ private lemma list_mul_sum {R : Type*} [Semiring R] {T : Type*} (l : List T) (y 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [DivisionRing F] (l : List T) {y : F} (hy : y ≠ 1) :
     (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
-  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range, ← Fin.sum_univ_get']
+  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range,
+    ← Fin.sum_univ_fun_getElem]
   simp only [List.getElem_zipIdx, Function.uncurry_apply_pair]
   let e : Fin l.zipIdx.length ≃ Fin l.length := finCongr List.length_zipIdx
   exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ by simp [e]
@@ -161,9 +162,9 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     have hap : a < a * b := lt_mul_of_one_lt_right (by omega) (by omega)
     have hbp : b < a * b := lt_mul_of_one_lt_left (by omega) (by omega)
     have ha :=
-      le_of_not_lt <| not_and.mp ((hmin a).mt hap.not_le) (map_pos_of_ne_zero f (mod_cast ha₀))
+      le_of_not_gt <| not_and.mp ((hmin a).mt hap.not_ge) (map_pos_of_ne_zero f (mod_cast ha₀))
     have hb :=
-      le_of_not_lt <| not_and.mp ((hmin b).mt hbp.not_le) (map_pos_of_ne_zero f (mod_cast hb₀))
+      le_of_not_gt <| not_and.mp ((hmin b).mt hbp.not_ge) (map_pos_of_ne_zero f (mod_cast hb₀))
     rw [Nat.cast_mul, map_mul] at hp1
     exact ((one_le_mul_of_one_le_of_one_le ha hb).trans_lt hp1).false
 

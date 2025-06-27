@@ -281,12 +281,12 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
   rw [← lintegral_add_compl _ ht]
   convert add_zero _
   · suffices ∀ b ∈ tᶜ, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 0 by
-      rw [setLIntegral_congr_fun ht.compl (ae_of_all _ this), lintegral_zero]
+      rw [setLIntegral_congr_fun ht.compl this, lintegral_zero]
     intro b hb
     simp only [t, Set.mem_compl_iff, Set.mem_setOf_eq] at hb
     simp [hb]
   · suffices ∀ b ∈ t, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 1 by
-      rw [setLIntegral_congr_fun ht (ae_of_all _ this), setLIntegral_one]
+      rw [setLIntegral_congr_fun ht this, setLIntegral_one]
     intro b hb
     simp only [t, Set.mem_setOf_eq] at hb
     simp [hb]
@@ -421,7 +421,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
     classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
-    simp (config := { unfoldPartialApp := true }) only [SimpleFunc.const_zero,
+    simp +unfoldPartialApp only [SimpleFunc.const_zero,
       SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
       Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
     rw [compProd_apply hs, ← lintegral_const_mul c _]

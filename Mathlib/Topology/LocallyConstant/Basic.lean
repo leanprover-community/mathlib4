@@ -65,7 +65,7 @@ theorem isClosed_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClos
   ⟨hf {y}ᶜ⟩
 
 theorem isClopen_fiber {f : X → Y} (hf : IsLocallyConstant f) (y : Y) : IsClopen { x | f x = y } :=
-  ⟨isClosed_fiber hf _,  isOpen_fiber hf _⟩
+  ⟨isClosed_fiber hf _, isOpen_fiber hf _⟩
 
 theorem iff_exists_open (f : X → Y) :
     IsLocallyConstant f ↔ ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x :=
@@ -466,8 +466,13 @@ theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU 
   Set.mulIndicator_of_mem h _
 
 @[to_additive]
-theorem mulIndicator_of_not_mem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator hU a = 1 :=
-  Set.mulIndicator_of_not_mem h _
+theorem mulIndicator_of_notMem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator hU a = 1 :=
+  Set.mulIndicator_of_notMem h _
+
+@[deprecated (since := "2025-05-23")] alias indicator_of_not_mem := indicator_of_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mulIndicator_of_not_mem := mulIndicator_of_notMem
 
 end Indicator
 

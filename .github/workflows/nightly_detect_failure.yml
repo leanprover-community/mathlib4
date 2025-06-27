@@ -8,7 +8,10 @@ on:
 
 jobs:
   handle_failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+
+    if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.conclusion == 'failure' &&
+            github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -22,11 +25,13 @@ jobs:
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+          ❌ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
           You can `git fetch; git checkout nightly-testing` and push a fix.
 
   handle_success:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' &&
+            github.event.workflow_run.conclusion == 'success' &&
+            github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -106,13 +111,13 @@ jobs:
         }
         response = client.get_messages(request)
         messages = response['messages']
-        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))":
+        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))":
             # Post the success message
             request = {
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status updates',
-                'content': f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
+                'content': f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
             }
             result = client.send_message(request)
             print(result)
@@ -126,11 +131,15 @@ jobs:
       with:
         script: |
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
-          const branches = await github.rest.repos.listBranches({
+          console.log(`Looking for branch: ${branchName}`);
+
+          // Use paginate to get all branches
+          const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
             repo: context.repo.repo
           });
-          const exists = branches.data.some(branch => branch.name === branchName);
+
+          const exists = branches.some(branch => branch.name === branchName);
           if (exists) {
             console.log(`Branch ${branchName} exists.`);
             return true;
@@ -150,6 +159,7 @@ jobs:
       id: latest_bump_branch
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
+        result-encoding: string
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
@@ -175,7 +185,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               path: 'lean-toolchain',
-              ref: ${{ steps.latest_bump_branch.outputs.result }}
+              ref: '${{ steps.latest_bump_branch.outputs.result }}'
             });
             const content = Buffer.from(response.data.content, 'base64').toString();
             const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/);
@@ -227,6 +237,18 @@ jobs:
         chmod 600 ~/.zuliprc
         echo "Setup complete"
 
+    - name: Clean workspace and checkout Mathlib4
+      if: steps.check_branch.outputs.result == 'false'
+      run: |
+        sudo rm -rf -- *
+    - name: Checkout Mathlib4 repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      if: steps.check_branch.outputs.result == 'false'
+      with:
+        ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
+        fetch-depth: 0 # checkout all branches
+        token: ${{ secrets.NIGHTLY_TESTING }}
+
     - name: Attempt automatic PR creation
       id: auto_pr
       if: steps.check_branch.outputs.result == 'false'
@@ -256,6 +278,8 @@ jobs:
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        REPOSITORY: ${{ github.repository }}
+        CURRENT_RUN_ID: ${{ github.run_id }}
       shell: python
       run: |
         import os
@@ -265,6 +289,8 @@ jobs:
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
         sha = os.getenv('SHA')
+        repository = os.getenv('REPOSITORY')
+        current_run_id = os.getenv('CURRENT_RUN_ID')
         print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
@@ -279,7 +305,8 @@ jobs:
             response = client.get_messages(request)
             messages = response['messages']
             bump_branch_suffix = bump_branch.replace('bump/', '')
-            payload = f"🛠️: Automatic PR creation failed. Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
+            failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
+            payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Only post if the message is different

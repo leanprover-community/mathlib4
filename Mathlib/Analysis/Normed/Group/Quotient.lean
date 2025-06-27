@@ -72,7 +72,7 @@ Since `M ⧸ S` is automatically a topological space (as any quotient of a topol
 one needs to be careful while defining the `SeminormedAddCommGroup` instance to avoid having two
 different topologies on this quotient. This is not purely a technological issue.
 Mathematically there is something to prove. The main point is proved in the auxiliary lemma
-`quotient_nhd_basis` that has no use beyond this verification and states that zero in the quotient
+`quotient_nhds_basis` that has no use beyond this verification and states that zero in the quotient
 admits as basis of neighborhoods in the quotient topology the sets `{x | ‖x‖ < ε}` for positive `ε`.
 
 Once this mathematical point is settled, we have two topologies that are propositionally equal. This
@@ -185,7 +185,7 @@ lemma norm_mk_eq_zero [hS : IsClosed (S : Set M)] : ‖(m : M ⧸ S)‖ = 0 ↔ 
 and `‖m‖ < ‖x‖ + ε`. -/
 @[to_additive "For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
 and `‖m‖ < ‖x‖ + ε`."]
-lemma exists_norm_mk_lt (x : M ⧸ S) (hε : 0 < ε) : ∃ m : M,  m = x ∧ ‖m‖ < ‖x‖ + ε :=
+lemma exists_norm_mk_lt (x : M ⧸ S) (hε : 0 < ε) : ∃ m : M, m = x ∧ ‖m‖ < ‖x‖ + ε :=
   norm_lt_iff.1 <| lt_add_of_pos_right _ hε
 
 /-- For any `m : M` and any `0 < ε`, there is `s ∈ S` such that `‖m * s‖ < ‖mk' S m‖ + ε`. -/
@@ -318,8 +318,10 @@ theorem norm_mk_eq_zero (S : AddSubgroup M) (hS : IsClosed (S : Set M)) (m : M)
     (h : ‖mk' S m‖ = 0) : m ∈ S := QuotientAddGroup.norm_mk_eq_zero.1 h
 
 @[deprecated QuotientAddGroup.nhds_zero_hasBasis (since := "2025-02-02")]
-theorem quotient_nhd_basis (S : AddSubgroup M) :
+theorem quotient_nhds_basis (S : AddSubgroup M) :
     (𝓝 (0 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := nhds_zero_hasBasis
+
+@[deprecated (since := "2025-05-22")] alias quotient_nhd_basis := quotient_nhds_basis
 
 /-- The seminormed group structure on the quotient by an additive subgroup. -/
 @[deprecated QuotientAddGroup.instSeminormedAddCommGroup (since := "2025-02-02")]
@@ -366,7 +368,7 @@ theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : Norm
   | inr h =>
     rw [← not_lt, ← lt_div_iff₀' h, norm_lt_iff]
     rintro ⟨x, rfl, hx⟩
-    exact ((lt_div_iff₀' h).1 hx).not_le (le_opNorm f x)
+    exact ((lt_div_iff₀' h).1 hx).not_ge (le_opNorm f x)
 
 /-- The operator norm of the projection is `1` if the subspace is not dense. -/
 theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :

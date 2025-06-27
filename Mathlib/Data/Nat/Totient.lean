@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
@@ -148,7 +149,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
       apply gcd_dvd_right
     rcases this with ⟨q, rfl⟩
     refine ⟨q, ⟨⟨(mul_lt_mul_left hd0).1 hb1, ?_⟩, rfl⟩⟩
-    rwa [gcd_mul_left, mul_right_eq_self_iff hd0] at hb2
+    rwa [gcd_mul_left, mul_eq_left hd0.ne'] at hb2
 
 theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -212,11 +213,12 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
     · rintro rfl
       rw [totient_one, tsub_self] at h
       exact one_ne_zero h
-  rw [totient_eq_card_coprime, range_eq_Ico, ← Ico_insert_succ_left hp.le, Finset.filter_insert,
-    if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)), ← Nat.card_Ico 1 p] at h
+  rw [totient_eq_card_coprime, range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico hp.le,
+    Finset.filter_insert, if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)),
+    ← Nat.card_Ico 1 p] at h
   refine
     p.prime_of_coprime hp fun n hn hnz => Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
-  rwa [succ_le_iff, pos_iff_ne_zero]
+  omega
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by

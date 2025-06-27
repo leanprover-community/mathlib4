@@ -79,7 +79,7 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
-      simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
+      simp +unfoldPartialApp only [← image_vadd, ← image_smul, ← range_comp,
         vadd_eq_add, circleMap, comp_def, real_smul]
     _ = sphere c |R| := by
       rw [range_exp_mul_I, smul_sphere R 0 zero_le_one]
@@ -154,6 +154,10 @@ theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
     simp [hR] at this
   · rwa [Set.image_univ, range_circleMap]
 
+theorem circleMap_neg_radius {r x : ℝ} {c : ℂ} :
+    circleMap c (-r) x = circleMap c r (x + π) := by
+  simp [circleMap, add_mul, Complex.exp_add]
+
 /-!
 ### Integrability of a function on a circle
 -/
@@ -175,9 +179,33 @@ namespace CircleIntegrable
 
 variable {f g : ℂ → E} {c : ℂ} {R : ℝ}
 
+/--
+Analogue of `IntervalIntegrable.abs`: If a real-valued function `f` is circle integrable, then so is
+`|f|`.
+-/
+theorem abs {f : ℂ → ℝ} (hf : CircleIntegrable f c R) :
+    CircleIntegrable |f| c R := IntervalIntegrable.abs hf
+
 nonrec theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
     CircleIntegrable (f + g) c R :=
   hf.add hg
+
+/-- Sums of circle integrable functions are circle integrable. -/
+protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    CircleIntegrable (∑ i ∈ s, f i) c R := by
+  rw [CircleIntegrable, (by aesop : (fun θ ↦ (∑ i ∈ s, f i) (circleMap c R θ))
+    = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
+  exact IntervalIntegrable.sum s h
+
+/-- Finsums of circle integrable functions are circle integrable. -/
+protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleIntegrable (f i) c R) :
+    CircleIntegrable (∑ᶠ i, f i) c R := by
+  by_cases h₁ : (Function.support f).Finite
+  · rw [finsum_eq_sum f h₁]
+    exact CircleIntegrable.sum h₁.toFinset (fun i _ ↦ h i)
+  · rw [finsum_of_infinite_support h₁]
+    apply circleIntegrable_const
 
 nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
   hf.neg
@@ -199,7 +227,7 @@ theorem circleIntegrable_zero_radius {f : ℂ → E} {c : ℂ} : CircleIntegrabl
   simp [CircleIntegrable]
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
-theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hf₁ : CircleIntegrable f₁ c R) :
     CircleIntegrable f₂ c R := by
   by_cases hR : R = 0
@@ -211,7 +239,7 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
     by tauto⟩
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
-theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   ⟨(CircleIntegrable.congr_codiscreteWithin hf ·),
@@ -221,7 +249,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
     CircleIntegrable f c R ↔ IntervalIntegrable (fun θ : ℝ =>
       deriv (circleMap c R) θ • f (circleMap c R θ)) volume 0 (2 * π) := by
   by_cases h₀ : R = 0
-  · simp (config := { unfoldPartialApp := true }) [h₀, const]
+  · simp +unfoldPartialApp [h₀, const]
   refine ⟨fun h => h.out, fun h => ?_⟩
   simp only [CircleIntegrable, intervalIntegrable_iff, deriv_circleMap] at h ⊢
   refine (h.norm.const_mul |R|⁻¹).mono' ?_ ?_
@@ -299,7 +327,7 @@ namespace circleIntegral
 
 @[simp]
 theorem integral_radius_zero (f : ℂ → E) (c : ℂ) : (∮ z in C(c, 0), f z) = 0 := by
-  simp (config := { unfoldPartialApp := true }) [circleIntegral, const]
+  simp +unfoldPartialApp [circleIntegral, const]
 
 theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h : EqOn f g (sphere c R)) :
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), g z :=
@@ -319,7 +347,7 @@ theorem integral_sub_inv_smul_sub_smul (f : ℂ → E) (c w : ℂ) (R : ℝ) :
     (∮ z in C(c, R), (z - w)⁻¹ • (z - w) • f z) = ∮ z in C(c, R), f z := by
   rcases eq_or_ne R 0 with (rfl | hR); · simp only [integral_radius_zero]
   have : (circleMap c R ⁻¹' {w}).Countable := (countable_singleton _).preimage_circleMap c hR
-  refine intervalIntegral.integral_congr_ae ((this.ae_not_mem _).mono fun θ hθ _' => ?_)
+  refine intervalIntegral.integral_congr_ae ((this.ae_notMem _).mono fun θ hθ _' => ?_)
   change circleMap c R θ ≠ w at hθ
   simp only [inv_smul_smul₀ (sub_ne_zero.2 <| hθ)]
 

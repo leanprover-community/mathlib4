@@ -153,7 +153,7 @@ theorem num_series' [Field α] (i : ℕ) :
       · suffices #{a ∈ antidiagonal (n + 1) | i + 1 ∣ a.fst ∧ a.snd = i + 1} = 0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
-        apply eq_empty_of_forall_not_mem
+        apply eq_empty_of_forall_notMem
         simp only [Prod.forall, mem_filter, not_and, mem_antidiagonal]
         rintro _ h₁ h₂ ⟨a, rfl⟩ rfl
         apply h
@@ -206,8 +206,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
     · rw [hi]
-      rw [Multiset.count_eq_zero_of_not_mem]
-      · rw [Multiset.count_eq_zero_of_not_mem]
+      rw [Multiset.count_eq_zero_of_notMem]
+      · rw [Multiset.count_eq_zero_of_notMem]
         intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
@@ -248,8 +248,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         rcases hf₄ i h with ⟨w, _, hw₂⟩
         apply Dvd.intro_left _ hw₂
       · apply symm
-        rw [← Finsupp.not_mem_support_iff]
-        exact not_mem_mono hf'.2 h
+        rw [← Finsupp.notMem_support_iff]
+        exact notMem_mono hf'.2 h
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
     #{p : n.Partition | ∀ j ∈ p.parts, j ∈ (range m).map mkOdd} = coeff α n (partialOddGF m) := by
@@ -337,8 +337,9 @@ theorem same_gf [Field α] (m : ℕ) :
     (partialOddGF m * (range m).prod fun i => 1 - (X : PowerSeries α) ^ (m + i + 1)) =
       partialDistinctGF m := by
   rw [partialOddGF, partialDistinctGF]
-  induction' m with m ih
-  · simp
+  induction m with
+  | zero => simp
+  | succ m ih => ?_
   set! π₀ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
   set! π₁ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
   set! π₂ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + i + 1)) with hπ₂

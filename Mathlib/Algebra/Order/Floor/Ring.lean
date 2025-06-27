@@ -454,7 +454,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
       simp [hl]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
-  · exact this (ofNat_nonneg m₀)
+  · exact this (natCast_nonneg m₀)
   let q := ⌈↑m₀ / (n : k)⌉
   let m₁ := q * ↑n - (↑m₀ : ℤ)
   have hm₁ : 0 ≤ m₁ := by
@@ -615,13 +615,16 @@ theorem floor_le_ceil (a : R) : ⌊a⌋ ≤ ⌈a⌉ :=
 theorem floor_lt_ceil_of_lt {a b : R} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 
-lemma ceil_eq_floor_add_one_iff_not_mem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
+lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
   refine ⟨fun h ht => ?_, fun h => ?_⟩
   · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
     linarith [Int.cast_inj.mp this]
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
     rw [Int.add_one_le_ceil_iff]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
+
+@[deprecated (since := "2025-05-23")]
+alias ceil_eq_floor_add_one_iff_not_mem := ceil_eq_floor_add_one_iff_notMem
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
   rcases eq_or_ne (fract a) 0 with ha | ha
@@ -651,7 +654,7 @@ variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRin
 
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉ ≤ a) : b * a < ⌊a⌋ := by
   calc
-    b * a < b * (⌊a⌋ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    b * a < b * (⌊a⌋ + 1) := by gcongr; apply lt_floor_add_one
     _ ≤ ⌊a⌋ := by
       rwa [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
         ← ceil_le, le_floor]
@@ -675,7 +678,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b 
     calc
       ⌈a⌉ < a + 1 := ceil_lt_add_one _
       _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
-      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ ≤ a + (b - 1) * a := by gcongr
       _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
 lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ ≤ b * a := by

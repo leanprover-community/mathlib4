@@ -51,9 +51,6 @@ Monad operations:
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
 
--- Pending rename in core.
-alias WellFounded.fixF_eq := WellFounded.fixFEq
-
 open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from

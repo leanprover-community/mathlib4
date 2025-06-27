@@ -296,24 +296,24 @@ angle. -/
 @[simp]
 theorem two_zsmul_oangle_smul_left_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
     (2 : ℤ) • o.oangle (r • x) y = (2 : ℤ) • o.oangle x y := by
-  rcases hr.lt_or_lt with (h | h) <;> simp [h]
+  rcases hr.lt_or_gt with (h | h) <;> simp [h]
 
 /-- Multiplying the second vector passed to `oangle` by a nonzero real does not change twice the
 angle. -/
 @[simp]
 theorem two_zsmul_oangle_smul_right_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
     (2 : ℤ) • o.oangle x (r • y) = (2 : ℤ) • o.oangle x y := by
-  rcases hr.lt_or_lt with (h | h) <;> simp [h]
+  rcases hr.lt_or_gt with (h | h) <;> simp [h]
 
 /-- Twice the angle between a multiple of a vector and that vector is 0. -/
 @[simp]
 theorem two_zsmul_oangle_smul_left_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle (r • x) x = 0 := by
-  rcases lt_or_le r 0 with (h | h) <;> simp [h]
+  rcases lt_or_ge r 0 with (h | h) <;> simp [h]
 
 /-- Twice the angle between a vector and a multiple of that vector is 0. -/
 @[simp]
 theorem two_zsmul_oangle_smul_right_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle x (r • x) = 0 := by
-  rcases lt_or_le r 0 with (h | h) <;> simp [h]
+  rcases lt_or_ge r 0 with (h | h) <;> simp [h]
 
 /-- Twice the angle between two multiples of a vector is 0. -/
 @[simp]
@@ -467,7 +467,6 @@ theorem oangle_sub_right {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0
     o.oangle x z - o.oangle y z = o.oangle x y := by rw [sub_eq_iff_eq_add, o.oangle_add hx hy hz]
 
 /-- Given three nonzero vectors, adding the angles between them in cyclic order results in 0. -/
-@[simp]
 theorem oangle_add_cyc3 {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     o.oangle x y + o.oangle y z + o.oangle z x = 0 := by simp [hx, hy, hz]
 

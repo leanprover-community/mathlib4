@@ -49,8 +49,7 @@ instance category : Category (Kleisli T) where
     rw [← T.η.naturality_assoc f, T.left_unit]
     apply Category.comp_id
   assoc f g h := by
-    simp only [Functor.map_comp, Category.assoc, Monad.assoc]
-    erw [T.μ.naturality_assoc]
+    simp [Monad.assoc, T.mu_naturality_assoc]
 
 namespace Adjunction
 
@@ -86,7 +85,6 @@ def adj : toKleisli T ⊣ fromKleisli T :=
         -- Porting note: used to be unfold_projs; dsimp
         change f ≫ g = (f ≫ T.η.app Y) ≫ T.map g ≫ T.μ.app Z
         rw [Category.assoc, ← T.η.naturality_assoc g, Functor.id_map]
-        dsimp
         simp [Monad.left_unit] }
 
 /-- The composition of the adjunction gives the original functor. -/

@@ -88,7 +88,7 @@ noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (
 
 variable (i₁ i₂) in
 /-- The sieve of `pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
-def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
+noncomputable def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
   Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) => E.toPullback j)
 
 lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)

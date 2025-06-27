@@ -544,7 +544,7 @@ theorem out_eq (q : Trunc α) : mk q.out = q :=
   Trunc.eq _ _
 
 protected theorem nonempty (q : Trunc α) : Nonempty α :=
-  nonempty_of_exists q.exists_rep
+  q.exists_rep.nonempty
 
 end Trunc
 

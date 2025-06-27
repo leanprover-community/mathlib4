@@ -102,7 +102,7 @@ variable [MulRightMono α]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
   apply pow_two_semiclosed _
-  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
+  rw [mabs, pow_two, mul_sup, sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
   apply le_sup_right
 
 @[to_additive (attr := simp)] lemma mabs_mabs (a : α) : |(|a|ₘ)|ₘ = |a|ₘ :=
@@ -212,6 +212,11 @@ variable [Group α] [LinearOrder α] {a b : α}
   mabs_by_cases (IsSquare · ↔ _) Iff.rfl isSquare_inv
 
 @[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
+
+@[to_additive (attr := simp)] lemma map_mabs {β F : Type*} [Group β] [LinearOrder β] [FunLike F α β]
+    [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) (a : α) :
+    f |a|ₘ = |f a|ₘ := by
+  rw [mabs, mabs, (OrderHomClass.mono f).map_max, map_inv]
 
 variable [MulLeftMono α] {a b : α}
 

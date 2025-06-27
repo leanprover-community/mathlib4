@@ -205,11 +205,25 @@ theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
 
 end restrictScalars
 
+/-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
+change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
+def lflip {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClass S₂ R₀ P] [SMulCommClass R₂ R₀ P] :
+    (M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) →ₗ[R₀] N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P where
+  toFun := flip
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem lflip_apply {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClass S₂ R₀ P]
+    [SMulCommClass R₂ R₀ P] (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) :
+    lflip (R₀ := R₀) f n m = f m n := rfl
+
 end Semiring
 
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
+variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
 variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
@@ -238,31 +252,23 @@ theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
 
 variable {R}
 
-/-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
-change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
-def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P where
-  toFun := flip
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
 variable (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
 
-@[simp]
-theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
-
-variable (R Pₗ)
+variable (A Pₗ)
+variable [Module A Pₗ] [SMulCommClass R A Pₗ]
 
 /-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
 `Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
-def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] Pₗ :=
+def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[A] M →ₗ[R] Pₗ :=
+  letI := SMulCommClass.symm
   flip <| LinearMap.comp (flip id) f
 
-variable {R Pₗ}
+variable {A Pₗ}
 
 @[simp]
-theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp _ _ f g x = g (f x) := rfl
+theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp A _ f g x = g (f x) := rfl
 
-theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
+theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp A Pₗ f g = g ∘ₗ f := rfl
 
 variable (P σ₂₃)
 
@@ -348,13 +354,21 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
+omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
-def compr₂ (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) : M →ₗ[R] Nₗ →ₗ[R] Qₗ :=
-  llcomp R Nₗ Pₗ Qₗ g ∘ₗ f
+def compr₂ [Module R A] [Module A M] [Module A Qₗ]
+    [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
+    (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) : M →ₗ[A] Nₗ →ₗ[R] Qₗ where
+  toFun x := g.restrictScalars R ∘ₗ (f x)
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
+omit [Module R M] in
 @[simp]
-theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
+theorem compr₂_apply [Module R A] [Module A M] [Module A Qₗ]
+    [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
+    (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
 
 /-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/

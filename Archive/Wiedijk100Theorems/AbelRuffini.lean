@@ -14,11 +14,11 @@ import Mathlib.RingTheory.RootsOfUnity.Minpoly
 # Construction of an algebraic number that is not solvable by radicals.
 
 The main ingredients are:
- * `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
+* `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
- * `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
+* `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
   an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group
- * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
+* `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
   solvable
 
 Then all that remains is the construction of a specific polynomial satisfying the conditions of
@@ -140,7 +140,7 @@ theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootS
     simp [Set.insert_subset, mem_rootSet_of_ne q_ne_zero, hx, hy]
   convert Fintype.card_le_of_embedding (Set.embeddingOfSubset _ _ key)
   simp only [Finset.coe_sort_coe, Fintype.card_coe, Finset.card_singleton,
-    Finset.card_insert_of_not_mem (mt Finset.mem_singleton.mp hxy)]
+    Finset.card_insert_of_notMem (mt Finset.mem_singleton.mp hxy)]
 
 theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a b).rootSet ℂ) = 5 :=
   (card_rootSet_eq_natDegree h (IsAlgClosed.splits_codomain _)).trans (natDegree_Phi a b)

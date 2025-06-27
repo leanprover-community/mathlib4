@@ -35,16 +35,16 @@ We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
 
 ## Main definitions and results:
 
- * `approxOrderOf`: in a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ`
-   is the set of elements within a distance `δ` of a point of order `n`.
- * `wellApproximable`: in a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`,
-   `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
-   is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
- * `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
-   the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
-   `addWellApproximable 𝕊 δ` is almost empty or almost full.
- * `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
- * `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
+* `approxOrderOf`: in a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ`
+  is the set of elements within a distance `δ` of a point of order `n`.
+* `wellApproximable`: in a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`,
+  `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
+  is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
+* `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
+  the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
+  `addWellApproximable 𝕊 δ` is almost empty or almost full.
+* `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
+* `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
 
 ## TODO
 

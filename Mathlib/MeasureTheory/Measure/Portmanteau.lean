@@ -35,11 +35,11 @@ general hypotheses) are:
       the measures of B under μs tend to the measure of B under μ, i.e., limᵢ μsᵢ(B) = μ(B).
 
 The separate implications are:
- * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (T) → (C).
- * `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` is the equivalence (C) ↔ (O).
- * `MeasureTheory.tendsto_measure_of_null_frontier` is the implication (O) → (B).
- * `MeasureTheory.limsup_measure_closed_le_of_forall_tendsto_measure` is the implication (B) → (C).
- * `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
+* `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto` is the implication (T) → (C).
+* `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` is the equivalence (C) ↔ (O).
+* `MeasureTheory.tendsto_measure_of_null_frontier` is the implication (O) → (B).
+* `MeasureTheory.limsup_measure_closed_le_of_forall_tendsto_measure` is the implication (B) → (C).
+* `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
     any sequence of Borel probability measures.
 
 ## Implementation notes
@@ -51,15 +51,15 @@ theorem, however, is most convenient for probability measures on pseudo-emetriza
 their Borel sigma algebras.
 
 Some specific considerations on the assumptions in the different implications:
- * `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto`, i.e., implication (T) → (C),
-   assumes that in the underlying topological space, indicator functions of closed sets have
-   decreasing bounded continuous pointwise approximating sequences. The assumption is in the form
-   of the type class `HasOuterApproxClosed`. Type class inference knows that for example the more
-   common assumptions of metrizability or pseudo-emetrizability suffice.
- * Where formulations are currently only provided for probability measures, one can obtain the
-   finite measure formulations using the characterization of convergence of finite measures by
-   their total masses and their probability-normalized versions, i.e., by
-   `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`.
+* `MeasureTheory.FiniteMeasure.limsup_measure_closed_le_of_tendsto`, i.e., implication (T) → (C),
+  assumes that in the underlying topological space, indicator functions of closed sets have
+  decreasing bounded continuous pointwise approximating sequences. The assumption is in the form
+  of the type class `HasOuterApproxClosed`. Type class inference knows that for example the more
+  common assumptions of metrizability or pseudo-emetrizability suffice.
+* Where formulations are currently only provided for probability measures, one can obtain the
+  finite measure formulations using the characterization of convergence of finite measures by
+  their total masses and their probability-normalized versions, i.e., by
+  `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`.
 
 ## References
 
@@ -420,9 +420,9 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   intros ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
-  have nhd : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
+  have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
     Iio_mem_nhds <| ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
-  specialize rs_lim (keyB nhd)
+  specialize rs_lim (keyB nhds)
   simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=

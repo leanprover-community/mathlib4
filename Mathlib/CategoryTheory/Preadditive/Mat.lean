@@ -100,10 +100,10 @@ instance : Category.{v₁} (Mat_ C) where
   comp f g := f.comp g
   id_comp f := by
     classical
-    simp (config := { unfoldPartialApp := true }) [dite_comp]
+    simp +unfoldPartialApp [dite_comp]
   comp_id f := by
     classical
-    simp (config := { unfoldPartialApp := true }) [comp_dite]
+    simp +unfoldPartialApp [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros

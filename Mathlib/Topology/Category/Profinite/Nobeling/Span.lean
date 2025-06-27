@@ -14,7 +14,7 @@ Most of the argument is developing an API for `π C (· ∈ s)` when `s : Finset
 of `C` is finite with the discrete topology. In this case, there is a direct argument that the good
 products span. The general result is deduced from this.
 
-For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main theorems
 

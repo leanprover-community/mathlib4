@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -51,8 +52,8 @@ TODO: add the similar result for the series of homogeneous components.
 
 ## Implementation Notes
 
-In `Mathlib.RingTheory.MvPowerSeries.LinearTopology`, we generalize the criterion for topological
-nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
+In `Mathlib/RingTheory/MvPowerSeries/LinearTopology.lean`, we generalize the criterion for
+topological nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
 a power series is topologically nilpotent if and only if its constant coefficient is.
 This is lemma `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`.
 
@@ -76,6 +77,8 @@ But future contributors wishing to clean this up should feel free to give it a t
 namespace MvPowerSeries
 
 open Function Filter
+
+open scoped Topology
 
 variable {σ R : Type*}
 
@@ -122,6 +125,30 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     ∀ d : σ →₀ ℕ, Tendsto (fun i => coeff R d (f i)) u (nhds (coeff R d g)) := by
   rw [nhds_pi, tendsto_pi]
   exact forall_congr' (fun d => Iff.rfl)
+
+theorem tendsto_trunc'_atTop [DecidableEq σ] [CommSemiring R] (f : MvPowerSeries σ R) :
+    Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
+  rw [tendsto_iff_coeff_tendsto]
+  intro d
+  exact tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ (by simp [coeff_trunc', hdn])
+
+theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f : MvPowerSeries σ R) :
+    Tendsto (fun d ↦ (trunc R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
+  rw [tendsto_iff_coeff_tendsto]
+  intro d
+  obtain ⟨s, _⟩ := (exists_const σ).mpr trivial
+  apply tendsto_atTop_of_eventually_const (i₀ := d + Finsupp.single s 1)
+  intro n hn
+  rw [MvPolynomial.coeff_coe, coeff_trunc, if_pos]
+  apply lt_of_lt_of_le _ hn
+  simp only [lt_add_iff_pos_right, Finsupp.lt_def]
+  refine ⟨zero_le _, ⟨s, by simp⟩⟩
+
+/-- The inclusion of polynomials into power series has dense image -/
+theorem denseRange_toMvPowerSeries [CommSemiring R] :
+    DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f ↦ by
+  classical
+  exact mem_closure_of_tendsto (tendsto_trunc'_atTop f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 variable (σ R)
 

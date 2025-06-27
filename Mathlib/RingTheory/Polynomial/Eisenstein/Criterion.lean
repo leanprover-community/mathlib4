@@ -26,9 +26,8 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
 We give in `Archive.Examples.Eisenstein` an explicit example
 of application of this criterion.
 
-* `Polynomial.irreducible_of_eisenstein_criterion` :
-the classic Eisenstein criterion.
-It is the particular case where `q := X`.
+* `Polynomial.irreducible_of_eisenstein_criterion` : the classic Eisenstein criterion.
+  It is the particular case where `q := X`.
 
 # TODO
 
@@ -44,12 +43,12 @@ the leading coefficients of `f` and `q` do not belong to `P`.
 There are two obstructions, though :
 
 * Usually, one will only obtain irreducibility in `F[X]`, where `F` is the field
-of fractions of `R`. (If `R` is a UFD, this will be close to what is wanted,
-but not in general.)
+  of fractions of `R`. (If `R` is a UFD, this will be close to what is wanted,
+  but not in general.)
 
 * The mod `P ^ 2` hypothesis will have to be rephrased to a condition
-in the second symbolic power of `P`. When `P` is a maximal ideal,
-that symbolic power coincides with `P ^ 2`, but not in general.
+  in the second symbolic power of `P`. When `P` is a maximal ideal,
+  that symbolic power coincides with `P ^ 2`, but not in general.
 
 -/
 

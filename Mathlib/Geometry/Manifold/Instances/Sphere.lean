@@ -71,7 +71,7 @@ noncomputable section
 
 open Metric Module Function
 
-open scoped Manifold ContDiff
+open scoped Manifold ContDiff RealInnerProductSpace
 
 section StereographicProjection
 
@@ -232,9 +232,9 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
     Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
   -- Porting note: was innerSL _ and now just inner
-  have h₂ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+  have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
   -- Porting note: was innerSL _ and now just inner
-  have h₃ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
+  have h₃ : ⟪v, v⟫ = 1 := by simp [real_inner_self_eq_norm_mul_norm, hv]
   rw [h₁, h₂, h₃]
   match_scalars
   field_simp
@@ -265,7 +265,7 @@ def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ
   continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 
 theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
-    stereographic hv x = (2 / ((1 : ℝ) - inner v x)) • (ℝ ∙ v)ᗮ.orthogonalProjection x :=
+    stereographic hv x = (2 / ((1 : ℝ) - ⟪v, x⟫)) • (ℝ ∙ v)ᗮ.orthogonalProjection x :=
   rfl
 
 @[simp]
@@ -287,6 +287,22 @@ theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
   convert stereographic_apply_neg (-v)
   ext1
   simp
+
+theorem surjective_stereographic (hv : ‖v‖ = 1) :
+    Surjective (stereographic hv) :=
+  (stereographic hv).surjective_of_target_eq_univ rfl
+
+@[simp]
+theorem range_stereographic_symm (hv : ‖v‖ = 1) (hv' : v ∈ sphere 0 1 := by simpa) :
+    Set.range (stereographic hv).symm = {⟨v, hv'⟩}ᶜ := by
+  refine le_antisymm ?_ (stereographic hv).symm.target_subset_range
+  rintro x ⟨y, rfl⟩
+  suffices y ∈ (stereographic hv).target from (fun _ ↦ (stereographic hv).map_target) y this
+  simp
+
+lemma isOpenEmbedding_stereographic_symm (hv : ‖v‖ = 1) :
+    Topology.IsOpenEmbedding (stereographic hv).symm :=
+  (stereographic hv).symm.to_isOpenEmbedding (by simp)
 
 end StereographicProjection
 

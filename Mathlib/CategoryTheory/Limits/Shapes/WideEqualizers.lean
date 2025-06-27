@@ -217,7 +217,6 @@ def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ 
   π :=
     { app := fun X => WalkingParallelFamily.casesOn X ι (ι ≫ f (Classical.arbitrary J))
       naturality := fun i j f => by
-        dsimp
         obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
@@ -232,12 +231,10 @@ def Cotrident.ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j�
   ι :=
     { app := fun X => WalkingParallelFamily.casesOn X (f (Classical.arbitrary J) ≫ π) π
       naturality := fun i j f => by
-        dsimp
         obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
 
--- See note [dsimp, simp]
 theorem Trident.ι_ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) :
     (Trident.ofι ι w).ι = ι :=
   rfl
@@ -405,7 +402,7 @@ def Cocone.ofCotrident {F : WalkingParallelFamily J ⥤ C} (t : Cotrident fun j 
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by cases X <;> aesop_cat) ≫ t.ι.app X
-      naturality := fun j j' g => by cases g <;> dsimp <;> simp [Cotrident.app_one t] }
+      naturality := fun j j' g => by cases g <;> simp [Cotrident.app_one t] }
 
 @[simp]
 theorem Cone.ofTrident_π {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j))

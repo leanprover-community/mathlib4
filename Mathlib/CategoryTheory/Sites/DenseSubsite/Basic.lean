@@ -417,8 +417,7 @@ theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom (whiskerLeft G.op α) = �
   · exact (pushforwardFamily_compatible _ _)
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
-  dsimp
-  simp
+  dsimp; simp
 
 /--
 A locally-full and cover-dense functor `G` induces an equivalence between morphisms into a sheaf and

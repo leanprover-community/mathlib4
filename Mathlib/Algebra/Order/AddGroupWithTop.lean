@@ -107,7 +107,7 @@ instance [LinearOrder α] [IsOrderedAddMonoid α] : LinearOrderedAddCommGroupWit
   __ := Option.nontrivial
   sub_eq_add_neg a b := by
     cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
-  neg_top := Option.map_none
+  neg_top := Option.map_none _
   zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha

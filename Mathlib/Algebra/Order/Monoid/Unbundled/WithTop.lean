@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.WithBot
-import Mathlib.Tactic.MinImports
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
@@ -199,7 +198,7 @@ lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ �
 
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable x ↔ x ≠ ⊤ where
-  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
+  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_ge <| h <| by simp
   mpr := addLECancellable_of_ne_top
 
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
@@ -547,8 +546,19 @@ lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ �
 
 lemma addLECancellable_iff_ne_bot [Nonempty α] [Preorder α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable x ↔ x ≠ ⊥ where
-  mp := by rintro h rfl; exact (bot_lt_coe <| Classical.arbitrary _).not_le <| h <| by simp
+  mp := by rintro h rfl; exact (bot_lt_coe <| Classical.arbitrary _).not_ge <| h <| by simp
   mpr := addLECancellable_of_ne_bot
+
+/--
+Addition in `WithBot (WithTop α)` is right cancellative provided the element
+being cancelled is not `⊤` or `⊥`.
+-/
+lemma add_le_add_iff_right' {α : Type*} [Add α] [LE α]
+    [AddRightMono α] [AddRightReflectLE α]
+    {a b c : WithBot (WithTop α)} (hc : c ≠ ⊥) (hc' : c ≠ ⊤) :
+    a + c ≤ b + c ↔ a ≤ b := by
+  induction a <;> induction b <;> induction c <;> norm_cast at * <;>
+    aesop (add simp WithTop.add_le_add_iff_right)
 
 --  There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
 @[simp]

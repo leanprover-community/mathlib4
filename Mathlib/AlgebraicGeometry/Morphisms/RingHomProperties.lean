@@ -83,7 +83,7 @@ theorem IsStableUnderBaseChange.pullback_fst_appTop
     Functor.op_map, Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
   rw [← this, CommRingCat.hom_comp, hP'.cancel_right_isIso, ← pushoutIsoUnopPullback_inl_hom,
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
-  exact hP.pushout_inl _ hP' _ _ H
+  exact hP.pushout_inl hP' _ _ H
 
 @[deprecated (since := "2024-11-23")]
 alias IsStableUnderBaseChange.pullback_fst_app_top :=

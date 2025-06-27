@@ -15,15 +15,15 @@ the matrix of their coordinates with respect to some basis.
 
 ## Main definitions
 
- * `Basis.toMatrix e v` is the matrix whose `i, j`th entry is `e.repr (v j) i`
- * `basis.toMatrixEquiv` is `Basis.toMatrix` bundled as a linear equiv
+* `Basis.toMatrix e v` is the matrix whose `i, j`th entry is `e.repr (v j) i`
+* `basis.toMatrixEquiv` is `Basis.toMatrix` bundled as a linear equiv
 
 ## Main results
 
- * `LinearMap.toMatrix_id_eq_basis_toMatrix`: `LinearMap.toMatrix b c id`
-   is equal to `Basis.toMatrix b c`
- * `Basis.toMatrix_mul_toMatrix`: multiplying `Basis.toMatrix` with another
-   `Basis.toMatrix` gives a `Basis.toMatrix`
+* `LinearMap.toMatrix_id_eq_basis_toMatrix`: `LinearMap.toMatrix b c id`
+  is equal to `Basis.toMatrix b c`
+* `Basis.toMatrix_mul_toMatrix`: multiplying `Basis.toMatrix` with another
+  `Basis.toMatrix` gives a `Basis.toMatrix`
 
 ## Tags
 
@@ -215,7 +215,7 @@ theorem mul_basis_toMatrix [DecidableEq ι] [DecidableEq ι'] (b₁ : Basis ι R
   rwa [LinearMap.toMatrix_toLin] at this
 
 theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι ι R) :
-    b.toMatrix (Pi.basisFun R ι) * A = of fun i j => b.repr (Aᵀ j) i := by
+    b.toMatrix (Pi.basisFun R ι) * A = of fun i j => b.repr (A.col j) i := by
   classical
   simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
   ext i j

@@ -105,10 +105,15 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
   simp (disch := intros; positivity)
     [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
+
+@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_adj (since := "2025-05-18")]
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
+    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j :=
+  G.lapMatrix_mulVec_eq_zero_iff_forall_adj
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
@@ -120,10 +125,24 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V →
   | nil => rfl
   | cons hA _ h' => exact (h _ _ hA).trans h'
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
+
+@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_reachable (since := "2025-05-18")]
+theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
+    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j :=
+  G.lapMatrix_mulVec_eq_zero_iff_forall_reachable
+
+@[simp]
+theorem det_lapMatrix_eq_zero [h : Nonempty V] : (G.lapMatrix ℝ).det = 0 := by
+  rw [← Matrix.exists_mulVec_eq_zero_iff]
+  use fun _ ↦ 1
+  refine ⟨?_, (lapMatrix_mulVec_eq_zero_iff_forall_adj G).mpr fun _ _ _ ↦ rfl⟩
+  rw [← Function.support_nonempty_iff]
+  use Classical.choice h
+  simp
 
 section
 
@@ -133,7 +152,7 @@ lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [Decida
     [DecidableEq G.ConnectedComponent] (c : G.ConnectedComponent) :
     (fun i ↦ if connectedComponentMk G i = c then 1 else 0) ∈
       LinearMap.ker (toLin' (lapMatrix ℝ G)) := by
-  rw [LinearMap.mem_ker, lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable]
+  rw [LinearMap.mem_ker, toLin'_apply, lapMatrix_mulVec_eq_zero_iff_forall_reachable]
   intro i j h
   split_ifs with h₁ h₂ h₃
   · rfl
@@ -172,8 +191,8 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
   rw [Submodule.mem_span_range_iff_exists_fun]
-  use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
-    LinearMap.map_coe_ker])
+  use Quot.lift x.val (by rw [← lapMatrix_mulVec_eq_zero_iff_forall_reachable,
+    ← toLin'_apply, LinearMap.map_coe_ker])
   ext j
   simp only [lapMatrix_ker_basis_aux]
   rw [AddSubmonoid.coe_finset_sum]

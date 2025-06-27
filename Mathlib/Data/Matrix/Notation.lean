@@ -174,21 +174,21 @@ section DotProduct
 variable [AddCommMonoid α] [Mul α]
 
 @[simp]
-theorem dotProduct_empty (v w : Fin 0 → α) : dotProduct v w = 0 :=
+theorem dotProduct_empty (v w : Fin 0 → α) : v ⬝ᵥ w = 0 :=
   Finset.sum_empty
 
 @[simp]
 theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
-    dotProduct (vecCons x v) w = x * vecHead w + dotProduct v (vecTail w) := by
+    vecCons x v ⬝ᵥ w = x * vecHead w + v ⬝ᵥ vecTail w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
 @[simp]
 theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
-    dotProduct v (vecCons x w) = vecHead v * x + dotProduct (vecTail v) w := by
+    v ⬝ᵥ vecCons x w = vecHead v * x + vecTail v ⬝ᵥ w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
 theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
-    dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
+    vecCons x v ⬝ᵥ vecCons y w = x * y + v ⬝ᵥ w := by simp
 
 end DotProduct
 
@@ -326,7 +326,7 @@ theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : A *ᵥ v = 
 
 @[simp]
 theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : n' → α) :
-    (of <| vecCons v A) *ᵥ w = vecCons (dotProduct v w) (of A *ᵥ w) := by
+    (of <| vecCons v A) *ᵥ w = vecCons (v ⬝ᵥ w) (of A *ᵥ w) := by
   ext i
   refine Fin.cases ?_ ?_ i <;> simp [mulVec]
 

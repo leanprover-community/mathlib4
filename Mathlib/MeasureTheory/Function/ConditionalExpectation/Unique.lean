@@ -13,7 +13,7 @@ Two Lp functions `f, g` which are almost everywhere strongly measurable with res
 `m` and verify `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ` for all `m`-measurable sets `s` are equal
 almost everywhere. This proves the uniqueness of the conditional expectation, which is not yet
 defined in this file but is introduced in
-`Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic`.
+`Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`.
 
 ## Main statements
 
@@ -71,15 +71,8 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
   have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas, Subtype.coe_mk]
   refine hf_f_meas.trans ?_
-  refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_
-  · intro s hs hμs
-    have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
-    rw [IntegrableOn, integrable_congr hfg_restrict.symm]
-    exact hf_int_finite s hs hμs
-  · intro s hs hμs
-    have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
-    rw [integral_congr_ae hfg_restrict.symm]
-    exact hf_zero s hs hμs
+  refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_ <;>
+    assumption
 
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/

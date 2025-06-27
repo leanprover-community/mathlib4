@@ -211,12 +211,10 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
   · intro j₁ j₂ f a
     fapply h₁ _ _ _ _ f.right _ a
     convert f.w.symm
-    dsimp
     simp
   · intro j₁ j₂ f a
     fapply h₂ _ _ _ _ f.right _ a
     convert f.w.symm
-    dsimp
     simp
 
 variable {F G}
@@ -555,12 +553,10 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
   · intro j₁ j₂ f a
     fapply h₁ _ _ _ _ f.left _ a
     convert f.w
-    dsimp
     simp
   · intro j₁ j₂ f a
     fapply h₂ _ _ _ _ f.left _ a
     convert f.w
-    dsimp
     simp
 
 variable {F G}
@@ -891,6 +887,26 @@ theorem initial_iff_initial_comp [Initial F] : Initial G ↔ Initial (F ⋙ G) :
 
 end
 
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {c : C}
+
+lemma final_fromPUnit_of_isTerminal (hc : Limits.IsTerminal c) : (fromPUnit c).Final where
+  out c' := by
+    letI : Inhabited (StructuredArrow c' (fromPUnit c)) := ⟨.mk (Y := default) (hc.from c')⟩
+    letI : Subsingleton (StructuredArrow c' (fromPUnit c)) :=
+      ⟨fun i j ↦ StructuredArrow.obj_ext _ _ (by aesop_cat) (hc.hom_ext _ _)⟩
+    infer_instance
+
+lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).Initial where
+  out c' := by
+    letI : Inhabited (CostructuredArrow (fromPUnit c) c') := ⟨.mk (Y := default) (hc.to c')⟩
+    letI : Subsingleton (CostructuredArrow (fromPUnit c) c') :=
+      ⟨fun i j ↦ CostructuredArrow.obj_ext _ _ (by aesop_cat) (hc.hom_ext _ _)⟩
+    infer_instance
+
+end
+
 end Functor
 
 section Filtered
@@ -990,6 +1006,7 @@ variable (F : D ⥤ Cat) (G : C ⥤ D)
 
 open Functor
 
+set_option backward.dsimp.proofs true in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :

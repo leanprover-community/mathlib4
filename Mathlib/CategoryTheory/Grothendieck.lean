@@ -151,7 +151,6 @@ theorem comp_fiber {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
-  dsimp
   simp
 
 @[simp]
@@ -408,7 +407,6 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rfl)
   functor_unitIso_comp := by
     rintro ⟨_, ⟨⟩⟩
-    dsimp
     simp
     rfl
 

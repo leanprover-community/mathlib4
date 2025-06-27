@@ -19,7 +19,7 @@ has exactly one fixed point, so `|S|` is odd and the involution defined by
 `(x, y, z) ↦ (x, z, y)` also has a fixed point." — [Don Zagier](Zagier1990)
 
 This elementary proof (`Nat.Prime.sq_add_sq'`) is independent of `Nat.Prime.sq_add_sq` in
-`Mathlib.NumberTheory.SumTwoSquares`, which uses the unique factorisation of `ℤ[i]`.
+`Mathlib/NumberTheory/SumTwoSquares.lean`, which uses the unique factorisation of `ℤ[i]`.
 For a geometric interpretation of the piecewise involution (`Zagier.complexInvo`)
 see [Moritz Firsching's MathOverflow answer](https://mathoverflow.net/a/299696).
 -/

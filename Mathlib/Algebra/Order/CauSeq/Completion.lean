@@ -39,7 +39,7 @@ def mk : CauSeq _ abv → Cauchy abv :=
 theorem mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) ⟦f⟧ (mk f) :=
   rfl
 
-theorem mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ f ≈ g :=
+theorem mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ LimZero (f - g) :=
   Quotient.eq
 
 /-- The map from the original ring into the Cauchy completion. -/
@@ -134,6 +134,9 @@ theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
   congr_arg mk (const_mul _ _)
 
+theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
+  simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
+
 private theorem zero_def : 0 = mk (abv := abv) 0 :=
   rfl
 
@@ -157,6 +160,9 @@ def ofRatRingHom : β →+* (Cauchy abv) where
 
 theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
   congr_arg mk (const_sub _ _)
+
+noncomputable instance Cauchy.instNonTrivial [Nontrivial β] : Nontrivial (Cauchy abv) :=
+  ofRat_injective.nontrivial
 
 end
 
@@ -236,7 +242,6 @@ lemma ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) :=
 
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
-  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
   mul_inv_cancel _ := CauSeq.Completion.mul_inv_cancel
   nnqsmul := (· • ·)

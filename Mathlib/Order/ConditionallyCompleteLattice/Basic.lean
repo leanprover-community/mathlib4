@@ -255,11 +255,15 @@ theorem csInf_upperBounds_range [Nonempty β] {f : β → α} (hf : BddAbove (ra
     sInf (upperBounds (range f)) = ⨆ i, f i :=
   csInf_upperBounds_eq_csSup hf <| range_nonempty _
 
-theorem not_mem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
+theorem notMem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (csInf_le hs hx))
 
-theorem not_mem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove s) : x ∉ s :=
-  not_mem_of_lt_csInf (α := αᵒᵈ) h hs
+@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_csInf := notMem_of_lt_csInf
+
+theorem notMem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove s) : x ∉ s :=
+  notMem_of_lt_csInf (α := αᵒᵈ) h hs
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_csSup_lt := notMem_of_csSup_lt
 
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w<b`.
@@ -488,10 +492,10 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup s = sSup t := by
   rcases eq_empty_or_nonempty s with rfl|s_ne
-  · have : t = ∅ := eq_empty_of_forall_not_mem (fun y yt ↦ by simpa using ht y yt)
+  · have : t = ∅ := eq_empty_of_forall_notMem (fun y yt ↦ by simpa using ht y yt)
     rw [this]
   rcases eq_empty_or_nonempty t with rfl|t_ne
-  · have : s = ∅ := eq_empty_of_forall_not_mem (fun x xs ↦ by simpa using hs x xs)
+  · have : s = ∅ := eq_empty_of_forall_notMem (fun x xs ↦ by simpa using hs x xs)
     rw [this]
   by_cases B : BddAbove s ∨ BddAbove t
   · have Bs : BddAbove s := by
@@ -616,8 +620,10 @@ theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b �
   contrapose! h
   exact csSup_le' h
 
-theorem not_mem_of_lt_csInf' {x : α} {s : Set α} (h : x < sInf s) : x ∉ s :=
-  not_mem_of_lt_csInf h (OrderBot.bddBelow s)
+theorem notMem_of_lt_csInf' {x : α} {s : Set α} (h : x < sInf s) : x ∉ s :=
+  notMem_of_lt_csInf h (OrderBot.bddBelow s)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_csInf' := notMem_of_lt_csInf'
 
 theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
   csInf_le_csInf (OrderBot.bddBelow s) h₁ h₂
@@ -788,7 +794,7 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
     (hst : s ⊆ t) (h : ∀ y ∈ t, ∃ x ∈ s, x ≤ y) :
     sInf (f '' s) = sInf (f '' t) := by
   obtain rfl | hs := Set.eq_empty_or_nonempty s
-  · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_not_mem] using h
+  · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_notMem] using h
     rfl
   apply le_antisymm _ (csInf_le_csInf ht (hs.image _) (image_subset _ hst))
   refine le_csInf ((hs.mono hst).image f) ?_

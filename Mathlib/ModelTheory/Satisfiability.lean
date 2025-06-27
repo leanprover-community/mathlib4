@@ -47,8 +47,6 @@ universe u v w w'
 
 open Cardinal CategoryTheory
 
-open Cardinal FirstOrder
-
 namespace FirstOrder
 
 namespace Language

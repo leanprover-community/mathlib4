@@ -99,7 +99,7 @@ theorem one_lt_gold : 1 < φ := by
   simp [← sq, gold_pos, zero_lt_one]
 
 theorem gold_lt_two : φ < 2 := by calc
-  (1 + sqrt 5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
+  (1 + √5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
   _ = 2 := by norm_num
 
 theorem goldConj_neg : ψ < 0 := by
@@ -208,7 +208,7 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
   repeat rw [coe_fib_eq]
   rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
   ring_nf
-  have nz : sqrt 5 ≠ 0 := by norm_num
+  have nz : √5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel₀ nz).symm, one_mul]
 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/

@@ -8,7 +8,6 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
@@ -28,17 +27,17 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 
 ## Main definitions / results:
 
- * `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
-   the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
-   discharging this proof obligation.
- * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
-   that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
-   linear map.
- * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
-   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
-   commutative ring. This is used to define reflection representations of Coxeter groups.
- * `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
-   finite spanning sets that is useful in the theory of root data / systems.
+* `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
+  the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
+  discharging this proof obligation.
+* `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
+  that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
+  linear map.
+* `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
+  $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
+  commutative ring. This is used to define reflection representations of Coxeter groups.
+* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
+  finite spanning sets that is useful in the theory of root data / systems.
 
 ## TODO
 
@@ -280,8 +279,8 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
   induction m with
-  | hz => simp
-  | hp m ih =>
+  | zero => simp
+  | succ m ih =>
     -- Apply the inductive hypothesis.
     rw [add_comm (m : ℤ) 1, zpow_one_add, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
     -- Expand out all the reflections and use `hf`, `hg`.
@@ -290,7 +289,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
     match_scalars
     · linear_combination (norm := ring_nf) -S_eval_t_sub_two (m + 1)
     · ring_nf
-  | hn m ih =>
+  | pred m ih =>
     -- Apply the inductive hypothesis.
     rw [sub_eq_add_neg (-m : ℤ) 1, add_comm (-m : ℤ) (-1), zpow_add, zpow_neg_one, mul_inv_rev,
       reflection_inv, reflection_inv, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]

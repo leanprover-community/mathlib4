@@ -295,6 +295,15 @@ lemma exists_preimage_pullback (x : X) (y : Y) (h : f.base x = g.base y) :
     (pullback.fst f g).base z = x ∧ (pullback.snd f g).base z = y :=
   (Pullback.Triplet.mk' x y h).exists_preimage
 
+lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y ⟶ S} :
+    IsEmpty ↑(Limits.pullback f g) ↔ Disjoint (Set.range f.base) (Set.range g.base) := by
+  refine ⟨?_, Scheme.isEmpty_pullback f g⟩
+  rw [← not_nonempty_iff, Set.disjoint_iff_forall_ne]
+  contrapose!
+  rintro ⟨_, ⟨x, rfl⟩, _, ⟨y, rfl⟩, e⟩
+  obtain ⟨z, -⟩ := exists_preimage_pullback x y e
+  exact ⟨z⟩
+
 variable (f g)
 
 lemma range_fst : Set.range (pullback.fst f g).base = f.base ⁻¹' Set.range g.base := by

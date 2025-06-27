@@ -93,7 +93,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
     · refine _root_.trans ?_ h
       by_cases ha : a ∈ as
       · simp [dedup_cons_of_mem ha]
-      · simp only [dedup_cons_of_not_mem ha, List.filter]
+      · simp only [dedup_cons_of_notMem ha, List.filter]
         match p a with
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only

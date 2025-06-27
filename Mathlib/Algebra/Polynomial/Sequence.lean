@@ -93,7 +93,6 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     · simp [p_ne_zero]
     -- let u be the inverse of `S n`'s leading coefficient
     obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
-
     -- We'll show `P` is the difference of two terms in the span:
     --   a polynomial whose leading term matches `P`'s and lower degree terms match `S n`'s
     let head := P.leadingCoeff • u • S n -- a polynomial whose leading term matches P's and whose

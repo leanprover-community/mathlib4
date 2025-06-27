@@ -169,8 +169,10 @@ theorem isClosed_closure : IsClosed (closure s) :=
 theorem subset_closure : s ⊆ closure s :=
   subset_sInter fun _ => And.right
 
-theorem not_mem_of_not_mem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
@@ -369,6 +371,10 @@ theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
 @[mono]
 theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
+
+lemma DenseRange.of_comp {α β : Type*} {f : α → X} {g : β → α}
+    (h : DenseRange (f ∘ g)) : DenseRange f :=
+  Dense.mono (range_comp_subset_range g f) h
 
 /-- Complement to a singleton is dense if and only if the singleton is not an open set. -/
 theorem dense_compl_singleton_iff_not_open :

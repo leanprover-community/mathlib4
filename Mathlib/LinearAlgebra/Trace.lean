@@ -121,7 +121,7 @@ variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R 
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
- `End(M) ≃ M* ⊗ M` -/
+`End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
   classical
@@ -130,10 +130,9 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     rintro ⟨i, j⟩
     simp only [Function.comp_apply, Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp]
     rw [trace_eq_matrix_trace R b, toMatrix_dualTensorHom]
-    by_cases hij : i = j
-    · rw [hij]
-      simp
-    rw [Matrix.StdBasisMatrix.trace_zero j i (1 : R) hij]
+    obtain rfl | hij := eq_or_ne i j
+    · simp
+    rw [Matrix.trace_single_eq_of_ne j i (1 : R) hij.symm]
     simp [Finsupp.single_eq_pi_single, hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
@@ -315,7 +314,8 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
   rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
 
--- This result requires `Mathlib.RingTheory.TensorProduct.Free`. Maybe it should move elsewhere?
+-- This result requires `Mathlib/RingTheory/TensorProduct/Free.lean`.
+-- Maybe it should move elsewhere?
 @[simp]
 lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
     (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :

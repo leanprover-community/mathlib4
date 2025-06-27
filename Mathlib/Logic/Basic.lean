@@ -219,7 +219,7 @@ def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
 
 @[simp] theorem xor_true : Xor' True = Not := by
-  simp (config := { unfoldPartialApp := true }) [Xor']
+  simp +unfoldPartialApp [Xor']
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
 
@@ -350,8 +350,14 @@ end Propositional
 
 /-! ### Membership -/
 
-alias Membership.mem.ne_of_not_mem := ne_of_mem_of_not_mem
-alias Membership.mem.ne_of_not_mem' := ne_of_mem_of_not_mem'
+alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
+alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
 
 section Membership
 

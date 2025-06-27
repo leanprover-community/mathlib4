@@ -713,7 +713,7 @@ theorem Finset.continuous_restrict₂_apply {s t : Finset X} (hst : s ⊆ t)
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
     ⨅ i ∈ S, induced (eval i) (T i) := by
-  simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
+  simp +unfoldPartialApp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
     restrict]
 
 lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
@@ -990,6 +990,12 @@ instance Pi.discreteTopology : DiscreteTopology (∀ i, π i) :=
   singletons_open_iff_discrete.mp fun x => by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
+
+lemma Function.Surjective.isEmbedding_comp {n m : Type*} (f : m → n) (hf : Function.Surjective f) :
+    IsEmbedding ((· ∘ f) : (n → X) → (m → X)) := by
+  refine ⟨isInducing_iff_nhds.mpr fun x ↦ ?_, hf.injective_comp_right⟩
+  simp only [nhds_pi, Filter.pi, Filter.comap_iInf, ← hf.iInf_congr, Filter.comap_comap,
+    Function.comp_def]
 
 end Pi
 

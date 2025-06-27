@@ -89,10 +89,13 @@ theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
 theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff, exists_prop]
 
-theorem mem_support_not_mem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
+theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
   contrapose! h
   exact (mem_vars v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias mem_support_not_mem_vars_zero := mem_support_notMem_vars_zero
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
@@ -133,7 +136,7 @@ theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPo
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert hs hsub =>
+  | insert _ _ hs hsub =>
     simp only [hs, Finset.biUnion_insert, Finset.prod_insert, not_false_iff]
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset_union (Finset.Subset.refl _) hsub
@@ -164,7 +167,7 @@ theorem vars_sum_subset [DecidableEq σ] :
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | insert has hsum =>
+  | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has]
     refine Finset.Subset.trans
       (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
@@ -175,7 +178,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
   classical
   induction t using Finset.induction_on with
   | empty => simp
-  | insert has hsum =>
+  | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
     unfold Pairwise onFun at h
     rw [hsum]
@@ -241,7 +244,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     contradiction
   repeat'
     obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
-      rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
+      rw [constantCoeff_eq, coeff, ← Finsupp.notMem_support_iff] at h0
       rw [Finset.nonempty_iff_ne_empty, Ne, Finsupp.support_eq_empty]
       rintro rfl
       contradiction

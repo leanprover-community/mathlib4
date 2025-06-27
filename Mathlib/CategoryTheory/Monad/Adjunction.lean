@@ -316,8 +316,8 @@ instance [Reflective R] (X : (reflectorAdjunction R).toMonad.Algebra) :
         rw [← (reflectorAdjunction R).unit_naturality]
         dsimp only [Functor.comp_obj, Adjunction.toMonad_coe]
         rw [unit_obj_eq_map_unit, ← Functor.map_comp, ← Functor.map_comp]
-        erw [X.unit]
-        simp⟩⟩⟩
+        dsimp [X.unit]
+        simpa using congrArg (fun t ↦ R.map ((reflector R).map t)) X.unit ⟩⟩⟩
 
 instance comparison_essSurj [Reflective R] :
     (Monad.comparison (reflectorAdjunction R)).EssSurj := by
@@ -349,8 +349,7 @@ instance [Coreflective R] (X : (coreflectorAdjunction R).toComonad.Coalgebra) :
         rw [← (coreflectorAdjunction R).counit_naturality]
         dsimp only [Functor.comp_obj, Adjunction.toMonad_coe]
         rw [counit_obj_eq_map_counit, ← Functor.map_comp, ← Functor.map_comp]
-        erw [X.counit]
-        simp, X.counit⟩⟩⟩
+        simpa using congrArg (fun t ↦ R.map ((coreflector R).map t)) X.counit, X.counit⟩⟩⟩
 
 instance comparison_essSurj [Coreflective R] :
     (Comonad.comparison (coreflectorAdjunction R)).EssSurj := by
@@ -360,8 +359,7 @@ instance comparison_essSurj [Coreflective R] :
   rw [← cancel_mono ((coreflectorAdjunction R).counit.app X.A)]
   simp only [Adjunction.counit_naturality, Functor.comp_obj, Functor.id_obj,
     Adjunction.left_triangle_components_assoc, assoc]
-  erw [X.counit]
-  simp
+  simpa using (coreflectorAdjunction R).counit.app X.A ≫= X.counit.symm
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
     (Comonad.comparison adj).Full where

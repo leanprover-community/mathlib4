@@ -33,20 +33,20 @@ and composition with linear maps `f`, `Q.comp f x = Q (f x)`.
 
 ## Main definitions
 
- * `QuadraticMap.ofPolar`: a more familiar constructor that works on rings
- * `QuadraticMap.associated`: associated bilinear map
- * `QuadraticMap.PosDef`: positive definite quadratic maps
- * `QuadraticMap.Anisotropic`: anisotropic quadratic maps
- * `QuadraticMap.discr`: discriminant of a quadratic map
- * `QuadraticMap.IsOrtho`: orthogonality of vectors with respect to a quadratic map.
+* `QuadraticMap.ofPolar`: a more familiar constructor that works on rings
+* `QuadraticMap.associated`: associated bilinear map
+* `QuadraticMap.PosDef`: positive definite quadratic maps
+* `QuadraticMap.Anisotropic`: anisotropic quadratic maps
+* `QuadraticMap.discr`: discriminant of a quadratic map
+* `QuadraticMap.IsOrtho`: orthogonality of vectors with respect to a quadratic map.
 
 ## Main statements
 
- * `QuadraticMap.associated_left_inverse`,
- * `QuadraticMap.associated_rightInverse`: in a commutative ring where 2 has
+* `QuadraticMap.associated_left_inverse`,
+* `QuadraticMap.associated_rightInverse`: in a commutative ring where 2 has
   an inverse, there is a correspondence between quadratic maps and symmetric
   bilinear forms
- * `LinearMap.BilinForm.exists_orthogonal_basis`: There exists an orthogonal basis with
+* `LinearMap.BilinForm.exists_orthogonal_basis`: There exists an orthogonal basis with
   respect to any nondegenerate, symmetric bilinear map `B`.
 
 ## Notation
@@ -67,8 +67,8 @@ has some further discussion.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Quadratic_form
- * https://en.wikipedia.org/wiki/Discriminant#Quadratic_forms
+* https://en.wikipedia.org/wiki/Quadratic_form
+* https://en.wikipedia.org/wiki/Discriminant#Quadratic_forms
 
 ## Tags
 
@@ -567,7 +567,7 @@ theorem comp_apply (Q : QuadraticMap R N P) (f : M →ₗ[R] N) (x : M) : (Q.com
   rfl
 
 /-- Compose a quadratic map with a linear function on the left. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M N) :
     QuadraticMap R M P where
   toFun x := f (Q x)
@@ -577,7 +577,7 @@ def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M 
     ⟨B.compr₂ f, fun x y => by simp only [h, map_add, LinearMap.compr₂_apply]⟩
 
 /-- Compose a quadratic map with a linear function on the left. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
     [IsScalarTower S R N] [IsScalarTower S R M] [Module S P]
     (f : N →ₗ[S] P) (Q : QuadraticMap R M N) : QuadraticMap S M P :=

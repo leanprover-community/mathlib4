@@ -162,10 +162,10 @@ theorem mk_prod_swap_eq {p : α × α} : Sym2.mk p.swap = Sym2.mk p := by
   exact eq_swap
 
 theorem congr_right {a b c : α} : s(a, b) = s(a, c) ↔ b = c := by
-  simp (config := {contextual := true})
+  simp +contextual
 
 theorem congr_left {a b c : α} : s(b, a) = s(c, a) ↔ b = c := by
-  simp (config := {contextual := true})
+  simp +contextual
 
 theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
   simp
@@ -184,7 +184,6 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
   invFun F := ⟨curry (F ∘ Sym2.mk), fun _ _ => congr_arg F eq_swap⟩
-  left_inv _ := Subtype.ext rfl
   right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
@@ -212,7 +211,6 @@ def lift₂ :
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
       exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
-  left_inv _ := Subtype.ext rfl
   right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]
@@ -351,8 +349,8 @@ noncomputable def Mem.other {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   Classical.choose h
 
 @[simp]
-theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z := by
-  erw [← Classical.choose_spec h]
+theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z :=
+  (Classical.choose_spec h).symm
 
 theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
   convert mem_mk_right a <| Mem.other h
@@ -539,7 +537,7 @@ theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym �
   Iff.rfl
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_not_mem fun e => _
+  apply Set.eq_empty_of_forall_notMem fun e => _
   apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 
@@ -610,7 +608,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]
-          first | done | apply List.Perm.swap'; rfl }
+          first | done | constructor }
 
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
 def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where

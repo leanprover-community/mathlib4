@@ -370,9 +370,9 @@ theorem wordProd_concat (i : B) (ω : List B) : π (ω.concat i) = π ω * s i :
 theorem wordProd_append (ω ω' : List B) : π (ω ++ ω') = π ω * π ω' := by simp [wordProd]
 
 @[simp] theorem wordProd_reverse (ω : List B) : π (reverse ω) = (π ω)⁻¹ := by
-  induction' ω with x ω' ih
-  · simp
-  · simpa [wordProd_cons, wordProd_append] using ih
+  induction ω with
+  | nil => simp
+  | cons x ω' ih => simpa [wordProd_cons, wordProd_append] using ih
 
 theorem wordProd_surjective : Surjective cs.wordProd := by
   intro w
@@ -397,9 +397,10 @@ theorem alternatingWord_succ (i i' : B) (m : ℕ) :
 
 theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (if Even m then i' else i) :: alternatingWord i i' m := by
-  induction' m with m ih generalizing i i'
-  · simp [alternatingWord]
-  · rw [alternatingWord]
+  induction m generalizing i i' with
+  | zero => simp [alternatingWord]
+  | succ m ih =>
+    rw [alternatingWord]
     nth_rw 1 [ih i' i]
     rw [alternatingWord]
     simp [Nat.even_add_one, ← Nat.not_even_iff_odd]
@@ -407,9 +408,9 @@ theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
 @[simp]
 theorem length_alternatingWord (i i' : B) (m : ℕ) :
     List.length (alternatingWord i i' m) = m := by
-  induction' m with m ih generalizing i i'
-  · dsimp [alternatingWord]
-  · simpa [alternatingWord] using ih i' i
+  induction m generalizing i i' with
+  | zero => dsimp [alternatingWord]
+  | succ m ih => simpa [alternatingWord] using ih i' i
 
 lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
     (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
@@ -443,7 +444,7 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
         rw [if_neg h_even]
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
-   (alternatingWord i j p)[k+1]'(by simp; exact h) =
+   (alternatingWord i j p)[k+1]'(by simp [h]) =
    (alternatingWord j i p)[k]'(by simp [h]; omega) := by
   rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
   by_cases h_even : Even (p + k)
@@ -480,7 +481,6 @@ lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2
     List.take (k + 1) (alternatingWord i j (2 * p)) =
     i :: (List.take k (alternatingWord j i (2 * p))) := by
   rw [listTake_alternatingWord j i p k (by omega), listTake_alternatingWord i j p (k+1) h]
-
   by_cases h_even : Even k
   · simp [h_even, Nat.not_even_iff_odd.mpr (Even.add_one h_even), alternatingWord_succ', h_even]
   · simp [h_even, (by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),
@@ -488,9 +488,10 @@ lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2
 
 theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
-  induction' m with m ih
-  · simp [alternatingWord]
-  · rw [alternatingWord_succ', wordProd_cons, ih]
+  induction m with
+  | zero => simp [alternatingWord]
+  | succ m ih =>
+    rw [alternatingWord_succ', wordProd_cons, ih]
     by_cases hm : Even m
     · have h₁ : ¬ Even (m + 1) := by simp [hm, parity_simps]
       have h₂ : (m + 1) / 2 = m / 2 := Nat.succ_div_of_not_dvd <| by rwa [← even_iff_two_dvd]
@@ -502,14 +503,12 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
 theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
   simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_coe_nat]
-
   /- Rewrite everything in terms of an integer m' which is equal to m.
   The resulting equation holds for all integers m'. -/
   simp_rw [← zpow_natCast, Int.natCast_ediv, Int.ofNat_sub hm]
   generalize (m : ℤ) = m'
   clear hm
   push_cast
-
   rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
   · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
     repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
@@ -520,12 +519,10 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
       Int.not_even_iff_odd.2 ⟨↑(M i i') - k - 1, by ring⟩
     rw [if_neg this]
-
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
     repeat rw [Int.add_mul_ediv_right _ _ (by norm_num)]
     norm_num
-
     rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
       ← inv_zpow]
     simp [← mul_assoc]

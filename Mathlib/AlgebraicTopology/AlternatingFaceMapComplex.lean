@@ -166,8 +166,8 @@ theorem alternatingFaceMapComplex_obj_X (X : SimplicialObject C) (n : ℕ) :
 @[simp]
 theorem alternatingFaceMapComplex_obj_d (X : SimplicialObject C) (n : ℕ) :
     ((alternatingFaceMapComplex C).obj X).d (n + 1) n = AlternatingFaceMapComplex.objD X n := by
- dsimp only [alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
- apply ChainComplex.of_d
+  dsimp only [alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
+  apply ChainComplex.of_d
 
 @[simp]
 theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y) (n : ℕ) :

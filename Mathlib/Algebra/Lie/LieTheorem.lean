@@ -165,20 +165,17 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
   obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
-  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_not_mem hA hz
+  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_notMem hA hz
   let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
   let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
-
   set W : LieSubmodule k L V := weightSpaceOfIsLieTower k V χ₀
   obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ W z).HasEigenvalue c := by
     have : Nontrivial W := inferInstanceAs (Nontrivial (weightSpace V χ₀))
     apply Module.End.exists_hasEigenvalue_of_genEigenspace_eq_top
     exact LieModule.IsTriangularizable.maxGenEigenspace_eq_top z
-
   obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
   have hv' : ∀ (x : ↥A), ⁅x, v⁆ = χ₀ x • v := by
     simpa [W, weightSpaceOfIsLieTower, mem_weightSpace] using hv
-
   use (χ₀.comp π₁) + c • (e.comp π₂)
   refine nontrivial_of_ne ⟨v, ?_⟩ 0 ?_
   · rw [mem_weightSpace]

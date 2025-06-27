@@ -101,11 +101,11 @@ element of `l`. This works from head to tail, (including a check for last elemen
 so it will match on first hit, ignoring later duplicates.
 
 For example:
- * `next [1, 2, 3] 2 _ = 3`
- * `next [1, 2, 3] 3 _ = 1`
- * `next [1, 2, 3, 2, 4] 2 _ = 3`
- * `next [1, 2, 3, 2] 2 _ = 3`
- * `next [1, 1, 2, 3, 2] 1 _ = 1`
+* `next [1, 2, 3] 2 _ = 3`
+* `next [1, 2, 3] 3 _ = 1`
+* `next [1, 2, 3, 2, 4] 2 _ = 3`
+* `next [1, 2, 3, 2] 2 _ = 3`
+* `next [1, 1, 2, 3, 2] 1 _ = 1`
 -/
 def next (l : List α) (x : α) (h : x ∈ l) : α :=
   nextOr l x (l.get ⟨0, length_pos_of_mem h⟩)
@@ -114,11 +114,11 @@ def next (l : List α) (x : α) (h : x ∈ l) : α :=
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
- * `prev [1, 2, 3] 2 _ = 1`
- * `prev [1, 2, 3] 1 _ = 3`
- * `prev [1, 2, 3, 2, 4] 2 _ = 1`
- * `prev [1, 2, 3, 4, 2] 2 _ = 1`
- * `prev [1, 1, 2] 1 _ = 2`
+* `prev [1, 2, 3] 2 _ = 1`
+* `prev [1, 2, 3] 1 _ = 3`
+* `prev [1, 2, 3, 2, 4] 2 _ = 1`
+* `prev [1, 2, 3, 4, 2] 2 _ = 1`
+* `prev [1, 1, 2] 1 _ = 2`
 -/
 def prev : ∀ l : List α, ∀ x ∈ l, α
   | [], _, h => by simp at h
@@ -148,8 +148,7 @@ theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : 
     (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
     next (y :: l) x h = next l x (by simpa [hy] using h) := by
   rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
-  · rwa [getLast_cons] at hx
-    exact ne_nil_of_mem (by assumption)
+  · assumption
   · rwa [getLast_cons] at hx
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
@@ -469,8 +468,10 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
   Iff.rfl
 
 @[simp]
-theorem not_mem_nil (a : α) : a ∉ nil :=
+theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
@@ -875,7 +876,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
     induction' s with a l _
-    · exact fun _ b hb => (not_mem_nil _ hb).elim
+    · exact fun _ b hb => (notMem_nil _ hb).elim
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,

@@ -161,7 +161,7 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
   · intro cond F h
     by_contra c
     specialize cond F c
-    rw [compl_mem_iff_not_mem] at cond
+    rw [compl_mem_iff_notMem] at cond
     contradiction
   · intro h1 F h2
     specialize h1 F
@@ -277,7 +277,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     by_contra H
     rw [le_nhds_iff] at cond
     specialize cond Aᶜ H hA.isOpen_compl
-    rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_not_mem] at cond
+    rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_notMem] at cond
     contradiction
   -- If A ∈ F, then x ∈ cl A.
   have claim2 : ∀ A : Set X, A ∈ F → x ∈ cl A := by
@@ -428,7 +428,7 @@ instance faithful : compactumToCompHaus.Faithful where
     apply congrArg (fun f => f.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
-def isoOfTopologicalSpace {D : CompHaus} :
+noncomputable def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
   hom := CompHausLike.ofHom _
     { toFun := id

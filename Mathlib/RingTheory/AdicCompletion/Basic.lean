@@ -479,7 +479,7 @@ theorem mk_surjective : Function.Surjective (mk I M) := by
   · intro m n hmn
     rw [SModEq.def, ha m, ← mkQ_apply,
       ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
-      mkQ_apply,  ha n, x.property hmn]
+      mkQ_apply, ha n, x.property hmn]
   · ext n
     simp [ha n]
 
