@@ -272,7 +272,7 @@ variable [LE α]
 -- The `Inhabited, LE, OrderBot` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.le
+instance : LE (Interval α) := WithBot.instLE
 instance : OrderBot (Interval α) := WithBot.orderBot
 
 instance : Coe (NonemptyInterval α) (Interval α) :=
