@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.Set.ComplSingletonLift
+import Mathlib.Data.Set.SubtypeNeLift
 import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
 
@@ -27,16 +27,16 @@ variable (R : Type*) [CommRing R]
 
 section equivTensorPiTensorComplSingleto
 
-variable {ι : Type*} (M : ι → Type*)
+variable {ι : Type*} [DecidableEq ι] (M : ι → Type*)
   [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
 
 /-- The linear equivalence between `⨂[R] i, M i` and the tensor product of `M i₀`
 (for some `i₀ : ι`) and the pi tensor product indexed by the complement of `{i₀}`. -/
 noncomputable def equivTensorPiTensorComplSingleton (i₀ : ι) :
     (⨂[R] i, M i) ≃ₗ[R] (M i₀ ⊗[R] ⨂[R] (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :=
-  ((reindex R (s := M) (e := (Set.sumSingletonComplEquiv i₀).symm)).trans
+  ((reindex R (s := M) (e := (unitSumSubtypeNeEquiv i₀).symm)).trans
     (tmulEquivDep R
-        (fun i => M (Set.sumSingletonComplEquiv i₀ i))).symm).trans
+        (fun i => M (unitSumSubtypeNeEquiv i₀ i))).symm).trans
       (LinearEquiv.rTensor _ (subsingletonEquiv (R := R) (M := M i₀) Unit.unit))
 
 variable (i₀ : ι)
@@ -46,27 +46,27 @@ lemma equivTensorPiTensorComplSingleton_tprod (i₀ : ι) (m : ∀ i, M i) :
     equivTensorPiTensorComplSingleton R M i₀ (⨂ₜ[R] i, m i) =
       m i₀ ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) := by
   dsimp [equivTensorPiTensorComplSingleton]
-  have h₁ : (reindex R M (Set.sumSingletonComplEquiv i₀).symm) (⨂ₜ[R] (i : ι), m i) =
-      ⨂ₜ[R] j, m ((Set.sumSingletonComplEquiv i₀) j) := by
+  have h₁ : (reindex R M (unitSumSubtypeNeEquiv i₀).symm) (⨂ₜ[R] (i : ι), m i) =
+      ⨂ₜ[R] j, m ((unitSumSubtypeNeEquiv i₀) j) := by
     simp_rw [reindex_tprod (R := R) (s := M), Equiv.symm_symm]
   have h₂ := tmulEquivDep_symm_apply (R := R)
-    (N := fun i ↦ (M ((Set.sumSingletonComplEquiv i₀) i)))
+    (N := fun i ↦ (M ((unitSumSubtypeNeEquiv i₀) i)))
   dsimp at h₁ h₂
   rw [h₁, h₂]
   exact (LinearEquiv.rTensor_tmul _ _ _ _).trans (by congr; simp)
 
 @[simp]
-lemma equivTensorPiTensorComplSingleton_symm_tmul [DecidableEq ι] (i₀ : ι)
+lemma equivTensorPiTensorComplSingleton_symm_tmul (i₀ : ι)
     (x : M i₀) (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :
     (equivTensorPiTensorComplSingleton R M i₀).symm
       (x ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j)) =
-      (⨂ₜ[R] i, Function.complSingletonLift i₀ m x i) := by
+      (⨂ₜ[R] i, Function.subtypeNeLift i₀ m x i) := by
   apply (equivTensorPiTensorComplSingleton R M i₀).injective
   simp only [LinearEquiv.apply_symm_apply, equivTensorPiTensorComplSingleton_tprod,
-    Function.complSingletonLift_self]
+    Function.subtypeNeLift_self]
   congr
   ext ⟨i, hi⟩
-  rw [Function.complSingletonLift_of_neq]
+  rw [Function.subtypeNeLift_of_neq]
 
 end equivTensorPiTensorComplSingleto
 
@@ -99,6 +99,7 @@ lemma ext_of_span_eq_top
       apply @isEmptyElim (a := i) _ _
     apply h
   | succ n hn =>
+    classical
     intro ι _ M _ _ γ g hg φ φ' h hι
     have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
     have i₀ : ι := Classical.arbitrary _
@@ -116,16 +117,15 @@ lemma ext_of_span_eq_top
     · intro i
       exact hg _
     · intro j
-      classical
       simp only [lift.equiv_symm_apply]
-      convert h (Function.complSingletonLift i₀ j g₀) using 1
+      convert h (Function.subtypeNeLift i₀ j g₀) using 1
       all_goals
         simp only [equivTensorPiTensorComplSingleton_tprod,
-          Function.complSingletonLift_self]
+          Function.subtypeNeLift_self]
         congr
-        ext x
+        ext ⟨x, hx⟩
         congr
-        rw [Function.complSingletonLift_of_neq]
+        rw [Function.subtypeNeLift_of_neq]
     · exact Nat.card_singleton_compl i₀ hι
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
