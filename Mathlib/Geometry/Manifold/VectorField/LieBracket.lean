@@ -140,29 +140,11 @@ theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
   simp only [mlieBracketWithin_apply]
   congr 1
-  have : T1Space M := I.t1Space M
   suffices A : ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E)
     =ᶠ[𝓝[{(extChartAt I x) x}ᶜ] (extChartAt I x x)]
       ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) by
     apply lieBracketWithin_congr_set' _ A
-  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
-    mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
-  rw [← extChartAt_to_inv (I := I) x] at u_mem
-  have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) :=
-    extChartAt_target_union_compl_range_mem_nhds_of_mem (mem_extChartAt_target x)
-  apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
-    ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
-  rintro z ⟨hz, h'z⟩
-  simp only [eq_iff_iff, mem_setOf_eq]
-  change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
-  by_cases hIz : z ∈ range I
-  · simp [-extChartAt, hIz] at hz ⊢
-    rw [← eq_iff_iff]
-    apply hu ⟨hz.1, ?_⟩
-    simp only [mem_compl_iff, mem_singleton_iff, ne_comm, ne_eq] at h'z ⊢
-    rw [(extChartAt I x).eq_symm_apply (by simp) hz.2]
-    exact Ne.symm h'z
-  · simp [hIz]
+  exact preimage_extChartAt_eventuallyEq_compl_singleton y h
 
 theorem mlieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x :=

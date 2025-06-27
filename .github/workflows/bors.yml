@@ -58,7 +58,11 @@ jobs:
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
+          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
+            echo "ERROR: Initial cleanup failed, waiting 5 seconds and retrying..."
+            sleep 5
+            find . -mindepth 1 -exec rm -rf -- {} +
+          fi
           # Delete all but the 5 most recent toolchains.
           # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
           # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
@@ -150,65 +154,6 @@ jobs:
           ls .lake/build/bin/cache
           ls .lake/build/bin/check-yaml
           ls .lake/packages/importGraph/.lake/build/bin/graph
-
-      - name: Check for changes to tool source files
-        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
-        id: tool_changes
-        with:
-          working-directory: 'pr-branch'
-          filters: |
-            cache:
-              - 'Cache/**'
-            autolabel:
-              - 'scripts/autolabel.lean'
-            check_yaml:
-              - 'scripts/check-yaml.lean'
-            mk_all:
-              - 'scripts/mk_all.lean'
-            lint_style:
-              - 'scripts/lint-style.lean'
-              - 'Mathlib/Tactic/Linter/TextBased.lean'
-            shake:
-              - 'Shake/**'
-            longest_pole:
-              - 'LongestPole/**'
-            mathlib_test:
-              - 'MathlibTest/**'
-            docs:
-              - 'docs/**'
-
-      - name: build pr-branch tools (test)
-        if: steps.tool_changes.outputs.changes != '[]'
-        # Test building the tools from the PR branch to ensure any modifications work correctly
-        # This runs inside landrun for security
-        run: |
-          cd pr-branch
-          echo "Tool source files have been modified, building affected tools from PR branch..."
-
-          # Define mapping from filter names to tools to build (only for exceptions)
-          declare -A TOOLS_TO_BUILD=(
-            ["check_yaml"]="check-yaml"
-            ["lint_style"]="lint-style"
-            ["longest_pole"]="pole unused"
-            ["mathlib_test"]="mathlib_test_executable"
-          )
-
-          # Parse the changes array and build corresponding tools
-          changes='${{ steps.tool_changes.outputs.changes }}'
-          echo "Changed filters: $changes"
-
-          # Loop through each changed filter
-          for filter in $(echo "$changes" | jq -r '.[]'); do
-            echo "Processing filter: $filter"
-            # Use dictionary value if it exists, otherwise use filter name as tool name
-            if [[ -n "${TOOLS_TO_BUILD[$filter]}" ]]; then
-              tools="${TOOLS_TO_BUILD[$filter]}"
-            else
-              tools="$filter"
-            fi
-            echo "Building $tools..."
-            lake build $tools
-          done
 
       - name: cleanup .cache/mathlib
         # This needs write access to .cache/mathlib, so can't be run inside landrun.
@@ -506,9 +451,21 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
+      # TODO: this step should not be necessary, "Configure Lean" above should already achieve this.
+      - name: get cache for Mathlib
+        run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
+          lake exe cache get
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+
+
       - name: get cache for Archive and Counterexamples
         run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get Archive Counterexamples
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         run: |
