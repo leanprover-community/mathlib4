@@ -68,6 +68,12 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
     change IsIso ((sheafToPresheaf _ _).map ((sheafCompose J F).map f))
     infer_instance
 
+instance [F.Faithful] : (sheafCompose J F).Faithful where
+  map_injective h := by
+    ext X
+    apply F.map_injective
+    exact (sheafToPresheaf _ _ ⋙ (evaluation _ _).obj X).congr_map h
+
 variable {F G}
 
 /--

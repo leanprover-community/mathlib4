@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Localization.Linear
 
 /-!
@@ -20,7 +20,7 @@ namespace CategoryTheory
 
 namespace Shift
 
-variable (R : Type*) [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear R C]
+variable (R : Type*) [Ring R] {C : Type*} [Category C] [Preadditive C] [Linear R C]
   {D : Type*} [Category D] [Preadditive D] [Linear R D]
   {M : Type*} [AddMonoid M] [HasShift C M]
   [∀ (n : M), (shiftFunctor C n).Linear R]
