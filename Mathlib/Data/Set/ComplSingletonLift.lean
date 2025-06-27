@@ -62,7 +62,7 @@ lemma complSingletonLift_of_neq (i : ι) (h : i ≠ i₀) :
     complSingletonLift i₀ f x i = f ⟨i, h⟩ := dif_neg h
 
 @[simp]
-lemma extendCompSingleton_restriction (φ : ∀ i, M i) (i₀ : ι) :
+lemma complSingletonLift_restriction (φ : ∀ i, M i) (i₀ : ι) :
     complSingletonLift i₀ (fun i ↦ φ i) (φ i₀) = φ := by
   ext i
   by_cases h : i = i₀
