@@ -125,8 +125,7 @@ end zulip1
 
 section
 
-attribute [local instance] Classical.propDecidable
-
+open scoped Classical in
 example (H : ∀ x, x = 1) : (if h : ∃ (k : ℕ), k = 1 then Classical.choose h else 0) = 1 := by
   rw [dif_pos ?hc]
   case hc => exact ⟨1, rfl⟩
