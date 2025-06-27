@@ -176,7 +176,7 @@ theorem antisymmRel_compl_apply : AntisymmRel rᶜ a b ↔ IncompRel r a b :=
 
 @[simp]
 theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
-  simp [← antisymmRel_compl, AntisymmRel, compl]
+  simp [← antisymmRel_compl, compl]
 
 @[simp]
 theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by
