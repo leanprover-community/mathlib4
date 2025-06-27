@@ -182,7 +182,7 @@ instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalS
   ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
 
 instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
+    [hα : BorelSpace α] (p : α → Prop) : BorelSpace (Subtype p) :=
   ⟨by borelize α; symm; apply borel_comap⟩
 
 instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
@@ -192,7 +192,7 @@ instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [Measurabl
   exact ⟨by aesop⟩
 
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
+    [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
     exact comap_mono h.1⟩
@@ -456,13 +456,7 @@ instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
     MeasurableSpace.SeparatesPoints α where
   separates x y := by
     contrapose!
-    intro x_ne_y
-    obtain ⟨U, U_open, mem_U⟩ := exists_isOpen_xor'_mem x_ne_y
-    by_cases x_in_U : x ∈ U
-    · refine ⟨U, U_open.measurableSet, x_in_U, ?_⟩
-      simp_all only [ne_eq, xor_true, not_false_eq_true]
-    · refine ⟨Uᶜ, U_open.isClosed_compl.measurableSet, x_in_U, ?_⟩
-      simp_all only [ne_eq, xor_false, id_eq, mem_compl_iff, not_true_eq_false, not_false_eq_true]
+    exact fun a => exists_measurableSet_of_ne a
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is measurable. -/

@@ -317,14 +317,17 @@ lemma integral_congr_ae₂ {β : Type*} {_ : MeasurableSpace β} {ν : Measure �
   apply integral_congr_ae
   filter_upwards [ha] with _ hb using hb
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, nolint simpNF]
-theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
-    ∫ a, (hf.toL1 f) a ∂μ = ∫ a, f a ∂μ := by
+@[simp]
+theorem L1.integral_of_fun_eq_integral' {f : α → G} (hf : Integrable f μ) :
+    ∫ a, (AEEqFun.mk f hf.aestronglyMeasurable) a ∂μ = ∫ a, f a ∂μ := by
   by_cases hG : CompleteSpace G
   · simp only [MeasureTheory.integral, hG, L1.integral]
     exact setToFun_toL1 (dominatedFinMeasAdditive_weightedSMul μ) hf
   · simp [MeasureTheory.integral, hG]
+
+theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
+    ∫ a, (hf.toL1 f) a ∂μ = ∫ a, f a ∂μ := by
+  simp [hf]
 
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] G => ∫ a, f a ∂μ := by
@@ -993,8 +996,10 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
   · simp [integral, hG]
 
 @[simp]
-theorem setIntegral_zero_measure (f : α → G) {μ : Measure α} {s : Set α} (hs : μ s = 0) :
+theorem setIntegral_measure_zero (f : α → G) {μ : Measure α} {s : Set α} (hs : μ s = 0) :
     ∫ x in s, f x ∂μ = 0 := Measure.restrict_eq_zero.mpr hs ▸ integral_zero_measure f
+
+@[deprecated (since := "2025-06-17")] alias setIntegral_zero_measure := setIntegral_measure_zero
 
 lemma integral_of_isEmpty [IsEmpty α] {f : α → G} : ∫ x, f x ∂μ = 0 :=
   μ.eq_zero_of_isEmpty ▸ integral_zero_measure _
