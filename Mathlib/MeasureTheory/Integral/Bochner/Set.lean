@@ -752,6 +752,22 @@ lemma integral_le_measure {f : X → ℝ} {s : Set X}
   · intro x hx
     simpa [g] using h's x hx
 
+lemma setIntegral_mono_of_nonneg_ae {g : X → ℝ} (hf : 0 ≤ᵐ[μ.restrict s] f)
+    (h : f ≤ᵐ[μ.restrict s] g) (hg : IntegrableOn g s μ) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  by_cases hfi : IntegrableOn f s μ
+  · exact setIntegral_mono_ae_restrict hfi hg h
+  · change ¬(Integrable (fun x ↦ f x) (μ.restrict s)) at hfi
+    conv_lhs => simp only [integral, Real.instCompleteSpace, ↓reduceDIte, hfi]
+    apply setIntegral_nonneg_of_ae_restrict
+    filter_upwards [hf, h] with x hx hx'
+    linarith
+
+lemma setIntegral_mono_of_nonneg (hs : MeasurableSet s) {g : X → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
+  setIntegral_mono_of_nonneg_ae
+    (ae_restrict_of_forall_mem hs hf) (ae_restrict_of_forall_mem hs h) hg
+
 end Nonneg
 
 section IntegrableUnion
