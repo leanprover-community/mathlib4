@@ -293,6 +293,18 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
     AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
   exact Finset.sum_comm
 
+def sumAddHom₂ {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} {γ : Type*}
+    [DecidableEq ι₁] [DecidableEq ι₂] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]
+    [AddCommMonoid γ] (h : ∀ i j, β₁ i →+ β₂ j →+ γ) : (Π₀ i, β₁ i) →+ (Π₀ j, β₂ j) →+ γ :=
+  sumAddHom (fun i₁ ↦ AddMonoidHom.flip (sumAddHom (fun i₂ ↦ (h i₁ i₂).flip)))
+
+@[simp]
+theorem sumAddHom₂_single {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*} {γ : Type*}
+    [DecidableEq ι₁] [DecidableEq ι₂] [∀ i, AddZeroClass (β₁ i)] [∀ i, AddZeroClass (β₂ i)]
+    [AddCommMonoid γ] (h : ∀ i j, β₁ i →+ β₂ j →+ γ) (i₁ i₂) (x : β₁ i₁) (y : β₂ i₂) :
+    sumAddHom₂ h (single i₁ x) (single i₂ y) = h i₁ i₂ x y := by
+  simp [sumAddHom₂]
+
 /-- The `DFinsupp` version of `Finsupp.liftAddHom` -/
 @[simps apply symm_apply]
 def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
