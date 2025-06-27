@@ -568,7 +568,7 @@ theorem tangentConeAt_mono_field : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜
 /--
 Assume that `E` is a normed vector space over normed fields `𝕜 ⊆ 𝕜'` and that `x ∈ s` is a point
 of unique differentiability with respect to the set `s` and the smaller field `𝕜`, then `x` is also
-a point of unique differentiability with respect to the set `s` and the larger field `𝕜`.
+a point of unique differentiability with respect to the set `s` and the larger field `𝕜'`.
 -/
 theorem UniqueDiffWithinAt.mono_field (h₂s : UniqueDiffWithinAt 𝕜 s x) :
     UniqueDiffWithinAt 𝕜' s x := by
