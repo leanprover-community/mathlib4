@@ -206,8 +206,17 @@ theorem laplacian_eq_iteratedFDeriv_complexPlane (f : ℂ → F) :
   simp [laplacian_eq_iteratedFDeriv_orthonormalBasis f Complex.orthonormalBasisOneI]
 
 /-!
-## Congruence Lemma for Δ
+## Congruence Lemmata for Δ
 -/
+
+/--
+If two functions agree in a neighborhood of a point, then so do their Laplacians.
+-/
+theorem laplacianWithin_congr_nhdsWithin (h : f₁ =ᶠ[𝓝[s] x] f₂) (hs : UniqueDiffOn ℝ s) :
+    (Δ[s] f₁) =ᶠ[𝓝[s] x] Δ[s] f₂ := by
+  filter_upwards [EventuallyEq.iteratedFDerivWithin (𝕜 := ℝ) h 2,
+    eventually_mem_nhdsWithin] with x h₁x h₂x
+  simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs h₂x, h₁x]
 
 /--
 If two functions agree in a neighborhood of a point, then so do their Laplacians.
@@ -222,16 +231,41 @@ theorem laplacian_congr_nhds (h : f₁ =ᶠ[𝓝 x] f₂) :
 -/
 
 /-- The Laplacian commutes with addition. -/
+theorem _root_.ContDiffWithinAt.laplacianWithin_add (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
+    (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    (Δ[s] (f₁ + f₂)) x = (Δ[s] f₁) x + (Δ[s] f₂) x := by
+  simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx,
+    ← Finset.sum_add_distrib, iteratedFDerivWithin_add_apply h₁ h₂ hs hx]
+
+/-- The Laplacian commutes with addition. -/
 theorem _root_.ContDiffAt.laplacian_add (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
     Δ (f₁ + f₂) x = (Δ f₁) x + (Δ f₂) x := by
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis,
     ← Finset.sum_add_distrib, iteratedFDeriv_add_apply h₁ h₂]
 
 /-- The Laplacian commutes with addition. -/
+theorem _root_.ContDiffAt.laplacianWithin_add_nhdWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
+    (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    Δ (f₁ + f₂) =ᶠ[𝓝[s] x] (Δ f₁) + (Δ f₂):= by
+  rw [← s.insert_eq_of_mem hx]
+  filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp),
+    eventually_mem_nhdsWithin] with y h₁y h₂y h₃y
+  rw [s.insert_eq_of_mem hx] at h₃y
+  exact h₁y.laplacianWithin_add h₂y hs h₃y
+
+/-- The Laplacian commutes with addition. -/
 theorem _root_.ContDiffAt.laplacian_add_nhd (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
     Δ (f₁ + f₂) =ᶠ[𝓝 x] (Δ f₁) + (Δ f₂):= by
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp)] with x h₁x h₂x
   exact h₁x.laplacian_add h₂x
+
+/-- The Laplacian commutes with scalar multiplication. -/
+theorem laplacianWithin_smul (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s)
+    (hx : x ∈ s):
+    (Δ[s] (v • f)) x = v • (Δ[s] f) x := by
+  simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx,
+    iteratedFDerivWithin_const_smul_apply hf hs hx,
+    Finset.smul_sum]
 
 /-- The Laplacian commutes with scalar multiplication. -/
 theorem laplacian_smul (v : ℝ) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = v • (Δ f) x := by
