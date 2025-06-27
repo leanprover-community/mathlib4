@@ -204,12 +204,9 @@ noncomputable section Pullback
 variable [HasPullbacks C] (T : FormalCoproduct.{w} C)
   {X Y Z : FormalCoproduct.{w} C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
-def pullback: FormalCoproduct.{w} C :=
-  ⟨Function.Pullback f.f g.f, fun xy ↦
-    Limits.pullback (f.φ xy.1.1 ≫ eqToHom (by rw [xy.2])) (g.φ xy.1.2)⟩
-
 def pullbackCone : PullbackCone f g :=
-  .mk (W := pullback f g)
+  .mk (W := ⟨Function.Pullback f.f g.f, fun xy ↦
+      Limits.pullback (f.φ xy.1.1 ≫ eqToHom (by rw [xy.2])) (g.φ xy.1.2)⟩)
     ⟨fun i ↦ i.1.1, fun i ↦ pullback.fst _ _⟩
     ⟨fun i ↦ i.1.2, fun i ↦ pullback.snd _ _⟩
     (hom_ext (funext fun i ↦ i.2) (by simp [pullback.condition]))
@@ -229,7 +226,7 @@ section simp_lemmas
 
 end simp_lemmas
 
-@[simps!] def homPullbackEquiv : (T ⟶ pullback f g) ≃
+@[simps!] def homPullbackEquiv : (T ⟶ (pullbackCone f g).pt) ≃
     { p : (T ⟶ X) × (T ⟶ Y) // p.1 ≫ f = p.2 ≫ g } :=
   { toFun m := ⟨⟨m ≫ (pullbackCone f g).fst, m ≫ (pullbackCone f g).snd⟩, by simp⟩
     invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congrFun (congrArg Hom.f s.2) i⟩,
@@ -247,14 +244,38 @@ def isLimitPullback : IsLimit (pullbackCone f g) := by
   convert ((homPullbackEquiv s.pt f g).left_inv m).symm using 3
   rw [← h₁, ← h₂]; rfl
 
+instance : HasPullback f g :=
+  ⟨⟨⟨_, isLimitPullback f g⟩⟩⟩
+
+instance : HasPullbacks (FormalCoproduct.{w} C) :=
+  hasPullbacks_of_hasLimit_cospan _
+
+def pullbackIsoPullback : pullback f g ≅ (pullbackCone f g).pt :=
+  limit.isoLimitCone ⟨_, isLimitPullback f g⟩
+
+@[reassoc (attr := simp)] lemma pullbackIsoPullback_hom_fst :
+    (pullbackIsoPullback f g).hom ≫ (pullbackCone f g).fst = pullback.fst f g :=
+  limit.isoLimitCone_hom_π _ _
+
+@[reassoc (attr := simp)] lemma pullbackIsoPullback_inv_fst :
+    (pullbackIsoPullback f g).inv ≫ pullback.fst f g = (pullbackCone f g).fst :=
+  limit.isoLimitCone_inv_π _ _
+
+@[reassoc (attr := simp)] lemma pullbackIsoPullback_hom_snd :
+    (pullbackIsoPullback f g).hom ≫ (pullbackCone f g).snd = pullback.snd f g :=
+  limit.isoLimitCone_hom_π _ _
+
+@[reassoc (attr := simp)] lemma pullbackIsoPullback_inv_snd :
+    (pullbackIsoPullback f g).inv ≫ pullback.snd f g = (pullbackCone f g).snd :=
+  limit.isoLimitCone_inv_π _ _
+
 end Pullback
 
 
 noncomputable section HasCoproducts
 
-variable [HasCoproducts.{w} A]
+variable [HasCoproducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : C ⥤ A)
 
-variable (C) in
 @[simps] def eval : (C ⥤ A) ⥤ (FormalCoproduct.{w} C ⥤ A) where
   obj F :=
     { obj X := ∐ fun (i : X.I) ↦ F.obj (X.obj i)
@@ -267,102 +288,47 @@ def evalOf : eval C A ⋙ (whiskeringLeft _ _ A).obj (of C) ≅ Functor.id (C �
     (fun x ↦ ⟨Sigma.desc fun _ ↦ 𝟙 _, Sigma.ι (fun _ ↦ F.obj x) PUnit.unit, by aesop, by simp⟩)
     (fun f ↦ Sigma.hom_ext _ _ (by simp [Sigma.ι_desc]))
 
-def isColimitEvalMapCocone (𝒜 : Type w) (f : 𝒜 → FormalCoproduct.{w} C) (F : C ⥤ A) :
-    IsColimit (((eval.{w} C A).obj F).mapCocone (cofan.{w} 𝒜 f)) :=
-  sorry
+variable {C A}
 
-variable {A} in
-@[simps!]
-def evalCoproductIso (F : C ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C) :
-    ((eval C A).obj F).obj (cofan J f).pt ≅ ∐ fun j ↦ ((eval C A).obj F).obj (f j) :=
-  (sigmaSigmaIso (fun j ↦ (f j).I) (fun j x ↦ F.obj ((f j).obj x))).symm
+def isColimitEvalMapCocone : IsColimit (((eval.{w} C A).obj F).mapCocone (cofan.{w} J f)) where
+  desc s := Sigma.desc fun i ↦ Sigma.ι (F.obj ∘ (f i.1).obj) i.2 ≫ s.ι.app ⟨i.1⟩
+  fac s i := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc, cofan]; rfl
+  uniq s m h := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc, ← h, ← Category.assoc, cofan]; rfl
 
-lemma comp_evalCoproductIso (F : C ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C)
-    (j : J) (x : (f j).I) :
-    ((eval C A).obj F).map ((ofHomEquiv ((f j).obj x) _).2 ⟨Sigma.mk j x, 𝟙 _⟩) ≫
-        (evalCoproductIso F f).hom =
-      Sigma.desc fun _ ↦ Sigma.ι (fun i ↦ F.obj ((f j).obj i)) x ≫
-        Sigma.ι (fun b ↦ ∐ fun i ↦ F.obj ((f b).obj i)) j :=
-  Sigma.hom_ext _ _ fun _ ↦ by simp [ofHomEquiv, Sigma.ι_desc]
-
-lemma sigmaComparison_eq (F : C ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C) :
-    sigmaComparison ((eval C A).obj F) f =
-      (evalCoproductIso F f).inv ≫ ((eval C A).obj F).map (coproductIsoCoproduct f).inv := by
-  refine Sigma.hom_ext _ _ fun j ↦ Sigma.hom_ext _ _ fun x ↦ ?_
-  rw [ι_comp_sigmaComparison, ← Functor.mapIso_inv, ← Category.assoc, ← Category.assoc,
-    Iso.eq_comp_inv, evalCoproductIso, Iso.symm_inv, sigmaSigmaIso_hom, Category.assoc,
-    Category.assoc, Sigma.ι_desc, Sigma.ι_desc, Functor.mapIso_hom, ← Functor.map_comp,
-    coproductIsoCoproduct_hom, colimit.ι_desc]
-  simp [coproduct]
-  rfl
-
-variable {A} in
-theorem preservesCoproductEval (F : C ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C) :
-    PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) := by
-  refine CategoryTheory.Limits.PreservesCoproduct.of_iso_comparison _ _ (i := ?_)
-  rw [sigmaComparison_eq, ← Functor.mapIso_inv, ← Iso.trans_inv, ← Iso.symm_hom]
-  infer_instance
+theorem preservesCoproductEval : PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) :=
+  ⟨fun hc ↦ ⟨IsColimit.ofIsoColimit (isColimitEvalMapCocone J f F)
+    ((Cocones.functoriality _ _).mapIso ((isColimitCofan J f).uniqueUpToIso hc))⟩⟩
 
 end HasCoproducts
 
 
-section HasProducts
+noncomputable section HasProducts
 
-variable [HasProducts.{w} A]
+variable [HasProducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : Cᵒᵖ ⥤ A)
 
-variable (C) in
-@[simps] noncomputable
-def evalOp : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct.{w} C)ᵒᵖ ⥤ A) where
+@[simps] def evalOp : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct.{w} C)ᵒᵖ ⥤ A) where
   obj F :=
     { obj X := ∏ᶜ fun (i : X.unop.I) ↦ F.obj (op (X.unop.obj i))
       map f := Pi.lift fun i ↦ Pi.π _ (f.unop.f i) ≫ F.map (f.unop.φ i).op }
   map α := { app f := Pi.map fun i ↦ α.app (op (f.unop.obj i)) }
 
 variable {A} in
-noncomputable def evalOpOf :
+def evalOpOf :
     evalOp C A ⋙ (whiskeringLeft _ _ A).obj (of C).op ≅ Functor.id (Cᵒᵖ ⥤ A) :=
   NatIso.ofComponents fun F ↦ NatIso.ofComponents fun x ↦
     ⟨Pi.π _ PUnit.unit, Pi.lift fun _ ↦ 𝟙 _, by aesop, by simp⟩
 
-variable {A} in
-@[simps!] noncomputable
-def evalOpCoproductIso (F : Cᵒᵖ ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C) :
-    ((evalOp C A).obj F).obj (op (coproduct J f).cocone.pt) ≅
-      ∏ᶜ fun j ↦ ((evalOp C A).obj F).obj (op (f j)) :=
-  (piPiIso (fun j ↦ (f j).I) (fun j x ↦ F.obj (op ((f j).obj x)))).symm
+variable {C A}
 
-lemma evalOpCoproductIso_comp (F : Cᵒᵖ ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C) (j : J) :
-    (evalOpCoproductIso F f).hom ≫ Pi.π _ j =
-      ((evalOp C A).obj F).map (op ((coproduct J f).cocone.ι.app ⟨j⟩)) :=
-  (Pi.lift_π _ _).trans (by simp [coproduct])
+def isLimitEvalMapCone : IsLimit (((evalOp.{w} C A).obj F).mapCone (cofan.{w} J f).op) where
+  lift s := Pi.lift fun i ↦ s.π.app ⟨i.1⟩ ≫ Pi.π _ i.2
+  fac s i := Pi.hom_ext _ _ fun i ↦ by simp [Pi.lift_π, cofan]
+  uniq s m h := Pi.hom_ext _ _ fun ⟨i₁, i₂⟩ ↦ by simp [Pi.lift_π, ← h, cofan]
 
-lemma π_eq {J : Type w} (f : J → FormalCoproduct.{w} C) (j : J) :
-    Pi.π (op ∘ f) j = (opCoproductIsoProduct _).inv ≫ op (colimit.ι _ _) :=
-  (opCoproductIsoProduct_inv_comp_ι _ _).symm
-
-lemma piComparison_eq (F : Cᵒᵖ ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C) :
-    piComparison ((evalOp C A).obj F) (op ∘ f) =
-      ((evalOp C A).obj F).map ((opCoproductIsoProduct _).inv ≫ (coproductIsoCoproduct _).op.inv) ≫
-        (evalOpCoproductIso F f).hom := by
-  refine Pi.hom_ext _ _ fun j ↦ Pi.hom_ext _ _ fun x ↦ ?_
-  rw [piComparison_comp_π, evalOp_obj_map, Pi.lift_π, evalOp_obj_map, evalOpCoproductIso_hom,
-    Category.assoc, Category.assoc]
-  conv => enter [2,2]; rw [← Category.assoc]; enter [1]; exact Pi.lift_π _ _
-  conv => enter [2,2]; exact Pi.lift_π _ _
-  refine Eq.symm ((Pi.lift_π _ _).trans ?_)
-  congr 1
-  · congr 3; simp [π_eq]
-  · congr 1; simp [π_eq]
-  · congr 1
-    · rw [π_eq]; rfl
-    · rw [π_eq]; rfl
-
-variable {A} in
-theorem preservesProductEvalOp (F : Cᵒᵖ ⥤ A) {J : Type w} (f : J → FormalCoproduct.{w} C) :
-    PreservesLimit (Discrete.functor (op ∘ f)) ((evalOp.{w} C A).obj F) := by
-  refine CategoryTheory.Limits.PreservesProduct.of_iso_comparison _ _ (i := ?_)
-  rw [piComparison_eq, ← Iso.trans_inv, ← Functor.mapIso_inv, ← Iso.symm_hom]
-  infer_instance
+theorem preservesProductEval :
+    PreservesLimit (Discrete.functor (op ∘ f)) ((evalOp.{w} C A).obj F) :=
+  ⟨fun hc ↦ ⟨IsLimit.ofIsoLimit (isLimitEvalMapCone J f F) ((Cones.functoriality _ _).mapIso
+    ((Cofan.IsColimit.op (isColimitCofan J f)).uniqueUpToIso hc))⟩⟩
 
 end HasProducts
 
