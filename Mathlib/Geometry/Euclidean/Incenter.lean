@@ -355,8 +355,7 @@ variable {s} in
 exradius. -/
 lemma ExcenterExists.dist_excenter {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
     (i : Fin (n + 1)) :
-    dist (s.excenter signs) (s.touchpoint signs i) =
-      s.exradius signs := by
+    dist (s.excenter signs) (s.touchpoint signs i) = s.exradius signs := by
   rw [touchpoint,
     ← abs_signedInfDist_eq_dist_of_mem_affineSpan_range i h.excenter_mem_affineSpan_range,
     h.signedInfDist_excenter, abs_mul, abs_mul, abs_of_nonneg (s.exradius_nonneg signs)]
