@@ -437,6 +437,13 @@ theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
 
 end trans
 
+/-- `MulEquiv.symm` defines an equivalence between `α ≃* β` and `β ≃* α`. -/
+@[to_additive (attr := simps!)
+"`AddEquiv.symm` defines an equivalence between `α ≃+ β` and `β ≃+ α`"]
+def symmEquiv (P Q : Type*) [Mul P] [Mul Q] : (P ≃* Q) ≃ (Q ≃* P) where
+  toFun := MulEquiv.symm
+  invFun := MulEquiv.symm
+
 end Mul
 
 /-!
