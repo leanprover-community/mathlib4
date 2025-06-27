@@ -137,7 +137,7 @@ lemma presInd_var (g₀ : (relations i₀).G)
 lemma eq_presInd_var (g : ∀ i, (relations i).G):
     (⨂ₜ[R] (i : ι), (solution i).var (g i)) =
       (presInd h i₀ h₀).var ⟨g i₀, fun i ↦ g i⟩ := by
-  rw [presInd_var, Function.extendCompSingleton_restriction]
+  rw [presInd_var, Function.complSingletonLift_restriction]
 
 end isPresentationCore_induction_step
 
@@ -191,7 +191,7 @@ noncomputable def isPresentationCore_induction_step :
     dsimp
     rw [eq_presInd_var h i₀ h₀, desc_var]
     dsimp
-    rw [Function.extendCompSingleton_restriction]
+    rw [Function.complSingletonLift_restriction]
   postcomp_injective h' := (presInd h i₀ h₀).postcomp_injective (by
     ext ⟨g₀, g⟩
     dsimp
