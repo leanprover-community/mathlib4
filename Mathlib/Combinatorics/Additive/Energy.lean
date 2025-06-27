@@ -106,7 +106,7 @@ variable {s t}
   mpr h := mulEnergy_pos h.1 h.2
 
 @[to_additive (attr := simp)] lemma mulEnergy_eq_zero_iff : Eₘ[s, t] = 0 ↔ s = ∅ ∨ t = ∅ := by
-  simp [← (Nat.zero_le _).not_gt_iff_eq, not_and_or, imp_iff_or_not, or_comm]
+  simp [← (Nat.zero_le _).not_lt_iff_eq', imp_iff_or_not, or_comm]
 
 @[to_additive] lemma mulEnergy_eq_card_filter (s t : Finset α) :
     Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card :=

@@ -154,7 +154,7 @@ lemma binEntropy_le_log_two : binEntropy p ≤ log 2 := by
   · exact (binEntropy_lt_log_two.2 hp).le
 
 lemma binEntropy_eq_log_two : binEntropy p = log 2 ↔ p = 2⁻¹ := by
-  rw [binEntropy_le_log_two.eq_iff_not_lt, binEntropy_lt_log_two, not_ne_iff]
+  rw [← binEntropy_le_log_two.not_lt_iff_eq, binEntropy_lt_log_two, not_ne_iff]
 
 /-- Binary entropy is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
