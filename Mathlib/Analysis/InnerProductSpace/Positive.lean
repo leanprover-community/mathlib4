@@ -121,7 +121,6 @@ theorem IsPositive.smul_of_zero_le {T : E →L[𝕜] E} (hT : T.IsPositive) {c :
     (c • T).IsPositive := by
   have hc' : starRingEnd 𝕜 c = c := by
     simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
-  have hT' := hT.left
   apply And.intro
   · exact IsSelfAdjoint.smul hc' hT.left
   · intro x
