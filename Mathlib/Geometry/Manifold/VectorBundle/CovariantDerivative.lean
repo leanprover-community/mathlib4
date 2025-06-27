@@ -268,8 +268,8 @@ structure CovariantDerivative where
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
     → MDifferentiableAt I 𝓘(𝕜) f x
     → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) f x (X x)) • σ x
-  do_not_read : ∀ (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M},
-    ¬ MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x → toFun X σ x = 0
+  smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜),
+    toFun X (a • σ) = a • toFun X σ
 
 namespace CovariantDerivative
 
@@ -302,33 +302,6 @@ lemma _root_.FiberBundle.trivializationAt.baseSet_mem_nhds {B : Type*} (F : Type
     (E : B → Type*) [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)]
     [FiberBundle F E] (b : B) : (trivializationAt F E b |>.baseSet) ∈ 𝓝 b :=
   (trivializationAt F E b).open_baseSet.eventually_mem (FiberBundle.mem_baseSet_trivializationAt' b)
-
-
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
-     [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-lemma smul_const_σ (cov : CovariantDerivative I F V)
-    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
-    cov X (a • σ) = a • cov X σ := by
-  ext x
-  by_cases hσ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
-  · simpa using cov.leibniz X σ (fun _ ↦ a) x hσ mdifferentiable_const.mdifferentiableAt
-  have hσ₂ : cov X (a • σ) x = 0 := by
-    by_cases ha: a = 0
-    · simp [ha]
-    refine cov.do_not_read X ?_
-    contrapose! hσ
-    have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a⁻¹ • a • σ x)) x := by
-      rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace] at *
-      refine ⟨mdifferentiableAt_id, ?_⟩
-      have : ∀ᶠ x' in 𝓝 x, ((trivializationAt F V x) ⟨x', a⁻¹ • a • σ x'⟩).2 =
-                           a⁻¹ • ((trivializationAt F V x) ⟨x', a • σ x'⟩).2 := by
-        filter_upwards [FiberBundle.trivializationAt.baseSet_mem_nhds F V x] with x' hx'
-        exact (trivializationAt F V x).linear 𝕜 hx' |>.map_smul a⁻¹ (a • σ x')
-      exact MDifferentiableAt.const_smul hσ.2 a⁻¹ |>.congr_of_eventuallyEq this
-    apply this.congr_of_eventuallyEq
-    filter_upwards with x
-    simp [ha]
-  simp [cov.do_not_read X hσ, hσ₂]
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
   [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
@@ -388,10 +361,12 @@ def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
   addσ X σ σ' x hσ hσ' := by
     simp [cov.addσ X σ σ' x hσ hσ', cov'.addσ X σ σ' x hσ hσ']
     module
+  smul_const_σ X {σ x} /-hσ-/ := by
+    simp [cov.smul_const_σ, cov'.smul_const_σ]
+    module
   leibniz X σ f x hσ hf := by
     simp [cov.leibniz X σ f x hσ hf, cov'.leibniz X σ f x hσ hf]
     module
-  do_not_read X {σ} {x} hσ := by simp [cov.do_not_read X hσ, cov'.do_not_read X hσ]
 
 section real
 
@@ -417,8 +392,6 @@ lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M]
     {X X' : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
     (hσσ' : ∀ x ∈ s, X x = X' x) :
     cov X σ x = cov X' σ x := by
-  by_cases hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x; swap
-  · simp [cov.do_not_read X hσ, cov.do_not_read X' hσ]
   -- Choose a smooth bump function ψ with support around `x` contained in `s`
   obtain ⟨ψ, _, hψ⟩ := (SmoothBumpFunction.nhds_basis_support (I := I) hs).mem_iff.1 hs
   -- Observe that `ψ • X = ψ • X'` as dependent functions.
@@ -447,8 +420,6 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
   let a := fun i ↦ b.localFrame_repr e i X
   have : x ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.localFrame_repr_spec this X
-  -- have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
-  --   refine ⟨_, aux, by simp⟩
   have (i : Fin n) : a i x = 0 := b.localFrame_repr_apply_zero_at hX i
   calc cov X σ x
     _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
@@ -608,6 +579,16 @@ theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (
 
 attribute [simp] mdifferentiableAt_iff_differentiableAt
 
+-- XXX: make a better version of fderiv_const_smul'', with field coefficients instead!
+theorem _root_.fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    (σ : (x : E) → Trivial E E' x) (a : 𝕜) (x : E) :
+    fderiv 𝕜 (a • σ) x = a • fderiv 𝕜 σ x := by
+  obtain (rfl | ha) := eq_or_ne a 0
+  · simp
+  · have : Invertible a := invertibleOfNonzero ha
+    exact fderiv_const_smul'' ..
+
 @[simps]
 noncomputable def CovariantDerivative.trivial : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
@@ -618,31 +599,30 @@ noncomputable def CovariantDerivative.trivial : CovariantDerivative 𝓘(𝕜, E
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
     rw [fderiv_add hσ hσ']
     rfl
+  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
   leibniz X σ f x hσ hf := by
     have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
       fderiv_smul (by simp_all) (by simp_all)
     simp [this, bar]
     rfl
-  do_not_read X σ x hσ := by
-    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
-    simp [fderiv_zero_of_not_differentiableAt hσ]
 
 open Classical in
 @[simps]
 noncomputable def CovariantDerivative.of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
     CovariantDerivative 𝓘(𝕜, E) E' (Bundle.Trivial E E') where
-  toFun X σ := fun x ↦ if DifferentiableAt 𝕜 σ x then fderiv 𝕜 σ x (X x) + A x (X x) (σ x) else 0
+  toFun X σ := fun x ↦ fderiv 𝕜 σ x (X x) + A x (X x) (σ x)
   addX X X' σ := by
     ext x
     by_cases h : DifferentiableAt 𝕜 σ x
     · simp [h, map_add]; abel
-    · simp [h]
+    · simp [fderiv_zero_of_not_differentiableAt h]
   smulX X σ c' := by ext; simp
   addσ X σ σ' e hσ hσ' := by
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
     rw [fderiv_add hσ hσ']
     simp [hσ, hσ']
     abel
+  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
   leibniz X σ f x hσ hf := by
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
     rw [mdifferentiableAt_iff_differentiableAt] at hf
@@ -651,7 +631,5 @@ noncomputable def CovariantDerivative.of_endomorphism (A : E → E →L[𝕜] E'
       fderiv_smul (by simp_all) (by simp_all)
     simp [this, bar, hσ, h]
     module
-  do_not_read X σ x hσ := by
-    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
-    simp [hσ]
+
 end
