@@ -53,7 +53,7 @@ end Semifield
 section Rat
 
 theorem toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    (∑ a ∈ s, f a).toNNRat = ∑ a ∈ s,(f a).toNNRat := by
+    (∑ a ∈ s, f a).toNNRat = ∑ a ∈ s, (f a).toNNRat := by
   rw [← coe_inj, coe_sum, Rat.coe_toNNRat _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
 
