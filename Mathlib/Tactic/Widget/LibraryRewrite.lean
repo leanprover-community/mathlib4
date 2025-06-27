@@ -10,10 +10,10 @@ import ProofWidgets.Component.FilterDetails
 /-!
 # Point & click library rewriting
 
-This file defines `rw??`, an interactive tactic that suggests rewrites for any expression selected
-by the user.
+This file defines `rw?`, an interactive tactic that suggests rewrites
+for any expression selected by the user.
 
-`rw??` uses a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
+`rw?` uses a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
 It excludes lemmas that are automatically generated.
 Each lemma is then checked one by one to see whether it is applicable.
 For each lemma that works, the corresponding rewrite tactic is constructed
@@ -36,7 +36,7 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 ## TODO
 
-Ways to improve `rw??`:
+Ways to improve `rw?`:
 - Improve the logic around `nth_rw` and occurrences,
   and about when to pass explicit arguments to the rewrite lemma.
   For example, we could only pass explicit arguments if that avoids using `nth_rw`.
@@ -48,7 +48,7 @@ Ways to improve `rw??`:
 - We could look for rewrites of partial applications of the selected expression.
   For example, when clicking on `(f + g) x`, there should still be an `add_comm` suggestion.
 
-Ways to extend `rw??`:
+Ways to extend `rw?`:
 - Support generalized rewriting (`grw`)
 - Integrate rewrite search with the `calc?` widget so that a `calc` block can be created using
   just point & click.
@@ -207,19 +207,19 @@ structure Rewrite where
 
 /-- If `thm` can be used to rewrite `e`, return the rewrite. -/
 def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
-  withTraceNodeBefore `rw?? (return m!
+  withTraceNodeBefore `rw? (return m!
     "rewriting {e} by {if symm then "← " else ""}{thm}") do
   let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := eqOrIff? eqn | return none
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
-  let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
+  let unifies ← withTraceNodeBefore `rw? (return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
   unless unifies do return none
   -- just like in `kabstract`, we compare the `HeadIndex` and number of arguments
   let lhs ← instantiateMVars lhs
   if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
     return none
-  synthAppInstances `rw?? default mvars binderInfos false false
+  synthAppInstances `rw? default mvars binderInfos false false
   let mut extraGoals := #[]
   for mvar in mvars, bi in binderInfos do
     unless ← mvar.mvarId!.isAssigned do
@@ -232,7 +232,7 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   return some { symm, proof, replacement, stringLength, extraGoals, makesNewMVars }
 
 initialize
-  registerTraceClass `rw??
+  registerTraceClass `rw?
 
 /-- Try to rewrite `e` with each of the rewrite lemmas, and sort the resulting rewrites. -/
 def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
@@ -327,11 +327,11 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
     if makesNewMVars rw then continue
     -- exclude a reflexive rewrite
     if ← isExplicitEq (replacement rw) e then
-      trace[rw??] "discarded reflexive rewrite {replacement rw}"
+      trace[rw?] "discarded reflexive rewrite {replacement rw}"
       continue
     -- exclude two identical looking rewrites
     if ← filtered.anyM (isExplicitEq (replacement rw) <| replacement ·) then
-      trace[rw??] "discarded duplicate rewrite {replacement rw}"
+      trace[rw?] "discarded duplicate rewrite {replacement rw}"
       continue
     filtered := filtered.push rw
   return filtered
@@ -480,12 +480,12 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
-    return .text "rw??: Please shift-click an expression."
+    return .text "rw?: Please shift-click an expression."
   if loc.loc matches .hypValue .. then
-    return .text "rw??: cannot rewrite in the value of a let variable."
-  let some goal := props.goals[0]? | return .text "rw??: there is no goal to solve!"
+    return .text "rw?: cannot rewrite in the value of a let variable."
+  let some goal := props.goals[0]? | return .text "rw?: there is no goal to solve!"
   if loc.mvarId != goal.mvarId then
-    return .text "rw??: the selected expression should be in the main goal."
+    return .text "rw?: the selected expression should be in the main goal."
   goal.ctx.val.runMetaM {} do
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
@@ -493,9 +493,9 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
 
       let rootExpr ← loc.rootExpr
       let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
-        return .text "rw??: expressions with bound variables are not yet supported"
+        return .text "rw?: expressions with bound variables are not yet supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
-        return .text <| "rw??: the selected expression cannot be rewritten, \
+        return .text <| "rw?: the selected expression cannot be rewritten, \
           because the motive is not type correct. \
           This usually occurs when trying to rewrite a term that appears as a dependent argument."
       let location ← loc.fvarId?.mapM FVarId.getUserName
@@ -511,13 +511,13 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
         filtered={filtered}
         initiallyFiltered={true} />
 
-/-- The component called by the `rw??` tactic -/
+/-- The component called by the `rw?` tactic -/
 @[widget_module]
 def LibraryRewriteComponent : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
-`rw??` is an interactive tactic that suggests rewrites for any expression selected by the user.
+`rw?` is an interactive tactic that suggests rewrites for any expression selected by the user.
 To use it, shift-click an expression in the goal or a hypothesis that you want to rewrite.
 Clicking on one of the rewrite suggestions will paste the relevant rewrite tactic into the editor.
 
@@ -526,7 +526,7 @@ Rewrites that don't change the goal and rewrites that create the same goal as an
 are filtered out, as well as rewrites that have new metavariables in the replacement expression.
 To see all suggestions, click on the filter button (▼) in the top right.
 -/
-elab stx:"rw??" : tactic => do
+elab stx:"rw?" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
@@ -551,13 +551,13 @@ def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option
   let head ← pattern (← getConstInfo name).type rw.symm (addMessageContext m! "{·}")
   return some <| "Pattern " ++ head ++ "\n" ++ rewrites
 
-/-- `#rw?? e` gives all possible rewrites of `e`. It is a testing command for the `rw??` tactic -/
-syntax (name := rw??Command) "#rw??" ("all")? term : command
+/-- `#rw? e` gives all possible rewrites of `e`. It is a testing command for the `rw?` tactic -/
+syntax (name := rw?Command) "#rw?" ("all")? term : command
 
 open Elab
-/-- Elaborate a `#rw??` command. -/
-@[command_elab rw??Command]
-def elabrw??Command : Command.CommandElab := fun stx =>
+/-- Elaborate a `#rw?` command. -/
+@[command_elab rw?Command]
+def elabrw?Command : Command.CommandElab := fun stx =>
   withoutModifyingEnv <| Command.runTermElabM fun _ => do
   let e ← Term.elabTerm stx[2] none
   Term.synthesizeSyntheticMVarsNoPostponing
