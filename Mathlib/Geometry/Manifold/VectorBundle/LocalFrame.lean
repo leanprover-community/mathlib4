@@ -206,25 +206,37 @@ lemma contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
 
   -- step 2: `s` read in trivialization `e` is `C^k`
   have h₁ : ContMDiffAt I 𝓘(𝕜, F) k (fun x ↦ (e (s x)).2) x := by
-    -- XXX: make e and s implicit!
     rw [contMDiffAt_section_of_mem_baseSet _ _ hxe] at hs
     exact hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
-  have : IsLinearMap 𝕜 bas := sorry
-  have hbas : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k bas (e (s x)).2 := by
-    -- exact? should do it now
-    sorry
+  let basl : F →ₗ[𝕜] 𝕜 := {
+    toFun := bas
+    map_add' m m' := by simp [bas]
+    map_smul' m x := by simp [bas]
+  }
+  let basL : F →L[𝕜] 𝕜 := {
+    toLinearMap := basl
+    cont := sorry -- F is finite-dimensional...
+  }
+  have hbas : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k basL (e (s x)).2 :=
+    contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
   exact hbas.comp x h₁
 
--- XXX: upgrade the above proof to contMDiffOn, and deduce contMDiffAt from it?
-
-lemma contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
+variable {I} in
+lemma contMDiffOn_localFrame_repr (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n) {t : Set M}
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t :=
   fun _ hx ↦ (b.contMDiffAt_localFrame_repr I (ht' hx) hk
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
+
+variable {I} in
+lemma contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
+    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet) (i : ι) :
+    ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet :=
+  contMDiffOn_localFrame_repr b hk e.open_baseSet (subset_refl _) hs _
 
 end Basis
