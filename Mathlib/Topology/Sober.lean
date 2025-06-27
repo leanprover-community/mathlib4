@@ -243,10 +243,6 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
       exact closure_mono (singleton_subset_iff.mpr hx)
     · exact isPreirreducible_iff_forall_subset_closure_singleton.mp h.isPreirreducible x hx
 
-/-- Any Hausdorff space is a quasi-sober space because any irreducible set is a singleton. -/
-instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α :=
-  inferInstance
-
 end Sober
 
 section genericPoints
