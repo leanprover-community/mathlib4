@@ -127,10 +127,9 @@ theorem EuclideanSpace.measurePreserving_measurableOfLp :
   suffices volume = map (EuclideanSpace.measurableOfLp ι).symm volume by
     convert ((EuclideanSpace.measurableOfLp ι).symm.measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
-    coe_measurableOfLp_symm, ← PiLp.ofLpContinuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
+    coe_measurableOfLp_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 
-set_option linter.deprecated false in
 @[deprecated EuclideanSpace.measurePreserving_measurableOfLp (since := "2024-04-27")]
 theorem EuclideanSpace.volume_preserving_measurableEquiv :
     MeasurePreserving (EuclideanSpace.measurableEquiv ι) :=
@@ -141,7 +140,6 @@ equivalence. -/
 theorem PiLp.measurePreserving_ofLp : MeasurePreserving (@WithLp.ofLp 2 (ι → ℝ)) :=
   EuclideanSpace.measurePreserving_measurableOfLp ι
 
-set_option linter.deprecated false in
 @[deprecated PiLp.measurePreserving_ofLp (since := "2024-04-27")]
 theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
   EuclideanSpace.volume_preserving_measurableEquiv ι
@@ -151,7 +149,6 @@ theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι →
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@WithLp.toLp 2 (ι → ℝ)) :=
   (EuclideanSpace.measurePreserving_measurableOfLp ι).symm
 
-set_option linter.deprecated false in
 @[deprecated PiLp.volume_preserving_toLp (since := "2024-04-27")]
 theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm

@@ -32,7 +32,6 @@ lemma norm_ofLp_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
   · linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +
       congrArg (· ^ 2) (cos_angle_mul_norm_mul_norm a b)
 
-set_option linter.deprecated false in
 @[deprecated norm_ofLp_crossProduct (since := "2025-05-04")]
 theorem norm_withLpEquiv_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
     ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm (WithLp.equiv _ _ a ×₃ WithLp.equiv _ _ b)‖ =

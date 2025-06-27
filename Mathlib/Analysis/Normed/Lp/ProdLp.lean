@@ -108,22 +108,18 @@ variable {p α β}
 @[simp] lemma ofLp_fst (x : WithLp p (α × β)) : (ofLp x).fst = x.fst := rfl
 @[simp] lemma ofLp_snd (x : WithLp p (α × β)) : (ofLp x).snd = x.snd := rfl
 
-set_option linter.deprecated false in
 @[deprecated ofLp_fst (since := "2024-04-27")]
 theorem equiv_fst (x : WithLp p (α × β)) : (WithLp.equiv p (α × β) x).fst = x.fst :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated toLp_fst (since := "2024-04-27")]
 theorem equiv_snd (x : WithLp p (α × β)) : (WithLp.equiv p (α × β) x).snd = x.snd :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated toLp_snd (since := "2024-04-27")]
 theorem equiv_symm_fst (x : α × β) : ((WithLp.equiv p (α × β)).symm x).fst = x.fst :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated ofLp_snd (since := "2024-04-27")]
 theorem equiv_symm_snd (x : α × β) : ((WithLp.equiv p (α × β)).symm x).snd = x.snd :=
   rfl
@@ -466,7 +462,6 @@ instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
 @[continuity]
 lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) := continuous_id
 
-set_option linter.deprecated false in
 @[deprecated prod_continuous_toLp (since := "2024-04-27")]
 theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
   prod_continuous_toLp _ _ _
@@ -474,7 +469,6 @@ theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm
 @[continuity]
 lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_id
 
-set_option linter.deprecated false in
 @[deprecated prod_continuous_ofLp (since := "2024-04-27")]
 theorem prod_continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
   prod_continuous_ofLp _ _ _
@@ -501,7 +495,6 @@ instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
 lemma prod_uniformContinuous_toLp : UniformContinuous (@toLp p (α × β)) :=
   uniformContinuous_id
 
-set_option linter.deprecated false in
 @[deprecated prod_uniformContinuous_toLp (since := "2024-04-27")]
 theorem prod_uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (α × β)).symm :=
   prod_uniformContinuous_toLp _ _ _
@@ -509,7 +502,6 @@ theorem prod_uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (�
 lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
   uniformContinuous_id
 
-set_option linter.deprecated false in
 @[deprecated prod_uniformContinuous_ofLp (since := "2024-04-27")]
 theorem prod_uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
   prod_uniformContinuous_ofLp _ _ _
@@ -530,16 +522,12 @@ variable [TopologicalSpace α] [TopologicalSpace β]
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable [Module 𝕜 α] [Module 𝕜 β]
 
-/-- `ofLp` as a continuous linear equivalence. -/
+/-- `WithLp.equiv` as a continuous linear equivalence. -/
 -- This is not specific to products and should be generalised!
-def ofLpProdContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
-  toLinearEquiv := ofLpLinearEquiv _ _ _
+def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
+  toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
-
-/-- `WithLp.equiv` as a continuous linear equivalence. -/
-@[deprecated ofLpProdContinuousLinearEquiv (since := "2024-04-27")]
-protected alias prodContinuousLinearEquiv := ofLpProdContinuousLinearEquiv
 
 end ContinuousLinearEquiv
 
@@ -615,7 +603,6 @@ lemma prod_lipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (@ofLp p (α × β)) :=
   prod_lipschitzWith_ofLp_aux p α β
 
-set_option linter.deprecated false in
 @[deprecated prod_lipschitzWith_ofLp (since := "2024-04-27")]
 theorem prod_lipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (WithLp.equiv p (α × β)) :=
@@ -625,7 +612,6 @@ lemma prod_antilipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (α × β)) :=
   prod_antilipschitzWith_ofLp_aux p α β
 
-set_option linter.deprecated false in
 @[deprecated prod_antilipschitzWith_ofLp (since := "2024-04-27")]
 theorem prod_antilipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (α × β)) :=
@@ -639,7 +625,6 @@ lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
       simpa only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero, ENNReal.coe_one,
         one_mul] using prod_antilipschitzWith_ofLp ∞ α β x y)
 
-set_option linter.deprecated false in
 @[deprecated prod_isometry_ofLp_infty (since := "2024-04-27")]
 theorem prod_infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     Isometry (WithLp.equiv ∞ (α × β)) :=
@@ -729,7 +714,6 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
 @[simp] lemma prod_nnnorm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖₊ = ‖f‖₊ := by
   rw [prod_nnnorm_eq_sup, Prod.nnnorm_def, ofLp_fst, ofLp_snd]
 
-set_option linter.deprecated false in
 @[deprecated prod_nnnorm_ofLp (since := "2024-04-27")]
 theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ :=
   prod_nnnorm_ofLp _
@@ -737,7 +721,6 @@ theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f�
 @[simp] lemma prod_nnnorm_toLp (f : α × β) : ‖toLp ⊤ f‖₊ = ‖f‖₊ :=
   (prod_nnnorm_ofLp _).symm
 
-set_option linter.deprecated false in
 @[deprecated prod_nnnorm_toLp (since := "2024-04-27")]
 theorem prod_nnnorm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
   prod_nnnorm_toLp _
@@ -745,7 +728,6 @@ theorem prod_nnnorm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f�
 @[simp] lemma prod_norm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖ = ‖f‖ :=
   congr_arg NNReal.toReal <| prod_nnnorm_ofLp f
 
-set_option linter.deprecated false in
 @[deprecated prod_norm_ofLp (since := "2024-04-27")]
 theorem prod_norm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ :=
   prod_norm_ofLp _
@@ -753,7 +735,6 @@ theorem prod_norm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖
 @[simp] lemma prod_norm_toLp (f : α × β) : ‖toLp ⊤ f‖ = ‖f‖ :=
   (prod_norm_ofLp _).symm
 
-set_option linter.deprecated false in
 @[deprecated prod_norm_toLp (since := "2024-04-27")]
 theorem prod_norm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ :=
   prod_norm_toLp _
@@ -834,7 +815,6 @@ section Single
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
-set_option linter.deprecated false in
 @[deprecated nnnorm_toLp_fst (since := "2024-04-27")]
 theorem nnnorm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x, 0)‖₊ = ‖x‖₊ :=
   nnnorm_toLp_fst ..
@@ -847,7 +827,6 @@ theorem nnnorm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x,
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
-set_option linter.deprecated false in
 @[deprecated nnnorm_toLp_snd (since := "2024-04-27")]
 lemma nnnorm_equiv_symm_snd (y : β) : ‖(WithLp.equiv p (α × β)).symm (0, y)‖₊ = ‖y‖₊ :=
   nnnorm_toLp_snd ..
@@ -856,7 +835,6 @@ lemma nnnorm_equiv_symm_snd (y : β) : ‖(WithLp.equiv p (α × β)).symm (0, y
 lemma norm_toLp_fst (x : α) : ‖toLp p (x, (0 : β))‖ = ‖x‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_fst p α β x
 
-set_option linter.deprecated false in
 @[deprecated norm_toLp_fst (since := "2024-04-27")]
 theorem norm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x, 0)‖ = ‖x‖ :=
   norm_toLp_fst _ _ _ _
@@ -865,7 +843,6 @@ theorem norm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x, 0
 lemma norm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖ = ‖y‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_snd p α β y
 
-set_option linter.deprecated false in
 @[deprecated norm_toLp_snd (since := "2024-04-27")]
 theorem norm_equiv_symm_snd (y : β) : ‖(WithLp.equiv p (α × β)).symm (0, y)‖ = ‖y‖ :=
   norm_toLp_snd _ _ _ _
@@ -876,7 +853,6 @@ lemma nndist_toLp_fst (x₁ x₂ : α) :
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnnorm_toLp_fst]
 
-set_option linter.deprecated false in
 @[deprecated nndist_toLp_fst (since := "2024-04-27")]
 theorem nndist_equiv_symm_fst (x₁ x₂ : α) :
     nndist ((WithLp.equiv p (α × β)).symm (x₁, 0)) ((WithLp.equiv p (α × β)).symm (x₂, 0)) =
@@ -889,7 +865,6 @@ lemma nndist_toLp_snd (y₁ y₂ : β) :
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnnorm_toLp_snd]
 
-set_option linter.deprecated false in
 @[deprecated nndist_toLp_snd (since := "2024-04-27")]
 theorem nndist_equiv_symm_snd (y₁ y₂ : β) :
     nndist ((WithLp.equiv p (α × β)).symm (0, y₁)) ((WithLp.equiv p (α × β)).symm (0, y₂)) =
@@ -900,7 +875,6 @@ theorem nndist_equiv_symm_snd (y₁ y₂ : β) :
 lemma dist_toLp_fst (x₁ x₂ : α) : dist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = dist x₁ x₂ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_toLp_fst p α β x₁ x₂
 
-set_option linter.deprecated false in
 @[deprecated dist_toLp_fst (since := "2024-04-27")]
 theorem dist_equiv_symm_fst (x₁ x₂ : α) :
     dist ((WithLp.equiv p (α × β)).symm (x₁, 0)) ((WithLp.equiv p (α × β)).symm (x₂, 0)) =
@@ -912,7 +886,6 @@ lemma dist_toLp_snd (y₁ y₂ : β) :
     dist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = dist y₁ y₂ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_toLp_snd p α β y₁ y₂
 
-set_option linter.deprecated false in
 @[deprecated dist_toLp_snd (since := "2024-04-27")]
 theorem dist_equiv_symm_snd (y₁ y₂ : β) :
     dist ((WithLp.equiv p (α × β)).symm (0, y₁)) ((WithLp.equiv p (α × β)).symm (0, y₂)) =
@@ -923,7 +896,6 @@ theorem dist_equiv_symm_snd (y₁ y₂ : β) :
 lemma edist_toLp_fst (x₁ x₂ : α) : edist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = edist x₁ x₂ := by
   simp only [edist_nndist, nndist_toLp_fst p α β x₁ x₂]
 
-set_option linter.deprecated false in
 @[deprecated edist_toLp_fst (since := "2024-04-27")]
 theorem edist_equiv_symm_fst (x₁ x₂ : α) :
     edist ((WithLp.equiv p (α × β)).symm (x₁, 0)) ((WithLp.equiv p (α × β)).symm (x₂, 0)) =
@@ -935,7 +907,6 @@ lemma edist_toLp_snd (y₁ y₂ : β) :
     edist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = edist y₁ y₂ := by
   simp only [edist_nndist, nndist_toLp_snd p α β y₁ y₂]
 
-set_option linter.deprecated false in
 @[deprecated edist_toLp_snd (since := "2024-04-27")]
 theorem edist_equiv_symm_snd (y₁ y₂ : β) :
     edist ((WithLp.equiv p (α × β)).symm (0, y₁)) ((WithLp.equiv p (α × β)).symm (0, y₂)) =
@@ -965,13 +936,11 @@ variable {𝕜 p α β}
 
 /-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
 equivalence. -/
-def prodOfLpₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
-  __ := ofLp
+def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
+  __ := WithLp.equiv p _
   map_add' _f _g := rfl
   map_smul' _c _f := rfl
   norm_map' := prod_norm_toLp
-
-@[deprecated (since := "2024-04-27")] alias prodEquivₗᵢ := prodOfLpₗᵢ
 
 end IsBoundedSMul
 

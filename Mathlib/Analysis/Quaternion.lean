@@ -153,7 +153,6 @@ lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = 
   simp_rw [RCLike.inner_apply, starRingEnd_apply, star_trivial, ← sq]
   rfl
 
-set_option linter.deprecated false in
 @[deprecated norm_toLp_equivTuple (since := "2024-04-27")]
 theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
     ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
@@ -166,7 +165,7 @@ theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
 @[simps apply symm_apply]
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (0 : ℝ) (-1 : ℝ)).trans
-      (WithLp.ofLpLinearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
+      (WithLp.WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
     toFun := fun a => !₂[a.1, a.2, a.3, a.4]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_toLp_equivTuple }

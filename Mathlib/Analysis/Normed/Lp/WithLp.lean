@@ -52,7 +52,7 @@ variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
 namespace WithLp
 
 variable {V} in
-/-- The canonical inclusion of `V` into `WithLp p V`.  -/
+/-- The canonical inclusion of `V` into `WithLp p V`. -/
 def toLp : V → WithLp p V := id
 
 variable {p V} in
@@ -194,15 +194,13 @@ end equiv
 
 variable (K V)
 
-/-- `WithLp.ofLp` as a linear equivalence. -/
+/-- `WithLp.equiv` as a linear equivalence. -/
 @[simps -fullyApplied]
-def ofLpLinearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V  where
-  __ := LinearEquiv.refl _ _
+protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V  where
+  __ := WithLp.equiv _ _
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   toFun := WithLp.ofLp
   invFun := WithLp.toLp p
-
-/-- `WithLp.equiv` as a linear equivalence. -/
-@[deprecated WithLp.ofLpLinearEquiv (since := "2025-06-08")]
-protected alias linearEquiv := ofLpLinearEquiv
 
 end WithLp

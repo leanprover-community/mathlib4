@@ -337,7 +337,6 @@ def measurableOfLp : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
 lemma coe_measurableOfLp : ⇑(EuclideanSpace.measurableOfLp ι) = WithLp.ofLp := rfl
 lemma coe_measurableOfLp_symm : ⇑(EuclideanSpace.measurableOfLp ι).symm = WithLp.toLp _ := rfl
 
-set_option linter.deprecated false in
 @[deprecated coe_measurableOfLp (since := "2024-04-27")]
 theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 

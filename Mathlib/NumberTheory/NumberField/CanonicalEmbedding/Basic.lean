@@ -839,7 +839,7 @@ variable [NumberField K]
 open Classical in
 /-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
 def toMixed : euclidean.mixedSpace K ≃L[ℝ] mixedSpace K :=
-  (WithLp.ofLpLinearEquiv _ _ _).toContinuousLinearEquiv
+  (WithLp.WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
 
 instance : Nontrivial (euclidean.mixedSpace K) := (toMixed K).toEquiv.nontrivial
 
