@@ -40,8 +40,6 @@ structure ContMDiffSection where
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
-@[deprecated (since := "2024-11-21")] alias SmoothSection := ContMDiffSection
-
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
 namespace ContMDiffSection
@@ -63,8 +61,6 @@ theorem coeFn_mk (s : ∀ x, V x)
 protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff_toFun
-
-@[deprecated (since := "2024-11-21")] alias smooth := ContMDiffSection.contMDiff
 
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
   DFunLike.ext' h

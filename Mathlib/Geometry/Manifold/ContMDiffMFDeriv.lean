@@ -335,8 +335,6 @@ theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n
   convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 
-@[deprecated (since := "2024-11-21")] alias Smooth.tangentMap := ContMDiff.contMDiff_tangentMap
-
 end tangentMap
 
 namespace TangentBundle
