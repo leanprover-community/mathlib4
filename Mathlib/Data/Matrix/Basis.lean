@@ -15,7 +15,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n o : Type*}
-variable {R α β : Type*}
+variable {R S α β γ : Type*}
 
 namespace Matrix
 
@@ -190,6 +190,36 @@ theorem ext_linearMap
     f = g :=
   LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j =>
     congrArg LinearMap.toAddMonoidHom <| h i j
+
+section liftLinear
+variable {R} (S)
+variable [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α] [AddCommMonoid β]
+variable [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
+
+/-- Families of linear maps acting on each element are equivalent to linear maps from a matrix.
+
+This can be thought of as the matrix version of `LinearMap.lsum`. -/
+def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R] β) :=
+  LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
+    LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
+
+@[simp]
+theorem liftLinear_piSingle (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
+    liftLinear S f (Matrix.single i j a) = f i j a := by
+  dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
+  simp_rw [of_symm_single, LinearMap.lsum_piSingle]
+
+@[simp]
+theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
+    liftLinear S f ∘ₗ Matrix.singleLinearMap _ i j = f i j :=
+  LinearMap.ext <| liftLinear_piSingle S f i j
+
+@[simp]
+theorem liftLinear_singleLinearMap [Module S α] [SMulCommClass R S α] :
+    liftLinear S (Matrix.singleLinearMap R) = .id (M := Matrix m n α) :=
+  ext_linearMap _ <| liftLinear_comp_singleLinearMap _ _
+
+end liftLinear
 
 end ext
 
