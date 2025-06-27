@@ -85,7 +85,6 @@ jobs:
           # For PRs and pushes to this repository, we will use `nightly-testing` instead.
           ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing' || 'master' }}
           path: master-branch
-          repository: leanprover-community/mathlib4
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
