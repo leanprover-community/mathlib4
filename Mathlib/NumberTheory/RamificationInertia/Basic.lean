@@ -7,6 +7,8 @@ import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.Ideal.Int
 
 /-!
 # Ramification index and inertia degree
@@ -939,5 +941,54 @@ theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.Is
 @[deprecated (since := "2024-12-09")] alias inertiaDeg_tower := inertiaDeg_algebra_tower
 
 end tower
+
+theorem absNorm_algebraMap (K L : Type*) [Field K] [Field L] [IsDedekindDomain R] [Algebra R K]
+    [IsFractionRing R K] [Module.Free ℤ R] [Module.Finite ℤ R] [IsDedekindDomain S] [Algebra S L]
+    [IsFractionRing S L] [Module.Free ℤ S] [Module.Finite ℤ S] [Algebra R S] [Algebra K L]
+    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [NoZeroSMulDivisors R S]
+    [IsIntegralClosure S R L] [Algebra.IsSeparable K L] [FiniteDimensional K L] (I : Ideal R) :
+    absNorm (map (algebraMap R S) I) = absNorm I ^ Module.finrank K L := by
+  classical
+  have : Module.Finite R S := IsIntegralClosure.finite R K L S
+  by_cases hI : I = ⊥
+  · simp [hI, zero_pow, Module.finrank_pos]
+  rw [← prod_normalizedFactors_eq_self hI]
+  refine Multiset.prod_induction
+    (fun I ↦  absNorm (map (algebraMap R S) I) = absNorm I ^ Module.finrank K L) _ ?_ ?_ ?_
+  · intro I J hI hJ
+    rw [map_mul, ← mapHom_apply, map_mul, map_mul, mapHom_apply, mapHom_apply, hI, hJ, mul_pow]
+  · simpa using Ideal.map_top _
+  · intro P hP
+    have hP' : P ≠ ⊥ := by
+      contrapose! hP
+      simpa [hP] using zero_notMem_normalizedFactors _
+    rw [Ideal.mem_normalizedFactors_iff hI] at hP
+    have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP' hP.1
+    let p := absNorm (under ℤ P)
+    have hp : Prime (p : ℤ) := Int.prime_absNorm_under _ hP.1
+      (Int.absNorm_under_ne_zero (by rwa [ne_eq, Ideal.absNorm_eq_zero_iff]))
+    have : Fact (Nat.Prime p) := ⟨Nat.prime_iff_prime_int.mpr hp⟩
+    have : (span {(p : ℤ)}).IsMaximal := Int.ideal_span_isMaximal_of_prime p
+    have : P.LiesOver (span {(p : ℤ)}) := by simp [liesOver_iff, p]
+    nth_rewrite 1 [← prod_normalizedFactors_eq_self (map_ne_bot_of_ne_bot hP')]
+    simp only [Finset.prod_multiset_count, ← mapHom_apply, map_prod, map_pow]
+    have hQ₁ {Q} (hQ : Q∈ (normalizedFactors ((map (algebraMap R S)) P)).toFinset) :
+        Ideal.absNorm Q = Ideal.absNorm P ^ P.inertiaDeg Q := by
+      rw [Multiset.mem_toFinset, ← mem_primesOver_iff_mem_normalizedFactors _ hP'] at hQ
+      have : Q.LiesOver P := hQ.2
+      have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
+      rw [absNorm_eq_pow_inertiaDeg P hp, absNorm_eq_pow_inertiaDeg Q hp,
+        inertiaDeg_algebra_tower _ P, pow_mul]
+    have hQ₂ {Q} (hQ : Q∈ (normalizedFactors ((map (algebraMap R S)) P)).toFinset) :
+        Multiset.count Q (normalizedFactors ((map (algebraMap R S)) P)) =
+          ramificationIdx (algebraMap R S) P Q := by
+      rw [IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count (map_ne_bot_of_ne_bot hP')]
+      · rw [Multiset.mem_toFinset, ← mem_primesOver_iff_mem_normalizedFactors _ hP'] at hQ
+        exact hQ.1
+      · contrapose! hQ
+        simpa [hQ] using zero_notMem_normalizedFactors _
+    simp_rw +contextual [mapHom_apply, hQ₁, hQ₂, ← pow_mul, mul_comm (P.inertiaDeg _)]
+    rw [Finset.prod_pow_eq_pow_sum, ← factors_eq_normalizedFactors,
+      sum_ramification_inertia S P K L hP']
 
 end Ideal
