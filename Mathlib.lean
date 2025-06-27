@@ -1090,6 +1090,7 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+import Mathlib.Algebra.SkewPolynomial.Basic
 import Mathlib.Algebra.Small.Group
 import Mathlib.Algebra.Small.Module
 import Mathlib.Algebra.Small.Ring
