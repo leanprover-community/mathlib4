@@ -65,8 +65,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
     cases f
     cases g
     simp only [ElementaryEmbedding.mk.injEq]
-    ext x
-    exact funext_iff.1 h x
+    assumption
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)

@@ -373,10 +373,10 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
       = (v, 0) := by
     rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prodMk]
     · simp
-    · exact differentiableAt_id'
+    · exact differentiableAt_fun_id
     · exact differentiableAt_const _
     · exact ModelWithCorners.uniqueDiffWithinAt_image I
-    · exact differentiableAt_id'.prodMk (differentiableAt_const _)
+    · exact differentiableAt_id.prodMk (differentiableAt_const _)
   simp +unfoldPartialApp only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
     tangentBundleCore, Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
