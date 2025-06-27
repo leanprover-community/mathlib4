@@ -296,9 +296,9 @@ theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s
 
 end FixingSubgroupConj
 
-variable {α} (s t : Set α)
+variable {s t : Set α}
 
-variable {M s t} in
+variable {M} in
 @[to_additive]
 lemma mem_fixingSubgroup_union_iff {g : M} :
     g ∈ fixingSubgroup M (s ∪ t) ↔ g ∈ fixingSubgroup M s ∧ g ∈ fixingSubgroup M t := by
@@ -319,6 +319,7 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
   map_one' := by simp
   map_mul' _ _ := by simp [← Subtype.coe_inj]
 
+variable (s t) in
 /-- The identity between the iterated `SubMulAction`
   of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
   of the union, as an equivariant map. -/
@@ -368,8 +369,6 @@ theorem map_ofFixingSubgroupUnion_bijective :
     · exact ha h
     · apply ha'
       simpa only [Set.mem_preimage]
-
-variable {s t}
 
 /-- The equivariant map on `SubMulAction.ofFixingSubgroup` given a set inclusion. -/
 @[to_additive
