@@ -175,7 +175,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
     simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
       coe_castSucc, submatrix_apply, cons_succ, Function.comp_apply, rev_succ,
       Pi.smul_apply, smul_eq_mul, W, r, rev_castSucc]
-    field_simp
+    simp only [val_rev, of_apply, cons_succ, r, W]
     ring
   /- The first row of `W` is `[(w 0)^n, 0, ..., 0]` - take a cofactor expansion along this row,
   and apply induction. -/

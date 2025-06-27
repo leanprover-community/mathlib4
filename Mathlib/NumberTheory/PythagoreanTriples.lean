@@ -7,6 +7,7 @@ import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp2
 
 /-!
 # Pythagorean Triples
@@ -257,17 +258,14 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     K ≃ { p : K × K // p.1 ^ 2 + p.2 ^ 2 = 1 ∧ p.2 ≠ -1 } where
   toFun x :=
     ⟨⟨2 * x / (1 + x ^ 2), (1 - x ^ 2) / (1 + x ^ 2)⟩, by
-      field_simp [hk x, div_pow]
+      field_simp2
       ring, by
       simp only [Ne, div_eq_iff (hk x), neg_mul, one_mul, neg_add, sub_eq_add_neg, add_left_inj]
       simpa only [eq_neg_iff_add_eq_zero, one_pow] using hk 1⟩
   invFun p := (p : K × K).1 / ((p : K × K).2 + 1)
   left_inv x := by
-    have h2 : (1 + 1 : K) = 2 := by norm_num
-    have h3 : (2 : K) ≠ 0 := by
-      convert hk 1
-      rw [one_pow 2, h2]
-    field_simp [hk x, h2, add_assoc, add_comm, add_sub_cancel, mul_comm]
+    field_simp2
+    ring
   right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ => by
     change x ^ 2 + y ^ 2 = 1 at hxy
     have h2 : y + 1 ≠ 0 := mt eq_neg_of_add_eq_zero_left hy
@@ -276,11 +274,11 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       ring
     have h4 : (2 : K) ≠ 0 := by
       convert hk 1
-      rw [one_pow 2]
       ring
     simp only [Prod.mk_inj, Subtype.mk_eq_mk]
     constructor
-    · field_simp [h3]
+    · field_simp2
+      rw [h3]
       ring
     · field_simp [h3]
       rw [← add_neg_eq_iff_eq_add.mpr hxy.symm]
@@ -436,7 +434,9 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    field_simp [v, w, sq]
+    simp only [v, w]
+    field_simp2
+    simp only [sq]
     norm_cast
   have hvz : v ≠ 0 := by
     field_simp [v]
@@ -478,7 +478,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hx2 {j k : ℚ} (h₁ : k ≠ 0) (h₂ : k ^ 2 + j ^ 2 ≠ 0) :
       2 * (j / k) / (1 + (j / k) ^ 2) = 2 * k * j / (k ^ 2 + j ^ 2) :=
     have h₃ : k * (k ^ 2 + j ^ 2) ≠ 0 := mul_ne_zero h₁ h₂
-    by field_simp; ring
+    by field_simp2; ring
   have hv2 : v = 2 * m * n / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
     calc
       v = 2 * q / (1 + q ^ 2) := by apply ht4.1
@@ -550,7 +550,7 @@ theorem classified : h.IsClassified := by
       apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_right h0
     use 0, 1, 0
-    field_simp [hx, hy]
+    simp [hx, hy]
   apply h.isClassified_of_normalize_isPrimitiveClassified
   apply h.normalize.isPrimitiveClassified_of_coprime
   apply Int.gcd_div_gcd_div_gcd (Nat.pos_of_ne_zero h0)

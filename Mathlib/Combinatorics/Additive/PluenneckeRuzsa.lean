@@ -6,6 +6,7 @@ Authors: Yaël Dillies, George Shakan
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp2
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
@@ -221,7 +222,10 @@ private lemma card_mul_pow_le (hAB : ∀ A' ⊆ A, #(A * B) * #A' ≤ #(A' * B) 
         = #(B ^ n * A * B) * #A := by rw [pow_succ, mul_left_comm, mul_assoc]
       _ ≤ #(A * B) * #(B ^ n * A) := mod_cast pluennecke_petridis_inequality_mul _ hAB
       _ ≤ #(A * B) * ((#(A * B) / #A) ^ n * #A) := by rw [mul_comm _ A]; gcongr
-      _ = (#(A * B) / #A) ^ (n + 1) * #A * #A := by field_simp; ring
+      _ = (#(A * B) / #A) ^ (n + 1) * #A * #A := by
+        rw [pow_add]
+        field_simp2
+        ring
 
 /-- The **Plünnecke-Ruzsa inequality**. Multiplication version. Note that this is genuinely harder
 than the division version because we cannot use a double counting argument. -/
