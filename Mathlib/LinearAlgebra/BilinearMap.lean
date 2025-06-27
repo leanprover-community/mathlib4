@@ -220,7 +220,7 @@ theorem lflip_apply {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClas
 
 end Semiring
 
-section Semiring'
+section Semiring
 
 variable {R R₂ R₃ R₄ R₅ : Type*}
 variable {M N P Q : Type*}
@@ -264,7 +264,7 @@ theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.comp
   ext
   rw [compl₂_apply, id_coe, _root_.id]
 
-end Semiring'
+end Semiring
 
 section CommSemiring
 
