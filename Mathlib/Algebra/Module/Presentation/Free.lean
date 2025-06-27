@@ -48,12 +48,28 @@ lemma solutionFinsupp_isPresentation :
     relations.solutionFinsupp.IsPresentation :=
   (solutionFinsupp.isPresentationCore relations).isPresentation
 
-variable {relations}
+section
 
-lemma Solution.IsPresentation.free {solution : relations.Solution M}
-    (h : solution.IsPresentation) :
+variable {M} {relations} {solution : relations.Solution M}
+    (h : solution.IsPresentation)
+
+include h
+
+lemma Solution.IsPresentation.free  :
     Module.Free A M :=
   Free.of_equiv ((solutionFinsupp_isPresentation relations).uniq h)
+
+/-- The basis of a module that is given by a presentation involving no relation. -/
+noncomputable def Solution.IsPresentation.basis :
+    Basis relations.G A M :=
+  .ofRepr ((solutionFinsupp_isPresentation relations).uniq h).symm
+
+@[simp]
+lemma Solution.IsPresentation.basis_apply (i : relations.G) :
+    h.basis i = solution.var i :=
+  uniq_var _ _ _
+
+end
 
 end Relations
 
@@ -82,3 +98,17 @@ lemma free_iff_exists_presentation :
     exact p.toIsPresentation.free
 
 end Module
+
+namespace Basis
+
+variable {A : Type u} [Ring A] {M : Type v} [AddCommGroup M] [Module A M] {ι : Type w}
+  (b : Basis ι A M)
+
+/-- The presentation of a module given by a basis. -/
+@[simps!]
+noncomputable def presentation : Module.Presentation A M :=
+  (Module.presentationFinsupp.{w, w} A ι).ofLinearEquiv b.repr.symm
+
+instance : IsEmpty (b.presentation.R) := by dsimp; infer_instance
+
+end Basis
