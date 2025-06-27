@@ -8,6 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Data.Finsupp.Option
 import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!

@@ -87,7 +87,7 @@ theorem exists_iff_exists_finsupp (P : R[X] → Prop) :
   ⟨fun ⟨⟨p⟩, hp⟩ => ⟨p, hp⟩, fun ⟨q, hq⟩ => ⟨⟨q⟩, hq⟩⟩
 
 @[simp]
-theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by cases f; rfl
+theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by constructor
 
 /-! ### Conversions to and from `AddMonoidAlgebra`
 

@@ -100,7 +100,7 @@ lemma eventually_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
   deriv (fun x => x ^ p * (1 - ε x))
     =ᶠ[atTop] fun x => deriv (· ^ p) x * (1 - ε x) + x ^ p * deriv (1 - ε ·) x := by
             filter_upwards [eventually_gt_atTop 1] with x hx
-            rw [deriv_mul]
+            rw [deriv_fun_mul]
             · exact differentiableAt_rpow_const_of_ne _ (by positivity)
             · exact differentiableAt_one_sub_smoothingFn hx
   _ =ᶠ[atTop] fun x => p * x ^ (p-1) * (1 - ε x) + x ^ p * (x⁻¹ / (log x ^ 2)) := by
@@ -117,7 +117,7 @@ lemma eventually_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
   deriv (fun x => x ^ p * (1 + ε x))
     =ᶠ[atTop] fun x => deriv (· ^ p) x * (1 + ε x) + x ^ p * deriv (1 + ε ·) x := by
             filter_upwards [eventually_gt_atTop 1] with x hx
-            rw [deriv_mul]
+            rw [deriv_fun_mul]
             · exact differentiableAt_rpow_const_of_ne _ (by positivity)
             · exact differentiableAt_one_add_smoothingFn hx
   _ =ᶠ[atTop] fun x => p * x ^ (p-1) * (1 + ε x) - x ^ p * (x⁻¹ / (log x ^ 2)) := by
@@ -290,7 +290,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
           _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 - ε x) +
                   x ^ (p a b) * deriv (fun z => 1 - ε z) x := by
               filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
-              rw [deriv_mul] <;> aesop
+              rw [deriv_fun_mul] <;> aesop
           _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
               refine IsBigO.add ?left ?right
               case left => calc
@@ -385,7 +385,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
           _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 + ε x)
               + x ^ (p a b) * deriv (fun z => 1 + ε z) x := by
                 filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
-                rw [deriv_mul] <;> aesop
+                rw [deriv_fun_mul] <;> aesop
           _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
                 refine IsBigO.add ?left ?right
                 case left => calc
