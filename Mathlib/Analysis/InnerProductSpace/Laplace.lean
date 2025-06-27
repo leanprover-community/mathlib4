@@ -43,8 +43,24 @@ variable (𝕜) in
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
 `E →ₗ[ℝ] E →ₗ[ℝ] ℝ
 -/
+noncomputable def bilinearIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
+  fun x ↦ (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x).toLinearMap₂
+
+variable (𝕜) in
+/--
+Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
+`E →ₗ[ℝ] E →ₗ[ℝ] ℝ
+-/
 noncomputable def bilinearIteratedFDerivTwo (f : E → F) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
   fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₂
+
+/--
+Expression of `bilinearIteratedFDerivWithinTwo` in terms of `iteratedFDerivWithin`.
+-/
+lemma bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv {e : E} {s : Set E} (f : E → F)
+    (hs : UniqueDiffOn 𝕜 s) (he : e ∈ s) (e₁ e₂ : E) :
+    bilinearIteratedFDerivWithinTwo 𝕜 f s e e₁ e₂ = iteratedFDerivWithin 𝕜 2 f s e ![e₁, e₂] := by
+  simp [iteratedFDerivWithin_two_apply f hs he ![e₁, e₂], bilinearIteratedFDerivWithinTwo]
 
 /--
 Expression of `bilinearIteratedFDerivTwo` in terms of `iteratedFDeriv`.
@@ -58,8 +74,26 @@ variable (𝕜) in
 Convenience reformulation of the second iterated derivative, as a map from `E` to linear maps
 `E ⊗[𝕜] E →ₗ[𝕜] F`.
 -/
+noncomputable def tensorIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E → E ⊗[𝕜] E →ₗ[𝕜] F :=
+  fun e ↦ lift (bilinearIteratedFDerivWithinTwo 𝕜 f s e)
+
+variable (𝕜) in
+/--
+Convenience reformulation of the second iterated derivative, as a map from `E` to linear maps
+`E ⊗[𝕜] E →ₗ[𝕜] F`.
+-/
 noncomputable def tensorIteratedFDerivTwo (f : E → F) : E → E ⊗[𝕜] E →ₗ[𝕜] F :=
   fun e ↦ lift (bilinearIteratedFDerivTwo 𝕜 f e)
+
+/--
+Expression of `tensorIteratedFDerivTwo` in terms of `iteratedFDerivWithin`.
+-/
+lemma tensorIteratedFDerivWithinTwo_eq_iteratedFDerivWithin {e : E} {s : Set E} (f : E → F)
+    (hs : UniqueDiffOn 𝕜 s) (he : e ∈ s) (e₁ e₂ : E) :
+    tensorIteratedFDerivWithinTwo 𝕜 f s e (e₁ ⊗ₜ[𝕜] e₂) =
+      iteratedFDerivWithin 𝕜 2 f s e ![e₁, e₂] := by
+  rw [← bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv f hs he, tensorIteratedFDerivWithinTwo]
+  rfl
 
 /--
 Expression of `tensorIteratedFDerivTwo` in terms of `iteratedFDeriv`.
@@ -79,7 +113,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-  {f f₁ f₂ : E → F} {x : E}
+  {f f₁ f₂ : E → F} {x : E} {s : Set E}
 
 namespace InnerProductSpace
 
@@ -91,12 +125,33 @@ notation `Δ` for `InnerProductSpace.Laplacian`.
 noncomputable def laplacian : E → F :=
   fun x ↦ tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
 
+variable (f s) in
+/--
+Laplacian for functions on real inner product spaces. Use `open InnerProductSpace` to access the
+notation `Δ` for `InnerProductSpace.Laplacian`.
+-/
+noncomputable def laplacianWithin : E → F :=
+  fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
+
 @[inherit_doc]
 scoped[InnerProductSpace] notation "Δ" => laplacian
+
+@[inherit_doc]
+scoped[InnerProductSpace] notation "Δ[" s "]" f => laplacianWithin f s
 
 /-!
 ## Computation of Δ in Terms of Orthonormal Bases
 -/
+
+variable (f) in
+/--
+Standard formula, computing the Laplacian from any orthonormal basis.
+-/
+theorem laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis {ι : Type*} [Fintype ι] {e : E}
+    (hs : UniqueDiffOn ℝ s) (he : e ∈ s) (v : OrthonormalBasis ι ℝ E) :
+    (Δ[s] f) e = ∑ i, iteratedFDerivWithin ℝ 2 f s e ![v i, v i] := by
+  simp [InnerProductSpace.laplacianWithin, canonicalCovariantTensor_eq_sum E v,
+    tensorIteratedFDerivWithinTwo_eq_iteratedFDerivWithin f hs he]
 
 variable (f) in
 /--
@@ -114,10 +169,32 @@ variable (f) in
 Standard formula, computing the Laplacian from the standard orthonormal basis of a real inner
 product space.
 -/
+theorem laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis {e : E} (hs : UniqueDiffOn ℝ s)
+    (he : e ∈ s) :
+    (Δ[s] f) e = ∑ i, iteratedFDerivWithin ℝ 2 f s e
+      ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] := by
+  apply laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he (stdOrthonormalBasis ℝ E)
+
+variable (f) in
+/--
+Standard formula, computing the Laplacian from the standard orthonormal basis of a real inner
+product space.
+-/
 theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
     Δ f = fun x ↦
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
   laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
+
+/--
+Special case of the standard formula for functions on `ℂ`, with the standard real inner product
+structure.
+-/
+theorem laplacianWithin_eq_iteratedFDerivWithin_complexPlane {e : ℂ} {s : Set ℂ} (f : ℂ → F)
+    (hs : UniqueDiffOn ℝ s) (he : e ∈ s) :
+    (Δ[s] f) e = iteratedFDerivWithin ℝ 2 f s e ![1, 1]
+      + iteratedFDerivWithin ℝ 2 f s e ![Complex.I, Complex.I] := by
+  simp [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
+    Complex.orthonormalBasisOneI]
 
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
