@@ -40,11 +40,41 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
 
+section prerequisites
+
 def bar (a : 𝕜) : TangentSpace 𝓘(𝕜) a ≃L[𝕜] 𝕜 where
   toFun v := v
   invFun v := v
   map_add' := by simp
   map_smul' := by simp
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+
+-- TODO: cleanup
+@[simp]
+theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
+    MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ x)) e ↔
+    DifferentiableAt 𝕜 σ e := by
+  rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace,
+      mdifferentiableWithinAt_univ,  mdifferentiableWithinAt_univ]
+  change MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E) id e ∧ MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') σ e ↔
+    DifferentiableAt 𝕜 σ e
+  simp [mdifferentiableAt_id, mdifferentiableAt_iff_differentiableAt]
+
+attribute [simp] mdifferentiableAt_iff_differentiableAt
+
+-- XXX: make a better version of fderiv_const_smul'', with field coefficients instead!
+theorem _root_.fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    (σ : (x : E) → Trivial E E' x) (a : 𝕜) (x : E) :
+    fderiv 𝕜 (a • σ) x = a • fderiv 𝕜 σ x := by
+  obtain (rfl | ha) := eq_or_ne a 0
+  · simp
+  · have : Invertible a := invertibleOfNonzero ha
+    exact fderiv_const_smul'' ..
+
+end prerequisites
 
 variable (x : M)
 
@@ -351,40 +381,11 @@ noncomputable def difference [FiniteDimensional ℝ F] [FiniteDimensional ℝ E]
 
 end real
 
-end CovariantDerivative
-
-end
-
-section
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
--- TODO: cleanup
-@[simp]
-theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
-    MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ x)) e ↔
-    DifferentiableAt 𝕜 σ e := by
-  rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace,
-      mdifferentiableWithinAt_univ,  mdifferentiableWithinAt_univ]
-  change MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E) id e ∧ MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') σ e ↔
-    DifferentiableAt 𝕜 σ e
-  simp [mdifferentiableAt_id, mdifferentiableAt_iff_differentiableAt]
-
-attribute [simp] mdifferentiableAt_iff_differentiableAt
-
--- XXX: make a better version of fderiv_const_smul'', with field coefficients instead!
-theorem _root_.fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    (σ : (x : E) → Trivial E E' x) (a : 𝕜) (x : E) :
-    fderiv 𝕜 (a • σ) x = a • fderiv 𝕜 σ x := by
-  obtain (rfl | ha) := eq_or_ne a 0
-  · simp
-  · have : Invertible a := invertibleOfNonzero ha
-    exact fderiv_const_smul'' ..
-
 @[simps]
-noncomputable def CovariantDerivative.trivial : CovariantDerivative 𝓘(𝕜, E) E'
+noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
   toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
   addX X X' σ := by ext; simp
@@ -400,9 +401,9 @@ noncomputable def CovariantDerivative.trivial : CovariantDerivative 𝓘(𝕜, E
     simp [this, bar]
     rfl
 
-open Classical in
+open scoped Classical in
 @[simps]
-noncomputable def CovariantDerivative.of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
+noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
     CovariantDerivative 𝓘(𝕜, E) E' (Bundle.Trivial E E') where
   toFun X σ := fun x ↦ fderiv 𝕜 σ x (X x) + A x (X x) (σ x)
   addX X X' σ := by
@@ -425,5 +426,7 @@ noncomputable def CovariantDerivative.of_endomorphism (A : E → E →L[𝕜] E'
       fderiv_smul (by simp_all) (by simp_all)
     simp [this, bar, hσ, h]
     module
+
+end CovariantDerivative
 
 end
