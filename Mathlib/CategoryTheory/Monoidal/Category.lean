@@ -600,16 +600,20 @@ theorem whiskerLeft_rightUnitor_inv (X Y : C) :
   eq_of_inv_eq_inv (by simp)
 
 @[reassoc]
-theorem leftUnitor_tensor (X Y : C) :
+theorem leftUnitor_tensor_hom (X Y : C) :
     (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ (λ_ X).hom ▷ Y := by simp
+
+@[deprecated (since := "2025-06-24")] alias leftUnitor_tensor := leftUnitor_tensor_hom
 
 @[reassoc]
 theorem leftUnitor_tensor_inv (X Y : C) :
     (λ_ (X ⊗ Y)).inv = (λ_ X).inv ▷ Y ≫ (α_ (𝟙_ C) X Y).hom := by simp
 
 @[reassoc]
-theorem rightUnitor_tensor (X Y : C) :
+theorem rightUnitor_tensor_hom (X Y : C) :
     (ρ_ (X ⊗ Y)).hom = (α_ X Y (𝟙_ C)).hom ≫ X ◁ (ρ_ Y).hom := by simp
+
+@[deprecated (since := "2025-06-24")] alias rightUnitor_tensor := rightUnitor_tensor_hom
 
 @[reassoc]
 theorem rightUnitor_tensor_inv (X Y : C) :
