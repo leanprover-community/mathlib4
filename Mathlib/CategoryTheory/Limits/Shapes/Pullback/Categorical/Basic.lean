@@ -142,16 +142,9 @@ def π₂ : F ⊡ G ⥤ C where
   map f := f.snd
 
 /-- The canonical categorical commutative square in which `CategoricalPullback F G` sits. -/
+@[simps!]
 instance catCommSq : CatCommSq (π₁ F G) (π₂ F G) F G where
-  iso' := NatIso.ofComponents (fun x ↦ x.iso)
-
-@[simp]
-lemma catCommSq_iso_hom_app (x : F ⊡ G) :
-    (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom.app x = x.iso.hom := rfl
-
-@[simp]
-lemma catCommSq_iso_inv_app (x : F ⊡ G) :
-    (CatCommSq.iso (π₁ F G) (π₂ F G) F G).inv.app x = x.iso.inv := rfl
+  iso := NatIso.ofComponents (fun x ↦ x.iso)
 
 variable {F G} in
 /-- Constructor for isomorphisms in `CategoricalPullback F G`. -/
@@ -190,7 +183,7 @@ namespace CatCommSqOver
 /-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps!]
 def asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
-  iso' := S.iso
+  iso := S.iso
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
