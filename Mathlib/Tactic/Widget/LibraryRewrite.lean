@@ -522,8 +522,8 @@ To use it, shift-click an expression in the goal or a hypothesis that you want t
 Clicking on one of the rewrite suggestions will paste the relevant rewrite tactic into the editor.
 
 The rewrite suggestions are grouped and sorted by the pattern that the rewrite lemmas match with.
-Reflexive and duplicate rewrites are filtered out,
-as well as rewrites that have new metavariables in the replacement expression.
+Rewrites that don't change the goal and rewrites that create the same goal as another rewrite
+are filtered out, as well as rewrites that have new metavariables in the replacement expression.
 To see all suggestions, click on the filter button (▼) in the top right.
 -/
 elab stx:"rw??" : tactic => do
