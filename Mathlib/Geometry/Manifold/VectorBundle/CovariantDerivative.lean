@@ -574,8 +574,9 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
   conv_rhs => rw [←bV.sum_repr v]
   simp [bV, Basis.localFrame_toBasis_at, Basis.localFrame, x_mem]
 
-/-lemma-/ def contMDiff_extend  {x : M} (X₀ : TangentSpace I x) :
-  sorry /- ContMDiff I I.tangent 2 (extend X₀) doesn't type-check -/ := sorry
+lemma contMDiff_extend [FiniteDimensional ℝ F] {x : M} (σ₀ : V x) :
+    ContMDiff I (I.prod 𝓘(ℝ, F)) 1 (fun x ↦ TotalSpace.mk' F x (extend F σ₀ x)) := by
+  sorry
 
 -- The difference of two covariant derivatives, as a tensorial map
 noncomputable def difference [FiniteDimensional ℝ F] [FiniteDimensional ℝ E] [IsManifold I 1 M]
