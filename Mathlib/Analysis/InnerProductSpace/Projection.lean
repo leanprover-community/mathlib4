@@ -307,7 +307,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
         have : w'' ∈ K := Submodule.add_mem _ (Submodule.neg_mem _ hw) hv
         have h₁ := h w'' this
         have h₂ : w'' - v = -w := by
-          simp only [w'', neg_inj, add_neg_cancel_right, sub_eq_add_neg]
+          simp only [w'', add_neg_cancel_right, sub_eq_add_neg]
         rw [h₂, inner_neg_right] at h₁
         linarith
       exact le_antisymm le ge)
@@ -669,7 +669,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       convert norm_sub_eq_norm_add this using 2
       · dsimp [reflectionLinearEquiv, v]
         abel
-      · simp only [v, add_sub_cancel, eq_self_iff_true] }
+      · simp only [v, add_sub_cancel] }
 
 variable {K}
 
@@ -1419,7 +1419,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     intro x hxu
     refine ((mt (h x)) (hu.ne_zero ⟨x, hxu⟩)).imp_symm ?_
     intro hxv y hy
-    have hxv' : (⟨x, hxu⟩ : u) ∉ ((↑) ⁻¹' v : Set u) := by simp [huv, hxv]
+    have hxv' : (⟨x, hxu⟩ : u) ∉ ((↑) ⁻¹' v : Set u) := by simp [hxv]
     obtain ⟨l, hl, rfl⟩ :
       ∃ l ∈ supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (linearCombination 𝕜 ((↑) : u → E)) l = y := by
       rw [← Finsupp.mem_span_image_iff_linearCombination]
