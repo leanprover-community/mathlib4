@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro, Antoine Chambert-Loir
 -/
 import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
@@ -188,78 +188,83 @@ theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k
 
 /--
 If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
-Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
+Otherwise, `minFacAux n k = minFacAux n (k+2)` using fueled recursion.
 If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`.
-
-By default this well-founded recursion would be irreducible.
-This prevents use `decide` to resolve `Nat.prime n` for small values of `n`,
-so we mark this as `@[semireducible]`.
-
-In future, we may want to remove this annotation and instead use `norm_num` instead of `decide`
-in these situations.
 -/
-@[semireducible] def minFacAux (n : ℕ) : ℕ → ℕ
-  | k =>
+def minFacAux (fuel n k : ℕ) (h : 2 * fuel + k = 2 * n + 3) : ℕ :=
+  match fuel with
+  | 0 => 2
+  | fuel + 1 =>
     if n < k * k then n
     else
-      if k ∣ n then k
-      else
-        minFacAux n (k + 2)
-termination_by k => sqrt n + 2 - k
-decreasing_by simp_wf; apply minFac_lemma n k; assumption
+      if k ∣ n then k else minFacAux fuel n (k + 2) (by
+          rw [add_comm k, ← add_assoc, ← h, Nat.mul_add])
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
 def minFac (n : ℕ) : ℕ :=
-  if 2 ∣ n then 2 else minFacAux n 3
+  if 2 ∣ n then 2 else minFacAux n n 3 (rfl)
 
 @[simp]
-theorem minFac_zero : minFac 0 = 2 :=
-  rfl
+theorem minFac_zero : minFac 0 = 2 := by
+  decide
 
 @[simp]
 theorem minFac_one : minFac 1 = 1 := by
-  simp [minFac, minFacAux]
+  decide
 
 @[simp]
 theorem minFac_two : minFac 2 = 2 := by
-  simp [minFac, minFacAux]
+  decide
 
-theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
+theorem minFac_eq (n : ℕ) :
+    minFac n = if 2 ∣ n then 2 else minFacAux n n 3 rfl := rfl
 
 private def minFacProp (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
-theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
-    ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
-  | k => fun i e a => by
-    rw [minFacAux]
+theorem minFacAux_has_prop {n : ℕ}
+    (n2 : 2 ≤ n) (fuel k : ℕ) (hk : 2 < k)
+    (hfuel : 2 * fuel + k = 2 * n + 3)
+    (hkn : ∀ m, 2 ≤ m → m ∣ n → k ≤ m) :
+    minFacProp n (minFacAux fuel n k hfuel) := by
+  rw [minFacAux.eq_def]
+  match fuel with
+  | 0 =>
+    dsimp
+    simp only [mul_zero, zero_add] at hfuel
+    specialize hkn n n2 (Nat.dvd_refl _)
+    rw [hfuel, Nat.two_mul, Nat.add_assoc, ← not_lt] at hkn
+    exfalso
+    apply hkn
+    refine Nat.lt_add_of_pos_right (zero_lt_succ (n + 2))
+  | fuel + 1 =>
+    dsimp
     by_cases h : n < k * k
     · have pp : Prime n :=
         prime_def_le_sqrt.2
-          ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
-      simpa only [k, h] using
-        ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
-    have k2 : 2 ≤ k := by
-      subst e
-      apply Nat.le_add_left
-    simp only [k, h, ↓reduceIte]
-    by_cases dk : k ∣ n <;> simp only [k, dk, ↓reduceIte]
-    · exact ⟨k2, dk, a⟩
-    · refine
-        have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, Nat.left_distrib, add_right_comm])
-          fun m m2 d => ?_
-      rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
+          ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (hkn m m2 d)⟩
+      simpa [h] using ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
+    simp only [h, ↓reduceIte, Nat.mul_zero]
+    by_cases dk : k ∣ n <;> simp only [dk, ↓reduceIte]
+    · exact ⟨le_of_lt hk, dk, hkn⟩
+    · apply
+        minFacAux_has_prop n2 fuel (k + 2) (Nat.lt_add_right 2 hk)
+          (by rw [← hfuel, Nat.mul_add, mul_one, add_comm k, add_assoc])
+      intro m m2 d
+      rcases Nat.eq_or_lt_of_le (hkn m m2 d) with me | ml
       · subst me
         contradiction
       apply (Nat.eq_or_lt_of_le ml).resolve_left
       intro me
-      rw [← me, e] at d
-      have d' : 2 * (i + 2) ∣ n := d
-      have := a _ le_rfl (dvd_of_mul_right_dvd d')
-      rw [e] at this
-      exact absurd this (by contradiction)
-  termination_by k => sqrt n + 2 - k
+      apply not_le.mpr hk
+      apply hkn _ le_rfl
+      apply dvd_trans _ d
+      rw [← me]
+      rw [← Nat.add_right_cancel_iff (n := 1), add_assoc] at hfuel
+      rw [Nat.dvd_add_iff_right, hfuel, add_assoc, ← Nat.dvd_add_iff_right]
+      · decide
+      · exact Nat.dvd_mul_right 2 n
+      · exact Nat.dvd_mul_right 2 (fuel + 1)
 
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
@@ -270,8 +275,8 @@ theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   simp only [minFac_eq, Nat.isUnit_iff]
   by_cases d2 : 2 ∣ n <;> simp only [d2, ↓reduceIte]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
-  · refine
-      minFacAux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt ?_ d2)
+  · refine minFacAux_has_prop n2 n 3 (by decide) rfl
+      fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt ?_ d2)
     exact fun e => e.symm ▸ d
 
 theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
