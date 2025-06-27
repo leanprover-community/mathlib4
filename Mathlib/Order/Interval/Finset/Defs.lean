@@ -1332,10 +1332,10 @@ abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder
   finsetIco x y := (finsetIco (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
   finsetIoc x y := (finsetIoc (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
   finsetIoo x y := (finsetIoo (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
-  finset_mem_Icc := by simp [finset_mem_Icc, EquivLike.inv_apply_eq_iff_eq_apply]
+  finset_mem_Icc := by simp [finset_mem_Icc, EquivLike.inv_apply_eq]
   finset_mem_Ico := by
-    simp [finset_mem_Ico, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]
+    simp [finset_mem_Ico, EquivLike.inv_apply_eq, map_lt_map_iff]
   finset_mem_Ioc := by
-    simp [finset_mem_Ioc, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]
+    simp [finset_mem_Ioc, EquivLike.inv_apply_eq, map_lt_map_iff]
   finset_mem_Ioo := by
-    simp [finset_mem_Ioo, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]
+    simp [finset_mem_Ioo, EquivLike.inv_apply_eq, map_lt_map_iff]

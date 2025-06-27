@@ -95,7 +95,7 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone F) := by
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_mul, Functor.comp_obj, Equiv.toFun_as_coe]
+    simp only [EquivLike.coe_apply, Functor.mapCone_π_app, forget_map, map_mul]
     rw [← equivShrink_mul]
     rfl
 
