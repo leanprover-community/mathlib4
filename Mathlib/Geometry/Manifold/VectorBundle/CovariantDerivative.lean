@@ -626,4 +626,31 @@ noncomputable def CovariantDerivative.trivial : CovariantDerivative 𝓘(𝕜, E
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
     simp [fderiv_zero_of_not_differentiableAt hσ]
 
+open Classical in
+@[simps]
+noncomputable def CovariantDerivative.of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
+    CovariantDerivative 𝓘(𝕜, E) E' (Bundle.Trivial E E') where
+  toFun X σ := fun x ↦ if DifferentiableAt 𝕜 σ x then fderiv 𝕜 σ x (X x) + A x (X x) (σ x) else 0
+  addX X X' σ := by
+    ext x
+    by_cases h : DifferentiableAt 𝕜 σ x
+    · simp [h, map_add]; abel
+    · simp [h]
+  smulX X σ c' := by ext; simp
+  addσ X σ σ' e hσ hσ' := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
+    rw [fderiv_add hσ hσ']
+    simp [hσ, hσ']
+    abel
+  leibniz X σ f x hσ hf := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
+    rw [mdifferentiableAt_iff_differentiableAt] at hf
+    have h : DifferentiableAt 𝕜 (f • σ) x := hf.smul hσ
+    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
+      fderiv_smul (by simp_all) (by simp_all)
+    simp [this, bar, hσ, h]
+    module
+  do_not_read X σ x hσ := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
+    simp [hσ]
 end
