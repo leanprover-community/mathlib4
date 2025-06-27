@@ -197,13 +197,13 @@ def whiskerRight {ψ ψ' : CatCospanTransform F G F' G'}
   left_coherence := by
     ext x
     dsimp
-    simp only [CatCommSq.vComp_iso'_hom_app, Category.assoc]
+    simp only [CatCommSq.vComp_iso_hom_app, Category.assoc]
     rw [← Functor.map_comp_assoc, ← left_coherence_app, Functor.map_comp_assoc]
     simp
   right_coherence := by
     ext x
     dsimp
-    simp only [CatCommSq.vComp_iso'_hom_app, Category.assoc]
+    simp only [CatCommSq.vComp_iso_hom_app, Category.assoc]
     rw [← Functor.map_comp_assoc, ← right_coherence_app, Functor.map_comp_assoc]
     simp
 
