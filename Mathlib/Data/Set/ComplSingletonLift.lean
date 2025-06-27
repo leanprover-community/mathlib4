@@ -9,65 +9,62 @@ import Mathlib.Logic.Equiv.Defs
 /-!
 # Extending a function from the complement of a singleton
 
-In this file, we define `Function.complSingletonLift` which allows to
+In this file, we define `Function.subtypeNeLift` which allows to
 extend a (dependant) function defined on the complement of a singleton.
 
 -/
 
 
-namespace Set
+variable {ι : Type*} [DecidableEq ι] (i₀ : ι)
 
-/-- The bijection `Unit ⊕ (({i₀})ᶜ : Set ι) ≃ ι` for any `i₀ : ι` -/
-noncomputable def sumSingletonComplEquiv {ι : Type*} (i₀ : ι) :
-    Unit ⊕ (({i₀})ᶜ : Set ι) ≃ ι :=
-  .ofBijective
-    (fun x ↦ match x with
-      | .inl _ => i₀
-      | .inr ⟨i, _⟩ => i) (by
-  constructor
-  · rintro (_ | ⟨_, hx⟩) (_ | ⟨_, hy⟩)
+/-- The bijection `Unit ⊕ { i // i ≠ i₀ } ≃ ι` for any `i₀ : ι` -/
+noncomputable def unitSumSubtypeNeEquiv :
+    Unit ⊕ { i // i ≠ i₀ } ≃ ι where
+  toFun x := match x with
+    | Sum.inl _ => i₀
+    | Sum.inr i => i.1
+  invFun i := if h : i = i₀ then Sum.inl .unit else Sum.inr ⟨i, h⟩
+  left_inv := by
+    rintro (_ | ⟨i, hi⟩)
     · simp
-    · simpa using Ne.symm hy
-    · simpa
-    · simp [Subtype.ext_iff_val]
-  · intro i
+    · apply dif_neg
+  right_inv i := by
     by_cases h : i = i₀
-    · exact ⟨.inl Unit.unit, h.symm⟩
-    · exact ⟨.inr ⟨i, by simpa using h⟩, rfl⟩)
+    · subst h
+      simp
+    · simp [dif_neg h]
 
 @[simp]
-lemma sumSingletonComplEquiv_inl {ι : Type*} (i₀ : ι) (u : Unit):
-    sumSingletonComplEquiv i₀ (.inl u) = i₀ := rfl
+lemma unitSumSubtypeNeEquiv_inl (u : Unit):
+    unitSumSubtypeNeEquiv i₀ (.inl u) = i₀ := rfl
 
 @[simp]
-lemma sumSingletonComplEquiv_inr {ι : Type*} (i₀ : ι) (i : ({i₀}ᶜ : Set ι)) :
-    sumSingletonComplEquiv i₀ (.inr i) = i := rfl
-
-end Set
+lemma unitSumSubtypeNeEquiv_inr (j : { i // i ≠ i₀ }) :
+    unitSumSubtypeNeEquiv i₀ (.inr j) = j := rfl
 
 namespace Function
 
 variable {ι : Type*} [DecidableEq ι] {M : ι → Type*} (i₀ : ι)
-  (f : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) (x : M i₀)
+  (f : ∀ (j : { i // i ≠ i₀ }), M j) (x : M i₀)
 
 /-- Given `i₀ : ι` and `x : M i₀`, this is (dependent) map `(i : ι) → M i`
 whose value at `i₀` is `x` and which extends a given map on the complement of `{i₀}`. -/
-def complSingletonLift (i : ι) : M i :=
+def subtypeNeLift (i : ι) : M i :=
   if h : i = i₀ then by rw [h]; exact x else f ⟨i, h⟩
 
 @[simp]
-lemma complSingletonLift_self : complSingletonLift i₀ f x i₀ = x := dif_pos rfl
+lemma subtypeNeLift_self : subtypeNeLift i₀ f x i₀ = x := dif_pos rfl
 
-lemma complSingletonLift_of_neq (i : ι) (h : i ≠ i₀) :
-    complSingletonLift i₀ f x i = f ⟨i, h⟩ := dif_neg h
+lemma subtypeNeLift_of_neq (i : ι) (h : i ≠ i₀) :
+    subtypeNeLift i₀ f x i = f ⟨i, h⟩ := dif_neg h
 
 @[simp]
-lemma complSingletonLift_restriction (φ : ∀ i, M i) (i₀ : ι) :
-    complSingletonLift i₀ (fun i ↦ φ i) (φ i₀) = φ := by
+lemma subtypeNeLift_restriction (φ : ∀ i, M i) (i₀ : ι) :
+    subtypeNeLift i₀ (fun i ↦ φ i) (φ i₀) = φ := by
   ext i
   by_cases h : i = i₀
   · subst h
     simp
-  · rw [complSingletonLift_of_neq _ _ _ _ h]
+  · rw [subtypeNeLift_of_neq _ _ _ _ h]
 
 end Function
