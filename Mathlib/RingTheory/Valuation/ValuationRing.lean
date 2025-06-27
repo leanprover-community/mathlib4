@@ -99,7 +99,7 @@ instance : Mul (ValueGroup A K) :=
         apply Quotient.sound'
         dsimp
         use c * d
-        simp only [mul_smul, Algebra.smul_def, Units.smul_def, RingHom.map_mul, Units.val_mul]
+        simp only [mul_smul, Algebra.smul_def, Units.smul_def]
         ring)
 
 instance : Inv (ValueGroup A K) :=
@@ -174,7 +174,7 @@ instance commGroupWithZero :
       rintro ⟨a⟩ ha
       apply Quotient.sound'
       use 1
-      simp only [one_smul, ne_eq]
+      simp only [one_smul]
       apply (mul_inv_cancel₀ _).symm
       contrapose ha
       simp only [Classical.not_not] at ha ⊢
