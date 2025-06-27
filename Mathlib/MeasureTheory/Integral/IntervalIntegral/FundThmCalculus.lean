@@ -629,7 +629,7 @@ theorem integral_hasStrictDerivAt_of_tendsto_ae_left (hf : IntervalIntegrable f 
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
     HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-c) a := by
   simpa only [← integral_symm] using
-    (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).neg
+    (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).fun_neg
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the left endpoint.
 
@@ -638,7 +638,7 @@ derivative `-f a` at `a` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : ContinuousAt f a) :
     HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-f a) a := by
-  simpa only [← integral_symm] using (integral_hasStrictDerivAt_right hf.symm hmeas ha).neg
+  simpa only [← integral_symm] using (integral_hasStrictDerivAt_right hf.symm hmeas ha).fun_neg
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the right endpoint.
 

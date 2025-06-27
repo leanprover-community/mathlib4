@@ -32,26 +32,16 @@ A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped wit
 class Hopf_Class (X : C) extends Bimon_Class X where
   /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
   antipode : X ⟶ X
-  /- For the names of the conditions below, the unprimed names are reserved for the version where
-  the argument `X` is explicit. -/
-  antipode_left' : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by aesop_cat
-  antipode_right' : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by aesop_cat
+  antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by aesop_cat
+  antipode_right (X) : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by aesop_cat
 
 namespace Hopf_Class
 
 @[inherit_doc] scoped notation "𝒮" => Hopf_Class.antipode
 @[inherit_doc] scoped notation "𝒮["M"]" => Hopf_Class.antipode (X := M)
 
-/- The simp attribute is reserved for the unprimed versions. -/
-attribute [reassoc] antipode_left' antipode_right'
+attribute [reassoc (attr := simp)] antipode_left antipode_right
 
-/-- The object is provided as an explicit argument. -/
-@[reassoc (attr := simp)]
-theorem antipode_left (X : C) [Hopf_Class X] : Δ ≫ 𝒮 ▷ X ≫ μ = ε ≫ η := antipode_left'
-
-/-- The object is provided as an explicit argument. -/
-@[reassoc (attr := simp)]
-theorem antipode_right (X : C) [Hopf_Class X] : Δ ≫ X ◁ 𝒮 ≫ μ = ε ≫ η := antipode_right'
 
 end Hopf_Class
 
