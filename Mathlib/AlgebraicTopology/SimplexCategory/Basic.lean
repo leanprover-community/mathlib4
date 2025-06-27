@@ -906,22 +906,4 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
 
-namespace Truncated
-
-instance final_inclusion (n : ℕ) : (inclusion n).Final := .mk fun Δ =>
-  have : Nonempty (StructuredArrow Δ (inclusion n)) := ⟨⟨⟨⟩⟩, ⦋0⦌ₙ, const _ _ 0⟩
-  zigzag_isConnected fun ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩ =>
-  Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⦋0⦌ₙ, Δ.const ⦋0⦌ 0⟩)
-    (Zigzag.of_zag (.inl ⟨StructuredArrow.homMk (Δ₁.const _ 0) (by rfl)⟩))
-    (Zigzag.of_zag (.inr ⟨StructuredArrow.homMk (Δ₂.const _ 0) (by rfl)⟩))
-
-instance final_incl (m n : ℕ) (h : m ≤ n) : (incl m n h).Final := .mk fun ⟨Δ, hΔ⟩ =>
-  have : Nonempty (StructuredArrow ⟨Δ, hΔ⟩ (incl m n h)) := ⟨⟨⟨⟩⟩, ⟨⦋0⦌, by simp⟩, const _ _ 0⟩
-  zigzag_isConnected fun ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩ =>
-  Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⟨⦋0⦌, by simp⟩, Δ.const ⦋0⦌ 0⟩)
-    (Zigzag.of_zag (.inl ⟨StructuredArrow.homMk (Δ₁.const _ 0) (by rfl)⟩))
-    (Zigzag.of_zag (.inr ⟨StructuredArrow.homMk (Δ₂.const _ 0) (by rfl)⟩))
-
-end Truncated
-
 end SimplexCategory
