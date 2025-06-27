@@ -112,7 +112,7 @@ theorem splits_one : Splits i 1 :=
   splits_C i 1
 
 theorem splits_of_isUnit [IsDomain K] {u : K[X]} (hu : IsUnit u) : u.Splits i :=
-  (isUnit_iff.mp hu).choose_spec.2 ▸ splits_C _ _
+  (Polynomial.isUnit_iff.mp hu).choose_spec.2 ▸ splits_C _ _
 
 theorem splits_X_sub_C {x : K} : (X - C x).Splits i :=
   splits_of_degree_le_one _ <| degree_X_sub_C_le _

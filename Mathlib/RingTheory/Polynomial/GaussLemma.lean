@@ -111,7 +111,7 @@ include hinj hf
 
 theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (map φ f) := by
   refine ⟨(mapRingHom φ).isUnit_map, fun h => ?_⟩
-  rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
+  rcases Polynomial.isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
   have hdeg := degree_C u.ne_zero
   rw [hu, degree_map_eq_of_injective hinj] at hdeg
   rw [eq_C_of_degree_eq_zero hdeg] at hf ⊢
@@ -216,12 +216,12 @@ variable [IsDomain R] [NormalizedGCDMonoid R]
 
 theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0 : p ≠ 0)
     (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
-  rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
+  rcases Polynomial.isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ p
   rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hc
   apply isUnit_of_mul_isUnit_right
   rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← RingHom.map_mul,
-    isUnit_iff]
+    Polynomial.isUnit_iff]
   refine
     ⟨algebraMap R K ((integerNormalization R⁰ p).content * ↑u), isUnit_iff_ne_zero.2 fun con => ?_,
       by simp⟩

@@ -70,7 +70,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   obtain ⟨p, hp⟩ := dvd_iff_isRoot.2 h
   rw [hasEigenvalue_iff, eigenspace_def]
   intro con
-  obtain ⟨u, hu⟩ := (LinearMap.isUnit_iff_ker_eq_bot _).2 con
+  obtain ⟨u, hu⟩ := ((LinearMap.isUnit_iff_ker_eq_bot _).2 con).1
   have p_ne_0 : p ≠ 0 := by
     intro con
     apply minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := K) f)

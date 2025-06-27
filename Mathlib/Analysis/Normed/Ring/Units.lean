@@ -199,7 +199,7 @@ induced topology from the embedding in `R × R`) to `R` is an open embedding. -/
 theorem isOpenEmbedding_val : IsOpenEmbedding (val : Rˣ → R) where
   toIsEmbedding := isEmbedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
-  isOpen_range := Units.isOpen
+  isOpen_range := by simpa only [_root_.isUnit_iff] using Units.isOpen
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open map. -/

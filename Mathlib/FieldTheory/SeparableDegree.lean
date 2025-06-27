@@ -432,8 +432,8 @@ theorem natSepDegree_mul_eq_iff (g : F[X]) :
     wlog hf : f = 0 generalizing f g
     · simpa only [mul_comm, add_comm, and_comm,
         isCoprime_comm] using this g f h.symm (h.resolve_left hf)
-    rw [hf, zero_mul, natSepDegree_zero, zero_add, isCoprime_zero_left, isUnit_iff, eq_comm,
-      natSepDegree_eq_zero_iff, natDegree_eq_zero]
+    rw [hf, zero_mul, natSepDegree_zero, zero_add, isCoprime_zero_left, Polynomial.isUnit_iff,
+      eq_comm, natSepDegree_eq_zero_iff, natDegree_eq_zero]
     refine ⟨fun ⟨x, h⟩ ↦ ?_, ?_⟩
     · by_cases hx : x = 0
       · exact .inl ⟨rfl, by rw [← h, hx, map_zero]⟩

@@ -505,14 +505,14 @@ theorem injective_pointReflection_left_of_injective_two_nsmul
 @[deprecated (since := "2024-11-18")] alias injective_pointReflection_left_of_injective_bit0 :=
 injective_pointReflection_left_of_injective_two_nsmul
 
-theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
+theorem injective_pointReflection_left_of_module [IsUnit (2 : k)] :
     ∀ y, Injective fun x : P₁ => pointReflection k x y :=
   injective_pointReflection_left_of_injective_two_nsmul k fun x y h => by
     dsimp at h
     rwa [two_nsmul, two_nsmul, ← two_smul k x, ← two_smul k y,
       (isUnit_of_invertible (2 : k)).smul_left_cancel] at h
 
-theorem pointReflection_fixed_iff_of_module [Invertible (2 : k)] {x y : P₁} :
+theorem pointReflection_fixed_iff_of_module [IsUnit (2 : k)] {x y : P₁} :
     pointReflection k x y = y ↔ y = x :=
   ((injective_pointReflection_left_of_module k y).eq_iff' (pointReflection_self k y)).trans eq_comm
 

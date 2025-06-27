@@ -305,13 +305,14 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
   rw [segment_eq_image_lineMap]
   exact ⟨⅟ 2, ⟨invOf_nonneg.mpr zero_le_two, invOf_le_one one_le_two⟩, rfl⟩
 
-theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x - y) (x + y)
+theorem mem_segment_sub_add [IsUnit (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
+  cases ‹IsUnit (2 : 𝕜)›.nonempty_invertible
+  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ (x - y) (x + y)
   rw [midpoint_sub_add]
 
-theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x + y) (x - y)
-  rw [midpoint_add_sub]
+theorem mem_segment_add_sub [IsUnit (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
+  rw [segment_symm]
+  apply mem_segment_sub_add
 
 @[simp]
 theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
