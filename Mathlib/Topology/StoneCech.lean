@@ -389,6 +389,24 @@ lemma eq_if_stoneCechUnit_eq {a b : α} {f : α → β} (hcf : Continuous f)
   rw [← congrFun (stoneCechExtend_extends hcf), ← congrFun (stoneCechExtend_extends hcf)]
   exact congrArg (stoneCechExtend hcf) h
 
+lemma exists_continuous_surjection_from_StoneCech_to_dense_range
+    {f : α → β} (df : DenseRange f) (cf : Continuous f) :
+    ∃ g : C(StoneCech α, β),
+      Function.Surjective g ∧ g ∘ stoneCechUnit = f := by
+  use ⟨stoneCechExtend cf, continuous_stoneCechExtend cf⟩
+  apply And.intro
+  focus
+    have cnt : IsCompact (range (stoneCechExtend cf)) := by
+      rw [← Set.image_univ]
+      exact IsCompact.image isCompact_univ (continuous_stoneCechExtend cf)
+    have dns : Dense (range (stoneCechExtend cf)) := by
+      rw [← stoneCechExtend_extends cf] at df
+      exact DenseRange.of_comp df
+    simp only [ContinuousMap.coe_mk]
+    rw [← Set.range_eq_univ, ← IsClosed.closure_eq (IsCompact.isClosed cnt)]
+    exact Dense.closure_eq dns
+  exact stoneCechExtend_extends cf
+
 end Extension
 
 end StoneCech
