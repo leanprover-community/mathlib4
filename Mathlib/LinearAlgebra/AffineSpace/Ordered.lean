@@ -48,7 +48,8 @@ variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_right (smul_le_smul_of_nonneg_left ha (sub_nonneg.2 hr)) _
+  gcongr
+  exact sub_nonneg.2 hr
 
 theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
@@ -57,7 +58,7 @@ theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < li
 omit [IsOrderedRing k] in
 theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_left (smul_le_smul_of_nonneg_left hb hr) _
+  gcongr
 
 omit [IsOrderedRing k] in
 theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by

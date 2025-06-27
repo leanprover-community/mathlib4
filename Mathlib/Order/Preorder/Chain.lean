@@ -148,7 +148,7 @@ lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
 
 lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
-  ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_le h⟩
+  ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_ge h⟩
 
 lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
@@ -158,7 +158,7 @@ lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
-  ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_lt h⟩
+  ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_gt h⟩
 
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1

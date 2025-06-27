@@ -430,7 +430,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     rw [content_mul, p.isPrimitive_primPart.dvd_primPart_iff_dvd hq]
     exact ⟨Dvd.intro _ rfl, p.primPart_dvd.trans (Dvd.intro _ rfl)⟩
   · rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
-    exact mul_dvd_mul (RingHom.map_dvd C h.1) h.2
+    exact mul_dvd_mul (_root_.map_dvd C h.1) h.2
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R

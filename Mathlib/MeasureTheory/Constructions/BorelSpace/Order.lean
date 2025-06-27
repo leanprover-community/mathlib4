@@ -761,8 +761,7 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
   · rintro b ⟨c, hc⟩
     apply isLUB_ciSup
     refine ⟨c, ?_⟩
-    rintro d ⟨i, rfl⟩
-    exact hc (mem_range_self i)
+    assumption
   · intro b hb
     apply csSup_of_not_bddAbove
     exact hb
@@ -958,7 +957,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       preimage_iUnion, inter_iUnion]
     · intro i j hij
       wlog h : i < j generalizing i j
-      · exact (this hij.symm (hij.lt_or_lt.resolve_left h)).symm
+      · exact (this hij.symm (hij.lt_or_gt.resolve_left h)).symm
       refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
       calc
         f x < (t : ℝ≥0∞) ^ (i + 1) := hx.2.2

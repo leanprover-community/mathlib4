@@ -155,7 +155,7 @@ lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (
   · intro H s' hs' s'_card
     by_contra! rid
     have card := card_le_card (monotone_filter_left P hs') |>.trans H
-    exact s'_card.not_le (filter_eq_self.mpr rid ▸ card)
+    exact s'_card.not_ge (filter_eq_self.mpr rid ▸ card)
   · contrapose!
     exact fun H ↦ ⟨s.filter P, filter_le _ _, H, fun a ha ↦ (mem_filter.mp ha).2⟩
 

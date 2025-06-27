@@ -26,14 +26,14 @@ This file defines the group law on nonsingular projective points.
 * `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
 * `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
 * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
-    nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
+  nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
 * `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
 * `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
 * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
-    forms an abelian group under addition.
+  forms an abelian group under addition.
 
 ## Implementation notes
 

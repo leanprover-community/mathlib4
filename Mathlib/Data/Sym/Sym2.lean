@@ -184,7 +184,6 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
   invFun F := ⟨curry (F ∘ Sym2.mk), fun _ _ => congr_arg F eq_swap⟩
-  left_inv _ := Subtype.ext rfl
   right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
@@ -212,7 +211,6 @@ def lift₂ :
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
       exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
-  left_inv _ := Subtype.ext rfl
   right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]
@@ -610,7 +608,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]
-          first | done | apply List.Perm.swap'; rfl }
+          first | done | constructor }
 
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
 def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where

@@ -352,7 +352,7 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     contrapose! h
     refine ⟨G.recolorOfCardLE (by simpa using h.le) C, fun hC ↦ ?_⟩
     dsimp at hC
-    simpa [h.not_le] using Fintype.card_le_of_surjective _ hC.of_comp
+    simpa [h.not_ge] using Fintype.card_le_of_surjective _ hC.of_comp
 
 lemma le_chromaticNumber_iff_forall_surjective :
     n ≤ G.chromaticNumber ↔ ∀ C : G.Coloring (Fin n), Surjective C := by

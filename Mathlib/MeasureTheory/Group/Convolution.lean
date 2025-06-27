@@ -38,29 +38,42 @@ scoped[MeasureTheory] infixr:80 " ∗ₘ " => MeasureTheory.Measure.mconv
 scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
+theorem lintegral_mconv_eq_lintegral_prod [MeasurableMul₂ M] {μ ν : Measure M}
+    {f : M → ℝ≥0∞} (hf : Measurable f):
+    ∫⁻ z, f z ∂(μ ∗ₘ ν) = ∫⁻ z, f (z.1 * z.2) ∂(μ.prod ν) := by
+  rw [mconv, lintegral_map hf measurable_mul]
+
+@[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
     {f : M → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ z, f z ∂(μ ∗ₘ ν) = ∫⁻ x, ∫⁻ y, f (x * y) ∂ν ∂μ := by
-  rw [mconv, lintegral_map hf measurable_mul, lintegral_prod]
-  fun_prop
+  rw [lintegral_mconv_eq_lintegral_prod hf, lintegral_prod _ (by fun_prop)]
+
+@[to_additive]
+lemma dirac_mconv [MeasurableMul₂ M] (x : M) (μ : Measure M) [SFinite μ] :
+    (Measure.dirac x) ∗ₘ μ = μ.map (fun y ↦ x * y) := by
+  unfold mconv
+  rw [Measure.dirac_prod, map_map (by fun_prop) (by fun_prop)]
+  simp [Function.comp_def]
+
+@[to_additive]
+lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
+    μ ∗ₘ (Measure.dirac x) = μ.map (fun y ↦ y * x) := by
+  unfold mconv
+  rw [Measure.prod_dirac, map_map (by fun_prop) (by fun_prop)]
+  simp [Function.comp_def]
 
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
 @[to_additive (attr := simp) "Convolution of the dirac measure at 0 with a measure μ returns μ."]
 theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
     (Measure.dirac 1) ∗ₘ μ = μ := by
-  unfold mconv
-  rw [MeasureTheory.Measure.dirac_prod, map_map (by fun_prop)]
-  · simp only [Function.comp_def, one_mul, map_id']
-  fun_prop
+  simp [dirac_mconv]
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
 @[to_additive (attr := simp) "Convolution of a measure μ with the dirac measure at 0 returns μ."]
 theorem mconv_dirac_one [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : μ ∗ₘ (Measure.dirac 1) = μ := by
-  unfold mconv
-  rw [MeasureTheory.Measure.prod_dirac, map_map (by fun_prop)]
-  · simp only [Function.comp_def, mul_one, map_id']
-  fun_prop
+  simp [mconv_dirac]
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
 @[to_additive (attr := simp) "Convolution of the zero measure with a measure μ returns
@@ -149,8 +162,8 @@ lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoi
     [OpensMeasurableSpace E] [BorelSpace F]
     {μ ν : Measure E} [SFinite μ] [SFinite ν]
     (L : E →L[ℝ] F) :
-    (μ ∗ ν).map L = (μ.map L).conv (ν.map L) := by
-  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)).conv (ν.map (L : E →+ F)) by simpa
+    (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
+  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)) ∗ (ν.map (L : E →+ F)) by simpa
   rw [map_conv_addMonoidHom]
   rw [AddMonoidHom.coe_coe]
   fun_prop

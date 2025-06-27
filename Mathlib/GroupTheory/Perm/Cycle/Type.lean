@@ -167,9 +167,10 @@ theorem sign_of_cycleType' (σ : Perm α) :
 theorem sign_of_cycleType (f : Perm α) :
     sign f = (-1 : ℤˣ) ^ (f.cycleType.sum + Multiset.card f.cycleType) := by
   rw [sign_of_cycleType']
-  induction' f.cycleType using Multiset.induction_on with a s ihs
-  · rfl
-  · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
+  induction f.cycleType using Multiset.induction_on with
+  | empty => rfl
+  | cons a s ihs =>
+    rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
     simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
 @[simp]

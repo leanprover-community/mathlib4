@@ -56,6 +56,19 @@ theorem rpow_intCast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_intCast x n
 
+@[simp, norm_cast]
+theorem rpow_neg_natCast (x : ℝ) (n : ℕ) : x ^ (-n : ℝ) = x ^ (-n : ℤ) := by
+  rw [← rpow_intCast, Int.cast_neg, Int.cast_natCast]
+
+@[simp]
+lemma rpow_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (ofNat(n) : ℝ) = x ^ (ofNat(n) : ℕ) :=
+  rpow_natCast x n
+
+@[simp]
+theorem rpow_neg_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] : x ^ (-ofNat(n) : ℝ) = x ^ (-ofNat(n) : ℤ) :=
+  rpow_neg_natCast _ _
+
 @[simp]
 theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mul]
 
@@ -444,10 +457,8 @@ lemma rpow_sub_one' (hx : 0 ≤ x) (h : y - 1 ≠ 0) : x ^ (y - 1) = x ^ y / x :
 lemma rpow_one_sub' (hx : 0 ≤ x) (h : 1 - y ≠ 0) : x ^ (1 - y) = x / x ^ y := by
   rw [rpow_sub' hx h, rpow_one]
 
-@[simp]
 theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
-  rw [← rpow_natCast]
-  simp only [Nat.cast_ofNat]
+  simp
 
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
   suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹ by rwa [Int.cast_neg, Int.cast_one] at H
@@ -698,7 +709,7 @@ theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 
 
 theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x ∧ x < 1 ∧ y < 0 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_lt]
+  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_gt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 
 /-- This is a more general but less convenient version of `rpow_le_rpow_of_exponent_ge`.
@@ -910,7 +921,7 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
 
 lemma rpow_right_inj (hx₀ : 0 < x) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z := by
   refine ⟨fun H ↦ ?_, fun H ↦ by rw [H]⟩
-  rcases hx₁.lt_or_lt with h | h
+  rcases hx₁.lt_or_gt with h | h
   · exact (strictAnti_rpow_of_base_lt_one hx₀ h).injective H
   · exact (strictMono_rpow_of_base_gt_one h).injective H
 

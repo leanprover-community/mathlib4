@@ -12,10 +12,10 @@ import Mathlib.Probability.Process.Stopping
 A family of functions `f : ι → Ω → E` is a martingale with respect to a filtration `ℱ` if every
 `f i` is integrable, `f` is adapted with respect to `ℱ` and for all `i ≤ j`,
 `μ[f j | ℱ i] =ᵐ[μ] f i`. On the other hand, `f : ι → Ω → E` is said to be a supermartingale
-with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with resepct to `ℱ`
+with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with respect to `ℱ`
 and for all `i ≤ j`, `μ[f j | ℱ i] ≤ᵐ[μ] f i`. Finally, `f : ι → Ω → E` is said to be a
 submartingale with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with
-resepct to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
+respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 
 The definitions of filtration and adapted can be found in `Probability.Process.Stopping`.
 

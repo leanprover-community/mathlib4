@@ -82,7 +82,7 @@ theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
 
 theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜} (h : spectralRadius 𝕜 a < ‖k‖₊) :
     k ∈ ρ a :=
-  Classical.not_not.mp fun hn => h.not_le <| le_iSup₂ (α := ℝ≥0∞) k hn
+  Classical.not_not.mp fun hn => h.not_ge <| le_iSup₂ (α := ℝ≥0∞) k hn
 
 variable [CompleteSpace A]
 
@@ -564,8 +564,6 @@ def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   invFun f :=
     { val := f.toContinuousLinearMap
       property := by rw [eq_set_map_one_map_mul]; exact ⟨map_one f, map_mul f⟩ }
-  left_inv _ := Subtype.ext <| ContinuousLinearMap.ext fun _ => rfl
-  right_inv _ := AlgHom.ext fun _ => rfl
 
 @[simp]
 theorem equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=

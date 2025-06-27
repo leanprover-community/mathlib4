@@ -99,7 +99,7 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
   rintro z h₁ h₂
-  refine (h₁ i₀ (mem_univ _)).2.not_lt ?_
+  refine (h₁ i₀ (mem_univ _)).2.not_gt ?_
   simpa only [Function.update_self] using (h₂ i₀ (mem_univ _)).1
 
 end PiPreorder

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp.FunctionData
+import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
 /-!
 ## `funProp`
@@ -94,6 +95,24 @@ structure Context where
   /-- current transition depth -/
   transitionDepth := 0
 
+/-- General theorem about a function property used for transition and morphism theorems -/
+structure GeneralTheorem where
+  /-- function property name -/
+  funPropName : Name
+  /-- theorem name -/
+  thmName : Name
+  /-- discrimination tree keys used to index this theorem -/
+  keys : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
+  /-- priority -/
+  priority : Nat  := eval_prio default
+  deriving Inhabited
+
+/-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
+structure GeneralTheorems where
+  /-- Discrimination tree indexing theorems. -/
+  theorems : RefinedDiscrTree GeneralTheorem := {}
+  deriving Inhabited
+
 /-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
@@ -105,6 +124,10 @@ structure State where
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
   msgLog : List String := []
+  /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
+  morTheorems : GeneralTheorems
+  /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
+  transitionTheorems : GeneralTheorems
 
 /-- Increase depth -/
 def Context.increaseTransitionDepth (ctx : Context) : Context :=

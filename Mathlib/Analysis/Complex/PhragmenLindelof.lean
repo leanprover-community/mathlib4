@@ -696,7 +696,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
         _ = |(z - x₀).re| := by rw [sub_re, ofReal_re, _root_.abs_sub_comm]
         _ ≤ ‖z - x₀‖ := abs_re_le_norm _
     -- Thus we have `C < ‖f x₀‖ = ‖f 0‖ ≤ C`. Contradiction completes the proof.
-    refine (h.not_le <| this ▸ ?_).elim
+    refine (h.not_ge <| this ▸ ?_).elim
     simpa using him 0
 
 /-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that

@@ -515,7 +515,7 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
     rw [Nat.cast_zero, neg_lt_zero] at hs
     suffices ∀ m : ℕ, s ≠ -↑m from (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
     rintro m rfl
-    apply hs.not_le
+    apply hs.not_ge
     simp
   | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]
@@ -556,7 +556,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     refine DifferentiableOn.analyticOnNhd ?_ isOpen_univ
     refine (Differentiable.mul ?_ (differentiable_const _)).differentiableOn
     apply Differentiable.mul
-    · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
+    · exact differentiable_one_div_Gamma.comp (differentiable_id.const_mul _)
     · refine fun t => DifferentiableAt.const_cpow ?_ (Or.inl two_ne_zero)
       exact DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
   have h3 : Tendsto ((↑) : ℝ → ℂ) (𝓝[≠] 1) (𝓝[≠] 1) := by

@@ -273,7 +273,7 @@ theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (
     rw [← zpow_natCast]
     exact le_trans (zpow_le_zpow_right₀ hy.le hM.le) hm
   obtain ⟨n, hn₁, hn₂⟩ := Int.exists_greatest_of_bdd hb he
-  exact ⟨n, hn₁, lt_of_not_ge fun hge => (Int.lt_succ _).not_le (hn₂ _ hge)⟩
+  exact ⟨n, hn₁, lt_of_not_ge fun hge => (Int.lt_succ _).not_ge (hn₂ _ hge)⟩
 
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ico_zpow`,
@@ -454,12 +454,12 @@ theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy :
 theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : K) < x → (q : K) ≤ y) : x ≤ y :=
   le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
-    hy.not_le <| h _ hx
+    hy.not_ge <| h _ hx
 
 theorem le_of_forall_lt_rat_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
   le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_rat_btwn hyx
-    hx.not_le <| h _ hy
+    hx.not_ge <| h _ hy
 
 theorem le_iff_forall_rat_lt_imp_le : x ≤ y ↔ ∀ q : ℚ, (q : K) < x → (q : K) ≤ y :=
   ⟨fun hxy _ hqx ↦ hqx.le.trans hxy, le_of_forall_rat_lt_imp_le⟩
@@ -537,7 +537,7 @@ instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archime
   constructor
   intro x y hxy
   cases y with
-  | bot => exact absurd hxy bot_le.not_lt
+  | bot => exact absurd hxy bot_le.not_gt
   | coe y =>
     cases x with
     | bot => refine ⟨0, bot_le⟩
@@ -548,7 +548,7 @@ instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArc
   constructor
   intro x y hxy
   cases y with
-  | zero => exact absurd hxy (zero_le _).not_lt
+  | zero => exact absurd hxy (zero_le _).not_gt
   | coe y =>
     cases x with
     | zero => refine ⟨0, zero_le _⟩

@@ -371,14 +371,16 @@ lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   simp_rw [← SimpleGraph.mem_neighborSet] at *
   aesop
 
-lemma IsCycles.induce_supp (c : G.ConnectedComponent) (h : G.IsCycles) :
-    (G.induce c.supp).spanningCoe.IsCycles := by
+lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
+    c.toSimpleGraph.spanningCoe.IsCycles := by
   intro v ⟨w, hw⟩
-  rw [mem_neighborSet, c.adj_spanningCoe_induce_supp] at hw
+  rw [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph] at hw
   rw [← h ⟨w, hw.2⟩]
   congr
   ext w'
-  simp only [mem_neighborSet, c.adj_spanningCoe_induce_supp, hw, true_and]
+  simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
+
+@[deprecated (since := "2025-06-08")] alias IsCycles.induce_supp := IsCycles.toSimpleGraph
 
 lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.spanningCoe.IsCycles := by

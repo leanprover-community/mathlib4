@@ -58,7 +58,7 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
   obtain ⟨y, hy : IsRoot _ y⟩ := this (show (0 : ℝ) ∈ Set.Icc _ _ by simpa [h0] using hx)
   rw [@isRoot_cyclotomic_iff] at hy
   rw [hy.eq_orderOf] at hn
-  exact hn.not_le LinearOrderedRing.orderOf_le_two
+  exact hn.not_ge LinearOrderedRing.orderOf_le_two
 
 theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
@@ -288,7 +288,7 @@ theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
 
 theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     (q - 1) ^ totient n < ((cyclotomic n ℤ).eval ↑q).natAbs := by
-  rcases hq.lt_or_lt.imp_left Nat.lt_one_iff.mp with (rfl | hq')
+  rcases hq.lt_or_gt.imp_left Nat.lt_one_iff.mp with (rfl | hq')
   · rw [zero_tsub, zero_pow (Nat.totient_pos.2 (pos_of_gt hn')).ne', pos_iff_ne_zero,
       Int.natAbs_ne_zero, Nat.cast_zero, ← coeff_zero_eq_eval_zero, cyclotomic_coeff_zero _ hn']
     exact one_ne_zero

@@ -323,7 +323,7 @@ theorem Nat.cauchy_induction' (seed : ℕ) (h : ∀ n, P (n + 1) → P n) (hs : 
   intro hf
   obtain ⟨m, hP, hm⟩ := hf.exists_maximal ⟨seed, hs⟩
   obtain ⟨y, hl, hy⟩ := hi m (le_of_not_gt <| not_lt_iff_le_imp_ge.2 <| hm hs) hP
-  exact hl.not_le (hm hy hl.le)
+  exact hl.not_ge (hm hy hl.le)
 
 theorem Nat.cauchy_induction (h : ∀ n, P (n + 1) → P n) (seed : ℕ) (hs : P seed) (f : ℕ → ℕ)
     (hf : ∀ x, seed ≤ x → P x → x < f x ∧ P (f x)) (n : ℕ) : P n :=

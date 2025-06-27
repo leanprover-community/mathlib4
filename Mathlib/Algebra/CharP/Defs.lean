@@ -15,8 +15,8 @@ import Mathlib.Order.Lattice
 * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
 * `ringChar`: the characteristic of a ring
 * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
-    exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
-    prime characteristic `p`)
+  exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
+  prime characteristic `p`)
 -/
 
 assert_not_exists Field Finset OrderHom
@@ -170,7 +170,7 @@ lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < 
     (-1 : R) ≠ (1 : R) := by
   rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
     CharP.cast_eq_zero_iff R p 2]
-  exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h
+  exact fun h ↦ (Fact.out : 2 < p).not_ge <| Nat.le_of_dvd Nat.zero_lt_two h
 
 namespace CharP
 

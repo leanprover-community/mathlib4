@@ -106,7 +106,7 @@ theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 := by
 theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 := by
   refine ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => ?_⟩
   suffices ∀ p : ℝ, 0 < p → |x| ≤ p / 2 → ‖(x : AddCircle p)‖ = |x| by
-    rcases hp.symm.lt_or_lt with (hp | hp)
+    rcases hp.symm.lt_or_gt with (hp | hp)
     · rw [abs_eq_self.mpr hp.le] at hx
       exact this p hp hx
     · rw [← norm_neg_period]

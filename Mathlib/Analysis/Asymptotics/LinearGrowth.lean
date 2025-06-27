@@ -9,7 +9,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 # Linear growth
 
 This file defines the linear growth of a sequence `u : ℕ → R`. This notion comes in two
-versions, using a `liminf` and a `limsup` respectively. Most properties are developped for
+versions, using a `liminf` and a `limsup` respectively. Most properties are developed for
 `R = EReal`.
 
 ## Main definitions

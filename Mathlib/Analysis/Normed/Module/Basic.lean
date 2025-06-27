@@ -174,7 +174,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
   let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
   let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
-  hx.not_le (hR x trivial)
+  hx.not_ge (hR x trivial)
 
 protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
   rw [neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ]
@@ -287,6 +287,19 @@ theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x�
 end NNReal
 
 variable (𝕜)
+
+/--
+Preimages of cobounded sets under the algebra map are cobounded.
+-/
+theorem algebraMap_cobounded_le_cobounded [NormOneClass 𝕜'] :
+    Filter.map (algebraMap 𝕜 𝕜') (Bornology.cobounded 𝕜) ≤ Bornology.cobounded 𝕜' := by
+  intro c hc
+  rw [Filter.mem_map, ← Bornology.isCobounded_def, ← Bornology.isBounded_compl_iff,
+    isBounded_iff_forall_norm_le]
+  obtain ⟨s, hs⟩ := isBounded_iff_forall_norm_le.1
+    (Bornology.isBounded_compl_iff.2 (Bornology.isCobounded_def.1 hc))
+  use s
+  exact fun x hx ↦ by simpa [norm_algebraMap, norm_one] using hs ((algebraMap 𝕜 𝕜') x) hx
 
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by

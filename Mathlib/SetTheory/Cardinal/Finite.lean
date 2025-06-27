@@ -56,6 +56,10 @@ lemma card_eq_card_toFinset (s : Set α) [Fintype s] : Nat.card s = s.toFinset.c
 lemma card_eq_card_finite_toFinset {s : Set α} (hs : s.Finite) : Nat.card s = hs.toFinset.card := by
   simp only [← Nat.card_eq_finsetCard, hs.mem_toFinset]
 
+theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
+    Nat.card { x // p x } = Finset.card s := by
+  rw [← Fintype.subtype_card s H, Fintype.card_eq_nat_card]
+
 @[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
 
 @[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
@@ -127,6 +131,9 @@ theorem _root_.Function.Surjective.bijective_of_nat_card_le [Finite α] {f : α 
 
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
+
+lemma card_fin (n : ℕ) : Nat.card (Fin n) = n := by
+  rw [Nat.card_eq_fintype_card, Fintype.card_fin]
 
 section Set
 open Set

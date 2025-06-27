@@ -110,10 +110,12 @@ theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   clear hx'
   obtain ⟨x, hx⟩ := x
   rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]
-  induction' x with x ih; · rfl
-  rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
-  rw [Ne, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
-  exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
+  induction x with
+  | zero => rfl
+  | succ x ih =>
+    rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
+    rw [Ne, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
+    exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
 
 theorem isCycle_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : IsCycle (finRotate n) := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h
@@ -165,7 +167,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
   rcases n with - | n
-  · exact absurd le_rfl i.pos.not_le
+  · exact absurd le_rfl i.pos.not_ge
   rw [cycleRange_of_le h]
   split_ifs with h'
   · rfl
@@ -297,7 +299,8 @@ theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
   exact cycleType_finRotate
 
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
-  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
+  rw [IsThreeCycle, cycleType_cycleRange two_ne_zero]
+  simp
 
 end Fin
 
@@ -343,7 +346,7 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   refine Finset.prod_congr rfl fun ⟨x₁, x₂⟩ hx ↦ ?_
   replace hx : x₂ < x₁ := by simpa [hD] using hx
   obtain hlt | hle := lt_or_ge (σ x₁) (σ x₂)
-  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_lt, ← hf]
+  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_gt, ← hf]
   simp [inf_eq_right.2 hle, sup_eq_left.2 hle, hx]
 
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]

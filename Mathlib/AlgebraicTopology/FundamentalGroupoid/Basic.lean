@@ -86,7 +86,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
       simp? [hx.not_le, ← extend_extends] says
-        simp only [one_div, hx.not_le, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
+        simp only [one_div, hx.not_ge, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
           extend_symm, ContinuousMap.coe_mk, Function.comp_apply]
       ring_nf
   prop' t := by norm_num [reflTransSymmAux]
@@ -223,8 +223,6 @@ namespace FundamentalGroupoid
 def equiv (X : Type*) : FundamentalGroupoid X ≃ X where
   toFun x := x.as
   invFun x := .mk x
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 lemma isEmpty_iff (X : Type*) :

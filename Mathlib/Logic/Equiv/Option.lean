@@ -42,13 +42,15 @@ theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=
   ext <| congr_fun Option.map_id
 
 @[simp]
-theorem optionCongr_symm (e : α ≃ β) : (optionCongr e).symm = optionCongr e.symm :=
+theorem optionCongr_symm (e : α ≃ β) : optionCongr e.symm = (optionCongr e).symm :=
   rfl
 
 @[simp]
 theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
-    (optionCongr e₁).trans (optionCongr e₂) = optionCongr (e₁.trans e₂) :=
-  ext <| Option.map_map _ _
+    optionCongr (e₁.trans e₂) = (optionCongr e₁).trans (optionCongr e₂) := by
+  ext x : 1
+  symm
+  apply Option.map_map
 
 /-- When `α` and `β` are in the same universe, this is the same as the result of
 `EquivFunctor.mapEquiv`. -/
