@@ -65,6 +65,11 @@ theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
 theorem not_isDiag_of_mem_edgeFinset : e ∈ G.edgeFinset → ¬e.IsDiag :=
   not_isDiag_of_mem_edgeSet _ ∘ mem_edgeFinset.1
 
+/-- Mapping an edge to a finite set produces a finset of size `2`. -/
+theorem card_toFinset_mem_edgeFinset [DecidableEq V] (e : G.edgeFinset) :
+    (e : Sym2 V).toFinset.card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag e.val (G.not_isDiag_of_mem_edgeFinset e.prop)
+
 theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp
 
 theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by simp
