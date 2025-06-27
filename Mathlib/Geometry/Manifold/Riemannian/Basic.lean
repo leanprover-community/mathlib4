@@ -194,10 +194,24 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
     (extChartAt I x).left_inv (by simpa using h'y)
   convert hy using 3 <;> congr
 
-lemma eventually_enorm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
-    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
-    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (extChartAt I x y)‖ₑ < C := by
+lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
+    ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
+    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ < C := by
   rcases eventually_norm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
+  refine ⟨C, C_pos, ?_⟩
+  have : 𝓝 x = 𝓝 ((extChartAt I x).symm (extChartAt I x x)) := by simp
+  rw [this] at hC
+  have : ContinuousAt (extChartAt I x).symm (extChartAt I x x) := continuousAt_extChartAt_symm _
+  filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
+    extChartAt_target_mem_nhdsWithin x] with y hy h'y
+  have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
+  simp [-extChartAt] at hy
+  convert hy
+
+lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
+    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ₑ < C := by
+  rcases eventually_norm_mfderivWithin_symm_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
@@ -205,40 +219,67 @@ lemma eventually_enorm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
   simp only [enorm, nnnorm]
   exact_mod_cast hy
 
-lemma blok (x : M) : ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
+/-- Around any point `x`, the Riemannian distance between two points is controlled by the distance
+in the extended chart. In other words, the extended chart is locally Lipschitz. -/
+lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
     riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := by
+  /- To construct a path with controlled distance from `x` to `y`, we consider the segment from
+  `extChartAt x x` to `extChartAt x y` in the chart, and we push it by `(extChartAt x).symm`. As
+  the derivative of the latter is locally bounded, this only multiplies the length by a bounded
+  amount. -/
+  -- first start from a bound on the derivative
+  rcases eventually_enorm_mfderivWithin_symm_extChartAt_lt I x with ⟨C, C_pos, hC⟩
+  refine ⟨C, C_pos, ?_⟩
+  -- consider a small convex set around `extChartAt x x` where everything is controlled.
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0,
-      ball (extChartAt I x x) r ∩ range I ⊆ (extChartAt I x).target :=
-    mem_nhdsWithin_iff.1 (extChartAt_target_mem_nhdsWithin x)
+      ball (extChartAt I x x) r ∩ range I ⊆ (extChartAt I x).target ∩
+        {y | ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ₑ < C} :=
+    mem_nhdsWithin_iff.1 (Filter.inter_mem (extChartAt_target_mem_nhdsWithin x) hC)
+  -- pull this set inside `M`: this is the set where we will get the estimate.
   have A : (extChartAt I x) ⁻¹' (ball (extChartAt I x x) r ∩ range I) ∈ 𝓝 x := by
     apply extChartAt_preimage_mem_nhds_of_mem_nhdsWithin (by simp)
     rw [inter_comm]
     exact inter_mem_nhdsWithin _ (ball_mem_nhds _ r_pos)
-  rcases eventually_enorm_mfderivWithin_symm_extChartAt_comp_lt I x with ⟨C, C_pos, hC⟩
-  refine ⟨C, C_pos, ?_⟩
-  filter_upwards [A, hC, chart_source_mem_nhds H x] with y hy h'y h''y
+  -- consider `y` in this good set. Let `η` be the segment in the extended chart, and
+  -- `γ` its composition with `(extChartAt x).symm`.
+  filter_upwards [A, chart_source_mem_nhds H x] with y hy h'y
   let η := ContinuousAffineMap.lineMap (R := ℝ) (extChartAt I x x) (extChartAt I x y)
   set γ := (extChartAt I x).symm ∘ η
+  -- by convexity, the whole segment between `extChartAt x x` and `extChartAt x y` is in the
+  -- controlled set.
+  have hη : Icc 0 1 ⊆ ⇑η ⁻¹' ((extChartAt I x).target ∩
+        {y | ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ₑ < C}) := by
+    simp only [← preimage_inter, ← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq,
+      ← segment_eq_image_lineMap, η]
+    apply Subset.trans _ hr
+    exact ((convex_ball _ _).inter I.convex_range).segment_subset (by simp [r_pos]) hy
+  simp only [preimage_inter, subset_inter_iff] at hη
+  have η_smooth : ContMDiffOn 𝓘(ℝ, ℝ) 𝓘(ℝ, E) 1 η (Icc 0 1) := by
+    apply ContMDiff.contMDiffOn
+    rw [contMDiff_iff_contDiff]
+    exact ContinuousAffineMap.contDiff _
+  -- we can bound the Riemannian distance using the specific path `γ`.
   have : riemannianEDist I x y ≤ pathELength I γ 0 1 := by
     apply riemannianEDist_le_pathELength _ _ _ zero_le_one
-    · apply (contMDiffOn_extChartAt_symm x).comp
-      · apply ContMDiff.contMDiffOn
-        rw [contMDiff_iff_contDiff]
-        exact ContinuousAffineMap.contDiff _
-      · simp only [← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq,
-          ← segment_eq_image_lineMap, η]
-        apply Subset.trans _ hr
-        exact ((convex_ball _ _).inter I.convex_range).segment_subset (by simp [r_pos]) hy
+    · exact (contMDiffOn_extChartAt_symm x).comp η_smooth hη.1
     · simp [γ, η, ContinuousAffineMap.coe_lineMap_eq]
-    · simp [γ, η, ContinuousAffineMap.coe_lineMap_eq, h''y]
+    · simp [γ, η, ContinuousAffineMap.coe_lineMap_eq, h'y]
   apply this.trans
+  -- Finally, we control the length of `γ` thanks to the boundedness of the derivative of
+  -- `(extChartAt x).symm` on the whole controlled set.
   rw [← lintegral_fderiv_lineMap_eq_edist, pathELength_eq_lintegral_mfderivWithin_Icc,
     ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   apply setLIntegral_mono' measurableSet_Icc (fun t ht ↦ ?_)
   have : mfderivWithin 𝓘(ℝ) I γ (Icc 0 1) t =
-    (mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (η t)) ∘L
-    (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t) := by
-    sorry
+      (mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (η t)) ∘L
+      (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t) := by
+    apply mfderivWithin_comp
+    · exact mdifferentiableWithinAt_extChartAt_symm (hη.1 ht)
+    · exact η_smooth.mdifferentiableOn le_rfl t ht
+    · exact hη.1.trans (preimage_mono (extChartAt_target_subset_range x))
+    · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
+      exact uniqueDiffOn_Icc zero_lt_one t ht
   have : mfderivWithin 𝓘(ℝ) I γ (Icc 0 1) t 1 =
       (mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (η t))
       (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t 1) := by
@@ -247,52 +288,14 @@ lemma blok (x : M) : ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
   rw [this]
   apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
   gcongr
-  · have : extChartAt I x y = η t := sorry
-    have W := h'y.le
-    rw [this] at W
-    convert W using 1
+  · exact (hη.2 ht).le
   · simp only [mfderivWithin_eq_fderivWithin]
     exact le_of_eq rfl
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#exit
-/-
-  let γ (y : M) (t : ℝ) : M :=
-    (extChartAt I x).symm
-    (ContinuousAffineMap.lineMap (extChartAt I x x) (extChartAt I x y) t)
-  obtain ⟨r, r_pos, hr⟩ : ∃ r > 0,
-      ball (extChartAt I x x) r ∩ range I ⊆ (extChartAt I x).target := by
-    have : (extChartAt I x).target ∈ 𝓝[range I] (extChartAt I x x) :=
-      extChartAt_target_mem_nhdsWithin x
-    sorry
-  let f : TangentSpace I x →L[ℝ] E := mfderiv I 𝓘(ℝ, E) (extChartAt I x) x
-  have A (v) : ‖f v‖ ≤ ‖f‖ * ‖v‖ := by
-    apply ContinuousLinearMap.le_opNorm
--/
-
-lemma foo (x : M) {c : ℝ≥0∞} (hc : 0 < c) : ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
-  rcases blok I x with ⟨C, C_pos, hC⟩
+/-- If points are close for the topology, then their Riemannian distance is small. -/
+lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
+    ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
+  rcases eventually_riemannianEDist_le_edist_extChartAt I x with ⟨C, C_pos, hC⟩
   have : (extChartAt I x) ⁻¹' (EMetric.ball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
     apply (continuousAt_extChartAt x).preimage_mem_nhds
     exact EMetric.ball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
