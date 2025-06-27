@@ -156,11 +156,31 @@ def mkIso {x y : F ⊡ G}
   hom := ⟨eₗ.hom, eᵣ.hom, w⟩
   inv := ⟨eₗ.inv, eᵣ.inv, by simpa using F.map eₗ.inv ≫= w.symm =≫ G.map eᵣ.inv⟩
 
-instance {x y : F ⊡ G} (f : x ⟶ y) [IsIso f] : IsIso f.fst :=
+section
+
+variable {x y : F ⊡ G} (f : x ⟶ y) [IsIso f]
+
+instance : IsIso f.fst :=
   inferInstanceAs (IsIso ((π₁ _ _).mapIso (asIso f)).hom)
 
-instance {x y : F ⊡ G} (f : x ⟶ y) [IsIso f] : IsIso f.snd :=
+instance : IsIso f.snd :=
   inferInstanceAs (IsIso ((π₂ _ _).mapIso (asIso f)).hom)
+
+lemma inv_fst : (inv f).fst = inv f.fst := by
+  symm
+  apply IsIso.inv_eq_of_hom_inv_id
+  simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.fst) (IsIso.hom_inv_id f)
+
+lemma inv_snd : (inv f).snd = inv f.snd := by
+  symm
+  apply IsIso.inv_eq_of_hom_inv_id
+  simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.snd) (IsIso.hom_inv_id f)
+
+end
+
+lemma isIso_iff {x y : F ⊡ G} (f : x ⟶ y) : IsIso f ↔ (IsIso f.fst ∧ IsIso f.snd) where
+  mp h := ⟨inferInstance, inferInstance⟩
+  mpr | ⟨h₁, h₂⟩ => ⟨⟨inv f.fst, inv f.snd, by aesop_cat⟩, by aesop_cat⟩
 
 end
 
