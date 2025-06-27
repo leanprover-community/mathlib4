@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
+import Mathlib.Data.Set.ComplSingletonLift
 import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
 
@@ -18,60 +18,6 @@ In `LinearAlgebra.PiTensorProduct.Finite`, we deduce that if the modules `M i`
 are finitely generated, then so is `⨂[R] i, M i`.
 
 -/
-
-namespace Set
-
-/-- The bijection `Unit ⊕ (({i₀})ᶜ : Set ι) ≃ ι` for any `i₀ : ι` -/
-noncomputable def sumSingletonComplEquiv {ι : Type*} (i₀ : ι) :
-    Unit ⊕ (({i₀})ᶜ : Set ι) ≃ ι :=
-  .ofBijective
-    (fun x ↦ match x with
-      | .inl _ => i₀
-      | .inr ⟨i, _⟩ => i) (by
-  constructor
-  · rintro (_ | _) (_ | _) <;> aesop
-  · intro i
-    by_cases h : i = i₀
-    · exact ⟨.inl Unit.unit, h.symm⟩
-    · exact ⟨.inr ⟨i, by simpa using h⟩, rfl⟩)
-
-@[simp]
-lemma sumSingletonComplEquiv_inl {ι : Type*} (i₀ : ι) (u : Unit):
-    sumSingletonComplEquiv i₀ (.inl u) = i₀ := rfl
-
-@[simp]
-lemma sumSingletonComplEquiv_inr {ι : Type*} (i₀ : ι) (i : ({i₀}ᶜ : Set ι)) :
-    sumSingletonComplEquiv i₀ (.inr i) = i := rfl
-
-end Set
-
--- to be moved
-namespace Function
-
-variable {ι : Type*} [DecidableEq ι] {M : ι → Type*} (i₀ : ι)
-  (f : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) (x : M i₀)
-
-/-- Given `i₀ : ι` and `x : M i₀`, this is (dependent) map `(i : ι) → M i`
-whose value at `i₀` is `x` and which extends a given map on the complement of `{i₀}`. -/
-def extendComplSingleton (i : ι) : M i :=
-  if h : i = i₀ then by rw [h]; exact x else f ⟨i, h⟩
-
-@[simp]
-lemma extendComplSingleton_self : extendComplSingleton i₀ f x i₀ = x := dif_pos rfl
-
-lemma extendComplSingleton_of_neq (i : ι) (h : i ≠ i₀) :
-    extendComplSingleton i₀ f x i = f ⟨i, h⟩ := dif_neg h
-
-@[simp]
-lemma extendCompSingleton_restriction (φ : ∀ i, M i) (i₀ : ι) :
-    extendComplSingleton i₀ (fun i ↦ φ i) (φ i₀) = φ := by
-  ext i
-  by_cases h : i = i₀
-  · subst h
-    simp
-  · rw [extendComplSingleton_of_neq _ _ _ _ h]
-
-end Function
 
 open TensorProduct
 
@@ -111,13 +57,13 @@ lemma equivTensorPiTensorComplSingleton_symm_tmul [DecidableEq ι] (i₀ : ι)
     (x : M i₀) (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :
     (equivTensorPiTensorComplSingleton R M i₀).symm
       (x ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j)) =
-      (⨂ₜ[R] i, Function.extendComplSingleton i₀ m x i) := by
+      (⨂ₜ[R] i, Function.complSingletonLift i₀ m x i) := by
   apply (equivTensorPiTensorComplSingleton R M i₀).injective
   simp only [LinearEquiv.apply_symm_apply, equivTensorPiTensorComplSingleton_tprod,
-    Function.extendComplSingleton_self]
+    Function.complSingletonLift_self]
   congr
   ext ⟨i, hi⟩
-  rw [Function.extendComplSingleton_of_neq]
+  rw [Function.complSingletonLift_of_neq]
 
 end equivTensorPiTensorComplSingleto
 
@@ -169,14 +115,14 @@ lemma ext_of_span_eq_top
     · intro j
       classical
       simp only [lift.equiv_symm_apply]
-      convert h (Function.extendComplSingleton i₀ j g₀) using 1
+      convert h (Function.complSingletonLift i₀ j g₀) using 1
       all_goals
         simp only [equivTensorPiTensorComplSingleton_tprod,
-          Function.extendComplSingleton_self]
+          Function.complSingletonLift_self]
         congr
         ext x
         congr
-        rw [Function.extendComplSingleton_of_neq]
+        rw [Function.complSingletonLift_of_neq]
     · exact Nat.card_singleton_compl i₀ hι
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top

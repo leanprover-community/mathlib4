@@ -3412,6 +3412,7 @@ import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.CoeSort
+import Mathlib.Data.Set.ComplSingletonLift
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Defs
