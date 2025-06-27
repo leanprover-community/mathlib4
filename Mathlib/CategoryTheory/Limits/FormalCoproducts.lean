@@ -53,9 +53,10 @@ structure Hom (X Y : FormalCoproduct.{w} C) where
 -- presheaves of sets on `C` which are coproducts of representable presheaves
 @[simps!] instance category : Category (FormalCoproduct.{w} C) where
   Hom := Hom
+  -- 𝟙 should be eqToHom -- that way lean doesnt check objects def eq
   id X := { f := id, φ := fun _ ↦ 𝟙 _ }
   comp α β := { f := β.f ∘ α.f, φ := fun _ ↦ α.φ _ ≫ β.φ _ }
-#check category_id_φ  -- 𝟙 should be eqToHom -- that way lean doesnt check objects def eq
+
 @[ext (iff := false)]
 lemma hom_ext {X Y : FormalCoproduct.{w} C} {f g : X ⟶ Y} (h₁ : f.f = g.f)
     (h₂ : ∀ (i : X.I), f.φ i ≫ eqToHom (by rw [h₁]) = g.φ i) : f = g := by
@@ -227,14 +228,14 @@ section simp_lemmas
 end simp_lemmas
 
 @[simps!] def homPullbackEquiv : (T ⟶ (pullbackCone f g).pt) ≃
-    { p : (T ⟶ X) × (T ⟶ Y) // p.1 ≫ f = p.2 ≫ g } :=
-  { toFun m := ⟨⟨m ≫ (pullbackCone f g).fst, m ≫ (pullbackCone f g).snd⟩, by simp⟩
-    invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congrFun (congrArg Hom.f s.2) i⟩,
-      fun i ↦ pullback.lift (s.1.1.φ i) (s.1.2.φ i) (by simpa using ((hom_ext_iff _ _).1 s.2).2 i)⟩
-    left_inv m := hom_ext rfl (fun i ↦ by
-      simp only [category_comp_f, category_comp_φ, eqToHom_refl, Category.comp_id]
-      exact pullback.hom_ext (pullback.lift_fst _ _ _) (pullback.lift_snd _ _ _))
-    right_inv s := by ext <;> simp }
+    { p : (T ⟶ X) × (T ⟶ Y) // p.1 ≫ f = p.2 ≫ g } where
+  toFun m := ⟨⟨m ≫ (pullbackCone f g).fst, m ≫ (pullbackCone f g).snd⟩, by simp⟩
+  invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congrFun (congrArg Hom.f s.2) i⟩,
+    fun i ↦ pullback.lift (s.1.1.φ i) (s.1.2.φ i) (by simpa using ((hom_ext_iff _ _).1 s.2).2 i)⟩
+  left_inv m := hom_ext rfl (fun i ↦ by
+    simp only [category_comp_f, category_comp_φ, eqToHom_refl, Category.comp_id]
+    exact pullback.hom_ext (pullback.lift_fst _ _ _) (pullback.lift_snd _ _ _))
+  right_inv s := by ext <;> simp
 
 def isLimitPullback : IsLimit (pullbackCone f g) := by
   refine PullbackCone.IsLimit.mk (fst := (pullbackCone f g).fst) (snd := (pullbackCone f g).snd) _
