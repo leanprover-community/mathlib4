@@ -603,14 +603,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
     Arrow.mk (f ∣_ U ∣_ V) ≅ Arrow.mk (f ∣_ U.ι ''ᵁ V) := by
   refine Arrow.isoMk' _ _ ((Scheme.Opens.ι _).isoImage _ ≪≫ Scheme.isoOfEq _ ?_)
     ((Scheme.Opens.ι _).isoImage _) ?_
-  · ext x
-    simp only [IsOpenMap.coe_functor_obj, Opens.coe_inclusion',
-      Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_base]
-    constructor
-    · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩
-      exact ⟨_, h₂, rfl⟩
-    · rintro ⟨⟨a, h₁⟩, h₂, rfl : a = _⟩
-      exact ⟨⟨x, h₁⟩, h₂, rfl⟩
+  · exact image_morphismRestrict_preimage f U V
   · rw [← cancel_mono (Scheme.Opens.ι _), Iso.trans_hom, Category.assoc, Category.assoc,
       Category.assoc, morphismRestrict_ι, Scheme.isoOfEq_hom_ι_assoc,
       Scheme.Hom.isoImage_hom_ι_assoc,
