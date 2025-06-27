@@ -24,11 +24,14 @@ def RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+
   letI : Algebra R S := f.toAlgebra
   Module.Flat R S
 
-lemma flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
+lemma RingHom.flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
     (algebraMap R S).Flat ↔ Module.Flat R S := by
   simp only [RingHom.Flat]
   congr!
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+
+@[deprecated (since := "2025-06-03")]
+alias flat_algebraMap_iff := RingHom.flat_algebraMap_iff
 
 namespace RingHom.Flat
 
