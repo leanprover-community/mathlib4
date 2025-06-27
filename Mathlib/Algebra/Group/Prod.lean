@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Logic.Equiv.Prod
 import Mathlib.Tactic.TermCongr
@@ -574,59 +573,9 @@ def prodUnique [Unique N] : M × N ≃* M :=
 
 end
 
-section
-
-variable [Monoid M] [Monoid N]
-
-/-- The monoid equivalence between units of a product of two monoids, and the product of the
-    units of each monoid. -/
-@[to_additive prodAddUnits
-      "The additive monoid equivalence between additive units of a product
-      of two additive monoids, and the product of the additive units of each additive monoid."]
-def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
-  toFun := (Units.map (MonoidHom.fst M N)).prod (Units.map (MonoidHom.snd M N))
-  invFun u := ⟨(u.1, u.2), (↑u.1⁻¹, ↑u.2⁻¹), by simp, by simp⟩
-  left_inv u := by
-    simp only [MonoidHom.prod_apply, Units.coe_map, MonoidHom.coe_fst, MonoidHom.coe_snd,
-      Prod.mk.eta, Units.coe_map_inv, Units.mk_val]
-  right_inv := fun ⟨u₁, u₂⟩ => by
-    simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
-      MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
-    exact ⟨rfl, rfl⟩
-  map_mul' := MonoidHom.map_mul _
-
-@[to_additive]
-lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
-  mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
-  mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
-
-end
-
 end MulEquiv
 
-namespace Units
-
-open MulOpposite
-
-/-- Canonical homomorphism of monoids from `αˣ` into `α × αᵐᵒᵖ`.
-Used mainly to define the natural topology of `αˣ`. -/
-@[to_additive (attr := simps)
-      "Canonical homomorphism of additive monoids from `AddUnits α` into `α × αᵃᵒᵖ`.
-      Used mainly to define the natural topology of `AddUnits α`."]
-def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
-  toFun x := ⟨x, op ↑x⁻¹⟩
-  map_one' := by
-    simp only [inv_one, eq_self_iff_true, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
-  map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
-
-@[to_additive]
-theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
-
-end Units
-
 /-! ### Multiplication and division as homomorphisms -/
-
 
 section BundledMulDiv
 
@@ -652,3 +601,4 @@ def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
   map_mul' _ _ := mul_div_mul_comm _ _ _ _
 
 end BundledMulDiv
+#min_imports

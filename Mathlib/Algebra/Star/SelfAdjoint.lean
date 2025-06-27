@@ -576,7 +576,7 @@ protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNo
 
 protected instance IsStarNormal.val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R)] :
     IsStarNormal (↑x⁻¹ : R) where
-  star_comm_self := by simpa [← Units.coe_star_inv, -Commute.units_val_iff] using star_comm_self
+  star_comm_self := by simpa [← Units.coe_star_inv] using star_comm_self
 
 protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :

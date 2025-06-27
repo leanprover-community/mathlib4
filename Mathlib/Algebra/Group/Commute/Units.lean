@@ -44,8 +44,8 @@ theorem units_val : Commute u₁ u₂ → Commute (u₁ : M) u₂ :=
 theorem units_of_val : Commute (u₁ : M) u₂ → Commute u₁ u₂ :=
   SemiconjBy.units_of_val
 
-@[to_additive (attr := simp)]
-theorem units_val_iff : Commute (u₁ : M) u₂ ↔ Commute u₁ u₂ :=
+@[to_additive]
+theorem units_val_iff : Commute u₁ u₂ ↔ Commute (u₁ : M) u₂ :=
   SemiconjBy.units_val_iff
 
 end Commute
