@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.Tactic.FinCases
@@ -892,5 +893,25 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
   SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
+
+namespace Truncated
+
+instance final_inclusion (n : ℕ) : (inclusion n).Final := .mk fun Δ => by
+  have : Nonempty (StructuredArrow Δ (inclusion n)) := ⟨⟨⟨⟩⟩, ⦋0⦌ₙ, const _ _ 0⟩
+  apply zigzag_isConnected
+  rintro ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩
+  apply Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⦋0⦌ₙ, Δ.const ⦋0⦌ 0⟩)
+    (Zigzag.of_zag (.inl ⟨StructuredArrow.homMk (Δ₁.const _ 0) (by rfl)⟩))
+    (Zigzag.of_zag (.inr ⟨StructuredArrow.homMk (Δ₂.const _ 0) (by rfl)⟩))
+
+instance final_incl (m n : ℕ) (h : m ≤ n) : (incl m n h).Final := .mk fun ⟨Δ, hΔ⟩ => by
+  have : Nonempty (StructuredArrow ⟨Δ, hΔ⟩ (incl m n h)) := ⟨⟨⟨⟩⟩, ⟨⦋0⦌, by simp⟩, const _ _ 0⟩
+  apply zigzag_isConnected
+  rintro ⟨⟨⟨⟩⟩, ⟨Δ₁, hΔ₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨Δ₂, hΔ₂⟩, g₂⟩
+  apply Zigzag.trans (j₂ := ⟨⟨⟨⟩⟩, ⟨⦋0⦌, by simp⟩, Δ.const ⦋0⦌ 0⟩)
+    (Zigzag.of_zag (.inl ⟨StructuredArrow.homMk (Δ₁.const _ 0) (by rfl)⟩))
+    (Zigzag.of_zag (.inr ⟨StructuredArrow.homMk (Δ₂.const _ 0) (by rfl)⟩))
+
+end Truncated
 
 end SimplexCategory
