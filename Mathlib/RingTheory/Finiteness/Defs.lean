@@ -80,6 +80,20 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
     have := Fintype.ofFinite (range g)
     exact ⟨(range g).toFinset, by simpa using hg⟩
 
+theorem fg_span_iff_fg_span_finset_subset (s : Set M) :
+  (span R s).FG ↔ ∃ (s' : Finset M), ↑s' ⊆ s ∧ span R s = span R s' := by
+  unfold FG
+  constructor
+  · intro ⟨s'', hs''⟩
+    obtain ⟨s', hs's, hss'⟩ := subset_span_finite_of_subset_span <| hs'' ▸ subset_span
+    refine ⟨s', hs's, ?_⟩
+    apply le_antisymm
+    · rwa [← hs'', Submodule.span_le]
+    · rw [Submodule.span_le]
+      exact le_trans hs's subset_span
+  · intro ⟨s', _, h⟩
+    exact ⟨s', h.symm⟩
+
 end Submodule
 
 namespace Ideal
