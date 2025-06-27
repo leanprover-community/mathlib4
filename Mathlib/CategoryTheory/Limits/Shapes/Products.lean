@@ -623,7 +623,7 @@ theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext j
-  simp only [Discrete.functor_obj, Category.assoc, piComparison_comp_π, ← G.map_comp,
+  simp only [Category.assoc, piComparison_comp_π, ← G.map_comp,
     limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
@@ -642,7 +642,7 @@ theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (
     (g : ∀ j, f j ⟶ P) :
     sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
   ext j
-  simp only [Discrete.functor_obj, ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
+  simp only [ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
     Cofan.mk_pt, Cofan.mk_ι_app]
 
 end Comparison

@@ -72,7 +72,7 @@ theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sIn
     ⨅ i ∈ s, f i = (s.image f).min' h' := by
   classical
   rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
-  simp only [Function.comp_apply, toDual_iInf]
+  simp only [toDual_iInf]
   rw [ciSup_eq_max'_image _ h]
   simp only [image_image]
   congr

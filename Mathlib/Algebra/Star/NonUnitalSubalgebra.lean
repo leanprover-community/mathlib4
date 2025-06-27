@@ -866,7 +866,7 @@ theorem range_id : NonUnitalStarAlgHom.range (NonUnitalStarAlgHom.id R A) = ⊤ 
 @[simp]
 theorem map_bot [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F) :
     (⊥ : NonUnitalStarSubalgebra R A).map f = ⊥ :=
-  SetLike.coe_injective <| by simp [NonUnitalAlgebra.coe_bot, NonUnitalStarSubalgebra.coe_map]
+  SetLike.coe_injective <| by simp [NonUnitalStarSubalgebra.coe_map]
 
 @[simp]
 theorem comap_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F) :
