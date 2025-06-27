@@ -252,7 +252,9 @@ theorem coe_chartAt_symm_fst (p : H × E) (q : TM) :
 
 /-- The trivialization of the tangent space can be expressed in terms of the tangent bundle core.
 To write it as the manifold derivative of `extChartAt`, see
-`TangentBundle.continuousLinearMapAt_trivializationAt`. -/
+`TangentBundle.continuousLinearMapAt_trivializationAt`.
+
+Use with care as it abuses the defeq `TangentSpace I b = E`. -/
 theorem continuousLinearMapAt_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b := by
@@ -260,7 +262,9 @@ theorem continuousLinearMapAt_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ 
 
 /-- The inverse trivialization of the tangent space can be expressed in terms of the tangent bundle
 core. To write it as the manifold derivative of `(extChartAt I b₀).symm`, see
-`TangentBundle.symmL_trivializationAt`. -/
+`TangentBundle.symmL_trivializationAt`.
+
+Use with care as it abuses the defeq `TangentSpace I b = E`. -/
 theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b := by

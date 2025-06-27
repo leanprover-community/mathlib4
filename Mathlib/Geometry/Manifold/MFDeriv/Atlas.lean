@@ -351,21 +351,26 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
 
+/-- The trivialization of the tangent bundle at a point is the manifold derivative of the
+extended chart.
+Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
 theorem TangentBundle.continuousLinearMapAt_trivializationAt
     {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
-    (trivializationAt E (TangentBundle I) b₀).continuousLinearMapAt 𝕜 b =
+    (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
       mfderiv I 𝓘(𝕜, E) (extChartAt I b₀) b := by
   have : MDifferentiableAt I 𝓘(𝕜, E) (extChartAt I b₀) b := mdifferentiableAt_extChartAt hb
   simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
     ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe] at this
   simp [hb, mfderiv, this]
 
+/-- The inverse trivialization of the tangent bundle at a point is the manifold derivative of the
+inverse of the extended chart.
+Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
 theorem TangentBundle.symmL_trivializationAt
     {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
       mfderivWithin 𝓘(𝕜, E) I (extChartAt I b₀).symm (range I) (extChartAt I b₀ b) := by
-  have : MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I b₀).symm
-      (range I) (extChartAt I b₀ b) :=
+  have : MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I b₀).symm (range I) (extChartAt I b₀ b) :=
     mdifferentiableWithinAt_extChartAt_symm (by simp [hb])
   simp? at this says
     simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans_symm,
