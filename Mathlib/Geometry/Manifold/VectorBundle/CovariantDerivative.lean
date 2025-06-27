@@ -104,6 +104,11 @@ instance : CoeFun (CovariantDerivative I F V)
     fun _ ↦ (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
   ⟨fun e ↦ e.toFun⟩
 
+-- TODO: prove this via a DFunLike instance
+lemma myext  (cov cov' : CovariantDerivative I F V)
+    (h : ∀ X : (Π x : M, TangentSpace I x), ∀ (σ : Π x : M, V x), ∀ (x : M), cov X σ x = cov' X σ x) :
+    cov = cov' := sorry
+
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [VectorBundle 𝕜 F V] in
 @[simp]
@@ -476,12 +481,46 @@ noncomputable def endomorph_of_trivial_aux' [FiniteDimensional ℝ E] [FiniteDim
   toLinearMap := cov.endomorph_of_trivial_aux x X
   cont := LinearMap.continuous_of_finiteDimensional _
 
+@[simps]
+noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
+    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x : E) : E →ₗ[ℝ] E' →L[ℝ] E' where
+  toFun X := cov.endomorph_of_trivial_aux' x X
+  map_add' X Y := by
+    ext Z
+    simp [cov.addX (extend E X (x := x)) (extend E Y (x := x)) (extend E' Z (x := x))]
+    module
+  map_smul' t X := by
+    ext Z
+    simp
+    --expose_names
+    --have A : cov (t • extend E X (x := x)) (extend E' Z) x = t • cov (extend E X (x := x)) (extend E' Z) x := sorry
+    --simp [A]
+    --have aux := cov.smulX (extend E X (x := x)) (extend E' Z (x := x)) (f := fun _ ↦ t) --t
+    --simp [aux]
+    --module
+    sorry
+
+@[simps!]
+noncomputable def endomorph_of_trivial_aux''' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
+    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x : E) : E →L[ℝ] E' →L[ℝ] E' where
+  toLinearMap := cov.endomorph_of_trivial_aux'' x
+  cont := LinearMap.continuous_of_finiteDimensional _
+
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
 -/
-lemma exists_endomorph (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) :
+lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
+    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) :
     ∃ (A : E → E →L[ℝ] E' →L[ℝ] E'), cov = .of_endomorphism A := by
-  sorry
+  use cov.endomorph_of_trivial_aux'''
+  apply CovariantDerivative.myext
+  intro X σ x
+  -- These two statements are unfolding a bit too far: the first sorry holds,
+  -- but the second one does not.
+  -- However, the difference of these is true again.
+  have A : cov (extend E (X x)) (extend E' (σ x)) x = cov X σ x := sorry
+  have B : fderiv ℝ (extend E' (σ x) (x := x)) x (X x) = fderiv ℝ σ x (X x) := sorry
+  simp [A, B]
 
 end real
 
