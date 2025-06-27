@@ -71,15 +71,8 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
   have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas]
   refine hf_f_meas.trans ?_
-  refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_
-  · intro s hs hμs
-    have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
-    rw [IntegrableOn, integrable_congr hfg_restrict.symm]
-    exact hf_int_finite s hs hμs
-  · intro s hs hμs
-    have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
-    rw [integral_congr_ae hfg_restrict.symm]
-    exact hf_zero s hs hμs
+  refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_ <;>
+    assumption
 
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/

@@ -44,17 +44,14 @@ def kroneckerTMulLinearEquiv :
     Matrix l m M ⊗[R] Matrix n p N ≃ₗ[S] Matrix (l × n) (m × p) (M ⊗[R] N) :=
   .ofLinear
     (AlgebraTensorModule.lift <| kroneckerTMulBilinear R S)
-    ((LinearMap.lsum S _ R fun ii => LinearMap.lsum S _ R fun jj => AlgebraTensorModule.map
-      (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
-      ∘ₗ (ofLinearEquiv S).symm.toLinearMap)
+    (Matrix.liftLinear R fun ii jj =>
+      AlgebraTensorModule.map (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
     (by
       ext : 4
-      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle,
-        single_kroneckerTMul_single])
+      simp [single_kroneckerTMul_single])
     (by
       ext : 5
-      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle,
-        single_kroneckerTMul_single])
+      simp [single_kroneckerTMul_single])
 
 @[simp]
 theorem kroneckerTMulLinearEquiv_tmul (a : Matrix l m M) (b : Matrix n p N) :

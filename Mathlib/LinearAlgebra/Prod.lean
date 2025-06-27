@@ -413,13 +413,8 @@ theorem disjoint_inl_inr : Disjoint (range <| inl R M M₂) (range <| inr R M M�
   simp +contextual [disjoint_def, @eq_comm M 0]
 
 theorem map_coprod_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (p : Submodule R M)
-    (q : Submodule R M₂) : map (coprod f g) (p.prod q) = map f p ⊔ map g q := by
-  refine le_antisymm ?_ (sup_le (map_le_iff_le_comap.2 ?_) (map_le_iff_le_comap.2 ?_))
-  · rw [SetLike.le_def]
-    rintro _ ⟨x, ⟨h₁, h₂⟩, rfl⟩
-    exact mem_sup.2 ⟨_, ⟨_, h₁, rfl⟩, _, ⟨_, h₂, rfl⟩, rfl⟩
-  · exact fun x hx => ⟨(x, 0), by simp [hx]⟩
-  · exact fun x hx => ⟨(0, x), by simp [hx]⟩
+    (q : Submodule R M₂) : map (coprod f g) (p.prod q) = map f p ⊔ map g q :=
+  coprod_map_prod f g p q
 
 theorem comap_prod_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) (p : Submodule R M₂)
     (q : Submodule R M₃) : comap (prod f g) (p.prod q) = comap f p ⊓ comap g q :=

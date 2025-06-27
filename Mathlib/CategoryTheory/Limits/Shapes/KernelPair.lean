@@ -55,10 +55,7 @@ namespace IsKernelPair
 
 /-- The data expressing that `(a, b)` is a kernel pair is subsingleton. -/
 instance : Subsingleton (IsKernelPair f a b) :=
-  ⟨fun P Q => by
-    cases P
-    cases Q
-    congr ⟩
+  ⟨fun P Q => by constructor⟩
 
 /-- If `f` is a monomorphism, then `(𝟙 _, 𝟙 _)` is a kernel pair for `f`. -/
 theorem id_of_mono [Mono f] : IsKernelPair f (𝟙 _) (𝟙 _) :=

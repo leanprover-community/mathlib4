@@ -60,8 +60,7 @@ theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ �
     intro i
     split_ifs
     · exact ⟨_, by assumption, le_rfl⟩
-    · obtain ⟨a, ha, ha'⟩ := h
-      exact ⟨a, ha, ha'⟩
+    · assumption
   · simp only [Set.mem_image, mem_coe, ciSup_eq_ite, dite_eq_ite, Set.mem_range,
       exists_exists_eq_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro i hi
