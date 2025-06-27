@@ -104,6 +104,16 @@ theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = 
 theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
   surjective_eval i
 
+/-- Homs to a pi module are canonically identified with a product of hom types, even linearly so. -/
+def _root_.LinearEquiv.linearMapPi (S) [Semiring S] [(i : ι) → Module S (φ i)]
+    [∀ i, SMulCommClass R S (φ i)] : (Π i, M₂ →ₗ[R] φ i) ≃ₗ[S] M₂ →ₗ[R] Π i, φ i where
+  toFun := pi
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun f i := proj i ∘ₗ f
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
   bot_unique <|

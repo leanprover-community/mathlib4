@@ -353,6 +353,10 @@ lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
   rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
   simp
 
+lemma mapRange_bijective (e : M → N) (he₀ : e 0 = 0) (he : Bijective e) :
+    Bijective (Finsupp.mapRange (α := α) e he₀) :=
+  ⟨mapRange_injective e he₀ he.1, mapRange_surjective e he₀ he.2⟩
+
 end MapRange
 
 /-! ### Declarations about `embDomain` -/
