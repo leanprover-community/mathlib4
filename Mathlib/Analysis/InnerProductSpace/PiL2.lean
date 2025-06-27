@@ -119,16 +119,14 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
   `(WithLp.toLp $p (V := ∀ _ : Fin $(quote n), _) ![$e,*])
 
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
-@[app_delab DFunLike.coe]
+@[app_delab WithLp.toLp]
 def EuclideanSpace.delabVecNotation : Delab :=
-  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
-    let p : Term ← withAppFn <| withAppArg do
-      let_expr WithLp.toLp _ := ← getExpr | failure
-      withNaryArg 2 <| withNaryArg 0 <| delab
+    let p : Term ← withNaryArg 0 <| delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
-    let `(![$elems,*]) := ← withAppArg delab | failure
+    let `(![$elems,*]) := ← withNaryArg 2 delab | failure
     `(!$p[$elems,*])
 
 end Notation
