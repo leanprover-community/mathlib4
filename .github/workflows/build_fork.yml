@@ -86,6 +86,7 @@ jobs:
         with:
           ref: master
           path: master-branch
+          repository: leanprover-community/mathlib4
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
