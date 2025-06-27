@@ -17,7 +17,7 @@ open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M]
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -223,16 +223,14 @@ lemma contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
     contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
   exact hbas.comp x h₁
 
-variable {I} in
 lemma contMDiffOn_localFrame_repr (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n) {t : Set M}
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t :=
-  fun _ hx ↦ (b.contMDiffAt_localFrame_repr I (ht' hx) hk
+  fun _ hx ↦ (b.contMDiffAt_localFrame_repr (ht' hx) hk
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
-variable {I} in
 lemma contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet) (i : ι) :
