@@ -430,16 +430,16 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
 
 /--
 Parse a string as either a path or a Lean module name.
-TODO: If the argument describes a folder, use `walkDir` to find all `.lean` files within.
+If the argument describes a folder, use `walkDir` to find all `.lean` files within.
 
-Return tuples of the form ("module name", "path to .lean file").
+Return tuples of the form `("module name", "path to .lean file")`.
 
 The input string `arg` takes one of the following forms:
 
 1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
-2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder (TODO)
+2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder
 3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
-4. `Mathlib/Algebra/Fields/`: the folder exists (TODO)
+4. `Mathlib/Algebra/Fields/`: the folder exists
 
 Not supported yet:
 
@@ -464,7 +464,9 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
       return .ok #[(mod, arg)]
     else
       -- (4.) provided existing directory: walk it
-      return .error "Searching lean files in a folder is not supported yet!"
+      IO.println s!"Searching directory {arg} for .lean files"
+      let leanModulesInFolder ← walkDir sp arg mod
+      return .ok leanModulesInFolder
   else
     -- provided a module
     let mod := argₛ.toName
@@ -477,15 +479,35 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
       -- does not correspond to a Lean file, but to an existing folder
       -- `Mathlib/Data/`
       let folder := sourceFile.withExtension ""
-      IO.println s!"Searching directory {folder} for .lean files"
       if ← folder.pathExists then
-        -- (2.) provided "module name" of an existing folder: walk dir
-        -- TODO: will be implemented in #21838
-        return .error "Entering a part of a module name \
-          (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
-          file `Mathlib/Data.lean` exists) is not supported yet!"
+        -- (2.) provided "module name" of an existing folder: walk it
+        IO.println s!"Searching directory {folder} for .lean files"
+        let leanModulesInFolder ← walkDir sp folder mod
+        return .ok leanModulesInFolder
       else
         return .error "Invalid argument: non-existing module {mod}"
+where
+  /--
+  Search all `.lean` files inside `folder`.
+
+  In order to figure out the module name corresponding
+  to the found files, we use `mod` and the search path `sp` to figure out how much of
+  the relative path needs to be trimmed.
+
+  This assumes the `folder` exists.
+  -/
+  walkDir (sp : SearchPath) (folder : FilePath) (mod : Name) : IO <| Array (Name × FilePath) := do
+    -- The source direcory where `mod` is located
+    let srcDir ← getSrcDir sp mod
+    -- find all Lean files in the folder only skipping special entries such as `.` and `..`
+    let files ← folder.walkDir (pure ·.fileName.isSome)
+    let leanFiles := files.filter (·.extension == some "lean")
+    let mut leanModulesInFolder : Array (Name × FilePath) := #[]
+    for file in leanFiles do
+      let path := file.withoutParent srcDir
+      let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
+      leanModulesInFolder := leanModulesInFolder.push (mod, file)
+    pure leanModulesInFolder
 
 /--
 Parse command line arguments.
