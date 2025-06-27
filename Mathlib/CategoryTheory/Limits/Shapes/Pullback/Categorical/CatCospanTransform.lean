@@ -320,4 +320,66 @@ end lemmas
 
 end CatCospanTransform
 
+open scoped CatCospanTransform
+
+/-- A `CatCospanAdjunction F G F' G'` is a diagram
+```
+     F     G
+  A = ⥤ B ⥢ = C
+ | ^   | ^   | |
+ |⊣|   |⊣|   |⊣|
+ v |   v |   v |
+  A'= ⥤ B'⥢ = C'
+     F'    G'
+ 
+```
+where H₁, H₂ and H₃ are equivalences, along with commutative 2-squares structure on the
+squares in the forward direction. -/
+structure CatCospanAdjunction
+    {A B C : Type*} [Category A] [Category B] [Category C]
+    (F : A ⥤ B) (G : C ⥤ B)
+    {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
+    (F' : A' ⥤ B') (G' : C' ⥤ B') where
+  /-- The functor on the left component -/
+  left : A ≌ A'
+  /-- The functor on the base component -/
+  base : B ≌ B'
+  /-- The functor on the right component -/
+  right : C ≌ C'
+  /-- A `CatCommSq` bundling the natural isomorphism `F ⋙ base ≅ left ⋙ F'`. -/
+  squareLeft : CatCommSq F left.functor base.functor F' := by infer_instance
+  /-- A `CatCommSq` bundling the natural isomorphism `G ⋙ base ≅ right ⋙ G'`. -/
+  squareRight : CatCommSq G right.functor base.functor G' := by infer_instance
+
+/-- A `CatCospanAdjunction F G F' G'` is a diagram
+```
+    F   G
+  A ⥤ B ⥢ C
+H₁|   |H₂ |H₃
+  v   v   v
+  A'⥤ B'⥢ C'
+    F'  G'
+```
+where H₁, H₂ and H₃ are equivalences, along with commutative 2-squares structure on the
+squares in the forward direction. -/
+structure CatCospanEquivalence
+    {A B C : Type*} [Category A] [Category B] [Category C]
+    (F : A ⥤ B) (G : C ⥤ B)
+    {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
+    (F' : A' ⥤ B') (G' : C' ⥤ B') where
+  /-- The functor on the left component -/
+  left : A ≌ A'
+  /-- The functor on the base component -/
+  base : B ≌ B'
+  /-- The functor on the right component -/
+  right : C ≌ C'
+  /-- A `CatCommSq` bundling the natural isomorphism `F ⋙ base ≅ left ⋙ F'`. -/
+  squareLeft : CatCommSq F left.functor base.functor F' := by infer_instance
+  /-- A `CatCommSq` bundling the natural isomorphism `G ⋙ base ≅ right ⋙ G'`. -/
+  squareRight : CatCommSq G right.functor base.functor G' := by infer_instance
+
+section equiv
+
+end equiv
+
 end CategoryTheory.Limits
