@@ -123,6 +123,19 @@ theorem tangentBundleCore_coordChange_achart (x x' z : M) :
       fderivWithin 𝕜 (extChartAt I x' ∘ (extChartAt I x).symm) (range I) (extChartAt I x z) :=
   rfl
 
+variable (y : E)
+variable (E) in
+def my_copy := E
+
+instance : AddCommGroup (my_copy E) := inferInstanceAs (AddCommGroup E)
+instance : TopologicalSpace (my_copy E) := inferInstanceAs (TopologicalSpace E)
+instance : Module 𝕜 (my_copy E) := inferInstanceAs (Module 𝕜 E)
+
+set_option trace.Meta.synthInstance true in
+#synth Norm (E →L[𝕜] my_copy E)
+
+#exit
+
 section tangentCoordChange
 
 variable (I) in

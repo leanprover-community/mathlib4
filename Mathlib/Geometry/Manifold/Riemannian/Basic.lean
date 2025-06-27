@@ -143,18 +143,50 @@ variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 [IsManifold I 1 M]
 [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
 
-attribute [local instance 2000]
-  Bundle.instNormedAddCommGroupOfRiemannianBundle Bundle.instInnerProductSpaceReal
+section
 
+def glou (x : E) : NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
+  inferInstanceAs (NormedAddCommGroup E)
+
+attribute [local instance] glou
+
+def gloups (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
+  inferInstanceAs (NormedSpace ℝ E)
+
+end
+
+variable (x : M) (y : E)
+
+set_option trace.Meta.synthInstance true in
+#synth Norm (E →L[ℝ] TangentSpace 𝓘(ℝ, E) y)
+
+#exit
+
+#check ContinuousLinearMap.hasOpNorm
+
+set_option synthInstance.maxHeartbeats 30000 in
+#synth NormedSpace ℝ (TangentSpace I x)
+
+set_option synthInstance.maxHeartbeats 30000 in
+#synth NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) y)
+
+#exit
+
+set_option synthInstance.maxHeartbeats 30000 in
 --set_option trace.profiler true in
 variable (I) in
 lemma bloops (x : M) : ∃ C > 0, ∀ᶠ y in 𝓝 x,
     ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ < C := by
+  sorry
+
+#exit
+
   rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
     with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
-  convert hy
+
+
 
 
 #exit
