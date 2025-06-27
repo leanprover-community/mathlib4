@@ -376,7 +376,7 @@ theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
 /-- Order related instances for `ℕ+`.
 -/
 
-instance instSuccOrder : SuccOrder ℕ+  :=
+instance instSuccOrder : SuccOrder ℕ+ :=
   SuccOrder.ofSuccLeIff (fun n => succPNat n) (by rfl)
 
 instance instSuccAddOrder : SuccAddOrder ℕ+ where
