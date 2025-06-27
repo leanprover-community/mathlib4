@@ -209,7 +209,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
 
   -- step 2: `s` read in trivialization `e` is `C^k`
   have h₁ : ContMDiffAt I 𝓘(𝕜, F) k (fun x ↦ (e (s x)).2) x := by
-    rw [contMDiffAt_section_of_mem_baseSet _ _ hxe] at hs
+    rw [contMDiffAt_section_of_mem_baseSet hxe] at hs
     exact hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
