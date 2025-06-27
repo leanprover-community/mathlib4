@@ -53,8 +53,8 @@ instance EnrichedCategory.opposite : EnrichedCategory V Cᵒᵖ where
     simp only [braiding_naturality_left_assoc,
       MonoidalCategory.whiskerLeft_comp, Category.assoc]
     rw [← EnrichedCategory.assoc]
-    simp only [braiding_tensor_left, Category.assoc, Iso.inv_hom_id_assoc,
-      braiding_naturality_right_assoc, braiding_tensor_right]
+    simp only [braiding_tensor_left_hom, Category.assoc, Iso.inv_hom_id_assoc,
+      braiding_naturality_right_assoc, braiding_tensor_right_hom]
 
 end
 
