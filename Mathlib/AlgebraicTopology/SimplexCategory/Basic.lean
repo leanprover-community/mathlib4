@@ -774,10 +774,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine ⟨y, x, ⟨h₁.symm, ?_⟩⟩
-      rcases lt_or_eq_of_le (not_lt.mp h) with h' | h'
-      · exact h'
-      · exfalso
-        exact h₂ h'.symm
+      omega
   rcases hθ₂ with ⟨x, y, ⟨h₁, h₂⟩⟩
   use x.castPred ((Fin.le_last _).trans_lt' h₂).ne
   apply eq_σ_comp_of_not_injective'

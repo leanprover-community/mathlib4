@@ -101,8 +101,7 @@ theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : Nat.beq (b / 2) 0 = false) (
       fun hf => ?_⟩
   have h : 2 ∣ a.gcd b := Nat.dvd_gcd (Nat.dvd_of_mod_eq_zero ha) (Nat.dvd_of_mod_eq_zero hb₁)
   change 2 ∣ (a : ℤ).gcd b at h
-  rw [hf, ← even_iff_two_dvd] at h
-  exact Nat.not_even_one h
+  omega
 
 /-- When `a` is odd and `b` is even, we can replace `b` by `b / 2`. -/
 theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 2 = 0) (hc : b / 2 = c)
@@ -130,25 +129,25 @@ theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : 
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  omega
 
 theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  omega
 
 theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  omega
 
 theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  omega
 
 /-- Use quadratic reciproity to reduce to smaller `b`. -/
 theorem jacobiSymNat.qr₁ (a b : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
