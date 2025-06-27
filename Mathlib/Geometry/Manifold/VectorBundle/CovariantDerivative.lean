@@ -356,6 +356,11 @@ lemma foo (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M
 -- TODO: either change `localFrame` to make sure it is everywhere smooth
 -- or introduce a cut-off here. First option is probaly better.
 variable (F) in
+/-- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
+The details of the extension are mostly unspecified: for covariant derivatives, the value of
+`s` at points other than `x` will not matter (except for shorter proofs).
+Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v`.
+-/
 noncomputable def extend [FiniteDimensional ℝ F] {x : M} (v : V x) : (x' : M) → V x' :=
   letI b := Basis.ofVectorSpace ℝ F
   letI t := trivializationAt F V x
@@ -369,11 +374,27 @@ noncomputable def extend [FiniteDimensional ℝ F] {x : M} (v : V x) : (x' : M) 
 -- a different proof would be to argue only the value at a point matters for cov
 @[simp]
 lemma extend_add_apply [FiniteDimensional ℝ F] {x : M} (v v' : V x) :
-  extend F (v + v') = extend F v + extend F v' := sorry
+    extend F (v + v') = extend F v + extend F v' := by
+  ext x
+  simp [extend]
+  expose_names
+  set b := Basis.ofVectorSpace ℝ F
+  set t := trivializationAt F V x
+  --have : x_1 ∈ (trivializationAt F V x_1).baseSet
+  have (i) :
+      let hi := FiberBundle.mem_baseSet_trivializationAt F V x_1;
+      (((b.localFrame_toBasis_at t sorry).repr v) i +
+      ((b.localFrame_toBasis_at t sorry).repr v') i) • b.localFrame t i x =
+      ((b.localFrame_toBasis_at t sorry).repr v) i • b.localFrame t i x +
+      ((b.localFrame_toBasis_at t sorry).repr v') i • b.localFrame t i x := by
+    sorry
+  sorry
 
 @[simp]
 lemma extend_smul_apply [FiniteDimensional ℝ F] {a : ℝ} (v  : V x) :
   extend F (a • v) = a • extend F v := sorry
+
+#exit
 
 -- TODO: cleanup this proof by adding simp lemmas to the localFrame stuff
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
