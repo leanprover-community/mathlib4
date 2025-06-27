@@ -74,7 +74,8 @@ evaluates to `2`, and the permutation attached to each element of `ι` is compat
 reflections on the corresponding roots and coroots.
 
 It exists to allow for a convenient unification of the theories of root systems and root data. -/
-structure RootPairing extends PerfectPairing R M N where
+structure RootPairing extends M →ₗ[R] N →ₗ[R] R where
+  [isPerfPair_toLinearMap : toLinearMap.IsPerfPair]
   /-- A parametrized family of vectors, called roots. -/
   root : ι ↪ M
   /-- A parametrized family of dual vectors, called coroots. -/
@@ -87,9 +88,11 @@ structure RootPairing extends PerfectPairing R M N where
       permutation); and similarly for coroots. -/
   reflectionPerm : ι → (ι ≃ ι)
   reflectionPerm_root : ∀ i j,
-    root j - toPerfectPairing (root j) (coroot i) • root i = root (reflectionPerm i j)
+    root j - toLinearMap (root j) (coroot i) • root i = root (reflectionPerm i j)
   reflectionPerm_coroot : ∀ i j,
-    coroot j - toPerfectPairing (root i) (coroot j) • coroot i = coroot (reflectionPerm i j)
+    coroot j - toLinearMap (root i) (coroot j) • coroot i = coroot (reflectionPerm i j)
+
+attribute [instance] RootPairing.isPerfPair_toLinearMap
 
 /-- A root datum is a root pairing with coefficients in the integers and for which the root and
 coroot spaces are finitely-generated free Abelian groups.
@@ -117,21 +120,21 @@ variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
 @[simp]
-lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
-    P.toLinearMap x y = P.toPerfectPairing x y := rfl
+lemma toLinearMap_eq_toLinearMap (x : M) (y : N) :
+    P.toLinearMap x y = P.toLinearMap x y := rfl
 
 @[deprecated (since := "2025-04-20")]
-alias toLin_toPerfectPairing := toLinearMap_eq_toPerfectPairing
+alias toLin_toLinearMap := toLinearMap_eq_toLinearMap
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
-protected def flip : RootPairing ι R N M :=
-  { P.toPerfectPairing.flip with
-    root := P.coroot
-    coroot := P.root
-    root_coroot_two := P.root_coroot_two
-    reflectionPerm := P.reflectionPerm
-    reflectionPerm_root := P.reflectionPerm_coroot
-    reflectionPerm_coroot := P.reflectionPerm_root }
+@[simps toLinearMap] protected def flip : RootPairing ι R N M where
+  toLinearMap := P.toLinearMap.flip
+  root := P.coroot
+  coroot := P.root
+  root_coroot_two := P.root_coroot_two
+  reflectionPerm := P.reflectionPerm
+  reflectionPerm_root := P.reflectionPerm_coroot
+  reflectionPerm_coroot := P.reflectionPerm_root
 
 @[simp]
 lemma flip_flip : P.flip.flip = P :=
@@ -193,16 +196,16 @@ protected lemma nontrivial' [Nonempty ι] [NeZero (2 : R)] : Nontrivial N :=
   P.flip.nontrivial
 
 /-- Roots written as functionals on the coweight space. -/
-abbrev root' (i : ι) : Dual R N := P.toPerfectPairing (P.root i)
+abbrev root' (i : ι) : Dual R N := P.toLinearMap (P.root i)
 
 /-- Coroots written as functionals on the weight space. -/
-abbrev coroot' (i : ι) : Dual R M := P.toPerfectPairing.flip (P.coroot i)
+abbrev coroot' (i : ι) : Dual R M := P.toLinearMap.flip (P.coroot i)
 
 /-- This is the pairing between roots and coroots. -/
 def pairing : R := P.root' i (P.coroot j)
 
 @[simp]
-lemma root_coroot_eq_pairing : P.toPerfectPairing (P.root i) (P.coroot j) = P.pairing i j :=
+lemma root_coroot_eq_pairing : P.toLinearMap (P.root i) (P.coroot j) = P.pairing i j :=
   rfl
 
 @[simp]
@@ -371,7 +374,7 @@ lemma coreflection_eq_flip_reflection :
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLinearMap.flip = P.toLinearMap.flip ∘ₗ P.coreflection i := by
   ext n m
-  simp [map_sub, coreflection_apply, reflection_apply, mul_comm (P.toPerfectPairing m (P.coroot i))]
+  simp [map_sub, coreflection_apply, reflection_apply, mul_comm (P.toLinearMap m (P.coroot i))]
 
 lemma coroot_eq_coreflection_of_root_eq
     {i j k : ι} (hk : P.root k = P.reflection i (P.root j)) :
@@ -395,29 +398,29 @@ lemma pairing_reflectionPerm (i j k : ι) :
   simp only [pairing, root', coroot_reflectionPerm, root_reflectionPerm]
   simp only [coreflection_apply_coroot, map_sub, map_smul, smul_eq_mul,
     reflection_apply_root]
-  simp [← toLinearMap_eq_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
+  simp [← toLinearMap_eq_toLinearMap, map_smul, LinearMap.smul_apply, map_sub, map_smul,
     LinearMap.sub_apply, smul_eq_mul]
   simp [mul_comm]
 
 @[deprecated (since := "2025-05-28")] alias pairing_reflection_perm := pairing_reflectionPerm
 
 @[simp]
-lemma toDualLeft_conj_reflection :
-    P.toDualLeft.conj (P.reflection i) = (P.coreflection i).toLinearMap.dualMap := by
+lemma toPerfPair_conj_reflection :
+    P.toPerfPair.conj (P.reflection i) = (P.coreflection i).toLinearMap.dualMap := by
   ext f n
   simp [LinearEquiv.conj_apply, reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
 
 @[simp]
-lemma toDualRight_conj_coreflection :
-    P.toDualRight.conj (P.coreflection i) = (P.reflection i).toLinearMap.dualMap :=
-  P.flip.toDualLeft_conj_reflection i
+lemma toPerfPair_flip_conj_coreflection :
+    P.flip.toPerfPair.conj (P.coreflection i) = (P.reflection i).toLinearMap.dualMap :=
+  P.flip.toPerfPair_conj_reflection i
 
 @[simp]
 lemma pairing_reflectionPerm_self_left (P : RootPairing ι R M N) (i j : ι) :
     P.pairing (P.reflectionPerm i i) j = - P.pairing i j := by
   rw [pairing, root', ← reflectionPerm_root, root'_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLinearMap_eq_toPerfectPairing, LinearMap.map_neg₂,
-    toLinearMap_eq_toPerfectPairing, root'_coroot_eq_pairing]
+    sub_add_cancel_left, ← toLinearMap_eq_toLinearMap, LinearMap.map_neg₂,
+    toLinearMap_eq_toLinearMap, root'_coroot_eq_pairing]
 
 @[deprecated (since := "2025-05-28")]
 alias pairing_reflection_perm_self_left := pairing_reflectionPerm_self_left
@@ -426,8 +429,8 @@ alias pairing_reflection_perm_self_left := pairing_reflectionPerm_self_left
 lemma pairing_reflectionPerm_self_right (i j : ι) :
     P.pairing i (P.reflectionPerm j j) = - P.pairing i j := by
   rw [pairing, ← reflectionPerm_coroot, root_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLinearMap_eq_toPerfectPairing, map_neg,
-    toLinearMap_eq_toPerfectPairing, root_coroot_eq_pairing]
+    sub_add_cancel_left, ← toLinearMap_eq_toLinearMap, map_neg,
+    toLinearMap_eq_toLinearMap, root_coroot_eq_pairing]
 
 @[deprecated (since := "2025-05-28")]
 alias pairing_reflection_perm_self_right := pairing_reflectionPerm_self_right
@@ -438,10 +441,9 @@ of a root / coroot. -/
   neg i := P.reflectionPerm i i
   neg_neg i := by
     apply P.root.injective
-    simp only [root_reflectionPerm, reflection_apply, PerfectPairing.flip_apply_apply,
-      root_coroot_eq_pairing, pairing_same, map_sub, map_smul, coroot_reflectionPerm,
-      coreflection_apply_self, LinearMap.sub_apply, map_neg, LinearMap.smul_apply, smul_eq_mul,
-      mul_neg, sub_neg_eq_add]
+    simp only [root_reflectionPerm, reflection_apply, LinearMap.flip_apply, root_coroot_eq_pairing,
+      pairing_same, map_sub, coroot_reflectionPerm, coreflection_apply_self, map_neg, neg_smul,
+      sub_neg_eq_add, map_smul, smul_add]
     module
 
 lemma ne_neg [NeZero (2 : R)] [IsDomain R] :
@@ -589,9 +591,9 @@ lemma _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff (P : RootSystem ι 
 alias _root_.RootSystem.reflection_perm_eq_reflection_perm_iff :=
   _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff
 
-@[simp] lemma toDualLeft_comp_root : P.toDualLeft ∘ P.root = P.root' := rfl
+@[simp] lemma toPerfPair_comp_root : P.toPerfPair ∘ P.root = P.root' := rfl
 
-@[simp] lemma toDualRight_comp_root : P.toDualRight ∘ P.coroot = P.coroot' := rfl
+@[simp] lemma toPerfPair_flip_comp_coroot : P.flip.toPerfPair ∘ P.coroot = P.coroot' := rfl
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
@@ -611,8 +613,8 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   ext v
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
   erw [Module.End.mul_apply, Module.End.mul_apply]
-  simp only [LinearEquiv.coe_coe, reflection_apply, PerfectPairing.flip_apply_apply, map_sub,
-    map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
+  simp only [LinearEquiv.coe_coe, reflection_apply, LinearMap.flip_apply, map_sub, map_smul,
+    root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
 
 variable {P i j}
@@ -687,12 +689,12 @@ lemma pairing_eq_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
 
 lemma pairing_eq_zero_iff' [NeZero (2 : R)] [IsDomain R] :
     P.pairing i j = 0 ↔ P.pairing j i = 0 := by
-  have := P.reflexive_left
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   exact pairing_eq_zero_iff
 
 lemma coxeterWeight_zero_iff_isOrthogonal [NeZero (2 : R)] [IsDomain R] :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
-  have := P.reflexive_left
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   simp [coxeterWeight, IsOrthogonal, P.pairing_eq_zero_iff (i := i) (j := j)]
 
 lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
