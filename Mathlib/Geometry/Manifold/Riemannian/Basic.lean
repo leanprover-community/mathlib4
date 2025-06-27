@@ -181,6 +181,17 @@ lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
   filter_upwards [hC, hx] with y hy h'y
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
+lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
+    ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x,
+    ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C := by
+  rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
+  lift C to ℝ≥0 using C_pos.le
+  simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
+  refine ⟨C, C_pos, ?_⟩
+  filter_upwards [hC] with y hy
+  simp only [enorm, nnnorm]
+  exact_mod_cast hy
+
 lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x,
     ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) (extChartAt I x y)‖ < C := by
@@ -306,5 +317,26 @@ lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
+
+/-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
+Riemannian distance. -/
+lemma setOf_riemmanianEDist_lt_subset_nhds {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
+    ∃ c > (0 : ℝ≥0), {y | riemannianEDist I x y < c} ⊆ s := by
+  rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
+  obtain ⟨r, r_pos, hr⟩ : ∃ r > 0, ball (extChartAt I x x) r ⊆
+      (extChartAt I x).symm ⁻¹' (s ∩ {y | ‖mfderiv I 𝓘(ℝ, E) (↑(extChartAt I x)) y‖ₑ < ↑C}) := by
+    apply Metric.mem_nhds_iff.1
+    apply extChartAt_preimage_mem_nhds
+    exact Filter.inter_mem hs hC
+  lift r to ℝ≥0 using r_pos.le
+  simp only [gt_iff_lt, NNReal.coe_pos] at r_pos
+  refine ⟨r / C, by positivity, ?_⟩
+  intro y hy
+  rcases exists_lt_locally_constant_of_riemannianEDist_lt hy zero_lt_one
+    with ⟨γ, hγx, hγy, γ_smooth, -, -⟩
+
+
+
+
 
 end
