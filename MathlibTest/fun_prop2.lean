@@ -45,7 +45,7 @@ example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
 
 -- Notice that no theorems about measuability of log are used. It is inferred from continuity.
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
-  fun_prop (config:={maxTransitionDepth:=2})
+  fun_prop (maxTransitionDepth := 2)
 
 
 

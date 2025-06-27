@@ -703,7 +703,7 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   rw [Ioc_union_Ioc, Ioc_union_Ioc]
   · ac_rfl
   all_goals
-  solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
-       le_max_of_le_left, le_max_of_le_right, le_refl]
+  solve_by_elim (maxDepth := 5) [min_le_of_left_le, min_le_of_right_le,
+    le_max_of_le_left, le_max_of_le_right, le_refl]
 
 end Set
