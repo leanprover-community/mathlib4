@@ -33,7 +33,7 @@ variable {ι : Type*} [DecidableEq ι] (M : ι → Type*)
 /-- The linear equivalence between `⨂[R] i, M i` and the tensor product of `M i₀`
 (for some `i₀ : ι`) and the pi tensor product indexed by the complement of `{i₀}`. -/
 noncomputable def equivTensorPiTensorComplSingleton (i₀ : ι) :
-    (⨂[R] i, M i) ≃ₗ[R] (M i₀ ⊗[R] ⨂[R] (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :=
+    (⨂[R] i, M i) ≃ₗ[R] (M i₀ ⊗[R] ⨂[R] (i : ({i₀}ᶜ : Set ι)), M i) :=
   ((reindex R (s := M) (e := (unitSumSubtypeNeEquiv i₀).symm)).trans
     (tmulEquivDep R
         (fun i => M (unitSumSubtypeNeEquiv i₀ i))).symm).trans
@@ -126,7 +126,7 @@ lemma ext_of_span_eq_top
         ext ⟨x, hx⟩
         congr
         rw [Function.subtypeNeLift_of_neq]
-    · exact Nat.card_singleton_compl i₀ hι
+    · exact Nat.card_compl_of_card_eq_add _ (by simpa)
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
