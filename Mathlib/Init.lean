@@ -60,6 +60,7 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   linter.allScriptsDocumented
   linter.checkInitImports
+  linter.dupOpen
 
   linter.hashCommand
   linter.oldObtain
