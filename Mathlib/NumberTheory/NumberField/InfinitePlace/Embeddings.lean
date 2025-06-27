@@ -266,10 +266,13 @@ lemma isConj_one_iff : IsConj φ (1 : Gal(K/k)) ↔ IsReal φ := Iff.rfl
 
 alias ⟨_, IsReal.isConjGal_one⟩ := ComplexEmbedding.isConj_one_iff
 
+lemma isConj_eq_one_iff (hσ : IsConj φ σ) :
+    σ = 1 ↔ IsReal φ :=
+  ⟨fun h ↦ isConj_one_iff.mp (h ▸ hσ), fun h ↦ (IsConj.ext_iff hσ).mpr h.isConjGal_one⟩
+
 lemma isConj_ne_one_iff (hσ : IsConj φ σ) :
     σ ≠ 1 ↔ ¬ IsReal φ :=
-  not_iff_not.mpr ⟨fun h ↦ isConj_one_iff.mp (h ▸ hσ),
-    fun h ↦ (IsConj.ext_iff hσ).mpr h.isConjGal_one⟩
+  isConj_eq_one_iff hσ |>.not
 
 lemma IsConj.symm (hσ : IsConj φ σ) :
     IsConj φ σ.symm := RingHom.ext fun x ↦ by simpa using congr_arg star (hσ.eq (σ.symm x))
