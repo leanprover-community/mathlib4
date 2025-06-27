@@ -316,7 +316,7 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp [*, two_ne_zero, parity_simps]
+  simp [*, parity_simps]
 
 example : ¬Even 25394535 := by decide
 

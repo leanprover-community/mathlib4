@@ -59,7 +59,7 @@ open Subgroup
 /-- The range of a monoid homomorphism from a group is a subgroup. -/
 @[to_additive "The range of an `AddMonoidHom` from an `AddGroup` is an `AddSubgroup`."]
 def range (f : G →* N) : Subgroup N :=
-  Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp [Set.ext_iff])
+  Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp)
 
 @[to_additive (attr := simp)]
 theorem coe_range (f : G →* N) : (f.range : Set N) = Set.range f :=
@@ -407,7 +407,7 @@ theorem map_comap_eq (H : Subgroup N) : map f (comap f H) = f.range ⊓ H :=
 @[to_additive]
 theorem comap_map_eq (H : Subgroup G) : comap f (map f H) = H ⊔ f.ker := by
   refine le_antisymm ?_ (sup_le (le_comap_map _ _) (ker_le_comap _ _))
-  intro x hx; simp only [exists_prop, mem_map, mem_comap] at hx
+  intro x hx; simp only [mem_map, mem_comap] at hx
   rcases hx with ⟨y, hy, hy'⟩
   rw [← mul_inv_cancel_left y x]
   exact mul_mem_sup hy (by simp [mem_ker, hy'])

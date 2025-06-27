@@ -76,7 +76,7 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     InnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, ⟪x i, y i⟫
   norm_sq_eq_re_inner x := by
-    simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner, one_div]
+    simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner]
   conj_inner_symm := by
     intro x y
     unfold inner
@@ -179,7 +179,7 @@ variable [Fintype ι]
 @[simp]
 theorem finrank_euclideanSpace :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  simp [EuclideanSpace, PiLp, WithLp]
+  simp [WithLp]
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
@@ -274,7 +274,7 @@ theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace
     ⟪EuclideanSpace.single i (a : 𝕜), v⟫ = conj a * v i := by simp [apply_ite conj, mul_comm]
 
 theorem EuclideanSpace.inner_single_right (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
-    ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [apply_ite conj]
+    ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp
 
 @[simp]
 theorem EuclideanSpace.norm_single (i : ι) (a : 𝕜) :
@@ -364,7 +364,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
       classical
         rw [← LinearMap.cancel_right (WithLp.linearEquiv 2 𝕜 (_ → 𝕜)).symm.surjective]
-        simp only [LinearIsometryEquiv.toLinearEquiv_symm]
+        simp only
         refine LinearMap.pi_ext fun i k => ?_
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
@@ -396,7 +396,7 @@ protected theorem repr_apply_apply (b : OrthonormalBasis ι 𝕜 E) (v : E) (i :
     b.repr v i = ⟪b i, v⟫ := by
   classical
     rw [← b.repr.inner_map_map (b i) v, b.repr_self i, EuclideanSpace.inner_single_left]
-    simp only [one_mul, eq_self_iff_true, map_one]
+    simp only [one_mul, map_one]
 
 @[simp]
 protected theorem orthonormal (b : OrthonormalBasis ι 𝕜 E) : Orthonormal 𝕜 b := by
@@ -421,6 +421,14 @@ lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 @[simp]
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
     ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij
+
+@[simp]
+lemma inner_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) : ⟪b i, b i⟫ = 1 := by
+  simp [inner_self_eq_norm_sq_to_K]
+
+lemma inner_eq_ite [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i j : ι) :
+    ⟪b i, b j⟫ = if i = j then 1 else 0 := by
+  by_cases h : i = j <;> simp [h]
 
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
@@ -461,7 +469,7 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   rw [map_smul, b.repr_apply_apply, mul_comm]
   simp
 
-lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+lemma sum_sq_norm_inner_right (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ∑ i, ‖⟪b i, x⟫‖ ^ 2 = ‖x‖ ^ 2 := by
   rw [@norm_eq_sqrt_re_inner 𝕜, ← OrthonormalBasis.sum_inner_mul_inner b x x, map_sum]
   simp_rw [inner_mul_symm_re_eq_norm, norm_mul, ← inner_conj_symm x, starRingEnd_apply,
@@ -469,10 +477,30 @@ lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
   rw [Real.sq_sqrt]
   exact Fintype.sum_nonneg fun _ ↦ by positivity
 
+@[deprecated (since := "2025-06-23")] alias sum_sq_norm_inner := sum_sq_norm_inner_right
+
+lemma sum_sq_norm_inner_left (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    ∑ i, ‖⟪x, b i⟫‖ ^ 2 = ‖x‖ ^ 2 := by
+  convert sum_sq_norm_inner_right b x using 2 with i -
+  rw [← inner_conj_symm, RCLike.norm_conj]
+
+open scoped RealInnerProductSpace in
+theorem sum_sq_inner_right {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    ∑ i : ι, ⟪b i, x⟫ ^ 2 = ‖x‖ ^ 2 := by
+  rw [← b.sum_sq_norm_inner_right]
+  simp
+
+open scoped RealInnerProductSpace in
+theorem sum_sq_inner_left {ι E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [Fintype ι] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    ∑ i : ι, ⟪x, b i⟫ ^ 2 = ‖x‖ ^ 2 := by
+  simp_rw [← b.sum_sq_inner_right, real_inner_comm]
+
 lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
   calc ‖x‖
-  _ = √(∑ i, ‖⟪b i, x⟫‖ ^ 2) := by rw [sum_sq_norm_inner, Real.sqrt_sq (by positivity)]
+  _ = √(∑ i, ‖⟪b i, x⟫‖ ^ 2) := by rw [sum_sq_norm_inner_right, Real.sqrt_sq (by positivity)]
   _ ≤ √(∑ _ : ι, (⨆ j, ‖⟪b j, x⟫‖) ^ 2) := by
     gcongr with i
     exact le_ciSup (f := fun j ↦ ‖⟪b j, x⟫‖) (by simp) i
@@ -1007,7 +1035,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       have Lp1x : L (p1 x) ∈ LinearMap.range L.toLinearMap :=
         LinearMap.mem_range_self L.toLinearMap (p1 x)
       have Lp2x : L3 (p2 x) ∈ (LinearMap.range L.toLinearMap)ᗮ := by
-        simp only [LS, LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ,
+        simp only [LS,
           ← Submodule.range_subtype LSᗮ]
         apply LinearMap.mem_range_self
       apply Submodule.inner_right_of_mem_orthogonal Lp1x Lp2x
@@ -1015,9 +1043,8 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
-    simp only [p1, p2, LinearIsometry.norm_map, _root_.add_left_inj, mul_eq_mul_left_iff,
-      norm_eq_zero, eq_self_iff_true, ContinuousLinearMap.coe_coe, Submodule.coe_norm,
-      Submodule.coe_eq_zero]
+    simp only [p1, p2, LinearIsometry.norm_map,
+      ContinuousLinearMap.coe_coe, Submodule.coe_norm]
   exact
     { toLinearMap := M
       norm_map' := M_norm_map }

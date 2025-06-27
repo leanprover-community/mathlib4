@@ -104,7 +104,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
     · rintro ⟨g, rfl⟩
       obtain ⟨⟨g, s⟩, rfl⟩ :=
         IsLocalizedModule.mk'_surjective I.primeCompl (LocalizedModule.map I.primeCompl) g
-      simp only [Function.uncurry_apply_pair, Submodule.restrictScalars_mem]
+      simp only [Function.uncurry_apply_pair]
       refine ⟨f.comp g, ⟨g, rfl⟩, s, ?_⟩
       apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
          (LocalizedModule.map I.primeCompl) s).injective

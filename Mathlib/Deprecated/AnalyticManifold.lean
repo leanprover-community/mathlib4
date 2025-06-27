@@ -135,7 +135,7 @@ theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace �
     (fa : f ∈ analyticGroupoid I) (ga : g ∈ analyticGroupoid J) :
     f.prod g ∈ analyticGroupoid (I.prod J) := by
   have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
-  simp only [mem_analyticGroupoid, Function.comp, image_subset_iff] at fa ga ⊢
+  simp only [mem_analyticGroupoid] at fa ga ⊢
   exact ⟨AnalyticOn.prod
       (fa.1.comp analyticOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
       (ga.1.comp analyticOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),

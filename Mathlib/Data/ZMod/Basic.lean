@@ -106,7 +106,7 @@ instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff := by
     intro k
     rcases n with - | n
-    · simp [zero_dvd_iff, Int.natCast_eq_zero]
+    · simp [zero_dvd_iff]
     · exact Fin.natCast_eq_zero
 
 -- Verify that `grind` can see that `ZMod n` has characteristic `n`.
@@ -266,7 +266,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
-  simp only [Fin.val_add_eq_ite, Int.natCast_succ, Int.ofNat_le]
+  simp only [Fin.val_add_eq_ite, Int.natCast_succ]
   norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]
@@ -528,7 +528,7 @@ lemma intCast_cast_neg (x : ZMod n) : (cast (-x) : ℤ) = -cast x % n := by
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   dsimp [val, Fin.coe_neg]
   cases n
-  · simp [Nat.mod_one]
+  · simp
   · dsimp [ZMod, ZMod.cast]
     rw [Fin.coe_neg_one]
 
@@ -738,7 +738,7 @@ theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a := by
 
 theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] := by
   cases n
-  · simp [Nat.ModEq, Int.natCast_inj, Nat.mod_zero]
+  · simp [Nat.ModEq, Nat.mod_zero]
   · rw [Fin.ext_iff, Nat.ModEq, ← val_natCast, ← val_natCast]
     exact Iff.rfl
 
@@ -923,7 +923,7 @@ theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
 
 @[simp]
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
-  fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]; rfl
+  fin_cases a <;> apply Fin.ext <;> simp; rfl
 
 @[simp]
 theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
