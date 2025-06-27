@@ -104,7 +104,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   -- the derivative of Gamma at 1.
   calc deriv Gamma (1 / 2)
   _ = (deriv (fun s ↦ Gamma s * Gamma (s + 1 / 2)) (1 / 2)) + √π * γ := by
-    rw [deriv_mul, Gamma_one_half_eq,
+    rw [deriv_fun_mul, Gamma_one_half_eq,
       add_assoc, ← mul_add, deriv_comp_add_const,
       (by norm_num : 1/2 + 1/2 = (1 : ℝ)), Gamma_one, mul_one,
       eulerMascheroniConstant_eq_neg_deriv, add_neg_cancel, mul_zero, add_zero]
@@ -121,7 +121,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
               deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 2
-    rw [deriv_mul]
+    rw [deriv_fun_mul]
     · congr 1 <;> norm_num
     · exact h_diff' one_half_pos
     · exact DifferentiableAt.rpow (by fun_prop) (by fun_prop) two_ne_zero

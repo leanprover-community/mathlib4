@@ -76,13 +76,7 @@ protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra v.valuationS
     (integralClosure v.valuationSubring L)).symm.toRingEquiv
 
 theorem integralClosure_algebraMap_injective :
-    Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) := by
-  have hinj : Injective ⇑(algebraMap v.valuationSubring L) :=
-    ValuationSubring.algebraMap_injective v L
-  rw [injective_iff_map_eq_zero (algebraMap v.valuationSubring _)]
-  intro x hx
-  rw [← Subtype.coe_inj, Subalgebra.coe_zero] at hx
-  rw [injective_iff_map_eq_zero (algebraMap v.valuationSubring L)] at hinj
-  exact hinj x hx
+    Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) :=
+  FaithfulSMul.algebraMap_injective ↥v.valuationSubring ↥(integralClosure (↥v.valuationSubring) L)
 
 end ValuationSubring
