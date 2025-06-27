@@ -81,7 +81,7 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
       = fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}) := by
     ext1 b
     congr with c
-    simp only [Set.mem_iUnion, Set.iSup_eq_iUnion, Set.mem_setOf_eq]
+    simp only [Set.mem_iUnion, Set.mem_setOf_eq]
   rw [compProdFun, h_Union]
   have h_tsum : (fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}))
       = fun b ↦ ∑' i, η (a, b) {c : γ | (b, c) ∈ f i} := by
@@ -274,8 +274,8 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
     {s : Set (β × γ)} (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ] (x : α) :
     (κ ⊗ₖ deterministic f hf) x s = κ x {b | (b, f (x, b)) ∈ s} := by
   classical
-  simp only [deterministic_apply, measurableSet_setOf, Set.mem_setOf_eq, Measure.dirac_apply,
-    Set.mem_setOf_eq, Set.indicator_apply, Pi.one_apply, compProd_apply hs]
+  simp only [deterministic_apply, Measure.dirac_apply,
+    Set.indicator_apply, Pi.one_apply, compProd_apply hs]
   let t := {b | (b, f (x, b)) ∈ s}
   have ht : MeasurableSet t := (measurable_id.prodMk (hf.comp measurable_prodMk_left)) hs
   rw [← lintegral_add_compl _ ht]
