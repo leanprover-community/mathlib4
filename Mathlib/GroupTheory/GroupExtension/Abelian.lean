@@ -3,10 +3,11 @@ Copyright (c) 2024 Yudai Yamazaki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yudai Yamazaki
 -/
-
 import Mathlib.GroupTheory.GroupExtension.Basic
-import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
+set_option linter.style.header false in
+set_option linter.directoryDependency false in
 /-!
 # Lemmas about extensions by Abelian groups
 
@@ -26,6 +27,8 @@ group extensions in general, see `Mathlib/GroupTheory/GroupExtension/Basic.lean`
 * [Kenneth S. Brown, *Cohomology of groups*][brown1982]
 
 -/
+
+suppress_compilation
 
 namespace SemidirectProduct
 
@@ -86,29 +89,30 @@ def splittingEquivOneCocycles :
   1-coboundary. -/
 theorem isConj_iff_sub_mem_oneCoboundaries (s₁ s₂ : (toGroupExtension φ).Splitting) :
     (toGroupExtension φ).IsConj s₁ s₂ ↔
-    splittingToOneCocycle φ s₁ - splittingToOneCocycle φ s₂ ∈
+    ⇑(splittingToOneCocycle φ s₁) - splittingToOneCocycle φ s₂ ∈
     groupCohomology.oneCoboundaries (toRep φ) := by
-  rw [sub_mem_comm_iff, groupCohomology.mem_oneCoboundaries_iff]
+  rw [sub_mem_comm_iff]
   apply Additive.ofMul.exists_congr
   intro n
-  rw [funext_iff]
+  rw [funext_iff, funext_iff]
   apply forall_congr'
   intro g
   simp only [toGroupExtension_inl, SemidirectProduct.ext_iff, mul_left, mul_right, inv_left,
     inv_right, right_splitting, left_inl, right_inl, inv_one, map_one, map_inv, MulAut.one_apply,
     one_mul, mul_one, and_true]
   rw [eq_mul_inv_iff_mul_eq, mul_comm, ← eq_mul_inv_iff_mul_eq, mul_assoc, mul_comm,
-    ← mul_inv_eq_iff_eq_mul, ← groupCohomology.oneCocycles.val_eq_coe, AddSubgroupClass.coe_sub,
-    Pi.sub_apply]
-  simp only [splittingToOneCocycle, toRep_ρ_apply_apply, toMul_ofMul, ← div_eq_mul_inv]
+    ← mul_inv_eq_iff_eq_mul]
+  simp only [← div_eq_mul_inv, groupCohomology.dZero_hom_apply, toRep_ρ_apply_apply, toMul_ofMul,
+    splittingToOneCocycle, Pi.sub_apply]
   rfl
 
-/-- The bijection between the `N`-conjugacy classes of splittings and the first cohomology group -/
-def conjClassesEquivH1 : (toGroupExtension φ).ConjClasses ≃ groupCohomology.H1 (toRep φ) :=
-  Quotient.congr (splittingEquivOneCocycles φ) (by
-    intro s₁ s₂
-    rw [Submodule.quotientRel_def]
-    exact isConj_iff_sub_mem_oneCoboundaries φ s₁ s₂
-  )
+-- /-- The bijection between the `N`-conjugacy classes of splittings and the first cohomology group
+-- -/
+-- def conjClassesEquivH1 : (toGroupExtension φ).ConjClasses ≃ groupCohomology.H1 (toRep φ) :=
+--   Quotient.congr (splittingEquivOneCocycles φ) (by
+--     intro s₁ s₂
+--     rw [Submodule.quotientRel_def]
+--     exact isConj_iff_sub_mem_oneCoboundaries φ s₁ s₂
+--   )
 
 end SemidirectProduct
