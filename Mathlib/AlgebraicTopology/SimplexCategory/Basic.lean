@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
-import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.Tactic.FinCases
