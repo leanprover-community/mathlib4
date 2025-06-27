@@ -59,6 +59,11 @@ theorem some_zero : (0 : Option α →₀ M).some = 0 := by
   simp
 
 @[simp]
+theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
+  ext
+  simp
+
+@[simp]
 theorem some_single_none (m : M) : (single none m : Option α →₀ M).some = 0 := by
   ext
   simp
@@ -69,11 +74,6 @@ theorem some_single_some (a : α) (m : M) :
   classical
     ext b
     simp [single_apply]
-
-theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
-  ext
-  simp
-
 
 @[simp]
 lemma some_update_none (f : Option α →₀ M) (y : M) : (update f none y).some = f.some := by
@@ -192,11 +192,6 @@ theorem optionElim'_ne_zero_iff (y : M) (f : α →₀ M) :
     | inr h => exact optionElim'_ne_zero_of_left y f h
 
 end Zero
-
-@[simp]
-theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
-  ext
-  simp
 
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
