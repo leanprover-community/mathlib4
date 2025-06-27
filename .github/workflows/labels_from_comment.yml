@@ -30,13 +30,6 @@ jobs:
         # trim leading/trailing whitespace and collapse "internal" whitespace
         COMMENT="$(printf '%s' "${COMMENT}" | awk '{$1=$1};1')"
 
-        # If, after trimming whitespace, the comment spans more than one line, we do not act.
-        if [ "$(wc -l <<< "${COMMENT}")" -ne 1 ]
-        then
-          printf $'The comment contains more than a single line: exiting.\n'
-          exit 0
-        fi
-
         # for debugging, we print some information
         printf '%s' "${COMMENT}" | hexdump -cC
         printf 'Comment:"%s"\n' "${COMMENT}"
@@ -45,7 +38,8 @@ jobs:
           inComment=""
           label="${labelArray[$i]}"
           printf $'\nProcessing label \'%s\'\n' "${label}"
-          inComment="$(printf '%s' "${COMMENT}" | grep "[-]\?${label}$")"
+          # extract the last line that, up to leading/trailing whitespace, matches the current label
+          inComment="$(printf '%s' "${COMMENT}" | grep "[-]\?${label}$" | tail -1)"
           if [ -n "${inComment}" ]
           then
             printf $'Found \'%s\'\n' "${inComment}"
