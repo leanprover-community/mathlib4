@@ -59,11 +59,6 @@ theorem some_zero : (0 : Option α →₀ M).some = 0 := by
   simp
 
 @[simp]
-theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
-  ext
-  simp
-
-@[simp]
 theorem some_single_none (m : M) : (single none m : Option α →₀ M).some = 0 := by
   ext
   simp
@@ -193,6 +188,11 @@ theorem optionElim'_ne_zero_iff (y : M) (f : α →₀ M) :
 
 end Zero
 
+@[simp]
+theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
+  ext
+  simp
+
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
@@ -212,24 +212,6 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (b : Option α → M) :
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
-
-theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
-    (n = (embDomain Embedding.some m).update none i) ↔
-      n none = i ∧ n.some = m := by
-  classical
-  rw [Finsupp.ext_iff, Option.forall, Finsupp.ext_iff]
-  apply and_congr
-  · simp
-  · apply forall_congr'
-    intro
-    simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
-    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
-
-@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
-  ext; rw [some_apply]; exact embDomain_apply _ _ _
-
-@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
-  embDomain_notin_range _ _ _ (by simp)
 
 end Option
 
