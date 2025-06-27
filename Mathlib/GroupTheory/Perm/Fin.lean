@@ -394,6 +394,25 @@ theorem cycleType_cycleIcc (hij : i < j) :
   simpa [cycleIcc, cycleType_cycleRange (castLT_sub_nezero hij)] using sub_val_of_le
     (Fin.le_of_lt hij)
 
+theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
+    (cycleIcc hij) ∘ (cycleIcc hjk) = (cycleIcc (Fin.le_trans hij hjk)) := by
+  ext x
+  rcases Fin.lt_or_le x i with ch | ch
+  · simp [cycleIcc_of_lt hjk (Fin.lt_of_lt_of_le ch hij), cycleIcc_of_lt hij ch,
+      cycleIcc_of_lt (Fin.le_trans hij hjk) ch]
+  rcases Fin.lt_or_le k x with ch | ch1
+  · simp [cycleIcc_of_gt hjk ch, cycleIcc_of_gt hij (Fin.lt_of_le_of_lt hjk ch),
+      cycleIcc_of_gt ((Fin.le_trans hij hjk)) ch]
+  rcases Fin.lt_or_le x j with ch2 | ch2
+  · simp [cycleIcc_of_lt hjk ch2, cycleIcc_of ch ch1, cycleIcc_of ch (Fin.le_of_lt ch2)]
+    split_ifs
+    repeat omega
+  · simp [cycleIcc_of ch2 ch1, cycleIcc_of ch ch1]
+    split_ifs with h
+    · simp
+    · have : j < x + 1 := Fin.lt_of_le_of_lt ch2 (lt_add_one_of_lt (lt_of_le_of_ne ch1 h))
+      simp [cycleIcc_of_gt hij this]
+
 end Fin
 
 end cycleIcc
