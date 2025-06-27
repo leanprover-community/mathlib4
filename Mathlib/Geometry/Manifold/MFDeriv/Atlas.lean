@@ -353,7 +353,7 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
 
 theorem TangentBundle.continuousLinearMapAt_trivializationAt
     {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
-    (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
+    (trivializationAt E (TangentBundle I) b₀).continuousLinearMapAt 𝕜 b =
       mfderiv I 𝓘(𝕜, E) (extChartAt I b₀) b := by
   have : MDifferentiableAt I 𝓘(𝕜, E) (extChartAt I b₀) b := mdifferentiableAt_extChartAt hb
   simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
