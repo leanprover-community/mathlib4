@@ -188,8 +188,11 @@ lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i :
     b.localFrame_repr e i s x = b.repr (e (s x)).2 i := by
   simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
-lemma contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [ContMDiffVectorBundle n F V I] [Fintype ι] in
+lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x} {k : WithTop ℕ∞}
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
     (i : ι) : ContMDiffAt I 𝓘(𝕜) k (b.localFrame_repr e i s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
@@ -217,24 +220,28 @@ lemma contMDiffAt_localFrame_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
   }
   let basL : F →L[𝕜] 𝕜 := {
     toLinearMap := basl
-    cont := sorry -- F is finite-dimensional...
+    cont := basl.continuous_of_finiteDimensional
   }
   have hbas : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k basL (e (s x)).2 :=
     contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
   exact hbas.comp x h₁
 
-lemma contMDiffOn_localFrame_repr (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n) {t : Set M}
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [ContMDiffVectorBundle n F V I] [Fintype ι] in
+lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M}
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t :=
-  fun _ hx ↦ (b.contMDiffAt_localFrame_repr (ht' hx) hk
+  fun _ hx ↦ (b.contMDiffAt_localFrame_repr (ht' hx)
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
-lemma contMDiffOn_baseSet_localFrame_repr (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [ContMDiffVectorBundle n F V I] [Fintype ι] in
+lemma contMDiffOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞}
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet :=
-  contMDiffOn_localFrame_repr b hk e.open_baseSet (subset_refl _) hs _
+  contMDiffOn_localFrame_repr b e.open_baseSet (subset_refl _) hs _
 
 end Basis
