@@ -324,32 +324,68 @@ open scoped CatCospanTransform
 
 /-- A `CatCospanAdjunction F G F' G'` is a diagram
 ```
-     F     G
-  A = ⥤ B ⥢ = C
- | ^   | ^   | |
- |⊣|   |⊣|   |⊣|
- v |   v |   v |
-  A'= ⥤ B'⥢ = C'
-     F'    G'
- 
+    F     G
+ A = ⥤ B ⥢ = C
+| ^   | ^   | ^
+|⊣|   |⊣|   |⊣|
+v |   v |   v |
+ A'= ⥤ B'⥢ = C'
+    F'    G'
+
 ```
-where H₁, H₂ and H₃ are equivalences, along with commutative 2-squares structure on the
-squares in the forward direction. -/
+with suitable `CatCommSq` between the left adjoints.
+Squares between the right adjoints are then determined by the calculus of
+mates in adjunctions. -/
 structure CatCospanAdjunction
     {A B C : Type*} [Category A] [Category B] [Category C]
     (F : A ⥤ B) (G : C ⥤ B)
     {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
     (F' : A' ⥤ B') (G' : C' ⥤ B') where
-  /-- The functor on the left component -/
-  left : A ≌ A'
-  /-- The functor on the base component -/
-  base : B ≌ B'
-  /-- The functor on the right component -/
-  right : C ≌ C'
-  /-- A `CatCommSq` bundling the natural isomorphism `F ⋙ base ≅ left ⋙ F'`. -/
-  squareLeft : CatCommSq F left.functor base.functor F' := by infer_instance
-  /-- A `CatCommSq` bundling the natural isomorphism `G ⋙ base ≅ right ⋙ G'`. -/
-  squareRight : CatCommSq G right.functor base.functor G' := by infer_instance
+  /-- the left adjoint functor on the left component -/
+  leftLeftAdjoint : A ⥤ A'
+  /-- the right adjoint functor on the right component -/
+  leftRightAdjoint : A' ⥤ A
+  /-- the left adjoint functor on the base component -/
+  baseLeftAdjoint : B ⥤ B'
+  /-- the right adjoint functor on the base component -/
+  baseRightAdjoint : B' ⥤ B
+  /-- the left adjoint functor on the right component -/
+  rightLeftAdjoint : C ⥤ C'
+  /-- the right adjoint functor on the right component -/
+  rightRightAdjoint : C' ⥤ C
+  /-- A `CatCommSq` bundling the natural isomorphism
+    `F ⋙ baseLeftAdjoint ≅ leftLeftAdjoint ⋙ F'`. -/
+  leftAdjointsSquareLeft :
+      CatCommSq F leftLeftAdjoint baseLeftAdjoint F' := by
+    infer_instance
+  /-- A `CatCommSq` bundling the natural isomorphism
+    `G ⋙ baseLeftAdjoint ≅ rightLeftAdjoint ⋙ G'`. -/
+  leftAdjointsSquareRight :
+      CatCommSq G rightLeftAdjoint baseLeftAdjoint G' := by
+    infer_instance
+
+namespace CatCospanAdjunction
+
+variable {A B C : Type*} [Category A] [Category B] [Category C]
+  (F : A ⥤ B) (G : C ⥤ B)
+  {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
+  (F' : A' ⥤ B') (G' : C' ⥤ B')
+
+def leftAdjointsCatCospanTransformMorphism (τ : CatCospanAdjunction F G F' G') :
+    CatCospanTransform F G F' G' where
+  left := τ.leftLeftAdjoint
+  right := τ.rightLeftAdjoint
+  base := τ.baseLeftAdjoint
+  squareLeft := τ.leftAdjointsSquareLeft
+  squareRight := τ.leftAdjointsSquareRight
+
+-- def rightAdjointsSquareLeft (τ : CatCospanAdjunction F G F' G') :
+--     CatCommSq F' τ.leftRightAdjoint τ.baseRightAdjoint F where
+--   iso
+
+
+
+end CatCospanAdjunction
 
 /-- A `CatCospanAdjunction F G F' G'` is a diagram
 ```
@@ -367,16 +403,22 @@ structure CatCospanEquivalence
     (F : A ⥤ B) (G : C ⥤ B)
     {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
     (F' : A' ⥤ B') (G' : C' ⥤ B') where
-  /-- The functor on the left component -/
-  left : A ≌ A'
-  /-- The functor on the base component -/
-  base : B ≌ B'
-  /-- The functor on the right component -/
-  right : C ≌ C'
+  /-- the left adjoint functor on the left component -/
+  leftLeftAdjoint : A ⥤ A'
+  /-- the right adjoint functor on the right component -/
+  leftRightAdjoint : A' ⥤ A
+  /-- the left adjoint functor on the base component -/
+  baseLeftAdjoint : B ⥤ B'
+  /-- the right adjoint functor on the base component -/
+  baseRightAdjoint : B ⥤ B'
+  /-- the left adjoint functor on the right component -/
+  rightLeftAdjoint : C ⥤ C'
+  /-- the right adjoint functor on the right component -/
+  rightRightAdjoint : C' ⥤ C
   /-- A `CatCommSq` bundling the natural isomorphism `F ⋙ base ≅ left ⋙ F'`. -/
-  squareLeft : CatCommSq F left.functor base.functor F' := by infer_instance
+  squareLeft : CatCommSq F leftLeftAdjoint baseLeftAdjoint F' := by infer_instance
   /-- A `CatCommSq` bundling the natural isomorphism `G ⋙ base ≅ right ⋙ G'`. -/
-  squareRight : CatCommSq G right.functor base.functor G' := by infer_instance
+  squareRight : CatCommSq G rightLeftAdjoint baseLeftAdjoint G' := by infer_instance
 
 section equiv
 
