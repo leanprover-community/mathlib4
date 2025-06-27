@@ -5,9 +5,9 @@ Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.CatCommSq
 
-/-! # Categorical pullback squares
+/-! # Categorical pullbacks
 
-This file defines the basic properties of categorical pullback squares.
+This file defines the basic properties of categorical pullbacks.
 
 Given a pair of functors `(F : A ⥤ B, G : C ⥤ B)`, we define the category
 `CategoricalPullback F G` as the category of triples
