@@ -166,13 +166,13 @@ lemma CompleteOrthogonalIdempotents.map (he : CompleteOrthogonalIdempotents e) :
 
 lemma CompleteOrthogonalIdempotents.map_injective_iff (hf : Function.Injective f) :
     CompleteOrthogonalIdempotents (f ∘ e) ↔ CompleteOrthogonalIdempotents e := by
-  simp [completeOrthogonalIdempotents_iff, ← hf.eq_iff, apply_ite,
+  simp [completeOrthogonalIdempotents_iff, ← hf.eq_iff,
     OrthogonalIdempotents.map_injective_iff f hf]
 
 lemma CompleteOrthogonalIdempotents.equiv {J} [Fintype J] (i : J ≃ I) :
     CompleteOrthogonalIdempotents (e ∘ i) ↔ CompleteOrthogonalIdempotents e := by
   simp only [completeOrthogonalIdempotents_iff, OrthogonalIdempotents.equiv, Function.comp_apply,
-    and_congr_right_iff, Fintype.sum_equiv i _ e (fun _ ↦ rfl)]
+    Fintype.sum_equiv i _ e (fun _ ↦ rfl)]
 
 @[nontriviality]
 lemma CompleteOrthogonalIdempotents.of_subsingleton [Subsingleton R] :
@@ -213,7 +213,7 @@ theorem exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent_aux
   have ha : f a = f e₁ := by rw [map_sub, map_mul, he₁e₂, sub_zero]
   have ha' : a * e₂ = 0 := by rw [sub_mul, mul_assoc, he₂.eq, sub_self]
   have hx' : a - a ^ 2 ∈ RingHom.ker f := by
-    simp [RingHom.mem_ker, mul_sub, pow_two, ha, he₁.eq]
+    simp [RingHom.mem_ker, pow_two, ha, he₁.eq]
   obtain ⟨n, hn⟩ := h _ hx'
   refine ⟨_, isIdempotentElem_one_sub_one_sub_pow_pow _ _ hn, ?_, ?_⟩
   · rcases n with - | n
@@ -334,11 +334,11 @@ theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
   have : (e₁ - e₂) ^ 3 = (e₁ - e₂) := by
     simp only [pow_succ, pow_zero, mul_sub, one_mul, sub_mul, he₁.eq, he₂.eq,
       H'.eq, mul_assoc]
-    simp only [← mul_assoc, he₁.eq, he₂.eq]
+    simp only [← mul_assoc, he₂.eq]
     abel
   obtain ⟨n, hn⟩ := H
   have : (e₁ - e₂) ^ (2 * n + 1) = (e₁ - e₂) := by
-    clear hn; induction n <;> simp [mul_add, add_assoc, pow_add _ (2 * _) 3, this, ← pow_succ, *]
+    clear hn; induction n <;> simp [mul_add, add_assoc, pow_add _ (2 * _) 3, ← pow_succ, *]
   rwa [pow_succ, two_mul, pow_add, hn, zero_mul, zero_mul, eq_comm, sub_eq_zero] at this
 
 theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent_of_isMulCentral
@@ -386,7 +386,7 @@ lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
     exact ⟨x, by ext i; simp [Ideal.quotientInfToPiQuotient]⟩
   intros i j hij
   rw [Ideal.isCoprime_span_singleton_iff]
-  exact ⟨1, e i, by simp [mul_sub, sub_mul, he.ortho hij]⟩
+  exact ⟨1, e i, by simp [mul_sub, he.ortho hij]⟩
 
 lemma OrthogonalIdempotents.prod_one_sub {I : Type*} {e : I → R}
     (he : OrthogonalIdempotents e) (s : Finset I) :
@@ -463,7 +463,7 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentEle
     fin_cases i <;> simpa [o]
   · intro i j hij
     fin_cases i <;> fin_cases j <;> simp at hij ⊢ <;>
-      simp [o, mul_comm, sub_mul, mul_sub, hef₂, ← hef₁]
+      simp [o, mul_comm, hef₂, ← hef₁]
   · simpa
 
 variable (R) in

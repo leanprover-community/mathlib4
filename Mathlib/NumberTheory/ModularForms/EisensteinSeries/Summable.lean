@@ -181,7 +181,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
     suffices Summable fun n : ℕ ↦ ∑' (_ : box (α := ℤ × ℤ) n), (n : ℝ) ^ (-k) by
       refine this.congr fun n ↦ tsum_congr fun p ↦ ?_
       simp only [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
-        Matrix.cons_val_one, Matrix.head_cons]
+        Matrix.cons_val_one]
     simp only [tsum_fintype, univ_eq_attach, sum_const, card_attach, nsmul_eq_mul]
     apply ((Real.summable_nat_rpow.mpr (by linarith : 1 - k < -1)).mul_left
       8).of_norm_bounded_eventually_nat

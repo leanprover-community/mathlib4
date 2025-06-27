@@ -222,7 +222,7 @@ instance uniqueHomToTrivial (A : Comon_ C) : Unique (A ⟶ trivial C) where
   default :=
     { hom := ε[A.X]
       is_comon_hom :=
-        { hom_comul := by simp [comul_counit, unitors_inv_equal] } }
+        { hom_comul := by simp [unitors_inv_equal] } }
   uniq f := by
     ext
     rw [← Category.comp_id f.hom]
@@ -270,7 +270,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
     { hom := f.hom.op
       is_mon_hom :=
         { one_hom := by apply Quiver.Hom.unop_inj; simp
-          mul_hom := by apply Quiver.Hom.unop_inj; simp [op_tensorHom] } }
+          mul_hom := by apply Quiver.Hom.unop_inj; simp } }
 
 /-- Auxiliary definition for `Mon_OpOpToComonObj`. -/
 abbrev Mon_OpOpToComonObjComon (A : Mon_ (Cᵒᵖ)) : Comon_Class (unop A.X) where

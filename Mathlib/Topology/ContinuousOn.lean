@@ -316,7 +316,7 @@ theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x
       (⨅ i ∈ I, comap (fun x => x i) (𝓝[s i] x i)) ⊓
         ⨅ (i) (_ : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
   simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← iInf_principal_finite hI, comap_inf,
-    comap_principal, eval]
+    comap_principal]
   rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
   simp only [iInf_inf_eq]
 

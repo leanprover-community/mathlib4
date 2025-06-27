@@ -15,7 +15,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 ## Main definitions
 
 * `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
-* `matrixEquivTensorMatrix : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A)`
+* `tensorMatrixLinearEquiv : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A)`
 * `Matrix.kroneckerTMulAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
@@ -84,6 +84,51 @@ theorem kroneckerTMulLinearEquiv_mul [Module S A] [IsScalarTower R S A] :
     ext : 10
     simp [single_kroneckerTMul_single, mul_kroneckerTMul_mul]
 
+omit [DecidableEq m] [DecidableEq n] in
+/-- Push a tensor product inside a matrix. -/
+def toTensorMatrixLin : A ⊗[R] Matrix m n M →ₗ[A] Matrix m n (A ⊗[R] M) :=
+  AlgebraTensorModule.lift
+    { toFun k := (TensorProduct.mk R _ _ k).mapMatrix
+      map_add' k1 k2 := by ext : 2; simp [add_smul, single_add]
+      map_smul' r k := by ext; dsimp; rw [← smul_eq_mul, smul_tmul'] }
+
+@[simp low]
+theorem toTensorMatrixLin_tmul (a : A) (b : Matrix m n M) :
+    toTensorMatrixLin m n R A M (a ⊗ₜ b) = b.map (fun x => a ⊗ₜ x) := rfl
+
+@[simp high]
+theorem toTensorMatrixLin_tmul_single (a : A) (i : m) (j : n) (b : M) :
+    toTensorMatrixLin m n R A M (a ⊗ₜ .single i j b) = .single i j (a ⊗ₜ b) := by
+  simp_rw [toTensorMatrixLin_tmul, ← mk_apply, map_single]
+
+attribute [local ext] AlgebraTensorModule.ext Matrix.ext_linearMap in
+/-- The base change of matrices over modules. -/
+def tensorMatrixLinearEquiv : A ⊗[R] Matrix m n M ≃ₗ[A] Matrix m n (A ⊗[R] M) :=
+  .ofLinear
+    (toTensorMatrixLin _ _ _ _ _)
+    (Matrix.liftLinear ℕ fun i j =>
+      AlgebraTensorModule.lift <|
+        AlgebraTensorModule.mk R A A (Matrix m n M) |>.compl₂ (Matrix.singleLinearMap _ i j))
+    (by
+      ext : 4
+      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle])
+    (by
+      ext : 4
+      dsimp [-LinearMap.lsum_apply]
+      simp_rw [← mk_apply, map_single, mk_apply]
+      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle])
+
+@[simp]
+theorem tensorMatrixLinearEquiv_tmul_single (i : m) (j : n) (a : A) (b : M) :
+    tensorMatrixLinearEquiv m n R A M (a ⊗ₜ .single i j b) = Matrix.single i j (a ⊗ₜ[R] b) := by
+  simp [tensorMatrixLinearEquiv]
+
+@[simp]
+theorem tensorMatrixLinearEquiv_symm_single_tmul (i : m) (j : n) (a : A) (b : M) :
+    (tensorMatrixLinearEquiv m n R A M).symm (.single i j (a ⊗ₜ b)) = a ⊗ₜ .single i j b := by
+  simp [tensorMatrixLinearEquiv]
+
+
 end Module
 
 
@@ -97,69 +142,18 @@ suppress_compilation
 
 open scoped TensorProduct
 
-variable (R K F A m n : Type*) [CommSemiring R] [Semiring K] [CommSemiring F] [Algebra R K]
+variable (m n R K F A : Type*)
+variable [CommSemiring R] [Semiring K] [CommSemiring F] [Algebra R K]
     [Algebra F K] [Semiring A] [Algebra F A] [SMulCommClass F R K]
 
 open Matrix
 
-abbrev toTensorMatrixLin : K ⊗[F] Matrix m n A →ₗ[K] Matrix m n (K ⊗[F] A) :=
-  AlgebraTensorModule.lift
-    { toFun k := (TensorProduct.mk F _ _ k).mapMatrix
-      map_add' k1 k2 := by ext; simp [add_smul]
-      map_smul' r k := by ext; dsimp; rw [← smul_eq_mul, smul_tmul'] }
-
-@[simp]
-theorem toTensorMatrixLin_tmul (k : K) (M : Matrix m n A) :
-    toTensorMatrixLin K F A m n (k ⊗ₜ M) = M.map (fun x => k ⊗ₜ x) := rfl
-
-variable [DecidableEq m] [DecidableEq n]
-
-@[simp high]
-theorem toTensorMatrixLin_tmul_single (k : K) (i : m) (j : n) (a : A) :
-    toTensorMatrixLin K F A m n (k ⊗ₜ .single i j a) = .single i j (k ⊗ₜ a) := by
-  simp_rw [toTensorMatrixLin_tmul, ← mk_apply, map_single]
-
-private abbrev invFun_toFun (i : m) (j : n) : K ⊗[F] A →ₗ[F] K ⊗[F] Matrix m n A :=
-  AlgebraTensorModule.lift <|
-    AlgebraTensorModule.mk F F K (Matrix m n A) |>.compl₂ (Matrix.singleLinearMap _ i j)
-
--- TODO: can we construct this by composition / lifting?
-private abbrev invFun_Klinear (i : m) (j : n) : K ⊗[F] A →ₗ[K] K ⊗[F] Matrix m n A where
-  __ := invFun_toFun K F A m n i j
-  map_smul' k tensor := by
-    induction tensor with
-    | zero => simp
-    | tmul k0 a => simp [smul_tmul', MulAction.mul_smul]
-    | add _ _ h1 h2 => simp_all
-
-variable [Fintype m] [Fintype n]
-
-private def invFun_linearMap : Matrix m n (K ⊗[F] A) →ₗ[K] K ⊗[F] Matrix m n A :=
-  Matrix.liftLinear ℕ (invFun_Klinear K F A m n)
-
-@[simp]
-theorem invFun_linearMap_single_tmul (i : m) (j : n) (k : K) (a : A) :
-    invFun_linearMap K F A m n (.single i j (k ⊗ₜ a)) = k ⊗ₜ .single i j a := by
-  simp [invFun_linearMap]
-
-attribute [local ext] AlgebraTensorModule.ext Matrix.ext_linearMap in
-def linearEquivTensor : K ⊗[F] Matrix m n A ≃ₗ[K] Matrix m n (K ⊗[F] A) :=
-  .ofLinear
-    (toTensorMatrixLin _ _ _ _ _)
-    (invFun_linearMap _ _ _ _ _)
-    (by
-      ext : 4
-      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle])
-    (by
-      ext : 4
-      dsimp [-LinearMap.lsum_apply]
-      simp_rw [← mk_apply, map_single, mk_apply]
-      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle])
+variable [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 
 attribute [local ext] AlgebraTensorModule.ext Matrix.ext_linearMap in
 theorem toTensorMatrixLin_mul (x y : K ⊗[F] Matrix n n A) :
-    toTensorMatrixLin K F A n n (x * y) =
-      toTensorMatrixLin K F A n n x * toTensorMatrixLin K F A n n y := by
+    toTensorMatrixLin n n F K A (x * y) =
+      toTensorMatrixLin n n F K A x * toTensorMatrixLin n n F K A y := by
   revert x y
   erw [LinearMap.map_mul_iff _]
   ext xk xi xj xA yk yj yk yM : 8
@@ -171,24 +165,25 @@ theorem toTensorMatrixLin_mul (x y : K ⊗[F] Matrix n n A) :
     simp
 
 attribute [local ext] AlgebraTensorModule.ext
+/-- `toTensorMatrixLin` as an `AlgHom`. -/
 abbrev toTensorMatrix : K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) :=
   AlgHom.ofLinearMap
-    (toTensorMatrixLin K F A n n |>.restrictScalars R)
+    (toTensorMatrixLin n n F K A |>.restrictScalars R)
     (by simp [Algebra.TensorProduct.one_def])
     (toTensorMatrixLin_mul _ _ _ _)
 
-/-- Base change of matrices. -/
+/-- The base change of matrices over algebras. -/
 def matrixEquivTensorMatrix : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A) where
-  __ := toTensorMatrix R K F A n
-  __ := linearEquivTensor K F A n n
+  __ := toTensorMatrix n R K F A
+  __ := tensorMatrixLinearEquiv n n F K A
 
 @[simp]
 lemma matrixEquivTensorMatrix_apply (M : K ⊗[F] Matrix n n A) :
-    matrixEquivTensorMatrix R K F A n M = toTensorMatrix R K F A n M := rfl
+    matrixEquivTensorMatrix n R K F A M = toTensorMatrix n R K F A M := rfl
 
 @[simp]
 lemma matrixEquivTensorMatrix_symm_apply (M : Matrix n n (K ⊗[F] A)) :
-    (matrixEquivTensorMatrix R K F A n).symm M = invFun_linearMap K F A n n M := rfl
+    (matrixEquivTensorMatrix n R K F A).symm M = (tensorMatrixLinearEquiv n n F K A).symm M := rfl
 
 end
 
@@ -197,13 +192,13 @@ variable [Fintype n] [DecidableEq n]
 /-- The `R`-algebra isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
-  Algebra.TensorProduct.rid _ _ _|>.symm.mapMatrix|>.trans <|
-    matrixEquivTensorMatrix R A R R n|>.symm
+  Algebra.TensorProduct.rid _ _ _ |>.symm.mapMatrix |>.trans <|
+    matrixEquivTensorMatrix n R A R R |>.symm
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :
     matrixEquivTensor n R A M = ∑ i : n, ∑ j : n, M i j ⊗ₜ single i j 1 := by
-  simp [matrixEquivTensor, invFun_linearMap, liftLinear_apply]
+  simp [matrixEquivTensor, tensorMatrixLinearEquiv, liftLinear_apply]
 
 -- Porting note: short circuiting simplifier from simplifying left hand side
 @[simp (high)]
