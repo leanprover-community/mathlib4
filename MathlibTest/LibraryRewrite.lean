@@ -166,40 +166,40 @@ Pattern m.gcd n
 #guard_msgs in
 #rw?? Nat.gcd n n
 
-def AtZero (f : Int → Int) : Int := f 0
+def atZero (f : Int → Int) : Int := f 0
 
-theorem atZero_neg (f : Int → Int) : AtZero (fun x => - f x) = - AtZero f := rfl
-theorem neg_atZero_neg (f : Int → Int) : - AtZero (fun x => - f x) = AtZero f := Int.neg_neg (f 0)
+theorem atZero_neg (f : Int → Int) : atZero (fun x => - f x) = - atZero f := rfl
+theorem neg_atZero_neg (f : Int → Int) : - atZero (fun x => - f x) = atZero f := Int.neg_neg (f 0)
 
-theorem atZero_add (f g : Int → Int) : AtZero (fun x => f x + g x) = AtZero f + AtZero g := rfl
-theorem atZero_add_const (f : Int → Int) (c : Int) : AtZero (fun x => f x + c) = AtZero f + c := rfl
+theorem atZero_add (f g : Int → Int) : atZero (fun x => f x + g x) = atZero f + atZero g := rfl
+theorem atZero_add_const (f : Int → Int) (c : Int) : atZero (fun x => f x + c) = atZero f + c := rfl
 
 /--
-info: Pattern AtZero fun x => f x + c
-· (AtZero fun x => x) + 1
+info: Pattern atZero fun x => f x + c
+· (atZero fun x => x) + 1
   atZero_add_const
 
-Pattern AtZero fun x => f x + g x
-· (AtZero fun x => x) + AtZero fun x => 1
+Pattern atZero fun x => f x + g x
+· (atZero fun x => x) + atZero fun x => 1
   atZero_add
 
-Pattern AtZero f
-· -AtZero fun x => -(x + 1)
+Pattern atZero f
+· -atZero fun x => -(x + 1)
   neg_atZero_neg
 -/
 #guard_msgs in
-#rw?? AtZero fun x => x + 1
+#rw?? atZero fun x => x + 1
 /--
-info: Pattern AtZero fun x => -f x
-· -AtZero fun x => x
+info: Pattern atZero fun x => -f x
+· -atZero fun x => x
   atZero_neg
 
-Pattern AtZero f
-· -AtZero fun x => - -x
+Pattern atZero f
+· -atZero fun x => - -x
   neg_atZero_neg
 -/
 #guard_msgs in
-#rw?? AtZero (Neg.neg : Int → Int)
+#rw?? atZero (Neg.neg : Int → Int)
 
 -- `Nat.Coprime` is reducible, so we might get matches with the pattern `n = 1`.
 -- This doesn't work with the `rw` tactic though, so we make sure to avoid them.
