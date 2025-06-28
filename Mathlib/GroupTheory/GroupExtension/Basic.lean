@@ -34,8 +34,8 @@ noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
   (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
     S.quotientKerRightHomEquivRight
 
-/-- The inverse of the surjective `S.rightHom` -/
-@[to_additive surjInvRightHom "The inverse of the surjective `S.rightHom`." ]
+/-- An arbitrarily chosen section -/
+@[to_additive surjInvRightHom "An arbitrarily chosen section"]
 noncomputable def surjInvRightHom : S.Section where
   toFun := Function.surjInv S.rightHom_surjective
   rightInverse_rightHom := Function.surjInv_eq S.rightHom_surjective
@@ -136,71 +136,6 @@ noncomputable def ofMonoidHom (f : E →* E') (comp_inl : f.comp S.inl = S'.inl)
     simpa only [Function.surjInv_eq] using inv_mul_cancel (S'.rightHom e')
   inl_comm := congrArg DFunLike.coe comp_inl
   rightHom_comm := congrArg DFunLike.coe rightHom_comp
-
-/-- The four lemma (deriving injectivity) specialized for group extensions -/
-@[to_additive "The four lemma (deriving injectivity) specialized for additive group extensions"]
-theorem injective : Function.Injective equiv.toMonoidHom := by
-  rw [injective_iff_map_eq_one]
-  intro e he
-  obtain ⟨n, rfl⟩ : e ∈ S.inl.range := by
-    simpa only [map_one, ← MonoidHom.comp_apply, equiv.rightHom_comm, S.range_inl_eq_ker_rightHom]
-      using congrArg S'.rightHom he
-  rw [← MonoidHom.comp_apply, equiv.inl_comm,
-    (injective_iff_map_eq_one' S'.inl).mp S'.inl_injective] at he
-  rw [he, S.inl.map_one]
-
-/-- The four lemma (deriving surjectivity) specialized for group extensions -/
-@[to_additive "The four lemma (deriving surjectivity) specialized for additive group extensions"]
-theorem surjective : Function.Surjective equiv.toMonoidHom := by
-  intro e'
-  obtain ⟨e, he⟩ := S.rightHom_surjective (S'.rightHom e')
-  rw [eq_comm, ← equiv.rightHom_comm, MonoidHom.comp_apply, MonoidHom.eq_iff,
-    ← S'.range_inl_eq_ker_rightHom] at he
-  obtain ⟨n, hn⟩ := he
-  use e * S.inl n
-  rw [MonoidHom.map_mul, ← MonoidHom.comp_apply, equiv.inl_comm, hn, mul_inv_cancel_left]
-
-/-- The five lemma specialized for group extensions -/
-@[to_additive "The five lemma specialized for additive group extensions"]
-theorem bijective : Function.Bijective equiv.toMonoidHom := ⟨equiv.injective, equiv.surjective⟩
-
-/-- The homomorphism associated to an equivalence of group extensions is an isomorphism. -/
-@[to_additive
-      "The homomorphism associated to an equivalence of additive group extensions is an
-      isomorphism."]
-noncomputable def toMulEquiv : E ≃* E' := MulEquiv.ofBijective equiv.toMonoidHom equiv.bijective
-
-@[to_additive]
-theorem toMulEquiv_eq_toMonoidHom : equiv.toMulEquiv = equiv.toMonoidHom := rfl
-
-/-- A group extension is equivalent to itself. -/
-@[to_additive "An additive group extension is equivalent to itself."]
-def refl (S : GroupExtension N E G) : S.Equiv S where
-  toMonoidHom := MonoidHom.id E
-  inl_comm := MonoidHom.id_comp _
-  rightHom_comm := MonoidHom.comp_id _
-
-/-- The inverse of an equivalence of group extensions is an equivalence. -/
-@[to_additive "The inverse of an equivalence of additive group extensions is an equivalence."]
-noncomputable def symm : S'.Equiv S where
-  toMonoidHom := equiv.toMulEquiv.symm
-  inl_comm := by
-    rw [← equiv.inl_comm, ← MonoidHom.comp_assoc, ← toMulEquiv_eq_toMonoidHom,
-      MulEquiv.coe_monoidHom_symm_comp_coe_monoidHom, MonoidHom.id_comp]
-  rightHom_comm := by
-    rw [← equiv.rightHom_comm, MonoidHom.comp_assoc, ← toMulEquiv_eq_toMonoidHom,
-      MulEquiv.coe_monoidHom_comp_coe_monoidHom_symm, MonoidHom.comp_id]
-
-/-- The composition of monoid homomorphisms associated to equivalences of group extensions gives
-    another equivalence. -/
-@[to_additive
-      "The composition of monoid homomorphisms associated to equivalences of additive group
-      extensions gives another equivalence."]
-def trans {E'' : Type*} [Group E''] {S'' : GroupExtension N E'' G} (equiv' : S'.Equiv S'') :
-    S.Equiv S'' where
-  toMonoidHom := equiv'.toMonoidHom.comp equiv.toMonoidHom
-  inl_comm := by rw [MonoidHom.comp_assoc, equiv.inl_comm, equiv'.inl_comm]
-  rightHom_comm := by rw [← MonoidHom.comp_assoc, equiv'.rightHom_comm, equiv.rightHom_comm]
 
 end Equiv
 

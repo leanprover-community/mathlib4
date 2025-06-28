@@ -38,13 +38,6 @@ For additive groups:
   of `G` by `N`
 - `SemidirectProduct.toGroupExtension φ`: the multiplicative group extension associated to the
   semidirect product coming from `φ : G →* MulAut N`, `1 → N → N ⋊[φ] G → G → 1`
-
-## TODO
-
-If `N` is abelian,
-
-- there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
-  (which is also stated as a TODO in `RepresentationTheory/GroupCohomology/LowDegree.lean`).
 -/
 
 variable (N E G : Type*)
@@ -90,13 +83,6 @@ structure Equiv {E' : Type*} [AddGroup E'] (S' : AddGroupExtension N E' G) exten
   inl_comm : toAddEquiv ∘ S.inl = S'.inl
   /-- The right-hand side of the diagram commutes. -/
   rightHom_comm : S'.rightHom ∘ toAddEquiv = S.rightHom
-
-/-- `Section` of an additive group extension is a right inverse to `S.rightHom`. -/
-structure Section where
-  /-- The underlying function -/
-  toFun : G → E
-  /-- `Section` is a right inverse to `S.rightHom` -/
-  rightInverse_rightHom : Function.RightInverse toFun S.rightHom
 
 /-- `Section` of an additive group extension is a right inverse to `S.rightHom`. -/
 structure Section where
@@ -263,37 +249,6 @@ theorem rightHom_section (g : G) : S.rightHom (σ g) = g := σ.rightInverse_righ
 
 @[to_additive (attr := simp)]
 theorem rightHom_comp_section : S.rightHom ∘ σ = id := σ.rightInverse_rightHom.comp_eq_id
-
-end Section
-
-/-- `Section` of a group extension is a right inverse to `S.rightHom`. -/
-@[to_additive]
-structure Section where
-  /-- The underlying function -/
-  toFun : G → E
-  /-- `Section` is a right inverse to `S.rightHom` -/
-  rightInverse_rightHom : Function.RightInverse toFun S.rightHom
-
-namespace Section
-
-@[to_additive]
-instance : FunLike S.Section G E where
-  coe := toFun
-  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ ↦ by congr
-
-variable {S}
-
-@[to_additive (attr := simp)]
-theorem coe_mk (σ : G → E) (hσ : Function.RightInverse σ S.rightHom) : (mk σ hσ : G → E) = σ := rfl
-
-variable (σ : S.Section)
-
-@[to_additive (attr := simp)]
-theorem rightHom_section (g : G) : S.rightHom (σ g) = g := σ.rightInverse_rightHom g
-
-@[to_additive (attr := simp)]
-theorem rightHom_comp_section : S.rightHom ∘ σ = id :=
-  Function.RightInverse.comp_eq_id σ.rightInverse_rightHom
 
 end Section
 
