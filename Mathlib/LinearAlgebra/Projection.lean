@@ -128,9 +128,9 @@ theorem prodEquivOfIsCompl_symm_apply_snd_eq_zero (h : IsCompl p q) {x : E} :
     mem_left_iff_eq_zero_of_disjoint h.disjoint]
 
 theorem prodEquivOfIsCompl_symm_apply (h : IsCompl p q)
-      (x y z : E) (hy : y ∈ p) (hz : z ∈ q) (hx : x = y + z) :
-    (prodEquivOfIsCompl p q h).symm x = ⟨⟨y, hy⟩, ⟨z, hz⟩⟩ := by
-  rw [LinearEquiv.symm_apply_eq, coe_prodEquivOfIsCompl', hx]
+      (x y z : E) (hy : y ∈ p) (hz : z ∈ q) (hx : y + z = x) :
+    (prodEquivOfIsCompl p q h).symm x = ⟨⟨y, hy⟩, ⟨z, hz⟩⟩ :=
+  (LinearEquiv.symm_apply_eq _).2 hx.symm
 
 theorem prodEquivOfIsCompl_symm_add (h : IsCompl p q) (x : E) :
     x = ((prodEquivOfIsCompl p q h).symm x).1.val + ((prodEquivOfIsCompl p q h).symm x).2.val :=
