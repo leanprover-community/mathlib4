@@ -145,12 +145,12 @@ def fin3Equiv : SignType ≃* Fin 3 where
   map_mul' a b := by
     cases a <;> cases b <;> rfl
 
-theorem pow_odd (s : SignType) (n : ℕ) (hn : Odd n) : s ^ n = s := by
+theorem pow_odd (s : SignType) {n : ℕ} (hn : Odd n) : s ^ n = s := by
   obtain ⟨k, rfl⟩ := hn
   rw [pow_add, pow_one, pow_mul, sq]
   cases s <;> simp
 
-theorem zpow_odd (s : SignType) (z : ℤ) (hz : Odd z) : s ^ z = s := by
+theorem zpow_odd (s : SignType) {z : ℤ} (hz : Odd z) : s ^ z = s := by
   obtain rfl | hs := eq_or_ne s 0
   · rw [zero_zpow]
     rintro rfl
