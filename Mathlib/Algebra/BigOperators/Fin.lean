@@ -577,11 +577,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         ∀ (n : Fin m → ℕ) (nn : ℕ) (f : ∀ i : Fin m, Fin (n i)) (fn : Fin nn),
           ((∑ i : Fin m, ↑(f i) * ∏ j : Fin i, n (Fin.castLE i.prop.le j)) + ↑fn * ∏ j, n j) <
             (∏ i : Fin m, n i) * nn by
-        replace := this (Fin.init n) (n (Fin.last _)) (Fin.init f) (f (Fin.last _))
-        rw [← Fin.snoc_init_self f]
-        simp +singlePass only [← Fin.snoc_init_self n]
-        simp_rw [Fin.snoc_castSucc, Fin.snoc_last, Fin.snoc_init_self n]
-        exact this
+        solve_by_elim
       intro n nn f fn
       cases nn
       · exact isEmptyElim fn
