@@ -374,8 +374,8 @@ variable {C A}
 /-- `eval(F)` preserves arbitrary coproducts. -/
 def isColimitEvalMapCocone : IsColimit (((eval.{w} C A).obj F).mapCocone (cofan.{w} J f)) where
   desc s := Sigma.desc fun i ↦ Sigma.ι (F.obj ∘ (f i.1).obj) i.2 ≫ s.ι.app ⟨i.1⟩
-  fac s i := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc, cofan, Function.comp_def]
-  uniq s m h := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc_assoc, cofan, Function.comp_def]
+  fac s i := Sigma.hom_ext _ _ fun i ↦ by simp [cofan, Function.comp_def]
+  uniq s m h := Sigma.hom_ext _ _ fun ⟨i₁, i₂⟩ ↦ by simp [← h, cofan, Function.comp_def]
 
 instance : PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) :=
   ⟨fun hc ↦ ⟨IsColimit.ofIsoColimit (isColimitEvalMapCocone J f F)
