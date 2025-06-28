@@ -102,6 +102,10 @@ theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R 
     [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).map f
 
+@[aesop 10% apply]
+theorem isStarNormal {R : Type*} [Mul R] [Star R] {x : R} (hx : IsSelfAdjoint x) :
+    IsStarNormal x := ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
+
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
@@ -158,10 +162,6 @@ theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star 
 @[aesop 90% apply]
 theorem conjugate_self {x : R} (hx : IsSelfAdjoint x) {z : R} (hz : IsSelfAdjoint z) :
     IsSelfAdjoint (z * x * z) := by nth_rewrite 2 [← hz]; exact conjugate hx z
-
-@[aesop 10% apply]
-theorem isStarNormal {x : R} (hx : IsSelfAdjoint x) : IsStarNormal x :=
-  ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
 
 end Semigroup
 
