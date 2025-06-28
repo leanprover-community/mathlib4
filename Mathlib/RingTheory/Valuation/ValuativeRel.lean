@@ -55,7 +55,7 @@ end Valuation
 /-- A preorder on a ring is said to be "valuative" if it agrees with the
 valuative relation. -/
 class ValuativePreorder (R : Type*) [CommRing R] [ValuativeRel R] [Preorder R] where
-  dvd_iff_le (x y : R) : x ≤ᵥ y ↔ x ≤ y
+  rel_iff_le (x y : R) : x ≤ᵥ y ↔ x ≤ y
 
 namespace ValuativeRel
 
@@ -458,7 +458,7 @@ instance : ValuativeRel (WithPreorder R) where
   not_rel_one_zero := not_rel_one_zero (R := R)
 
 instance : ValuativePreorder (WithPreorder R) where
-  dvd_iff_le _ _ := Iff.rfl
+  rel_iff_le _ _ := Iff.rfl
 
 variable (R) in
 /-- The support of the valuation on `R`. -/
