@@ -481,8 +481,8 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
       have : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
       have Hs : Nonempty (Fin (s.ncard) ≃ s) :=
         Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
-      set x' := ofFixingSubgroup.append G x with hx
-      set y' := ofFixingSubgroup.append G y with hy
+      set x' := ofFixingSubgroup.append x with hx
+      set y' := ofFixingSubgroup.append y with hy
       obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
       suffices g ∈ fixingSubgroup G s by
         use ⟨g, this⟩
@@ -493,8 +493,8 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
       set i := (Classical.choice Hs).symm a
       have ha : (Classical.choice Hs) i = a := by simp [i]
       rw [← ha]
-      nth_rewrite 1 [← ofFixingSubgroup.append_left G x i]
-      rw [← ofFixingSubgroup.append_left G y i, ← hy, ← hg, smul_apply, ← hx]
+      nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
+      rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx]
 
 /-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
 acts `m` transitively on the complement if `d + m ≤ n`. -/
