@@ -1111,15 +1111,17 @@ end Prod
 
 namespace ObjectProperty
 
-def final_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
+/-- For the full subcategory induced by an object property `P` on `C`, to show initiality of
+the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
+theorem final_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
     (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
     P.ι.Initial := .mk <| fun d => by
   by_cases hd : P d
   · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
-    refine zigzag_isConnected fun ⟨⟨c₁, hc₁⟩, ⟨⟨⟩⟩, g₁⟩ ⟨⟨c₂, hc₂⟩, ⟨⟨⟩⟩, g₂⟩ =>
+    refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
       Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
-    · fapply CostructuredArrow.homMk g₁
-    · fapply CostructuredArrow.homMk g₂
+    · apply CostructuredArrow.homMk g₁
+    · apply CostructuredArrow.homMk g₂
   · exact h d hd
 
 end ObjectProperty
