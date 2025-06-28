@@ -25,7 +25,7 @@ jobs:
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+          ❌ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
           You can `git fetch; git checkout nightly-testing` and push a fix.
 
   handle_success:
@@ -111,13 +111,13 @@ jobs:
         }
         response = client.get_messages(request)
         messages = response['messages']
-        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))":
+        if not messages or messages[0]['content'] != f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))":
             # Post the success message
             request = {
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status updates',
-                'content': f"✅ The latest CI for Mathlib's branch#nightly-testing has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
+                'content': f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
             }
             result = client.send_message(request)
             print(result)

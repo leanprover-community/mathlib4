@@ -111,8 +111,7 @@ lemma exists_mem_of_isClosed_of_nonempty
   let ι : D' ⟶ D := { app i := subschemeι _, naturality _ _ _ := by simp [D'] }
   haveI {i j} (f : i ⟶ j) : IsAffineHom (D'.map f) := by
     suffices IsAffineHom (D'.map f ≫ ι.app j) from .of_comp _ (ι.app j)
-    simp only [TopologicalSpace.Closeds.coe_mk, id_eq, TopologicalSpace.Closeds.coe_closure,
-      coe_support_vanishingIdeal, eq_mpr_eq_cast, subschemeMap_subschemeι, D', ι]
+    simp only [subschemeMap_subschemeι, D', ι]
     infer_instance
   haveI (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
   haveI (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
@@ -131,7 +130,7 @@ lemma exists_mem_of_isClosed_of_nonempty
     uniq s m hm := by
       rw [← cancel_mono (subschemeι _)]
       refine hc.hom_ext fun i ↦ ?_
-      simp [← cancel_mono (subschemeι _), ι, c', ← hm] }
+      simp [ι, c', ← hm] }
   have : Nonempty (⨆ i, (vanishingIdeal ⟨Z i, hZc i⟩).comap (c.π.app i)).support :=
     Scheme.nonempty_of_isLimit D' c' hc'
   simpa using this

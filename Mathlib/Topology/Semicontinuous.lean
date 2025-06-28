@@ -348,7 +348,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
       exists_Ioc_subset_of_mem_nhds (hg (Ioi_mem_nhds hy)) h
     filter_upwards [hf z zlt] with a ha
     calc
-      y < g (min (f x) (f a)) := hz (by simp [zlt, ha, le_refl])
+      y < g (min (f x) (f a)) := hz (by simp [zlt, ha])
       _ ≤ g (f a) := gmon (min_le_right _ _)
   · simp only [not_exists, not_lt] at h
     exact Filter.Eventually.of_forall fun a => hy.trans_le (gmon (h (f a)))

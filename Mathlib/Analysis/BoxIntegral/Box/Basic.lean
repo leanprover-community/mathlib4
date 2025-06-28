@@ -260,7 +260,7 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
-  induction I <;> simp [WithBot.coe_eq_coe]
+  induction I <;> simp
 
 @[simp, norm_cast]
 theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := by
@@ -287,7 +287,7 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
   obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
-  · simp [WithBot.coe_eq_coe]
+  · simp
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl
     exact h hI
