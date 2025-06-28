@@ -34,7 +34,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 ## Main Definitions
 
 * `spectralValue` : the spectral value of a polynomial in `R[X]`.
-* `spectralNorm` : The spectral norm `|y|_sp` is the spectral value of the minimal polynomial
+* `spectralNorm` : the spectral norm `|y|_sp` is the spectral value of the minimal polynomial
   of `y : L` over `K`.
 * `spectralAlgNorm` : the spectral norm is a `K`-algebra norm on `L`.
 
