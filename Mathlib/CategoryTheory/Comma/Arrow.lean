@@ -192,15 +192,13 @@ variable {f g : Arrow T} (sq : f ⟶ g)
 instance isIso_left [IsIso sq] : IsIso sq.left where
   out := by
     apply Exists.intro (inv sq).left
-    simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_left,
-      eq_self_iff_true, and_self_iff]
+    simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id]
     simp
 
 instance isIso_right [IsIso sq] : IsIso sq.right where
   out := by
     apply Exists.intro (inv sq).right
-    simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_right,
-      eq_self_iff_true, and_self_iff]
+    simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id]
     simp
 
 lemma isIso_of_isIso {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) [IsIso sq] [IsIso f] :

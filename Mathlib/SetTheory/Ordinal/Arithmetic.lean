@@ -604,7 +604,7 @@ instance monoid : Monoid Ordinal.{u} where
         ⟨⟨punitProd _, @fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
             simp only [Prod.lex_def, EmptyRelation, false_or]
-            simp only [eq_self_iff_true, true_and]
+            simp only [true_and]
             rfl⟩⟩
   one_mul a :=
     inductionOn a fun α r _ =>
@@ -718,10 +718,10 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
       simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and, false_or,
         eq_self_iff_true, dif_pos, Sum.lex_inr_inr] using h
     · subst b₁
-      simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val, eq_self_iff_true,
+      simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val,
         or_false, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and] at h ⊢
       obtain ⟨-, -, h₂_h⟩ | e₂ := h₂ <;> [exact asymm h h₂_h; exact e₂ rfl]
-    · simp [e₂, dif_neg e₁, show b₂ ≠ b₁ from e₂ ▸ e₁]
+    · simp [e₂, show b₂ ≠ b₁ from e₂ ▸ e₁]
     · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
         Sum.lex_inl_inl] using h
 
