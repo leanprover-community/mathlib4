@@ -156,6 +156,12 @@ theorem ValueGroup.sound {x y : R} {t s : unitSubmonoid R}
   Quotient.sound ⟨h₁, h₂⟩
 
 protected
+theorem ValueGroup.exact {x y : R} {t s : unitSubmonoid R}
+    (h : ValueGroup.mk x t = ValueGroup.mk y s) :
+    x * s ≤ᵥ y * t ∧ y * t ≤ᵥ x * s :=
+  Quotient.exact h
+
+protected
 theorem ValueGroup.ind {motive : ValueGroup R → Prop} (mk : ∀ x y, motive (.mk x y))
     (t : ValueGroup R) : motive t :=
   Quotient.ind (fun (x, y) => mk x y) t
@@ -453,6 +459,32 @@ instance : ValuativeRel (WithPreorder R) where
 
 instance : ValuativePreorder (WithPreorder R) where
   dvd_iff_le _ _ := Iff.rfl
+
+variable (R) in
+def supp : Ideal R where
+  carrier := { x | x ≤ᵥ 0 }
+  add_mem' ha hb := rel_add ha hb
+  zero_mem' := rel_refl _
+  smul_mem' x _ h := by simpa using rel_mul_left _ h
+
+@[simp]
+lemma supp_def (x : R) : x ∈ supp R ↔ x ≤ᵥ 0 := Iff.refl _
+
+lemma supp_eq_valuation_supp : supp R = (valuation R).supp := by
+  ext x
+  constructor
+  · intro h
+    simp only [supp_def, Valuation.mem_supp_iff] at h ⊢
+    apply ValueGroup.sound
+    · simpa
+    · simp
+  · intro h
+    have := ValueGroup.exact h
+    simpa using this.left
+
+instance : (supp R).IsPrime := by
+  rw [supp_eq_valuation_supp]
+  infer_instance
 
 open NNReal in variable (R) in
 /-- An auxiliary structure used to define `IsRankOne`. -/
