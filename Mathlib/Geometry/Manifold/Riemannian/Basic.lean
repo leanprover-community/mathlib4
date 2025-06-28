@@ -322,7 +322,28 @@ lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
 Riemannian distance. -/
 lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
     ∃ c > (0 : ℝ≥0), {y | riemannianEDist I x y < c} ⊆ s := by
+  /- Consider a closed neighborhood `u` of `x` on which the derivative of the extended chart is
+  bounded by some `C`, contained in `s`, then an open neighborhood `v` of `x` inside `u`,
+  and finally `r` small enough that the ball of radius `r` in the extended chart is contained in
+  the image of `v`.
+
+  We claim that points are Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
+  inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
+  it stays inside `u`, then by the derivative control its image in the extended chart has length
+  at most `r`, so it can not exit the ball of radius `r`, which means that in the manifold it is
+  inside `v` (which is strictly inside `u`). This means that the path will stay inside `u` for
+  a little bit longer, by openness of `v`. Therefore, it will remain inside `u` for the whole
+  time interval `[0, 1]`. In particular, its right endpoint is inside `u`, as desired.
+
+  To formalize this, we introduce the set `a` of times `t ∈ [0, 1]` such that `γ t' ∈ u` for all
+  `t' ∈ [0, t]`. As `u` is closed, the set `a` is closed. In particular, it contains its
+  maximum `t₁`. If this maximum is `1`, we are done. If not, `γ t₁` is in `u`, but in fact it is
+  even in `v` by the above argument based on path length control. It follows that `γ t` is still
+  in `v` (and therefore in `u`) slightly to the right of `t₁`, contradicting its maximality.
+  -/
+  -- first introduce a neighborhood where the derivative of the extended chart is bounded by `C`
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
+  -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
       ∧ u ⊆ {y | ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
     have W := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
@@ -330,22 +351,31 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     simp only [subset_inter_iff] at hu
     exact ⟨u, u_mem, u_closed, hu.1.1, hu.1.2, hu.2⟩
   have uc' : u ⊆ (chartAt H x).source := by simpa [extChartAt_source I x] using uc
+  -- let `v` be a smaller open neighborhood, inside `u`.
   obtain ⟨v, v_mem, v_open, hv⟩ : ∃ v ∈ 𝓝 x, IsOpen v ∧ v ⊆ u := by
     rcases _root_.mem_nhds_iff.1 u_mem with ⟨v, vu, v_open, xv⟩
     refine ⟨v, v_open.mem_nhds xv, v_open, vu⟩
+  -- let `r > 0` be small enough that, in the extended chart, the ball of radius `r` is contained
+  -- in the image of `v`.
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0, ball (extChartAt I x x) r ⊆ (extChartAt I x).symm ⁻¹' v :=
     Metric.mem_nhds_iff.1 (extChartAt_preimage_mem_nhds v_mem)
   lift r to ℝ≥0 using r_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at r_pos
   refine ⟨r / C, by positivity, ?_⟩
   intro y hy
+  -- consider a path `γ` of length `< r / C` from `x` to a point `y`. We will show that `y` belongs
+  -- to `u`.
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hy zero_lt_one
     with ⟨γ, hγx, hγy, γ_smooth, hγ, -⟩
+  -- let `a` be the set of times `t` such that `γ t' ∈ u` for all `t' ∈ [0, t]`.
   let a := {t ∈ Icc 0 1 | ∀ t' ∈ Icc 0 t, γ t' ∈ u}
   have zero_mem : 0 ∈ a := by simpa only [mem_setOf_eq, Icc_self, mem_singleton_iff, forall_eq, a,
     hγx, left_mem_Icc, zero_le_one, true_and] using mem_of_mem_nhds u_mem
   have bdd_a : BddAbove a := ⟨1, fun t ht ↦ ht.1.2⟩
-  have sup_mem : sSup a ∈ a := by
+  -- let `t₁` be the supremum of `a`.
+  let t₁ := sSup a
+  -- as `u` is closed, `t₁` belongs to `a`.
+  have t₁_mem : t₁ ∈ a := by
     rcases exists_seq_tendsto_sSup (S := a) ⟨0, zero_mem⟩ bdd_a with ⟨z, z_mono, z_lim, hz⟩
     refine ⟨?_, fun t ht ↦ ?_⟩
     · apply IsClosed.mem_of_tendsto isClosed_Icc z_lim (Eventually.of_forall (fun n ↦ (hz n).1))
@@ -356,49 +386,51 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
       exact (hz n).2 _ ⟨(hz n).1.1, le_rfl⟩
     · obtain ⟨n, hn⟩ : ∃ n, t < z n := ((tendsto_order.1 z_lim).1 _ h).exists
       exact (hz n).2 t ⟨ht.1, hn.le⟩
-  have B (t) (ht : t ∈ a) : γ t ∈ v := by
+  -- key point: we know that `γ t₁` is in `u`, but in fact it is in the smaller set `v` since the
+  -- path is not long enough to exit the ball of radius `r` in the extended chart.
+  have B : γ t₁ ∈ v := by
     let γ' := (extChartAt I x) ∘ γ
-    have hC : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, E) 1 γ' (Icc 0 t) :=
+    have hC : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, E) 1 γ' (Icc 0 t₁) :=
       ContMDiffOn.comp (I' := I) (t := (chartAt H x).source) contMDiffOn_extChartAt
-        γ_smooth.contMDiffOn (fun t' ht' ↦ uc' (ht.2 t' ht'))
-    have : ‖γ' t - γ' 0‖ₑ < r := calc
-        ‖γ' t - γ' 0‖ₑ
-      _ ≤ ∫⁻ t' in Icc 0 t, ‖derivWithin γ' (Icc 0 t) t'‖ₑ := by
-        apply enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc _ ht.1.1
+        γ_smooth.contMDiffOn (fun t' ht' ↦ uc' (t₁_mem.2 t' ht'))
+    have : ‖γ' t₁ - γ' 0‖ₑ < r := calc
+        ‖γ' t₁ - γ' 0‖ₑ
+      _ ≤ ∫⁻ t' in Icc 0 t₁, ‖derivWithin γ' (Icc 0 t₁) t'‖ₑ := by
+        apply enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc _ t₁_mem.1.1
         rwa [← contMDiffOn_iff_contDiffOn]
-      _ = ∫⁻ t' in Icc 0 t, ‖mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t) t' 1‖ₑ := by
+      _ = ∫⁻ t' in Icc 0 t₁, ‖mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' 1‖ₑ := by
         simp_rw [← fderivWithin_derivWithin, mfderivWithin_eq_fderivWithin]
         rfl
-      _ ≤ ∫⁻ t' in Icc 0 t, C * ‖mfderivWithin 𝓘(ℝ) I γ (Icc 0 t) t' 1‖ₑ := by
-        rcases ht.1.1.eq_or_lt with rfl | h't
-        · simp
+      _ ≤ ∫⁻ t' in Icc 0 t₁, C * ‖mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t' 1‖ₑ := by
+        rcases t₁_mem.1.1.eq_or_lt with h't | h't
+        · simp [h't]
         apply setLIntegral_mono' measurableSet_Icc (fun t' ht' ↦ ?_)
-        have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t) t' =
+        have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' =
             (mfderiv I 𝓘(ℝ, E) (extChartAt I x) (γ t')) ∘L
-            (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t) t') := by
+            (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t') := by
           apply mfderiv_comp_mfderivWithin
-          · exact mdifferentiableAt_extChartAt (uc' (ht.2 t' ht'))
+          · exact mdifferentiableAt_extChartAt (uc' (t₁_mem.2 t' ht'))
           · exact (γ_smooth.mdifferentiable le_rfl).mdifferentiableOn _ ht'
           · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
             exact uniqueDiffOn_Icc h't _ ht'
-        have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t) t' 1 =
+        have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' 1 =
             (mfderiv I 𝓘(ℝ, E) (extChartAt I x) (γ t'))
-            (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t) t' 1) := by rw [this]; rfl
+            (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t₁) t' 1) := by rw [this]; rfl
         rw [this]
         apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
         gcongr
-        exact (hu (ht.2 t' ht')).le
-      _ = C * pathELength I γ 0 t := by
+        exact (hu (t₁_mem.2 t' ht')).le
+      _ = C * pathELength I γ 0 t₁ := by
         rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top, pathELength_eq_lintegral_mfderivWithin_Icc]
       _ ≤ C * pathELength I γ 0 1 := by
         gcongr
-        exact pathELength_mono le_rfl ht.1.2
+        exact pathELength_mono le_rfl t₁_mem.1.2
       _ < C * (r / C) := by
         gcongr
         · exact ENNReal.coe_ne_top
         · exact hγ.trans_eq (ENNReal.coe_div C_pos.ne')
       _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
-    have : γ' t ∈ (extChartAt I x).symm ⁻¹' v := by
+    have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
       apply hr
       rw [← Metric.emetric_ball_nnreal, EMetric.mem_ball, edist_eq_enorm_sub]
       convert this
@@ -406,41 +438,31 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     convert mem_preimage.1 this
     simp only [Function.comp_apply, γ']
     refine Eq.symm (PartialEquiv.left_inv (extChartAt I x) ?_)
-    exact uc (ht.2 t ⟨ht.1.1, le_rfl⟩)
-  have : sSup a = 1 := by
-
-
-#exit
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
-exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
-
-
-
-
-
-
-
-
-
-
-
-
-
+    exact uc (t₁_mem.2 t₁ ⟨t₁_mem.1.1, le_rfl⟩)
+  -- therefore, the maximum of `a` has to be `1`, as otherwise one could go to its left and
+  -- remain inside `a`, as `v` is open and contained inside `u`.
+  have : t₁ = 1 := by
+    rcases t₁_mem.1.2.eq_or_lt with ha | ha
+    · exact ha
+    have : ∀ᶠ t in 𝓝 (t₁), γ t ∈ v := by
+      apply γ_smooth.continuous.continuousAt (x := t₁)
+      exact v_open.mem_nhds B
+    obtain ⟨l, m, ⟨hl, hm⟩, hlm⟩ : ∃ l m, t₁ ∈ Ioo l m ∧ Ioo l m ⊆ {t | γ t ∈ v} :=
+      mem_nhds_iff_exists_Ioo_subset.1 this
+    obtain ⟨t, hat, ht⟩ : ∃ t, sSup a < t ∧ t < min m 1 := exists_between (lt_min hm ha)
+    have : t ∈ a := by
+      have : 0 ≤ t₁ := t₁_mem.1.1
+      refine ⟨⟨by linarith, ht.le.trans (min_le_right _ _)⟩, fun t' ht' ↦ ?_⟩
+      rcases le_or_gt t' (sSup a) with h't' | h't'
+      · exact t₁_mem.2 t' ⟨ht'.1, h't'⟩
+      · apply hv
+        apply hlm
+        exact ⟨hl.trans h't', ht'.2.trans_lt (ht.trans_le (min_le_left _ _))⟩
+    have : t ≤ t₁ := le_csSup bdd_a this
+    linarith
+  -- the above gives the conclusion that `y = γ 1` belongs to `u`, and therefore to `s`.
+  rw [← hγy, ← this]
+  apply us
+  exact t₁_mem.2 t₁ ⟨t₁_mem.1.1, le_rfl⟩
 
 end
