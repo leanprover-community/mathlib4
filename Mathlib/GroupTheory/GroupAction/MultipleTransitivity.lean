@@ -462,7 +462,7 @@ private theorem index_of_fixingSubgroup_aux
       congr
     have hat' : s = insert a (Subtype.val '' t) := by
       rw [hat, Set.insert_diff_singleton, Set.insert_eq_of_mem has]
-    have hfs := SubMulAction.fixingSubgroup_of_insert G a t
+    have hfs := SubMulAction.fixingSubgroup_of_insert a t
     rw [← hat'] at hfs
     rw [hfs]
     rw [Subgroup.index_map]
@@ -497,9 +497,9 @@ private theorem index_of_fixingSubgroup_aux
         (ofStabilizer.isMultiplyPretransitive.mp hmk) htcard
       all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
- /-- For a multiply pretransitive action,
-  computes the index of the fixing_subgroup of a subset
-  of adequate cardinality -/
+/-- For a multiply pretransitive action,
+  computes the index of the `fixingSubgroup` of a subset
+  of adequate cardinality. -/
 theorem index_of_fixingSubgroup_eq_of_isMultiplyPretransitive
     [Finite α] (s : Set α) (hMk : IsMultiplyPretransitive G α s.ncard) :
     (fixingSubgroup G s).index =
