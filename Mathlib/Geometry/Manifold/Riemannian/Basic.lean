@@ -15,7 +15,7 @@ A Riemannian manifold `M` is a real manifold such that its tangent spaces are en
 inner product, depending smoothly on the point, and such that `M` has an emetric space
 structure for which the distance is the infimum of lengths of paths. -/
 
-open Bundle Bornology Set MeasureTheory Manifold
+open Bundle Bornology Set MeasureTheory Manifold Filter
 open scoped ENNReal ContDiff Topology
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
@@ -320,20 +320,119 @@ lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
 
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance. -/
-lemma setOf_riemmanianEDist_lt_subset_nhds {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
+lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
     ∃ c > (0 : ℝ≥0), {y | riemannianEDist I x y < c} ⊆ s := by
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
-  obtain ⟨r, r_pos, hr⟩ : ∃ r > 0, ball (extChartAt I x x) r ⊆
-      (extChartAt I x).symm ⁻¹' (s ∩ {y | ‖mfderiv I 𝓘(ℝ, E) (↑(extChartAt I x)) y‖ₑ < ↑C}) := by
-    apply Metric.mem_nhds_iff.1
-    apply extChartAt_preimage_mem_nhds
-    exact Filter.inter_mem hs hC
+  obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
+      ∧ u ⊆ {y | ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
+    have W := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
+    rcases exists_mem_nhds_isClosed_subset W with ⟨u, u_mem, u_closed, hu⟩
+    simp only [subset_inter_iff] at hu
+    exact ⟨u, u_mem, u_closed, hu.1.1, hu.1.2, hu.2⟩
+  have uc' : u ⊆ (chartAt H x).source := by simpa [extChartAt_source I x] using uc
+  obtain ⟨v, v_mem, v_open, hv⟩ : ∃ v ∈ 𝓝 x, IsOpen v ∧ v ⊆ u := by
+    rcases _root_.mem_nhds_iff.1 u_mem with ⟨v, vu, v_open, xv⟩
+    refine ⟨v, v_open.mem_nhds xv, v_open, vu⟩
+  obtain ⟨r, r_pos, hr⟩ : ∃ r > 0, ball (extChartAt I x x) r ⊆ (extChartAt I x).symm ⁻¹' v :=
+    Metric.mem_nhds_iff.1 (extChartAt_preimage_mem_nhds v_mem)
   lift r to ℝ≥0 using r_pos.le
   simp only [gt_iff_lt, NNReal.coe_pos] at r_pos
   refine ⟨r / C, by positivity, ?_⟩
   intro y hy
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hy zero_lt_one
-    with ⟨γ, hγx, hγy, γ_smooth, -, -⟩
+    with ⟨γ, hγx, hγy, γ_smooth, hγ, -⟩
+  let a := {t ∈ Icc 0 1 | ∀ t' ∈ Icc 0 t, γ t' ∈ u}
+  have zero_mem : 0 ∈ a := by simpa only [mem_setOf_eq, Icc_self, mem_singleton_iff, forall_eq, a,
+    hγx, left_mem_Icc, zero_le_one, true_and] using mem_of_mem_nhds u_mem
+  have bdd_a : BddAbove a := ⟨1, fun t ht ↦ ht.1.2⟩
+  have sup_mem : sSup a ∈ a := by
+    rcases exists_seq_tendsto_sSup (S := a) ⟨0, zero_mem⟩ bdd_a with ⟨z, z_mono, z_lim, hz⟩
+    refine ⟨?_, fun t ht ↦ ?_⟩
+    · apply IsClosed.mem_of_tendsto isClosed_Icc z_lim (Eventually.of_forall (fun n ↦ (hz n).1))
+    rcases ht.2.eq_or_lt with rfl | h
+    · have : Tendsto (fun n ↦ γ (z n)) atTop (𝓝 (γ (sSup a))) :=
+        (γ_smooth.continuous.tendsto (sSup a)).comp z_lim
+      apply u_closed.mem_of_tendsto this (Eventually.of_forall (fun n ↦ ?_))
+      exact (hz n).2 _ ⟨(hz n).1.1, le_rfl⟩
+    · obtain ⟨n, hn⟩ : ∃ n, t < z n := ((tendsto_order.1 z_lim).1 _ h).exists
+      exact (hz n).2 t ⟨ht.1, hn.le⟩
+  have B (t) (ht : t ∈ a) : γ t ∈ v := by
+    let γ' := (extChartAt I x) ∘ γ
+    have hC : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, E) 1 γ' (Icc 0 t) :=
+      ContMDiffOn.comp (I' := I) (t := (chartAt H x).source) contMDiffOn_extChartAt
+        γ_smooth.contMDiffOn (fun t' ht' ↦ uc' (ht.2 t' ht'))
+    have : ‖γ' t - γ' 0‖ₑ < r := calc
+        ‖γ' t - γ' 0‖ₑ
+      _ ≤ ∫⁻ t' in Icc 0 t, ‖derivWithin γ' (Icc 0 t) t'‖ₑ := by
+        apply enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc _ ht.1.1
+        rwa [← contMDiffOn_iff_contDiffOn]
+      _ = ∫⁻ t' in Icc 0 t, ‖mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t) t' 1‖ₑ := by
+        simp_rw [← fderivWithin_derivWithin, mfderivWithin_eq_fderivWithin]
+        rfl
+      _ ≤ ∫⁻ t' in Icc 0 t, C * ‖mfderivWithin 𝓘(ℝ) I γ (Icc 0 t) t' 1‖ₑ := by
+        rcases ht.1.1.eq_or_lt with rfl | h't
+        · simp
+        apply setLIntegral_mono' measurableSet_Icc (fun t' ht' ↦ ?_)
+        have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t) t' =
+            (mfderiv I 𝓘(ℝ, E) (extChartAt I x) (γ t')) ∘L
+            (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t) t') := by
+          apply mfderiv_comp_mfderivWithin
+          · exact mdifferentiableAt_extChartAt (uc' (ht.2 t' ht'))
+          · exact (γ_smooth.mdifferentiable le_rfl).mdifferentiableOn _ ht'
+          · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
+            exact uniqueDiffOn_Icc h't _ ht'
+        have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t) t' 1 =
+            (mfderiv I 𝓘(ℝ, E) (extChartAt I x) (γ t'))
+            (mfderivWithin 𝓘(ℝ) I γ (Icc 0 t) t' 1) := by rw [this]; rfl
+        rw [this]
+        apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
+        gcongr
+
+
+
+
+
+      _ = C * pathELength I γ 0 t := by
+        rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top, pathELength_eq_lintegral_mfderivWithin_Icc]
+      _ ≤ C * pathELength I γ 0 1 := by
+        gcongr
+        exact pathELength_mono le_rfl ht.1.2
+      _ < C * (r / C) := by
+        gcongr
+        · exact ENNReal.coe_ne_top
+        · exact hγ.trans_eq (ENNReal.coe_div C_pos.ne')
+      _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
+    sorry
+  sorry
+
+#exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#exit
+
+exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
+
+
+
+
+
+
+
+
+
 
 
 

@@ -24,7 +24,7 @@ variable
 
 namespace Manifold
 
-variable [∀ (x : M), ENorm (TangentSpace I x)] {x y : ℝ} {γ γ' : ℝ → M}
+variable [∀ (x : M), ENorm (TangentSpace I x)] {x y x' y' : ℝ} {γ γ' : ℝ → M}
 
 variable (I) in
 /-- The length on `Icc x y` of a path into a manifold, where the path is defined on the whole real
@@ -68,6 +68,11 @@ lemma pathELength_congr_Ioo (h : EqOn γ γ' (Ioo x y)) :
 
 lemma pathELength_congr (h : EqOn γ γ' (Icc x y)) : pathELength I γ x y = pathELength I γ' x y :=
   pathELength_congr_Ioo (fun _ hx ↦ h ⟨hx.1.le, hx.2.le⟩)
+
+lemma pathELength_mono (h : x' ≤ x) (h' : y ≤ y') :
+    pathELength I γ x y ≤ pathELength I γ x' y' := by
+  simp only [pathELength_eq_lintegral_mfderiv_Icc]
+  exact lintegral_mono_set (Icc_subset_Icc h h')
 
 lemma pathELength_eq_add {γ : ℝ → M} {x y z : ℝ} (h : x ≤ y) (h' : y ≤ z) :
     pathELength I γ x z = pathELength I γ x y + pathELength I γ y z := by
@@ -231,7 +236,7 @@ which is convenient for gluing purposes. -/
 lemma exists_lt_locally_constant_of_riemannianEDist_lt
     (hr : riemannianEDist I x y < r) (hab : a < b) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
-    γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) ∧ pathELength I γ a b < r := by
+    pathELength I γ a b < r ∧ γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) := by
   /- We start from a path from `x` to `y` defined on `[0, 1]` with short length. Then, we
   reparameterize it using a smooth monotone map `η` from `[a, b]` to `[0, 1]` which is moreover
   locally constant around `a` and `b`.
@@ -257,8 +262,6 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       fun_prop
     · intro t ht
       exact ⟨Real.smoothTransition.nonneg _, Real.smoothTransition.le_one _⟩
-  · filter_upwards [Iio_mem_nhds haa'] with t ht using A' t ht
-  · filter_upwards [Ioi_mem_nhds hb'b] with t ht using B' t ht
   · convert hγ using 1
     rw [← A a haa', ← B b hb'b]
     apply pathELength_comp_of_monotoneOn hab.le
@@ -273,6 +276,8 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       fun_prop
     · rw [A a haa', B b hb'b]
       apply γ_smooth.mdifferentiableOn le_rfl
+  · filter_upwards [Iio_mem_nhds haa'] with t ht using A' t ht
+  · filter_upwards [Ioi_mem_nhds hb'b] with t ht using B' t ht
 
 lemma riemannianEDist_self : riemannianEDist I x x = 0 := by
   apply le_antisymm _ bot_le
@@ -284,7 +289,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   intro x y
   apply le_of_forall_gt (fun r hr ↦ ?_)
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hr zero_lt_one
-    with ⟨γ, γ0, γ1, γ_smooth, -, -, hγ⟩
+    with ⟨γ, γ0, γ1, γ_smooth, hγ, -⟩
   let η : ℝ → ℝ := fun t ↦ - t
   have h_smooth : ContMDiff 𝓘(ℝ) I 1 (γ ∘ η) := by
     apply γ_smooth.comp ?_
@@ -306,9 +311,9 @@ lemma riemannianEDist_triangle :
   apply le_of_forall_gt (fun r hr ↦ ?_)
   rcases ENNReal.exists_add_lt_of_add_lt hr with ⟨u, hu, v, hv, huv⟩
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hu zero_lt_one with
-    ⟨γ₁, hγ₁0, hγ₁1, hγ₁_smooth, -, hγ₁_const, hγ₁⟩
+    ⟨γ₁, hγ₁0, hγ₁1, hγ₁_smooth, hγ₁, -, hγ₁_const⟩
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hv one_lt_two with
-    ⟨γ₂, hγ₂1, hγ₂2, hγ₂_smooth, hγ₂_const, -, hγ₂⟩
+    ⟨γ₂, hγ₂1, hγ₂2, hγ₂_smooth, hγ₂, hγ₂_const, -⟩
   let γ := piecewise (Iic 1) γ₁ γ₂
   have : riemannianEDist I x z ≤ pathELength I γ 0 2 := by
     apply riemannianEDist_le_pathELength
