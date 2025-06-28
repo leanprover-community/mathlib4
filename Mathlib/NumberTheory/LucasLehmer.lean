@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 -/
 import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.GeomSum
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.NumberTheory.Fermat
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.NormNum
@@ -71,18 +71,12 @@ lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * (mersenne n) + 1 := by
   have := Nat.one_le_pow n 2 two_pos
   omega
 
-lemma mersenne_dvd_of_dvd {m n : ℕ} (h : m ∣ n) : (mersenne m) ∣ (mersenne n) := by
-  dsimp[mersenne]
-  rcases h with ⟨k, hk⟩
-  rw [hk]
-  apply nat_pow_one_sub_dvd_pow_mul_sub_one
-
 /-- If `2 ^ p - 1` is prime, then `p` is prime. -/
 lemma prime_of_mersenne_prime {p : ℕ} (h : Nat.Prime (mersenne p)) : Nat.Prime p := by
-  rcases lt_or_ge p 2 with lt_two | two_le
-  · revert h; decide +revert
-  exact Nat.prime_def.2 ⟨two_le, fun m hm ↦ ((Nat.dvd_prime h).1 (mersenne_dvd_of_dvd hm)).imp
-    (strictMono_mersenne.injective ·) (strictMono_mersenne.injective ·)⟩
+  apply Nat.prime_of_pow_sub_one_prime _ h |>.2
+  intro eq_one
+  rw [eq_one, mersenne] at h
+  apply Nat.not_prime_one h
 
 namespace Mathlib.Meta.Positivity
 
