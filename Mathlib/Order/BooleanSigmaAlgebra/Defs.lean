@@ -17,7 +17,7 @@ used to define Boolean σ-algebras.
 A Boolean σ-algebra is both a Boolean algebra and a σ-complete lattice.
 
 The theory is very comparable to the theory of complete Boolean algebras, except that suitable
-countability have to be added to most statements.
+countability assumptions have to be added.
 
 To differentiate the statements between complete Boolean algebras and Boolean σ-algebras, we prefix
 `sInf` and `sSup` in the statements by `σ`, giving `σsInf` and `σsSup`.
@@ -40,7 +40,11 @@ infimum.
 
 To differentiate the statements from the corresponding statements in `CompleteLattice` or
 `ConditionallyCompleteLattice`, we prefix `sInf` and `sSup` by a `σ` everywhere. Most statements
-should hold in both worlds, usually with additional assumptions of countability. -/
+should hold in both worlds, usually with additional assumptions of countability.
+
+Note that `sSup s` and `sInf s` are only guaranteed to be the supremum and the infifmum of `s` when
+`s` is countable. If `s` is not countable and `IsLUB s a` is true, then `sSup s = a` might not hold.
+-/
 class SigmaCompleteLattice (α) extends Lattice α, SupSet α, InfSet α where
   isLUB_σsSup (s : Set α) (hs : s.Countable) : IsLUB s (sSup s)
   isGLB_σsInf (s : Set α) (hs : s.Countable) : IsGLB s (sInf s)

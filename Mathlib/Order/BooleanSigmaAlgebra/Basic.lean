@@ -13,7 +13,7 @@ and a greatest lower bound, denoted below by `sSup s` and `sInf s`. This provide
 generalization for σ-algebras.
 
 The theory is very comparable to the theory of complete Boolean algebras, except that suitable
-countability have to be added to most statements.
+countability assumptions have to be added.
 
 To differentiate the statements between complete Boolean algebras and Boolean σ-algebras, we prefix
 `sInf` and `sSup` in the statements by `σ`, giving `σsInf` and `σsSup`.
