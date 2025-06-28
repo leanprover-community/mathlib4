@@ -459,14 +459,14 @@ variable [TopologicalSpace α] [TopologicalSpace β]
 instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
   instTopologicalSpaceProd
 
-@[continuity]
+@[continuity, fun_prop]
 lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) := continuous_id
 
 @[deprecated prod_continuous_toLp (since := "2024-04-27")]
 theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
   prod_continuous_toLp _ _ _
 
-@[continuity]
+@[continuity, fun_prop]
 lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_id
 
 @[deprecated prod_continuous_ofLp (since := "2024-04-27")]
