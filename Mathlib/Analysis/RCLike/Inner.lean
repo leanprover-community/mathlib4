@@ -128,7 +128,7 @@ lemma wInner_one_eq_inner (f g : ι → 𝕜) :
   simp [wInner]
 
 lemma inner_eq_wInner_one (f g : PiLp 2 fun _i : ι ↦ 𝕜) :
-    ⟪f, g⟫_𝕜 = ⟪WithLp.toLp 2 f, WithLp.toLp 2 g⟫_[𝕜, 1] := by simp [wInner]
+    ⟪f, g⟫_𝕜 = ⟪WithLp.ofLp f, WithLp.ofLp g⟫_[𝕜, 1] := by simp [wInner]
 
 lemma linearIndependent_of_ne_zero_of_wInner_one_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by
