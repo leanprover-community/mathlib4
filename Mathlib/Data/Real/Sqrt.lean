@@ -264,8 +264,8 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma sqrt_le_one : √x ≤ 1 ↔ x ≤ 1 := by
   rw [← sqrt_one, sqrt_le_sqrt_iff zero_le_one, sqrt_one]
 
-@[simp] lemma isSquare_iff {r : ℝ} : IsSquare r ↔ 0 ≤ r :=
-  ⟨(·.nonneg), (√r, mul_self_sqrt · |>.symm)⟩
+@[simp] lemma isSquare_iff {x : ℝ} : IsSquare x ↔ 0 ≤ x :=
+  ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
 end Real
 
