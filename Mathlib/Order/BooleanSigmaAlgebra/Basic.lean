@@ -70,19 +70,6 @@ theorem IsLUB.σsSup_eq (h : IsLUB s a) (hs : s.Countable) : sSup s = a :=
 theorem IsGLB.σsInf_eq (h : IsGLB s a) (hs : s.Countable) : sInf s = a :=
   IsLUB.σsSup_eq (α := αᵒᵈ) h hs
 
-theorem IsGreatest.σsSup_eq (h : IsGreatest s a) : sSup s = a :=
-  let h' : IsLUB s a := h.isLUB
-  (SigmaCompleteLattice.isLUB_σsSup_of_isLUB a s h').unique h'
-
-theorem IsLeast.σsInf_eq (h : IsLeast s a) : sInf s = a :=
-  IsGreatest.σsSup_eq (α := αᵒᵈ) h
-
-theorem IsGreatest.σsSup_mem (h : IsGreatest s a) : sSup s ∈ s :=
-  h.σsSup_eq.symm ▸ h.1
-
-theorem IsLeast.σsInf_mem (h : IsLeast s a) : sInf s ∈ s :=
-  IsGreatest.σsSup_mem (α := αᵒᵈ) h
-
 theorem subset_Icc_σsInf_σsSup (hs : s.Countable) : s ⊆ Set.Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨σsInf_le hs hx, le_σsSup hs hx⟩
 
