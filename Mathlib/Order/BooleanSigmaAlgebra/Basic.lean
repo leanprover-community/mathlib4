@@ -159,4 +159,15 @@ nonempty and bounded below. -/
 theorem σsInf_insert (hs : s.Countable) : sInf (insert a s) = a ⊓ sInf s :=
   σsSup_insert (α := αᵒᵈ) hs
 
+theorem σsSup_le_σsSup_of_forall_exists_le (hs : s.Countable) (ht : t.Countable)
+    (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
+  (le_σsSup_iff ht).2 fun _ hb =>
+    σsSup_le hs fun a ha =>
+      let ⟨_, hct, hac⟩ := h a ha
+      hac.trans (hb hct)
+
+theorem σsInf_le_σsInf_of_forall_exists_le (hs : s.Countable) (ht : t.Countable)
+    (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
+  σsSup_le_σsSup_of_forall_exists_le (α := αᵒᵈ) hs ht h
+
 end SigmaCompleteLattice
