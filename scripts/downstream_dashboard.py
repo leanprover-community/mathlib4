@@ -189,10 +189,17 @@ def check_workflow_uses_action(repo: Dict[str, str], workflow_name: str, expecte
         workflow_filename = repo['workflows'][workflow_name]
     except KeyError:
         if not silent:
+            # Splat out the repo data and workflow data in order to not mutate the original.
+            example_entry = {**repo, 'workflows': {**repo['workflows'], workflow_name: f'{workflow_name}.yml'}}
+            yaml_example_entry = yaml.dump(example_entry)
             print(
 f"""  {FAIL} Consider adding a {workflow_name} workflow.
     See https://github.com/{expected_action}/blob/HEAD/README.md for installation instructions.
-    After installing a workflow, please add an entry to `scripts/downstream_repos.yml` in Mathlib.""")
+    After installing a workflow, please add an entry to `scripts/downstream_repos.yml` in Mathlib.
+    For example, assuming you call the workflow file `{workflow_name}.yml`:
+```
+{yaml_example_entry}
+```""")
         return False
     workflow_path = f'.github/workflows/{workflow_filename}'
     workflow_contents = fetch_file_contents(repo, workflow_path)
@@ -214,12 +221,12 @@ f"""  {FAIL} Workflow {workflow_name} defined in `scripts/downstream_repos.yml` 
     action_references = set(action.split('@')[0] for action in workflow_actions(workflow))
     if expected_action in action_references:
         if not silent:
-            print(f"  {PASS} Workflow {workflow_name} installed, using the action: {expected_action}")
+            print(f"  {PASS} Detected workflow {workflow_name}, using the action: {expected_action}")
         return True
     else:
         if not silent:
             print(
-f"""  {WARN} Workflow {workflow_name} installed.
+f"""  {WARN} Detected a workflow {workflow_name} set up by hand.
     A GitHub Action exists to handle this workflow for you.
     See https://github.com/{expected_action}/blob/HEAD/README.md for installation instructions.""")
         return False
