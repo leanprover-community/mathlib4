@@ -277,8 +277,8 @@ lemma setLIntegral_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hs : Measurable
 
 section
 
-theorem lintegral_eq_zero_of_ae_eq_zero {α : Type*} [MeasurableSpace α] {μ : Measure α}
-    {f : α → ℝ≥0∞} : f =ᵐ[μ] 0 →  ∫⁻ a, f a ∂μ = 0 :=
+theorem lintegral_eq_zero_of_ae_eq_zero {f : α → ℝ≥0∞} :
+    f =ᵐ[μ] 0 →  ∫⁻ a, f a ∂μ = 0 :=
   fun h ↦ (lintegral_congr_ae h).trans lintegral_zero
 
 /-- The Lebesgue integral is zero iff the function is a.e. zero.
