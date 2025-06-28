@@ -72,7 +72,7 @@ theorem supported_eq_span_single (s : Set α) :
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
     refine sum_mem fun i il => ?_
-    rw [show single i (l i) = l i • single i 1 by simp [span]]
+    rw [show single i (l i) = l i • single i 1 by simp]
     exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :

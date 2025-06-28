@@ -364,7 +364,7 @@ lemma lt_card_fiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
   by_contra hlt
   apply h
   apply isIso_of_mono_of_eq_card_fiber F f
-  simp only [gt_iff_lt, not_lt] at hlt
+  simp only [not_lt] at hlt
   exact Nat.le_antisymm
     (Finite.card_le_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
 

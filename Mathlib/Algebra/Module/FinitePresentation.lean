@@ -512,8 +512,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     have : IsLocalizedModule.map S f g l' = (s • LinearMap.id) ∘ₗ l := by
       apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
       apply LinearMap.ext fun x ↦ ?_
-      simp only [LinearMap.coe_comp, Function.comp_apply, IsLocalizedModule.map_apply,
-        Basis.coe_repr_symm, LinearMap.coe_restrictScalars]
+      simp only [LinearMap.coe_comp, Function.comp_apply, IsLocalizedModule.map_apply]
       rw [← LinearMap.comp_apply, H]
       simp
     rw [this]

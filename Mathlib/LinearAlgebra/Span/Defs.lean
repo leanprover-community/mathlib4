@@ -315,7 +315,7 @@ theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : 
 theorem mem_sSup_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
   have : Nonempty s := hs.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists, Subtype.coe_mk,
+  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists,
     exists_prop]
 
 @[norm_cast, simp]
@@ -567,7 +567,7 @@ theorem mem_span_insert' {x y} {s : Set M} :
   · rintro ⟨a, z, hz, rfl⟩
     exact ⟨-a, by simp [hz, add_assoc]⟩
   · rintro ⟨a, h⟩
-    exact ⟨-a, _, h, by simp [add_comm, add_left_comm]⟩
+    exact ⟨-a, _, h, by simp [add_comm]⟩
 
 lemma span_range_update_add_smul (hij : i ≠ j) (v : ι → M) (r : R) :
     span R (Set.range (Function.update v j (v j + r • v i))) = span R (Set.range v) := by

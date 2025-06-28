@@ -166,7 +166,7 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
     cases i <;> simp only [List.dropSlice]
     · cases j with
       | zero => simp
-      | succ n => simp_all [xs_ih]; omega
+      | succ n => simp_all; omega
     · simp [xs_ih]; omega
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :

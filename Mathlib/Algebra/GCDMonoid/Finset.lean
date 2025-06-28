@@ -178,9 +178,9 @@ theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
   constructor <;> intro h
   · intro b bs
     apply h (f b)
-    simp only [Multiset.mem_map, mem_def.1 bs]
+    simp only [Multiset.mem_map]
     use b
-    simp only [mem_def.1 bs, eq_self_iff_true, and_self]
+    simp only [mem_def.1 bs, and_self]
   · intro a as
     rw [Multiset.mem_map] at as
     rcases as with ⟨b, ⟨bs, rfl⟩⟩

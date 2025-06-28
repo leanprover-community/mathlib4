@@ -279,7 +279,7 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
   ext fun x => by substs h h2; rfl
 
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
-  subst h; simp [coe_refl]
+  subst h; simp
 
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
   ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
@@ -332,8 +332,8 @@ is equivalent to the type of equivalences `β ≃ δ`. -/
 def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) where
   toFun ac := (ab.symm.trans ac).trans cd
   invFun bd := ab.trans <| bd.trans <| cd.symm
-  left_inv ac := by ext x; simp only [trans_apply, comp_apply, symm_apply_apply]
-  right_inv ac := by ext x; simp only [trans_apply, comp_apply, apply_symm_apply]
+  left_inv ac := by ext x; simp only [trans_apply, symm_apply_apply]
+  right_inv ac := by ext x; simp only [trans_apply, apply_symm_apply]
 
 @[simp] theorem equivCongr_refl {α β} :
     (Equiv.refl α).equivCongr (Equiv.refl β) = Equiv.refl (α ≃ β) := by ext; rfl
@@ -375,7 +375,7 @@ theorem permCongr_symm_apply (p : Equiv.Perm β') (x) :
 
 theorem permCongr_trans (p p' : Equiv.Perm α') :
     (e.permCongr p).trans (e.permCongr p') = e.permCongr (p.trans p') := by
-  ext; simp only [trans_apply, comp_apply, permCongr_apply, symm_apply_apply]
+  ext; simp only [trans_apply, permCongr_apply, symm_apply_apply]
 
 end permCongr
 

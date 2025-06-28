@@ -88,7 +88,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
   · intro H
     rw [← mem_nilradical, nilradical_eq_sInf, Ideal.mem_sInf] at H
     simp only [Set.mem_setOf_eq, Algebra.TensorProduct.algebraMap_apply,
-      Ideal.Quotient.algebraMap_eq, not_forall, Classical.not_imp] at H
+      Ideal.Quotient.algebraMap_eq, not_forall] at H
     obtain ⟨q, hq, hfq⟩ := H
     have : ∀ a ∈ s, Ideal.Quotient.mk (Ideal.span s) a ⊗ₜ[R] 1 ∈ q := fun a ha ↦ by
       simp [Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span ha)]
@@ -142,7 +142,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     congr!
     ext1
     · ext; simp [e]
-    · simp [e, monomial_one_one_eq_X]
+    · simp [e]
   · simp [Polynomial.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
@@ -205,7 +205,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     ext
     · simp [scalarRTensorAlgEquiv, e, coeff_map,
         Algebra.smul_def, apply_ite (f := algebraMap _ _)]
-    · simp [e, monomial_one_one_eq_X, scalarRTensorAlgEquiv, coeff_map, coeff_X']
+    · simp [e, scalarRTensorAlgEquiv, coeff_map, coeff_X']
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

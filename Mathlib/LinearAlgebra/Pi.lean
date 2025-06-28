@@ -278,22 +278,21 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
       (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) ?_) ?_ ?_
   · intro b
-    simp only [mem_iInf, mem_ker, funext_iff, proj_apply, pi_apply]
+    simp only [mem_iInf, mem_ker, proj_apply, pi_apply]
     intro j hjJ
     have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
     rw [dif_neg this, zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
     ext b ⟨j, hj⟩
-    simp only [dif_pos, Function.comp_apply, Function.eval_apply, LinearMap.codRestrict_apply,
-      LinearMap.coe_comp, LinearMap.coe_proj, LinearMap.pi_apply, Submodule.subtype_apply,
-      Subtype.coe_prop]
+    simp only [dif_pos,
+      LinearMap.coe_proj, LinearMap.pi_apply]
     rfl
   · ext1 ⟨b, hb⟩
     apply Subtype.ext
     ext j
     have hb : ∀ i ∈ J, b i = 0 := by
       simpa only [mem_iInf, mem_ker, proj_apply] using (mem_iInf _).1 hb
-    simp only [comp_apply, pi_apply, id_apply, proj_apply, subtype_apply, codRestrict_apply]
+    simp only [comp_apply, pi_apply, id_apply, codRestrict_apply]
     split_ifs with h
     · rfl
     · exact (hb _ <| (hu trivial).resolve_left h).symm

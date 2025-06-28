@@ -146,7 +146,7 @@ include ht
 theorem isRightInversion_mul_left_iff {w : W} :
     cs.IsRightInversion (w * t) t ↔ ¬cs.IsRightInversion w t := by
   unfold IsRightInversion
-  simp only [mul_assoc, ht.inv, ht.mul_self, mul_one, ht, true_and, not_lt]
+  simp only [mul_assoc, ht.mul_self, mul_one, ht, true_and, not_lt]
   constructor
   · exact le_of_lt
   · exact (lt_of_le_of_ne' · (ht.length_mul_left_ne w))
@@ -216,7 +216,7 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
     dsimp [rightInvSeq, concat]
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
-      inv_simple, cons_append, cons.injEq, and_true]
+      inv_simple, cons.injEq, and_true]
     group
 
 private theorem leftInvSeq_eq_reverse_rightInvSeq_reverse (ω : List B) :
@@ -257,9 +257,9 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
   | cons i ω ih =>
     dsimp only [rightInvSeq]
     rcases j with _ | j'
-    · simp [getD_cons_zero]
+    · simp
     · simp only [getD_eq_getElem?_getD] at ih
-      simp [getD_cons_succ, ih j']
+      simp [ih j']
 
 lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
     (ris ω)[j]'(by simp[h]) =
@@ -278,7 +278,7 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
   | cons i ω ih =>
     dsimp [leftInvSeq]
     rcases j with _ | j'
-    · simp [getD_cons_zero]
+    · simp
     · rw [getD_cons_succ]
       rw [(by simp : 1 = ⇑(MulAut.conj (s i)) 1)]
       rw [getD_map]
@@ -348,7 +348,7 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   nth_rw 1 [← take_append_drop (j + 1) ω]
   rw [take_succ]
   obtain lt | le := lt_or_ge j ω.length
-  · simp only [getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
+  · simp only [getElem?_eq_getElem lt, wordProd_append, mul_assoc]
     simp
   · simp only [getElem?_eq_none le]
     simp
@@ -359,7 +359,7 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   nth_rw 4 [← take_append_drop (j + 1) ω]
   rw [take_succ]
   obtain lt | le := lt_or_ge j ω.length
-  · simp only [getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
+  · simp only [getElem?_eq_getElem lt, wordProd_append, mul_assoc]
     simp
   · simp only [getElem?_eq_none le]
     simp
@@ -465,7 +465,7 @@ lemma getElem_succ_leftInvSeq_alternatingWord
     (lis (alternatingWord i j (2 * p)))[k + 1]'(by simpa using h) =
     MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; omega)) := by
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
-    cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
+    cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[]; omega)]
   simp only [MulAut.conj, listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc,
     mul_inv_rev, inv_simple, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk,
     mul_right_inj, mul_left_inj]

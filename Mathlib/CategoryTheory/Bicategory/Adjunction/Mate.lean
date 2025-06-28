@@ -445,7 +445,7 @@ end
 lemma mateEquiv_leftUnitor_hom_rightUnitor_inv
     {a b : B} {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) :
     mateEquiv adj adj ((λ_ _).hom ≫ (ρ_ _).inv) = (ρ_ _).hom ≫ (λ_ _).inv := by
-  simp [← cancel_mono (λ_ r).hom, ← cancel_epi (ρ_ r).inv,
+  simp [← cancel_mono (λ_ r).hom,
     ← conjugateEquiv_id adj, conjugateEquiv_apply]
 
 section
@@ -638,7 +638,7 @@ isomorphism if and only if the original 2-morphism is. This explains why some Be
 theorem iterated_mateEquiv_conjugateEquiv (α : f₁ ≫ l₂ ⟶ l₁ ≫ f₂) :
     mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α) =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
-  simp only [conjugateEquiv_apply, mateEquiv_symm_apply', mateEquiv_apply']
+  simp only [conjugateEquiv_apply, mateEquiv_apply']
   dsimp [Adjunction.comp]
   bicategory
 

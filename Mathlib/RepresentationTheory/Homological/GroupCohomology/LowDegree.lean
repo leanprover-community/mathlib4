@@ -333,7 +333,7 @@ theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCocycles A :=
   (mem_oneCocycles_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
-      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
+      isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
 variable (A) in
@@ -900,7 +900,7 @@ noncomputable alias isoH0 := H0Iso
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H0Iso_hom  :
     π A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
-  simp [← cancel_mono (shortComplexH0 A).f, H0Iso]
+  simp [H0Iso]
 
 @[deprecated (since := "2025-06-12")]
 alias groupCohomologyπ_comp_isoH0_hom := π_comp_H0Iso_hom

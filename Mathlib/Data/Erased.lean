@@ -134,8 +134,8 @@ protected instance instLawfulMonad : LawfulMonad Erased :=
     bind_assoc := by intros; ext; simp
     bind_pure_comp := by intros; ext; simp
     bind_map := by intros; ext; simp [Seq.seq]
-    seqLeft_eq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqLeft.seqLeft]
-    seqRight_eq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight]
-    pure_seq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight] }
+    seqLeft_eq := by intros; ext; simp [Seq.seq, SeqLeft.seqLeft]
+    seqRight_eq := by intros; ext; simp [Seq.seq, SeqRight.seqRight]
+    pure_seq := by intros; ext; simp [Seq.seq] }
 
 end Erased

@@ -182,7 +182,7 @@ lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
   | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
 
 @[to_additive]
-lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp [mul_right_iterate]
+lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
 
 @[to_additive]
 lemma mul_right_iterate_apply_one (a : M) : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
@@ -730,7 +730,7 @@ lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_di
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
-  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel_right]
+  rw [div_mul_eq_div_div_swap]; simp only [mul_div_cancel_right]
 
 @[to_additive eq_sub_of_add_eq]
 theorem eq_div_of_mul_eq' (h : a * c = b) : a = b / c := by simp [← h]

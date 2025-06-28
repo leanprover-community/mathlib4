@@ -814,7 +814,7 @@ variable [StarAddMonoid R] [Star A] {a : A}
 
 @[simp]
 lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
-  simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+  simp only [isSelfAdjoint_iff, ← inr_star, inr_injective.eq_iff]
 
 alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
 

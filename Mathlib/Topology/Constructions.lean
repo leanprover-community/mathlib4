@@ -1128,7 +1128,7 @@ lemma Topology.isInducing_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ
 
 lemma Topology.isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h : Injective f₁) : IsEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsEmbedding (f₂ i) := by
-  simp only [isEmbedding_iff, Injective.sigma_map, isInducing_sigmaMap h, forall_and,
+  simp only [isEmbedding_iff, isInducing_sigmaMap h, forall_and,
     h.sigma_map_iff]
 
 @[deprecated (since := "2024-10-26")]

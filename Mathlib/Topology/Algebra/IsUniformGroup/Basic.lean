@@ -399,7 +399,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prodMap df) (fun p : β × δ =>
     rw [mem_map, mem_comap, nhds_prod_eq]
     exists (U' ×ˢ V') ×ˢ U' ×ˢ V'
     rw [mem_prod_same_iff]
-    simp only [exists_prop]
+    simp only
     constructor
     · have := prod_mem_prod U'_nhds V'_nhds
       tauto

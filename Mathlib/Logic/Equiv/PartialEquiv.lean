@@ -674,7 +674,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 `PartialEquiv`s. -/
 instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
-  iseqv := by constructor <;> simp only [Equivalence, EqOnSource, EqOn] <;> aesop
+  iseqv := by constructor <;> simp only [EqOnSource, EqOn] <;> aesop
 
 theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _
@@ -797,7 +797,7 @@ theorem refl_prod_refl :
 theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
-  ext ⟨x, y⟩ <;> simp [Set.ext_iff]; tauto
+  ext ⟨x, y⟩ <;> simp; tauto
 
 end Prod
 
@@ -986,6 +986,6 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 @[simp, mfld_simps]
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
-  simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
+  simp only [transEquiv_eq_trans, trans_assoc]
 
 end PartialEquiv

@@ -229,7 +229,7 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
   ext k hk
   rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_real_apply _ hi₂ hi₁ hk,
     toMeasureOfLEZero_real_apply _ hi₃ hi₁.compl hk]
-  simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
+  simp only [sub_neg_eq_add]
   rw [← of_union _ (MeasurableSet.inter hi₁ hk) (MeasurableSet.inter hi₁.compl hk),
     Set.inter_comm i, Set.inter_comm iᶜ, Set.inter_union_compl _ _]
   exact (disjoint_compl_right.inf_left _).inf_right _

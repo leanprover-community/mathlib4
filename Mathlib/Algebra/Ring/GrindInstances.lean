@@ -63,8 +63,8 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
 theorem Semiring.toGrindSemiring_ofNat [Semiring α] (n : ℕ) :
     @OfNat.ofNat α n (Lean.Grind.Semiring.ofNat n) = n.cast := by
   match n with
-  | 0 => simp [zero_add]
-  | 1 => simp [one_add_one_eq_two]
+  | 0 => simp
+  | 1 => simp
   | n + 2 => rfl
 
 attribute [local instance] Grind.Semiring.natCast Grind.Ring.intCast in

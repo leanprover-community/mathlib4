@@ -448,7 +448,7 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
     simp [freeMap, freeObj]
   right_triangle_components X := by
     ext
-    simp [freeMap, freeObj]
+    simp [freeObj]
 
 instance : (forget₂ (TopModuleCat.{max v u} R) TopCat).IsRightAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
