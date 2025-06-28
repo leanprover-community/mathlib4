@@ -125,4 +125,16 @@ theorem σsInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
 theorem σsInf_le_csSup (hs : s.Countable) (ne : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_σsInf hs) (isLUB_σsSup hs) ne
 
+/-- The `sSup` of a union of two sets is the max of the suprema of each subset, under the
+assumptions that all sets are countable. -/
+theorem σsSup_union (hs : s.Countable) (ht : t.Countable) :
+    sSup (s ∪ t) = sSup s ⊔ sSup t :=
+  ((isLUB_σsSup hs).union (isLUB_σsSup ht)).σsSup_eq (hs.union ht)
+
+/-- The `sInf` of a union of two sets is the min of the infima of each subset, under the
+assumptions that all sets are countable. -/
+theorem σsInf_union (hs : s.Countable) (ht : t.Countable) :
+    sInf (s ∪ t) = sInf s ⊓ sInf t :=
+  σsSup_union (α := αᵒᵈ) hs ht
+
 end SigmaCompleteLattice
