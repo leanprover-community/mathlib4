@@ -8,6 +8,7 @@ import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.List
 import Mathlib.Order.Preorder.Finite
+import Mathlib.Data.Finite.Prod
 
 /-!
 # Countable sets
@@ -307,7 +308,91 @@ theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
     exact not_disjoint_iff_nonempty_inter.2 A (hf H)
   exact Injective.countable A
 
+theorem iUnion_le_nat : ⋃ n : ℕ, {i | i ≤ n} = Set.univ :=
+ subset_antisymm (Set.subset_univ _)
+   (fun i _ ↦ Set.mem_iUnion_of_mem i (Set.mem_setOf.mpr (le_refl _)))
+
 end Set
 
 theorem Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=
   s.finite_toSet.countable
+
+structure FiniteExhaustion {α : Type*} (s : Set α) where
+  toFun : ℕ → Set α
+  Finite' : ∀ n, Finite (toFun n)
+  subset_succ' : ∀ n, toFun n ⊆ toFun (n + 1)
+  iUnion_eq' : ⋃ n, toFun n = s
+
+namespace FiniteExhaustion
+
+instance {α : Type*} {s : Set α} : FunLike (FiniteExhaustion s) ℕ (Set α) where
+  coe := toFun
+  coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+
+instance {α : Type*} {s : Set α} : RelHomClass (FiniteExhaustion s) LE.le HasSubset.Subset where
+  map_rel K _ _ h := monotone_nat_of_le_succ (fun n ↦ K.subset_succ' n) h
+
+instance {α : Type*} {s : Set α} {K : FiniteExhaustion s} {n : ℕ} : Finite (K n) :=
+  K.Finite' n
+
+variable {α : Type*} {s : Set α} (K : FiniteExhaustion s)
+
+@[simp]
+theorem toFun_eq_coe : K.toFun = K := rfl
+
+protected theorem Finite (n : ℕ) : (K n).Finite := K.Finite' n
+
+theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset_succ' n
+
+protected theorem subset {m n : ℕ} (h : m ≤ n) : K m ⊆ K n :=
+  OrderHomClass.mono K h
+
+theorem iUnion_eq : ⋃ n, K n = s :=
+  K.iUnion_eq'
+
+noncomputable def choice (s : Set α) [Countable s] : FiniteExhaustion s := by
+    apply Classical.choice
+    by_cases h : Nonempty s
+    · obtain ⟨f, hf⟩ := exists_surjective_nat s
+      have : s → α := Subtype.val
+      refine ⟨fun n ↦ (Subtype.val ∘ f) '' {i | i ≤ n}, ?_, ?_, ?_⟩
+      · exact fun n ↦ Set.Finite.image _ (Set.finite_le_nat n)
+      · intro n
+        simp only [Function.comp_apply]
+        apply Set.image_subset
+        intro _ h
+        simp [le_trans h (Nat.le_succ _)]
+      · simp [← Set.image_image, ← Set.image_iUnion, Set.iUnion_le_nat, Set.range_eq_univ.mpr hf]
+    · refine ⟨fun _ ↦ ∅, by simp [Set.Finite.to_subtype], fun n ↦ by simp, ?_⟩
+      simp [Set.not_nonempty_iff_eq_empty'.mp h]
+
+noncomputable instance [Countable s] :
+    Inhabited (FiniteExhaustion s) :=
+  ⟨FiniteExhaustion.choice s⟩
+
+section prod
+
+variable {β : Type*} {t : Set β} (K' : FiniteExhaustion t)
+
+protected def prod :
+    FiniteExhaustion (s ×ˢ t) :=
+  { toFun := fun n ↦ K n ×ˢ K' n
+    Finite' := fun n ↦ Set.Finite.prod (K.Finite n) (K'.Finite n)
+    subset_succ' := fun n ↦ Set.prod_mono (K.subset_succ n) (K'.subset_succ n)
+    iUnion_eq' := by
+      apply subset_antisymm
+      · rw [Set.iUnion_subset_iff]
+        refine fun i ↦ Set.prod_mono ?_ ?_
+        · simp [← K.iUnion_eq, Set.subset_iUnion]
+        · simp [← K'.iUnion_eq, Set.subset_iUnion]
+      rintro ⟨a, b⟩ h
+      simp only [← K.iUnion_eq, ← K'.iUnion_eq, Set.mem_prod, Set.mem_iUnion] at h
+      obtain ⟨⟨i,hi⟩, ⟨j, hj⟩⟩ := h
+      simp only [Set.mem_iUnion, Set.mem_prod]
+      exact ⟨max i j, K.subset (le_max_left _ _) hi, K'.subset (le_max_right _ _ ) hj⟩ }
+
+protected theorem prod_apply (n : ℕ) : (K.prod K') n = K n ×ˢ K' n := by rfl
+
+end prod
+
+end FiniteExhaustion
