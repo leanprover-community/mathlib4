@@ -172,7 +172,7 @@ def sectionOfRetractionKerToTensorAux : S →ₐ[R] P where
   toFun x := σ x - l (1 ⊗ₜ .D _ _ (σ x))
   map_one' := by simp [sectionOfRetractionKerToTensorAux_prop l hl (σ 1) 1 (by simp [hσ])]
   map_mul' a b := by
-    have (x y) : (l x).1 * (l y).1 = 0 := by
+    have (x y : _) : (l x).1 * (l y).1 = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l x).2 (l y).2
     simp only [sectionOfRetractionKerToTensorAux_prop l hl (σ (a * b)) (σ a * σ b) (by simp [hσ]),
       Derivation.leibniz, tmul_add, tmul_smul, map_add, map_smul, Submodule.coe_add,
@@ -239,7 +239,7 @@ def retractionKerToTensorEquivSection :
   left_inv l := by
     ext s p
     obtain ⟨s, rfl⟩ := hf s
-    have (x y) : (l.1 x).1 * (l.1 y).1 = 0 := by
+    have (x y : _) : (l.1 x).1 * (l.1 y).1 = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l.1 x).2 (l.1 y).2
     simp only [AlgebraTensorModule.curry_apply,
       Derivation.coe_comp, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Derivation.coeFn_coe,

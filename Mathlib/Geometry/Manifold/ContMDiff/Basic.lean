@@ -379,7 +379,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   rw [h.toPartialHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
-    exact haveI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
+    exact letI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this

@@ -66,7 +66,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
         (F := RingEquiv _ _)] using congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
     map_id N := by ext ⟨⟨x⟩, hx⟩; rfl
     map_comp f g := by ext ⟨⟨x⟩, hx⟩; rfl }
-  have (N) : Nonempty (F.obj N) := by
+  have (N : _) : Nonempty (F.obj N) := by
     obtain ⟨g, hg⟩ := Algebra.IsInvariant.exists_smul_of_under_eq A
       (B' N.1.1) (G ⧸ N.1.1) (P.under _) (Q.under _) hPQ
     exact ⟨g, hg⟩

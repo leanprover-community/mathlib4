@@ -93,7 +93,7 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f :
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂ν) := by
     rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable (f x) ν
-    · have (n) : Integrable (s' n x) ν := by
+    · have (n : _) : Integrable (s' n x) ν := by
         apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
@@ -224,7 +224,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
   simp only [hasFiniteIntegral_iff_enorm, lintegral_prod _ h1f.enorm.aemeasurable]
-  have (x) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
+  have (x : _) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
     enorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_enorm]

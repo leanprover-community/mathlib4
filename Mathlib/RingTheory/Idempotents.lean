@@ -312,7 +312,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
-  have (i) : f (e' i) = e i := congr_fun h₂ i
+  have (i : _) : f (e' i) = e i := congr_fun h₂ i
   cases i using Fin.cases with
   | zero => simp [this, Fin.sum_univ_succ, ← he.complete]
   | succ i => simp [this]
