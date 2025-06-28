@@ -96,7 +96,7 @@ alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 attribute [bound] sqrt_pos_of_pos
 
-@[simp] theorem isSquare (r : ℝ≥0) : IsSquare r := ⟨_, mul_self_sqrt _ |>.symm⟩
+@[simp] theorem isSquare (x : ℝ≥0) : IsSquare x := ⟨_, mul_self_sqrt _ |>.symm⟩
 
 end NNReal
 
@@ -264,7 +264,7 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma sqrt_le_one : √x ≤ 1 ↔ x ≤ 1 := by
   rw [← sqrt_one, sqrt_le_sqrt_iff zero_le_one, sqrt_one]
 
-@[simp] lemma isSquare_iff {x : ℝ} : IsSquare x ↔ 0 ≤ x :=
+@[simp] lemma isSquare_iff : IsSquare x ↔ 0 ≤ x :=
   ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
 end Real
