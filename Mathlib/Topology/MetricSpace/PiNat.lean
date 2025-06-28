@@ -133,7 +133,7 @@ theorem mem_cylinder_iff_eq {x y : ∀ n, E n} {n : ℕ} :
     exact self_mem_cylinder _ _
 
 theorem mem_cylinder_comm (x y : ∀ n, E n) (n : ℕ) : y ∈ cylinder x n ↔ x ∈ cylinder y n := by
-  simp [mem_cylinder_iff_eq, eq_comm]
+  simp [eq_comm]
 
 theorem mem_cylinder_iff_le_firstDiff {x y : ∀ n, E n} (hne : x ≠ y) (i : ℕ) :
     x ∈ cylinder y i ↔ i ≤ firstDiff x y := by
@@ -260,7 +260,7 @@ protected theorem dist_comm (x y : ∀ n, E n) : dist x y = dist y x := by
 protected theorem dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
   rcases eq_or_ne x y with (rfl | h)
   · simp [dist]
-  · simp [dist, h, zero_le_two]
+  · simp [dist, h]
 
 theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y) (dist y z) := by
   rcases eq_or_ne x z with (rfl | hxz)
@@ -848,9 +848,9 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
       · rintro ⟨i, hi⟩
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
-        simp only [Prod.forall, imp_self, mem_principal, Subset.rfl]
+        simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
-        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_range, Finset.mem_coe] at hxy
+        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_coe] at hxy
         calc
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
           _ = (∑ i ∈ K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +

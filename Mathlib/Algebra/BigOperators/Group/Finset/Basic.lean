@@ -1111,5 +1111,5 @@ theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
   induction s using Finset.cons_induction with
   | empty => simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
   | cons i s his IH =>
-    simp only [Finset.sum_cons, not_false_iff]
+    simp only [Finset.sum_cons]
     exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)

@@ -115,10 +115,10 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Nat.coprime_zero_left] at hab
-    simp [hab, Finset.filter_singleton, not_isPrimePow_one]
+    simp [hab]
   rcases eq_or_ne b 0 with (rfl | hb)
   · simp only [Nat.coprime_zero_right] at hab
-    simp [hab, Finset.filter_singleton, not_isPrimePow_one]
+    simp [hab]
   refine
     ⟨?_, fun h =>
       Or.elim h (fun i => i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))
