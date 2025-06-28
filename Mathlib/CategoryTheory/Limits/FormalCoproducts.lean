@@ -108,7 +108,7 @@ variable {X : C} {Y : FormalCoproduct.{w} C}
 
 /-- A map `of(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
 `X ⟶ Y.obj i` in the original category. -/
-def ofHom.mk (i : Y.I) (f : X ⟶ Y.obj i) : (of C).obj X ⟶ Y :=
+@[simps!] def ofHom.mk (i : Y.I) (f : X ⟶ Y.obj i) : (of C).obj X ⟶ Y :=
   ⟨fun _ ↦ i, fun _ ↦ f⟩
 
 /-- A map `of(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
@@ -130,7 +130,7 @@ end ofHom
 -- This is probably some form of adjunction?
 /-- A map `of(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
 `X ⟶ Y.obj i` in the original category. -/
-def ofHomEquiv (X : C) (Y : FormalCoproduct.{w} C) :
+@[simps!] def ofHomEquiv (X : C) (Y : FormalCoproduct.{w} C) :
     ((of C).obj X ⟶ Y) ≃ (i : Y.I) × (X ⟶ Y.obj i) where
   toFun f := ⟨ofHom.fst f, ofHom.snd f⟩
   invFun f := ofHom.mk f.1 f.2
@@ -138,7 +138,7 @@ def ofHomEquiv (X : C) (Y : FormalCoproduct.{w} C) :
   right_inv _ := rfl
 
 /-- `of` is fully faithful, which means that `(X ⟶ Y) ≃ (of(X) ⟶ of(Y))`. -/
-def fullyFaithfulOf : (of C).FullyFaithful where
+@[simps!] def fullyFaithfulOf : (of C).FullyFaithful where
   preimage f := f.φ PUnit.unit
 
 instance : (of C).Full :=
@@ -213,18 +213,27 @@ def coproductCoconeIsoSelf : (cofan X.I X.toFun).pt ≅ X :=
   isoOfComponents (Equiv.sigmaPUnit X.I) fun i ↦ Iso.refl (X.obj i.fst)
 
 @[reassoc (attr := simp)]
-lemma inj_comp_coproductCoconeIsoSelf (i : X.I) :
+lemma inj_comp_coproductCoconeIsoSelf_hom (i : X.I) :
     (cofan X.I X.toFun).inj i ≫ (coproductCoconeIsoSelf X).hom = ofHom.mk i (𝟙 (X.obj i)) :=
-  hom_ext rfl (fun i => by simp; rfl)
+  hom_ext rfl (fun i => by aesop)
+
+@[reassoc (attr := simp)]
+lemma mk_comp_coproductCoconeIsoSelf_inv (i : X.I) :
+    ofHom.mk i (𝟙 (X.obj i)) ≫ (coproductCoconeIsoSelf X).inv = (cofan X.I X.toFun).inj i :=
+  (Iso.comp_inv_eq _).2 (inj_comp_coproductCoconeIsoSelf_hom _ _).symm
 
 /-- The isomorphism between the coproduct of `X.toFun` and the object `X` itself. -/
 @[simps!] noncomputable def coproductIsoSelf :
     ∐ X.toFun ≅ X :=
   coproductIsoCofan _ _ ≪≫ coproductCoconeIsoSelf X
 
-@[reassoc (attr := simp)] lemma ι_comp_coproductIsoSelf (i : X.I) :
+@[reassoc (attr := simp)] lemma ι_comp_coproductIsoSelf_hom (i : X.I) :
     Sigma.ι _ i ≫ (coproductIsoSelf X).hom = ofHom.mk i (𝟙 (X.obj i)) := by
   simp [coproductIsoSelf]
+
+@[reassoc (attr := simp)] lemma mk_comp_coproductIsoSelf_inv (i : X.I) :
+    ofHom.mk i (𝟙 (X.obj i)) ≫ (coproductIsoSelf X).inv = Sigma.ι X.toFun i :=
+  (Iso.comp_inv_eq _).2 (ι_comp_coproductIsoSelf_hom _ _).symm
 
 end Coproduct
 
@@ -285,7 +294,7 @@ universal property of pullbacks. -/
       (by simpa using ((hom_ext_iff _ _).1 s.2).2 i))⟩
   left_inv m := hom_ext rfl (fun i ↦ by
     simp only [category_comp_f, category_comp_φ, eqToHom_refl, Category.comp_id]
-    exact (hpb _).hom_ext ((pb _).equalizer_ext (by simp; rfl) (by simp; rfl)))
+    exact (hpb _).hom_ext ((pb _).equalizer_ext (by aesop) (by aesop)))
   right_inv s := by ext <;> simp
 
 /-- `pullbackCone f g pb` is a pullback. -/
@@ -347,7 +356,7 @@ variable [HasCoproducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C
 
 /-- A copresheaf valued in a category `A` with arbitrary coproducts, can be extended to the category
 of formal coproducts. -/
-@[simps] def eval : (C ⥤ A) ⥤ (FormalCoproduct.{w} C ⥤ A) where
+@[simps!] def eval : (C ⥤ A) ⥤ (FormalCoproduct.{w} C ⥤ A) where
   obj F :=
     { obj X := ∐ fun (i : X.I) ↦ F.obj (X.obj i)
       map {X Y} f := Sigma.desc fun i ↦ F.map (f.φ i) ≫ Sigma.ι (F.obj ∘ Y.obj) (f.f i)
@@ -355,7 +364,7 @@ of formal coproducts. -/
   map α := { app f := Sigma.map fun i ↦ α.app (f.obj i) }
 
 /-- `eval(F)` restricted to the original category (via `of`) is the original copresheaf `F`. -/
-def evalOf : eval C A ⋙ (whiskeringLeft _ _ A).obj (of C) ≅ Functor.id (C ⥤ A) :=
+@[simps!] def evalOf : eval C A ⋙ (whiskeringLeft _ _ A).obj (of C) ≅ Functor.id (C ⥤ A) :=
   NatIso.ofComponents fun F ↦ NatIso.ofComponents
     (fun x ↦ ⟨Sigma.desc fun _ ↦ 𝟙 _, Sigma.ι (fun _ ↦ F.obj x) PUnit.unit, by aesop, by simp⟩)
     (fun f ↦ Sigma.hom_ext _ _ (by simp [Sigma.ι_desc]))
@@ -365,8 +374,8 @@ variable {C A}
 /-- `eval(F)` preserves arbitrary coproducts. -/
 def isColimitEvalMapCocone : IsColimit (((eval.{w} C A).obj F).mapCocone (cofan.{w} J f)) where
   desc s := Sigma.desc fun i ↦ Sigma.ι (F.obj ∘ (f i.1).obj) i.2 ≫ s.ι.app ⟨i.1⟩
-  fac s i := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc, cofan]; rfl
-  uniq s m h := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc, ← h, ← Category.assoc, cofan]; rfl
+  fac s i := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc, cofan, Function.comp_def]
+  uniq s m h := Sigma.hom_ext _ _ fun i ↦ by simp [Sigma.ι_desc_assoc, cofan, Function.comp_def]
 
 instance : PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) :=
   ⟨fun hc ↦ ⟨IsColimit.ofIsoColimit (isColimitEvalMapCocone J f F)
@@ -384,15 +393,14 @@ variable [HasProducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) 
 
 /-- A presheaf valued in a category `A` with arbitrary products can be extended to the category of
 formal coproducts. -/
-@[simps] def evalOp : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct.{w} C)ᵒᵖ ⥤ A) where
+@[simps!] def evalOp : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct.{w} C)ᵒᵖ ⥤ A) where
   obj F :=
     { obj X := ∏ᶜ fun (i : X.unop.I) ↦ F.obj (op (X.unop.obj i))
       map f := Pi.lift fun i ↦ Pi.π _ (f.unop.f i) ≫ F.map (f.unop.φ i).op }
   map α := { app f := Pi.map fun i ↦ α.app (op (f.unop.obj i)) }
 
-variable {A} in
 /-- `evalOp(F)` restricted to the original category (via `of`) is the original presheaf `F`. -/
-def evalOpOf :
+@[simps!] def evalOpOf :
     evalOp C A ⋙ (whiskeringLeft _ _ A).obj (of C).op ≅ Functor.id (Cᵒᵖ ⥤ A) :=
   NatIso.ofComponents fun F ↦ NatIso.ofComponents fun x ↦
     ⟨Pi.π _ PUnit.unit, Pi.lift fun _ ↦ 𝟙 _, by aesop, by simp⟩
@@ -414,7 +422,7 @@ end HasProducts
 
 /-- A family of maps with the same target can be turned into one arrow in the category of formal
 coproducts. This is used in Čech cohomology. -/
-def arrowOfMaps (X : C) {J : Type w} (f : (j : J) → C) (φ : (j : J) → f j ⟶ X) :
+@[simps!] def arrowOfMaps (X : C) {J : Type w} (f : (j : J) → C) (φ : (j : J) → f j ⟶ X) :
     FormalCoproduct.mk _ f ⟶ (of C).obj X :=
   ⟨fun _ ↦ PUnit.unit, φ⟩
 
