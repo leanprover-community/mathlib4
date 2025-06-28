@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 In this file we introduce a class called `ValuativeRel R` for a ring `R`.
 This bundles a relation `rel : R → R → Prop` on `R` which mimics a
 preorder on `R` arising from a valuation.
-We introduce the notation `x ∣ᵥ y` for this relation.
+We introduce the notation `x ≤ᵥ y` for this relation.
 
 Recall that the equivalence class of a valuation is *completely* characterized by
 such a preorder. Thus, we can think of `ValuativeRel R` as a way of
@@ -24,9 +24,9 @@ saying that `R` is endowed with an equivalence class of a valuation.
 
 noncomputable section
 
-/-- The class `[ValuativeRel R]` class introduces an operator `x ∣ᵥ y : Prop` for `x y : R`
+/-- The class `[ValuativeRel R]` class introduces an operator `x ≤ᵥ y : Prop` for `x y : R`
 which is the natural relation arising from an equivalence class of a valuation on `R`.
-More precisely, if v is a valuation on R then the associated relation is `x ∣ᵥ y ↔ v x ≤ v y`.
+More precisely, if v is a valuation on R then the associated relation is `x ≤ᵥ y ↔ v x ≤ v y`.
 Use this class to talk about the case where `R` is equipped with an equivalence class
 of valuations. -/
 class ValuativeRel (R : Type*) [CommRing R] where
@@ -46,7 +46,7 @@ namespace Valuation
 variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
   (v : Valuation R Γ)
 
-/-- We say that a valuation `v` is `Compatible` if the relation `x ∣ᵥ y`
+/-- We say that a valuation `v` is `Compatible` if the relation `x ≤ᵥ y`
 is equivalent to `v x ≤ x y`. -/
 class Compatible [ValuativeRel R] where
   rel_iff_le (x y : R) : x ≤ᵥ y ↔ v x ≤ v y
