@@ -186,7 +186,7 @@ alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
 variable [IsOrderedRing 𝕜]
 
 instance canLift : CanLift (ConvexCone 𝕜 E) (ProperCone 𝕜 E) (↑)
-     fun C ↦ (C : Set E).Nonempty ∧ IsClosed (C : Set E) where
+    fun C ↦ (C : Set E).Nonempty ∧ IsClosed (C : Set E) where
   prf C hC := ⟨⟨C.toPointedCone <| .of_nonempty_of_isClosed hC.1 hC.2, hC.2⟩, rfl⟩
 
 end ConvexCone
