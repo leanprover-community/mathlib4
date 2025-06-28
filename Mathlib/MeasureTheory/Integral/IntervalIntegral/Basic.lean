@@ -265,6 +265,16 @@ theorem sum (s : Finset ι) {f : ι → ℝ → E} (h : ∀ i ∈ s, IntervalInt
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
 
+/-- Finsums of interval integrable functions are interval integrable. -/
+@[simp]
+protected theorem finsum {f : ι → ℝ → E} (h : ∀ i, IntervalIntegrable (f i) μ a b) :
+    IntervalIntegrable (∑ᶠ i, f i) μ a b := by
+  by_cases h₁ : f.support.Finite
+  · simp [finsum_eq_sum _ h₁, IntervalIntegrable.sum h₁.toFinset (fun i _ ↦ h i)]
+  · rw [finsum_of_infinite_support h₁]
+    apply intervalIntegrable_const_iff.2
+    tauto
+
 theorem mul_continuousOn {f g : ℝ → A} (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x * g x) μ a b := by
   rw [intervalIntegrable_iff] at hf ⊢
@@ -611,7 +621,7 @@ theorem norm_integral_le_abs_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.re
 theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (hab : a ≤ b)
     (h : ∀ᵐ t ∂μ, t ∈ Set.Ioc a b → ‖f t‖ ≤ g t) (hbound : IntervalIntegrable g μ a b) :
     ‖∫ t in a..b, f t ∂μ‖ ≤ ∫ t in a..b, g t ∂μ := by
-  simp only [integral_of_le hab, uIoc_of_le hab, ← ae_restrict_iff' measurableSet_Ioc] at *
+  simp only [integral_of_le hab, ← ae_restrict_iff' measurableSet_Ioc] at *
   exact MeasureTheory.norm_integral_le_of_norm_le hbound.1 h
 
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}

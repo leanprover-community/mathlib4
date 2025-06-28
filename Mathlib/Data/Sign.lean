@@ -466,7 +466,7 @@ end LinearOrderedAddCommGroup
 namespace Int
 
 theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
-  obtain (n | _) | _ := n <;> simp [sign, Int.sign_neg, negSucc_lt_zero]
+  obtain (n | _) | _ := n <;> simp [sign, negSucc_lt_zero]
 
 end Int
 
