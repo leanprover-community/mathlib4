@@ -133,10 +133,8 @@ theorem prodEquivOfIsCompl_symm_apply (h : IsCompl p q)
   rw [LinearEquiv.symm_apply_eq, coe_prodEquivOfIsCompl', hx]
 
 theorem prodEquivOfIsCompl_symm_add (h : IsCompl p q) (x : E) :
-    x = ((prodEquivOfIsCompl p q h).symm x).1.val + ((prodEquivOfIsCompl p q h).symm x).2.val := by
-  obtain ⟨y, hy, z, hz, hx⟩ := Submodule.exists_add_eq_of_codisjoint h.codisjoint x
-  rw [prodEquivOfIsCompl_symm_apply p q h x y z hy hz hx.symm]
-  exact hx.symm
+    x = ((prodEquivOfIsCompl p q h).symm x).1.val + ((prodEquivOfIsCompl p q h).symm x).2.val :=
+  ((prodEquivOfIsCompl p q h).apply_symm_apply x).symm
 
 @[simp]
 theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
