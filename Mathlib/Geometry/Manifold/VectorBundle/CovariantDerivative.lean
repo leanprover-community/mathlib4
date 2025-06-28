@@ -113,6 +113,84 @@ lemma mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s �
 
 end prerequisites
 
+-- local extension of a vector field in a trivialisation's base set
+section extendLocally
+
+variable {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F}
+  {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+  [MemTrivializationAtlas e] {x : M}
+
+open scoped Classical in
+-- TODO: add longer docs!
+-- a starting point (not fully updated any more) is this:
+/- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
+The details of the extension are mostly unspecified: for covariant derivatives, the value of
+`s` at points other than `x` will not matter (except for shorter proofs).
+Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v`.
+-/
+
+-- comment: need not be smooth (outside of e.baseSet), but this is a useful building block for
+-- global smooth extensions of vector fields
+-- the latter caps this with a smooth bump function, which need not exist if k=C
+-- In contrast, this definition makes sense over any field
+-- (for example, *locally* holomorphic sections always exist),
+
+-- extendLocally: takes trivialisation e as parameter, and a basis b of F
+variable {V F} (b e) in
+noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e] (x : M) (v : V x) : (x' : M) → V x' :=
+  fun x' ↦ if hx : x ∈ e.baseSet then
+    letI bV := b.localFrame_toBasis_at e hx; ∑ i, bV.repr v i • b.localFrame e i x'
+    else 0
+
+-- in the trivialisation e, the localExtensionOn is constant on e.baseSet
+lemma localExtensionOn_apply_of_mem_baseSet (b : Basis ι 𝕜 F)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) :
+    ∀ x' ∈ e.baseSet, (e ((localExtensionOn b e x v) x')).2 = (e v).2 := by
+  intro x' hx'
+  simp [localExtensionOn, hx]
+  -- main result should be v equals its representation in the local frame; is this always true?
+  sorry
+
+-- By construction, localExtensionOn is a linear map.
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+variable {V F} (b e) in
+lemma localExtensionOn_add (v v' : V x) :
+    localExtensionOn b e x (v + v') = localExtensionOn b e x v + localExtensionOn b e x v' := by
+  ext x'
+  by_cases hx: x ∈ e.baseSet; swap
+  · simp [hx, localExtensionOn]
+  · simp [hx, localExtensionOn, add_smul, Finset.sum_add_distrib]
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+variable {V F} (b e) in
+lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
+    localExtensionOn b e x (a • v) = a • localExtensionOn b e x v := by
+  ext x'
+  by_cases hx: x ∈ e.baseSet; swap
+  · simp [hx, localExtensionOn]
+  · simp [hx, localExtensionOn]
+    set B := Basis.localFrame_toBasis_at e b hx
+    have (x') : (a * (B.repr v) x') = a • (B.repr v) x' := by rw [smul_eq_mul]
+    simp_rw [this, IsScalarTower.smul_assoc a, Finset.smul_sum]
+
+-- `hx` might not be strictly required; I'm including it for robustness:
+-- for other x, this extension is not mathematically meaningful
+omit [IsManifold I 0 M] in
+lemma contMDiffOn_localExtensionOn {x : M} (hx : x ∈ e.baseSet) (v : V x) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) 1
+    (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) e.baseSet := by
+  -- idea: in the trivialisation e, everything looks constant (like the vector v transported to F)
+  rw [contMDiffOn_section_of_mem_baseSet₀]
+  apply (contMDiffOn_const (c := (e v).2)).congr
+  intro y hy
+  rw [localExtensionOn_apply_of_mem_baseSet _ _ _ _ hx _ _ hy]
+
+end extendLocally
+
 variable (x : M)
 
 @[ext]
@@ -258,6 +336,8 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   [FiberBundle F V] [VectorBundle ℝ F V]
   -- `V` vector bundle
 
+/- the following lemmas are subsubmed by tensoriality_criterion
+  XXX should they be extracted as separate lemmas (stated twice)?
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] in
 /-- If `X` and `X'` agree in a neighbourhood of `p`, then `∇_X σ` and `∇_X' σ` agree at `p`. -/
@@ -299,7 +379,7 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
     _ = ∑ i, cov (a i • Xi i) σ x := by rw [cov.sum_X]; simp
     _ = ∑ i, a i x • cov (Xi i) σ x := by
       congr; ext i; simp [cov.smulX (Xi i) σ (a i)]
-    _ = 0 := by simp [this]
+    _ = 0 := by simp [this] -/
 
 /-- `cov X σ x` only depends on `X` via `X x` -/
 lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
@@ -313,6 +393,8 @@ lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞
     rw [cov.addX]
     rfl
 
+/- TODO: are these lemmas still useful after the general tensoriality lemma?
+are they worth extracting separately?
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] in
 lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
@@ -351,6 +433,7 @@ lemma congr_σ_of_eventuallyEq
     _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
     _ = cov X σ' x := by
       simp [cov.congr_σ_smoothBumpFunction, mdifferentiableAt_dependent_congr hs hσ hσσ']
+-/
 
 -- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
 
@@ -422,6 +505,8 @@ lemma differenceAux_tensorial (cov cov' : CovariantDerivative I F V) [T2Space M]
 
 -- TODO: either change `localFrame` to make sure it is everywhere smooth
 -- or introduce a cut-off here. First option is probaly better.
+-- TODO: comment why we chose the second option in the end, and adapt the definition accordingly
+-- new definition: smooth a bump function, then smul with localExtensionOn
 variable (F) in
 /-- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
 The details of the extension are mostly unspecified: for covariant derivatives, the value of
@@ -475,6 +560,7 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
 
 lemma contMDiff_extend [FiniteDimensional ℝ F] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) 1 (fun x ↦ TotalSpace.mk' F x (extend F σ₀ x)) := by
+  -- use contMDiffOn_localExtensionOn, plus an abstract result about capping with a bump function
   sorry
 
 /-- The difference of two covariant derivatives, as a tensorial map -/
