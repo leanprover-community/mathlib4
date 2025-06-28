@@ -30,6 +30,8 @@ variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M]
 
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
   (n : WithTop ℕ∞)
@@ -73,6 +75,41 @@ theorem _root_.fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 
   · simp
   · have : Invertible a := invertibleOfNonzero ha
     exact fderiv_const_smul'' ..
+
+lemma _root_.FiberBundle.trivializationAt.baseSet_mem_nhds {B : Type*} (F : Type*)
+    [TopologicalSpace B] [TopologicalSpace F]
+    (E : B → Type*) [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)]
+    [FiberBundle F E] (b : B) : (trivializationAt F E b |>.baseSet) ∈ 𝓝 b :=
+  (trivializationAt F E b).open_baseSet.eventually_mem (FiberBundle.mem_baseSet_trivializationAt' b)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → Module 𝕜 (V x)]
+     [(x : M) → AddCommGroup (V x)]
+     [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
+variable {I F V x} in
+/-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
+if one is differentiable at `x` then so is the other.
+Issue: EventuallyEq does not work for dependent functions. -/
+lemma _root_.mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+    (hσ₁ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x := by
+  apply MDifferentiableAt.congr_of_eventuallyEq hσ₁
+  -- TODO: split off a lemma?
+  apply Set.EqOn.eventuallyEq_of_mem _ hs
+  intro x hx
+  simp [hσ₂, hx]
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → Module 𝕜 (V x)]
+     [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] [(x : M) → AddCommGroup (V x)] in
+variable {I F V x} in
+/-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
+one is differentiable at `x` iff the other is. -/
+lemma _root_.mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+    (hσ : ∀ x ∈ s, σ x = σ' x) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x  ↔
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x :=
+  ⟨fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h hσ,
+   fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
 
 end prerequisites
 
@@ -122,12 +159,6 @@ lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) 
   have := cov.addσ X (0 : (x : M) → V x) (0 : (x : M) → V x) x this this
   simpa using this
 
-lemma _root_.FiberBundle.trivializationAt.baseSet_mem_nhds {B : Type*} (F : Type*)
-    [TopologicalSpace B] [TopologicalSpace F]
-    (E : B → Type*) [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)]
-    [FiberBundle F E] (b : B) : (trivializationAt F E b |>.baseSet) ∈ 𝓝 b :=
-  (trivializationAt F E b).open_baseSet.eventually_mem (FiberBundle.mem_baseSet_trivializationAt' b)
-
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
   [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
 variable {I F V} in
@@ -136,35 +167,6 @@ lemma congr_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) :
     cov X σ x = cov X σ' x := by
   simp [funext hσ]
-
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → Module 𝕜 (V x)]
-     [(x : M) → AddCommGroup (V x)]
-     [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
-variable {I F V x} in
-/-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
-if one is differentiable at `x` then so is the other.
-Issue: EventuallyEq does not work for dependent functions. -/
-lemma _root_.mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
-    (hσ₁ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
-    (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x := by
-  apply MDifferentiableAt.congr_of_eventuallyEq hσ₁
-  -- TODO: split off a lemma?
-  apply Set.EqOn.eventuallyEq_of_mem _ hs
-  intro x hx
-  simp [hσ₂, hx]
-
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → Module 𝕜 (V x)]
-     [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] [(x : M) → AddCommGroup (V x)] in
-variable {I F V x} in
-/-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
-one is differentiable at `x` iff the other is. -/
-lemma _root_.mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
-    (hσ : ∀ x ∈ s, σ x = σ' x) :
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x  ↔
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x :=
-  ⟨fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h hσ,
-   fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [VectorBundle 𝕜 F V] in
@@ -191,6 +193,52 @@ def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
     module
   leibniz X σ f x hσ hf := by
     simp [cov.leibniz X σ f x hσ hf, cov'.leibniz X σ f x hσ hf]
+    module
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+
+variable (E E') in
+@[simps]
+noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
+  (Bundle.Trivial E E') where
+  toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
+  addX X X' σ := by ext; simp
+  smulX X σ c' := by ext; simp
+  addσ X σ σ' e hσ hσ' := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
+    rw [fderiv_add hσ hσ']
+    rfl
+  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
+  leibniz X σ f x hσ hf := by
+    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
+      fderiv_smul (by simp_all) (by simp_all)
+    simp [this, bar]
+    rfl
+
+open scoped Classical in
+@[simps]
+noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
+    CovariantDerivative 𝓘(𝕜, E) E' (Bundle.Trivial E E') where
+  toFun X σ := fun x ↦ fderiv 𝕜 σ x (X x) + A x (X x) (σ x)
+  addX X X' σ := by
+    ext x
+    by_cases h : DifferentiableAt 𝕜 σ x
+    · simp [h, map_add]; abel
+    · simp [fderiv_zero_of_not_differentiableAt h]
+  smulX X σ c' := by ext; simp
+  addσ X σ σ' e hσ hσ' := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
+    rw [fderiv_add hσ hσ']
+    simp [hσ, hσ']
+    abel
+  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
+  leibniz X σ f x hσ hf := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
+    rw [mdifferentiableAt_iff_differentiableAt] at hf
+    have h : DifferentiableAt 𝕜 (f • σ) x := hf.smul hσ
+    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
+      fderiv_smul (by simp_all) (by simp_all)
+    simp [this, bar, hσ, h]
     module
 
 section real
@@ -453,56 +501,8 @@ lemma difference_apply [FiniteDimensional ℝ F] [IsManifold I 1 M]
     difference cov cov' x X₀ σ₀ =
       cov (extend E X₀) (extend F σ₀) x - cov' (extend E X₀) (extend F σ₀) x := rfl
 
-end real
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-
-variable (E E') in
-@[simps]
-noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
-  (Bundle.Trivial E E') where
-  toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
-  addX X X' σ := by ext; simp
-  smulX X σ c' := by ext; simp
-  addσ X σ σ' e hσ hσ' := by
-    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
-    rw [fderiv_add hσ hσ']
-    rfl
-  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
-  leibniz X σ f x hσ hf := by
-    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
-      fderiv_smul (by simp_all) (by simp_all)
-    simp [this, bar]
-    rfl
-
-open scoped Classical in
-@[simps]
-noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
-    CovariantDerivative 𝓘(𝕜, E) E' (Bundle.Trivial E E') where
-  toFun X σ := fun x ↦ fderiv 𝕜 σ x (X x) + A x (X x) (σ x)
-  addX X X' σ := by
-    ext x
-    by_cases h : DifferentiableAt 𝕜 σ x
-    · simp [h, map_add]; abel
-    · simp [fderiv_zero_of_not_differentiableAt h]
-  smulX X σ c' := by ext; simp
-  addσ X σ σ' e hσ hσ' := by
-    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
-    rw [fderiv_add hσ hσ']
-    simp [hσ, hσ']
-    abel
-  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
-  leibniz X σ f x hσ hf := by
-    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
-    rw [mdifferentiableAt_iff_differentiableAt] at hf
-    have h : DifferentiableAt 𝕜 (f • σ) x := hf.smul hσ
-    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
-      fderiv_smul (by simp_all) (by simp_all)
-    simp [this, bar, hσ, h]
-    module
-
-section real
+-- The classification of real connections over a trivial bundle
+section classification
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -592,6 +592,8 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     simp
   rw [← h₂, ← h₁]
   module
+
+end classification
 
 end real
 
