@@ -67,7 +67,7 @@ theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (
 attribute [simp] mdifferentiableAt_iff_differentiableAt
 
 -- XXX: make a better version of fderiv_const_smul'', with field coefficients instead!
-theorem _root_.fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 𝕜]
+theorem fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
     (σ : (x : E) → Trivial E E' x) (a : 𝕜) (x : E) :
     fderiv 𝕜 (a • σ) x = a • fderiv 𝕜 σ x := by
@@ -76,7 +76,7 @@ theorem _root_.fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 
   · have : Invertible a := invertibleOfNonzero ha
     exact fderiv_const_smul'' ..
 
-lemma _root_.FiberBundle.trivializationAt.baseSet_mem_nhds {B : Type*} (F : Type*)
+lemma FiberBundle.trivializationAt.baseSet_mem_nhds {B : Type*} (F : Type*)
     [TopologicalSpace B] [TopologicalSpace F]
     (E : B → Type*) [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)]
     [FiberBundle F E] (b : B) : (trivializationAt F E b |>.baseSet) ∈ 𝓝 b :=
@@ -89,7 +89,7 @@ variable {I F V x} in
 /-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
 if one is differentiable at `x` then so is the other.
 Issue: EventuallyEq does not work for dependent functions. -/
-lemma _root_.mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+lemma mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
     (hσ₁ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
     (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x := by
@@ -104,12 +104,12 @@ omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → 
 variable {I F V x} in
 /-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
 one is differentiable at `x` iff the other is. -/
-lemma _root_.mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+lemma mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
     (hσ : ∀ x ∈ s, σ x = σ' x) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x  ↔
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x :=
-  ⟨fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h hσ,
-   fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
+  ⟨fun h ↦ mdifferentiableAt_dependent_congr hs h hσ,
+   fun h ↦ mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
 
 end prerequisites
 
@@ -350,7 +350,7 @@ lemma congr_σ_of_eventuallyEq
     _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_σ_smoothBumpFunction _ hσ]
     _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
     _ = cov X σ' x := by
-      simp [cov.congr_σ_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
+      simp [cov.congr_σ_smoothBumpFunction, mdifferentiableAt_dependent_congr hs hσ hσσ']
 
 -- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
 
