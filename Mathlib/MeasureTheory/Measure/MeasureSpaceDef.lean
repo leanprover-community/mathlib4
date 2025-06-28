@@ -379,6 +379,10 @@ def support (μ : Measure X) : Set X := {x : X | ∀ U ∈ 𝓝 x, 0 < μ U}
 
 variable {μ : Measure X}
 
+lemma not_mem_support_iff (x : X) : x ∉ support μ ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
+     rw [support, Set.mem_setOf_eq, not_forall]
+     simp only [Classical.not_imp, not_lt, nonpos_iff_eq_zero]
+
 theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
     x ∈ μ.support ↔ ∀ (i : ι), p i → 0 < μ (s i) := by
