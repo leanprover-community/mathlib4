@@ -139,6 +139,8 @@ variable (R) in
 /-- The "canonical" value group-with-zero of a ring with a valuative relation. -/
 def ValGroupWithZero := Quotient (valueSetoid R)
 
+/-- Construct an element of the value group-with-zero from an element `r : R` and
+  `y : posSubmonoid R`. This should be thought of as `v r / v y`. -/
 protected
 def ValGroupWithZero.mk (x : R) (y : posSubmonoid R) : ValGroupWithZero R :=
   Quotient.mk _ (x, y)
@@ -160,6 +162,7 @@ theorem ValGroupWithZero.ind {motive : ValGroupWithZero R → Prop} (mk : ∀ x 
     (t : ValGroupWithZero R) : motive t :=
   Quotient.ind (fun (x, y) => mk x y) t
 
+/-- Lifts a function `R → posSubmonoid R → α` to the value group-with-zero of `R`. -/
 protected
 def ValGroupWithZero.lift {α : Sort*} (f : R → posSubmonoid R → α)
     (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
@@ -171,6 +174,8 @@ theorem ValGroupWithZero.lift_mk {α : Sort*} (f : R → posSubmonoid R → α)
     (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
     (x : R) (y : posSubmonoid R) : ValGroupWithZero.lift f hf (.mk x y) = f x y := rfl
 
+/-- Lifts a function `R → posSubmonoid R → R → posSubmonoid R → α` to
+  the value group-with-zero of `R`. -/
 protected
 def ValGroupWithZero.lift₂ {α : Sort*} (f : R → posSubmonoid R → R → posSubmonoid R → α)
     (hf : ∀ (x y z w : R) (t s u v : posSubmonoid R),
@@ -181,7 +186,7 @@ def ValGroupWithZero.lift₂ {α : Sort*} (f : R → posSubmonoid R → R → po
     (fun (x, t) (z, v) (y, s) (w, u) ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ => hf x y z w s t u v h₁ h₂ h₃ h₄) t₁ t₂
 
 @[simp] protected
-def ValGroupWithZero.lift₂_mk {α : Sort*} (f : R → posSubmonoid R → R → posSubmonoid R → α)
+lemma ValGroupWithZero.lift₂_mk {α : Sort*} (f : R → posSubmonoid R → R → posSubmonoid R → α)
     (hf : ∀ (x y z w : R) (t s u v : posSubmonoid R),
       x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → z * u ≤ᵥ w * v → w * v ≤ᵥ z * u →
       f x s z v = f y t w u)
@@ -456,6 +461,7 @@ instance : ValuativePreorder (WithPreorder R) where
   dvd_iff_le _ _ := Iff.rfl
 
 variable (R) in
+/-- The support of the valuation on `R`. -/
 def supp : Ideal R where
   carrier := { x | x ≤ᵥ 0 }
   add_mem' ha hb := rel_add ha hb
@@ -547,6 +553,8 @@ variable {A B : Type*} [CommRing A] [CommRing B]
   [ValuativeExtension A B]
 
 variable (A B) in
+/-- The morphism of `posSubmonoid`s associated to an algebra map.
+  This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
 @[simps]
 def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
@@ -555,6 +563,7 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   map_mul' := by simp
 
 variable (A B) in
+/-- The map on value groups-with-zero associated to the structure morphism of an algebra. -/
 def mapValGroupWithZero : ValGroupWithZero A →*₀ ValGroupWithZero B where
   toFun := ValGroupWithZero.lift
     (fun a u => ValGroupWithZero.mk (algebraMap _ _ a) (mapPosSubmonoid _ _ u)) <| by
