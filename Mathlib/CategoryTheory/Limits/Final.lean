@@ -1113,7 +1113,7 @@ namespace ObjectProperty
 
 /-- For the full subcategory induced by an object property `P` on `C`, to show initiality of
 the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
-theorem final_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
+theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
     (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
     P.ι.Initial := .mk <| fun d => by
   by_cases hd : P d
