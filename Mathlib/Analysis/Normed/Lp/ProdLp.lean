@@ -826,7 +826,7 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 section Single
 
-@[simp] lemma nnnorm_toLp_fst (x : α) : ‖toLp p (x, (0 : β))‖₊ = ‖x‖₊ := by
+@[simp] lemma nnnorm_toLp_inl (x : α) : ‖toLp p (x, (0 : β))‖₊ = ‖x‖₊ := by
   induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
@@ -835,11 +835,11 @@ section Single
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
 set_option linter.deprecated false in
-@[deprecated nnnorm_toLp_fst (since := "2024-04-27")]
+@[deprecated nnnorm_toLp_inl (since := "2024-04-27")]
 theorem nnnorm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x, 0)‖₊ = ‖x‖₊ :=
-  nnnorm_toLp_fst ..
+  nnnorm_toLp_inl ..
 
-@[simp] lemma nnnorm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖₊ = ‖y‖₊ := by
+@[simp] lemma nnnorm_toLp_inr (y : β) : ‖toLp p ((0 : α), y)‖₊ = ‖y‖₊ := by
   induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
@@ -848,13 +848,13 @@ theorem nnnorm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x,
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
 set_option linter.deprecated false in
-@[deprecated nnnorm_toLp_snd (since := "2024-04-27")]
+@[deprecated nnnorm_toLp_inr (since := "2024-04-27")]
 lemma nnnorm_equiv_symm_snd (y : β) : ‖(WithLp.equiv p (α × β)).symm (0, y)‖₊ = ‖y‖₊ :=
-  nnnorm_toLp_snd ..
+  nnnorm_toLp_inr ..
 
 @[simp]
 lemma norm_toLp_fst (x : α) : ‖toLp p (x, (0 : β))‖ = ‖x‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_fst p α β x
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_inl p α β x
 
 set_option linter.deprecated false in
 @[deprecated norm_toLp_fst (since := "2024-04-27")]
@@ -863,7 +863,7 @@ theorem norm_equiv_symm_fst (x : α) : ‖(WithLp.equiv p (α × β)).symm (x, 0
 
 @[simp]
 lemma norm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖ = ‖y‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_snd p α β y
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_inr p α β y
 
 set_option linter.deprecated false in
 @[deprecated norm_toLp_snd (since := "2024-04-27")]
@@ -874,7 +874,7 @@ theorem norm_equiv_symm_snd (y : β) : ‖(WithLp.equiv p (α × β)).symm (0, y
 lemma nndist_toLp_fst (x₁ x₂ : α) :
     nndist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = nndist x₁ x₂ := by
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_toLp_fst]
+    nnnorm_toLp_inl]
 
 set_option linter.deprecated false in
 @[deprecated nndist_toLp_fst (since := "2024-04-27")]
@@ -887,7 +887,7 @@ theorem nndist_equiv_symm_fst (x₁ x₂ : α) :
 lemma nndist_toLp_snd (y₁ y₂ : β) :
     nndist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = nndist y₁ y₂ := by
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
-    nnnorm_toLp_snd]
+    nnnorm_toLp_inr]
 
 set_option linter.deprecated false in
 @[deprecated nndist_toLp_snd (since := "2024-04-27")]
