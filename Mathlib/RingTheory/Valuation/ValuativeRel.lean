@@ -92,7 +92,8 @@ theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
 
 variable (R) in
-def unitSubmonoid : Submonoid R where
+/-- The submonoid of elements `x : R` whose valuation is positive. -/
+def posSubmonoid : Submonoid R where
   carrier := { x | ¬ x ≤ᵥ 0}
   mul_mem' {x y} hx hy := by
     dsimp only [Set.mem_setOf_eq] at hx hy ⊢
@@ -102,20 +103,20 @@ def unitSubmonoid : Submonoid R where
   one_mem' := not_rel_one_zero
 
 @[simp]
-lemma unitSubmonoid_def (x : R) : x ∈ unitSubmonoid R ↔ ¬ x ≤ᵥ 0 := Iff.refl _
+lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ ¬ x ≤ᵥ 0 := Iff.refl _
 
 @[simp]
-lemma right_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
+lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     x * u ≤ᵥ y * u ↔ x ≤ᵥ y := ⟨rel_mul_cancel u.prop, rel_mul_right _⟩
 
 @[simp]
-lemma left_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
+lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
-  simp only [← right_cancel_unitSubmonoid x y u, mul_comm]
+  simp only [← right_cancel_posSubmonoid x y u, mul_comm]
 
 variable (R) in
-/-- The setoid used to construct `ValueMonoid R`. -/
-def valueSetoid : Setoid (R × unitSubmonoid R) where
+/-- The setoid used to construct `ValueGroup R`. -/
+def valueSetoid : Setoid (R × posSubmonoid R) where
   r := fun (x,s) (y,t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
     refl ru := ⟨rel_refl _, rel_refl _⟩
@@ -140,17 +141,17 @@ variable (R) in
 def ValueGroup := Quotient (valueSetoid R)
 
 protected
-def ValueGroup.mk (x : R) (y : unitSubmonoid R) : ValueGroup R :=
+def ValueGroup.mk (x : R) (y : posSubmonoid R) : ValueGroup R :=
   Quotient.mk _ (x, y)
 
 protected
-theorem ValueGroup.sound {x y : R} {t s : unitSubmonoid R}
+theorem ValueGroup.sound {x y : R} {t s : posSubmonoid R}
     (h₁ : x * s ≤ᵥ y * t) (h₂ : y * t ≤ᵥ x * s) :
     ValueGroup.mk x t = ValueGroup.mk y s :=
   Quotient.sound ⟨h₁, h₂⟩
 
 protected
-theorem ValueGroup.exact {x y : R} {t s : unitSubmonoid R}
+theorem ValueGroup.exact {x y : R} {t s : posSubmonoid R}
     (h : ValueGroup.mk x t = ValueGroup.mk y s) :
     x * s ≤ᵥ y * t ∧ y * t ≤ᵥ x * s :=
   Quotient.exact h
@@ -161,19 +162,19 @@ theorem ValueGroup.ind {motive : ValueGroup R → Prop} (mk : ∀ x y, motive (.
   Quotient.ind (fun (x, y) => mk x y) t
 
 protected
-def ValueGroup.lift {α : Sort*} (f : R → unitSubmonoid R → α)
-    (hf : ∀ (x y : R) (t s : unitSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
+def ValueGroup.lift {α : Sort*} (f : R → posSubmonoid R → α)
+    (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
     (t : ValueGroup R) : α :=
   Quotient.lift (fun (x, y) => f x y) (fun (x, t) (y, s) ⟨h₁, h₂⟩ => hf x y s t h₁ h₂) t
 
 @[simp] protected
-theorem ValueGroup.lift_mk {α : Sort*} (f : R → unitSubmonoid R → α)
-    (hf : ∀ (x y : R) (t s : unitSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
-    (x : R) (y : unitSubmonoid R) : ValueGroup.lift f hf (.mk x y) = f x y := rfl
+theorem ValueGroup.lift_mk {α : Sort*} (f : R → posSubmonoid R → α)
+    (hf : ∀ (x y : R) (t s : posSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
+    (x : R) (y : posSubmonoid R) : ValueGroup.lift f hf (.mk x y) = f x y := rfl
 
 protected
-def ValueGroup.lift₂ {α : Sort*} (f : R → unitSubmonoid R → R → unitSubmonoid R → α)
-    (hf : ∀ (x y z w : R) (t s u v : unitSubmonoid R),
+def ValueGroup.lift₂ {α : Sort*} (f : R → posSubmonoid R → R → posSubmonoid R → α)
+    (hf : ∀ (x y z w : R) (t s u v : posSubmonoid R),
       x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → z * u ≤ᵥ w * v → w * v ≤ᵥ z * u →
       f x s z v = f y t w u)
     (t₁ : ValueGroup R) (t₂ : ValueGroup R) : α :=
@@ -181,14 +182,14 @@ def ValueGroup.lift₂ {α : Sort*} (f : R → unitSubmonoid R → R → unitSub
     (fun (x, t) (z, v) (y, s) (w, u) ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ => hf x y z w s t u v h₁ h₂ h₃ h₄) t₁ t₂
 
 @[simp] protected
-def ValueGroup.lift₂_mk {α : Sort*} (f : R → unitSubmonoid R → R → unitSubmonoid R → α)
-    (hf : ∀ (x y z w : R) (t s u v : unitSubmonoid R),
+def ValueGroup.lift₂_mk {α : Sort*} (f : R → posSubmonoid R → R → posSubmonoid R → α)
+    (hf : ∀ (x y z w : R) (t s u v : posSubmonoid R),
       x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → z * u ≤ᵥ w * v → w * v ≤ᵥ z * u →
       f x s z v = f y t w u)
-    (x y : R) (z w : unitSubmonoid R) :
+    (x y : R) (z w : posSubmonoid R) :
     ValueGroup.lift₂ f hf (.mk x z) (.mk y w) = f x z y w := rfl
 
-theorem ValueGroup.mk_eq_mk {x y : R} {t s : unitSubmonoid R} :
+theorem ValueGroup.mk_eq_mk {x y : R} {t s : posSubmonoid R} :
     ValueGroup.mk x t = ValueGroup.mk y s ↔ x * s ≤ᵥ y * t ∧ y * t ≤ᵥ x * s :=
   Quotient.eq
 
@@ -196,20 +197,20 @@ instance : Zero (ValueGroup R) where
   zero := .mk 0 1
 
 @[simp]
-theorem ValueGroup.mk_eq_zero (x : R) (y : unitSubmonoid R) :
+theorem ValueGroup.mk_eq_zero (x : R) (y : posSubmonoid R) :
     ValueGroup.mk x y = 0 ↔ x ≤ᵥ 0 :=
   ⟨fun h => by simpa using ValueGroup.mk_eq_mk.mp h,
     fun h => ValueGroup.sound (by simpa using h) (by simp)⟩
 
 @[simp]
-theorem ValueGroup.mk_zero (x : unitSubmonoid R) : ValueGroup.mk 0 x = 0 :=
+theorem ValueGroup.mk_zero (x : posSubmonoid R) : ValueGroup.mk 0 x = 0 :=
   (ValueGroup.mk_eq_zero 0 x).mpr .rfl
 
 instance : One (ValueGroup R) where
   one := .mk 1 1
 
 @[simp]
-theorem ValueGroup.mk_self (x : unitSubmonoid R) : ValueGroup.mk (x : R) x = 1 :=
+theorem ValueGroup.mk_self (x : posSubmonoid R) : ValueGroup.mk (x : R) x = 1 :=
   ValueGroup.sound (by simp) (by simp)
 
 @[simp]
@@ -228,7 +229,7 @@ instance : Mul (ValueGroup R) where
       exact rel_mul h₂ h₄
 
 @[simp]
-theorem ValueGroup.mk_mul_mk (a b : R) (c d : unitSubmonoid R) :
+theorem ValueGroup.mk_mul_mk (a b : R) (c d : posSubmonoid R) :
     ValueGroup.mk a c * ValueGroup.mk b d = ValueGroup.mk (a * b) (c * d) := rfl
 
 instance : CommMonoidWithZero (ValueGroup R) where
@@ -304,7 +305,7 @@ instance : LE (ValueGroup R) where
           _ = z * s * t * w := by ring
 
 @[simp]
-theorem ValueGroup.mk_le_mk (x y : R) (t s : unitSubmonoid R) :
+theorem ValueGroup.mk_le_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroup.mk x t ≤ ValueGroup.mk y s ↔ x * s ≤ᵥ y * t := Iff.rfl
 
 instance : LinearOrder (ValueGroup R) where
@@ -371,7 +372,7 @@ instance : Inv (ValueGroup R) where
       · simpa [mul_comm] using h₁
 
 @[simp]
-theorem ValueGroup.inv_mk (x : R) (y : unitSubmonoid R) (hx : ¬x ≤ᵥ 0) :
+theorem ValueGroup.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 0) :
     (ValueGroup.mk x y)⁻¹ = ValueGroup.mk (y : R) ⟨x, hx⟩ := dif_neg hx
 
 /-- The value monoid is a linearly ordered commutative group with zero. -/
@@ -504,7 +505,7 @@ class IsDiscrete where
     ∃ γ : ValueGroup R, γ < 1 ∧ (∀ δ : ValueGroup R, δ < 1 → δ ≤ γ)
 
 lemma valuation_surjective (γ : ValueGroup R) :
-    ∃ (a : R) (b : unitSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
+    ∃ (a : R) (b : posSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
   induction γ using ValueGroup.ind with | mk a b
   use a, b
   simp [valuation, div_eq_mul_inv, ValueGroup.inv_mk (b : R) 1 b.prop]
@@ -546,19 +547,19 @@ variable {A B : Type*} [CommRing A] [CommRing B]
 
 variable (A B) in
 @[simps]
-def mapUnitSubmonoid : unitSubmonoid A →* unitSubmonoid B where
+def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
-    by simpa only [unitSubmonoid_def, ← (algebraMap A B).map_zero, rel_iff_rel] using ha⟩
+    by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, rel_iff_rel] using ha⟩
   map_one' := by simp
   map_mul' := by simp
 
 variable (A B) in
 def mapValueGroup : ValueGroup A →*₀ ValueGroup B where
   toFun := ValueGroup.lift
-    (fun a u => ValueGroup.mk (algebraMap _ _ a) (mapUnitSubmonoid _ _ u)) <| by
+    (fun a u => ValueGroup.mk (algebraMap _ _ a) (mapPosSubmonoid _ _ u)) <| by
       intro x y s t h1 h2
       apply ValueGroup.sound <;>
-        simpa only [mapUnitSubmonoid_apply_coe, ← (algebraMap A B).map_mul, rel_iff_rel]
+        simpa only [mapPosSubmonoid_apply_coe, ← (algebraMap A B).map_mul, rel_iff_rel]
   map_zero' := by
     apply ValueGroup.sound <;> simp
   map_one' := by
