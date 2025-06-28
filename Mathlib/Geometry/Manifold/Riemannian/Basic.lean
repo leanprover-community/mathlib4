@@ -387,11 +387,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
         rw [this]
         apply (ContinuousLinearMap.le_opNorm_enorm _ _).trans
         gcongr
-
-
-
-
-
+        exact (hu (ht.2 t' ht')).le
       _ = C * pathELength I γ 0 t := by
         rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top, pathELength_eq_lintegral_mfderivWithin_Icc]
       _ ≤ C * pathELength I γ 0 1 := by
@@ -402,8 +398,17 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
         · exact ENNReal.coe_ne_top
         · exact hγ.trans_eq (ENNReal.coe_div C_pos.ne')
       _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
-    sorry
-  sorry
+    have : γ' t ∈ (extChartAt I x).symm ⁻¹' v := by
+      apply hr
+      rw [← Metric.emetric_ball_nnreal, EMetric.mem_ball, edist_eq_enorm_sub]
+      convert this
+      simp [γ', hγx]
+    convert mem_preimage.1 this
+    simp only [Function.comp_apply, γ']
+    refine Eq.symm (PartialEquiv.left_inv (extChartAt I x) ?_)
+    exact uc (ht.2 t ⟨ht.1.1, le_rfl⟩)
+  have : sSup a = 1 := by
+
 
 #exit
 
