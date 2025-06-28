@@ -151,13 +151,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   slice_lhs 2 3 => rw [← prodComparison_comp]
   simp only [assoc]
   unfold prodComparison
-  have ηlemma : (h.unit.app (F.obj A ⊗ F.obj B) ≫
-    lift ((L ⋙ F).map (fst _ _)) ((L ⋙ F).map (snd _ _))) =
-      (h.unit.app (F.obj A)) ⊗ₘ (h.unit.app (F.obj B)) := by
-    ext <;> simp
-  slice_lhs 1 2 => rw [ηlemma]
-  simp only [Functor.id_obj, Functor.comp_obj, assoc, ← whisker_exchange, ← tensorHom_def']
-  ext <;> simp
+  simp
 
 /--
 If the exponential comparison transformation (at `A`) is an isomorphism, then the Frobenius morphism
