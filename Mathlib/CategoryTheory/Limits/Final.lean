@@ -1109,4 +1109,19 @@ instance [F.Final] [G.Final] : (F.prod G).Final where
 
 end Prod
 
+namespace ObjectProperty
+
+def final_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
+    (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
+    P.ι.Initial := .mk <| fun d => by
+  by_cases hd : P d
+  · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
+    refine zigzag_isConnected fun ⟨⟨c₁, hc₁⟩, ⟨⟨⟩⟩, g₁⟩ ⟨⟨c₂, hc₂⟩, ⟨⟨⟩⟩, g₂⟩ =>
+      Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
+    · fapply CostructuredArrow.homMk g₁
+    · fapply CostructuredArrow.homMk g₂
+  · exact h d hd
+
+end ObjectProperty
+
 end CategoryTheory
