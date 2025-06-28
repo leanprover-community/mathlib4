@@ -257,7 +257,7 @@ theorem archimedeanClass_le_iff_of_orderTop_eq {x y : Lex (HahnSeries Γ R)}
         rw [abs_pos, leadingCoeff_ne_iff]
         exact hx'
 
-theorem archimedeanClass_le_iff {x y : Lex (HahnSeries Γ R)}:
+theorem archimedeanClass_le_iff {x y : Lex (HahnSeries Γ R)} :
     ArchimedeanClass.mk x ≤ ArchimedeanClass.mk y ↔
     (ofLex x).orderTop < (ofLex y).orderTop ∨ ((ofLex x).orderTop = (ofLex y).orderTop ∧
     ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ ArchimedeanClass.mk (ofLex y).leadingCoeff) := by
@@ -284,7 +284,7 @@ theorem archimedeanClass_le_iff {x y : Lex (HahnSeries Γ R)}:
       · exact hgt.trans h
       · exact hgt.trans_eq h
 
-theorem achimedeanClass_eq_iff {x y : Lex (HahnSeries Γ R)}:
+theorem archimedeanClass_eq_iff {x y : Lex (HahnSeries Γ R)} :
     ArchimedeanClass.mk x = ArchimedeanClass.mk y ↔
     (ofLex x).orderTop = (ofLex y).orderTop ∧
     ArchimedeanClass.mk (ofLex x).leadingCoeff = ArchimedeanClass.mk (ofLex y).leadingCoeff := by
@@ -357,7 +357,7 @@ def archimedeanClass₀_orderIso :
         (toLex (single ((ofLex a).orderTop.untop _) (ofLex a).leadingCoeff)) =
         ArchimedeanClass.mk a by
       simpa [archimedeanClass₀_orderHom, archimedeanClass₀_orderHom_inv] using this
-    rw [achimedeanClass_eq_iff]
+    rw [archimedeanClass_eq_iff]
     have h : (ofLex a).leadingCoeff ≠ 0 := leadingCoeff_ne_iff.mpr ha
     simp [h]
 
