@@ -186,7 +186,7 @@ def Hom.comp (f : E.Hom F) (g : F.Hom G) : E.Hom G where
 def Hom.s₁' (f : E.Hom F) (k : E.I₁') : F.I₁' :=
   ⟨⟨f.s₀ k.1.1, f.s₀ k.1.2⟩, f.s₁ k.2⟩
 
-@[simps! id_s₀ id_s₁ id_h₀ comp_h₁ comp_s₀ comp_s₁ comp_h₀ comp_h₁]
+@[simps! id_s₀ id_s₁ id_h₀ id_h₁ comp_s₀ comp_s₁ comp_h₀ comp_h₁]
 instance : Category (PreOneHypercover S) where
   Hom := Hom
   id E := Hom.id E
