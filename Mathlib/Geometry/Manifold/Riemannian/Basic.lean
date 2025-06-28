@@ -13,7 +13,18 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 
 A Riemannian manifold `M` is a real manifold such that its tangent spaces are endowed with an
 inner product, depending smoothly on the point, and such that `M` has an emetric space
-structure for which the distance is the infimum of lengths of paths. -/
+structure for which the distance is the infimum of lengths of paths.
+
+We register a Prop-valued typeclass `IsRiemannianManifold I M` recording this fact.
+
+We show that an inner product vector space, with the associated canonical Riemannian metric,
+satisfies the predicate `IsRiemannianManifold 𝓘(ℝ, E) E`.
+
+In a general manifold with a Riemannian metric, we define the associated extended distance in the
+manifold, and show that it defines the same topology as the pre-existing one. Therefore, one
+may endow the manifold with an emetric space structure, see `EmetricSpace.ofRiemannianMetric`.
+By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
+-/
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
 open scoped ENNReal ContDiff Topology
@@ -37,13 +48,26 @@ the space is already endowed with an extended distance. We say that this is a Ri
 if the distance is given by the infimum of the lengths of `C^1` paths, measured using the norm in
 the tangent spaces.
 
-This is a `Prop` valued typeclass, on top of existing data. -/
+This is a `Prop` valued typeclass, on top of existing data.
+
+If you need to *construct* a distance using a Riemannian structure,
+see `EmetricSpace.ofRiemannianMetric`. -/
 class IsRiemannianManifold : Prop where
   out (x y : M) : edist x y = riemannianEDist I x y
 
 end
 
 section
+
+/-!
+# Riemannian structure on an inner product vector space
+
+We endow an inner product vector space with the canonical Riemannian metric, given by the
+inner product of the vector space in each of the tangent spaces, and we show that this construction
+satisfies the `IsRiemannianManifold 𝓘(ℝ, E) E` predicate, i.e., the extended distance between
+two points is the infimum of the length of paths between these points.
+
+-/
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
@@ -140,14 +164,24 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
 
 end
 
+section
+
+/-!
+# Constructing a distance from a Riemannian structure
+
+Let `M` be a real manifold with a Riemannian structure. We construct the associated distance and
+show that the associated topology coincides with the pre-existing topology. Therefore, one may
+endow `M` with an emetric space structure, called `EmetricSpace.ofRiemannianMetric`.
+Moreover, we show that in this case the resulting emetric space satisfies the predicate
+`IsRiemannianManifold I M`.
+-/
+
 open Manifold Metric
 open scoped NNReal
 
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 [IsManifold I 1 M]
 [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
-
-section
 
 /-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
 as in the vector space.
@@ -319,7 +353,7 @@ lemma eventually_riemmanianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · simp
 
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
-Riemannian distance. -/
+Riemannian distance, `ℝ≥0` version. -/
 lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
     ∃ c > (0 : ℝ≥0), {y | riemannianEDist I x y < c} ⊆ s := by
   /- Consider a closed neighborhood `u` of `x` on which the derivative of the extended chart is
@@ -465,15 +499,35 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   apply us
   exact t₁_mem.2 t₁ ⟨t₁_mem.1.1, le_rfl⟩
 
+/-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
+Riemannian distance, `ℝ≥0∞` version. -/
+lemma setOf_riemmanianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
+    ∃ c > 0, {y | riemannianEDist I x y < c} ⊆ s := by
+  rcases setOf_riemmanianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
+  exact ⟨c, mod_cast c_pos, hc⟩
+
 variable (M) in
 /-- The emetric space structure associated to a Riemannian metric on a manifold. Designed
-so that the topology is defeq to the original one. -/
-@[reducible] def emetricSpaceOfRiemannianMetric [T3Space M] : EMetricSpace M :=
+so that the topology is defeq to the original one.
+
+This should only be used when constructing data in specific situtations. To develop the theory,
+one should rather assume that there is an already existing emetric space structure, which satisfies
+additionally the predicate `IsRiemannianManifold I M`. -/
+@[reducible] def EmetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
   EmetricSpace.ofEdistOfTopology (riemannianEDist I (M := M))
-    (fun x ↦ riemannianEDist_self)
-    (fun x y ↦ riemannianEDist_comm)
-    (fun x y z ↦ riemannianEDist_triangle)
-    (fun x c hc ↦ eventually_riemmanianEDist_lt I x hc)
-    (fun x s hs ↦ by
-      rcases setOf_riemmanianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
-      exact ⟨c, mod_cast c_pos, hc⟩)
+    (fun _ ↦ riemannianEDist_self)
+    (fun _ _ ↦ riemannianEDist_comm)
+    (fun _ _ _ ↦ riemannianEDist_triangle)
+    (fun x _ hc ↦ eventually_riemmanianEDist_lt I x hc)
+    (fun _ _ hs ↦ setOf_riemmanianEDist_lt_subset_nhds' I hs)
+
+/-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
+by definition the distance is the infimum of the length of paths between the points, i.e., the
+manifold satsifies the `IsRiemannianManifold I M` predicate. -/
+instance [T3Space M] :
+    letI : EMetricSpace M := EmetricSpace.ofRiemannianMetric I M;
+    IsRiemannianManifold I M := by
+  letI : EMetricSpace M := EmetricSpace.ofRiemannianMetric I M
+  exact ⟨fun x y ↦ rfl⟩
+
+end
