@@ -322,13 +322,11 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   rw [this] at Z
   convert Z with n
   ext v
-  simp only [FormalMultilinearSeries.derivSeries,
+  simp only [FormalMultilinearSeries.derivSeries, ContinuousLinearMap.coe_sum', Finset.sum_apply,
     ContinuousLinearMap.compFormalMultilinearSeries_apply,
     FormalMultilinearSeries.changeOriginSeries,
     ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
-    ContinuousLinearMap.coe_sum', Finset.sum_apply,
-    Matrix.zero_empty]
+    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum]
   rfl
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. Version
