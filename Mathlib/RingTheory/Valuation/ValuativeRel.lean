@@ -84,8 +84,7 @@ lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
 instance : Trans (rel (R := R)) (rel (R := R)) (rel (R := R)) where
   trans h1 h2 := rel_trans h1 h2
 
-lemma rel_mul {x x' y y' : R} : x ≤ᵥ y → x' ≤ᵥ y' → x * x' ≤ᵥ y * y' := by
-  intro h1 h2
+lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
 
@@ -95,8 +94,7 @@ theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
 variable (R) in
 def unitSubmonoid : Submonoid R where
   carrier := { x | ¬ x ≤ᵥ 0}
-  mul_mem' := by
-    intro x y hx hy
+  mul_mem' {x y} hx hy := by
     by_contra c
     apply hy
     simp only [Set.mem_setOf_eq, not_not] at c
@@ -109,15 +107,12 @@ lemma unitSubmonoid_def (x : R) : x ∈ unitSubmonoid R ↔ ¬ x ≤ᵥ 0 := Iff
 
 @[simp]
 lemma right_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
-    x * u ≤ᵥ y * u ↔ x ≤ᵥ y := by
-  refine ⟨fun h => rel_mul_cancel u.prop h, fun h => ?_⟩
-  exact rel_mul_right _ h
+    x * u ≤ᵥ y * u ↔ x ≤ᵥ y := ⟨rel_mul_cancel u.prop, rel_mul_right _⟩
 
 @[simp]
 lemma left_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
-  rw [← right_cancel_unitSubmonoid x y u]
-  simp only [mul_comm _ x, mul_comm _ y]
+  simp only [← right_cancel_unitSubmonoid x y u, mul_comm]
 
 variable (R) in
 /-- The setoid used to construct `ValueMonoid R`. -/
@@ -142,7 +137,7 @@ def valueSetoid : Setoid (R × unitSubmonoid R) where
   }
 
 variable (R) in
-/-- The "canonical" value monoid of a ring with a valuative relation. -/
+/-- The "canonical" value group-with-zero of a ring with a valuative relation. -/
 def ValueGroup := Quotient (valueSetoid R)
 
 protected
@@ -380,7 +375,7 @@ instance : Inv (ValueGroup R) where
 theorem ValueGroup.inv_mk (x : R) (y : unitSubmonoid R) (hx : ¬x ≤ᵥ 0) :
     (ValueGroup.mk x y)⁻¹ = ValueGroup.mk (y : R) ⟨x, hx⟩ := dif_neg hx
 
-/-- The value monoid is a linearly ordered commutative monoid with zero. -/
+/-- The value monoid is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
   zero_le_one := bot_le
   exists_pair_ne := by
@@ -519,7 +514,7 @@ end ValuativeRel
 
 open Topology ValuativeRel in
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
-are determined by the relation `· ∣ᵥ ·`. -/
+are determined by the relation `· ≤ᵥ ·`. -/
 class ValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
   mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : (ValueGroup R)ˣ, { x | valuation _ x < γ } ⊆ s
 
@@ -569,8 +564,8 @@ def mapValueGroup : ValueGroup A →*₀ ValueGroup B where
     apply ValueGroup.sound <;> simp
   map_one' := by
     apply ValueGroup.sound <;> simp
-  map_mul' := by
-    intro x y ; apply x.ind ; apply y.ind
+  map_mul' x y := by
+    apply x.ind ; apply y.ind
     intro x s y t
     simp
 
