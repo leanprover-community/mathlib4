@@ -542,5 +542,9 @@ def mapValueGroup : ValueGroup A →*₀ ValueGroup B where
     intro x s y t
     simp
 
+@[simp]
+lemma mapValueGroup_valuation (a : A) :
+    mapValueGroup A B (valuation _ a) = valuation _ (algebraMap _ _ a) := by
+  apply ValueGroup.sound <;> simp
 
 end ValuativeExtension
