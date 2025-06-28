@@ -166,11 +166,13 @@ instance : IsIso f.fst :=
 instance : IsIso f.snd :=
   inferInstanceAs (IsIso ((π₂ _ _).mapIso (asIso f)).hom)
 
+@[simp]
 lemma inv_fst : (inv f).fst = inv f.fst := by
   symm
   apply IsIso.inv_eq_of_hom_inv_id
   simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.fst) (IsIso.hom_inv_id f)
 
+@[simp]
 lemma inv_snd : (inv f).snd = inv f.snd := by
   symm
   apply IsIso.inv_eq_of_hom_inv_id
