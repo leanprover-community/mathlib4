@@ -8,8 +8,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 
 /-!
 # Covariant derivatives
@@ -253,21 +253,17 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
       congr; ext i; simp [cov.smulX (Xi i) σ (a i)]
     _ = 0 := by simp [this]
 
--- XXX: better name?
--- golfing welcome!
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-  [VectorBundle ℝ F V] in
 /-- `cov X σ x` only depends on `X` via `X x` -/
 lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} (hXX' : X x = X' x) :
     cov X σ x = cov X' σ x := by
-  have : cov X' σ x = cov X σ x + cov (X' - X) σ x := by
-    have : X' = X + (X' - X) := by simp
-    nth_rw 1 [this]
-    rw [cov.addX X (X' - X) σ]
-    simp
-  have h : (X' - X) x = 0 := by simp [hXX']
-  simp [this, cov.congr_X_at_aux (X' - X) h]
+  apply tensoriality_criterion' (E := E) (I := I) E (TangentSpace I) F V hXX'
+  · intro f X
+    rw [cov.smulX]
+    rfl
+  · intro X X'
+    rw [cov.addX]
+    rfl
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] in
@@ -326,35 +322,55 @@ lemma differenceAux_apply (cov cov' : CovariantDerivative I F V)
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] [FiniteDimensional ℝ E] in
 lemma differenceAux_smul_eq (cov cov' : CovariantDerivative I F V)
-    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
-    (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
-    (hf : MDifferentiable I 𝓘(ℝ) f) :
-    differenceAux cov cov' X ((f : M → ℝ) • σ) = (f : M → ℝ) • (differenceAux cov cov' X σ) :=
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ) {x : M}
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (hf : MDifferentiableAt I 𝓘(ℝ) f x) :
+    differenceAux cov cov' X ((f : M → ℝ) • σ) x = f x • differenceAux cov cov' X σ x:=
   calc _
-    _ = cov X ((f : M → ℝ) • σ) - cov' X ((f : M → ℝ) • σ) := rfl
-    _ = (f • cov X σ +  (fun x ↦ bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ)
-        - (f • cov' X σ +  (fun x ↦ bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ) := by
-      ext x
-      simp [cov.leibniz X _ _ _ (hσ x) (hf x), cov'.leibniz X _ _ _ (hσ x) (hf x)]
-    _ = f • cov X σ - f • cov' X σ := by simp
-    _ = f • (cov X σ - cov' X σ) := by simp [smul_sub]
+    _ = cov X ((f : M → ℝ) • σ) x - cov' X ((f : M → ℝ) • σ) x := rfl
+    _ = (f x • cov X σ x +  (bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x)
+        - (f x • cov' X σ x +  (bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x) := by
+      simp [cov.leibniz X _ _ _ hσ hf, cov'.leibniz X _ _ _ hσ hf]
+    _ = f x • cov X σ x - f x • cov' X σ x := by simp
+    _ = f x • (cov X σ x - cov' X σ x) := by simp [smul_sub]
     _ = _ := rfl
 
 omit [FiniteDimensional ℝ E] [∀ (x : M), IsTopologicalAddGroup (V x)]
     [∀ (x : M), ContinuousSMul ℝ (V x)] [VectorBundle ℝ F V] in
 lemma differenceAux_smul_eq' (cov cov' : CovariantDerivative I F V)
-    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ) :
-    differenceAux cov cov' (f • X) σ = (f : M → ℝ) • differenceAux cov cov' X σ := by
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ) (x : M) :
+    differenceAux cov cov' (f • X) σ x = f x • differenceAux cov cov' X σ x := by
   simp [differenceAux, cov.smulX, cov'.smulX, smul_sub]
 
 /-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
-lemma foo (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+lemma differenceAux_tensorial (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     (X X' : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x₀ : M)
-    (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
-    (hσ' : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x))) :
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x₀)
+    (hσ' : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x₀)
+    (hXX' : X x₀ = X' x₀) (hσσ' : σ x₀ = σ' x₀) :
     differenceAux cov cov' X σ x₀ = differenceAux cov cov' X' σ' x₀ := by
-  -- use the previous two lemmas: they prove that differenceAux is tensorial
-  sorry
+  trans cov.differenceAux cov' X' σ x₀
+  · let φ : (Π x : M, TangentSpace I x) → (Π x, V x) := fun X ↦ cov.differenceAux cov' X σ
+    change φ X x₀ = φ X' x₀
+    apply tensoriality_criterion' (E := E) (I := I) E (TangentSpace I) F V hXX'
+    · intro f X
+      apply differenceAux_smul_eq'
+    · intro X X'
+      unfold φ CovariantDerivative.differenceAux
+      rw [cov.addX, cov'.addX]
+      simp
+      abel
+  · let φ : (Π x : M, V x) → (Π x, V x) := fun σ ↦ cov.differenceAux cov' X' σ
+    change φ σ x₀ = φ σ' x₀
+    apply tensoriality_criterion (E := E) (I := I) F V F V hσ hσ' hσσ'
+    · intro f σ x hf
+      exact differenceAux_smul_eq cov cov' X' σ f hf x
+    · intro σ σ' hσ hσ'
+      unfold φ CovariantDerivative.differenceAux
+      simp
+      rw [cov.addσ, cov'.addσ] <;> try assumption
+      abel
 
 -- TODO: either change `localFrame` to make sure it is everywhere smooth
 -- or introduce a cut-off here. First option is probaly better.
