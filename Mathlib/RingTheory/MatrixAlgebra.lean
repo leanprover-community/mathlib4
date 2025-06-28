@@ -15,7 +15,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 ## Main definitions
 
 * `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
-* `tensorMatrixLinearEquiv : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A)`
+* `tensorMatrixLinearEquiv : A ⊗[R] Matrix n n B ≃ₐ[S] Matrix n n (A ⊗[R] B)`
 * `Matrix.kroneckerTMulAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
@@ -140,20 +140,17 @@ theorem tensorMatrixLinearEquiv_symm_single_tmul (i : m) (j : n) (a : A) (b : M)
 end Module
 
 section Algebra
-variable [CommSemiring R]
-variable [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable (n R A)
+variable (m n R S A B)
 
 section
 
-variable (K F A : Type*)
-variable [Semiring K] [CommSemiring F] [Algebra R K]
-    [Algebra F K] [Semiring A] [Algebra F A] [SMulCommClass F R K]
+variable [CommSemiring R] [CommSemiring S] [Semiring A]
+variable [Algebra R A] [Algebra S A] [Semiring B] [Algebra R B] [SMulCommClass R S A]
 
 attribute [local ext] Matrix.ext_linearMap in
-theorem toTensorMatrixLin_mul [Fintype n] (x y : K ⊗[F] Matrix n n A) :
-    toTensorMatrixLin n n F K A (x * y) =
-      toTensorMatrixLin n n F K A x * toTensorMatrixLin n n F K A y := by
+theorem toTensorMatrixLin_mul [Fintype n] (x y : A ⊗[R] Matrix n n B) :
+    toTensorMatrixLin n n R A B (x * y) =
+      toTensorMatrixLin n n R A B x * toTensorMatrixLin n n R A B y := by
   classical
   revert x y
   erw [LinearMap.map_mul_iff _]
@@ -166,42 +163,43 @@ theorem toTensorMatrixLin_mul [Fintype n] (x y : K ⊗[F] Matrix n n A) :
     simp
 
 @[simp]
-theorem toTensorMatrixLin_one [DecidableEq n] : toTensorMatrixLin n n F K A 1 = 1 := by
+theorem toTensorMatrixLin_one [DecidableEq n] : toTensorMatrixLin n n R A B 1 = 1 := by
   simp [Algebra.TensorProduct.one_def]
 
 variable [Fintype n] [DecidableEq n]
 
 /-- `toTensorMatrixLin` as an `AlgHom`. -/
 @[simps!]
-def toTensorMatrix : K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) :=
+def toTensorMatrix : A ⊗[R] Matrix n n B →ₐ[S] Matrix n n (A ⊗[R] B) :=
   AlgHom.ofLinearMap
-    (toTensorMatrixLin n n F K A |>.restrictScalars R)
+    (toTensorMatrixLin n n R A B |>.restrictScalars S)
     (toTensorMatrixLin_one _ _ _ _)
     (toTensorMatrixLin_mul _ _ _ _)
 
 /-- The base change of matrices over algebras.
 
 This is the `AlgEquiv` version of `tensorMatrixLinearEquiv`. -/
-def tensorMatrixAlgEquiv : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A) where
-  __ := toTensorMatrix n R K F A
-  __ := tensorMatrixLinearEquiv n n F K A
+def tensorMatrixAlgEquiv : A ⊗[R] Matrix n n B ≃ₐ[S] Matrix n n (A ⊗[R] B) where
+  __ := toTensorMatrix n R S A B
+  __ := tensorMatrixLinearEquiv n n R A B
 
 @[simp]
-lemma tensorMatrixAlgEquiv_apply (M : K ⊗[F] Matrix n n A) :
-    tensorMatrixAlgEquiv n R K F A M = toTensorMatrix n R K F A M := rfl
+lemma tensorMatrixAlgEquiv_apply (M : A ⊗[R] Matrix n n B) :
+    tensorMatrixAlgEquiv n R S A B M = toTensorMatrix n R S A B M := rfl
 
 @[simp]
-lemma tensorMatrixAlgEquiv_symm_apply (M : Matrix n n (K ⊗[F] A)) :
-    (tensorMatrixAlgEquiv n R K F A).symm M = (tensorMatrixLinearEquiv n n F K A).symm M := rfl
+lemma tensorMatrixAlgEquiv_symm_apply (M : Matrix n n (A ⊗[R] B)) :
+    (tensorMatrixAlgEquiv n R S A B).symm M = (tensorMatrixLinearEquiv n n R A B).symm M := rfl
 
 end
 
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [Fintype n] [DecidableEq n]
 
 /-- The `R`-algebra isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`. -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
   Algebra.TensorProduct.rid _ _ _ |>.symm.mapMatrix |>.trans <|
-    tensorMatrixAlgEquiv n R A R R |>.symm
+    tensorMatrixAlgEquiv n R R A R |>.symm
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :
@@ -226,7 +224,6 @@ theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
 namespace Matrix
 open scoped Kronecker
 
-variable (m) (S B)
 variable [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 variable [Fintype m] [DecidableEq m]
 
