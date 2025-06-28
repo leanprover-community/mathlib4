@@ -575,7 +575,7 @@ def mapValGroupWithZero : ValGroupWithZero A →*₀ ValGroupWithZero B where
   map_one' := by
     apply ValGroupWithZero.sound <;> simp
   map_mul' x y := by
-    apply x.ind ; apply y.ind
+    apply x.ind; apply y.ind
     intro x s y t
     simp
 
