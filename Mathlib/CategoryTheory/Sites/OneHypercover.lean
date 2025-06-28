@@ -433,13 +433,17 @@ section Category
 
 variable {S : C} {E : OneHypercover.{w} J S} {F : OneHypercover.{w'} J S}
 
+/-- A morphism of `1`-hypercovers is a morphism of the underlying pre-`1`-hypercovers. -/
+abbrev Hom (E : OneHypercover.{w} J S) (F : OneHypercover.{w'} J S) :=
+  E.toPreOneHypercover.Hom F.toPreOneHypercover
+
 variable [HasPullbacks C]
 
 /-- Given two refinement morphism `f, g : E ⟶ F`, this is a `1`-hypercover `W` that
 admits a morphism `h : W ⟶ E` such that `h ≫ f` and `h ≫ g` are homotopic. Hence
 they become equal after quotienting out by homotopy. -/
 @[simps! toPreOneHypercover]
-noncomputable def cylinder (f g : E.Hom F.toPreOneHypercover) : J.OneHypercover S :=
+noncomputable def cylinder (f g : E.Hom F) : J.OneHypercover S :=
   mk' (PreOneHypercover.cylinder f g)
     (by
       rw [PreOneHypercover.sieve₀_cylinder]
@@ -451,8 +455,8 @@ noncomputable def cylinder (f g : E.Hom F.toPreOneHypercover) : J.OneHypercover 
       exact J.pullback_stable _ (mem_sieve₁' E _ _))
 
 /-- Up to homotopy, the category of `1`-hypercovers is cofiltered. -/
-lemma exists_nonempty_homotopy (f g : E.Hom F.toPreOneHypercover) :
-    ∃ (W : OneHypercover.{max w w'} J S) (h : W.Hom E.toPreOneHypercover),
+lemma exists_nonempty_homotopy (f g : E.Hom F) :
+    ∃ (W : OneHypercover.{max w w'} J S) (h : W.Hom E),
       Nonempty (PreOneHypercover.Homotopy (h.comp f) (h.comp g)) :=
   ⟨cylinder f g, PreOneHypercover.cylinderHom f g, ⟨PreOneHypercover.cylinderHomotopy f g⟩⟩
 
