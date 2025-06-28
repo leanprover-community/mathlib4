@@ -13,20 +13,6 @@ The trap this avoids is that using `rpow`, `(-8 : ℝ) ^ (1/3 : ℝ) = 1`.
 
 noncomputable section
 
-theorem Rat.den_inv_of_ne_zero (q : ℚ) (hq : q ≠ 0) : (q⁻¹).den = q.num.natAbs := by
-  have hq' : q.num ≠ 0 := by simpa using hq
-  rw [Rat.inv_def', Rat.divInt_eq_div, div_eq_mul_inv, Rat.mul_den, Rat.inv_intCast_den, if_neg hq']
-  norm_cast
-  rw [one_mul, inv_intCast_num, Int.natAbs_mul, Int.natAbs_sign_of_ne_zero hq', mul_one,
-    Int.natAbs_cast, q.reduced.symm, Nat.div_one]
-
-theorem Rat.num_inv (q : ℚ) : (q⁻¹).num = q.num.sign * q.den := by
-  rw [Rat.inv_def', Rat.divInt_eq_div, div_eq_mul_inv, Rat.mul_num, Rat.inv_intCast_num]
-  norm_cast
-  rw [one_mul, inv_intCast_den, Int.natAbs_mul, Int.natAbs_cast]
-  split <;> simp_all [Int.natAbs_sign_of_ne_zero, q.reduced.symm, mul_comm]
-
-
 namespace Real
 
 section qpow
@@ -59,15 +45,31 @@ theorem qpow_eq_rpow_iff {r : ℝ} {q : ℚ} :
   · simp
   have hn0 : q.den ≠ 0 := Nat.ne_of_odd_add ho
   obtain hr | rfl | hr := lt_trichotomy r 0
-  · simp only [_root_.sign_neg hr, abs_of_neg hr, SignType.coe_neg, SignType.coe_one, hr.not_le,
+  · simp only [_root_.sign_neg hr, abs_of_neg hr, SignType.coe_neg, SignType.coe_one, hr.not_ge,
       false_or]
     rw [Real.rpow_def_of_neg hr, rpow_def_of_pos (neg_pos.2 hr), log_neg_eq_log, mul_comm,
-      mul_right_inj' (Real.exp_ne_zero _), eq_comm]
+      mul_right_inj' (Real.exp_ne_zero _), eq_comm, Rat.den_eq_one_iff]
     obtain he | ho := Int.even_or_odd q.num
     · rw [he.neg_one_zpow, cos_eq_one_iff]
-      sorry
+      simp_rw [← mul_assoc, mul_left_inj' pi_pos.ne']
+      norm_cast
+      constructor
+      · rintro ⟨n, rfl⟩
+        norm_cast
+      · intro h
+        obtain ⟨k, hk⟩ := he
+        refine ⟨k, ?_⟩
+        rw [← h, hk, mul_two]
     · rw [ho.neg_one_zpow, cos_eq_neg_one_iff]
-      sorry
+      simp_rw [← mul_assoc, ← one_add_mul, mul_left_inj' pi_pos.ne']
+      norm_cast
+      constructor
+      · rintro ⟨n, rfl⟩
+        norm_cast
+      · intro h
+        obtain ⟨k, hk⟩ := ho
+        refine ⟨k, ?_⟩
+        rw [← h, hk, add_comm, mul_comm]
   · simp [hq, qpow_eq_of_odd_den _ ho]
   · rw [_root_.sign_pos hr, abs_of_pos hr, SignType.coe_one, one_zpow, one_mul]
     simp_rw [hr.le, true_or]
@@ -131,12 +133,31 @@ theorem neg_qpow_eq_of_even_of_odd {q : ℚ} (hn : Even q.num) (hn' : Odd q.den)
   · rw [qpow_eq_of_odd_of_nonpos hn' (neg_nonpos.mpr hr), hn.neg_one_zpow, neg_neg,
       qpow_eq_of_nonneg hr, one_mul]
 
+@[simp]
+theorem Int.even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
+  induction z using Int.wlog_sign with
+  | inv => simp
+  | w n =>
+    cases n
+    · simp
+    · norm_cast
+      simp
+
+@[simp]
+theorem Int.odd_sign_iff {z : ℤ} : Odd z.sign ↔ z ≠ 0 := by
+  rw [← Int.not_even_iff_odd, Int.even_sign_iff]
+
 theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (hq : q ≠ 0) (h : 0 ≤ r ∨ Odd q.den) : (r ^ q⁻¹) ^ q = r := by
   obtain he | ho := Nat.even_or_odd q.den
   · obtain hr := h.resolve_right (Nat.not_odd_iff_even.mpr he)
     rw [qpow_eq_of_even_den _ he, qpow_eq_of_nonneg hr, Rat.cast_inv, rpow_inv_rpow hr]
     assumption_mod_cast
-  · rw [qpow_eq_of_odd_den _ ho]
+  · have : Odd q⁻¹.num := by
+      rw [Rat.num_inv]
+      apply Odd.mul
+      · sorry
+      · assumption_mod_cast
+    rw [qpow_eq_of_odd_den _ ho]
     obtain he | ho := Int.even_or_odd q.num
     · by_cases hr : r = 0
       · rw [hr, zero_qpow]
@@ -145,12 +166,20 @@ theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (hq : q ≠ 0) (h : 0 ≤ r ∨ Odd q.
           · simp
           · assumption_mod_cast
         simpa
-      · rw [← SignType.coe_zpow, SignType.zpow_even, SignType.coe_one, one_mul]
-        · sorry
+      · have : Even (q⁻¹).den := by
+          rw [Rat.den_inv_of_ne_zero hq]
+          simp [he]
+        rw [qpow_eq_of_even_den _ this]
+        rw [← SignType.coe_zpow, SignType.zpow_even _ he, SignType.coe_one, one_mul]
         · sorry
         · rw [sign_ne_zero]
           sorry
     rw [←SignType.coe_zpow, SignType.zpow_odd _ _ ho]
+    have : Odd q⁻¹.den := by
+      rw [Rat.den_inv_of_ne_zero hq]
+      simp [ho]
+    rw [qpow_eq_of_odd_den _ this]
+    simp_all [← SignType.coe_zpow,SignType.zpow_odd]
     sorry
 
 theorem qpow_mul_of_even_of_nonneg {q : ℚ} {a b : ℝ} (hn : Even q.den) (ha : 0 ≤ a) (hb : 0 ≤ b) :
@@ -169,7 +198,9 @@ theorem qpow_qpow_inv {q : ℚ} (r : ℝ) (h : (q.den ≠ 0 ∧ 0 ≤ r) ∨ Odd
   · obtain ⟨hn, hr⟩ := h.resolve_right (Nat.not_odd_iff_even.mpr he)
     rw [qpow_eq_of_even_den _ he, qpow_eq_of_even_den]
     · sorry
-    · sorry -- rw [Rat.den_inv_of_ne_zero]
+    · rw [Rat.den_inv_of_ne_zero]
+      · sorry
+      · sorry
   · have hn : q.den ≠ 0 := Nat.ne_of_odd_add ho
     sorry
     /-
