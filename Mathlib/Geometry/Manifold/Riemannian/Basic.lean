@@ -439,12 +439,12 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     simp only [Function.comp_apply, γ']
     refine Eq.symm (PartialEquiv.left_inv (extChartAt I x) ?_)
     exact uc (t₁_mem.2 t₁ ⟨t₁_mem.1.1, le_rfl⟩)
-  -- therefore, the maximum of `a` has to be `1`, as otherwise one could go to its left and
+  -- therefore, the maximum of `a` has to be `1`, as otherwise one could go to its right and
   -- remain inside `a`, as `v` is open and contained inside `u`.
   have : t₁ = 1 := by
     rcases t₁_mem.1.2.eq_or_lt with ha | ha
     · exact ha
-    have : ∀ᶠ t in 𝓝 (t₁), γ t ∈ v := by
+    have : ∀ᶠ t in 𝓝 t₁, γ t ∈ v := by
       apply γ_smooth.continuous.continuousAt (x := t₁)
       exact v_open.mem_nhds B
     obtain ⟨l, m, ⟨hl, hm⟩, hlm⟩ : ∃ l m, t₁ ∈ Ioo l m ∧ Ioo l m ⊆ {t | γ t ∈ v} :=
@@ -464,5 +464,21 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   rw [← hγy, ← this]
   apply us
   exact t₁_mem.2 t₁ ⟨t₁_mem.1.1, le_rfl⟩
+
+#check riemannianEDist_self
+
+#check ENormSMulClass
+
+def soug : EMetricSpace M where
+  edist := riemannianEDist I
+  edist_self x := by
+    convert riemannianEDist_self
+    intro x
+    apply NormSMulClass.ENormSMulClass
+
+
+  edist_comm := sorry
+  edist_triangle := sorry
+  eq_of_edist_eq_zero := sorry
 
 end

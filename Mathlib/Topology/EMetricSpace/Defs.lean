@@ -607,6 +607,23 @@ abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpa
   toUniformSpace := U
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 
+/-- Auxiliary function to replace the topology on an emetric space with
+a topology which is equal to the original one, but maybe not defeq.
+This is useful if one wants to construct an emetric space with a
+specified topology. See Note [forgetful inheritance] explaining why having definitionally
+the right topology is often important.
+See note [reducible non-instances].
+-/
+abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricSpace γ)
+    (H : T = m.toUniformSpace.toTopologicalSpace) : EMetricSpace γ where
+  edist := @edist _ m.toEDist
+  edist_self := edist_self
+  eq_of_edist_eq_zero := @eq_of_edist_eq_zero _ _
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  toUniformSpace := m.toUniformSpace.replaceTopology H
+  uniformity_edist := PseudoEMetricSpace.uniformity_edist
+
 /-- The extended metric induced by an injective function taking values in an emetric space.
 See Note [reducible non-instances]. -/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
