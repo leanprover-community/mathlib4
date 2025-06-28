@@ -621,7 +621,7 @@ theorem norm_integral_le_abs_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.re
 theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (hab : a ≤ b)
     (h : ∀ᵐ t ∂μ, t ∈ Set.Ioc a b → ‖f t‖ ≤ g t) (hbound : IntervalIntegrable g μ a b) :
     ‖∫ t in a..b, f t ∂μ‖ ≤ ∫ t in a..b, g t ∂μ := by
-  simp only [integral_of_le hab, uIoc_of_le hab, ← ae_restrict_iff' measurableSet_Ioc] at *
+  simp only [integral_of_le hab, ← ae_restrict_iff' measurableSet_Ioc] at *
   exact MeasureTheory.norm_integral_le_of_norm_le hbound.1 h
 
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}

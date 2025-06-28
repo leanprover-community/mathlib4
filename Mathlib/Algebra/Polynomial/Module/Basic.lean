@@ -197,7 +197,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
               exfalso
               apply hpq2
               rw [← hpq1, H]
-              simp only [add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right]
+              simp only [add_tsub_cancel_right]
             · rfl
           · intro H
             exfalso

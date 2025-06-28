@@ -100,11 +100,11 @@ variable [Monoid α] (s : Set α)
 
 @[to_additive zero_leftAddCoset]
 theorem one_leftCoset : (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 @[to_additive rightAddCoset_zero]
 theorem rightCoset_one : op (1 : α) • s = s :=
-  Set.ext <| by simp [← image_smul]
+  Set.ext <| by simp
 
 end CosetMonoid
 
