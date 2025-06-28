@@ -153,6 +153,7 @@ noncomputable
 def ofFinitePresentation [FinitePresentation R S] :
     Presentation R S (Fin (ofFinitePresentationVars R S)) (Fin (ofFinitePresentationRels R S)) :=
   (exists_presentation_fin R S).choose_spec.choose_spec.some
+
 section Construction
 
 /-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
@@ -256,10 +257,7 @@ private lemma span_range_relation_eq_ker_baseChange :
         simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
           TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one]
       | add p q hp hq => simp only [map_add, hp, hq]
-      | mul_X p i hp =>
-        simp only [map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul, map_one,
-          IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
-        rfl
+      | mul_X p i hp => simp [hp, e]
     rw [H] at H'
     replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
     rw [← P.span_range_relation_eq_ker, ← Ideal.mem_comap, ← Ideal.comap_coe,
@@ -441,9 +439,9 @@ lemma comp_aeval_relation_inl (r : σ') :
 
 end Composition
 
-/-- Given a presentation `P` and equivalences `ι ≃ ι` and
-`κ ≃ σ`, this is the induced presentation with variables indexed
-by `ι` and relations indexed by `κ -/
+/-- Given a presentation `P` and equivalences `ι' ≃ ι` and
+`σ' ≃ σ`, this is the induced presentation with variables indexed
+by `ι'` and relations indexed by `σ'` -/
 @[simps toGenerators]
 noncomputable def reindex (P : Presentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) :

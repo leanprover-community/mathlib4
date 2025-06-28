@@ -189,7 +189,7 @@ then `adjoin A { b : B | ∃ a : ℕ, a ∈ S ∧ a ≠ 0 ∧ b ^ a = 1 }` is a 
 given by roots of unity of order in `S`. -/
 theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
     IsCyclotomicExtension S A (adjoin A {b : B | ∃ a : ℕ, a ∈ S ∧ a ≠ 0 ∧ b ^ a = 1}) := by
-  refine ⟨@fun n hn hn' => ?_, fun b => ?_⟩
+  refine ⟨fun {n} hn hn' => ?_, fun b => ?_⟩
   · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 h).1 (hS hn) hn'
     refine ⟨⟨b, subset_adjoin ⟨n, hn, hn', hb.pow_eq_one⟩⟩, ?_⟩
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
@@ -241,7 +241,7 @@ variable (n S)
 /-- `IsCyclotomicExtension S A B` is equivalent to `IsCyclotomicExtension (S ∪ {1}) A B`. -/
 theorem iff_union_singleton_one :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {1}) A B := by
-  by_cases hS: ∃ s ∈ S, s ≠ 0
+  by_cases hS : ∃ s ∈ S, s ≠ 0
   · exact iff_union_of_dvd _ _ (by simpa)
   · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_diff_distrib,
       show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by aesop]
@@ -594,9 +594,8 @@ theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       letI := Classical.decEq L
-      -- todo: make `exists_prim_root` take an explicit `L`
       obtain ⟨ζ : L, hζ⟩ :=
-        IsCyclotomicExtension.exists_isPrimitiveRoot K (B := L) (mem_singleton n) (NeZero.ne _)
+        IsCyclotomicExtension.exists_isPrimitiveRoot K L (mem_singleton n) (NeZero.ne _)
       exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ }
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.splitting_field_cyclotomic
@@ -726,14 +725,14 @@ instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
 
 instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
-  exists_isPrimitiveRoot := @fun a han => by
+  exists_isPrimitiveRoot {a} han _ := by
     rw [mem_singleton_iff] at han
     subst a
     have := NeZero.of_faithfulSMul A K n
     have := NeZero.of_faithfulSMul A (CyclotomicField n K) n
     obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_isPrimitiveRoot
       (mem_singleton n) (NeZero.ne n)
-    refine fun _ ↦ ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
+    refine ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
     · apply (isRoot_of_unity_iff (NeZero.pos n) (CyclotomicField n K)).mpr
       refine ⟨n, Nat.mem_divisors_self _ (NeZero.ne n), ?_⟩
       rwa [← isRoot_cyclotomic_iff] at hμ
@@ -812,7 +811,7 @@ variable [IsSepClosed K]
 `NeZero ((a : ℕ) : K)` for all nonzero `a ∈ S`. -/
 theorem IsSepClosed.isCyclotomicExtension (h : ∀ a ∈ S, a ≠ 0 → NeZero (a : K)) :
     IsCyclotomicExtension S K K := by
-  refine ⟨@fun a ha ha' ↦ ?_, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
+  refine ⟨fun {a} ha ha' ↦ ?_, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
   have := h a ha ha'
   obtain ⟨r, hr⟩ := IsSepClosed.exists_aeval_eq_zero K _
     (degree_cyclotomic_pos a K (Nat.pos_of_ne_zero ha')).ne' (separable_cyclotomic a K)
