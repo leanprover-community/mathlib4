@@ -95,11 +95,10 @@ variable (R) in
 def unitSubmonoid : Submonoid R where
   carrier := { x | ¬ x ≤ᵥ 0}
   mul_mem' {x y} hx hy := by
-    by_contra c
-    apply hy
-    simp only [Set.mem_setOf_eq, not_not] at c
-    rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at c
-    exact rel_mul_cancel hx c
+    dsimp only [Set.mem_setOf_eq] at hx hy ⊢
+    contrapose! hy
+    rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
+    exact rel_mul_cancel hx hy
   one_mem' := not_rel_one_zero
 
 @[simp]
