@@ -256,20 +256,11 @@ lemma zpow_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℤ) (i : ι) : (x ^ n) i = x i ^ n :=
   rfl
 
-@[to_additive]
 instance [Π i, AddMonoidWithOne (R i)] [∀ i, AddSubmonoidWithOneClass (S i) (R i)] :
     NatCast (Πʳ i, [R i, B i]_[𝓕]) where
   natCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ natCast_mem _ n⟩
 
 @[to_additive]
-instance [Π i, AddGroup (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
-    AddGroup (Πʳ i, [R i, B i]_[𝓕]) :=
-  haveI : ∀ i, SMulMemClass (S i) ℤ (R i) := fun _ ↦ AddSubgroupClass.zsmulMemClass
-  haveI : ∀ i, SMulMemClass (S i) ℕ (R i) := fun _ ↦ AddSubmonoidClass.nsmulMemClass
-  DFunLike.coe_injective.addGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-
-@[to_additive existing]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Group (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -372,24 +363,25 @@ sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
 
 See also `mapMonoidHom`, `mapAddMonoidHom` and `mapRingHom` for variants.
 -/
-def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
+def mapAlong (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] :=
+  ⟨fun j ↦ φ j (x (f j)), by
   filter_upwards [hf.eventually x.2, hφ] using fun _ h1 h2 ↦ h2 h1⟩
 
 @[simp]
 lemma map_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
-    x.map R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+    x.mapAlong R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
   rfl
 
 -- variant of `map` where the index set is constant
 
 /-- The maps between restricted products over a fixed index type,
 given maps on the factors. -/
-def congrRight {G H : ι → Type*}
+def map {G H : ι → Type*}
     {C : (i : ι) → Set (G i)}
     {D : (i : ι) → Set (H i)} (φ : (i : ι) → G i → H i)
     (hφ : ∀ᶠ i in 𝓕, Set.MapsTo (φ i) (C i) (D i))
     (x : Πʳ i, [G i, C i]_[𝓕]) : (Πʳ i, [H i, D i]_[𝓕]) :=
-  map G H id Filter.tendsto_id φ hφ x
+  mapAlong G H id Filter.tendsto_id φ hφ x
 
 end set
 
@@ -412,8 +404,8 @@ needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁
 additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for
 an `𝓕₂`-large set of `j`'s.
 "]
-def mapMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
-  toFun := map R₁ R₂ f hf (fun j r ↦ φ j r) hφ
+def mapAlongMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
+  toFun := mapAlong R₁ R₂ f hf (fun j r ↦ φ j r) hφ
   map_one' := by
     ext i
     exact map_one (φ i)
@@ -422,8 +414,8 @@ def mapMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂
     exact map_mul (φ i) _ _
 
 @[to_additive (attr := simp)]
-lemma mapMonoidHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
-    x.mapMonoidHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+lemma mapAlongMonoidHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
+    x.mapAlongMonoidHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
   rfl
 
 end monoid
@@ -440,13 +432,13 @@ Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and
 function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and ring homomorphisms
 `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
 -/
-def mapRingHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →+* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
-  __ := mapMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
-  __ := mapAddMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
+def mapAlongRingHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →+* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
+  __ := mapAlongMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
+  __ := mapAlongAddMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
 
 @[simp]
-lemma mapRingHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
-    x.mapRingHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+lemma mapAlongRingHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
+    x.mapAlongRingHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
   rfl
 
 end ring
