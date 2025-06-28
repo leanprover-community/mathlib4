@@ -170,4 +170,12 @@ theorem σsInf_le_σsInf_of_forall_exists_le (hs : s.Countable) (ht : t.Countabl
     (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
   σsSup_le_σsSup_of_forall_exists_le (α := αᵒᵈ) hs ht h
 
+@[simp]
+theorem σsSup_empty [OrderBot α] : sSup ∅ = (⊥ : α) :=
+  (@isLUB_empty α _ _).σsSup_eq Set.countable_empty
+
+@[simp]
+theorem σsInf_empty [OrderTop α] : sInf ∅ = (⊤ : α) :=
+  σsSup_empty (α := αᵒᵈ)
+
 end SigmaCompleteLattice
