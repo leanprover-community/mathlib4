@@ -12,6 +12,8 @@ import ProofWidgets.Component.FilterDetails
 
 This file defines `rw?`, an interactive tactic that suggests rewrites
 for any expression selected by the user.
+This implementation of `rw?` overrides the implementation of `rw?` in core Lean that is
+not interactive: that one simply suggests rewrites for all subexpressions.
 
 `rw?` uses a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
 It excludes lemmas that are automatically generated.
@@ -525,6 +527,9 @@ The rewrite suggestions are grouped and sorted by the pattern that the rewrite l
 Rewrites that don't change the goal and rewrites that create the same goal as another rewrite
 are filtered out, as well as rewrites that have new metavariables in the replacement expression.
 To see all suggestions, click on the filter button (▼) in the top right.
+
+This implementation of `rw?` overrides the implementation of `rw?` in core Lean that is
+not interactive.
 -/
 elab stx:"rw?" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
