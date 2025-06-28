@@ -128,6 +128,7 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 
+
 @[simp]
 theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
   induction z using wlog_sign with
