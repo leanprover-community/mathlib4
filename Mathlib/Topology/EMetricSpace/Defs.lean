@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.OfFun
 
@@ -441,6 +442,38 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, ball x ε ⊆ s :=
 theorem mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, ball x ε ∩ t ⊆ s :=
   nhdsWithin_basis_eball.mem_iff
 
+/-- If an extended distance on a topological space defines balls which are neighborhoods of points,
+and is such that any neighborhood contains a ball, then the topology defined by the distance
+coincides with the initial topology. -/
+lemma topologicalSpace_eq_uniformSpaceOfEdist_toTopologicalSpace
+    {α : Type*} [T : TopologicalSpace α]
+    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
+    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
+    (h₁ : ∀ x, ∀ c > 0, {y | d x y < c} ∈ 𝓝 x)
+    (h₂ : ∀ x, ∀ s ∈ 𝓝 x, ∃ c > 0, {y | d x y < c} ⊆ s) :
+    T = (uniformSpaceOfEDist d h_self h_comm h_triangle).toTopologicalSpace := by
+  apply TopologicalSpace.ext_nhds (fun x ↦ ?_)
+  let m : PseudoEMetricSpace α :=
+    { edist := d
+      edist_self := h_self
+      edist_comm := h_comm
+      edist_triangle := h_triangle }
+  have A (x c) : @EMetric.ball α m x c = {y | d x y < c} := by
+    ext y
+    simp only [EMetric.mem_ball']
+    exact Iff.rfl
+  apply le_antisymm
+  · intro t ht
+    have h't : t ∈ @nhds α m.toUniformSpace.toTopologicalSpace x := ht
+    rcases EMetric.mem_nhds_iff.1 h't with ⟨c, c_pos, hc⟩
+    apply Filter.mem_of_superset (h₁ x c c_pos)
+    rwa [A] at hc
+  · intro t ht
+    rcases h₂ x t ht with ⟨c, c_pos, hc⟩
+    change t ∈ @nhds α m.toUniformSpace.toTopologicalSpace x
+    apply EMetric.mem_nhds_iff.2 ⟨c, c_pos, ?_⟩
+    rwa [← A] at hc
+
 section
 
 variable [PseudoEMetricSpace β] {f : α → β}
@@ -623,6 +656,33 @@ abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricS
   edist_triangle := edist_triangle
   toUniformSpace := m.toUniformSpace.replaceTopology H
   uniformity_edist := PseudoEMetricSpace.uniformity_edist
+
+/-- Consider an extended distance on a topological space for which the balls are neighborhoods of
+points, and such that any neighborhood contains a ball. Then we define the emetric
+space structure associated to this distance, with a topology defeq to the initial one. -/
+@[reducible] def EmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α] [T0Space α]
+    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
+    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
+    (h₁ : ∀ x, ∀ c > 0, {y | d x y < c} ∈ 𝓝 x)
+    (h₂ : ∀ x, ∀ s ∈ 𝓝 x, ∃ c > 0, {y | d x y < c} ⊆ s) :
+    EMetricSpace α where
+  edist := d
+  edist_self := h_self
+  edist_comm := h_comm
+  edist_triangle := h_triangle
+  eq_of_edist_eq_zero := by
+    intro x y hxy
+    contrapose! hxy
+    intro hd
+    rcases exists_isOpen_xor'_mem hxy with ⟨u, u_open, hu⟩
+    rcases hu with ⟨ux, uy⟩ | ⟨uy, ux⟩
+    · rcases h₂ x _ (u_open.mem_nhds ux) with ⟨c, c_pos, hc⟩
+      exact uy (hc (by simpa [hd] using c_pos))
+    · rcases h₂ y _ (u_open.mem_nhds uy) with ⟨c, c_pos, hc⟩
+      exact ux (hc (by simpa [hd, h_comm] using c_pos))
+  toUniformSpace := (uniformSpaceOfEDist d h_self h_comm h_triangle).replaceTopology
+    (topologicalSpace_eq_uniformSpaceOfEdist_toTopologicalSpace d h_self h_comm h_triangle h₁ h₂)
+  uniformity_edist := rfl
 
 /-- The extended metric induced by an injective function taking values in an emetric space.
 See Note [reducible non-instances]. -/

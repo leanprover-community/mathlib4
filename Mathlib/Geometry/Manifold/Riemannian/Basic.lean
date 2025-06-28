@@ -465,20 +465,15 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   apply us
   exact t₁_mem.2 t₁ ⟨t₁_mem.1.1, le_rfl⟩
 
-#check riemannianEDist_self
-
-#check ENormSMulClass
-
-def soug : EMetricSpace M where
-  edist := riemannianEDist I
-  edist_self x := by
-    convert riemannianEDist_self
-    intro x
-    apply NormSMulClass.ENormSMulClass
-
-
-  edist_comm := sorry
-  edist_triangle := sorry
-  eq_of_edist_eq_zero := sorry
-
-end
+variable (M) in
+/-- The emetric space structure associated to a Riemannian metric on a manifold. Designed
+so that the topology is defeq to the original one. -/
+@[reducible] def emetricSpaceOfRiemannianMetric [T3Space M] : EMetricSpace M :=
+  EmetricSpace.ofEdistOfTopology (riemannianEDist I (M := M))
+    (fun x ↦ riemannianEDist_self)
+    (fun x y ↦ riemannianEDist_comm)
+    (fun x y z ↦ riemannianEDist_triangle)
+    (fun x c hc ↦ eventually_riemmanianEDist_lt I x hc)
+    (fun x s hs ↦ by
+      rcases setOf_riemmanianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
+      exact ⟨c, mod_cast c_pos, hc⟩)
