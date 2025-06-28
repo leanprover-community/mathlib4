@@ -85,8 +85,8 @@ lemma lieBracketWithin_smul_left {c : 𝕜} (hV : DifferentiableWithinAt 𝕜 V 
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (c • V) W s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.add_apply, map_add, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul' hs hV]
+  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
+  rw [fderivWithin_const_smul hs hV]
   rfl
 
 lemma lieBracket_smul_left {c : 𝕜} (hV : DifferentiableAt 𝕜 V x) :
@@ -98,8 +98,8 @@ lemma lieBracketWithin_smul_right {c : 𝕜} (hW : DifferentiableWithinAt 𝕜 W
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (c • W) s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.add_apply, map_add, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul' hs hW]
+  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
+  rw [fderivWithin_const_smul hs hW]
   rfl
 
 lemma lieBracket_smul_right {c : 𝕜} (hW : DifferentiableAt 𝕜 W x) :
@@ -112,14 +112,14 @@ lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     lieBracketWithin 𝕜 (V + V₁) W s x =
       lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V₁ W s x := by
   simp only [lieBracketWithin, Pi.add_apply, map_add]
-  rw [fderivWithin_add' hs hV hV₁, ContinuousLinearMap.add_apply]
+  rw [fderivWithin_add hs hV hV₁, ContinuousLinearMap.add_apply]
   abel
 
 lemma lieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : DifferentiableAt 𝕜 V₁ x) :
     lieBracket 𝕜 (V + V₁) W  x =
       lieBracket 𝕜 V W x + lieBracket 𝕜 V₁ W x := by
   simp only [lieBracket, Pi.add_apply, map_add]
-  rw [fderiv_add' hV hV₁, ContinuousLinearMap.add_apply]
+  rw [fderiv_add hV hV₁, ContinuousLinearMap.add_apply]
   abel
 
 lemma lieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
@@ -127,14 +127,14 @@ lemma lieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
     lieBracketWithin 𝕜 V (W + W₁) s x =
       lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V W₁ s x := by
   simp only [lieBracketWithin, Pi.add_apply, map_add]
-  rw [fderivWithin_add' hs hW hW₁, ContinuousLinearMap.add_apply]
+  rw [fderivWithin_add hs hW hW₁, ContinuousLinearMap.add_apply]
   abel
 
 lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : DifferentiableAt 𝕜 W₁ x) :
     lieBracket 𝕜 V (W + W₁) x =
       lieBracket 𝕜 V W x + lieBracket 𝕜 V W₁ x := by
   simp only [lieBracket, Pi.add_apply, map_add]
-  rw [fderiv_add' hW hW₁, ContinuousLinearMap.add_apply]
+  rw [fderiv_add hW hW₁, ContinuousLinearMap.add_apply]
   abel
 
 lemma lieBracketWithin_swap : lieBracketWithin 𝕜 V W s = - lieBracketWithin 𝕜 W V s := by
@@ -314,9 +314,9 @@ lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
         (fderivWithin 𝕜 (fderivWithin 𝕜 U s) s x).flip (V x) := by
     refine fderivWithin_clm_apply (hs x hx) ?_ (hV.differentiableWithinAt one_le_two)
     exact (hU.fderivWithin_right hs le_rfl hx).differentiableWithinAt le_rfl
-  rw [fderivWithin_sub (hs x hx) (aux₁ hV hW) (aux₁ hW hV)]
-  rw [fderivWithin_sub (hs x hx) (aux₁ hU hV) (aux₁ hV hU)]
-  rw [fderivWithin_sub (hs x hx) (aux₁ hU hW) (aux₁ hW hU)]
+  rw [fderivWithin_fun_sub (hs x hx) (aux₁ hV hW) (aux₁ hW hV)]
+  rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hV) (aux₁ hV hU)]
+  rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hW) (aux₁ hW hU)]
   rw [aux₂ hW hV, aux₂ hV hW, aux₂ hV hU, aux₂ hU hV, aux₂ hW hU, aux₂ hU hW]
   simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply,
     ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.flip_apply, h'V.eq,
@@ -453,7 +453,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
       = ContinuousLinearMap.id 𝕜 F := by ext; simp
   have : fderivWithin 𝕜 (fun y ↦ ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F)
       ((N y).symm : F →L[𝕜] E)) s x v = 0 := by
-    simp [A', fderivWithin_const_apply, hs x hx]
+    simp [A', fderivWithin_const_apply]
   have I : (N x : E →L[𝕜] F) ∘L (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v) =
       - (fderivWithin 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) s x v) ∘L ((N x).symm : F →L[𝕜] E) := by
     rw [ContinuousLinearMap.fderivWithin_of_bilinear _ (hN.differentiableWithinAt le_rfl)
@@ -462,7 +462,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
   have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘L ((N x) ∘L M) := by
     ext; simp
   rw [B (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v), I]
-  simp only [ContinuousLinearMap.comp_neg, neg_inj, eN.fderivWithin_eq e'N]
+  simp only [ContinuousLinearMap.comp_neg, eN.fderivWithin_eq e'N]
 
 lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set E} {t : Set F} {x : E}
     (hV : DifferentiableWithinAt 𝕜 V t (f x))

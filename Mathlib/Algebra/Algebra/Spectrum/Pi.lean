@@ -40,8 +40,6 @@ def PreQuasiregular.toPi [∀ i, NonUnitalSemiring (κ i)] :
     PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasiregular (κ i) where
   toFun := fun x i => .mk <| x.val i
   invFun := fun x => .mk <| fun i => (x i).val
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 variable (A B) in
@@ -51,8 +49,6 @@ def PreQuasiregular.toProd [NonUnitalSemiring A] [NonUnitalSemiring B] :
     PreQuasiregular (A × B) ≃* PreQuasiregular A × PreQuasiregular B where
   toFun := fun p => ⟨.mk p.val.1, .mk p.val.2⟩
   invFun := fun ⟨a, b⟩ => .mk ⟨a.val, b.val⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 lemma isQuasiregular_pi_iff [∀ i, NonUnitalSemiring (κ i)] (x : ∀ i, κ i) :
@@ -103,8 +99,7 @@ lemma Prod.quasispectrum_eq [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
     quasispectrum R (⟨a, b⟩ : A × B) = quasispectrum R a ∪ quasispectrum R b := by
   apply compl_injective
   ext r
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall,
-    not_not, Set.mem_union, not_exists]
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not, Set.mem_union]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_prod_iff]

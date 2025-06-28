@@ -60,7 +60,7 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 theorem antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) :: (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, range_succ_eq_map, map_cons, Nat.add_succ_sub_one,
-    Nat.add_zero, id, eq_self_iff_true, Nat.sub_zero, map_map, Prod.map_apply]
+    Nat.add_zero, id, Nat.sub_zero, map_map, Prod.map_apply]
   apply congr rfl (congr rfl _)
   ext; simp
 

@@ -244,7 +244,7 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
     LinearMap.IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜)
       (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
   intro x y
-  simp only [sesqFormOfInner_apply_apply, adjoint_inner_left, coe_coe]
+  simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
 
 end ContinuousLinearMap
 
@@ -474,7 +474,7 @@ theorem re_inner_adjoint_mul_self_nonneg (T : E →ₗ[𝕜] E) (x : E) :
 @[simp]
 theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
     im ⟪x, LinearMap.adjoint T (T x)⟫ = 0 := by
-  simp only [Module.End.mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
+  simp only [adjoint_inner_right, inner_self_eq_norm_sq_to_K]
   norm_cast
 
 theorem isSelfAdjoint_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
@@ -572,8 +572,6 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
             inv_val := by ext; simp }
         exact IsUnit.mem_unitary_of_star_mul_self ⟨e', rfl⟩ <|
           (e : H →L[𝕜] H).norm_map_iff_adjoint_comp_self.mp e.norm_map }
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := LinearIsometryEquiv.ext fun _ ↦ rfl
   map_mul' u v := by ext; rfl
 
 @[simp]

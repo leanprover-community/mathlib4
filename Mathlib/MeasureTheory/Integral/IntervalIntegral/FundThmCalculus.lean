@@ -629,7 +629,7 @@ theorem integral_hasStrictDerivAt_of_tendsto_ae_left (hf : IntervalIntegrable f 
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
     HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-c) a := by
   simpa only [← integral_symm] using
-    (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).neg
+    (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).fun_neg
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the left endpoint.
 
@@ -638,7 +638,7 @@ derivative `-f a` at `a` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : ContinuousAt f a) :
     HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-f a) a := by
-  simpa only [← integral_symm] using (integral_hasStrictDerivAt_right hf.symm hmeas ha).neg
+  simpa only [← integral_symm] using (integral_hasStrictDerivAt_right hf.symm hmeas ha).fun_neg
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the right endpoint.
 
@@ -994,7 +994,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       calc
         (u - t) * y = ∫ _ in Icc t u, y := by
           simp only [MeasureTheory.integral_const, MeasurableSet.univ, measureReal_restrict_apply,
-            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul, s]
+            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul]
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
@@ -1236,7 +1236,7 @@ theorem intervalIntegrable_deriv_of_nonneg (hcont : ContinuousOn g (uIcc a b))
     (hderiv : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt g (g' x) x)
     (hpos : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ g' x) : IntervalIntegrable g' volume a b := by
   rcases le_total a b with hab | hab
-  · simp only [uIcc_of_le, min_eq_left, max_eq_right, hab, IntervalIntegrable, hab,
+  · simp only [uIcc_of_le, min_eq_left, max_eq_right, IntervalIntegrable, hab,
       Ioc_eq_empty_of_le, integrableOn_empty, and_true] at hcont hderiv hpos ⊢
     exact integrableOn_deriv_of_nonneg hcont hderiv hpos
   · simp only [uIcc_of_ge, min_eq_right, max_eq_left, hab, IntervalIntegrable, Ioc_eq_empty_of_le,
