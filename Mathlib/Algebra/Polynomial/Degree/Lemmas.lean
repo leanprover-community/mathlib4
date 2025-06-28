@@ -227,7 +227,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
         exact Finset.le_sup' (fun i : S => (natDegree (f i) : WithBot ℕ)) hb
       · rw [Finset.sup'_le_iff]
         intro b hb
-        simp only [Finset.le_sup'_iff, exists_prop, Function.comp_apply]
+        simp only [Finset.le_sup'_iff, Function.comp_apply]
         by_cases hb' : f b = 0
         · refine ⟨x, hx, ?_⟩
           contrapose! hx'
@@ -282,7 +282,7 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
   rw [nextCoeff] at h
   by_cases hpz : p.natDegree = 0
-  · simp_all only [ne_eq, zero_le, ite_true, not_true_eq_false]
+  · simp_all only [ne_eq, ite_true, not_true_eq_false]
   · apply Nat.zero_lt_of_ne_zero hpz
 
 end Degree
