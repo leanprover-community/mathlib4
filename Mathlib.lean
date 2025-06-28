@@ -908,7 +908,6 @@ import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Algebra.Order.Ring.Idempotent
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Order.Ring.IntMisc
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.Opposite
