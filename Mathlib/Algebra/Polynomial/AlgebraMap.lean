@@ -627,8 +627,7 @@ lemma aeval_apply_smul_mem_of_le_comap'
   | monomial n t hmq =>
     dsimp only at hmq ⊢
     rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
-    rw [← q.map_le_iff_le_comap] at hq
-    exact hq ⟨_, hmq, rfl⟩
+    solve_by_elim
 
 lemma aeval_apply_smul_mem_of_le_comap
     (hm : m ∈ q) (p : R[X]) (f : Module.End R M) (hq : q ≤ q.comap f) :
