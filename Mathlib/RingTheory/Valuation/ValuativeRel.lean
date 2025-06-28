@@ -234,7 +234,8 @@ instance : Mul (ValueGroupWithZero R) where
 
 @[simp]
 theorem ValueGroupWithZero.mk_mul_mk (a b : R) (c d : posSubmonoid R) :
-    ValueGroupWithZero.mk a c * ValueGroupWithZero.mk b d = ValueGroupWithZero.mk (a * b) (c * d) := rfl
+    ValueGroupWithZero.mk a c * ValueGroupWithZero.mk b d = ValueGroupWithZero.mk (a * b) (c * d) :=
+  rfl
 
 instance : CommMonoidWithZero (ValueGroupWithZero R) where
   mul_assoc a b c := by
@@ -385,7 +386,8 @@ instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
-    rw [← ValueGroupWithZero.mk_zero 1, ← ValueGroupWithZero.mk_one_one, ValueGroupWithZero.mk_le_mk] at h
+    rw [← ValueGroupWithZero.mk_zero 1, ← ValueGroupWithZero.mk_one_one,
+      ValueGroupWithZero.mk_le_mk] at h
     simp [not_rel_one_zero] at h
   inv_zero := dif_pos .rfl
   mul_inv_cancel := ValueGroupWithZero.ind fun x y h => by
