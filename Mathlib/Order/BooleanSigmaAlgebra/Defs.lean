@@ -45,27 +45,19 @@ class SigmaCompleteLattice (α) extends Lattice α, SupSet α, InfSet α where
   isLUB_σsSup (s : Set α) (hs : s.Countable) : IsLUB s (sSup s)
   isGLB_σsInf (s : Set α) (hs : s.Countable) : IsGLB s (sInf s)
 
-  isLUB_σsSup_of_isLUB (a : α) (s : Set α) (h : IsLUB s a) : IsLUB s (sSup s)
-  isGLB_σsInf_of_isGLB (a : α) (s : Set α) (h : IsGLB s a) : IsGLB s (sInf s)
-
 /-- A complete lattice is a σ-complete lattice. -/
-instance (priority := 100) CompleteLattice.toSigmaCompleteLattice [CompleteLattice α] :
+instance (priority := 100) CompleteLAttice.toSigmaCompleteLattice [CompleteLattice α] :
     SigmaCompleteLattice α where
   isLUB_σsSup (s : Set α) _ := isLUB_sSup s
   isGLB_σsInf (s : Set α) _ := isGLB_sInf s
-  isLUB_σsSup_of_isLUB _ (s : Set α) _ := isLUB_sSup s
-  isGLB_σsInf_of_isGLB _ (s : Set α) _ := isGLB_sInf s
 
-instance OrderDual.instSigmaCompleteLattice [SigmaCompleteLattice α] :
+instance OrderDual.instSigmaCompleteLattice (α : Type*) [SigmaCompleteLattice α] :
     SigmaCompleteLattice αᵒᵈ where
   toSupSet := inferInstance
   toInfSet := inferInstance
   isLUB_σsSup (s : Set α) (hs : s.Countable) := IsGLB.dual (SigmaCompleteLattice.isGLB_σsInf s hs)
   isGLB_σsInf (s : Set α) (hs : s.Countable) := IsLUB.dual (SigmaCompleteLattice.isLUB_σsSup s hs)
-  isLUB_σsSup_of_isLUB (a : α) (s : Set α) (h : IsLUB (α := αᵒᵈ) s a) :=
-    IsGLB.dual (SigmaCompleteLattice.isGLB_σsInf_of_isGLB a s h)
-  isGLB_σsInf_of_isGLB (a : α) (s : Set α) (h : IsGLB (α := αᵒᵈ) s a) :=
-    IsLUB.dual (SigmaCompleteLattice.isLUB_σsSup_of_isLUB a s h)
+
 
 
 /-- A Boolean σ-algebra is a `BooleanAlgebra` and a `SigmaCompleteLattice`.
@@ -78,10 +70,13 @@ class BooleanSigmaAlgebra (α) extends BooleanAlgebra α, SigmaCompleteLattice �
 /-- A complete Boolean algebra is a Boolean σ-algebra. -/
 instance (priority := 100) CompleteBooleanAlgebra.toBooleanSigmaAlgebra [CompleteBooleanAlgebra α] :
     BooleanSigmaAlgebra α where
-  __ := toBooleanAlgebra
-  __ := CompleteLattice.toSigmaCompleteLattice
+  isLUB_σsSup (s : Set α) _ := isLUB_sSup s
+  isGLB_σsInf (s : Set α) _ := isGLB_sInf s
 
-instance OrderDual.instBooleanSigmaAlgebra [BooleanSigmaAlgebra α] :
+instance OrderDual.instBooleanSigmaAlgebra (α : Type*) [BooleanSigmaAlgebra α] :
     BooleanSigmaAlgebra αᵒᵈ where
-  __ := OrderDual.instBooleanAlgebra
-  __ := OrderDual.instSigmaCompleteLattice
+  toBooleanAlgebra := inferInstance
+  toSupSet := inferInstance
+  toInfSet := inferInstance
+  isLUB_σsSup (s : Set α) (hs : s.Countable) := IsGLB.dual (BooleanSigmaAlgebra.isGLB_σsInf s hs)
+  isGLB_σsInf (s : Set α) (hs : s.Countable) := IsLUB.dual (BooleanSigmaAlgebra.isLUB_σsSup s hs)
