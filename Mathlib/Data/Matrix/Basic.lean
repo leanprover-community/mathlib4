@@ -221,7 +221,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
   dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h, Matrix.one_apply_ne]
+  split_ifs with h <;> simp [h]
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl
@@ -612,6 +612,14 @@ theorem mapMatrix_symm (f : α ≃ₐ[R] β) :
 theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃ₐ[R] _) :=
   rfl
+
+/-- For any algebra `α` over a ring `R`, we have an `R`-algebra isomorphism
+`Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose. If `α` is commutative,
+we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEquiv`. -/
+@[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+  __ := RingEquiv.mopMatrix
+  commutes' _ := MulOpposite.unop_injective <| by
+    ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
 
 end AlgEquiv
 

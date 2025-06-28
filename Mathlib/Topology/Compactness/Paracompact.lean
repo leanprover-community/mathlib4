@@ -118,9 +118,6 @@ theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X 
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.paracompactSpace := IsClosedEmbedding.paracompactSpace
-
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
   ⟨fun _ ↦ e.symm.isClosedEmbedding.paracompactSpace, fun _ ↦ e.isClosedEmbedding.paracompactSpace⟩
 
@@ -230,7 +227,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
         (finite_le_nat _).biUnion fun k _ ↦ finite_range _
       apply this.subset
       rintro ⟨k, c, hc⟩
-      simp only [mem_iUnion, mem_setOf_eq, mem_image, Subtype.coe_mk]
+      simp only [mem_iUnion, mem_setOf_eq, Subtype.coe_mk]
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
       refine ⟨k, ?_, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)

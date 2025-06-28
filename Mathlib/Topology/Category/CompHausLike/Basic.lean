@@ -3,8 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 /-!
 
 # Categories of Compact Hausdorff Spaces
@@ -257,8 +258,6 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A constant map as a morphism in `CompHausLike` -/
 def const {P : TopCat.{u} → Prop}

@@ -339,9 +339,11 @@ theorem of_think_mem {s : Computation α} {a} : a ∈ think s → a ∈ s
 theorem of_think_terminates {s : Computation α} : Terminates (think s) → Terminates s
   | ⟨⟨a, h⟩⟩ => ⟨⟨a, of_think_mem h⟩⟩
 
-theorem not_mem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradiction
+theorem notMem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradiction
 
-theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => not_mem_empty a h
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
+
+theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => notMem_empty a h
 
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
   apply Subtype.eq; funext n
@@ -369,7 +371,7 @@ scoped infixl:50 " ~> " => Promises
 
 theorem mem_promises {s : Computation α} {a : α} : a ∈ s → s ~> a := fun h _ => mem_unique h
 
-theorem empty_promises (a : α) : empty α ~> a := fun _ h => absurd h (not_mem_empty _)
+theorem empty_promises (a : α) : empty α ~> a := fun _ h => absurd h (notMem_empty _)
 
 section get
 
@@ -1007,7 +1009,7 @@ theorem liftRel_congr {R : α → β → Prop} {ca ca' : Computation α} {cb cb'
 theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Computation α}
     {s2 : Computation β} {f1 : α → γ} {f2 : β → δ} (h1 : LiftRel R s1 s2)
     (h2 : ∀ {a b}, R a b → S (f1 a) (f2 b)) : LiftRel S (map f1 s1) (map f2 s2) := by
-  rw [← bind_pure, ← bind_pure]; apply liftRel_bind _ _ h1; simp; exact @h2
+  rw [← bind_pure, ← bind_pure]; apply liftRel_bind _ _ h1; simpa
 
 theorem map_congr {s1 s2 : Computation α} {f : α → β}
     (h1 : s1 ~ s2) : map f s1 ~ map f s2 := by

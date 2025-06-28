@@ -55,7 +55,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   -- We will apply Hölder's inequality, for the conjugate exponents `p = 1 / a`
   -- and `q = 1 / b`, to the functions `f a s` and `f b t`, where `f` is as follows:
   let f : ℝ → ℝ → ℝ → ℝ := fun c u x => exp (-c * x) * x ^ (c * (u - 1))
-  have e : IsConjExponent (1 / a) (1 / b) := Real.isConjExponent_one_div ha hb hab
+  have e : HolderConjugate (1 / a) (1 / b) := Real.holderConjugate_one_div ha hb hab
   have hab' : b = 1 - a := by linarith
   have hst : 0 < a * s + b * t := by positivity
   -- some properties of f:
@@ -158,7 +158,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   | succ n hn =>
     have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
-    · rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
+    · rw [Finset.range_succ, Finset.sum_insert Finset.notMem_range_self]
       abel
     · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
 
@@ -241,7 +241,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
   suffices ∀ m : ℕ, ↑m < x → x ≤ m + 1 → Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) by
     refine this ⌈x - 1⌉₊ ?_ ?_
-    · rcases lt_or_le x 1 with ⟨⟩
+    · rcases lt_or_ge x 1 with ⟨⟩
       · rwa [Nat.ceil_eq_zero.mpr (by linarith : x - 1 ≤ 0), Nat.cast_zero]
       · convert Nat.ceil_lt_add_one (by linarith : 0 ≤ x - 1)
         abel

@@ -78,9 +78,9 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     simp only [Finset.univ_eq_attach, I, Ideal.mem_span_singleton] at hp
     obtain ⟨q, rfl⟩ := hp
     simp only [map_mul, map_sub, map_sum, map_one, hg', hh']
-    erw [Finsupp.linearCombination_apply_of_mem_supported S (s := s.attach)] at hl
+    rw [Finsupp.linearCombination_apply_of_mem_supported (α := (s : Set S)) S (s := s.attach)] at hl
     · rw [← hl]
-      simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, mul_zero, zero_mul]
+      simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, zero_mul]
     · rintro a -
       simp
   let f' : A →ₐ[R] S := Ideal.Quotient.liftₐ I f hfI
@@ -105,7 +105,7 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
       obtain ⟨g, hg⟩ := g
       convert hg
-      simp [A, f', t]
+      simp [A, t]
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]

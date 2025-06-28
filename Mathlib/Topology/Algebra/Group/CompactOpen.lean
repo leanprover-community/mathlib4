@@ -68,9 +68,6 @@ theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     exact isClosed_eq (continuous_eval_const (x * y)) <|
       .mul (continuous_eval_const x) (continuous_eval_const y)
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
-
 variable {A B C D E}
 
 @[to_additive]
@@ -110,8 +107,7 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
-variable (E)
-
+variable (E) in
 /-- `ContinuousMonoidHom _ f` is a functor. -/
 @[to_additive "`ContinuousAddMonoidHom _ f` is a functor."]
 def compLeft (f : ContinuousMonoidHom A B) :
@@ -121,8 +117,7 @@ def compLeft (f : ContinuousMonoidHom A B) :
   map_mul' _g _h := rfl
   continuous_toFun := f.continuous_comp_left
 
-variable (A) {E}
-
+variable (A) in
 /-- `ContinuousMonoidHom f _` is a functor. -/
 @[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
 def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
@@ -133,10 +128,23 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 
+section DiscreteTopology
+variable [DiscreteTopology A] [ContinuousMul B] [T2Space B]
+
+@[to_additive]
+lemma isClosedEmbedding_coe : IsClosedEmbedding ((⇑) : (A →ₜ* B) → A → B) :=
+  ContinuousMap.isHomeomorph_coe.isClosedEmbedding.comp <| isClosedEmbedding_toContinuousMap ..
+
+@[to_additive]
+instance [CompactSpace B] : CompactSpace (A →ₜ* B) :=
+  ContinuousMonoidHom.isClosedEmbedding_coe.compactSpace
+
+end DiscreteTopology
+
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [IsTopologicalGroup X]
-  [UniformSpace Y] [CommGroup Y] [UniformGroup Y] [T0Space Y] [CompactSpace Y]
+  [UniformSpace Y] [CommGroup Y] [IsUniformGroup Y] [T0Space Y] [CompactSpace Y]
 
 @[to_additive]
 theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)

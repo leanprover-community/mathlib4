@@ -9,7 +9,7 @@ import Mathlib.Data.DFinsupp.Ext
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
+For a non-dependent version see `Mathlib/Data/Finsupp/Defs.lean`.
 
 ## Notation
 
@@ -75,7 +75,7 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
   ∏ i ∈ f.support, g i (f i)
 
 @[to_additive (attr := simp)]
-theorem _root_.map_dfinsupp_prod
+theorem _root_.map_dfinsuppProd
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid R] [CommMonoid S] [FunLike H R S] [MonoidHomClass H R S] (h : H) (f : Π₀ i, β i)
     (g : ∀ i, β i → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
@@ -109,7 +109,7 @@ theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x
   by_cases h : b ≠ 0
   · simp [DFinsupp.prod, support_single_ne_zero h]
   · rw [not_not] at h
-    simp [h, prod_zero_index, h_zero]
+    simp [h, h_zero]
     rfl
 
 @[to_additive]
@@ -158,8 +158,9 @@ theorem prod_mul [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x
   Finset.prod_mul_distrib
 
 @[to_additive (attr := simp)]
-theorem prod_inv [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommGroup γ]
-    {f : Π₀ i, β i} {h : ∀ i, β i → γ} : (f.prod fun i b => (h i b)⁻¹) = (f.prod h)⁻¹ :=
+theorem prod_inv [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+    [DivisionCommMonoid γ] {f : Π₀ i, β i} {h : ∀ i, β i → γ} :
+    (f.prod fun i b => (h i b)⁻¹) = (f.prod h)⁻¹ :=
   (map_prod (invMonoidHom : γ →* γ) _ f.support).symm
 
 @[to_additive]
@@ -167,8 +168,8 @@ theorem prod_eq_one [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0
     {f : Π₀ i, β i} {h : ∀ i, β i → γ} (hyp : ∀ i, h i (f i) = 1) : f.prod h = 1 :=
   Finset.prod_eq_one fun i _ => hyp i
 
-theorem smul_sum {α : Type*} [Monoid α] [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-    [AddCommMonoid γ] [DistribMulAction α γ] {f : Π₀ i, β i} {h : ∀ i, β i → γ} {c : α} :
+theorem smul_sum {α : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+    [AddCommMonoid γ] [DistribSMul α γ] {f : Π₀ i, β i} {h : ∀ i, β i → γ} {c : α} :
     c • f.sum h = f.sum fun a b => c • h a b :=
   Finset.smul_sum
 
@@ -178,14 +179,14 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) : (f + g).prod h = f.prod h * g.prod h :=
   have f_eq : (∏ i ∈ f.support ∪ g.support, h i (f i)) = f.prod h :=
     (Finset.prod_subset Finset.subset_union_left <| by
-        simp +contextual [mem_support_iff, h_zero]).symm
+        simp +contextual [h_zero]).symm
   have g_eq : (∏ i ∈ f.support ∪ g.support, h i (g i)) = g.prod h :=
     (Finset.prod_subset Finset.subset_union_right <| by
-        simp +contextual [mem_support_iff, h_zero]).symm
+        simp +contextual [h_zero]).symm
   calc
     (∏ i ∈ (f + g).support, h i ((f + g) i)) = ∏ i ∈ f.support ∪ g.support, h i ((f + g) i) :=
       Finset.prod_subset support_add <| by
-        simp +contextual [mem_support_iff, h_zero]
+        simp +contextual [h_zero]
     _ = (∏ i ∈ f.support ∪ g.support, h i (f i)) * ∏ i ∈ f.support ∪ g.support, h i (g i) := by
       { simp [h_add, Finset.prod_mul_distrib] }
     _ = _ := by rw [f_eq, g_eq]
@@ -240,21 +241,21 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
   map_add' := by
     rintro ⟨f, sf, hf⟩ ⟨g, sg, hg⟩
     change (∑ i ∈ _, _) = (∑ i ∈ _, _) + ∑ i ∈ _, _
-    simp only [coe_add, coe_mk', Subtype.coe_mk, Pi.add_apply, map_add, Finset.sum_add_distrib]
+    simp only [coe_add, coe_mk', Pi.add_apply, map_add, Finset.sum_add_distrib]
     congr 1
     · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inl
       · intro i _ H2
-        simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
+        simp only [Multiset.mem_toFinset] at H2
         rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
     · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr
       · intro i _ H2
-        simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
+        simp only [Multiset.mem_toFinset] at H2
         rw [(hg i).resolve_left H2, AddMonoidHom.map_zero]
   map_zero' := by
     simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
@@ -288,7 +289,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
     sumAddHom (fun i₂ => sumAddHom (fun i₁ => h i₁ i₂) f₁) f₂ =
       sumAddHom (fun i₁ => sumAddHom (fun i₂ => (h i₁ i₂).flip) f₂) f₁ := by
   obtain ⟨⟨f₁, s₁, h₁⟩, ⟨f₂, s₂, h₂⟩⟩ := f₁, f₂
-  simp only [sumAddHom, AddMonoidHom.finset_sum_apply, Quotient.liftOn_mk, AddMonoidHom.coe_mk,
+  simp only [sumAddHom, AddMonoidHom.finset_sum_apply, AddMonoidHom.coe_mk,
     AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
   exact Finset.sum_comm
 
@@ -419,14 +420,24 @@ variable {R S : Type*}
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
+theorem coe_dfinsuppProd [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
     ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 
+@[deprecated (since := "2025-04-06")]
+alias _root_.AddMonoidHom.coe_dfinsupp_sum := AddMonoidHom.coe_dfinsuppSum
+@[to_additive existing, deprecated (since := "2025-04-06")]
+alias coe_dfinsupp_prod := coe_dfinsuppProd
+
 @[to_additive]
-theorem dfinsupp_prod_apply [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
+theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
   finset_prod_apply _ _ _
+
+@[deprecated (since := "2025-04-06")]
+alias _root_.AddMonoidHom.dfinsupp_sum_apply := AddMonoidHom.dfinsuppSum_apply
+@[to_additive existing, deprecated (since := "2025-04-06")]
+alias dfinsupp_prod_apply := dfinsuppProd_apply
 
 end MonoidHom
 
@@ -440,22 +451,27 @@ variable {R S : Type*}
 open DFinsupp
 
 @[simp]
-theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R →+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h g) f
 
-theorem dfinsupp_sumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
+
+theorem dfinsuppSumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
     (sumAddHom g f) r = sumAddHom (fun i => (eval r).comp (g i)) f :=
-  map_dfinsupp_sumAddHom (eval r) f g
+  map_dfinsuppSumAddHom (eval r) f g
+
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_apply := dfinsuppSumAddHom_apply
 
 @[simp, norm_cast]
-theorem coe_dfinsupp_sumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+theorem coe_dfinsuppSumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) :
     ⇑(sumAddHom g f) = sumAddHom (fun i => (coeFn R S).comp (g i)) f :=
-  map_dfinsupp_sumAddHom (coeFn R S) f g
+  map_dfinsuppSumAddHom (coeFn R S) f g
 
+@[deprecated (since := "2025-04-06")] alias coe_dfinsupp_sumAddHom := coe_dfinsuppSumAddHom
 end AddMonoidHom
 
 namespace RingHom
@@ -465,10 +481,12 @@ variable {R S : Type*}
 open DFinsupp
 
 @[simp]
-theorem map_dfinsupp_sumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
+theorem map_dfinsuppSumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
     (h : R →+* S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end RingHom
 
@@ -479,10 +497,12 @@ variable {R S : Type*}
 open DFinsupp
 
 @[simp]
-theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
+theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end AddEquiv
 

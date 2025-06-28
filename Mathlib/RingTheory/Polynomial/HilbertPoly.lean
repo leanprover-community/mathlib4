@@ -23,7 +23,7 @@ For example, given `d : ℕ`, the power series expansion of `1/(1 - X)ᵈ⁺¹` 
 is `Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
 `Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(X + 1)···(X + d)/d!`. Note that
 if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer works, so we do not want
-the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` may take any
+`d!` to be divisible by the characteristic of `F`. As `Polynomial.hilbertPoly` may take any
 `p : F[X]` and `d : ℕ` as its inputs, it is necessary for us to assume that `CharZero F`.
 
 ## Main definitions
@@ -76,7 +76,7 @@ lemma coeff_preHilbertPoly_self [CharZero F] (d k : ℕ) :
     simp only [sub_add, ← C_1, ← map_sub, coeff_smul, coeff_natDegree]
   _ = (d ! : F)⁻¹ := by
     simp only [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
-      (monic_ascPochhammer _ _), one_mul, leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
+      (monic_ascPochhammer _ _), leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
 
 lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
     (preHilbertPoly F d k).leadingCoeff = (d ! : F)⁻¹ := by
@@ -126,7 +126,7 @@ lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
   induction d with
   | zero => simp only [add_zero]
   | succ d _ =>
-      simp only [← coeff_add]
+      simp only
       rw [← sum_def _ fun _ r => r • _]
       exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
 

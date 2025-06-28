@@ -7,7 +7,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Domain of definition of the partial left adjoint
@@ -45,24 +45,27 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- Given a functor `F : D ⥤ C`, this is a predicate on objects `X : C` corresponding
 to the domain of definition of the (partial) left adjoint of `F`. -/
-def LeftAdjointObjIsDefined (X : C) : Prop := IsCorepresentable (F ⋙ coyoneda.obj (op X))
+def leftAdjointObjIsDefined : ObjectProperty C :=
+  fun X ↦ IsCorepresentable (F ⋙ coyoneda.obj (op X))
+
+@[deprecated (since := "2025-03-05")] alias LeftAdjointObjIsDefined := leftAdjointObjIsDefined
 
 lemma leftAdjointObjIsDefined_iff (X : C) :
-    F.LeftAdjointObjIsDefined X ↔ IsCorepresentable (F ⋙ coyoneda.obj (op X)) := by rfl
+    F.leftAdjointObjIsDefined X ↔ IsCorepresentable (F ⋙ coyoneda.obj (op X)) := by rfl
 
 variable {F} in
 lemma leftAdjointObjIsDefined_of_adjunction {G : C ⥤ D} (adj : G ⊣ F) (X : C) :
-    F.LeftAdjointObjIsDefined X :=
+    F.leftAdjointObjIsDefined X :=
   (adj.corepresentableBy X).isCorepresentable
 
 /-- The full subcategory where `F.partialLeftAdjoint` shall be defined. -/
-abbrev PartialLeftAdjointSource := FullSubcategory F.LeftAdjointObjIsDefined
+abbrev PartialLeftAdjointSource := F.leftAdjointObjIsDefined.FullSubcategory
 
 instance (X : F.PartialLeftAdjointSource) :
     IsCorepresentable (F ⋙ coyoneda.obj (op X.obj)) := X.property
 
 /-- Given `F : D ⥤ C`, this is `F.partialLeftAdjoint` on objects: it sends
-`X : C` such that `F.LeftAdjointObjIsDefined X` holds to an object of `D`
+`X : C` such that `F.leftAdjointObjIsDefined X` holds to an object of `D`
 which represents the functor `F ⋙ coyoneda.obj (op X.obj)`. -/
 noncomputable def partialLeftAdjointObj (X : F.PartialLeftAdjointSource) : D :=
   (F ⋙ coyoneda.obj (op X.obj)).coreprX
@@ -121,7 +124,7 @@ noncomputable def partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D where
 variable {F}
 
 lemma isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
-    (h : F.LeftAdjointObjIsDefined = ⊤) : F.IsRightAdjoint := by
+    (h : F.leftAdjointObjIsDefined = ⊤) : F.IsRightAdjoint := by
   replace h : ∀ X, IsCorepresentable (F ⋙ coyoneda.obj (op X)) := fun X ↦ by
     simp only [← leftAdjointObjIsDefined_iff, h, Pi.top_apply, Prop.top_eq_true]
   exact (Adjunction.adjunctionOfEquivLeft
@@ -130,7 +133,7 @@ lemma isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
 
 variable (F) in
 lemma isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top :
-    F.IsRightAdjoint ↔ F.LeftAdjointObjIsDefined = ⊤ := by
+    F.IsRightAdjoint ↔ F.leftAdjointObjIsDefined = ⊤ := by
   refine ⟨fun h ↦ ?_, isRightAdjoint_of_leftAdjointObjIsDefined_eq_top⟩
   ext X
   simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
@@ -139,7 +142,7 @@ lemma isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top :
 /-- Auxiliary definition for `leftAdjointObjIsDefined_of_isColimit`. -/
 noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Category J]
     {R : J ⥤ F.PartialLeftAdjointSource}
-    {c : Cocone (R ⋙ fullSubcategoryInclusion _)} (hc : IsColimit c)
+    {c : Cocone (R ⋙ ObjectProperty.ι _)} (hc : IsColimit c)
     {c' : Cocone (R ⋙ F.partialLeftAdjoint)} (hc' : IsColimit c') :
     (F ⋙ coyoneda.obj (op c.pt)).CorepresentableBy c'.pt where
   homEquiv {Y} :=
@@ -166,15 +169,15 @@ noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Categ
 
 lemma leftAdjointObjIsDefined_of_isColimit {J : Type*} [Category J] {R : J ⥤ C} {c : Cocone R}
     (hc : IsColimit c) [HasColimitsOfShape J D]
-    (h : ∀ (j : J), F.LeftAdjointObjIsDefined (R.obj j)) :
-    F.LeftAdjointObjIsDefined c.pt :=
+    (h : ∀ (j : J), F.leftAdjointObjIsDefined (R.obj j)) :
+    F.leftAdjointObjIsDefined c.pt :=
   (corepresentableByCompCoyonedaObjOfIsColimit
-    (R := FullSubcategory.lift _ R h) hc (colimit.isColimit _)).isCorepresentable
+    (R := ObjectProperty.lift _ R h) hc (colimit.isColimit _)).isCorepresentable
 
 lemma leftAdjointObjIsDefined_colimit {J : Type*} [Category J] (R : J ⥤ C)
     [HasColimit R] [HasColimitsOfShape J D]
-    (h : ∀ (j : J), F.LeftAdjointObjIsDefined (R.obj j)) :
-    F.LeftAdjointObjIsDefined (colimit R) :=
+    (h : ∀ (j : J), F.leftAdjointObjIsDefined (R.obj j)) :
+    F.leftAdjointObjIsDefined (colimit R) :=
   leftAdjointObjIsDefined_of_isColimit (colimit.isColimit R) h
 
 end Functor

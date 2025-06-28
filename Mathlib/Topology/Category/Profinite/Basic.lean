@@ -105,7 +105,6 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     { toFun := Continuous.connectedComponentsLift g.hom.2
       continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.2 }
   left_inv _ := TopCat.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
-  right_inv _ := TopCat.ext fun _ => rfl
 
 /-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
@@ -186,6 +185,7 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus where
+  L := CompHaus.toProfinite
   adj := Profinite.toProfiniteAdjToCompHaus
 
 noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=

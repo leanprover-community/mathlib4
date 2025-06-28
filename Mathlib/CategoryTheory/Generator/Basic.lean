@@ -43,7 +43,7 @@ We
   dual);
 * show that `C` is `WellPowered` if it admits small pullbacks and a detector;
 * define corresponding typeclasses `HasSeparator`, `HasCoseparator`, `HasDetector`
-and `HasCodetector` on categories and prove analogous results for these.
+  and `HasCodetector` on categories and prove analogous results for these.
 
 ## Future work
 

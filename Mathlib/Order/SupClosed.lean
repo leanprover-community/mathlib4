@@ -273,8 +273,6 @@ end LinearOrder
 
 /-! ## Closure -/
 
-open Finset
-
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] {s t : Set α} {a b : α}
 
@@ -333,7 +331,7 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
     fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
-    Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
+    Finset.mem_powerset, mem_filter]
   exact ⟨t, ⟨hts, ht⟩, rfl⟩
 
 @[simp] lemma supClosure_prod (s : Set α) (t : Set β) :
@@ -405,7 +403,7 @@ protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite :=
     fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
-    Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
+    Finset.mem_powerset, mem_filter]
   exact ⟨t, ⟨hts, ht⟩, rfl⟩
 
 @[simp] lemma infClosure_prod (s : Set α) (t : Set β) :
@@ -453,8 +451,6 @@ end Lattice
 
 section DistribLattice
 variable [DistribLattice α] [DistribLattice β] {s : Set α}
-
-open Finset
 
 protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure s) := by
   rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩

@@ -74,11 +74,11 @@ def findSCCsImp (g : Graph) : StateM TarjanState Unit := do
 index `v` represents the SCC number containing vertex `v`. The numbering of SCCs is arbitrary. -/
 def findSCCs (g : Graph) : Array Nat :=
   let s : TarjanState := {
-    visited := mkArray g.size false
-    id := mkArray g.size 0
-    lowlink := mkArray g.size 0
+    visited := .replicate g.size false
+    id := .replicate g.size 0
+    lowlink := .replicate g.size 0
     stack := #[]
-    onStack := mkArray g.size false
+    onStack := .replicate g.size false
     time := 0
   }
   (findSCCsImp g).run s |>.snd.lowlink

@@ -70,7 +70,7 @@ def 𝒪 : Sheaf CommRingCat X.toTopCat :=
   X.sheaf
 
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
- such that the morphisms induced on stalks are local ring homomorphisms. -/
+such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
 structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
     extends X.toPresheafedSpace.Hom Y.toPresheafedSpace where
@@ -115,9 +115,6 @@ theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) 
 theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.toShHom.stalkMap x).hom :=
   f.2 x
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
@@ -290,8 +287,8 @@ def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.I
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
-    exists_and_right, exists_eq_right, Opens.coe_bot, Set.mem_empty_iff_false,
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
+    Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
   intros hx
   rw [map_zero, isUnit_zero_iff]

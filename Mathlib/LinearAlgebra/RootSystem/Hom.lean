@@ -11,36 +11,36 @@ This file defines morphisms of root pairings, following the definition of morphi
 given in SGA III Exp. 21 Section 6.
 
 ## Main definitions:
- * `Hom`: A morphism of root pairings is a linear map of weight spaces, its transverse on coweight
-   spaces, and a bijection on the set that indexes roots and coroots.
- * `Hom.id`: The identity morphism.
- * `Hom.comp`: The composite of two morphisms.
- * `End`: The endomorphism monoid of a root pairing.
- * `Hom.weightHom`: The homomorphism from the endomorphism monoid to linear endomorphisms on the
-   weight space.
- * `Hom.coweightHom`: The homomorphism from the endomorphism monoid to the opposite monoid of linear
-   endomorphisms on the coweight space.
- * `Equiv`: An equivalence of root pairings is a morphism for which the maps on weight spaces and
-   coweight spaces are bijective.
- * `Equiv.toHom`: The morphism underlying an equivalence.
- * `Equiv.weightEquiv`: The linear isomorphism on weight spaces given by an equivalence.
- * `Equiv.coweightEquiv`: The linear isomorphism on coweight spaces given by an equivalence.
- * `Equiv.id`: The identity equivalence.
- * `Equiv.comp`: The composite of two equivalences.
- * `Equiv.symm`: The inverse of an equivalence.
- * `Aut`: The automorphism group of a root pairing.
- * `Equiv.toEndUnit`: The group isomorphism between the automorphism group of a root pairing and the
-   group of invertible endomorphisms.
- * `Equiv.weightHom`: The homomorphism from the automorphism group to linear automorphisms on the
-   weight space.
- * `Equiv.coweightHom`: The homomorphism from the automorphism group to the opposite group of linear
-   automorphisms on the coweight space.
- * `Equiv.reflection`: The automorphism of a root pairing given by reflection in a root and
-   coreflection in the corresponding coroot.
+* `Hom`: A morphism of root pairings is a linear map of weight spaces, its transverse on coweight
+  spaces, and a bijection on the set that indexes roots and coroots.
+* `Hom.id`: The identity morphism.
+* `Hom.comp`: The composite of two morphisms.
+* `End`: The endomorphism monoid of a root pairing.
+* `Hom.weightHom`: The homomorphism from the endomorphism monoid to linear endomorphisms on the
+  weight space.
+* `Hom.coweightHom`: The homomorphism from the endomorphism monoid to the opposite monoid of linear
+  endomorphisms on the coweight space.
+* `Equiv`: An equivalence of root pairings is a morphism for which the maps on weight spaces and
+  coweight spaces are bijective.
+* `Equiv.toHom`: The morphism underlying an equivalence.
+* `Equiv.weightEquiv`: The linear isomorphism on weight spaces given by an equivalence.
+* `Equiv.coweightEquiv`: The linear isomorphism on coweight spaces given by an equivalence.
+* `Equiv.id`: The identity equivalence.
+* `Equiv.comp`: The composite of two equivalences.
+* `Equiv.symm`: The inverse of an equivalence.
+* `Aut`: The automorphism group of a root pairing.
+* `Equiv.toEndUnit`: The group isomorphism between the automorphism group of a root pairing and the
+  group of invertible endomorphisms.
+* `Equiv.weightHom`: The homomorphism from the automorphism group to linear automorphisms on the
+  weight space.
+* `Equiv.coweightHom`: The homomorphism from the automorphism group to the opposite group of linear
+  automorphisms on the coweight space.
+* `Equiv.reflection`: The automorphism of a root pairing given by reflection in a root and
+  coreflection in the corresponding coroot.
 
 ## TODO
- * Special types of morphisms: Isogenies, weight/coweight space embeddings
- * Weyl group reimplementation?
+* Special types of morphisms: Isogenies, weight/coweight space embeddings
+* Weyl group reimplementation?
 
 -/
 
@@ -118,7 +118,7 @@ def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R
     rw [comp_assoc, f.root_weightMap, ← comp_assoc, g.root_weightMap, comp_assoc]
   coroot_coweightMap := by
     ext i
-    simp only [LinearMap.coe_comp, Equiv.symm_trans_apply]
+    simp only [LinearMap.coe_comp]
     rw [comp_assoc, g.coroot_coweightMap, ← comp_assoc, f.coroot_coweightMap, comp_assoc]
     simp
 
@@ -207,9 +207,9 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (weightHom P) :
 def coweightHom (P : RootPairing ι R M N) : End P →* (N →ₗ[R] N)ᵐᵒᵖ where
   toFun g := MulOpposite.op (Hom.coweightMap (P := P) (Q := P) g)
   map_mul' g h := by
-    simp only [← MulOpposite.op_mul, coweightMap_mul, LinearMap.mul_eq_comp]
+    simp only [← MulOpposite.op_mul, coweightMap_mul, Module.End.mul_eq_comp]
   map_one' := by
-    simp only [MulOpposite.op_eq_one_iff, coweightMap_one, LinearMap.one_eq_id]
+    simp only [MulOpposite.op_eq_one_iff, coweightMap_one, Module.End.one_eq_id]
 
 lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom P) := by
   intro f g hfg
@@ -602,16 +602,16 @@ lemma indexEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
 def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
   weightMap := P.reflection i
   coweightMap := P.coreflection i
-  indexEquiv := P.reflection_perm i
+  indexEquiv := P.reflectionPerm i
   weight_coweight_transpose := by
     ext f x
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply,
       PerfectPairing.toDualRight_apply, LinearMap.dualMap_apply, PerfectPairing.flip_apply_apply,
       LinearEquiv.comp_coe, LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp only [← PerfectPairing.toLin_apply, map_sub, map_smul, LinearMap.sub_apply,
-      toLin_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-    simp only [PerfectPairing.toLin_apply, PerfectPairing.flip_apply_apply, mul_comm]
+    simp only [← PerfectPairing.toLinearMap_apply, map_sub, map_smul, LinearMap.sub_apply,
+      toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
+    simp [mul_comm]
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by
@@ -633,7 +633,7 @@ lemma reflection_coweightEquiv (P : RootPairing ι R M N) (i : ι) :
 
 @[simp]
 lemma reflection_indexEquiv (P : RootPairing ι R M N) (i : ι) :
-    (reflection P i).indexEquiv = P.reflection_perm i :=
+    (reflection P i).indexEquiv = P.reflectionPerm i :=
   rfl
 
 @[simp]
@@ -650,6 +650,12 @@ instance : DistribMulAction P.Aut M where
   mul_smul _ _ _ := rfl
   smul_zero w := show weightHom P w 0 = 0 by simp
   smul_add w x y := show weightHom P w (x + y) = weightHom P w x + weightHom P w y by simp
+
+@[simp] lemma reflection_smul (i : ι) (x : M) : Equiv.reflection P i • x = P.reflection i x := rfl
+
+@[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
+    P.root (g.indexEquiv i) = g • P.root i := by
+  simpa using (congr_fun g.root_weightMap i).symm
 
 open MulOpposite in
 instance : DistribMulAction P.Autᵐᵒᵖ N where

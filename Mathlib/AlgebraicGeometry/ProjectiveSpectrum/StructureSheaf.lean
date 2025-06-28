@@ -11,7 +11,7 @@ import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 /-!
 # The structure sheaf on `ProjectiveSpectrum 𝒜`.
 
-In `Mathlib.AlgebraicGeometry.Topology`, we have given a topology on `ProjectiveSpectrum 𝒜`; in
+In `Mathlib/AlgebraicGeometry/Topology.lean`, we have given a topology on `ProjectiveSpectrum 𝒜`; in
 this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
@@ -321,8 +321,7 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
   apply Subtype.ext
   ext ⟨t, ht⟩
   rw [Proj.res_apply, Proj.res_apply]
-  simp [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
-    IsLocalization.mk'_eq_iff_eq, e t ht]
+  simp [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk', e t ht]
 
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by
