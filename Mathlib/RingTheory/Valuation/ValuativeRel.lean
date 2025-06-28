@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Adam Topaz
 -/
 import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.Topology.Basic
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.Data.NNReal.Defs
+import Mathlib.Topology.Defs.Filter
 
 /-!
 
