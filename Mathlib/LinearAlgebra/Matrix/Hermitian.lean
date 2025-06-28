@@ -270,7 +270,7 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
   rw [LinearMap.IsSymmetric, (WithLp.equiv 2 (n → α)).symm.surjective.forall₂]
-  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_eq_star_dotProduct, toLin'_apply,
+  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_eq_star_dotProduct,
     Equiv.apply_symm_apply, star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y

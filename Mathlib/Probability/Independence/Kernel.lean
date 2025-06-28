@@ -426,7 +426,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
     rcases Finset.mem_insert.mp hx with hx | hx
     · simp [hx, ht₁]
     · simp [Finset.mem_singleton.mp hx, hij.symm, ht₂]
-  have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true, eq_self_iff_true]
+  have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true]
   have h2 : t₂ = ite (j = i) t₁ t₂ := by simp only [hij.symm, if_false]
   have h_inter : ⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂ =
       ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ := by
@@ -525,7 +525,7 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : Kernel α Ω} {μ :
   intros t1 t2 ht1 ht2
   induction t1, ht1 using induction_on_inter hpm1 hp1 with
   | empty =>
-    simp only [Set.empty_inter, measure_empty, zero_mul, eq_self_iff_true, Filter.eventually_true]
+    simp only [Set.empty_inter, measure_empty, zero_mul, Filter.eventually_true]
   | basic t ht =>
     refine IndepSets.indep_aux h2 hp2 hpm2 hyp ht (h1 _ ?_) ht2
     rw [hpm1]
@@ -666,14 +666,14 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) κ μ := by
   convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {i} { j | j < i }
     (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
-  simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
+  simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
   convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
       (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
-  simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
+  simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (n : ℕ) :
@@ -749,7 +749,7 @@ theorem iIndepSets.iIndep (m : ι → MeasurableSpace Ω)
   refine Finset.induction ?_ ?_ s
   · simp only [Finset.notMem_empty, Set.mem_setOf_eq, IsEmpty.forall_iff, implies_true,
       Set.iInter_of_empty, Set.iInter_univ, measure_univ, Finset.prod_empty,
-      Filter.eventually_true, forall_true_left]
+      Filter.eventually_true]
   · intro a S ha_notin_S h_rec hf_m
     have hf_m_S : ∀ x ∈ S, MeasurableSet[m x] (f x) := fun x hx => hf_m x (by simp [hx])
     let p := piiUnionInter π S
@@ -1162,7 +1162,7 @@ theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f κ μ)
         p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩)) ∘
         fun a (j : s) => f j a := by
     ext1 a
-    simp only [Prod.mk_inj]
+    simp only
     constructor
   have h_meas_left : Measurable fun p : ∀ l : s, β l =>
       (p ⟨i, Finset.mem_insert_self i _⟩,
@@ -1427,7 +1427,7 @@ lemma iIndepFun.cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
   cases nonempty_fintype ι
   let g (i' : ι) := if i' ∈ s then Y i' ⁻¹' t i' ∩ f i' else Y i' ⁻¹' t i'
   have hYt i : MeasurableSet[(mα.prod mβ).comap fun ω ↦ (X i ω, Y i ω)] (Y i ⁻¹' t i) :=
-    ⟨.univ ×ˢ t i, .prod .univ (ht _), by ext; simp [eq_comm]⟩
+    ⟨.univ ×ˢ t i, .prod .univ (ht _), by ext; simp⟩
   have hg i : MeasurableSet[(mα.prod mβ).comap fun ω ↦ (X i ω, Y i ω)] (g i) := by
     by_cases hi : i ∈ s <;> simp only [hi, ↓reduceIte, g]
     · obtain ⟨A, hA, hA'⟩ := hf i hi
