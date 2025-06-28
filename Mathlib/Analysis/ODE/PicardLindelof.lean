@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
 
@@ -335,7 +335,7 @@ theorem exists_solution [CompleteSpace E] :
   rcases v.exists_fixed with ⟨f, hf⟩
   refine ⟨f ∘ v.proj, ?_, fun t ht => ?_⟩
   · simp only [(· ∘ ·), proj_coe, f.map_t₀]
-  · simp only [(· ∘ ·), v.proj_of_mem ht]
+  · simp only [(· ∘ ·)]
     lift t to Icc v.tMin v.tMax using ht
     simpa only [hf, v.proj_coe] using f.hasDerivWithinAt_next t
 

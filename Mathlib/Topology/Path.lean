@@ -285,7 +285,7 @@ theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
 @[simp]
 theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
   ext t
-  simp only [trans_apply, ← one_div, symm_apply, not_le, Function.comp_apply]
+  simp only [trans_apply, symm_apply, Function.comp_apply]
   split_ifs with h h₁ h₂ <;> rw [coe_symm_eq] at h
   · have ht : (t : ℝ) = 1 / 2 := by linarith
     norm_num [ht]
@@ -416,7 +416,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
     Continuous ↿fun t => (γ₁ t).trans (γ₂ t) := by
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
-  simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, (· ∘ ·)]
+  simp only [HasUncurry.uncurry, Path.trans]
   refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
@@ -428,7 +428,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
         (continuous_id.prodMap <|
           (continuous_const.mul continuous_subtype_val).sub continuous_const)
   · rintro st hst
-    simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
+    simp [hst]
 
 @[continuity, fun_prop]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
@@ -495,20 +495,20 @@ theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i,
 
 end Pi
 
-/-! #### Pointwise multiplication/addition of two paths in a topological (additive) group -/
+/-! #### Pointwise operations on paths in a topological (additive) group -/
 
 
-/-- Pointwise multiplication of paths in a topological group. The additive version is probably more
-useful. -/
-@[to_additive "Pointwise addition of paths in a topological additive group."]
+/-- Pointwise multiplication of paths in a topological group. -/
+@[to_additive (attr := simps!) "Pointwise addition of paths in a topological additive group."]
 protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁) (γ₂ : Path a₂ b₂) :
     Path (a₁ * a₂) (b₁ * b₂) :=
   (γ₁.prod γ₂).map continuous_mul
 
-@[to_additive (attr := simp)]
-protected theorem mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁)
-    (γ₂ : Path a₂ b₂) (t : unitInterval) : (γ₁.mul γ₂) t = γ₁ t * γ₂ t :=
-  rfl
+/-- Pointwise inversion of paths in a topological group. -/
+@[to_additive (attr := simps!) "Pointwise negation of paths in a topological group."]
+def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
+    Path a⁻¹ b⁻¹ :=
+  γ.map continuous_inv
 
 /-! #### Truncating a path -/
 
@@ -547,7 +547,7 @@ def truncateOfLE {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) {t�
 theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
     range (γ.truncate t₀ t₁) ⊆ range γ := by
   rw [← γ.extend_range]
-  simp only [range_subset_iff, SetCoe.exists, SetCoe.forall]
+  simp only [range_subset_iff, SetCoe.forall]
   intro x _hx
   simp only [DFunLike.coe, Path.truncate, mem_range_self]
 

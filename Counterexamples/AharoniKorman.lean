@@ -67,10 +67,6 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
 
-#adaptation_note /-- 2025-03-12
-We temporarily comment out this file on `nightly-testing`, awaiting fixes for a complex
-interaction between `omega`, `aesop`, and asynchronous elaboration.
-
 attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
 
@@ -97,7 +93,7 @@ open Hollom
 /-- `toHollom` and `ofHollom` as an equivalence. -/
 @[simps]
 def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
-  toFun := toHollom; invFun := ofHollom; left_inv _ := rfl; right_inv _ := rfl
+  toFun := toHollom; invFun := ofHollom
 
 namespace Hollom
 
@@ -494,16 +490,16 @@ lemma not_apply_lt : ¬ f x < x := f.not_lt_of_eq (by simp)
 lemma not_lt_apply : ¬ x < f x := f.not_lt_of_eq (by simp)
 
 lemma le_apply_of_le (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : y ≤ x) : y ≤ f x :=
-  hC.le_of_not_lt (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_le hx)
+  hC.le_of_not_gt (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_le hx)
 
 lemma apply_le_of_le (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : x ≤ y) : f x ≤ y :=
-  hC.le_of_not_lt hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_lt hxy)
+  hC.le_of_not_gt hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_lt hxy)
 
 lemma lt_apply_of_lt (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : y < x) : y < f x :=
-  hC.lt_of_not_le (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_lt hx)
+  hC.lt_of_not_ge (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_lt hx)
 
 lemma apply_lt_of_lt (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : x < y) : f x < y :=
-  hC.lt_of_not_le hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_le hxy)
+  hC.lt_of_not_ge hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_le hxy)
 
 lemma apply_mem_Icc_of_mem_Icc (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hz : z ∈ C)
     (hx : x ∈ Set.Icc y z) : f x ∈ Set.Icc y z :=
@@ -792,7 +788,7 @@ theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·
     (h₁l : lo ≤ x) (h₂l : lo ≤ y) (h₁h : x ≤ hi) (h₂h : y ≤ hi) :
     f x = f y := by
   wlog hxy : (ofHollom y).1 ≤ (ofHollom x).1 generalizing x y
-  · exact (this h.symm h₂l h₁l h₂h h₁h (le_of_not_le hxy)).symm
+  · exact (this h.symm h₂l h₁l h₂h h₁h (le_of_not_ge hxy)).symm
   have hx : x ∈ level n := ordConnected_level.out hlo.2 hhi.2 ⟨h₁l, h₁h⟩
   have hy : y ∈ level n := ordConnected_level.out hlo.2 hhi.2 ⟨h₂l, h₂h⟩
   induction hx using induction_on_level with | h x₁ y₁ =>
@@ -832,7 +828,6 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   -- If `(C ∩ level n)` is empty, trivially we are done.
   obtain h | hne := (C ∩ level n).eq_empty_or_nonempty
   · simp [h]
-
   -- Otherwise take a maximal pair `(a, b)` so that any `(c, d, n)` in `C` satisfies
   -- `(c, d, n) ≤ (a, b, n)`.
   obtain ⟨a, b, hab⟩ : ∃ a b, ∀ c d, h(c, d, n) ∈ C → c ≤ a ∧ d ≤ b := by
@@ -840,7 +835,6 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
     use a, b
     intro c d hcd
     simpa using hab ⟨h(_, _, _), ⟨hcd, by simp⟩, rfl⟩
-
   -- With this pair, we can use the "base" of the square as `max a b + 1`.
   rw [eventually_atTop]
   refine ⟨max a b + 1, ?_⟩
@@ -850,7 +844,6 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
     Set.mem_setOf_eq, forall_exists_index, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq,
     toHollom_le_toHollom_iff_fixed_right, Set.mem_diff, and_true, ← max_add_add_right,
     Hollom.ext_iff]
-
   -- After simplifying, direct calculations show the subset relation as required.
   rintro k hak hbk _ _ _ f g hkf hkg rfl rfl rfl
   constructor
@@ -900,7 +893,7 @@ lemma x0y0_mem (h : (C ∩ level (n + 1)).Nonempty) :
 lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) z ∈ C) :
     embed (n + 1) (x0y0 n C) ≤ embed (n + 1) z := by
   have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
-  refine hC.le_of_not_lt h (x0y0_mem this) ?_
+  refine hC.le_of_not_gt h (x0y0_mem this) ?_
   rw [x0y0, dif_pos this, OrderEmbedding.lt_iff_lt]
   exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} ?_ h
 
@@ -951,7 +944,6 @@ We will later show the same assuming `C ∩ level (n + 1)` is infinite.
 lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) := by
   rw [S, if_pos h']
-
   -- Take a maximal pair `(b, c)` so that any `(d, e, n)` in `C` satisfies
   -- `(d, e, n) ≤ (b, c, n)`.
   obtain ⟨b, c, hab⟩ : ∃ b c, ∀ d e, h(d, e, n + 1) ∈ C → (d, e) ≤ (b, c) := by
@@ -959,7 +951,6 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     use b, c
     intro d e hde
     simpa using hbc ⟨h(_, _, _), ⟨hde, by simp⟩, rfl⟩
-
   -- Using `a ≥ max b c`, we have that all elements of `{(x, y, n) | x ≥ a ∧ y ≥ a}` are comparable
   -- to all elements of `C ∩ level (n + 1)`.
   have : ∀ᶠ a in atTop, embed n '' .Ici (a, a) ⊆ {x | ∀ y ∈ C ∩ level (n + 1), x ≤ y ∨ y ≤ x} := by
@@ -975,7 +966,6 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     have := hab _ _ hgh
     simp only [Prod.mk_le_mk] at this ⊢
     omega
-
   -- Combined with the fact that sufficiently large `a` have
   -- `{(x, y, n) | x ≥ a ∧ y ≥ a} ⊆ R \ (C ∩ level n)`, we can easily finish.
   filter_upwards [square_subset_R h, this] with a h₁ h₂
@@ -1045,7 +1035,6 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
     simp only [level_eq, Set.mem_setOf_eq] at this
     intro h
     simp [level_eq, h, this] at hy
-
   -- So suppose it is infinite
   case inr h =>
     -- Write `(x, y, n)` for our given point, and set `(a, b, n + 1) := f(x, y, n)`
@@ -1065,7 +1054,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
       -- Then we have `(a, b, n + 1) ≤ j`...
       have hj' : h(a, b, n + 1) ≤ j := by
         induction hjCn.2 using induction_on_level with | h c d =>
-        apply hC.le_of_not_lt hjCn.1 hp.1 ?_
+        apply hC.le_of_not_gt hjCn.1 hp.1 ?_
         intro h
         have : c + d < a + b := add_lt_add_of_lt h
         simp only [toHollom_le_toHollom_iff_fixed_right] at hj
@@ -1086,7 +1075,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
       -- The left case is exactly symmetric
       have hj' : h(a, b, n + 1) ≤ j := by
         induction hjCn.2 using induction_on_level with | h c d =>
-        apply hC.le_of_not_lt hjCn.1 hp.1 ?_
+        apply hC.le_of_not_gt hjCn.1 hp.1 ?_
         intro h
         have : c + d < a + b := add_lt_add_of_lt h
         simp only [toHollom_le_toHollom_iff_fixed_right] at hj
@@ -1253,5 +1242,3 @@ theorem aharoni_korman_false :
     rw [Hollom.exists_partition_iff_nonempty_spinalMap hC] at h
     obtain ⟨f⟩ := h
     exact Hollom.no_spinalMap hC f
-
--/

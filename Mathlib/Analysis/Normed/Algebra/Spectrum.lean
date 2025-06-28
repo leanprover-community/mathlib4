@@ -82,7 +82,7 @@ theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
 
 theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜} (h : spectralRadius 𝕜 a < ‖k‖₊) :
     k ∈ ρ a :=
-  Classical.not_not.mp fun hn => h.not_le <| le_iSup₂ (α := ℝ≥0∞) k hn
+  Classical.not_not.mp fun hn => h.not_ge <| le_iSup₂ (α := ℝ≥0∞) k hn
 
 variable [CompleteSpace A]
 
@@ -107,10 +107,10 @@ theorem mem_resolventSet_of_norm_lt [NormOneClass A] {a : A} {k : 𝕜} (h : ‖
   mem_resolventSet_of_norm_lt_mul (by rwa [norm_one, mul_one])
 
 theorem norm_le_norm_mul_of_mem {a : A} {k : 𝕜} (hk : k ∈ σ a) : ‖k‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
-  le_of_not_lt <| mt mem_resolventSet_of_norm_lt_mul hk
+  le_of_not_gt <| mt mem_resolventSet_of_norm_lt_mul hk
 
 theorem norm_le_norm_of_mem [NormOneClass A] {a : A} {k : 𝕜} (hk : k ∈ σ a) : ‖k‖ ≤ ‖a‖ :=
-  le_of_not_lt <| mt mem_resolventSet_of_norm_lt hk
+  le_of_not_gt <| mt mem_resolventSet_of_norm_lt hk
 
 theorem subset_closedBall_norm_mul (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) (‖a‖ * ‖(1 : A)‖) :=
   fun k hk => by simp [norm_le_norm_mul_of_mem hk]
@@ -564,8 +564,6 @@ def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   invFun f :=
     { val := f.toContinuousLinearMap
       property := by rw [eq_set_map_one_map_mul]; exact ⟨map_one f, map_mul f⟩ }
-  left_inv _ := Subtype.ext <| ContinuousLinearMap.ext fun _ => rfl
-  right_inv _ := AlgHom.ext fun _ => rfl
 
 @[simp]
 theorem equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=

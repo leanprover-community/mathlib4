@@ -91,13 +91,13 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
       toFun f := by
         refine equalizer.lift (adj.homEquiv _ _ f.f) ?_
         simp only [Adjunction.toComonad_coe, Functor.comp_obj, Adjunction.homEquiv_unit,
-          Functor.id_obj, Category.assoc, ← G.map_comp, ← f.h, comparison_obj_A, comparison_obj_a]
+          Category.assoc, ← G.map_comp, ← f.h, comparison_obj_A, comparison_obj_a]
         rw [Functor.comp_map, Functor.map_comp, Adjunction.unit_naturality_assoc,
           Adjunction.unit_naturality]
       invFun f := by
         refine ⟨(adj.homEquiv _ _).symm (f ≫ (equalizer.ι _ _)), (adj.homEquiv _ _).injective ?_⟩
         simp only [Adjunction.toComonad_coe, Functor.comp_obj, comparison_obj_A, comparison_obj_a,
-          Adjunction.homEquiv_counit, Functor.id_obj, Functor.map_comp, Category.assoc,
+          Adjunction.homEquiv_counit, Functor.map_comp, Category.assoc,
           Functor.comp_map, Adjunction.homEquiv_unit, Adjunction.unit_naturality_assoc,
           Adjunction.unit_naturality, Adjunction.right_triangle_components_assoc]
         congr 1

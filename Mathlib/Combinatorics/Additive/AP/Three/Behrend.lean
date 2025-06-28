@@ -194,7 +194,7 @@ theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n
   rw [mem_box] at hx
   have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i =>
     Nat.pow_le_pow_left (Nat.le_sub_one_of_lt (hx i)) _
-  exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [card_fin, smul_eq_mul])
+  exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [Finset.card_fin, smul_eq_mul])
 
 theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n - 1) / 2 := by
   refine (Nat.div_eq_of_eq_mul_left zero_lt_two ?_).symm
@@ -211,8 +211,8 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   cases d
   · simp
   apply threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
-  · simp only [subset_iff, mem_image, and_imp, forall_exists_index, mem_range,
-      forall_apply_eq_imp_iff₂, sphere, mem_filter]
+  · simp only [mem_image, and_imp, forall_exists_index,
+      sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
   apply map_injOn.mono fun x => ?_
@@ -480,7 +480,7 @@ theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
 theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N := by
   obtain rfl | hN := Nat.eq_zero_or_pos N
   · norm_num
-  obtain h₁ | h₁ := le_or_lt 4096 N
+  obtain h₁ | h₁ := le_or_gt 4096 N
   · exact (roth_lower_bound_explicit h₁).le
   · apply (lower_bound_le_one hN h₁.le).trans
     simpa using rothNumberNat.monotone hN

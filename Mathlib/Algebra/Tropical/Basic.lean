@@ -168,7 +168,7 @@ instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with
     le_refl := fun x => le_refl (untrop x)
     le_trans := fun _ _ _ h h' => le_trans (α := R) h h'
-    lt_iff_le_not_le := fun _ _ => lt_iff_le_not_le (α := R) }
+    lt_iff_le_not_ge := fun _ _ => lt_iff_le_not_ge (α := R) }
 
 /-- Reinterpret `x : R` as an element of `Tropical R`, preserving the order. -/
 def tropOrderIso [Preorder R] : R ≃o Tropical R :=
@@ -351,7 +351,7 @@ instance instAddMonoidWithOneTropical [LinearOrder R] [OrderTop R] [Zero R] :
   { instOneTropical, instAddCommMonoidTropical with
     natCast := fun n => if n = 0 then 0 else 1
     natCast_zero := rfl
-    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp [Nat.cast]) }
+    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp) }
 
 instance [Zero R] : Nontrivial (Tropical (WithTop R)) :=
   ⟨⟨0, 1, trop_injective.ne WithTop.top_ne_coe⟩⟩

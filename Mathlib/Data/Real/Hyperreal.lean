@@ -264,14 +264,14 @@ theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y 
   have HR₂ : BddAbove S :=
     ⟨r₂, fun _y hy => le_of_lt (coe_lt_coe.1 (lt_of_lt_of_le hy (not_lt.mp hr₂)))⟩
   fun δ hδ =>
-  ⟨lt_of_not_le fun c =>
+  ⟨lt_of_not_ge fun c =>
       have hc : ∀ y ∈ S, y ≤ R - δ := fun _y hy =>
         coe_le_coe.1 <| le_of_lt <| lt_of_lt_of_le hy c
-      not_lt_of_le (csSup_le HR₁ hc) <| sub_lt_self R hδ,
-    lt_of_not_le fun c =>
+      not_lt_of_ge (csSup_le HR₁ hc) <| sub_lt_self R hδ,
+    lt_of_not_ge fun c =>
       have hc : ↑(R + δ / 2) < x :=
         lt_of_lt_of_le (add_lt_add_left (coe_lt_coe.2 (half_lt_self hδ)) R) c
-      not_lt_of_le (le_csSup HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
+      not_lt_of_ge (le_csSup HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
 
 theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ, IsSt x r :=
   ⟨sSup { y : ℝ | (y : ℝ*) < x }, isSt_sSup hni⟩
@@ -285,7 +285,7 @@ theorem st_eq_sSup {x : ℝ*} : st x = sSup { y : ℝ | (y : ℝ*) < x } := by
       exact Set.eq_univ_of_forall hx
     | inr hx =>
       convert Real.sSup_empty.symm
-      exact Set.eq_empty_of_forall_notMem fun y hy ↦ hy.out.not_lt (hx _)
+      exact Set.eq_empty_of_forall_notMem fun y hy ↦ hy.out.not_gt (hx _)
   · exact (isSt_sSup hx).st_eq
 
 theorem exists_st_iff_not_infinite {x : ℝ*} : (∃ r : ℝ, IsSt x r) ↔ ¬Infinite x :=
@@ -350,7 +350,7 @@ theorem IsSt.sub {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) : Is
   hxr.map₂ hys continuous_sub.continuousAt
 
 theorem IsSt.le {x y : ℝ*} {r s : ℝ} (hrx : IsSt x r) (hsy : IsSt y s) (hxy : x ≤ y) : r ≤ s :=
-  not_lt.1 fun h ↦ hxy.not_lt <| hsy.lt hrx h
+  not_lt.1 fun h ↦ hxy.not_gt <| hsy.lt hrx h
 
 theorem st_le_of_le {x y : ℝ*} (hix : ¬Infinite x) (hiy : ¬Infinite y) : x ≤ y → st x ≤ st y :=
   (isSt_st' hix).le (isSt_st' hiy)
@@ -376,7 +376,7 @@ theorem Infinite.ne_zero {x : ℝ*} (hI : Infinite x) : x ≠ 0 :=
 theorem not_infinite_zero : ¬Infinite 0 := fun hI => hI.ne_zero rfl
 
 theorem InfiniteNeg.not_infinitePos {x : ℝ*} : InfiniteNeg x → ¬InfinitePos x := fun hn hp =>
-  (hn 0).not_lt (hp 0)
+  (hn 0).not_gt (hp 0)
 
 theorem InfinitePos.not_infiniteNeg {x : ℝ*} (hp : InfinitePos x) : ¬InfiniteNeg x := fun hn ↦
   hn.not_infinitePos hp
@@ -410,20 +410,20 @@ theorem InfiniteNeg.not_infinitesimal {x : ℝ*} (h : InfiniteNeg x) : ¬Infinit
 
 theorem infinitePos_iff_infinite_and_pos {x : ℝ*} : InfinitePos x ↔ Infinite x ∧ 0 < x :=
   ⟨fun hip => ⟨Or.inl hip, hip 0⟩, fun ⟨hi, hp⟩ =>
-    hi.casesOn id fun hin => False.elim (not_lt_of_lt hp (hin 0))⟩
+    hi.casesOn id fun hin => False.elim (not_lt_of_gt hp (hin 0))⟩
 
 theorem infiniteNeg_iff_infinite_and_neg {x : ℝ*} : InfiniteNeg x ↔ Infinite x ∧ x < 0 :=
   ⟨fun hip => ⟨Or.inr hip, hip 0⟩, fun ⟨hi, hp⟩ =>
-    hi.casesOn (fun hin => False.elim (not_lt_of_lt hp (hin 0))) fun hip => hip⟩
+    hi.casesOn (fun hin => False.elim (not_lt_of_gt hp (hin 0))) fun hip => hip⟩
 
 theorem infinitePos_iff_infinite_of_nonneg {x : ℝ*} (hp : 0 ≤ x) : InfinitePos x ↔ Infinite x :=
-  .symm <| or_iff_left fun h ↦ h.lt_zero.not_le hp
+  .symm <| or_iff_left fun h ↦ h.lt_zero.not_ge hp
 
 theorem infinitePos_iff_infinite_of_pos {x : ℝ*} (hp : 0 < x) : InfinitePos x ↔ Infinite x :=
   infinitePos_iff_infinite_of_nonneg hp.le
 
 theorem infiniteNeg_iff_infinite_of_neg {x : ℝ*} (hn : x < 0) : InfiniteNeg x ↔ Infinite x :=
-  .symm <| or_iff_right fun h ↦ h.pos.not_lt hn
+  .symm <| or_iff_right fun h ↦ h.pos.not_gt hn
 
 theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infinite |x| :=
   infinitePos_iff_infinite_of_nonneg (abs_nonneg _)
@@ -503,7 +503,7 @@ theorem not_infinite_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : 
 
 theorem not_infinite_iff_exist_lt_gt {x : ℝ*} : ¬Infinite x ↔ ∃ r s : ℝ, (r : ℝ*) < x ∧ x < s :=
   ⟨fun hni ↦ let ⟨r, hr⟩ := exists_st_of_not_infinite hni; ⟨r - 1, r + 1, hr 1 one_pos⟩,
-    fun ⟨r, s, hr, hs⟩ hi ↦ hi.elim (fun hp ↦ (hp s).not_lt hs) (fun hn ↦ (hn r).not_lt hr)⟩
+    fun ⟨r, s, hr, hs⟩ hi ↦ hi.elim (fun hp ↦ (hp s).not_gt hs) (fun hn ↦ (hn r).not_gt hr)⟩
 
 theorem not_infinite_real (r : ℝ) : ¬Infinite r := by
   rw [not_infinite_iff_exist_lt_gt]

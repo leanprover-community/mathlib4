@@ -35,7 +35,7 @@ variable [CharP R p] {a b : ℕ}
 
 lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
   wlog hle : a ≤ b
-  · exact (this R p h.symm (le_of_not_le hle)).symm
+  · exact (this R p h.symm (le_of_not_ge hle)).symm
   rw [Nat.modEq_iff_dvd' hle] at h
   rw [← Nat.sub_add_cancel hle, Nat.cast_add, (cast_eq_zero_iff R p _).mpr h, zero_add]
 
@@ -46,7 +46,7 @@ variable [IsRightCancelAdd R]
 
 lemma natCast_eq_natCast : (a : R) = b ↔ a ≡ b [MOD p] := by
   wlog hle : a ≤ b
-  · rw [eq_comm, this R p (le_of_not_le hle), Nat.ModEq.comm]
+  · rw [eq_comm, this R p (le_of_not_ge hle), Nat.ModEq.comm]
   rw [Nat.modEq_iff_dvd' hle, ← cast_eq_zero_iff R p (b - a),
     ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
     Nat.sub_add_cancel hle, eq_comm]
@@ -185,6 +185,8 @@ end CharZero
 
 namespace Fin
 
+open Fin.NatCast
+
 /-- The characteristic of `F_p` is `p`. -/
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
 instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
@@ -196,7 +198,7 @@ variable [AddMonoidWithOne R]
 
 instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
   obtain hp | ⟨hp⟩ := ‹ExpChar R p›
-  · have := Prod.charZero_of_left R S; exact .zero
+  · constructor
   obtain _ | _ := ‹ExpChar S p›
   · exact (Nat.not_prime_one hp).elim
   · have := Prod.charP R S p; exact .prime hp

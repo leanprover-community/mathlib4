@@ -246,7 +246,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem]
     intro x hx
     rw [mem_inter, mem_Ico, mem_Ico] at hx
-    exact hx.1.2.not_le hx.2.1
+    exact hx.1.2.not_ge hx.2.1
 
 end CommSemiring
 

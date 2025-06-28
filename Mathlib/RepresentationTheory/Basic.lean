@@ -228,7 +228,7 @@ theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
   apply MonoidAlgebra.induction_on r
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_symm_apply, MonoidAlgebra.of_apply,
-      Representation.asAlgebraHom_single, Representation.ofModule, AddEquiv.apply_eq_iff_eq,
+      Representation.asAlgebraHom_single, Representation.ofModule,
       RestrictScalars.lsmul_apply_apply]
   · intro f g fw gw
     simp only [fw, gw, map_add, add_smul, LinearMap.add_apply]
@@ -354,7 +354,6 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
   toFun g := Finsupp.lmapDomain k k (g • ·)
   map_one' := by
     ext x y
-    dsimp
     simp
   map_mul' x y := by
     ext z w

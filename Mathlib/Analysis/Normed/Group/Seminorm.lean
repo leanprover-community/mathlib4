@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Group seminorms
