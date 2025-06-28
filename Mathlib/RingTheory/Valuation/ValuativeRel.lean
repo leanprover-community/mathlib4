@@ -105,6 +105,9 @@ def unitSubmonoid : Submonoid R where
   one_mem' := not_rel_one_zero
 
 @[simp]
+lemma unitSubmonoid_def (x : R) : x ∈ unitSubmonoid R ↔ ¬ x ≤ᵥ 0 := Iff.refl _
+
+@[simp]
 lemma right_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
     x * u ≤ᵥ y * u ↔ x ≤ᵥ y := by
   refine ⟨fun h => rel_mul_cancel u.prop h, fun h => ?_⟩
@@ -448,7 +451,6 @@ instance : ValuativeRel (WithPreorder R) where
   rel_mul_cancel := rel_mul_cancel (R := R)
   not_rel_one_zero := not_rel_one_zero (R := R)
 
-
 instance : ValuativePreorder (WithPreorder R) where
   dvd_iff_le _ _ := Iff.rfl
 
@@ -506,4 +508,39 @@ class ValuativeExtension
     [CommRing A] [CommRing B]
     [ValuativeRel A] [ValuativeRel B]
     [Algebra A B] where
-  dvd_iff_dvd (a b : A) : a ≤ᵥ b ↔ algebraMap A B a ≤ᵥ algebraMap A B b
+  rel_iff_rel (a b : A) : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
+
+namespace ValuativeExtension
+
+open ValuativeRel
+
+variable {A B : Type*} [CommRing A] [CommRing B]
+  [ValuativeRel A] [ValuativeRel B] [Algebra A B]
+  [ValuativeExtension A B]
+
+variable (A B) in
+@[simps]
+def mapUnitSubmonoid : unitSubmonoid A →* unitSubmonoid B where
+  toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
+    by simpa only [unitSubmonoid_def, ← (algebraMap A B).map_zero, rel_iff_rel] using ha⟩
+  map_one' := by simp
+  map_mul' := by simp
+
+variable (A B) in
+def mapValueGroup : ValueGroup A →*₀ ValueGroup B where
+  toFun := ValueGroup.lift
+    (fun a u => ValueGroup.mk (algebraMap _ _ a) (mapUnitSubmonoid _ _ u)) <| by
+      intro x y s t h1 h2
+      apply ValueGroup.sound <;>
+        simpa only [mapUnitSubmonoid_apply_coe, ← (algebraMap A B).map_mul, rel_iff_rel]
+  map_zero' := by
+    apply ValueGroup.sound <;> simp
+  map_one' := by
+    apply ValueGroup.sound <;> simp
+  map_mul' := by
+    intro x y ; apply x.ind ; apply y.ind
+    intro x s y t
+    simp
+
+
+end ValuativeExtension
