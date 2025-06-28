@@ -127,7 +127,7 @@ end
 the use of the type synonym. -/
 
 @[simp] lemma ofLp_apply (x : PiLp p α) (i : ι) : ofLp x i = x i := rfl
-@[simp] lemma toLp_apply (x : ∀ i, α i) (i : ι) :  toLp p x i = x i := rfl
+@[simp] lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
 
 @[deprecated ofLp_apply (since := "2024-04-27")]
 theorem _root_.WithLp.equiv_pi_apply (x : PiLp p α) (i : ι) : WithLp.equiv p _ x i = x i :=
@@ -643,8 +643,6 @@ theorem nnnorm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖�
 
 @[deprecated norm_ofLp (since := "2024-04-27")]
 theorem norm_equiv (f : PiLp ∞ β) : ‖WithLp.equiv ⊤ _ f‖ = ‖f‖ := norm_ofLp _
-
-
 @[deprecated norm_toLp (since := "2024-04-27")]
 theorem norm_equiv_symm (f : ∀ i, β i) : ‖(WithLp.equiv ⊤ _).symm f‖ = ‖f‖ := norm_toLp _
 
@@ -881,8 +879,7 @@ def _root_.LinearIsometryEquiv.piLpCurry :
 @[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_apply
     (f : PiLp p (fun i : Sigma κ => α i.1 i.2)) :
     _root_.LinearIsometryEquiv.piLpCurry 𝕜 p α f =
-      toLp p (fun i => (toLp p) <|
-        Sigma.curry (ofLp f) i) :=
+      toLp p (fun i => (toLp p) <| Sigma.curry (ofLp f) i) :=
   rfl
 
 @[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_symm_apply
