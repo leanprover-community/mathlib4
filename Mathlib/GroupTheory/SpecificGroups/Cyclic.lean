@@ -464,7 +464,7 @@ open Nat
 @[to_additive]
 private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.card α)
     (hpos : 0 < #{a : α | orderOf a = d}) : #{a : α | orderOf a = d} = φ d := by
-  induction' d using Nat.strongRec' with d IH
+  induction d using Nat.strongRec' with | _ d IH
   rcases Decidable.eq_or_ne d 0 with (rfl | hd0)
   · cases Fintype.card_ne_zero (eq_zero_of_zero_dvd hd)
   rcases Finset.card_pos.1 hpos with ⟨a, ha'⟩
@@ -473,7 +473,7 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
     (∑ m ∈ d.properDivisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.properDivisors, φ m := by
     refine Finset.sum_congr rfl fun m hm => ?_
-    simp only [mem_filter, mem_range, mem_properDivisors] at hm
+    simp only [mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
     simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and,
       Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]

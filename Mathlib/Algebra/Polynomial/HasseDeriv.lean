@@ -64,7 +64,7 @@ theorem hasseDeriv_apply :
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
-  · simp only [if_true, add_tsub_cancel_right, eq_self_iff_true]
+  · simp only [if_true, add_tsub_cancel_right]
   · intro i _hi hink
     rw [coeff_monomial]
     by_cases hik : i < k
@@ -196,7 +196,7 @@ theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff 
 
 theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
-  rcases lt_or_le p.natDegree n with hn | hn
+  rcases lt_or_ge p.natDegree n with hn | hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
   · refine map_natDegree_eq_sub ?_ ?_
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _

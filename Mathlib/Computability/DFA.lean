@@ -31,7 +31,7 @@ a `Fintype` instance must be supplied for true DFAs.
 ## Main theorems
 
 - `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
-  be repeated arbitrarily many times
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 
 ## Implementation notes
 
@@ -125,7 +125,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
     Fintype.exists_ne_map_eq_of_card_lt
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by norm_num)
   wlog hle : (n : ℕ) ≤ m generalizing n m
-  · exact this m n hneq.symm heq.symm (le_of_not_le hle)
+  · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
   have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
   refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,

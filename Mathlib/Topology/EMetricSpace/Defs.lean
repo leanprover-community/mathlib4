@@ -381,7 +381,7 @@ theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ 
 
 theorem ball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (ball x ε₁) (ball y ε₂) :=
   Set.disjoint_left.mpr fun z h₁ h₂ =>
-    (edist_triangle_left x y z).not_lt <| (ENNReal.add_lt_add h₁ h₂).trans_le h
+    (edist_triangle_left x y z).not_gt <| (ENNReal.add_lt_add h₁ h₂).trans_le h
 
 theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : ball x ε₁ ⊆ ball y ε₂ :=
   fun z zx =>
@@ -399,7 +399,7 @@ theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' 
 theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
   eq_empty_iff_forall_notMem.trans
     ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
-      not_lt_of_le (le_of_eq ε0) (pos_of_mem_ball h)⟩
+      not_lt_of_ge (le_of_eq ε0) (pos_of_mem_ball h)⟩
 
 theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
     OrdConnected { r | closedBall x r ⊆ s } :=
@@ -500,7 +500,7 @@ theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
 theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
-    simp only [exists_prop, true_and, mem_Ici, mem_ball]
+    simp only [true_and, mem_Ici, mem_ball]
 
 section Compact
 

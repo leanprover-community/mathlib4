@@ -57,7 +57,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   lift y to ℝ using ⟨hyt.ne, ((OrderBot.bot_le _).trans_lt hay).ne'⟩
   -- `F x m` is the `m`th term of `(n+1)^x * LSeries f x`, except that `F x (n+1) = 0`
   let F := fun (x : ℝ) ↦ {m | n + 1 < m}.indicator (fun m ↦ f m / (m / (n + 1) : ℂ) ^ (x : ℂ))
-  have hF₀ (x : ℝ) {m : ℕ} (hm : m ≤ n + 1) : F x m = 0 := by simp [F, not_lt_of_le hm]
+  have hF₀ (x : ℝ) {m : ℕ} (hm : m ≤ n + 1) : F x m = 0 := by simp [F, not_lt_of_ge hm]
   have hF (x : ℝ) {m : ℕ} (hm : m ≠ n + 1) : F x m = ((n + 1) ^ (x : ℂ)) * term f x m := by
     rcases lt_trichotomy m (n + 1) with H | rfl | H
     · simp [Nat.not_lt_of_gt H, term, h m <| Nat.lt_succ_iff.mp H, F]
@@ -85,9 +85,9 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     refine ((hs le_rfl).indicator {m | n + 1 < m}).congr fun m ↦ ?_
     by_cases hm : n + 1 < m
     · simp [hF, hm, hm.ne']
-    · simp [hm, hF₀ _ (le_of_not_lt hm)]
+    · simp [hm, hF₀ _ (le_of_not_gt hm)]
   have hc (k : ℕ) : Tendsto (F · k) atTop (nhds 0) := by
-    rcases lt_or_le (n + 1) k with H | H
+    rcases lt_or_ge (n + 1) k with H | H
     · have H₀ : (0 : ℝ) ≤ k / (n + 1) := by positivity
       have H₀' : (0 : ℝ) ≤ (n + 1) / k := by positivity
       have H₁ : (k / (n + 1) : ℂ) = (k / (n + 1) : ℝ) := by push_cast; rfl
@@ -105,7 +105,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   refine tendsto_tsum_of_dominated_convergence hys.norm hc <| eventually_iff.mpr ?_
   filter_upwards [mem_atTop y] with y' hy' k
   -- it remains to show that `‖F y' k‖ ≤ ‖F y k‖` (for `y' ≥ y`)
-  rcases lt_or_le (n + 1) k with H | H
+  rcases lt_or_ge (n + 1) k with H | H
   · simp only [Set.mem_setOf_eq, H, Set.indicator_of_mem, norm_div, norm_cpow_real,
       Complex.norm_natCast, F]
     rw [← Nat.cast_one, ← Nat.cast_add, Complex.norm_natCast]

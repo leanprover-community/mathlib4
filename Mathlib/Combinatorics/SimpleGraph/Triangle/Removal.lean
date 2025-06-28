@@ -125,7 +125,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
     triangleRemovalBound ε * card α ^ 3 ≤ #(G.cliqueFinset 3) := by
   cases isEmpty_or_nonempty α
   · simp [Fintype.card_eq_zero]
-  obtain hε | hε := le_or_lt ε 0
+  obtain hε | hε := le_or_gt ε 0
   · apply (mul_nonpos_of_nonpos_of_nonneg (triangleRemovalBound_nonpos hε) _).trans <;> positivity
   let l : ℕ := ⌈4 / ε⌉₊
   have hl : 4/ε ≤ l := le_ceil (4/ε)
@@ -149,9 +149,9 @@ lemma triangle_removal (hG : #(G.cliqueFinset 3) < triangleRemovalBound ε * car
     ∃ G' ≤ G, ∃ _ : DecidableRel G'.Adj,
       (#G.edgeFinset - #G'.edgeFinset : ℝ) < ε * (card α^2 : ℕ) ∧ G'.CliqueFree 3 := by
   by_contra! h
-  refine hG.not_le (farFromTriangleFree_iff.2 ?_).le_card_cliqueFinset
+  refine hG.not_ge (farFromTriangleFree_iff.2 ?_).le_card_cliqueFinset
   intros G' _ hG hG'
-  exact le_of_not_lt fun i ↦ h G' hG _ i hG'
+  exact le_of_not_gt fun i ↦ h G' hG _ i hG'
 
 end SimpleGraph
 

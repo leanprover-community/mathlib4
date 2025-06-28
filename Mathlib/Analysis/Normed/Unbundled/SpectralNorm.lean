@@ -131,7 +131,7 @@ theorem spectralValue_X_sub_C (r : R) : spectralValue (X - C r) = ‖r‖ := by
         norm_neg, inv_one, rpow_one]
     · rw [if_neg hn, if_neg hn]
   · apply ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun n ↦ ?_)
-      (fun _ hx ↦ ⟨0, by simp only [eq_self_iff_true, if_true, hx]⟩)
+      (fun _ hx ↦ ⟨0, by simp only [if_true, hx]⟩)
     split_ifs
     · exact le_refl _
     · exact norm_nonneg _
@@ -147,7 +147,7 @@ theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
     · rw [if_pos hmn, rpow_eq_zero_iff_of_nonneg (norm_nonneg _), if_neg (_root_.ne_of_lt hmn),
         norm_zero, one_div, ne_eq, inv_eq_zero, ← cast_sub (le_of_lt hmn), cast_eq_zero,
         Nat.sub_eq_zero_iff_le]
-      exact ⟨Eq.refl _, not_le_of_lt hmn⟩
+      exact ⟨Eq.refl _, not_le_of_gt hmn⟩
     · rw [if_neg hmn]
   · infer_instance
 
@@ -177,7 +177,7 @@ theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :
       simp only [spectralValueTerms, if_pos hn'] at h_le
       rw [h0, rpow_le_rpow_iff (norm_nonneg _) (le_refl _) h_exp] at h_le
       exact norm_eq_zero.mp (le_antisymm h_le (norm_nonneg _))
-    · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_lt hn') (ne_comm.mpr hn))
+    · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt hn') (ne_comm.mpr hn))
 
 end Normed
 
@@ -430,7 +430,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
   classical
   have hf1 : f 1 = 1 := by
     rw [← (algebraMap K L).map_one, hf_ext]
-    simp [nnnorm_one, NNReal.coe_nonneg]
+    simp
   refine le_antisymm ?_ (ciSup_le fun σ ↦
     norm_root_le_spectralValue hf_pm hf_na
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))

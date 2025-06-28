@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
@@ -46,8 +47,8 @@ theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n �
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta]
-      right_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta] }
+      left_inv := fun m => by simp only [Subtype.coe_eta]
+      right_inv := fun m => by simp only [Subtype.coe_eta] }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -78,7 +79,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos), zero_add]
+    simp only [add_zero, mul_one, mul_zero, zero_add]
     gcongr
     exact le_of_lt (mod_lt n a_pos)
   simp only [mul_succ]
@@ -148,7 +149,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
       apply gcd_dvd_right
     rcases this with ⟨q, rfl⟩
     refine ⟨q, ⟨⟨(mul_lt_mul_left hd0).1 hb1, ?_⟩, rfl⟩⟩
-    rwa [gcd_mul_left, mul_right_eq_self_iff hd0] at hb2
+    rwa [gcd_mul_left, mul_eq_left hd0.ne'] at hb2
 
 theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -176,7 +177,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         (by
           rw [sdiff_eq_filter]
           apply filter_congr
-          simp only [mem_range, mem_filter, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
+          simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
             hp.coprime_iff_not_dvd]
           intro a ha
           constructor

@@ -603,7 +603,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
   have P : ht.symm.HasPrimitiveVectorWith y (-2 : K) :=
     { ne_zero := by simpa [LieSubmodule.mk_eq_zero] using hy₀
-      lie_h := by simp only [neg_smul, neg_lie, neg_inj, ht.h_eq_coroot hα heα hfα,
+      lie_h := by simp only [neg_smul, neg_lie, ht.h_eq_coroot hα heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]
       lie_e := by rw [← lie_skew, hy, neg_zero] }

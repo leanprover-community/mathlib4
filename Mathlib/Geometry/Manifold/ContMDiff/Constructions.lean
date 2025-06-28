@@ -365,7 +365,7 @@ theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
-    writtenInExtChartAt, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
+    extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
 theorem contMDiffOn_pi_space :
     ContMDiffOn I 𝓘(𝕜, ∀ i, Fi i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Fi i) n (fun x => φ x i) s :=
@@ -454,8 +454,7 @@ lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
       rw [contMDiffAt_iff] at hf'
       simpa using hf'.2
     apply this.congr_of_eventuallyEq
-    · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl,
-        Sum.inl_injective.extend_apply]
+    · simp only [extChartAt, Sum.elim_inl, ChartedSpace.sum_chartAt_inl]
       filter_upwards with a
       congr
     · -- They agree at the image of x.
@@ -470,8 +469,7 @@ lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
       rw [contMDiffAt_iff] at hg'
       simpa using hg'.2
     apply this.congr_of_eventuallyEq
-    · simp only [extChartAt, Sum.elim_inr, ChartedSpace.sum_chartAt_inr,
-        Sum.inl_injective.extend_apply]
+    · simp only [extChartAt, Sum.elim_inr, ChartedSpace.sum_chartAt_inr]
       filter_upwards with a
       congr
     · -- They agree at the image of x.

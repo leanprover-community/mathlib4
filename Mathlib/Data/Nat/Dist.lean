@@ -90,7 +90,7 @@ theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
   simp [dist, succ_sub_succ]
 
 theorem dist_pos_of_ne {i j : Nat} (h : i ≠ j) : 0 < dist i j := by
-  cases h.lt_or_lt with
+  cases h.lt_or_gt with
   | inl h => rw [dist_eq_sub_of_le h.le]; apply tsub_pos_of_lt h
   | inr h => rw [dist_eq_sub_of_le_right h.le]; apply tsub_pos_of_lt h
 

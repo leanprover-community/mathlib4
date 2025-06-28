@@ -295,7 +295,6 @@ theorem finrank_eq_one_iff [Nontrivial E] [Module.Free F S] : finrank F S = 1 �
 theorem bot_eq_top_iff_rank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
-  -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 
 theorem bot_eq_top_iff_finrank_eq_one [Nontrivial E] [Module.Free F E] :

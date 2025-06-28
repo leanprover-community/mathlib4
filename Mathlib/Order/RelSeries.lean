@@ -244,7 +244,7 @@ lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := 
 @[simp]
 lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.toList[(i : ℕ)] = p i := by
-  simp only [Fin.getElem_fin, toList, List.getElem_ofFn]
+  simp only [toList, List.getElem_ofFn]
 
 lemma toList_getElem_eq_apply_of_lt_length {p : RelSeries r} {i : ℕ} (hi : i < p.length + 1) :
     p.toList[i]'(by simpa using hi) = p ⟨i, hi⟩ :=
@@ -314,17 +314,18 @@ lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
 
+open Fin.NatCast in -- TODO: can this be removed?
 lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (q.length + 1)) :
     p.append q connect (i.natAdd p.length + 1) = q i := by
   delta append
-  simp only [Fin.coe_natAdd, Nat.cast_add, Function.comp_apply]
+  simp only [Fin.coe_natAdd, Function.comp_apply]
   convert Fin.append_right _ _ _
   ext
   simp only [Fin.coe_cast, Fin.coe_natAdd]
   conv_rhs => rw [add_assoc, add_comm 1, ← add_assoc]
   change _ % _ = _
-  simp only [Nat.add_mod_mod, Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
+  simp only [Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
   omega
 
 @[simp] lemma head_append (p q : RelSeries r) (connect : r p.last q.head) :
@@ -360,7 +361,7 @@ lemma toList_append (p q : RelSeries r) (connect : r p.last q.head) :
       split
       · have : Fin.mk i h3' = Fin.castAdd _ ⟨i, by simp_all⟩ := rfl
         rw [this, Fin.append_left, toList_getElem_eq_apply_of_lt_length]
-      · simp_all only [length_toList, append_length, List.length_append]
+      · simp_all only [length_toList, append_length]
         have : Fin.mk i h3' = Fin.natAdd _ ⟨i - p.length - 1, by omega⟩ := by simp_all; omega
         rw [this, Fin.append_right, toList_getElem_eq_apply_of_lt_length]
         rfl
@@ -428,7 +429,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           rw [Fin.insertNth_apply_above]
           swap
           · exact hm.trans (lt_add_one _)
-          simp only [Fin.val_succ, Fin.pred_succ, eq_rec_constant, Fin.succ_mk]
+          simp only [Fin.pred_succ, eq_rec_constant, Fin.succ_mk]
           congr
           exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
       · convert connect_next
@@ -549,7 +550,7 @@ lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : r s.last a) (i : Fin (s
 lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : r p.last newLast} {x : α} :
     x ∈ p.snoc newLast rel ↔ x ∈ p ∨ x = newLast := by
   simp only [snoc, append, singleton_length, Nat.add_zero, Nat.reduceAdd, Fin.cast_refl,
-    Function.comp_id, mem_def, id_eq, Set.mem_range]
+    Function.comp_id, mem_def, Set.mem_range]
   constructor
   · rintro ⟨i, rfl⟩
     exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i => Or.inl ⟨⟨i.1, i.2⟩,
@@ -657,7 +658,7 @@ lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
     r p.eraseLast.last p.last := by
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
   convert p.step ⟨p.length - 1, by omega⟩
-  simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+  simp only [Fin.succ_mk]; omega
 
 @[simp]
 lemma toList_eraseLast (p : RelSeries r) (hp : p.length ≠ 0) :
@@ -766,14 +767,14 @@ lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
 lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.take i).last = p i := by simp [take, last, Fin.last]
 
-/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aᵢ`. -/
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aₙ`. -/
 @[simps! length]
 def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
   step := fun ⟨j, h⟩ => by
     convert p.step ⟨j+i.1, by omega⟩
-    simp only [Nat.succ_eq_add_one, Fin.succ_mk]; omega
+    simp only [Fin.succ_mk]; omega
 
 @[simp]
 lemma head_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).head = p.toFun i := by
@@ -838,7 +839,7 @@ lemma Rel.wellFounded_swap_of_finiteDimensional [Rel.FiniteDimensional r] :
   rw [WellFounded.wellFounded_iff_no_descending_seq]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
-  exact (RelSeries.longestOf r).length.lt_succ_self.not_le s.length_le_length_longestOf
+  exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
 
 lemma Rel.wellFounded_of_finiteDimensional [Rel.FiniteDimensional r] : WellFounded r :=
   have : (Rel.FiniteDimensional (Function.swap r)) := Rel.finiteDimensional_swap_iff.mp ‹_›
