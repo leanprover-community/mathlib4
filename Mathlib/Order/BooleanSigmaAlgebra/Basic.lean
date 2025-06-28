@@ -137,4 +137,26 @@ theorem σsInf_union (hs : s.Countable) (ht : t.Countable) :
     sInf (s ∪ t) = sInf s ⊓ sInf t :=
   σsSup_union (α := αᵒᵈ) hs ht
 
+/-- The supremum of an intersection of two sets is bounded above by the minimum of the suprema of
+each set, under the assumptions that all sets are countable. -/
+theorem σsSup_inter_le (hs : s.Countable) (ht : t.Countable) : sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
+  σsSup_le (hs.mono (by simp)) fun _ hx => le_inf (le_σsSup hs hx.1) (le_σsSup ht hx.2)
+
+/-- The infimum of an intersection of two sets is bounded below by the maximum of the infima of
+each set, under the assumptions that all sets are countable. -/
+theorem le_σsInf_inter (hs : s.Countable) (ht : t.Countable) : sInf s ⊔ sInf t ≤ sInf (s ∩ t) :=
+  σsSup_inter_le (α := αᵒᵈ) hs ht
+
+/-- The supremum of `insert a s` is the maximum of `a` and the supremum of `s`, if `s` is
+nonempty and bounded above. -/
+@[simp]
+theorem σsSup_insert (hs : s.Countable) : sSup (insert a s) = a ⊔ sSup s :=
+  ((isLUB_σsSup hs).insert a).σsSup_eq <| hs.insert a
+
+/-- The infimum of `insert a s` is the minimum of `a` and the infimum of `s`, if `s` is
+nonempty and bounded below. -/
+@[simp]
+theorem σsInf_insert (hs : s.Countable) : sInf (insert a s) = a ⊓ sInf s :=
+  σsSup_insert (α := αᵒᵈ) hs
+
 end SigmaCompleteLattice
