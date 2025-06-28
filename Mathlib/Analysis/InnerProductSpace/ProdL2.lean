@@ -59,7 +59,7 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
   (by
     constructor
     · simp only [Sum.forall, norm_eq_sqrt_re_inner (𝕜 := 𝕜), Real.sqrt_eq_one]
-      simp [← Real.sqrt_eq_one, ← norm_eq_sqrt_re_inner (𝕜 := 𝕜), v.orthonormal.1, w.orthonormal.1]
+      simp
     · unfold Pairwise
       simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
         OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.ofLpLinearEquiv_symm_apply,

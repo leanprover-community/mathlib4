@@ -264,7 +264,7 @@ lemma cancel_right_div_gcd' (hm : 0 < m) (hcd : c ≡ d [MOD m]) (h : a * c ≡ 
 lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) : a ≡ b [MOD m] := by
   rcases m.eq_zero_or_pos with (rfl | hm)
   · simp only [gcd_zero_left] at hmc
-    simp only [gcd_zero_left, hmc, one_mul, modEq_zero_iff] at h
+    simp only [hmc, one_mul, modEq_zero_iff] at h
     subst h
     rfl
   simpa [hmc] using h.cancel_left_div_gcd hm
