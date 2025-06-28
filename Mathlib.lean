@@ -3411,6 +3411,7 @@ import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Card.Arithmetic
+import Mathlib.Data.Set.Card.InfiniteArithmetic
 import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.Set.Constructions
 import Mathlib.Data.Set.Countable
@@ -6296,6 +6297,7 @@ import Mathlib.Topology.Instances.Complex
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 import Mathlib.Topology.Instances.ENat
+import Mathlib.Topology.Instances.ENat.Lemmas
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Instances.Irrational
