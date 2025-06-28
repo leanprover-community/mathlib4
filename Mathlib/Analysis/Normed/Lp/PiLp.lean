@@ -403,7 +403,7 @@ private lemma antilipschitzWith_ofLp_aux :
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
     have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (ne_of_gt pos)
     rw [edist_eq_sum pos, ENNReal.toReal_div 1 p]
-    simp only [edist, ← one_div, ENNReal.toReal_one]
+    simp only [edist, ENNReal.toReal_one]
     calc
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
           (∑ _i, edist (ofLp x) (ofLp y) ^ p.toReal) ^ (1 / p.toReal) := by
@@ -652,8 +652,8 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, eq_self_iff_true,
-    Finset.sum_congr, norm_eq_sum this]
+  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
+    norm_eq_sum this]
 
 section L1
 variable {β} [∀ i, SeminormedAddCommGroup (β i)]
@@ -794,7 +794,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
     LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e (toLp p <| Pi.single i v) =
       toLp p (Pi.single (e i) v) := by
   funext x
-  simp [LinearIsometryEquiv.piLpCongrLeft_apply, LinearEquiv.piCongrLeft', Equiv.piCongrLeft',
+  simp [LinearIsometryEquiv.piLpCongrLeft_apply, Equiv.piCongrLeft',
     Pi.single, Function.update, Equiv.symm_apply_eq]
 
 end piLpCongrLeft
@@ -814,7 +814,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
       ≪≫ₗ (LinearEquiv.piCongrRight fun i => (e i).toLinearEquiv)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
-    simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
+    simp only [LinearEquiv.trans_apply,
       Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
     obtain rfl | hp := p.dichotomy
     · simp_rw [PiLp.norm_toLp, Pi.norm_def, LinearEquiv.piCongrRight_apply,

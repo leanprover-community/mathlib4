@@ -244,7 +244,7 @@ end OperationsAndInfty
   lift b to ℝ≥0 using bd.ne_top
   cases c; · simp
   cases d; · simp
-  simp only [← coe_add, some_eq_coe, coe_lt_coe] at *
+  simp only [← coe_add, coe_lt_coe] at *
   exact add_lt_add ac bd
 
 section Cancel

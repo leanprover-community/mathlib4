@@ -170,7 +170,7 @@ lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     ← Subgroup.coe_pow]
   congr 2
   norm_cast
-  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff, SubmonoidClass.coe_pow,
+  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff,
     ZMod.natCast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
 
 end modularCyclotomicCharacter
