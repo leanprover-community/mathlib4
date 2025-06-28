@@ -357,11 +357,11 @@ variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo 
 
 /--
 Given two restricted products `Πʳ (i : ι₁), [R₁ i, A₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, A₂ j]_[𝓕₂]`,
-`RestrictedProduct.map` gives a function between them. The data needed is a function `f : ι₂ → ι₁`
-such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
+`RestrictedProduct.mapAlong` gives a function between them. The data needed is a
+function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
 sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
 
-See also `mapMonoidHom`, `mapAddMonoidHom` and `mapRingHom` for variants.
+See also `mapAlongMonoidHom`, `mapAlongAddMonoidHom` and `mapAlongRingHom` for variants.
 -/
 def mapAlong (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] :=
   ⟨fun j ↦ φ j (x (f j)), by
@@ -372,7 +372,7 @@ lemma map_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
     x.mapAlong R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
   rfl
 
--- variant of `map` where the index set is constant
+-- variant of `mapAlong` where the index set is constant
 
 /-- The maps between restricted products over a fixed index type,
 given maps on the factors. -/
@@ -392,16 +392,16 @@ variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass 
     (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
 
 /--
-Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
-`RestrictedProduct.mapMonoidHom` gives a monoid homomorphism between them. The data needed is a
-function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and monoid homomorphisms
-`φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`
+of monoids, `RestrictedProduct.mapAlongMonoidHom` gives a monoid homomorphism between them.
+The data needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and monoid
+homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
 -/
 @[to_additive "
-Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
-`RestrictedProduct.mapAddMonoidHom` gives a additive monoid homomorphism between them. The data
-needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and
-additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`
+of additive monoids, `RestrictedProduct.mapAlongAddMonoidHom` gives a additive monoid homomorphism
+between them. The data needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`,
+and additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for
 an `𝓕₂`-large set of `j`'s.
 "]
 def mapAlongMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
@@ -427,8 +427,9 @@ variable [Π i, Ring (R₁ i)] [Π i, Ring (R₂ i)] [∀ i, SubringClass (S₁ 
     (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
 
 /--
-Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
-`RestrictedProduct.mapRingHom` gives a ring homomorphism between them. The data needed is a
+Given two restricted products of rings `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and
+`Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`, `RestrictedProduct.mapAlongRingHom` gives a
+ring homomorphism between them. The data needed is a
 function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and ring homomorphisms
 `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
 -/
