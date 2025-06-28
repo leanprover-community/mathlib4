@@ -146,11 +146,9 @@ variable (n R A)
 
 section
 
-variable (R K F A : Type*)
-variable [CommSemiring R] [Semiring K] [CommSemiring F] [Algebra R K]
+variable (K F A : Type*)
+variable [Semiring K] [CommSemiring F] [Algebra R K]
     [Algebra F K] [Semiring A] [Algebra F A] [SMulCommClass F R K]
-
-open Matrix
 
 attribute [local ext] Matrix.ext_linearMap in
 theorem toTensorMatrixLin_mul [Fintype n] (x y : K ⊗[F] Matrix n n A) :
@@ -184,17 +182,17 @@ def toTensorMatrix : K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) :=
 /-- The base change of matrices over algebras.
 
 This is the `AlgEquiv` version of `tensorMatrixLinearEquiv`. -/
-def matrixEquivTensorMatrix : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A) where
+def tensorMatrixAlgEquiv : K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A) where
   __ := toTensorMatrix n R K F A
   __ := tensorMatrixLinearEquiv n n F K A
 
 @[simp]
-lemma matrixEquivTensorMatrix_apply (M : K ⊗[F] Matrix n n A) :
-    matrixEquivTensorMatrix n R K F A M = toTensorMatrix n R K F A M := rfl
+lemma tensorMatrixAlgEquiv_apply (M : K ⊗[F] Matrix n n A) :
+    tensorMatrixAlgEquiv n R K F A M = toTensorMatrix n R K F A M := rfl
 
 @[simp]
-lemma matrixEquivTensorMatrix_symm_apply (M : Matrix n n (K ⊗[F] A)) :
-    (matrixEquivTensorMatrix n R K F A).symm M = (tensorMatrixLinearEquiv n n F K A).symm M := rfl
+lemma tensorMatrixAlgEquiv_symm_apply (M : Matrix n n (K ⊗[F] A)) :
+    (tensorMatrixAlgEquiv n R K F A).symm M = (tensorMatrixLinearEquiv n n F K A).symm M := rfl
 
 end
 
@@ -203,7 +201,7 @@ variable [Fintype n] [DecidableEq n]
 /-- The `R`-algebra isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`. -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
   Algebra.TensorProduct.rid _ _ _ |>.symm.mapMatrix |>.trans <|
-    matrixEquivTensorMatrix n R A R R |>.symm
+    tensorMatrixAlgEquiv n R A R R |>.symm
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :
