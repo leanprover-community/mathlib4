@@ -6,6 +6,11 @@ Authors: Eric Wieser
 
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Basic
+/-!
+# Miscellaneous order lemmas about Int
+
+TODO: work out where this can go.
+-/
 
 @[simp]
 theorem Int.isSquare_sign_iff {z : ℤ} : IsSquare z.sign ↔ 0 ≤ z := by
