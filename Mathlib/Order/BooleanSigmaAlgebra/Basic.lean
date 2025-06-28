@@ -122,7 +122,7 @@ theorem σsInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
   σsSup_pair (α := αᵒᵈ) a b
 
 /-- If a set is countable, and non-empty, its infimum is less than or equal to its supremum. -/
-theorem σsInf_le_csSup (hs : s.Countable) (ne : s.Nonempty) : sInf s ≤ sSup s :=
+theorem σsInf_le_σsSup (hs : s.Countable) (ne : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_σsInf hs) (isLUB_σsSup hs) ne
 
 /-- The `sSup` of a union of two sets is the max of the suprema of each subset, under the
