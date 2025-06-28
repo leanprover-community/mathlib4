@@ -55,14 +55,14 @@ variable [Fintype ι₁] [Fintype ι₂]
 /-- The product of two orthonormal bases is a basis for the L2-product. -/
 def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
     OrthonormalBasis (ι₁ ⊕ ι₂) 𝕜 (WithLp 2 (E × F)) :=
-  ((v.toBasis.prod w.toBasis).map (WithLp.ofLpLinearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
+  ((v.toBasis.prod w.toBasis).map (WithLp.linearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
   (by
     constructor
     · simp only [Sum.forall, norm_eq_sqrt_re_inner (𝕜 := 𝕜), Real.sqrt_eq_one]
       simp
     · unfold Pairwise
       simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
-        OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.ofLpLinearEquiv_symm_apply,
+        OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.linearEquiv_symm_apply,
         WithLp.prod_inner_apply, WithLp.ofLp_toLp, Sum.forall, Sum.elim_inl,
         Function.comp_apply, inner_zero_right, add_zero, Sum.elim_inr, zero_add, Sum.inl.injEq,
         reduceCtorEq, not_false_eq_true, inner_zero_left, imp_self, implies_true, and_true,
