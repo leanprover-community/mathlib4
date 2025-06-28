@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.Tactic.FinCases
@@ -892,5 +893,22 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
   SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
+
+namespace Truncated
+
+theorem initial_inclusion (n : ℕ) : (inclusion n).Initial := by
+  apply ObjectProperty.initial_ι
+  intro d hd
+  have : Nonempty (CostructuredArrow (ObjectProperty.ι fun (a : SimplexCategory) ↦ a.len ≤ n) d) :=
+    ⟨⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ 0 ⟩⟩
+  apply zigzag_isConnected
+  rintro ⟨⟨Δ₁, hΔ₁⟩, ⟨⟨⟩⟩, g₁⟩ ⟨⟨Δ₂, hΔ₂⟩, ⟨⟨⟩⟩, g₂⟩
+  simp at g₁ g₂
+  refine Zigzag.trans (j₂ := ⟨⦋n⦌ₙ, ⟨⟨⟩⟩, subinterval (n := d.len) 0 n (by omega)⟩)
+    (.of_hom ?_) (.of_inv ?_)
+  · sorry
+  · sorry
+
+end Truncated
 
 end SimplexCategory
