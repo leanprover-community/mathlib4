@@ -58,7 +58,10 @@ variable [Module ℝ E]
 
 variable  [IsScalarTower ℝ 𝕜 E]
 
--- See Bourbaki TVS II.43 or Rudin Theorem 3.10
+-- See
+-- - Conway V Theorem 1.3
+-- - Bourbaki TVS II.43
+-- - Rudin Theorem 3.10
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [Function.Surjective]
   intro f₁
