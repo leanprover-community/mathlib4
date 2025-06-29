@@ -136,15 +136,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
   left_inv := by
     intro A
     ext
-    · dsimp
-      rw [WidePullback.lift_π]
-      nth_rw 2 [← Category.id_comp A.left]
-      congr 1
-      convert X.left.map_id _
-      rw [← op_id]
-      congr 1
-      ext ⟨a, ha⟩
-      simp
+    · simp
     · rfl
   right_inv := by
     intro A

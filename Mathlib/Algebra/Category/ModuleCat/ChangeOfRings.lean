@@ -6,9 +6,10 @@ Authors: Jujian Zhang
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Change Of Rings

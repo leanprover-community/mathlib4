@@ -17,7 +17,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 ## Main declarations
 
-- `LinearMap.baseChange A f` is the `A`-linear map `A ⊗ f`, for an `R`-linear map `f`.
 - `Algebra.TensorProduct.semiring`: the ring structure on `A ⊗[R] B` for two `R`-algebras `A`, `B`.
 - `Algebra.TensorProduct.leftAlgebra`: the `S`-algebra structure on `A ⊗[R] B`, for when `A` is
   additionally an `S` algebra.
@@ -44,112 +43,6 @@ open TensorProduct
 
 
 namespace LinearMap
-
-open TensorProduct
-
-/-!
-### The base-change of a linear map of `R`-modules to a linear map of `A`-modules
--/
-
-
-section Semiring
-
-variable {R A B M N P : Type*} [CommSemiring R]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [Module R M] [Module R N] [Module R P]
-variable (r : R) (f g : M →ₗ[R] N)
-
-variable (A) in
-/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
-
-This "base change" operation is also known as "extension of scalars". -/
-def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
-
-@[simp]
-theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
-  rfl
-
-theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
-  rfl
-
-@[simp]
-theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
-  ext
-  -- Porting note: added `-baseChange_tmul`
-  simp [baseChange_eq_ltensor, -baseChange_tmul]
-
-@[simp]
-theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
-  ext
-  simp [baseChange_eq_ltensor]
-
-@[simp]
-theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
-  ext
-  simp [baseChange_tmul]
-
-@[simp]
-lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
-  ext; simp
-
-lemma baseChange_comp (g : N →ₗ[R] P) :
-    (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
-  ext; simp
-
-variable (R M) in
-@[simp]
-lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
-
-lemma baseChange_mul (f g : Module.End R M) :
-    (f * g).baseChange A = f.baseChange A * g.baseChange A := by
-  ext; simp
-
-variable (R A M N)
-
-/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
-def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.congr (.refl _ _) e
-
-/-- `baseChange` as a linear map.
-
-When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
-@[simps]
-def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
-  toFun := baseChange A
-  map_add' := baseChange_add
-  map_smul' := baseChange_smul
-
-/-- `baseChange` as an `AlgHom`. -/
-@[simps!]
-def _root_.Module.End.baseChangeHom : Module.End R M →ₐ[R] Module.End A (A ⊗[R] M) :=
-  .ofLinearMap (LinearMap.baseChangeHom _ _ _ _) (baseChange_one _ _) baseChange_mul
-
-lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
-    (f ^ n).baseChange A = f.baseChange A ^ n :=
-  map_pow (Module.End.baseChangeHom _ _ _) f n
-
-end Semiring
-
-section Ring
-
-variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-variable (f g : M →ₗ[R] N)
-
-@[simp]
-theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
-  ext
-  simp [baseChange_eq_ltensor, tmul_sub]
-
-@[simp]
-theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
-  ext
-  simp [baseChange_eq_ltensor, tmul_neg]
-
-end Ring
 
 section liftBaseChange
 
@@ -1166,6 +1059,22 @@ lemma tmul_one_eq_one_tmul (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ alg
 
 end
 
+variable (R A B) in
+lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] :
+    Subring.closure (Set.range (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∪
+      Set.range Algebra.TensorProduct.includeRight) = ⊤ := by
+  rw [← top_le_iff]
+  rintro x -
+  induction x with
+  | zero => exact zero_mem _
+  | tmul x y =>
+    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
+      (Algebra.TensorProduct.includeRight y) ∈ _
+    · simp
+    · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
+        (Subring.subset_closure (.inr ⟨_, rfl⟩))
+  | add x y _ _ => exact add_mem ‹_› ‹_›
 section
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
@@ -1179,7 +1088,7 @@ def lmul'' : S ⊗[R] S →ₐ[S] S :=
     { __ := LinearMap.mul' R S
       map_smul' := fun s x ↦ x.induction_on (by simp)
         (fun _ _ ↦ by simp [TensorProduct.smul_tmul', mul_assoc])
-        fun x y hx hy ↦ by simp_all [hx, hy, mul_add] }
+        fun x y hx hy ↦ by simp_all [mul_add] }
     (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
 
 theorem lmul''_eq_lid_comp_mapOfCompatibleSMul :
@@ -1213,7 +1122,7 @@ def lmulEquiv [CompatibleSMul R S S S] : S ⊗[R] S ≃ₐ[S] S :=
   .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
     (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
       rw [mul_comm, ← smul_eq_mul, smul_tmul, smul_eq_mul, mul_one])
-    fun _ _ hx hy ↦ by simp_all [hx, hy, add_tmul]
+    fun _ _ hx hy ↦ by simp_all [add_tmul]
 
 theorem lmulEquiv_eq_lidOfCompatibleSMul [CompatibleSMul R S S S] :
     lmulEquiv R S = lidOfCompatibleSMul R S S :=
@@ -1316,7 +1225,7 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
       intro x
       simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
-        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_apply, Module.End.one_eq_id,
+        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
 
 end LinearMap
@@ -1413,7 +1322,7 @@ protected def module : Module (A ⊗[R] B) M where
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
       simp only [moduleAux_apply, mul_add, LinearMap.map_add,
-        LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
+        LinearMap.add_apply, moduleAux_apply, hz, hw]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
