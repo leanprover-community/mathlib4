@@ -88,6 +88,13 @@ instance : Category (CatEnriched C) where
   comp_id {X Y} f := congrArg (·.obj f) (e_comp_id (V := Cat) X Y)
   assoc {X Y Z W} f g h := congrArg (·.obj (f, g, h)) (e_assoc (V := Cat) X Y Z W)
 
+/-- The category instance on `CatEnriched C` promotes it to a `Cat` enriched ordinary
+category. -/
+instance : EnrichedOrdinaryCategory Cat (CatEnriched C) where
+  homEquiv := Cat.fromChosenTerminalEquiv.symm
+  homEquiv_comp _ _ := (Equiv.symm_apply_eq Cat.fromChosenTerminalEquiv).mpr rfl
+  homEquiv_id _ := (Equiv.symm_apply_eq Cat.fromChosenTerminalEquiv).mpr rfl
+
 theorem id_hComp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp (𝟙 (𝟙 a)) η) η := by
   rw [id_eq, ← Functor.map_id]
