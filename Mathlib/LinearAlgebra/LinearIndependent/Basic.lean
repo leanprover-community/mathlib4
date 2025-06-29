@@ -82,6 +82,55 @@ theorem LinearIndependent.restrict_scalars' [Semiring K] [SMulWithZero R K] [Mod
     (li : LinearIndependent K v) : LinearIndependent R v :=
   restrict_scalars ((faithfulSMul_iff_injective_smul_one R K).mp inferInstance) li
 
+/-- Compose a finitely supported function with scalar multiplication by 1. -/
+abbrev Finsupp.smulOne (K) [One K] [Zero K] [SMulWithZero R K] (f : ι →₀ R) : ι →₀ K :=
+  Finsupp.mapRange (fun r ↦ r • (1 : K)) (zero_smul R 1) f
+--#find_home! Finsupp.smulOne --[Mathlib.Data.Finsupp.Basic]
+
+theorem Finsupp.smulOne_injective (K) [Zero K] [MulOneClass K] [SMulWithZero R K] [FaithfulSMul R K]
+    [IsScalarTower R K K] :
+    Injective (α := ι →₀ R) (Finsupp.smulOne K) :=
+  Finsupp.mapRange_injective (fun r ↦ r • (1 : K)) (zero_smul R 1)
+    (FaithfulSMul.injective_smul_one R K)
+--#find_home! Finsupp.smulOne_injective--[Mathlib.Data.Finsupp.Basic]
+
+theorem Finsupp.smulOne_mem_supported (K) [Semiring K] [SMulWithZero R K] (f : ι →₀ R) (s : Set ι)
+    (hf : f ∈ Finsupp.supported R R s) :
+    Finsupp.smulOne K f ∈ Finsupp.supported K K s := by
+  refine (Finsupp.mem_supported K (Finsupp.smulOne K f)).mpr <| Finsupp.support_subset_iff.mpr ?_
+  intro _ h
+  rw [Finsupp.mapRange_apply]
+  exact smul_eq_zero_of_left (Finsupp.notMem_support_iff.mp fun a ↦ h (hf a)) 1
+--#find_home! Finsupp.smulOne_mem_supported --[Mathlib.LinearAlgebra.Finsupp.Supported]
+
+theorem LinearIndepOn.restrict_scalars_span {M} [AddCommGroup M] [Module R M] [Semiring K]
+    [SMulWithZero R K] [Module K M] {v : ι → M} [IsScalarTower R K M] [FaithfulSMul R K]
+    [IsScalarTower R K K] (s : Set ι) (li : LinearIndepOn K v s) :
+    LinearIndepOn R (fun i ↦ (⟨v i, Submodule.subset_span (mem_range_self i)⟩ : span R (range v)))
+      s := by
+  contrapose! li
+  rw [linearDepOn_iff'ₛ] at li
+  obtain ⟨f, g, hf, hg, hfge, hfgn⟩ := li
+  simp only [linearDepOn_iff'ₛ, ne_eq, exists_and_left]
+  use Finsupp.smulOne K f
+  refine ⟨Finsupp.smulOne_mem_supported K f s hf, ?_⟩
+  use Finsupp.smulOne K g
+  refine ⟨Finsupp.smulOne_mem_supported K g s hg, ?_⟩
+  constructor
+  · simp only [Finsupp.linearCombination_apply, Finsupp.sum, SetLike.mk_smul_mk,
+    Finsupp.mapRange_apply, smul_assoc, one_smul] at hfge ⊢
+    have sumeq (f : ι →₀ R) : ∑ x ∈ f.support,
+        (⟨f x • v x, SMulMemClass.smul_mem (f x) (subset_span (mem_range_self x))⟩ :
+          span R (range v)) = ∑ x ∈ (Finsupp.smulOne K f).support, f x • v x := by
+      simp only [AddSubmonoidClass.coe_finset_sum]
+      exact Finset.sum_congr (Finsupp.support_mapRange_of_injective (zero_smul R 1) f
+        (FaithfulSMul.injective_smul_one R K)).symm fun _ _ ↦ rfl
+    rw [← sumeq f, ← sumeq g]
+    exact congrArg Subtype.val hfge
+  · contrapose! hfgn
+    exact Finsupp.smulOne_injective K hfgn
+--#find_home! LinearIndepOn.restrict_scalars_span --[Mathlib.LinearAlgebra.LinearIndependent.Defs]
+
 /-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f`.
 TODO : `LinearIndepOn` version. -/
