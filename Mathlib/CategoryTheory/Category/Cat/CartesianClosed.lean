@@ -99,8 +99,8 @@ lemma cartesianClosed_closed_rightAdj_obj {D : Type u} [Category.{u} D] :
 @[simp]
 lemma cartesianClosed_closed_rightAdj_map {D E : Type u}
     [Category.{u} D] [Category.{u} E] {F : D ⥤ E} :
-    (CategoryTheory.Closed.rightAdj (C := Cat.{u,u}) (Cat.of C)).map F.toCatHom
-      = (whiskeringRight _ _ _).obj F := rfl
+    (CategoryTheory.Closed.rightAdj (C := Cat.{u,u}) (Cat.of C)).map F.toCatHom =
+      (whiskeringRight _ _ _).obj F := rfl
 
 end
 
