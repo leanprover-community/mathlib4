@@ -58,16 +58,19 @@ variable [Module ℝ E]
 
 variable  [IsScalarTower ℝ 𝕜 E]
 
--- See
--- - Conway V Theorem 1.3 on p108
+/-
+See
+- Conway V Theorem 1.3 on p108
      - III 2.1 on p68 - continuous iff cont at 0 iff cont at a point iff scalar bound
      - III 5.3 on p54 - a linear funtional is continuous iff the kernel is closed (a iff d in 3.1)
--- - Bourbaki TVS II.43
--- - Rudin Theorem 3.10
+     - Mathlib/Analysis/Normed/Group/Hom.lean:theorem isClosed_ker
+- Bourbaki TVS II.43
+- Rudin Theorem 3.10
 lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [Function.Surjective]
   intro f₁
   sorry
+-/
 
 /-
 def dualEquiv : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
