@@ -1015,10 +1015,8 @@ lemma sum_single' (x : PiLp p β) :
   simp_rw [single_apply, ← toLp_sum, LinearMap.sum_single_apply]
   ext; simp
 
-@[simp]
-lemma comp_inl_add_comp_inr {γ : Type*} [AddCommGroup γ] [Module 𝕜 γ]
-    (L : PiLp p β →ₗ[𝕜] γ) (x : PiLp p β) :
-    ∑ i, L (PiLp.single p 𝕜 (x i)) = L x := by
+lemma comp_inl_add_comp_inr {γ : Type*} [AddCommGroup γ] [Module 𝕜 γ] (L : PiLp p β →ₗ[𝕜] γ)
+    (x : PiLp p β) : ∑ i, L (PiLp.single p 𝕜 (x i)) = L x := by
   simp [← map_sum, sum_single', -single_apply]
 
 end Single
