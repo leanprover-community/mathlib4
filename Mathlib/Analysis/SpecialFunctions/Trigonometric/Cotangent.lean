@@ -208,7 +208,7 @@ theorem cot_series_rep' {z : ℂ} (hz : z ∈ ℂ_ℤ) : π * Complex.cot (π * 
   apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm hz)).mpr
     (tendsto_logDeriv_euler_cot_sub z hz)
 
-/-- The cotangent infinte sum representation. -/
+/-- The cotangent infinte sum representation -/
 theorem cot_series_rep {z : ℂ} (hz : z ∈ ℂ_ℤ) :
     π * Complex.cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
   have h0 := tsum_pnat_eq_tsum_succ fun n ↦ 1 / ((z : ℂ) - n) + 1 / (z + n)
