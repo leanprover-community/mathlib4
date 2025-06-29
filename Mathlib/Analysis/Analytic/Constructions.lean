@@ -1301,3 +1301,81 @@ theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) 
   hrf.unshift.hasFPowerSeriesWithinAt
 
 end
+
+/-!
+### Composition with a linear map
+-/
+
+section compContinuousLinearMap
+
+variable {u : E →L[𝕜] F} {f : F → G} {pf : FormalMultilinearSeries 𝕜 F G} {s : Set F} {x : E}
+  {r : ℝ≥0∞}
+
+theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinOnBall f pf s (u x) r) :
+    HasFPowerSeriesWithinOnBall (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x (r / ‖u‖₊) where
+  r_le := by
+    calc
+      _ ≤ pf.radius / ↑‖u‖₊ := by
+        gcongr
+        exact hf.r_le
+      _ ≤ _ := pf.radius_compContinuousLinearMap_ge u
+  r_pos := by
+    simp only [ENNReal.div_pos_iff, ne_eq, coe_ne_top, not_false_eq_true, and_true]
+    exact pos_iff_ne_zero.mp hf.r_pos
+  hasSum := by
+    intro y hy1 hy2
+    convert hf.hasSum (y := u y) _ _
+    · simp
+    · simp at hy1 ⊢
+      rcases hy1 with (hy1 | hy1) <;> simp [hy1]
+    by_cases hu_zero : ‖u‖₊ = 0
+    · simp only [nnnorm_eq_zero] at hu_zero
+      simp [hu_zero, hf.r_pos]
+    cases r with
+    | top => simp
+    | coe r =>
+      rw [← ENNReal.coe_div hu_zero] at hy2
+      simp only [Metric.emetric_ball_nnreal, NNReal.coe_div, coe_nnnorm, Metric.mem_ball,
+        dist_zero_right] at hy2 ⊢
+      calc
+        _ ≤ _ := u.le_opNorm y
+        _ < _ := by
+          rwa [lt_div_iff₀'] at hy2
+          simpa using hu_zero
+
+theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
+    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖₊) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
+  exact hf.compContinuousLinearMap
+
+theorem HasFPowerSeriesAt.compContinuousLinearMap (hf : HasFPowerSeriesAt f pf (u x)) :
+    HasFPowerSeriesAt (f ∘ u) (pf.compContinuousLinearMap u) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖₊, hr.compContinuousLinearMap⟩
+
+theorem HasFPowerSeriesWithinAt.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinAt f pf s (u x)) :
+    HasFPowerSeriesWithinAt (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖₊, hr.compContinuousLinearMap⟩
+
+theorem AnalyticAt.compContinuousLinearMap (hf : AnalyticAt 𝕜 f (u x)) :
+    AnalyticAt 𝕜 (f ∘ u) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticAtWithin.compContinuousLinearMap (hf : AnalyticWithinAt 𝕜 f s (u x)) :
+    AnalyticWithinAt 𝕜 (f ∘ u) (u ⁻¹' s) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticOn.compContinuousLinearMap (hf : AnalyticOn 𝕜 f s) :
+    AnalyticOn 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAtWithin.compContinuousLinearMap (hf (u x) hx)
+
+theorem AnalyticOnNhd.compContinuousLinearMap (hf : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAt.compContinuousLinearMap (hf (u x) hx)
+
+end compContinuousLinearMap
