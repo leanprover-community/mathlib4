@@ -186,4 +186,14 @@ theorem σsInf_le_σsInf_of_subset_insert_top [OrderTop α] (ht : t.Countable) (
     sInf t ≤ sInf s :=
   σsSup_le_σsSup_of_subset_insert_bot (α := αᵒᵈ) ht h
 
+@[simp]
+theorem σsSup_diff_singleton_bot [OrderBot α] (hs : s.Countable) : sSup (s \ {⊥}) = sSup s :=
+  (σsSup_le_σsSup hs Set.diff_subset).antisymm <|
+    σsSup_le_σsSup_of_subset_insert_bot (hs.mono Set.diff_subset) <|
+      Set.subset_insert_diff_singleton _ _
+
+@[simp]
+theorem σsInf_diff_singleton_top [OrderTop α] (hs : s.Countable) : sInf (s \ {⊤}) = sInf s :=
+  σsSup_diff_singleton_bot (α := αᵒᵈ) hs
+
 end SigmaCompleteLattice
