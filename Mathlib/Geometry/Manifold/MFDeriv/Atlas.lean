@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
-
 /-!
 # Differentiability of models with corners and (extended) charts
 

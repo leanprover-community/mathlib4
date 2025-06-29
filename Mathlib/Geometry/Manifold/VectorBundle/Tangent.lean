@@ -260,6 +260,9 @@ theorem continuousLinearMapAt_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ 
       (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b := by
   simp [hb]
 
+@[deprecated (since := "2025-06-29")]
+alias trivializationAt_continuousLinearMapAt := continuousLinearMapAt_trivializationAt_eq_core
+
 /-- The inverse trivialization of the tangent space can be expressed in terms of the tangent bundle
 core. To write it as the manifold derivative of `(extChartAt I b₀).symm`, see
 `TangentBundle.symmL_trivializationAt`.
@@ -269,6 +272,9 @@ theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀)
     (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b := by
   simp [hb]
+
+@[deprecated (since := "2025-06-29")]
+alias trivializationAt_symmL  := symmL_trivializationAt_eq_core
 
 -- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]

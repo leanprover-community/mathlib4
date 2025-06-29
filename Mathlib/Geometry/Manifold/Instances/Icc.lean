@@ -10,6 +10,12 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-! # Manifold structure on real intervals
 
+The manifold structure on real intervals is defined in `Mathlib.Geometry.Manifold.Instances.Real`.
+We relate it to the manifold structure on the real line, by showing that the inclusion and
+projection are smooth, and showing that a function defined on the interval is smooth iff
+its composition with the projection is smooth on the interval in `ℝ`.
+
+We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
 -/
 
 open Set
