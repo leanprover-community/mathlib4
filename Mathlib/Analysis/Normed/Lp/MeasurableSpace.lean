@@ -25,12 +25,14 @@ instance measurableSpace : MeasurableSpace (WithLp p X) :=
 @[fun_prop, measurability]
 lemma measurable_ofLp : Measurable (@WithLp.ofLp p X) := fun _ h ↦ h
 
+set_option linter.deprecated false in
 @[deprecated measurable_ofLp (since := "2024-04-27")]
 lemma measurable_equiv : Measurable (WithLp.equiv p X) := fun _ h ↦ h
 
 @[fun_prop, measurability]
 lemma measurable_toLp : Measurable (@WithLp.toLp p X) := fun _ h ↦ h
 
+set_option linter.deprecated false in
 @[deprecated measurable_toLp (since := "2024-04-27")]
 lemma measurable_equiv_symm : Measurable (WithLp.equiv p X).symm := fun _ h ↦ h
 
@@ -56,7 +58,7 @@ namespace MeasurableEquiv
 
 /-- The map from `X` to `WithLp p X` as a measurable equivalence. -/
 protected def toLp : X ≃ᵐ (WithLp p X) where
-  toEquiv := (WithLp.equiv p X).symm
+  toEquiv := WithLp.toLp p
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 

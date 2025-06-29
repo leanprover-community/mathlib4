@@ -33,8 +33,8 @@ open Unitization
 /-- The natural map between `Unitization 𝕜 A` and `𝕜 × A`, transferred to their `WithLp 1`
 synonyms. -/
 noncomputable def unitization_addEquiv_prod : WithLp 1 (Unitization 𝕜 A) ≃+ WithLp 1 (𝕜 × A) :=
-  (WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).toAddEquiv.trans <|
-    (addEquiv 𝕜 A).trans (WithLp.linearEquiv 1 𝕜 (𝕜 × A)).symm.toAddEquiv
+  (ofLpLinearEquiv 1 𝕜 (Unitization 𝕜 A)).toAddEquiv.trans <|
+    (addEquiv 𝕜 A).trans (ofLpLinearEquiv 1 𝕜 (𝕜 × A)).symm.toAddEquiv
 
 noncomputable instance instUnitizationNormedAddCommGroup :
     NormedAddCommGroup (WithLp 1 (Unitization 𝕜 A)) :=
@@ -75,7 +75,7 @@ lemma unitization_nnnorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ 
 
 lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm
-    ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)
+    ((ofLpLinearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)
     unitization_norm_inr
 
 variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
@@ -98,7 +98,7 @@ lemma unitization_algebraMap (r : 𝕜) :
 @[simps!]
 def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A]
     [IsScalarTower R 𝕜 A] : WithLp 1 (Unitization 𝕜 A) ≃ₐ[R] Unitization 𝕜 A where
-  __ := WithLp.linearEquiv _ R _
+  __ := ofLp
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
   commutes' _ := rfl
