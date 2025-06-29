@@ -191,8 +191,8 @@ def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
 def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
   toFun F := uncurry.obj F
   invFun G := curry.obj G
-  left_inv := fun F ↦ curry_obj_uncurry_obj F
-  right_inv := fun G ↦ uncurry_obj_curry_obj G
+  left_inv := curry_obj_uncurry_obj
+  right_inv := uncurry_obj_curry_obj
 
 /-- The flipped equivalence of types of bifunctors given by currying. -/
 @[simps!]
