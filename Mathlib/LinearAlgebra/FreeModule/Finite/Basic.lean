@@ -49,3 +49,6 @@ instance Module.Finite.matrix {R ι₁ ι₂ M : Type*}
 
 example {ι₁ ι₂ R : Type*} [Semiring R] [Finite ι₁] [Finite ι₂] :
     Module.Finite R (Matrix ι₁ ι₂ R) := inferInstance
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [IsDomain R]
+  [IsPrincipalIdealRing R] [Module.Finite R M] [NoZeroSMulDivisors R M] [Module.Free R M]
