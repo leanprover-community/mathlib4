@@ -74,7 +74,6 @@ lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := Simpl
 lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
   SimplexCategory.δ_comp_σ_of_gt' (by decide)
 
-@[reassoc]
 lemma δ₂_zero_eq_mkOfSucc : (δ₂ (0 : Fin 3) _ _ : ⦋1⦌₂ ⟶ ⦋2⦌₂) =
     Hom.tr (SimplexCategory.mkOfSucc (1 : Fin 2)) _ _ :=
   SimplexCategory.δ_zero_eq_mkOfSucc
