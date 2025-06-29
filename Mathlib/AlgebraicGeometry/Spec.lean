@@ -412,7 +412,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         U.2
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
+    simp only [map_zero] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=

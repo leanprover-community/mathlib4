@@ -435,8 +435,7 @@ theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
   have := ΓSpec.adjunction.left_triangle_components X
   dsimp at this
   rw [← IsIso.eq_comp_inv] at this
-  simp only [ΓSpec.adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
-    Scheme.Γ_obj, Category.id_comp] at this
+  simp only [Category.id_comp] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
 
 @[deprecated (since := "2024-11-23")] alias Scheme.toSpecΓ_app_top := Scheme.toSpecΓ_appTop

@@ -132,7 +132,7 @@ lemma differentiable_LFunction_of_sum_zero {Φ : ZMod N → ℂ} (hΦ : ∑ j, �
 /-- The L-function of `Φ` has a residue at `s = 1` equal to the average value of `Φ`. -/
 lemma LFunction_residue_one (Φ : ZMod N → ℂ) :
     Tendsto (fun s ↦ (s - 1) * LFunction Φ s) (𝓝[≠] 1) (𝓝 (∑ j, Φ j / N)) := by
-  simp only [sum_div, LFunction, mul_sum]
+  simp only [LFunction, mul_sum]
   refine tendsto_finset_sum _ fun j _ ↦ ?_
   rw [(by ring : Φ j / N = Φ j * (1 / N * 1)), one_div, ← cpow_neg_one]
   simp only [show ∀ a b c d : ℂ, a * (b * (c * d)) = c * (b * (a * d)) by intros; ring]
@@ -181,7 +181,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_LFunction _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     simp only [mul_comm j, AddChar.sum_mulShift _ (isPrimitive_stdAddChar _), h,
-      ↓reduceIte, CharP.cast_eq_zero, or_true]
+      ↓reduceIte, CharP.cast_eq_zero]
   have hg : AnalyticOnNhd ℂ g U := by
     refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_expZeta _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
@@ -210,7 +210,7 @@ lemma LFunction_dft (Φ : ZMod N → ℂ) {s : ℂ} (hs : Φ 0 = 0 ∨ s ≠ 1) 
       rw [h.1, show Φ 0 = 0 by tauto, zero_mul, zero_mul]
   simp only [LFunction, ← this, mul_sum]
   rw [dft_def, sum_comm]
-  simp only [sum_mul, mul_sum, Circle.smul_def, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
+  simp only [sum_mul, mul_sum, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
   congr 1 with j
   congr 1 with k
   rw [mul_assoc (Φ _), mul_comm (Φ _), neg_mul]

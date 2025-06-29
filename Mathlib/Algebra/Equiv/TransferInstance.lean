@@ -710,7 +710,7 @@ lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A �
   letI := e.toAddEquiv.module A
   constructor
   intro x y z
-  simp only [Equiv.smul_def, AddEquiv.toEquiv_eq_coe, smul_assoc]
+  simp only [Equiv.smul_def, smul_assoc]
   apply e.symm.map_smul
 
 end

@@ -99,7 +99,7 @@ theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf 
 theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
   rw [exponent]
   split_ifs with h
-  · simp [h, @not_lt_zero' ℕ]
+  · simp [h]
   --if this isn't done this way, `to_additive` freaks
   · tauto
 

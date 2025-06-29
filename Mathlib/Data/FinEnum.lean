@@ -136,7 +136,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
   induction xs generalizing s with
   | nil => simp [enum, eq_empty_iff_forall_notMem]
   | cons x xs ih =>
-      simp only [enum, List.bind_eq_flatMap, List.mem_flatMap, List.mem_cons, List.mem_singleton,
+      simp only [enum, List.bind_eq_flatMap, List.mem_flatMap, List.mem_cons,
         List.not_mem_nil, or_false, ih]
       refine ⟨by aesop, fun hs => ⟨s.erase x, ?_⟩⟩
       simp only [or_iff_not_imp_left] at hs

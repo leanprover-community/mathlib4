@@ -307,8 +307,7 @@ theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a
 @[simp]
 theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') = singleton a b :=
   ext <| by
-    simp only [AList.entries_insert, List.kerase_cons_eq, and_self_iff, AList.singleton_entries,
-      heq_iff_eq, eq_self_iff_true]
+    simp only [AList.entries_insert, List.kerase_cons_eq, AList.singleton_entries]
 
 @[simp]
 theorem entries_toAList (xs : List (Sigma β)) : (List.toAList xs).entries = dedupKeys xs :=

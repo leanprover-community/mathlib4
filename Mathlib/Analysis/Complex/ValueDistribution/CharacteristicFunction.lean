@@ -60,7 +60,6 @@ difference between the proximity functions.
 lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : MeromorphicOn f Set.univ)
     (a₀ : E) :
     characteristic f ⊤ - characteristic (f · - a₀) ⊤ = proximity f ⊤ - proximity (f · - a₀) ⊤ := by
-  rw [(by rfl : (f · - a₀) = f - fun _ ↦ a₀)]
-  simp [characteristic, logCounting_sub_const h]
+  simp [← Pi.sub_def, characteristic, logCounting_sub_const h]
 
 end ValueDistribution

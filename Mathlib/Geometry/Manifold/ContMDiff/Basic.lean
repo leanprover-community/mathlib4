@@ -62,7 +62,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds (I := I) x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
-    simp only [e, e.map_source hx', true_and, e.left_inv hx', st hx's, *]
+    simp only [e, true_and, e.left_inv hx', st hx's, *]
   refine ((hg.2.comp _ (hf.2.mono inter_subset_right)
       ((mapsTo_preimage _ _).mono_left inter_subset_left)).mono_of_mem_nhdsWithin
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_

@@ -612,7 +612,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
         change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
-        simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff]
+        simp [toDual_le_toDual]
       · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _)
           Lex.not_inr_le_inl
       · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _)
@@ -620,7 +620,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
       · change
           toLex (inl <| toDual a) ≤ toLex (inl <| toDual b) ↔
             toDual (toLex <| inr a) ≤ toDual (toLex <| inr b)
-        simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff] }
+        simp [toDual_le_toDual] }
 
 @[simp]
 theorem sumLexDualAntidistrib_inl :
@@ -655,7 +655,7 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
-    · simp only [elim_inr, lex_inl_inl, bot_le, le_rfl]
+    · simp only [elim_inr, lex_inl_inl, bot_le]
     · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
@@ -690,7 +690,7 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
+      Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
     · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]

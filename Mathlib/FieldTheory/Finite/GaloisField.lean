@@ -116,24 +116,24 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   refine Subring.closure_induction ?_ ?_ ?_ ?_ ?_ ?_ hx
     <;> simp_rw [mem_rootSet_of_ne aux]
   · rintro x (⟨r, rfl⟩ | hx)
-    · simp only [g_poly, map_sub, map_pow, aeval_X]
+    · simp only [map_sub, map_pow, aeval_X]
       rw [← map_pow, ZMod.pow_card_pow, sub_self]
     · dsimp only [GaloisField] at hx
       rwa [mem_rootSet_of_ne aux] at hx
   · rw [← coeff_zero_eq_aeval_zero']
-    simp only [g_poly, coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
+    simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
       one_ne_zero, coeff_sub]
     intro hn
     exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
-  · simp [g_poly]
-  · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
+  · simp
+  · simp only [aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
     intro x y _ _ hx hy
     rw [hx, hy]
   · intro x _ hx
     simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, map_sub, sub_neg_eq_add] at *
     rw [neg_pow, hx, neg_one_pow_char_pow]
     simp
-  · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, mul_pow, sub_eq_zero]
+  · simp only [aeval_X_pow, aeval_X, map_sub, mul_pow, sub_eq_zero]
     intro x y _ _ hx hy
     rw [hx, hy]
 
@@ -155,8 +155,8 @@ theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
-  let h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
-  let inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
+  have h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
+  have inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
   (@IsSplittingField.algEquiv _ (ZMod p) _ _ _ (X ^ p ^ 1 - X : (ZMod p)[X]) inst).symm
 
 section Fintype

@@ -51,7 +51,7 @@ instance instInhabited : Inhabited (OuterMeasure α) :=
 instance instAdd : Add (OuterMeasure α) :=
   ⟨fun m₁ m₂ =>
     { measureOf := fun s => m₁ s + m₂ s
-      empty := show m₁ ∅ + m₂ ∅ = 0 by simp [OuterMeasure.empty]
+      empty := show m₁ ∅ + m₂ ∅ = 0 by simp
       mono := fun {_ _} h => add_le_add (m₁.mono h) (m₂.mono h)
       iUnion_nat := fun s _ =>
         calc
@@ -141,7 +141,7 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
-    bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, coe_bot, zero_le] }
+    bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, zero_le] }
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
   ⟨fun h => bot_unique fun s => (measure_mono <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩

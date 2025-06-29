@@ -144,7 +144,7 @@ theorem RemoveNone.fiber_some (a : α) :
     constructor
     · intro x
       apply_fun fun x => Equiv.swap none (some a) x
-      simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
+      simp only [Perm.decomposeOption_symm_apply, Perm.coe_mul]
       rcases x with - | x
       · simp
       simp only [comp, optionCongr_apply, Option.map_some, swap_apply_self]

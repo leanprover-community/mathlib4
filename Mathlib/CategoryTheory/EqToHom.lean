@@ -79,7 +79,7 @@ theorem comp_eqToHom_iff {X Y Y' : C} (p : Y = Y') (f : X ⟶ Y) (g : X ⟶ Y') 
 theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) :
     eqToHom p ≫ g = f ↔ g = eqToHom p.symm ≫ f :=
   { mp := fun h => h ▸ by simp
-    mpr := fun h => h ▸ by simp [whisker_eq _ h] }
+    mpr := fun h => h ▸ by simp }
 
 theorem eqToHom_comp_heq {C} [Category C] {W X Y : C}
     (f : Y ⟶ X) (h : W = Y) : HEq (eqToHom h ≫ f) f := by

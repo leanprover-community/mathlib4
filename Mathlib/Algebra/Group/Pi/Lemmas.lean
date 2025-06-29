@@ -310,7 +310,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
-    simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
+    simp only [mul_apply, mulSingle_apply] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
     · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)

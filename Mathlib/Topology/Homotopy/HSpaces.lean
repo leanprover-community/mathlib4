@@ -202,7 +202,7 @@ theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayRef
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
-  simp only [delayReflRight, trans_apply, refl_extend, Path.coe_mk_mk, Function.comp_apply,
+  simp only [delayReflRight, trans_apply, Path.coe_mk_mk,
     refl_apply]
   split_ifs with h; swap
   on_goal 1 => conv_rhs => rw [← γ.target]

@@ -214,7 +214,7 @@ lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] 
       mul_subset_mul_right <| singleton_subset_iff.2 <| max'_mem _ _)
   refine eq_singleton_iff_unique_mem.2 ⟨mem_inter.2 ⟨mul_mem_mul (max'_mem _ _) <|
     mem_singleton_self _, mul_mem_mul (mem_singleton_self _) <| min'_mem _ _⟩, ?_⟩
-  simp only [mem_inter, and_imp, mem_mul, mem_singleton, exists_and_left, exists_eq_left,
+  simp only [mem_inter, and_imp, mem_mul, mem_singleton, exists_eq_left,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mul_left_inj]
   exact fun a' ha' b' hb' h ↦ (le_max' _ _ ha').eq_of_not_lt fun ha ↦
     ((mul_lt_mul_right' ha _).trans_eq' h).not_ge <| mul_le_mul_left' (min'_le _ _ hb') _

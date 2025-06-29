@@ -88,7 +88,7 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
   Iff.rfl
 
 theorem hasFiniteIntegral_iff_enorm {f : α → ε} : HasFiniteIntegral f μ ↔ ∫⁻ a, ‖f a‖ₑ ∂μ < ∞ := by
-  simp only [HasFiniteIntegral, ofReal_norm_eq_enorm, enorm_eq_nnnorm]
+  simp only [HasFiniteIntegral]
 
 @[deprecated (since := "2025-01-20")]
 alias hasFiniteIntegral_iff_nnnorm := hasFiniteIntegral_iff_enorm
@@ -289,7 +289,7 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
   by_cases hfx : f x = ∞
   · simp [hfx]
   · lift f x to ℝ≥0 using hfx with fx h
-    simp [← h, ← NNReal.coe_le_coe]
+    simp
 
 lemma hasFiniteIntegral_toReal_iff {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
@@ -470,7 +470,7 @@ variable [MeasurableSingletonClass α]
 -- Note that asking for mere summability makes no sense, as every sequence in ℝ≥0∞ is summable.
 lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
     HasFiniteIntegral f Measure.count ↔ tsum (‖f ·‖ₑ) < ⊤ := by
-  simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count]
+  simp only [hasFiniteIntegral_iff_enorm, lintegral_count]
 
 /-- A function has finite integral for the counting measure iff its norm is summable. -/
 lemma hasFiniteIntegral_count_iff {f : α → β} :

@@ -34,8 +34,8 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
     (fun f g => by
       simp only [edist_pi_def, edist_nndist, ← ENNReal.coe_finset_sup, ENNReal.coe_toReal])
   refine i.replaceBornology fun s => ?_
-  simp only [← isBounded_def, isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
-    forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
+  simp only [isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
+    forall_mem_image, ← Filter.eventually_all, @dist_nndist (π _)]
   refine eventually_congr ((eventually_ge_atTop 0).mono fun C hC ↦ ?_)
   lift C to ℝ≥0 using hC
   refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,

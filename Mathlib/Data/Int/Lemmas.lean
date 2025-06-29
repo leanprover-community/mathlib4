@@ -23,7 +23,7 @@ namespace Int
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
   by_cases h : m ≥ n
   · exact le_of_eq (Int.ofNat_sub h).symm
-  · simp [le_of_not_ge h, ofNat_le]
+  · simp [le_of_not_ge h]
 
 /-! ### `succ` and `pred` -/
 
@@ -120,7 +120,7 @@ theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
   · intro ⟨rfl, hz, hb⟩
     constructor
     · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
-      simp [Int.zero_add]
+      simp
     · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
 
 end Int

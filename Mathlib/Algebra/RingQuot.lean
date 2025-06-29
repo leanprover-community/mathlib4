@@ -315,7 +315,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   nsmul := (· • ·)
   nsmul_zero := by
     rintro ⟨⟨⟩⟩
-    simp only [smul_quot, zero_smul, zero_quot]
+    simp only [zero_smul]
   nsmul_succ := by
     rintro n ⟨⟨⟩⟩
     simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
@@ -443,7 +443,7 @@ irreducible_def lift {r : R → R → Prop} :
       simp only [preLift_def]
       ext
       simp only [mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-                 Function.comp_apply, forall_const] }
+        Function.comp_apply] }
 
 @[simp]
 theorem lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
@@ -591,13 +591,13 @@ irreducible_def liftAlgHom {s : A → A → Prop} :
     invFun := fun F ↦ ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg F (mkAlgHom_rel S h)⟩
     left_inv := fun f ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, RingHom.toMonoidHom_eq_coe,
-                 RingHom.coe_monoidHom_mk, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
-                 MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
+      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
+        AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Function.comp_apply]
     right_inv := fun F ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, RingHom.toMonoidHom_eq_coe,
-                 RingHom.coe_monoidHom_mk, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
+      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
+                 AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
                  MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
 
 @[simp]

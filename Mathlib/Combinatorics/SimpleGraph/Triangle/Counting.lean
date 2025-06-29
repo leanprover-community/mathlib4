@@ -64,7 +64,7 @@ private lemma triangle_split_helper [DecidableEq α] :
       (fun x ↦ (G.interedges {y ∈ t | G.Adj x y} {y ∈ u | G.Adj x y}).image (x, ·)) ⊆
       (s ×ˢ t ×ˢ u).filter (fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z) := by
   rintro ⟨x, y, z⟩
-  simp only [mem_filter, mem_product, mem_biUnion, mem_sdiff, exists_prop, mem_union,
+  simp only [mem_filter, mem_product, mem_biUnion, mem_sdiff, mem_union,
     mem_image, Prod.exists, and_assoc, exists_imp, and_imp, Prod.mk_inj, mem_interedges_iff]
   rintro x hx - y z hy xy hz xz yz rfl rfl rfl
   exact ⟨hx, hy, hz, xy, xz, yz⟩
@@ -125,8 +125,8 @@ lemma triangle_counting'
     gcongr
   rintro a _ b _ t
   rw [Function.onFun, disjoint_left]
-  simp only [Prod.forall, mem_image, not_exists, exists_prop, mem_filter, Prod.mk_inj,
-    exists_imp, and_imp, not_and, mem_product, or_assoc]
+  simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj,
+    exists_imp, and_imp, not_and]
   aesop
 
 variable [DecidableEq α]

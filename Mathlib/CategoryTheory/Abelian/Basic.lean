@@ -144,7 +144,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
-  simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
+  simp only [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,

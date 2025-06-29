@@ -74,7 +74,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
       _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
   refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert ksum, ?_⟩
-  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne, Subtype.coe_mk]
+  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne]
     intro e _ het
     by_cases hes : e ∈ s
     · have hge : 0 < g e := by
@@ -162,7 +162,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   rw [convexHull_eq_union] at hx
   simp only [exists_prop, Set.mem_iUnion] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
-  simp only [t.convexHull_eq, exists_prop, Set.mem_setOf_eq] at ht₃
+  simp only [t.convexHull_eq, Set.mem_setOf_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := {i ∈ t | w i ≠ 0}
   refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩

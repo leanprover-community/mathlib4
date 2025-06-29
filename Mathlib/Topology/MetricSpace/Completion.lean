@@ -105,7 +105,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         · have Z := hε (not_le.1 h)
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
-    simp only [not_le.mpr hxy, false_or, not_le] at this
+    simp only [not_le.mpr hxy, false_or] at this
     exact ts this
   · /- Start from a set `s` containing an ε-neighborhood of the diagonal in `Completion α`. To show
         that it is an entourage, we use the fact that `dist` is uniformly continuous on
@@ -118,8 +118,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     let r : Set (ℝ × ℝ) := { p | dist p.1 p.2 < ε }
     have : r ∈ uniformity ℝ := Metric.dist_mem_uniformity εpos
     have T := uniformContinuous_def.1 (@Completion.uniformContinuous_dist α _) r this
-    simp only [uniformity_prod_eq_prod, mem_prod_iff, exists_prop, Filter.mem_map,
-      Set.mem_setOf_eq] at T
+    simp only [uniformity_prod_eq_prod, mem_prod_iff, Filter.mem_map] at T
     rcases T with ⟨t1, ht1, t2, ht2, ht⟩
     refine mem_of_superset ht1 ?_
     have A : ∀ a b : Completion α, (a, b) ∈ t1 → dist a b < ε := by
@@ -143,7 +142,7 @@ protected theorem uniformity_dist' :
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
-    simp +contextual [lt_min_iff]
+    simp +contextual
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _

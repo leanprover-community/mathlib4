@@ -872,7 +872,7 @@ theorem map_comp
     {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
     N.map (g.comp f) = (N.map f).map g :=
   SetLike.coe_injective <| by
-    simp only [← Set.image_comp, coe_map, LinearMap.coe_comp, LieModuleHom.coe_comp]
+    simp only [← Set.image_comp, coe_map, LieModuleHom.coe_comp]
 
 @[simp]
 theorem map_id : N.map LieModuleHom.id = N := by ext; simp

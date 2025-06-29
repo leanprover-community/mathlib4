@@ -83,7 +83,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
               convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
-              · simp [hj]
+              · simp
               · rintro j - h
                 have hinj := f.injective.ne h
                 rw [hj.choose_spec] at hinj

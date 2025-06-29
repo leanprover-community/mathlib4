@@ -74,7 +74,7 @@ theorem midpoint_fixed {x y : PE} :
   have : c ≤ c / 2 := by
     apply ciSup_le
     rintro ⟨e, he⟩
-    simp only [Subtype.coe_mk, le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
+    simp only [le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
     exact le_ciSup h_bdd ⟨f e, hf_maps_to he⟩
   replace : c ≤ 0 := by linarith
   refine fun e hx hy => dist_le_zero.1 (le_trans ?_ this)

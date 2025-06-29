@@ -64,7 +64,7 @@ lemma piecewise_insert_of_ne [DecidableEq ι] {i j : ι} [∀ i, Decidable (i �
 
 lemma piecewise_insert [DecidableEq ι] (j : ι) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = update (s.piecewise f g) j (f j) := by
-  classical simp only [← piecewise_coe, coe_insert, ← Set.piecewise_insert]
+  classical simp only [← piecewise_coe, ← Set.piecewise_insert]
   ext
   congr
   simp
@@ -161,7 +161,7 @@ lemma le_piecewise_of_le_of_le (hf : h ≤ f) (hg : h ≤ g) : h ≤ s.piecewise
   piecewise_cases s f g (fun y => h x ≤ y) (hf x) (hg x)
 
 lemma piecewise_le_piecewise' (hf : ∀ x ∈ s, f x ≤ f' x) (hg : ∀ x ∉ s, g x ≤ g' x) :
-    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [hx, *]
+    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [*]
 
 lemma piecewise_le_piecewise (hf : f ≤ f') (hg : g ≤ g') : s.piecewise f g ≤ s.piecewise f' g' :=
   s.piecewise_le_piecewise' (fun x _ => hf x) fun x _ => hg x

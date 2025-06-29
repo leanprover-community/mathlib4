@@ -29,10 +29,6 @@ instance : Field (ZMod p) where
   qsmul_def := fun _ _ => rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
-instance : IsDomain (ZMod p) := by
-  -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
-  cases p
-  · exact (Nat.not_prime_zero hp.out).elim
-  exact @Field.isDomain (ZMod _) (inferInstanceAs (Field (ZMod _)))
+instance : IsDomain (ZMod p) := by constructor
 
 end ZMod

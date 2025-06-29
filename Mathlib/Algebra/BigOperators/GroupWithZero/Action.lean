@@ -75,7 +75,7 @@ theorem smul_finprod' {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
     r • ∏ᶠ x : ι, f x = ∏ᶠ x : ι, r • (f x) := by
   cases nonempty_fintype (PLift ι)
   simp only [finprod_eq_prod_plift_of_mulSupport_subset (s := Finset.univ) (by simp),
-    finprod_eq_prod_of_fintype, Finset.smul_prod']
+    Finset.smul_prod']
 
 variable {G : Type*} [Group G] [MulDistribMulAction G β]
 

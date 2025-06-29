@@ -731,7 +731,7 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     refine Submodule.comap_mono ?_
     intro x hx
     refine (Submodule.mem_inf.mp (this.ge ?_)).1
-    simp only [val_eq_coe, Submodule.mem_comap, Algebra.lsmul_coe, smul_eq_mul, mem_coe]
+    simp only [val_eq_coe, Algebra.lsmul_coe, smul_eq_mul, mem_coe]
     exact mul_mem_mul (mem_spanSingleton_self _ _) hx
   · rw [← LinearMap.ker_eq_bot, Submodule.mapQ, Submodule.ker_liftQ,
       LinearMap.ker_comp, Submodule.ker_mkQ, ← Submodule.comap_comp,

@@ -74,7 +74,7 @@ lemma Cotangent.exact :
       EmbeddingLike.map_eq_zero_iff]
     ext x
     obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-    simp only [map_mk, Hom.toAlgHom_comp_apply, val_mk, LinearMap.zero_apply, val_zero]
+    simp only [map_mk, val_mk, LinearMap.zero_apply, val_zero]
     convert Q.ker.toCotangent.map_zero
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
     · congr
@@ -146,7 +146,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
       Basis.repr_self, Basis.prod_repr_inl, map_zero, Finsupp.coe_zero,
       Pi.zero_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_apply,
       Finsupp.single_apply, ite_smul, one_smul, zero_smul, Sum.inr.injEq,
-      MonoidWithZeroHom.map_ite_one_zero, reduceCtorEq, ↓reduceIte]
+      MonoidWithZeroHom.map_ite_one_zero, reduceCtorEq]
 
 lemma CotangentSpace.compEquiv_symm_zero (x) :
     (compEquiv Q P).symm (0, x) =
@@ -229,7 +229,7 @@ lemma δAux_mul (x y) :
     induction y using MvPolynomial.induction_on' with
     | monomial m s =>
       simp only [monomial_mul, δAux_monomial, Derivation.leibniz, tmul_add, tmul_smul,
-        smul_tmul', smul_eq_mul, Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
+        smul_tmul', Algebra.smul_def, algebraMap_apply, aeval_monomial, mul_assoc]
       rw [mul_comm (m.prod _) (n.prod _)]
       simp only [pow_zero, implies_true, pow_add, Finsupp.prod_add_index']
     | add y₁ y₂ hy₁ hy₂ => simp only [map_add, smul_add, hy₁, hy₂, mul_add, add_smul]; abel
@@ -269,8 +269,8 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
-    simp only [algHom_C, δAux_C, sub_self, derivation_C, Derivation.map_algebraMap,
-      tmul_zero, map_zero, add_zero, MvPolynomial.algebraMap_apply, Prod.snd_zero]
+    simp only [algHom_C, δAux_C, derivation_C, Derivation.map_algebraMap,
+      tmul_zero, map_zero, MvPolynomial.algebraMap_apply, Prod.snd_zero]
   | add x₁ x₂ hx₁ hx₂ =>
     simp only [map_add, hx₁, hx₂, tmul_add, Prod.snd_add]
   | mul_X p n IH =>

@@ -204,7 +204,7 @@ def ContMDiff (n : WithTop ℕ∞) (f : M → M') :=
 
 theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
     ContMDiffWithinAt I I' m f s x := by
-  simp only [ContMDiffWithinAt, LiftPropWithinAt] at hf ⊢
+  simp only [ContMDiffWithinAt] at hf ⊢
   exact ⟨hf.1, hf.2.of_le (mod_cast le)⟩
 
 theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=

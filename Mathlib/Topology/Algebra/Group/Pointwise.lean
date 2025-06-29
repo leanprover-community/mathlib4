@@ -229,7 +229,7 @@ lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
   calc
   F * (closure {1} : Set G) = closure F * closure ({1} : Set G) := by rw [hF.closure_eq]
   _ ⊆ closure (F * ({1} : Set G)) := smul_set_closure_subset _ _
-  _ = F := by simp [hF.closure_eq]
+  _ = F := by simp
 
 @[to_additive]
 lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :
@@ -239,7 +239,7 @@ lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) 
   by_contra H
   have : x ∈ t * (closure {1} : Set G) := by
     rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
-    simp only [smul_eq_mul, mem_compl_iff, not_not] at H
+    simp only [mem_compl_iff, not_not] at H
     exact ⟨x * g, H, g⁻¹, Subgroup.inv_mem _ hg, by simp⟩
   rw [ht] at this
   exact hx this

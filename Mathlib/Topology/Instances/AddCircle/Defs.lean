@@ -94,7 +94,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) 
       (by
         rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
         exact isOpen_iUnion fun i => isOpen_Ioo) <|
-    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx
+    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx.symm
 
 theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
   let h := toIcoMod_eventuallyEq_toIocMod hp a hx

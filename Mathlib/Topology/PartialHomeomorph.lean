@@ -1276,7 +1276,7 @@ theorem transHomeomorph_transHomeomorph (e : PartialHomeomorph X Y) (f' : Y ≃�
 theorem trans_transHomeomorph (e : PartialHomeomorph X Y) (e' : PartialHomeomorph Y Z)
     (f'' : Z ≃ₜ Z') :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
-  simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
+  simp only [transHomeomorph_eq_trans, trans_assoc]
 
 end transHomeomorph
 

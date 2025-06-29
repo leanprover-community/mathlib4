@@ -367,7 +367,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   congr; ext y
   rw [map_apply, traceForm_apply, mul_comm (b y), ← smul_def]
   simp only [id.smul_eq_mul, RingHom.id_apply, map_apply, transpose_apply, LinearMap.map_smulₛₗ,
-    traceForm_apply, Algebra.smul_mul_assoc]
+    Algebra.smul_mul_assoc]
   rw [mul_comm (b x), ← smul_def]
   ring_nf
   rw [mul_assoc]
@@ -544,8 +544,8 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
   apply (algebraMap K (AlgebraicClosure K)).injective
   have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
     pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
-  simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
-    map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
+  simp only [Polynomial.map_smul, map_div₀,
+    map_pow, RingHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
   simp only [MonoidWithZeroHom.map_ite_one_zero, traceForm_apply]

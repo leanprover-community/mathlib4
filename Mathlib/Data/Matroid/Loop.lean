@@ -153,7 +153,7 @@ lemma Indep.eq_empty_of_subset_loops (hI : M.Indep I) (h : I ⊆ M.loops) : I = 
 @[simp]
 lemma isBasis_loops_iff : M.IsBasis I M.loops ↔ I = ∅ :=
   ⟨fun h ↦ h.indep.eq_empty_of_subset_loops h.subset,
-    by simp +contextual [closure_empty, M.empty_indep.isBasis_closure]⟩
+    by simp +contextual [closure_empty]⟩
 
 lemma closure_eq_loops_of_subset (h : X ⊆ M.loops) : M.closure X = M.loops :=
   (closure_subset_closure_of_subset_closure h).antisymm (M.closure_mono (empty_subset _))
@@ -304,7 +304,7 @@ lemma setOf_isNonloop_eq (M : Matroid α) : {e | M.IsNonloop e} = M.E \ M.loops 
 
 lemma not_isNonloop_iff_closure : ¬ M.IsNonloop e ↔ M.closure {e} = M.loops := by
   by_cases he : e ∈ M.E
-  · simp [IsNonloop, isLoop_iff_closure_eq_loops_and_mem_ground, he]
+  · simp [isLoop_iff_closure_eq_loops_and_mem_ground, he]
   simp [← closure_inter_ground, singleton_inter_eq_empty.2 he, loops,
     (show ¬ M.IsNonloop e from fun h ↦ he h.mem_ground)]
 
@@ -652,7 +652,7 @@ lemma IsBasis.inter_coloops_subset (hIX : M.IsBasis I X) : X ∩ M.coloops ⊆ I
 
 lemma exists_mem_isCircuit_of_not_isColoop (heE : e ∈ M.E) (he : ¬ M.IsColoop e) :
     ∃ C, M.IsCircuit C ∧ e ∈ C := by
-  simp only [isColoop_iff_forall_mem_isBase, not_forall, Classical.not_imp, exists_prop] at he
+  simp only [isColoop_iff_forall_mem_isBase, not_forall, exists_prop] at he
   obtain ⟨B, hB, heB⟩ := he
   exact ⟨M.fundCircuit e B, hB.fundCircuit_isCircuit heE heB, .inl rfl⟩
 

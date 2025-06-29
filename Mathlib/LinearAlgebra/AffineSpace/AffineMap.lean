@@ -282,7 +282,7 @@ instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub f g :=
     ⟨fun p => f p -ᵥ g p, f.linear - g.linear, fun p v => by
-      simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub, sub_add_eq_add_sub]⟩
+      simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, sub_add_eq_add_sub]⟩
   vsub_vadd' f g := ext fun p => vsub_vadd (f p) (g p)
   vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
 
@@ -407,7 +407,7 @@ theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
-    simp [f.map_vadd, vadd_vsub_assoc]
+    simp [f.map_vadd]
   rw [h, Equiv.comp_injective, Equiv.injective_comp]
 
 @[simp]
@@ -416,7 +416,7 @@ theorem linear_surjective_iff (f : P1 →ᵃ[k] P2) :
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
-    simp [f.map_vadd, vadd_vsub_assoc]
+    simp [f.map_vadd]
   rw [h, Equiv.comp_surjective, Equiv.surjective_comp]
 
 @[simp]
@@ -428,7 +428,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
   simp only [Set.mem_vsub, Set.mem_image,
-    exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
+    exists_exists_and_eq_and, ← f.linearMap_vsub]
   constructor
   · rintro ⟨x, hx, y, hy, hv⟩
     exact ⟨x -ᵥ y, ⟨x, hx, y, hy, rfl⟩, hv⟩
@@ -659,10 +659,10 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp [const_apply]
+    simp
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp [const_apply, const_linear]
+    ext <;> simp [const_linear]
   map_add' := by simp
   map_smul' := by simp
 

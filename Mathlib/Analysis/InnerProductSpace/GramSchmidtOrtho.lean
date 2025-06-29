@@ -93,7 +93,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
     · rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel₀, sub_self]
       rwa [inner_self_ne_zero]
   intro i hi hia
-  simp only [mul_eq_zero, div_eq_zero_iff, inner_self_eq_zero]
+  simp only [mul_eq_zero, div_eq_zero_iff]
   right
   rcases hia.lt_or_gt with hia₁ | hia₂
   · rw [inner_eq_zero_symm]
@@ -188,7 +188,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
     rw [← span_gramSchmidt_Iio 𝕜 f n, gramSchmidt_def' 𝕜 f, h, zero_add]
     apply Submodule.sum_mem _ _
     intro a ha
-    simp only [Set.mem_image, Set.mem_Iio, orthogonalProjection_singleton]
+    simp only [orthogonalProjection_singleton]
     apply Submodule.smul_mem _ _ _
     rw [Finset.mem_Iio] at ha
     exact subset_span ⟨a, ha, by rfl⟩
@@ -257,7 +257,7 @@ theorem gramSchmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f)
     Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
   unfold Orthonormal
   constructor
-  · simp only [gramSchmidtNormed_unit_length, h₀, eq_self_iff_true, imp_true_iff]
+  · simp only [gramSchmidtNormed_unit_length, h₀, imp_true_iff]
   · intro i j hij
     simp only [gramSchmidtNormed, inner_smul_left, inner_smul_right, RCLike.conj_inv,
       RCLike.conj_ofReal, mul_eq_zero, inv_eq_zero, RCLike.ofReal_eq_zero, norm_eq_zero]

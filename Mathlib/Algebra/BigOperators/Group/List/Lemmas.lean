@@ -104,7 +104,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
-        · simp only [ha.symm, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
+        · simp only [ha.symm, mem_filter, mem_dedup, mem_cons, true_or, hp,
             and_false, false_and, reduceCtorEq] at ha'
         · exact ha'.2.symm
 
@@ -145,7 +145,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
     (L.flatten.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
-  simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
+  simp only [this, take_sum_flatten, drop_sum_flatten,
     drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
 end List

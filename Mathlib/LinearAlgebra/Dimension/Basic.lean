@@ -229,7 +229,7 @@ theorem lift_rank_le_of_surjective_injective
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
@@ -240,7 +240,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
-  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, this]
 
 variable {S' : Type v} [Semiring S'] [Algebra R' S']
 

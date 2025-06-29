@@ -100,7 +100,7 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
   simp_rw [this] at hF
   convert hasSum_mellin_pi_mul hp' hs hF ?_ using 2 with i
   · rcases eq_or_ne (p i) 0 with h | h <;>
-    simp [a', h, if_false, ofReal_zero, zero_cpow hs', div_zero]
+    simp [a', h, ofReal_zero, zero_cpow hs', div_zero]
   · refine h_sum.of_norm_bounded (fun i ↦ ?_)
     simp only [a']
     split_ifs

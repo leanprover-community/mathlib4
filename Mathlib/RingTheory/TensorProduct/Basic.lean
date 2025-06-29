@@ -1059,6 +1059,22 @@ lemma tmul_one_eq_one_tmul (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ alg
 
 end
 
+variable (R A B) in
+lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] :
+    Subring.closure (Set.range (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∪
+      Set.range Algebra.TensorProduct.includeRight) = ⊤ := by
+  rw [← top_le_iff]
+  rintro x -
+  induction x with
+  | zero => exact zero_mem _
+  | tmul x y =>
+    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
+      (Algebra.TensorProduct.includeRight y) ∈ _
+    · simp
+    · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
+        (Subring.subset_closure (.inr ⟨_, rfl⟩))
+  | add x y _ _ => exact add_mem ‹_› ‹_›
 section
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
@@ -1072,7 +1088,7 @@ def lmul'' : S ⊗[R] S →ₐ[S] S :=
     { __ := LinearMap.mul' R S
       map_smul' := fun s x ↦ x.induction_on (by simp)
         (fun _ _ ↦ by simp [TensorProduct.smul_tmul', mul_assoc])
-        fun x y hx hy ↦ by simp_all [hx, hy, mul_add] }
+        fun x y hx hy ↦ by simp_all [mul_add] }
     (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
 
 theorem lmul''_eq_lid_comp_mapOfCompatibleSMul :
@@ -1106,7 +1122,7 @@ def lmulEquiv [CompatibleSMul R S S S] : S ⊗[R] S ≃ₐ[S] S :=
   .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
     (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
       rw [mul_comm, ← smul_eq_mul, smul_tmul, smul_eq_mul, mul_one])
-    fun _ _ hx hy ↦ by simp_all [hx, hy, add_tmul]
+    fun _ _ hx hy ↦ by simp_all [add_tmul]
 
 theorem lmulEquiv_eq_lidOfCompatibleSMul [CompatibleSMul R S S S] :
     lmulEquiv R S = lidOfCompatibleSMul R S S :=
@@ -1209,7 +1225,7 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
       intro x
       simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
-        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_apply, Module.End.one_eq_id,
+        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
 
 end LinearMap
@@ -1306,7 +1322,7 @@ protected def module : Module (A ⊗[R] B) M where
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
       simp only [moduleAux_apply, mul_add, LinearMap.map_add,
-        LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
+        LinearMap.add_apply, moduleAux_apply, hz, hw]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw

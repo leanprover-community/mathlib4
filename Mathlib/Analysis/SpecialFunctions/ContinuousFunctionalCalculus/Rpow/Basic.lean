@@ -137,7 +137,7 @@ lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
   case pos =>
     obtain (rfl | hx) := eq_zero_or_pos x <;> obtain (rfl | hy) := eq_zero_or_pos y
     all_goals try simp
-    simp only [nnrpow_def, NNReal.coe_mul]
+    simp only [nnrpow_def]
     rw [← cfcₙ_comp _ _ a]
     congr! 2 with u
     ext
@@ -222,7 +222,7 @@ noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
 lemma sqrt_eq_nnrpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
-  simp only [sqrt, nnrpow, NNReal.coe_inv, NNReal.coe_ofNat, NNReal.rpow_eq_pow]
+  simp only [sqrt]
   congr
   ext
   exact_mod_cast NNReal.sqrt_eq_rpow _
@@ -343,7 +343,7 @@ lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
-  simp only [rpow_def, NNReal.coe_one, NNReal.rpow_eq_pow, NNReal.rpow_one, cfc_id' ℝ≥0 a]
+  simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
 
 @[simp]
 lemma one_rpow {x : ℝ} : (1 : A) ^ x = (1 : A) := by simp [rpow_def]
@@ -366,7 +366,7 @@ lemma rpow_algebraMap {x : ℝ≥0} {y : ℝ} :
 lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
     a ^ (x + y) = a ^ x * a ^ y := by
   have ha' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
-  simp only [rpow_def, NNReal.rpow_eq_pow]
+  simp only [rpow_def]
   rw [← cfc_mul _ _ a]
   refine cfc_congr ?_
   intro z hz

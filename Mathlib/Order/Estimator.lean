@@ -230,7 +230,7 @@ def Estimator.fstInst [DecidableLT α] [∀ (p : α × β), WellFoundedGT { q //
     simp only [EstimatorData.improve, decide_eq_true_eq]
     match Estimator.improveUntil (a.prod b) _ _ with
     | .error _ =>
-      simp only [Option.map_none]
+      simp only
       exact fun w =>
         eq_of_le_of_not_lt
           (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1 w

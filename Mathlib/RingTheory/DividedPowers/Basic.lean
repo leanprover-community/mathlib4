@@ -105,7 +105,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     exact fun _ a ↦ False.elim (hn a)
   dpow_add ha hb := by
     rw [mem_bot.mp ha, mem_bot.mp hb, add_zero]
-    simp only [true_and, ge_iff_le, tsub_eq_zero_iff_le, mul_ite, mul_one, mul_zero]
+    simp only [true_and, mul_ite, mul_one, mul_zero]
     split_ifs with h
     · simp [h]
     · symm
@@ -193,7 +193,7 @@ theorem exp_add' (dp : ℕ → A → A)
     PowerSeries.mk (fun n ↦ dp n (a + b)) =
       (PowerSeries.mk fun n ↦ dp n a) * (PowerSeries.mk fun n ↦ dp n b) := by
   ext n
-  simp only [exp, PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
+  simp only [PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
     sum_antidiagonal_eq_sum_range_succ_mk]
 
 theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :

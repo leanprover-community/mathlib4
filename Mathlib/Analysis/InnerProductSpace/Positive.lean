@@ -60,7 +60,7 @@ theorem IsPositive.isSelfAdjoint {T : E →L[𝕜] E} (hT : IsPositive T) : IsSe
 
 theorem IsPositive.inner_left_eq_inner_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     ⟪T x, x⟫ = ⟪x, T x⟫ := by
-  rw [← adjoint_inner_left, show adjoint T = T from hT.left]
+  rw [← adjoint_inner_left, hT.isSelfAdjoint.adjoint_eq]
 
 theorem IsPositive.re_inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪T x, x⟫ :=
@@ -91,8 +91,7 @@ theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (
 @[simp]
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := by
   refine ⟨.zero _, fun x => ?_⟩
-  change 0 ≤ re ⟪_, _⟫
-  rw [zero_apply, inner_zero_left, ZeroHomClass.map_zero]
+  simp [reApplyInnerSelf_apply]
 
 @[simp]
 theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
@@ -102,8 +101,8 @@ theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
 theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →L[𝕜] E) := by
   refine ⟨IsSelfAdjoint.natCast n, ?_⟩
   intro x
-  simp [reApplyInnerSelf, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left]
-  exact mul_nonneg n.cast_nonneg' inner_self_nonneg
+  simpa [reApplyInnerSelf_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left] using
+    mul_nonneg n.cast_nonneg' inner_self_nonneg
 
 @[simp]
 theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →L[𝕜] E) :=
@@ -229,35 +228,13 @@ theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive
 
 lemma isPositive_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
-  apply Iff.intro
-  · intro hT
-    apply And.intro
-    · exact (isSelfAdjoint_toContinuousLinearMap_iff T).mp hT.left
-    · intro x
-      have hx : 0 ≤ re ⟪T x, x⟫ := hT.right x
-      exact hx
-  · intro hT
-    apply And.intro
-    · exact (isSelfAdjoint_toContinuousLinearMap_iff T).mpr hT.left
-    · intro x
-      simp [ContinuousLinearMap.reApplyInnerSelf]
-      exact hT.right x
+  simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toContinuousLinearMap_iff T,
+    ContinuousLinearMap.reApplyInnerSelf]
 
 lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
-  apply Iff.intro
-  · intro hT
-    apply And.intro
-    · exact (isSelfAdjoint_toLinearMap_iff T).mp hT.left
-    · intro x
-      have hx : 0 ≤ re ⟪T x, x⟫ := hT.right x
-      exact hx
-  · intro hT
-    apply And.intro
-    · exact (isSelfAdjoint_toLinearMap_iff T).mpr hT.left
-    · intro x
-      have hx : 0 ≤ re ⟪T x, x⟫ := hT.right x
-      simp [hx]
+  simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toLinearMap_iff T,
+    ContinuousLinearMap.reApplyInnerSelf]
 
 section Complex
 
@@ -266,8 +243,8 @@ variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E'] [Finite
 theorem isPositive_iff_complex (T : E' →ₗ[ℂ] E') :
     IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by
   simp_rw [IsPositive, forall_and, ← isSymmetric_iff_isSelfAdjoint,
-    LinearMap.isSymmetric_iff_inner_map_self_real, conj_eq_iff_re]
-  rfl
+    LinearMap.isSymmetric_iff_inner_map_self_real, conj_eq_iff_re, re_to_complex,
+    Complex.coe_algebraMap]
 
 end Complex
 
@@ -320,8 +297,8 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
 theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : E →ₗ[𝕜] F) :
     (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
   refine And.intro ?_ ?_
-  · rw [isSelfAdjoint_iff', adjoint_comp, adjoint_comp, adjoint_adjoint, ← star_eq_adjoint, hT.1]
-    rfl
+  · rw [isSelfAdjoint_iff', adjoint_comp, adjoint_comp, adjoint_adjoint, ← star_eq_adjoint, hT.1,
+      comp_assoc]
   · intro x
     rw [comp_apply, ← adjoint_inner_right]
     exact hT.re_inner_nonneg_left _

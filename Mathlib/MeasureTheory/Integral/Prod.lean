@@ -302,7 +302,7 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
       apply le_coe_toNNReal
     _ ≤ ∫⁻ x, ∫⁻ y, .ofReal C * ‖f x‖ₑ * ‖g y‖ₑ ∂ν ∂μ := lintegral_prod_le _
     _ ≤ .ofReal C * (∫⁻ x, ‖f x‖ₑ ∂μ) * ∫⁻ y, ‖g y‖ₑ ∂ν := by
-      simp [lintegral_const_mul', lintegral_mul_const', hf.2.ne, hg.2.ne, mul_assoc]
+      simp [lintegral_const_mul', lintegral_mul_const', hg.2.ne, mul_assoc]
     _ < ∞ := by apply_rules [ENNReal.mul_lt_top, hf.2, hg.2, ENNReal.ofReal_lt_top]
 
 omit [SFinite ν] in

@@ -96,8 +96,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
   invFun I := ⨆ U ∈ I, U.toOpens
   left_inv U := by
     apply le_antisymm
-    · simp only [Set.mem_setOf_eq, LowerSet.carrier_eq_coe, LowerSet.coe_mk,
-        CompactOpens.coe_sup, id_eq, iSup_le_iff]
+    · simp only [iSup_le_iff]
       exact fun _ ↦ id
     · intro x hxU
       obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
