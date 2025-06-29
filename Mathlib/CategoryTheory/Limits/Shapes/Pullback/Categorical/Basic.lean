@@ -273,24 +273,6 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
         { fst := φ.fst.app x
           snd := φ.snd.app x } }
 
-/-- The unit of `CategoricalPullback.functorEquiv`. -/
-@[simps!]
-def functorEquivUnitIso :
-    𝟭 (X ⥤ F ⊡ G) ≅
-    toCatCommSqOver F G X ⋙ CatCommSqOver.toFunctorToCategoricalPullback F G X :=
-  NatIso.ofComponents
-    (fun _ ↦ NatIso.ofComponents
-      (fun _ ↦ CategoricalPullback.mkIso (.refl _) (.refl _)))
-
-/-- The counit of `CategoricalPullback.functorEquiv`. -/
-@[simps!]
-def functorEquivCounitIso :
-    CatCommSqOver.toFunctorToCategoricalPullback F G X ⋙ toCatCommSqOver F G X ≅
-    𝟭 (CatCommSqOver F G X) :=
-  NatIso.ofComponents
-    (fun _ ↦ CategoricalPullback.mkIso
-      (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
-
 /-- The universal property of categorical pullbacks, stated as an equivalence
 of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
 over X. -/
@@ -298,8 +280,15 @@ over X. -/
 def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
   functor := toCatCommSqOver F G X
   inverse := CatCommSqOver.toFunctorToCategoricalPullback F G X
-  unitIso := functorEquivUnitIso F G X
-  counitIso := functorEquivCounitIso F G X
+  unitIso :=
+    NatIso.ofComponents
+      (fun _ ↦ NatIso.ofComponents
+        (fun _ ↦ CategoricalPullback.mkIso (.refl _) (.refl _)))
+  counitIso :=
+    NatIso.ofComponents
+      (fun _ ↦ CategoricalPullback.mkIso
+        (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
+
 
 variable {F G X}
 
