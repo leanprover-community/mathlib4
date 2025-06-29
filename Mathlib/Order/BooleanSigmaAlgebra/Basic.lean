@@ -178,4 +178,14 @@ theorem σsSup_empty [OrderBot α] : sSup ∅ = (⊥ : α) :=
 theorem σsInf_empty [OrderTop α] : sInf ∅ = (⊤ : α) :=
   σsSup_empty (α := αᵒᵈ)
 
+theorem σsSup_le_σsSup_of_subset_insert_bot [OrderBot α] (ht : t.Countable) (h : s ⊆ insert ⊥ t) :
+    sSup s ≤ sSup t :=
+  have ht' := (ht.insert ⊥)
+  have hs := (ht'.mono h)
+  (σsSup_le_σsSup ht' hs h).trans_eq ((σsSup_insert ht).trans (bot_sup_eq _))
+
+theorem σsInf_le_σsInf_of_subset_insert_top [OrderTop α] (ht : t.Countable) (h : s ⊆ insert ⊤ t) :
+    sInf t ≤ sInf s :=
+  σsSup_le_σsSup_of_subset_insert_bot (α := αᵒᵈ) ht h
+
 end SigmaCompleteLattice
