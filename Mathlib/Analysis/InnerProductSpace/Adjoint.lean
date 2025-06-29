@@ -289,19 +289,70 @@ theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
   rwa [← ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric] at hA
 
 /-- The orthogonal projection is self-adjoint. -/
-theorem _root_.orthogonalProjection_isSelfAdjoint (U : Submodule 𝕜 E) [CompleteSpace U] :
+theorem _root_.orthogonalProjection_isSelfAdjoint (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     IsSelfAdjoint (U.subtypeL ∘L U.orthogonalProjection) :=
   U.orthogonalProjection_isSymmetric.isSelfAdjoint
 
 theorem conj_orthogonalProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (U : Submodule 𝕜 E)
-    [CompleteSpace U] :
+    [U.HasOrthogonalProjection] :
     IsSelfAdjoint
       (U.subtypeL ∘L U.orthogonalProjection ∘L T ∘L U.subtypeL ∘L U.orthogonalProjection) := by
   rw [← ContinuousLinearMap.comp_assoc]
   nth_rw 1 [← (orthogonalProjection_isSelfAdjoint U).adjoint_eq]
   exact hT.adjoint_conj _
 
+theorem ker_eq_ortho_range
+    {p : E →L[𝕜] E} (hp : IsSelfAdjoint p) : LinearMap.ker p = (LinearMap.range p)ᗮ := by
+  rw [ContinuousLinearMap.orthogonal_range, hp.adjoint_eq]
+
 end IsSelfAdjoint
+
+theorem IsStarProjection.hasOrthogonalProjection_range [CompleteSpace E]
+    {p : E →L[𝕜] E} (hp : IsStarProjection p) : (LinearMap.range p).HasOrthogonalProjection := by
+  constructor
+  intro v
+  use p v
+  simp only [LinearMap.mem_range, exists_apply_eq_apply, true_and]
+  rw [← hp.isSelfAdjoint.ker_eq_ortho_range]
+  simp_rw [LinearMap.mem_ker, map_sub, ← ContinuousLinearMap.mul_apply,
+    hp.isIdempotentElem.eq, sub_self]
+
+/-- The orthogonal projection onto a subspace as an operator, so is a star projection. -/
+noncomputable def Submodule.starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjection
+
+/-- `U.starProjection` is a star projection. -/
+theorem orthogonalProjection_isStarProjection
+    [CompleteSpace E] {U : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] : IsStarProjection U.starProjection := by
+  refine ⟨?_, (orthogonalProjection_isSelfAdjoint U)⟩
+  ext
+  simp_rw [Submodule.starProjection,
+    ContinuousLinearMap.mul_apply, ContinuousLinearMap.comp_apply, Submodule.subtypeL_apply,
+    Submodule.orthogonalProjection_mem_subspace_eq_self]
+
+/-- An operator is a star projection if and only if it is an orthogonal projection. -/
+theorem isStarProjection_iff_orthogonalProjection [CompleteSpace E] {p : E →L[𝕜] E} :
+    IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
+    p = (LinearMap.range p).starProjection := by
+  constructor
+  · intro hp
+    letI := hp.hasOrthogonalProjection_range
+    use this
+    ext x
+    have : (LinearMap.range p).orthogonalProjection (p x) = p x := by
+      simp [Submodule.orthogonalProjection_eq_self_iff]
+    rw [← this]
+    symm
+    simp only [Submodule.starProjection,
+      ContinuousLinearMap.coe_comp', Submodule.coe_subtypeL',
+        Submodule.coe_subtype, Function.comp_apply, SetLike.coe_eq_coe]
+    rw [← sub_eq_zero, ← ContinuousLinearMap.map_sub,
+      Submodule.orthogonalProjection_eq_zero_iff, ← hp.isSelfAdjoint.ker_eq_ortho_range,
+      LinearMap.mem_ker, map_sub, ← ContinuousLinearMap.mul_apply, hp.isIdempotentElem.eq, sub_self]
+  · rintro ⟨h, hp⟩
+    rw [hp]
+    exact orthogonalProjection_isStarProjection
 
 namespace LinearMap
 
