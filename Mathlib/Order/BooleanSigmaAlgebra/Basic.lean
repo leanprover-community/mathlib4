@@ -140,7 +140,7 @@ theorem σsInf_union (hs : s.Countable) (ht : t.Countable) :
 /-- The supremum of an intersection of two sets is bounded above by the minimum of the suprema of
 each set, under the assumptions that all sets are countable. -/
 theorem σsSup_inter_le (hs : s.Countable) (ht : t.Countable) : sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
-  σsSup_le (hs.mono (by simp)) fun _ hx => le_inf (le_σsSup hs hx.1) (le_σsSup ht hx.2)
+  σsSup_le (hs.mono Set.inter_subset_left) fun _ hx => le_inf (le_σsSup hs hx.1) (le_σsSup ht hx.2)
 
 /-- The infimum of an intersection of two sets is bounded below by the maximum of the infima of
 each set, under the assumptions that all sets are countable. -/
