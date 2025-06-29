@@ -68,7 +68,7 @@ theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
 theorem lt_opow_of_limit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsLimit c) :
     a < b ^ c ↔ ∃ c' < c, a < b ^ c' := by
   rw [← not_iff_not, not_exists]
-  simp only [not_lt, opow_le_of_limit b0 h, exists_prop, not_and]
+  simp only [not_lt, opow_le_of_limit b0 h, not_and]
 
 @[simp]
 theorem opow_one (a : Ordinal) : a ^ (1 : Ordinal) = a := by

@@ -213,7 +213,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
   ext k
 -- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
 -- with the equality in the other direction
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
 

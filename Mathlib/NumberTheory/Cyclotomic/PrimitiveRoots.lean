@@ -364,7 +364,7 @@ theorem sub_one_norm_isPrimePow (hn : IsPrimePow n) [IsCyclotomicExtension {n} K
       ((n.factorization.mem_support_toFun n.minFac).1 <|
         mem_primeFactors_iff_mem_primeFactorsList.2 <|
           (mem_primeFactorsList (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
-  simp [hk, sub_one_norm_eq_eval_cyclotomic hζ this hirr]
+  simp [hk]
 
 end
 
