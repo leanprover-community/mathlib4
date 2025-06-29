@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Set.Monotone
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Erdős–Szekeres theorem
@@ -23,11 +25,88 @@ https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
 sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Erdős-Szekeres
 -/
 
-variable {α : Type*} [LinearOrder α] {β : Type*}
-
 open Function Finset
 
 namespace Theorems100
+
+variable {α β : Type*} [Fintype α] [LinearOrder α] [LinearOrder β] {f : α → β} {i : α}
+
+/-- The possible lengths of an increasing sequence which ends at `i`. -/
+private noncomputable def incSequencesTo (f : α → β) (i : α) : Finset ℕ :=
+  open Classical in
+  image card {t : Finset α | IsGreatest t.toSet i ∧ StrictMonoOn f t}
+
+/-- The possible lengths of a decreasing sequence which ends at `i`. -/
+private noncomputable def decSequencesTo (f : α → β) (i : α) : Finset ℕ :=
+  open Classical in
+  image card {t : Finset α | IsGreatest t.toSet i ∧ StrictAntiOn f t}
+
+private lemma one_mem_incSequencesTo : 1 ∈ incSequencesTo f i := mem_image.2 ⟨{i}, by simp⟩
+private lemma one_mem_decSequencesTo : 1 ∈ decSequencesTo f i := one_mem_incSequencesTo (β := βᵒᵈ)
+
+private lemma incSequencesTo_nonempty : (incSequencesTo f i).Nonempty := ⟨1, one_mem_incSequencesTo⟩
+private lemma decSequencesTo_nonempty : (decSequencesTo f i).Nonempty := ⟨1, one_mem_decSequencesTo⟩
+
+/-- The maximum length of an increasing sequence which ends at `i`. -/
+private noncomputable def maxIncSequencesTo (f : α → β) (i : α) : ℕ :=
+  max' (incSequencesTo f i) incSequencesTo_nonempty
+
+/-- The maximum length of a decreasing sequence which ends at `i`. -/
+private noncomputable def maxDecSequencesTo (f : α → β) (i : α) : ℕ :=
+  max' (decSequencesTo f i) decSequencesTo_nonempty
+
+private lemma one_le_maxIncSequencesTo : 1 ≤ maxIncSequencesTo f i :=
+  le_max' _ _ one_mem_incSequencesTo
+private lemma one_le_maxDecSequencesTo : 1 ≤ maxDecSequencesTo f i :=
+  le_max' _ _ one_mem_decSequencesTo
+
+private lemma maxIncSequencesTo_mem : maxIncSequencesTo f i ∈ incSequencesTo f i :=
+  max'_mem _ incSequencesTo_nonempty
+private lemma maxDecSequencesTo_mem : maxDecSequencesTo f i ∈ decSequencesTo f i :=
+  max'_mem _ decSequencesTo_nonempty
+
+private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
+    maxIncSequencesTo f i < maxIncSequencesTo f j := by
+  classical
+  rw [Nat.lt_iff_add_one_le]
+  refine le_max' _ _ ?_
+  have : maxIncSequencesTo f i ∈ incSequencesTo f i := max'_mem _ incSequencesTo_nonempty
+  simp only [incSequencesTo, mem_image, mem_filter, exists_prop, mem_univ, exists_and_right,
+    true_and, and_assoc] at this
+  obtain ⟨t, hti, ht₁, ht₂⟩ := this
+  simp only [incSequencesTo, mem_image, mem_filter, mem_univ, true_and, exists_and_right,
+    and_assoc]
+  have : ∀ x ∈ t, x < j := by
+    intro x hx
+    exact (hti.2 hx).trans_lt hij
+  refine ⟨insert j t, ?_, ?_, ?_⟩
+  next =>
+    convert hti.insert j using 1
+    next => simp
+    next => rw [max_eq_left hij.le]
+  next =>
+    simp only [coe_insert, incSequencesTo, decSequencesTo]
+    rw [strictMonoOn_insert_iff_of_forall_le]
+    · refine ⟨?_, ht₁⟩
+      intro x hx hxj
+      exact (ht₁.monotoneOn hx hti.1 (hti.2 hx)).trans_lt hfij
+    · exact fun x hx ↦ (this x hx).le
+  have : j ∉ t := fun hj ↦ lt_irrefl _ (this _ hj)
+  simp [this, ht₂]
+
+private lemma maxDecSequencesTo_gt {i j : α} (hij : i < j) (hfij : f j < f i) :
+    maxDecSequencesTo f i < maxDecSequencesTo f j :=
+  maxIncSequencesTo_lt (β := βᵒᵈ) hij hfij
+
+private noncomputable def paired (f : α → β) (i : α) : ℕ × ℕ :=
+  (maxIncSequencesTo f i, maxDecSequencesTo f i)
+
+private lemma paired_injective (hf : Injective f) : Injective (paired f) := by
+  apply injective_of_lt_imp_ne
+  intro i j hij q
+  cases lt_or_gt_of_ne (hf.ne hij.ne)
+  case inl h => exact (maxIncSequencesTo_lt hij h).ne congr($q.1)
+  case inr h => exact (maxDecSequencesTo_gt hij h).ne congr($q.2)
 
 /-- **Erdős–Szekeres Theorem**: Given a sequence of more than `r * s` distinct values, there is an
 increasing sequence of length longer than `r` or a decreasing sequence of length longer than `s`.
@@ -39,127 +118,26 @@ We then show the pair of labels must be unique. Now if there is no increasing se
 `r` and no decreasing sequence longer than `s`, then there are at most `r * s` possible labels,
 which is a contradiction if there are more than `r * s` elements.
 -/
-theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : Injective f) :
-    (∃ t : Finset (Fin n), r < #t ∧ StrictMonoOn f ↑t) ∨
-      ∃ t : Finset (Fin n), s < #t ∧ StrictAntiOn f ↑t := by
-  -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
-  -- at `i`.
-  let inc_sequences_ending_in (i : Fin n) : Finset (Finset (Fin n)) :=
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictMonoOn f ↑t
-  let dec_sequences_ending_in (i : Fin n) : Finset (Finset (Fin n)) :=
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictAntiOn f ↑t
-  -- The singleton sequence is in both of the above collections.
-  -- (This is useful to show that the maximum length subsequence is at least 1, and that the set
-  -- of subsequences is nonempty.)
-  have inc_i (i) : {i} ∈ inc_sequences_ending_in i := by
-    simp [inc_sequences_ending_in, StrictMonoOn]
-  have dec_i (i) : {i} ∈ dec_sequences_ending_in i := by
-    simp [dec_sequences_ending_in, StrictAntiOn]
-  -- Define the pair of labels: at index `i`, the pair is the maximum length of an increasing
-  -- subsequence ending at `i`, paired with the maximum length of a decreasing subsequence ending
-  -- at `i`.
-  -- We call these labels `(a_i, b_i)`.
-  let ab (i : Fin n) : ℕ × ℕ :=
-    (max' ((inc_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, inc_i i⟩ _),
-      max' ((dec_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, dec_i i⟩ _))
-  -- It now suffices to show that one of the labels is 'big' somewhere. In particular, if the
-  -- first in the pair is more than `r` somewhere, then we have an increasing subsequence in our
-  -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
-  have hab1 (i : Fin n) : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
-    simpa only [ab] using max'_mem _ _
-  have hab2 (i : Fin n) : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
-    simpa only [ab] using max'_mem _ _
-  rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
-  · refine hi.imp ?_ ?_
-    on_goal 1 => have := hab1 i
-    on_goal 2 => have := hab2 i
+theorem erdos_szekeres {r s : ℕ} {f : α → β} (hn : r * s < Fintype.card α) (hf : Injective f) :
+    (∃ t : Finset α, r < #t ∧ StrictMonoOn f t) ∨
+      ∃ t : Finset α, s < #t ∧ StrictAntiOn f t := by
+  classical
+  rsuffices ⟨i, hi⟩ : ∃ i, r < maxIncSequencesTo f i ∨ s < maxDecSequencesTo f i
+  · refine Or.imp ?_ ?_ hi
+    on_goal 1 =>
+      have : maxIncSequencesTo f i ∈ image card _ := maxIncSequencesTo_mem
+    on_goal 2 =>
+      have : maxDecSequencesTo f i ∈ image card _ := maxDecSequencesTo_mem
     all_goals
       intro hi
-      rw [mem_image] at this
-      obtain ⟨t, ht₁, ht₂⟩ := this
+      obtain ⟨t, ht₁, ht₂⟩ := mem_image.1 this
       refine ⟨t, by rwa [ht₂], ?_⟩
       rw [mem_filter] at ht₁
-      apply ht₁.2.2
-  -- Show first that the pair of labels is unique.
-  have : Injective ab := by
-    apply injective_of_lt_imp_ne
-    intro i j k q
-    injection q with q₁ q₂
-    -- We have two cases: `f i < f j` or `f j < f i`.
-    -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
-    cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
-    on_goal 1 =>
-      apply ne_of_lt _ q₁
-      have := hab1 i
-    on_goal 2 =>
-      apply ne_of_lt _ q₂
-      have := hab2 i
-    all_goals
-      -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
-      rw [Nat.lt_iff_add_one_le]
-      apply le_max'
-      rw [mem_image] at this ⊢
-      -- In particular we take the subsequence `t` of length `a_i` which ends at `i`, by definition
-      -- of `a_i`
-      rcases this with ⟨t, ht₁, ht₂⟩
-      rw [mem_filter] at ht₁
-      -- Ensure `t` ends at `i`.
-      have : t.max = i := by simp only [ht₁.2.1]
-      -- Now our new subsequence is given by adding `j` at the end of `t`.
-      refine ⟨insert j t, ?_, ?_⟩
-      -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
-      · rw [mem_filter]
-        refine ⟨?_, ?_, ?_⟩
-        · rw [mem_powerset]; apply subset_univ
-        -- It ends at `j` since `i < j`.
-        · convert max_insert (a := j) (s := t)
-          rw [ht₁.2.1, max_eq_left]
-          apply WithBot.coe_le_coe.mpr (le_of_lt ‹i < j›)
-        -- To show it's increasing (i.e., `f` is monotone increasing on `t.insert j`), we do cases
-        -- on what the possibilities could be - either in `t` or equals `j`.
-        simp only [StrictMonoOn, StrictAntiOn, coe_insert, Set.mem_insert_iff, mem_coe]
-        -- Most of the cases are just bashes.
-        rintro x ⟨rfl | _⟩ y ⟨rfl | _⟩ _
-        · apply (irrefl _ ‹j < j›).elim
-        · exfalso
-          apply not_le_of_gt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
-        · first
-          | apply lt_of_le_of_lt _ ‹f i < f j›
-          | apply lt_of_lt_of_le ‹f j < f i› _
-          rcases lt_or_eq_of_le (le_max_of_eq ‹x ∈ t› ‹t.max = i›) with (_ | rfl)
-          · apply le_of_lt (ht₁.2.2 ‹x ∈ t› (mem_of_max ‹t.max = i›) ‹x < i›)
-          · rfl
-        · apply ht₁.2.2 ‹x ∈ t› ‹y ∈ t› ‹x < y›
-      -- Finally show that this new subsequence is one longer than the old one.
-      · rw [card_insert_of_notMem, ht₂]
-        intro
-        apply not_le_of_gt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
-  -- Finished both goals!
-  -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
-  -- Suppose all the labels are small.
+      exact ht₁.2.2
   by_contra! q
-  -- Then the labels `(a_i, b_i)` all fit in the following set: `{ (x,y) | 1 ≤ x ≤ r, 1 ≤ y ≤ s }`
-  let ran : Finset (ℕ × ℕ) := (range r).image Nat.succ ×ˢ (range s).image Nat.succ
-  -- which we prove here.
-  have : image ab univ ⊆ ran := by
-    -- First some logical shuffling
-    rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
-      Prod.ext_iff]
-    rintro ⟨i, rfl, rfl⟩
-    specialize q i
-    -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is an increasing and
-    -- decreasing subsequence which we did right near the top.
-    have z : 1 ≤ (ab i).1 ∧ 1 ≤ (ab i).2 := by
-      constructor <;>
-        · apply le_max'
-          rw [mem_image]
-          exact ⟨{i}, by solve_by_elim, card_singleton i⟩
-    -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
-    exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
-  -- To get our contradiction, it suffices to prove `n ≤ r * s`
-  apply not_le_of_gt hn
-  -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
-  simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
+  have : Set.MapsTo (paired f) Finset.univ.toSet (Finset.Icc 1 r ×ˢ Finset.Icc 1 s).toSet := by
+    simp [paired, one_le_maxIncSequencesTo, one_le_maxDecSequencesTo, *]
+  refine hn.not_ge ?_
+  simpa using card_le_card_of_injOn (paired f) this (paired_injective hf).injOn
 
 end Theorems100
