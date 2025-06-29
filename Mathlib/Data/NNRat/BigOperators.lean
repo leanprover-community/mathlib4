@@ -16,36 +16,36 @@ namespace NNRat
 
 section DivisionSemiring
 
-variable {β : Type} [DivisionSemiring β] [CharZero β]
+variable {K : Type} [DivisionSemiring K] [CharZero K]
 
 @[norm_cast]
-theorem coe_list_sum (l : List ℚ≥0) : (l.sum : β) = (l.map (↑)).sum :=
+theorem coe_list_sum (l : List ℚ≥0) : (l.sum : K) = (l.map (↑)).sum :=
   map_list_sum (castHom _) _
 
 @[norm_cast]
-theorem coe_list_prod (l : List ℚ≥0) : (l.prod : β) = (l.map (↑)).prod :=
+theorem coe_list_prod (l : List ℚ≥0) : (l.prod : K) = (l.map (↑)).prod :=
   map_list_prod (castHom _) _
 
 @[norm_cast]
-theorem coe_multiset_sum (s : Multiset ℚ≥0) : (s.sum : β) = (s.map (↑)).sum :=
+theorem coe_multiset_sum (s : Multiset ℚ≥0) : (s.sum : K) = (s.map (↑)).sum :=
   map_multiset_sum (castHom _) _
 
 @[norm_cast]
-theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : β) :=
+theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : K) :=
   map_sum (castHom _) _ _
 
 end DivisionSemiring
 
 section Semifield
 
-variable {β : Type} [Semifield β] [CharZero β]
+variable {K : Type} [Semifield K] [CharZero K]
 
 @[norm_cast]
-theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : β) = (s.map (↑)).prod :=
+theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : K) = (s.map (↑)).prod :=
   map_multiset_prod (castHom _) _
 
 @[norm_cast]
-theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : β) :=
+theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : K) :=
   map_prod (castHom _) _ _
 
 end Semifield
