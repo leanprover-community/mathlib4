@@ -214,7 +214,7 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
         simp [h, Ne.symm h, dist_comm (s.points i₁)]
       all_goals intro i _ hi; simp [hfs i hi]
     · intro i _ hi
-      simp [hfs i hi, pointsWithCircumcenter]
+      simp [hfs i hi]
   · intro i _ hi
     simp [hfs i hi]
 
@@ -344,7 +344,7 @@ theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h�
   have he : ({i₁}ᶜ : Set (Fin 3)) = {i₂, i₃} := by ext; decide +revert
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton,
     vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
-  simp [h₂₃, Submodule.span_insert_eq_span]
+  simp [h₂₃]
 
 /-- The orthocenter lies in the altitudes. -/
 theorem orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} :
@@ -397,7 +397,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
     dist t.orthocenter
         (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.circumcenter) =
       t.circumradius := by
-  simp only [mem_singleton, coe_insert, coe_singleton, Set.mem_singleton_iff]
+  simp only [coe_insert, coe_singleton]
   exact dist_orthocenter_reflection_circumcenter _ h
 
 /-- The affine span of the orthocenter and a vertex is contained in

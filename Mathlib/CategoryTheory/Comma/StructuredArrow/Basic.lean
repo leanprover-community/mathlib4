@@ -634,7 +634,7 @@ instance isEquivalence_pre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence]
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X := CostructuredArrow.mk (G.map X.hom)
-  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
+  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp])
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : (post F G S).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
