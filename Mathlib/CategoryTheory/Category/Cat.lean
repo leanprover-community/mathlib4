@@ -197,7 +197,6 @@ def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
   hom_inv_id := (Functor.ext_of_iso e.unitIso (fun X ↦ (h₁ X).symm) h₃).symm
   inv_hom_id := (Functor.ext_of_iso e.counitIso h₂ h₄)
 
-
 end
 
 end Cat
