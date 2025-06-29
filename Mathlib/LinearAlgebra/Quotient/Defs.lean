@@ -103,6 +103,11 @@ theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
 theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
   rfl
 
+variable {p} in
+@[simp]
+theorem mk_out (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
+  Quotient.out_eq m
+
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
 
 theorem subsingleton_iff : Subsingleton (M ⧸ p) ↔ ∀ x : M, x ∈ p := by
