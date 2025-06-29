@@ -43,7 +43,7 @@ private noncomputable def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀
   toFun n := LinearMap.pi (fun i ↦ mk R N (M i) n ∘ₗ LinearMap.proj i)
   map_add' _ _ := by
     ext
-    simp [add_tmul]
+    simp
   map_smul' _ _ := rfl
 
 /-- For any `R`-module `N`, index type `ι` and family of `R`-modules `Mᵢ`, there is a natural

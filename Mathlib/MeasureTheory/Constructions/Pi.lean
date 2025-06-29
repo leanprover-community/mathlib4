@@ -427,7 +427,7 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
     simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, mem_prod]
     refine ⟨by tauto, fun _ i ↦ ?_⟩
     rcases i <;> tauto
-  simp only [e_meas, me.map_apply, univ_option, le_eq_subset, Finset.prod_insertNone, this,
+  simp only [e_meas, me.map_apply, univ_option, Finset.prod_insertNone, this,
     prod_prod, pi_pi, mul_comm]
 
 section Intervals

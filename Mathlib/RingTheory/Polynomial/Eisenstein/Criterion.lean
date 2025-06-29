@@ -89,7 +89,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     obtain ⟨a, ha, ha'⟩ := Polynomial.isUnit_iff.mp u.isUnit
     suffices C (algebraMap R K g.leadingCoeff) = u by
       simp [r, ← this, Polynomial.map_sub, ← hu, Polynomial.map_mul, map_C,
-        Polynomial.map_pow, sub_eq_zero, mul_comm]
+        Polynomial.map_pow, mul_comm]
     rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP, ← hu, ← ha',
       leadingCoeff_mul, leadingCoeff_C, (hq_monic.map _).pow m, one_mul]
   use m, r, hg, hr
@@ -126,7 +126,7 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     (hfmodP2 : (f.modByMonic q).map (mk ((ker (algebraMap R K)) ^ 2)) ≠ 0) :
     Irreducible f where
   not_isUnit := mt degree_eq_zero_of_isUnit fun h => by
-    simp_all [lt_irrefl, natDegree_pos_iff_degree_pos]
+    simp_all [natDegree_pos_iff_degree_pos]
   isUnit_or_isUnit g h h_eq := by
     -- We have to show that factorizations `f = g * h` are trivial
     set P : Ideal R := ker (algebraMap R K)
@@ -183,7 +183,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
     exact hfl
   · rw [← map_C, ← Polynomial.map_pow, ← Polynomial.map_mul]
     simp only [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P)),
-      Quotient.algebraMap_eq, coe_comp, Function.comp_apply, ← map_map]
+      Quotient.algebraMap_eq, ← map_map]
     congr 1
     ext n
     simp only [coeff_map, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
