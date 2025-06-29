@@ -120,6 +120,8 @@ variable {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F}
   {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
   [MemTrivializationAtlas e] {x : M}
 
+variable {F V}
+
 open scoped Classical in
 -- TODO: add longer docs!
 -- a starting point (not fully updated any more) is this:
@@ -136,7 +138,7 @@ Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v
 -- (for example, *locally* holomorphic sections always exist),
 
 -- extendLocally: takes trivialisation e as parameter, and a basis b of F
-variable {V F} (b e) in
+variable (b e) in
 noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (x : M) (v : V x) : (x' : M) → V x' :=
@@ -144,20 +146,46 @@ noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
     letI bV := b.localFrame_toBasis_at e hx; ∑ i, bV.repr v i • b.localFrame e i x'
     else 0
 
+-- TODO: clean up this proof, by adding further API as necessary
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma localExtensionOn_apply_self (b : Basis ι 𝕜 F)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
+    ((localExtensionOn b e x v) x) = v := by
+  unfold localExtensionOn
+  simp [hx]
+  letI bV := b.localFrame_toBasis_at e hx
+  show ∑ i, bV.repr v i • (b.localFrame_toBasis_at e hx) i = v
+  conv_rhs => rw [← bV.sum_repr v]
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma localExtensionOn_apply_self' (b : Basis ι 𝕜 F)
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
+    (e ((localExtensionOn b e x v) x)).2 = (e v).2 := by
+  rw [localExtensionOn_apply_self _ _ hx]
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 -- in the trivialisation e, the localExtensionOn is constant on e.baseSet
-lemma localExtensionOn_apply_of_mem_baseSet (b : Basis ι 𝕜 F)
+lemma localExtensionOn_apply_of_mem_baseSet (b : Basis ι 𝕜 F) [Fintype ι]
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) :
     ∀ x' ∈ e.baseSet, (e ((localExtensionOn b e x v) x')).2 = (e v).2 := by
   intro x' hx'
+  rw [← localExtensionOn_apply_self' b e hx v]
   simp [localExtensionOn, hx]
-  -- main result should be v equals its representation in the local frame; is this always true?
+  letI bV := b.localFrame_toBasis_at e hx
+  -- TODO: missing simp lemmas!
+  simp [Basis.localFrame, hx']
+  -- TODO: this Lean statement is false (the sections s^i do depend on the base point x);
+  -- want I want is the *coefficients* being equals (which is true)
+  -- -> need to fix the statement first!
   sorry
 
 -- By construction, localExtensionOn is a linear map.
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-variable {V F} (b e) in
+variable (b e) in
 lemma localExtensionOn_add (v v' : V x) :
     localExtensionOn b e x (v + v') = localExtensionOn b e x v + localExtensionOn b e x v' := by
   ext x'
@@ -166,7 +194,7 @@ lemma localExtensionOn_add (v v' : V x) :
   · simp [hx, localExtensionOn, add_smul, Finset.sum_add_distrib]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-variable {V F} (b e) in
+variable (b e) in
 lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
     localExtensionOn b e x (a • v) = a • localExtensionOn b e x v := by
   ext x'
@@ -179,7 +207,8 @@ lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
 
 -- `hx` might not be strictly required; I'm including it for robustness:
 -- for other x, this extension is not mathematically meaningful
-omit [IsManifold I 0 M] in
+omit [IsManifold I 0 M]
+  [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 lemma contMDiffOn_localExtensionOn {x : M} (hx : x ∈ e.baseSet) (v : V x) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) 1
     (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) e.baseSet := by
@@ -187,7 +216,7 @@ lemma contMDiffOn_localExtensionOn {x : M} (hx : x ∈ e.baseSet) (v : V x) :
   rw [contMDiffOn_section_of_mem_baseSet₀]
   apply (contMDiffOn_const (c := (e v).2)).congr
   intro y hy
-  rw [localExtensionOn_apply_of_mem_baseSet _ _ _ _ hx _ _ hy]
+  rw [localExtensionOn_apply_of_mem_baseSet _ _ hx _ _ hy]
 
 end extendLocally
 
