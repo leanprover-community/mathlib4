@@ -70,14 +70,16 @@ theorem stirlingFirst_zero_succ (k : ℕ) : stirlingFirst 0 (succ k) = 0 := by
 theorem stirlingFirst_succ_zero (n : ℕ) : stirlingFirst (succ n) 0 = 0 := by
   simp [stirlingFirst]
 
-theorem stirlingFirst_succ_left (n k : ℕ) (hk : 0 < k) :
+theorem stirlingFirst_succ_left (n k : ℕ) (hk : k ≠ 0) :
     stirlingFirst (n + 1) k = n * stirlingFirst n k + stirlingFirst n (k - 1) := by
+  have hk : 0 < k := Nat.pos_of_ne_zero hk
   obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
   rfl
 
-theorem stirlingFirst_succ_right (n k : ℕ) (hn : 0 < n) :
+theorem stirlingFirst_succ_right (n k : ℕ) (hn : n ≠ 0) :
     stirlingFirst n (k + 1)
      = (n - 1) * stirlingFirst (n - 1) (k + 1) + stirlingFirst (n - 1) k := by
+  have hn : 0 < n := Nat.pos_of_ne_zero hn
   obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
   rfl
 
@@ -145,14 +147,16 @@ theorem stirlingSecond_zero_succ (k : ℕ) : stirlingSecond 0 (succ k) = 0 :=
 theorem stirlingSecond_zero_right' (n : ℕ) : stirlingSecond (succ n) 0 = 0 :=
   rfl
 
-theorem stirlingSecond_succ_left (n k : ℕ) (hk : 0 < k) :
+theorem stirlingSecond_succ_left (n k : ℕ) (hk : k ≠ 0) :
     stirlingSecond (n + 1) k = k * stirlingSecond n k + stirlingSecond n (k - 1) := by
+  have hk : 0 < k := Nat.pos_of_ne_zero hk
   obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
   rfl
 
-theorem stirlingSecond_succ_right (n k : ℕ) (hn : 0 < n) :
+theorem stirlingSecond_succ_right (n k : ℕ) (hn : n ≠ 0) :
     stirlingSecond n (k + 1) =
      (k + 1) * stirlingSecond (n - 1) (k + 1) + stirlingSecond (n - 1) k := by
+  have hn : 0 < n := Nat.pos_of_ne_zero hn
   obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
   rfl
 
