@@ -584,4 +584,34 @@ theorem le_sSup_image_Icc (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
   rw [h.image_Icc (hc.1.trans hc.2)] at this
   exact this.2
 
+theorem image_Icc_of_monotoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
+    (h' : MonotoneOn f <| Icc a b) : f '' Icc a b = Icc (f a) (f b) := by
+  rw [h.image_Icc hab]
+  congr!
+  · apply le_antisymm (h.sInf_image_Icc_le ⟨le_rfl, hab⟩)
+    apply le_csInf (by simp [hab])
+    simp only [mem_image, mem_Icc, forall_exists_index, and_imp]
+    rintro w t hat htb rfl
+    exact h' ⟨le_rfl, hab⟩ ⟨hat, htb⟩ hat
+  · apply le_antisymm ?_ (h.le_sSup_image_Icc ⟨hab, le_rfl⟩)
+    apply csSup_le (by simp [hab])
+    simp only [mem_image, mem_Icc, forall_exists_index, and_imp]
+    rintro w t hat htb rfl
+    exact h' ⟨hat, htb⟩ ⟨hab, le_rfl⟩ htb
+
+theorem image_Icc_of_antitoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
+    (h' : AntitoneOn f <| Icc a b) : f '' Icc a b = Icc (f b) (f a) := by
+  rw [h.image_Icc hab]
+  congr!
+  · apply le_antisymm (h.sInf_image_Icc_le ⟨hab, le_rfl⟩)
+    apply le_csInf (by simp [hab])
+    simp only [mem_image, mem_Icc, forall_exists_index, and_imp]
+    rintro w t hat htb rfl
+    exact h' ⟨hat, htb⟩ ⟨hab, le_rfl⟩ htb
+  · apply le_antisymm ?_ (h.le_sSup_image_Icc ⟨le_rfl, hab⟩)
+    apply csSup_le (by simp [hab])
+    simp only [mem_image, mem_Icc, forall_exists_index, and_imp]
+    rintro w t hat htb rfl
+    exact h' ⟨le_rfl, hab⟩ ⟨hat, htb⟩ hat
+
 end ContinuousOn
