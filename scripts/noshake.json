@@ -226,7 +226,7 @@
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
-  "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
+  "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic", "Mathlib.Tactic.ITauto"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.Simps.Basic": ["Batteries.Data.String.Basic"],
