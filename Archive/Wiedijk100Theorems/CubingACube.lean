@@ -269,7 +269,7 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
   apply lt_of_le_of_ne _ (v.2.2 i hi.1)
   have j : Fin n := ⟨1, Nat.le_of_succ_le_succ h.three_le⟩
   rw [← add_le_add_iff_left ((cs i).b j.succ)]
-  apply le_trans (t_le_t hi j); rw [add_le_add_iff_right]; apply b_le_b hi
+  apply le_trans (t_le_t hi j); gcongr; apply b_le_b hi
 
 /-- There are at least two cubes in a valley -/
 theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
@@ -292,8 +292,9 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rintro rfl
   apply not_le_of_gt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
   simp only [tail, Cube.tail, p]
-  rw [if_pos, add_le_add_iff_right]
-  · exact (hi.2 _).1
+  rw [if_pos]
+  · gcongr
+    exact (hi.2 _).1
   rfl
 
 /-- There is a cube in the valley -/
@@ -367,7 +368,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
   intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
-  refine le_trans ?_ (t_le_t hi'' j); rw [add_le_add_iff_left]; apply h3i' i'' ⟨hi'', _⟩
+  refine le_trans ?_ (t_le_t hi'' j); gcongr; apply h3i' i'' ⟨hi'', _⟩
   simp [i, mem_singleton, h2i'']
 
 variable (h v)

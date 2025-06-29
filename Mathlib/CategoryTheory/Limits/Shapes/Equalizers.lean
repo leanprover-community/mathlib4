@@ -613,6 +613,21 @@ def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
   Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
 
 /--
+Given two forks with isomorphic components in such a way that the natural diagrams commute, then
+one is a limit if and only if the other one is.
+-/
+def Fork.isLimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    (c : Fork f g)
+    {f' g' : X' ⟶ Y'} (c' : Fork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) :
+    IsLimit c ≃ IsLimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)
+
+/--
 Given two forks with isomorphic components in such a way that the natural diagrams commute, then if
 one is a limit, then the other one is as well.
 -/
@@ -622,8 +637,7 @@ def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
     (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
     (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
-  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
-  (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
+  (Fork.isLimitEquivOfIsos c c' e₀ e₁ e) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
 -/
@@ -656,6 +670,33 @@ def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=
   Cofork.ext (by simp only [Cofork.ofπ_pt, Functor.const_obj_obj]; rfl) (by simp)
+
+/--
+Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
+one is a colimit if and only if the other one is.
+-/
+def Cofork.isColimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    (c : Cofork f g)
+    {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) :
+    IsColimit c ≃ IsColimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  IsColimit.equivOfNatIsoOfIso i c c' (Cofork.ext e (by rw [← comm₃, ← Category.assoc]; rfl))
+
+/--
+Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
+if one is a colimit, then the other one is as well.
+-/
+def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
+    {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) : IsColimit c' :=
+  (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
 variable (f g)
 

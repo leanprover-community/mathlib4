@@ -118,7 +118,7 @@ theorem append_left {t₁ t₂ : List α} (h : Shortlex r t₁ t₂) (s : List �
     exact h
   | cons head tail =>
     apply of_lex
-    · simp only [List.cons_append, List.length_cons, List.length_append, Nat.succ_eq_add_one,
+    · simp only [List.cons_append, List.length_cons, List.length_append,
       add_left_inj, add_right_inj]
       exact h2.1
     exact List.Lex.append_left r h2.2 (head :: tail)
@@ -147,7 +147,7 @@ private theorem _root_.Acc.shortlex {a : α} {b : List α} (aca : Acc r a)
           rw [List.length_cons, ← h2len]
           exact hl
         | @rel x xs _ _ h =>
-          simp only [List.length_cons, List.singleton_append, add_left_inj] at h2len
+          simp only [List.length_cons, add_left_inj] at h2len
           refine iha _ h (ih xs (by rw [h2len]; simp)) fun l hl => ?_
           apply ih
           rw [List.length_cons, ← h2len]

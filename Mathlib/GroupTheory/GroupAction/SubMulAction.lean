@@ -243,7 +243,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
 protected def subtype : p →[R] M where
   toFun := Subtype.val
-  map_smul' := by simp [val_smul]
+  map_smul' := by simp
 
 variable {p} in
 @[to_additive (attr := simp)]

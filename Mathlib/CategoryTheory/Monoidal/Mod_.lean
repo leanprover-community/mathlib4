@@ -103,7 +103,7 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
       smul := f.hom ▷ M.X ≫ M.smul
       one_smul := by
         slice_lhs 1 2 => rw [← comp_whiskerRight]
-        rw [f.one_hom, one_smul]
+        rw [IsMon_Hom.one_hom, one_smul]
       assoc := by
         -- oh, for homotopy.io in a widget!
         slice_rhs 2 3 => rw [whisker_exchange]
@@ -113,7 +113,8 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 3 4 => rw [associator_inv_naturality_middle]
         slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
         slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← f.mul_hom]
+        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def',
+          ← IsMon_Hom.mul_hom]
         rw [comp_whiskerRight, Category.assoc] }
   map g :=
     { hom := g.hom
