@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Topology.Bases
 import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.ContinuousOn
 
@@ -34,7 +35,7 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
-open Set Filter Topology
+open Set Filter TopologicalSpace Topology
 
 universe u v ua ub uc ud
 
@@ -44,6 +45,22 @@ universe u v ua ub uc ud
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
 open Uniformity
+
+lemma IsOpen.compRel [TopologicalSpace α] {s t : Set (α × α)} (hs : IsOpen s) (ht : IsOpen t) :
+    IsOpen (s ○ t) := by
+  classical
+  refine (isTopologicalBasis_opens.prod isTopologicalBasis_opens).isOpen_induction
+    ((isTopologicalBasis_opens.prod isTopologicalBasis_opens).isOpen_induction ?_ ?_ ht) ?_ hs
+  · rintro S hS
+    rw [sUnion_compRel]
+    exact isOpen_biUnion hS
+  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩ _ ⟨s₁, hs₁, s₂, hs₂, rfl⟩
+    rw [prod_compRel_prod]
+    split_ifs
+    exacts [isOpen_empty, hs₁.prod ht₂]
+  · rintro T hT b hb
+    rw [compRel_sUnion]
+    exact isOpen_biUnion fun t ht ↦ hT t ht b hb
 
 section UniformSpace
 
