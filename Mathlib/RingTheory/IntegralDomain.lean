@@ -116,7 +116,8 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   calc
-    _ ≤ #(nthRoots n (f g₀)).toFinset := card_le_card_of_injOn f (by aesop) hf.injOn
+    _ ≤ #(nthRoots n (f g₀)).toFinset :=
+      card_le_card_of_injOn f (by aesop (add safe unfold Set.MapsTo)) hf.injOn
     _ ≤ _ := (nthRoots n (f g₀)).toFinset_card_le
 
 /-- A finite subgroup of the unit group of an integral domain is cyclic. -/

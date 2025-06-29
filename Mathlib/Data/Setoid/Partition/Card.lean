@@ -36,10 +36,10 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
     apply Finset.card_nbij' (fun ⟨t, x⟩ ↦ x)
       (fun x ↦ ⟨⟨(hP.2 x).exists.choose, (hP.2 x).exists.choose_spec.1⟩, x⟩)
     · rintro ⟨t, x⟩
-      simp only [Finset.mem_sigma, Set.Finite.mem_toFinset, Set.mem_inter_iff, and_imp]
-      exact fun _ a _ ↦ a
+      simp +contextual
     · intro x
-      simp only [Set.Finite.mem_toFinset, Finset.mem_sigma, Function.mem_support, Set.mem_inter_iff]
+      simp only [Set.Finite.mem_toFinset, Finset.mem_sigma, Function.mem_support, Set.mem_inter_iff,
+        Finset.mem_coe]
       intro hx
       refine ⟨Nat.card_ne_zero.mpr ⟨?_, hst (hP.right x).exists.choose⟩,
         hx, (hP.2 x).exists.choose_spec.2⟩
@@ -47,7 +47,7 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
       use x, hx, (hP.2 x).exists.choose_spec.2
     · rintro ⟨t, x⟩
       simp only [Finset.mem_sigma, Set.Finite.mem_toFinset, Function.mem_support, Nat.card_ne_zero,
-        Set.mem_inter_iff, Sigma.mk.inj_iff, heq_eq_eq, and_true, and_imp]
+        Set.mem_inter_iff, Sigma.mk.inj_iff, heq_eq_eq, and_true, and_imp, Finset.mem_coe]
       simp only [nonempty_subtype, Set.mem_inter_iff, forall_exists_index, and_imp]
       intro y hy hyt _ hxs hxt
       rw [← Subtype.coe_inj]
