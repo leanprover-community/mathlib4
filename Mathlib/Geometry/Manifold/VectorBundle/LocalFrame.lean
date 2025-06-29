@@ -29,7 +29,10 @@ basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquel
   induced by `e` and `b` at `x` only depends on `s` at `x`.
 * `b.contMDiffOn_localFrame_repr`: if `s` is a `C^k` section, each coefficient
   `b.localFrame_repr e i s` is `C^k` on `e.baseSet`
-* TODO: the converse, can test smoothness via local frames
+* `b.contMDiffAt_iff_localFrame_repr e`: a section `s` is `C^k` at `x ∈ e.baseSet`
+  iff all of its frame coefficients are
+* `b.contMDiffOn_iff_localFrame_repr e`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
+  iff all of its frame coefficients are
 
 TODO add a more complete doc-string!
 
@@ -168,17 +171,20 @@ lemma localFrame_repr_apply_of_mem_baseSet {x : M}
 
 -- uniqueness of the decomposition: follows from the IsBasis property above
 
+-- TODO: better name?
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma localFrame_repr_sum_eq [Fintype ι] (s : Π x : M,  V x) {x'} (hx : x' ∈ e.baseSet) :
+    s x' = (∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x') := by
+  simp [Basis.localFrame_repr, hx]
+  exact (sum_repr (localFrame_toBasis_at e b hx) (s x')).symm
+
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 variable (b) in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
   of `V` around `x`, we have `s = ∑ i, (b.localFrame_repr e i s) • b.localFrame e i` -/
 lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
-    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x' := by
-  have {x'} (hx : x' ∈ e.baseSet) :
-      s x' = (∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x') := by
-    simp [Basis.localFrame_repr, hx]
-    exact (sum_repr (localFrame_toBasis_at e b hx) (s x')).symm
-  exact eventually_nhds_iff.mpr ⟨e.baseSet, fun y a ↦ this a, e.open_baseSet, hxe⟩
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x' :=
+  eventually_nhds_iff.mpr ⟨e.baseSet, fun _ h ↦ localFrame_repr_sum_eq s h, e.open_baseSet, hxe⟩
 
 variable {ι : Type*} [Fintype ι] {x : M}
   {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
@@ -282,5 +288,48 @@ lemma contMDiffOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSp
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet :=
   contMDiffOn_localFrame_repr b e.open_baseSet (subset_refl _) hs _
+
+/-- A section `s` of `V` is `C^k` at `x ∈ e.baseSet` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma contMDiffAt_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} {x' : M} (hx : x' ∈ e.baseSet) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x' ↔
+    ∀ i, ContMDiffAt I 𝓘(𝕜) k (b.localFrame_repr e i s) x' := by
+  refine ⟨fun h i ↦ b.contMDiffAt_localFrame_repr hx h i, fun i ↦ ?_⟩
+  -- needs two missing API lemmas, see below
+  sorry
+
+/-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma contMDiffOn_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M}
+    (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t ↔
+    ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t := by
+  refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun i ↦ ?_⟩
+
+  have inner (i) : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦
+      TotalSpace.mk' F x ((localFrame_repr e b i) s x • localFrame e b i x)) t := by
+    -- lemma localFrame_repr is smooth, localFrame is smooth => scalar product is
+    -- does this already exist? if not, missing API!
+    sorry
+  let rhs := fun x' ↦ ∑ i, (localFrame_repr e b i) s x' • localFrame e b i x'
+  have almost : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k
+      (fun x ↦ TotalSpace.mk' F x (rhs x)) t := by
+    unfold rhs
+    -- lemma: apply contMDiffOn_finsum, proven by induction, to `inner`
+    sorry
+  apply almost.congr
+  intro y hy
+  congr
+  exact localFrame_repr_sum_eq s (ht' hy)
+
+/-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma contMDiffOn_baseSet_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
+    ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet := by
+  rw [b.contMDiffOn_iff_localFrame_repr e.open_baseSet (subset_refl _)]
 
 end Basis
