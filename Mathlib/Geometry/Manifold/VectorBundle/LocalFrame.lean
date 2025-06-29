@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Geometry.Manifold.Algebra.Monoid
 
 /-!
 # Local frames in a vector bundle
@@ -15,7 +16,7 @@ i.e. a collection of sections `s_i` of `V` which is smooth on `e.baseSet` such t
 basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquely written as
 `s = ∑ i, f^i s_i` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
 
-We use this to construction local extensions of a vector to a section which is smooth on the
+We use this to construct local extensions of a vector to a section which is smooth on the
 trivialisation domain.
 
 ## Main definitions and results
@@ -318,11 +319,13 @@ lemma contMDiffOn_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 
     -- lemma localFrame_repr is smooth, localFrame is smooth => scalar product is
     -- does this already exist? if not, missing API!
     sorry
-  let rhs := fun x' ↦ ∑ i, (localFrame_repr e b i) s x' • localFrame e b i x'
+  let rhs₀ (i) := fun x' ↦ (localFrame_repr e b i) s x' • localFrame e b i x'
+  let rhs := fun x' ↦ ∑ i, rhs₀ i x'
   have almost : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k
       (fun x ↦ TotalSpace.mk' F x (rhs x)) t := by
     unfold rhs
-    -- lemma: apply contMDiffOn_finsum, proven by induction, to `inner`
+    -- TODO: add a dependent function version of contMDiffOn_finsum, for sections of a vector bundle
+    -- have aux := contMDiffOn_finsum (I' := I) (I := I.prod 𝓘(𝕜, F)) (f := fun i x ↦ rhs₀ i x)
     sorry
   apply almost.congr
   intro y hy
