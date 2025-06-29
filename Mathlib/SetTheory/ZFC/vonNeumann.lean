@@ -28,7 +28,8 @@ hierarchy contains the set as a subset.
 
 ## Implementation Notes
 
-The first section defining the hierarchy does not depend on the definition and properties of rank contained in `Mathlib/SetTheory/ZFC/Rank.lean' 
+The first section defining the hierarchy does not depend on the definition and properties of rank 
+contained in `Mathlib/SetTheory/ZFC/Rank.lean' 
 
 ## Tags
 
@@ -40,12 +41,12 @@ universe u
 
 namespace ZFSet
 
-/-! ### Definition of Hierarchy and Basic Results -/
+/-! ### Definition of Hierarchy and Basic Properties -/
 
 /-- The stage in the von Neumann hierarchy indexed by a given Ordinal. -/
 noncomputable def stage (o : Ordinal.{u}) : ZFSet.{u} :=
   Ordinal.limitRecOn o ∅
-    (fun _ prev => prev.powerset)
+    (fun _ x => x.powerset)
     (fun a _ ih =>
       (range (fun (b : ↑(Set.Iio a)) => by
         use ih b ?_
@@ -54,7 +55,7 @@ noncomputable def stage (o : Ordinal.{u}) : ZFSet.{u} :=
 
 /-- The stages of the von Neumann hierarchy are transitive as sets,
 meaning that every element of a stage is a subset of it. -/
-theorem stage_trans {o : Ordinal.{u}} : ∀ {x : ZFSet.{u}}, x ∈ stage o → x ⊆ stage o := by
+theorem stage_sub_of_mem {o : Ordinal.{u}} : ∀ {x : ZFSet.{u}}, x ∈ stage o → x ⊆ stage o := by
   induction o using Ordinal.limitRecOn
   <;> simp [stage]
   <;> intro x hxo z (hzx : z ∈ x)
@@ -82,18 +83,19 @@ theorem stage_mono {a b : Ordinal.{u}} (h : a ≤ b) : stage a ⊆ stage b := by
     contradiction
   · obtain ⟨o, hob⟩ := hbs
     subst hob
-    apply stage_trans
-    conv in stage (Order.succ o) =>
-      simp [stage]; rw [← stage]
+    show stage a ⊆ stage (Order.succ o)
+    apply stage_sub_of_mem
+    conv in stage (Order.succ o) => simp [stage]
     rw [mem_powerset]
     exact ih o (Order.lt_succ o) (Order.le_of_lt_succ hlt)
   · intro x (hx : x ∈ stage a)
     simp [stage, hbl]
+    show ∃ o < b, x ∈ stage o
     use Order.succ a
     constructor
     · exact (Ordinal.succ_lt_of_isLimit hbl).mpr hlt
     · simp [stage]
-      apply stage_trans
+      apply stage_sub_of_mem
       exact hx
 
 
@@ -112,7 +114,7 @@ lemma no_infinite_chains (f : ℕ → ZFSet.{u}) : ¬∀ n, f (n + 1) ∈ f n :=
   obtain ⟨y, ⟨hyr : y ∈ r, hrye : r ∩ y = ∅⟩⟩ := regularity r hrne
   obtain ⟨n, fny⟩ : ∃ n, f n = y := by 
     rw [← Set.mem_range, ← mem_range]
-    assumption
+    exact hyr
   rw [eq_empty] at hrye
   specialize hrye (f (n + 1))
   have : f (n + 1) ∈ r ∩ y := by
@@ -187,7 +189,7 @@ theorem rank_stage_eq_self (o : Ordinal.{u}) : (stage o).rank = o := by
   case isLimit o olim ih => 
     rw [eq_iff_le_not_lt]
     constructor
-    · let f := fun (a : Set.Iio o) => stage ↑a
+    · let f := fun (a : ↑(Set.Iio o)) => stage ↑a
       calc
         (stage o).rank = (⋃₀ range f).rank                            := by simp [f, stage, olim]
         _              ≤ (range f).rank                               := rank_sUnion_le (range f)
@@ -202,12 +204,12 @@ theorem rank_stage_eq_self (o : Ordinal.{u}) : (stage o).rank = o := by
       rw [← Set.mem_Iio]
       exact Subtype.mem a
     · show ¬(stage o).rank < o 
-      by_contra h
-      have ⟨a, ⟨hlto, hlta⟩⟩ := (Ordinal.lt_limit olim).mp h
+      intro h
+      obtain ⟨a, ⟨hlto : a < o, hgtr : (stage o).rank < a⟩⟩ := (Ordinal.lt_limit olim).mp h
       have : ¬ (stage a).rank ≤ (stage o).rank := by 
         apply not_le_of_gt
-        have := ih a hlto ▸ hlta
-        assumption
+        rw [ih a hlto]
+        exact hgtr
       have : (stage a).rank ≤ (stage o).rank := by
         apply rank_mono
         apply stage_mono
@@ -216,8 +218,8 @@ theorem rank_stage_eq_self (o : Ordinal.{u}) : (stage o).rank = o := by
         exact hlto
       contradiction
 
-/-- A set is contained by a stage of the von Neumann hierarchy iff the rank of the stage
-is greater than or equal to the rank of the set. -/
+/-- A set is contained by a stage of the von Neumann hierarchy iff the rank of the stage is greater
+than or equal to the rank of the set. -/
 theorem sub_stage_iff_rank_le {x : ZFSet.{u}} {o : Ordinal.{u}} : x ⊆ stage o ↔ x.rank ≤ o := by
   constructor <;> intro h
   · exact rank_stage_eq_self o ▸ ZFSet.rank_mono h
@@ -226,8 +228,7 @@ theorem sub_stage_iff_rank_le {x : ZFSet.{u}} {o : Ordinal.{u}} : x ⊆ stage o 
     apply sub_stage_rank x
     exact hy
 
-/-- The definition in ZFSet.rank is equivalent to the traditional definition of rank
-in terms of the von Neumann hierarchy. -/
+/-- The definition in ZFSet.rank is equivalent to the definition of rank in terms of the von Neumann hierarchy. -/
 theorem rank_def {x : ZFSet.{u}} {o : Ordinal.{u}} :
     x.rank = o ↔ (x ⊆ stage o ∧ ∀ o' < o, ¬ x ⊆ stage o') := by
   constructor
@@ -236,7 +237,7 @@ theorem rank_def {x : ZFSet.{u}} {o : Ordinal.{u}} :
     · rw [sub_stage_iff_rank_le, le_iff_lt_or_eq]
       right
       exact h 
-    · intro a ha
+    · intro a (ha : a < o)
       rw [sub_stage_iff_rank_le]
       subst h
       exact not_le_of_gt ha
@@ -245,6 +246,9 @@ theorem rank_def {x : ZFSet.{u}} {o : Ordinal.{u}} :
     constructor
     · rw [← sub_stage_iff_rank_le]
       exact hxo
-    · by_contra h
-      apply omin x.rank h
+    · by_contra hlto
+      apply omin x.rank hlto
       exact sub_stage_rank x
+
+
+end ZFSet
