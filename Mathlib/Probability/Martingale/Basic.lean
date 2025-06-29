@@ -12,10 +12,10 @@ import Mathlib.Probability.Process.Stopping
 A family of functions `f : ι → Ω → E` is a martingale with respect to a filtration `ℱ` if every
 `f i` is integrable, `f` is adapted with respect to `ℱ` and for all `i ≤ j`,
 `μ[f j | ℱ i] =ᵐ[μ] f i`. On the other hand, `f : ι → Ω → E` is said to be a supermartingale
-with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with resepct to `ℱ`
+with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with respect to `ℱ`
 and for all `i ≤ j`, `μ[f j | ℱ i] ≤ᵐ[μ] f i`. Finally, `f : ι → Ω → E` is said to be a
 submartingale with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with
-resepct to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
+respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 
 The definitions of filtration and adapted can be found in `Probability.Process.Stopping`.
 
@@ -495,8 +495,8 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
       ((hf.adapted.stronglyMeasurable_le (Nat.succ_le_of_lt hi)).sub
         (hf.adapted.stronglyMeasurable_le hi.le))
   refine submartingale_of_condExp_sub_nonneg_nat hadp hint fun i => ?_
-  simp only [← Finset.sum_Ico_eq_sub _ (Nat.le_succ _), Finset.sum_apply, Pi.mul_apply,
-    Pi.sub_apply, Nat.Ico_succ_singleton, Finset.sum_singleton]
+  simp only [← Finset.sum_Ico_eq_sub _ (Nat.le_succ _),
+    Nat.Ico_succ_singleton, Finset.sum_singleton]
   exact EventuallyLE.trans (EventuallyLE.mul_nonneg (Eventually.of_forall (hnonneg _))
     (hf.condExp_sub_nonneg (Nat.le_succ _))) (condExp_mul_of_stronglyMeasurable_left (hξ _)
     (((hf.integrable _).sub (hf.integrable _)).bdd_mul

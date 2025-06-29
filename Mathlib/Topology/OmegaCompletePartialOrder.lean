@@ -122,17 +122,13 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
   rcases (notBelow_isOpen z).preimage hf with hf''
   let hf' := hf''.monotone_map_ωSup.2
   specialize hf' c
-  simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
+  simp only [mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]
   simp only [ωSup_le_iff, hf', ωSup, iSup, sSup, mem_range, Chain.map_coe, Function.comp_apply,
     eq_iff_iff, not_forall, OrderHom.coe_mk]
   tauto
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
-    [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : ωScottContinuous f) : Continuous f := by
-  rw [continuous_def]
-  intro s hs
-  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
-  simp_rw [mem_preimage, mem_def, ← Function.comp_def]
-  apply ωScottContinuous.comp hs hf
+    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : ωScottContinuous f) :
+    Continuous f := by
+  rw [continuous_def]; exact fun s hs ↦ hs.comp hf

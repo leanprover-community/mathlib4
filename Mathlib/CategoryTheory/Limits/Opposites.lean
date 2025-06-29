@@ -598,6 +598,17 @@ def opCoproductIsoProduct :
 
 end
 
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct'_hom_comp_proj {c : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hf : IsLimit f) (i : α) :
+    (opCoproductIsoProduct' hc hf).hom ≫ f.proj i = (c.inj i).op := by
+  simp [opCoproductIsoProduct', Fan.proj]
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct_hom_comp_π [HasCoproduct Z] (i : α) :
+    (opCoproductIsoProduct Z).hom ≫ Pi.π _ i = (Sigma.ι _ i).op :=
+  Limits.opCoproductIsoProduct'_hom_comp_proj ..
+
 theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (b : α) :
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
@@ -760,7 +771,7 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom_inv_id := by
     apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only [limit.lift_π]
+    · simp only
       apply Quiver.Hom.op_inj
       simp
   inv_hom_id := by

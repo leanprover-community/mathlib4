@@ -495,7 +495,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     exact (IsEmpty.false i).elim
   · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
     refine nonsing_inv_apply_not_isUnit _ ?_
-    simp [hn]
+    simp
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }

@@ -54,8 +54,8 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
     ∫⁻ y in Iio x, paretoPDF t r y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · simp only [paretoPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
-    filter_upwards with a (_ : a < _)
+  · intro a (_ : a < _)
+    simp only [paretoPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
     rw [if_neg (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
@@ -99,7 +99,7 @@ lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :
   have leftSide : ∫⁻ x in Iio t, paretoPDF t r x = 0 := lintegral_paretoPDF_of_le (le_refl t)
   have rightSide : ∫⁻ x in Ici t, paretoPDF t r x =
       ∫⁻ x in Ici t, ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) :=
-    setLIntegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ paretoPDF_of_le))
+    setLIntegral_congr_fun measurableSet_Ici (fun _ ↦ paretoPDF_of_le)
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
   · rw [integral_Ici_eq_integral_Ioi, integral_const_mul, integral_Ioi_rpow_of_lt _ ht]

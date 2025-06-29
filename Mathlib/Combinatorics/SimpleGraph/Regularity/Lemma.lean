@@ -149,4 +149,4 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   · rw [card_increment hPα huniform, iterate_succ_apply']
     exact stepBound_mono hP₃
   · rw [Nat.cast_succ, mul_add, mul_one]
-    exact add_le_add_right hP₄ _
+    gcongr

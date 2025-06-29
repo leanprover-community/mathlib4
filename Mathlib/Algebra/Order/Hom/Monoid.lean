@@ -926,13 +926,29 @@ end Mul
 section LinearOrderedCommMonoidWithZero
 
 variable {hα : Preorder α} {hα' : MulZeroOneClass α} {hβ : Preorder β} {hβ' : MulZeroOneClass β}
+  {hγ : Preorder γ} {hγ' : MulZeroOneClass γ}
 
 @[simp]
 theorem toMonoidWithZeroHom_eq_coe (f : α →*₀o β) : f.toMonoidWithZeroHom = f := by
   rfl
 
 @[simp]
+theorem toMonoidWithZeroHom_mk (f : α →*₀ β) (hf : Monotone f) :
+    ((OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = f := by
+  rfl
+
+@[simp]
+lemma toMonoidWithZeroHom_coe (f : β →*₀o γ) (g : α →*₀o β) :
+    (f.comp g : α →*₀ γ) = (f : β →*₀ γ).comp g :=
+  rfl
+
+@[simp]
 theorem toOrderMonoidHom_eq_coe (f : α →*₀o β) : f.toOrderMonoidHom = f :=
+  rfl
+
+@[simp]
+lemma toOrderMonoidHom_comp (f : β →*₀o γ) (g : α →*₀o β) :
+    (f.comp g : α →*o γ) = (f : β →*o γ).comp g :=
   rfl
 
 end LinearOrderedCommMonoidWithZero

@@ -162,7 +162,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
   conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
   simp only [get_eq_get_toList]
-  congr <;> simp [Fin.heq_ext_iff]
+  congr <;> simp
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
@@ -217,7 +217,7 @@ retrieved via `toList`, is equal to the list of that single element. -/
 @[simp]
 theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] := by
   rw [← v.cons_head_tail]
-  simp only [toList_cons, toList_nil, head_cons, eq_self_iff_true, and_self_iff, singleton_tail]
+  simp only [toList_cons, toList_nil, head_cons, singleton_tail]
 
 @[simp]
 theorem empty_toList_eq_ff (v : Vector α (n + 1)) : v.toList.isEmpty = false :=
@@ -368,7 +368,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList, List.get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
