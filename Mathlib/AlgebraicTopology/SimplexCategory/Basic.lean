@@ -896,18 +896,27 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
 
 namespace Truncated
 
-theorem initial_inclusion (n : ℕ) : (inclusion n).Initial := by
-  apply ObjectProperty.initial_ι
-  intro d hd
-  have : Nonempty (CostructuredArrow (ObjectProperty.ι fun (a : SimplexCategory) ↦ a.len ≤ n) d) :=
-    ⟨⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ 0 ⟩⟩
+/-- For `0 < n`, the inclusion functor from the truncated simplex category to the untruncated
+simplex category is initial. -/
+theorem initial_inclusion {n : ℕ} (hn : 0 < n) : (inclusion n).Initial := by
+  constructor
+  intro Δ
+  have : Nonempty (CostructuredArrow (inclusion n) Δ) := ⟨⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ 0 ⟩⟩
   apply zigzag_isConnected
-  rintro ⟨⟨Δ₁, hΔ₁⟩, ⟨⟨⟩⟩, g₁⟩ ⟨⟨Δ₂, hΔ₂⟩, ⟨⟨⟩⟩, g₂⟩
-  simp at g₁ g₂
-  refine Zigzag.trans (j₂ := ⟨⦋n⦌ₙ, ⟨⟨⟩⟩, subinterval (n := d.len) 0 n (by omega)⟩)
-    (.of_hom ?_) (.of_inv ?_)
-  · sorry
-  · sorry
+  rintro ⟨⟨Δ₁, hΔ₁⟩, ⟨⟨⟩⟩, f⟩ ⟨⟨Δ₂, hΔ₂⟩, ⟨⟨⟩⟩, f'⟩
+  apply Zigzag.trans (j₂ := ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f 0)⟩)
+    (.of_inv <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ hΔ₁))
+  by_cases hff' : f 0 ≤ f' 0
+  · apply Zigzag.trans (j₂ := ⟨⦋1⦌ₙ, ⟨⟨⟩⟩, mkOfLe (n := Δ.len) (f 0) (f' 0) hff'⟩)
+      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
+    apply Zigzag.trans (j₂ := ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f' 0)⟩)
+      (.of_inv <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 1) _ _))
+      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
+  · apply Zigzag.trans (j₂ := ⟨⦋1⦌ₙ, ⟨⟨⟩⟩, mkOfLe (n := Δ.len) (f' 0) (f 0) (le_of_not_ge hff')⟩)
+      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 1) _ _))
+    apply Zigzag.trans (j₂ := ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f' 0)⟩)
+      (.of_inv <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
+      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
 
 end Truncated
 
