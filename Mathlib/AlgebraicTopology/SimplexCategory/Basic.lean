@@ -895,11 +895,19 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
 
 theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
 
+instance uniqueHomToZero {Δ : SimplexCategory} : Unique (Δ ⟶ ⦋0⦌) where
+  default := Δ.const _ 0
+  uniq := eq_const_to_zero
+
 /-- The object `⦋0⦌` is terminal in `SimplexCategory`. -/
 def isTerminalZero : IsTerminal (⦋0⦌ : SimplexCategory) :=
-  IsTerminal.ofUniqueHom (fun _ ↦ const _ ⦋0⦌ 0) (fun _ _ => eq_const_to_zero _)
+  IsTerminal.ofUnique ⦋0⦌
 
-instance uniqueHomToZero {n} : Unique (⦋n⦌ ⟶ ⦋0⦌) :=
-  Limits.isTerminalEquivUnique _ _ |>.toFun SimplexCategory.isTerminalZero _
+instance : HasTerminal SimplexCategory :=
+  IsTerminal.hasTerminal isTerminalZero
+
+/-- The isomorphism of the terminal objects in `SimplexCategory` and `⦋0⦌`. -/
+noncomputable def topIsoZero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
+  terminalIsoIsTerminal isTerminalZero
 
 end SimplexCategory
