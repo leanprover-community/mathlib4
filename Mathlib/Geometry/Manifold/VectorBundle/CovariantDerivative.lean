@@ -113,109 +113,6 @@ lemma mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s �
 
 end prerequisites
 
--- local extension of a vector field in a trivialisation's base set
-section extendLocally
-
-variable {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F}
-  {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-  [MemTrivializationAtlas e] {x : M}
-
-variable {F V}
-
-open scoped Classical in
--- TODO: add longer docs!
--- a starting point (not fully updated any more) is this:
-/- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
-The details of the extension are mostly unspecified: for covariant derivatives, the value of
-`s` at points other than `x` will not matter (except for shorter proofs).
-Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v`.
--/
-
--- comment: need not be smooth (outside of e.baseSet), but this is a useful building block for
--- global smooth extensions of vector fields
--- the latter caps this with a smooth bump function, which need not exist if k=C
--- In contrast, this definition makes sense over any field
--- (for example, *locally* holomorphic sections always exist),
-
--- extendLocally: takes trivialisation e as parameter, and a basis b of F
-variable (b e) in
-noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (x : M) (v : V x) : (x' : M) → V x' :=
-  fun x' ↦ if hx : x ∈ e.baseSet then
-    letI bV := b.localFrame_toBasis_at e hx; ∑ i, bV.repr v i • b.localFrame e i x'
-    else 0
-
--- TODO: clean up this proof, by adding further API as necessary
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-lemma localExtensionOn_apply_self (b : Basis ι 𝕜 F)
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
-    ((localExtensionOn b e x v) x) = v := by
-  unfold localExtensionOn
-  simp [hx]
-  letI bV := b.localFrame_toBasis_at e hx
-  show ∑ i, bV.repr v i • (b.localFrame_toBasis_at e hx) i = v
-  conv_rhs => rw [← bV.sum_repr v]
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-lemma localExtensionOn_apply_self' (b : Basis ι 𝕜 F)
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
-    (e ((localExtensionOn b e x v) x)).2 = (e v).2 := by
-  rw [localExtensionOn_apply_self _ _ hx]
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
--- in the trivialisation e, the localExtensionOn is constant on e.baseSet
-lemma localExtensionOn_localFrame_repr (b : Basis ι 𝕜 F)
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) (i : ι)
-    {x' : M} (hx' : x' ∈ e.baseSet):
-    b.localFrame_repr e i (localExtensionOn b e x v) x' =
-      b.localFrame_repr e i (localExtensionOn b e x v) x := by
-  -- TODO: missing simp lemmas/ ensure the API is fine here!
-  simp [Basis.localFrame, hx', localExtensionOn, hx]
-
--- By construction, localExtensionOn is a linear map.
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-variable (b e) in
-lemma localExtensionOn_add (v v' : V x) :
-    localExtensionOn b e x (v + v') = localExtensionOn b e x v + localExtensionOn b e x v' := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet; swap
-  · simp [hx, localExtensionOn]
-  · simp [hx, localExtensionOn, add_smul, Finset.sum_add_distrib]
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-variable (b e) in
-lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
-    localExtensionOn b e x (a • v) = a • localExtensionOn b e x v := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet; swap
-  · simp [hx, localExtensionOn]
-  · simp [hx, localExtensionOn]
-    set B := Basis.localFrame_toBasis_at e b hx
-    have (x') : (a * (B.repr v) x') = a • (B.repr v) x' := by rw [smul_eq_mul]
-    simp_rw [this, IsScalarTower.smul_assoc a, Finset.smul_sum]
-
-omit [IsManifold I 0 M] in
-lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    {x : M} (hx : x ∈ e.baseSet) (v : V x) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) 1
-    (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) e.baseSet := by
-  -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
-  -- constant, hence smoothness follows.
-  rw [b.contMDiffOn_baseSet_iff_localFrame_repr]
-  intro i
-  apply (contMDiffOn_const (c := (b.localFrame_repr e i) (localExtensionOn b e x v) x)).congr
-  intro y hy
-  rw [localExtensionOn_localFrame_repr b hx v i hy]
-
-end extendLocally
-
-variable (x : M)
-
 @[ext]
 structure CovariantDerivative where
   toFun : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)
@@ -265,7 +162,7 @@ omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
 variable {I F V} in
 /-- If `σ` and `σ'` are equal sections of `E`, they have equal covariant derivatives. -/
 lemma congr_σ (cov : CovariantDerivative I F V)
-    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) :
+    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) (x : M) :
     cov X σ x = cov X σ' x := by
   simp [funext hσ]
 
