@@ -6,6 +6,7 @@ Authors: Beibei Xiong, Shao Yu, Weijie Jiang
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Choose.Basic
 
 
 /-!
@@ -31,9 +32,9 @@ n distinct elements into k non-empty subsets.
 # Main definitions
 
 * `Nat.stirlingFirst`: the number of ways to partition n distinct elements into k non-empty
-cycles, Defined by the recursive relationship it satisfies.
+  cycles, defined by the recursive relationship it satisfies.
 * `Nat.stirlingSecond`: the number of ways to partition n distinct elements into k non-empty
-subsets, Defined by the recursive relationship it satisfies.
+  subsets, defined by the recursive relationship it satisfies.
 
 
 # References:
@@ -43,7 +44,7 @@ subsets, Defined by the recursive relationship it satisfies.
 
 -/
 
-
+open Nat
 
 namespace Nat
 
@@ -84,7 +85,7 @@ theorem stirlingFirst_succ_succ (n k : ℕ) :
     stirlingFirst (n + 1) (k + 1) = n * stirlingFirst n (k + 1) +  stirlingFirst n k := by
   rw [stirlingFirst]
 
-theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n k= 0
+theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, _ + 1, _ => by rw [stirlingFirst]
   | n + 1, k + 1, hk => by
@@ -97,7 +98,8 @@ theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n
 theorem stirlingFirst_self (n : ℕ) : stirlingFirst n n = 1 := by
   induction n <;> simp [*, stirlingFirst, stirlingFirst_eq_zero_of_lt (Nat.lt_succ_self _)]
 
-theorem stirlingFirst_succ_self_left (n : ℕ) : stirlingFirst (n + 1) n = (n * (n + 1)) / 2 := by
+theorem stirlingFirst_succ_self_left (n : ℕ) : stirlingFirst (n + 1) n = (n + 1).choose 2 := by
+  simp [choose_two_right]
   induction' n with n hn
   · simp [stirlingFirst]
   · have h₀ : (n + 1) = (2 * (n + 1)) / 2 := by
@@ -109,7 +111,7 @@ theorem stirlingFirst_succ_self_left (n : ℕ) : stirlingFirst (n + 1) n = (n * 
     rw [← Nat.add_div_of_dvd_left]
     · ring_nf
     · suffices h₁ : Even (n * (n + 1)) from by
-        rw [even_iff_two_dvd] at h₁
+        rw [even_iff_two_dvd, mul_comm] at h₁
         exact h₁
       exact Nat.even_mul_succ_self n
 
@@ -172,7 +174,7 @@ theorem stirlingSecond_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingSecond
 theorem stirlingSecond_self (n : ℕ) : stirlingSecond n n = 1 := by
   induction n <;> simp [*, stirlingSecond, stirlingSecond_eq_zero_of_lt (lt_succ_self _)]
 
-theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n+1) 1 = 1 := by
+theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
   simp [stirlingSecond]
   induction' n with n ih
   · simp [stirlingSecond]
@@ -183,8 +185,9 @@ theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n+1) 1 = 1 := by
     simp
     exact ih
 
-theorem stirlning_second_succ_self_left (n : ℕ) :
-    stirlingSecond (n + 1) n = (n * (n + 1)) / 2 := by
+theorem stirlingSecond_succ_self_left (n : ℕ) :
+    stirlingSecond (n + 1) n = (n + 1).choose 2 := by
+  simp [choose_two_right]
   induction' n with n hn
   · simp
   · rw [stirlingSecond_succ_succ, hn, stirlingSecond_self, mul_one, add_assoc n 1 1]
@@ -196,7 +199,7 @@ theorem stirlning_second_succ_self_left (n : ℕ) :
     rw [← Nat.add_div_of_dvd_left]
     · ring_nf
     · suffices h₁ : Even (n * (n + 1)) from by
-        rw [even_iff_two_dvd] at h₁
+        rw [even_iff_two_dvd, mul_comm] at h₁
         exact h₁
       exact Nat.even_mul_succ_self n
 
