@@ -971,7 +971,6 @@ lemma inl_add_inr (x : α) (y : β) :
   rw [inl_apply, inr_apply, ← toLp_add]
   simp
 
-@[simp]
 lemma comp_inl_add_comp_inr {γ : Type*}
     [AddCommGroup γ] [Module 𝕜 γ] (L : WithLp p (α × β) →ₗ[𝕜] γ) (x : WithLp p (α × β)) :
     L (WithLp.inl p 𝕜 α β x.fst) + L (WithLp.inr p 𝕜 α β x.snd) = L x := by
