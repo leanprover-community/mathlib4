@@ -205,4 +205,10 @@ theorem σsSup_eq_bot [OrderBot α] (hs : s.Countable) : sSup s = ⊥ ↔ ∀ a 
 theorem σsInf_eq_top [OrderTop α] (hs : s.Countable) : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   σsSup_eq_bot (α := αᵒᵈ) hs
 
+lemma σsSup_eq_bot' [OrderBot α] (hs : s.Countable) : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
+  rw [σsSup_eq_bot hs, ← Set.subset_singleton_iff_eq, Set.subset_singleton_iff]
+
+lemma σsInf_eq_bot' [OrderTop α] (hs : s.Countable) : sInf s = ⊤ ↔ s = ∅ ∨ s = {⊤} :=
+  σsSup_eq_bot' (α := αᵒᵈ) hs
+
 end SigmaCompleteLattice
