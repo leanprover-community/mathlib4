@@ -182,11 +182,11 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ} {Kf Kg : ℝ≥0}
 
 protected theorem max (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => max (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prod hg)
+  simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prodMk hg)
 
 protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prod hg)
+  simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prodMk hg)
 
 theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.max (LipschitzWith.const a)
@@ -300,12 +300,12 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ}
 /-- The minimum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma min (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz (fun x => min (f x) (g x)) :=
-  lipschitzWith_min.locallyLipschitz.comp (hf.prod hg)
+  lipschitzWith_min.locallyLipschitz.comp (hf.prodMk hg)
 
 /-- The maximum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma max (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz (fun x => max (f x) (g x)) :=
-  lipschitzWith_max.locallyLipschitz.comp (hf.prod hg)
+  lipschitzWith_max.locallyLipschitz.comp (hf.prodMk hg)
 
 theorem max_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max (f x) a :=
   hf.max (LocallyLipschitz.const a)

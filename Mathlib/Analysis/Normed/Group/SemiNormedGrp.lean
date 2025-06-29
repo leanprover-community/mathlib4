@@ -135,10 +135,6 @@ theorem coe_comp {M N K : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ K) :
 instance : Inhabited SemiNormedGrp :=
   ⟨of PUnit⟩
 
-instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
-    Unique (SemiNormedGrp.of V) :=
-  i
-
 instance {M N : SemiNormedGrp} : Zero (M ⟶ N) where
   zero := ofHom 0
 
@@ -361,10 +357,6 @@ theorem coe_comp {M N K : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ K) :
 
 instance : Inhabited SemiNormedGrp₁ :=
   ⟨of PUnit⟩
-
-instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
-    Unique (SemiNormedGrp₁.of V) :=
-  i
 
 instance (X Y : SemiNormedGrp₁) : Zero (X ⟶ Y) where
   zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩

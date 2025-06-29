@@ -25,11 +25,12 @@ open Cardinal Polynomial
 
 namespace Algebraic
 
-theorem infinite_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
-    [CharZero A] : { x : A | IsAlgebraic R x }.Infinite :=
-  infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
+theorem infinite_of_charZero (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [CharZero A] : { x : A | IsAlgebraic R x }.Infinite := by
+  letI := MulActionWithZero.nontrivial R A
+  exact infinite_of_injective_forall_mem Nat.cast_injective isAlgebraic_nat
 
-theorem aleph0_le_cardinalMk_of_charZero (R A : Type*) [CommRing R] [IsDomain R] [Ring A]
+theorem aleph0_le_cardinalMk_of_charZero (R A : Type*) [CommRing R] [Ring A]
     [Algebra R A] [CharZero A] : ℵ₀ ≤ #{ x : A // IsAlgebraic R x } :=
   infinite_iff.1 (Set.infinite_coe_iff.2 <| infinite_of_charZero R A)
 
@@ -80,7 +81,7 @@ protected theorem countable : Set.Countable { x : A | IsAlgebraic R x } := by
   simp
 
 @[simp]
-theorem cardinalMk_of_countable_of_charZero [CharZero A] [IsDomain R] :
+theorem cardinalMk_of_countable_of_charZero [CharZero A] :
     #{ x : A // IsAlgebraic R x } = ℵ₀ :=
   (Algebraic.countable R A).le_aleph0.antisymm (aleph0_le_cardinalMk_of_charZero R A)
 

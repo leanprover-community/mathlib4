@@ -3,11 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Directed
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.Chain
+import Mathlib.Order.Preorder.Chain
 
 /-!
 # Antichains
@@ -24,6 +21,7 @@ relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent se
 * `IsAntichain.mk r s`: Turns `s` into an antichain by keeping only the "maximal" elements.
 -/
 
+assert_not_exists CompleteLattice
 
 open Function Set
 
@@ -306,11 +304,11 @@ variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
 
 lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
     IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_le (hf' ha hb hab)
+  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_ge (hf' ha hb hab)
 
 lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
     IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_lt (hf' ha hb <| hab.lt_of_ne hab')
+  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
 
 end General
 

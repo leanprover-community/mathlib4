@@ -136,7 +136,7 @@ theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   constructor
   · intro h
     use (x, y)
-    simp only [mem_product, h, and_self, true_and]
+    simp only [mem_product, h, and_self]
   · rintro ⟨⟨a, b⟩, h⟩
     simp only [mem_product, Sym2.eq_iff] at h
     obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
@@ -173,10 +173,6 @@ section Sym
 
 variable [DecidableEq α] {n : ℕ}
 
--- Porting note: instance needed
-instance : DecidableEq (Sym α n) :=
-  inferInstanceAs <| DecidableEq <| Subtype _
-
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/
 protected def sym (s : Finset α) : ∀ n, Finset (Sym α n)
@@ -194,7 +190,7 @@ theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := b
   induction' n with n ih
   · refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
-    exact fun a ha ↦ (Finset.not_mem_empty _ ha).elim
+    exact fun a ha ↦ (Finset.notMem_empty _ ha).elim
   refine mem_sup.trans ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, ha, he⟩ b hb
     rw [mem_image] at he

@@ -3,7 +3,6 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.FieldSimp
@@ -195,7 +194,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
   cases n with
   | zero =>
     change g.s.get? 0 = none at terminatedAt_n
-    simp only [convs', squashGCF, convs'Aux, terminatedAt_n]
+    simp only [squashGCF, terminatedAt_n]
   | succ =>
     cases g
     simp only [squashGCF, mk.injEq, true_and]
@@ -204,7 +203,7 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
 /-- The values before the squashed position stay the same. -/
 theorem squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
     (squashGCF g (n + 1)).s.get? m = g.s.get? m := by
-  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n, Nat.add_eq, add_zero]
+  simp only [squashGCF, squashSeq_nth_of_lt m_lt_n]
 
 /-- `convs'` returns the same value for a gcf and the corresponding squashed gcf at the
 squashed position. -/
@@ -323,7 +322,7 @@ In practice, one most commonly deals with regular continued fractions, which sat
 positivity criterion required here. The analogous result for them
 (see `ContFract.convs_eq_convs`) hence follows directly from this theorem.
 -/
-theorem convs_eq_convs' [LinearOrderedField K]
+theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     (s_pos : ∀ {gp : Pair K} {m : ℕ}, m < n → g.s.get? m = some gp → 0 < gp.a ∧ 0 < gp.b) :
     g.convs n = g.convs' n := by
   induction n generalizing g with
@@ -382,7 +381,8 @@ namespace ContFract
 
 /-- Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : ContFract K} :
+nonrec theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    {c : ContFract K} :
     (↑c : GenContFract K).convs = (↑c : GenContFract K).convs' := by
   ext n
   apply convs_eq_convs'

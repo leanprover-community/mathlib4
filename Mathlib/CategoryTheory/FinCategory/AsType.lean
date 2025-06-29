@@ -38,7 +38,7 @@ noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
 abbrev AsType : Type :=
   Fin (Fintype.card α)
 
-@[simps (config := .lemmasOnly) id comp]
+@[simps -isSimp id comp]
 noncomputable instance categoryAsType : SmallCategory (AsType α) where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
   id _ := Fintype.equivFin _ (𝟙 _)

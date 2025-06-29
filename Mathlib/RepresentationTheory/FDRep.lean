@@ -33,7 +33,7 @@ We define `FDRep R G` for any ring `R` and monoid `G`,
 as the category of finitely generated `R`-linear representations of `G`.
 
 The main case of interest is when `R = k` is a field and `G` is a group,
-and this is reflected in the documentaton.
+and this is reflected in the documentation.
 
 ## TODO
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
@@ -57,13 +57,15 @@ open CategoryTheory.Limits
 Note that `R` can be any ring,
 but the main case of interest is when `R = k` is a field and `G` is a group. -/
 abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
-  Action (FGModuleCat R) G
+  Action (FGModuleCat.{u} R) G
 
 namespace FDRep
 
 variable {R k G : Type u} [CommRing R] [Field k] [Monoid G]
 
--- Porting note: `@[derive]` didn't work for `FDRep`. Add the 4 instances here.
+-- The `LargeCategory, ConcreteCategory, Preadditive, HasFiniteLimits` instances should be
+-- constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : LargeCategory (FDRep R G) := inferInstance
 instance : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := inferInstance
 instance : Preadditive (FDRep R G) := inferInstance
@@ -130,15 +132,15 @@ abbrev of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
 theorem of_ρ' {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V] (ρ : G →* V →ₗ[R] V) :
     (of ρ).ρ = ρ := rfl
 
-@[simp]
+@[deprecated Representation.inv_self_apply (since := "2025-05-09")]
 theorem ρ_inv_self_apply {G : Type u} [Group G] {A : FDRep R G} (g : G) (x : A) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_cancel, map_one, Module.End.one_apply]
 
-@[simp]
+@[deprecated Representation.self_inv_apply (since := "2025-05-09")]
 theorem ρ_self_inv_apply {G : Type u} [Group G] {A : FDRep R G} (g : G) (x : A) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, LinearMap.one_apply]
+  show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_cancel, map_one, Module.End.one_apply]
 
 instance : HasForget₂ (FDRep R G) (Rep R G) where
   forget₂ := (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
@@ -174,8 +176,6 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, f.comm⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
 
 end FDRep
 

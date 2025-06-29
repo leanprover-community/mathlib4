@@ -50,7 +50,7 @@ Let's mark the product constructor.
 -/
 
 attribute [fun_prop]
-  Measurable.prod_mk -- Measurable f → Measurable g → Measurable fun x => (f x, g x)
+  Measurable.prodMk -- Measurable f → Measurable g → Measurable fun x => (f x, g x)
 
 /-!
 When it comes to product projection, their properties are usually stated in two different ways
@@ -77,7 +77,7 @@ A silly example on which `measurability` fails and `fun_prop` succeeds. Let's tu
 to see what is going on
 set_option trace.Meta.Tactic.fun_prop true in
 -/
-example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x,y) => f x y) (a : α) :
+example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x, y) ↦ f x y) (a : α) :
     Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by
   -- This now takes longer than 200,000 heartbeats to fail, so I've commented it out.
   -- fail_if_success measurability
@@ -152,7 +152,7 @@ attribute [fun_prop]
   Continuous.comp'
   continuous_pi
   continuous_apply
-  Continuous.prod_mk
+  Continuous.prodMk
   Continuous.fst
   Continuous.snd
 
@@ -162,7 +162,7 @@ Now we can prove one of the earlier examples assuming the function is continuous
 measurable.
 -/
 
-example (f : ℝ → ℝ → ℝ) (hf : Continuous fun (x,y) => f x y) (a : ℝ) :
+example (f : ℝ → ℝ → ℝ) (hf : Continuous fun (x, y) ↦ f x y) (a : ℝ) :
     Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by fun_prop
 
 
@@ -200,7 +200,7 @@ attribute [fun_prop]
 A silly example that everything together works as expected
 -/
 
-example (f : ℝ → ℝ → (ℝ →L[ℝ] ℝ)) (hf : Continuous (fun (x,y) => f x y)) :
+example (f : ℝ → ℝ → (ℝ →L[ℝ] ℝ)) (hf : Continuous (fun (x, y) ↦ f x y)) :
     Measurable fun x => (f (x / x) (x * x) 1 + x) := by fun_prop
 
 set_option linter.style.longLine false in

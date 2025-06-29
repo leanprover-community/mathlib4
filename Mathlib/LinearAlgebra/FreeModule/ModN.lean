@@ -66,7 +66,7 @@ noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (M
   have hker : nG ≤ LinearMap.ker (mod.comp f) := by
     rintro _ ⟨x, rfl⟩
     ext b
-    simp [mod, f, nG, CharP.ofNat_eq_zero]
+    simp [mod, f]
   let g : H →ₗ[ℤ] (ι →₀ ZMod n) := nG.liftQ (mod.comp f) hker
   refine ⟨.ofBijective (g.toAddMonoidHom.toZModLinearMap n) ⟨?_, ?_⟩⟩
   · rw [AddMonoidHom.coe_toZModLinearMap, LinearMap.toAddMonoidHom_coe, injective_iff_map_eq_zero,
@@ -76,7 +76,7 @@ noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (M
     rw [Submodule.liftQ_apply] at hx
     replace hx : ∀ b, ↑n ∣ f x b := by
       simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using hx
-    simp only [Submodule.mkQ_apply, mod, g, f]
+    simp only [Submodule.mkQ_apply]
     rw [Submodule.Quotient.mk_eq_zero]
     choose c hc using hx
     refine ⟨b.repr.symm ⟨(f x).support, c, by simp [hc, NeZero.ne]⟩, b.repr.injective ?_⟩
@@ -85,9 +85,7 @@ noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (M
       exact (this ▸ (mapRange_surjective _ (map_zero _) ZMod.intCast_surjective).comp
         b.repr.surjective).of_comp
     ext x b
-    simp only [comp_apply, mapRange.linearMap_apply, AddMonoidHom.coe_toIntLinearMap,
-      Int.coe_castAddHom, mapRange_apply, Submodule.mkQ_apply, mod, g, f, H]
-    rfl
+    simp [mod, g, f, H]
 
 lemma basis_apply_eq_mkQ {ι : Type*} (b : Basis ι ℤ G) (i : ι) : basis b i = mkQ n (b i) := by
   rw [Basis.apply_eq_iff]; simp [basis, mkQ]

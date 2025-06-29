@@ -11,7 +11,7 @@ import Mathlib.Data.Setoid.Partition
 /-! # Cardinality of parts of partitions
 
 * `Setoid.IsPartition.ncard_eq_finsum` on an ambient finite type,
-the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
+  the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
 
 -/
 
@@ -62,7 +62,7 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
   have : Finite ↑s := hs
   apply Finite.of_injective f
   intro t t' h
-  simp only [← Subtype.coe_inj, Subtype.coe_mk]
+  simp only [← Subtype.coe_inj]
   exact (hP.2 (f t)).unique (hf t) (h ▸ hf t')
 
 end Finite

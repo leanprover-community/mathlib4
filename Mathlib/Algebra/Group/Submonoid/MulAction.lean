@@ -27,7 +27,7 @@ section SetLike
 variable {S' : Type*} [SetLike S' M'] (s : S')
 
 @[to_additive]
-instance (priority := low) [SMul M' α]  : SMul s α where
+instance (priority := low) [SMul M' α] : SMul s α where
   smul m a := (m : M') • a
 
 section MulOneClass
@@ -42,6 +42,7 @@ instance (priority := low) [SMul M' β] [SMul α β] [SMulCommClass M' α β] : 
 instance (priority := low) [SMul α β] [SMul M' β] [SMulCommClass α M' β] : SMulCommClass α s β :=
   ⟨fun a s => smul_comm a (s : M')⟩
 
+@[to_additive]
 instance (priority := low) [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] :
     IsScalarTower s α β :=
   ⟨fun a => smul_assoc (a : M')⟩
@@ -76,6 +77,7 @@ instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
   inferInstance
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
+@[to_additive]
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=

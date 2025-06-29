@@ -289,7 +289,7 @@ theorem toEmbedding_toPartialEquiv (f : M ↪[L] N) :
   rfl
 
 @[simp]
-theorem toPartialEquiv_toEmbedding {f :  M ≃ₚ[L] N} (h : f.dom = ⊤) :
+theorem toPartialEquiv_toEmbedding {f : M ≃ₚ[L] N} (h : f.dom = ⊤) :
     (PartialEquiv.toEmbeddingOfEqTop h).toPartialEquiv = f := by
   rcases f with ⟨_, _, _⟩
   cases h
@@ -356,7 +356,7 @@ theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
     #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
     these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
-    simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
+    simp only [cod_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
 
 end DirectLimit

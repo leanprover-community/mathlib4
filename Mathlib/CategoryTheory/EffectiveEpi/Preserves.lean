@@ -50,7 +50,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       (EffectiveEpiFamily.desc X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h))
   fac ε h a := by
-    simp only [Functor.comp_obj, Adjunction.homEquiv_counit, Functor.id_obj,
+    simp only [Functor.comp_obj, Adjunction.homEquiv_counit,
       Equivalence.toAdjunction_counit]
     have := congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map)
       (EffectiveEpiFamily.fac X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
@@ -59,7 +59,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
         Category.assoc, Equivalence.fun_inv_map, Iso.inv_hom_id_app, Category.comp_id] at this
     simp [this]
   uniq ε h m hm := by
-    simp only [Functor.comp_obj, Adjunction.homEquiv_counit, Functor.id_obj,
+    simp only [Functor.comp_obj, Adjunction.homEquiv_counit,
       Equivalence.toAdjunction_counit]
     have := EffectiveEpiFamily.uniq X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h)

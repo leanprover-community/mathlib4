@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Logic.Small.Defs
 import Mathlib.Topology.Defs.Induced
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Topological space structure on `Shrink X`
@@ -15,7 +15,8 @@ universe v u
 
 namespace Shrink
 
-instance (X : Type u) [TopologicalSpace X] [Small.{v} X] : TopologicalSpace (Shrink.{v} X) :=
+noncomputable instance (X : Type u) [TopologicalSpace X] [Small.{v} X] :
+    TopologicalSpace (Shrink.{v} X) :=
   .coinduced (equivShrink X) inferInstance
 
 /-- `equivShrink` as a homeomorphism. -/

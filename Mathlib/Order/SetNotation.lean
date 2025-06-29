@@ -66,17 +66,6 @@ instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
 instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
   ⟨sSup ∅⟩
 
-/-
-Porting note: the code below could replace the `notation3` command
-open Batteries.ExtendedBinder in
-syntax "⨆ " extBinder ", " term:51 : term
-
-macro_rules
-  | `(⨆ $x:ident, $p) => `(iSup fun $x:ident ↦ $p)
-  | `(⨆ $x:ident : $t, $p) => `(iSup fun $x:ident : $t ↦ $p)
-  | `(⨆ $x:ident $b:binderPred, $p) =>
-    `(iSup fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p) -/
-
 /-- Indexed supremum. -/
 notation3 "⨆ "(...)", "r:60:(scoped f => iSup f) => r
 

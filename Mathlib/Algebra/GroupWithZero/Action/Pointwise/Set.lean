@@ -30,8 +30,13 @@ variable {α β : Type*}
 namespace Set
 
 lemma smul_set_pi₀ {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
-    {c : M} (hc : c ≠ 0) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s ·) :=
+    {c : M} (hc : c ≠ 0) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
   smul_set_pi_of_isUnit (.mk0 _ hc) I s
+
+/-- A slightly more general version of `Set.smul_set_pi₀`. -/
+lemma smul_set_pi₀' {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
+    {c : M} {I : Set ι} (h : c ≠ 0 ∨ I = univ) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
+  h.elim (fun hc ↦ smul_set_pi_of_isUnit (.mk0 _ hc) I s) (fun hI ↦ hI ▸ smul_set_univ_pi ..)
 
 section SMulZeroClass
 variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β} {a : α}
@@ -74,7 +79,7 @@ lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
 
 /-- A nonempty set is scaled by zero to the singleton set containing 0. -/
 @[simp] lemma zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
-  simp only [← image_smul, image_eta, zero_smul, h.image_const, singleton_zero]
+  simp only [← image_smul, zero_smul, h.image_const, singleton_zero]
 
 lemma zero_smul_set_subset (s : Set β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ zero_smul α x
@@ -99,20 +104,21 @@ end SMulWithZero
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Set β → Set β`. -/
-protected def distribSMulSet [AddZeroClass β] [DistribSMul α β] : DistribSMul α (Set β) where
+protected noncomputable def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
+   DistribSMul α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
 
 scoped[Pointwise] attribute [instance] Set.distribSMulSet
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Set β`. -/
-protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
+protected noncomputable def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Set β) where
   smul_add := smul_add
   smul_zero := smul_zero
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
-protected def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulAction α β] :
+protected noncomputable def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _
   smul_one _ := image_singleton.trans <| by rw [smul_one, singleton_one]

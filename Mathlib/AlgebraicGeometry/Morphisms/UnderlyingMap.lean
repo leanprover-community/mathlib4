@@ -17,6 +17,7 @@ of the underlying map of topological spaces, including
 - `Surjective`
 - `IsOpenMap`
 - `IsClosedMap`
+- `GeneralizingMap`
 - `IsEmbedding`
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
@@ -28,7 +29,7 @@ open CategoryTheory Topology TopologicalSpace
 
 namespace AlgebraicGeometry
 
-universe u
+universe u v
 
 section Injective
 
@@ -95,6 +96,20 @@ lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) 
 lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
     [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
   rw [range_eq_range_of_surjective f g e hge]
+
+lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
+    {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
+    (H : ⋃ i, Set.range (f i).base = Set.univ) : Surjective (Limits.Sigma.desc f) := by
+  refine ⟨fun x ↦ ?_⟩
+  simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
+  obtain ⟨i, x, rfl⟩ := H x
+  use (Limits.Sigma.ι (fun i ↦ Y i) i).base x
+  rw [← Scheme.comp_base_apply, Limits.Sigma.ι_desc]
+
+instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover P) :
+    Surjective (Limits.Sigma.desc fun i ↦ 𝒰.map i) :=
+  Surjective.sigmaDesc_of_union_range_eq_univ 𝒰.iUnion_range
+
 end Surjective
 
 section Injective
@@ -112,6 +127,9 @@ instance : (topologically IsOpenMap).RespectsIso :=
 
 instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :=
   topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isOpenMap_iff_restrictPreimage
+
+instance : IsLocalAtSource (topologically IsOpenMap) :=
+  topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.isOpenMap_iff_comp
 
 end IsOpenMap
 
@@ -248,5 +266,20 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
     use a.val, ha, hay
 
 end SpecializingMap
+
+section GeneralizingMap
+
+instance : (topologically GeneralizingMap).RespectsIso :=
+  topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap
+    f.isOpenEmbedding.isOpen_range.stableUnderGeneralization) (fun _ _ hf hg ↦ hf.comp hg)
+
+instance : IsLocalAtSource (topologically GeneralizingMap) :=
+  topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.generalizingMap_iff_comp
+
+instance : IsLocalAtTarget (topologically GeneralizingMap) :=
+  topologically_isLocalAtTarget' (fun _ ↦ _) fun _ _ _ hU _ ↦
+    hU.generalizingMap_iff_restrictPreimage
+
+end GeneralizingMap
 
 end AlgebraicGeometry

@@ -130,7 +130,7 @@ def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
   convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
   change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
-  simp [smul_top_eq_map, Algebra.id.map_eq_id, map_id, restrictScalars_self]
+  simp
 
 end Ideal
 
@@ -224,8 +224,8 @@ instance (priority := 100) : NonarchimedeanRing R :=
 instance (priority := 100) : UniformSpace R :=
   IsTopologicalAddGroup.toUniformSpace R
 
-instance (priority := 100) : UniformAddGroup R :=
-  uniformAddGroup_of_addCommGroup
+instance (priority := 100) : IsUniformAddGroup R :=
+  isUniformAddGroup_of_addCommGroup
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
