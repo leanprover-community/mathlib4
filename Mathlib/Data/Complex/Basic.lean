@@ -330,22 +330,23 @@ instance addCommGroup : AddCommGroup ℂ :=
     neg_add_cancel := by intros; ext <;> simp }
 
 
+instance instNatCast : NatCast ℂ where
+  natCast := fun n => ⟨n, 0⟩
+
+@[simp]
+lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
+@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
+
+
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
-    natCast := fun n => ⟨n, 0⟩
-    natCast_zero := by
-      ext <;> simp [Nat.cast]
-    natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
-    intCast := fun n => ⟨n, 0⟩
-    intCast_ofNat := fun _ => by ext <;> rfl
-    intCast_negSucc := fun n => by
-      ext
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show -(1 : ℝ) + (-n) = -(↑(n + 1))
-        simp [Nat.cast_add, add_comm]
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show im ⟨n, 0⟩ = 0
-        rfl
+    natCast_zero := by ext <;> simp
+    natCast_succ _ := by ext <;> simp
+    intCast n := ⟨n, 0⟩
+    intCast_ofNat _ := by ext <;> simp
+    intCast_negSucc _ := by ext <;> simp
     one := 1 }
 
 instance commRing : CommRing ℂ :=
@@ -407,11 +408,6 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
 
-@[simp]
-lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
-@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
 @[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
