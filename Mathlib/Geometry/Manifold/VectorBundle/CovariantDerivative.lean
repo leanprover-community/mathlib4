@@ -434,19 +434,24 @@ The details of the extension are mostly unspecified: for covariant derivatives, 
 `s` at points other than `x` will not matter (except for shorter proofs).
 Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v`.
 -/
-noncomputable def extend [FiniteDimensional ℝ F] {x : M} (v : V x) : (x' : M) → V x' :=
+noncomputable def extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x) :
+    (x' : M) → V x' := by
   letI b := Basis.ofVectorSpace ℝ F
   letI t := trivializationAt F V x
-  letI bV := b.localFrame_toBasis_at t (FiberBundle.mem_baseSet_trivializationAt F V x)
-  fun x' ↦ ∑ i, bV.repr v i • b.localFrame t i x'
+  letI V₀ := localExtensionOn b t x v
+  -- Choose a smooth bump function ψ near `x`, supported without t.baseSet
+  -- and return ψ • V₀ instead
+  letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)
+  choose ψ _ hψ using (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
+  exact ψ.toFun • localExtensionOn b t x v
 
--- FIXME: these two lemmas only hold for *very particular* choices of extensions of v
--- (but there exist such choices, and our definition makes these ?! TODO check!!)
+-- NB. These two lemmas don't hold for *any* choice of extension of `v`, but they hold for
+-- *well-chosen* extensions (such as ours).
 -- so, one may argue this is mathematically wrong, but it encodes the "choice some extension
 -- with this and that property" nicely
 -- a different proof would be to argue only the value at a point matters for cov
 @[simp]
-lemma extend_add_apply [FiniteDimensional ℝ F] {x : M} (v v' : V x) :
+lemma extend_add_apply [FiniteDimensional ℝ F] [T2Space M] {x : M} (v v' : V x) :
     extend F (v + v') = extend F v + extend F v' := by
   ext x
   simp [extend]
@@ -464,28 +469,29 @@ lemma extend_add_apply [FiniteDimensional ℝ F] {x : M} (v v' : V x) :
   sorry
 
 @[simp]
-lemma extend_smul_apply [FiniteDimensional ℝ F] {a : ℝ} (v  : V x) :
+lemma extend_smul_apply [FiniteDimensional ℝ F] [T2Space M] {a : ℝ} (v  : V x) :
   extend F (a • v) = a • extend F v := sorry
 
 -- TODO: cleanup this proof by adding simp lemmas to the localFrame stuff
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
-@[simp] lemma extend_apply_self [FiniteDimensional ℝ F] {x : M} (v : V x) :
+@[simp] lemma extend_apply_self [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x) :
     extend F v x = v := by
   letI b := Basis.ofVectorSpace ℝ F
   letI t := trivializationAt F V x
   have x_mem : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt F V x
   letI bV := b.localFrame_toBasis_at t x_mem
-  change ∑ i, bV.repr v i • b.localFrame t i x = v
-  conv_rhs => rw [←bV.sum_repr v]
-  simp [bV, Basis.localFrame_toBasis_at, Basis.localFrame, x_mem]
+  sorry
+  -- change ∑ i, bV.repr v i • b.localFrame t i x = v
+  -- conv_rhs => rw [←bV.sum_repr v]
+  -- simp [bV, Basis.localFrame_toBasis_at, Basis.localFrame, x_mem]
 
-lemma contMDiff_extend [FiniteDimensional ℝ F] {x : M} (σ₀ : V x) :
+lemma contMDiff_extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) 1 (fun x ↦ TotalSpace.mk' F x (extend F σ₀ x)) := by
   -- use contMDiffOn_localExtensionOn, plus an abstract result about capping with a bump function
   sorry
 
 /-- The difference of two covariant derivatives, as a tensorial map -/
-noncomputable def difference [FiniteDimensional ℝ F] [FiniteDimensional ℝ E] [IsManifold I 1 M]
+noncomputable def difference [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I 1 M]
     (cov cov' : CovariantDerivative I F V) :
     Π x : M, TangentSpace I x → V x → V x :=
   fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀) (extend F σ₀) x
@@ -503,7 +509,7 @@ noncomputable def difference [FiniteDimensional ℝ F] [FiniteDimensional ℝ E]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 @[simp]
-lemma difference_apply [FiniteDimensional ℝ F] [IsManifold I 1 M]
+lemma difference_apply [FiniteDimensional ℝ F] [IsManifold I 1 M] [T2Space M]
     (cov cov' : CovariantDerivative I F V) (x : M) (X₀ : TangentSpace I x) (σ₀ : V x) :
     difference cov cov' x X₀ σ₀ =
       cov (extend E X₀) (extend F σ₀) x - cov' (extend E X₀) (extend F σ₀) x := rfl
