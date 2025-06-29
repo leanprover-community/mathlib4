@@ -15,6 +15,8 @@ defined by the functor category mapping out of `C`.
 
 Adjoint transposition is defined by currying and uncurrying.
 
+TODO: It would be useful to investigate and formalize further compatibilities along the lines of `Cat.ihom_obj` and `Cat.ihom_map`, relating currying of functors with currying in monoidal closed categories and precomposition with left whiskering. These may not be definitional equalities but may have to be phrased using `eqToIso`.
+
 -/
 
 universe v u v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -67,11 +69,11 @@ variable {B C D E : Type u} [Category.{u} B] [Category.{u} C]
 
 /-- Natural isomorphism witnessing `comp_flip_curry_eq`. -/
 @[simps!]
-def compFlipCurryIso (F : C × B ⥤ D) (G : D ⥤ E) :
+def curryObjCompIso (F : C × B ⥤ D) (G : D ⥤ E) :
     (curry.obj (F ⋙ G)).flip ≅ (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom :=
   .refl _
 
-lemma comp_flip_curry_eq (F : C × B ⥤ D) (G : D ⥤ E) :
+lemma curry_obj_comp_flip (F : C × B ⥤ D) (G : D ⥤ E) :
     (curry.obj (F ⋙ G)).flip =
       (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom := rfl
 
@@ -87,20 +89,18 @@ instance closed : Closed (Cat.of C) where
   adj := Adjunction.mkOfHomEquiv
     { homEquiv _ _ := curryingFlipEquiv.symm
       homEquiv_naturality_left_symm := comp_flip_uncurry_eq
-      homEquiv_naturality_right := comp_flip_curry_eq }
+      homEquiv_naturality_right := curry_obj_comp_flip }
 
 instance cartesianClosed : CartesianClosed Cat.{u, u} where
   closed C := closed C
 
 @[simp]
-lemma cartesianClosed_closed_rightAdj_obj {D : Type u} [Category.{u} D] :
-    ((Closed.rightAdj (C := Cat.{u,u}) (Cat.of C)).obj (Cat.of D)) = Cat.of (C ⥤ D) := rfl
+lemma ihom_obj (D : Type u) [Category.{u} D] :
+    (ihom (Cat.of C)).obj (Cat.of D) = Cat.of (C ⥤ D) := rfl
 
 @[simp]
-lemma cartesianClosed_closed_rightAdj_map {D E : Type u}
-    [Category.{u} D] [Category.{u} E] {F : D ⥤ E} :
-    (CategoryTheory.Closed.rightAdj (C := Cat.{u,u}) (Cat.of C)).map F.toCatHom =
-      (whiskeringRight _ _ _).obj F := rfl
+lemma ihom_map {D E : Type u} [Category.{u} D] [Category.{u} E] (F : D ⥤ E) :
+    (ihom (Cat.of C)).map F.toCatHom = (whiskeringRight _ _ _).obj F := rfl
 
 end
 
