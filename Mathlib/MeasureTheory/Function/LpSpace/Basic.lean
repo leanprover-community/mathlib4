@@ -372,7 +372,7 @@ theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
   by_cases hμ : μ = 0
   · by_cases hp : p.toReal⁻¹ = 0
     · simp [hp, hμ, nnnorm_def]
-    · simp [hμ, nnnorm_def, Real.zero_rpow hp]
+    · simp [hμ, nnnorm_def]
   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
   refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
@@ -481,7 +481,7 @@ theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
   by_cases q_top : q = ∞
   · simp [q_top]
   by_cases q_zero : q = 0
-  · simp only [q_zero, ENNReal.toReal_zero, Real.rpow_zero]
+  · simp only [q_zero, ENNReal.toReal_zero]
     by_cases p_zero : p = 0
     · simp [p_zero]
     rw [ENNReal.div_zero p_zero]
@@ -532,7 +532,7 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
   · ext x
     rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg (norm_nonneg _), ← Real.rpow_mul (abs_nonneg _),
       ENNReal.toReal_inv, mul_inv_cancel₀, abs_of_nonneg (norm_nonneg _), Real.rpow_one]
-    simp [ENNReal.toReal_eq_zero_iff, not_or, q_zero, q_top]
+    simp [ENNReal.toReal_eq_zero_iff, q_zero, q_top]
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
 

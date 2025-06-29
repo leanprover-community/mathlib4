@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!
 # Hamiltonian Graphs
@@ -94,7 +94,7 @@ lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
   simp +contextual [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
-    IsHamiltonian, support_tail, IsCycle.not_nil, exists_prop]
+    IsHamiltonian, support_tail, IsCycle.not_nil]
 
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :

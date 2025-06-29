@@ -57,6 +57,7 @@
   "Mathlib.Mathport.Rename",
   "Mathlib.Probability.Notation",
   "Mathlib.Tactic.Abel",
+  "Mathlib.Tactic.Algebraize",
   "Mathlib.Tactic.ApplyCongr",
   "Mathlib.Tactic.ApplyFun",
   "Mathlib.Tactic.ApplyWith",
@@ -241,6 +242,7 @@
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
+   "Mathlib.Algebra.Order.Hom.Basic",
    "Mathlib.Algebra.Order.Ring.Basic",
    "Mathlib.Data.Int.CharZero",
    "Mathlib.Data.Nat.Factorial.Basic",

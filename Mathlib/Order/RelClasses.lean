@@ -411,7 +411,7 @@ def Bounded (r : α → α → Prop) (s : Set α) : Prop :=
 
 @[simp]
 theorem not_bounded_iff {r : α → α → Prop} (s : Set α) : ¬Bounded r s ↔ Unbounded r s := by
-  simp only [Bounded, Unbounded, not_forall, not_exists, exists_prop, not_and, not_not]
+  simp only [Bounded, Unbounded, not_forall, not_exists, exists_prop]
 
 @[simp]
 theorem not_unbounded_iff {r : α → α → Prop} (s : Set α) : ¬Unbounded r s ↔ Bounded r s := by
@@ -659,11 +659,11 @@ theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → 
   ssubset_imp_ssubset h₂ h₁
 
 @[gcongr]
-theorem ssuperset_imp_ssuperset_left  (h : a ⊆ b) : c ⊃ b → c ⊃ a :=
+theorem ssuperset_imp_ssuperset_left (h : a ⊆ b) : c ⊃ b → c ⊃ a :=
   ssubset_of_subset_of_ssubset h
 
 @[gcongr]
-theorem ssuperset_imp_ssuperset_right  (h : a ⊆ b) : a ⊃ c → b ⊃ c :=
+theorem ssuperset_imp_ssuperset_right (h : a ⊆ b) : a ⊃ c → b ⊃ c :=
   ssubset_imp_ssubset_right h
 
 /-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
