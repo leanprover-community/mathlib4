@@ -375,19 +375,38 @@ open scoped Topology
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
-protected def support (μ : Measure X) : Set X := {x : X | ∀ U ∈ 𝓝 x, 0 < μ U}
+protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
+
+@[simp]
+lemma support_def {x : X} {μ : Measure X} : x ∈ μ.support ↔ ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := by
+  rfl
+
+lemma support_set (μ : Measure X) : μ.support = {x : X | ∀ U ∈ 𝓝 x, 0 < μ U} := by
+  ext x
+  simp only [support_def, Set.mem_setOf, mem_setOf_eq, Filter.frequently_smallSets]
+  constructor
+  · -- (→) from “every small set eventually has a pos‐measure subset”
+    intro h U hU
+    obtain ⟨t, htsub, htpos⟩ := h U hU
+    -- by monotonicity, μ U ≥ μ t > 0
+    exact lt_of_lt_of_le htpos (measure_mono htsub)
+  · -- (←) if every U has μ U > 0, then for each U pick t = U
+    intro h U hU
+    exact ⟨U, Subset.refl U, h U hU⟩
 
 variable {μ : Measure X}
 
 @[simp]
 lemma not_mem_support_iff (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
-     rw [Measure.support, Set.mem_setOf_eq, not_forall]
-     simp only [Classical.not_imp, not_lt, nonpos_iff_eq_zero]
+     simp only [support_set, mem_setOf_eq, not_forall, Classical.not_imp, not_lt,
+       nonpos_iff_eq_zero]
+     exact bex_def
 
 theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
     x ∈ μ.support  ↔ ∀ (i : ι), p i → 0 < μ (s i) := by
-  simp [Measure.support, hl.forall_iff (fun s t hst hs ↦ (hs.trans_le (μ.mono hst) : 0 < μ t))]
+  simp only [support_set, mem_setOf_eq]
+  exact hl.forall_iff (fun U V hUV hUpos => lt_of_lt_of_le hUpos (measure_mono hUV))
 
 theorem support_eq_forall_isOpen : μ.support =
     {x : X | ∀ u : Set X, x ∈ u → IsOpen u → 0 < μ u} := by

@@ -803,44 +803,9 @@ section Support
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
-lemma support_add (μ ν : Measure X):
-    (μ + ν).support = μ.support ∪ ν.support := by
-  ext x
-  rw [mem_union]
-  constructor
-  · intro h
-    by_contra h'
-    push_neg at h'
-    have H1 := h'.1
-    have H2 := h'.2
-    dsimp [Measure.support] at H1 H2
-    push_neg at H1 H2
-    obtain ⟨U1, HU1, HUμ1⟩ := H1
-    obtain ⟨U2, HU2, HUμ2⟩ := H2
-    rw [nonpos_iff_eq_zero] at HUμ1 HUμ2
-    let U := U1 ∩ U2
-    have hxU := inter_mem HU1 HU2
-    have : (μ + ν) (U) ≤ μ (U1) + ν (U2)  := by
-      have K1 : μ U ≤ μ U1 := by
-        refine OuterMeasureClass.measure_mono μ ?_
-        exact inter_subset_left
-      have K2 : ν U ≤ ν U2 := by
-        refine OuterMeasureClass.measure_mono ν ?_
-        exact inter_subset_right
-      exact add_le_add K1 K2
-    have hsum : (μ + ν) U = 0 := by
-      apply le_antisymm
-      simpa only [coe_add, Pi.add_apply, nonpos_iff_eq_zero, add_eq_zero, HUμ1, HUμ2, add_zero, U]
-      exact zero_le <| (μ + ν) U
-    exact (ne_of_lt (h U hxU)).symm hsum
-  · rintro (hxμ | hxν)
-    all_goals intro U hU
-    · have K : μ U ≤ (μ + ν) U := by
-       simp only [coe_add, Pi.add_apply, self_le_add_right]
-      apply lt_of_lt_of_le (hxμ U hU) K
-    · have L : ν U ≤ (μ + ν) U := by
-       simp only [coe_add, Pi.add_apply, self_le_add_left]
-      apply lt_of_lt_of_le (hxν U hU) L
+lemma support_add (μ ν : Measure X) :
+  (μ + ν).support = μ.support ∪ ν.support := by
+  ext x; simp
 
 end Support
 section SMul
