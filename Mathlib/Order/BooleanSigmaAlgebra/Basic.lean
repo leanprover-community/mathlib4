@@ -52,11 +52,11 @@ theorem le_σsSup_of_le (hs : s.Countable) (hb : b ∈ s) (h : a ≤ b) : a ≤ 
 theorem σsInf_le_of_le (hs : s.Countable) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
   le_σsSup_of_le (α := αᵒᵈ) hs hb h
 
-theorem σsSup_le_σsSup (ht : t.Countable) (hs : s.Countable) (h : s ⊆ t) : sSup s ≤ sSup t :=
-  σsSup_le hs fun _ ha => le_σsSup ht (h ha)
+theorem σsSup_le_σsSup (ht : t.Countable) (h : s ⊆ t) : sSup s ≤ sSup t :=
+  σsSup_le (ht.mono h) fun _ ha => le_σsSup ht (h ha)
 
-theorem σsInf_le_σsInf (ht : t.Countable) (hs : s.Countable) (h : s ⊆ t) : sInf t ≤ sInf s :=
-  σsSup_le_σsSup (α := αᵒᵈ) ht hs h
+theorem σsInf_le_σsInf (ht : t.Countable) (h : s ⊆ t) : sInf t ≤ sInf s :=
+  σsSup_le_σsSup (α := αᵒᵈ) ht h
 
 theorem le_σsSup_iff (hs : s.Countable) : a ≤ sSup s ↔ ∀ b ∈ upperBounds s, a ≤ b :=
   ⟨fun h _ hb => le_trans h (σsSup_le hs hb), fun hb => hb _ fun _ => le_σsSup hs⟩
@@ -180,9 +180,7 @@ theorem σsInf_empty [OrderTop α] : sInf ∅ = (⊤ : α) :=
 
 theorem σsSup_le_σsSup_of_subset_insert_bot [OrderBot α] (ht : t.Countable) (h : s ⊆ insert ⊥ t) :
     sSup s ≤ sSup t :=
-  have ht' := (ht.insert ⊥)
-  have hs := (ht'.mono h)
-  (σsSup_le_σsSup ht' hs h).trans_eq ((σsSup_insert ht).trans (bot_sup_eq _))
+  (σsSup_le_σsSup (ht.insert ⊥) h).trans_eq ((σsSup_insert ht).trans (bot_sup_eq _))
 
 theorem σsInf_le_σsInf_of_subset_insert_top [OrderTop α] (ht : t.Countable) (h : s ⊆ insert ⊤ t) :
     sInf t ≤ sInf s :=
