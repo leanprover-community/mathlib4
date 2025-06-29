@@ -1077,9 +1077,17 @@ theorem biSup_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
   simp_rw [iSup_prod, mem_prod, iSup_and]
   exact iSup_congr fun _ => iSup_comm
 
+theorem biSup_prod' {f : β → γ → α} {s : Set β} {t : Set γ} :
+    ⨆ x ∈ s ×ˢ t, f x.1 x.2 = ⨆ (a ∈ s) (b ∈ t), f a b :=
+  biSup_prod
+
 theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) :=
   @biSup_prod αᵒᵈ _ _ _ _ _ _
+
+theorem biInf_prod' {f : β → γ → α} {s : Set β} {t : Set γ} :
+    ⨅ x ∈ s ×ˢ t, f x.1 x.2 = ⨅ (a ∈ s) (b ∈ t), f a b :=
+  biInf_prod
 
 theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
     ⨆ d ∈ image2 f s t, g d = ⨆ b ∈ s, ⨆ c ∈ t, g (f b c) := by
