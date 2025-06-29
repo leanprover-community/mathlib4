@@ -539,28 +539,6 @@ lemma prodContinuousLinearEquiv_apply :
 lemma prodContinuousLinearEquiv_symm_apply :
     ⇑(prodContinuousLinearEquiv p 𝕜 α β).symm = toLp p := rfl
 
-protected def inl : α →L[𝕜] WithLp p (α × β) :=
-  (WithLp.prodContinuousLinearEquiv p 𝕜 α β).symm.toContinuousLinearMap.comp (.inl 𝕜 α β)
-
-protected def inr : β →L[𝕜] WithLp p (α × β) :=
-  (WithLp.prodContinuousLinearEquiv p 𝕜 α β).symm.toContinuousLinearMap.comp (.inr 𝕜 α β)
-
-@[simp]
-lemma inl_apply (x : α) : WithLp.inl p 𝕜 α β x = toLp p (x, 0) := rfl
-
-@[simp]
-lemma inr_apply (x : β) : WithLp.inr p 𝕜 α β x = toLp p (0, x) := rfl
-
-lemma inl_add_inr (x : α) (y : β) :
-    WithLp.inl p 𝕜 α β x + WithLp.inr p 𝕜 α β y = toLp p (x, y) := by
-  rw [inl_apply, inr_apply, ← WithLp.prodContinuousLinearEquiv_symm_apply p 𝕜 α β, ← map_add]
-  simp
-
-lemma comp_inl_add_comp_inr {γ : Type*} [TopologicalSpace γ]
-    [AddCommGroup γ] [Module 𝕜 γ] (L : WithLp p (α × β) →L[𝕜] γ) (x : WithLp p (α × β)) :
-    L.comp (WithLp.inl p 𝕜 α β) x.fst + L.comp (WithLp.inr p 𝕜 α β) x.snd = L x := by
-  simp [← map_add, inl_add_inr, -inl_apply, -inr_apply]
-
 protected def fstCLM : WithLp p (α × β) →L[𝕜] α :=
   (ContinuousLinearMap.fst 𝕜 α β).comp
     (WithLp.prodContinuousLinearEquiv p 𝕜 α β).toContinuousLinearMap
@@ -962,6 +940,33 @@ theorem edist_equiv_symm_snd (y₁ y₂ : β) :
     edist ((WithLp.equiv p (α × β)).symm (0, y₁)) ((WithLp.equiv p (α × β)).symm (0, y₂)) =
       edist y₁ y₂ :=
   edist_toLp_snd _ _ _ _ _
+
+variable [Semiring 𝕜] [Module 𝕜 α] [Module 𝕜 β]
+
+protected def inl : α →ₗᵢ[𝕜] WithLp p (α × β) where
+  toLinearMap := (WithLp.linearEquiv p 𝕜 (α × β)).symm.comp (.inl 𝕜 α β)
+  norm_map' x := norm_toLp_fst p α β x
+
+protected def inr : β →ₗᵢ[𝕜] WithLp p (α × β) where
+  toLinearMap := (WithLp.linearEquiv p 𝕜 (α × β)).symm.comp (.inr 𝕜 α β)
+  norm_map' x := norm_toLp_snd p α β x
+
+@[simp]
+lemma inl_apply (x : α) : WithLp.inl p 𝕜 α β x = toLp p (x, 0) := rfl
+
+@[simp]
+lemma inr_apply (x : β) : WithLp.inr p 𝕜 α β x = toLp p (0, x) := rfl
+
+lemma inl_add_inr (x : α) (y : β) :
+    WithLp.inl p 𝕜 α β x + WithLp.inr p 𝕜 α β y = toLp p (x, y) := by
+  rw [inl_apply, inr_apply, ← WithLp.prodContinuousLinearEquiv_symm_apply p 𝕜 α β, ← map_add]
+  simp
+
+@[simp]
+lemma comp_inl_add_comp_inr {γ : Type*}
+    [AddCommGroup γ] [Module 𝕜 γ] (L : WithLp p (α × β) →ₗ[𝕜] γ) (x : WithLp p (α × β)) :
+    L (WithLp.inl p 𝕜 α β x.fst) + L (WithLp.inr p 𝕜 α β x.snd) = L x := by
+  simp [← map_add, inl_add_inr, -inl_apply, -inr_apply]
 
 end Single
 
