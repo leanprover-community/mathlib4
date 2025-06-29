@@ -421,8 +421,7 @@ lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
   induction m with
   | zero => simp
   | succ n IH =>
-    simp only [Fin.sum_univ_castSucc, Fin.coe_castSucc, IH, Fin.val_last,
-      Nat.even_add_one, ← Nat.not_even_iff_odd, ite_not]
+    simp only [Fin.sum_univ_castSucc, Fin.coe_castSucc, IH, Fin.val_last, Nat.even_add_one, ite_not]
     split_ifs with h
     · simp [*]
     · simp [(Nat.not_even_iff_odd.mp h).neg_pow]
@@ -443,7 +442,7 @@ theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [pa
 @[to_additive]
 theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt]
+  simp [partialProd, List.take_succ]
 
 @[to_additive]
 theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
@@ -455,7 +454,7 @@ theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
 theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
     (f 0 • partialProd fun i : Fin n => (f i.castSucc)⁻¹ * f i.succ) = f :=
   funext fun x => Fin.inductionOn x (by simp) fun x hx => by
-    simp only [coe_eq_castSucc, Pi.smul_apply, smul_eq_mul] at hx ⊢
+    simp only [Pi.smul_apply, smul_eq_mul] at hx ⊢
     rw [partialProd_succ, ← mul_assoc, hx, mul_inv_cancel_left]
 
 @[to_additive]
@@ -484,7 +483,7 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
       omega
     · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
         castSucc_fin_succ] <;>
-      simp only [le_def, Nat.succ_eq_add_one, val_succ, coe_castSucc] <;>
+      simp only [le_def, val_succ, coe_castSucc] <;>
       omega
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
@@ -578,11 +577,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         ∀ (n : Fin m → ℕ) (nn : ℕ) (f : ∀ i : Fin m, Fin (n i)) (fn : Fin nn),
           ((∑ i : Fin m, ↑(f i) * ∏ j : Fin i, n (Fin.castLE i.prop.le j)) + ↑fn * ∏ j, n j) <
             (∏ i : Fin m, n i) * nn by
-        replace := this (Fin.init n) (n (Fin.last _)) (Fin.init f) (f (Fin.last _))
-        rw [← Fin.snoc_init_self f]
-        simp +singlePass only [← Fin.snoc_init_self n]
-        simp_rw [Fin.snoc_castSucc, Fin.snoc_last, Fin.snoc_init_self n]
-        exact this
+        solve_by_elim
       intro n nn f fn
       cases nn
       · exact isEmptyElim fn

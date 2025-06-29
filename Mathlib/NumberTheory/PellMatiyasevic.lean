@@ -73,7 +73,7 @@ theorem isPell_mul {b c : ℤ√d} (hb : IsPell b) (hc : IsPell c) : IsPell (b *
     star_mul, isPell_norm.1 hb, isPell_norm.1 hc])
 
 theorem isPell_star : ∀ {b : ℤ√d}, IsPell b ↔ IsPell (star b)
-  | ⟨x, y⟩ => by simp [IsPell, Zsqrtd.star_mk]
+  | ⟨x, y⟩ => by simp [IsPell]
 
 end
 
@@ -272,7 +272,7 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
           | 0, y0l, _ => y0l (le_refl 0)
           | (y + 1 : ℕ), _, yl2 =>
             yl2
-              (Zsqrtd.le_of_le_le (by simp [sub_eq_add_neg])
+              (Zsqrtd.le_of_le_le (by simp)
                 (let t := Int.ofNat_le_ofNat_of_le (Nat.succ_pos y)
                 add_le_add t t))
           | Int.negSucc _, y0l, _ => y0l trivial
@@ -490,12 +490,12 @@ end
 
 theorem x_sub_y_dvd_pow (y : ℕ) :
     ∀ n, (2 * a * y - y * y - 1 : ℤ) ∣ yz a1 n * (a - y) + ↑(y ^ n) - xz a1 n
-  | 0 => by simp [xz, yz, Int.ofNat_zero, Int.ofNat_one]
-  | 1 => by simp [xz, yz, Int.ofNat_zero, Int.ofNat_one]
+  | 0 => by simp [xz, yz]
+  | 1 => by simp [xz, yz]
   | n + 2 => by
     have : (2 * a * y - y * y - 1 : ℤ) ∣ ↑(y ^ (n + 2)) - ↑(2 * a) * ↑(y ^ (n + 1)) + ↑(y ^ n) :=
       ⟨-↑(y ^ n), by
-        simp [_root_.pow_succ, mul_add, Int.natCast_mul, show ((2 : ℕ) : ℤ) = 2 from rfl, mul_comm,
+        simp [_root_.pow_succ, mul_comm,
           mul_left_comm]
         ring⟩
     rw [xz_succ_succ, yz_succ_succ, x_sub_y_dvd_pow_lem ↑(y ^ (n + 2)) ↑(y ^ (n + 1)) ↑(y ^ n)]
