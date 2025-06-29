@@ -100,7 +100,8 @@ theorem stage_mono {a b : Ordinal.{u}} (h : a ≤ b) : stage a ⊆ stage b := by
 
 
 
-/-- The Axiom of Regularity is equivalent to there not existing any sequences of sets such that each set in the sequence contains the next. This is a proof of the forward direction. -/
+/-- The Axiom of Regularity is equivalent to there not existing any sequences of sets such that each
+set in the sequence contains the next. This is a proof of the forward direction. -/
 lemma no_infinite_chains (f : ℕ → ZFSet.{u}) : ¬∀ n, f (n + 1) ∈ f n := by
   intro hf
   let r := ZFSet.range f
@@ -227,7 +228,8 @@ theorem sub_stage_iff_rank_le {x : ZFSet.{u}} {o : Ordinal.{u}} : x ⊆ stage o 
     apply sub_stage_rank x
     exact hy
 
-/-- The definition in ZFSet.rank is equivalent to the definition of rank in terms of the von Neumann hierarchy. -/
+/-- The definition in ZFSet.rank is equivalent to the definition of rank in terms of the von Neumann
+hierarchy. -/
 theorem rank_def {x : ZFSet.{u}} {o : Ordinal.{u}} :
     x.rank = o ↔ (x ⊆ stage o ∧ ∀ o' < o, ¬ x ⊆ stage o') := by
   constructor
