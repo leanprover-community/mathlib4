@@ -896,7 +896,7 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
 
 namespace Truncated
 
-/-- For `0 < n`, the inclusion functor from the truncated simplex category to the untruncated
+/-- For `0 < n`, the inclusion functor from the `n`-truncated simplex category to the untruncated
 simplex category is initial. -/
 theorem initial_inclusion {n : ℕ} (hn : 0 < n) : (inclusion n).Initial := by
   constructor
