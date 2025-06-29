@@ -536,6 +536,50 @@ theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + i
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
     _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
 
+lemma add_biInf' {p : ι → Prop} (f : ι → ℝ≥0∞) :
+    a + ⨅ i, ⨅ _ : p i, f i = ⨅ i, ⨅ _ : p i, a + f i := by
+  simp only [iInf_subtype', add_iInf]
+
+lemma biInf_add' {p : ι → Prop} (f : ι → ℝ≥0∞) :
+    (⨅ i, ⨅ _ : p i, f i) + a = ⨅ i, ⨅ _ : p i, f i + a := by
+  simp only [add_comm, add_biInf']
+
+lemma add_biInf {ι : Type*} {s : Set ι} (f : ι → ℝ≥0∞) :
+    a + ⨅ i ∈ s, f i = ⨅ i ∈ s, a + f i := add_biInf' _
+
+lemma biInf_add {ι : Type*} {s : Set ι} (f : ι → ℝ≥0∞) :
+    (⨅ i ∈ s, f i) + a = ⨅ i ∈ s, f i + a := biInf_add' _
+
+lemma add_sInf {s : Set ℝ≥0∞}: a + sInf s = ⨅ b ∈ s, a + b := by
+  rw [sInf_eq_iInf, add_biInf]
+
+variable {κ : Sort*}
+
+lemma le_iInf_add_iInf {g : κ → ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) :
+    a ≤ iInf f + iInf g := by
+  simp_rw [iInf_add, add_iInf]; exact le_iInf₂ h
+
+lemma le_biInf_add_biInf' {p : ι → Prop} {q : κ → Prop}
+    {g : κ → ℝ≥0∞} (h : ∀ i, p i → ∀ j, q j → a ≤ f i + g j) :
+    a ≤ (⨅ i, ⨅ _ : p i, f i) + ⨅ j, ⨅ _ : q j, g j := by
+  simp_rw [biInf_add', add_biInf']
+  exact le_iInf₂ fun i hi => le_iInf₂ (h i hi)
+
+lemma le_biInf_add_biInf {ι κ : Type*} {s : Set ι} {t : Set κ}
+    {f : ι → ℝ≥0∞} {g : κ → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ i ∈ s, ∀ j ∈ t, a ≤ f i + g j) :
+    a ≤ (⨅ i ∈ s, f i) + ⨅ j ∈ t, g j := le_biInf_add_biInf' h
+
+@[simp] lemma iInf_gt_eq_self (a : ℝ≥0∞) : ⨅ b, ⨅ _ : a < b, b = a := by
+  refine le_antisymm ?_ (le_iInf₂ fun b hb ↦ hb.le)
+  refine le_of_forall_gt fun c hac ↦ ?_
+  obtain ⟨d, had, hdc⟩ := exists_between hac
+  exact (iInf₂_le_of_le d had le_rfl).trans_lt hdc
+
+lemma exists_add_lt_of_add_lt {x y z : ℝ≥0∞} (h : y + z < x) :
+    ∃ y' > y, ∃ z' > z, y' + z' < x := by
+  contrapose! h
+  simpa using le_biInf_add_biInf' h
+
 end iInf
 
 section iSup

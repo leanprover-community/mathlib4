@@ -58,6 +58,29 @@ instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
     simp only [trivialization.coordChangeL]
     exact continuous_const.continuousOn
 
+@[simp] lemma linearMapAt_trivialization (x : B) :
+    (trivialization B F).linearMapAt 𝕜 x = LinearMap.id := by
+  ext v
+  rw [Trivialization.coe_linearMapAt_of_mem _ (by simp)]
+  rfl
+
+@[simp] lemma continuousLinearMapAt_trivialization (x : B) :
+    (trivialization B F).continuousLinearMapAt 𝕜 x = ContinuousLinearMap.id 𝕜 F := by
+  ext; simp
+
+@[simp] lemma symmₗ_trivialization (x : B) :
+    (trivialization B F).symmₗ 𝕜 x = LinearMap.id := by
+  ext; simp [Trivialization.coe_symmₗ, trivialization_symm_apply B F]
+
+@[simp] lemma symmL_trivialization (x : B) :
+    (trivialization B F).symmL 𝕜 x = ContinuousLinearMap.id 𝕜 F := by
+  ext; simp [trivialization_symm_apply B F]
+
+@[simp] lemma continuousLinearEquivAt_trivialization (x : B) :
+    (trivialization B F).continuousLinearEquivAt 𝕜 x (mem_univ _) =
+      ContinuousLinearEquiv.refl 𝕜 F := by
+  ext; simp
+
 end Bundle.Trivial
 
 /-! ### Direct sum of two vector bundles -/

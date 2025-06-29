@@ -34,7 +34,7 @@ The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`
 Vector bundle, Riemannian metric
 -/
 
-open Bundle ContinuousLinearMap
+open Bundle ContinuousLinearMap Filter
 open scoped Topology
 
 variable
@@ -123,6 +123,209 @@ lemma Continuous.inner_bundle
     Continuous (fun b ↦ ⟪v b, w b⟫) := by
   simp only [continuous_iff_continuousAt] at hv hw ⊢
   exact fun x ↦ (hv x).inner_bundle (hw x)
+
+variable (F E)
+
+/-- In a continuous Riemannian bundle, local changes of coordinates given by the trivialization at
+a point distort the norm by a factor arbitrarily close to 1. -/
+lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr : 1 < r) :
+    ∀ᶠ y in 𝓝 x, ‖((trivializationAt F E x).symmL ℝ x)
+      ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y)‖ < r := by
+  obtain ⟨r', hr', r'r⟩ : ∃ r', 1 < r' ∧ r' < r := exists_between hr
+  have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  let G := (trivializationAt F E x).continuousLinearEquivAt ℝ x h'x
+  obtain ⟨δ, δpos, hδ, h'δ⟩ : ∃ δ, 0 < δ ∧ 0 < 1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2
+      ∧ (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹ < r' ^ 2 := by
+    have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
+    have B : Tendsto (fun δ ↦ 1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2)
+        (𝓝[>] 0) (𝓝 (1 - 0 * (‖(G : E x →L[ℝ] F)‖) ^ 2)) := by
+      apply tendsto_inf_left
+      exact tendsto_const_nhds.sub (tendsto_id.mul tendsto_const_nhds)
+    have B' : ∀ᶠ δ in 𝓝[>] 0, 0 < 1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 :=
+      (tendsto_order.1 B).1 _ (by simp)
+    have C : Tendsto (fun δ ↦ (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹) (𝓝[>] 0)
+        (𝓝 ((1 - 0 * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹)) := by
+      apply tendsto_inf_left
+      exact (tendsto_const_nhds.sub (tendsto_id.mul tendsto_const_nhds)).inv₀ (by simp)
+    have C' : ∀ᶠ δ in 𝓝[>] 0, (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹ < r' ^ 2 := by
+      apply (tendsto_order.1 C).2
+      simpa using hr'.trans_le (le_abs_self _)
+    exact (A.and (B'.and C')).exists
+  rcases h.exists_continuous with ⟨g, g_cont, hg⟩
+  let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun x_1 ↦
+    inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x x_1 x x_1 (g x_1)
+  have hg' : ContinuousAt g' x := by
+    have W := g_cont.continuousAt (x := x)
+    simp only [continuousAt_hom_bundle] at W
+    exact W.2
+  have : ∀ᶠ y in 𝓝 x, dist (g' y) (g' x) < δ := by
+    rw [Metric.continuousAt_iff'] at hg'
+    apply hg' _ δpos
+  filter_upwards [this, (trivializationAt F E x).open_baseSet.mem_nhds h'x] with y hy h'y
+  have : ‖g' x - g' y‖ ≤ δ := by rw [← dist_eq_norm']; exact hy.le
+  apply (opNorm_le_bound _ (by linarith) (fun v ↦ ?_)).trans_lt r'r
+  let w := (trivializationAt F E x).continuousLinearMapAt ℝ y v
+  suffices ‖((trivializationAt F E x).symmL ℝ x) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
+    le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
+  simp only [Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply, ←
+    real_inner_self_eq_norm_sq, hg]
+  have hgy : g y v v = g' y w w := by
+    rw [inCoordinates_apply_eq₂ h'y h'y (Set.mem_univ _)]
+    have A : ((trivializationAt F E x).symm y)
+       ((trivializationAt F E x).linearMapAt ℝ y v) = v := by
+      convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'y).symm_apply_apply v
+      rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'y]
+      rfl
+    simp [A, w]
+  have hgx : g x ((trivializationAt F E x).symm x w) ((trivializationAt F E x).symm x w) =
+      g' x w w := by
+    rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
+    simp
+  rw [hgx, hgy]
+  have : g' x w w ≤ δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g' x w w + g' y w w := calc
+        g' x w w
+    _ = (g' x - g' y) w w + g' y w w := by simp
+    _ ≤ ‖g' x - g' y‖ * ‖w‖ * ‖w‖ + g' y w w := by
+      gcongr; exact (Real.le_norm_self _).trans (le_opNorm₂ (g' x - g' y) w w)
+    _ ≤ δ * ‖w‖ ^ 2 + g' y w w := by
+      rw [pow_two, mul_assoc]; gcongr
+    _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' y w w := by
+      gcongr
+      have : w = G (G.symm w) := by simp
+      conv_lhs => rw [this]
+      exact le_opNorm (G : E x →L[ℝ] F) (G.symm w)
+    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * ‖G.symm w‖^2 + g' y w w := by ring
+    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g x (G.symm w) (G.symm w) + g' y w w := by
+      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g' x w w + g' y w w := by
+      rw [← hgx]; rfl
+  have : (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) * g' x w w ≤ g' y w w := by linarith
+  rw [← (le_div_iff₀' hδ), div_eq_inv_mul] at this
+  apply this.trans
+  gcongr
+  rw [← hgy, ← hg,real_inner_self_eq_norm_sq]
+  positivity
+
+/-- In a continuous Riemannian bundle, the trivialization at a point is locally bounded in norm. -/
+lemma eventually_norm_trivializationAt_lt (x : B) :
+    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖(trivializationAt F E x).continuousLinearMapAt ℝ y‖ < C := by
+  refine ⟨(1 + ‖(trivializationAt F E x).continuousLinearMapAt ℝ  x‖) * 2, by positivity, ?_⟩
+  filter_upwards [eventually_norm_symmL_trivializationAt_self_comp_lt F E x one_lt_two] with y hy
+  have A : ((trivializationAt F E x).continuousLinearMapAt ℝ x) ∘L
+      ((trivializationAt F E x).symmL ℝ x) = ContinuousLinearMap.id _ _ := by
+    ext v
+    have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+    simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
+      Function.comp_apply, coe_id', id_eq]
+    convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
+    rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
+    rfl
+  have : (trivializationAt F E x).continuousLinearMapAt ℝ y =
+    (ContinuousLinearMap.id _ _) ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y) := by simp
+  rw [← A, comp_assoc] at this
+  rw [this]
+  apply (opNorm_comp_le _ _).trans_lt
+  gcongr
+  linarith
+
+/-- In a continuous Riemannian bundle, local changes of coordinates given by the trivialization at
+a point distort the norm by a factor arbitrarily close to 1. -/
+lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr : 1 < r) :
+    ∀ᶠ y in 𝓝 x, ‖((trivializationAt F E x).symmL ℝ y)
+      ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ x)‖ < r := by
+  obtain ⟨r', hr', r'r⟩ : ∃ r', 1 < r' ∧ r' < r := exists_between hr
+  have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  let G := (trivializationAt F E x).continuousLinearEquivAt ℝ x h'x
+  obtain ⟨δ, δpos, h'δ⟩ : ∃ δ, 0 < δ
+      ∧ (1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) < r' ^ 2 := by
+    have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
+    have C : Tendsto (fun δ ↦ 1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) (𝓝[>] 0)
+        (𝓝 (1 + 0 * (‖(G : E x →L[ℝ] F)‖) ^ 2)) := by
+      apply tendsto_inf_left
+      exact tendsto_const_nhds.add (tendsto_id.mul tendsto_const_nhds)
+    have C' : ∀ᶠ δ in 𝓝[>] 0, 1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 < r' ^ 2 := by
+      apply (tendsto_order.1 C).2
+      simpa using hr'.trans_le (le_abs_self _)
+    exact (A.and C').exists
+  rcases h.exists_continuous with ⟨g, g_cont, hg⟩
+  let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun x_1 ↦
+    inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x x_1 x x_1 (g x_1)
+  have hg' : ContinuousAt g' x := by
+    have W := g_cont.continuousAt (x := x)
+    simp only [continuousAt_hom_bundle] at W
+    exact W.2
+  have : ∀ᶠ y in 𝓝 x, dist (g' y) (g' x) < δ := by
+    rw [Metric.continuousAt_iff'] at hg'
+    apply hg' _ δpos
+  filter_upwards [this, (trivializationAt F E x).open_baseSet.mem_nhds h'x] with y hy h'y
+  have : ‖g' y - g' x‖ ≤ δ := by rw [← dist_eq_norm]; exact hy.le
+  apply (opNorm_le_bound _ (by linarith) (fun v ↦ ?_)).trans_lt r'r
+  let w := (trivializationAt F E x).continuousLinearMapAt ℝ x v
+  suffices ‖((trivializationAt F E x).symmL ℝ y) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
+    le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
+  simp only [Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply, ←
+    real_inner_self_eq_norm_sq, hg]
+  have hgx : g x v v = g' x w w := by
+    rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
+    have A : ((trivializationAt F E x).symm x)
+       ((trivializationAt F E x).linearMapAt ℝ x v) = v := by
+      convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).symm_apply_apply v
+      rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
+      rfl
+    simp [A, w]
+  have hgy : g y ((trivializationAt F E x).symm y w) ((trivializationAt F E x).symm y w)
+      = g' y w w := by
+    rw [inCoordinates_apply_eq₂ h'y h'y (Set.mem_univ _)]
+    simp
+  rw [hgx, hgy]
+  calc g' y w w
+    _ = (g' y - g' x) w w + g' x w w := by simp
+    _ ≤ ‖g' y - g' x‖ * ‖w‖ * ‖w‖ + g' x w w := by
+      gcongr; exact (Real.le_norm_self _).trans (le_opNorm₂ (g' y - g' x) w w)
+    _ ≤ δ * ‖w‖ ^ 2 + g' x w w := by
+      rw [pow_two, mul_assoc]; gcongr
+    _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' x w w := by
+      gcongr
+      have : w = G (G.symm w) := by simp
+      conv_lhs => rw [this]
+      exact le_opNorm (G : E x →L[ℝ] F) (G.symm w)
+    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * ‖G.symm w‖^2 + g' x w w := by ring
+    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g x (G.symm w) (G.symm w) + g' x w w := by
+      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g' x w w + g' x w w := by
+      congr
+      rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
+      simp only [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization,
+        LinearMap.id_coe, id_eq, w]
+      rfl
+    _ = (1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) * g' x w w := by ring
+    _ ≤ r' ^ 2 * g' x w w := by
+      gcongr
+      rw [← hgx, ← hg,real_inner_self_eq_norm_sq]
+      positivity
+
+/-- In a continuous Riemannian bundle, the inverse of the trivialization at a point is locally
+bounded in norm. -/
+lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
+    ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖(trivializationAt F E x).symmL ℝ y‖ < C := by
+  refine ⟨2 * (1 + ‖(trivializationAt F E x).symmL ℝ x‖), by positivity, ?_⟩
+  filter_upwards [eventually_norm_symmL_trivializationAt_comp_self_lt F E x one_lt_two] with y hy
+  have A : ((trivializationAt F E x).continuousLinearMapAt ℝ x) ∘L
+      ((trivializationAt F E x).symmL ℝ x) = ContinuousLinearMap.id _ _ := by
+    ext v
+    have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+    simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
+      Function.comp_apply, coe_id', id_eq]
+    convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
+    rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
+    rfl
+  have : (trivializationAt F E x).symmL ℝ y =
+     ((trivializationAt F E x).symmL ℝ y) ∘L (ContinuousLinearMap.id _ _) := by simp
+  rw [← A, ← comp_assoc] at this
+  rw [this]
+  apply (opNorm_comp_le _ _).trans_lt
+  gcongr
+  linarith
 
 end Continuous
 
