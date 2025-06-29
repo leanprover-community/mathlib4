@@ -183,8 +183,8 @@ lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C 
 def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
   toFun F := F.flip
   invFun F := F.flip
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- The equivalence of types of bifunctors given by currying. -/
 @[simps!]
