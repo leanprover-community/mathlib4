@@ -65,8 +65,9 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   (n : WithTop ℕ∞)
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
-  [∀ x : M, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
-  [∀ x, ContinuousSMul 𝕜 (V x)]
+  [∀ x : M, TopologicalSpace (V x)]
+  -- not needed in this file
+  -- [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
   [FiberBundle F V] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
   -- `V` vector bundle
 
@@ -80,6 +81,7 @@ noncomputable def localFrame_toBasis_at
     (b : Basis ι 𝕜 F) {x : M} (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
+
 open scoped Classical in
 -- If x is outside of `e.baseSet`, this returns the junk value 0.
 noncomputable def localFrame
@@ -92,9 +94,7 @@ noncomputable def localFrame
 -- TODO: understand why this isn’t already a simp lemma
 attribute [simp] Trivialization.apply_mk_symm
 
-omit [IsManifold I 0 M]
-    [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
-    [ContMDiffVectorBundle n F V I] in
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- Each local frame `s^i ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
 is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_localFrame_baseSet
@@ -107,7 +107,6 @@ lemma contMDiffOn_localFrame_baseSet
   intro y hy
   simp [localFrame, hy, localFrame_toBasis_at]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 @[simp]
 lemma localFrame_apply_of_mem_baseSet
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
@@ -115,7 +114,6 @@ lemma localFrame_apply_of_mem_baseSet
     b.localFrame e i x = b.localFrame_toBasis_at e hx i := by
   simp [localFrame, hx]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 @[simp]
 lemma localFrame_apply_of_notMem
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
@@ -123,7 +121,7 @@ lemma localFrame_apply_of_notMem
     b.localFrame e i x = 0 := by
   simp [localFrame, hx]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+
 lemma localFrame_toBasis_at_coe
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
@@ -161,14 +159,12 @@ variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V �
     [MemTrivializationAtlas e] {b : Basis ι 𝕜 F}
 
 variable (e b) in
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 @[simp]
 lemma localFrame_repr_apply_of_notMem_baseSet {x : M}
     (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) : b.localFrame_repr e i s x = 0 := by
   simpa [localFrame_repr] using fun hx' ↦ (hx hx').elim
 
 variable (e b) in
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 @[simp]
 lemma localFrame_repr_apply_of_mem_baseSet {x : M}
     (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
@@ -178,13 +174,11 @@ lemma localFrame_repr_apply_of_mem_baseSet {x : M}
 -- uniqueness of the decomposition: follows from the IsBasis property above
 
 -- TODO: better name?
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 lemma localFrame_repr_sum_eq [Fintype ι] (s : Π x : M,  V x) {x'} (hx : x' ∈ e.baseSet) :
     s x' = (∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x') := by
   simp [Basis.localFrame_repr, hx]
   exact (sum_repr (localFrame_toBasis_at e b hx) (s x')).symm
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 variable (b) in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
   of `V` around `x`, we have `s = ∑ i, (b.localFrame_repr e i s) • b.localFrame e i` -/
@@ -192,11 +186,10 @@ lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π 
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x' :=
   eventually_nhds_iff.mpr ⟨e.baseSet, fun _ h ↦ localFrame_repr_sum_eq s h, e.open_baseSet, hxe⟩
 
-variable {ι : Type*} [Fintype ι] {x : M}
+variable {ι : Type*} {x : M}
   {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
   [MemTrivializationAtlas e]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_repr_congr (b : Basis ι 𝕜 F)
     {s s' : Π x : M,  V x} {i : ι} (hss' : s x = s' x) :
@@ -206,7 +199,6 @@ lemma localFrame_repr_congr (b : Basis ι 𝕜 F)
     congr
   · simp [localFrame_repr, hxe]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 lemma localFrame_repr_apply_zero_at
     (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
     b.localFrame_repr e i s x = 0 := by
@@ -225,7 +217,6 @@ lemma localFrame_repr_apply_zero_at
 
 variable {n}
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] [Fintype ι] in
 /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
@@ -233,8 +224,7 @@ lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i :
     b.localFrame_repr e i s x = b.repr (e (s x)).2 i := by
   simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
-  [ContMDiffVectorBundle n F V I] [Fintype ι] in
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
 near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
@@ -273,8 +263,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
     contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
   exact hbas.comp x h₁
 
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
-  [ContMDiffVectorBundle n F V I] [Fintype ι] in
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_repr e i`
 in the local frame induced by `e` -/
 lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
@@ -285,8 +274,7 @@ lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
   fun _ hx ↦ (b.contMDiffAt_localFrame_repr (ht' hx)
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
-  [ContMDiffVectorBundle n F V I] [Fintype ι] in
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_repr e i` in the local frame
 induced by `e` -/
 lemma contMDiffOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
@@ -307,8 +295,8 @@ lemma contMDiffAt_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 
 
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma contMDiffOn_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M}
+lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M}
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t ↔
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t := by
@@ -334,7 +322,7 @@ lemma contMDiffOn_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 
 
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma contMDiffOn_baseSet_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+lemma contMDiffOn_baseSet_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet := by
@@ -366,6 +354,7 @@ Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v
 
 -- extendLocally: takes trivialisation e as parameter, and a basis b of F
 variable (b e) in
+
 noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (x : M) (v : V x) : (x' : M) → V x' :=
@@ -374,7 +363,6 @@ noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
     else 0
 
 -- TODO: clean up this proof, by adding further API as necessary
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 lemma localExtensionOn_apply_self (b : Basis ι 𝕜 F)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
@@ -385,14 +373,12 @@ lemma localExtensionOn_apply_self (b : Basis ι 𝕜 F)
   show ∑ i, bV.repr v i • (b.localFrame_toBasis_at e hx) i = v
   conv_rhs => rw [← bV.sum_repr v]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 lemma localExtensionOn_apply_self' (b : Basis ι 𝕜 F)
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
     (e ((localExtensionOn b e x v) x)).2 = (e v).2 := by
   rw [localExtensionOn_apply_self _ _ hx]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 -- in the trivialisation e, the localExtensionOn is constant on e.baseSet
 lemma localExtensionOn_localFrame_repr (b : Basis ι 𝕜 F)
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
@@ -405,7 +391,6 @@ lemma localExtensionOn_localFrame_repr (b : Basis ι 𝕜 F)
 
 -- By construction, localExtensionOn is a linear map.
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 variable (b e) in
 lemma localExtensionOn_add (v v' : V x) :
     localExtensionOn b e x (v + v') = localExtensionOn b e x v + localExtensionOn b e x v' := by
@@ -414,7 +399,6 @@ lemma localExtensionOn_add (v v' : V x) :
   · simp [hx, localExtensionOn]
   · simp [hx, localExtensionOn, add_smul, Finset.sum_add_distrib]
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 variable (b e) in
 lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
     localExtensionOn b e x (a • v) = a • localExtensionOn b e x v := by
