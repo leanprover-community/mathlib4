@@ -410,6 +410,7 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
       congr; ext i; simp [cov.smulX (Xi i) σ (a i)]
     _ = 0 := by simp [this] -/
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 /-- `cov X σ x` only depends on `X` via `X x` -/
 lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} (hXX' : X x = X' x) :
@@ -504,7 +505,7 @@ lemma differenceAux_smul_eq' (cov cov' : CovariantDerivative I F V)
 
 /-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
 lemma differenceAux_tensorial (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
-    [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+    [FiniteDimensional ℝ F]
     (X X' : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x₀ : M)
     (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x₀)
     (hσ' : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x₀)
@@ -691,17 +692,18 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
   simp only [of_endomorphism_toFun, endomorph_of_trivial_aux'''_apply_apply]
 
   -- TODO: this case has a gap; if hσ is false, currently hσ' is still true...
-  have hσ : MDifferentiable 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
-      fun x ↦ TotalSpace.mk' E' x (σ x) := sorry
-  have hσ' : MDifferentiable 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
-      fun x' ↦ TotalSpace.mk' E' x' ((extend E' (σ x)) x') := sorry
+  have hσ : MDifferentiableAt 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
+      (fun x' ↦ TotalSpace.mk' E' x' (σ x')) x := sorry
+  have hσ' : MDifferentiableAt 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
+      (fun x' ↦ TotalSpace.mk' E' x' ((extend E' (σ x)) x')) x := sorry
 
   rw [← CovariantDerivative.trivial_toFun]
   have h₁ : cov X σ x - (trivial E E') X σ x = cov.difference (trivial E E') x (X x) (σ x) := by
     -- Do not unfold differenceAux: we use the tensoriality of differenceAux.
     rw [difference]
-    -- TODO:  should σ and σ' be implicit?
-    apply foo _ _ _ _ _ _ _ hσ hσ'
+    -- Should x be implicit? Or X, X', σ, σ' perhaps?
+    exact differenceAux_tensorial cov (trivial E E') _ _ _ _ _ hσ hσ'
+      (extend_apply_self (X x)).symm (extend_apply_self (σ x)).symm
   have h₂ : cov.difference (trivial E E') x (X x) (σ x) =
       cov (extend E (X x)) (extend E' (σ x)) x - (fderiv ℝ (extend E' (σ x) (x := x)) x) (X x) := by
     simp
