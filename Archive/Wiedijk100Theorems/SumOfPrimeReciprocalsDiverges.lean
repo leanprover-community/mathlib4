@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Real
+import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Nat.Squarefree
 
 /-!
