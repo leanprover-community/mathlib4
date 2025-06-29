@@ -13,8 +13,8 @@ We define `curry : ((C × D) ⥤ E) ⥤ (C ⥤ (D ⥤ E))` and `uncurry : (C ⥤
 and verify that they provide an equivalence of categories
 `currying : (C ⥤ (D ⥤ E)) ≌ ((C × D) ⥤ E)`.
 
-This is used elsewhere to equip the category of small categories with a cartesian closed structure
-`cartesianClosed : CartesianClosed Cat.{u, u}`.
+This is used in `CategoryTheory.Category.Cat.CartesianClosed` to equip the category of small
+categories `Cat.{u, u}` with a cartesian closed structure.
 -/
 
 namespace CategoryTheory
