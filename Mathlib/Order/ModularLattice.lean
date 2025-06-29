@@ -422,6 +422,13 @@ instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) :=
         rw [← sup_assoc]
         exact le_trans hy.2.top_le le_sup_left⟩⟩
 
+theorem exists_disjoint_and_sup_eq {b : α} (h : a ≤ b) : ∃ c, Disjoint a c ∧ a ⊔ c = b := by
+  have : ComplementedLattice (Set.Iic b) := inferInstance
+  rw [Set.Iic.complementedLattice_iff] at this
+  simp_rw [disjoint_iff]
+  specialize this a h
+  aesop
+
 end ComplementedLattice
 
 end IsModularLattice
