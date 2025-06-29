@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Algebra.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
@@ -234,6 +234,52 @@ theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R 
   have : IsLocalization (Algebra.algebraMapSubmonoid S M)
     (Localization (Submonoid.map (f : R →* S) M)) := Localization.isLocalization
   isIntegral_localization
+
+lemma Algebra.IsIntegral.of_isLocalization (R S Rₚ Sₚ : Type*) [CommRing R] [CommRing S]
+    [CommRing Rₚ] [CommRing Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R)
+    [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
+    [Algebra.IsIntegral R S] :
+    Algebra.IsIntegral Rₚ Sₚ := by
+  refine ⟨fun x ↦ ?_⟩
+  delta IsIntegral
+  convert isIntegral_localization (R := R) (S := S) (M := M) (Rₘ := Rₚ) (Sₘ := Sₚ) x
+  apply IsLocalization.ringHom_ext (M := M)
+  simp [← IsScalarTower.algebraMap_eq]
+
+open nonZeroDivisors Algebra in
+instance IsFractionRing.isLocalization_algebraMapSubmonoid
+    {R S L : Type*} [CommRing R] [CommRing S] [IsDomain R] [Field L]
+    [Algebra R S] [Algebra S L]
+    [IsFractionRing S L] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S] :
+    IsLocalization (algebraMapSubmonoid S R⁰) L := by
+  have : IsDomain S := Function.Injective.isDomain _ (IsFractionRing.injective S L)
+  letI : Algebra (FractionRing R) (Localization (algebraMapSubmonoid S R⁰)) :=
+    localizationAlgebra R⁰ S
+  have : IsScalarTower R (FractionRing R) (Localization (algebraMapSubmonoid S R⁰)) :=
+    .of_algebraMap_eq fun x ↦ by
+      simp [localizationAlgebra, RingHom.algebraMap_toAlgebra,
+        IsScalarTower.algebraMap_apply R S (Localization _)]
+  have : Algebra.IsIntegral (FractionRing R) (Localization (algebraMapSubmonoid S R⁰)) :=
+    .of_isLocalization R S _ _ R⁰
+  have : IsDomain (Localization (algebraMapSubmonoid S R⁰)) :=
+    IsLocalization.isDomain_of_le_nonZeroDivisors S (M := algebraMapSubmonoid S R⁰)
+    algebraMapSubmonoid_nonZeroDivisors_le
+  have : IsField (Localization (algebraMapSubmonoid S R⁰)) :=
+    isField_of_isIntegral_of_isField' (Field.toIsField (FractionRing R))
+  letI := this.toField
+  have : FaithfulSMul S (Localization (algebraMapSubmonoid S R⁰)) :=
+    .of_injective (Algebra.ofId S _) (IsLocalization.injective (M := (algebraMapSubmonoid S R⁰)) _
+      algebraMapSubmonoid_nonZeroDivisors_le)
+  have : IsFractionRing S (Localization (algebraMapSubmonoid S R⁰)) := by
+    refine IsFractionRing.of_field _ _ ?_
+    intro z
+    obtain ⟨x, y, rfl⟩ := IsLocalization.mk'_surjective (algebraMapSubmonoid S R⁰) z
+    have hy : y.1 ≠ 0 := by obtain ⟨_, y, hy, rfl⟩ := y; simpa using hy
+    refine ⟨x, y.1, ?_⟩
+    rw [eq_div_iff_mul_eq (by simpa), IsLocalization.mk'_spec]
+  exact IsLocalization.isLocalization_of_algEquiv _
+    (IsLocalization.algEquiv S⁰ (Localization (algebraMapSubmonoid S R⁰)) L)
 
 variable (M)
 
