@@ -170,6 +170,17 @@ lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) int
 @[simp] lemma principal_exterior (s : Set α) : 𝓟 (exterior s) = 𝓝ˢ s := by
   rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
 
+lemma principal_exterior_singleton (a : α) : 𝓟 (exterior {a}) = 𝓝 a := by
+  rw [principal_exterior, nhdsSet_singleton]
+
+lemma nhdsSet_basis_exterior (s : Set α) :
+    (𝓝ˢ s).HasBasis (fun _ : Unit => True) (fun _ => exterior s) :=
+  principal_exterior s ▸ hasBasis_principal (exterior s)
+
+lemma nhds_basis_exterior_singleton (a : α) :
+    (𝓝 a).HasBasis (fun _ : Unit => True) (fun _ => exterior {a}) :=
+  principal_exterior_singleton a ▸ hasBasis_principal (exterior {a})
+
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
   simp only [← exterior_subset_iff_isOpen, Set.subset_def, mem_exterior_iff_specializes, exists_imp,
     and_imp, @forall_swap (_ ⤳ _)]
