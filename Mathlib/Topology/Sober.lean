@@ -167,7 +167,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
   map_rel_iff' := by
     rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp [hs'.closure_eq, ht'.closure_eq]
+    simp
     rfl
 
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :

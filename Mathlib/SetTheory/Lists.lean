@@ -173,7 +173,7 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
     obtain - | ⟨e, m, s⟩ := s
-    simp only [toList, Sigma.eta, List.find?, List.mem_cons] at h
+    simp only [toList, Sigma.eta, List.mem_cons] at h
     rcases h with (rfl | h)
     · exact ⟨_, m, e⟩
     · exact mem_of_subset' s h

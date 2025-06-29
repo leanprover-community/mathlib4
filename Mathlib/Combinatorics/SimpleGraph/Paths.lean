@@ -356,7 +356,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
   intro n hn m hm hnm
-  simp only [Walk.length_reverse, Set.mem_setOf_eq, Nat.sub_le, and_true] at *
+  simp only [Set.mem_setOf_eq] at *
   have := hpc.three_le_length
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
     (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
@@ -725,7 +725,7 @@ protected def map (f : G →g G') (hinj : Function.Injective f) {u v : V} (p : G
 theorem map_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Path.map f hinj : G.Path u v → G'.Path (f u) (f v)) := by
   rintro ⟨p, hp⟩ ⟨p', hp'⟩ h
-  simp only [Path.map, Subtype.coe_mk, Subtype.mk.injEq] at h
+  simp only [Path.map, Subtype.mk.injEq] at h
   simp [Walk.map_injective_of_injective hinj u v h]
 
 /-- Given a graph embedding, map paths to paths. -/
@@ -759,7 +759,7 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
   cases q with
   | nil => simp at qc
   | cons _ q =>
-    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hq
+    simp only [edges_cons, List.mem_cons, forall_eq_or_imp] at hq
     simp only [Walk.transfer, cons_isCycle_iff, edges_transfer q hq.2] at qc ⊢
     exact ⟨qc.1.transfer hq.2, qc.2⟩
 

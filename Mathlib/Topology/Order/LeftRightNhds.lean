@@ -141,7 +141,7 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
     simp [H, (subsingleton_isTop α).countable]
   have (x) (hx : x ∈ t) : ∃ y > x, s ∩ Ioo x y = ∅ := by
     simp only [← empty_mem_iff_bot, mem_nhdsWithin_iff_exists_mem_nhds_inter,
-      subset_empty_iff, IsTop, not_forall, not_le, mem_inter_iff, mem_setOf_eq, t] at hx
+      subset_empty_iff, IsTop, not_forall, not_le, mem_setOf_eq, t] at hx
     rcases hx.2.1 with ⟨u, hu, h'u⟩
     obtain ⟨y, hxy, hy⟩ : ∃ y, x < y ∧ Ico x y ⊆ u := exists_Ico_subset_of_mem_nhds hu hx.2.2
     refine ⟨y, hxy, ?_⟩
