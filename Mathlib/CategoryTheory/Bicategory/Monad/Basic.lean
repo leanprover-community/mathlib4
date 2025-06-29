@@ -47,7 +47,7 @@ abbrev Comonad.comul {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ t ≫ t := Comon_
 
 namespace Comonad
 
-variable {a: B}
+variable {a : B}
 
 /- Comonad laws -/
 section

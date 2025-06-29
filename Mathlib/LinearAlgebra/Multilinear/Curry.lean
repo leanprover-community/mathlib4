@@ -328,7 +328,6 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
   toFun := currySum
   invFun := uncurrySum
   left_inv _ := by simp
-  right_inv _ := rfl
   map_add' := by aesop
   map_smul' := by aesop
 

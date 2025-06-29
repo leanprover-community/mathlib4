@@ -279,7 +279,7 @@ theorem coe_coordChangeL' (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.
 theorem symm_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e'.baseSet ∩ e.baseSet) : (e.coordChangeL R e' b).symm = e'.coordChangeL R e b := by
   apply ContinuousLinearEquiv.toLinearEquiv_injective
-  rw [coe_coordChangeL' e' e hb, (coordChangeL R e e' b).symm_toLinearEquiv,
+  rw [coe_coordChangeL' e' e hb, (coordChangeL R e e' b).toLinearEquiv_symm,
     coe_coordChangeL' e e' hb.symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
 
 theorem coordChangeL_apply (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}

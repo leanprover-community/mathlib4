@@ -85,15 +85,19 @@ protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
     StrictAnti (f ∘ Subtype.val : s → β) :=
   fun x y hlt => h x.coe_prop y.coe_prop hlt
 
-lemma MonotoneOn_insert_iff {a : α} :
+lemma monotoneOn_insert_iff {a : α} :
     MonotoneOn f (insert a s) ↔
       (∀ b ∈ s, b ≤ a → f b ≤ f a) ∧ (∀ b ∈ s, a ≤ b → f a ≤ f b) ∧ MonotoneOn f s := by
   simp [MonotoneOn, forall_and]
 
-lemma AntitoneOn_insert_iff {a : α} :
+@[deprecated (since := "2025-06-14")] alias MonotoneOn_insert_iff := monotoneOn_insert_iff
+
+lemma antitoneOn_insert_iff {a : α} :
     AntitoneOn f (insert a s) ↔
       (∀ b ∈ s, b ≤ a → f a ≤ f b) ∧ (∀ b ∈ s, a ≤ b → f b ≤ f a) ∧ AntitoneOn f s :=
-  @MonotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
+  @monotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
+
+@[deprecated (since := "2025-06-14")] alias AntitoneOn_insert_iff := antitoneOn_insert_iff
 
 end Mono
 

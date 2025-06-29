@@ -34,6 +34,14 @@ jobs:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate
         run: |
+          # don't try to run if we don't have access to necessary secrets
+          if [[ -z '${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }}' ]]
+          then
+            printf 'No access to secrets, aborting.'
+            printf 'mOrD=' > "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
           echo "PR author: ${PR_AUTHOR}"
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
 

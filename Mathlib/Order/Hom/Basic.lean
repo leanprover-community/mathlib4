@@ -296,8 +296,6 @@ def curry : (α × β →o γ) ≃o (α →o β →o γ) where
   toFun f := ⟨fun x ↦ ⟨Function.curry f x, fun _ _ h ↦ f.mono ⟨le_rfl, h⟩⟩, fun _ _ h _ =>
     f.mono ⟨h, le_rfl⟩⟩
   invFun f := ⟨Function.uncurry fun x ↦ f x, fun x y h ↦ (f.mono h.1 x.2).trans ((f y.1).mono h.2)⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := by simp [le_def]
 
 @[simp]
@@ -409,8 +407,6 @@ of monotone maps to `β` and `γ`. -/
 def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   toFun f := (fst.comp f, snd.comp f)
   invFun f := f.1.prod f.2
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := forall_and.symm
 
 /-- `Prod.map` of two `OrderHom`s as an `OrderHom` -/
@@ -450,8 +446,6 @@ maps `Π i, α →o π i`. -/
 def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := forall_swap
 
 /-- `Subtype.val` as a bundled monotone function. -/
@@ -480,8 +474,6 @@ protected def dual : (α →o β) ≃ (αᵒᵈ →o βᵒᵈ) where
   toFun f := ⟨(OrderDual.toDual : β → βᵒᵈ) ∘ (f : α → β) ∘
     (OrderDual.ofDual : αᵒᵈ → α), f.mono.dual⟩
   invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, f.mono.dual⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : (OrderHom.id : α →o α).dual = OrderHom.id :=
@@ -784,8 +776,14 @@ theorem symm_injective : Function.Injective (symm : α ≃o β → β ≃o α) :
   symm_bijective.injective
 
 @[simp]
-theorem toEquiv_symm (e : α ≃o β) : e.toEquiv.symm = e.symm.toEquiv :=
+theorem toEquiv_symm (e : α ≃o β) : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_toEquiv (e : α ≃o β) : ⇑e.toEquiv = e := rfl
+
+@[simp]
+theorem coe_symm_toEquiv (e : α ≃o β) : ⇑e.toEquiv.symm = e.symm := rfl
 
 /-- Composition of two order isomorphisms is an order isomorphism. -/
 @[trans]
@@ -939,8 +937,14 @@ theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
 @[simp]
-theorem toRelIsoLT_symm (e : α ≃o β) : e.toRelIsoLT.symm = e.symm.toRelIsoLT :=
+theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
   rfl
+
+@[simp]
+theorem coe_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT = e := rfl
+
+@[simp]
+theorem coe_symm_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT.symm = e.symm := rfl
 
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
 def ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]

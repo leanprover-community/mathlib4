@@ -22,6 +22,8 @@ This file proves that one can adjoin a new zero element to a group and get a gro
   a monoid homomorphism `f : α →* β`.
 -/
 
+open Function
+
 assert_not_exists DenselyOrdered Ring
 
 namespace WithZero
@@ -106,8 +108,6 @@ nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
         | (_ : α), 0 => (mul_zero _).symm
         | (_ : α), (_ : α) => map_mul f _ _ }
   invFun F := F.toMonoidHom.comp coeMonoidHom
-  left_inv _ := rfl
-  right_inv _ := monoidWithZeroHom_ext rfl
 
 lemma lift'_zero (f : α →* β) : lift' f (0 : WithZero α) = 0 := rfl
 
@@ -138,6 +138,11 @@ lemma map'_map'  (f : α →* β) (g : β →* γ) (x) : map' g (map' f x) = map
 @[simp]
 lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).comp (map' f) :=
   MonoidWithZeroHom.ext fun x => (map'_map' f g x).symm
+
+lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f := by
+  simp [Injective, WithZero.forall]
+
+alias ⟨_, map'_injective⟩ := map'_injective_iff
 
 end MulOneClass
 
@@ -255,7 +260,6 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
-  right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
 
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :

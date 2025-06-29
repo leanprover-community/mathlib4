@@ -830,16 +830,7 @@ open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
-    __ := IsSimpleOrder.booleanAlgebra
-    iInf_sup_le_sup_sInf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp [bot_sup_eq, ← sInf_eq_iInf]
-      · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
-    inf_sSup_le_iSup_inf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [le_bot_iff, sSup_eq_bot, bot_inf_eq, iSup_bot, le_refl]
-      · simp only [top_inf_eq, ← sSup_eq_iSup]
-        exact le_rfl }
+    __ := IsSimpleOrder.booleanAlgebra }
 
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance

@@ -622,6 +622,11 @@ theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f,
     (hq : ∀ x, p x → q x) : ∀ᶠ x in f, q x :=
   hp.mp (Eventually.of_forall hq)
 
+@[gcongr]
+theorem GCongr.eventually_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
+    (∀ᶠ x in f, p x) → ∀ᶠ x in f, q x :=
+  (·.mono h)
+
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
   fun y => h.mono fun _ h => h y
@@ -722,6 +727,11 @@ theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x
 theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ x, p x → q x) : ∃ᶠ x in f, q x :=
   h.mp (Eventually.of_forall hpq)
+
+@[gcongr]
+theorem GCongr.frequently_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
+    (∃ᶠ x in f, p x) → ∃ᶠ x in f, q x :=
+  (·.mono h)
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by

@@ -90,6 +90,7 @@ section Semiring
 
 variable (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [Algebra A B]
   [Algebra A C] (P : Ideal B) {Q : Ideal C} (p : Ideal A)
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G)
 
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
 abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
@@ -100,8 +101,7 @@ instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
   hP.comap (algebraMap A B)
 
 @[simp]
-lemma under_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G) :
-    (g • P : Ideal B).under A = P.under A := by
+lemma under_smul : (g • P : Ideal B).under A = P.under A := by
   ext a
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
@@ -143,6 +143,10 @@ theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
   rw [← show _ = P.map σ from comap_symm (σ : B ≃+* C)] at h
   exact of_eq_comap p (σ : B ≃ₐ[A] C).symm h
+
+variable {p} in
+instance LiesOver.smul [h : P.LiesOver p] : (g • P).LiesOver p :=
+  ⟨h.over.trans (under_smul A P g).symm⟩
 
 variable (P) (Q)
 

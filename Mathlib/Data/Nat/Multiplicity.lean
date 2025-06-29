@@ -160,6 +160,17 @@ theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     congr 1
     rw [add_comm, add_assoc]
 
+/- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
+  and `n - 1`. -/
+theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
+    multiplicity p (p ^ n).factorial = ∑ i ∈ Finset.range n, p ^ i := by
+  rw [← ENat.coe_inj, ← (Nat.finiteMultiplicity_iff.2
+      ⟨hp.ne_one, (p ^ n).factorial_pos⟩).emultiplicity_eq_multiplicity]
+  induction n with
+  | zero => simp [hp.emultiplicity_one]
+  | succ n h =>
+    rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
+
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :

@@ -1323,7 +1323,6 @@ noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i)
   toFun | ⟨_, b⟩ => b
   invFun b := ⟨(hs b).choose, b, (hs b).choose_spec.1⟩
   left_inv | ⟨i, b, hb⟩ => Sigma.subtype_ext ((hs b).choose_spec.2 i hb).symm rfl
-  right_inv _ := rfl
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}

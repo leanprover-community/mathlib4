@@ -80,11 +80,7 @@ def trivial : Grp_ C :=
 instance : Inhabited (Grp_ C) where
   default := trivial C
 
-/-- Make a group object from `Grp_Class`. -/
-@[simps X]
-def mk' (X : C) [Grp_Class X] : Grp_ C where
-  __ := Mon_.mk X
-  grp := { inv := Grp_Class.inv (X := X) }
+@[deprecated (since := "2025-06-15")] alias mk' := mk
 
 instance : Category (Grp_ C) :=
   InducedCategory.category Grp_.toMon_
@@ -173,7 +169,7 @@ theorem inv_inv (A : C) [Grp_Class A] : CategoryTheory.inv ι = ι[A] := by
 
 @[reassoc]
 theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
-    μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ ι) ≫ μ := by
+    μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ₘ ι) ≫ μ := by
   apply lift_left_mul_ext μ
   nth_rw 2 [← Category.comp_id μ]
   rw [← comp_lift, Category.assoc, left_inv, ← Category.assoc (β_ A A).hom,
@@ -184,7 +180,7 @@ theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
 
 @[reassoc (attr := simp)]
 theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [Grp_Class A] :
-    (ι[A] ⊗ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
+    (ι[A] ⊗ₘ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
 
 /-- The map `(· * f)`. -/
@@ -247,13 +243,13 @@ theorem inv_hom [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] : ι ≫
 lemma toMon_Class_injective {X : C} :
     Function.Injective (@Grp_Class.toMon_Class C ‹_› ‹_› X) := by
   intro h₁ h₂ e
-  let X₁ : Grp_ C := @Grp_.mk' _ _ _ X h₁
-  let X₂ : Grp_ C := @Grp_.mk' _ _ _ X h₂
-  suffices ι[X₁.X] = ι[X₂.X] by cases h₁; cases h₂; subst e this; rfl
+  let X₁ : Grp_ C := @Grp_.mk _ _ _ X h₁
+  let X₂ : Grp_ C := @Grp_.mk _ _ _ X h₂
+  suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
-  rw [left_inv, show μ[X₁.X] = μ[X₂.X] from congr(($e).mul),
-    show η[X₁.X] = η[X₂.X] from congr(($e).one)]
-  exact (left_inv X₂.X).symm
+  rw [left_inv]
+  convert @left_inv _ _ _ _ h₁ using 2
+  exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[ext]
 lemma _root_.Grp_Class.ext {X : C} (h₁ h₂ : Grp_Class X)
@@ -310,7 +306,7 @@ end
 section
 
 variable {M N : Grp_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat)
+  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `Grp_ C`. -/
 def mkIso : M ≅ N :=
@@ -390,7 +386,7 @@ noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]
 noncomputable def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
-  app X := .mk (f.app _)
+  app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[simps!]
@@ -402,7 +398,7 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   obj F := F.1.mapGrp
-  map {F G} α := { app A := { hom := α.app A.X } }
+  map {F G} α := { app A := .mk' (α.app A.X) }
 
 end Functor
 

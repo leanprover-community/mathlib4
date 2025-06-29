@@ -6,6 +6,7 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 import Mathlib.MeasureTheory.Group.Convolution
 import Mathlib.Probability.Moments.MGFAnalytic
+import Mathlib.Probability.Independence.Basic
 
 /-!
 # Gaussian distributions over ℝ
@@ -595,6 +596,18 @@ lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
   rw [← Complex.exp_add]
   simp only [Complex.ofReal_add, NNReal.coe_add]
   ring_nf
+
+/- The sum of two real Gaussian variables with means `m₁, m₂` and variances `v₁, v₂` is a real
+Gaussian distribution with mean `m₁ + m₂` and variance `v_1 + v_2`. -/
+lemma gaussianReal_add_gaussianReal_of_indepFun {Ω} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+    {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} {X Y : Ω → ℝ} (hXY : IndepFun X Y P)
+    (hX : P.map X = gaussianReal m₁ v₁) (hY : P.map Y = gaussianReal m₂ v₂) :
+    P.map (X + Y) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
+  rw [hXY.map_add_eq_map_conv_map₀', hX, hY, gaussianReal_conv_gaussianReal]
+  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hX]
+  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hY]
+  · rw [hX]; apply IsFiniteMeasure.toSigmaFinite
+  · rw [hY]; apply IsFiniteMeasure.toSigmaFinite
 
 end GaussianReal
 

@@ -539,7 +539,10 @@ jobs:
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
-      - id: PR
+      # This action is used to determine the PR metadata in the event of a push.
+      # If it is called from a PR from a fork, it will find nothing/irrelevant data.
+      - if: github.event_name != 'pull_request_target'
+        id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
@@ -547,6 +550,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Only return if PR is still open
           filterOutClosed: true
+
+      # Combine the output from the previous action with the metadata supplied by GitHub itself.
+      - id: PR
+        shell: bash
+        run: |
+          echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" >> $GITHUB_OUTPUT
 
       - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
         name: If `bench-after-CI` is present, add a `!bench` comment.

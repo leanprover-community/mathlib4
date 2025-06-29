@@ -360,3 +360,8 @@ def Fin.appendEquiv {α : Type*} (m n : ℕ) :
   invFun f := ⟨fun i ↦ f (Fin.castAdd n i), fun i ↦ f (Fin.natAdd m i)⟩
   left_inv fg := by simp
   right_inv f := by simp [Fin.append_castAdd_natAdd]
+
+/-- `Fin (n + 1) → α` and `(Fin n → α) × α` are equivalent. -/
+@[simps!]
+def Fin.succFunEquiv (α : Type*) (n : ℕ) : (Fin (n + 1) → α) ≃ (Fin n → α) × α :=
+  (appendEquiv n 1).symm.trans (Equiv.prodCongrRight fun _ ↦ Equiv.funUnique (Fin 1) α)

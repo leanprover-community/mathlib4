@@ -1051,11 +1051,7 @@ def liftEquivOfComm :
     toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
-    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩
-    left_inv := fun f => rfl
-    right_inv := fun fg => Subtype.ext <|
-      Prod.ext (AlgHom.toLinearMap_injective <| LinearMap.ext_ring <| by simp)
-      rfl }
+    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩ }
 
 section map
 
