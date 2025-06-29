@@ -905,18 +905,18 @@ theorem initial_inclusion {n : ℕ} (hn : 0 < n) : (inclusion n).Initial := by
   apply zigzag_isConnected
   rintro ⟨⟨Δ₁, hΔ₁⟩, ⟨⟨⟩⟩, f⟩ ⟨⟨Δ₂, hΔ₂⟩, ⟨⟨⟩⟩, f'⟩
   apply Zigzag.trans (j₂ := ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f 0)⟩)
-    (.of_inv <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ hΔ₁))
+    (.of_inv <| CostructuredArrow.homMk <| Hom.tr <| ⦋0⦌.const _ 0)
   by_cases hff' : f 0 ≤ f' 0
-  · apply Zigzag.trans (j₂ := ⟨⦋1⦌ₙ, ⟨⟨⟩⟩, mkOfLe (n := Δ.len) (f 0) (f' 0) hff'⟩)
-      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
-    apply Zigzag.trans (j₂ := ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f' 0)⟩)
-      (.of_inv <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 1) _ _))
-      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
-  · apply Zigzag.trans (j₂ := ⟨⦋1⦌ₙ, ⟨⟨⟩⟩, mkOfLe (n := Δ.len) (f' 0) (f 0) (le_of_not_ge hff')⟩)
-      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 1) _ _))
-    apply Zigzag.trans (j₂ := ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f' 0)⟩)
-      (.of_inv <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
-      (.of_hom <| CostructuredArrow.homMk (Hom.tr (⦋0⦌.const _ 0) _ _))
+  · trans ⟨⦋1⦌ₙ, ⟨⟨⟩⟩, mkOfLe (n := Δ.len) (f 0) (f' 0) hff'⟩
+    · apply Zigzag.of_hom <| CostructuredArrow.homMk <| Hom.tr <| ⦋0⦌.const _ 0
+    · trans ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f' 0)⟩
+      · apply Zigzag.of_inv <| CostructuredArrow.homMk <| Hom.tr <| ⦋0⦌.const _ 1
+      · apply Zigzag.of_hom <| CostructuredArrow.homMk <| Hom.tr <| ⦋0⦌.const _ 0
+  · trans ⟨⦋1⦌ₙ, ⟨⟨⟩⟩, mkOfLe (n := Δ.len) (f' 0) (f 0) (le_of_not_ge hff')⟩
+    · apply Zigzag.of_hom <| CostructuredArrow.homMk <| Hom.tr <| ⦋0⦌.const _ 1
+    · trans ⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ (f' 0)⟩
+      · apply Zigzag.of_inv <| CostructuredArrow.homMk <| Hom.tr <| ⦋0⦌.const _ 0
+      · apply Zigzag.of_hom <| CostructuredArrow.homMk <| Hom.tr <| ⦋0⦌.const _ 0
 
 end Truncated
 
