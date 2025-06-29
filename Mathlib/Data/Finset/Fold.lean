@@ -64,7 +64,8 @@ theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
 @[congr]
-theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) : s.fold op b f = s.fold op b g := by
+theorem fold_congr {g : α → β} (H : ∀ x ∈ s, binderNameHint x f (f x) = g x) :
+    s.fold op b f = s.fold op b g := by
   rw [fold, fold, map_congr rfl H]
 
 theorem fold_op_distrib {f g : α → β} {b₁ b₂ : β} :

@@ -89,7 +89,7 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
 
 @[congr]
 theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
-    (hf : ∀ a ∈ y, f a = g a) : x.bind f = y.bind g :=
+    (hf : ∀ a ∈ y, binderNameHint a f (f a) = g a) : x.bind f = y.bind g :=
   hx.symm ▸ bind_congr hf
 
 @[deprecated bind_congr (since := "2025-03-20")]

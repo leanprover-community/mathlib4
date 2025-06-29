@@ -98,7 +98,7 @@ theorem countP_pos_of_mem {s a} (h : a ∈ s) (pa : p a) : 0 < countP p s :=
 @[congr]
 theorem countP_congr {s s' : Multiset α} (hs : s = s')
     {p p' : α → Prop} [DecidablePred p] [DecidablePred p']
-    (hp : ∀ x ∈ s, p x = p' x) : s.countP p = s'.countP p' := by
+    (hp : ∀ x ∈ s, binderNameHint x p (p x) = p' x) : s.countP p = s'.countP p' := by
   revert hs hp
   exact Quot.induction_on₂ s s'
     (fun l l' hs hp => by
