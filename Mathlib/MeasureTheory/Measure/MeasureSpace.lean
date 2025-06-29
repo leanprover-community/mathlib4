@@ -813,7 +813,7 @@ lemma support_add (μ ν : Measure X):
     push_neg at h'
     have H1 := h'.1
     have H2 := h'.2
-    dsimp [support] at H1 H2
+    dsimp [Measure.support] at H1 H2
     push_neg at H1 H2
     obtain ⟨U1, HU1, HUμ1⟩ := H1
     obtain ⟨U2, HU2, HUμ2⟩ := H2
