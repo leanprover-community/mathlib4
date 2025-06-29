@@ -866,6 +866,16 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
     Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
 
+lemma faceOpposite_point_eq_point (s : Simplex k P 1) {i j : Fin 2} (h : i ≠ j) (n : Fin 1) :
+    (s.faceOpposite i).points n = s.points j := by
+  suffices (s.faceOpposite i).points n ∈ s.points '' {j} by
+    simpa using this
+  refine Set.mem_of_mem_of_subset (Set.mem_range_self _) ?_
+  rw [range_faceOpposite_points]
+  refine Set.image_subset _ ?_
+  simp only [Nat.reduceAdd, Set.subset_singleton_iff, Set.mem_compl_iff, Set.mem_singleton_iff]
+  decide +revert
+
 /-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
 instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
   (Set.nonempty_compl_of_nontrivial i).to_subtype
