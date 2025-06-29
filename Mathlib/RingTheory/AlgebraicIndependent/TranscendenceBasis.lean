@@ -541,11 +541,6 @@ variable (R S A)
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
   exact lift_trdeg_add_eq R S A
 
--- TODO: move this
-lemma Equiv.image_swap_of_mem_of_notMem [DecidableEq ι] {s : Set ι} {i j : ι}
-    (hi : i ∈ s) (hj : j ∉ s) : Equiv.swap i j '' s = insert j s \ {i} := by
-  aesop (add simp swap_apply_def)
-
 namespace IsTranscendenceBasis
 
 variable {R S} [FaithfulSMul R S] [NoZeroDivisors S] (s : Set ι) (i j : ι) (v : ι → S)
