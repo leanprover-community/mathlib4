@@ -427,12 +427,43 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [NonAssocSemiring
 
 section
 
-variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
+variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [Field K] [Algebra 𝒪 K]
   [LinearOrderedCommGroupWithZero Γ]
+
+lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective
+    (h : ∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a)
+    (hinj : Function.Injective (algebraMap 𝒪 K)) :
+    IsFractionRing 𝒪 K := by
+  have : IsDomain 𝒪 := hinj.isDomain
+  constructor
+  · intro a
+    simpa using hinj.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
+  · intro x
+    obtain ⟨a, ha⟩ := h x
+    by_cases h0 : a = 0
+    · refine ⟨⟨0, 1⟩, by simpa [h0, eq_comm] using ha⟩
+    · have : algebraMap 𝒪 K a ≠ 0 := by simpa using hinj.ne_iff.mpr h0
+      rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
+      cases ha with
+      | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
+      | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
+  · intro _ _ hab
+    exact ⟨1, by simp only [OneMemClass.coe_one, hinj hab, one_mul]⟩
+
+lemma _root_.Valuation.Integers.isFractionRing {v : Valuation K Γ} (hv : v.Integers 𝒪) :
+    IsFractionRing 𝒪 K :=
+  isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective
+    hv.eq_algebraMap_or_inv_eq_algebraMap hv.hom_inj
+
+instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
+  (Valuation.integer.integers v).isFractionRing
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/
-theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) : ValuationRing 𝒪 := by
+theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
+    haveI := hh.hom_inj.isDomain
+    ValuationRing 𝒪 := by
+  haveI := hh.hom_inj.isDomain
   suffices PreValuationRing 𝒪 from .mk
   constructor
   intro a b
@@ -445,36 +476,14 @@ theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) : ValuationRing 
 instance instValuationRingInteger (v : Valuation K Γ) : ValuationRing v.integer :=
   of_integers (v := v) (Valuation.integer.integers v)
 
-theorem isFractionRing_iff [ValuationRing 𝒪] :
+theorem isFractionRing_iff [IsDomain 𝒪] [ValuationRing 𝒪] :
     IsFractionRing 𝒪 K ↔
       (∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a) ∧
         Function.Injective (algebraMap 𝒪 K) := by
   refine ⟨fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
   · obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
     exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
-  · constructor
-    · intro a
-      simpa using h.2.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
-    · intro x
-      obtain ⟨a, ha⟩ := h.1 x
-      by_cases h0 : a = 0
-      · exact ⟨⟨0, 1⟩, by simpa [h0] using ha⟩
-      · have : algebraMap 𝒪 K a ≠ 0 := by simpa using h.2.ne_iff.mpr h0
-        rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
-        cases ha with
-        | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
-        | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
-    · intro _ _ hab
-      exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
-
-lemma _root_.Valuation.Integers.isFractionRing {v : Valuation K Γ} (hv : v.Integers 𝒪) :
-    IsFractionRing 𝒪 K :=
-  have := of_integers _ hv
-  ValuationRing.isFractionRing_iff.mpr
-    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap hv, hv.hom_inj⟩
-
-instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
-  (Valuation.integer.integers v).isFractionRing
+  · exact isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective h.1 h.2
 
 end
 
