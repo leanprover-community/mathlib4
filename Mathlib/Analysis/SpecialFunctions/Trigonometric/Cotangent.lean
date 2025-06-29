@@ -15,6 +15,10 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 # Cotangent
 
 This file contains lemmas about the cotangent function, including useful series expansions.
+In particular, we prove that
+`π * cot (π * z) = π * I - 2 * π * I * ∑' n : ℕ, Complex.exp (2 * π * I * z) ^ n`
+as well as the infinite sum representation of cotangent (also known as the Mittag-Leffler
+expansion): `π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n))`.
 -/
 
 open Real Complex
@@ -85,7 +89,7 @@ theorem multipliable_sineTerm (x : ℂ) : Multipliable fun i ↦ (1 + sineTerm x
 
 lemma euler_sineTerm_tprod (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     ∏' i : ℕ, (1 + sineTerm x i) = Complex.sin (π * x) / (π * x) := by
-  rw [← Multipliable.hasProd_iff  (multipliable_sineTerm x) ,
+  rw [← Multipliable.hasProd_iff (multipliable_sineTerm x) ,
     Multipliable.hasProd_iff_tendsto_nat (multipliable_sineTerm x )]
   exact tendsto_euler_sin_prod' x (by apply integerComplement.ne_zero hx)
 
