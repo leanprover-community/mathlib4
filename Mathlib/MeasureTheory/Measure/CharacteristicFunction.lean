@@ -410,12 +410,11 @@ lemma charFunDual_pi' (p : ℝ≥0∞) [Fact (1 ≤ p)] {ι : Type*} [Fintype ι
     {mE : ∀ i, MeasurableSpace (E i)} {μ : (i : ι) → Measure (E i)} [∀ i, SigmaFinite (μ i)]
     (L : Dual ℝ (PiLp p E)) :
     charFunDual ((Measure.pi μ).map (toLp p)) L =
-      ∏ i, charFunDual (μ i) (L.comp
-        ((PiLp.continuousLinearEquiv p ℝ E).symm.toContinuousLinearMap.comp (.single ℝ E i))) := by
+      ∏ i, charFunDual (μ i) (L.comp (PiLp.single p ℝ).toContinuousLinearMap) := by
   simp_rw [charFunDual_apply, ← integral_fintype_prod_eq_prod, ← Complex.exp_sum, ← Finset.sum_mul,
-    ← ofReal_sum, L.comp_apply, ← map_sum, ContinuousLinearMap.sum_comp_single]
+    ← ofReal_sum, L.comp_apply, LinearIsometry.coe_toContinuousLinearMap,
+    ← ContinuousLinearMap.coe_coe, PiLp.sum_comp_single]
   rw [← MeasurableEquiv.coe_toLp, integral_map_equiv]
-  simp
 
 variable [BorelSpace E] [SecondCountableTopology E]
 
@@ -456,13 +455,9 @@ See `charFun_eq_prod_iff` for the Hilbert space version. -/
 lemma charFunDual_eq_prod_iff' (p : ℝ≥0∞) [Fact (1 ≤ p)] [BorelSpace F]
     [SecondCountableTopology F] [CompleteSpace E] [CompleteSpace F] {ξ : Measure (E × F)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
-    (∀ L, charFunDual (ξ.map (WithLp.equiv p (E × F)).symm) L =
-      charFunDual μ (L.comp
-        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
-          (.inl ℝ E F))) *
-      charFunDual ν (L.comp
-        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
-          (.inr ℝ E F)))) ↔
+    (∀ L, charFunDual (ξ.map (toLp p)) L =
+      charFunDual μ (L.comp (WithLp.inl p ℝ E F).toContinuousLinearMap) *
+      charFunDual ν (L.comp (WithLp.inr p ℝ E F).toContinuousLinearMap)) ↔
     ξ = μ.prod ν where
   mp h := by
     refine (MeasurableEquiv.toLp p (E × F)).map_measurableEquiv_injective
@@ -495,9 +490,8 @@ lemma charFunDual_eq_pi_iff' (p : ℝ≥0∞) [Fact (1 ≤ p)] {ι : Type*} [Fin
     {mE : ∀ i, MeasurableSpace (E i)} [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
     [∀ i, CompleteSpace (E i)] {μ : (i : ι) → Measure (E i)} {ν : Measure (Π i, E i)}
     [∀ i, IsFiniteMeasure (μ i)] [IsFiniteMeasure ν] :
-    (∀ L, charFunDual (ν.map (WithLp.equiv p (Π i, E i)).symm) L =
-      ∏ i, charFunDual (μ i) (L.comp
-        ((PiLp.continuousLinearEquiv p ℝ E).symm.toContinuousLinearMap.comp (.single ℝ E i)))) ↔
+    (∀ L, charFunDual (ν.map (toLp p)) L =
+      ∏ i, charFunDual (μ i) (L.comp (PiLp.single p ℝ).toContinuousLinearMap)) ↔
     ν = Measure.pi μ where
   mp h := by
     refine (MeasurableEquiv.toLp p (Π i, E i)).map_measurableEquiv_injective
