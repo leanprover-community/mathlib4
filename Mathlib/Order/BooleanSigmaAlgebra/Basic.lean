@@ -196,4 +196,13 @@ theorem σsSup_diff_singleton_bot [OrderBot α] (hs : s.Countable) : sSup (s \ {
 theorem σsInf_diff_singleton_top [OrderTop α] (hs : s.Countable) : sInf (s \ {⊤}) = sInf s :=
   σsSup_diff_singleton_bot (α := αᵒᵈ) hs
 
+@[simp]
+theorem σsSup_eq_bot [OrderBot α] (hs : s.Countable) : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
+  ⟨fun h _ ha => bot_unique <| h ▸ le_σsSup hs ha, fun h =>
+    bot_unique <| σsSup_le hs fun a ha => le_bot_iff.2 <| h a ha⟩
+
+@[simp]
+theorem σsInf_eq_top [OrderTop α] (hs : s.Countable) : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
+  σsSup_eq_bot (α := αᵒᵈ) hs
+
 end SigmaCompleteLattice
