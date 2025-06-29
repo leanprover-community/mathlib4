@@ -639,6 +639,37 @@ lemma Indep.notMem_closure_diff_of_mem (hI : M.Indep I) (he : e ∈ I) : e ∉ M
 @[deprecated (since := "2025-05-23")]
 alias Indep.not_mem_closure_diff_of_mem := Indep.notMem_closure_diff_of_mem
 
+lemma Indep.closure_insert_diff_eq_of_mem_closure (hI : M.Indep I) (hf : f ∈ M.closure I)
+    (he : e ∈ M.closure (insert f I \ {e})) : M.closure (insert f I \ {e}) = M.closure I := by
+  apply subset_antisymm <;> apply closure_subset_closure_of_subset_closure
+  · rintro a (rfl | haI)
+    exacts [hf, M.subset_closure _ hI.subset_ground haI]
+  · intro a haI
+    obtain rfl | ne := eq_or_ne a e
+    exacts [he, M.mem_closure_of_mem' ⟨.inr haI, ne⟩ (hI.subset_ground haI)]
+
+lemma Indep.indep_insert_diff_of_mem_closure (hI : M.Indep I) (hfI : f ∈ M.closure I)
+    (he : e ∈ M.closure (insert f I \ {e})) (heI : e ∈ insert f I) :
+    M.Indep (insert f I \ {e}) := by
+  obtain rfl | heI := heI
+  · exact hI.subset (by simp)
+  rw [Indep.insert_diff_indep_iff (hI.subset (diff_subset ..)) heI]
+  refine .inl ⟨mem_ground_of_mem_closure hfI, fun h ↦ hI.notMem_closure_diff_of_mem heI ?_⟩
+  exact closure_insert_eq_of_mem_closure h ▸ M.closure_subset_closure (by intro; aesop) he
+
+lemma IsBase.isBase_insert_diff_of_mem_closure (hB : M.IsBase B)
+    (he : e ∈ M.closure (insert f B \ {e})) (heB : e ∈ insert f B) :
+    M.IsBase (insert f B \ {e}) := by
+  rw [isBase_iff_indep_closure_eq] at hB ⊢
+  have hf : f ∈ M.closure B := by
+    obtain rfl | heB := heB
+    · exact M.closure_subset_closure (by simp) he
+    rw [← closure_inter_ground] at he
+    by_contra hfB
+    exact hB.1.notMem_closure_diff_of_mem heB (M.closure_subset_closure (by intro; aesop) he)
+  exact ⟨hB.1.indep_insert_diff_of_mem_closure hf he heB,
+    (hB.1.closure_insert_diff_eq_of_mem_closure hf he).trans hB.2⟩
+
 lemma indep_iff_forall_closure_diff_ne :
     M.Indep I ↔ ∀ ⦃e⦄, e ∈ I → M.closure (I \ {e}) ≠ M.closure I := by
   rw [indep_iff_forall_notMem_closure_diff']

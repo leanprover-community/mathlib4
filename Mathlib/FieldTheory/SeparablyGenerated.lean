@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Data.Set.Subset
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
@@ -44,16 +45,8 @@ variable (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i)
 variable (H : ∀ s : Finset K,
   LinearIndepOn k _root_.id (s : Set K) → LinearIndepOn k (· ^ p) (s : Set K))
 
-/- variable (a : ι → K) (s : Set ι) (n : ι) (hs : AlgebraicIndepOn k a s)
-variable (ha' : ¬ AlgebraicIndepOn k a (insert n s))
-
-lemma exists_algebraicIndepOn_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top :
-    ∃ i : ι, AlgebraicIndepOn k a (insert n s \ {i}) ∧
-      IsSeparable (IntermediateField.adjoin k (a '' (insert n s \ {i}))) (a i) := by
-  sorry -/
-
 set_option quotPrecheck false
-local notation "aevalAdjoin" i => aeval fun j : {j // j ≠ i} ↦
+local notation "aevalAdjoin" a:arg i:arg => aeval fun j : {j // j ≠ i} ↦
   (⟨a j, Algebra.subset_adjoin ⟨j, j.2, rfl⟩⟩ : Algebra.adjoin k (a '' {i}ᶜ))
 
 namespace MvPolynomial
@@ -76,7 +69,7 @@ theorem irreducible_of_forall_aeval_eq_zero_totalDegree_le : Irreducible F := by
 set_option quotPrecheck false
 local notation "e" i => (Equiv.optionSubtypeNe i).symm
 local notation "F₀" i => optionEquivLeft k _ (renameEquiv k (e i) F)
-local notation "F₁" i => (F₀ i).mapAlgHom (aevalAdjoin i)
+local notation "F₁" i => (F₀ i).mapAlgHom (aevalAdjoin a i)
 
 include hFa in
 theorem aeval_ite_aeval_eq_zero [DecidableEq ι] (i : ι) : (F₁ i).aeval (a i) = 0 := by
@@ -160,9 +153,72 @@ theorem exists_mem_support_not_dvd_of_forall_aeval_eq_zero_totalDegree_le :
 
 end MvPolynomial
 
+open IntermediateField
+
 variable [ExpChar k p]
 
+include hp H in
+lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
+    (s : Set ι) (n : ι) (ha : IsTranscendenceBasis k fun i : s ↦ a i) (hn : n ∉ s) :
+    ∃ i : ι, IsTranscendenceBasis k (fun j : ↥(insert n s \ {i}) ↦ a j) ∧
+      IsSeparable (adjoin k (a '' (insert n s \ {i}))) (a i) := by
+  have ha' : ¬ AlgebraicIndepOn k a (insert n s) := fun h ↦ by
+    rw [AlgebraicIndepOn.insert_iff hn, Set.image_eq_range] at h
+    exact h.2 (ha.isAlgebraic.isAlgebraic _)
+  have HF : {F : MvPolynomial ↥(insert n s) k | F ≠ 0 ∧ MvPolynomial.aeval (a ·.1) F = 0}.Nonempty
+    := by simpa [algebraicIndependent_iff, and_comm] using ha'
+  let F := totalDegree.argminOn _ HF
+  obtain ⟨hF0, hFa⟩ : F ∈ _ := totalDegree.argminOn_mem _ HF
+  replace HF f h₁ h₂ := totalDegree.argminOn_le _ (a := f) (.intro h₁ h₂) HF
+  -- By the minimality of total degree, `F` is irreducible.
+  have hFirr : Irreducible F := irreducible_of_forall_aeval_eq_zero_totalDegree_le _ F hF0 hFa HF
+  -- By the minimality of total degree and the linearly independent condition,
+  -- there exists some `Xᵢᵈ` with `p ∤ d` appearing in `F`.
+  have ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_aeval_eq_zero_totalDegree_le
+    p hp _ H F hF0 hFa HF
+  have hσi : σ i ≠ 0 := (by simp [·] at hi)
+  have alg := isAlgebraic_of_mem_vars_of_forall_aeval_eq_zero_totalDegree_le _ F hFa HF i <|
+    (mem_vars i).mpr ⟨σ, hσ, Finsupp.mem_support_iff.mpr hσi⟩
+  have eq : (a ·.1) '' {i}ᶜ = a '' (insert n s \ {i.1}) := by
+    rw [← Function.comp_def (f := a), Set.image_comp, Set.image_val_compl, Set.image_singleton]
+  have Hi := ha.of_isAlgebraic_adjoin_insert_diff s n i a i.2 (eq ▸ alg)
+  refine ⟨i, Hi, ?_⟩
+  let e' : {j // j ≠ i} ≃ ↥(insert n s \ {i.1}) := ⟨fun x ↦ ⟨x, x.1.2, fun h ↦ x.2 (Subtype.ext h)⟩,
+    fun x ↦ ⟨⟨x, x.2.1⟩, fun h ↦ x.2.2 congr($h.1)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
+  let e := (Hi.comp_equiv e').1.aevalEquiv.trans <| Subalgebra.equivOfEq _ _ <| congr_arg
+    (Algebra.adjoin k) <| (EquivLike.range_comp ..).trans <| (eq.trans (Set.image_eq_range ..)).symm
+  classical
+  have hF₁irr := hFirr.map (renameEquiv k (Equiv.optionSubtypeNe i).symm)
+    |>.map (optionEquivLeft k _) |>.map (Polynomial.mapAlgEquiv e)
+  rw [← AlgEquiv.coe_algHom, AlgEquiv.toAlgHom_eq_coe, Polynomial.mapAlgEquiv_toAlgHom e,
+    ← AlgEquiv.toAlgHom_eq_coe, show e.toAlgHom = aevalAdjoin (a ·.1) i by ext; simp [e, e']]
+    at hF₁irr
+  have coeff_ne := coeff_aeval_ite_ne_zero_of_forall_aeval_eq_zero_totalDegree_le _ F HF σ hσ i hσi
+  -- By Gauss's lemma, `F` is still irrreducible over `k(x₁,...,xᵢ₋₁, xᵢ₊₁,...,xₙ₊₁)`.
+  have := e.uniqueFactorizationMonoid inferInstance
+  let k' := adjoin k ((a ·.1) '' {i}ᶜ)
+  open scoped algebraAdjoinAdjoin in
+  have hF₂irr := (hF₁irr.isPrimitive fun h ↦ coeff_ne <| Polynomial.coeff_eq_zero_of_natDegree_lt <|
+    h.trans_lt <| Nat.pos_iff_ne_zero.2 hσi).irreducible_iff_irreducible_map_fraction_map
+    (K := k').1 hF₁irr
+  -- And by the existence of `Xᵢᵈ` with `p ∤ d`, it is separable.
+  contrapose! coeff_ne with Hsep
+  rw [← eq] at Hsep
+  have instExpChar : ExpChar k' p := expChar_of_injective_algebraMap (algebraMap k k').injective _
+  have : CharP k' p := by
+    cases instExpChar
+    · cases hp.ne_one rfl
+    · assumption
+  obtain ⟨g, hg, eq⟩ := (((minpoly k' (a i)).separable_or p (minpoly.irreducible
+    (isAlgebraic_iff_isIntegral.mp <| isAlgebraic_adjoin_iff.mpr alg))).resolve_left Hsep).2
+  replace eq := congr(Polynomial.coeff $eq (σ i))
+  rwa [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
+    (aeval_ite_aeval_eq_zero _ F hFa i)), Polynomial.coeff_mul_C, Polynomial.coeff_expand hp.pos,
+    if_neg hi, eq_mul_inv_iff_mul_eq₀ (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
+    Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
+
 include hp ha ha' H in
+open Set in
 /--
 Suppose `k` has chararcteristic `p` and `K/k` is generated by `a₁,...,aₙ₊₁`,
 where `a₁,...aₙ` forms a transcendental basis.
@@ -175,123 +231,17 @@ Then some subset of `a₁,...,aₙ₊₁` forms a separable transcedental basis.
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top :
     ∃ i : ι, IsTranscendenceBasis k (fun j : {j // j ≠ i} ↦ a j) ∧
       Algebra.IsSeparable (IntermediateField.adjoin k (a '' {i}ᶜ)) K := by
-  have : ¬ AlgebraicIndependent k a := fun h ↦
-    ((AlgebraicIndependent.iff_transcendental_adjoin_image n).mp h).2
-      (Set.image_eq_range .. ▸ ha'.isAlgebraic.isAlgebraic _)
-  have HF : {F : MvPolynomial ι k | F ≠ 0 ∧ MvPolynomial.aeval a F = 0}.Nonempty := by
-    simpa [algebraicIndependent_iff, and_comm] using this
-  let F := totalDegree.argminOn _ HF
-  obtain ⟨hF0, hFa⟩ : F ∈ _ := totalDegree.argminOn_mem _ HF
-  replace HF f h₁ h₂ := totalDegree.argminOn_le _ (a := f) (.intro h₁ h₂) HF
-  -- By the minimality of total degree, `F` is irreducible.
-  have hFirr : Irreducible F := irreducible_of_forall_aeval_eq_zero_totalDegree_le a F hF0 hFa HF
-  -- By the minimality of total degree and the linearly independent condition,
-  -- there exists some `Xᵢᵈ` with `p ∤ d` appearing in `F`.
-  have ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_aeval_eq_zero_totalDegree_le
-    p hp a H F hF0 hFa HF
-  have hσi : σ i ≠ 0 := (by simp [·] at hi)
-  have alg := isAlgebraic_of_mem_vars_of_forall_aeval_eq_zero_totalDegree_le a F hFa HF i <|
-    (mem_vars i).mpr ⟨σ, hσ, Finsupp.mem_support_iff.mpr hσi⟩
-  have Hi := IsTranscendenceBasis.of_isAlgebraic_adjoin_image_compl n i a ha' alg
-  refine ⟨i, Hi, ?_⟩
-  let k' := IntermediateField.adjoin k (a '' {i}ᶜ)
-  have hk' : k'⟮a i⟯ = ⊤ := IntermediateField.restrictScalars_injective k <| by
-    rw [IntermediateField.adjoin_adjoin_left, IntermediateField.restrictScalars_top, ← ha,
-      ← Set.image_singleton, ← Set.image_union, ← Set.image_univ, Set.compl_union_self]
-  rw [← AlgEquiv.Algebra.isSeparable_iff IntermediateField.topEquiv, ← hk',
-    IntermediateField.isSeparable_adjoin_simple_iff_isSeparable]
-  let e := Hi.1.aevalEquiv.trans <| Subalgebra.equivOfEq _ _ <|
-    congr_arg (Algebra.adjoin k) (Set.image_eq_range a {i}ᶜ).symm
-  classical
-  have hF₁irr := hFirr.map (renameEquiv k (Equiv.optionSubtypeNe i).symm)
-    |>.map (optionEquivLeft k _) |>.map (Polynomial.mapAlgEquiv e)
-  rw [← AlgEquiv.coe_algHom, AlgEquiv.toAlgHom_eq_coe, Polynomial.mapAlgEquiv_toAlgHom e,
-    ← AlgEquiv.toAlgHom_eq_coe, show e.toAlgHom = aevalAdjoin i by ext; simp [e]] at hF₁irr
-  have coeff_ne := coeff_aeval_ite_ne_zero_of_forall_aeval_eq_zero_totalDegree_le a F HF σ hσ i hσi
-  -- By Gauss's lemma, `F` is still irrreducible over `k(x₁,...,xᵢ₋₁, xᵢ₊₁,...,xₙ₊₁)`.
-  have := e.uniqueFactorizationMonoid inferInstance
-  open scoped IntermediateField.algebraAdjoinAdjoin in
-  have hF₂irr := (hF₁irr.isPrimitive fun h ↦ coeff_ne <| Polynomial.coeff_eq_zero_of_natDegree_lt <|
-    h.trans_lt <| Nat.pos_iff_ne_zero.2 hσi) |>.irreducible_iff_irreducible_map_fraction_map
-    (K := k').1 hF₁irr
-  -- And by the existence of `Xᵢᵈ` with `p ∤ d`, it is separable.
-  contrapose! coeff_ne with Hsep
-  have instExpChar : ExpChar k' p := expChar_of_injective_algebraMap (algebraMap k k').injective _
-  have : CharP k' p := by
-    cases instExpChar
-    · cases hp.ne_one rfl
-    · assumption
-  obtain ⟨g, hg, eq⟩ := (((minpoly k' (a i)).separable_or p (minpoly.irreducible
-    (isAlgebraic_iff_isIntegral.mp <| IntermediateField.isAlgebraic_adjoin_iff.mpr alg)))
-    |>.resolve_left Hsep).2
-  replace eq := congr(Polynomial.coeff $eq (σ i))
-  rwa [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
-    (aeval_ite_aeval_eq_zero a F hFa i)), Polynomial.coeff_mul_C, Polynomial.coeff_expand hp.pos,
-    if_neg hi, eq_mul_inv_iff_mul_eq₀ (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
-    Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
+  have ⟨i, hi⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
+    p hp a H {n}ᶜ n ha' (· rfl)
+  rw [compl_eq_univ_diff, insert_diff_self_of_mem (mem_univ _), ← compl_eq_univ_diff] at hi
+  refine ⟨i, hi.1, ?_⟩
+  rw [← separableClosure.eq_top_iff, ← (restrictScalars_injective k).eq_iff,
+    restrictScalars_top, eq_top_iff, ← ha, adjoin_le_iff]
+  rintro _ ⟨x, rfl⟩
+  obtain rfl | ne := eq_or_ne x i
+  · exact hi.2
+  · exact isSeparable_algebraMap (F := adjoin k (a '' {i}ᶜ)) ⟨_, subset_adjoin _ _ ⟨x, ne, rfl⟩⟩
 
-open IntermediateField
-
-/- include hp H in
-lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux
-    (t : Set K) (x : K) (ht : IsTranscendenceBasis k ((↑) : t → K)) (hxt : x ∉ t) :
-    ∃ i ∈ insert x t, (IsTranscendenceBasis k ((↑) : ↥(insert x t \ {i}) → K)) ∧
-      IntermediateField.adjoin k (insert x t) ≤ (separableClosure
-        (IntermediateField.adjoin k (insert x t \ {i})) K).restrictScalars _ := by
-  sorry -/
-
-include hp H in
-lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux
-    (t : Set K) (x : K) (ht : IsTranscendenceBasis k ((↑) : t → K)) (hxt : x ∉ t) :
-    ∃ (i : ↥(insert x t)), (IsTranscendenceBasis k fun (j : {j // j ≠ i}) ↦ j.1.1) ∧
-      IntermediateField.adjoin k (insert x t) ≤ (separableClosure
-        (IntermediateField.adjoin k (Subtype.val '' {i}ᶜ)) K).restrictScalars _ := by
-  classical
-  have inst : ExpChar K p := expChar_of_injective_ringHom (algebraMap k K).injective p
-  letI K' := IntermediateField.adjoin k (insert x t)
-  have : Algebra.IsAlgebraic K' K := by
-    have := ht.isAlgebraic_field
-    rw [IntermediateField.isAlgebraic_adjoin_iff_top,
-      ← AlgebraicIndependent.matroid_spanning_iff] at this ⊢
-    exact .superset this (by simp)
-  letI tx : ↥(insert x t) → K' := fun a ↦ ⟨a.1, IntermediateField.subset_adjoin _ _ a.2⟩
-  have htx : K'.val '' Set.range tx = insert x t := by
-    rw [← Set.range_comp]
-    exact Subtype.range_val
-  have ⟨i, hi, H⟩ :=
-    exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top
-    (k := k) (K := K') p hp tx ⟨x, by simp⟩ ?_ ?_ ?_
-  · let K₁ := IntermediateField.adjoin k (tx '' {i}ᶜ)
-    let K₂ := IntermediateField.adjoin k (Subtype.val '' {i}ᶜ)
-    letI e : K₁ ≃ₐ[k] K₂ := (equivMap K₁ K'.val).trans (equivOfEq (by
-      simp only [adjoin_map, coe_val, K₁, K₂, ← Set.image_comp]; rfl))
-    letI := e.toRingHom.toAlgebra
-    have : IsScalarTower K₁ K₂ K := .of_algebraMap_eq' rfl
-    refine ⟨i, hi.algebraMap_comp, ?_⟩
-    intro x hx
-    have := (Algebra.IsSeparable.isSeparable (IntermediateField.adjoin k (tx '' {i}ᶜ)) (K := K')
-      ⟨x, hx⟩).map (L := K) ⟨K'.val.toRingHom, fun _ ↦ by rfl⟩ Subtype.val_injective
-    rw [mem_restrictScalars, mem_separableClosure_iff]
-    exact this.tower_top (IntermediateField.adjoin k (Subtype.val '' {i}ᶜ))
-  · apply IntermediateField.map_injective (IntermediateField.val _)
-    rw [IntermediateField.adjoin_map, ← AlgHom.fieldRange_eq_map, fieldRange_val, htx]
-  · apply IsTranscendenceBasis.of_comp (IntermediateField.val _) Subtype.val_injective
-    convert ht.comp_equiv ?_ using 1; swap
-    · exact ⟨fun x ↦ ⟨x.1, by aesop⟩, fun x ↦ ⟨⟨x.1, by aesop⟩, by aesop⟩,
-        fun x ↦ by aesop, fun x ↦ by aesop⟩
-    ext
-    simp [K', tx]
-  · intro s
-    have := H (s.image (IntermediateField.val _))
-    simp only [coe_val, Finset.coe_image] at this
-    rw [← linearIndepOn_iff_image Subtype.val_injective.injOn] at this
-    rw [linearIndepOn_iff_image (f := (· ^ p)) (frobenius_inj K p).injOn,
-      ← Set.image_comp, ← linearIndepOn_iff_image (f := (· ^ p) ∘ Subtype.val)
-        ((frobenius_inj K p).comp Subtype.val_injective).injOn] at this
-    rw [← LinearMap.linearIndepOn_iff_of_injOn K'.val.toLinearMap Subtype.val_injective.injOn,
-      ← LinearMap.linearIndepOn_iff_of_injOn K'.val.toLinearMap Subtype.val_injective.injOn]
-    exact this
- 
 include hp H in
 /--
 Suppose `k` has chararcteristic `p` and `K/k` is finitely generated.
@@ -303,12 +253,14 @@ Then `K/k` is finite separably generated.
 TODO: show that this is an if and only if.
 -/
 @[stacks 030W "(2) ⇒ (1) finitely genenerated case"]
-lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
+lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_fg
     (Hfg : FG (F := k) (E := K) ⊤) :
     ∃ s : Finset K, IsTranscendenceBasis k ((↑) : s → K) ∧
       Algebra.IsSeparable (adjoin k (s : Set K)) K := by
   have ⟨t, ht⟩ := Hfg
   let sc (t : Set K) := (separableClosure (adjoin k t) K).restrictScalars k
+  have incl (t : Set K) : t ⊆ sc t := fun x hx ↦
+    isSeparable_algebraMap (F := adjoin k t) ⟨x, subset_adjoin _ _ hx⟩
   have : Algebra.IsAlgebraic (Algebra.adjoin k t.toSet) K := by
     rw [← isAlgebraic_adjoin_iff_top, ht, Algebra.isAlgebraic_iff_isIntegral]
     exact Algebra.isIntegral_of_surjective fun x ↦ ⟨⟨x, ⟨⟩⟩, rfl⟩
@@ -323,16 +275,21 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
   rw [fin.coe_toFinset, ← separableClosure.eq_top_iff,
     ← (restrictScalars_injective k).eq_iff, restrictScalars_top, eq_top_iff, ← ht, adjoin_le_iff]
   by_contra!
-  obtain ⟨x, hxt, hx⟩ := Set.not_subset.mp this
-  have hxs : x ∉ s := fun h ↦ hx (isSeparable_algebraMap (F := adjoin k s) ⟨x, subset_adjoin _ _ h⟩)
-  obtain ⟨i, hi₁, hi₂⟩ :=
-    exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_aux p hp H s x hs hxs
+  obtain ⟨n, hnt, hn⟩ := Set.not_subset.mp this
+  have hns : n ∉ s := (hn <| incl s ·)
+  have ⟨i, hi₁, hi₂⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
+    p hp id H s n hs hns
   refine Hs ⟨_, _, ⟨?_, hi₁.to_subtype_range⟩, rfl⟩ ⟨⟩ ?_
-  · rintro _ ⟨x, rfl⟩; exact Set.insert_subset hxt hst x.1.2
-  refine lt_of_lt_of_eq (b := sc (Subtype.val '' {i}ᶜ)) ?_ congr(sc $(Set.image_eq_range ..))
-  rw [SetLike.lt_iff_le_and_exists]
-  refine ⟨?_, x, hi₂ (subset_adjoin _ _ (Set.mem_insert _ _)), hx⟩
-  rw [separableClosure_le_separableClosure_iff]
-  exact (adjoin.mono _ _ _ (Set.subset_insert _ _)).trans hi₂
+  · rintro _ ⟨x, rfl⟩; exact Set.insert_subset hnt hst x.2.1
+  rw [Set.image_id] at hi₂
+  simp_rw [id_eq, Subrel, Order.Preimage, Subtype.range_val]
+  rw [GT.gt, SetLike.lt_iff_le_and_exists]
+  refine ⟨?_, n, incl _ ⟨.inl rfl, ?_⟩, hn⟩
+  · rw [separableClosure_le_separableClosure_iff, adjoin_le_iff]
+    intro x hx
+    obtain rfl | ne := eq_or_ne x i
+    · exact hi₂
+    · refine incl _ ⟨.inr hx, ne⟩
+  · rintro rfl; exact hn (by rwa [Set.insert_diff_self_of_notMem hns] at hi₂)
 
 end
