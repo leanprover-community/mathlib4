@@ -52,7 +52,12 @@ variable {p 𝕜 α β}
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
+/-- The projection on the first coordinate in `WithLp`. If `x : WithLp p (α × β)`, you
+shoudl always write `x.fst` instead of `x.1` to avoid defeq abuse. -/
 protected def fst (x : WithLp p (α × β)) : α := (ofLp x).fst
+
+/-- The projection on the scond coordinate in `WithLp`. If `x : WithLp p (α × β)`, you
+shoudl always write `x.snd` instead of `x.2` to avoid defeq abuse. -/
 protected def snd (x : WithLp p (α × β)) : β := (ofLp x).snd
 
 @[simp]
@@ -539,10 +544,12 @@ lemma prodContinuousLinearEquiv_apply :
 lemma prodContinuousLinearEquiv_symm_apply :
     ⇑(prodContinuousLinearEquiv p 𝕜 α β).symm = toLp p := rfl
 
+/-- The projection on the first coordinate in `WithLp` as continuous linear map. -/
 protected def fstCLM : WithLp p (α × β) →L[𝕜] α :=
   (ContinuousLinearMap.fst 𝕜 α β).comp
     (WithLp.prodContinuousLinearEquiv p 𝕜 α β).toContinuousLinearMap
 
+/-- The projection on the second coordinate in `WithLp` as continuous linear map. -/
 protected def sndCLM : WithLp p (α × β) →L[𝕜] β :=
   (ContinuousLinearMap.snd 𝕜 α β).comp
     (WithLp.prodContinuousLinearEquiv p 𝕜 α β).toContinuousLinearMap
@@ -943,10 +950,12 @@ theorem edist_equiv_symm_snd (y₁ y₂ : β) :
 
 variable [Semiring 𝕜] [Module 𝕜 α] [Module 𝕜 β]
 
+/-- The canonical injection from `α` to `x : WithLp p (α × β)`, as a linear isometry. -/
 protected def inl : α →ₗᵢ[𝕜] WithLp p (α × β) where
   toLinearMap := (WithLp.linearEquiv p 𝕜 (α × β)).symm.comp (.inl 𝕜 α β)
   norm_map' x := norm_toLp_fst p α β x
 
+/-- The canonical injection from `β` to `x : WithLp p (α × β)`, as a linear isometry. -/
 protected def inr : β →ₗᵢ[𝕜] WithLp p (α × β) where
   toLinearMap := (WithLp.linearEquiv p 𝕜 (α × β)).symm.comp (.inr 𝕜 α β)
   norm_map' x := norm_toLp_snd p α β x
@@ -959,7 +968,7 @@ lemma inr_apply (x : β) : WithLp.inr p 𝕜 α β x = toLp p (0, x) := rfl
 
 lemma inl_add_inr (x : α) (y : β) :
     WithLp.inl p 𝕜 α β x + WithLp.inr p 𝕜 α β y = toLp p (x, y) := by
-  rw [inl_apply, inr_apply, ← WithLp.prodContinuousLinearEquiv_symm_apply p 𝕜 α β, ← map_add]
+  rw [inl_apply, inr_apply, ← toLp_add]
   simp
 
 @[simp]

@@ -997,6 +997,30 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
       edist b₁ b₂ :=
   edist_toLp_single_same _ _ _ _ _
 
+variable (𝕜) {β} in
+/-- The canonical injection from `β i` to `PiLp p β` as a linear isometry. -/
+protected def single {i : ι} : β i →ₗᵢ[𝕜] PiLp p β where
+  toLinearMap := (WithLp.linearEquiv p 𝕜 (Π i, β i)).symm.toLinearMap.comp (.single 𝕜 β i)
+  norm_map' x := norm_toLp_single p β i x
+
+@[simp]
+lemma single_apply {i : ι} (x : β i) : PiLp.single p 𝕜 x = toLp p (Pi.single i x) := rfl
+
+lemma sum_single (x : Π i, β i) :
+    ∑ i, PiLp.single p 𝕜 (x i) = toLp p x := by
+  simp_rw [single_apply, ← toLp_sum, LinearMap.sum_single_apply]
+
+lemma sum_single' (x : PiLp p β) :
+    ∑ i, PiLp.single p 𝕜 (x i) = x := by
+  simp_rw [single_apply, ← toLp_sum, LinearMap.sum_single_apply]
+  ext; simp
+
+@[simp]
+lemma comp_inl_add_comp_inr {γ : Type*} [AddCommGroup γ] [Module 𝕜 γ]
+    (L : PiLp p β →ₗ[𝕜] γ) (x : PiLp p β) :
+    ∑ i, L (PiLp.single p 𝕜 (x i)) = L x := by
+  simp [← map_sum, sum_single', -single_apply]
+
 end Single
 
 /-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
