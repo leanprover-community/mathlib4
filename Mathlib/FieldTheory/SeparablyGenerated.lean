@@ -52,7 +52,7 @@ local notation "aevalAdjoin" a:arg i:arg => aeval fun j : {j // j ≠ i} ↦
 namespace MvPolynomial
 
 variable (F : MvPolynomial ι k) (hF0 : F ≠ 0) (hFa : F.aeval a = 0)
-variable (HF : ∀ (F' : MvPolynomial ι k), F' ≠ 0 → F'.aeval a = 0 → F.totalDegree ≤ F'.totalDegree)
+variable (HF : ∀ F' : MvPolynomial ι k, F' ≠ 0 → F'.aeval a = 0 → F.totalDegree ≤ F'.totalDegree)
 
 include hF0 hFa HF in
 theorem irreducible_of_forall_aeval_eq_zero_totalDegree_le : Irreducible F := by
@@ -230,7 +230,7 @@ Then some subset of `a₁,...,aₙ₊₁` forms a separable transcedental basis.
 @[stacks 0H71]
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top :
     ∃ i : ι, IsTranscendenceBasis k (fun j : {j // j ≠ i} ↦ a j) ∧
-      Algebra.IsSeparable (IntermediateField.adjoin k (a '' {i}ᶜ)) K := by
+      Algebra.IsSeparable (adjoin k (a '' {i}ᶜ)) K := by
   have ⟨i, hi⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     p hp a H {n}ᶜ n ha' (· rfl)
   rw [compl_eq_univ_diff, insert_diff_self_of_mem (mem_univ _), ← compl_eq_univ_diff] at hi
@@ -257,39 +257,18 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_fg
     (Hfg : FG (F := k) (E := K) ⊤) :
     ∃ s : Finset K, IsTranscendenceBasis k ((↑) : s → K) ∧
       Algebra.IsSeparable (adjoin k (s : Set K)) K := by
-  have ⟨t, ht⟩ := Hfg
-  let sc (t : Set K) := (separableClosure (adjoin k t) K).restrictScalars k
-  have incl (t : Set K) : t ⊆ sc t := fun x hx ↦
-    isSeparable_algebraMap (F := adjoin k t) ⟨x, subset_adjoin _ _ hx⟩
-  have : Algebra.IsAlgebraic (Algebra.adjoin k t.toSet) K := by
-    rw [← isAlgebraic_adjoin_iff_top, ht, Algebra.isAlgebraic_iff_isIntegral]
-    exact Algebra.isIntegral_of_surjective fun x ↦ ⟨⟨x, ⟨⟩⟩, rfl⟩
-  classical
-  have h := (t.finite_toSet.powerset.inter_of_left {s | IsTranscendenceBasis k ((↑) : s → K)}
-      |>.image sc).wellFoundedOn (r := (· > ·)).has_min Set.univ <|
-    have ⟨s, hs⟩ := exists_isTranscendenceBasis_subset (R := k) (s := t.toSet)
-    ⟨⟨_, (t.finite_toSet.subset hs.1).toFinset, by simp [hs], rfl⟩, ⟨⟩⟩
-  obtain ⟨⟨_, s, ⟨hst, hs⟩, rfl⟩, -, Hs⟩ := h
-  have fin := t.finite_toSet.subset hst
-  refine ⟨fin.toFinset, by rwa [← fin.coe_toFinset] at hs, ?_⟩
-  rw [fin.coe_toFinset, ← separableClosure.eq_top_iff,
-    ← (restrictScalars_injective k).eq_iff, restrictScalars_top, eq_top_iff, ← ht, adjoin_le_iff]
-  by_contra!
-  obtain ⟨n, hnt, hn⟩ := Set.not_subset.mp this
-  have hns : n ∉ s := (hn <| incl s ·)
+  have ⟨s, hs, Hs⟩ := Hfg.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
+  refine ⟨s, hs, ⟨fun n ↦ of_not_not fun hn ↦ ?_⟩⟩
+  have hns : n ∉ s := fun h ↦ hn (le_restrictScalars_separableClosure _ (subset_adjoin _ _ h))
   have ⟨i, hi₁, hi₂⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     p hp id H s n hs hns
-  refine Hs ⟨_, _, ⟨?_, hi₁.to_subtype_range⟩, rfl⟩ ⟨⟩ ?_
-  · rintro _ ⟨x, rfl⟩; exact Set.insert_subset hnt hst x.2.1
   rw [Set.image_id] at hi₂
-  simp_rw [id_eq, Subrel, Order.Preimage, Subtype.range_val]
-  rw [GT.gt, SetLike.lt_iff_le_and_exists]
-  refine ⟨?_, n, incl _ ⟨.inl rfl, ?_⟩, hn⟩
+  refine not_lt_iff_le_imp_ge.mpr (Hs hi₁) (SetLike.lt_iff_le_and_exists.mpr ⟨?_, n, ?_, hn⟩)
   · rw [separableClosure_le_separableClosure_iff, adjoin_le_iff]
     intro x hx
     obtain rfl | ne := eq_or_ne x i
-    · exact hi₂
-    · refine incl _ ⟨.inr hx, ne⟩
-  · rintro rfl; exact hn (by rwa [Set.insert_diff_self_of_notMem hns] at hi₂)
+    exacts [hi₂, le_restrictScalars_separableClosure _ (subset_adjoin _ _ ⟨.inr hx, ne⟩)]
+  · obtain rfl | ne := eq_or_ne n i
+    exacts [hi₂, le_restrictScalars_separableClosure _ (subset_adjoin _ _ ⟨.inl rfl, ne⟩)]
 
 end

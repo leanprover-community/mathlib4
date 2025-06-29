@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.IsSepClosed
+import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
 /-!
 
@@ -361,6 +362,35 @@ theorem finInsepDegree_self : finInsepDegree F F = 1 := by
 end Field
 
 namespace IntermediateField
+
+/-- In a finitely generated field extension, there exists a maximal
+separably generated field extension. -/
+lemma FG.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
+    (Hfg : FG (F := F) (E := E) ⊤) :
+    ∃ s : Finset E, MaximalFor (fun t : Set E ↦ IsTranscendenceBasis F ((↑) : t → E))
+      (fun t ↦ (separableClosure (adjoin F t) E).restrictScalars F) s := by
+  let d (s : Finset E) := Field.finInsepDegree (adjoin F s.toSet) E
+  have Hexists : {s : Finset E | IsTranscendenceBasis F ((↑) : s → E)}.Nonempty := by
+    have ⟨s, hs⟩ := Hfg
+    have : Algebra.IsAlgebraic (Algebra.adjoin F s.toSet) E := by
+      rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
+      refine Algebra.isIntegral_of_surjective topEquiv.surjective
+    have ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := F) s.toSet
+    lift t to Finset E using s.finite_toSet.subset hts
+    exact ⟨t, ht⟩
+  let s := d.argminOn _ Hexists
+  have hs := d.argminOn_mem _ Hexists
+  refine ⟨s, hs, fun t ht ↦ not_lt_iff_le_imp_ge.mp fun H ↦ ?_⟩
+  have : t.Finite := by
+    simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.nat_lt_aleph0]
+  lift t to Finset E using this
+  have : Module.Finite (adjoin F s.toSet) E := by
+    apply (config := { allowSynthFailures := true }) finite_of_fg_of_isAlgebraic
+    · exact .of_restrictScalars (K := F) (by rwa [restrictScalars_top])
+    · convert hs.isAlgebraic_field <;> simp [s]
+  have : Module.Finite ((separableClosure (adjoin F s.toSet) E).restrictScalars F) E :=
+    inferInstanceAs <| Module.Finite (separableClosure (adjoin F s.toSet) E) E
+  exact d.not_lt_argminOn _ ht Hexists (by apply finrank_lt_of_lt H)
 
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
