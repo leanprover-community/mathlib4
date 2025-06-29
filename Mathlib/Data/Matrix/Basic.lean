@@ -221,7 +221,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
   dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h, Matrix.one_apply_ne]
+  split_ifs with h <;> simp [h]
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl

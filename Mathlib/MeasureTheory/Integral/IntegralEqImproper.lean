@@ -1045,9 +1045,7 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
     refine
       intervalIntegral.integral_comp_smul_deriv''' (hf.mono i2)
         (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_subset _ ?_)
-        (hg1.mono_set <| image_subset _ ?_) (hg2.mono_set i2)
-    · rw [min_eq_left hb.le]; exact Ioo_subset_Ioi_self
-    · rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
+        (hg1.mono_set <| image_subset _ ?_) (hg2.mono_set i2) <;> assumption
   rw [integrableOn_Ici_iff_integrableOn_Ioi] at hg2
   have t2 := intervalIntegral_tendsto_integral_Ioi _ hg2 tendsto_id
   have : Ioi (f a) ⊆ f '' Ici a :=
