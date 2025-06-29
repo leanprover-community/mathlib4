@@ -128,19 +128,20 @@ def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
     else isFalse fun hab' => hab (le_of_lt hab')
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
-This means that `a ≤ b` and there is no element in between.
+This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
 -/
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `WCovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
-/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
+/-- `CovBy a b` means that `b` covers `a`. This means that `a < b` and there is no element in
+between. This is denoted `a ⋖ b`. -/
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `CovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⋖ " => CovBy
 
 end Preorder
