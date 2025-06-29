@@ -211,4 +211,14 @@ lemma σsSup_eq_bot' [OrderBot α] (hs : s.Countable) : sSup s = ⊥ ↔ s = ∅
 lemma σsInf_eq_bot' [OrderTop α] (hs : s.Countable) : sInf s = ⊤ ↔ s = ∅ ∨ s = {⊤} :=
   σsSup_eq_bot' (α := αᵒᵈ) hs
 
+theorem eq_singleton_bot_of_σsSup_eq_bot_of_nonempty [OrderBot α] (hs : s.Countable)
+    (h_sup : sSup s = ⊥) (hne : s.Nonempty) : s = {⊥} := by
+  rw [Set.eq_singleton_iff_nonempty_unique_mem]
+  rw [σsSup_eq_bot hs] at h_sup
+  exact ⟨hne, h_sup⟩
+
+theorem eq_singleton_top_of_σsInf_eq_top_of_nonempty [OrderTop α] (hs : s.Countable)
+    (h_inf : sInf s = ⊤) (hne : s.Nonempty) : s = {⊤} :=
+  eq_singleton_bot_of_σsSup_eq_bot_of_nonempty (α := αᵒᵈ) hs h_inf hne
+
 end SigmaCompleteLattice
