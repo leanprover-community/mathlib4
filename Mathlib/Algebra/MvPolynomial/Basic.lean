@@ -190,7 +190,7 @@ theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   -- Porting note: this `show` feels like defeq abuse, but I can't find the appropriate lemmas
   change AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
-  simp [C_apply, single_mul_single]
+  simp [single_mul_single]
 
 @[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=

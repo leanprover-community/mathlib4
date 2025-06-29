@@ -63,7 +63,7 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     exact Nat.dvd_mul_right p a
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
-    _ = ↑(k % p) := by simp [cast_eq_zero, this]
+    _ = ↑(k % p) := by simp [this]
 
 lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
   wlog hle : a ≤ b

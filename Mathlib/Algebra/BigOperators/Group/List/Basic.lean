@@ -495,7 +495,7 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.drop ((L.map length).take i).sum = (L.drop i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_length_add_append, *]
+  · cases i <;> simp [*]
 
 @[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
 @[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten
