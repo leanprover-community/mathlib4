@@ -8,7 +8,38 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 /-!
 # Local frames in a vector bundle
 
+Let `V → M` be a finite rank smooth vector bundle with standard fiber `F`.
+Given a basis `b` for `F` and a local trivialisation `e` for `V`,
+we construct a **smooth local frame** on `V` w.r.t. `e` and `b`,
+i.e. a collection of sections `s_i` of `V` which is smooth on `e.baseSet` such that `{s_i x}` is a
+basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquely written as
+`s = ∑ i, f^i s_i` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
+
+## Main definitions and results
+* `Basis.localFrame e b`: the local frame on `V` w.r.t. a local trivialisation `e` of `V` and a
+  basis `b` of `F`. Use `b.localFrame e i` to access the i-th section in that frame.
+* `b.contMDiffOn_localFrame_baseSet`: each section `b.localFrame e i` is smooth on `e.baseSet`
+* `b.localFrame_toBasis_at e`: for each `x ∈ e.baseSet`, the vectors `b.localFrame e i x` form
+  a basis of `F`
+* `Basis.localFrame_repr e b i` describes the coefficient of sections of `V` w.r.t.`b.localFrame e`:
+  `b.localFrame e i` is a linear map from sections of `V` to functions `M → 𝕜`.
+* `b.localFrame_repr_spec e`: near `x`, we have
+  `s = ∑ i, (b.localFrame_repr e i s) • b.localFrame e i`
+* `b.localFrame_repr_congr e`: the coefficient `b.localFrame_repr e b i` of `s` in the local frame
+  induced by `e` and `b` at `x` only depends on `s` at `x`.
+* `b.contMDiffOn_localFrame_repr`: if `s` is a `C^k` section, each coefficient
+  `b.localFrame_repr e i s` is `C^k` on `e.baseSet`
+* TODO: the converse, can test smoothness via local frames
+
 TODO add a more complete doc-string!
+
+## Implementation notes
+* local frames use the junk value pattern: they are defined on all of `M`, but their value is
+  only meaningful inside `e.baseSet`
+* anything else I want to add?
+
+## Tags
+vector bundle, local frame, smoothness
 
 -/
 open Bundle Filter Function Topology
@@ -139,6 +170,8 @@ lemma localFrame_repr_apply_of_mem_baseSet {x : M}
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 variable (b) in
+/-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
+  of `V` around `x`, we have `s = ∑ i, (b.localFrame_repr e i s) • b.localFrame e i` -/
 lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x' := by
   have {x'} (hx : x' ∈ e.baseSet) :
@@ -190,6 +223,8 @@ lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i :
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [ContMDiffVectorBundle n F V I] [Fintype ι] in
+/-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
+near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞}
@@ -228,6 +263,8 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [ContMDiffVectorBundle n F V I] [Fintype ι] in
+/-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_repr e i`
+in the local frame induced by `e` -/
 lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M}
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
@@ -238,6 +275,8 @@ lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [ContMDiffVectorBundle n F V I] [Fintype ι] in
+/-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_repr e i` in the local frame
+induced by `e` -/
 lemma contMDiffOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞}
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet) (i : ι) :
