@@ -581,6 +581,20 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
     Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
       (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
 
+@[simp]
+lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
+    s.orthogonalProjectionSpan p = s.points 0 := by
+  rw [orthogonalProjectionSpan]
+  convert orthogonalProjection_affineSpan_singleton _ _
+  rw [← Set.image_singleton, ← Set.image_univ]
+  convert rfl
+  exact Set.toFinset_eq_univ.mp rfl
+
+lemma orthogonalProjectionSpan_faceOpposite_eq_point (s : Simplex ℝ P 1) {i j : Fin 2} (h : i ≠ j)
+    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points j := by
+  convert (s.faceOpposite i).orthogonalProjectionSpan_eq_point p using 1
+  exact (s.faceOpposite_point_eq_point h _).symm
+
 end Simplex
 
 end Affine
