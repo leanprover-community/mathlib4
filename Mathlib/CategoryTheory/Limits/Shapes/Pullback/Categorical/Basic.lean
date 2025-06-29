@@ -289,7 +289,6 @@ def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
       (fun _ ↦ CategoricalPullback.mkIso
         (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
 
-
 variable {F G X}
 
 /-- A constructor for natural isomorphisms of functors `X ⥤ CategoricalPullback`: to
@@ -327,9 +326,9 @@ lemma natTrans_ext
   · exact congrArg (fun t ↦ t.app x) e₁
   · exact congrArg (fun t ↦ t.app x) e₂
 
-/-- Comparing mkNatIso with the corresponding construction one can deduce from
-`functorEquiv`. -/
-lemma mkNatIso_eq {J K : X ⥤ F ⊡ G}
+section
+
+variable {J K : X ⥤ F ⊡ G}
     (e₁ : J ⋙ π₁ F G ≅ K ⋙ π₁ F G) (e₂ : J ⋙ π₂ F G ≅ K ⋙ π₂ F G)
     (coh :
       whiskerRight e₁.hom F ≫ (Functor.associator _ _ _).hom ≫
@@ -338,14 +337,27 @@ lemma mkNatIso_eq {J K : X ⥤ F ⊡ G}
       (Functor.associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (Functor.associator _ _ _).inv ≫
-        whiskerRight e₂.hom G := by aesop_cat) :
-  mkNatIso e₁ e₂ coh =
+        whiskerRight e₂.hom G := by aesop_cat)
+
+@[simp]
+lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
+    (toCatCommSqOver F G X).mapIso (mkNatIso e₁ e₂ coh) =
+    CategoricalPullback.mkIso e₁ e₂
+      (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
+  aesop
+
+/-- Comparing mkNatIso with the corresponding construction one can deduce from
+`functorEquiv`. -/
+lemma mkNatIso_eq :
+    mkNatIso e₁ e₂ coh =
     (functorEquiv F G X).fullyFaithfulFunctor.preimageIso
       (CategoricalPullback.mkIso e₁ e₂
         (by simpa [functorEquiv, toCatCommSqOver] using coh)) := by
-  ext
-  · simp [Equivalence.fullyFaithfulFunctor]
-  · simp [Equivalence.fullyFaithfulFunctor]
+  rw [← toCatCommSqOver_mapIso_mkNatIso_eq_mkIso e₁ e₂ coh]
+  dsimp [Equivalence.fullyFaithfulFunctor]
+  aesop_cat
+
+end
 
 end functorEquiv
 
