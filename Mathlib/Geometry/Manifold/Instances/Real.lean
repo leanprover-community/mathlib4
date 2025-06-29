@@ -173,7 +173,7 @@ a model for manifolds with boundary. In the locale `Manifold`, use the shortcut 
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
   toFun := Subtype.val
-  invFun x := ⟨update x 0 (max (x 0) 0), by simp [le_refl]⟩
+  invFun x := ⟨update x 0 (max (x 0) 0), by simp⟩
   source := univ
   target := { x | 0 ≤ x 0 }
   map_source' x _ := x.property
@@ -204,7 +204,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
-  left_inv' x _ := by ext i; simp only [Subtype.coe_mk, x.2 i, max_eq_left]
+  left_inv' x _ := by ext i; simp only [x.2 i, max_eq_left]
   right_inv' x hx := by ext1 i; simp only [hx i, max_eq_left]
   source_eq := rfl
   uniqueDiffOn' := by
@@ -262,7 +262,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
-  invFun z := ⟨min (z.val 0 + x) y, by simp [le_refl, z.prop, h.out.le]⟩
+  invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
   map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
@@ -337,7 +337,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
-    ⟨max (y - z.val 0) x, by simp [le_refl, z.prop, h.out.le, sub_eq_add_neg]⟩
+    ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩
   map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
@@ -467,7 +467,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     contDiff_id.neg.add contDiff_const
   apply isManifold_of_contDiffOn
   intro e e' he he'
-  simp only [atlas, mem_singleton_iff, mem_insert_iff] at he he'
+  simp only [atlas] at he he'
   /- We need to check that any composition of two charts gives a `C^∞` function. Each chart can be
   either the left chart or the right chart, leaving 4 possibilities that we handle successively. -/
   rcases he with (rfl | rfl) <;> rcases he' with (rfl | rfl)
@@ -481,8 +481,8 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     rw [min_eq_left hz₁.le, lt_add_iff_pos_left] at hz₂
     ext i
     rw [Subsingleton.elim i 0]
-    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, *, PiLp.add_apply,
-      PiLp.neg_apply, max_eq_left, min_eq_left hz₁.le, update_self, mfld_simps]
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, *,
+      max_eq_left, min_eq_left hz₁.le, update_self, mfld_simps]
     abel
   · -- `e = right chart`, `e' = left chart`
     apply M.contDiffOn.congr
@@ -492,8 +492,8 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     rw [lt_sub_comm] at hz₁
     ext i
     rw [Subsingleton.elim i 0]
-    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, PiLp.add_apply,
-      PiLp.neg_apply, update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart,
+      update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
