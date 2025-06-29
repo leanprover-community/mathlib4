@@ -997,6 +997,25 @@ theorem edist_equiv_symm_single_same (i : ι) (b₁ b₂ : β i) :
       edist b₁ b₂ :=
   edist_toLp_single_same _ _ _ _ _
 
+variable (𝕜) {β} in
+protected def single {i : ι} : β i →ₗᵢ[𝕜] PiLp p β where
+  toLinearMap := (WithLp.linearEquiv p 𝕜 (Π i, β i)).symm.toLinearMap.comp (.single 𝕜 β i)
+  norm_map' x := norm_toLp_single p β i x
+
+@[simp]
+lemma single_apply {i : ι} (x : β i) : PiLp.single p 𝕜 x = toLp p (Pi.single i x) := rfl
+
+lemma inl_add_inr (x : Π i, β i) :
+    ∑ i, PiLp.single p 𝕜 (x i) = toLp p x := by
+  simp_rw [single_apply, ← toLp_sum, Fintype.sum_pi_single']
+  simp
+
+@[simp]
+lemma comp_inl_add_comp_inr {γ : Type*}
+    [AddCommGroup γ] [Module 𝕜 γ] (L : WithLp p (α × β) →ₗ[𝕜] γ) (x : WithLp p (α × β)) :
+    L (WithLp.inl p 𝕜 α β x.fst) + L (WithLp.inr p 𝕜 α β x.snd) = L x := by
+  simp [← map_add, inl_add_inr, -inl_apply, -inr_apply]
+
 end Single
 
 /-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because

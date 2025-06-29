@@ -959,7 +959,7 @@ lemma inr_apply (x : β) : WithLp.inr p 𝕜 α β x = toLp p (0, x) := rfl
 
 lemma inl_add_inr (x : α) (y : β) :
     WithLp.inl p 𝕜 α β x + WithLp.inr p 𝕜 α β y = toLp p (x, y) := by
-  rw [inl_apply, inr_apply, ← WithLp.prodContinuousLinearEquiv_symm_apply p 𝕜 α β, ← map_add]
+  rw [inl_apply, inr_apply, ← toLp_add]
   simp
 
 @[simp]
