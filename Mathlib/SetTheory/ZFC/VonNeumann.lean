@@ -9,7 +9,7 @@ import Mathlib.SetTheory.Ordinal.Family
 /-!
 # von Neumann Hierarchy
 
-In this file, we define the von Neumann hierarchy and prove the result that all sets are contained 
+In this file, we define the von Neumann hierarchy and prove the result that all sets are contained
 within it, which follows from regularity. Then, we show that `ZFSet.rank` is consistent with the
 traditional definition of the rank of a set as the least ordinal whose stage of the von Neumann
 hierarchy contains the set as a subset.
@@ -28,15 +28,15 @@ hierarchy contains the set as a subset.
 
 ## Implementation Notes
 
-The first section defining the hierarchy does not depend on the definition and properties of rank 
-contained in `Mathlib/SetTheory/ZFC/Rank.lean' 
+The first section defining the hierarchy does not depend on the definition and properties of rank
+contained in `Mathlib/SetTheory/ZFC/Rank.lean'
 
 ## Tags
 
 ordinal, rank, von Neumann hierarchy, von Neumann universe, cumulative hierarchy
 
 -/
- 
+
 universe u
 
 namespace ZFSet
@@ -112,7 +112,7 @@ lemma no_infinite_chains (f : ℕ → ZFSet.{u}) : ¬∀ n, f (n + 1) ∈ f n :=
     rw [mem_range]
     exact Set.mem_range_self 0
   obtain ⟨y, ⟨hyr : y ∈ r, hrye : r ∩ y = ∅⟩⟩ := regularity r hrne
-  obtain ⟨n, fny⟩ : ∃ n, f n = y := by 
+  obtain ⟨n, fny⟩ : ∃ n, f n = y := by
     rw [← Set.mem_range, ← mem_range]
     exact hyr
   rw [eq_empty] at hrye
@@ -183,10 +183,10 @@ theorem rank_stage_eq_self (o : Ordinal.{u}) : (stage o).rank = o := by
   induction o using Ordinal.limitRecOn
   case zero =>
     simp [stage, rank_empty]
-  case succ o ih => 
+  case succ o ih =>
     simp [stage, rank_powerset]
     exact ih
-  case isLimit o olim ih => 
+  case isLimit o olim ih =>
     rw [eq_iff_le_not_lt]
     constructor
     · let f := fun (a : ↑(Set.Iio o)) => stage ↑a
@@ -195,18 +195,18 @@ theorem rank_stage_eq_self (o : Ordinal.{u}) : (stage o).rank = o := by
         _              ≤ (range f).rank                               := rank_sUnion_le (range f)
         _              = iSup fun a => Order.succ (f a).rank          := rank_range f
         _              = iSup fun (a : ↑(Set.Iio o)) => Order.succ ↑a := ?_
-        _              = o                                            := Ordinal.iSup_succ o 
+        _              = o                                            := Ordinal.iSup_succ o
       apply iSup_congr
-      intro a 
+      intro a
       rw [Order.succ_eq_succ_iff]
       apply ih
-      show ↑a < o 
+      show ↑a < o
       rw [← Set.mem_Iio]
       exact Subtype.mem a
-    · show ¬(stage o).rank < o 
+    · show ¬(stage o).rank < o
       intro h
       obtain ⟨a, ⟨hlto : a < o, hgtr : (stage o).rank < a⟩⟩ := (Ordinal.lt_limit olim).mp h
-      have : ¬ (stage a).rank ≤ (stage o).rank := by 
+      have : ¬ (stage a).rank ≤ (stage o).rank := by
         apply not_le_of_gt
         rw [ih a hlto]
         exact hgtr
@@ -236,7 +236,7 @@ theorem rank_def {x : ZFSet.{u}} {o : Ordinal.{u}} :
     constructor
     · rw [sub_stage_iff_rank_le, le_iff_lt_or_eq]
       right
-      exact h 
+      exact h
     · intro a (ha : a < o)
       rw [sub_stage_iff_rank_le]
       subst h
