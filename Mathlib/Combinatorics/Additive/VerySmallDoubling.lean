@@ -202,6 +202,9 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     simp only [mem_inter, mem_product, and_imp, Prod.forall, mem_filter, mul_inv_rev, inv_inv,
       exists_and_left, exists_eq_left, forall_exists_index, smul_eq_mul, Set.MapsTo, mem_coe,
       forall_apply_eq_imp_iff₂, inv_mul_cancel_left, inv_mul_cancel_right, mem_smul_finset]
+    rintro c hc d hd h
+    rw [mul_assoc, mul_inv_cancel_left, ← h, inv_mul_cancel_left]
+    simp [hd, hc]
   have h₃ : ∀ x ∈ A ×ˢ A, (fun ⟨x, y⟩ => x * y⁻¹) x ∈ A⁻¹ * A := by
     rw [← mul_inv_eq_inv_mul_of_doubling_lt_two (weaken_doubling h)]
     simp only [mem_product, Prod.forall, mem_mul, and_imp, mem_inv]
