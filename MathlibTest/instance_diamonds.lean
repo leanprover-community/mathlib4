@@ -149,7 +149,7 @@ the domain is a group. -/
 example {k : Type _} [Semiring k] [Nontrivial kˣ] :
     (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
-  haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
+  haveI : Nontrivial k := Units.val_injective.nontrivial
   intro h
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
