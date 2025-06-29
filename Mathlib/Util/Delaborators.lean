@@ -6,8 +6,11 @@ Authors: Kyle Miller
 import Mathlib.Init
 import Mathlib.Util.PPOptions
 import Lean.PrettyPrinter.Delaborator.Builtins
+import Lean.Compiler.BorrowedAnnotation
 
-/-! # Pi type notation
+/-! # Extra delaborators
+
+## Pi type notation
 
 Provides the `Π x : α, β x` notation as an alternative to Lean 4's built-in
 `(x : α) → β x` notation. To get all non-`∀` pi types to pretty print this way
@@ -15,6 +18,10 @@ then do `open scoped PiNotation`.
 
 The notation also accepts extended binders, like `Π x ∈ s, β x` for `Π x, x ∈ s → β x`.
 This can be disabled with the `pp.mathlib.binderPredicates` option.
+
+## Metadata
+
+Provides delaborators for various `Expr.mdata` annotations, like `no_index` and `@&`.
 -/
 
 namespace PiNotation
@@ -173,3 +180,37 @@ open Lean Lean.PrettyPrinter.Delaborator
   let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab
   let stx₂ ← SubExpr.withAppArg <| SubExpr.withNaryArg 4 delab
   return ← `($stx₂ ∉ $stx₁)
+
+/-- Delaborator for `no_index`. -/
+@[delab mdata]
+def delabNoIndex : Delab := whenPPOption Lean.getPPMData do
+  guard <| Meta.DiscrTree.hasNoindexAnnotation (← SubExpr.getExpr)
+  let inner ← SubExpr.withMDataExpr delab
+  `(no_index $inner)
+
+/-- Delaborator for `@&`. -/
+@[delab mdata]
+def delabBorrowed : Delab := whenPPOption Lean.getPPMData do
+  guard <| Lean.isMarkedBorrowed (← SubExpr.getExpr)
+  let inner ← SubExpr.withMDataExpr delab
+  `(@& $inner)
+
+/-! Internal metadata that should never appear in user-facing expressions; and so it should always
+be printed if it somehow gets there anyway. -/
+section internal
+
+/-- Delaborator for `no_implicit_lambda%`. -/
+@[delab mdata]
+def delabNoImplicitLambda : Delab := do
+  guard <| Elab.Term.hasNoImplicitLambdaAnnotation (← SubExpr.getExpr)
+  let inner ← SubExpr.withMDataExpr delab
+  `(no_implicit_lambda% $inner)
+
+/-- Delaborator for `.(_)`. -/
+@[delab mdata]
+def delabInaccessible : Delab := do
+  guard <| inaccessible? (← SubExpr.getExpr) |>.isSome
+  let inner ← SubExpr.withMDataExpr delab
+  `(.($inner))
+
+end internal
