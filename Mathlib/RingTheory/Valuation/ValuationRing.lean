@@ -467,10 +467,14 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
     · intro _ _ hab
       exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
 
-instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
+lemma _root_.Valuation.Integers.isFractionRing {v : Valuation K Γ} (hv : v.Integers 𝒪) :
+    IsFractionRing 𝒪 K :=
+  have := of_integers _ hv
   ValuationRing.isFractionRing_iff.mpr
-    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap (Valuation.integer.integers v),
-    Subtype.coe_injective⟩
+    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap hv, hv.hom_inj⟩
+
+instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
+  (Valuation.integer.integers v).isFractionRing
 
 end
 
