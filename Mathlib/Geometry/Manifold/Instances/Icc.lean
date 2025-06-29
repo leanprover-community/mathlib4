@@ -16,6 +16,9 @@ projection are smooth, and showing that a function defined on the interval is sm
 its composition with the projection is smooth on the interval in `ℝ`.
 
 We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
+
+TODO: several results in this file are particular cases of general results on submersions
+or immersions. Refactor using the general results once they are available.
 -/
 
 open Set
@@ -33,7 +36,7 @@ instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
 
 /-- Unit vector in the tangent space to a segment, as the image of the unit vector in the real line
 under the canonical projection. It is also mapped to the unit vector in the real line through
-the canonical injection, see `mfderiv_subtypeVal_Icc_one`.
+the canonical injection, see `mfderiv_subtype_coe_Icc_one`.
 
 Note that one can not abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
@@ -48,11 +51,14 @@ instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡�
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
-lemma contMDiff_subtypeVal_Icc  :
+lemma contMDiff_subtype_coe_Icc  :
     ContMDiff (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   rw [contMDiffAt_iff]
   refine ⟨by fun_prop, ?_⟩
+  -- We come back to the definition: we should check that, in each chart, the map is smooth.
+  -- There are two charts, and we check things separately in each of them using the
+  -- explicit formulas.
   simp? says
     simp only [extChartAt, PartialHomeomorph.extend, PartialHomeomorph.refl_partialEquiv,
       PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
@@ -97,6 +103,9 @@ lemma contMDiffOn_projIcc :
   intro z hz
   rw [contMDiffWithinAt_iff]
   refine ⟨by apply ContinuousAt.continuousWithinAt; fun_prop, ?_⟩
+  -- We come back to the definition: we should check that, in each chart, the map is smooth
+  -- There are two charts, and we check things separately in each of them using the
+  -- explicit formulas.
   simp? says
     simp only [extChartAt, PartialHomeomorph.extend, Icc_chartedSpaceChartAt,
       PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
@@ -135,7 +144,7 @@ lemma contMDiffOn_projIcc :
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
     ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
-  convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
+  convert hf.comp_contMDiff (contMDiff_subtype_coe_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
@@ -144,7 +153,7 @@ lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
       ContMDiffAt (𝓡∂ 1) I n f w := by
   refine ⟨fun hf ↦ ?_,
     fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
-  have A := contMDiff_subtypeVal_Icc (x := x) (y := y) (n := n) w
+  have A := contMDiff_subtype_coe_Icc (x := x) (y := y) (n := n) w
   rw [← contMDiffWithinAt_univ] at A ⊢
   convert hf.comp _ A (fun z hz ↦ z.2)
   ext z
@@ -154,7 +163,7 @@ lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y}
     MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
       MDifferentiableAt (𝓡∂ 1) I f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · have A := (contMDiff_subtypeVal_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
+  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
     rw [← mdifferentiableWithinAt_univ] at A ⊢
     convert hf.comp _ A (fun z hz ↦ z.2)
     ext z
