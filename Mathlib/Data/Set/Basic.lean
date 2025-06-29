@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
-import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanAlgebra.Basic
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators
@@ -202,35 +202,18 @@ theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := I
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
-  Iff.rfl
-
-/-- This lemma is intended for use with `rw` where a membership predicate is needed,
-hence the explicit argument and the equality in the reverse direction from normal.
-See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
-theorem eq_mem_setOf (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
-
-/-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
-nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
-argument to `simp`. -/
-theorem _root_.Membership.mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p x }) : p a :=
-  h
-
-theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
-  Iff.rfl
-
-@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
-
-@[simp]
-theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
-  rfl
-
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem setOf_set {s : Set α} : setOf s = s :=
   rfl
 
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
   Iff.rfl
 
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
   Iff.rfl
 
@@ -1096,7 +1079,7 @@ theorem inter_subset (a b c : Set α) : a ∩ b ⊆ c ↔ a ⊆ bᶜ ∪ c :=
   forall_congr' fun _ => and_imp.trans <| imp_congr_right fun _ => imp_iff_not_or
 
 theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s ⊆ t :=
-  (not_subset.trans <| exists_congr fun x => by simp [mem_compl]).symm
+  (not_subset.trans <| exists_congr fun x => by simp).symm
 
 /-! ### Lemmas about set difference -/
 
@@ -1513,5 +1496,3 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
   rfl
 
 end Equiv
-
-set_option linter.style.longFile 1700

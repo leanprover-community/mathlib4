@@ -372,7 +372,7 @@ def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C w
   map_zero' := by simp only [Pi.prod, Prod.mk_zero_zero, map_zero]
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
   map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
-  map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, id_eq, Prod.smul_mk]
+  map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, Prod.smul_mk]
 
 theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
@@ -395,8 +395,6 @@ their codomains. -/
 def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (R A B)
 
