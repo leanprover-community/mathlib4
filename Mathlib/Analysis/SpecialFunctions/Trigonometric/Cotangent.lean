@@ -150,7 +150,7 @@ theorem logDeriv_sin_div_eq_cot (z : ℂ) (hz : z ∈ ℂ_ℤ ) :
   · simp only [Set.mem_setOf_eq, ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
     refine ⟨Real.pi_ne_zero, integerComplement.ne_zero hz⟩
 
-/-- The term in the infinite series expansion of cot. -/
+/-- The term in the infinite sum expansion of cot. -/
 noncomputable abbrev cotTerm (x : ℂ) (n : ℕ) : ℂ := 1 / (x - (n + 1)) + 1 / (x + (n + 1))
 
 theorem logDeriv_sineTerm_eq_cotTerm (x : ℂ) (hx : x ∈ ℂ_ℤ ) (i : ℕ) :
@@ -202,15 +202,15 @@ theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ ) : Summable fun n ↦ co
   apply (EisensteinSeries.summable_linear_sub_mul_linear_add z 1 1).congr
   simp [mul_comm]
 
-theorem cot_series_rep' {z : ℂ} (hz : z ∈ ℂ_ℤ ) : π * Complex.cot (π * z) - 1 / z =
+theorem cot_series_rep' {z : ℂ} (hz : z ∈ ℂ_ℤ ) : π * cot (π * z) - 1 / z =
     ∑' n : ℕ, (1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) := by
   rw [HasSum.tsum_eq]
   apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm hz)).mpr
     (tendsto_logDeriv_euler_cot_sub z hz)
 
-/-- The cotangent infinte sum representation -/
+/-- The cotangent infinte sum representation. -/
 theorem cot_series_rep {z : ℂ} (hz : z ∈ ℂ_ℤ ) :
-    π * Complex.cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
+    π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
   have h0 := tsum_pnat_eq_tsum_succ fun n ↦ 1 / ((z : ℂ) - n) + 1 / (z + n)
   have h1 := cot_series_rep' hz
   simp only [one_div, Nat.cast_add, Nat.cast_one] at *
