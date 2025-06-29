@@ -6513,6 +6513,7 @@ import Mathlib.Topology.UniformSpace.OfFun
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.ProdApproximation
 import Mathlib.Topology.UniformSpace.Real
+import Mathlib.Topology.UniformSpace.Separated
 import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.UniformSpace.Ultra.Basic
 import Mathlib.Topology.UniformSpace.Ultra.Constructions
