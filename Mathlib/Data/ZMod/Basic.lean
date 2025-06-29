@@ -906,7 +906,7 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
-instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
+instance subsingleton_units : IsSharpMonoid (ZMod 2) :=
   ⟨by decide⟩
 
 @[simp]

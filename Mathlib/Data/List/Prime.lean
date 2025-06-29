@@ -42,7 +42,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable {M : Type*} [CancelCommMonoidWithZero M] [Subsingleton Mˣ]
+variable {M : Type*} [CancelCommMonoidWithZero M] [IsSharpMonoid M]
 
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
     (hpL : p ∣ L.prod) : p ∈ L := by
