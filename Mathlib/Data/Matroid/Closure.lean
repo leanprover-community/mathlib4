@@ -657,18 +657,24 @@ lemma Indep.indep_insert_diff_of_mem_closure (hI : M.Indep I) (hfI : f ∈ M.clo
   refine .inl ⟨mem_ground_of_mem_closure hfI, fun h ↦ hI.notMem_closure_diff_of_mem heI ?_⟩
   exact closure_insert_eq_of_mem_closure h ▸ M.closure_subset_closure (by intro; aesop) he
 
+lemma IsBasis.isBasis_insert_diff_of_mem_closure (hB : M.IsBasis B X)
+    (he : e ∈ M.closure (insert f B \ {e})) (heB : e ∈ insert f B) (hfX : f ∈ X) :
+    M.IsBasis (insert f B \ {e}) X := by
+  rw [isBasis_iff_indep_closure] at hB ⊢
+  exact ⟨hB.1.indep_insert_diff_of_mem_closure (hB.2.1 hfX) he heB, hB.2.1.trans_eq
+    (hB.1.closure_insert_diff_eq_of_mem_closure (hB.2.1 hfX) he).symm, diff_subset.trans
+    (insert_subset hfX hB.2.2)⟩
+
 lemma IsBase.isBase_insert_diff_of_mem_closure (hB : M.IsBase B)
     (he : e ∈ M.closure (insert f B \ {e})) (heB : e ∈ insert f B) :
     M.IsBase (insert f B \ {e}) := by
-  rw [isBase_iff_indep_closure_eq] at hB ⊢
-  have hf : f ∈ M.closure B := by
-    obtain rfl | heB := heB
-    · exact M.closure_subset_closure (by simp) he
-    rw [← closure_inter_ground] at he
-    by_contra hfB
-    exact hB.1.notMem_closure_diff_of_mem heB (M.closure_subset_closure (by intro; aesop) he)
-  exact ⟨hB.1.indep_insert_diff_of_mem_closure hf he heB,
-    (hB.1.closure_insert_diff_eq_of_mem_closure hf he).trans hB.2⟩
+  rw [← isBasis_ground_iff] at hB ⊢
+  by_cases hf : f ∈ M.E
+  · exact hB.isBasis_insert_diff_of_mem_closure he heB hf
+  obtain rfl | heB := heB
+  · simpa [show e ∉ B from fun h ↦ hf (hB.1.1.2 h)] using hB
+  rw [← closure_inter_ground] at he
+  cases hB.indep.notMem_closure_diff_of_mem heB (M.closure_subset_closure (by intro; aesop) he)
 
 lemma indep_iff_forall_closure_diff_ne :
     M.Indep I ↔ ∀ ⦃e⦄, e ∈ I → M.closure (I \ {e}) ≠ M.closure I := by
