@@ -68,27 +68,8 @@ theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne, ← Units.eq_iff, Units.val_one]
   exact ((nontrivial v).choose_spec ).2
 
-section Field
-
-variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-  (v : Valuation K Γ₀) [hv : RankOne v]
-
-lemma exists_lt_one :
-    ∃ x : K, v x ≠ 0 ∧ v x < 1  := by
-  obtain ⟨x, hx, hx'⟩ := hv.nontrivial
-  wlog hv : v x < 1 generalizing x
-  · push_neg at hv
-    use x⁻¹
-    simp [map_inv₀, hx, inv_lt_one₀ (zero_lt_iff.mpr hx), lt_iff_le_and_ne, hv, hx'.symm]
-  exact ⟨x, hx, hv⟩
-
-lemma exists_one_lt :
-    ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
-  obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
-  use x⁻¹
-  simp [one_lt_inv₀ (zero_lt_iff.mpr h0), h0, h1]
-
-end Field
+instance [RankOne v] : IsNontrivial v where
+  exists_val_nontrivial := RankOne.nontrivial v
 
 end RankOne
 
