@@ -76,6 +76,10 @@ lemma orderPred_succ {n : ℕ} (i : Fin n) :
     Order.pred i.succ = i.castSucc :=
   rfl
 
+theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i j : Fin n} (hij : i < j) :
+    (i + 1).1 = i.1 + 1 := by
+  simpa [Fin.val_add] using ((Nat.mod_eq_iff_lt (Ne.symm (NeZero.ne' n))).mpr (by omega))
+
 @[deprecated (since := "2025-02-06")] alias pred_eq := orderPred_eq
 @[deprecated (since := "2025-02-06")] alias pred_apply := orderPred_apply
 
