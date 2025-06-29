@@ -427,7 +427,7 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
   | x :: xs => by
     rw [orderedInsert]
     split_ifs
-    · simp [orderedInsert]
+    · simp
     · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
 
 theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
@@ -437,7 +437,7 @@ theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
   | nil => simp
   | cons x xs ih =>
     rw [List.forall_mem_cons] at hl₁ hl₂
-    simp only [List.map, List.orderedInsert, ← hl₁.1, ← hl₂.1]
+    simp only [List.map, List.orderedInsert, ← hl₂.1]
     split_ifs
     · rw [List.map, List.map]
     · rw [List.map, ih (fun _ ha => hl₁.2 _ ha) (fun _ ha => hl₂.2 _ ha)]

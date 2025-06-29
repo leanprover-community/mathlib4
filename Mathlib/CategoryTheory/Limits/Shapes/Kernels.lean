@@ -82,7 +82,7 @@ theorem KernelFork.condition (s : KernelFork f) : Fork.ι s ≫ f = 0 := by
   rw [Fork.condition, HasZeroMorphisms.comp_zero]
 
 theorem KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
-  simp [Fork.app_one_eq_ι_comp_right]
+  simp
 
 /-- A morphism `ι` satisfying `ι ≫ f = 0` determines a kernel fork over `f`. -/
 abbrev KernelFork.ofι {Z : C} (ι : Z ⟶ X) (w : ι ≫ f = 0) : KernelFork f :=
@@ -210,7 +210,7 @@ def KernelFork.isLimitOfIsLimitOfIff {X Y : C} {g : X ⟶ Y} {c : KernelFork g} 
   KernelFork.IsLimit.ofι _ _
     (fun s hs ↦ hc.lift (KernelFork.ofι (ι := s ≫ e.inv)
       (by rw [iff, Category.assoc, Iso.inv_hom_id_assoc, hs])))
-    (fun s hs ↦ by simp [← cancel_mono e.inv])
+    (fun s hs ↦ by simp)
     (fun s hs m hm ↦ Fork.IsLimit.hom_ext hc (by simpa [← cancel_mono e.hom] using hm))
 
 /-- If `c` is a limit kernel fork for `g : X ⟶ Y`, and `g' : X ⟶ Y'` is a another morphism,
@@ -546,7 +546,7 @@ theorem CokernelCofork.condition (s : CokernelCofork f) : f ≫ s.π = 0 := by
   rw [Cofork.condition, zero_comp]
 
 theorem CokernelCofork.π_eq_zero (s : CokernelCofork f) : s.ι.app zero = 0 := by
-  simp [Cofork.app_zero_eq_comp_π_right]
+  simp
 
 /-- A morphism `π` satisfying `f ≫ π = 0` determines a cokernel cofork on `f`. -/
 abbrev CokernelCofork.ofπ {Z : C} (π : Y ⟶ Z) (w : f ≫ π = 0) : CokernelCofork f :=
@@ -672,7 +672,7 @@ def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : Cokern
   CokernelCofork.IsColimit.ofπ _ _
     (fun s hs ↦ hc.desc (CokernelCofork.ofπ (π := e.inv ≫ s)
       (by rw [iff, e.hom_inv_id_assoc, hs])))
-    (fun s hs ↦ by simp [← cancel_epi e.inv])
+    (fun s hs ↦ by simp)
     (fun s hs m hm ↦ Cofork.IsColimit.hom_ext hc (by simpa [← cancel_epi e.hom] using hm))
 
 /-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, and `f' : X' ⟶ Y is another
