@@ -167,20 +167,14 @@ lemma localExtensionOn_apply_self' (b : Basis ι 𝕜 F)
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 -- in the trivialisation e, the localExtensionOn is constant on e.baseSet
-lemma localExtensionOn_apply_of_mem_baseSet (b : Basis ι 𝕜 F) [Fintype ι]
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) :
-    ∀ x' ∈ e.baseSet, (e ((localExtensionOn b e x v) x')).2 = (e v).2 := by
-  intro x' hx'
-  rw [← localExtensionOn_apply_self' b e hx v]
-  simp [localExtensionOn, hx]
-  letI bV := b.localFrame_toBasis_at e hx
-  -- TODO: missing simp lemmas!
-  simp [Basis.localFrame, hx']
-  -- TODO: this Lean statement is false (the sections s^i do depend on the base point x);
-  -- want I want is the *coefficients* being equals (which is true)
-  -- -> need to fix the statement first!
-  sorry
+lemma localExtensionOn_localFrame_repr (b : Basis ι 𝕜 F)
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) (i : ι)
+    {x' : M} (hx' : x' ∈ e.baseSet):
+    b.localFrame_repr e i (localExtensionOn b e x v) x' =
+      b.localFrame_repr e i (localExtensionOn b e x v) x := by
+  -- TODO: missing simp lemmas/ ensure the API is fine here!
+  simp [Basis.localFrame, hx', localExtensionOn, hx]
 
 -- By construction, localExtensionOn is a linear map.
 
@@ -205,18 +199,18 @@ lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
     have (x') : (a * (B.repr v) x') = a • (B.repr v) x' := by rw [smul_eq_mul]
     simp_rw [this, IsScalarTower.smul_assoc a, Finset.smul_sum]
 
--- `hx` might not be strictly required; I'm including it for robustness:
--- for other x, this extension is not mathematically meaningful
-omit [IsManifold I 0 M]
-  [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
-lemma contMDiffOn_localExtensionOn {x : M} (hx : x ∈ e.baseSet) (v : V x) :
+omit [IsManifold I 0 M] in
+lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    {x : M} (hx : x ∈ e.baseSet) (v : V x) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) 1
     (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) e.baseSet := by
-  -- idea: in the trivialisation e, everything looks constant (like the vector v transported to F)
-  rw [contMDiffOn_section_of_mem_baseSet₀]
-  apply (contMDiffOn_const (c := (e v).2)).congr
+  -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
+  -- constant, hence smoothness follows.
+  rw [b.contMDiffOn_baseSet_iff_localFrame_repr]
+  intro i
+  apply (contMDiffOn_const (c := (b.localFrame_repr e i) (localExtensionOn b e x v) x)).congr
   intro y hy
-  rw [localExtensionOn_apply_of_mem_baseSet _ _ hx _ _ hy]
+  rw [localExtensionOn_localFrame_repr b hx v i hy]
 
 end extendLocally
 
