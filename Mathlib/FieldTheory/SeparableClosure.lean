@@ -78,7 +78,7 @@ def separableClosure : IntermediateField F E where
   carrier := {x | IsSeparable F x}
   mul_mem' := isSeparable_mul
   add_mem' := isSeparable_add
-  algebraMap_mem' := isSeparable_algebraMap E
+  algebraMap_mem' := isSeparable_algebraMap
   inv_mem' _ := isSeparable_inv
 
 variable {F E K}
@@ -159,8 +159,7 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
 if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
-  ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩,
-    fun _ ↦ le_separableClosure _ _ _⟩
+  Subalgebra.isSeparable_iff.symm
 
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
@@ -252,20 +251,32 @@ instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → Intermediat
   simp_rw [← le_separableClosure_iff] at h ⊢
   exact iSup_le h
 
+variable {F E} in
+theorem le_restrictScalars_separableClosure (L : IntermediateField F E) :
+    L ≤ (separableClosure L E).restrictScalars F :=
+  fun x hx ↦ isSeparable_algebraMap (F := L) ⟨x, hx⟩
+
+/-- `separableClosure` as a `ClosureOperator`. -/
+abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
+  refine .mk' (fun K ↦ (separableClosure K E).restrictScalars F) (fun K L le x hx ↦ ?_)
+    le_restrictScalars_separableClosure fun K x hx ↦ ?_ <;> dsimp only at hx ⊢
+  · let _ := (inclusion le).toAlgebra
+    have : IsScalarTower K L E := .of_algebraMap_eq' rfl
+    exact hx.tower_top _
+  · obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
+    exact x.2
+
+lemma isClosed_restrictScalars_separableClosure [Algebra K E] [IsScalarTower F K E] :
+    (separableClosureOperator F E).IsClosed ((separableClosure K E).restrictScalars F) :=
+  ClosureOperator.isClosed_iff_closure_le.mpr fun x hx ↦ by
+    obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
+    exact x.2
+
 lemma separableClosure_le_separableClosure_iff
     [Algebra K E] [IsScalarTower F K E] {L : IntermediateField F E} :
     (separableClosure L E).restrictScalars F ≤ (separableClosure K E).restrictScalars F ↔
-      L ≤ (separableClosure K E).restrictScalars F := by
-  refine ⟨fun H ↦ .trans ?_ H, fun H ↦ ?_⟩
-  · conv_lhs => rw [← L.restrictScalars_bot_eq_self]
-    exact (IntermediateField.restrictScalars_le_iff F).mpr bot_le
-  · let K' := (separableClosure K E).restrictScalars F
-    have hK' : (separableClosure K' E).restrictScalars F ≤ K' :=
-      (separableClosure.eq_restrictScalars_of_isSeparable K (separableClosure K E) E).ge
-    letI inst := (IntermediateField.inclusion H).toRingHom.toAlgebra
-    have inst : IsScalarTower L K' E := .of_algebraMap_eq' rfl
-    exact ((IntermediateField.restrictScalars_le_iff F).mpr
-      (separableClosure.le_restrictScalars L K' E)).trans hK'
+      L ≤ (separableClosure K E).restrictScalars F :=
+   (isClosed_restrictScalars_separableClosure F E K).closure_le_iff
 
 end separableClosure
 
