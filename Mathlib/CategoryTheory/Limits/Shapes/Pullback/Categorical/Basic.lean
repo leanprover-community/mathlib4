@@ -230,10 +230,9 @@ abbrev sndFunctor : CatCommSqOver F G X ⥤ X ⥤ C := π₂ _ _
 
 /-- The structure isompophism of a `CatCommSqOver` as a natural transformation. -/
 abbrev e :
-    (fstFunctor F G X) ⋙ (whiskeringRight X A B|>.obj F) ≅
-    (sndFunctor F G X) ⋙ (whiskeringRight X C B|>.obj G) :=
-  NatIso.ofComponents
-    (fun S ↦ S.iso)
+    fstFunctor F G X ⋙ (whiskeringRight X A B).obj F ≅
+    sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
+  NatIso.ofComponents (fun S ↦ S.iso)
 
 end CatCommSqOver
 
@@ -295,7 +294,7 @@ def functorEquivCounitIso :
 /-- The universal property of categorical pullbacks, stated as an equivalence
 of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
 over X. -/
-@[simps!]
+@[simps]
 def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
   functor := toCatCommSqOver F G X
   inverse := CatCommSqOver.toFunctorToCategoricalPullback F G X
