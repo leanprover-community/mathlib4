@@ -170,7 +170,7 @@ lemma IsTangentAt.dist_sq_eq_of_mem {s : Sphere P} {p q : P} {as : AffineSubspac
   rw [norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero]
   exact h.inner_left_eq_zero_of_mem hq
 
-lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P} 
+lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
     (h : s.IsTangentAt p as) : (q ∈ s ∧ q ∈ as) ↔ q = p := by
   refine ⟨fun ⟨hs, has⟩ ↦ ?_, ?_⟩
   · have hd := h.dist_sq_eq_of_mem has
