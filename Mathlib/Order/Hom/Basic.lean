@@ -833,11 +833,11 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
   invFun p := .comp g.symm <| .comp p f
   left_inv p := DFunLike.coe_injective <| by
     change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
-    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+    simp only [← OrderIso.coe_trans, Function.id_comp,
                OrderIso.self_trans_symm, OrderIso.coe_refl, Function.comp_id]
   right_inv p := DFunLike.coe_injective <| by
     change (g ∘ g.symm) ∘ p ∘ (f ∘ f.symm) = p
-    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+    simp only [← OrderIso.coe_trans, Function.id_comp,
                OrderIso.symm_trans_self, OrderIso.coe_refl, Function.comp_id]
   map_rel_iff' {p q} := by
     simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
