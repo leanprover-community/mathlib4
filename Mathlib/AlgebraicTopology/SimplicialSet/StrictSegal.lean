@@ -210,6 +210,86 @@ lemma spine_δ_arrow_eq (hij : j = i.succ.castSucc) :
     mkOfSucc_δ_eq hij, spineToSimplex_edge]
 
 end StrictSegal
+
+section
+
+open Limits
+
+variable {Z : SSet.Truncated.{u} 2}
+
+variable (Z) in
+/-- The spine of a 2-simplex of a 2-truncated simplicial set valued in a product rather than
+in paths. -/
+noncomputable def segalSpine : Z _⦋2⦌₂ ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
+  prod.lift (Z.map (δ 2).op) (Z.map (δ 0).op)
+
+theorem StrictSegal.mono_spine (sz : StrictSegal Z) :
+    Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
+  (CategoryTheory.mono_iff_injective _).mpr (StrictSegal.spineInjective sz 2 _)
+
+instance [IsStrictSegal Z] :
+    Mono (Y := Path Z 2) (Z.spine 2 (by omega)) :=
+  StrictSegal.mono_spine (StrictSegal.ofIsStrictSegal Z)
+
+variable (Z) in
+/-- Paths of length two in a 2-truncated simplicial set include into pairs of 1-simplices. -/
+noncomputable def pathToPair : Path Z 2 ⟶ Z _⦋1⦌₂ ⨯ Z _⦋1⦌₂ :=
+  prod.lift (fun p ↦ p.arrow 0) (fun p ↦ p.arrow 1)
+
+lemma pathToPair_fst :
+    pathToPair _ ≫ (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 0) := by
+  dsimp [pathToPair]
+  simp only [limit.lift_π, BinaryFan.mk_fst]
+
+lemma pathToPair_snd :
+    pathToPair _ ≫ (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) = (fun p ↦ p.arrow 1) := by
+  dsimp [pathToPair]
+  simp only [limit.lift_π, BinaryFan.mk_snd]
+
+lemma pathToPair_fst_apply (p : Path Z 2) :
+    (prod.fst (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 0 := by
+  have := congr_fun pathToPair_fst p
+  simp only [types_comp_apply] at this
+  exact this
+
+lemma pathToPair_snd_apply (p : Path Z 2) :
+    (prod.snd (X := Z _⦋1⦌₂) (Y := Z _⦋1⦌₂)) (pathToPair _ p) = p.arrow 1 := by
+  have := congr_fun pathToPair_snd p
+  simp only [types_comp_apply] at this
+  exact this
+
+theorem segalSpine_eq : segalSpine (Z := Z) = (Z.spine 2) ≫ pathToPair _ := by
+  unfold segalSpine pathToPair
+  refine Limits.prod.hom_ext ?_ ?_
+  · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+    prod.comp_lift]
+    ext φ
+    simp only [types_comp_apply, spine_arrow]
+    rw [δ_two_eq_mkOfSucc]
+    congr!
+  · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+    prod.comp_lift]
+    ext φ
+    simp only [types_comp_apply, spine_arrow]
+    rw [δ_zero_eq_mkOfSucc]
+    congr!
+
+theorem StrictSegal.mono_segalSpine (sz : StrictSegal Z) : Mono (segalSpine Z) := by
+  rw [CategoryTheory.mono_iff_injective, segalSpine_eq]
+  refine Function.Injective.comp ?_ (StrictSegal.spineInjective sz 2)
+  · intro p q hyp
+    ext i
+    fin_cases i
+    · apply_fun (prod.fst (X := Z _⦋1⦌₂)) at hyp
+      rwa [pathToPair_fst_apply, pathToPair_fst_apply] at hyp
+    · apply_fun (prod.snd (X := Z _⦋1⦌₂)) at hyp
+      rwa [pathToPair_snd_apply, pathToPair_snd_apply] at hyp
+
+instance [IsStrictSegal Z] : Mono (segalSpine (Z := Z)) :=
+  StrictSegal.mono_segalSpine (StrictSegal.ofIsStrictSegal Z)
+
+end
+
 end Truncated
 
 variable (X : SSet.{u})
@@ -396,7 +476,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine.
 Indeed, this property describes the essential image of the nerve functor. -/
-noncomputable def strictSegal : StrictSegal (nerve C) where
+def strictSegal : StrictSegal (nerve C) where
   spineToSimplex {n} F :=
     ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
       (fun i ↦ eqToHom (Functor.congr_obj (F.arrow_src i).symm 0) ≫
@@ -420,5 +500,35 @@ noncomputable def strictSegal : StrictSegal (nerve C) where
 
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal
+
+/-- Simplices in the nerve of categories are uniquely determined by their spine.
+Indeed, this property describes the essential image of the nerve functor. -/
+def strictSegal₂ : Truncated.StrictSegal ((truncation 2).obj (nerve C)) :=
+  (strictSegal C).truncation 1
+
+instance isStrictSegal₂ : Truncated.IsStrictSegal ((truncation 2).obj (nerve C)) :=
+  strictSegal₂ C |>.isStrictSegal
+
+lemma mkOfObjOfMapSucc₂_δ_one
+    (obj : Fin (2 + 1) → C) (mapSucc : ∀ (i : Fin 2), obj i.castSucc ⟶ obj i.succ) :
+    (nerve C).map (δ 1).op (ComposableArrows.mkOfObjOfMapSucc obj mapSucc) =
+        ComposableArrows.mk₁ (mapSucc 0 ≫ mapSucc 1) := by
+  dsimp
+  refine ComposableArrows.ext₁ rfl rfl ?_
+  simp only [Fin.isValue, ComposableArrows.whiskerLeft_obj, Nat.reduceAdd, Fin.zero_eta,
+    Monotone.functor_obj, ComposableArrows.mkOfObjOfMapSucc_obj, Fin.mk_one,
+    ComposableArrows.whiskerLeft_map, homOfLE_leOfHom, ComposableArrows.mk₁_obj,
+    ComposableArrows.Mk₁.obj, eqToHom_refl, ComposableArrows.mk₁_map, ComposableArrows.Mk₁.map,
+    Category.comp_id, Category.id_comp]
+  show (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map' 0 2 = _
+  have := (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map_comp (X := 0) (Y := 1) (Z := 2)
+    (homOfLE (Fin.zero_le 1)) (homOfLE (Fin.coe_sub_iff_le.mp rfl))
+  convert this
+  · show _ = (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map' 0 1
+    erw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mapSucc 0 (by valid)]
+    simp only [Fin.zero_eta]
+  · show _ = (ComposableArrows.mkOfObjOfMapSucc obj mapSucc).map' 1 2
+    erw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mapSucc 1 (by valid)]
+    simp only [Fin.mk_one]
 
 end CategoryTheory.Nerve

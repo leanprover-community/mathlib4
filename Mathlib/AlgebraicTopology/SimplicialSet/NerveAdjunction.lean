@@ -76,224 +76,195 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ 𝟭 Cat where
   app _ := nerve₂Adj.counit.app _
   naturality _ _ _ := nerve₂Adj.counit.naturality _
 
-local notation (priority := high) "[" n "]" => SimplexCategory.mk n
+end
 
-variable {C : Type u} [SmallCategory C] {X : SSet.Truncated.{u} 2}
-    (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
+end CategoryTheory
 
-/-- Because nerves are 2-coskeletal, the components of a map of 2-truncated simplicial sets valued
-in a nerve can be recovered from the underlying ReflPrefunctor. -/
-def toNerve₂.mk.app (n : SimplexCategory.Truncated 2) :
-    X.obj (op n) ⟶ (nerveFunctor₂.obj (Cat.of C)).obj (op n) := by
+namespace SSet.Truncated
+
+open SimplexCategory Simplicial SSet CategoryTheory Category Functor Opposite Limits
+open SSet.Truncated SimplexCategory.Truncated SimplicialObject.Truncated
+universe v u v' u'
+
+section
+variable {X Y : SSet.Truncated 2} (sy : StrictSegal Y) (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
+
+/-- The components of a map of 2-truncated simplicial sets built from a map on underlying reflexive
+quivers, under the assumption that the codomain is `StrictSegal`. -/
+def toStrictSegal₂.mk.app (n : SimplexCategory.Truncated 2) : X.obj (op n) ⟶ Y.obj (op n) := by
   obtain ⟨n, hn⟩ := n
   induction' n using SimplexCategory.rec with n
   match n with
-  | 0 => exact fun x => .mk₀ (F.obj x)
-  | 1 => exact fun f => .mk₁ (F.map ⟨f, rfl, rfl⟩)
-  | 2 => exact fun φ => .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ))
+  | 0 => exact fun x => F.obj x
+  | 1 => exact fun f => (F.map ⟨f, rfl, rfl⟩).edge
+  | 2 => exact fun φ => StrictSegal.spineToSimplex sy _ _ (oneTruncation₂.pathMap F (X.spine _ _ φ))
 
-@[simp] theorem toNerve₂.mk.app_zero (x : X _⦋0⦌₂) : mk.app F ⦋0⦌₂ x = .mk₀ (F.obj x) := rfl
+@[simp] theorem toStrictSegal₂.mk.app_zero (x : X _⦋0⦌₂) :
+    mk.app sy F ⦋0⦌₂ x = F.obj x := rfl
 
-@[simp] theorem toNerve₂.mk.app_one (f : X _⦋1⦌₂) :
-    mk.app F ⦋1⦌₂ f = .mk₁ (F.map ⟨f, rfl, rfl⟩) := rfl
+@[simp] theorem toStrictSegal₂.mk.app_one (f : X _⦋1⦌₂) :
+    mk.app sy F ⦋1⦌₂ f = (F.map ⟨f, rfl, rfl⟩).edge := rfl
 
-@[simp] theorem toNerve₂.mk.app_two (φ : X _⦋2⦌₂) :
-    mk.app F ⦋2⦌₂ φ = .mk₂ (F.map (ev01₂ φ)) (F.map (ev12₂ φ)) := rfl
+@[simp] theorem toStrictSegal₂.mk.app_two (φ : X _⦋2⦌₂) :
+    mk.app sy F ⦋2⦌₂ φ =
+      StrictSegal.spineToSimplex sy _ _ (oneTruncation₂.pathMap F (X.spine _ _ φ)) := rfl
 
-/-- This is similar to one of the famous Segal maps, except valued in a product rather than a
-pullback. -/
-noncomputable def nerve₂.seagull (C : Type u) [Category C] :
-    (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋2⦌₂) ⟶
-    (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋1⦌₂) ⨯ (nerveFunctor₂.obj (Cat.of C)).obj (op ⦋1⦌₂) :=
-  prod.lift
-    ((nerveFunctor₂.obj (Cat.of C)).map (.op δ2₂)) ((nerveFunctor₂.obj (Cat.of C)).map (.op δ0₂))
-
-instance (C : Type u) [Category C] : Mono (nerve₂.seagull C) where
-  right_cancellation {X} (f g : X → ComposableArrows C 2) eq := by
-    ext x
-    simp [nerve₂.seagull] at eq
-    have eq1 := congr($eq ≫ prod.fst)
-    have eq2 := congr($eq ≫ prod.snd)
-    simp only [limit.lift_π, BinaryFan.mk_fst, BinaryFan.mk_snd] at eq1 eq2
-    replace eq1 := congr_fun eq1 x
-    replace eq2 := congr_fun eq2 x
-    simp only [types_comp_apply] at eq1 eq2
-    generalize f x = fx at *
-    generalize g x = gx at *
-    fapply ComposableArrows.ext₂
-    · exact congrArg (·.obj 0) <| eq1
-    · exact congrArg (·.obj 1) <| eq1
-    · exact congrArg (·.obj 1) <| eq2
-    · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq1)
-    · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq2)
-
-/-- Naturality of the components defined by `toNerve₂.mk.app` as a morphism property of
+/-- Naturality of the components defined by `toStrictSegal₂.mk.app` as a morphism property of
 maps in `SimplexCategory.Truncated 2`. -/
-abbrev toNerve₂.mk.naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
-  (MorphismProperty.naturalityProperty (fun n => toNerve₂.mk.app F n.unop)).unop
+abbrev toStrictSegal₂.mk.naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
+  (MorphismProperty.naturalityProperty (fun n => toStrictSegal₂.mk.app sy F n.unop)).unop
 
-lemma ReflPrefunctor.congr_mk₁_map
-    {Y : Type u'} [ReflQuiver.{v'} Y] {C : Type u} [Category.{v} C]
-    (F : ReflPrefunctor Y (ReflQuiv.of C))
-    {x₁ y₁ x₂ y₂ : Y} (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂)
+lemma ReflPrefunctor.congr_map_edge
+    {U : Type u'} [ReflQuiver.{v'} U] (G : U ⥤rq OneTruncation₂ X)
+    {x₁ y₁ x₂ y₂ : U} (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂)
     (hx : x₁ = x₂) (hy : y₁ = y₂) (hfg : Quiver.homOfEq f hx hy = g) :
-    ComposableArrows.mk₁ (C := C) (F.map f) = ComposableArrows.mk₁ (C := C) (F.map g) := by
+    (G.map f).edge = (G.map g).edge := by
   subst hx hy hfg; rfl
 
-lemma toNerve₂.mk_naturality_σ00 : toNerve₂.mk.naturalityProperty F (σ₂ (n := 0) 0) := by
-  ext x
-  refine Eq.trans ?_ (nerve.σ₀_mk₀_eq (C := C) (F.obj x)).symm
-  have := ReflPrefunctor.map_id F x
-  dsimp at this ⊢
-  rw [← this, ← OneTruncation₂.id_edge x]
-  fapply ReflPrefunctor.congr_mk₁_map
+lemma toStrictSegal₂.mk_naturality_σ00 :
+    toStrictSegal₂.mk.naturalityProperty sy F (σ₂ (n := 0) 0) := by
+  ext (x : OneTruncation₂ X)
+  dsimp
+  rw [← OneTruncation₂.id_edge (F.obj x), ← ReflPrefunctor.map_id F x]
+  fapply ReflPrefunctor.congr_map_edge (G := F) (g := 𝟙rq x)
   · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+    rw [δ₂_one_comp_σ₂_zero]
+    simp only [op_id, FunctorToTypes.map_id_apply]
   · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+    rw [δ₂_zero_comp_σ₂_zero]
+    simp only [op_id, FunctorToTypes.map_id_apply]
   · aesop
 
-lemma toNerve₂.mk_naturality_δ0i (i : Fin 2) : toNerve₂.mk.naturalityProperty F (δ₂ i) := by
-  ext x
-  apply ComposableArrows.ext₀
-  fin_cases i <;> rfl
+lemma toStrictSegal₂.mk_naturality_δ0i (i : Fin 2) :
+    toStrictSegal₂.mk.naturalityProperty sy F (δ₂ i) := by
+  ext f
+  fin_cases i <;> dsimp
+  · rw [(F.map ⟨f, rfl, rfl⟩).tgt_eq]
+  · rw [(F.map ⟨f, rfl, rfl⟩).src_eq]
 
 section
-variable
-  (hyp : ∀ φ, F.map (ev02₂ φ) = CategoryStruct.comp (obj := C) (F.map (ev01₂ φ)) (F.map (ev12₂ φ)))
+variable (hyp : (φ : X _⦋2⦌₂) → (F.map (ev02₂ φ)).edge =
+  Y.map (δ₂ (1 : Fin 3) _ _).op
+    (StrictSegal.spineToSimplex sy 2 (by omega) (oneTruncation₂.pathMap F (X.spine _ _ φ))))
+
 include hyp
 
-lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProperty F (δ₂ i) := by
-  ext x
-  simp only [types_comp_apply]
-  rw [toNerve₂.mk.app_one]
-  unfold nerveFunctor₂ truncation SimplicialObject.truncation
-  simp only [comp_obj, nerveFunctor_obj, Cat.of_α, whiskeringLeft_obj_obj, op_obj,
-    nerve_obj, oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd, mk.app_two,
-    Functor.comp_map, op_map, Quiver.Hom.unop_op]
-  unfold δ₂ inclusion
-  simp only [ObjectProperty.ι_map]
+lemma toStrictSegal₂.mk_naturality_δ1i (i : Fin 3) :
+    toStrictSegal₂.mk.naturalityProperty sy F (δ₂ i) := by
+  ext φ
+  dsimp
   fin_cases i
   · simp only [Fin.zero_eta]
-    show _ = (nerve C).δ 0 _
-    rw [nerve.δ₀_mk₂_eq]
-    fapply ReflPrefunctor.congr_mk₁_map
-    · unfold ev1₂ ι1₂ δ₂
-      simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-      have := δ_comp_δ (n := 0) (i := 0) (j := 1) (by decide)
-      dsimp at this
-      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
-    · unfold ev2₂ ι2₂ δ₂
-      simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-      have := δ_comp_δ (n := 0) (i := 0) (j := 0) (by decide)
-      dsimp at this
-      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
-    · aesop
+    have :=
+      StrictSegal.spineToSimplex_arrow sy 2 (by omega) 1 (oneTruncation₂.pathMap F (X.spine 2 _ φ))
+    rw [← δ₂_zero_eq_mkOfSucc] at this
+    rw [this]
+    rw [oneTruncation₂.pathMap_arrow]
+    fapply ReflPrefunctor.congr_map_edge
+    · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp only [spine_vertex]
+      congr!
+      apply δ_one_δ_zero_eq_const
+    · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp only [spine_vertex]
+      congr!
+      apply δ_zero_δ_zero_eq_const
+    · simp only [Nat.reduceAdd, len_mk, id_eq, Fin.isValue, Fin.castSucc_one, spine_vertex,
+      Fin.succ_one_eq_two, spine_arrow, OneTruncation₂.Quiver_homOfEq]
+      congr!
+      exact δ_zero_eq_mkOfSucc
   · simp only [Fin.mk_one]
-    show _ = (nerve C).δ 1 _
-    rw [nerve.δ₁_mk₂_eq]
     rw [← hyp]
-    fapply ReflPrefunctor.congr_mk₁_map
-    · unfold ev0₂ ι0₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-    · unfold ev2₂ ι2₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-    · aesop
+    fapply ReflPrefunctor.congr_map_edge
+    · unfold ev0₂
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      dsimp [ι0₂]
+    · unfold ev2₂
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      dsimp [ι2₂]
+    · unfold ev02₂
+      simp only [Fin.isValue, OneTruncation₂.Quiver_homOfEq]
+      dsimp [δ1₂]
   · simp only [Fin.reduceFinMk]
-    show _ = (nerve C).δ 2 _
-    rw [nerve.δ₂_mk₂_eq]
-    fapply ReflPrefunctor.congr_mk₁_map
-    · unfold ev0₂ ι0₂ δ₂
-      simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-      have := δ_comp_δ (n := 0) (i := 1) (j := 1) (by decide)
-      dsimp at this
-      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this)) x
-    · unfold ev1₂ ι1₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-    · aesop
+    have :=
+      StrictSegal.spineToSimplex_arrow sy 2 (by omega) 0 (oneTruncation₂.pathMap F (X.spine 2 _ φ))
+    rw [← δ₂_two_eq_mkOfSucc] at this
+    rw [this, oneTruncation₂.pathMap_arrow]
+    fapply ReflPrefunctor.congr_map_edge
+    · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp only [spine_vertex]
+      congr!
+      apply δ_one_δ_two_eq_const
+    · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp only [spine_vertex]
+      congr!
+      apply δ_zero_δ_two_eq_const
+    · simp only [Nat.reduceAdd, len_mk, id_eq, Fin.isValue, Fin.castSucc_zero, spine_vertex,
+      Fin.succ_zero_eq_one, OneTruncation₂.Quiver_homOfEq, spine_arrow]
+      congr!
+      exact δ_two_eq_mkOfSucc
 
-lemma toNerve₂.mk_naturality_σ1i (i : Fin 2) : toNerve₂.mk.naturalityProperty F (σ₂ i) := by
-  apply (cancel_mono (nerve₂.seagull _)).1
-  simp only [nerve₂.seagull, prod.comp_lift, assoc]
-  congr 1 <;> rw [← map_comp, ← op_comp]
-  · unfold δ2₂
-    rw [← toNerve₂.mk_naturality_δ1i F hyp, ← assoc, ← map_comp, ← op_comp]
-    change toNerve₂.mk.naturalityProperty F (δ₂ 2 ≫ σ₂ i)
+lemma toStrictSegal₂.mk_naturality_σ1i (i : Fin 2) :
+    toStrictSegal₂.mk.naturalityProperty sy F (σ₂ i) := by
+  have := StrictSegal.mono_segalSpine sy
+  apply (cancel_mono (segalSpine (Z := Y)) ).1
+  simp only [segalSpine, prod.comp_lift, assoc]
+  congr 1 <;> rw [← map_comp]
+  · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
+    rw [← op_comp, ← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
+    change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 2 ≫ σ₂ i)
     fin_cases i
     · dsimp only [Fin.zero_eta]
       rw [δ₂_two_comp_σ₂_zero]
-      exact (toNerve₂.mk.naturalityProperty F).comp_mem _ _
-        (toNerve₂.mk_naturality_σ00 F) (toNerve₂.mk_naturality_δ0i F _)
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).comp_mem _ _
+        (toStrictSegal₂.mk_naturality_σ00 sy F) (toStrictSegal₂.mk_naturality_δ0i sy F _)
     · dsimp only [Fin.mk_one]
       rw [δ₂_two_comp_σ₂_one]
-      exact (toNerve₂.mk.naturalityProperty F).id_mem _
-  · unfold δ0₂
-    rw [← toNerve₂.mk_naturality_δ1i F hyp, ← assoc, ← map_comp, ← op_comp]
-    change toNerve₂.mk.naturalityProperty F (δ₂ 0 ≫ σ₂ i)
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).id_mem _
+  · show _ ≫ _ ≫ Y.map (δ₂ _).op = _ ≫ Y.map (_ ≫ (δ₂ _).op)
+    rw [← op_comp, ← toStrictSegal₂.mk_naturality_δ1i sy F hyp, ← assoc, ← map_comp, ← op_comp]
+    change toStrictSegal₂.mk.naturalityProperty sy F (δ₂ 0 ≫ σ₂ i)
     fin_cases i <;> dsimp only [Fin.zero_eta, Fin.isValue, Fin.mk_one]
     · rw [δ₂_zero_comp_σ₂_zero]
-      exact (toNerve₂.mk.naturalityProperty F).id_mem _
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).id_mem _
     · rw [δ₂_zero_comp_σ₂_one]
-      exact (toNerve₂.mk.naturalityProperty F).comp_mem _ _
-        (toNerve₂.mk_naturality_σ00 F) (toNerve₂.mk_naturality_δ0i F _)
+      exact (toStrictSegal₂.mk.naturalityProperty sy F).comp_mem _ _
+        (toStrictSegal₂.mk_naturality_σ00 sy F) (toStrictSegal₂.mk_naturality_δ0i sy F _)
 
 /-- A proof that the components defined by `toNerve₂.mk.app` are natural. -/
-theorem toNerve₂.mk_naturality : toNerve₂.mk.naturalityProperty F = ⊤ :=
-  Truncated.morphismProperty_eq_top (toNerve₂.mk.naturalityProperty F)
+theorem toStrictSegal₂.mk_naturality : toStrictSegal₂.mk.naturalityProperty sy F = ⊤ :=
+  Truncated.morphismProperty_eq_top (toStrictSegal₂.mk.naturalityProperty sy F)
     (fun
-      | 0, _, _ => toNerve₂.mk_naturality_δ0i F _
-      | 1, _, _ => toNerve₂.mk_naturality_δ1i F hyp _)
+      | 0, _, _ => toStrictSegal₂.mk_naturality_δ0i sy F _
+      | 1, _, _ => toStrictSegal₂.mk_naturality_δ1i sy F hyp _)
     (fun
-      | 0, _, 0 => toNerve₂.mk_naturality_σ00 F
-      | 1, _, _ => toNerve₂.mk_naturality_σ1i F hyp _)
+      | 0, _, 0 => toStrictSegal₂.mk_naturality_σ00 sy F
+      | 1, _, _ => toStrictSegal₂.mk_naturality_σ1i sy F hyp _)
 
-/-- The morphism `X ⟶ nerveFunctor₂.obj (Cat.of C)` of 2-truncated simplicial sets that is
-constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C` assuming
-`∀ (φ : : X _⦋2⦌₂), F.map (ev02₂ φ) = F.map (ev01₂ φ) ≫ F.map (ev12₂ φ)`. -/
+/-- A map `X → Y` of 2-truncated simplicial sets that is constructed from a refl prefunctor
+`F : OneTruncation₂ X ⥤rq OneTruncation₂ Y` assuming `∀ (φ : X _⦋2⦌₂),`
+`(F.map (ev02₂ φ)).edge =`
+`StrictSegal.spineToDiagonal sy 2 (by omega) (oneTruncation₂.pathMap F (X.spine _ _ φ)))`. -/
 @[simps!]
-def toNerve₂.mk : X ⟶ nerveFunctor₂.obj (Cat.of C) where
-  app n := toNerve₂.mk.app F n.unop
-  naturality _ _ f := MorphismProperty.of_eq_top (toNerve₂.mk_naturality F hyp) f.unop
+def toStrictSegal₂.mk : X ⟶ Y where
+  app n := toStrictSegal₂.mk.app sy F n.unop
+  naturality _ _ α := MorphismProperty.of_eq_top (toStrictSegal₂.mk_naturality sy F hyp) α.unop
 
-end
-
-section
-
-variable (F : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
-variable (hyp : (φ : X _⦋2⦌₂) →
-            (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ) =
-              CategoryStruct.comp (obj := C)
-              ((F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
-              ((F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ)))
-
-/-- An alternate version of `toNerve₂.mk`, which constructs a map of 2-truncated simplicial sets
-`X ⟶ nerveFunctor₂.obj (Cat.of C)` from the underlying refl prefunctor under a composition
-hypothesis, where that prefunctor the central hypothesis is conjugated by the isomorphism
-`nerve₂Adj.NatIso.app C`. -/
-@[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
-  toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
-
-/-- A computation about `toNerve₂.mk'`. -/
-theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
-  refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
-    (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
-  simp [oneTruncation₂]
-  refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
-  · exact ComposableArrows.ext₀ rfl
-  · exact ComposableArrows.ext₀ rfl
-  · apply OneTruncation₂.Hom.ext
-    simp only [oneTruncation₂_obj, ReflQuiv.of_val, OneTruncation₂.homOfEq_edge]
-    fapply ComposableArrows.ext₁ <;> simp [ReflQuiv.comp_eq_comp]
-    · rw [g.src_eq]; exact congr_arg (·.obj 0) (F.map g).src_eq.symm
-    · rw [g.tgt_eq]; exact congr_arg (·.obj 1) (F.map g).tgt_eq.symm
-    · refine (conj_eqToHom_iff_heq' _ _ _ _).2 ?_
-      simp [OneTruncation₂.nerveHomEquiv]
-      obtain ⟨g, rfl, rfl⟩ := g
-      rfl
+/-- A computation about `toStrictSegal₂.mk`. -/
+theorem oneTruncation₂_toStrictSegal₂Mk :
+    oneTruncation₂.map (toStrictSegal₂.mk sy F hyp) = F := by
+  refine ReflPrefunctor.ext' (fun _ ↦ rfl) (fun X Y f ↦ ?_)
+  · dsimp [oneTruncation₂]
+    ext
+    dsimp
+    exact ReflPrefunctor.congr_map_edge F { edge := f.edge, src_eq := rfl, tgt_eq := rfl }
+      f f.src_eq f.tgt_eq (by simp only [OneTruncation₂.Quiver_homOfEq]; rfl)
 
 end
 
 /-- An equality between maps into the 2-truncated nerve is detected by an equality between their
 underlying refl prefunctors. -/
-theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
+theorem toStrictSegal₂.ext (F G : X ⟶ Y) (sy : StrictSegal Y)
     (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
   have eq₀ (x : X _⦋0⦌₂) : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
   have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
@@ -304,15 +275,130 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
   | 0 => apply eq₀
   | 1 => apply eq₁
   | 2 =>
-    apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
-    · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
-      refine congr(($(congr_fun (F.naturality pt.op) x)).obj 0).symm.trans ?_
-      refine .trans ?_ congr(($(congr_fun (G.naturality pt.op) x)).obj 0)
-      exact congr($(eq₀ _).obj 0)
-    · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
-      have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (F.naturality (op ar)) x)
-      have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (G.naturality (op ar)) x)
-      exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
+    apply sy.spineInjective 2
+    unfold StrictSegal.spineEquiv
+    simp only [Nat.reduceAdd, Equiv.coe_fn_mk]
+    ext i
+    have h1 := congr_fun (F.naturality (Hom.tr (mkOfSucc i)).op) x
+    have h2 := congr_fun (G.naturality (Hom.tr (mkOfSucc i)).op) x
+    simp only [types_comp_apply, Nat.reduceAdd] at h1 h2
+    simp only [Equiv.coe_fn_mk, spine_arrow, ← h1, ← h2, eq₁]
+
+end
+
+end SSet.Truncated
+
+namespace CategoryTheory
+
+open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve
+open SSet.Truncated SimplexCategory.Truncated SimplicialObject.Truncated
+universe v u v' u'
+
+section
+variable {C : Type u} [SmallCategory C] {X : SSet.Truncated.{u} 2}
+    (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
+
+section
+variable
+  (hyp : ∀ φ, F.map (ev02₂ φ) = CategoryStruct.comp (obj := C) (F.map (ev01₂ φ)) (F.map (ev12₂ φ)))
+include hyp
+
+
+/-- The morphism `X ⟶ nerveFunctor₂.obj (Cat.of C)` of 2-truncated simplicial sets that is
+constructed from a refl prefunctor `F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C` assuming
+`∀ (φ : : X _⦋2⦌₂), F.map (ev02₂ φ) = F.map (ev01₂ φ) ≫ F.map (ev12₂ φ)`. -/
+@[simps!] def toNerve₂.mk : X ⟶ nerveFunctor₂.obj (Cat.of C) := by
+  refine toStrictSegal₂.mk (Nerve.strictSegal₂ C)
+    (F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).inv) ?_
+  intro φ
+  have := hyp φ
+  unfold δ₂ nerveFunctor₂ nerveFunctor
+  simp only [comp_obj, Cat.of_α]
+  erw [Nerve.mkOfObjOfMapSucc₂_δ_one]
+  simp only [ReflQuiv.of_val, oneTruncation₂_obj, ReflQuiv.forget_obj,
+    Iso.app_inv, ReflPrefunctor.comp_obj, ReflPrefunctor.comp_map,
+    OneTruncation₂.ofNerve₂.natIso_inv_app_map,
+    oneTruncation₂.pathMap_vertex, Truncated.spine_vertex,
+    OneTruncation₂.ofNerve₂.natIso_inv_app_obj_obj,
+    oneTruncation₂.pathMap_arrow, Truncated.spine_arrow, toCat_map,
+    ComposableArrows.whiskerLeft_obj, eqToHom_refl, comp_id, id_comp, Fin.castSucc_zero,
+    Fin.succ_one_eq_two]
+  unfold OneTruncation₂.nerveHomEquiv
+  simp only [OneTruncation₂.nerveEquiv_apply, ComposableArrows.mk₀_obj, Equiv.coe_fn_symm_mk]
+  fapply ComposableArrows.ext₁ <;> simp only [ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj]
+  · unfold ev0₂ ι0₂ δ₂
+    congr!
+    exact δ_one_δ_one_eq_const
+  · unfold ev2₂ ι2₂ δ₂
+    congr!
+    exact δ_zero_δ_one_eq_const
+  · rw [hyp]
+    simp only [oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd,
+      Fin.zero_eta, Fin.isValue, Fin.mk_one, ComposableArrows.mk₁_map,
+      ComposableArrows.Mk₁.map, len_mk, homOfLE_leOfHom]
+    have zero_eq : ev0₂ φ = (X.spine 2 _ φ).vertex 0 := by
+      unfold ev0₂ ι0₂
+      simp only [Truncated.spine_vertex]
+      congr!
+      exact δ_one_δ_one_eq_const
+    have one_eq : ev1₂ φ = (X.spine 2 _ φ).vertex 1 := by
+      unfold ev1₂ ι1₂
+      simp only [Truncated.spine_vertex]
+      congr!
+      exact δ_zero_δ_two_eq_const
+    have two_eq : ev2₂ φ = (X.spine 2 _ φ).vertex 2 := by
+      unfold ev2₂ ι2₂
+      simp only [Truncated.spine_vertex]
+      congr!
+      exact δ_zero_δ_one_eq_const
+    have left : Quiver.homOfEq (ev01₂ φ) zero_eq one_eq =
+      ⟨(X.spine 2 _ φ).arrow 0, (X.spine 2 _ φ).arrow_src 0, (X.spine 2 _ φ).arrow_tgt 0⟩ := by
+      unfold ev01₂ δ2₂
+      simp [OneTruncation₂.Quiver_homOfEq]
+      congr!
+      exact δ_two_eq_mkOfSucc
+    have right : Quiver.homOfEq (ev12₂ φ) one_eq two_eq =
+      ⟨(X.spine 2 _ φ).arrow 1, (X.spine 2 _ φ).arrow_src 1, (X.spine 2 _ φ).arrow_tgt 1⟩ := by
+      unfold ev12₂ δ0₂
+      simp [OneTruncation₂.Quiver_homOfEq]
+      congr!
+      exact δ_zero_eq_mkOfSucc
+    erw [← left, ← right]
+    simp [Prefunctor.homOfEq_map, eqToHom_quiverHomOfEq]
+
+end
+section
+
+variable (F : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj (Cat.of C)))
+variable (hyp : (φ : X _⦋2⦌₂) →
+            (F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev02₂ φ) =
+              CategoryStruct.comp (obj := C)
+              ((F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev01₂ φ))
+              ((F ⋙rq (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom).map (ev12₂ φ)))
+
+/-- An alternate version of `toNerve₂.mk`, which constructs a map of 2-truncated simplicial sets
+`X ⟶ nerveFunctor₂.obj (Cat.of C)` from the underlying refl prefunctor under a composition
+hypothesis, where that prefunctor the central hypothesis is conjugated by the isomorphism
+`nerve₂Adj.NatIso.app C`. The `ALT` pathway includes the new infrastructure above. -/
+@[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
+  toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
+
+/-- A computation about `toNerve₂.mk'`. -/
+theorem oneTruncation₂_toNerve₂Mk : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
+  unfold toNerve₂.mk'
+  unfold toNerve₂.mk
+  rw [oneTruncation₂_toStrictSegal₂Mk, ← ReflQuiv.comp_eq_comp]
+  simp
+
+end
+
+/-- An equality between maps into the 2-truncated nerve is detected by an equality between their
+underlying refl prefunctors. -/
+theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
+    (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
+  unfold nerveFunctor₂ at F G
+  dsimp at F G
+  exact toStrictSegal₂.ext F G (Nerve.strictSegal₂ C) hyp
 
 /-- The components of the 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit.app (X : SSet.Truncated.{u} 2) :
@@ -328,7 +414,7 @@ theorem nerve₂Adj.unit.map_app_eq (X : SSet.Truncated.{u} 2) :
     ReflQuiv.adj.{u}.unit.app (SSet.oneTruncation₂.obj X) ⋙rq
     (SSet.Truncated.HomotopyCategory.quotientFunctor X).toReflPrefunctor ⋙rq
     (OneTruncation₂.ofNerve₂.natIso).inv.app (hoFunctor₂.obj X) := by
-  apply oneTruncation₂_toNerve₂Mk'
+  apply oneTruncation₂_toNerve₂Mk
 
 @[reassoc]
 lemma nerve₂Adj.unit.naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
@@ -346,7 +432,6 @@ lemma nerve₂Adj.unit.naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
 def nerve₂Adj.unit : 𝟭 (SSet.Truncated.{u} 2) ⟶ hoFunctor₂ ⋙ nerveFunctor₂ where
   app := nerve₂Adj.unit.app
   naturality _ _ _ := unit.naturality _
-
 
 /-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
 functor. -/
