@@ -281,6 +281,8 @@ structure ContMDiffMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWit
     G →* G' where
   contMDiff_toFun : ContMDiff I I' n toFun
 
+@[deprecated (since := "2025-01-09")] alias SmoothAddMonoidMorphism := ContMDiffAddMonoidMorphism
+
 @[to_additive]
 instance : One (ContMDiffMonoidMorphism I I' n G G') :=
   ⟨{  contMDiff_toFun := contMDiff_const

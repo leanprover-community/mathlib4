@@ -529,6 +529,10 @@ theorem contMDiff_transContinuousLinearEquiv_right {f : M' → M} :
     ContMDiff I' (I.transContinuousLinearEquiv e) n f ↔ ContMDiff I' I n f :=
   (toTransContinuousLinearEquiv I M e).contMDiff_diffeomorph_comp_iff le_rfl
 
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiff_transDiffeomorph_right :=
+contMDiff_transContinuousLinearEquiv_right
+
 @[simp]
 theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
     ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x
