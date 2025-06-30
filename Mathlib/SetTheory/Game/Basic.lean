@@ -625,7 +625,7 @@ theorem quot_right_distrib_sub (x y z : PGame) : (⟦(y - z) * x⟧ : Game) = �
 def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
     -- Porting note: the next four lines were just `unfold has_one.one,`
-    show _ * One.one ≡r _
+    change _ * One.one ≡r _
     unfold One.one
     unfold instOnePGame
     change mk _ _ _ _ * mk _ _ _ _ ≡r _

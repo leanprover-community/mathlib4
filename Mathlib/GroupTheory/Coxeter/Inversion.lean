@@ -422,8 +422,8 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   have h₃ : t' = (ris ω).getD j' 1                    := by
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by omega) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
-      drop_append_eq_append_drop, drop_of_length_le (by simp [j_lt_j'.le]), length_take,
-      drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
+      drop_append, drop_of_length_le (by simp [j_lt_j'.le]), length_take, drop_drop,
+      nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
       ← add_assoc, Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
     show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?

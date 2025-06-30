@@ -264,7 +264,7 @@ theorem ker_toSpanSingleton_eq_span :
   rw [Ideal.mem_span_singleton']
   refine ⟨fun h ↦ ⟨x, by rw [mul_sub, show x * e = 0 from h, mul_one, sub_zero]⟩, fun h ↦ ?_⟩
   obtain ⟨x, rfl⟩ := h
-  show x * (1 - e) * e = 0
+  change x * (1 - e) * e = 0
   rw [mul_assoc, sub_mul, one_mul, he, sub_self, mul_zero]
 
 theorem ker_toSpanSingleton_one_sub_eq_span :

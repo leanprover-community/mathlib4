@@ -733,7 +733,7 @@ lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy 
   congr 2 with g
   simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
   let f' := MonoidHomClass.toMonoidHom f
-  show f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
+  change f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
   rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 
 end MonoidHom
