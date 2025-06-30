@@ -11,13 +11,13 @@ import Mathlib.Data.Multiset.Sections
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
 
-variable {ι R M₀ β : Type*}
+variable {ι M M₀ R : Type*}
 
 namespace Multiset
 section CommMonoid
-variable [CommMonoid R] [HasDistribNeg R]
+variable [CommMonoid M] [HasDistribNeg M]
 
-@[simp] lemma prod_map_neg (s : Multiset R) : (s.map Neg.neg).prod = (-1) ^ card s * s.prod :=
+@[simp] lemma prod_map_neg (s : Multiset M) : (s.map Neg.neg).prod = (-1) ^ card s * s.prod :=
   Quotient.inductionOn s (by simp)
 
 end CommMonoid
@@ -49,7 +49,7 @@ lemma sum_map_mul_right : sum (s.map fun i ↦ f i * a) = sum (s.map f) * a :=
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
-variable [NonUnitalSemiring M₀] {s : Multiset M₀} {a : M₀}
+variable [NonUnitalSemiring R] {s : Multiset R} {a : R}
 
 lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
   Multiset.induction_on s (fun _ ↦ dvd_zero _) fun x s ih h ↦ by
@@ -59,14 +59,14 @@ lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
 end NonUnitalSemiring
 
 section CommSemiring
-variable [CommSemiring M₀]
+variable [CommSemiring R]
 
-lemma prod_map_sum {s : Multiset (Multiset M₀)} :
+lemma prod_map_sum {s : Multiset (Multiset R)} :
     prod (s.map sum) = sum ((Sections s).map prod) :=
   Multiset.induction_on s (by simp) fun a s ih ↦ by
     simp [ih, map_bind, sum_map_mul_left, sum_map_mul_right]
 
-lemma prod_map_add {s : Multiset ι} {f g : ι → M₀} :
+lemma prod_map_add {s : Multiset ι} {f g : ι → R} :
     prod (s.map fun i ↦ f i + g i) =
       sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) := by
   refine s.induction_on ?_ fun a s ih ↦ ?_

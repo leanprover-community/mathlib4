@@ -27,7 +27,7 @@ assert_not_exists Field
 
 open Finset
 
-variable {M M : Type*}
+variable {ι M : Type*}
 
 namespace Finset
 
@@ -120,7 +120,7 @@ theorem prod_univ_two (f : Fin 2 → M) : ∏ i, f i = f 0 * f 1 := by
   simp [prod_univ_succ]
 
 @[to_additive]
-theorem prod_univ_two' (f : M → M) (a b : M) : ∏ i, f (![a, b] i) = f a * f b :=
+theorem prod_univ_two' (f : ι → M) (a b : ι) : ∏ i, f (![a, b] i) = f a * f b :=
   prod_univ_two _
 
 @[to_additive]

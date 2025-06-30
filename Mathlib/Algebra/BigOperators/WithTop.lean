@@ -14,7 +14,7 @@ This file proves results about finite sums over monoids extended by a bottom or 
 
 open Finset
 
-variable {ι M : Type*}
+variable {ι M M₀ : Type*}
 
 namespace WithTop
 section AddCommMonoid
@@ -39,15 +39,15 @@ variable [LT M]
 end AddCommMonoid
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M] [NoZeroDivisors M] [Nontrivial M] [DecidableEq M]
-  {s : Finset ι} {f : ι → WithTop M}
+variable [CommMonoidWithZero M₀] [NoZeroDivisors M₀] [Nontrivial M₀] [DecidableEq M₀]
+  {s : Finset ι} {f : ι → WithTop M₀}
 
 /-- A product of finite terms is finite. -/
 lemma prod_ne_top (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i ∈ s, f i ≠ ⊤ :=
   prod_induction f (· ≠ ⊤) (fun _ _ ↦ mul_ne_top) coe_ne_top h
 
 /-- A product of finite terms is finite. -/
-lemma prod_lt_top [LT M] (h : ∀ i ∈ s, f i < ⊤) : ∏ i ∈ s, f i < ⊤ :=
+lemma prod_lt_top [LT M₀] (h : ∀ i ∈ s, f i < ⊤) : ∏ i ∈ s, f i < ⊤ :=
   prod_induction f (· < ⊤) (fun _ _ ↦ mul_lt_top) (coe_lt_top _) h
 
 end CommMonoidWithZero
@@ -77,15 +77,15 @@ lemma sum_lt_bot (h : ∀ i ∈ s, f i ≠ ⊥) : ⊥ < ∑ i ∈ s, f i :=
 end AddCommMonoid
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M] [NoZeroDivisors M] [Nontrivial M] [DecidableEq M]
-  {s : Finset ι} {f : ι → WithBot M}
+variable [CommMonoidWithZero M₀] [NoZeroDivisors M₀] [Nontrivial M₀] [DecidableEq M₀]
+  {s : Finset ι} {f : ι → WithBot M₀}
 
 /-- A product of finite terms is finite. -/
 lemma prod_ne_bot (h : ∀ i ∈ s, f i ≠ ⊥) : ∏ i ∈ s, f i ≠ ⊥ :=
   prod_induction f (· ≠ ⊥) (fun _ _ ↦ mul_ne_bot) coe_ne_bot h
 
 /-- A product of finite terms is finite. -/
-lemma bot_lt_prod [LT M] (h : ∀ i ∈ s, ⊥ < f i) : ⊥ < ∏ i ∈ s, f i :=
+lemma bot_lt_prod [LT M₀] (h : ∀ i ∈ s, ⊥ < f i) : ⊥ < ∏ i ∈ s, f i :=
   prod_induction f (⊥ < ·) (fun _ _ ↦ bot_lt_mul) (bot_lt_coe _) h
 
 end CommMonoidWithZero

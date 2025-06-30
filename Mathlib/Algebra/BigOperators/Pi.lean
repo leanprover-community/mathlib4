@@ -104,7 +104,7 @@ theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, M i) :
   simp
 
 @[to_additive]
-theorem MonoidHom.functions_ext [Finite I] (G : Type*) [CommMonoid G] (g h : (∀ i, M i) →* G)
+theorem MonoidHom.functions_ext [Finite I] (N : Type*) [CommMonoid N] (g h : (∀ i, M i) →* N)
     (H : ∀ i x, g (Pi.mulSingle i x) = h (Pi.mulSingle i x)) : g = h := by
   cases nonempty_fintype I
   ext k
@@ -130,10 +130,10 @@ variable {I : Type*} [DecidableEq I] {R : I → Type*}
 variable [∀ i, NonAssocSemiring (R i)]
 
 @[ext]
-theorem RingHom.functions_ext [Finite I] (G : Type*) [NonAssocSemiring G] (g h : (∀ i, R i) →+* G)
+theorem RingHom.functions_ext [Finite I] (S : Type*) [NonAssocSemiring S] (g h : (∀ i, R i) →+* S)
     (H : ∀ (i : I) (x : R i), g (single i x) = h (single i x)) : g = h :=
   RingHom.coe_addMonoidHom_injective <|
-    @AddMonoidHom.functions_ext I _ R _ _ G _ (g : (∀ i, R i) →+ G) h H
+    @AddMonoidHom.functions_ext I _ R _ _ S _ (g : (∀ i, R i) →+ S) h H
 
 end RingHom
 

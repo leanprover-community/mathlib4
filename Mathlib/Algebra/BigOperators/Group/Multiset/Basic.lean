@@ -24,7 +24,7 @@ and sums indexed by finite sets.
 
 assert_not_exists MonoidWithZero
 
-variable {F ι M N ι γ : Type*}
+variable {F ι κ M N O : Type*}
 
 namespace Multiset
 
@@ -93,13 +93,13 @@ theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
   exact (map_map _ _ _).symm
 
 @[to_additive]
-theorem prod_hom₂_ne_zero [CommMonoid γ] {s : Multiset ι} (hs : s ≠ 0) (f : M → N → γ)
+theorem prod_hom₂_ne_zero [CommMonoid O] {s : Multiset ι} (hs : s ≠ 0) (f : M → N → O)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) :
     (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod := by
   induction s using Quotient.inductionOn; aesop (add simp List.prod_hom₂_nonempty)
 
 @[to_additive]
-theorem prod_hom₂ [CommMonoid γ] (s : Multiset ι) (f : M → N → γ)
+theorem prod_hom₂ [CommMonoid O] (s : Multiset ι) (f : M → N → O)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (hf' : f 1 1 = 1) (f₁ : ι → M)
     (f₂ : ι → N) : (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
   Quotient.inductionOn s fun l => by
@@ -114,7 +114,7 @@ theorem prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod 
   m.prod_hom' (powMonoidHom n : M →* M) f
 
 @[to_additive]
-theorem prod_map_prod_map (m : Multiset ι) (n : Multiset γ) {f : ι → γ → M} :
+theorem prod_map_prod_map (m : Multiset ι) (n : Multiset κ) {f : ι → κ → M} :
     prod (m.map fun a => prod <| n.map fun b => f a b) =
       prod (n.map fun b => prod <| m.map fun a => f a b) :=
   Multiset.induction_on m (by simp) fun a m ih => by simp [ih]

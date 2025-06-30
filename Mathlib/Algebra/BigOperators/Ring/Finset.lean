@@ -22,11 +22,11 @@ assert_not_exists Field
 
 open Fintype
 
-variable {ι ι' M₀ R α : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+variable {ι ι' M R α : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
 
 namespace Finset
 
-lemma prod_neg [CommMonoid M₀] [HasDistribNeg M₀] (f : ι → M₀) :
+lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
     ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
   simpa using (s.1.map f).prod_map_neg
 
