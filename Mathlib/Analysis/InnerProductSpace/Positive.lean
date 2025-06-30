@@ -117,7 +117,8 @@ theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPosi
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
 open ComplexOrder in
-theorem IsPositive.smul_of_zero_le {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive := by
   have hc' : starRingEnd 𝕜 c = c := by
     simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
@@ -329,7 +330,8 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
 open ComplexOrder in
-theorem IsPositive.smul_of_zero_le {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive := by
   have hc' : starRingEnd 𝕜 c = c := by
     simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
