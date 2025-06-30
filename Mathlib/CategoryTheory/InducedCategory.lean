@@ -79,6 +79,12 @@ from a morphism in the original category. -/
 @[simps] def homMk {X Y : InducedCategory D F} (f : F X ⟶ F Y) : X ⟶ Y where
   hom := f
 
+/-- Morphisms in `InducedCategory D F` identify to morphisms in `D`. -/
+@[simps!]
+def homEquiv {X Y : InducedCategory D F} : (X ⟶ Y) ≃ (F X ⟶ F Y) where
+  toFun f := f.hom
+  invFun f := homMk f
+
 /-- Construct an isomorphism in the induced category
 from an isomorphism in the original category. -/
 @[simps] def isoMk {X Y : InducedCategory D F} (f : F X ≅ F Y) : X ≅ Y where
