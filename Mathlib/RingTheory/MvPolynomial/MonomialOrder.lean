@@ -746,10 +746,10 @@ theorem degree_sub_leadingTerm (f : MvPolynomial σ R) :
       simp [coeff_monomial, leadingTerm]
       simp [leadingCoeff]
 
-    have h1: m.toSyn ( m.degree (f - m.leadingTerm f)) ≠  m.toSyn (m.degree f) := by
+    have h1 : m.toSyn ( m.degree (f - m.leadingTerm f)) ≠  m.toSyn (m.degree f) := by
       simp [degree_eq_zero_iff]
       by_contra h
-      have hin: m.degree (f - m.leadingTerm f) ∈ (f - m.leadingTerm f).support := by
+      have hin : m.degree (f - m.leadingTerm f) ∈ (f - m.leadingTerm f).support := by
         (expose_names; exact (degree_mem_support_iff m (f - m.leadingTerm f)).mpr h_1)
       rw [h] at hin
       have : (f - m.leadingTerm f).coeff (m.degree f) ≠  0 := by
