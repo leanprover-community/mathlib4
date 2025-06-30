@@ -166,11 +166,13 @@ instance : IsIso f.fst :=
 instance : IsIso f.snd :=
   inferInstanceAs (IsIso ((π₂ _ _).mapIso (asIso f)).hom)
 
+@[simp]
 lemma inv_fst : (inv f).fst = inv f.fst := by
   symm
   apply IsIso.inv_eq_of_hom_inv_id
   simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.fst) (IsIso.hom_inv_id f)
 
+@[simp]
 lemma inv_snd : (inv f).snd = inv f.snd := by
   symm
   apply IsIso.inv_eq_of_hom_inv_id
@@ -202,7 +204,7 @@ abbrev CatCommSqOver :=
 namespace CatCommSqOver
 
 /-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
-@[simps!]
+@[simps]
 def asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
   iso := S.iso
 
@@ -228,10 +230,9 @@ abbrev sndFunctor : CatCommSqOver F G X ⥤ X ⥤ C := π₂ _ _
 
 /-- The structure isompophism of a `CatCommSqOver` as a natural transformation. -/
 abbrev e :
-    (fstFunctor F G X) ⋙ (whiskeringRight X A B|>.obj F) ≅
-    (sndFunctor F G X) ⋙ (whiskeringRight X C B|>.obj G) :=
-  NatIso.ofComponents
-    (fun S ↦ S.iso)
+    fstFunctor F G X ⋙ (whiskeringRight X A B).obj F ≅
+    sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
+  NatIso.ofComponents (fun S ↦ S.iso)
 
 end CatCommSqOver
 
@@ -272,33 +273,21 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
         { fst := φ.fst.app x
           snd := φ.snd.app x } }
 
-/-- The unit of `CategoricalPullback.functorEquiv`. -/
-@[simps!]
-def functorEquivUnitIso :
-    𝟭 (X ⥤ F ⊡ G) ≅
-    toCatCommSqOver F G X ⋙ CatCommSqOver.toFunctorToCategoricalPullback F G X :=
-  NatIso.ofComponents
-    (fun _ ↦ NatIso.ofComponents
-      (fun _ ↦ CategoricalPullback.mkIso (.refl _) (.refl _)))
-
-/-- The counit of `CategoricalPullback.functorEquiv`. -/
-@[simps!]
-def functorEquivCounitIso :
-    CatCommSqOver.toFunctorToCategoricalPullback F G X ⋙ toCatCommSqOver F G X ≅
-    𝟭 (CatCommSqOver F G X) :=
-  NatIso.ofComponents
-    (fun _ ↦ CategoricalPullback.mkIso
-      (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
-
 /-- The universal property of categorical pullbacks, stated as an equivalence
 of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
 over X. -/
-@[simps!]
+@[simps]
 def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
   functor := toCatCommSqOver F G X
   inverse := CatCommSqOver.toFunctorToCategoricalPullback F G X
-  unitIso := functorEquivUnitIso F G X
-  counitIso := functorEquivCounitIso F G X
+  unitIso :=
+    NatIso.ofComponents
+      (fun _ ↦ NatIso.ofComponents
+        (fun _ ↦ CategoricalPullback.mkIso (.refl _) (.refl _)))
+  counitIso :=
+    NatIso.ofComponents
+      (fun _ ↦ CategoricalPullback.mkIso
+        (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
 
 variable {F G X}
 
@@ -337,9 +326,9 @@ lemma natTrans_ext
   · exact congrArg (fun t ↦ t.app x) e₁
   · exact congrArg (fun t ↦ t.app x) e₂
 
-/-- Comparing mkNatIso with the corresponding construction one can deduce from
-`functorEquiv`. -/
-lemma mkNatIso_eq {J K : X ⥤ F ⊡ G}
+section
+
+variable {J K : X ⥤ F ⊡ G}
     (e₁ : J ⋙ π₁ F G ≅ K ⋙ π₁ F G) (e₂ : J ⋙ π₂ F G ≅ K ⋙ π₂ F G)
     (coh :
       whiskerRight e₁.hom F ≫ (Functor.associator _ _ _).hom ≫
@@ -348,14 +337,27 @@ lemma mkNatIso_eq {J K : X ⥤ F ⊡ G}
       (Functor.associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
         (Functor.associator _ _ _).inv ≫
-        whiskerRight e₂.hom G := by aesop_cat) :
-  mkNatIso e₁ e₂ coh =
+        whiskerRight e₂.hom G := by aesop_cat)
+
+@[simp]
+lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
+    (toCatCommSqOver F G X).mapIso (mkNatIso e₁ e₂ coh) =
+    CategoricalPullback.mkIso e₁ e₂
+      (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
+  aesop
+
+/-- Comparing mkNatIso with the corresponding construction one can deduce from
+`functorEquiv`. -/
+lemma mkNatIso_eq :
+    mkNatIso e₁ e₂ coh =
     (functorEquiv F G X).fullyFaithfulFunctor.preimageIso
       (CategoricalPullback.mkIso e₁ e₂
         (by simpa [functorEquiv, toCatCommSqOver] using coh)) := by
-  ext
-  · simp [Equivalence.fullyFaithfulFunctor]
-  · simp [Equivalence.fullyFaithfulFunctor]
+  rw [← toCatCommSqOver_mapIso_mkNatIso_eq_mkIso e₁ e₂ coh]
+  dsimp [Equivalence.fullyFaithfulFunctor]
+  aesop_cat
+
+end
 
 end functorEquiv
 
