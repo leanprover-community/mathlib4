@@ -236,8 +236,7 @@ def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
       (hS.symm))
 
 lemma kernel_hull_eq (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Set α) = a := by
-  conv_rhs => rw [← (OrderDual.ofDual_toDual a),
-    ← (GaloisInsertion.l_u_eq (gi hG) a)]
+  conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
   rfl
 
 lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
