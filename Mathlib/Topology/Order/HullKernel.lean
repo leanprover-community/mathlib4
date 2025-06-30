@@ -86,7 +86,8 @@ lemma preimage_Ici_union_preimage_Ici (hT : ∀ p ∈ T, InfPrime p) (a b : α) 
 pairwise intersection. -/
 lemma Ici_compl_inter_Ici_compl_eq (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = T ↓∩ (Ici (a ⊓ b))ᶜ := by
-  rw [preimage_compl, preimage_compl, preimage_compl, ← (Ici_union_Ici_eq hT), compl_union]
+  rw [preimage_compl, preimage_compl, preimage_compl, ← (preimage_Ici_union_preimage_Ici hT),
+    compl_union]
 
 variable [DecidableEq α] [OrderTop α]
 
@@ -105,7 +106,7 @@ lemma upperClosureFinite_eq (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     obtain ⟨x, hx⟩ := hf
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr hx)
   · simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
-      preimage_iUnion, inf_insert, id_eq, ← (Ici_union_Ici_eq hT), ← I4]
+      preimage_iUnion, inf_insert, id_eq, ← (preimage_Ici_union_preimage_Ici hT), ← I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
 set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⊓ F`. -/
