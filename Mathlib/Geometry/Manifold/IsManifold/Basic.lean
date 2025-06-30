@@ -919,6 +919,10 @@ instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
 instance : IsTopologicalAddGroup (TangentSpace I x) := inferInstanceAs (IsTopologicalAddGroup E)
 instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
+instance : ContinuousSMul 𝕜 (TangentSpace I x) := inferInstanceAs (ContinuousSMul 𝕜 E)
+-- the following instance derives from the previous one, but through an instance with priority 100
+-- which takes a long time to be found. We register a shortcut instance instead
+instance : ContinuousConstSMul 𝕜 (TangentSpace I x) := inferInstanceAs (ContinuousConstSMul 𝕜 E)
 
 variable (M) in
 -- is empty if the base manifold is empty
