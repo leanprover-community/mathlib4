@@ -219,7 +219,7 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
   refine ⟨c, one_lt_iff_ne_one.2 ?_, hc.symm⟩
   rintro rfl
-  simp [hc, lt_irrefl] at h
+  simp [hc] at h
 
 @[to_additive]
 theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * c := by

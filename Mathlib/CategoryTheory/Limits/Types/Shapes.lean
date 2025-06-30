@@ -90,9 +90,7 @@ def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
   isLimit :=
     { lift := fun _ _ => PUnit.unit
       fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by
-        funext
-        subsingleton }
+      uniq := fun _ _ _ => by constructor }
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=

@@ -80,7 +80,7 @@ theorem expComparison_ev (A B : C) :
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
-  simp only [prodComparisonNatTrans_app, prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app,
+  simp only [prodComparisonNatTrans_app, prodComparisonNatIso_inv, NatIso.isIso_inv_app,
     IsIso.hom_inv_id]
 
 theorem coev_expComparison (A B : C) :
@@ -111,7 +111,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   congr 1
   apply congr_arg
   ext B
-  simp only [Functor.comp_obj, curriedTensor_obj_obj, prodComparisonNatIso_inv, asIso_inv,
+  simp only [Functor.comp_obj, curriedTensor_obj_obj, prodComparisonNatIso_inv,
     NatTrans.comp_app, whiskerLeft_app, curriedTensor_map_app, NatIso.isIso_inv_app,
     whiskerRight_app, IsIso.eq_inv_comp, prodComparisonNatTrans_app]
   rw [← prodComparison_inv_natural_whiskerRight F f]
@@ -141,7 +141,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app,
     whiskerLeft_app, curriedTensor_obj_obj, whiskerRight_app, prodComparisonNatTrans_app,
     curriedTensor_map_app, Functor.comp_map, curriedTensor_obj_map, prodComparisonNatIso_inv,
-    asIso_inv, NatIso.isIso_inv_app]
+    NatIso.isIso_inv_app]
   rw [← F.map_comp, ← F.map_comp]
   simp only [Functor.map_comp]
   apply IsIso.eq_inv_of_inv_hom_id
@@ -151,13 +151,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   slice_lhs 2 3 => rw [← prodComparison_comp]
   simp only [assoc]
   unfold prodComparison
-  have ηlemma : (h.unit.app (F.obj A ⊗ F.obj B) ≫
-    lift ((L ⋙ F).map (fst _ _)) ((L ⋙ F).map (snd _ _))) =
-      (h.unit.app (F.obj A)) ⊗ₘ (h.unit.app (F.obj B)) := by
-    ext <;> simp
-  slice_lhs 1 2 => rw [ηlemma]
-  simp only [Functor.id_obj, Functor.comp_obj, assoc, ← whisker_exchange, ← tensorHom_def']
-  ext <;> simp
+  simp
 
 /--
 If the exponential comparison transformation (at `A`) is an isomorphism, then the Frobenius morphism

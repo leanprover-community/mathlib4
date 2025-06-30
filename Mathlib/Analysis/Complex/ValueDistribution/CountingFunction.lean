@@ -75,7 +75,7 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
   toFun D := fun r ↦ ∑ᶠ z, D.toClosedBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
   map_zero' := by aesop
   map_add' D₁ D₂ := by
-    simp only [Set.top_eq_univ, map_add, coe_add, Pi.add_apply, Int.cast_add]
+    simp only [map_add, coe_add, Pi.add_apply, Int.cast_add]
     ext r
     have {A B C D : ℝ} : A + B + (C + D) = A + C + (B + D) := by ring
     rw [Pi.add_apply, this]

@@ -96,7 +96,7 @@ theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁�
   -- typically it would be better to invoke the tactic.
   · simp [commutatorElement_def, mul_assoc]
   · rw [h1 _ (H₂.inv_mem hy) _ hz _ (H₁.inv_mem hx), h2 _ (H₃.inv_mem hz) _ (H₁.inv_mem hx) _ hy]
-    simp [commutatorElement_def, mul_assoc]
+    simp [mul_assoc]
 
 variable (H₁ H₂)
 
