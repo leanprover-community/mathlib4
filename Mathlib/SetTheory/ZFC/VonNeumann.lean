@@ -40,7 +40,7 @@ decreasing_by exact a.2
 @[inherit_doc]
 scoped notation "V_ " => vonNeumann
 
-variable {a b o : Ordinal}
+variable {a b o : Ordinal} {x : ZFSet.{u}}
 
 theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   rw [vonNeumann]
