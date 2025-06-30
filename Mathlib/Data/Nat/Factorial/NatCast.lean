@@ -68,31 +68,29 @@ end CharP
 
 section Nilpotent
 
-variable {A : Type*} [CommRing A] {p : ℕ} [Fact (Nat.Prime p)]
+variable {A : Type*} [CommRing A] {n p : ℕ} (hp : IsNilpotent (p : A))
+include hp
 
-lemma natCast_of_lt_of_isNilpotent (hp : IsNilpotent (p : A)) {n : ℕ} (h₀ : n ≠ 0) (h : n < p) :
+lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
     IsUnit (n : A) := by
   obtain ⟨m, hm⟩ := hp
-  have : Coprime (p ^ m) n := by
-    apply Coprime.pow_left
-    rw [Nat.Prime.coprime_iff_not_dvd (Fact.elim (inferInstance))]
-    exact Nat.not_dvd_of_pos_of_lt (zero_lt_of_ne_zero h₀) h
-  suffices ∃ (a b : A), p ^ m * a + n * b = 1 by
+  suffices ∃ a b : A, p ^ m * a + n * b = 1 by
     obtain ⟨a, b, h⟩ := this
-    rw [hm, zero_mul, zero_add] at h
-    exact isUnit_iff_exists.mpr ⟨b, by rw [h, mul_comm, h, and_self]⟩
-  have hcoe : ((p ^ m).gcd n : A) = (((p ^ m).gcd n : ℤ) : A) := by rw [Int.cast_natCast]
-  rw [← Nat.cast_one, ← this]
-  exact ⟨(p ^ m).gcdA (n), (p ^ m).gcdB n, by norm_cast; rw [hcoe, Nat.gcd_eq_gcd_ab (p^m) n]⟩
+    apply isUnit_of_mul_eq_one (n : A) b
+    simpa [hm] using h
+  refine ⟨(p ^ m).gcdA n, (p ^ m).gcdB n, ?_⟩
+  norm_cast
+  rw [← Nat.cast_one, ← Int.cast_natCast 1, ← (h.pow_left m).gcd_eq_one, Nat.gcd_eq_gcd_ab]
 
-theorem natCast_factorial_of_isNilpotent (hp : IsNilpotent (p : A)) {n : ℕ} (h : n < p) :
+theorem natCast_factorial_of_isNilpotent [Fact p.Prime] (h : n < p) :
     IsUnit (n ! : A) := by
   induction n with
   | zero => simp
   | succ n ih =>
     simp only [factorial_succ, cast_mul, IsUnit.mul_iff]
-    exact ⟨IsUnit.natCast_of_lt_of_isNilpotent hp (succ_ne_zero n) h,
-      ih (lt_trans (lt_add_one n) h)⟩
+    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by omega)⟩
+    rw [Nat.Prime.coprime_iff_not_dvd Fact.out]
+    exact Nat.not_dvd_of_pos_of_lt (by omega) h
 
 end Nilpotent
 
