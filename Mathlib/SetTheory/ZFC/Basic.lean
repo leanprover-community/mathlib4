@@ -262,12 +262,6 @@ instance : IsAntisymm ZFSet (· ⊆ ·) :=
 instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ ↦ Iff.rfl⟩
 
-instance : PartialOrder ZFSet where
-  le := (· ⊆ ·)
-  le_refl := refl_of (· ⊆ ·)
-  le_trans _ _ _ := trans_of (· ⊆ ·)
-  le_antisymm _ _ := antisymm_of (· ⊆ ·)
-
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
   mk ∅
@@ -687,9 +681,7 @@ theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
   ext
   simp
 
-theorem mem_range_self {α} [Small.{u} α] {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by
-  rw [← mem_toSet, toSet_range]
-  exact Set.mem_range_self a
+theorem mem_range_self {α} [Small.{u} α] {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by simp
 
 /-- Kuratowski ordered pair -/
 def pair (x y : ZFSet.{u}) : ZFSet.{u} :=

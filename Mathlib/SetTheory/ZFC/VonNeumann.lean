@@ -10,9 +10,9 @@ import Mathlib.SetTheory.ZFC.Rank
 /-!
 # Von Neumann hierarchy
 
-This file defines the von Neumann hierarchy of sets `V_ o`, which is recursively defined so that
-`V_ a = ⋃ b < a, powerset (V_ b)`. This stratifies the universal class, in the sense that
-`⋃ o, V_ o = univ`.
+This file defines the von Neumann hierarchy of sets `V_ o` for ordinal `o`, which is recursively
+defined so that `V_ a = ⋃ b < a, powerset (V_ b)`. This stratifies the universal class, in the sense
+that `⋃ o, V_ o = univ`.
 
 ## Notation
 
@@ -99,7 +99,7 @@ theorem vonNeumann_subset_vonNeumann_iff {a b : Ordinal} : V_ a ⊆ V_ b ↔ a �
   simp [subset_vonNeumann]
 
 theorem vonNeumann_strictMono : StrictMono vonNeumann :=
-  strictMono_of_le_iff_le fun _ _ ↦ vonNeumann_subset_vonNeumann_iff.symm
+  strictMono_of_le_iff_le (by simp)
 
 theorem vonNeumann_injective : Function.Injective vonNeumann :=
   vonNeumann_strictMono.injective
@@ -125,10 +125,8 @@ theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
   simpa [mem_vonNeumann] using h.lt_iff_exists_lt
 
 /-- Every set is in some element of the von Neumann hierarchy. -/
-theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o := by
-  use succ (rank x)
-  rw [mem_vonNeumann]
-  exact lt_succ _
+theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o :=
+  ⟨succ x.rank, by simp [subset_vonNeumann]⟩
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
