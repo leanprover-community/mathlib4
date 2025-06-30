@@ -20,7 +20,7 @@ curve.
 integral curve, vector field
 -/
 
-open Function Set Pointwise
+open Function Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -33,29 +33,24 @@ variable
 section Translation
 
 lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
-    IsIntegralCurveOn (γ ∘ (· + dt)) v (-dt +ᵥ s) := by
+    IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
   rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
-  rw [mem_vadd_set_iff_neg_vadd_mem, neg_neg, vadd_eq_add, add_comm,
-    ← mem_setOf (p := fun t ↦ t + dt ∈ s)] at ht
-  have : -dt +ᵥ s ⊆ (fun x ↦ x + dt) ⁻¹' s := by
-    rw [Set.preimage, Set.subset_setOf]
-    simp_rw [Set.mem_neg_vadd_set_iff, vadd_eq_add, add_comm dt, imp_self, forall_true_iff]
-  apply HasMFDerivWithinAt.comp t (hγ (t + dt) ht) _ this
+  apply HasMFDerivWithinAt.comp t (hγ (t + dt) ht) _ subset_rfl
   refine ⟨(continuous_add_right _).continuousWithinAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact (hasFDerivWithinAt_id _ _).add_const _
 
 lemma isIntegralCurveOn_comp_add {dt : ℝ} :
-    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v (-dt +ᵥ s) := by
+    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
   · ext t
-    simp only [Function.comp_apply, neg_add_cancel_right]
-  · simp only [neg_neg, vadd_neg_vadd]
+    simp
+  · simp
 
 lemma isIntegralCurveOn_comp_sub {dt : ℝ} :
-    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· - dt)) v (dt +ᵥ s) := by
+    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· - dt)) v { t | t - dt ∈ s } := by
   simpa using isIntegralCurveOn_comp_add (dt := -dt)
 
 lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
@@ -64,7 +59,8 @@ lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) 
   obtain ⟨ε, hε, h⟩ := hγ
   refine ⟨ε, hε, ?_⟩
   convert h.comp_add dt
-  rw [Metric.vadd_ball, vadd_eq_add, neg_add_eq_sub]
+  rw [Metric.ball]
+  simp_rw [Metric.mem_ball, Real.dist_eq, ← sub_add, add_sub_right_comm]
 
 lemma isIntegralCurveAt_comp_add {dt : ℝ} :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
