@@ -233,13 +233,9 @@ lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [Decid
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = T ↓∩ Ici (sInf S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
-  have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ T ↓∩ Ici (sInf ↑S) := by
-      constructor
-      · rw [(isClosed_iff hT)]
-        use sInf ↑S
-      · exact image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)
   constructor
-  · exact fun ⦃a⦄ a ↦ a (T ↓∩ Ici (sInf ↑S)) e1
+  · exact fun ⦃a⦄ a ↦ a (T ↓∩ Ici (sInf ↑S)) ⟨(isClosed_iff hT _).mpr ⟨sInf ↑S, rfl⟩,
+      image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
     rw [← (gc_closureOperator_of_isClosed hT hG hR.1), ← gc_closureOperator_eq]
