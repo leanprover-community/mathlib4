@@ -66,9 +66,6 @@ open Set.Notation
 section SemilatticeInf
 
 variable [SemilatticeInf α] --[TopologicalSpace α] [IsLower α]
-
-
-
 namespace PrimitiveSpectrum
 
 variable {T : Set α}
