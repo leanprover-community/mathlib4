@@ -434,6 +434,10 @@ protected theorem range {T : M →ₗ[S] M} {U : Submodule S M}
   exact ⟨fun ⟨y, hy⟩ => hy ▸ h.map_mem y, fun hx => ⟨x, h.map_id x hx⟩⟩
 
 variable (S M) in
+protected theorem bot : IsProj (⊥ : Submodule S M) (0 : M →ₗ[S] M) :=
+  ⟨congrFun rfl, by simp only [mem_bot, zero_apply, forall_eq]⟩
+
+variable (S M) in
 protected theorem top : IsProj (⊤ : Submodule S M) (id (R := S)) :=
   ⟨fun _ ↦ trivial, fun _ ↦ congrFun rfl⟩
 
