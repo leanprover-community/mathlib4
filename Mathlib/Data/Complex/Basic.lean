@@ -347,6 +347,21 @@ instance instIntCast : IntCast ℂ where
 @[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
 
 
+instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
+instance instRatCast : RatCast ℂ where ratCast q := ofReal q
+
+@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
+@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
+
+@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+
+
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast_zero := by ext <;> simp
@@ -404,20 +419,6 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 
 /-! ### Cast lemmas -/
-
-instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
-instance instRatCast : RatCast ℂ where ratCast q := ofReal q
-
-@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
-@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
-@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
-@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
-@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
-
-@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
-@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
-@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
 
 lemma re_nsmul (n : ℕ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
 lemma im_nsmul (n : ℕ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
