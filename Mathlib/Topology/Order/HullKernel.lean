@@ -37,7 +37,7 @@ structure topology also occur in the literature.
 
 ## Implementation notes
 
-The antitone Galois connection from `Set T` to `α` is implemented as a monitone Galois connection
+The antitone Galois connection from `Set T` to `α` is implemented as a monotone Galois connection
 between `Set T` to `αᵒᵈ`.
 
 ## Motivation
