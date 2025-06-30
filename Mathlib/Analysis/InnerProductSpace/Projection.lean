@@ -670,6 +670,7 @@ lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjectio
   rfl
 
 end StarProjection
+
 section reflection
 
 variable [K.HasOrthogonalProjection]
