@@ -126,11 +126,11 @@ variable [AddCommGroup R]
 
 @[simp]
 theorem trace_sub (A B : Matrix n n R) : trace (A - B) = trace A - trace B :=
-  Finset.sum_sub_distrib
+  Finset.sum_sub_distrib ..
 
 @[simp]
 theorem trace_neg (A : Matrix n n R) : trace (-A) = -trace A :=
-  Finset.sum_neg_distrib
+  Finset.sum_neg_distrib ..
 
 end AddCommGroup
 

@@ -303,7 +303,7 @@ theorem prod_inv [Zero M] [CommGroup G] {f : α →₀ M} {h : α → M → G} :
 @[simp]
 theorem sum_sub [Zero M] [SubtractionCommMonoid G] {f : α →₀ M} {h₁ h₂ : α → M → G} :
     (f.sum fun a b => h₁ a b - h₂ a b) = f.sum h₁ - f.sum h₂ :=
-  Finset.sum_sub_distrib
+  Finset.sum_sub_distrib ..
 
 /-- Taking the product under `h` is an additive-to-multiplicative homomorphism of finsupps,
 if `h` is an additive-to-multiplicative homomorphism on the support.
