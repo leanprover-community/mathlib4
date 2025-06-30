@@ -6417,6 +6417,7 @@ import Mathlib.Topology.Order.LawsonTopology
 import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Order.LeftRightLim
 import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.Order.LiminfLimsup
 import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Order.Monotone
