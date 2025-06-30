@@ -581,7 +581,7 @@ lemma contMDiff_extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V 
 noncomputable def difference [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I 1 M]
     (cov cov' : CovariantDerivative I F V) :
     Π x : M, TangentSpace I x → V x → V x :=
-  fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀) (extend F σ₀) x
+  fun x X₀ σ₀ ↦ differenceAux cov cov' (extend I E X₀) (extend I F σ₀) x
 
 -- -- Note: we conciously register this lemma in unapplied form,
 -- -- but differenceAux_apply: this means the applied form should simplify down all the way,
@@ -599,7 +599,7 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
 lemma difference_apply [FiniteDimensional ℝ F] [IsManifold I 1 M] [T2Space M]
     (cov cov' : CovariantDerivative I F V) (x : M) (X₀ : TangentSpace I x) (σ₀ : V x) :
     difference cov cov' x X₀ σ₀ =
-      cov (extend E X₀) (extend F σ₀) x - cov' (extend E X₀) (extend F σ₀) x := rfl
+      cov (extend I E X₀) (extend I F σ₀) x - cov' (extend I E X₀) (extend I F σ₀) x := rfl
 
 -- The classification of real connections over a trivial bundle
 section classification
@@ -613,14 +613,14 @@ noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDime
   toFun := difference cov (CovariantDerivative.trivial E E') x X
   map_add' y y' := by
     -- follows from the (not yet proven) smoothness
-    have A : fderiv ℝ ((extend E' y  (x := x)) + extend E' y' (x := x)) x =
-        fderiv ℝ (extend E' y (x := x)) x + fderiv ℝ (extend E' y' (x := x)) x := by
+    have A : fderiv ℝ ((extend 𝓘(ℝ, E) E' y  (x := x)) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
+        fderiv ℝ (extend 𝓘(ℝ, E) E' y (x := x)) x + fderiv ℝ (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
       rw [fderiv_add]
       · sorry -- apply (contMDiff_extend _ _).contMDiffAt.DifferentiableAt
       · sorry -- similar
-    have B : cov (extend E X (x := x)) (extend E' y  (x := x) + extend E' y' (x := x)) x =
-      cov (extend E X (x := x)) (extend E' y (x := x)) x +
-        cov (extend E X (x := x)) (extend E' y' (x := x)) x := by
+    have B : cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y  (x := x) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
+      cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y (x := x)) x +
+        cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
       apply cov.addσ
       · exact (contMDiff_extend _ _).mdifferentiableAt (n := 1) (hn := by norm_num)
       · apply (contMDiff_extend _ _).mdifferentiableAt (n := 1) (hn := by norm_num)
@@ -642,19 +642,19 @@ noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDi
   toFun X := cov.endomorph_of_trivial_aux' x X
   map_add' X Y := by
     ext Z
-    simp [cov.addX (extend E X (x := x)) (extend E Y (x := x)) (extend E' Z (x := x))]
+    simp [cov.addX (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E Y (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x))]
     module
   map_smul' t X := by
     ext Z
     simp
 
     -- The following lines should ideally mold into the simp call above.
-    trans t • (cov (extend E X (x := x)) (extend E' Z (x := x)) x)
-      - t • (fderiv ℝ (extend E' Z (x := x)) x) X
+    trans t • (cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) x)
+      - t • (fderiv ℝ (extend 𝓘(ℝ, E)  E' Z (x := x)) x) X
     swap; · module
     congr
     -- TODO: this is almost the item we want, but not quite! not sure where the mismatch comes from
-    let asdf := cov.smulX (extend E X (x := x)) (extend E' Z (x := x)) (fun x ↦ t)
+    let asdf := cov.smulX (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) (fun x ↦ t)
     sorry
 
 @[simps!]
@@ -679,7 +679,7 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
   have hσ : MDifferentiableAt 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
       (fun x' ↦ TotalSpace.mk' E' x' (σ x')) x := sorry
   have hσ' : MDifferentiableAt 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
-      (fun x' ↦ TotalSpace.mk' E' x' ((extend E' (σ x)) x')) x := sorry
+      (fun x' ↦ TotalSpace.mk' E' x' ((extend 𝓘(ℝ, E) E' (σ x)) x')) x := sorry
 
   rw [← CovariantDerivative.trivial_toFun]
   have h₁ : cov X σ x - (trivial E E') X σ x = cov.difference (trivial E E') x (X x) (σ x) := by
@@ -689,7 +689,8 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     exact differenceAux_tensorial cov (trivial E E') _ _ _ _ _ hσ hσ'
       (extend_apply_self (X x)).symm (extend_apply_self (σ x)).symm
   have h₂ : cov.difference (trivial E E') x (X x) (σ x) =
-      cov (extend E (X x)) (extend E' (σ x)) x - (fderiv ℝ (extend E' (σ x) (x := x)) x) (X x) := by
+      cov (extend 𝓘(ℝ, E) E (X x)) (extend 𝓘(ℝ, E) E' (σ x)) x
+        - (fderiv ℝ (extend 𝓘(ℝ, E) E' (σ x) (x := x)) x) (X x) := by
     simp
   rw [← h₂, ← h₁]
   module
