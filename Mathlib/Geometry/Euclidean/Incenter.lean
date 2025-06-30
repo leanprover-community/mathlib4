@@ -354,9 +354,9 @@ lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1))
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
   orthogonalProjection_mem _
 
-lemma touchpoint_eq_point (s : Simplex ℝ P 1) (signs : Finset (Fin 2)) {i j : Fin 2} (h : i ≠ j) :
-    s.touchpoint signs i = s.points j :=
-  s.orthogonalProjectionSpan_faceOpposite_eq_point h _
+lemma touchpoint_eq_point_rev (s : Simplex ℝ P 1) (signs : Finset (Fin 2)) (i : Fin 2) :
+    s.touchpoint signs i = s.points i.rev :=
+  s.orthogonalProjectionSpan_faceOpposite_eq_point_rev _ _
 
 variable {s} in
 /-- The signed distance between the excenter and its projection in the plane of each face is the
@@ -509,8 +509,9 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
   by_contra hne
   by_cases hn1 : n = 1
   · subst hn1
-    rw [s.touchpoint_eq_point signs hne, s.touchpoint_eq_point signs (Ne.symm hne)] at hij
-    exact s.independent.injective.ne hne hij.symm
+    rw [s.touchpoint_eq_point_rev signs i, s.touchpoint_eq_point_rev signs j] at hij
+    apply s.independent.injective.ne hne
+    convert hij.symm <;> clear hij <;> decide +revert
   · suffices s.excenter signs -ᵥ s.touchpoint signs i ∈ (vectorSpan ℝ (Set.range s.points))ᗮ by
       have h' : s.excenter signs -ᵥ s.touchpoint signs i ∈ (vectorSpan ℝ (Set.range s.points)) := by
         rw [← direction_affineSpan]
