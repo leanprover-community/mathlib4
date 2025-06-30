@@ -107,6 +107,9 @@ lemma pOpcycles_restrictionOpcyclesIso_inv :
       (K.restrictionXIso e hj').inv ≫ (K.restriction e).pOpcycles j := by
   simp [restrictionOpcyclesIso]
 
+/-- The isomorphism `(K.restriction e).opcycles j ≅ K.opcycles j'` when `e.f j = j'`,
+the predecessors `i` and `i'` of `j` and `j'` satisfy `e.f i = i'`,
+and the successors `k` and `k'` of `j` and `j'` satisfy `e.f k = k'` -/
 noncomputable def restrictionHomologyIso :
     (K.restriction e).homology j ≅ K.homology j' :=
   have : ((K.restriction e).sc' i j k).HasHomology := by subst hi hk; assumption
@@ -115,7 +118,7 @@ noncomputable def restrictionHomologyIso :
     ShortComplex.homologyMapIso (restriction.sc'Iso K e i j k hi' hj' hk' hi'' hk'') ≪≫
     (K.homologyIsoSc' i' j' k' hi'' hk'').symm
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma homologyπ_restrictionHomologyIso_hom :
     (K.restriction e).homologyπ j ≫
       (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').hom =
@@ -141,7 +144,7 @@ lemma homologyπ_restrictionHomologyIso_inv :
     assoc, assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id,
     Iso.inv_hom_id_assoc]
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma restrictionHomologyIso_inv_homologyι :
     (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv ≫
       (K.restriction e).homologyι j =
