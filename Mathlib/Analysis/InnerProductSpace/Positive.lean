@@ -129,7 +129,7 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
   rw [adjoint_adjoint]
 
 theorem IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
-    [CompleteSpace U] :
+    [U.HasOrthogonalProjection] :
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
   have := hT.conj_adjoint (U.starProjection)
   rwa [(orthogonalProjection_isSelfAdjoint U).adjoint_eq] at this
