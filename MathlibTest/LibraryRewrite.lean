@@ -4,7 +4,7 @@ import Mathlib.Data.Subtype
 import Batteries.Data.Nat.Gcd
 
 -- set_option trace.profiler true
--- set_option trace.rw?? true
+-- set_option trace.rw? true
 
 variable (n : Nat) (p q : Prop)
 
@@ -72,7 +72,7 @@ Pattern ∀ (p : P), Q p
   forall_prop_of_true
 -/
 #guard_msgs in
-#rw?? p → p → q
+#rw? p → p → q
 
 /--
 info: Pattern n + 1
@@ -104,7 +104,7 @@ Pattern a + b
   add_comm
 -/
 #guard_msgs in
-#rw?? n+1
+#rw? n+1
 
 /--
 info: Pattern n / 2
@@ -128,7 +128,7 @@ Pattern x / y
   Nat.div_eq_sub_div
 -/
 #guard_msgs in
-#rw?? n/2
+#rw? n/2
 
 /--
 info: Pattern n.gcd n
@@ -164,7 +164,7 @@ Pattern m.gcd n
   Nat.gcd_self_sub_right
 -/
 #guard_msgs in
-#rw?? Nat.gcd n n
+#rw? Nat.gcd n n
 
 def atZero (f : Int → Int) : Int := f 0
 
@@ -188,7 +188,7 @@ Pattern atZero f
   neg_atZero_neg
 -/
 #guard_msgs in
-#rw?? atZero fun x => x + 1
+#rw? atZero fun x => x + 1
 /--
 info: Pattern atZero fun x => -f x
 · -atZero fun x => x
@@ -199,7 +199,7 @@ Pattern atZero f
   neg_atZero_neg
 -/
 #guard_msgs in
-#rw?? atZero (Neg.neg : Int → Int)
+#rw? atZero (Neg.neg : Int → Int)
 
 -- `Nat.Coprime` is reducible, so we might get matches with the pattern `n = 1`.
 -- This doesn't work with the `rw` tactic though, so we make sure to avoid them.
@@ -211,4 +211,4 @@ info: Pattern n.Coprime m
   Nat.coprime_iff_gcd_eq_one
 -/
 #guard_msgs in
-#rw?? Nat.Coprime 2 3
+#rw? Nat.Coprime 2 3
