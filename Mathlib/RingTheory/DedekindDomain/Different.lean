@@ -402,13 +402,11 @@ theorem dual_eq_dual_mul_dual (C M : Type*) [CommRing C] [IsDedekindDomain C] [F
     [Algebra C M] [IsFractionRing C M] [Algebra A C] [Algebra B C] [Algebra A M] [Algebra B M]
     [Algebra K M] [Algebra L M] [IsScalarTower A C M] [IsScalarTower A K M] [IsScalarTower B C M]
     [IsScalarTower B L M] [IsScalarTower K L M] [IsIntegralClosure C A M] [IsIntegralClosure C B M]
-    [NoZeroSMulDivisors B C] [FiniteDimensional K M] [Algebra.IsSeparable K M] :
+    [NoZeroSMulDivisors B C] [FiniteDimensional K M] [FiniteDimensional L M] [FiniteDimensional K L]
+    [Algebra.IsSeparable K M] [Algebra.IsSeparable L M] :
     haveI h : B⁰ ≤ Submonoid.comap (algebraMap B C) C⁰ :=
       nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
         FaithfulSMul.algebraMap_injective _ _
-    haveI : Module.Finite L M := Module.Finite.right K L M
-    haveI : Module.Finite K L := Module.Finite.left K L M
-    haveI : Algebra.IsSeparable L M := isSeparable_tower_top_of_isSeparable K L M
     dual A K (1 : FractionalIdeal C⁰ M) = dual B L (1 : FractionalIdeal C⁰ M) *
         (dual A K (1 : FractionalIdeal B⁰ L)).extended M h := by
   have : Module.Finite L M := Module.Finite.right K L M
@@ -568,26 +566,24 @@ lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) :
 
 variable (A K B L)
 
-omit [FiniteDimensional K L] in
 open FractionalIdeal in
 /-- Transitivity of the different ideal. -/
-theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C M : Type*) [CommRing C] [Field M]
-    [Algebra C M] [IsFractionRing C M] [Algebra B C] [Algebra A C] [Algebra K M] [Algebra L M]
-    [Algebra B M] [Algebra A M] [IsScalarTower K L M] [IsScalarTower A K M] [IsScalarTower A C M]
-    [IsScalarTower B C M] [IsScalarTower B L M] [IsDedekindDomain C] [NoZeroSMulDivisors A C]
-    [Algebra.IsSeparable K M] [FiniteDimensional K M] [IsIntegralClosure C B M]
-    [IsIntegralClosure C A M] [NoZeroSMulDivisors B C] :
-    differentIdeal A C =
-       differentIdeal B C *
-        (differentIdeal A B).map (algebraMap B C) := by
-  have : Algebra.IsSeparable L M := isSeparable_tower_top_of_isSeparable K L M
-  have : FiniteDimensional K L := Module.Finite.left K L M
-  have : FiniteDimensional L M := Module.Finite.right K L M
-  rw [← coeIdeal_inj (K := M), coeIdeal_mul, coeIdeal_differentIdeal A K,
-    coeIdeal_differentIdeal B L, ← extended_coeIdeal_eq_map_algebraMap (K := L) M,
-    coeIdeal_differentIdeal A K, extended_inv _ (by simp), ← mul_inv, ← inv_eq_iff_eq_inv,
-    inv_inv]
-  exact FractionalIdeal.dual_eq_dual_mul_dual A K L B C M
+theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomain B] [CommRing C]
+    [Algebra B C] [Algebra A C] [IsDedekindDomain C]
+    [Module.Finite A B] [Module.Finite A C] [Module.Finite B C]
+    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C] [IsScalarTower A B C]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing C)] :
+    differentIdeal A C = differentIdeal B C * (differentIdeal A B).map (algebraMap B C) := by
+  have : Algebra.IsSeparable (FractionRing B) (FractionRing C) :=
+    isSeparable_tower_top_of_isSeparable (FractionRing A) _ _
+  have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
+    isSeparable_tower_bot_of_isSeparable _ _ (FractionRing C)
+  rw [← coeIdeal_inj (K := FractionRing C), coeIdeal_mul, coeIdeal_differentIdeal A
+    (FractionRing A), coeIdeal_differentIdeal B (FractionRing B),
+    ← extended_coeIdeal_eq_map_algebraMap (K := (FractionRing B)) (FractionRing C),
+    coeIdeal_differentIdeal A (FractionRing A), extended_inv _ (by simp), ← mul_inv,
+    ← inv_eq_iff_eq_inv, inv_inv]
+  exact dual_eq_dual_mul_dual A (FractionRing A) (FractionRing B) B C (FractionRing C)
 
 variable {B L}
 
