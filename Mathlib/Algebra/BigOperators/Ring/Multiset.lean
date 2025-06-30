@@ -38,7 +38,7 @@ lemma prod_ne_zero (h : (0 : M₀) ∉ s) : s.prod ≠ 0 := mt prod_eq_zero_iff.
 end CommMonoidWithZero
 
 section NonUnitalNonAssocSemiring
-variable [NonUnitalNonAssocSemiring M₀] {a : M₀} {s : Multiset ι} {f : ι → M₀}
+variable [NonUnitalNonAssocSemiring R] {a : R} {s : Multiset ι} {f : ι → R}
 
 lemma sum_map_mul_left : sum (s.map fun i ↦ a * f i) = a * sum (s.map f) :=
   Multiset.induction_on s (by simp) fun i s ih => by simp [ih, mul_add]

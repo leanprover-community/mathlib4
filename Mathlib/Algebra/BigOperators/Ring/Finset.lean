@@ -22,7 +22,7 @@ assert_not_exists Field
 
 open Fintype
 
-variable {ι ι' M R α : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+variable {ι κ M R : Type*} {s s₁ s₂ : Finset ι} {i : ι}
 
 namespace Finset
 
@@ -52,11 +52,11 @@ lemma sum_mul (s : Finset ι) (f : ι → R) (a : R) :
 lemma mul_sum (s : Finset ι) (f : ι → R) (a : R) :
     a * ∑ i ∈ s, f i = ∑ i ∈ s, a * f i := map_sum (AddMonoidHom.mulLeft a) _ s
 
-lemma sum_mul_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → R) (g : κ → R) :
+lemma sum_mul_sum (s : Finset ι) (t : Finset κ) (f : ι → R) (g : κ → R) :
     (∑ i ∈ s, f i) * ∑ j ∈ t, g j = ∑ i ∈ s, ∑ j ∈ t, f i * g j := by
   simp_rw [sum_mul, ← mul_sum]
 
-lemma _root_.Fintype.sum_mul_sum {κ : Type*} [Fintype ι] [Fintype κ] (f : ι → R) (g : κ → R) :
+lemma _root_.Fintype.sum_mul_sum [Fintype ι] [Fintype κ] (f : ι → R) (g : κ → R) :
     (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
   Finset.sum_mul_sum _ _ _ _
 
@@ -114,7 +114,7 @@ variable [DecidableEq ι]
 
 /-- The product over a sum can be written as a sum over the product of sets, `Finset.Pi`.
   `Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
-lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
+lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
     ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
   classical
   induction s using Finset.induction with
@@ -147,15 +147,15 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R
 /-- The product over `univ` of a sum can be written as a sum over the product of sets,
 `Fintype.piFinset`. `Finset.prod_sum` is an alternative statement when the product is not
 over `univ`. -/
-lemma prod_univ_sum [Fintype ι] (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
+lemma prod_univ_sum {κ : ι → Type*} [Fintype ι] (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → R) :
     ∏ i, ∑ j ∈ t i, f i j = ∑ x ∈ piFinset t, ∏ i, f i (x i) := by
   simp only [prod_attach_univ, prod_sum, Finset.sum_univ_pi]
 
-lemma sum_prod_piFinset {κ : Type*} [Fintype ι] (s : Finset κ) (g : ι → κ → R) :
+lemma sum_prod_piFinset [Fintype ι] (s : Finset κ) (g : ι → κ → R) :
     ∑ f ∈ piFinset fun _ : ι ↦ s, ∏ i, g i (f i) = ∏ i, ∑ j ∈ s, g i j := by
   rw [← prod_univ_sum]
 
-lemma sum_pow' (s : Finset ι') (f : ι' → R) (n : ℕ) :
+lemma sum_pow' (s : Finset κ) (f : κ → R) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
   convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
@@ -322,12 +322,12 @@ lemma cast_multiset_prod [CommSemiring R] (s : Multiset ℕ) : (↑s.prod : R) =
   map_multiset_prod (castRingHom R) _
 
 @[simp, norm_cast]
-lemma cast_sum [AddCommMonoidWithOne R] (s : Finset α) (f : α → ℕ) :
+lemma cast_sum [AddCommMonoidWithOne R] (s : Finset ι) (f : ι → ℕ) :
     ↑(∑ x ∈ s, f x : ℕ) = ∑ x ∈ s, (f x : R) :=
   map_sum (castAddMonoidHom R) _ _
 
 @[simp, norm_cast]
-lemma cast_prod [CommSemiring R] (f : α → ℕ) (s : Finset α) :
+lemma cast_prod [CommSemiring R] (f : ι → ℕ) (s : Finset ι) :
     (↑(∏ i ∈ s, f i) : R) = ∏ i ∈ s, (f i : R) :=
   map_prod (castRingHom R) _ _
 
@@ -362,12 +362,12 @@ lemma cast_multiset_prod {R : Type*} [CommRing R] (s : Multiset ℤ) :
   map_multiset_prod (castRingHom R) _
 
 @[simp, norm_cast]
-lemma cast_sum [AddCommGroupWithOne R] (s : Finset α) (f : α → ℤ) :
+lemma cast_sum [AddCommGroupWithOne R] (s : Finset ι) (f : ι → ℤ) :
     ↑(∑ x ∈ s, f x : ℤ) = ∑ x ∈ s, (f x : R) :=
   map_sum (castAddHom R) _ _
 
 @[simp, norm_cast]
-lemma cast_prod {R : Type*} [CommRing R] (f : α → ℤ) (s : Finset α) :
+lemma cast_prod {R : Type*} [CommRing R] (f : ι → ℤ) (s : Finset ι) :
     (↑(∏ i ∈ s, f i) : R) = ∏ i ∈ s, (f i : R) :=
   map_prod (Int.castRingHom R) _ _
 

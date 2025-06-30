@@ -24,7 +24,7 @@ and sums indexed by finite sets.
 
 assert_not_exists MonoidWithZero
 
-variable {F ι κ M N O : Type*}
+variable {F ι κ G M N O : Type*}
 
 namespace Multiset
 
@@ -177,11 +177,11 @@ end AddCommMonoid
 
 section DivisionCommMonoid
 
-variable [DivisionCommMonoid M] {m : Multiset ι} {f g : ι → M}
+variable [DivisionCommMonoid G] {m : Multiset ι} {f g : ι → G}
 
 @[to_additive]
-theorem prod_map_inv' (m : Multiset M) : (m.map Inv.inv).prod = m.prod⁻¹ :=
-  m.prod_hom (invMonoidHom : M →* M)
+theorem prod_map_inv' (m : Multiset G) : (m.map Inv.inv).prod = m.prod⁻¹ :=
+  m.prod_hom (invMonoidHom : G →* G)
 
 @[to_additive (attr := simp)]
 theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
@@ -193,7 +193,7 @@ theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map
 
 @[to_additive]
 theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
-  convert (m.map f).prod_hom (zpowGroupHom n : M →* M)
+  convert (m.map f).prod_hom (zpowGroupHom n : G →* G)
   simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
 
 end DivisionCommMonoid
