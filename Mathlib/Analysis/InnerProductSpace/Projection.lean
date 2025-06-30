@@ -644,6 +644,32 @@ theorem orthogonalProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
 
 end orthogonalProjection
 
+section StarProjection
+
+/-- The orthogonal projection onto a subspace as a map from the full space to itself,
+as opposed to `Submodule.orthogonalProjection`, which maps into the subtype. This
+version is important as it satisfies `IsStarProjection`. -/
+noncomputable def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjection
+
+lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
+  rw [starProjection, orthogonalProjection_bot, ContinuousLinearMap.comp_zero]
+
+lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
+  ext
+  exact orthogonalProjection_eq_self_iff.mpr trivial
+
+lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
+  starProjection_top
+
+lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
+  ext
+  simp only [starProjection, ContinuousLinearMap.comp_apply,
+    orthogonalProjection_orthogonal]
+  rfl
+
+end StarProjection
 section reflection
 
 variable [K.HasOrthogonalProjection]
