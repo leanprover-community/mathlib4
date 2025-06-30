@@ -52,10 +52,8 @@ termination_by o
 theorem vonNeumann_mem_of_lt (h : a < b) : V_ a ∈ V_ b := by
   rw [vonNeumann]; aesop
 
-theorem vonNeumann_subset_of_le (h : a ≤ b) : V_ a ⊆ V_ b := by
-  obtain rfl | h := h.eq_or_lt
-  · rfl
-  · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
+theorem vonNeumann_subset_of_le (h : a ≤ b) : V_ a ⊆ V_ b :=
+  h.eq_or_lt.rec (by aesop) fun h ↦ isTransitive_vonNeumann _ _ <| vonNeumann_mem_of_lt h
 
 theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ o := by
   rw [rank_le_iff]
