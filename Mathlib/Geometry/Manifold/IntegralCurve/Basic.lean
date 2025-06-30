@@ -33,6 +33,13 @@ For `IsMIntegralCurveOn γ v s` and `IsMIntegralCurveAt γ v t₀`, even though 
 time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered
 junk.
 
+These definitions mirror the definitions of `IsIntegralCurve`, `IsIntegralCurveOn`, and
+`IsIntegralCurveAt`.
+
+## TODO
+
+* Implement `IsMIntegralCurveWithinAt`.
+
 ## Reference
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]

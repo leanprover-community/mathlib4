@@ -25,6 +25,10 @@ For `IsIntegralCurveOn γ v s` and `IsIntegralCurveAt γ v t₀`, even though `�
 time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered
 junk.
 
+## TODO
+
+* Implement `IsIntegralCurveWithinAt`.
+
 ## Tags
 
 integral curve, vector field
@@ -36,20 +40,19 @@ open Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- If `γ : ℝ → E` is $C^1$ on `s : Set ℝ` and `v` is a vector field on `M`,
-`IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
-outside of `s` is irrelevant and considered junk. -/
+/-- `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` within `s` for all `t ∈ s`. The
+value of `γ` outside of `s` is irrelevant and considered junk. -/
 def IsIntegralCurveOn (γ : ℝ → E) (v : E → E) (s : Set ℝ) : Prop :=
   ∀ t ∈ s, HasDerivWithinAt γ (v (γ t)) s t
 
-/-- If `v` is a vector field on `M` and `t₀ : ℝ`, `IsIntegralCurveAt γ v t₀` means `γ : ℝ → E` is a
-local integral curve of `v` in a neighbourhood containing `t₀`. The value of `γ` outside of this
-interval is irrelevant and considered junk. -/
+/-- `IsIntegralCurveAt γ v t₀` means `γ : ℝ → E` is a local integral curve of `v` in a neighbourhood
+containing `t₀`. The value of `γ` outside of this neighbourhood is irrelevant and considered
+junk. -/
 def IsIntegralCurveAt (γ : ℝ → E) (v : E → E) (t₀ : ℝ) : Prop :=
   ∀ᶠ t in 𝓝 t₀, HasDerivAt γ (v (γ t)) t
 
-/-- If `v : M → TM` is a vector field on `M`, `IsIntegralCurve γ v` means `γ : ℝ → E` is a global
-integral curve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ`. -/
+/-- `IsIntegralCurve γ v` means `γ : ℝ → E` is a global integral curve of `v`. That is, `γ t` is
+tangent to `v (γ t)` for all `t : ℝ`. -/
 def IsIntegralCurve (γ : ℝ → E) (v : E → E) : Prop :=
   ∀ t : ℝ, HasDerivAt γ (v (γ t)) t
 
