@@ -308,10 +308,8 @@ def of_convex_range
   toPartialEquiv := φ
   source_eq := hsource
   convex_range' := by
-    have h : IsRCLikeNormedField ℝ := by infer_instance
-    simp only [h, ↓reduceDIte]
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
-    simp only [this, htarget, dite_else_true]
+    simp only [instIsRCLikeNormedField, ↓reduceDIte, this]
     exact htarget.convex_isRCLikeNormedField
   nonempty_interior' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
