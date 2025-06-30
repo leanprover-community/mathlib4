@@ -259,6 +259,13 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
 
+theorem Submodule.exists_inf_eq_bot_and_sup_eq {p q : Submodule K V} (h : p ≤ q) :
+    ∃ r : Submodule K V, p ⊓ r = ⊥ ∧ p ⊔ r = q := by
+  have : ComplementedLattice (Submodule K q) := inferInstance
+  rw [q.mapIic.complementedLattice_iff, Set.Iic.complementedLattice_iff] at this
+  specialize this p h
+  aesop
+
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
 space. -/
 theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
