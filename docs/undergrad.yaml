@@ -473,7 +473,7 @@ Multivariable calculus:
     implicit function theorem: 'ImplicitFunctionData.implicitFunction'
   Differential equations:
     Cauchy-Lipschitz Theorem: 'IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq'
-    maximal solutions: ''
+    maximal solutions: 'exists_maximal_ode_solution'
     Grönwall lemma: 'norm_le_gronwallBound_of_norm_deriv_right_le'
     exit theorem of a compact subspace: ''
     autonomous differential equations: ''
