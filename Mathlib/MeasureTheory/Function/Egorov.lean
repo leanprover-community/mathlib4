@@ -39,12 +39,12 @@ set of elements such that `f k x` and `g x` are separated by at least `1 / (n + 
 
 This definition is useful for Egorov's theorem. -/
 def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : ℕ) (j : ι) : Set α :=
-  ⋃ (k) (_ : j ≤ k), { x | 1 / (n + 1 : ℝ≥0∞) < edist (f k x) (g x) }
+  ⋃ (k) (_ : j ≤ k), { x | (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) }
 
 variable {n : ℕ} {j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
-    x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, 1 / (n + 1 : ℝ≥0∞) < edist (f k x) (g x) := by
+    x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) := by
   simp_rw [notConvergentSeq, Set.mem_iUnion, exists_prop, mem_setOf]
 
 theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g n) :=
@@ -59,7 +59,7 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
   simp only [Set.mem_inter_iff, Set.mem_iInter, mem_notConvergentSeq_iff]
   push_neg
   rintro ⟨hmem, hx⟩
-  refine ⟨hmem, 1 / (n + 1 : ℝ≥0∞), by simp, fun N => ?_⟩
+  refine ⟨hmem, (n : ℝ≥0∞)⁻¹, by simp, fun N => ?_⟩
   obtain ⟨n, hn₁, hn₂⟩ := hx N
   exact ⟨n, hn₁, hn₂.le⟩
 
@@ -156,12 +156,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hg hsm hs hfg) := by
   rw [EMetric.tendstoUniformlyOn_iff]
   intro δ hδ
-  obtain ⟨N, hN⟩ : ∃ n : ℕ, 1 / (n + 1 : ℝ≥0∞) < δ := by
-    obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
-    refine ⟨N, lt_of_le_of_lt ?_ hN⟩
-    rw [div_eq_mul_inv, one_mul]
-    gcongr
-    simp
+  obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
   rw [eventually_atTop]
   refine ⟨Egorov.notConvergentSeqLTIndex (half_pos hε) hf hg hsm hs hfg N, fun n hn x hx => ?_⟩
   simp only [Set.mem_diff, Egorov.iUnionNotConvergentSeq, not_exists, Set.mem_iUnion,
