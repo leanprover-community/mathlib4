@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
+import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-!
 # Connecting a chain complex and a cochain complex
@@ -138,6 +138,34 @@ def restrictionLEIso :
       (i' := Int.negSucc (n + 1)) (j' := Int.negSucc n) (by dsimp; omega) (by dsimp; omega),
       cochainComplex_d, d_negSucc]
     simp)
+
+/-- Given `h : ConnectData K L` and `n : ℕ`, the homology
+of `h.cochainComplex` in degree `n + 1` identifies to the homology of `L` in degree `n + 1`. -/
+noncomputable def homologyIsoPos (n : ℕ) (m : ℤ)
+    [h.cochainComplex.HasHomology m] [L.HasHomology (n + 1)]
+    (hm : m = (n + 1 : ℕ)) :
+    h.cochainComplex.homology m ≅ L.homology (n + 1) :=
+  have := hasHomology_of_iso h.restrictionGEIso.symm (n + 1)
+  (h.cochainComplex.restrictionHomologyIso
+    (ComplexShape.embeddingUpIntGE 0) n (n + 1) (n + 2) (by simp) (by simp)
+      (i' := m - 1) (j' := m) (k' := m + 1) (by simp; omega) (by simp; omega)
+      (by simp; omega) (by simp) (by simp)).symm ≪≫
+    HomologicalComplex.homologyMapIso h.restrictionGEIso (n + 1)
+
+/-- Given `h : ConnectData K L` and `n : ℕ`, the homology
+of `h.cochainComplex` in degree `-(n + 2)` identifies to the homology of `K` in degree `n + 1`. -/
+noncomputable def homologyIsoNeg (n : ℕ) (m : ℤ)
+    [h.cochainComplex.HasHomology m] [K.HasHomology (n + 1)]
+    (hm : m = -(n + 2 : ℕ)) :
+    h.cochainComplex.homology m ≅ K.homology (n + 1) :=
+  have := hasHomology_of_iso h.restrictionLEIso.symm (n + 1)
+  (h.cochainComplex.restrictionHomologyIso
+    (ComplexShape.embeddingUpIntLE (-1)) (n + 2) (n + 1) n (by simp) (by simp)
+      (i' := m - 1) (j' := m) (k' := m + 1)
+      (by simp; omega) (by simp; omega) (by simp; omega) (by simp) (by simp)).symm ≪≫
+    HomologicalComplex.homologyMapIso h.restrictionLEIso (n + 1)
+
+-- TODO: Study `h.cochainComplex.homology k` when `k = 0` or `k = -1`.
 
 end ConnectData
 
