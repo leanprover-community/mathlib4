@@ -106,9 +106,8 @@ theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
   ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
 
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
-    V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
-  ext
-  simpa [mem_vonNeumann] using h.lt_iff_exists_lt
+    V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) :=
+  ext fun z ↦ by simpa [mem_vonNeumann] using h.lt_iff_exists_lt
 
 /-- Every set is in some element of the von Neumann hierarchy. -/
 theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o :=
