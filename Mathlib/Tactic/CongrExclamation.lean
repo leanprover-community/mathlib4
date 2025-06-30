@@ -712,7 +712,7 @@ while `congr! 2` produces the intended `⊢ x + y = y + x`.
 
 The `congr!` tactic also takes a configuration option, for example
 ```lean
-congr! (config := {transparency := .default}) 2
+congr! (transparency := .default) 2
 ```
 This overrides the default, which is to apply congruence lemmas at reducible transparency.
 
