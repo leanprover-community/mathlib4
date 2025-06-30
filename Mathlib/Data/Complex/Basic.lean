@@ -331,13 +331,20 @@ instance addCommGroup : AddCommGroup ℂ :=
 
 
 instance instNatCast : NatCast ℂ where
-  natCast := fun n => ⟨n, 0⟩
+  natCast n := ⟨n, 0⟩
 
 @[simp]
 lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
 @[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
 @[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
+
+
+instance instIntCast : IntCast ℂ where
+  intCast n := ⟨n, 0⟩
+
+@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
 
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
@@ -408,8 +415,6 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
 
-@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
