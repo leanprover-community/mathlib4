@@ -3,6 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Module.End
@@ -94,16 +95,14 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := InducedCategory.homEquiv.addCommGroup
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
 end InducedCategory
 
-instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
-  homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=
+  inferInstanceAs (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
 
 instance (X : C) : AddCommGroup (End X) := by
   dsimp [End]
