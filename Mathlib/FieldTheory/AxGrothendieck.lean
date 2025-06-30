@@ -140,13 +140,12 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
   Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
-open Fin.CommRing in -- TODO: can this be refactored to avoid using the ring structure in the proof?
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
         let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
-        let S : Set (ι → K) := fun x => φ.Realize (Sum.elim v x)
+        let S : Set (ι → K) := {x | φ.Realize (Sum.elim v x)}
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   classical
   have injOnAlt : ∀ {S : Set (ι → K)} (f : (ι → K) → (ι → K)),
@@ -155,10 +154,10 @@ theorem realize_genericPolyMapSurjOnOfInjOn
   simp only [Sentence.Realize, Formula.Realize, genericPolyMapSurjOnOfInjOn, Formula.relabel,
     Function.comp_def, Sum.map, id_eq, Equiv.sumAssoc, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     realize_iAlls, realize_imp, realize_relabel, Fin.natAdd_zero, realize_subst, realize_iInf,
-    Finset.mem_univ, realize_bdEqual, Term.realize_relabel, true_imp_iff,
-    Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply, Function.uncurry,
+    realize_bdEqual, Term.realize_relabel,
+    Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply,
     Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
-    Set.MapsTo, Set.mem_def, injOnAlt, funext_iff, Set.SurjOn, Set.image, setOf,
+    Set.MapsTo, Set.mem_setOf_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)

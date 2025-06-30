@@ -15,8 +15,8 @@ import Mathlib.Order.Lattice
 * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
 * `ringChar`: the characteristic of a ring
 * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
-    exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
-    prime characteristic `p`)
+  exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
+  prime characteristic `p`)
 -/
 
 assert_not_exists Field Finset OrderHom
@@ -81,7 +81,7 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
     lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
+  · simp only [Int.cast_zero, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 
@@ -170,7 +170,7 @@ lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < 
     (-1 : R) ≠ (1 : R) := by
   rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
     CharP.cast_eq_zero_iff R p 2]
-  exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h
+  exact fun h ↦ (Fact.out : 2 < p).not_ge <| Nat.le_of_dvd Nat.zero_lt_two h
 
 namespace CharP
 
@@ -181,7 +181,7 @@ variable [NonAssocRing R]
 lemma cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
-    _ = ↑(k % p) := by simp [cast_eq_zero]
+    _ = ↑(k % p) := by simp
 
 lemma ringChar_zero_iff_CharZero : ringChar R = 0 ↔ CharZero R := by
   rw [ringChar.eq_iff, charP_zero_iff_charZero]

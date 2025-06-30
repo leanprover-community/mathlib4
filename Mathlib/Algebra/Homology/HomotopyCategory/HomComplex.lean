@@ -445,7 +445,7 @@ def δ_hom : Cochain F G n →ₗ[R] Cochain F G m where
     · ext p q hpq
       dsimp
       simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.smul_v, Linear.comp_smul,
-        Linear.smul_comp, smul_add, add_right_inj, smul_comm m.negOnePow r]
+        Linear.smul_comp, smul_add, smul_comm m.negOnePow r]
     · simp only [δ_shape _ _ h, smul_zero]
 
 variable {F G R}
@@ -521,8 +521,8 @@ lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
 @[simp]
 lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
     (δ 0 1 z).v p q hpq = z.v p p (add_zero p) ≫ G.d p q - F.d p q ≫ z.v q q (add_zero q) := by
-  simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by omega) hpq, zero_add,
-    Int.negOnePow_one, Units.neg_smul, one_smul, sub_eq_add_neg]
+  simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by omega) hpq, Int.negOnePow_one, Units.neg_smul,
+    one_smul, sub_eq_add_neg]
 
 @[simp]
 lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
@@ -541,8 +541,7 @@ lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
   rw [dNext_eq h.hom (show (ComplexShape.up ℤ).Rel p (p+1) by simp),
     prevD_eq h.hom (show (ComplexShape.up ℤ).Rel (p-1) p by simp)] at eq
   rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
-  simp only [Cochain.mk_v, neg_add_cancel, one_smul, Int.negOnePow_zero,
-    Cochain.sub_v, Cochain.ofHom_v, eq]
+  simp only [Cochain.mk_v, one_smul, Int.negOnePow_zero, Cochain.sub_v, Cochain.ofHom_v, eq]
   abel
 
 lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
@@ -550,7 +549,7 @@ lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
       (fun i j hij => z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
   ext p
   rw [δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
-  simp only [neg_add_cancel, one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
+  simp only [one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
   rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p-1) p by simp)
     (show (ComplexShape.up ℤ).Rel p (p+1) by simp)]
   abel

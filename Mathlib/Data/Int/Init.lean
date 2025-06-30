@@ -71,51 +71,52 @@ the upwards induction step `p i → p (i + 1)` and the downwards induction step 
 
 It is used as the default induction principle for the `induction` tactic.
 -/
-@[elab_as_elim, induction_eliminator] protected lemma induction_on {p : ℤ → Prop} (i : ℤ)
-    (hz : p 0) (hp : ∀ i : ℕ, p i → p (i + 1)) (hn : ∀ i : ℕ, p (-i) → p (-i - 1)) : p i := by
+@[elab_as_elim, induction_eliminator] protected lemma induction_on {motive : ℤ → Prop} (i : ℤ)
+    (zero : motive 0) (succ : ∀ i : ℕ, motive i → motive (i + 1))
+    (pred : ∀ i : ℕ, motive (-i) → motive (-i - 1)) : motive i := by
   cases i with
   | ofNat i =>
     induction i with
-    | zero => exact hz
-    | succ i ih => exact hp _ ih
+    | zero => exact zero
+    | succ i ih => exact succ _ ih
   | negSucc i =>
-    suffices ∀ n : ℕ, p (-n) from this (i + 1)
+    suffices ∀ n : ℕ, motive (-n) from this (i + 1)
     intro n; induction n with
-    | zero => simp [hz]
-    | succ n ih => simpa [natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using hn _ ih
+    | zero => simp [zero]
+    | succ n ih => simpa [natCast_succ, Int.neg_add, Int.sub_eq_add_neg] using pred _ ih
 
 section inductionOn'
 
-variable {C : ℤ → Sort*} (z b : ℤ)
-  (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1)) (Hp : ∀ k ≤ b, C k → C (k - 1))
+variable {motive : ℤ → Sort*} (z b : ℤ) (zero : motive b)
+  (succ : ∀ k, b ≤ k → motive k → motive (k + 1)) (pred : ∀ k ≤ b, motive k → motive (k - 1))
 
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
-@[elab_as_elim] protected def inductionOn' : C z :=
-  cast (congrArg C <| show b + (z - b) = z by rw [Int.add_comm, z.sub_add_cancel b]) <|
+@[elab_as_elim] protected def inductionOn' : motive z :=
+  cast (congrArg motive <| show b + (z - b) = z by rw [Int.add_comm, z.sub_add_cancel b]) <|
   match z - b with
   | .ofNat n => pos n
   | .negSucc n => neg n
 where
   /-- The positive case of `Int.inductionOn'`. -/
-  pos : ∀ n : ℕ, C (b + n)
-  | 0 => cast (by simp) H0
+  pos : ∀ n : ℕ, motive (b + n)
+  | 0 => cast (by simp) zero
   | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
-    Hs _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
+    succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
-  neg : ∀ n : ℕ, C (b + -[n+1])
-  | 0 => Hp _ Int.le_rfl H0
+  neg : ∀ n : ℕ, motive (b + -[n+1])
+  | 0 => pred _ Int.le_rfl zero
   | n+1 => by
-    refine cast (by rw [Int.add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
+    refine cast (by rw [Int.add_sub_assoc]; rfl) (pred _ (Int.le_of_lt ?_) (neg n))
     omega
 
-variable {z b H0 Hs Hp}
+variable {z b zero succ pred}
 
-lemma inductionOn'_self : b.inductionOn' b H0 Hs Hp = H0 :=
+lemma inductionOn'_self : b.inductionOn' b zero succ pred = zero :=
   cast_eq_iff_heq.mpr <| .symm <| by rw [b.sub_self, ← cast_eq_iff_heq]; rfl
 
 lemma inductionOn'_sub_one (hz : z ≤ b) :
-    (z - 1).inductionOn' b H0 Hs Hp = Hp z hz (z.inductionOn' b H0 Hs Hp) := by
+    (z - 1).inductionOn' b zero succ pred = pred z hz (z.inductionOn' b zero succ pred) := by
   apply cast_eq_iff_heq.mpr
   obtain ⟨n, hn⟩ := Int.eq_negSucc_of_lt_zero (show z - 1 - b < 0 by omega)
   rw [hn]
@@ -133,35 +134,38 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
 end inductionOn'
 
 /-- Inductively define a function on `ℤ` by defining it on `ℕ` and extending it from `n` to `-n`. -/
-@[elab_as_elim] protected def negInduction {C : ℤ → Sort*} (nat : ∀ n : ℕ, C n)
-    (neg : (∀ n : ℕ, C n) → ∀ n : ℕ, C (-n)) : ∀ n : ℤ, C n
+@[elab_as_elim] protected def negInduction {motive : ℤ → Sort*} (nat : ∀ n : ℕ, motive n)
+    (neg : (∀ n : ℕ, motive n) → ∀ n : ℕ, motive (-n)) : ∀ n : ℤ, motive n
   | .ofNat n => nat n
   | .negSucc n => neg nat <| n + 1
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
-protected lemma le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
-    (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
-  refine Int.inductionOn' n m ?_ ?_ ?_
+@[elab_as_elim]
+protected lemma le_induction {m : ℤ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
+    (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn := by
+  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_
   · intro
-    exact h0
+    exact base
   · intro k hle hi _
-    exact h1 k hle (hi hle)
+    exact succ k hle (hi hle)
   · intro k hle _ hle'
     omega
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
-protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
-    (h1 : ∀ n : ℤ, n ≤ m → P n → P (n - 1)) (n : ℤ) : n ≤ m → P n :=
-  Int.inductionOn' n m (fun _ ↦ h0) (fun k hle _ hle' ↦ by omega)
-    fun k hle hi _ ↦ h1 k hle (hi hle)
+@[elab_as_elim]
+protected lemma le_induction_down {m : ℤ} {motive : ∀ n, n ≤ m → Prop} (base : motive m m.le_refl)
+    (pred : ∀ n hmn, motive n hmn → motive (n - 1) (by omega)) : ∀ n hmn, motive n hmn := fun n ↦
+  Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by omega)
+    fun k hle hi _ ↦ pred k hle (hi hle)
 
 section strongRec
 
-variable {P : ℤ → Sort*} (lt : ∀ n < m, P n) (ge : ∀ n ≥ m, (∀ k < n, P k) → P n)
+variable {motive : ℤ → Sort*} (lt : ∀ n < m, motive n)
+  (ge : ∀ n ≥ m, (∀ k < n, motive k) → motive n)
 
 /-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
 and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
-@[elab_as_elim] protected def strongRec (n : ℤ) : P n := by
+@[elab_as_elim] protected def strongRec (n : ℤ) : motive n := by
   refine if hnm : n < m then lt n hnm else ge n (by omega) (n.inductionOn' m lt ?_ ?_)
   · intro _n _ ih l _
     exact if hlm : l < m then lt l hlm else ge l (by omega) fun k _ ↦ ih k (by omega)

@@ -317,7 +317,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     suffices ∀ a, diagonal w a = 0 ∨ ∃ b, w b ≠ 0 ∧ diagonal w b = diagonal w a
       by simpa [subset_antisymm_iff, subset_def, w']
     simp_rw [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
-    simp +contextual [funext_iff, diagonal, or_iff_not_imp_right]
+    simp +contextual [funext_iff, diagonal]
   rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,
     ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 

@@ -110,7 +110,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
                 Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
                   ?_⟩)
         simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
-          Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
+          Subtype.exists, exists_and_right, exists_eq_right]
         exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
       exact ⟨ModelType.of T M'⟩⟩
 

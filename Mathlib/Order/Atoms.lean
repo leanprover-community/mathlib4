@@ -77,7 +77,7 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
     forall_congr' fun b => by
-      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_le]
+      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_ge]
 
 end Preorder
 
@@ -190,19 +190,19 @@ variable {A B : Type*} [SetLike A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
-  simp_rw [IsAtom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+  simp_rw [IsAtom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem isCoatom_iff [OrderTop A] {K : A} :
     IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+  simp_rw [IsCoatom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem covBy_iff {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
   refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
   push_neg
-  rw [lt_iff_le_not_le, lt_iff_le_and_ne, and_and_and_comm]
+  rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, and_comm, implies_true]
 
@@ -211,7 +211,7 @@ theorem covBy_iff' {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
   refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
   push_neg
-  rw [lt_iff_le_and_ne, lt_iff_le_not_le, and_and_and_comm]
+  rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, ne_comm, implies_true]
 
@@ -251,7 +251,7 @@ section Pairwise
 
 theorem IsAtom.inf_eq_bot_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
     (hb : IsAtom b) (hab : a ≠ b) : a ⊓ b = ⊥ :=
-  hab.not_le_or_not_le.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
+  hab.not_le_or_not_ge.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
 
 theorem IsAtom.disjoint_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
     (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b :=
@@ -621,7 +621,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
     inhabit α
     refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
     refine le_antisymm ?_ (sSup_le fun c hc => hc.2)
-    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq, iInf_const]
+    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq]
     rw [← this]; clear this
     simp_rw [iInf_iSup_eq, iSup_le_iff]; intro g
     if h : (⨅ a, b ⊓ cond (g a) a (aᶜ)) = ⊥ then simp [h] else
@@ -775,10 +775,10 @@ def orderIsoBool : α ≃o Bool :=
   { equivBool with
     map_rel_iff' := @fun a b => by
       rcases eq_bot_or_eq_top a with (rfl | rfl)
-      · simp [bot_ne_top]
+      · simp
       · rcases eq_bot_or_eq_top b with (rfl | rfl)
-        · simp [bot_ne_top.symm, bot_ne_top, Bool.false_lt_true]
-        · simp [bot_ne_top] }
+        · simp [bot_ne_top.symm, Bool.false_lt_true]
+        · simp }
 
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
@@ -787,7 +787,7 @@ protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α
     compl := fun x => if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top, SDiff.sdiff, compl]
+      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp
     inf_compl_le_bot := fun x => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
@@ -830,16 +830,7 @@ open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
-    __ := IsSimpleOrder.booleanAlgebra
-    iInf_sup_le_sup_sInf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp [bot_sup_eq, ← sInf_eq_iInf]
-      · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
-    inf_sSup_le_iSup_inf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [le_bot_iff, sSup_eq_bot, bot_inf_eq, iSup_bot, le_refl]
-      · simp only [top_inf_eq, ← sSup_eq_iSup]
-        exact le_rfl }
+    __ := IsSimpleOrder.booleanAlgebra }
 
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
@@ -1020,7 +1011,7 @@ theorem Lattice.isStronglyAtomic [OrderBot α] [IsUpperModularLattice α] [IsAto
     IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     obtain ⟨s, hsb, h⟩ := isLUB_atoms b
-    refine by_contra fun hcon ↦ hab.not_le <| (isLUB_le_iff hsb).2 fun x hx ↦ ?_
+    refine by_contra fun hcon ↦ hab.not_ge <| (isLUB_le_iff hsb).2 fun x hx ↦ ?_
     simp_rw [not_exists, and_comm (b := _ ≤ _), not_and] at hcon
     specialize hcon (x ⊔ a) (sup_le (hsb.1 hx) hab.le)
     obtain (hbot | h_inf) := (h x hx).bot_covBy.eq_or_eq (c := x ⊓ a) (by simp) (by simp)
