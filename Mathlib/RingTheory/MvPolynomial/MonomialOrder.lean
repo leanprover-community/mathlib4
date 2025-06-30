@@ -649,7 +649,7 @@ The leading terms of non-zero polynomials within a set `B` is equal to the leadi
 of all polynomials in B, excluding zero.
 -/
 lemma leadingTerm_image_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :
-  m.leadingTerm '' (B \ {0}) = (m.leadingTerm '' B) \ {0} := by
+    m.leadingTerm '' (B \ {0}) = (m.leadingTerm '' B) \ {0} := by
   apply subset_antisymm
   · intro p
     simp
