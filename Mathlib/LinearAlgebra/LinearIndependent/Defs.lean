@@ -473,11 +473,11 @@ section repr
 
 /-- Canonical isomorphism between linear combinations and the span of linearly independent vectors.
 -/
-@[simps (config := { rhsMd := default }) symm_apply]
+@[simps (rhsMd := default) symm_apply]
 def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
     (ι →₀ R) ≃ₗ[R] span R (range v) := by
   refine LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v))
-                                 (Finsupp.linearCombination R v) ?_) ⟨hv.codRestrict _, ?_⟩
+    (Finsupp.linearCombination R v) ?_) ⟨hv.codRestrict _, ?_⟩
   · simp_rw [← Finsupp.range_linearCombination]; exact fun c ↦ ⟨c, rfl⟩
   rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict,
     ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top,
