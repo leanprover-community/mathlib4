@@ -133,4 +133,7 @@ theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o := by
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
 
+theorem rank_def {x : ZFSet} {o : Ordinal} : rank x = o ↔ x ⊆ V_ o ∧ ∀ o' < o, ¬ x ⊆ V_ o' := by
+  simp_rw [subset_vonNeumann, not_le, forall_lt_iff_le, le_antisymm_iff]
+
 end ZFSet
