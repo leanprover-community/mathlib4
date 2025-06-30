@@ -690,13 +690,13 @@ lemma leadingTerm_degree_eq (f : MvPolynomial σ R) :
     exact fun a ↦ False.elim (h a)
 
 lemma leadingTerm_degree_eq' (f : MvPolynomial σ R) :
-  m.toSyn (m.degree (m.leadingTerm f)) = m.toSyn (m.degree f) := by
-    classical
-    by_cases h : f = 0 <;> simp [leadingTerm,h]
-    have : m.leadingCoeff f != 0 := by
-      simp [leadingCoeff, h]
-    simp [MonomialOrder.degree_monomial]
-    exact fun a ↦ False.elim (h a)
+    m.toSyn (m.degree (m.leadingTerm f)) = m.toSyn (m.degree f) := by
+  classical
+  by_cases h : f = 0 <;> simp [leadingTerm,h]
+  have : m.leadingCoeff f != 0 := by
+    simp [leadingCoeff, h]
+  simp [MonomialOrder.degree_monomial]
+  exact fun a ↦ False.elim (h a)
 
 end Semiring
 
