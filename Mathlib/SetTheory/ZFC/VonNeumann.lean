@@ -69,9 +69,19 @@ theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ 
     exact ⟨_, this, subset_vonNeumann.2 le_rfl⟩
 termination_by o
 
+theorem subset_vonNeumann_self (x : ZFSet) : x ⊆ V_ (rank x) := by
+  simp [subset_vonNeumann]
+
 theorem mem_vonNeumann : x ∈ V_ o ↔ rank x < o := by
   simp_rw [mem_vonNeumann', subset_vonNeumann]
   exact ⟨fun ⟨a, h₁, h₂⟩ ↦ h₂.trans_lt h₁, by aesop⟩
+
+theorem mem_vonNeumann_succ (x : ZFSet) : x ∈ V_ (succ (rank x)) := by
+  simp [mem_vonNeumann]
+
+/-- Every set is in some element of the von Neumann hierarchy. -/
+theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o :=
+  ⟨_, mem_vonNeumann_succ x⟩
 
 @[simp]
 theorem rank_vonNeumann (o : Ordinal) : rank (V_ o) = o :=
@@ -86,6 +96,10 @@ theorem vonNeumann_mem_vonNeumann_iff : V_ a ∈ V_ b ↔ a < b := by
 @[simp]
 theorem vonNeumann_subset_vonNeumann_iff : V_ a ⊆ V_ b ↔ a ≤ b := by
   simp [subset_vonNeumann]
+
+theorem mem_vonNeumann_of_subset {y : ZFSet} (h : x ⊆ y) (hy : y ∈ V_ o) : x ∈ V_ o := by
+  rw [mem_vonNeumann] at *
+  exact (rank_mono h).trans_lt hy
 
 theorem vonNeumann_strictMono : StrictMono vonNeumann :=
   strictMono_of_le_iff_le (by simp)
@@ -108,10 +122,6 @@ theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) :=
   ext fun z ↦ by simpa [mem_vonNeumann] using h.lt_iff_exists_lt
-
-/-- Every set is in some element of the von Neumann hierarchy. -/
-theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o :=
-  ⟨succ x.rank, by simp [subset_vonNeumann]⟩
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
