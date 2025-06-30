@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 
 import Mathlib.Data.Set.Subset
-import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.Irreducible
 import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Sets.Closeds
