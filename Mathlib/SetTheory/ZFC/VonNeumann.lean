@@ -61,10 +61,9 @@ theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ 
   constructor <;> intro hx y hy
   · apply (rank_lt_of_mem (hx hy)).trans_le
     simp_rw [rank_le_iff, mem_sUnion, mem_range]
-    rintro z ⟨_, ⟨⟨a, rfl⟩, hz⟩⟩
-    have := a.2
+    rintro z ⟨_, ⟨⟨⟨a, ha⟩, rfl⟩, hz⟩⟩
     rw [mem_powerset, subset_vonNeumann] at hz
-    exact hz.trans_lt a.2
+    exact hz.trans_lt ha
   · simp_rw [mem_sUnion, mem_range]
     have := hx hy
     refine ⟨_, Set.mem_range_self ⟨y.rank, this⟩, ?_⟩
