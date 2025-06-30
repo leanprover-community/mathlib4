@@ -33,7 +33,7 @@ This file defines the following linters:
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
-  scoped to a single declaration
+  scoped to a single declaration, and for `Classical` declarations made local or scoped instances.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -492,6 +492,8 @@ end Style.nameCheck
 /-- The "openClassical" linter emits a warning on `open Classical` statements which are not
 scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
 would be better stated with explicit decidability statements.
+We also check for declarations in the Classical namespace being made local or scoped instances,
+as this has basically the same effect.
 -/
 register_option linter.style.openClassical : Bool := {
   defValue := false
@@ -518,6 +520,32 @@ def extractOpenNames : Syntax → Array (TSyntax `ident)
     | _ => unreachable!
   | _ => #[]
 
+/--
+`getLocalScopedAttributes? cmd` assumes that `cmd` represents a `attribute [...] id` or
+`attribute [...] id` command. If a local or scoped instance is added, it returns the
+attribute's id. Otherwise, it returns `default`.
+-/
+def getLocalScopedAttributes? : Syntax → Option Ident
+  | `(attribute [$x,*] $id in $_) | `(attribute [$x,*] $id) =>
+    let xs := x.getElems.find? fun a ↦ match a.raw with
+      | `(Parser.Term.attrInstance| local $_attr:attr) => true
+      | `(Parser.Term.attrInstance| scoped $_attr:attr) => true
+      | `(Parser.Command.eraseAttr| -$_) => false
+      | `(attr| $_a) => false
+
+    let prio := if let some inner := xs then
+      let prio := inner.raw[1]
+      dbg_trace prio
+      some prio
+
+    else
+      none
+    --dbg_trace x.getElems
+    --let asdf := prio.map fun _ ↦ id
+    --dbg_trace asdf
+    xs.map fun _ ↦ id
+  | _ => default
+
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
 def openClassicalLinter : Linter where run stx := do
     unless getLinterValue linter.style.openClassical (← getLinterOptions) do
@@ -527,11 +555,22 @@ def openClassicalLinter : Linter where run stx := do
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
     for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
       Linter.logLint linter.style.openClassical stxN "\
-      please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
+      please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
       which would be better stated with explicit decidability statements.\n\
-      Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+      Instead, use `open scoped Classical in` for definitions or instances, the `classical` tactic \
       for proofs.\nFor theorem statements, \
-      either add missing decidability assumptions or use `open Classical in`."
+      either add missing decidability assumptions or use `open scoped Classical in`."
+    -- Also lint if some `Classical` declaration is added as a local or scoped instance.
+    if let some id := getLocalScopedAttributes? stx then
+      if id.raw.getId.getRoot == `Classical then
+        Linter.logLint linter.style.openClassical stx s!"please do not add '{id.raw.getId}' \
+        as a local or scoped instance:\nthis can hide theorem statements \
+        which would be better stated with explicit decidability statements.\n\
+        A local instance at default priority also overrides other better decidability instances.\n\
+        Instead, specify an instance priority, or \
+        use `open scoped Classical in` for definitions or instances and \
+        the `classical` tactic for proofs.\nFor theorem statements, \
+        either add missing decidability assumptions or use `open scoped Classical in`."
 
 initialize addLinter openClassicalLinter
 

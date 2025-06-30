@@ -352,8 +352,7 @@ namespace ModP
 
 section Classical
 
-attribute [local instance] Classical.dec
-
+open scoped Classical in
 /-- For a field `K` with valuation `v : K → ℝ≥0` and ring of integers `O`,
 a function `O/(p) → ℝ≥0` that sends `0` to `0` and `x + (p)` to `v(x)` as long as `x ∉ (p)`. -/
 noncomputable def preVal (x : ModP O p) : ℝ≥0 :=
