@@ -547,7 +547,7 @@ lemma ExcenterExists.touchpoint_notMem_affineSpan_of_ne {signs : Finset (Fin (n 
     (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hne : i ≠ j) :
     s.touchpoint signs i ∉ affineSpan ℝ (Set.range (s.faceOpposite j).points) :=
   fun hm ↦ h.touchpoint_injective.ne hne
-    ((h.isTangentAt_touchpoint j).mem_and_mem_iff_eq.1 ⟨h.touchpoint_mem_exsphere i, hm⟩)
+    ((h.isTangentAt_touchpoint j).eq_of_mem_of_mem (h.touchpoint_mem_exsphere i) hm)
 
 lemma touchpoint_empty_notMem_affineSpan_of_ne {i j : Fin (n + 1)} (hne : i ≠ j) :
     s.touchpoint ∅ i ∉ affineSpan ℝ (Set.range (s.faceOpposite j).points) :=
