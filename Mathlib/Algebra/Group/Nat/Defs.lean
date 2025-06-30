@@ -70,22 +70,4 @@ set_option linter.style.commandStart true
 -- We set the simp priority slightly lower than default; later more general lemmas will replace it.
 @[simp 900] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
 
-lemma div_mul_div {m n k : ℕ} (hn : n > 0) (hkm : m ∣ k) (hkn : n ∣ m) :
-    (k / m) * (m / n) = k / n := by
-  refine Eq.symm (Nat.div_eq_of_eq_mul_left hn ?_)
-  rw [mul_assoc, Nat.div_mul_cancel hkn, Nat.div_mul_cancel hkm]
-
-lemma div_dvd_div' {m n k : ℕ} (hn : n > 0) (hkm : m ∣ k) (hkn : n ∣ m) :
-    k / m ∣ k / n := Exists.intro (m / n) (Eq.symm (div_mul_div hn hkm hkn))
-
-lemma lcm_div_div {m n k : ℕ} (hm : m > 0) (hn : n > 0) (hkm : m ∣ k) (hkn : n ∣ k) :
-    (k / m).lcm (k / n) = k / (m.gcd n) := by
-  rw [Nat.lcm_eq_iff]
-  exact ⟨div_dvd_div' (gcd_pos_of_pos_left n hm) hkm (Nat.gcd_dvd_left m n),
-        div_dvd_div' (gcd_pos_of_pos_left n hm) hkn (Nat.gcd_dvd_right m n), fun c hmc hnc ↦ by
-    rw [Nat.div_dvd_iff_dvd_mul hkm hm] at hmc
-    rw [Nat.div_dvd_iff_dvd_mul hkn hn] at hnc
-    simpa [Nat.div_dvd_iff_dvd_mul (Nat.dvd_trans (Nat.gcd_dvd_left m n) hkm)
-      (gcd_pos_of_pos_left n hm), Nat.gcd_mul_right m c n] using (Nat.dvd_gcd hmc hnc) ⟩
-
 end Nat
