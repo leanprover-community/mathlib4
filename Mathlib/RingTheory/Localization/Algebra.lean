@@ -38,7 +38,7 @@ variable (M S) in
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
     IsLocalizedModule M (Algebra.idealMap I (S := S)) where
   map_units x :=
-    (Module.End_isUnit_iff _).mpr ⟨fun a b e ↦ Subtype.ext ((map_units S x).mul_right_injective
+    (Module.End.isUnit_iff _).mpr ⟨fun a b e ↦ Subtype.ext ((map_units S x).mul_right_injective
       (by simpa [Algebra.smul_def] using congr(($e).1))),
       fun a ↦ ⟨⟨_, Ideal.mul_mem_left _ (map_units S x).unit⁻¹.1 a.2⟩,
         Subtype.ext (by simp [Algebra.smul_def, ← mul_assoc])⟩⟩
@@ -57,7 +57,7 @@ lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
 
 variable (S) in
 /-- The canonical linear map from the kernel of `g` to the kernel of its localization. -/
-def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
+noncomputable def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
     RingHom.ker g →ₗ[R] RingHom.ker (IsLocalization.map Q g hy : S →+* Q) where
   toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, RingHom.mem_ker.mp x.property]⟩
   map_add' x y := by
@@ -126,7 +126,7 @@ end IsLocalization
 open IsLocalization
 
 /-- The canonical linear map from the kernel of an algebra homomorphism to its localization. -/
-def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
+noncomputable def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
     RingHom.ker f →ₗ[A] RingHom.ker (mapₐ M Rₚ Aₚ Bₚ f) :=
   RingHom.toKerIsLocalization Aₚ Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)
 

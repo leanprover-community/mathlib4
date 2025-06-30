@@ -26,7 +26,7 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
@@ -213,3 +213,8 @@ elab_rules : tactic
   _ ← simpLocation r.ctx {} dis loc
 
 end Mathlib.Tactic.FieldSimp
+
+/-!
+ We register `field_simp` with the `hint` tactic.
+ -/
+register_hint field_simp

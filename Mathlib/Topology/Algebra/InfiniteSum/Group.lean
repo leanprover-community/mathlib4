@@ -72,7 +72,7 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
   convert (hasProd_ite_eq b (a / f b)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_self]
-    simp [eq_self_iff_true, if_true, sub_add_cancel]
+    simp
   · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
@@ -168,14 +168,22 @@ theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
       tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
 
 @[to_additive]
-theorem tprod_div (hf : Multipliable f) (hg : Multipliable g) :
+protected theorem Multipliable.tprod_div (hf : Multipliable f) (hg : Multipliable g) :
     ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
 
+@[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
+  Multipliable.tprod_div
+
 @[to_additive]
-theorem prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
+protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
   ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
+
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_compl := Summable.sum_add_tsum_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_compl :=
+  Multipliable.prod_mul_tprod_compl
 
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
@@ -183,10 +191,14 @@ remaining terms. -/
 @[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
 Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
 remaining terms."]
-theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f) (b : β) :
-    ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
+protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f)
+    (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
   exact (mul_div_cancel _ _).symm
+
+@[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite := Summable.tsum_eq_add_tsum_ite
+@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite :=
+  Multipliable.tprod_eq_mul_tprod_ite
 
 end tprod
 
@@ -210,7 +222,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
     (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
-  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+  simp only [CauchySeq, cauchy_map_iff, prod_atTop_atTop_eq,
     uniformity_eq_comap_nhds_one α, tendsto_comap_iff, Function.comp_def, atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
@@ -292,7 +304,7 @@ protected theorem Multipliable.mulIndicator (hf : Multipliable f) (s : Set β) :
 theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : Injective i) :
     Multipliable (f ∘ i) := by
   simpa only [Set.mulIndicator_range_comp] using
-    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_not_mem hx _)).2
+    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_notMem hx _)).2
     (hf.mulIndicator (Set.range i))
 
 @[to_additive]
@@ -305,16 +317,27 @@ theorem multipliable_subtype_and_compl {s : Set β} :
   ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
 
 @[to_additive]
-theorem tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f)
-    (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
+protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α}
+    (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 
+@[deprecated (since := "2025-04-12")] alias tsum_subtype_add_tsum_subtype_compl :=
+  Summable.tsum_subtype_add_tsum_subtype_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias
+  tprod_subtype_mul_tprod_subtype_compl := Multipliable.tprod_subtype_mul_tprod_subtype_compl
+
 @[to_additive]
-theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f) (s : Finset β) :
+protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
+    (hf : Multipliable f) (s : Finset β) :
     (∏ x ∈ s, f x) * ∏' x : { x // x ∉ s }, f x = ∏' x, f x := by
-  rw [← tprod_subtype_mul_tprod_subtype_compl hf s]
+  rw [← hf.tprod_subtype_mul_tprod_subtype_compl s]
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
+
+@[deprecated (since := "2025-04-12")] alias sum_add_tsum_subtype_compl :=
+  Summable.sum_add_tsum_subtype_compl
+@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_subtype_compl :=
+  Multipliable.prod_mul_tprod_subtype_compl
 
 end IsUniformGroup
 
@@ -362,7 +385,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
-  refine s.eventually_cofinite_nmem.mono fun x hx ↦ ?_
+  refine s.eventually_cofinite_notMem.mono fun x hx ↦ ?_
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 
 @[to_additive]
@@ -429,10 +452,12 @@ lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
   _ = ∏ i ∈ t, g i := by
     rw [← prod_union disjoint_sdiff, union_sdiff_of_subset ht]
 
-lemma tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
+protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
     (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
+
+@[deprecated (since := "2025-04-12")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
 
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead

@@ -193,7 +193,7 @@ lemma deriv_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   _ = μ[fun ω ↦ X ω * exp (v * X ω)] / mgf X μ v := by rw [deriv_mgf h]
 
 lemma deriv_cgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
-    deriv (cgf X μ) 0 = μ[X] / (μ Set.univ).toReal := by simp [deriv_cgf h]
+    deriv (cgf X μ) 0 = μ[X] / μ.real Set.univ := by simp [deriv_cgf h]
 
 lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
@@ -211,7 +211,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
   calc deriv (fun u ↦ (∫ ω, X ω * exp (u * X ω) ∂μ) / mgf X μ u) v
   _ = (deriv (fun u ↦ ∫ ω, X ω * exp (u * X ω) ∂μ) v * mgf X μ v -
       (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (mgf X μ) v) / mgf X μ v ^ 2 := by
-    rw [deriv_div]
+    rw [deriv_fun_div]
     · rw [h_d_mgf.symm.differentiableAt_iff, ← iteratedDeriv_one]
       exact differentiableAt_iteratedDeriv_mgf h 1
     · exact differentiableAt_mgf h
@@ -262,10 +262,10 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     · exact (interior_subset (s := integrableExpSet X μ) h).const_mul _
     rw [integral_sub (integrable_pow_mul_exp_of_mem_interior_integrableExpSet h 2) h_int]
     congr
-    · rw [← integral_mul_left, ← integral_mul_right]
+    · rw [← integral_const_mul, ← integral_mul_const]
       congr with ω
       ring
-    · rw [integral_mul_left, mgf]
+    · rw [integral_const_mul, mgf]
   _ = (∫ ω, (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v := by
     congr with ω
     ring

@@ -62,7 +62,7 @@ theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a�
 
 @[to_additive (attr := simp)]
 theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
-  ⟨1, by simp [MulAction.one_smul]⟩
+  ⟨1, by simp⟩
 
 @[to_additive]
 theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
@@ -273,22 +273,13 @@ def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv :=
     ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
-      simp +contextual [orbit_eq_iff.symm, eq_comm]⟩
+      simp +contextual [orbit_eq_iff.symm]⟩
 
 variable {G α}
 
 @[to_additive]
 theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
-
-@[to_additive]
-alias orbitRel_r_apply := orbitRel_apply
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated orbitRel_apply (since := "2024-10-18")] orbitRel_r_apply
-attribute [deprecated AddAction.orbitRel_apply (since := "2024-10-18")] AddAction.orbitRel_r_apply
-
 
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/

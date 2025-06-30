@@ -158,8 +158,9 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
     ((R ⧸ I) ⊗[R] M) ≃ₗ[R] M ⧸ (I • (⊤ : Submodule R M)) :=
   quotientTensorEquiv M I ≪≫ₗ
   (Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <| by
-    erw [← LinearMap.range_comp, ← (Submodule.topEquiv.lTensor I).range_comp,
-      Submodule.smul_eq_map₂, map₂_eq_range_lift_comp_mapIncl]
+    rw [← Submodule.map_coe_toLinearMap, ← LinearMap.range_comp,
+      ← (Submodule.topEquiv.lTensor I).range_comp, Submodule.smul_eq_map₂,
+      map₂_eq_range_lift_comp_mapIncl]
     exact congr_arg _ (TensorProduct.ext' fun _ _ ↦  rfl))
 
 variable (M) in

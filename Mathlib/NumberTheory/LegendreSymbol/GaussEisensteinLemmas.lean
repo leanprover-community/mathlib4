@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -51,9 +50,9 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     · rw [natCast_natAbs_valMinAbs]
       split_ifs
       · rw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
-          if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
+          if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
       · rw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
-          val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
+          val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
     (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
@@ -160,7 +159,7 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
 private theorem sum_Ico_eq_card_lt {p q : ℕ} :
     ∑ a ∈ Ico 1 (p / 2).succ, a * q / p =
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q} :=
-  if hp0 : p = 0 then by simp [hp0, Finset.ext_iff]
+  if hp0 : p = 0 then by simp [hp0]
   else
     calc
       ∑ a ∈ Ico 1 (p / 2).succ, a * q / p =
@@ -188,8 +187,8 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       #{x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} :=
     card_equiv (Equiv.prodComm _ _)
       (fun ⟨_, _⟩ => by
-        simp +contextual only [mem_filter, and_self_iff, Prod.swap_prod_mk,
-          forall_true_iff, mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
+        simp +contextual only [mem_filter, Prod.swap_prod_mk,
+          mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
   have hdisj :
     Disjoint {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q}
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} := by

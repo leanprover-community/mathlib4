@@ -35,16 +35,16 @@ We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
 
 ## Main definitions and results:
 
- * `approxOrderOf`: in a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ`
-   is the set of elements within a distance `δ` of a point of order `n`.
- * `wellApproximable`: in a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`,
-   `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
-   is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
- * `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
-   the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
-   `addWellApproximable 𝕊 δ` is almost empty or almost full.
- * `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
- * `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
+* `approxOrderOf`: in a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ`
+  is the set of elements within a distance `δ` of a point of order `n`.
+* `wellApproximable`: in a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`,
+  `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
+  is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
+* `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
+  the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
+  `addWellApproximable 𝕊 δ` is almost empty or almost full.
+* `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
+* `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
 
 ## TODO
 
@@ -145,7 +145,7 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     · rw [mem_setOf_eq, ← orderOf_inv, mul_inv_rev, inv_inv, mul_comm]
       apply han
       simpa
-    · simp only [f, Subtype.mk_eq_mk, Subtype.coe_mk, mul_inv_cancel_left]
+    · simp only [f, mul_inv_cancel_left]
   simpa only [mem_setOf_eq, Subtype.coe_mk, iUnion_coe_set] using
     hf.iUnion_comp fun b => ball (b : A) δ
 
@@ -155,7 +155,7 @@ namespace UnitAddCircle
 
 theorem mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 0 < n) :
     x ∈ approxAddOrderOf UnitAddCircle n δ ↔ ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ := by
-  simp only [mem_approx_add_orderOf_iff, mem_setOf_eq, ball, exists_prop, dist_eq_norm,
+  simp only [mem_approx_add_orderOf_iff, mem_setOf_eq, ball, dist_eq_norm,
     AddCircle.addOrderOf_eq_pos_iff hn, mul_one]
   constructor
   · rintro ⟨y, ⟨m, hm₁, hm₂, rfl⟩, hx⟩; exact ⟨m, hm₁, hm₂, hx⟩

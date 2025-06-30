@@ -150,7 +150,7 @@ lemma P1_of_lt (h₁ : P3 x₃ x₂ y₂ y₃) (h₂ : P3 x₁ x₃ y₂ y₁) :
   convert add_lt_add h₁ h₂ using 1 <;> abel
 
 /-- The type of lists of arguments for P1, P2, and P4. -/
-inductive Args : Type (u+1)
+inductive Args : Type (u + 1)
   | P1 (x y : PGame.{u}) : Args
   | P24 (x₁ x₂ y : PGame.{u}) : Args
 
@@ -516,16 +516,6 @@ instance : CommRing Surreal where
   mul_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound (mul_comm_equiv _ _)
   zero_mul := by rintro ⟨_⟩; exact Quotient.sound (zero_mul_equiv _)
   mul_zero := by rintro ⟨_⟩; exact Quotient.sound (mul_zero_equiv _)
-
-noncomputable instance : LinearOrder Surreal where
-  le := lift₂ (fun x y _ _ ↦ x ≤ y) (fun _ _ _ _ hx hy ↦ propext <| le_congr hx hy)
-  lt := lift₂ (fun x y _ _ ↦ x < y) (fun _ _ _ _ hx hy ↦ propext <| lt_congr hx hy)
-  le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
-  le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
-  lt_iff_le_not_le := by rintro ⟨_⟩ ⟨_⟩; exact lt_iff_le_not_le
-  le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
-  le_total := by rintro ⟨x⟩ ⟨y⟩; exact (le_or_gf x.1 y.1).imp id (fun h ↦ h.le y.2 x.2)
-  decidableLE := Classical.decRel _
 
 instance : ZeroLEOneClass Surreal where
   zero_le_one := PGame.zero_lt_one.le

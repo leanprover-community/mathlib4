@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colin Jones
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.IsPrimePow
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -68,7 +68,7 @@ def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by
   rw [Pseudoperfect, not_and_or]
-  simp only [not_lt, nonpos_iff_eq_zero, mem_powerset, not_exists, not_and, ne_eq]
+  simp only [not_lt, nonpos_iff_eq_zero, not_exists, not_and, ne_eq]
 
 theorem deficient_one : Deficient 1 := zero_lt_one
 theorem deficient_two : Deficient 2 := one_lt_two
@@ -136,7 +136,7 @@ theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p := by
   exact not_imp_not.mpr (Perfect.pseudoperfect)
 
 /-- Any natural number power of a prime is deficient -/
-theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
+theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
   rcases Nat.eq_zero_or_pos m with (rfl | _)
   · simpa using deficient_one
   · have h1 : (n ^ m).properDivisors = image (n ^ ·) (range m) := by
@@ -182,7 +182,7 @@ theorem infinite_even_deficient : {n : ℕ | Even n ∧ n.Deficient}.Infinite :=
   intro n
   use 2 ^ (n + 1)
   constructor
-  · exact ⟨⟨2 ^ n, by ring⟩, prime_two.deficient_pow⟩
+  · exact ⟨⟨2 ^ n, by rw [pow_succ, mul_two]⟩, prime_two.deficient_pow⟩
   · calc
       n ≤ 2 ^ n := Nat.le_of_lt n.lt_two_pow_self
       _ < 2 ^ (n + 1) := (Nat.pow_lt_pow_iff_right (Nat.one_lt_two)).mpr (lt_add_one n)

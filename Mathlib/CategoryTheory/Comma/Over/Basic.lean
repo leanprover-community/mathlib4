@@ -123,6 +123,10 @@ lemma inv_left_hom_left {f g : Over X} (e : f ≅ g) :
     e.inv.left ≫ e.hom.left = 𝟙 g.left := by
   simp [← Over.comp_left]
 
+lemma forall_iff (P : Over X → Prop) :
+    (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
+  aesop
+
 section
 
 variable (X)
@@ -352,7 +356,7 @@ def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 /-- A natural transformation `F ⟶ G` induces a natural transformation on
-`Over X` up to `Under.map`. -/
+`Over X` up to `Over.map`. -/
 @[simps]
 def postMap {F G : T ⥤ D} (e : F ⟶ G) : post F ⋙ map (e.app X) ⟶ post G where
   app Y := Over.homMk (e.app Y.left)
@@ -388,6 +392,20 @@ instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
 def _root_.CategoryTheory.Functor.FullyFaithful.over (h : F.FullyFaithful) :
     (post (X := X) F).FullyFaithful where
   preimage {A B} f := Over.homMk (h.preimage f.left) <| h.map_injective (by simpa using Over.w f)
+
+/-- If `G` is a right adjoint, then so is `post G : Over Y ⥤ Over (G Y)`.
+
+If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
+`(X ⟶ G Y) ↦ (F X ⟶ F G Y ⟶ Y)`. -/
+@[simps]
+def postAdjunctionRight {Y : D} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
+    post F ⋙ map (a.counit.app Y) ⊣ post G where
+  unit.app A := homMk <| a.unit.app A.left
+  counit.app A := homMk <| a.counit.app A.left
+
+instance isRightAdjoint_post {Y : D} {G : D ⥤ T} [G.IsRightAdjoint] :
+    (post (X := Y) G).IsRightAdjoint :=
+  let ⟨F, ⟨a⟩⟩ := ‹G.IsRightAdjoint›; ⟨_, ⟨postAdjunctionRight a⟩⟩
 
 /-- An equivalence of categories induces an equivalence on over categories. -/
 @[simps]
@@ -520,6 +538,10 @@ lemma hom_right_inv_right {f g : Under X} (e : f ≅ g) :
 lemma inv_right_hom_right {f g : Under X} (e : f ≅ g) :
     e.inv.right ≫ e.hom.right = 𝟙 g.right := by
   simp [← Under.comp_right]
+
+lemma forall_iff (P : Under X → Prop) :
+    (∀ Y, P Y) ↔ (∀ (Y) (f : X ⟶ Y), P (.mk f)) := by
+  aesop
 
 section
 
@@ -741,6 +763,19 @@ instance [F.IsEquivalence] : (Under.post (X := X) F).IsEquivalence where
 def _root_.CategoryTheory.Functor.FullyFaithful.under (h : F.FullyFaithful) :
     (post (X := X) F).FullyFaithful where
   preimage {A B} f := Under.homMk (h.preimage f.right) <| h.map_injective (by simpa using Under.w f)
+
+/-- If `F` is a left adjoint, then so is `post F : Under X ⥤ Under (F X)`.
+
+If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
+`(F X ⟶ Y) ↦ (X ⟶ G F X ⟶ G Y)`. -/
+@[simps]
+def postAdjunctionLeft {X : T} {F : T ⥤ D} {G : D ⥤ T} (a : F ⊣ G) :
+    post F ⊣ post G ⋙ map (a.unit.app X) where
+  unit.app A := homMk <| a.unit.app A.right
+  counit.app A := homMk <| a.counit.app A.right
+
+instance isLeftAdjoint_post [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
+  let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
 
 /-- An equivalence of categories induces an equivalence on under categories. -/
 @[simps]

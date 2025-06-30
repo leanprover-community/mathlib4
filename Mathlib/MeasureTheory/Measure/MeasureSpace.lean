@@ -213,7 +213,8 @@ theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
 
 @[simp] lemma sum_measure_singleton {s : Finset α} [MeasurableSingletonClass α] :
     ∑ x ∈ s, μ {x} = μ s := by
-  change ∑ x ∈ s, μ (id ⁻¹' {x}) = μ s
+  trans ∑ x ∈ s, μ (id ⁻¹' {x})
+  · simp
   rw [sum_measure_preimage_singleton]
   · simp
   · simp
@@ -632,7 +633,7 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
       fun i j hij => measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
   suffices Filter.Tendsto F Filter.atTop (𝓝 0) by
     rw [@ENNReal.tendsto_atTop_zero_iff_lt_of_antitone
-         _ (nonempty_of_exists hfin) _ _ hFAnti] at this
+         _ hfin.nonempty _ _ hFAnti] at this
     exact this ε hε
   have hzero : μ (⋂ n, f n) = 0 := by
     simp only [hfem, measure_empty]
@@ -957,11 +958,11 @@ theorem le_intro (h : ∀ s, MeasurableSet s → s.Nonempty → μ₁ s ≤ μ�
 theorem le_iff' : μ₁ ≤ μ₂ ↔ ∀ s, μ₁ s ≤ μ₂ s := .rfl
 
 theorem lt_iff : μ < ν ↔ μ ≤ ν ∧ ∃ s, MeasurableSet s ∧ μ s < ν s :=
-  lt_iff_le_not_le.trans <|
+  lt_iff_le_not_ge.trans <|
     and_congr Iff.rfl <| by simp only [le_iff, not_forall, not_le, exists_prop]
 
 theorem lt_iff' : μ < ν ↔ μ ≤ ν ∧ ∃ s, μ s < ν s :=
-  lt_iff_le_not_le.trans <| and_congr Iff.rfl <| by simp only [le_iff', not_forall, not_le]
+  lt_iff_le_not_ge.trans <| and_congr Iff.rfl <| by simp only [le_iff', not_forall, not_le]
 
 instance instAddLeftMono {_ : MeasurableSpace α} : AddLeftMono (Measure α) :=
   ⟨fun _ν _μ₁ _μ₂ hμ s => add_le_add_left (hμ s) _⟩
@@ -1048,11 +1049,11 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
         simp [hx, hxt]
     · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
       rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, if_neg zero_ne_one.symm,
-        (tsum_eq_zero_iff ENNReal.summable).2 _, add_zero]
+        ENNReal.summable.tsum_eq_zero_iff.2 _, add_zero]
       · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
       · simp only [ite_eq_left_iff]
         intro n hn₁ hn₀
-        simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, iInf_pair, le_refl, inf_of_le_left]
+        simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, le_refl, inf_of_le_left]
   · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
     -- Conversely, fixing `t' : ℕ → Set α` such that `s ⊆ ⋃ n, t' n`, we construct `t : Set α`
     -- for which `μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n, μ (t' n) ⊓ ν (t' n)`.
@@ -1077,9 +1078,9 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       (measure_mono hcap).trans (measure_biUnion_le ν (to_countable {k | ν (t' k) < μ (t' k)}) _)
     refine (add_le_add hle₁ hle₂).trans ?_
     have heq : {k | μ (t' k) ≤ ν (t' k)} ∪ {k | ν (t' k) < μ (t' k)} = univ := by
-      ext k; simp [le_or_lt]
+      ext k; simp [le_or_gt]
     conv in ∑' (n : ℕ), μ (t' n) ⊓ ν (t' n) => rw [← tsum_univ, ← heq]
-    rw [tsum_union_disjoint (f := fun n ↦ μ (t' n) ⊓ ν (t' n)) ?_ ENNReal.summable ENNReal.summable]
+    rw [ENNReal.summable.tsum_union_disjoint (f := fun n ↦ μ (t' n) ⊓ ν (t' n)) ?_ ENNReal.summable]
     · refine add_le_add (tsum_congr ?_).le (tsum_congr ?_).le
       · rw [Subtype.forall]
         intro n hn; simpa
@@ -1090,7 +1091,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
     · rw [Set.disjoint_iff]
       rintro k ⟨hk₁, hk₂⟩
       rw [mem_setOf_eq] at hk₁ hk₂
-      exact False.elim <| hk₂.not_le hk₁
+      exact False.elim <| hk₂.not_ge hk₁
 
 @[simp]
 theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top :
@@ -1243,15 +1244,15 @@ theorem sum_add_sum_compl (s : Set ι) (μ : ι → Measure α) :
     ((sum fun i : s => μ i) + sum fun i : ↥sᶜ => μ i) = sum μ := by
   ext1 t ht
   simp only [add_apply, sum_apply _ ht]
-  exact tsum_add_tsum_compl (f := fun i => μ i t) ENNReal.summable ENNReal.summable
+  exact ENNReal.summable.tsum_add_tsum_compl (f := fun i => μ i t) ENNReal.summable
 
 theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ = sum ν :=
   congr_arg sum (funext h)
 
 theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs
-  simp only [add_apply, sum_apply _ hs, Pi.add_apply, coe_add,
-    tsum_add ENNReal.summable ENNReal.summable]
+  simp only [add_apply, sum_apply _ hs,
+    ENNReal.summable.tsum_add ENNReal.summable]
 
 @[simp] lemma sum_comp_equiv {ι ι' : Type*} (e : ι' ≃ ι) (m : ι → Measure α) :
     sum (m ∘ e) = sum m := by

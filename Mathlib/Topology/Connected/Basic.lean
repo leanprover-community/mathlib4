@@ -432,8 +432,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
   | empty =>
     refine ⟨g, hgs, ⟨?_, hgv⟩⟩
     simpa using hI
-  | insert _ ihI =>
-    rename_i i I _
+  | insert i I _ ihI =>
     rw [Finset.piecewise_insert] at hI
     have := I.piecewise_mem_set_pi hfs hgs
     refine (hsuv this).elim ihI fun h => ?_

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Andrew Yang,
   Johannes Hölzl, Kevin Buzzard, Yury Kudryashov
 -/
+import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -16,7 +17,7 @@ then we can turn an `R`-submodule into an `S`-submodule by forgetting the action
 this restriction of scalars for submodules.
 
 ## Main definitions:
- * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
+* `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 
 -/
 
@@ -80,7 +81,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
 
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
   { AddEquiv.refl p with
     map_smul' := fun _ _ => rfl }
@@ -107,5 +108,10 @@ def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S 
   toFun := restrictScalars S
   map_sInf' s := by ext; simp
   map_sSup' s := by rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]; simp
+
+@[simp]
+lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) :
+    N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
 
 end Submodule

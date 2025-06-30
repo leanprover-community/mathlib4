@@ -396,6 +396,7 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddComm
   · rw [← h𝓕.lintegral_eq_tsum'' (‖f ·‖ₑ)]
     exact ne_of_lt hf₁.2
 
+-- we can't use `to_additive`, because it tries to translate `*` into `+`
 /-- This is the **Unfolding Trick**: Given a subgroup `Γ` of a group `G`, the integral of a
   function `f` on `G` times the lift to `G` of a function `g` on the quotient `G ⧸ Γ` with respect
   to a right-invariant measure `μ` on `G`, is equal to the integral over the quotient of the
@@ -431,11 +432,10 @@ end UnfoldingTrick
 section
 
 variable {G' : Type*} [AddGroup G'] [MeasurableSpace G'] [TopologicalSpace G']
-  [IsTopologicalAddGroup G'] [BorelSpace G']
-  {μ' : Measure G'}
-  {Γ' : AddSubgroup G'}
+  [IsTopologicalAddGroup G'] [BorelSpace G'] {μ' : Measure G'} {Γ' : AddSubgroup G'}
+  {𝓕' : Set G'} (h𝓕 : IsAddFundamentalDomain Γ'.op 𝓕' μ')
   [Countable Γ'] [MeasurableSpace (G' ⧸ Γ')] [BorelSpace (G' ⧸ Γ')]
-  {𝓕' : Set G'}
+include h𝓕
 
 local notation "μ_𝓕" => Measure.map (@QuotientAddGroup.mk G' _ Γ') (μ'.restrict 𝓕')
 
@@ -447,8 +447,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
     [NormedSpace ℝ K] [μ'.IsAddRightInvariant] {f : G' → K}
     (f_ℒ_1 : Integrable f μ') {g : G' ⧸ Γ' → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (‖g ·‖ₑ) μ_𝓕 ≠ ∞)
-    (F_ae_measurable : AEStronglyMeasurable (QuotientAddGroup.automorphize f) μ_𝓕)
-    (h𝓕 : IsAddFundamentalDomain Γ'.op 𝓕' μ') :
+    (F_ae_measurable : AEStronglyMeasurable (QuotientAddGroup.automorphize f) μ_𝓕) :
     ∫ x : G', g (x : G' ⧸ Γ') * (f x) ∂μ'
       = ∫ x : G' ⧸ Γ', g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by
   let π : G' → G' ⧸ Γ' := QuotientAddGroup.mk
@@ -471,6 +470,3 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
   apply QuotientAddGroup.integral_eq_integral_automorphize h𝓕 H₁ H₂
 
 end
-
-attribute [to_additive existing QuotientGroup.integral_mul_eq_integral_automorphize_mul]
-  QuotientAddGroup.integral_mul_eq_integral_automorphize_mul

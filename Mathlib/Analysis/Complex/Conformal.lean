@@ -45,7 +45,7 @@ this file.
 
 * The classical form of Cauchy-Riemann equations
 * On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
-throughout or antiholomorphic throughout.
+  throughout or antiholomorphic throughout.
 -/
 
 
@@ -156,6 +156,6 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conjCLE.differentiableAt)]
   refine exists_congr fun g => rfl.congr ?_
   have : fderiv ℝ conj (conj z) = _ := conjCLE.fderiv
-  simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
+  simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this]
 
 end Conformality

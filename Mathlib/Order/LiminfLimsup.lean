@@ -298,8 +298,7 @@ theorem HasBasis.limsup_eq_sInf_univ_of_empty {f : ι → α} {v : Filter ι}
 @[simp]
 theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
     liminf (fun i => f (i + k)) atTop = liminf f atTop := by
-  change liminf (f ∘ (· + k)) atTop = liminf f atTop
-  rw [liminf, liminf, ← map_map, map_add_atTop_eq_nat]
+  rw [← Function.comp_def, liminf, liminf, ← map_map, map_add_atTop_eq_nat]
 
 @[simp]
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
@@ -386,7 +385,7 @@ theorem limsup_eq_iInf_iSup_of_nat' {u : ℕ → α} : limsup u atTop = ⨅ n : 
 
 theorem HasBasis.limsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : Filter β} {u : β → α}
     (h : f.HasBasis p s) : limsup u f = ⨅ (i) (_ : p i), ⨆ a ∈ s i, u a :=
-  (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image, id]
+  (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image]
 
 lemma limsSup_principal_eq_sSup (s : Set α) : limsSup (𝓟 s) = sSup s := by
   simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_csSup s
@@ -490,7 +489,7 @@ theorem _root_.CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom �
   conv_rhs => rw [iInf_split _ (0 < ·)]
   simp only [not_lt, Nat.le_zero, iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
   refine (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans ?_
-  simp only [zero_add, Function.comp_apply, iSup_le_iff]
+  simp only [zero_add, iSup_le_iff]
   exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
 
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
@@ -785,7 +784,7 @@ theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddZeroClass α] [AddL
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, eventually we have `x + ε < u b`. -/
 theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
-    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop )
+    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop)
     (hε : ε < 0) :
     ∀ᶠ b : β in atTop, x + ε < u b :=
   eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd
@@ -843,17 +842,17 @@ theorem limsup_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ a in f, u a < y := by
   refine ⟨fun h _ h' ↦ eventually_lt_of_limsup_lt (h.trans_lt h') h₂, fun h ↦ ?_⟩
   --Two cases: Either `x` is a cluster point from above, or it is not.
-  --In the first case, we use `forall_lt_iff_le'` and split an interval.
+  --In the first case, we use `forall_gt_iff_le` and split an interval.
   --In the second case, the function `u` must eventually be smaller or equal to `x`.
   by_cases h' : ∀ y > x, ∃ z, x < z ∧ z < y
-  · rw [← forall_lt_iff_le']
+  · rw [← forall_gt_iff_le]
     intro y x_y
     rcases h' y x_y with ⟨z, x_z, z_y⟩
     exact (limsup_le_of_le h₁ ((h z x_z).mono (fun _ ↦ le_of_lt))).trans_lt z_y
   · apply limsup_le_of_le h₁
     set_option push_neg.use_distrib true in push_neg at h'
     rcases h' with ⟨z, x_z, hz⟩
-    exact (h z x_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
+    exact (h z x_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
 
 /- A version of `limsup_le_iff` with large inequalities in densely ordered spaces.-/
 lemma limsup_le_iff' [DenselyOrdered β] {x : β}
@@ -861,7 +860,7 @@ lemma limsup_le_iff' [DenselyOrdered β] {x : β}
     (h₂ : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ (a : α) in f, u a ≤ y := by
   refine ⟨fun h _ h' ↦ (eventually_lt_of_limsup_lt (h.trans_lt h') h₂).mono fun _ ↦ le_of_lt, ?_⟩
-  rw [← forall_lt_iff_le']
+  rw [← forall_gt_iff_le]
   intro h y x_y
   obtain ⟨z, x_z, z_y⟩ := exists_between x_y
   exact (limsup_le_of_le h₁ (h z x_z)).trans_lt z_y
@@ -881,7 +880,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
   · apply le_limsup_of_frequently_le _ h₂
     set_option push_neg.use_distrib true in push_neg at h'
     rcases h' with ⟨z, z_x, hz⟩
-    exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_lt hw)).1 (hz (u w))
+    exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
 
 /- A version of `le_limsup_iff` with large inequalities in densely ordered spaces.-/
 lemma le_limsup_iff' [DenselyOrdered β] {x : β}
@@ -1162,10 +1161,10 @@ theorem limsup_finset_sup' [ConditionallyCompleteLinearOrder β] {f : Filter α}
       intro i i_s
       apply eventually_lt_of_limsup_lt _ (h₂ i i_s)
       exact lt_of_le_of_lt (Finset.le_sup' (f := fun i ↦ limsup (F i) f) i_s) hb
-    · simp only [mem_iInter, mem_setOf_eq, Finset.sup'_apply, sup'_lt_iff, imp_self, implies_true]
+    · simp only [mem_iInter, mem_setOf_eq, sup'_lt_iff, imp_self, implies_true]
   · apply Finset.sup'_le hs (fun i ↦ limsup (F i) f)
     refine fun i i_s ↦ limsup_le_limsup (Eventually.of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup
-    simp only [Finset.sup'_apply, le_sup'_iff]
+    simp only [le_sup'_iff]
     use i, i_s
 
 theorem limsup_finset_sup [ConditionallyCompleteLinearOrder β] [OrderBot β] {f : Filter α}
@@ -1176,7 +1175,7 @@ theorem limsup_finset_sup [ConditionallyCompleteLinearOrder β] [OrderBot β] {f
   rcases eq_or_neBot f with (rfl | _)
   · simp [limsup_eq, csInf_univ]
   rcases Finset.eq_empty_or_nonempty s with (rfl | s_nemp)
-  · simp only [Finset.sup_apply, sup_empty, limsup_const]
+  · simp only [sup_empty, limsup_const]
   rw [← Finset.sup'_eq_sup s_nemp fun i ↦ limsup (F i) f, ← limsup_finset_sup' s_nemp h₁ h₂]
   congr
   ext a

@@ -68,7 +68,7 @@ instance (priority := 100) ProperSMul.toContinuousSMul [ProperSMul G X] : Contin
 /-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters
 `𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges to `g`. -/
-@[to_additive "A group `G` acts properly on a topological space `X` if and only if
+@[to_additive "An additive group `G` acts properly on a topological space `X` if and only if
 for all ultrafilters `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)`
 along the map `(g, x) ↦ (g • x, x)`, then there exists `g : G` such that `g • x₂ = x₁`
 and `𝒰.fst` converges to `g`."]
@@ -160,9 +160,6 @@ theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [T
       simp [f_compat]
     rw [this]
     exact h.comp <| ProperSMul.isProperMap_smul_pair
-
-@[deprecated (since := "2024-10-20")]
-alias properSMul_of_closedEmbedding := properSMul_of_isClosedEmbedding
 
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]

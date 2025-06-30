@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.CotangentComplex
+import Mathlib.RingTheory.Extension.Cotangent.Basic
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Tactic.StacksAttribute
@@ -75,7 +75,7 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
   map_add' x y := by simp only [map_add, AddMemClass.mk_add_mk, Subtype.mk.injEq]; ring
   map_smul' x y := by
     ext
-    simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, AlgHom.commutes,
+    simp only [Algebra.smul_def, map_mul, AlgHom.commutes,
       RingHom.id_apply, Submodule.coe_smul_of_tower]
     ring
   map_one_eq_zero' := by simp only [LinearMap.coe_mk, AddHom.coe_mk, map_one, sub_self,
@@ -368,13 +368,13 @@ def retractionKerCotangentToTensorEquivSection :
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
-      LinearEquiv.coe_coe, LinearMap.coe_mk, AddHom.coe_coe, LinearMap.toAddMonoidHom_coe,
+      LinearEquiv.coe_coe, LinearMap.coe_mk, AddHom.coe_coe,
       LinearEquiv.apply_symm_apply, LinearEquiv.symm_apply_apply]
   · intro f
     ext x
     simp only [AlgebraTensorModule.curry_apply, Derivation.coe_comp, LinearMap.coe_comp,
       LinearMap.coe_restrictScalars, Derivation.coeFn_coe, Function.comp_apply, curry_apply,
-      LinearMap.coe_mk, AddHom.coe_coe, LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe,
+      LinearMap.coe_mk, AddHom.coe_coe, LinearEquiv.coe_coe,
       LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
 
 variable [Algebra.FormallySmooth R P]
@@ -472,7 +472,7 @@ theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
     (Generators.self R S).algebraMap_surjective).trans (and_congr ?_ Iff.rfl)
   show Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot]
-  rfl
+  simp [H1Cotangent, Extension.H1Cotangent]
 
 instance [Algebra.FormallySmooth R S] : Subsingleton (Algebra.H1Cotangent R S) :=
   (Algebra.FormallySmooth.iff_subsingleton_and_projective.mp ‹_›).1
