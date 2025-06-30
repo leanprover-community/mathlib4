@@ -268,10 +268,6 @@ instance : PartialOrder ZFSet where
   le_trans _ _ _ := trans_of (· ⊆ ·)
   le_antisymm _ _ := antisymm_of (· ⊆ ·)
 
-@[simp]
-theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
-  Iff.rfl
-
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
   mk ∅
