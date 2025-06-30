@@ -189,9 +189,8 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   set γ2 := γ2_aux ∘ (· - (asup - ε / 2)) with γ2_def
   have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [γ2_def, h2_aux]
   -- rewrite shifted Ioo as Ioo
-  rw [neg_sub] at hγ1
-  rw [Real.Ioo_eq_ball, neg_add_cancel, zero_div, sub_neg_eq_add, add_self_div_two,
-    Metric.vadd_ball, vadd_eq_add, add_zero, Real.ball_eq_Ioo] at hγ1 hγ2
+  simp_rw [Set.mem_Ioo, ← sub_lt_iff_lt_add, ← lt_sub_iff_add_lt, ← Set.mem_Ioo] at hγ1
+  simp_rw [Set.mem_Ioo, lt_sub_iff_add_lt, sub_lt_iff_lt_add, ← Set.mem_Ioo] at hγ2
   -- to help `linarith`
   have hεle : ε ≤ asup := le_csSup hbdd (h x)
   -- extend `γ` on the left by `γ1` and on the right by `γ2`
