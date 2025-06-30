@@ -306,7 +306,7 @@ distance, with a topology defeq to the initial one. -/
 @[reducible] def PseudoEmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α]
     (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
     (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (h_basis : ∀ x, (𝓝 x).HasBasis (fun c ↦ 0 < c) (fun c ↦ {y | edist x y < c})) : :
+    (h_basis : ∀ x, (𝓝 x).HasBasis (fun c ↦ 0 < c) (fun c ↦ {y | d x y < c})) :
     PseudoEMetricSpace α where
   edist := d
   edist_self := h_self
