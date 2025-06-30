@@ -122,9 +122,6 @@ lemma isIntegralCurve_iff_isIntegralCurveAt :
 lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
     IsIntegralCurveOn γ v s' := fun t ht ↦ (h t (hs ht)).mono hs
 
--- lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
---     IsIntegralCurveOn γ v (s ∪ s') := fun _ ↦ fun | .inl ht => (h _ ht) | .inr ht => h' _ ht
-
 lemma IsIntegralCurveAt.hasMFDerivAt (h : IsIntegralCurveAt γ v t₀) :
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t₀ ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t₀))) :=
   have ⟨_, hs, h⟩ := isIntegralCurveAt_iff.mp h
@@ -147,6 +144,9 @@ lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
 
 lemma IsIntegralCurveOn.continuousWithinAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
     ContinuousWithinAt γ s t₀ := (hγ t₀ ht).1
+
+@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.continuousAt :=
+  IsIntegralCurveOn.continuousWithinAt
 
 lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
     ContinuousOn γ s := fun t ht ↦ (hγ t ht).continuousWithinAt
@@ -178,6 +178,9 @@ lemma IsIntegralCurveOn.hasDerivWithinAt (hγ : IsIntegralCurveOn γ v s) {t : �
     ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
+
+@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.hasDerivAt :=
+  IsIntegralCurveOn.hasDerivWithinAt
 
 lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
     ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
