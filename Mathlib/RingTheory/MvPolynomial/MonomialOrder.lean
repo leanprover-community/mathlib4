@@ -681,13 +681,13 @@ lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
 
 /-- The degree of `f` equals to the degree of `leadingTerm f` -/
 lemma leadingTerm_degree_eq (f : MvPolynomial σ R) :
-  m.degree (m.leadingTerm f) = m.degree f := by
-    classical
-    by_cases h : f = 0 <;> simp [leadingTerm,h]
-    have : m.leadingCoeff f != 0 := by
-      simp [leadingCoeff, h]
-    simp [MonomialOrder.degree_monomial]
-    exact fun a ↦ False.elim (h a)
+    m.degree (m.leadingTerm f) = m.degree f := by
+  classical
+  by_cases h : f = 0 <;> simp [leadingTerm,h]
+  have : m.leadingCoeff f != 0 := by
+    simp [leadingCoeff, h]
+  simp [MonomialOrder.degree_monomial]
+  exact fun a ↦ False.elim (h a)
 
 lemma leadingTerm_degree_eq' (f : MvPolynomial σ R) :
     m.toSyn (m.degree (m.leadingTerm f)) = m.toSyn (m.degree f) := by
