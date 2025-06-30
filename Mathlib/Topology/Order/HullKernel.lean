@@ -111,9 +111,9 @@ lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
 set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⊓ F`. -/
 open Finset in
-lemma upperClosureFiniteCompl_eq (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
+lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
-  rw [Set.preimage_compl, Set.preimage_compl, (upperClosureFinite_eq hT)]
+  rw [Set.preimage_compl, Set.preimage_compl, (preimage_upperClosure_finset hT)]
 
 variable [TopologicalSpace α] [IsLower α]
 
@@ -137,7 +137,7 @@ lemma relativeLowerIsTopologicalBasis (hT : ∀ p ∈ T, InfPrime p) :
   · obtain ⟨F, hF⟩ := ha
     lift F to Finset α using hF.1
     use Finset.inf F id
-    rw [← (upperClosureFinite_eq hT), ← hF.2]
+    rw [← (preimage_upperClosure_finset hT), ← hF.2]
     rfl
 
 end PrimitiveSpectrum
