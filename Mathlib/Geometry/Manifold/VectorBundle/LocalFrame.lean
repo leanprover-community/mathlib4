@@ -352,42 +352,36 @@ Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v
 -- In contrast, this definition makes sense over any field
 -- (for example, *locally* holomorphic sections always exist),
 
--- extendLocally: takes trivialisation e as parameter, and a basis b of F
-variable (b e) in
+/--
+Extend a vector `v ∈ V x` to a local section of `V`, w.r.t. a chosen local trivialisation.
+This construction uses a choice of local frame near `x`, w.r.t. to a basis `b` of `F` and a
+compatible local trivialisation `e` of `V` near `x`: the resulting extension has constant
+coefficients on `e.baseSet` w.r.t. this trivialisation (and is zero otherwise).
 
+In particular, our construction is smooth on `e.baseSet`, and linear in the input vector `v`.
+-/
 noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (x : M) (v : V x) : (x' : M) → V x' :=
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    (x : M) (v : V x) : (x' : M) → V x' :=
   fun x' ↦ if hx : x ∈ e.baseSet then
     letI bV := b.localFrame_toBasis_at e hx; ∑ i, bV.repr v i • b.localFrame e i x'
     else 0
 
--- TODO: clean up this proof, by adding further API as necessary
-lemma localExtensionOn_apply_self (b : Basis ι 𝕜 F)
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
+variable (b e) in
+@[simp]
+lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
     ((localExtensionOn b e x v) x) = v := by
-  unfold localExtensionOn
-  simp [hx]
-  letI bV := b.localFrame_toBasis_at e hx
-  show ∑ i, bV.repr v i • (b.localFrame_toBasis_at e hx) i = v
-  conv_rhs => rw [← bV.sum_repr v]
+  simp [localExtensionOn, hx]
+  nth_rw 2 [← (b.localFrame_toBasis_at e hx).sum_repr v]
 
-lemma localExtensionOn_apply_self' (b : Basis ι 𝕜 F)
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (hx : x ∈ e.baseSet) (v : V x) :
-    (e ((localExtensionOn b e x v) x)).2 = (e v).2 := by
-  rw [localExtensionOn_apply_self _ _ hx]
-
--- in the trivialisation e, the localExtensionOn is constant on e.baseSet
+/-- A local extension has constant frame coefficients within its defining trivialisation. -/
 lemma localExtensionOn_localFrame_repr (b : Basis ι 𝕜 F)
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) (i : ι)
     {x' : M} (hx' : x' ∈ e.baseSet):
     b.localFrame_repr e i (localExtensionOn b e x v) x' =
       b.localFrame_repr e i (localExtensionOn b e x v) x := by
-  -- TODO: missing simp lemmas/ ensure the API is fine here!
-  simp [Basis.localFrame, hx', localExtensionOn, hx]
+  simp [localExtensionOn, hx, hx']
 
 -- By construction, localExtensionOn is a linear map.
 
