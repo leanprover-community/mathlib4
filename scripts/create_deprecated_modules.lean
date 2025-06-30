@@ -113,7 +113,8 @@ syntax "#create_deprecated_module " str (ppSpace str)? (&" rename_to " str)? (&"
 It expects `log` to be a line in the output of `git log --pretty=oneline`:
 it should look like `<hash> <PRdescr>`.
 
-It also expects `msg` to be either `last modified` or `deleted` and
+It returns the pair `(<hash>, <msg> in <PRdescr> <hash> <diff of file wrt previous commit>)`,
+formatted as a collapsible message. In practice, `msg` is either `last modified` or `deleted`.
 it returns the pair `(<hash>, <msg> in <PRdescr> <hash> <diff of file wrt previous commit>)`,
 formatted as a collapsible message.
 -/
@@ -213,7 +214,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   let deletionDate := (log'.trim.splitOn "\n")[0]!
   let deprecation ← mkDeprecationWithDate deletionDate comment
   msgs := msgs.push ""
-  -- Retrieves the final version of the file, before it was deleted.
+  -- Retrieve the final version of the file, before it was deleted.
   let file ← runCmd s!"git show {modifiedHash}:{fname}"
   -- Generate a module deprecation for the file `fname`.
   let fileHeader := ← match rename with
