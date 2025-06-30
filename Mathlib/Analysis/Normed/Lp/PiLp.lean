@@ -818,8 +818,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
       ≪≫ₗ (LinearEquiv.piCongrRight fun i => (e i).toLinearEquiv)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
-    simp only [LinearEquiv.trans_apply,
-      WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
+    simp only [LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
     obtain rfl | hp := p.dichotomy
     · simp_rw [PiLp.norm_toLp, Pi.norm_def, LinearEquiv.piCongrRight_apply,
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map,
