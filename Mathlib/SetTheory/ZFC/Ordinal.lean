@@ -237,15 +237,15 @@ theorem mem_iff_rank_lt {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
     x ∈ y ↔ rank x < rank y := by
   refine ⟨rank_lt_of_mem, fun h ↦ ?_⟩
   rw [← hy.not_subset_iff_mem hx]
-  exact fun h' ↦ (rank_mono h').not_lt h
+  exact fun h' ↦ (rank_mono h').not_gt h
 
 theorem subset_iff_rank_le {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
     x ⊆ y ↔ rank x ≤ rank y := by
-  rw [← not_mem_iff_subset hy hx, mem_iff_rank_lt hy hx, not_lt]
+  rw [← notMem_iff_subset hy hx, mem_iff_rank_lt hy hx, not_lt]
 
 theorem rank_inj {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
     rank x = rank y ↔ x = y := by
-  rw [antisymm_iff, le_antisymm_iff, subset_iff_rank_le hx hy, subset_iff_rank_le hy hx]
+  rw [le_antisymm_iff, subset_antisymm_iff, subset_iff_rank_le hx hy, subset_iff_rank_le hy hx]
 
 end IsOrdinal
 
@@ -326,7 +326,7 @@ private theorem toZFSet_subset_toZFSet_of_le {a b : Ordinal} (h : a ≤ b) :
 theorem toZFSet_mem_toZFSet_iff {a b : Ordinal} : a.toZFSet ∈ b.toZFSet ↔ a < b := by
   refine ⟨?_, toZFSet_mem_toZFSet_of_lt⟩
   contrapose!
-  exact fun h ↦ not_mem_of_subset (toZFSet_subset_toZFSet_of_le h)
+  exact fun h ↦ notMem_of_subset (toZFSet_subset_toZFSet_of_le h)
 
 @[simp]
 theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔ a ≤ b := by
