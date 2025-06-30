@@ -45,7 +45,10 @@ namespace ZFSet
 
 /-! ### Definition of Hierarchy and Basic Properties -/
 
-/-- The stage in the von Neumann hierarchy indexed by a given Ordinal. -/
+/-- The stage in the von Neumann hierarchy indexed by a given `Ordinal`, usually denoted `V_α` in
+the literature. It is defined recursively, with `stage 0 = ∅`,
+`stage (succ o) = (stage o).powerset`, and for a limit ordinal `o`, `stage o` is the union of
+`stage o'` for `o' < o`. -/
 noncomputable def stage (o : Ordinal.{u}) : ZFSet.{u} :=
   o.limitRecOn ∅ (fun _ ↦ powerset) fun a _ ih ↦ (range fun b : Set.Iio a ↦ ih b b.2).sUnion
 
@@ -142,7 +145,7 @@ theorem in_hierarchy (x : ZFSet.{u}) : ∃ (o : Ordinal.{u}), x ∈ stage o := b
 /-! ### Theorems about `rank` -/
 
 /-- The stage at the rank of a set contains the set as a subset. -/
-theorem sub_stage_rank (x : ZFSet.{u}) : x ⊆ stage x.rank :=
+@[simp] theorem subset_stage_rank (x : ZFSet.{u}) : x ⊆ stage x.rank :=
   x.inductionOn fun x ih y hy ↦
     stage_mono (Order.succ_le_of_lt <| rank_lt_of_mem hy) (by simp [ih y hy])
 
@@ -188,7 +191,7 @@ theorem rank_stage_eq_self (o : Ordinal.{u}) : (stage o).rank = o := by
 
 /-- A set is contained by a stage of the von Neumann hierarchy iff the rank of the stage is greater
 than or equal to the rank of the set. -/
-theorem sub_stage_iff_rank_le {x : ZFSet.{u}} {o : Ordinal.{u}} : x ⊆ stage o ↔ x.rank ≤ o :=
+theorem subset_stage_iff_rank_le {x : ZFSet.{u}} {o : Ordinal.{u}} : x ⊆ stage o ↔ x.rank ≤ o :=
   ⟨fun h ↦ rank_stage_eq_self o ▸ rank_mono h, fun h _ hy ↦ stage_mono h (sub_stage_rank x hy)⟩
 
 /-- The definition in ZFSet.rank is equivalent to the definition of rank in terms of the von Neumann
