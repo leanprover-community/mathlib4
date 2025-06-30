@@ -88,7 +88,7 @@ def rdropWhile : List α :=
   reverse (l.reverse.dropWhile p)
 
 @[simp]
-theorem rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile, dropWhile]
+theorem rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile]
 
 theorem rdropWhile_concat (x : α) :
     rdropWhile p (l ++ [x]) = if p x then rdropWhile p l else l ++ [x] := by
@@ -159,7 +159,7 @@ def rtakeWhile : List α :=
   reverse (l.reverse.takeWhile p)
 
 @[simp]
-theorem rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile, takeWhile]
+theorem rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile]
 
 theorem rtakeWhile_concat (x : α) :
     rtakeWhile p (l ++ [x]) = if p x then rtakeWhile p l ++ [x] else [] := by
