@@ -403,8 +403,9 @@ noncomputable def ofMonoTruth
     uniq f :=
       let pb_f : IsPullback (𝟙 Y) f (f ≫ truth) truth :=
         of_horiz_isIso_mono { w := by simp }
+      let pb_def := isPullback (𝟙 Y)
       let eq_f := uniq₀ (𝟙 Y) f (f ≫ truth) pb_f
-      let eq_def := uniq₀ (𝟙 Y) (χ₀ (𝟙 Y)) (χ (𝟙 Y)) (isPullback (𝟙 Y))
+      let eq_def := uniq₀ (𝟙 Y) (χ₀ (𝟙 Y)) (χ (𝟙 Y)) pb_def
       eq_f.trans eq_def.symm
   }
 
