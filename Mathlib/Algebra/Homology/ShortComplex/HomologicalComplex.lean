@@ -234,7 +234,7 @@ noncomputable def fromOpcycles :
   K.opcycles i ⟶ K.X j  :=
   K.descOpcycles (K.d i j) (c.prev i) rfl (K.d_comp_d _ _ _)
 
-omit [K.HasHomology j] in
+omit [K.HasHomology i] in
 @[reassoc (attr := simp)]
 lemma d_pOpcycles [K.HasHomology j] : K.d i j ≫ K.pOpcycles j = 0 := by
   by_cases hij : c.Rel i j
