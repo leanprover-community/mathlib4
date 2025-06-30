@@ -70,15 +70,8 @@ theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ 
 termination_by o
 
 theorem mem_vonNeumann {x : ZFSet} : x ∈ V_ o ↔ rank x < o := by
-  rw [vonNeumann]
-  simp_rw [mem_sUnion, mem_range]
-  constructor
-  · rintro ⟨_, ⟨⟨a, rfl⟩, h⟩⟩
-    rw [mem_powerset] at h
-    exact ((rank_mono h).trans (subset_vonNeumann.1 (subset_rfl))).trans_lt a.2
-  · intro hx
-    refine ⟨_, Set.mem_range_self ⟨x.rank, hx⟩, ?_⟩
-    rw [mem_powerset, subset_vonNeumann]
+  simp_rw [mem_vonNeumann', subset_vonNeumann]
+  exact ⟨fun ⟨a, h₁, h₂⟩ ↦ h₂.trans_lt h₁, by aesop⟩
 
 @[simp]
 theorem rank_vonNeumann (o : Ordinal) : rank (V_ o) = o := by
