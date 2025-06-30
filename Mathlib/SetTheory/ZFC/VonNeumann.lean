@@ -60,17 +60,15 @@ theorem vonNeumann_subset_of_le (h : a ≤ b) : V_ a ⊆ V_ b := by
   · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
 
 theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ o := by
-  rw [vonNeumann, rank_le_iff]
+  rw [rank_le_iff]
   constructor <;> intro hx y hy
   · apply (rank_lt_of_mem (hx hy)).trans_le
-    simp_rw [rank_le_iff, mem_sUnion, mem_range]
-    rintro z ⟨_, ⟨⟨⟨a, ha⟩, rfl⟩, hz⟩⟩
-    rw [mem_powerset, subset_vonNeumann] at hz
-    exact hz.trans_lt ha
-  · simp_rw [mem_sUnion, mem_range]
+    simp_rw [rank_le_iff, mem_vonNeumann']
+    rintro z ⟨a, ha, hz⟩
+    exact (subset_vonNeumann.1 hz).trans_lt ha
+  · rw [mem_vonNeumann']
     have := hx hy
-    refine ⟨_, Set.mem_range_self ⟨y.rank, this⟩, ?_⟩
-    rw [mem_powerset, subset_vonNeumann]
+    exact ⟨_, this, subset_vonNeumann.2 le_rfl⟩
 termination_by o
 
 theorem mem_vonNeumann {x : ZFSet} : x ∈ V_ o ↔ rank x < o := by
