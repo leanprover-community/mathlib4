@@ -170,7 +170,7 @@ lemma coeFn_lpSMul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
 
 protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     ‖f • g‖ ≤ ‖f‖ * ‖g‖ := by
-  simp only [Lp.norm_def, ← ENNReal.toReal_mul, coeFn_lpSMul]
+  simp only [Lp.norm_def, ← ENNReal.toReal_mul]
   refine ENNReal.toReal_mono (by finiteness) ?_
   rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
   exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
@@ -245,7 +245,7 @@ protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f, Lp.coeFn_smul c g] with x hfx hgx
-  simp [smul_comm, hfx, hgx]
+  simp [smul_comm, hgx]
 
 end Module
 

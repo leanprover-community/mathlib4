@@ -125,7 +125,7 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
       Types.Small.limitCone_pt, equivShrink_symm_add]
     apply map_add
   · intro r
-    simp only [← Shrink.algEquiv_symm_apply _ R, limitCone, Equiv.algebraMap_def, Equiv.symm_symm]
+    simp only [Equiv.algebraMap_def, Equiv.symm_symm]
     apply congrArg
     apply Subtype.ext
     ext j

@@ -113,7 +113,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
     (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
-  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl -- should this be a lemma?
+  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl
   rw [this]
   apply hf.comp (by fun_prop)
   intro _ ht
@@ -724,8 +724,8 @@ theorem exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt
   · simp_rw [hα', dif_pos hx, h2 t ht]
 
 open Classical in
-/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. This version shows the existence
-of a local flow and that it is Lipschitz continuous in the intial point.
+/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
+existence of a local flow and that it is Lipschitz continuous in the intial point.
 
 TODO: derive the previous theorem from this. add docstring at beginning of file -/
 theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
@@ -760,8 +760,8 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
     apply ContinuousMap.dist_le_iff_of_nonempty.mp
     exact h x y hx hy (α x hx) (α y hy) (hα x hx) (hα y hy)
 
-/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. This version shows the existence
-of a local flow and that it is continuous on its domain as a (partial) map `E × ℝ → E`. -/
+/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
+existence of a local flow and that it is continuous on its domain as a (partial) map `E × ℝ → E`. -/
 theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_continuousOn
     (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ∃ α : E × ℝ → E, (∀ x ∈ closedBall x₀ r, α ⟨x, t₀⟩ = x ∧

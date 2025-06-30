@@ -399,16 +399,25 @@ variable (I) (e : E ≃L[𝕜] E')
 def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
   source_eq := by simp
-  uniqueDiffOn' := by simp [I.uniqueDiffOn]
-  target_subset_closure_interior := by
-    simp only [PartialEquiv.trans_target, Equiv.toPartialEquiv_target,
-      Equiv.toPartialEquiv_symm_apply, Diffeomorph.toEquiv_coe_symm, target_eq, univ_inter]
-    change e.toHomeomorph.symm ⁻¹' _ ⊆ closure (interior (e.toHomeomorph.symm ⁻¹' (range I)))
-    rw [← e.toHomeomorph.symm.isOpenMap.preimage_interior_eq_interior_preimage
-      e.toHomeomorph.continuous_symm,
-      ← e.toHomeomorph.symm.isOpenMap.preimage_closure_eq_closure_preimage
-      e.toHomeomorph.continuous_symm]
-    exact preimage_mono I.range_subset_closure_interior
+  convex_range' := by
+    split_ifs with h
+    · simp only [PartialEquiv.coe_trans, Equiv.toPartialEquiv_apply, LinearEquiv.coe_toEquiv,
+      ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe]
+      rw [range_comp]
+      letI := h.rclike
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+      let eR : E →L[ℝ] E' := ContinuousLinearMap.restrictScalars ℝ (e : E →L[𝕜] E')
+      change Convex ℝ (⇑eR '' range ↑I)
+      apply I.convex_range.linear_image
+    · simp [range_eq_univ_of_not_isRCLikeNormedField I h, range_comp]
+  nonempty_interior' := by
+    simp only [PartialEquiv.coe_trans, Equiv.toPartialEquiv_apply, LinearEquiv.coe_toEquiv,
+      ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe, range_comp,
+      ContinuousLinearEquiv.image_eq_preimage]
+    apply Nonempty.mono (preimage_interior_subset_interior_preimage e.symm.continuous)
+    rw [← ContinuousLinearEquiv.image_eq_preimage]
+    simpa using I.nonempty_interior
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 
