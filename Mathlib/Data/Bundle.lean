@@ -29,7 +29,7 @@ general, the constructions of fiber bundles we will make will be of this form.
   Lean 4 `simp` fails to apply lemmas about `Σ x, E x` to elements of the total space.
 
 - The definition of `Bundle.TotalSpace` has an unused argument `F`. The reason is that in some
-  constructions (e.g., `Bundle.ContinuousLinearMap.vectorBundle`) we need access to the atlas of
+  constructions (e.g., the bundle of continuous linear maps) we need access to the atlas of
   trivializations of original fiber bundles to construct the topology on the total space of the new
   fiber bundle.
 

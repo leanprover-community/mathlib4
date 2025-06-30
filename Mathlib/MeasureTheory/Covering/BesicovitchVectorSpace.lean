@@ -133,8 +133,8 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
       (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) = μ A := by
         rw [hA, measure_biUnion_finset D fun c _ => measurableSet_ball]
         have I : 0 < δ := by norm_num
-        simp only [div_pow, μ.addHaar_ball_of_pos _ I]
-        simp only [one_div, one_pow, Finset.sum_const, nsmul_eq_mul, mul_assoc]
+        simp only [μ.addHaar_ball_of_pos _ I]
+        simp only [Finset.sum_const, nsmul_eq_mul, mul_assoc]
       _ ≤ μ (ball (0 : E) ρ) := measure_mono A_subset
       _ = ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) := by
         simp only [μ.addHaar_ball_of_pos _ ρpos]
@@ -230,7 +230,7 @@ theorem exists_goodδ :
       Finset.mem_image, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖ := by
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
+      Ne, forall_apply_eq_imp_iff, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h'f this
@@ -273,11 +273,11 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
   let s := Finset.image f Finset.univ
   have s_card : s.card = n := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin n
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [s, h, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [s, h, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, imp_true_iff, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖ := by
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
+      Ne, forall_apply_eq_imp_iff, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h' this
