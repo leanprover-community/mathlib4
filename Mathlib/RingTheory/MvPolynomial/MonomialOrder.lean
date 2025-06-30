@@ -83,7 +83,7 @@ and a monomial order `m : MonomialOrder σ`.
   `f - m.leadingTerm f` is smaller than the degree of `f`.
 
 * `m.degree_sub_leadingTerm_lt_iff` : the degree of
-`f - m.leadingTerm f` smaller than the degree of `f` equals to `m.degree f ≠ 0`.
+  `f - m.leadingTerm f` smaller than the degree of `f` equals to `m.degree f ≠ 0`.
 
 ## Reference
 
