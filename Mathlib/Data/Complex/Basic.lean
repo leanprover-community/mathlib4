@@ -340,10 +340,10 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     intCast_ofNat := fun _ => by ext <;> rfl
     intCast_negSucc := fun n => by
       ext
-      · simp [AddGroupWithOne.intCast_negSucc]
+      · simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, neg_re]
         change -(1 : ℝ) + (-n) = -(↑(n + 1))
         simp [Nat.cast_add, add_comm]
-      · simp [AddGroupWithOne.intCast_negSucc]
+      · simp only [neg_im, zero_eq_neg]
         change im ⟨n, 0⟩ = 0
         rfl
     one := 1 }
