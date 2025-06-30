@@ -538,10 +538,10 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
 
-lemma prodContinuousLinearEquiv_apply :
+lemma coe_prodContinuousLinearEquiv :
     ⇑(prodContinuousLinearEquiv p 𝕜 α β) = ofLp := rfl
 
-lemma prodContinuousLinearEquiv_symm_apply :
+lemma coe_prodContinuousLinearEquiv_symm :
     ⇑(prodContinuousLinearEquiv p 𝕜 α β).symm = toLp p := rfl
 
 /-- The projection on the first coordinate in `WithLp` as continuous linear map. -/
