@@ -475,7 +475,7 @@ def baseAdjunction : 𝔄.leftAdjoint.base ⊣ 𝔄.rightAdjoint.base where
 
 /-- In a `CatCospanAdjunction`, the left square on the right adjoints is
 related to the left square on the left adjoints via the calculus of mates. -/
-lemma mateEquivLeftAdjointSquares :
+lemma mateEquivLeftAdjointSquaresHom :
     mateEquiv 𝔄.leftAdjunction 𝔄.baseAdjunction
       (TwoSquare.mk _ _ _ _ 𝔄.leftAdjoint.squareLeft.iso.hom) =
     TwoSquare.mk _ _ _ _ (𝔄.rightAdjoint.squareLeft.iso.inv) := by
@@ -499,7 +499,7 @@ lemma mateEquivLeftAdjointSquares :
 
 /-- In a `CatCospanAdjunction`, the right square on the right adjoints is
 related to the right square on the left adjoints via the calculus of mates. -/
-lemma mateEquivRightAdjointSquares :
+lemma mateEquivRightAdjointSquaresHom :
     mateEquiv 𝔄.rightAdjunction 𝔄.baseAdjunction
       (TwoSquare.mk _ _ _ _ 𝔄.leftAdjoint.squareRight.iso.hom) =
     TwoSquare.mk _ _ _ _ (𝔄.rightAdjoint.squareRight.iso.inv) := by
@@ -610,8 +610,35 @@ def baseEquiv : C ≌ C' where
   counitIso := CatCospanTransform.rightIso 𝔈.counitIso
   functor_unitIso_comp x := 𝔈.rightAdjunction.left_triangle_components x
 
--- def mk' (leftEquiv : A ≌ A') (rightEquiv : C ≌ C') (baseEquiv : B ≌ B')
---   (squareLeft : ) (squareRight : )
+/-- Construct a `CatCospanEquivalence F G F' G'` from the data of individual
+equivalences of categories for the left, base and right components, as well
+as the data of `CatCommSq` on their forward functor. -/
+def mk'
+    (leftEquiv : A ≌ A') (rightEquiv : C ≌ C') (baseEquiv : B ≌ B')
+    (squareLeft :
+        CatCommSq F leftEquiv.functor baseEquiv.functor F' := by
+      infer_instance )
+    (squareRight :
+        CatCommSq G rightEquiv.functor baseEquiv.functor G' := by
+      infer_instance) :
+    CatCospanEquivalence F G F' G' where
+  leftAdjoint :=
+    { left := leftEquiv.functor
+      right := rightEquiv.functor
+      base := baseEquiv.functor
+      squareLeft := squareLeft 
+      squareRight := squareRight }
+  rightAdjoint := 
+    { left := leftEquiv.inverse
+      right := rightEquiv.inverse
+      base := baseEquiv.inverse
+      squareLeft := .mk
+        { hom := sorry
+          inv := sorry }
+      squareRight := 
+        { hom := sorry
+          inv := sorry } }
+
 
 end CatCospanEquivalence
 
