@@ -49,12 +49,12 @@ def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
 def hId : CatCommSq (𝟭 C₁) L L (𝟭 C₃) where
   iso := (Functor.rightUnitor _) ≪≫ (Functor.leftUnitor _).symm
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma iso_hom_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
     R.map (T.map f) ≫ (iso T L R B).hom.app y = (iso T L R B).hom.app x ≫ B.map (L.map f) :=
   (iso T L R B).hom.naturality f
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma iso_inv_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
     B.map (L.map f) ≫ (iso T L R B).inv.app y = (iso T L R B).inv.app x ≫ R.map (T.map f) :=
   (iso T L R B).inv.naturality f
