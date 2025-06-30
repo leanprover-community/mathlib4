@@ -167,10 +167,9 @@ lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ Ici a | a ∈ S } = T ↓�
 /- When `α` is complete, the relative basis for the Lower topology is also closed under arbitary
 unions. -/
 lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
-  rw [Set.preimage_compl, ← sInter_Ici_eq, compl_sInter, sUnion_eq_compl_sInter_compl]
-  simp only [preimage_compl, sInter_image, mem_setOf_eq, iInter_exists, biInter_and',
-    iInter_iInter_eq_right, compl_compl, compl_iInter, sUnion_image, iUnion_exists, biUnion_and',
-    iUnion_iUnion_eq_right]
+  simp only [preimage_compl, sUnion_eq_compl_sInter_compl, sInter_image, mem_setOf_eq,
+    iInter_exists, biInter_and', iInter_iInter_eq_right, compl_compl, compl_iInter, ← sInter_Ici_eq,
+    compl_sInter, mem_image, exists_exists_and_eq_and]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
@@ -183,17 +182,13 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
       IsTopologicalBasis.open_eq_sUnion' (relativeLowerIsTopologicalBasis hT) h]
     aesop
   · obtain ⟨a, ha⟩ := h
-    use (Ici a)ᶜ
-    exact ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩
+    exact ⟨(Ici a)ᶜ, ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩⟩
 
 /- When `α` is complete, a set is Lower topology relative-closed if and only if it is of the form
 `T ↓∩ Ici a` for some `a` in `α`.-/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
-  rw [← isOpen_compl_iff, (isOpen_iff hT)]
-  constructor <;> (intro h; obtain ⟨a, ha⟩ := h; use a)
-  · exact compl_inj_iff.mp ha
-  · exact compl_inj_iff.mpr ha
+  simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
 
 /- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ Ici a` (hull) form an antitone Galois
 connection betwen the subsets of `T` and `α`. -/
