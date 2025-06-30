@@ -3,8 +3,7 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Util.FoldConsts
-import Lean
+import Lake.CLI.Main
 
 /-! # `lake exe shake` command
 
@@ -26,7 +25,7 @@ To mitigate this, the `scripts/noshake.json` file is used to suppress known fals
 
 -/
 
-def help : String := "Mathlib4 tree shaking tool
+def help : String := "Lean project tree shaking tool
 Usage: lake exe shake [OPTIONS] <MODULE>..
 
 Arguments:
@@ -156,7 +155,7 @@ Returns a pair `(imps, transImps)` where:
 
 * `j ∈ imps` if `j` is one of the module indexes in `imports`
 * `j ∈ transImps` if module `j` is transitively reachable from `imports`
- -/
+-/
 partial def loadModules (imports : Array Import) : StateT State IO (Array USize × Bitset) := do
   let mut imps := #[]
   let mut transImps := 0
@@ -201,7 +200,7 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
 * If `j ∈ added` then we want to add module index `j` to the imports of `i`.
   We keep this as a bitset because we will do transitive reduction before applying it
 -/
-def Edits := Std.HashMap Name (NameSet × Bitset)
+abbrev Edits := Std.HashMap Name (NameSet × Bitset)
 
 /-- Register that we want to remove `tgt` from the imports of `src`. -/
 def Edits.remove (ed : Edits) (src tgt : Name) : Edits :=
@@ -217,24 +216,38 @@ def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
 
 /-- Parse a source file to extract the location of the import lines, for edits and error messages.
 
-Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Parser.Module.header`
+Returns `(path, inputCtx, imports, endPos)` where `imports` is the `Lean.Parser.Module.import` list
 and `endPos` is the position of the end of the header.
 -/
-def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
-    IO (System.FilePath × Parser.InputContext × Syntax × String.Pos) := do
-  -- Parse the input file
-  let some path ← srcSearchPath.findModuleWithExt "lean" mod
-    | throw <| .userError "error: failed to find source file for {mod}"
-  let text ← IO.FS.readFile path
-  let inputCtx := Parser.mkInputContext text path.toString
+def parseHeaderFromString (text path : String) :
+    IO (System.FilePath × Parser.InputContext ×
+      TSyntaxArray ``Parser.Module.import × String.Pos) := do
+  let inputCtx := Parser.mkInputContext text path
   let (header, parserState, msgs) ← Parser.parseHeader inputCtx
   if !msgs.toList.isEmpty then -- skip this file if there are parse errors
     msgs.forM fun msg => msg.toString >>= IO.println
     throw <| .userError "parse errors in file"
   -- the insertion point for `add` is the first newline after the imports
-  let insertion := header.getTailPos?.getD parserState.pos
+  let insertion := header.raw.getTailPos?.getD parserState.pos
   let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
-  pure (path, inputCtx, header, insertion)
+  pure (path, inputCtx, .mk header.raw[2].getArgs, insertion)
+
+/-- Parse a source file to extract the location of the import lines, for edits and error messages.
+
+Returns `(path, inputCtx, imports, endPos)` where `imports` is the `Lean.Parser.Module.import` list
+and `endPos` is the position of the end of the header.
+-/
+def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
+    IO (System.FilePath × Parser.InputContext ×
+      TSyntaxArray ``Parser.Module.import × String.Pos) := do
+  -- Parse the input file
+  let some path ← srcSearchPath.findModuleWithExt "lean" mod
+    | throw <| .userError "error: failed to find source file for {mod}"
+  let text ← IO.FS.readFile path
+  parseHeaderFromString text path.toString
+
+/-- Gets the name `Foo` in `import Foo`. -/
+def importId (stx : TSyntax ``Parser.Module.import) : Name := stx.raw[3].getId
 
 /-- Analyze and report issues from module `i`. Arguments:
 
@@ -246,7 +259,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
   be initialized if `downstream` mode is disabled so we pass it in here
 * `edits`: accumulates the list of edits to apply if `--fix` is true
 * `downstream`: if true, then we report downstream files that need to be fixed too
- -/
+-/
 def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     (i : Nat) (needs : Bitset) (edits : Edits)
     (downstream := true) (githubStyle := false) (explain := false) : IO Edits := do
@@ -287,10 +300,10 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     edits.remove s.modNames[i]! s.modNames[n]!
   if githubStyle then
     try
-      let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
-      for stx in header[1].getArgs do
-        if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
-          let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
+      let (path, inputCtx, imports, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
+      for stx in imports do
+        if toRemove.any fun i => s.modNames[i]! == importId stx then
+          let pos := inputCtx.fileMap.toPosition stx.raw.getPos?.get!
           println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
             (use `lake exe shake --fix` to fix this, or `lake exe shake --update` to ignore)"
       if !toAdd.isEmpty then
@@ -449,25 +462,50 @@ def main (args : List String) : IO UInt32 := do
       IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
       IO.Process.exit 1
 
+  -- Determine default module(s) to run shake on
+  let defaultTargetModules : Array Name ← try
+    let (elanInstall?, leanInstall?, lakeInstall?) ← Lake.findInstall?
+    let config ← Lake.MonadError.runEIO <| Lake.mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
+    let some workspace ← Lake.loadWorkspace config |>.toBaseIO
+      | throw <| IO.userError "failed to load Lake workspace"
+    let defaultTargetModules := workspace.root.defaultTargets.flatMap fun target =>
+      if let some lib := workspace.root.findLeanLib? target then
+        lib.roots
+      else if let some exe := workspace.root.findLeanExe? target then
+        #[exe.config.root]
+      else
+        #[]
+    pure defaultTargetModules
+  catch _ =>
+    pure #[]
+
   -- Parse the `--cfg` argument
-  let srcSearchPath ← initSrcSearchPath
+  let srcSearchPath ← getSrcSearchPath
   let cfgFile ← if let some cfg := args.cfg then
     pure (some ⟨cfg⟩)
-  else if let some path ← srcSearchPath.findModuleWithExt "lean" `Mathlib then
-    pure (some (path.parent.get! / "scripts" / "noshake.json"))
+  else if let some mod := defaultTargetModules[0]? then
+    if let some path ← srcSearchPath.findModuleWithExt "lean" mod then
+      pure (some (path.parent.get! / "scripts" / "noshake.json"))
+    else
+      pure none
   else pure none
 
   -- Read the config file
-  let cfg ← if let some file := cfgFile then
+  -- `isValidCfgFile` is `false` if and only if the config file is present and invalid.
+  let (cfg, isValidCfgFile) ← if let some file := cfgFile then
     try
-      IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg))
+      pure (← IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg)), true)
     catch e =>
+      -- The `cfgFile` is invalid, so we print the error and return `isValidCfgFile = false`.
       println! "{e.toString}"
-      pure {}
-  else pure {}
-
+      pure ({}, false)
+    else pure ({}, true)
+  if !isValidCfgFile then
+    IO.println s!"Invalid config file '{cfgFile.get!}'"
+    IO.Process.exit 1
+  else
   -- the list of root modules
-  let mods := if args.mods.isEmpty then #[`Mathlib] else args.mods
+  let mods := if args.mods.isEmpty then defaultTargetModules else args.mods
   -- Only submodules of `pkg` will be edited or have info reported on them
   let pkg := mods[0]!.components.head!
 
@@ -477,7 +515,7 @@ def main (args : List String) : IO UInt32 := do
   -- Parse the config file
   let ignoreMods := toBitset s (cfg.ignoreAll?.getD [])
   let ignoreImps := toBitset s (cfg.ignoreImport?.getD [])
-  let ignore := (cfg.ignore?.getD {}).fold (init := Std.HashMap.empty) fun m a v =>
+  let ignore := (cfg.ignore?.getD {}).fold (init := (∅ : Std.HashMap _ _)) fun m a v =>
     m.insert a (toBitset s v.toList)
 
   let noIgnore (i : Nat) :=
@@ -500,7 +538,7 @@ def main (args : List String) : IO UInt32 := do
     println! "The following changes will be made automatically:"
 
   -- Check all selected modules
-  let mut edits : Edits := Std.HashMap.empty
+  let mut edits : Edits := ∅
   for i in [0:s.mods.size], t in needs do
     if let some t := t then
       if noIgnore i then
@@ -566,7 +604,7 @@ def main (args : List String) : IO UInt32 := do
       out.qsort Name.lt
 
     -- Parse the input file
-    let (path, inputCtx, header, insertion) ←
+    let (path, inputCtx, imports, insertion) ←
       try parseHeader srcSearchPath mod
       catch e => println! e.toString; return count
     let text := inputCtx.input
@@ -575,12 +613,12 @@ def main (args : List String) : IO UInt32 := do
     let mut pos : String.Pos := 0
     let mut out : String := ""
     let mut seen : NameSet := {}
-    for stx in header[1].getArgs do
-      let mod := stx[2].getId
+    for stx in imports do
+      let mod := importId stx
       if remove.contains mod || seen.contains mod then
-        out := out ++ text.extract pos stx.getPos?.get!
+        out := out ++ text.extract pos stx.raw.getPos?.get!
         -- We use the end position of the syntax, but include whitespace up to the first newline
-        pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
+        pos := text.findAux (· == '\n') text.endPos stx.raw.getTailPos?.get! + ⟨1⟩
       seen := seen.insert mod
     out := out ++ text.extract pos insertion
     for mod in add do
@@ -599,3 +637,10 @@ def main (args : List String) : IO UInt32 := do
   else
     println! "No edits required."
   return 0
+
+-- self-test so that future grammar changes cause a build failure
+/-- info: #[`Lake.CLI.Main] -/
+#guard_msgs (whitespace := lax) in
+#eval show MetaM _ from do
+  let (_, _, imports, _) ← parseHeaderFromString (← getFileMap).source (← getFileName)
+  return imports.map importId

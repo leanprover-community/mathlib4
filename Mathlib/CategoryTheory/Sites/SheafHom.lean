@@ -92,7 +92,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
     dsimp at H ⊢
     rw [← H]
     apply presheafHom_map_app_op_mk_id
-  right_inv _ := rfl
 
 variable {F G}
 
@@ -110,7 +109,7 @@ lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     refine (h W.left (W.hom ≫ g) (S.downward_closed hg _)).trans ?_
     have H := hx (𝟙 _) W.hom (S.downward_closed hg W.hom) hg (by simp)
     dsimp at H
-    simp only [Functor.map_id, FunctorToTypes.map_id_apply] at H
+    simp only [FunctorToTypes.map_id_apply] at H
     rw [H, presheafHom_map_app_op_mk_id]
     rfl
 
@@ -165,7 +164,7 @@ open PresheafHom.IsSheafFor in
 lemma presheafHom_isSheafFor  :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · refine ⟨
       { app := fun Y => app hG x hx Y.unop.hom
         naturality := by

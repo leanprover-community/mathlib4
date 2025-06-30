@@ -72,6 +72,7 @@ theorem isBasis_basicOpen :
   convert ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
   exact (Set.range_comp _ _).symm
 
+/-- If `{ xᵢ }` spans the irrelevant ideal of `A`, then `D₊(xᵢ)` covers `Proj A`. -/
 lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
     ⨆ i, Proj.basicOpen 𝒜 (f i) = ⊤ := by
@@ -81,6 +82,42 @@ lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
   simp only [mem_basicOpen, Decidable.not_not] at H
   refine x.not_irrelevant_le (hf.trans ?_)
   rwa [Ideal.span_le, Set.range_subset_iff]
+
+/-- If `{ xᵢ }` are homogeneous and span `A` as an `A₀` algebra, then `D₊(xᵢ)` covers `Proj A`. -/
+lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
+    (hfn : ∀ i, ∃ n, f i ∈ 𝒜 n)
+    (hf : Algebra.adjoin (𝒜 0) (Set.range f) = ⊤) :
+    ⨆ i, Proj.basicOpen 𝒜 (f i) = ⊤ := by
+  classical
+  apply Proj.iSup_basicOpen_eq_top
+  intro x hx
+  convert_to x - GradedRing.projZeroRingHom 𝒜 x ∈ _
+  · rw [GradedRing.projZeroRingHom_apply, ← GradedRing.proj_apply,
+      (HomogeneousIdeal.mem_irrelevant_iff _ _).mp hx, sub_zero]
+  clear hx
+  have := (eq_iff_iff.mp congr(x ∈ $hf)).mpr trivial
+  induction this using Algebra.adjoin_induction with
+  | mem x hx =>
+    obtain ⟨i, rfl⟩ := hx
+    obtain ⟨n, hn⟩ := hfn i
+    rw [GradedRing.projZeroRingHom_apply]
+    by_cases hn' : n = 0
+    · rw [DirectSum.decompose_of_mem_same 𝒜 (hn' ▸ hn), sub_self]
+      exact zero_mem _
+    · rw [DirectSum.decompose_of_mem_ne 𝒜 hn hn', sub_zero]
+      exact Ideal.subset_span ⟨_, rfl⟩
+  | algebraMap r =>
+    convert zero_mem (Ideal.span _)
+    rw [sub_eq_zero]
+    exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
+  | add x y hx hy _ _ =>
+    rw [map_add, add_sub_add_comm]
+    exact add_mem ‹_› ‹_›
+  | mul x y hx hy hx' hy' =>
+    convert add_mem (Ideal.mul_mem_left _ x hy')
+      (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using 1
+    rw [map_mul]
+    ring
 
 /-- The canonical map `(A_f)₀ ⟶ Γ(Proj A, D₊(f))`.
 This is an isomorphism when `f` is homogeneous of positive degree. See `basicOpenIsoAway` below. -/
@@ -112,7 +149,7 @@ variable {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 
 /-- The canonical isomorphism `Proj A |_ D₊(f) ≅ Spec (A_f)₀`
 when `f` is homogeneous of positive degree. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 noncomputable
 def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of (Away 𝒜 f)) :=
   have : IsIso (basicOpenToSpec 𝒜 f) := by
@@ -126,7 +163,7 @@ def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of (Away 𝒜 f)) 
 
 /-- The canonical isomorphism `(A_f)₀ ≅ Γ(Proj A, D₊(f))`
 when `f` is homogeneous of positive degree. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 noncomputable
 def basicOpenIsoAway : CommRingCat.of (Away 𝒜 f) ≅ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
   have : IsIso (awayToSection 𝒜 f) := by
@@ -179,7 +216,7 @@ lemma awayMap_awayToSection  :
   obtain ⟨⟨n, a, ⟨b, hb'⟩, i, rfl : _ = b⟩, rfl⟩ := mk_surjective a
   simp only [homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
   erw [ProjectiveSpectrum.Proj.awayToSection_apply]
-  rw [val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
+  rw [CommRingCat.hom_ofHom, val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
     ← Localization.mk_eq_mk']
   refine Localization.mk_eq_mk_iff.mpr ?_
   rw [Localization.r_iff_exists]
@@ -250,7 +287,7 @@ lemma pullbackAwayιIso_inv_snd :
   rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
 
 open TopologicalSpace.Opens in
-/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelavent ideal,
+/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
 `Spec (A_f)₀ ⟶ Proj A` forms an affine open cover of `Proj A`. -/
 noncomputable
 def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}

@@ -18,7 +18,7 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 ## Implementation notes
 
-This file is split from `Mathlib.Algebra.Category.Grp.Injective` to prevent import loops.
+This file is split from `Mathlib/Algebra/Category/Grp/Injective.lean` to prevent import loops.
 -/
 
 open CategoryTheory
@@ -33,7 +33,7 @@ instance enoughInjectives : EnoughInjectives AddCommGrp.{u} where
   presentation A_ := Nonempty.intro
     { J := of <| (CharacterModule A_) → ULift.{u} (AddCircle (1 : ℚ))
       injective := injective_of_divisible _
-      f := ⟨⟨fun a i ↦ ULift.up (i a), by aesop⟩, by aesop⟩
+      f := ofHom ⟨⟨fun a i ↦ ULift.up (i a), by aesop⟩, by aesop⟩
       mono := (AddCommGrp.mono_iff_injective _).mpr <| (injective_iff_map_eq_zero _).mpr
         fun _ h0 ↦ eq_zero_of_character_apply (congr_arg ULift.down <| congr_fun h0 ·) }
 

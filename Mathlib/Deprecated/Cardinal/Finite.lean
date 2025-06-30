@@ -77,7 +77,7 @@ theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
 @[simp]
 theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
     Cardinal.toPartENat c = n ↔ c = n := by
-rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
+  rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
 
 @[simp]
 theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
@@ -113,9 +113,7 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
   unfold PartENat.card
   apply symm
   rw [Cardinal.natCast_eq_toPartENat_iff]
-  exact Finite.cast_card_eq_mk
+  exact Nat.cast_card
 
-
-@[deprecated (since := "2024-05-25")] alias card_eq_coe_nat_card := card_eq_coe_natCard
 
 end PartENat

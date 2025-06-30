@@ -22,6 +22,8 @@ In particular, we obtain a monoidal category structure on
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits MonoidalCategory Category
 
 namespace HomologicalComplex
@@ -286,21 +288,26 @@ noncomputable def Monoidal.inducingFunctorData :
   εIso := tensorUnitIso C c
   whiskerLeft_eq K₁ K₂ L₂ g := by
     dsimp [forget]
-    erw [comp_id, id_comp]
+    rw [comp_id]
+    erw [id_comp]
     rfl
   whiskerRight_eq {K₁ L₁} f K₂ := by
     dsimp [forget]
-    erw [comp_id, id_comp]
+    rw [comp_id]
+    erw [id_comp]
     rfl
   tensorHom_eq {K₁ L₁ K₂ L₂} f g := by
     dsimp [forget]
-    erw [comp_id, id_comp]
+    rw [comp_id]
+    erw [id_comp]
     rfl
   associator_eq K₁ K₂ K₃ := by
     dsimp [forget]
     simp only [tensorHom_id, whiskerRight_tensor, id_whiskerRight,
       id_comp, Iso.inv_hom_id, comp_id, assoc]
-    erw [id_whiskerRight, id_comp, id_comp]
+    erw [id_whiskerRight]
+    rw [id_comp]
+    erw [id_comp]
     rfl
   leftUnitor_eq K := by
     dsimp

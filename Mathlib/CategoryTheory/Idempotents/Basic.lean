@@ -75,7 +75,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
               · intro m hm
                 rw [Fork.ι_ofι] at hm
                 rw [← hm]
-                simp only [← hm, assoc, h₁]
+                simp only [assoc, h₁]
                 exact (comp_id m).symm }⟩
   · intro h
     refine ⟨?_⟩
@@ -84,19 +84,16 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     refine ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
       equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), ?_, equalizer.lift_ι _ _⟩
     ext
-    simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
+    simp only [assoc, limit.lift_π, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]
     rw [← equalizer.condition, comp_id]
 
-variable {C}
-
+variable {C} in
 /-- In a preadditive category, when `p : X ⟶ X` is idempotent,
 then `𝟙 X - p` is also idempotent. -/
 theorem idem_of_id_sub_idem [Preadditive C] {X : C} (p : X ⟶ X) (hp : p ≫ p = p) :
     (𝟙 _ - p) ≫ (𝟙 _ - p) = 𝟙 _ - p := by
   simp only [comp_sub, sub_comp, id_comp, comp_id, hp, sub_self, sub_zero]
-
-variable (C)
 
 /-- A preadditive category is pseudoabelian iff all idempotent endomorphisms have a kernel. -/
 theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :

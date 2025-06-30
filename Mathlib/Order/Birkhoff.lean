@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Filippo A. E. Nuccio, Sam van Gool
 -/
-import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.Order
+import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Irreducible
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Birkhoff representation
@@ -69,8 +69,8 @@ variable [Finite α]
 
 @[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
   refine ⟨fun hs ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
-    exact ⟨a, (hs.2 <| erase_inf_Ici ha <| by simpa [eq_comm] using has).resolve_left
+  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal (coe_nonempty.2 hs.ne_top)
+    exact ⟨a, (hs.2 <| erase_inf_Ici ha fun b hb ↦ le_imp_eq_iff_le_imp_ge.2 <| has hb).resolve_left
       (lt_erase.2 ha).ne'⟩
   · rintro ⟨a, rfl⟩
     exact infIrred_Ici _
@@ -91,9 +91,9 @@ variable [Finite α]
 
 @[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
   refine ⟨fun hs ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
-    exact ⟨a, (hs.2 <| erase_sup_Iic ha <| by simpa [eq_comm] using has).resolve_left
-      (erase_lt.2 ha).ne⟩
+  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal (coe_nonempty.2 hs.ne_bot)
+    exact ⟨a, (hs.2 <| erase_sup_Iic ha fun b hb ↦
+      le_imp_eq_iff_le_imp_ge'.2 <| has hb).resolve_left (erase_lt.2 ha).ne⟩
   · rintro ⟨a, rfl⟩
     exact supIrred_Iic _
 

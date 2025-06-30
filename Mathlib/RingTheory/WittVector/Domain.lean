@@ -34,8 +34,6 @@ the 0th component of which must be nonzero.
 
 noncomputable section
 
-open scoped Classical
-
 namespace WittVector
 
 open Function
@@ -81,6 +79,7 @@ theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i
 
 theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
     ∃ n : ℕ, ∃ x' : 𝕎 R, x'.coeff 0 ≠ 0 ∧ x = verschiebung^[n] x' := by
+  classical
   have hex : ∃ k : ℕ, x.coeff k ≠ 0 := by
     by_contra! hall
     apply hx

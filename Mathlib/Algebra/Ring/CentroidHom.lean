@@ -62,7 +62,7 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 
 You should extend this class when you extend `CentroidHom`. -/
 class CentroidHomClass (F : Type*) (α : outParam Type*)
-    [NonUnitalNonAssocSemiring α] [FunLike F α α] extends AddMonoidHomClass F α α : Prop where
+    [NonUnitalNonAssocSemiring α] [FunLike F α α] : Prop extends AddMonoidHomClass F α α where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
   /-- Commutativity of centroid homomorphims with right multiplication. -/
@@ -101,9 +101,6 @@ instance : CentroidHomClass (CentroidHom α) α where
   map_mul_left f := f.map_mul_left'
   map_mul_right f := f.map_mul_right'
 
-
--- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
--- the LHS simplifies to the RHS anyway.)
 theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
 
 @[ext]
@@ -337,14 +334,8 @@ instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α
 theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 theorem natCast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_apply := natCast_apply
 
 @[simp]
 theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
@@ -361,9 +352,6 @@ theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :
 @[simp, norm_cast]
 theorem toEnd_natCast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias toEnd_nat_cast := toEnd_natCast
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
@@ -574,14 +562,8 @@ instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α
 theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
-
 theorem intCast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_apply := intCast_apply
 
 @[simp]
 theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
@@ -615,9 +597,6 @@ theorem sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
 theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias toEnd_int_cast := toEnd_intCast
-
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
     toEnd_smul toEnd_smul toEnd_pow toEnd_natCast toEnd_intCast
@@ -628,7 +607,6 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- Porting note: Not sure why Lean didn't like `CentroidHom.Ring`
 -- See note [reducible non instances]
 /-- A prime associative ring has commutative centroid. -/
 abbrev commRing

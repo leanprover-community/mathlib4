@@ -85,14 +85,14 @@ def functorToInterchangeIso : functorToInterchange A K ≅
 /-- (Implementation) One way to express the flipped version of our functor. We choose this
 association because the type of `Presheaf.tautologicalCocone` is
 `Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda)`, so this association will show up in the
-proof.-/
+proof. -/
 @[simps!]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
   Iso.refl _
 
 /-- (Implementation) A natural isomorphism we will need to construct `iso`. -/
-@[simps! (config := { fullyApplied := false }) hom_app]
+@[simps! -fullyApplied hom_app]
 noncomputable def isoAux :
     (CostructuredArrow.proj yoneda A ⋙ yoneda ⋙ (evaluation Cᵒᵖ (Type u)).obj (limit K)) ≅
       ((coyoneda ⋙ (whiskeringLeft (CostructuredArrow yoneda A) C (Type u)).obj
@@ -136,7 +136,6 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   rw [Eq.comm, ← Iso.inv_comp_eq, ← Iso.inv_comp_eq]
   refine limit.hom_ext (fun j => colimit.hom_ext (fun i => ?_))
   simp only [Category.assoc]
-
   -- `simp` is not too helpful here because we will need to apply `NatTrans.comp_app_assoc`
   -- backwards at certain points, so we rewrite the term manually.
   rw [HasLimit.isoOfNatIso_hom_π, HasLimit.isoOfNatIso_hom_π_assoc, limit.post_π,
@@ -153,7 +152,6 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
     ι_colimitCompWhiskeringLeftIsoCompColimit_hom,
     NatTrans.comp_app, Category.assoc, isoWhiskerLeft_hom, NatTrans.comp_app, Category.assoc,
     ← NatTrans.comp_app, ← whiskerLeft_comp, colimit.comp_coconePointUniqueUpToIso_hom]
-
   have := i.hom.naturality (limit.π K j)
   dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
   rw [← this]
@@ -182,8 +180,8 @@ lemma preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda
 Proposition 3.3.13 of [Kashiwara2006].
 -/
 theorem isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits :
-    IsFiltered (CostructuredArrow yoneda A) ↔ Nonempty (PreservesFiniteLimits A) :=
-  ⟨fun _ => ⟨preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda A⟩,
-   fun ⟨_⟩ => isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
+    IsFiltered (CostructuredArrow yoneda A) ↔ PreservesFiniteLimits A :=
+  ⟨fun _ => preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda A,
+   fun _ => isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
 
 end CategoryTheory.Limits

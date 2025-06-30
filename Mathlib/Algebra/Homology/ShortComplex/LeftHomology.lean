@@ -42,9 +42,9 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 `π : K ⟶ H` such that `i` identifies `K` to the kernel of `g : S.X₂ ⟶ S.X₃`,
 and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` -/
 structure LeftHomologyData where
-  /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
+  /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃` -/
   K : C
-  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K`-/
+  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   H : C
   /-- the inclusion of cycles in `S.X₂` -/
   i : K ⟶ S.X₂
@@ -389,6 +389,9 @@ variable [S.HasLeftHomology]
 
 /-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
 noncomputable def leftHomology : C := S.leftHomologyData.H
+
+-- `S.leftHomology` is the simp normal form.
+@[simp] lemma leftHomologyData_H : S.leftHomologyData.H = S.leftHomology := rfl
 
 /-- The cycles of a short complex, given by the `K` field of a chosen left homology data. -/
 noncomputable def cycles : C := S.leftHomologyData.K
@@ -887,7 +890,7 @@ namespace LeftHomologyMapData
 /-- This left homology map data expresses compatibilities of the left homology data
 constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     LeftHomologyMapData φ h (LeftHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φK := 𝟙 _
@@ -1008,8 +1011,8 @@ lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
   haveI : HasColimit (parallelPair h.f' 0) := ⟨⟨⟨_, h.hπ'⟩⟩⟩
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
-      (by aesop_cat) (by aesop_cat)
-  exact hasColimitOfIso e
+      (by aesop_cat) (by simp)
+  exact hasColimit_of_iso e
 
 end HasLeftHomology
 

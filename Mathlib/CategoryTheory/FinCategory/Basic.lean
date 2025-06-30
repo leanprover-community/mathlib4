@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Category.ULift
 
@@ -23,8 +23,6 @@ having to supply instances or delay with non-defeq conflicts between instances.
 
 universe w v u
 
-open scoped Classical
-
 noncomputable section
 
 namespace CategoryTheory
@@ -33,6 +31,7 @@ instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
   Fintype.ofEquiv α discreteEquiv.symm
 
 instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
+  classical
   apply ULift.fintype
 
 /-- A category with a `Fintype` of objects, and a `Fintype` for each morphism space. -/

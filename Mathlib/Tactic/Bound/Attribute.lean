@@ -3,7 +3,6 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Tactic.Bound.Init
 import Qq
 import Aesop
@@ -32,11 +31,11 @@ def isZero (e : Q($α)) : MetaM Bool :=
   | _ => return false
 
 /-- Map the arguments of an inequality expression to a score -/
-def ineqPriority (a b : Q($α)) : MetaM ℕ := do
+def ineqPriority (a b : Q($α)) : MetaM Nat := do
   return if (← isZero a) || (← isZero b) then 1 else 10
 
 /-- Map a hypothesis type to a score -/
-partial def hypPriority (hyp : Q(Prop)) : MetaM ℕ := do
+partial def hypPriority (hyp : Q(Prop)) : MetaM Nat := do
   match hyp with
     -- Conjunctions add scores
     | ~q($a ∧ $b) => pure <| (← hypPriority a) + (← hypPriority b)
@@ -51,13 +50,13 @@ partial def hypPriority (hyp : Q(Prop)) : MetaM ℕ := do
     | _ => pure 0
 
 /-- Map a type to a score -/
-def typePriority (decl : Lean.Name) (type : Lean.Expr) : MetaM ℕ :=
+def typePriority (decl : Lean.Name) (type : Lean.Expr) : MetaM Nat :=
   Lean.Meta.forallTelescope type fun xs t ↦ do
     checkResult t
-    xs.foldlM (fun (t : ℕ) x ↦ do return t + (← argPriority x)) 0
-  where
+    xs.foldlM (fun (t : Nat) x ↦ do return t + (← argPriority x)) 0
+where
   /-- Score the type of argument `x` -/
-  argPriority (x : Lean.Expr) : MetaM ℕ := do
+  argPriority (x : Lean.Expr) : MetaM Nat := do
     hypPriority (← Lean.Meta.inferType x)
   /-- Insist that our conclusion is an inequality -/
   checkResult (t : Q(Prop)) : MetaM Unit := do match t with
@@ -69,14 +68,14 @@ def typePriority (decl : Lean.Name) (type : Lean.Expr) : MetaM ℕ :=
                           it should be an inequality")
 
 /-- Map a theorem decl to a score (0 means `norm apply`, `0 <` means `safe apply`) -/
-def declPriority (decl : Lean.Name) : Lean.MetaM ℕ := do
+def declPriority (decl : Lean.Name) : Lean.MetaM Nat := do
   match (← Lean.getEnv).find? decl with
     | some info => do
         typePriority decl info.type
     | none => throwError "unknown declaration {decl}"
 
 /-- Map a score to either `norm apply` or `safe apply <priority>` -/
-def scoreToConfig (decl : Lean.Name) (score : ℕ) : Aesop.Frontend.RuleConfig :=
+def scoreToConfig (decl : Lean.Name) (score : Nat) : Aesop.Frontend.RuleConfig :=
   let (phase, priority) := match score with
     | 0 => (Aesop.PhaseName.norm, 0)  -- No hypotheses: this rule closes the goal immediately
     | s => (Aesop.PhaseName.safe, s)

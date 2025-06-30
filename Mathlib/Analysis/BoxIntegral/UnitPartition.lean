@@ -17,7 +17,7 @@ vectors `ν : ι → ℤ`.
 
 Let `B` be a `BoxIntegral`. A `unitPartition.box` is admissible for `B` (more precisely its index is
 admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.box` for
-`B` and thus we can form the corresponing tagged prepartition, see
+`B` and thus we can form the corresponding tagged prepartition, see
 `BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.box` comes with its
 tag situated at its "upper most" vertex). If `B` satisfies `hasIntegralVertices`, that
 is its vertices are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
@@ -25,36 +25,38 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 ## Main definitions and results
 
 * `BoxIntegral.hasIntegralVertices`: a `Prop` that states that the vertices of the box have
-coordinates in `ℤ`
+  coordinates in `ℤ`
 
 * `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
-`ν i / n` and of side length `1 / n`.
+  `ν i / n` and of side length `1 / n`.
 
 * `BoxIntegral.unitPartition.admissibleIndex`: For `B : BoxIntegral.Box`, the set of indices of
-`unitPartition.box` that are subsets of `B`. This is a finite set.
+  `unitPartition.box` that are subsets of `B`. This is a finite set.
 
 * `BoxIntegral.unitPartition.prepartition_isPartition`: For `B : BoxIntegral.Box`, if `B`
-has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
-partition of `B`.
+  has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
+  partition of `B`.
 
 * `tendsto_tsum_div_pow_atTop_integral`: let `s` be a bounded, measurable set of `ι → ℝ`
-whose frontier has zero volume and let `F` be a continuous function. Then the limit as `n → ∞`
-of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the
-integral of `F` over `s`.
+  whose frontier has zero volume and let `F` be a continuous function. Then the limit as `n → ∞`
+  of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the
+  integral of `F` over `s`.
 
 * `tendsto_card_div_pow_atTop_volume`: let `s` be a bounded, measurable set of `ι → ℝ` whose
-frontier has zero volume. Then the limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι`
-tends to the volume of `s`.
+  frontier has zero volume. Then the limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι`
+  tends to the volume of `s`.
 
 * `tendsto_card_div_pow_atTop_volume'`: a version of `tendsto_card_div_pow_atTop_volume` where we
-assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
-`card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
+  assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
+  `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
 
 -/
 
 noncomputable section
 
 variable {ι : Type*}
+
+open scoped Topology
 
 section hasIntegralVertices
 
@@ -104,7 +106,7 @@ theorem box_lower [NeZero n] (ν : ι → ℤ) :
 
 @[simp]
 theorem box_upper [NeZero n] (ν : ι → ℤ) :
-    (box n ν).upper = fun i ↦ ((ν i + 1)/ n : ℝ) := rfl
+    (box n ν).upper = fun i ↦ ((ν i + 1) / n : ℝ) := rfl
 
 variable {n} in
 @[simp]
@@ -370,9 +372,10 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
       (mem_admissibleIndex_of_mem_box n hB (hs₀ hI.2))]
     exact tag_mem_smul_span _ _
   · rw [Set.mem_toFinset] at hx
-    rw [volume_box, prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
+    rw [measureReal_def, volume_box,
+      prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
       tag_index_eq_self_of_mem_smul_span n hx.2, ENNReal.toReal_div,
-      ENNReal.one_toReal, ENNReal.toReal_pow, ENNReal.toReal_nat, mul_comm_div, one_mul]
+      ENNReal.toReal_one, ENNReal.toReal_pow, ENNReal.toReal_natCast, mul_comm_div, one_mul]
 
 open Filter
 
@@ -418,7 +421,7 @@ special case of `tendsto_card_div_pow` with `F = 1`. -/
 theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card ↑(s ∩ (n : ℝ)⁻¹ • L) : ℝ) / n ^ card ι)
-      atTop (nhds (volume s).toReal) := by
+      atTop (𝓝 (volume.real s)) := by
   convert tendsto_tsum_div_pow_atTop_integral s (fun _ ↦ 1) continuous_const hs₁ hs₂ hs₃
   · rw [tsum_const, nsmul_eq_mul, mul_one, Nat.cast_inj]
   · rw [setIntegral_const, smul_eq_mul, mul_one]
@@ -474,8 +477,8 @@ theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
     Tendsto (fun x : ℝ ↦ (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι)
-      atTop (nhds (volume s).toReal) := by
-  rw [show (volume s).toReal = (volume s).toReal * 1 ^ card ι by ring]
+      atTop (𝓝 (volume.real s)) := by
+  rw [show volume.real s = volume.real s * 1 ^ card ι by ring]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ ?_
     (tendsto_card_div_pow₃ s hs₁ hs₄) (tendsto_card_div_pow₄ s hs₁ hs₄)
   · refine Tendsto.congr' (tendsto_card_div_pow₅ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))

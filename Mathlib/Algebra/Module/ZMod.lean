@@ -3,12 +3,15 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Submodule.Defs
+import Mathlib.GroupTheory.Sylow
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
+
+assert_not_exists TwoSidedIdeal
 
 variable {n : ℕ} {M M₁ : Type*}
 
@@ -79,6 +82,12 @@ theorem toZModLinearMap_injective : Function.Injective <| toZModLinearMap n (M :
 @[simp]
 theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
 
+/-- `AddMonoidHom.toZModLinearMap` as an equivalence. -/
+def toZModLinearMapEquiv : (M →+ M₁) ≃+ (M →ₗ[ZMod n] M₁) where
+  toFun f := f.toZModLinearMap n
+  invFun g := g
+  map_add' f₁ f₂ := by ext; simp
+
 end AddMonoidHom
 
 namespace AddSubgroup
@@ -89,8 +98,6 @@ See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
 def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
   toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
   invFun := Submodule.toAddSubgroup
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 @[simp]
@@ -112,3 +119,18 @@ theorem _root_.Submodule.toAddSubgroup_toZModSubmodule (S : Submodule (ZMod n) M
   rfl
 
 end AddSubgroup
+
+namespace ZModModule
+variable {p : ℕ} {G : Type*} [AddCommGroup G]
+
+/-- In an elementary abelian `p`-group, every finite subgroup `H` contains a further subgroup of
+cardinality between `k` and `p * k`, if `k ≤ |H|`. -/
+lemma exists_submodule_subset_card_le (hp : p.Prime) [Module (ZMod p) G]
+    (H : Submodule (ZMod p) G) {k : ℕ} (hk : k ≤ Nat.card H) (h'k : k ≠ 0) :
+    ∃ H' : Submodule (ZMod p) G, Nat.card H' ≤ k ∧ k < p * Nat.card H' ∧ H' ≤ H := by
+  obtain ⟨H'm, H'mHm, H'mk, kH'm⟩ := Sylow.exists_subgroup_le_card_le
+    (H := AddSubgroup.toSubgroup ((AddSubgroup.toZModSubmodule _).symm H)) hp
+      isPGroup_multiplicative hk h'k
+  exact ⟨AddSubgroup.toZModSubmodule _ (AddSubgroup.toSubgroup.symm H'm), H'mk, kH'm, H'mHm⟩
+
+end ZModModule

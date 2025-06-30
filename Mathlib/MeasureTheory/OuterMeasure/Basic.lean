@@ -7,6 +7,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.Disjointed
 import Mathlib.MeasureTheory.OuterMeasure.Defs
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Outer Measures
@@ -51,6 +52,9 @@ theorem measure_mono (h : s ⊆ t) : μ s ≤ μ t :=
 
 theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
   eq_bot_mono (measure_mono h) ht
+
+lemma measure_eq_top_mono (h : s ⊆ t) (hs : μ s = ∞) : μ t = ∞ := eq_top_mono (measure_mono h) hs
+lemma measure_lt_top_mono (h : s ⊆ t) (ht : μ t < ∞) : μ s < ∞ := (measure_mono h).trans_lt ht
 
 theorem measure_pos_of_superset (h : s ⊆ t) (hs : μ s ≠ 0) : 0 < μ t :=
   hs.bot_lt.trans_le (measure_mono h)
@@ -157,65 +161,6 @@ namespace OuterMeasure
 
 variable {α β : Type*} {m : OuterMeasure α}
 
-@[deprecated measure_empty (since := "2024-05-14")]
-theorem empty' (m : OuterMeasure α) : m ∅ = 0 := measure_empty
-
-@[deprecated measure_mono (since := "2024-05-14")]
-theorem mono' (m : OuterMeasure α) {s₁ s₂} (h : s₁ ⊆ s₂) : m s₁ ≤ m s₂ := by gcongr
-
-@[deprecated measure_mono_null (since := "2024-05-14")]
-theorem mono_null (m : OuterMeasure α) {s t} (h : s ⊆ t) (ht : m t = 0) : m s = 0 :=
-  measure_mono_null h ht
-
-@[deprecated measure_pos_of_superset (since := "2024-05-14")]
-theorem pos_of_subset_ne_zero (m : OuterMeasure α) {a b : Set α} (hs : a ⊆ b) (hnz : m a ≠ 0) :
-    0 < m b :=
-  measure_pos_of_superset hs hnz
-
-@[deprecated measure_iUnion_le (since := "2024-05-14")]
-protected theorem iUnion (m : OuterMeasure α) {β} [Countable β] (s : β → Set α) :
-    m (⋃ i, s i) ≤ ∑' i, m (s i) :=
-  measure_iUnion_le s
-
-@[deprecated measure_biUnion_null_iff (since := "2024-05-14")]
-theorem biUnion_null_iff (m : OuterMeasure α) {s : Set β} (hs : s.Countable) {t : β → Set α} :
-    m (⋃ i ∈ s, t i) = 0 ↔ ∀ i ∈ s, m (t i) = 0 :=
-  measure_biUnion_null_iff hs
-
-@[deprecated measure_sUnion_null_iff (since := "2024-05-14")]
-theorem sUnion_null_iff (m : OuterMeasure α) {S : Set (Set α)} (hS : S.Countable) :
-    m (⋃₀ S) = 0 ↔ ∀ s ∈ S, m s = 0 := measure_sUnion_null_iff hS
-
-@[deprecated measure_iUnion_null_iff (since := "2024-05-14")]
-theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : ι → Set α} :
-    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-  measure_iUnion_null_iff
-
-@[deprecated measure_iUnion_null (since := "2024-05-14")]
-alias ⟨_, iUnion_null⟩ := iUnion_null_iff
-
-@[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
-protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
-    m (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, m (s i) :=
-  measure_biUnion_finset_le t s
-
-@[deprecated measure_union_le (since := "2024-05-14")]
-protected theorem union (m : OuterMeasure α) (s₁ s₂ : Set α) : m (s₁ ∪ s₂) ≤ m s₁ + m s₂ :=
-  measure_union_le s₁ s₂
-
-/-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure
-in a second-countable space. -/
-@[deprecated measure_null_of_locally_null (since := "2024-05-14")]
-theorem null_of_locally_null [TopologicalSpace α] [SecondCountableTopology α] (m : OuterMeasure α)
-    (s : Set α) (hs : ∀ x ∈ s, ∃ u ∈ 𝓝[s] x, m u = 0) : m s = 0 :=
-  measure_null_of_locally_null s hs
-
-/-- If `m s ≠ 0`, then for some point `x ∈ s` and any `t ∈ 𝓝[s] x` we have `0 < m t`. -/
-@[deprecated exists_mem_forall_mem_nhdsWithin_pos_measure (since := "2024-05-14")]
-theorem exists_mem_forall_mem_nhds_within_pos [TopologicalSpace α] [SecondCountableTopology α]
-    (m : OuterMeasure α) {s : Set α} (hs : m s ≠ 0) : ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < m t :=
-  exists_mem_forall_mem_nhdsWithin_pos_measure hs
-
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
 some nontrivial filter (usually `atTop` on `ι = ℕ`), then `m S = ⨆ n, m (s n)`. -/
 theorem iUnion_of_tendsto_zero {ι} (m : OuterMeasure α) {s : ι → Set α} (l : Filter ι) [NeBot l]
@@ -238,26 +183,12 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   have : ∃i, x ∈ s i := by exists i
   rcases Nat.findX this with ⟨j, hj, hlt⟩
   clear hx i
-  rcases le_or_lt j n with hjn | hnj
+  rcases le_or_gt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
   have : j - (n + 1) + n + 1 = j := by omega
   refine Or.inr (mem_iUnion.2 ⟨j - (n + 1), ?_, hlt _ ?_⟩)
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]
-
-@[deprecated measure_le_inter_add_diff (since := "2024-05-14")]
-theorem le_inter_add_diff {m : OuterMeasure α} {t : Set α} (s : Set α) :
-    m t ≤ m (t ∩ s) + m (t \ s) :=
-  measure_le_inter_add_diff m t s
-
-@[deprecated measure_diff_null (since := "2024-05-14")]
-theorem diff_null (m : OuterMeasure α) (s : Set α) {t : Set α} (ht : m t = 0) : m (s \ t) = m s :=
-  measure_diff_null ht
-
-@[deprecated measure_union_null (since := "2024-05-14")]
-theorem union_null (m : OuterMeasure α) {s₁ s₂ : Set α} (h₁ : m s₁ = 0) (h₂ : m s₂ = 0) :
-    m (s₁ ∪ s₂) = 0 :=
-  measure_union_null h₁ h₂
 
 theorem coe_fn_injective : Injective fun (μ : OuterMeasure α) (s : Set α) => μ s :=
   DFunLike.coe_injective

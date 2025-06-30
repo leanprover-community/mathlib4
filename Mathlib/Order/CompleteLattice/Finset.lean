@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Option
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Lattice operations on finsets
@@ -15,8 +15,7 @@ See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding bin
 operations over a finset.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -158,8 +157,8 @@ theorem iInf_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
 
 theorem iSup_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
     ⨆ i ∈ insert x t, Function.update f x s i = s ⊔ ⨆ i ∈ t, f i := by
-  simp only [Finset.iSup_insert, update_same]
-  rcongr (i hi); apply update_noteq; rintro rfl; exact hx hi
+  simp only [Finset.iSup_insert, update_self]
+  rcongr (i hi); apply update_of_ne; rintro rfl; exact hx hi
 
 theorem iInf_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
     ⨅ i ∈ insert x t, update f x s i = s ⊓ ⨅ i ∈ t, f i :=

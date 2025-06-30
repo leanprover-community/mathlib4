@@ -19,14 +19,10 @@ As this works with either products or coproducts,
 and sometimes we want to think of a different monoidal structure entirely,
 we don't set up either construct as an instance.
 
-## Implementation
-We had previously chosen to rely on `HasTerminal` and `HasBinaryProducts` instead of
-`HasBinaryProducts`, because we were later relying on the definitional form of the tensor product.
-Now that `has_limit` has been refactored to be a `Prop`,
-this issue is irrelevant and we could simplify the construction here.
+## TODO
 
-See `CategoryTheory.monoidalOfChosenFiniteProducts` for a variant of this construction
-which allows specifying a particular choice of terminal object and binary products.
+Replace `monoidalOfHasFiniteProducts` and `symmetricOfHasFiniteProducts`
+with `CartesianMonoidalCategory.ofHasFiniteProducts`.
 -/
 
 
@@ -82,7 +78,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.prod.map f g :=
   rfl
 
 @[simp]
@@ -158,7 +154,7 @@ def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Symmetr
   braiding_naturality_right X _ _ f := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
-  symmetry X Y := by dsimp; simp
+  symmetry X Y := by simp
 
 end
 
@@ -196,7 +192,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.coprod.map f g :=
   rfl
 
 @[simp]
@@ -254,7 +250,7 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
   braiding_naturality_right f g := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
-  symmetry X Y := by dsimp; simp
+  symmetry X Y := by simp
 
 end
 
@@ -269,11 +265,11 @@ variable {D : Type*} [Category D] (F : C ⥤ D)
 
 attribute [local simp] associator_hom_fst
 instance : F.OplaxMonoidal where
-  η' := terminalComparison F
-  δ' X Y := prodComparison F X Y
-  δ'_natural_left _ _ := by simp [prodComparison_natural]
-  δ'_natural_right _ _ := by simp [prodComparison_natural]
-  oplax_associativity' _ _ _ := by
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left _ _ := by simp [prodComparison_natural]
+  δ_natural_right _ _ := by simp [prodComparison_natural]
+  oplax_associativity _ _ _ := by
     dsimp
     ext
     · dsimp
@@ -291,8 +287,8 @@ instance : F.OplaxMonoidal where
         Functor.map_comp]
       erw [associator_hom_snd_snd, associator_hom_snd_snd]
       simp
-  oplax_left_unitality' _ := by ext; simp [← Functor.map_comp]
-  oplax_right_unitality' _ := by ext; simp [← Functor.map_comp]
+  oplax_left_unitality _ := by ext; simp [← Functor.map_comp]
+  oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 open Functor.OplaxMonoidal
 
@@ -307,7 +303,7 @@ instance (X Y : C) : IsIso (δ F X Y) := by dsimp [δ_eq]; infer_instance
 
 /-- Promote a finite products preserving functor to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/
-instance : F.Monoidal := Functor.Monoidal.ofOplaxMonoidal F
+instance : F.Monoidal := .ofOplaxMonoidal F
 
 end monoidalOfHasFiniteProducts
 

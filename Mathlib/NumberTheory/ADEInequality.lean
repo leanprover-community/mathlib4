@@ -103,7 +103,7 @@ def sumInv (pqr : Multiset ℕ+) : ℚ :=
   Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
 
 theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
-  simp only [sumInv, add_zero, insert_eq_cons, add_assoc, map_cons, sum_cons,
+  simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,
     map_singleton, sum_singleton]
 
 /-- A multiset `pqr` of positive natural numbers is `admissible`
@@ -142,11 +142,9 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
     simp only [lt_add_iff_pos_right, PNat.one_coe, inv_one, Nat.cast_one]
     apply add_pos <;> simp only [PNat.pos, Nat.cast_pos, inv_pos]
   · rw [← H, D', sumInv_pqr]
-    conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
     norm_num
   all_goals
     rw [← H, E', sumInv_pqr]
-    conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
     norm_num
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by

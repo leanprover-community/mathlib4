@@ -50,7 +50,7 @@ when `c.prev j = i` and `c.next j = k`. -/
 noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k :=
   NatIso.ofComponents (fun K => ShortComplex.isoMk (K.XIsoOfEq hi) (Iso.refl _) (K.XIsoOfEq hk)
-    (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+    (by simp) (by simp)) (by aesop_cat)
 
 variable {C c}
 
@@ -70,7 +70,9 @@ noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
 short complex `K.sc i` has. -/
 abbrev HasHomology := (K.sc i).HasHomology
 
-section variable [K.HasHomology i]
+section
+
+variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
@@ -614,6 +616,24 @@ lemma exactAt_iff_isZero_homology [K.HasHomology i] :
   dsimp [homology]
   rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
 
+variable {K i} in
+lemma ExactAt.isZero_homology [K.HasHomology i] (h : K.ExactAt i) :
+    IsZero (K.homology i) := by
+  rwa [← exactAt_iff_isZero_homology]
+
+/-- A homological complex `K` is acyclic if it is exact at `i` for any `i`. -/
+def Acyclic := ∀ i, K.ExactAt i
+
+lemma acyclic_iff :
+    K.Acyclic ↔ ∀ i, K.ExactAt i := by rfl
+
+lemma acyclic_of_isZero (hK : IsZero K) :
+    K.Acyclic := by
+  rw [acyclic_iff]
+  intro i
+  apply ShortComplex.exact_of_isZero_X₂
+  exact (eval _ _ i).map_isZero hK
+
 end HomologicalComplex
 
 namespace ChainComplex
@@ -796,7 +816,7 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
 lemma opcyclesIsoSc'_inv_fromOpcycles :
     (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =
       (K.sc' i j k).fromOpcycles := by
-  simp only [← cancel_epi (K.sc' i j k).pOpcycles,  pOpcycles_opcyclesIsoSc'_inv_assoc,
+  simp only [← cancel_epi (K.sc' i j k).pOpcycles, pOpcycles_opcyclesIsoSc'_inv_assoc,
     p_fromOpcycles, ShortComplex.p_fromOpcycles, shortComplexFunctor'_obj_g]
 
 /-- The opcycles of a homological complex in degree `j` can be computed
