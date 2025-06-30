@@ -42,6 +42,8 @@ scoped notation "V_ " => vonNeumann
 
 variable {a b o : Ordinal} {x : ZFSet.{u}}
 
+lemma mem_vonNeumann' : x ∈ V_ o ↔ ∃ a < o, x ⊆ V_ a := by rw [vonNeumann]; simp
+
 theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   rw [vonNeumann]
   refine IsTransitive.sUnion' fun x hx ↦ ?_
