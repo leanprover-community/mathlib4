@@ -50,7 +50,7 @@ class SigmaCompleteLattice (α) extends Lattice α, SupSet α, InfSet α where
   isGLB_σsInf (s : Set α) (hs : s.Countable) : IsGLB s (sInf s)
 
 /-- A complete lattice is a σ-complete lattice. -/
-instance (priority := 100) CompleteLAttice.toSigmaCompleteLattice [CompleteLattice α] :
+instance (priority := 100) CompleteLattice.toSigmaCompleteLattice [CompleteLattice α] :
     SigmaCompleteLattice α where
   isLUB_σsSup (s : Set α) _ := isLUB_sSup s
   isGLB_σsInf (s : Set α) _ := isGLB_sInf s
