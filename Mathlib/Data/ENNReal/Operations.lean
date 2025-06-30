@@ -540,22 +540,16 @@ lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· �
     (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
   iInf_add_iInf fun i j ↦ (exists_le_le i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 
-lemma add_biInf' {p : ι → Prop} (f : ι → ℝ≥0∞) :
-    a + ⨅ i, ⨅ _ : p i, f i = ⨅ i, ⨅ _ : p i, a + f i := by
+lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
+    a + ⨅ (i) (j), f i j = ⨅ (i) (j), a + f i j := by
   simp only [iInf_subtype', add_iInf]
 
-lemma biInf_add' {p : ι → Prop} (f : ι → ℝ≥0∞) :
-    (⨅ i, ⨅ _ : p i, f i) + a = ⨅ i, ⨅ _ : p i, f i + a := by
-  simp only [add_comm, add_biInf']
-
-lemma add_biInf {ι : Type*} {s : Set ι} (f : ι → ℝ≥0∞) :
-    a + ⨅ i ∈ s, f i = ⨅ i ∈ s, a + f i := add_biInf' _
-
-lemma biInf_add {ι : Type*} {s : Set ι} (f : ι → ℝ≥0∞) :
-    (⨅ i ∈ s, f i) + a = ⨅ i ∈ s, f i + a := biInf_add' _
+lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
+    (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
+  simp only [add_comm, add_iInf₂]
 
 lemma add_sInf {s : Set ℝ≥0∞}: a + sInf s = ⨅ b ∈ s, a + b := by
-  rw [sInf_eq_iInf, add_biInf]
+  rw [sInf_eq_iInf, add_iInf₂]
 
 variable {κ : Sort*}
 
@@ -563,15 +557,12 @@ lemma le_iInf_add_iInf {g : κ → ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) :
     a ≤ iInf f + iInf g := by
   simp_rw [iInf_add, add_iInf]; exact le_iInf₂ h
 
-lemma le_biInf_add_biInf' {p : ι → Prop} {q : κ → Prop}
-    {g : κ → ℝ≥0∞} (h : ∀ i, p i → ∀ j, q j → a ≤ f i + g j) :
-    a ≤ (⨅ i, ⨅ _ : p i, f i) + ⨅ j, ⨅ _ : q j, g j := by
-  simp_rw [biInf_add', add_biInf']
+lemma le_iInf₂_add_iInf₂ {q₁ : ι → Sort*} {q₂ : κ → Sort*}
+    {f : (i : ι) → q₁ i → ℝ≥0∞} {g : (k : κ) → q₂ k → ℝ≥0∞}
+    (h : ∀ i pi k qk, a ≤ f i pi + g k qk) :
+    a ≤ (⨅ (i) (qi), f i qi) + ⨅ (k) (qk), g k qk := by
+  simp_rw [iInf₂_add, add_iInf₂]
   exact le_iInf₂ fun i hi => le_iInf₂ (h i hi)
-
-lemma le_biInf_add_biInf {ι κ : Type*} {s : Set ι} {t : Set κ}
-    {f : ι → ℝ≥0∞} {g : κ → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ i ∈ s, ∀ j ∈ t, a ≤ f i + g j) :
-    a ≤ (⨅ i ∈ s, f i) + ⨅ j ∈ t, g j := le_biInf_add_biInf' h
 
 @[simp] lemma iInf_gt_eq_self (a : ℝ≥0∞) : ⨅ b, ⨅ _ : a < b, b = a := by
   refine le_antisymm ?_ (le_iInf₂ fun b hb ↦ hb.le)
@@ -582,7 +573,7 @@ lemma le_biInf_add_biInf {ι κ : Type*} {s : Set ι} {t : Set κ}
 lemma exists_add_lt_of_add_lt {x y z : ℝ≥0∞} (h : y + z < x) :
     ∃ y' > y, ∃ z' > z, y' + z' < x := by
   contrapose! h
-  simpa using le_biInf_add_biInf' h
+  simpa using le_iInf₂_add_iInf₂ h
 
 end iInf
 
