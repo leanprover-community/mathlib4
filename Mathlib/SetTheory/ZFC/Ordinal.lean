@@ -341,13 +341,12 @@ namespace ZFSet
 open Ordinal
 
 theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
-  refine ⟨fun x hx y hy ↦ ?_, @fun x y z hx hy hz ↦ ?_⟩
-  · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
+  refine ⟨fun x hx y hy ↦ ?_, @fun z y x hz hy hx ↦ ?_⟩
+  all_goals
+    obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
     obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy
-    exact toZFSet_mem_toZFSet_iff.2 (hb.trans ha)
-  · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hz
-    obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy
-    obtain ⟨c, hc, rfl⟩ := mem_toZFSet_iff.1 hx
+  · exact toZFSet_mem_toZFSet_iff.2 (hb.trans ha)
+  · obtain ⟨c, hc, rfl⟩ := mem_toZFSet_iff.1 hz
     exact toZFSet_mem_toZFSet_iff.2 (hc.trans hb)
 
 theorem IsOrdinal.toZFSet_rank_eq {x : ZFSet} (hx : IsOrdinal x) : x.rank.toZFSet = x :=
