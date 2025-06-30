@@ -139,6 +139,40 @@ theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : F
     F₁ = F₂ :=
   Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
 
+@[simp]
+lemma FreeRefl.quotientFunctor_id (V) [ReflQuiver V] (X : V) :
+    (FreeRefl.quotientFunctor V).map (𝟙rq X).toPath = 𝟙 _ := by
+  apply Quotient.sound
+  exact .mk
+
+instance (V : Type*) [ReflQuiver V] [Unique V] : Unique (FreeRefl V) :=
+  letI : Unique (Paths V) := inferInstanceAs (Unique V)
+  inferInstanceAs (Unique (Quotient _))
+
+instance (V : Type*) [ReflQuiver V] [Unique V]
+    [∀ (x y : V), Unique (x ⟶ y)] (x y : FreeRefl V) :
+    Unique (x ⟶ y) where
+  default := (FreeRefl.quotientFunctor V).map ((Paths.of V).map default)
+  uniq f := by
+    letI : Unique (Paths V) := inferInstanceAs (Unique V)
+    induction f using Quotient.induction with | @h x y f =>
+    rw [← FreeRefl.quotientFunctor]
+    symm
+    induction f using Paths.induction with
+    | id =>
+      apply Quotient.sound
+      obtain rfl : x = y := by subsingleton
+      conv =>
+        arg 3
+        equals (𝟙rq _).toPath => congr; subsingleton
+      exact .mk
+    | @comp x y z f g hrec =>
+        obtain rfl : x = z := by subsingleton
+        obtain rfl : x = y := by subsingleton
+        obtain rfl : g = 𝟙rq _ := by subsingleton
+        simp only [Paths.of_obj, ↓hrec, Paths.of_map, Functor.map_comp,
+          FreeRefl.quotientFunctor_id, Category.comp_id]
+
 
 /-- A refl prefunctor `V ⥤rq W` induces a functor `FreeRefl V ⥤ FreeRefl W` defined using
 `freeMap` and the quotient functor. -/
