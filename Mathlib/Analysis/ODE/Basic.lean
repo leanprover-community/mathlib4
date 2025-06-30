@@ -40,7 +40,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
 outside of `s` is irrelevant and considered junk. -/
 def IsIntegralCurveOn (γ : ℝ → E) (v : E → E) (s : Set ℝ) : Prop :=
-  ∀ t ∈ s, HasDerivAt γ (v (γ t)) t
+  ∀ t ∈ s, HasDerivWithinAt γ (v (γ t)) s t
 
 /-- If `v` is a vector field on `M` and `t₀ : ℝ`, `IsIntegralCurveAt γ v t₀` means `γ : ℝ → E` is a
 local integral curve of `v` in a neighbourhood containing `t₀`. The value of `γ` outside of this
@@ -56,40 +56,62 @@ def IsIntegralCurve (γ : ℝ → E) (v : E → E) : Prop :=
 variable {γ γ' : ℝ → E} {v : E → E} {s s' : Set ℝ} {t₀ : ℝ}
 
 lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ) :
-    IsIntegralCurveOn γ v s := fun t _ ↦ h t
+    IsIntegralCurveOn γ v s := fun t _ ↦ (h t).hasDerivWithinAt
 
-lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
-  ⟨fun h ↦ h.isIntegralCurveOn _, fun h t ↦ h t (mem_univ _)⟩
+lemma isIntegralCurve_iff_isIntegralCurveOn :
+    IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
+  ⟨fun h ↦ h.isIntegralCurveOn _, fun h t ↦ (h t (mem_univ _)).hasDerivAt Filter.univ_mem⟩
 
 lemma isIntegralCurveAt_iff :
     IsIntegralCurveAt γ v t₀ ↔ ∃ s ∈ 𝓝 t₀, IsIntegralCurveOn γ v s := by
-  simp_rw [IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem, IsIntegralCurveAt]
+  constructor
+  · intro h
+    rw [IsIntegralCurveAt, Filter.eventually_iff_exists_mem] at h
+    obtain ⟨s, hs, h⟩ := h
+    exact ⟨s, hs, fun t ht ↦ (h t ht).hasDerivWithinAt⟩
+  · intro h
+    rw [IsIntegralCurveAt, Filter.eventually_iff_exists_mem]
+    obtain ⟨s, hs, h⟩ := h
+    rw [mem_nhds_iff] at hs
+    obtain ⟨s', h1, h2, h3⟩ := hs
+    refine ⟨s', h2.mem_nhds h3, ?_⟩
+    intro t ht
+    apply (h t (h1 ht)).hasDerivAt
+    rw [mem_nhds_iff]
+    exact ⟨s', h1, h2, ht⟩
 
 /-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
 containing `t₀`. -/
 lemma isIntegralCurveAt_iff' :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  simp_rw [IsIntegralCurveOn, ← Metric.eventually_nhds_iff_ball, IsIntegralCurveAt]
+  rw [isIntegralCurveAt_iff]
+  constructor
+  · intro ⟨s, hs, h⟩
+    rw [Metric.mem_nhds_iff] at hs
+    obtain ⟨ε, hε, hε'⟩ := hs
+    refine ⟨ε, hε, ?_⟩
+    intro t ht
+    exact (h t (hε' ht)).mono hε'
+  · intro ⟨ε, hε, h⟩
+    exact ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
-    IsIntegralCurveAt γ v t := isIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
+    IsIntegralCurveAt γ v t :=
+  isIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ (h t).hasDerivWithinAt⟩
 
 lemma isIntegralCurve_iff_isIntegralCurveAt :
     IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
   ⟨fun h ↦ h.isIntegralCurveAt, fun h t ↦ by
     obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t)
-    exact h t (mem_of_mem_nhds hs)⟩
+    exact h t (mem_of_mem_nhds hs) |>.hasDerivAt hs⟩
 
 lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
-    IsIntegralCurveOn γ v s' := fun t ht ↦ h t (mem_of_mem_of_subset ht hs)
+    IsIntegralCurveOn γ v s' := fun t ht ↦ (h t (hs ht)).mono hs
 
-lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
-    IsIntegralCurveOn γ v (s ∪ s') := fun _ ↦ fun | .inl ht => h _ ht | .inr ht => h' _ ht
-
-lemma IsIntegralCurveAt.hasMFDerivAt (h : IsIntegralCurveAt γ v t₀) :
+lemma IsIntegralCurveAt.hasDerivAt (h : IsIntegralCurveAt γ v t₀) :
     HasDerivAt γ (v (γ t₀)) t₀ :=
   have ⟨_, hs, h⟩ := isIntegralCurveAt_iff.mp h
-  h t₀ (mem_of_mem_nhds hs)
+  h t₀ (mem_of_mem_nhds hs) |>.hasDerivAt hs
 
 lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ 𝓝 t₀) :
     IsIntegralCurveAt γ v t₀ := isIntegralCurveAt_iff.mpr ⟨s, hs, h⟩
@@ -98,60 +120,27 @@ lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s
 lemma IsIntegralCurveAt.isIntegralCurveOn (h : ∀ t ∈ s, IsIntegralCurveAt γ v t) :
     IsIntegralCurveOn γ v s := by
   intros t ht
-  obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t ht)
-  exact h t (mem_of_mem_nhds hs)
+  apply HasDerivAt.hasDerivWithinAt
+  obtain ⟨s', hs', h⟩ := Filter.eventually_iff_exists_mem.mp (h t ht)
+  exact h _ (mem_of_mem_nhds hs')
 
 lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
     IsIntegralCurveOn γ v s ↔ ∀ t ∈ s, IsIntegralCurveAt γ v t :=
   ⟨fun h _ ht ↦ h.isIntegralCurveAt (hs.mem_nhds ht), IsIntegralCurveAt.isIntegralCurveOn⟩
 
-lemma IsIntegralCurveOn.continuousAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
-    ContinuousAt γ t₀ := (hγ t₀ ht).continuousAt
+lemma IsIntegralCurveOn.continuousWithinAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
+    ContinuousWithinAt γ s t₀ := (hγ t₀ ht).continuousWithinAt
+
+@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.continuousAt :=
+  IsIntegralCurveOn.continuousWithinAt
 
 lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
-    ContinuousOn γ s := fun t ht ↦ (hγ t ht).1.continuousWithinAt
+    ContinuousOn γ s := fun t ht ↦ (hγ t ht).continuousWithinAt
 
 lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
     ContinuousAt γ t₀ :=
   have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
-  hγ.continuousAt <| mem_of_mem_nhds hs
+  hγ.continuousWithinAt (mem_of_mem_nhds hs) |>.continuousAt hs
 
 lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
-  continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
-
-variable [IsManifold I 1 M]
-
-/-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
-expressed in the local chart around the initial point `γ t₀`. -/
-lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
-    (hsrc : γ t ∈ (extChartAt I (γ t₀)).source) :
-    HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
-  -- turn `HasDerivAt` into comp of `HasMFDerivAt`
-  have hsrc := extChartAt_source I (γ t₀) ▸ hsrc
-  rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
-  apply (HasMFDerivAt.comp t
-    (hasMFDerivAt_extChartAt (I := I) hsrc) (hγ _ ht)).congr_mfderiv
-  rw [ContinuousLinearMap.ext_iff]
-  intro a
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
-    mfderiv_chartAt_eq_tangentCoordChange hsrc]
-  rfl
-
-lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
-    ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
-  apply eventually_mem_nhds_iff.mpr
-    (hγ.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds (I := I) _)) |>.and hγ |>.mono
-  rintro t ⟨ht1, ht2⟩
-  have hsrc := mem_of_mem_nhds ht1
-  rw [mem_preimage, extChartAt_source I (γ t₀)] at hsrc
-  rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
-  apply (HasMFDerivAt.comp t (hasMFDerivAt_extChartAt (I := I) hsrc) ht2).congr_mfderiv
-  rw [ContinuousLinearMap.ext_iff]
-  intro a
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
-    mfderiv_chartAt_eq_tangentCoordChange hsrc]
-  rfl
+  continuous_iff_continuousAt.mpr fun t ↦ (hγ.isIntegralCurveAt t).continuousAt
