@@ -40,9 +40,8 @@ scoped notation "V_ " => vonNeumann
 
 theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   rw [vonNeumann]
-  apply IsTransitive.sUnion'
-  simp_rw [mem_range]
-  rintro _ ⟨⟨a, _⟩, rfl⟩
+  refine IsTransitive.sUnion' fun x hx ↦ ?_
+  obtain ⟨⟨a, _⟩, rfl⟩ := mem_range.1 hx
   exact (isTransitive_vonNeumann a).powerset
 termination_by o
 
