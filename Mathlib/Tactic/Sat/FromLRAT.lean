@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Tactic.ByContra
 
 /-!
@@ -40,7 +40,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-open Lean hiding Literal HashMap
+open Lean hiding Literal
 open Std (HashMap)
 
 namespace Sat
@@ -70,7 +70,10 @@ instance : ToExpr Literal where
 /-- A clause is a list of literals, thought of as a disjunction like `a ∨ b ∨ ¬c`. -/
 def Clause := List Literal
 
+/-- The empty clause -/
 def Clause.nil : Clause := []
+
+/-- Append a literal to a clause. -/
 def Clause.cons : Literal → Clause → Clause := List.cons
 
 /-- A formula is a list of clauses, thought of as a conjunction like `(a ∨ b) ∧ c ∧ (¬c ∨ ¬d)`. -/
@@ -550,7 +553,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
-  let ctxName ← mkAuxName (name ++ `ctx) 1
+  let ctxName ← mkAuxDeclName (name ++ `ctx)
   addDecl <| Declaration.defnDecl {
     name := ctxName
     levelParams := []
@@ -563,7 +566,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
   let Parsec.ParseResult.success _ steps := Parser.parseLRAT lrat.mkIterator
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
-  let declName ← mkAuxName (name ++ `proof) 1
+  let declName ← mkAuxDeclName (name ++ `proof)
   addDecl <| Declaration.thmDecl {
     name := declName
     levelParams := []

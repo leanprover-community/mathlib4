@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.Topology.ApproximateUnit
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
@@ -119,7 +118,7 @@ open Metric Filter Topology
 
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit contained in the
 closed unit ball of nonnegative elements. -/
-structure Filter.IsIncreasingApproximateUnit (l : Filter A) extends l.IsApproximateUnit : Prop where
+structure Filter.IsIncreasingApproximateUnit (l : Filter A) : Prop extends l.IsApproximateUnit where
   eventually_nonneg : ∀ᶠ x in l, 0 ≤ x
   eventually_norm : ∀ᶠ x in l, ‖x‖ ≤ 1
 
@@ -188,8 +187,8 @@ lemma hasBasis_approximateUnit :
     (approximateUnit A).HasBasis (fun x : A ↦ 0 ≤ x ∧ ‖x‖ < 1) ({x | · ≤ x} ∩ closedBall 0 1) :=
   isBasis_nonneg_sections A |>.hasBasis.inf_principal (closedBall 0 1)
 
-/-- This is a common reasoning sequence in C⋆-algebra theory. If `0 ≤ x ≤ y ≤ 1`, then the norm
-of `z - y * z` is controled by the norm of `star z * (1 - x) * z`, which is advantageous because the
+/-- This is a common reasoning sequence in C⋆-algebra theory. If `0 ≤ x ≤ y ≤ 1`, then the norm of
+`z - y * z` is controlled by the norm of `star z * (1 - x) * z`, which is advantageous because the
 latter is nonnegative. This is a key step in establishing the existence of an increasing approximate
 unit in general C⋆-algebras. -/
 lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]

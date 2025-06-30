@@ -3,8 +3,10 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Bracket
 import Mathlib.Tactic.Abel
 
@@ -28,10 +30,10 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 ## Notation
 
 Working over a fixed commutative ring `R`, we introduce the notations:
- * `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
- * `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
- * `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
- * `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
+* `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
+* `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
+* `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
+* `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
 
 ## Implementation notes
 
@@ -65,7 +67,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
+@[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
@@ -92,7 +94,43 @@ class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] 
   /-- A Lie module bracket is compatible with scalar multiplication in its second argument. -/
   protected lie_smul : ∀ (t : R) (x : L) (m : M), ⁅x, t • m⁆ = t • ⁅x, m⁆
 
+/-- A tower of Lie bracket actions encapsulates the Leibniz rule for Lie bracket actions.
+
+More precisely, it does so in a relative setting:
+Let `L₁` and `L₂` be two types with Lie bracket actions on a type `M` endowed with an addition,
+and additionally assume a Lie bracket action of `L₁` on `L₂`.
+Then the Leibniz rule asserts for all `x : L₁`, `y : L₂`, and `m : M` that
+`⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆` holds.
+
+Common examples include the case where `L₁` is a Lie subalgebra of `L₂`
+and the case where `L₂` is a Lie ideal of `L₁`. -/
+class IsLieTower (L₁ L₂ M : Type*) [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [Add M] where
+  protected leibniz_lie (x : L₁) (y : L₂) (m : M) : ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
+
+section IsLieTower
+
+variable {L₁ L₂ M : Type*} [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M]
+
+lemma leibniz_lie [Add M] [IsLieTower L₁ L₂ M] (x : L₁) (y : L₂) (m : M) :
+    ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ := IsLieTower.leibniz_lie x y m
+
+lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M] [IsLieTower L₂ L₁ M]
+    (x : L₁) (y : L₂) (m : M) : ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
+  have h1 := leibniz_lie x y m
+  have h2 := leibniz_lie y x m
+  convert congr($h1.symm - $h2) using 1 <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
+
+end IsLieTower
+
 section BasicProperties
+
+theorem LieAlgebra.toModule_injective (L : Type*) [LieRing L] :
+    Function.Injective (@LieAlgebra.toModule _ _ _ _ : LieAlgebra ℚ L → Module ℚ L) := by
+  rintro ⟨h₁⟩ ⟨h₂⟩ heq
+  congr
+
+instance (L : Type*) [LieRing L] : Subsingleton (LieAlgebra ℚ L) :=
+  LieAlgebra.toModule_injective L |>.subsingleton
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -116,8 +154,8 @@ theorem smul_lie : ⁅t • x, m⁆ = t • ⁅x, m⁆ :=
 theorem lie_smul : ⁅x, t • m⁆ = t • ⁅x, m⁆ :=
   LieModule.lie_smul t x m
 
-theorem leibniz_lie : ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ :=
-  LieRingModule.leibniz_lie x y m
+instance : IsLieTower L L M where
+  leibniz_lie x y m := LieRingModule.leibniz_lie x y m
 
 @[simp]
 theorem lie_zero : ⁅x, 0⁆ = (0 : M) :=
@@ -172,13 +210,11 @@ theorem lie_nsmul (n : ℕ) : ⁅x, n • m⁆ = n • ⁅x, m⁆ :=
     { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _}
     _ _
 
-@[simp]
 theorem zsmul_lie (a : ℤ) : ⁅a • x, m⁆ = a • ⁅x, m⁆ :=
   AddMonoidHom.map_zsmul
     { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
     _ _
 
-@[simp]
 theorem lie_zsmul (a : ℤ) : ⁅x, a • m⁆ = a • ⁅x, m⁆ :=
   AddMonoidHom.map_zsmul
     { toFun := fun m : M => ⁅x, m⁆, map_zero' := lie_zero x, map_add' := fun _ _ => lie_add _ _ _ }
@@ -192,6 +228,10 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   abel
 
 instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
+
+instance : LieModule ℤ L M where
+  smul_lie n x m := zsmul_lie x m n
+  lie_smul n x m := lie_zsmul x m n
 
 instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
@@ -245,9 +285,34 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
 
+variable (L) in
+/-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
+def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
+  { mul := Bracket.bracket
+    left_distrib := lie_add
+    right_distrib := add_lie
+    zero_mul := zero_lie
+    mul_zero := lie_zero }
+
+variable {ι κ : Type*}
+
+theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul f a
+
+theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.mul_sum f a
+
+theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul_sum t f g
+
 end BasicProperties
 
-/-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
+/-- A morphism of Lie algebras (denoted as `L₁ →ₗ⁅R⁆ L₂`)
+is a linear map respecting the bracket operations. -/
 structure LieHom (R L L' : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
   /-- A morphism of Lie algebras is compatible with brackets. -/
@@ -312,7 +377,7 @@ theorem map_zero (f : L₁ →ₗ⁅R⁆ L₂) : f 0 = 0 :=
 def id : L₁ →ₗ⁅R⁆ L₁ :=
   { (LinearMap.id : L₁ →ₗ[R] L₁) with map_lie' := rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id : L₁ →ₗ⁅R⁆ L₁) = _root_.id :=
   rfl
 
@@ -369,8 +434,7 @@ def comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) : L₁ →�
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
       intros x y
-      change f (g ⁅x, y⁆) = ⁅f (g x), f (g y)⁆
-      rw [map_lie, map_lie] }
+      simp }
 
 theorem comp_apply (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) (x : L₁) : f.comp g x = f (g x) :=
   rfl
@@ -380,9 +444,11 @@ theorem coe_comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) : (
   rfl
 
 @[norm_cast, simp]
-theorem coe_linearMap_comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) :
+theorem toLinearMap_comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) :
     (f.comp g : L₁ →ₗ[R] L₃) = (f : L₂ →ₗ[R] L₃).comp (g : L₁ →ₗ[R] L₂) :=
   rfl
+
+@[deprecated (since := "2024-12-30")] alias coe_linearMap_comp := toLinearMap_comp
 
 @[simp]
 theorem comp_id (f : L₁ →ₗ⁅R⁆ L₂) : f.comp (id : L₁ →ₗ⁅R⁆ L₁) = f :=
@@ -438,19 +504,20 @@ theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
 
 end ModulePullBack
 
-/-- An equivalence of Lie algebras is a morphism which is also a linear equivalence. We could
-instead define an equivalence to be a morphism which is also a (plain) equivalence. However it is
-more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
+/-- An equivalence of Lie algebras (denoted as `L₁ ≃ₗ⁅R⁆ L₂`) is a morphism
+which is also a linear equivalence.
+We could instead define an equivalence to be a morphism which is also a (plain) equivalence.
+However, it is more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
 structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ⁅R⁆ L' where
   /-- The inverse function of an equivalence of Lie algebras -/
   invFun : L' → L
   /-- The inverse function of an equivalence of Lie algebras is a left inverse of the underlying
   function. -/
-  left_inv : Function.LeftInverse invFun toLieHom.toFun
+  left_inv : Function.LeftInverse invFun toLieHom.toFun := by intro; first | rfl | ext <;> rfl
   /-- The inverse function of an equivalence of Lie algebras is a right inverse of the underlying
   function. -/
-  right_inv : Function.RightInverse invFun toLieHom.toFun
+  right_inv : Function.RightInverse invFun toLieHom.toFun := by intro; first | rfl | ext <;> rfl
 
 @[inherit_doc]
 notation:50 L " ≃ₗ⁅" R "⁆ " L' => LieEquiv R L L'
@@ -478,15 +545,21 @@ instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ where
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by cases f; cases g; simp at h₁ h₂; simp [*]
 
-theorem coe_to_lieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
+theorem coe_toLieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
   rfl
 
-@[simp]
-theorem coe_to_linearEquiv (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ ≃ₗ[R] L₂) = e :=
-  rfl
+@[deprecated (since := "2024-12-30")] alias coe_to_lieHom := coe_toLieHom
 
 @[simp]
-theorem to_linearEquiv_mk (f : L₁ →ₗ⁅R⁆ L₂) (g h₁ h₂) :
+theorem coe_toLinearEquiv (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ ≃ₗ[R] L₂) = e :=
+  rfl
+
+@[simp] theorem coe_coe (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑e.toLieHom = e := rfl
+
+@[deprecated (since := "2024-12-30")] alias coe_to_linearEquiv := coe_toLinearEquiv
+
+@[simp]
+theorem toLinearEquiv_mk (f : L₁ →ₗ⁅R⁆ L₂) (g h₁ h₂) :
     (mk f g h₁ h₂ : L₁ ≃ₗ[R] L₂) =
       { f with
         invFun := g
@@ -494,15 +567,19 @@ theorem to_linearEquiv_mk (f : L₁ →ₗ⁅R⁆ L₂) (g h₁ h₂) :
         right_inv := h₂ } :=
   rfl
 
-theorem coe_linearEquiv_injective : Injective ((↑) : (L₁ ≃ₗ⁅R⁆ L₂) → L₁ ≃ₗ[R] L₂) := by
+@[deprecated (since := "2024-12-30")] alias to_linearEquiv_mk := toLinearEquiv_mk
+
+theorem toLinearEquiv_injective : Injective ((↑) : (L₁ ≃ₗ⁅R⁆ L₂) → L₁ ≃ₗ[R] L₂) := by
   rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
   intro h
-  simp only [to_linearEquiv_mk, LinearEquiv.mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq] at h
+  simp only [toLinearEquiv_mk, LinearEquiv.mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq] at h
   congr
   exacts [h.1, h.2]
 
+@[deprecated (since := "2024-12-30")] alias coe_linearEquiv_injective := toLinearEquiv_injective
+
 theorem coe_injective : @Injective (L₁ ≃ₗ⁅R⁆ L₂) (L₁ → L₂) (↑) :=
-  LinearEquiv.coe_injective.comp coe_linearEquiv_injective
+  LinearEquiv.coe_injective.comp toLinearEquiv_injective
 
 @[ext]
 theorem ext {f g : L₁ ≃ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
@@ -602,8 +679,8 @@ variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 variable [Module R M] [Module R N] [Module R P]
 variable [LieRingModule L M] [LieRingModule L N] [LieRingModule L P]
 
-/-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie
-algebra. -/
+/-- A morphism of Lie algebra modules (denoted as `M →ₗ⁅R,L⁆ N`) is a linear map
+which commutes with the action of the Lie algebra. -/
 structure LieModuleHom extends M →ₗ[R] N where
   /-- A module of Lie algebra modules is compatible with the action of the Lie algebra on the
   modules. -/
@@ -663,7 +740,7 @@ theorem map_zero (f : M →ₗ⁅R,L⁆ N) : f 0 = 0 :=
 def id : M →ₗ⁅R,L⁆ M :=
   { (LinearMap.id : M →ₗ[R] M) with map_lie' := rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ((id : M →ₗ⁅R,L⁆ M) : M → M) = _root_.id :=
   rfl
 
@@ -716,8 +793,7 @@ def comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : M →ₗ⁅R,L⁆
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
       intros x m
-      change f (g ⁅x, m⁆) = ⁅x, f (g m)⁆
-      rw [map_lie, map_lie] }
+      simp }
 
 theorem comp_apply (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) (m : M) : f.comp g m = f (g m) :=
   rfl
@@ -727,9 +803,11 @@ theorem coe_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : ⇑(f.com
   rfl
 
 @[norm_cast, simp]
-theorem coe_linearMap_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) :
+theorem toLinearMap_comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) :
     (f.comp g : M →ₗ[R] P) = (f : N →ₗ[R] P).comp (g : M →ₗ[R] N) :=
   rfl
+
+@[deprecated (since := "2024-12-30")] alias coe_linearMap_comp := toLinearMap_comp
 
 /-- The inverse of a bijective morphism of Lie modules is a morphism of Lie modules. -/
 def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse g f)
@@ -815,8 +893,8 @@ instance : Module R (M →ₗ⁅R,L⁆ N) :=
 
 end LieModuleHom
 
-/-- An equivalence of Lie algebra modules is a linear equivalence which is also a morphism of
-Lie algebra modules. -/
+/-- An equivalence of Lie algebra modules (denoted as `M ≃ₗ⁅R,L⁆ N`) is a linear equivalence
+which is also a morphism of Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
   /-- The inverse function of an equivalence of Lie modules -/
   invFun : N → M
@@ -878,12 +956,16 @@ theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (invFun h₁ h₂) :
     ((⟨f, invFun, h₁, h₂⟩ : M ≃ₗ⁅R,L⁆ N) : M → N) = f :=
   rfl
 
-theorem coe_to_lieModuleHom (e : M ≃ₗ⁅R,L⁆ N) : ⇑(e : M →ₗ⁅R,L⁆ N) = e :=
+theorem coe_toLieModuleHom (e : M ≃ₗ⁅R,L⁆ N) : ⇑(e : M →ₗ⁅R,L⁆ N) = e :=
   rfl
 
+@[deprecated (since := "2024-12-30")] alias coe_to_lieModuleHom := coe_toLieModuleHom
+
 @[simp]
-theorem coe_to_linearEquiv (e : M ≃ₗ⁅R,L⁆ N) : ((e : M ≃ₗ[R] N) : M → N) = e :=
+theorem coe_toLinearEquiv (e : M ≃ₗ⁅R,L⁆ N) : ((e : M ≃ₗ[R] N) : M → N) = e :=
   rfl
+
+@[deprecated (since := "2024-12-30")] alias coe_to_linearEquiv := coe_toLinearEquiv
 
 theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) → M ≃ N) := by
   rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩

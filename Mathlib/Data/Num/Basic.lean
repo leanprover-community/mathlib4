@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
-import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Tactic.TypeStar
@@ -138,7 +138,7 @@ def ofNatSucc : ℕ → PosNum
 def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 
-instance {n : ℕ} : OfNat PosNum (n + 1) where
+instance (priority := low) {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering
@@ -159,10 +159,10 @@ instance : LT PosNum :=
 instance : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := PosNum) (· < ·)
+instance decidableLT : DecidableLT PosNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := PosNum) (· ≤ ·)
+instance decidableLE : DecidableLE PosNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end PosNum
@@ -270,10 +270,10 @@ instance : LT Num :=
 instance : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := Num) (· < ·)
+instance decidableLT : DecidableLT Num
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := Num) (· ≤ ·)
+instance decidableLE : DecidableLE Num
   | a, b => by dsimp [LE.le]; infer_instance
 
 /-- Converts a `Num` to a `ZNum`. -/
@@ -479,10 +479,10 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := ZNum) (· < ·)
+instance decidableLT : DecidableLT ZNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := ZNum) (· ≤ ·)
+instance decidableLE : DecidableLE ZNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end ZNum
@@ -505,7 +505,7 @@ def divMod (d : PosNum) : PosNum → Num × Num
     divModAux d q (Num.bit1 r₁)
   | 1 => divModAux d 0 1
 
-/-- Division of `PosNum`, -/
+/-- Division of `PosNum` -/
 def div' (n d : PosNum) : Num :=
   (divMod d n).1
 

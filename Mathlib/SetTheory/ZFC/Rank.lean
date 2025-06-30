@@ -30,29 +30,30 @@ namespace PSet
 
 /-- The ordinal rank of a pre-set -/
 noncomputable def rank : PSet.{u} → Ordinal.{u}
-  | ⟨_, A⟩ => lsub fun a => rank (A a)
+  | ⟨_, A⟩ => ⨆ a, succ (rank (A a))
 
 theorem rank_congr : ∀ {x y : PSet}, Equiv x y → rank x = rank y
-  | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
-    lsub_eq_of_range_eq (by
-      ext
-      constructor <;> simp <;> intro a h
-      · obtain ⟨b, h'⟩ := αβ a
-        exists b
-        rw [← h, rank_congr h']
-      · obtain ⟨b, h'⟩ := βα a
-        exists b
-        rw [← h, rank_congr h'])
+  | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ => by
+    apply congr_arg sSup
+    ext
+    constructor <;> simp only [Set.mem_range, forall_exists_index] <;> intro a h
+    · obtain ⟨b, h'⟩ := αβ a
+      exists b
+      rw [← h, rank_congr h']
+    · obtain ⟨b, h'⟩ := βα a
+      exists b
+      rw [← h, rank_congr h']
 
 theorem rank_lt_of_mem : ∀ {x y : PSet}, y ∈ x → rank y < rank x
   | ⟨_, _⟩, _, ⟨_, h⟩ => by
-    rw [rank_congr h]
-    apply lt_lsub
+    rw [rank_congr h, ← succ_le_iff]
+    apply Ordinal.le_iSup
 
 theorem rank_le_iff {o : Ordinal} : ∀ {x : PSet}, rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → rank y < o
-  | ⟨_, A⟩ =>
-    ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h =>
-      lsub_le fun a => h (Mem.mk A a)⟩
+  | ⟨_, A⟩ => by
+    refine ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h ↦ Ordinal.iSup_le fun a ↦ ?_⟩
+    rw [succ_le_iff]
+    exact h (Mem.mk A a)
 
 theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
   rw [← not_iff_not, not_lt, rank_le_iff]
@@ -64,7 +65,7 @@ variable {x y : PSet.{u}}
   rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (mem_of_subset h h₁)
 
 @[simp]
-theorem rank_empty : rank ∅ = 0 := by simp [rank]
+theorem rank_empty : rank ∅ = 0 := by simp [empty_def, rank]
 
 @[simp]
 theorem rank_insert (x y : PSet) : rank (insert x y) = max (succ (rank x)) (rank y) := by
@@ -114,7 +115,7 @@ theorem le_succ_rank_sUnion (x : PSet) : rank x ≤ succ (rank (⋃₀ x)) := by
 
 /-- `PSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := PSet) (· ∈ ·) x := by
-  induction' x using mem_wf.induction with x ih
+  induction x using mem_wf.induction with | _ x ih
   rw [IsWellFounded.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
@@ -193,15 +194,16 @@ theorem le_succ_rank_sUnion (x : ZFSet) : rank x ≤ succ (rank (⋃₀ x)) := b
   rw [mem_sUnion]
   exists z
 
-theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
-    rank (range f) = lsub fun i => rank (f i) := by
-  apply (lsub_le _).antisymm'
-  · simpa [rank_le_iff] using lt_lsub _
+@[simp]
+theorem rank_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
+    rank (range f) = ⨆ i, succ (rank (f i)) := by
+  apply (Ordinal.iSup_le _).antisymm'
+  · simpa [rank_le_iff, ← succ_le_iff] using Ordinal.le_iSup _
   · simp [rank_lt_of_mem]
 
 /-- `ZFSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := ZFSet) (· ∈ ·) x := by
-  induction' x using inductionOn with x ih
+  induction x using inductionOn with | _ x ih
   rw [IsWellFounded.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h

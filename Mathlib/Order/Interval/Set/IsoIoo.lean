@@ -14,17 +14,14 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
 
-/- Porting note: `Mathlib.Algebra.Order.Field.Basic` added to imports for `abs` -/
-
-
 open Set
 
-/- Porting note: Had to manually coerce `x : Ioo (-1 : k) 1` to `x : k`. -/
 /-- In a linear ordered field, the whole field is order isomorphic to the open interval `(-1, 1)`.
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/
 @[irreducible]
-def orderIsoIooNegOneOne (k : Type*) [LinearOrderedField k] : k ≃o Ioo (-1 : k) 1 := by
+def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsStrictOrderedRing k] :
+    k ≃o Ioo (-1 : k) 1 := by
   refine StrictMono.orderIsoOfRightInverse ?_ ?_ (fun x ↦ x / (1 - |↑x|)) ?_
   · refine codRestrict (fun x ↦ x / (1 + |x|)) _ fun x ↦ abs_lt.1 ?_
     have H : 0 < 1 + |x| := (abs_nonneg x).trans_lt (lt_one_add _)

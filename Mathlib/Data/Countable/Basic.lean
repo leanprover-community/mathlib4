@@ -14,6 +14,7 @@ import Mathlib.Logic.Equiv.Nat
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
 
+assert_not_exists Monoid
 
 universe u v w
 
@@ -58,7 +59,7 @@ variable {α : Type u} {β : Type v} {π : α → Type w}
 instance [Countable α] [Countable β] : Countable (α ⊕ β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
-  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
+  exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sumMap hg).countable
 
 instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
   inl_injective.uncountable
@@ -86,11 +87,11 @@ instance [Countable α] [Countable β] : Countable (α × β) := by
 
 instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
   inhabit β
-  exact (Prod.mk.inj_right default).uncountable
+  exact (Prod.mk_left_injective default).uncountable
 
 instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   inhabit α
-  exact (Prod.mk.inj_left default).uncountable
+  exact (Prod.mk_right_injective default).uncountable
 
 lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
   contrapose h

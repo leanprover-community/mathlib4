@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.GameAdd
+import Mathlib.SetTheory.Cardinal.Order
 import Mathlib.Tactic.AdaptationNote
-import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`
@@ -120,7 +120,7 @@ theorem Lex.acc_of_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) [DecidableEq ι]
       exact fun _ => Lex.acc_zero hbot
     refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
     refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
-    rw [erase_ne (ha.ne_of_not_mem hb)]
+    rw [erase_ne (ha.ne_of_notMem hb)]
     exact h a (Finset.mem_insert_of_mem ha)
 
 theorem Lex.acc_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
@@ -163,9 +163,10 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFoun
 end Zero
 
 instance Lex.wellFoundedLT [LT ι] [IsTrichotomous ι (· < ·)] [hι : WellFoundedGT ι]
-    [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [hα : ∀ i, WellFoundedLT (α i)] :
+    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+    [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
-  ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_lt) (fun i => (hα i).wf) hι.wf⟩
+  ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_gt) (fun i => (hα i).wf) hι.wf⟩
 
 end DFinsupp
 
@@ -211,18 +212,17 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot
-      · #adaptation_note /-- nightly-2024-03-16: simp was
-        simp (config := { unfoldPartialApp := true }) only [Function.swap] -/
-        simp only [Function.swap_def]
+      · simp +unfoldPartialApp only [Function.swap]
         exact IsWellFounded.wf
     refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange e fun _ ↦ rfl) this
     have := IsStrictOrder.swap (@WellOrderingRel ι)
     obtain ⟨i, he, hl⟩ := lex_lt_of_lt_of_preorder (Function.swap WellOrderingRel) h
     exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩⟩
 
-instance DFinsupp.wellFoundedLT' [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
+instance DFinsupp.wellFoundedLT'
+    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
-  DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_lt
+  DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_gt
 
 instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (∀ i, α i) :=

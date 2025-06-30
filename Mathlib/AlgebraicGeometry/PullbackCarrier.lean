@@ -141,14 +141,14 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
 @[simp]
 lemma specTensorTo_base_fst (p : Spec T.tensor) :
     (pullback.fst f g).base (T.SpecTensorTo.base p) = T.x := by
-  simp only [SpecTensorTo, residueFieldCongr_inv]
+  simp only [SpecTensorTo]
   rw [← Scheme.comp_base_apply]
   simp
 
 @[simp]
 lemma specTensorTo_base_snd (p : Spec T.tensor) :
     (pullback.snd f g).base (T.SpecTensorTo.base p) = T.y := by
-  simp only [SpecTensorTo, residueFieldCongr_inv]
+  simp only [SpecTensorTo]
   rw [← Scheme.comp_base_apply]
   simp
 
@@ -295,6 +295,15 @@ lemma exists_preimage_pullback (x : X) (y : Y) (h : f.base x = g.base y) :
     (pullback.fst f g).base z = x ∧ (pullback.snd f g).base z = y :=
   (Pullback.Triplet.mk' x y h).exists_preimage
 
+lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y ⟶ S} :
+    IsEmpty ↑(Limits.pullback f g) ↔ Disjoint (Set.range f.base) (Set.range g.base) := by
+  refine ⟨?_, Scheme.isEmpty_pullback f g⟩
+  rw [← not_nonempty_iff, Set.disjoint_iff_forall_ne]
+  contrapose!
+  rintro ⟨_, ⟨x, rfl⟩, _, ⟨y, rfl⟩, e⟩
+  obtain ⟨z, -⟩ := exists_preimage_pullback x y e
+  exact ⟨z⟩
+
 variable (f g)
 
 lemma range_fst : Set.range (pullback.fst f g).base = f.base ⁻¹' Set.range g.base := by
@@ -359,10 +368,22 @@ instance isJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) :
     obtain ⟨a, b, h⟩ := Pullback.exists_preimage_pullback x y hxy
     use a
 
+end Scheme
+
+namespace Surjective
+
 instance : MorphismProperty.IsStableUnderBaseChange @Surjective := by
   refine .mk' ?_
   introv hg
-  simp only [surjective_iff, ← Set.range_eq_univ, Pullback.range_fst] at hg ⊢
+  simp only [surjective_iff, ← Set.range_eq_univ, Scheme.Pullback.range_fst] at hg ⊢
   rw [hg, Set.preimage_univ]
 
-end AlgebraicGeometry.Scheme
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Surjective g] :
+    Surjective (pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ inferInstance
+
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Surjective f] :
+    Surjective (pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ inferInstance
+
+end AlgebraicGeometry.Surjective

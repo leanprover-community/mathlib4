@@ -136,7 +136,7 @@ noncomputable instance liftCommShift :
 
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
-  comm' a := by
+  shift_comm a := by
     ext X
     dsimp
     erw [Functor.map_id, id_comp, comp_id]

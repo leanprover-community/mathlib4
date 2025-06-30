@@ -32,7 +32,7 @@ section IsomorphismLaws
 /-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is linearly
 equivalent to the range of `f`. -/
 noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
-  (LinearEquiv.ofInjective (f.ker.liftQ f <| le_rfl) <|
+  (LinearEquiv.ofInjective ((LinearMap.ker f).liftQ f <| le_rfl) <|
         ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl (LinearMap.ker f))).trans
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
 
@@ -48,16 +48,14 @@ theorem quotKerEquivRange_apply_mk (x : M) :
 
 @[simp]
 theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range f) :
-    f.quotKerEquivRange.symm ⟨f x, h⟩ = f.ker.mkQ x :=
-  f.quotKerEquivRange.symm_apply_apply (f.ker.mkQ x)
+    f.quotKerEquivRange.symm ⟨f x, h⟩ = (LinearMap.ker f).mkQ x :=
+  f.quotKerEquivRange.symm_apply_apply ((LinearMap.ker f).mkQ x)
 
--- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
 abbrev subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 
--- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
     comap (Submodule.subtype p) (p ⊓ p') ≤ ker (subToSupQuotient p p') := by
   rw [LinearMap.ker_comp, Submodule.inclusion, comap_codRestrict, ker_mkQ, map_comap_subtype]
@@ -65,19 +63,23 @@ theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
 
 /-- Canonical linear map from the quotient `p/(p ∩ p')` to `(p+p')/p'`, mapping `x + (p ∩ p')`
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
--/
+
+Note that in the following declaration the type of the domain is expressed using
+``comap p.subtype p ⊓ comap p.subtype p'`
+instead of
+`comap p.subtype (p ⊓ p')`
+because the former is the simp normal form (see also `Submodule.comap_inf`). -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
-    (↥p) ⧸ (comap p.subtype (p ⊓ p')) →ₗ[R] (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
+    (↥p) ⧸ (comap p.subtype p ⊓ comap p.subtype p') →ₗ[R]
+      (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
    (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
 
--- Porting note: breaking up original definition of quotientInfEquivSupQuotient to avoid timing out
 theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
   exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
 
--- Porting note: breaking up original definition of quotientInfEquivSupQuotient to avoid timing out
 theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
@@ -87,21 +89,22 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
 
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
--/
+
+Note that in the following declaration the type of the domain is expressed using
+``comap p.subtype p ⊓ comap p.subtype p'`
+instead of
+`comap p.subtype (p ⊓ p')`
+because the former is the simp normal form (see also `Submodule.comap_inf`). -/
 noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
-    (p ⧸ comap p.subtype (p ⊓ p')) ≃ₗ[R] _ ⧸ comap (p ⊔ p').subtype p' :=
+    (p ⧸ comap p.subtype p ⊓ comap p.subtype p') ≃ₗ[R] _ ⧸ comap (p ⊔ p').subtype p' :=
   LinearEquiv.ofBijective (quotientInfToSupQuotient p p')
     ⟨quotientInfEquivSupQuotient_injective p p', quotientInfEquivSupQuotient_surjective p p'⟩
 
--- @[simp]
--- Porting note: `simp` affects the type arguments of `DFunLike.coe`, so this theorem can't be
---               a simp theorem anymore, even if it has high priority.
+@[simp]
 theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
     ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
   rfl
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-@[simp, nolint simpNF]
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := inclusion (le_sup_left : p ≤ p ⊔ p')
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
@@ -113,7 +116,6 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`.
     rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 
 

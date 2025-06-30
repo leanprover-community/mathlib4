@@ -41,7 +41,7 @@ Currently, the string diagram widget provided in this file deals with equalities
 in monoidal categories. It displays string diagrams corresponding to the morphisms for the
 left-hand and right-hand sides of the equality.
 
-Some examples can be found in `test/StringDiagram.lean`.
+Some examples can be found in `MathlibTest/StringDiagram.lean`.
 
 When drawing string diagrams, it is common to ignore associators and unitors. We follow this
 convention. To do this, we need to extract non-structural morphisms that are not associators
@@ -53,7 +53,7 @@ file can also be used to display the string diagram for general bicategories (se
 PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
 categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
 Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
+`Mathlib/CategoryTheory/Bicategory/SingleObj.lean`, although the string diagram widget does not use
 it directly.
 
 -/
@@ -186,12 +186,12 @@ variable {ρ : Type} [MonadMor₁ (CoherenceM ρ)]
 
 /-- The list of nodes at the top of a string diagram. -/
 def topNodes (η : WhiskerLeft) : CoherenceM ρ (List Node) := do
-  return (← η.srcM).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
+  return (← η.srcM).toList.mapIdx fun i f => .id ⟨0, i, i, f⟩
 
 /-- The list of nodes at the top of a string diagram. The position is counted from the
 specified natural number. -/
 def NormalExpr.nodesAux (v : ℕ) : NormalExpr → CoherenceM ρ (List (List Node))
-  | NormalExpr.nil _ α => return [(← α.srcM).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
+  | NormalExpr.nil _ α => return [(← α.srcM).toList.mapIdx fun i f => .id ⟨v, i, i, f⟩]
   | NormalExpr.cons _ _ η ηs => do
     let s₁ := η.nodes v 0 0
     let s₂ ← ηs.nodesAux (v + 1)
@@ -216,7 +216,7 @@ def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := 
     -- sanity check
     if xs.length ≠ ys.length then
       throwError "The number of the start and end points of a string does not match."
-    (xs.zip ys).enum.mapM fun (k, (n₁, f₁), (n₂, _)) => do
+    (xs.zip ys).mapIdxM fun k ((n₁, f₁), (n₂, _)) => do
       return ⟨n₁.hPosTar + k, n₁, n₂, f₁⟩
 
 end BicategoryLike

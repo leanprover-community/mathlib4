@@ -5,7 +5,7 @@ Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Structure of finite(ly generated) abelian groups
@@ -66,19 +66,21 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
   invFun := DirectSum.toAddMonoid fun i ↦
     if h : n i = 0 then 0 else DirectSum.of (fun j : {i // n i ≠ 0} ↦ ZMod (p j ^ n j)) ⟨i, h⟩
   left_inv x := by
-    induction' x using DirectSum.induction_on with i x x y hx hy
-    · simp
-    · rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
+    induction x using DirectSum.induction_on with
+    | zero => simp
+    | of i x =>
+      rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
         dif_neg i.prop]
-    · rw [map_add, map_add, hx, hy]
+    | add x y hx hy => rw [map_add, map_add, hx, hy]
   right_inv x := by
-    induction' x using DirectSum.induction_on with i x x y hx hy
-    · rw [map_zero, map_zero]
-    · rw [DirectSum.toAddMonoid_of]
+    induction x using DirectSum.induction_on with
+    | zero => rw [map_zero, map_zero]
+    | of i x =>
+      rw [DirectSum.toAddMonoid_of]
       split_ifs with h
       · simp [(ZMod.subsingleton_iff.2 <| by rw [h, pow_zero]).elim x 0]
       · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
-    · rw [map_add, map_add, hx, hy]
+    | add x y hx hy => rw [map_add, map_add, hx, hy]
   map_add' := map_add (directSumNeZeroMulHom p n)
 
 universe u
@@ -130,7 +132,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
       Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) := by
   cases nonempty_fintype G
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
-  cases' n with n
+  rcases n with - | n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
       { uniq := by simp only [eq_iff_true_of_subsingleton]; trivial }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩

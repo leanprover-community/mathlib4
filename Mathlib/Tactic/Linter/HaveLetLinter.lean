@@ -7,6 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Server.InfoUtils
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 #  The `have` vs `let` linter
@@ -49,10 +50,9 @@ register_option linter.haveLet : Nat := {
 namespace haveLet
 
 /-- find the `have` syntax. -/
-partial
 def isHave? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.tacticHave_ _ => true
-  |_ => false
+  | _ => false
 
 end haveLet
 
@@ -118,11 +118,8 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
     let trees ← getInfoTrees
     for t in trees do
       for (s, fmt) in ← nonPropHaves t do
-        -- Since the linter option is not in `Bool`, the standard `Linter.logLint` does not work.
-        -- We emulate it with `logWarningAt`
-        logWarningAt s <| .tagged linter.haveLet.name
-          m!"'{fmt}' is a Type and not a Prop. Consider using 'let' instead of 'have'.\n\
-          You can disable this linter using `set_option linter.haveLet 0`"
+        logLint0Disable linter.haveLet s
+          m!"'{fmt}' is a Type and not a Prop. Consider using 'let' instead of 'have'."
 
 initialize addLinter haveLetLinter
 

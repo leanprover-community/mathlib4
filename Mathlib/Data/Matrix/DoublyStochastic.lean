@@ -36,13 +36,14 @@ open Finset Function Matrix
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
 section OrderedSemiring
-variable [OrderedSemiring R] {M : Matrix n n R}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {M : Matrix n n R}
 
 /--
 A square matrix is doubly stochastic iff all entries are nonnegative, and left or right
 multiplication by the vector of all 1s gives the vector of all 1s.
 -/
-def doublyStochastic (R n : Type*) [Fintype n] [DecidableEq n] [OrderedSemiring R] :
+def doublyStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [PartialOrder R]
+    [IsOrderedRing R] :
     Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 }
   mul_mem' {M N} hM hN := by
@@ -105,7 +106,7 @@ end OrderedSemiring
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield R]
+variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
 
 /--
 A matrix is `s` times a doubly stochastic matrix iff all entries are nonnegative, and all row and
@@ -134,6 +135,6 @@ lemma exists_mem_doublyStochastic_eq_smul_iff {M : Matrix n n R} {s : R} (hs : 0
     rw [sum_eq_zero_iff_of_nonneg (by simp [h₁ i])] at h₂
     exact h₂ _ (by simp)
   rintro ⟨hM₁, hM₂, hM₃⟩
-  exact ⟨s⁻¹ • M, by simp [mem_doublyStochastic_iff_sum, ← mul_sum, hs.ne', inv_mul_cancel₀, *]⟩
+  exact ⟨s⁻¹ • M, by simp [mem_doublyStochastic_iff_sum, ← mul_sum, hs.ne', *]⟩
 
 end LinearOrderedSemifield

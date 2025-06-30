@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Localization of algebra maps
@@ -36,7 +38,7 @@ variable (M S) in
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
     IsLocalizedModule M (Algebra.idealMap I (S := S)) where
   map_units x :=
-    (Module.End_isUnit_iff _).mpr ⟨fun a b e ↦ Subtype.ext ((map_units S x).mul_right_injective
+    (Module.End.isUnit_iff _).mpr ⟨fun a b e ↦ Subtype.ext ((map_units S x).mul_right_injective
       (by simpa [Algebra.smul_def] using congr(($e).1))),
       fun a ↦ ⟨⟨_, Ideal.mul_mem_left _ (map_units S x).unit⁻¹.1 a.2⟩,
         Subtype.ext (by simp [Algebra.smul_def, ← mul_assoc])⟩⟩
@@ -55,7 +57,7 @@ lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
 
 variable (S) in
 /-- The canonical linear map from the kernel of `g` to the kernel of its localization. -/
-def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
+noncomputable def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
     RingHom.ker g →ₗ[R] RingHom.ker (IsLocalization.map Q g hy : S →+* Q) where
   toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, RingHom.mem_ker.mp x.property]⟩
   map_add' x y := by
@@ -96,7 +98,8 @@ namespace IsLocalization
 
 instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
     IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
-  erw [algebraMapSubmonoid_map_eq M f]
+  rw [AlgHom.toRingHom_eq_coe, ← Submonoid.map_coe_toMonoidHom, AlgHom.toRingHom_toMonoidHom,
+    Submonoid.map_coe_toMonoidHom, algebraMapSubmonoid_map_eq M f]
   infer_instance
 
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
@@ -123,7 +126,7 @@ end IsLocalization
 open IsLocalization
 
 /-- The canonical linear map from the kernel of an algebra homomorphism to its localization. -/
-def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
+noncomputable def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
     RingHom.ker f →ₗ[A] RingHom.ker (mapₐ M Rₚ Aₚ Bₚ f) :=
   RingHom.toKerIsLocalization Aₚ Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)
 
@@ -142,3 +145,19 @@ lemma AlgHom.toKerIsLocalization_isLocalizedModule (f : A →ₐ[R] B) :
     (algebraMapSubmonoid_map_eq M f)
 
 end Algebra
+
+namespace Polynomial
+
+/-- If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
+`R[X]` at `S.map Polynomial.C`.
+
+See also `MvPolynomial.isLocalization` for the multivariate case. -/
+lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
+    [IsLocalization S A] : letI := (mapRingHom (algebraMap R A)).toAlgebra
+    IsLocalization (S.map C) A[X] :=
+  letI := (mapRingHom (algebraMap R A)).toAlgebra
+  have : IsScalarTower R R[X] A[X] := .of_algebraMap_eq fun _ ↦ (map_C _).symm
+  isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
+    .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
+
+end Polynomial

@@ -142,8 +142,7 @@ is the same as a co-cone over the sieve. Constructing a co-cone from a compatibl
 any presieve, as does constructing a family of elements from a co-cone. Showing compatibility of the
 family needs the sieve condition.
 Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
- -/
-
+-/
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
     (hx : FamilyOfElements.Compatible x) :
     Cocone (R.diagram) where
@@ -152,13 +151,14 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
     { app := fun f => x f.obj.hom f.property
       naturality := by
         intro g₁ g₂ F
-        simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
-          Functor.const_obj_obj, Functor.comp_map, fullSubcategoryInclusion.map, Over.forget_map,
-          Functor.const_obj_map, Category.comp_id]
+        simp only [Functor.id_obj, Functor.comp_obj, ObjectProperty.ι_obj, Over.forget_obj,
+          Functor.const_obj_obj, Functor.comp_map, ObjectProperty.ι_map, Over.forget_map,
+          Functor.const_obj_map, comp_id]
         rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
         apply hx
         simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
 
+/-- Construct a family of elements from a cocone. -/
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
     FamilyOfElements (yoneda.obj s.pt) R :=
   fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩

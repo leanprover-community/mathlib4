@@ -33,11 +33,11 @@ but is expected to have type
   exact test_sorry
 
 noncomputable example : test_sorry := by
- success_if_fail_with_msg
+  success_if_fail_with_msg
 "type mismatch
   Prop
 has type
   Type : Type 1
 but is expected to have type
   Sort u_1 : Type u_1" (exact ∀ x : Sort*, x = Prop)
- exact test_sorry
+  exact test_sorry

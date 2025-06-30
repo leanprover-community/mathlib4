@@ -3,9 +3,8 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Fintype.Inv
 
 /-! # Equivalence between fintypes
 
@@ -14,16 +13,18 @@ sides of the equivalence are `Fintype`s.
 
 # Main definitions
 
- - `Function.Embedding.toEquivRange`: computably turn an embedding of a
-   fintype into an `Equiv` of the domain to its range
- - `Equiv.Perm.viaFintypeEmbedding : Perm α → (α ↪ β) → Perm β` extends the domain of
-   a permutation, fixing everything outside the range of the embedding
+- `Function.Embedding.toEquivRange`: computably turn an embedding of a
+  fintype into an `Equiv` of the domain to its range
+- `Equiv.Perm.viaFintypeEmbedding : Perm α → (α ↪ β) → Perm β` extends the domain of
+  a permutation, fixing everything outside the range of the embedding
 
 # Implementation details
 
- - `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
-   computational performance, since it operates by exhaustive search over the input `Fintype`s.
+- `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
+  computational performance, since it operates by exhaustive search over the input `Fintype`s.
 -/
+
+assert_not_exists Equiv.Perm.sign
 
 section Fintype
 
@@ -73,14 +74,13 @@ theorem Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.r
   rw [Equiv.Perm.extendDomain_apply_subtype]
   congr
 
-theorem Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range {b : β} (h : b ∉ Set.range f) :
+theorem Equiv.Perm.viaFintypeEmbedding_apply_notMem_range {b : β} (h : b ∉ Set.range f) :
     e.viaFintypeEmbedding f b = b := by
   rwa [Equiv.Perm.viaFintypeEmbedding, Equiv.Perm.extendDomain_apply_not_subtype]
 
-@[simp]
-theorem Equiv.Perm.viaFintypeEmbedding_sign [DecidableEq α] [Fintype β] :
-    Equiv.Perm.sign (e.viaFintypeEmbedding f) = Equiv.Perm.sign e := by
-  simp [Equiv.Perm.viaFintypeEmbedding]
+@[deprecated (since := "2025-05-23")]
+alias Equiv.Perm.viaFintypeEmbedding_apply_not_mem_range :=
+  Equiv.Perm.viaFintypeEmbedding_apply_notMem_range
 
 end Fintype
 
