@@ -181,7 +181,7 @@ variable [NonAssocRing R]
 lemma cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
-    _ = ↑(k % p) := by simp [cast_eq_zero]
+    _ = ↑(k % p) := by simp
 
 lemma ringChar_zero_iff_CharZero : ringChar R = 0 ↔ CharZero R := by
   rw [ringChar.eq_iff, charP_zero_iff_charZero]
