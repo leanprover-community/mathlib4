@@ -866,9 +866,9 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
     Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
 
-lemma faceOpposite_point_eq_point (s : Simplex k P 1) {i j : Fin 2} (h : i ≠ j) (n : Fin 1) :
-    (s.faceOpposite i).points n = s.points j := by
-  suffices (s.faceOpposite i).points n ∈ s.points '' {j} by
+lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1) :
+    (s.faceOpposite i).points n = s.points i.rev := by
+  suffices (s.faceOpposite i).points n ∈ s.points '' {i.rev} by
     simpa using this
   refine Set.mem_of_mem_of_subset (Set.mem_range_self _) ?_
   rw [range_faceOpposite_points]
