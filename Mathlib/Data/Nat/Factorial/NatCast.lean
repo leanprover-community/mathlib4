@@ -6,7 +6,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
