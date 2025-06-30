@@ -54,6 +54,17 @@ theorem prod_mono_left (hs : s₁ ⊆ s₂) : s₁ ×ˢ t ⊆ s₂ ×ˢ t :=
 theorem prod_mono_right (ht : t₁ ⊆ t₂) : s ×ˢ t₁ ⊆ s ×ˢ t₂ :=
   prod_mono Subset.rfl ht
 
+theorem prod_subset_of_prod (h : s₁ ×ˢ t₁ ⊆ s₂ ×ˢ t₂) (hs₁ : s₁.Nonempty) (ht₁ : t₁.Nonempty) :
+  s₁ ⊆ s₂ ∧ t₁ ⊆ t₂ := by
+  rw [Set.nonempty_def] at hs₁ ht₁
+  obtain ⟨x, hx⟩ := hs₁
+  obtain ⟨y, hy⟩ := ht₁
+  and_intros
+  · intros z hz
+    exact prodMk_mem_set_prod_eq ▸ h (mk_mem_prod hz hy) |>.1
+  · intros z hz
+    exact prodMk_mem_set_prod_eq ▸ h (mk_mem_prod hx hz) |>.2
+
 @[simp]
 theorem prod_self_subset_prod_self : s₁ ×ˢ s₁ ⊆ s₂ ×ˢ s₂ ↔ s₁ ⊆ s₂ :=
   ⟨fun h _ hx => (h (mk_mem_prod hx hx)).1, fun h _ hx => ⟨h hx.1, h hx.2⟩⟩
