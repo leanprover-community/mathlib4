@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Algebra.Group.End
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -94,12 +95,12 @@ theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K
 
 lemma lipschitzOnWith_restrict {t : Set s} :
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
-  simp [LipschitzOnWith, LipschitzWith]
+  simp [LipschitzOnWith]
 
 lemma locallyLipschitzOn_iff_restrict :
     LocallyLipschitzOn s f ↔ LocallyLipschitz (s.restrict f) := by
-  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict_apply,
-    Subtype.edist_mk_mk, ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict,
+  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall',
+    lipschitzOnWith_restrict,
     nhds_subtype_eq_comap_nhdsWithin, mem_comap]
   congr! with x K
   constructor
@@ -149,7 +150,7 @@ theorem mapsTo_emetric_ball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r :
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
-  (hf x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top h.lt_top
+  (hf x y).trans_lt (by finiteness)
 
 theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * edist (f x) (f y) ≤ edist x y := by

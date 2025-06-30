@@ -68,6 +68,10 @@ variable (R B) in
 instance Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R B :=
   ⟨.of_finite R⟩
 
+lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)) :
+    Algebra.IsIntegral R B :=
+  .of_surjective (Algebra.ofId R B) H
+
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)

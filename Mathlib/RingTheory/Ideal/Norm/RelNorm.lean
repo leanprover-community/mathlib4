@@ -17,14 +17,14 @@ spanned by the norms of elements in `I`.
 
 ## Main definitions
 
- * `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
-    This is used to define `Ideal.relNorm`.
- * `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
-   defined as the ideal spanned by the norms of elements in `I`.
+* `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
+  This is used to define `Ideal.relNorm`.
+* `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
+  defined as the ideal spanned by the norms of elements in `I`.
 
 ## Main results
 
- * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
+* `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 -/
 
 open scoped nonZeroDivisors
@@ -46,7 +46,7 @@ over `I`.
 
 See also `Ideal.relNorm`.
 -/
-def spanNorm (I : Ideal S) : Ideal R :=
+noncomputable def spanNorm (I : Ideal S) : Ideal R :=
   Ideal.map (Algebra.intNorm R S) I
 
 @[simp]
@@ -135,10 +135,10 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     obtain ⟨⟨a, ha⟩, ⟨_, ⟨s, hs, rfl⟩⟩, has⟩ := ha'
     refine ⟨⟨Algebra.intNorm R S a, intNorm_mem_spanNorm _ ha⟩,
       ⟨s ^ Module.finrank K L, pow_mem hs _⟩, ?_⟩
-    simp only [Submodule.coe_mk, Subtype.coe_mk, map_pow] at has ⊢
+    simp only [map_pow] at has ⊢
     apply_fun algebraMap _ L at has
     apply_fun Algebra.norm K at has
-    simp only [map_mul, IsScalarTower.algebraMap_apply R Rₘ Sₘ] at has
+    simp only [map_mul] at has
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R K L,
@@ -184,7 +184,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   nontriviality R
   cases subsingleton_or_nontrivial S
   · have : ∀ I : Ideal S, I = ⊤ := fun I ↦ Subsingleton.elim I ⊤
-    simp [this I, this J, this (I * J)]
+    simp [this I, this J]
   refine eq_of_localization_maximal (fun P hP ↦ ?_)
   by_cases hP0 : P = ⊥
   · subst hP0
@@ -233,7 +233,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
 
 /-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
-def relNorm : Ideal S →*₀ Ideal R where
+noncomputable def relNorm : Ideal S →*₀ Ideal R where
   toFun := spanNorm R
   map_zero' := spanNorm_bot R
   map_one' := by rw [one_eq_top, spanNorm_top R, one_eq_top]

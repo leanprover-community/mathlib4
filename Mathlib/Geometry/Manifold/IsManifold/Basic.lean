@@ -477,7 +477,7 @@ theorem ModelWithCorners.range_eq_univ {𝕜 : Type*} [NontriviallyNormedField �
     range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
 
 /-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
-@[simps (config := {simpRhs := true})]
+@[simps +simpRhs]
 def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
@@ -592,7 +592,7 @@ lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
     simp_all only [mem_empty_iff_false]
   · intro x ⟨hx, _⟩
     have : f.target = ∅ := by simp [← f.image_source_eq_target, hf]
-    simp_all [hx]
+    simp_all
 
 include I in
 /-- Any change of coordinates with empty source belongs to `continuousGroupoid`. -/
@@ -833,13 +833,13 @@ instance disjointUnion : IsManifold I n (M ⊕ M') where
       · rw [hef, he'f']
         apply ContDiffGroupoid.mem_of_source_eq_empty
         ext x
-        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all, fun hx ↦ hx.elim⟩
     · -- Analogous argument to the first case: is there a way to deduplicate?
       obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
       · rw [hef, he'f']
         apply ContDiffGroupoid.mem_of_source_eq_empty
         ext x
-        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all, fun hx ↦ hx.elim⟩
       · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inr]
         exact hM'.compatible hf hf'
 

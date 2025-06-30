@@ -32,7 +32,7 @@ lemma exists_isClosed_singleton_of_isJacobsonRing [IsJacobsonRing R]
     ∃ x ∈ s, IsClosed {x} := by
   simp_rw [isClosed_singleton_iff_isMaximal]
   obtain ⟨I, hI'⟩ := (isClosed_iff_zeroLocus_ideal _).mp hs.isClosed_compl
-  simp_rw [← @Set.not_mem_compl_iff _ s, hI', mem_zeroLocus]
+  simp_rw [← @Set.notMem_compl_iff _ s, hI', mem_zeroLocus]
   have := hs'.ne_empty
   contrapose! this
   simp_rw [not_imp_not] at this

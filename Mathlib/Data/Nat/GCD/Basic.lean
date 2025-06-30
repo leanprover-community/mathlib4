@@ -43,7 +43,7 @@ theorem pow_sub_one_mod_pow_sub_one (a b c : ℕ) : (a ^ c - 1) % (a ^ b - 1) = 
   · simp
   rcases eq_zero_or_pos b with rfl | hb0
   · simp
-  rcases lt_or_le c b with h | h
+  rcases lt_or_ge c b with h | h
   · rw [mod_eq_of_lt, mod_eq_of_lt h]
     rwa [Nat.sub_lt_sub_iff_right (one_le_pow c a ha0), Nat.pow_lt_pow_iff_right ha1]
   · suffices a ^ (c - b + b) - 1 = a ^ (c - b) * (a ^ b - 1) + (a ^ (c - b) - 1) by
@@ -59,28 +59,6 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
   · simp
   replace hb : c % b < b := mod_lt c hb
   rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
-
-/-! ### `lcm` -/
-
-theorem lcm_dvd_mul (m n : ℕ) : lcm m n ∣ m * n :=
-  lcm_dvd (dvd_mul_right _ _) (dvd_mul_left _ _)
-
-theorem lcm_dvd_iff {m n k : ℕ} : lcm m n ∣ k ↔ m ∣ k ∧ n ∣ k :=
-  ⟨fun h => ⟨(dvd_lcm_left _ _).trans h, (dvd_lcm_right _ _).trans h⟩, and_imp.2 lcm_dvd⟩
-
-theorem lcm_pos {m n : ℕ} : 0 < m → 0 < n → 0 < m.lcm n := by
-  simp_rw [Nat.pos_iff_ne_zero]
-  exact lcm_ne_zero
-
-theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
-  apply dvd_antisymm
-  · exact lcm_dvd (mul_dvd_mul_left m (dvd_lcm_left n k)) (mul_dvd_mul_left m (dvd_lcm_right n k))
-  · have h : m ∣ lcm (m * n) (m * k) := (dvd_mul_right m n).trans (dvd_lcm_left (m * n) (m * k))
-    rw [← dvd_div_iff_mul_dvd h, lcm_dvd_iff, dvd_div_iff_mul_dvd h, dvd_div_iff_mul_dvd h,
-      ← lcm_dvd_iff]
-
-theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
- rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]
 
 /-!
 ### `Coprime`

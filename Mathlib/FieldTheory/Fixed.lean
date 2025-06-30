@@ -83,7 +83,7 @@ variable (M)
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
-    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf, Subfield.mem_sInf]; rfl)
+    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf]; rfl)
 
 instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
   smul_mem g x hx g' := by rw [hx, hx]
@@ -128,7 +128,6 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
     exact Submodule.smul_mem _ _ <| Submodule.subset_span <| by simpa
-
   intro i his g
   refine
     eq_of_sub_eq_zero

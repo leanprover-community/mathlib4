@@ -13,11 +13,10 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 # Preservation of (co)limits in the functor category
 
 * Show that if `X ⨯ -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -`
-for `F : C ⥤ D` preserves colimits.
+  for `F : C ⥤ D` preserves colimits.
 
-The idea of the proof is simply that products and colimits in the functor category are computed
-pointwise, so pointwise preservation implies general preservation.
-
+  The idea of the proof is simply that products and colimits in the functor category are computed
+  pointwise, so pointwise preservation implies general preservation.
 * Show that `F ⋙ -` preserves limits if the target category has limits.
 * Show that `F : C ⥤ D` preserves limits of a certain shape
   if `Lan F.op : Cᵒᵖ ⥤ Type*` preserves such limits.

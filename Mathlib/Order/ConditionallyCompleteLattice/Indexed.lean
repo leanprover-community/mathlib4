@@ -178,13 +178,11 @@ theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
-@[simp]
-theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
-  ciSup_subsingleton hp f
+theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp := by
+  simp [hp]
 
-@[simp]
-theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
-  ciSup_pos (α := αᵒᵈ) hp
+theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp := by
+  simp [hp]
 
 lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨆ (h : p), f h = sSup (∅ : Set α) := by
@@ -211,7 +209,7 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   congr
   apply Subset.antisymm
   · rintro - ⟨i, rfl⟩
-    simp [hp i]
+    simp
   · rintro - ⟨i, rfl⟩
     simp
 
@@ -341,7 +339,7 @@ lemma ciSup_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempt
     intro ⟨i, h⟩
     obtain ⟨t, ht⟩ : ∃ t : f '' s, g t = g (f (Subtype.mk i h)) := by
       have : f i ∈ f '' s := Set.mem_image_of_mem _ h
-      exact ⟨⟨f i, this⟩, by simp [this]⟩
+      exact ⟨⟨f i, this⟩, by simp⟩
     rw [← ht]
     refine le_ciSup_set ?_ t.prop
     simpa [bddAbove_def] using hf

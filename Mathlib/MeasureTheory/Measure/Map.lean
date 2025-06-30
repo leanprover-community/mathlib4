@@ -47,7 +47,7 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
       OuterMeasure.coe_add, hs]
   map_smul' c μ := ext fun s hs => by
-    simp only [LinearMap.map_smulₛₗ, coe_smul, Pi.smul_apply,
+    simp only [LinearMap.map_smulₛₗ, Pi.smul_apply,
       toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞), OuterMeasure.coe_smul (R := ℝ≥0∞),
       smul_apply, hs]
 

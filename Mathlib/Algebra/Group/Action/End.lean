@@ -201,7 +201,7 @@ variable (M) [Group G] [Monoid M] [MulDistribMulAction G M]
 /-- Each element of the group defines a multiplicative monoid isomorphism.
 
 This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
   { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
 

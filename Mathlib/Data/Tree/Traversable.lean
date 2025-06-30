@@ -38,8 +38,7 @@ lemma comp_traverse
     rfl
 
 lemma traverse_eq_map_id (f : α → β) (t : Tree α) :
-    t.traverse ((pure : β → Id β) ∘ f) = t.map f := by
-  rw [← Id.pure_eq (t.map f)]
+    t.traverse ((pure : β → Id β) ∘ f) = pure (t.map f) := by
   induction t with
   | nil => rw [traverse, map]
   | node v l r hl hr =>

@@ -58,7 +58,7 @@ def IsSeqClosed (s : Set X) : Prop :=
   ∀ ⦃x : ℕ → X⦄ ⦃p : X⦄, (∀ n, x n ∈ s) → Tendsto x atTop (𝓝 p) → p ∈ s
 
 /-- A function between topological spaces is sequentially continuous if it commutes with limit of
- convergent sequences. -/
+convergent sequences. -/
 def SeqContinuous (f : X → Y) : Prop :=
   ∀ ⦃x : ℕ → X⦄ ⦃p : X⦄, Tendsto x atTop (𝓝 p) → Tendsto (f ∘ x) atTop (𝓝 (f p))
 

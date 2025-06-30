@@ -69,9 +69,9 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
     fun a₁ a₂ pa ↦
       Quot.induction_on qb fun b ↦
         have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) := by
-          simp [heq_self_iff_true]
+          simp
         have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) := by
-          simp [heq_self_iff_true]
+          simp
         (h₁.trans (ca pa)).trans h₂
 
 /-- Map a function `f : α → β` such that `ra x y` implies `rb (f x) (f y)`
@@ -296,6 +296,17 @@ theorem Quotient.lift_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a �
 theorem Quotient.lift_comp_mk {_ : Setoid α} (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) :
     Quotient.lift f h ∘ Quotient.mk _ = f :=
   rfl
+
+@[simp]
+theorem Quotient.lift_surjective_iff {α β : Sort*} {s : Setoid α} (f : α → β)
+    (h : ∀ (a b : α), a ≈ b → f a = f b) :
+    Function.Surjective (Quotient.lift f h : Quotient s → β) ↔ Function.Surjective f :=
+  Quot.surjective_lift h
+
+theorem Quotient.lift_surjective {α β : Sort*} {s : Setoid α} (f : α → β)
+    (h : ∀ (a b : α), a ≈ b → f a = f b) (hf : Function.Surjective f):
+    Function.Surjective (Quotient.lift f h : Quotient s → β) :=
+  (Quot.surjective_lift h).mpr hf
 
 @[simp]
 theorem Quotient.lift₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
@@ -533,7 +544,7 @@ theorem out_eq (q : Trunc α) : mk q.out = q :=
   Trunc.eq _ _
 
 protected theorem nonempty (q : Trunc α) : Nonempty α :=
-  nonempty_of_exists q.exists_rep
+  q.exists_rep.nonempty
 
 end Trunc
 

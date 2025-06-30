@@ -85,9 +85,9 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
   induction s using Finset.induction with
   | empty =>
     rw [factoredNumbers_empty]
-    simp only [not_mem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
+    simp only [notMem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
     exact ⟨(Set.finite_singleton 1).summable (‖f ·‖), hf₁ ▸ hasSum_singleton 1 f⟩
-  | @insert p s hp ih =>
+  | insert p s hp ih =>
     rw [filter_insert]
     split_ifs with hpp
     · constructor

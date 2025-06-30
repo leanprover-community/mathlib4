@@ -52,7 +52,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   let ind (x : α) : ι := wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
   have mem_ind (x) : x ∈ s (ind x) := wellFounded_lt.min_mem _ (hcov x)
-  have nmem_of_lt_ind {x i} (hlt : i < ind x) (hxi : x ∈ s i) : False :=
+  have notMem_of_lt_ind {x i} (hlt : i < ind x) (hxi : x ∈ s i) : False :=
     wellFounded_lt.not_lt_min _ (hcov x) hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
     is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
@@ -135,10 +135,10 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rintro j₁ ⟨y, hyD, hyB⟩ j₂ ⟨z, hzD, hzB⟩
       by_contra! h' : j₁ ≠ j₂
       wlog h : j₁ < j₂ generalizing j₁ j₂ y z
-      · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_lt.resolve_left h)
+      · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_gt.resolve_left h)
       rcases memD.1 hyD with ⟨y', rfl, hsuby, -, hdisty⟩
       rcases memD.1 hzD with ⟨z', rfl, -, -, hdistz⟩
-      suffices edist z' y' < 3 * 2⁻¹ ^ m from nmem_of_lt_ind h (hsuby this)
+      suffices edist z' y' < 3 * 2⁻¹ ^ m from notMem_of_lt_ind h (hsuby this)
       calc
         edist z' y' ≤ edist z' x + edist x y' := edist_triangle _ _ _
         _ ≤ edist z z' + edist z x + (edist y x + edist y y') :=

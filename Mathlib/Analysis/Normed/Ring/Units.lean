@@ -137,7 +137,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
   have ht' : ‖t‖ < 1 := by linarith
-  simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
+  simp only [inverse_one_sub t ht', norm_one, mul_one]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
   have := tsum_geometric_le_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
@@ -220,7 +220,7 @@ theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 -
 geometric series is proper. -/
 theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
   have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
-  simpa only [I.closure.eq_top_iff_one, Ne] using mt (@h 1) one_not_mem_nonunits
+  simpa only [I.closure.eq_top_iff_one, Ne] using mt (@h 1) one_notMem_nonunits
 
 /-- The `Ideal.closure` of a maximal ideal in a normed ring with summable
 geometric series is the ideal itself. -/

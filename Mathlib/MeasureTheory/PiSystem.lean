@@ -293,7 +293,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
   have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
     suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
-    simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists, Subtype.coe_mk]
+    simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists]
     rfl
   rcases @mem_generatePiSystem_iUnion_elim α (Subtype s) (g ∘ Subtype.val)
       (fun b => h_pi b.val b.property) t this with
@@ -303,7 +303,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
       Function.extend (fun x : s => (x : β)) f fun _ : β => (∅ : Set α), by simp, ?_, ?_⟩
   · ext a
     constructor <;>
-      · simp (config := { proj := false }) only
+      · simp -proj only
           [Set.mem_iInter, Subtype.forall, Finset.set_biInter_finset_image]
         intro h1 b h_b h_b_in_T
         have h2 := h1 b h_b h_b_in_T
@@ -349,9 +349,9 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       exact Or.inl (hfπ i hi)
     · have ht_empty : t = ∅ := by
         ext1 x
-        simp only [Finset.not_mem_empty, iff_false]
+        simp only [Finset.notMem_empty, iff_false]
         exact fun hx => hi (hti x hx ▸ hx)
-      simp [ht_empty, iInter_false, iInter_univ, Set.mem_singleton univ]
+      simp [ht_empty, iInter_univ, Set.mem_singleton univ]
   · rcases h with hs | hs
     · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
@@ -360,7 +360,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       · simp only [Finset.mem_singleton, iInter_iInter_eq_left]
     · refine ⟨∅, ?_⟩
       simpa only [Finset.coe_empty, subset_singleton_iff, mem_empty_iff_false, IsEmpty.forall_iff,
-        imp_true_iff, Finset.not_mem_empty, iInter_false, iInter_univ, true_and,
+        imp_true_iff, Finset.notMem_empty, iInter_false, iInter_univ, true_and,
         exists_const] using hs
 
 theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :

@@ -14,13 +14,13 @@ This file contains basic results relevant to the triangularizability of linear e
 
 ## Main definitions / results
 
- * `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
-   linear endomorphism has an eigenvalue.
- * `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
-   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
- * `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
-   generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
-   its restriction to any invariant submodule.
+* `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
+  linear endomorphism has an eigenvalue.
+* `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
+  closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
+* `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
+  generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
+  its restriction to any invariant submodule.
 
 ## References
 
@@ -149,7 +149,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
   by_cases hμ : μ ∈ m.support; swap
-  · simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
+  · simp only [Finsupp.notMem_support_iff.mp hμ, p.zero_mem]
   have hm₂_aux := hm₂
   simp_rw [Module.End.mem_genEigenspace] at hm₂_aux
   choose l hlk hl using hm₂_aux

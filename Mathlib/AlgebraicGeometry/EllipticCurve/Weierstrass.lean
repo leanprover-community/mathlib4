@@ -30,17 +30,17 @@ field of `R` are precisely the `X`-coordinates of the non-zero 2-torsion points 
 
 ## Main definitions
 
- * `WeierstrassCurve`: a Weierstrass curve over a commutative ring.
- * `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
- * `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
- * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
- * `WeierstrassCurve.IsElliptic`: typeclass asserting that a Weierstrass curve is an elliptic curve.
- * `WeierstrassCurve.j`: the j-invariant of an elliptic curve.
+* `WeierstrassCurve`: a Weierstrass curve over a commutative ring.
+* `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
+* `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
+* `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
+* `WeierstrassCurve.IsElliptic`: typeclass asserting that a Weierstrass curve is an elliptic curve.
+* `WeierstrassCurve.j`: the j-invariant of an elliptic curve.
 
 ## Main statements
 
- * `WeierstrassCurve.twoTorsionPolynomial_disc`: the discriminant of a Weierstrass curve is a
-    constant factor of the cubic discriminant of its 2-torsion polynomial.
+* `WeierstrassCurve.twoTorsionPolynomial_disc`: the discriminant of a Weierstrass curve is a
+  constant factor of the cubic discriminant of its 2-torsion polynomial.
 
 ## Implementation notes
 
@@ -53,9 +53,9 @@ which are not globally defined by a cubic equation valid over the entire base.
 
 ## References
 
- * [N Katz and B Mazur, *Arithmetic Moduli of Elliptic Curves*][katz_mazur]
- * [P Deligne, *Courbes Elliptiques: Formulaire (d'après J. Tate)*][deligne_formulaire]
- * [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* [N Katz and B Mazur, *Arithmetic Moduli of Elliptic Curves*][katz_mazur]
+* [P Deligne, *Courbes Elliptiques: Formulaire (d'après J. Tate)*][deligne_formulaire]
+* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
 
 ## Tags
 

@@ -14,7 +14,7 @@ Most of the argument is developing an API for `π C (· ∈ s)` when `s : Finset
 of `C` is finite with the discrete topology. In this case, there is a direct argument that the good
 products span. The general result is deduced from this.
 
-For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main theorems
 
@@ -46,7 +46,7 @@ theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
     l.eval C = πJ C s (l.eval (π C (· ∈ s))) := by
   ext f
   simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
-    (continuous_projRestrict C (· ∈ s)), LocallyConstant.coe_comap, Function.comp_apply]
+    LocallyConstant.coe_comap, Function.comp_apply]
   exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood  C (· ∈ s) hl)) _).symm
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
@@ -91,8 +91,7 @@ def factors (x : π C (· ∈ s)) : List (LocallyConstant (π C (· ∈ s)) ℤ)
 
 theorem list_prod_apply {I} (C : Set (I → Bool)) (x : C) (l : List (LocallyConstant C ℤ)) :
     l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
-  rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l]
-  rfl
+  rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l, LocallyConstant.evalMonoidHom_apply]
 
 theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x) :
     (factors C s x).prod y = 1 := by
@@ -117,7 +116,7 @@ theorem one_sub_e_mem_of_false {x y : (π C (· ∈ s))} {a : I} (ha : y.val a =
     (hx : x.val a = false) : 1 - e (π C (· ∈ s)) a ∈ factors C s x := by
   simp only [factors, List.mem_map, Finset.mem_sort]
   use a
-  simp only [hx, ite_false, and_true]
+  simp only [hx]
   rcases y with ⟨_, z, hz, rfl⟩
   aesop (add simp Proj)
 

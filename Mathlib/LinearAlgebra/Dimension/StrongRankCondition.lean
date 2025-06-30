@@ -35,6 +35,11 @@ For modules over rings with invariant basis number
 * `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
   cardinality.
 
+## Additional definition
+
+* `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
+  free `R`-algebra of rank `2`.
+
 -/
 
 
@@ -42,7 +47,7 @@ noncomputable section
 
 universe u v w w'
 
-variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {S : Type*} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
 open Cardinal Basis Submodule Function Set Module
@@ -151,8 +156,8 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : #(r
       · subst b
         rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
         exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
-    refine le_of_not_lt fun IJ => ?_
-    suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_lt this ⟨Set.embeddingOfSubset _ _ hs⟩
+    refine le_of_not_gt fun IJ => ?_
+    suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_gt this ⟨Set.embeddingOfSubset _ _ hs⟩
     refine lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
       (Cardinal.sum_le_sum _ (fun _ => ℵ₀) ?_)) ?_
     · exact fun j => (Cardinal.lt_aleph0_of_finite _).le
@@ -180,7 +185,7 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
     exact fun i => Span.repr R w ⟨v i, s (mem_range_self i)⟩
   · intro f g h
     apply_fun linearCombination R ((↑) : w → M) at h
-    simp only [linearCombination_linearCombination, Submodule.coe_mk,
+    simp only [linearCombination_linearCombination,
                Span.finsupp_linearCombination_repr] at h
     exact i h
 
@@ -242,7 +247,7 @@ theorem linearIndependent_le_infinite_basis {ι : Type w} (b : Basis ι R M) [In
   have w' : Finite (Φ ⁻¹' {s}) := by
     apply i'.finite_of_le_span_finite v' (s.image b)
     rintro m ⟨⟨p, ⟨rfl⟩⟩, rfl⟩
-    simp only [SetLike.mem_coe, Subtype.coe_mk, Finset.coe_image]
+    simp only [SetLike.mem_coe, Finset.coe_image]
     apply Basis.mem_span_repr_support
   exact w.false
 
@@ -284,7 +289,7 @@ theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearInde
     exact fun i ↦ Span.repr R w ⟨v i, s ▸ trivial⟩
   · intro f g h
     apply_fun linearCombination R ((↑) : w → M) at h
-    simp only [linearCombination_linearCombination, Submodule.coe_mk,
+    simp only [linearCombination_linearCombination,
                Span.finsupp_linearCombination_repr] at h
     exact i h
 
@@ -499,6 +504,27 @@ theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Alge
   rw [← Module.finrank_eq_rank R L']
   exact nat_lt_aleph0 (finrank R ↥L')
 
+variable (R S M) in
+/-- Also see `Module.finrank_top_le_finrank_of_isScalarTower_of_free`
+for a version with different typeclass constraints. -/
+lemma Module.finrank_top_le_finrank_of_isScalarTower [Module.Finite R M] [Semiring S]
+    [Module S M] [Module R S] [IsScalarTower R S S] [FaithfulSMul R S] [IsScalarTower R S M] :
+    finrank S M ≤ finrank R M := by
+  rw [finrank, finrank, Cardinal.toNat_le_iff_le_of_lt_aleph0]
+  · exact rank_top_le_rank_of_isScalarTower R S M
+  · exact lt_of_le_of_lt (rank_top_le_rank_of_isScalarTower R S M) (Module.rank_lt_aleph0 R M)
+  · exact Module.rank_lt_aleph0 _ _
+
+variable (R) in
+/-- Also see `Module.finrank_bot_le_finrank_of_isScalarTower_of_free`
+for a version with different typeclass constraints. -/
+lemma Module.finrank_bot_le_finrank_of_isScalarTower (S T : Type*) [Semiring S] [Semiring T]
+    [Module R T] [Module S T] [Module R S] [IsScalarTower R S T]
+    [IsScalarTower S T T] [FaithfulSMul S T] [Module.Finite R T] :
+    finrank R S ≤ finrank R T :=
+  finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
+    (Module.rank_lt_aleph0 _ _)
+
 @[deprecated (since := "2024-11-21")]
 alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular
 
@@ -542,3 +568,19 @@ theorem mem_span_set_iff_exists_finsupp_le_finrank :
     exact mem_span_set.mpr ⟨c, hcs, hx⟩
 
 end Submodule
+
+namespace Algebra
+
+/--
+An extension of rings `R ⊆ S` is quadratic if `S` is a free `R`-algebra of rank `2`.
+-/
+-- TODO. use this in connection with `NumberTheory.Zsqrtd`
+class IsQuadraticExtension (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S]
+    [Algebra R S] extends Module.Free R S where
+  finrank_eq_two' : Module.finrank R S = 2
+
+theorem IsQuadraticExtension.finrank_eq_two (R S : Type*) [CommSemiring R] [StrongRankCondition R]
+    [Semiring S] [Algebra R S] [IsQuadraticExtension R S] :
+    Module.finrank R S = 2 := finrank_eq_two'
+
+end Algebra

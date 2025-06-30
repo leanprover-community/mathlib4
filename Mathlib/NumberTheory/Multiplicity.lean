@@ -56,8 +56,8 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
   rcases n with - | n
   · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, mul_zero]
   · simp only [Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.cast_succ, add_pow, Finset.sum_range_succ,
-      Nat.choose_self, Nat.succ_sub _, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
-      mul_one, Nat.cast_zero, zero_add, Nat.succ_eq_add_one, add_tsub_cancel_left]
+      Nat.choose_self, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
+      mul_one, Nat.cast_zero, zero_add, add_tsub_cancel_left]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
     apply Finset.dvd_sum
@@ -111,7 +111,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (↑p * a ^ (p - 1)) := by
-      simp only [add_right_inj, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+      simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul]
     _ =
         mk (span {s}) (↑p * b * ∑ x ∈ Finset.range p, a ^ (p - 2) * x) +
           mk (span {s}) (↑p * a ^ (p - 1)) := by
@@ -366,7 +366,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       emultiplicity 2 (x + y) + emultiplicity 2 (x - y) + emultiplicity 2 n := by
   obtain hyx | hyx := le_total y x
   · iterate 3 rw [← Int.natCast_emultiplicity]
-    simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.ofNat_add,
+    simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.natCast_add,
       Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy

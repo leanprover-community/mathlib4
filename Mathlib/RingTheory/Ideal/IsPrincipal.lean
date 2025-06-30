@@ -15,10 +15,10 @@ This file deals with the set of principal ideals of a `CommRing R`.
 * `Ideal.isPrincipalSubmonoid`: the submonoid of `Ideal R` formed by the principal ideals of `R`.
 
 * `Ideal.isPrincipalNonZeroDivisorSubmonoid`: the submonoid of `(Ideal R)⁰` formed by the
-non-zero-divisors principal ideals of `R`.
+  non-zero-divisors principal ideals of `R`.
 
 * `Ideal.associatesMulEquivIsPrincipal`: the `MulEquiv` between the monoid of `Associates R` and
-the submonoid of principal ideals of `R`.
+  the submonoid of principal ideals of `R`.
 
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
 `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.

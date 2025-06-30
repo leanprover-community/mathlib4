@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.Topology.Algebra.RestrictedProduct
+import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -54,10 +54,10 @@ lemma HeightOneSpectrum.Support.finite (k : K) : (Support R k).Finite := by
     rw [Set.mem_setOf_eq, valuation_of_algebraMap]
     have := intValuation_le_one v n
     contrapose! this
-    rw [← intValuation_apply, ← hk, mul_comm]
+    rw [← hk, mul_comm]
     exact (lt_mul_of_one_lt_right (by simp) hv).trans_le <|
       mul_le_mul_of_nonneg_right this (by simp)
-  simp_rw [valuation_of_algebraMap, intValuation_apply, intValuation_lt_one_iff_dvd]
+  simp_rw [valuation_lt_one_iff_dvd]
   apply Ideal.finite_factors
   simpa only [Submodule.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
 
@@ -127,10 +127,10 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
 section Topology
 
 instance : IsTopologicalRing (FiniteAdeleRing R K) :=
-    haveI : Fact (∀ (v : HeightOneSpectrum R),
+  haveI : Fact (∀ v : HeightOneSpectrum R,
       IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
-    ⟨fun _ ↦ Valued.valuationSubring_isOpen _⟩
-    RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
+    ⟨fun _ ↦ Valued.isOpen_valuationSubring _⟩
+  RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
 
 end Topology
 

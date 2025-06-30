@@ -81,7 +81,7 @@ section general
 variable {A E : Type*} [NonUnitalRing A] [StarRing A] [AddCommGroup E] [Module ℂ A]
   [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E] [CStarModule A E]
 
-local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
+local notation "⟪" x ", " y "⟫" => inner A x y
 
 @[simp]
 lemma inner_add_left {x y z : E} : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ := by
@@ -154,13 +154,13 @@ section norm
 variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [AddCommGroup E]
   [Module ℂ E] [SMul A E] [Norm E] [CStarModule A E]
 
-local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
+local notation "⟪" x ", " y "⟫" => inner A x y
 
 open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
 noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
-  norm x := Real.sqrt ‖⟪x, x⟫_A‖
+  norm x := √‖⟪x, x⟫_A‖
 
 section
 include A
@@ -181,7 +181,7 @@ protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inne
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
   ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self (A := A), inner_self] using h,
-    fun h => by simp [norm, h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
+    fun h => by simp [h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
 
 end
 
@@ -207,10 +207,9 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 
                   - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
                       calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) := CStarAlgebra.conjugate_le_norm_smul'
-                        _ = (Real.sqrt ‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
-                                  congr
-                                  have : 0 ≤ ‖⟪x, x⟫_A‖ := by positivity
-                                  rw [Real.sq_sqrt this]
+                        _ = (√‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
+                          rw [Real.sq_sqrt]
+                          positivity
                         _ = ‖x‖ ^ 2 • (a * star a) := by rw [← norm_eq_sqrt_norm_inner_self]
     specialize h₁ ⟪x, y⟫
     simp only [star_inner, sub_self, zero_sub, le_neg_add_iff_add_le, add_zero] at h₁

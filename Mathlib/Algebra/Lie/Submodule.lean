@@ -398,8 +398,7 @@ instance : SupSet (LieSubmodule R L M) where
         | empty =>
           replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
-        | insert hqt ih =>
-          rename_i q t
+        | insert q t hqt ih =>
           rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]
@@ -873,7 +872,7 @@ theorem map_comp
     {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
     N.map (g.comp f) = (N.map f).map g :=
   SetLike.coe_injective <| by
-    simp only [← Set.image_comp, coe_map, LinearMap.coe_comp, LieModuleHom.coe_comp]
+    simp only [← Set.image_comp, coe_map, LieModuleHom.coe_comp]
 
 @[simp]
 theorem map_id : N.map LieModuleHom.id = N := by ext; simp
@@ -1078,9 +1077,7 @@ variable [LieAlgebra R L] [LieModule R L M]
 This is the Lie subalgebra version of `Submodule.topEquiv`. -/
 def LieSubalgebra.topEquiv : (⊤ : LieSubalgebra R L) ≃ₗ⁅R⁆ L :=
   { (⊤ : LieSubalgebra R L).incl with
-    invFun := fun x ↦ ⟨x, Set.mem_univ x⟩
-    left_inv := fun x ↦ by ext; rfl
-    right_inv := fun _ ↦ rfl }
+    invFun := fun x ↦ ⟨x, Set.mem_univ x⟩ }
 
 @[simp]
 theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalgebra.topEquiv x = x :=
