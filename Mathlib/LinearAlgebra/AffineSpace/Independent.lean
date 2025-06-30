@@ -866,15 +866,26 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
     Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
 
+lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) (j : Fin n) :
+    (s.faceOpposite i).points (Fin.cast (Nat.sub_one_add_one (NeZero.ne _)).symm j) =
+      s.points (Fin.succAbove i j) := by
+  simp_rw [faceOpposite, face, comp_apply]
+  convert rfl
+  let j' : Fin (n - 1 + 1) := Fin.cast (Nat.sub_one_add_one (NeZero.ne _)).symm j
+  rw [eq_comm]
+  change Finset.orderEmbOfFin _ _ j' =
+    (Fin.succAbove i ∘ Fin.cast (Nat.sub_one_add_one (NeZero.ne _))) j'
+  convert rfl
+  convert Finset.orderEmbOfFin_unique _ (fun x ↦ ?_)
+    ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
+  simp
+
 lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1) :
     (s.faceOpposite i).points n = s.points i.rev := by
-  suffices (s.faceOpposite i).points n ∈ s.points '' {i.rev} by
-    simpa using this
-  refine Set.mem_of_mem_of_subset (Set.mem_range_self _) ?_
-  rw [range_faceOpposite_points]
-  refine Set.image_subset _ ?_
-  simp only [Nat.reduceAdd, Set.subset_singleton_iff, Set.mem_compl_iff, Set.mem_singleton_iff]
-  decide +revert
+  have h : i.rev = Fin.succAbove i n := by decide +revert
+  rw [h, ← faceOpposite_point_eq_point_succAbove]
+  simp
 
 /-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
 instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
