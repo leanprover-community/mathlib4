@@ -190,7 +190,7 @@ theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   -- Porting note: this `show` feels like defeq abuse, but I can't find the appropriate lemmas
   show AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
-  simp [C_apply, single_mul_single]
+  simp [single_mul_single]
 
 @[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
@@ -355,7 +355,7 @@ theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
       intro e
       induction e with
       | zero => simp [ih]
-      | succ e e_ih => simp [ih, pow_succ, (mul_assoc _ _ _).symm, mul_X, e_ih]
+      | succ e e_ih => simp [pow_succ, (mul_assoc _ _ _).symm, mul_X, e_ih]
     simp [add_comm, monomial_add_single, this]
 
 /-- Analog of `Polynomial.induction_on'`.
@@ -878,8 +878,8 @@ This is a ring homomorphism.
 -/
 def constantCoeff : MvPolynomial σ R →+* R where
   toFun := coeff 0
-  map_one' := by simp [AddMonoidAlgebra.one_def]
-  map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
+  map_one' := by simp
+  map_mul' := by classical simp [coeff_mul]
   map_zero' := coeff_zero _
   map_add' := coeff_add _
 
@@ -963,7 +963,7 @@ lemma one_coeffsIn : 1 ∈ coeffsIn σ M ↔ 1 ∈ M := by simpa using C_mem_coe
 @[simp]
 lemma mul_monomial_mem_coeffsIn : p * monomial i 1 ∈ coeffsIn σ M ↔ p ∈ coeffsIn σ M := by
   classical
-  simp only [mem_coeffsIn, coeff_mul_monomial', Finsupp.mem_support_iff]
+  simp only [mem_coeffsIn, coeff_mul_monomial']
   constructor
   · rintro hp j
     simpa using hp (j + i)
@@ -989,7 +989,7 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
     rw [p.as_sum]
     exact sum_mem fun i hi ↦ Submodule.subset_span ⟨_, hp i, _, rfl⟩
   · rintro _ ⟨m, hm, s, n, rfl⟩ i
-    simp [coeff_X_pow]
+    simp
     split <;> simp [hm]
 
 lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
