@@ -783,11 +783,11 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
       exact zero_le m (m.toSyn (m.degree (f - m.leadingTerm f)))
     apply not_le_of_gt h this
   · intro h
-    by_cases hl: f - m.leadingTerm f = 0
+    by_cases hl : f - m.leadingTerm f = 0
     · simp [hl]
-      have h1: m.toSyn (m.degree f) ≥ 0 := by
+      have h1 : m.toSyn (m.degree f) ≥ 0 := by
         exact zero_le m (m.toSyn (m.degree f))
-      have h2: m.toSyn (m.degree f) ≠ 0 := by
+      have h2 : m.toSyn (m.degree f) ≠ 0 := by
         exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr h
       exact lt_of_le_of_ne h1 (id (Ne.symm h2))
     · exact m.degree_sub_leadingTerm_lt_degree hl
