@@ -69,7 +69,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
-  simp only [← Ne.eq_def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
+  simp only [← Ne.eq_def, ne_univ_iff_exists_notMem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
   -- We have some basis element `b i` which is not in the support of any of the `v k`.
   obtain ⟨i, w⟩ := h

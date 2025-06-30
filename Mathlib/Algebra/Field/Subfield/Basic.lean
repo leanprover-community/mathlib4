@@ -155,7 +155,7 @@ theorem coe_map : (s.map f : Set L) = f '' s :=
 @[simp]
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
-  simp only [mem_mk, Subring.mem_mk, Subring.mem_toSubsemiring, Subring.mem_map, mem_toSubring]
+  simp only [mem_mk, Subring.mem_map, mem_toSubring]
 
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
@@ -295,11 +295,16 @@ theorem mem_closure {x : K} {s : Set K} : x ∈ closure s ↔ ∀ S : Subfield K
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set K} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set K} {x : K} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring :=
   Subring.closure_le.mpr subset_closure
 
-theorem not_mem_of_not_mem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subfield `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]

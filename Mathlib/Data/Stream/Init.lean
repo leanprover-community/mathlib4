@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Common
 
@@ -61,7 +60,7 @@ theorem drop_drop (n m : ℕ) (s : Stream' α) : drop n (drop m s) = drop (m + n
 @[simp] theorem get_tail {n : ℕ} {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
 @[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i + 1) := by
-  ext; simp [Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
+  ext; simp [Nat.add_comm, Nat.add_left_comm]
 
 @[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i + 1) := rfl
 
@@ -467,7 +466,7 @@ lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
   ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
 
 @[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
-  ⟨append_right_injective x a b, by simp (config := {contextual := true})⟩
+  ⟨append_right_injective x a b, by simp +contextual⟩
 
 lemma append_left_injective (h : x ++ₛ a = y ++ₛ b) (hl : x.length = y.length) : x = y := by
   apply List.ext_getElem hl

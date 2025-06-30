@@ -5,6 +5,7 @@ Authors: Justus Springer
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.Algebra.Ring.ULift
 
 /-!
 # The forgetful functor from (commutative) (semi-) rings preserves filtered colimits.
@@ -86,7 +87,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       erw [colimit_add_mk_eq _ ⟨j₂, _⟩ ⟨j₃, _⟩ k g h, colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨k, _⟩ k f (𝟙 k),
         colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₂, _⟩ k f g, colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₃, _⟩ k f h,
         colimit_add_mk_eq _ ⟨k, _⟩ ⟨k, _⟩ k (𝟙 k) (𝟙 k)]
-      simp only [CategoryTheory.Functor.map_id, id_apply]
+      simp only [CategoryTheory.Functor.map_id]
       erw [left_distrib (F.map f x) (F.map g y) (F.map h z)]
       rfl
     right_distrib := fun x y z => by
@@ -99,7 +100,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       erw [colimit_add_mk_eq _ ⟨j₁, _⟩ ⟨j₂, _⟩ k f g, colimit_mul_mk_eq _ ⟨k, _⟩ ⟨j₃, _⟩ k (𝟙 k) h,
         colimit_mul_mk_eq _ ⟨j₁, _⟩ ⟨j₃, _⟩ k f h, colimit_mul_mk_eq _ ⟨j₂, _⟩ ⟨j₃, _⟩ k g h,
         colimit_add_mk_eq _ ⟨k, _⟩ ⟨k, _⟩ k (𝟙 k) (𝟙 k)]
-      simp only [CategoryTheory.Functor.map_id, id_apply]
+      simp only [CategoryTheory.Functor.map_id]
       erw [right_distrib (F.map f x) (F.map g y) (F.map h z)]
       rfl }
 
@@ -342,6 +343,24 @@ instance forget₂Ring_preservesFilteredColimits :
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget CommRingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ CommRingCat RingCat) (forget RingCat.{u})
+
+omit [IsFiltered J] in
+protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
+    [∀ i, Nontrivial (F.obj i)] {c : Cocone F} (hc : IsColimit c) : Nontrivial c.pt := by
+  classical
+  cases isEmpty_or_nonempty J
+  · exact ((isColimitEquivIsInitialOfIsEmpty _ _ hc).to (.of (ULift ℤ))).hom.domain_nontrivial
+  have i := ‹Nonempty J›.some
+  refine ⟨c.ι.app i 0, c.ι.app i 1, fun h ↦ ?_⟩
+  have : IsFiltered J := ⟨⟩
+  obtain ⟨k, f, e⟩ :=
+    (Types.FilteredColimit.isColimit_eq_iff' (isColimitOfPreserves (forget _) hc) _ _).mp h
+  exact zero_ne_one (((F.map f).hom.map_zero.symm.trans e).trans (F.map f).hom.map_one)
+
+omit [IsFiltered J] in
+instance {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
+    [HasColimit F] [∀ i, Nontrivial (F.obj i)] : Nontrivial ↑(Limits.colimit F) :=
+  FilteredColimits.nontrivial (getColimitCocone F).2
 
 end
 

@@ -88,7 +88,7 @@ lemma Ideal.finite_quotient_prod {ι : Type*} (I : ι → Ideal R) (s : Finset �
   classical
   induction s using Finset.induction_on with
   | empty => simp only [Finset.prod_empty, one_eq_top]; infer_instance
-  | @insert a s has IH =>
+  | insert a s has IH =>
     rw [Finset.prod_insert has, mul_comm]
     have := hI' a (by simp)
     have := IH (fun i hi ↦ hI _ (by simp [hi])) (fun i hi ↦ hI' _ (by simp [hi]))

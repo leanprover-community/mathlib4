@@ -3,7 +3,7 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Order.Floor
 
@@ -86,7 +86,7 @@ private lemma recursion' (n : ℕ) :
     ring
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
   have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).mul ((hf x).pow _) using 1
+    convert (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
     simp only [u₂']
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
@@ -163,7 +163,7 @@ explicit description of `sinPoly`.
 -/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
-  | 1 => by simp only [natDegree_C, mul_one, zero_le', sinPoly]
+  | 1 => by simp only [natDegree_C, zero_le', sinPoly]
   | n + 2 => by
       rw [sinPoly]
       refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_

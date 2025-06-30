@@ -39,7 +39,7 @@ All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
 -/
 
-open Lean Parser Elab Command Meta
+open Lean Parser Elab Command Meta Linter
 
 namespace Mathlib.Linter
 
@@ -94,7 +94,7 @@ so you can simply remove them. (Some tests will intentionally use one of these o
 in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.setOption (← getOptions) do
+    unless getLinterValue linter.style.setOption (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -140,7 +140,7 @@ namespace Style.missingEnd
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if Linter.getLinterValue linter.style.missingEnd (← getOptions) &&
+    if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
         !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
@@ -209,7 +209,7 @@ namespace Style
 
 @[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.cdot (← getOptions) do
+    unless getLinterValue linter.style.cdot (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -221,7 +221,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
       match cdot.find? (·.isOfKind `token.«· ») with
       | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
         if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-          logWarningAt cdot <| .tagged linter.style.cdot.name
+          Linter.logLint linter.style.cdot cdot
             m!"This central dot `·` is isolated; please merge it with the next line."
       | _ => return
 
@@ -257,7 +257,7 @@ def findDollarSyntax : Syntax → Array Syntax
 
 @[inherit_doc linter.style.dollarSyntax]
 def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.dollarSyntax (← getOptions) do
+    unless getLinterValue linter.style.dollarSyntax (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -301,7 +301,7 @@ def findLambdaSyntax : Syntax → Array Syntax
 
 @[inherit_doc linter.style.lambdaSyntax]
 def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) do
+    unless getLinterValue linter.style.lambdaSyntax (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -351,7 +351,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
   if smallOption then
-    logWarningAt stx <| .tagged linter.style.longFile.name
+    logLint0Disable linter.style.longFile stx
       m!"The default value of the `longFile` linter is {defValue}.\n\
         The current value of {linterBound} does not exceed the allowed bound.\n\
         Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -369,7 +369,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let lastLine := ((← getFileMap).toPosition init).line
     -- In this case, the file has an allowed length, and the linter option is unnecessarily set.
     if lastLine ≤ defValue && defValue < linterBound then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"The default value of the `longFile` linter is {defValue}.\n\
           This file is {lastLine} lines long which does not exceed the allowed bound.\n\
           Please, remove the `set_option linter.style.longFile {linterBound}`."
@@ -381,7 +381,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let candidate := max candidate defValue
     -- In this case, the file is longer than the default and also than what the option says.
     if defValue ≤ linterBound && linterBound < lastLine then
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
           You can extend the allowed length of the file using \
           `set_option linter.style.longFile {candidate}`.\n\
@@ -392,7 +392,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In particular, this flags any option that is set to an unnecessarily high value.
     if linterBound == candidate || linterBound + 100 == candidate then return
     else
-      logWarningAt stx <| .tagged linter.style.longFile.name
+      logLint0Disable linter.style.longFile stx
         m!"This file is {lastLine} lines long. \
           The current limit is {linterBound}, but it is expected to be {candidate}:\n\
           `set_option linter.style.longFile {candidate}`."
@@ -414,7 +414,7 @@ namespace Style.longLine
 
 @[inherit_doc Mathlib.Linter.linter.style.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.longLine (← getOptions) do
+    unless getLinterValue linter.style.longLine (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -429,7 +429,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
           { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
-        return impMods
+        return impMods.raw
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
@@ -465,7 +465,7 @@ namespace Style.nameCheck
 
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
+    unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
@@ -520,7 +520,7 @@ def extractOpenNames : Syntax → Array (TSyntax `ident)
 
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
 def openClassicalLinter : Linter where run stx := do
-    unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
+    unless getLinterValue linter.style.openClassical (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return

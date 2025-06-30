@@ -13,8 +13,8 @@ import Mathlib.Tactic.Ring
 # The complex numbers
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
-of characteristic zero. The result that the complex numbers are algebraically closed, see
-`FieldTheory.AlgebraicClosure`.
+of characteristic zero. For the result that the complex numbers are algebraically closed, see
+`Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
 
 assert_not_exists Multiset Algebra
@@ -45,8 +45,6 @@ noncomputable instance : DecidableEq ℂ :=
 def equivRealProd : ℂ ≃ ℝ × ℝ where
   toFun z := ⟨z.re, z.im⟩
   invFun p := ⟨p.1, p.2⟩
-  left_inv := fun ⟨_, _⟩ => rfl
-  right_inv := fun ⟨_, _⟩ => rfl
 
 @[simp]
 theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z
@@ -267,7 +265,7 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal]
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 
@@ -336,7 +334,7 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
     natCast_zero := by
-      ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_zero]
+      ext <;> simp [Nat.cast]
     natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
     intCast := fun n => ⟨n, 0⟩
     intCast_ofNat := fun _ => by ext <;> rfl
@@ -455,7 +453,7 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
 
 @[simp]
 theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
-  Complex.ext_iff.2 <| by simp [star]
+  Complex.ext_iff.2 <| by simp
 
 @[simp]
 theorem conj_I : conj I = -I :=

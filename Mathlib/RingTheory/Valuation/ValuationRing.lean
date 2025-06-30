@@ -99,7 +99,7 @@ instance : Mul (ValueGroup A K) :=
         apply Quotient.sound'
         dsimp
         use c * d
-        simp only [mul_smul, Algebra.smul_def, Units.smul_def, RingHom.map_mul, Units.val_mul]
+        simp only [mul_smul, Algebra.smul_def, Units.smul_def]
         ring)
 
 instance : Inv (ValueGroup A K) :=
@@ -112,6 +112,13 @@ instance : Inv (ValueGroup A K) :=
         dsimp
         rw [Units.smul_def, Units.smul_def, Algebra.smul_def, Algebra.smul_def, mul_inv,
           map_units_inv])
+
+instance : Nontrivial (ValueGroup A K) where
+  exists_pair_ne := ⟨0, 1, fun c => by
+    obtain ⟨d, hd⟩ := Quotient.exact' c
+    apply_fun fun t => d⁻¹ • t at hd
+    dsimp at hd
+    simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd⟩
 
 variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
@@ -162,17 +169,12 @@ instance commGroupWithZero :
     mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
     zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
     mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
     inv_zero := by apply Quotient.sound'; rw [inv_zero]
     mul_inv_cancel := by
       rintro ⟨a⟩ ha
       apply Quotient.sound'
       use 1
-      simp only [one_smul, ne_eq]
+      simp only [one_smul]
       apply (mul_inv_cancel₀ _).symm
       contrapose ha
       simp only [Classical.not_not] at ha ⊢
@@ -186,16 +188,11 @@ noncomputable instance linearOrderedCommGroupWithZero :
       rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
       use c; simp only [Algebra.smul_def]; ring
     zero_le_one := ⟨0, by rw [zero_smul]⟩
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
     bot := 0
     bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
-def valuation : Valuation K (ValueGroup A K) where
+noncomputable def valuation : Valuation K (ValueGroup A K) where
   toFun := Quotient.mk''
   map_zero' := rfl
   map_one' := rfl

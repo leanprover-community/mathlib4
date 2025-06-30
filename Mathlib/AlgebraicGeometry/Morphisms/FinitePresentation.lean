@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.Spectrum.Prime.Chevalley
@@ -73,6 +74,13 @@ instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresen
 instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresentation f] :
     LocallyOfFinitePresentation (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
+
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [hf : LocallyOfFinitePresentation f] :
+    LocallyOfFiniteType f := by
+  rw [HasRingHomProperty.eq_affineLocally @LocallyOfFinitePresentation] at hf
+  rw [HasRingHomProperty.eq_affineLocally @LocallyOfFiniteType]
+  refine affineLocally_le (fun hf ↦ ?_) f hf
+  exact RingHom.FiniteType.of_finitePresentation hf
 
 /-- **Chevalley's Theorem**: The image of a locally constructible set under a
 morphism of finite presentation is locally constructible. -/

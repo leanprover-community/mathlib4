@@ -62,8 +62,9 @@ private lemma list_mul_sum {R : Type*} [Semiring R] {T : Type*} (l : List T) (y 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [DivisionRing F] (l : List T) {y : F} (hy : y ≠ 1) :
     (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
-  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range, ← Fin.sum_univ_get']
-  simp only [List.getElem_zipIdx, Function.uncurry_apply_pair]
+  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range,
+    ← Fin.sum_univ_fun_getElem]
+  simp only
   let e : Fin l.zipIdx.length ≃ Fin l.length := finCongr List.length_zipIdx
   exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ by simp [e]
 
@@ -161,9 +162,9 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     have hap : a < a * b := lt_mul_of_one_lt_right (by omega) (by omega)
     have hbp : b < a * b := lt_mul_of_one_lt_left (by omega) (by omega)
     have ha :=
-      le_of_not_lt <| not_and.mp ((hmin a).mt hap.not_le) (map_pos_of_ne_zero f (mod_cast ha₀))
+      le_of_not_gt <| not_and.mp ((hmin a).mt hap.not_ge) (map_pos_of_ne_zero f (mod_cast ha₀))
     have hb :=
-      le_of_not_lt <| not_and.mp ((hmin b).mt hbp.not_le) (map_pos_of_ne_zero f (mod_cast hb₀))
+      le_of_not_gt <| not_and.mp ((hmin b).mt hbp.not_ge) (map_pos_of_ne_zero f (mod_cast hb₀))
     rw [Nat.cast_mul, map_mul] at hp1
     exact ((one_le_mul_of_one_le_of_one_le ha hb).trans_lt hp1).false
 
@@ -313,9 +314,9 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     calc
     f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := apply_le_sum_digits m hn₀
     _ ≤ (L.mapIdx fun _ _ ↦ (n₀ : ℝ)).sum := by
-      simp only [List.mapIdx_eq_zipIdx_map, List.map_map]
+      simp only [List.mapIdx_eq_zipIdx_map]
       refine List.sum_le_sum fun ⟨i, a⟩ _ ↦ ?_
-      simp only [Function.comp_apply, Function.uncurry_apply_pair]
+      simp only
       exact (mul_le_mul_of_nonneg_right (mod_cast le_refl n₀) (by positivity)).trans <|
         mul_le_of_le_one_right (by positivity) (pow_le_one₀ (by positivity) h)
     _ = n₀ * (Nat.log n₀ m + 1) := by

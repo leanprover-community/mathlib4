@@ -45,7 +45,7 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
 /-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
-def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
+noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     (w : W) :
     V →ᵇ ℂ where
   toFun := fun v ↦ e (L v w)
@@ -91,7 +91,7 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
     · rw [neg_smul, ← LinearMap.map_smul (L v')]
     · rw [← LinearMap.map_smul (L v)]
   _ = e ((a / (L (v - v') w)) • (L (v - v') w)) := by
-    simp only [neg_mul, map_sub, LinearMap.sub_apply]
+    simp only [map_sub, LinearMap.sub_apply]
     congr
     module
   _ = e a := by
@@ -100,7 +100,7 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   _ ≠ 1 := ha
 
 /-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
-def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     Multiplicative W →* (V →ᵇ ℂ) where
   toFun w := char he hL w
   map_one' := char_zero_eq_one
@@ -159,7 +159,7 @@ lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := by
   ext v
   simp only [char_apply, AddMonoidAlgebra.single]
   rw [Finset.sum_eq_single w]
-  · simp only [Finsupp.single_eq_same, ofReal_one, one_mul, SetLike.coe_eq_coe]
+  · simp only [Finsupp.single_eq_same, one_mul]
   · simp [Finsupp.single_apply_ne_zero]
   · simp
 
@@ -173,7 +173,7 @@ lemma separatesPoints_charPoly (he : Continuous e) (he' : e ≠ 1)
     exact ext_of_char_eq he he' hL hL' hvv'
   use char he hL w
   simp only [StarSubalgebra.coe_toSubalgebra, StarSubalgebra.coe_map, Set.mem_image,
-    SetLike.mem_coe, exists_exists_and_eq_and, ne_eq, SetLike.coe_eq_coe]
+    SetLike.mem_coe, exists_exists_and_eq_and, ne_eq]
   exact ⟨⟨char he hL w, char_mem_charPoly w, rfl⟩, hw⟩
 
 end BoundedContinuousFunction

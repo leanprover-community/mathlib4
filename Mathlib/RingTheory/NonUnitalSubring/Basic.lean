@@ -393,8 +393,13 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : NonUnitalS
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _x hx => mem_closure.2 fun _S hS => hS hx
 
-theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+
+theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A `NonUnitalSubring` `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -420,7 +425,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (hx : x ∈ closure s)  : p x hx :=
+    {x} (hx : x ∈ closure s) : p x hx :=
   let K : NonUnitalSubring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
@@ -588,11 +593,11 @@ theorem prod_mono_left (t : NonUnitalSubring S) : Monotone fun s : NonUnitalSubr
 
 theorem prod_top (s : NonUnitalSubring R) :
     s.prod (⊤ : NonUnitalSubring S) = s.comap (NonUnitalRingHom.fst R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x => by simp [mem_prod]
 
 theorem top_prod (s : NonUnitalSubring S) :
     (⊤ : NonUnitalSubring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x => by simp [mem_prod]
 
 @[simp]
 theorem top_prod_top : (⊤ : NonUnitalSubring R).prod (⊤ : NonUnitalSubring S) = ⊤ :=
@@ -623,7 +628,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → NonUnitalSubring R}
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists,
     exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)

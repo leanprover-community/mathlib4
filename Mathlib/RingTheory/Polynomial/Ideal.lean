@@ -49,14 +49,17 @@ lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiri
       ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
   constructor
   · intro H
-    induction' H using Submodule.span_induction with a ha a b ha hb ha' hb' a b hb hb'
-    · obtain ⟨a, ha, rfl⟩ := ha
+    induction H using Submodule.span_induction with
+    | mem a ha =>
+      obtain ⟨a, ha, rfl⟩ := ha
       exact ⟨C a, fun i ↦ by rw [coeff_C]; aesop, aeval_C _ _⟩
-    · exact ⟨0, by simp, aeval_zero _⟩
-    · obtain ⟨a, ha, ha'⟩ := ha'
+    | zero => exact ⟨0, by simp, aeval_zero _⟩
+    | add a b ha hb ha' hb' =>
+      obtain ⟨a, ha, ha'⟩ := ha'
       obtain ⟨b, hb, hb'⟩ := hb'
       exact ⟨a + b, fun i ↦ by simpa using add_mem (ha i) (hb i), by simp [ha', hb']⟩
-    · obtain ⟨b', hb, hb'⟩ := hb'
+    | smul a b hb hb' =>
+      obtain ⟨b', hb, hb'⟩ := hb'
       obtain ⟨a, ha⟩ := a
       rw [Algebra.adjoin_singleton_eq_range_aeval] at ha
       obtain ⟨p, hp : aeval x p = a⟩ := ha

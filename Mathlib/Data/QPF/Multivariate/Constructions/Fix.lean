@@ -16,13 +16,13 @@ and take a fixed point again.
 
 ## Main definitions
 
- * `Fix.mk`     - constructor
- * `Fix.dest`    - destructor
- * `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
- * `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
+* `Fix.mk`     - constructor
+* `Fix.dest`    - destructor
+* `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
+* `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
                   the result type of the function is allowed to depend on the `Fix F α` value
- * `Fix.rec_eq` - defining equation for `recursor`
- * `Fix.ind`    - induction principle for `Fix F α`
+* `Fix.rec_eq` - defining equation for `recursor`
+* `Fix.ind`    - induction principle for `Fix F α`
 
 ## Implementation notes
 
@@ -33,7 +33,7 @@ See [avigad-carneiro-hudon2019] for more details.
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
    [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
@@ -88,7 +88,7 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   intro h
   -- Porting note: induction on h doesn't work.
   refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
-  · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
+  · intros a f' f₀ f₁ _h ih; simp only [recF_eq]
     congr; funext; congr; funext; apply ih
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
   · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
@@ -309,7 +309,7 @@ def Fix.drec {β : Fix F α → Type u}
     rw [Fix.rec_eq]
     dsimp
     simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map, y] at ih
+      simp only [appendFun_id_id, MvFunctor.id_map] at ih
     congr
     conv =>
       rhs

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Small.Defs
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -461,11 +462,6 @@ protected abbrev commRing [CommRing β] : CommRing α := by
 noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :=
   (equivShrink α).symm.commRing
 
-include e in
-/-- Transfer `Nontrivial` across an `Equiv` -/
-protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
-  e.surjective.nontrivial
-
 noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
   (equivShrink α).symm.nontrivial
 
@@ -714,7 +710,7 @@ lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A �
   letI := e.toAddEquiv.module A
   constructor
   intro x y z
-  simp only [Equiv.smul_def, AddEquiv.toEquiv_eq_coe, smul_assoc]
+  simp only [Equiv.smul_def, smul_assoc]
   apply e.symm.map_smul
 
 end

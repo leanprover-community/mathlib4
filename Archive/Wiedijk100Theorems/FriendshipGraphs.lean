@@ -181,7 +181,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
   have v := Classical.arbitrary V
   trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ => 1)) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
-    simp only [sum_insert, mul_one, if_true, Nat.cast_id, eq_self_iff_true, mem_erase, not_true,
+    simp only [sum_insert, mul_one, if_true, Nat.cast_id, mem_erase, not_true,
       Ne, not_false_iff, add_right_inj, false_and, of_apply]
     rw [Finset.sum_const_nat, card_erase_of_mem (mem_univ v), mul_one]; · rfl
     intro x hx; simp [(ne_of_mem_erase hx).symm]
@@ -227,10 +227,11 @@ theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
   match k with
   | 0 | 1 => exfalso; linarith
   | k + 2 =>
-    induction' k with k hind
-    · exact adjMatrix_sq_mod_p_of_regular hG dmod hd
-    rw [pow_succ', hind (Nat.le_add_left 2 k)]
-    exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
+    induction k with
+    | zero => exact adjMatrix_sq_mod_p_of_regular hG dmod hd
+    | succ k hind =>
+      rw [pow_succ', hind (Nat.le_add_left 2 k)]
+      exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
 
 variable [Nonempty V]
 
@@ -262,7 +263,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   -- but the trace is 1 mod p when computed the other way
   rw [adjMatrix_pow_mod_p_of_regular hG dmod hd hp2]
   dsimp only [Fintype.card] at Vmod
-  simp only [Matrix.trace, Matrix.diag, mul_one, nsmul_eq_mul, LinearMap.coe_mk, sum_const,
+  simp only [Matrix.trace, Matrix.diag, mul_one, nsmul_eq_mul, sum_const,
     of_apply, Ne]
   rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_zmod_eq_zero_iff_dvd,
     Nat.dvd_one, Nat.minFac_eq_one_iff]
@@ -334,7 +335,7 @@ include hG in
 theorem friendship_theorem [Nonempty V] : ExistsPolitician G := by
   by_contra npG
   rcases hG.isRegularOf_not_existsPolitician npG with ⟨d, dreg⟩
-  rcases lt_or_le d 3 with dle2 | dge3
+  rcases lt_or_ge d 3 with dle2 | dge3
   · exact npG (hG.existsPolitician_of_degree_le_two dreg (Nat.lt_succ_iff.mp dle2))
   · exact hG.false_of_three_le_degree dreg dge3
 

@@ -16,7 +16,7 @@ that `1 : ℤ` belongs to the image of `a`.
 
 ## Main Definitions
 * `IsDiscrete`: We define a valuation to be discrete if it is `ℤₘ₀`-valued and `ofAdd (-1 : ℤ)`
-belongs to the image.
+  belongs to the image.
 
 ## TODO
 * Define (pre)uniformizers for nontrivial `ℤₘ₀`-valued valuations.

@@ -96,10 +96,10 @@ theorem gold_ne_zero : φ ≠ 0 :=
 
 theorem one_lt_gold : 1 < φ := by
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt gold_pos)
-  simp [← sq, gold_pos, zero_lt_one]
+  simp [← sq, zero_lt_one]
 
 theorem gold_lt_two : φ < 2 := by calc
-  (1 + sqrt 5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
+  (1 + √5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
   _ = 2 := by norm_num
 
 theorem goldConj_neg : ψ < 0 := by
@@ -169,12 +169,12 @@ theorem fib_isSol_fibRec : fibRec.IsSolution (fun x => x.fib : ℕ → α) := by
 /-- The geometric sequence `fun n ↦ φ^n` is a solution of `fibRec`. -/
 theorem geom_gold_isSol_fibRec : fibRec.IsSolution (φ ^ ·) := by
   rw [fibRec.geom_sol_iff_root_charPoly, fibRec_charPoly_eq]
-  simp [sub_eq_zero]
+  simp
 
 /-- The geometric sequence `fun n ↦ ψ^n` is a solution of `fibRec`. -/
 theorem geom_goldConj_isSol_fibRec : fibRec.IsSolution (ψ ^ ·) := by
   rw [fibRec.geom_sol_iff_root_charPoly, fibRec_charPoly_eq]
-  simp [sub_eq_zero]
+  simp
 
 end Fibrec
 
@@ -208,7 +208,7 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
   repeat rw [coe_fib_eq]
   rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
   ring_nf
-  have nz : sqrt 5 ≠ 0 := by norm_num
+  have nz : √5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel₀ nz).symm, one_mul]
 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
