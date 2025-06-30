@@ -314,7 +314,7 @@ theorem _root_.Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot
     | add x y hx hy ihx ihy => exact Subalgebra.add_mem _ ihx ihy
     | mul x y hx hy ihx ihy => exact Subalgebra.mul_mem _ ihx ihy
 
-/-- Two elements in Galois group of a cyclotomic extension are equal if
+/-- Two elements in the Galois group of a cyclotomic extension are equal if
 their actions on primitive roots are equal. -/
 theorem algEquiv_eq_of_apply_eq [IsCyclotomicExtension S A B] [IsDomain B] {f g : B ≃ₐ[A] B}
     (H : ∀ n ∈ S, n ≠ 0 → ∃ r : B, IsPrimitiveRoot r n ∧ f r = g r) : f = g := by
@@ -331,7 +331,7 @@ theorem algEquiv_eq_of_apply_eq [IsCyclotomicExtension S A B] [IsDomain B] {f g 
   | add x y hx hy ihx ihy => simp [ihx, ihy]
   | mul x y hx hy ihx ihy => simp [ihx, ihy]
 
-/-- Cyclotomic extension is abelian. -/
+/-- Cyclotomic extensions are abelian. -/
 theorem isMulCommutative [IsCyclotomicExtension S A B] [IsDomain B] :
     IsMulCommutative (B ≃ₐ[A] B) := by
   refine ⟨⟨fun f g ↦ algEquiv_eq_of_apply_eq S A B fun n hn h1 ↦ ?_⟩⟩
