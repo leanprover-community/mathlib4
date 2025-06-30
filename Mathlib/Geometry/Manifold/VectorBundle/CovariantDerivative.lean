@@ -186,11 +186,7 @@ lemma ContMDiff.of_contMDiffOn_smul_bump_function [SMul 𝕜 M'] (hf : ContMDiff
   · apply (hzero.contMDiffOn (s := (tsupport ψ)ᶜ)).congr
     intro y hy
     simp [image_eq_zero_of_notMem_tsupport hy]
-  · -- XXX: simplify/clean up this proof!
-    apply le_antisymm (by simp)
-    rw [← union_compl_self (s := tsupport ψ)]
-    change tsupport ψ ∪ (tsupport ψ)ᶜ ⊆ s ∪ (tsupport ψ)ᶜ
-    gcongr
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr hψ'
 
 -- See also `ContMDiff.of_contMDiffOn_smul_bump_function` for the analogous result applying
 -- to sections of vector bundles (whose co-domain has no zero).
@@ -553,10 +549,33 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
 
 lemma contMDiff_extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) 1 (fun x ↦ TotalSpace.mk' F x (extend I F σ₀ x)) := by
+  --letI b := Basis.ofVectorSpace ℝ F
+  --letI V₀ := localExtensionOn b t x σ₀
+  -- Choose a smooth bump function ψ near `x`, supported within t.baseSet
+  -- and return ψ • V₀ instead.
+  letI t := trivializationAt F V x
+  letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)
+  let ψ := Classical.choose <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
+  -- XXX: extract ψ and hψ as helper declarations, perhaps private to prevent API leakage?
+  let hψ :=
+    Classical.choose_spec <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
+  --let res := ψ.toFun • localExtensionOn b t x σ₀
+  unfold extend
+  -- show ContMDiff I (I.prod 𝓘(ℝ, F)) 1 fun x_1 ↦ TotalSpace.mk' F x_1 (extend I F σ₀ x_1)
   -- use contMDiffOn_localExtensionOn, plus an abstract result about capping with a bump function
-  sorry
-
-#exit
+  -- the latter is easier to just prove directly by hand
+  refine contMDiff_of_contMDiffOn_union_of_isOpen ?_ ?_ ?_ t.open_baseSet (t := (tsupport ψ)ᶜ) ?_
+  · sorry
+  · have aux : ContMDiffOn I (I.prod 𝓘(ℝ, F)) 1
+      (fun x_1 ↦ TotalSpace.mk' F x_1 (0 : V x_1)) (tsupport ↑ψ)ᶜ := by
+      apply ContMDiff.contMDiffOn
+      -- #check contMDiff_of_locally_contMDiffOn for the helper lemmas above
+      -- should be contMDiff_zero_section
+      sorry
+    apply aux.congr fun y hy ↦ ?_
+    simpa [extend] using Or.inl <| image_eq_zero_of_notMem_tsupport hy
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr hψ.1
+  · exact isOpen_compl_iff.mpr <| isClosed_tsupport ψ
 
 /-- The difference of two covariant derivatives, as a tensorial map -/
 noncomputable def difference [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I 1 M]
