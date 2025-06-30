@@ -94,7 +94,7 @@ variable [DecidableEq α] [OrderTop α]
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
 relative-closed set of the form `T ↓∩ Ici a` where `a = ⊓ F`. -/
 open Finset in
-lemma upperClosureFinite_eq (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
+lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ ↑(upperClosure F.toSet) = T ↓∩ Ici (inf F id) := by
   rw [coe_upperClosure]
   induction' F using Finset.induction_on with a F' _ I4
