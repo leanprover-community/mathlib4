@@ -73,7 +73,7 @@ variable {T : Set α}
 
 /- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
 pairwise union. -/
-lemma Ici_union_Ici_eq (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
+lemma preimage_Ici_union_preimage_Ici (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (T ↓∩ Ici a) ∪ (T ↓∩ Ici b) = T ↓∩ Ici (a ⊓ b) := by
   ext p
   constructor <;> intro h
