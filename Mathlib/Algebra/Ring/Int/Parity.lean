@@ -128,6 +128,20 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 
+@[simp]
+theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
+  induction z using wlog_sign with
+  | inv => simp
+  | w n =>
+    cases n
+    · simp
+    · norm_cast
+      simp
+
+@[simp]
+theorem odd_sign_iff {z : ℤ} : Odd z.sign ↔ z ≠ 0 := by
+  rw [← not_even_iff_odd, even_sign_iff]
+
 @[norm_cast, simp]
 theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
   constructor <;> rintro ⟨x, h⟩
