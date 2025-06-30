@@ -42,17 +42,16 @@ theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   rw [vonNeumann]
   apply IsTransitive.sUnion'
   simp_rw [mem_range]
-  rintro _ ⟨a, rfl⟩
+  rintro _ ⟨⟨a, _⟩, rfl⟩
   exact (isTransitive_vonNeumann a).powerset
 termination_by o
-decreasing_by exact a.2
 
-private theorem vonNeumann_mem_of_lt {a b : Ordinal} (h : a < b) : V_ a ∈ V_ b := by
+theorem vonNeumann_mem_of_lt {a b : Ordinal} (h : a < b) : V_ a ∈ V_ b := by
   rw [vonNeumann, mem_sUnion]
   refine ⟨_, mem_range_self ⟨a, h⟩, ?_⟩
   rw [mem_powerset]
 
-private theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : V_ a ⊆ V_ b := by
+theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : V_ a ⊆ V_ b := by
   obtain rfl | h := h.eq_or_lt
   · rfl
   · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
