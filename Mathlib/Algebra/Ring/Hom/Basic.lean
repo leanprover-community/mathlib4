@@ -6,12 +6,4 @@ Authors: Amelia Livingston, Jireh Loreaux
 
 import Mathlib.Algebra.Ring.Hom.Defs
 
-/-!
-# Additional lemmas about homomorphisms of semirings and rings
--/
-
-assert_not_exists RelIso Field
-
-namespace RingHom
-
-end RingHom
+deprecated_module (since := "2025-06-09")
