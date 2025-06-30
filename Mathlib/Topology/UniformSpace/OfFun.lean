@@ -49,4 +49,17 @@ theorem hasBasis_ofFun [AddCommMonoid M] [LinearOrder M]
     (fun ε₁ h₁ ε₂ h₂ => ⟨min ε₁ ε₂, lt_min h₁ h₂, fun _x hx => lt_of_lt_of_le hx (min_le_left _ _),
       fun _x hx => lt_of_lt_of_le hx (min_le_right _ _)⟩) h₀
 
+open scoped Topology in
+def ofFunOfHasBasis [t : TopologicalSpace X] [AddCommMonoid M] [LinearOrder M]
+    (d : X → X → M) (refl : ∀ x, d x x = 0)
+    (symm : ∀ x y, d x y = d y x) (triangle : ∀ x y z, d x z ≤ d x y + d y z)
+    (half : ∀ ε > (0 : M), ∃ δ > (0 : M), ∀ x < δ, ∀ y < δ, x + y < ε)
+    (basis : ∀ x, (𝓝 x).HasBasis (fun ε ↦ 0 < ε) (fun ε ↦ { y | d x y < ε })) :
+    UniformSpace X where
+  toTopologicalSpace := t
+  nhds_eq_comap_uniformity x :=
+    (basis x).eq_of_same_basis <|
+      (hasBasis_ofFun (basis x).ex_mem d refl symm triangle half).comap (Prod.mk x)
+  __ := ofFun d refl symm triangle half
+
 end UniformSpace

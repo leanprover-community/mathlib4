@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
-import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.OfFun
 
@@ -59,6 +58,16 @@ def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x :
   .ofFun edist edist_self edist_comm edist_triangle fun ε ε0 =>
     ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩
+
+def uniformSpaceOfEDistOfHasBasis [TopologicalSpace α] (edist : α → α → ℝ≥0∞)
+    (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z)
+    (basis : ∀ x, (𝓝 x).HasBasis (fun c ↦ 0 < c) (fun c ↦ { y | edist x y < c })) :
+    UniformSpace α :=
+  .ofFunOfHasBasis edist edist_self edist_comm edist_triangle (fun ε ε0 =>
+    ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
+      (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩) basis
 
 /-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
 satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
@@ -286,6 +295,24 @@ the original pseudodistance, by definition. -/
 theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
     edist (⟨x, hx⟩ : Subtype p) ⟨y, hy⟩ = edist x y :=
   rfl
+
+/-- Consider an extended distance on a topological space for which the balls are neighborhoods of
+points, and such that any neighborhood contains a ball. Then we define the emetric
+space structure associated to this distance, with a topology defeq to the initial one. -/
+@[reducible] def PseudoEmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α]
+    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
+    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
+    (h₁ : ∀ x, ∀ c > 0, {y | d x y < c} ∈ 𝓝 x)
+    (h₂ : ∀ x, ∀ s ∈ 𝓝 x, ∃ c > 0, {y | d x y < c} ⊆ s) :
+    PseudoEMetricSpace α where
+  edist := d
+  edist_self := h_self
+  edist_comm := h_comm
+  edist_triangle := h_triangle
+  toUniformSpace :=
+    (uniformSpaceOfEDistOfHasBasis d h_self h_comm h_triangle fun x ↦
+      basis_sets (𝓝 x) |>.to_hasBasis' (h₂ x) (h₁ x))
+  uniformity_edist := rfl
 
 namespace MulOpposite
 
@@ -656,33 +683,6 @@ abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricS
   edist_triangle := edist_triangle
   toUniformSpace := m.toUniformSpace.replaceTopology H
   uniformity_edist := PseudoEMetricSpace.uniformity_edist
-
-/-- Consider an extended distance on a topological space for which the balls are neighborhoods of
-points, and such that any neighborhood contains a ball. Then we define the emetric
-space structure associated to this distance, with a topology defeq to the initial one. -/
-@[reducible] def EmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α] [T0Space α]
-    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
-    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (h₁ : ∀ x, ∀ c > 0, {y | d x y < c} ∈ 𝓝 x)
-    (h₂ : ∀ x, ∀ s ∈ 𝓝 x, ∃ c > 0, {y | d x y < c} ⊆ s) :
-    EMetricSpace α where
-  edist := d
-  edist_self := h_self
-  edist_comm := h_comm
-  edist_triangle := h_triangle
-  eq_of_edist_eq_zero := by
-    intro x y hxy
-    contrapose! hxy
-    intro hd
-    rcases exists_isOpen_xor'_mem hxy with ⟨u, u_open, hu⟩
-    rcases hu with ⟨ux, uy⟩ | ⟨uy, ux⟩
-    · rcases h₂ x _ (u_open.mem_nhds ux) with ⟨c, c_pos, hc⟩
-      exact uy (hc (by simpa [hd] using c_pos))
-    · rcases h₂ y _ (u_open.mem_nhds uy) with ⟨c, c_pos, hc⟩
-      exact ux (hc (by simpa [hd, h_comm] using c_pos))
-  toUniformSpace := (uniformSpaceOfEDist d h_self h_comm h_triangle).replaceTopology
-    (topologicalSpace_eq_uniformSpaceOfEdist_toTopologicalSpace d h_self h_comm h_triangle h₁ h₂)
-  uniformity_edist := rfl
 
 /-- The extended metric induced by an injective function taking values in an emetric space.
 See Note [reducible non-instances]. -/
