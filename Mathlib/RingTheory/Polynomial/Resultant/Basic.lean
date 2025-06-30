@@ -74,10 +74,8 @@ def resultant (f g : R[X]) (m : ℕ := f.natDegree) (n : ℕ := g.natDegree) : R
 
 variable (f g : R[X]) (m n : ℕ)
 
-lemma resultant_def : resultant f g m n = (sylvester f g m n).det := rfl
-
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
-@[simp] theorem resultant_C_zero (a : R) : resultant f (C a) m 0 = a ^ m := by simp [resultant_def]
+@[simp] theorem resultant_C_zero (a : R) : resultant f (C a) m 0 = a ^ m := by simp [resultant]
 
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
 theorem resultant_C (a : R) : resultant f (C a) m = a ^ m := by simp
