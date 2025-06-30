@@ -8,13 +8,15 @@ import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 /-!
 # The low-degree homology of a `k`-linear `G`-representation
 
-Let `k` be a commutative ring and `G` a group. This file will contain specialised API for
+Let `k` be a commutative ring and `G` a group. This file contains specialised API for
 the cycles and group homology  of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 In `RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group homology
 of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
-`(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree. Here, meanwhile, we will define
-the one and two cycles and boundaries as submodules of `G →₀ A` and `G × G →₀ A`, and provide maps
-to `H1` and `H2`.
+`(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
+
+## TODO
+  * Define the one and two cycles and boundaries as submodules of `G →₀ A` and `G × G →₀ A`, and
+  provide maps to `H1` and `H2`.
 
 -/
 
