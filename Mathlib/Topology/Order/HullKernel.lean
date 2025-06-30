@@ -188,17 +188,9 @@ connection betwen the subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => toDual (sInf (S : Set α))) (fun a => T ↓∩ Ici (ofDual a)) := fun S a => by
-  constructor
-  · intro h b hbS
-    rw [mem_preimage, mem_Ici]
-    rw [← ofDual_le_ofDual] at h
-    simp only [toDual_sInf, ofDual_sSup, le_sInf_iff, mem_preimage, ofDual_toDual, mem_image,
-      Subtype.exists, exists_and_right, exists_eq_right, forall_exists_index] at h
-    exact h _ (Subtype.coe_prop b) hbS
-  · intro h
-    simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
+  simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
       exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
-    exact fun b _ hbS => h hbS
+  exact ⟨fun h b hbS => h _ (Subtype.coe_prop b) hbS, fun h b _ hbS => h hbS⟩
 
 lemma gc_closureOperator_eq (S : Set T) : gc.closureOperator S = T ↓∩ Ici (sInf S) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
@@ -232,7 +224,7 @@ lemma kernel_hull_eq (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Se
 lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
     gc.closureOperator C = C := by
-  obtain ⟨a, ha⟩ := ((isClosed_iff hT C).mp h)
+  obtain ⟨a, ha⟩ := (isClosed_iff hT C).mp h
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq, ha,
     (kernel_hull_eq hG)]
