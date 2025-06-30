@@ -433,8 +433,9 @@ protected theorem range {T : M →ₗ[S] M} {U : Submodule S M}
   ext x
   exact ⟨fun ⟨y, hy⟩ => hy ▸ h.map_mem y, fun hx => ⟨x, h.map_id x hx⟩⟩
 
-protected theorem top (S M : Type*) [Semiring S] [AddCommMonoid M] [Module S M] :
-    IsProj (⊤ : Submodule S M) (id (R := S)) := ⟨fun _ ↦ trivial, fun _ ↦ congrFun rfl⟩
+variable (S M) in
+protected theorem top : IsProj (⊤ : Submodule S M) (id (R := S)) :=
+  ⟨fun _ ↦ trivial, fun _ ↦ congrFun rfl⟩
 
 theorem subtype_comp_codRestrict {U : Submodule S M} {f : M →ₗ[S] M} (hf : IsProj U f) :
     (Submodule.subtype U).comp hf.codRestrict = f := rfl
