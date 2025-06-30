@@ -6,6 +6,7 @@ Authors: Pim Otte
 
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
 # Results using cardinal arithmetic
@@ -35,6 +36,15 @@ theorem Finset.exists_disjoint_union_of_even_card_iff [DecidableEq α] (s : Fins
   ⟨Finset.exists_disjoint_union_of_even_card, by
     rintro ⟨t, u, rfl, hdtu, hctu⟩
     simp_all⟩
+
+@[simp]
+lemma finsum_one {s : Set α} : ∑ᶠ i ∈ s, 1 = s.ncard := by
+  obtain hs | hs := s.infinite_or_finite
+  · rw [hs.ncard]
+    by_cases h : 1 = 0
+    · simp [h]
+    · exact finsum_mem_eq_zero_of_infinite (by simpa [Function.support_const h])
+  · simp [finsum_mem_eq_finite_toFinset_sum _ hs, Set.ncard_eq_toFinset_card s hs]
 
 namespace Set
 
@@ -78,5 +88,37 @@ theorem exists_union_disjoint_cardinal_eq_iff (s : Set α) :
     rw [ncard_union_eq hdtu hfin.1 hfin.2, hn]
     exact Even.add_self u.ncard
   · simp [hnfin.ncard]
+
+open scoped Function
+
+variable {ι : Type*}
+
+lemma ncard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs : ∀ i ∈ t, (s i).Finite)
+    (h : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).ncard = ∑ᶠ i ∈ t, (s i).ncard := by
+  rw [← finsum_one, finsum_mem_biUnion h ht hs, finsum_mem_congr rfl fun i hi ↦ finsum_one]
+
+lemma ncard_iUnion [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).Finite)
+    (h : Pairwise (Disjoint on s)) : (⋃ i, s i).ncard = ∑ᶠ i : ι, (s i).ncard := by
+  rw [← finsum_mem_univ, ← Set.ncard_biUnion finite_univ (by simpa) (fun _ _ _ _ hab ↦ h hab)]
+  simp
+
+lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
+    (hs : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).encard = ∑ᶠ i ∈ t, (s i).encard := by
+  classical
+  by_cases h : ∀ i ∈ t, (s i).Finite
+  · have : (⋃ i ∈ t, s i).Finite := ht.biUnion (fun i hi ↦ h i hi)
+    rw [← this.cast_ncard_eq, ncard_biUnion ht h hs,
+      ← finsum_mem_congr rfl fun i hi ↦ (h i hi).cast_ncard_eq, Nat.cast_finsum_mem ht]
+  · simp only [not_forall] at h
+    obtain ⟨i, hi, (hn : (s i).Infinite)⟩ := h
+    rw [← Set.insert_diff_self_of_mem hi,
+      finsum_mem_insert _ (not_mem_diff_of_mem <| mem_singleton i) ht.diff]
+    simp [hn]
+
+/-- See `Set.encard_iUnion` for a `tsum` version without `Finite ι`. -/
+lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :
+    (⋃ i, s i).encard = ∑ᶠ i, (s i).encard := by
+  rw [← finsum_mem_univ, ← finite_univ.encard_biUnion (fun a _ b _ hab ↦ hs hab)]
+  simp
 
 end Set
