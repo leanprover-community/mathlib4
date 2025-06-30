@@ -893,4 +893,6 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
 
+def testConstant : Nat := 42
+
 end SimplexCategory
