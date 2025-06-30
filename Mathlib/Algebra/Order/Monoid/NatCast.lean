@@ -71,6 +71,11 @@ variable [AddLeftMono α]
   rw [← three_add_one_eq_four]
   exact lt_add_of_lt_of_nonneg zero_lt_three zero_le_one
 
+/-- See `zero_lt_five'` for a version with the type explicit. -/
+@[simp] lemma zero_lt_five : (0 : α) < 5 := by
+  rw [← four_add_one_eq_five]
+  exact lt_add_of_lt_of_nonneg zero_lt_four zero_le_one
+
 variable (α)
 
 /-- See `zero_lt_two` for a version with the type implicit. -/
@@ -82,9 +87,13 @@ lemma zero_lt_three' : (0 : α) < 3 := zero_lt_three
 /-- See `zero_lt_four` for a version with the type implicit. -/
 lemma zero_lt_four' : (0 : α) < 4 := zero_lt_four
 
+/-- See `zero_lt_five` for a version with the type implicit. -/
+lemma zero_lt_five' : (0 : α) < 5 := zero_lt_five
+
 instance ZeroLEOneClass.neZero.two : NeZero (2 : α) := ⟨zero_lt_two.ne'⟩
 instance ZeroLEOneClass.neZero.three : NeZero (3 : α) := ⟨zero_lt_three.ne'⟩
 instance ZeroLEOneClass.neZero.four : NeZero (4 : α) := ⟨zero_lt_four.ne'⟩
+instance ZeroLEOneClass.neZero.five : NeZero (5 : α) := ⟨zero_lt_five.ne'⟩
 
 end
 
