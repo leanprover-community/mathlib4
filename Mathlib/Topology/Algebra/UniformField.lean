@@ -207,7 +207,7 @@ theorem IsUniformInducing.completableTopField
   refine CompletableTopField.mk (fun F F_cau inf_F => ?_)
   rw [← IsUniformInducing.cauchy_map_iff hf] at F_cau ⊢
   have h_comm : (f ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ f := by
-    ext; simp only [Function.comp_apply, map_inv₀, Subfield.coe_inv]
+    ext; simp only [Function.comp_apply, map_inv₀]
   rw [Filter.map_comm h_comm]
   apply CompletableTopField.nice _ F_cau
   rw [← Filter.push_pull', ← map_zero f, ← hf.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]

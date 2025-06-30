@@ -497,16 +497,12 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
     refine (mem_filter.mpr ⟨hi a h₁ _, ?_⟩)
     specialize h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     rwa [← h]
-  · intros a₁ ha₁ a₂ ha₂
-    refine (mem_filter.mp ha₁).elim fun _ha₁₁ _ha₁₂ ↦ ?_
-    refine (mem_filter.mp ha₂).elim fun _ha₂₁ _ha₂₂ ↦ ?_
-    apply i_inj
+  · solve_by_elim
   · intros b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
     obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     exact ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, eq⟩
-  · refine (fun a ha => (mem_filter.mp ha).elim fun h₁ h₂ ↦ ?_)
-    exact h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
+  · solve_by_elim
 
 @[to_additive]
 theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s, f a ≠ 1 := by
@@ -1111,5 +1107,5 @@ theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
   induction s using Finset.cons_induction with
   | empty => simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
   | cons i s his IH =>
-    simp only [Finset.sum_cons, not_false_iff]
+    simp only [Finset.sum_cons]
     exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)

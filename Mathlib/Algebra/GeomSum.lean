@@ -50,7 +50,7 @@ theorem geom_sum_succ' {x : R} {n : ℕ} :
 theorem geom_sum_zero (x : R) : ∑ i ∈ range 0, x ^ i = 0 :=
   rfl
 
-theorem geom_sum_one (x : R) : ∑ i ∈ range 1, x ^ i = 1 := by simp [geom_sum_succ']
+theorem geom_sum_one (x : R) : ∑ i ∈ range 1, x ^ i = 1 := by simp
 
 @[simp]
 theorem geom_sum_two {x : R} : ∑ i ∈ range 2, x ^ i = x + 1 := by simp [geom_sum_succ']
@@ -150,7 +150,7 @@ protected theorem Commute.geom_sum₂_mul [Ring R] {x y : R} (h : Commute x y) (
 theorem Commute.mul_neg_geom_sum₂ [Ring R] {x y : R} (h : Commute x y) (n : ℕ) :
     ((y - x) * ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) = y ^ n - x ^ n := by
   apply op_injective
-  simp only [op_mul, op_sub, op_geom_sum₂, op_pow]
+  simp only [op_mul, op_sub, op_pow]
   simp [(Commute.op h.symm).geom_sum₂_mul n]
 
 theorem Commute.mul_geom_sum₂ [Ring R] {x y : R} (h : Commute x y) (n : ℕ) :
@@ -251,7 +251,7 @@ protected theorem Commute.geom_sum₂_comm [Semiring R] {x y : R} (n : ℕ)
     (h : Commute x y) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = ∑ i ∈ range n, y ^ i * x ^ (n - 1 - i) := by
   cases n; · simp
-  simp only [Nat.succ_eq_add_one, Nat.add_sub_cancel]
+  simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
   simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
@@ -506,7 +506,7 @@ theorem geom_sum_alternating_of_lt_neg_one [Ring R] [PartialOrder R] [IsStrictOr
     if Even n then (∑ i ∈ range n, x ^ i) < 0 else 1 < ∑ i ∈ range n, x ^ i := by
   have hx0 : x < 0 := (le_add_of_nonneg_right zero_le_one).trans_lt hx
   refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
-  · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx, even_two]
+  · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, hx, even_two]
   clear hn
   intro n _ ihn
   simp only [Nat.even_add_one, geom_sum_succ]

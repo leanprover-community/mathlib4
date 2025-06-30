@@ -717,8 +717,7 @@ lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M) :
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
-  simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span, Set.mem_image,
-    Set.mem_setOf_eq]
+  simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span]
   congr; ext t
   constructor
   · rintro ⟨_, ⟨⟨m, n, rfl⟩, rfl⟩⟩
@@ -801,7 +800,7 @@ theorem map_smul_left (r : R) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map (r �
 
 theorem map_smul_right (r : R) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map f (r • g) = r • map f g := by
   ext
-  simp only [smul_tmul, compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [compr₂_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
 
 variable (R M N P Q)
 
@@ -1107,22 +1106,22 @@ theorem rTensor_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
 @[simp]
 theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) :
     (map f g).comp (f'.rTensor _) = map (f.comp f') g := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [rTensor, ← map_comp, comp_id]
 
 @[simp]
 theorem map_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) :
     (map f g).comp (g'.lTensor _) = map f (g.comp g') := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [lTensor, ← map_comp, comp_id]
 
 @[simp]
 theorem rTensor_comp_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (f'.rTensor _).comp (map f g) = map (f'.comp f) g := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [rTensor, ← map_comp, id_comp]
 
 @[simp]
 theorem lTensor_comp_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g'.lTensor _).comp (map f g) = map f (g'.comp g) := by
-  simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
+  simp only [lTensor, ← map_comp, id_comp]
 
 variable {M}
 
@@ -1289,8 +1288,8 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     sub_eq_add_neg := fun _ _ => rfl
     neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
     zsmul := fun n v => n • v
-    zsmul_zero' := by simp [TensorProduct.zero_smul]
-    zsmul_succ' := by simp [add_comm, TensorProduct.one_smul, TensorProduct.add_smul]
+    zsmul_zero' := by simp
+    zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
       rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
