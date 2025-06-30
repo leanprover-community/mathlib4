@@ -202,7 +202,6 @@ lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := b
 
 end PartialOrder
 
-
 /-- A star projection operator is positive.
 
 The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
