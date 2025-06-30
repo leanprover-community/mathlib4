@@ -13,7 +13,7 @@ import Mathlib.Topology.Sets.Closeds
 /-!
 # Hull-Kernel Topology
 
-Let `α` be a `CompleteLattice` and let `T` be a subset of `α`. The relative `Topology.lower` on `T`
+Let `α` be a `CompleteLattice` and let `T` be a subset of `α`. The relative topology (`Topology.lower`) on `T`
 takes on a particularly simple form when every element of `T` is `InfPrime` in `α`. In this case,
 the relative-open sets are exactly the sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.
 
