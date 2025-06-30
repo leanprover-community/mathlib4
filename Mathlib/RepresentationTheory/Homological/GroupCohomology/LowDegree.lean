@@ -391,8 +391,7 @@ theorem mem_cocycles₁_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ cocycles₁ A :=
   (mem_cocycles₁_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
-      cocycles₁_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
-      add_comm (f (Additive.ofMul g))]
+      isTrivial_apply A.ρ g (f (Additive.ofMul h)), add_comm (f (Additive.ofMul g))]
 
 @[deprecated (since := "2025-06-25")]
 alias mem_oneCocycles_of_addMonoidHom := mem_cocycles₁_of_addMonoidHom
@@ -1101,7 +1100,7 @@ noncomputable alias isoH0 := H0Iso
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H0Iso_hom  :
     π A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
-  simp [← cancel_mono (shortComplexH0 A).f, H0Iso]
+  simp [H0Iso]
 
 @[deprecated (since := "2025-06-12")]
 alias groupCohomologyπ_comp_isoH0_hom := π_comp_H0Iso_hom

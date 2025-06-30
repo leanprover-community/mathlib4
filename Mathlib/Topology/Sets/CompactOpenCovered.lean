@@ -89,7 +89,7 @@ lemma of_iUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : s
     rwa [iff_isCompactOpenCovered_sigmaMk, iff_of_unique] at this
   choose V hVeq hVc using this
   refine ⟨⨆ (t : s), V t t.2, ?_, ?_⟩
-  · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_iSup, Opens.coe_mk]
+  · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk]
     have : Finite s := hf
     exact isCompact_iUnion (fun _ ↦ hVeq _ _)
   · simp [Set.image_iUnion, ← hs]

@@ -87,7 +87,7 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
   use (Units.mk0 (aux f z) hz)⁻¹
   intro g
 /- Then the equality follows from the hypothesis that `f` is a 1-cocycle. -/
-  simp only [IsMulCocycle₁, IsMulCoboundary₁, AlgEquiv.smul_units_def,
+  simp only [IsMulCocycle₁, AlgEquiv.smul_units_def,
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
     Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]

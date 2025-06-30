@@ -72,7 +72,7 @@ lemma condVar_const (hm : m ≤ m₀) (c : ℝ) : Var[fun _ ↦ c; μ | m] = 0 :
   obtain rfl | hc := eq_or_ne c 0
   · simp [← Pi.zero_def]
   by_cases hμm : IsFiniteMeasure μ
-  · simp [condVar, hm, Pi.pow_def]
+  · simp [condVar, hm]
   · simp [condVar, condExp_of_not_integrable, integrable_const_iff_isFiniteMeasure hc,
       integrable_const_iff_isFiniteMeasure <| pow_ne_zero _ hc, hμm, Pi.pow_def]
 
@@ -115,7 +115,7 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
           ((hX.integrable one_le_two).const_mul _), condExp_ofNat (m := m) 2 X]
         with ω hω₀ hω₁ hω₂ hω₃
-      simp [hω₀, hω₁, hω₂, hω₃, condExp_const,
+      simp [hω₀, hω₁, hω₂, hω₃,
         condExp_of_stronglyMeasurable hm (stronglyMeasurable_condExp.pow _) aux₂]
       simp [mul_assoc, sq]
     _ = μ[X ^ 2 | m] - μ[X | m] ^ 2 := by ring
@@ -168,7 +168,7 @@ lemma condVar_smul (c : ℝ) (X : Ω → ℝ) : Var[c • X; μ | m] =ᵐ[μ] c 
 @[simp] lemma condVar_neg (X : Ω → ℝ) : Var[-X; μ | m] =ᵐ[μ] Var[X; μ | m] := by
   refine condExp_congr_ae ?_
   filter_upwards [condExp_neg (m := m) X] with ω hω
-  simp [condVar, hω]
+  simp [hω]
   ring
 
 end ProbabilityTheory

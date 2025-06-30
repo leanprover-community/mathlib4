@@ -202,7 +202,7 @@ alias cochainsMap_f_0_comp_zeroCochainsLequiv := cochainsMap_f_0_comp_cochainsIs
 lemma cochainsMap_f_1_comp_cochainsIso₁ :
     (cochainsMap f φ).f 1 ≫ (cochainsIso₁ B).hom = (cochainsIso₁ A).hom ≫ f₁ f φ := by
   ext x
-  simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
+  simp only [cochainsMap_f]
   rfl
 
 @[deprecated (since := "2025-06-25")]
@@ -378,7 +378,7 @@ theorem mapCocycles₁_one (φ : (Action.res _ 1).obj A ⟶ B) :
     mapCocycles₁ 1 φ = 0 := by
   rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, cyclesMap'_i]
   refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
-  simp [mapShortComplexH1, shortComplexH1, moduleCatMk, Pi.zero_apply y]
+  simp [mapShortComplexH1, shortComplexH1, Pi.zero_apply y]
 
 @[deprecated (since := "2025-06-25")] alias mapOneCocycles_one := mapCocycles₁_one
 
