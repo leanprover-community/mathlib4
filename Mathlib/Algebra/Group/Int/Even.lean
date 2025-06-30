@@ -85,4 +85,15 @@ example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
 
 example : ¬Even (25394535 : ℤ) := by decide
 
+@[simp]
+theorem isSquare_sign_iff {z : ℤ} : IsSquare z.sign ↔ 0 ≤ z := by
+  induction z using Int.induction_on with
+  | zero => simpa using ⟨0, by simp⟩
+  | succ => norm_cast; simp
+  | pred =>
+    rw [sign_eq_neg_one_of_neg (by omega), ← neg_add', Int.neg_nonneg]
+    norm_cast
+    simp only [reduceNeg, le_zero_eq, Nat.add_eq_zero, succ_ne_self, and_false, iff_false]
+    rintro ⟨a | a, ⟨⟩⟩
+
 end Int

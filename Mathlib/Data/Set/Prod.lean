@@ -931,10 +931,7 @@ theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type*) (t : 
     (sumPiEquivProdPi π).symm ⁻¹' univ.pi t =
     univ.pi (fun i => t (.inl i)) ×ˢ univ.pi fun i => t (.inr i) := by
   ext
-  simp_rw [mem_preimage, mem_prod, mem_univ_pi, sumPiEquivProdPi_symm_apply]
-  constructor
-  · intro h; constructor <;> intro i <;> apply h
-  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
+  simp
 
 end Equiv
 

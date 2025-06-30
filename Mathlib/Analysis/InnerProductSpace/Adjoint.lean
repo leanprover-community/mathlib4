@@ -479,16 +479,14 @@ theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
 
 theorem isSelfAdjoint_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
     IsSelfAdjoint T.toContinuousLinearMap ↔ IsSelfAdjoint T := by
-  simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
-      coe_toContinuousLinearMap_symm,
-      ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
-  rfl
+  simp [IsSelfAdjoint, star, adjoint,
+    ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
 
 theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
     IsSelfAdjoint T.toLinearMap ↔ IsSelfAdjoint T := by
   simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
-      coe_toContinuousLinearMap_symm,
-      ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
+    coe_toContinuousLinearMap_symm,
+    ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
   rfl
 
 end LinearMap

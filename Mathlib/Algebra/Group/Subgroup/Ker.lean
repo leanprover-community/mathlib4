@@ -177,8 +177,7 @@ def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) :
     left_inv := h
     right_inv := by
       rintro ⟨x, y, rfl⟩
-      apply Subtype.ext
-      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coe_subtype, Subtype.coe_mk, h] }
+      solve_by_elim }
 
 @[to_additive (attr := simp)]
 theorem ofLeftInverse_apply {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) (x : G) :
@@ -292,6 +291,12 @@ theorem ker_one : (1 : G →* M).ker = ⊤ :=
 @[to_additive (attr := simp)]
 theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
   rfl
+
+@[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
+  simp_rw [ker, ← top_le_iff, SetLike.le_def, f.ext_iff, Subgroup.mem_top, true_imp_iff]; rfl
+
+@[to_additive] theorem range_eq_bot_iff {f : G →* G'} : f.range = ⊥ ↔ f = 1 := by
+  rw [← le_bot_iff, f.range_eq_map, map_le_iff_le_comap, top_le_iff, comap_bot, ker_eq_top_iff]
 
 @[to_additive]
 theorem ker_eq_bot_iff (f : G →* M) : f.ker = ⊥ ↔ Function.Injective f :=
