@@ -194,6 +194,7 @@ import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.LinearAlgebra
+import Mathlib.Algebra.Category.Ring.Topology
 import Mathlib.Algebra.Category.Ring.Under.Basic
 import Mathlib.Algebra.Category.Ring.Under.Limits
 import Mathlib.Algebra.Category.Semigrp.Basic
@@ -470,6 +471,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.ProdHom
+import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Subgroup
@@ -1110,6 +1112,7 @@ import Mathlib.Algebra.Star.Rat
 import Mathlib.Algebra.Star.RingQuot
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Star.StarProjection
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Subsemiring
@@ -3015,6 +3018,7 @@ import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Notation
+import Mathlib.Data.Finsupp.Option
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finsupp.Pointwise
@@ -3769,6 +3773,7 @@ import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.GroupTheory.GroupAction.Iwasawa
+import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
 import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pointwise
@@ -5073,6 +5078,7 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.RepresentationTheory.Induced
 import Mathlib.RepresentationTheory.Invariants
@@ -5158,6 +5164,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.DividedPowers.Basic
 import Mathlib.RingTheory.DividedPowers.DPMorphism
+import Mathlib.RingTheory.DividedPowers.SubDPIdeal
 import Mathlib.RingTheory.DualNumber
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EssentialFiniteness
@@ -5612,6 +5619,7 @@ import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
+import Mathlib.RingTheory.ZMod.UnitsCyclic
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Basic
@@ -5958,6 +5966,7 @@ import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.Widget.GCongr
 import Mathlib.Tactic.Widget.InteractiveUnfold
+import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram

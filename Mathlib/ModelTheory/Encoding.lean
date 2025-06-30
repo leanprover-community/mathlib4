@@ -227,8 +227,8 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
   | equal =>
     intro l
     rw [listEncode, cons_append, cons_append, listDecode, dif_pos]
-    · simp only [eq_mp_eq_cast, cast_eq, eq_self_iff_true, heq_iff_eq, and_self_iff, nil_append]
-    · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
+    · simp only [eq_mp_eq_cast, cast_eq, nil_append]
+    · simp only
   | @rel φ_n φ_l φ_R ts =>
     intro l
     rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]

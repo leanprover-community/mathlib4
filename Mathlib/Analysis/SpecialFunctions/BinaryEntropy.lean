@@ -317,9 +317,9 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
   filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
-  · simp_all only [zero_add, mem_Ioo, ne_eq]
+  · simp_all only [mem_Ioo, ne_eq]
     linarith
-  · simp_all only [zero_add, mem_Ioo, ne_eq]
+  · simp_all only [mem_Ioo, ne_eq]
     linarith [two_inv_lt_one (α := ℝ)]
 
 /-- Second derivative of q-ary entropy. -/
@@ -340,7 +340,7 @@ lemma deriv2_qaryEntropy :
           field_simp [sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
-        simp only [ne_eq, differentiableAt_const]
+        simp only [differentiableAt_const]
         exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr xne1.symm)
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
@@ -353,7 +353,7 @@ lemma deriv2_qaryEntropy :
     · intro h
       have contAt := h.continuousAt
       cases this <;> simp_all [
-        not_continuousAt_deriv_qaryEntropy_zero, not_continuousAt_deriv_qaryEntropy_one, contAt]
+        not_continuousAt_deriv_qaryEntropy_zero, not_continuousAt_deriv_qaryEntropy_one]
 
 lemma deriv2_binEntropy : deriv^[2] binEntropy p = -1 / (p * (1 - p)) :=
   qaryEntropy_two ▸ deriv2_qaryEntropy
@@ -370,7 +370,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
     have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
     have zero_le_qinv : 0 < (q : ℝ)⁻¹ := by positivity
     have : 0 < 1 - p := by
-      simp only [sub_pos, hp.2]
+      simp only [sub_pos]
       have p_lt_1_minus_qinv : p < 1 - (q : ℝ)⁻¹ := by
         simp_all only [inv_pos, interior_Icc, mem_Ioo, one_div]
       linarith
@@ -397,13 +397,13 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
   · intro p hp
     have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
     have qinv_lt_1 : (q : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ (by linarith)
-    have zero_lt_1_sub_p : 0 < 1 - p := by simp_all only [sub_pos, hp.2, interior_Icc, mem_Ioo]
+    have zero_lt_1_sub_p : 0 < 1 - p := by simp_all only [sub_pos, interior_Icc, mem_Ioo]
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
     · field_simp
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
-      · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left]
+      · simp_all only [mem_Ioi]
         linarith
       · have qpos : 0 < (q : ℝ) := by positivity
         ring_nf
@@ -414,7 +414,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
           have : (q : ℝ) ≠ 0 := (ne_of_lt qpos).symm
           have asdfasfd : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
             _ = q - (q : ℝ)⁻¹ * (q : ℝ) := by ring
-            _ = q - 1 := by simp_all only [ne_eq, isUnit_iff_ne_zero, Rat.cast_eq_zero,
+            _ = q - 1 := by simp_all only [ne_eq, isUnit_iff_ne_zero,
               not_false_eq_true, IsUnit.inv_mul_cancel]
           rwa [asdfasfd] at tmp
         nlinarith
@@ -440,7 +440,7 @@ lemma strictConcaveOn_qaryEntropy : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q
   · simp_all only [interior_Icc, mem_Ioo]
     apply div_neg_of_neg_of_pos
     · norm_num [show 0 < log 2 by positivity]
-    · simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hp]
+    · simp_all only [mul_pos_iff_of_pos_left, sub_pos]
 
 lemma strictConcave_binEntropy : StrictConcaveOn ℝ (Icc 0 1) binEntropy :=
   qaryEntropy_two ▸ strictConcaveOn_qaryEntropy

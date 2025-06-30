@@ -46,7 +46,7 @@ theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
     l.eval C = πJ C s (l.eval (π C (· ∈ s))) := by
   ext f
   simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
-    (continuous_projRestrict C (· ∈ s)), LocallyConstant.coe_comap, Function.comp_apply]
+    LocallyConstant.coe_comap, Function.comp_apply]
   exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood  C (· ∈ s) hl)) _).symm
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
@@ -116,7 +116,7 @@ theorem one_sub_e_mem_of_false {x y : (π C (· ∈ s))} {a : I} (ha : y.val a =
     (hx : x.val a = false) : 1 - e (π C (· ∈ s)) a ∈ factors C s x := by
   simp only [factors, List.mem_map, Finset.mem_sort]
   use a
-  simp only [hx, ite_false, and_true]
+  simp only [hx]
   rcases y with ⟨_, z, hz, rfl⟩
   aesop (add simp Proj)
 
