@@ -176,7 +176,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
   induction k with
   | zero =>
     simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
-      zero_eq, zero_add, range_one, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
+      zero_add, range_one, sum_singleton, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_card (slice_subset_falling _ _)
   | succ k ih =>

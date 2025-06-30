@@ -188,7 +188,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq, union_self, subset_inter_iff,
+      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq,
         mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
       by_contra hCon
       push_neg at hCon
@@ -360,12 +360,12 @@ lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V 
 lemma restrict_eqOn [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) D V := by
   intro _ _
-  simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff]
+  simp_all [restrict_apply]
 
 lemma restrict_eqOn_compl [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) 0 Vᶜ := by
   intro _ hx
-  simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff, hx]
+  simp_all
 
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :

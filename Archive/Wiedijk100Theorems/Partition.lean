@@ -117,8 +117,8 @@ theorem two_series (i : ℕ) [Semiring α] :
   simp only [coeff_indicator, coeff_one, coeff_X_pow, Set.mem_insert_iff, Set.mem_singleton_iff,
     map_add]
   rcases n with - | d
-  · simp [(Nat.succ_ne_zero i).symm]
-  · simp [Nat.succ_ne_zero d]
+  · simp
+  · simp
 
 theorem num_series' [Field α] (i : ℕ) :
     (1 - (X : PowerSeries α) ^ (i + 1))⁻¹ = indicatorSeries α {k | i + 1 ∣ k} := by
@@ -171,8 +171,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       coeff α n (∏ i ∈ s, indicatorSeries α ((· * i) '' c i)) := by
   simp_rw [coeff_prod, coeff_indicator, prod_boole, sum_boole]
   apply congr_arg
-  simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
-    Set.mem_image, not_exists]
+  simp only [Set.mem_image]
   set φ : (a : Nat.Partition n) →
     a ∈ filter (fun p ↦ (∀ (j : ℕ), Multiset.count j p.parts ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) univ →
     ℕ →₀ ℕ := fun p _ => {
@@ -181,29 +180,28 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       mem_support_toFun := fun a => by
         simp only [smul_eq_mul, ne_eq, mul_eq_zero, Multiset.count_eq_zero]
         rw [not_or, not_not]
-        simp only [Multiset.mem_toFinset, not_not, mem_filter] }
+        simp only [Multiset.mem_toFinset, mem_filter] }
   refine Finset.card_bij φ ?_ ?_ ?_
   · intro a ha
-    simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
+    simp only [φ, mem_filter]
     rw [mem_finsuppAntidiag]
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
-    simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
-      mem_filter, true_and] at ha
+    simp only [mem_univ, mem_filter, true_and] at ha
     refine ⟨⟨?_, fun i ↦ ?_⟩, fun i _ ↦ ⟨a.parts.count i, ha.1 i, rfl⟩⟩
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
       · simp only [smul_eq_mul]
       · intro i
-        simp only [Multiset.mem_toFinset, not_not, mem_filter]
+        simp only [Multiset.mem_toFinset]
         apply ha.2
-    · simp only [ne_eq, Multiset.mem_toFinset, not_not, mem_filter, and_imp]
+    · simp only [Multiset.mem_toFinset, mem_filter, and_imp]
       exact fun hi _ ↦ ha.2 i hi
   · dsimp only
     intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
     simp only [true_and, mem_univ, mem_filter] at hp₁ hp₂
     ext i
-    simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
+    simp only [φ, ne_eq, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
     · rw [hi]
       rw [Multiset.count_eq_zero_of_notMem]
@@ -219,7 +217,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     simp only [mem_finsuppAntidiag] at hf'
     refine ⟨⟨∑ i ∈ s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
-      simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
+      simp only [mem_sum] at hi
       rcases hi with ⟨t, ht, z⟩
       apply hs
       rwa [Multiset.eq_of_mem_replicate z]
@@ -241,8 +239,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rwa [Multiset.eq_of_mem_replicate hj₂]
     · ext i
       simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq']
-      simp only [ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, ite_mul,
-        zero_mul, Finsupp.coe_mk]
+      simp only [ne_eq, smul_eq_mul, ite_mul, zero_mul, Finsupp.coe_mk]
       split_ifs with h
       · apply Nat.div_mul_cancel
         rcases hf₄ i h with ⟨w, _, hw₂⟩
@@ -282,7 +279,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
   intro i hi
   have hin : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi
-  simp only [mkOdd, exists_prop, mem_range, Function.Embedding.coeFn_mk, mem_map]
+  simp only [mkOdd, mem_range, Function.Embedding.coeFn_mk, mem_map]
   constructor
   · intro hi₂
     have := Nat.mod_add_div i 2
@@ -324,7 +321,7 @@ theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
   intro i hi
   have : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi
-  simp only [mkOdd, exists_prop, mem_range, Function.Embedding.coeFn_mk, mem_map]
+  simp only [mem_range, Function.Embedding.coeFn_mk, mem_map]
   refine ⟨i - 1, ?_, Nat.succ_pred_eq_of_pos (p.parts_pos hi)⟩
   rw [tsub_lt_iff_right (Nat.one_le_iff_ne_zero.mpr (p.parts_pos hi).ne')]
   exact lt_of_le_of_lt this h
