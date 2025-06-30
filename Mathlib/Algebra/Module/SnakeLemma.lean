@@ -196,7 +196,7 @@ lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π
       g₂.comp_apply, hy, hg.apply_apply_eq_zero])
     exact ⟨z, δ_eq i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁ _ _ hz.symm _ hy.symm⟩
   · rintro ⟨x, rfl⟩
-    simp only [δ, id_eq, coe_mk, AddHom.coe_mk]
+    simp only [δ, coe_mk, AddHom.coe_mk]
     rw [← G.comp_apply, hF, π₂.comp_apply, H₂, hπ₂.apply_apply_eq_zero]
 
 /--

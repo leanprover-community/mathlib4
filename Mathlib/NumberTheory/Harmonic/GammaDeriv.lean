@@ -202,7 +202,7 @@ lemma hasDerivAt_Gammaℂ_one : HasDerivAt Gammaℂ (-(γ + log (2 * π)) / π) 
     rw [mul_neg_one, mul_neg, cpow_neg_one, ← div_eq_inv_mul, ← mul_div_assoc,
       mul_div_mul_left _ _ two_ne_zero, neg_div]
   have := this.mul hasDerivAt_Gamma_one
-  simp only [f] at this
+  simp only at this
   rwa [Gamma_one, mul_one, cpow_neg_one, ← div_eq_mul_inv, ← div_div, div_self two_ne_zero,
     mul_comm (1 / _), mul_one_div, ← _root_.add_div, ← neg_add, add_comm] at this
 

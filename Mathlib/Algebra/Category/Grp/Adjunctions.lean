@@ -155,7 +155,7 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp only [Equiv.symm_symm]
+        simp only
         apply Eq.symm
         apply Abelianization.lift.unique
         intros

@@ -240,7 +240,7 @@ theorem le_degree {R : Type*}
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
-  simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
+  simp only [degree, weight_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
 theorem finite_of_degree_le [Finite σ] (n : ℕ) :
     {f : σ →₀ ℕ | degree f ≤ n}.Finite := by
