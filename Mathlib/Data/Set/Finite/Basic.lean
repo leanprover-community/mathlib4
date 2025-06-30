@@ -332,7 +332,7 @@ instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
   simpa [Nat.lt_succ_iff] using Set.fintypeLTNat (n + 1)
 
 /-- This is not an instance so that it does not conflict with the one
-in `Mathlib/Order/LocallyFinite.lean`. -/
+in `Mathlib/Order/Interval/Finset/Defs.lean`. -/
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
   Set.fintypeLTNat n
 
