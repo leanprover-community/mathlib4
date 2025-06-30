@@ -92,7 +92,7 @@ alias sum_univ_get := sum_univ_getElem
 alias prod_univ_get := prod_univ_getElem
 
 @[to_additive (attr := simp)]
-theorem prod_univ_fun_getElem (l : List M) (f : M → M) :
+theorem prod_univ_fun_getElem (l : List ι) (f : ι → M) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
