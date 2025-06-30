@@ -14,38 +14,54 @@ variable {α : Type*}
 
 namespace NNRat
 
-@[norm_cast]
-theorem coe_list_sum (l : List ℚ≥0) : (l.sum : ℚ) = (l.map (↑)).sum :=
-  map_list_sum coeHom _
+section DivisionSemiring
+
+variable {K : Type} [DivisionSemiring K] [CharZero K]
 
 @[norm_cast]
-theorem coe_list_prod (l : List ℚ≥0) : (l.prod : ℚ) = (l.map (↑)).prod :=
-  map_list_prod coeHom _
+theorem coe_list_sum (l : List ℚ≥0) : (l.sum : K) = (l.map (↑)).sum :=
+  map_list_sum (castHom _) _
 
 @[norm_cast]
-theorem coe_multiset_sum (s : Multiset ℚ≥0) : (s.sum : ℚ) = (s.map (↑)).sum :=
-  map_multiset_sum coeHom _
+theorem coe_list_prod (l : List ℚ≥0) : (l.prod : K) = (l.map (↑)).prod :=
+  map_list_prod (castHom _) _
 
 @[norm_cast]
-theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : ℚ) = (s.map (↑)).prod :=
-  map_multiset_prod coeHom _
+theorem coe_multiset_sum (s : Multiset ℚ≥0) : (s.sum : K) = (s.map (↑)).sum :=
+  map_multiset_sum (castHom _) _
 
 @[norm_cast]
-theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℚ) :=
-  map_sum coeHom _ _
+theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : K) :=
+  map_sum (castHom _) _ _
+
+end DivisionSemiring
+
+section Semifield
+
+variable {K : Type} [Semifield K] [CharZero K]
+
+@[norm_cast]
+theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : K) = (s.map (↑)).prod :=
+  map_multiset_prod (castHom _) _
+
+@[norm_cast]
+theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : K) :=
+  map_prod (castHom _) _ _
+
+end Semifield
+
+section Rat
 
 theorem toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
     (∑ a ∈ s, f a).toNNRat = ∑ a ∈ s, (f a).toNNRat := by
   rw [← coe_inj, coe_sum, Rat.coe_toNNRat _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
 
-@[norm_cast]
-theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℚ) :=
-  map_prod coeHom _ _
-
 theorem toNNRat_prod_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a ∈ s, 0 ≤ f a) :
     (∏ a ∈ s, f a).toNNRat = ∏ a ∈ s, (f a).toNNRat := by
   rw [← coe_inj, coe_prod, Rat.coe_toNNRat _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
+
+end Rat
 
 end NNRat
