@@ -277,7 +277,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
         neg_mul, IsSelfAdjoint.cfcₙ (f := (·⁻)).star_eq]
     _ = - a⁻ * (a⁺ - a⁻) * a⁻ :=
       congr(- a⁻ * $(CFC.posPart_sub_negPart a ha) * a⁻).symm
-    _ = a⁻ ^ 3 := by simp [mul_sub, sub_mul, ← mul_assoc, pow_succ]
+    _ = a⁻ ^ 3 := by simp [mul_sub, pow_succ]
   -- the spectrum of `- (star c * c) = a⁻ ^ 3` is nonnegative, since the function on the right
   -- is nonnegative on the spectrum of `a`.
   have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
@@ -367,7 +367,7 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
     exact hyx.2.eq_zero_of_neg hyx.1 (neg_sub (x : A⁺¹) (y : A⁺¹) ▸ hxy.2)
   le_trans x y z hxy hyz := by
     simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),
-      quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, Unitization.inr_sub] at hxy hyz ⊢
+      quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ] at hxy hyz ⊢
     exact ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnreal_add hyz.1 hxy.1 hxy.2⟩
 
 /-- The `CStarAlgebra.spectralOrder` on a C⋆-algebra is a `StarOrderedRing`. -/
@@ -380,7 +380,7 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
         obtain ⟨s, hs₁, _, hs₂⟩ :=
           CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts h.1 h.2
         refine ⟨s * s, ?_, by rwa [eq_sub_iff_add_eq', eq_comm] at hs₂⟩
-        exact AddSubmonoid.subset_closure ⟨s, by simp [hs₁.star_eq, sq]⟩
+        exact AddSubmonoid.subset_closure ⟨s, by simp [hs₁.star_eq]⟩
       · rintro ⟨p, hp, rfl⟩
         simp only [spectralOrder, add_sub_cancel_left]
         induction hp using AddSubmonoid.closure_induction with

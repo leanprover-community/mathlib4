@@ -105,7 +105,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
-  simp only [smul_eq_mul, MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
+  simp only [MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
   exact Or.inl (h i)
 
 end ext
@@ -342,7 +342,7 @@ lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure
     charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
   simp_rw [charFunDual_apply]
   rw [integral_conv]
-  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · simp [add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
   · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end NormedSpace
