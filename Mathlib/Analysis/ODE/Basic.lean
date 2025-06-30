@@ -131,9 +131,6 @@ lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
 lemma IsIntegralCurveOn.continuousWithinAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
     ContinuousWithinAt γ s t₀ := (hγ t₀ ht).continuousWithinAt
 
-@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.continuousAt :=
-  IsIntegralCurveOn.continuousWithinAt
-
 lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
     ContinuousOn γ s := fun t ht ↦ (hγ t ht).continuousWithinAt
 
