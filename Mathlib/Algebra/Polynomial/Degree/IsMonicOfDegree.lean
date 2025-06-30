@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Tactic.ComputeDegree
 
 /-!
@@ -69,10 +69,12 @@ lemma isMonicOfDegree_iff {R : Type*} [Semiring R] [Nontrivial R] (p : R[X]) (n 
 lemma IsMonicOfDegree.exists_natDegree_lt {R : Type*} [Semiring R] {p : R[X]} {n : ℕ}
     (hn : n ≠ 0)  (hp : IsMonicOfDegree p n) :
     ∃ q : R[X], p = X ^ n + q ∧ q.natDegree < n := by
-  refine ⟨_, hp.natDegree_eq ▸ hp.monic.as_sum, LE.le.trans_lt ?_ (Nat.sub_one_lt hn)⟩
-  refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_
-  have : i ≤ n - 1 := by rw [Finset.mem_range] at hi; omega
-  compute_degree!
+  refine ⟨p.eraseLead, ?_, ?_⟩
+  · nth_rewrite 1 [← p.eraseLead_add_C_mul_X_pow]
+    rw [add_comm, hp.natDegree_eq, hp.leadingCoeff_eq, map_one, one_mul]
+  · refine p.eraseLead_natDegree_le.trans_lt ?_
+    rw [hp.natDegree_eq]
+    omega
 
 lemma IsMonicOfDegree.natDegree_sub_X_pow {R : Type*} [Ring R] {p : R[X]} {n : ℕ} (hn : n ≠ 0)
     (hp : IsMonicOfDegree p n) :
@@ -117,6 +119,10 @@ lemma isMonicOfDegree_X (R : Type*) [Semiring R] [Nontrivial R] : IsMonicOfDegre
 lemma isMonicOfDegree_X_pow (R : Type*) [Semiring R] [Nontrivial R] (n : ℕ) :
     IsMonicOfDegree ((X : R[X]) ^ n) n :=
   (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_pow_le n, coeff_X_pow_self n⟩
+
+lemma isMonicOfDegree_monomial_one {R : Type*} [Semiring R] [Nontrivial R] (n : ℕ) :
+    IsMonicOfDegree (monomial n (1 : R)) n := by
+  simpa only [monomial_one_right_eq_X_pow] using isMonicOfDegree_X_pow R n
 
 lemma IsMonicOfDegree.coeff_eq {R : Type*} [Semiring R] {p q : R[X]} {n : ℕ}
     (hp : IsMonicOfDegree p n) (hq : IsMonicOfDegree q n) {m : ℕ} (hm : n ≤ m) :
