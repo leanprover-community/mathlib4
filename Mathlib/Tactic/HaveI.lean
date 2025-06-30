@@ -23,7 +23,7 @@ macro_rules
   | `(assert! haveIDummy $hd:letDecl; $body) => `(haveI $hd:letDecl; $body)
 
 /--
-`haveI'` behaves like `have`, but inlines the value instead of producing a `let_fun` term.
+`haveI'` behaves like `have`, but inlines the value instead of producing a `have` term.
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
@@ -35,7 +35,7 @@ macro_rules
   | `(assert! letIDummy $hd:letDecl; $body) => `(letI $hd:letDecl; $body)
 
 /--
-`letI` behaves like `let`, but inlines the value instead of producing a `let_fun` term.
+`letI` behaves like `let`, but inlines the value instead of producing a `let` term.
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
