@@ -331,7 +331,7 @@ instance addCommGroup : AddCommGroup ℂ :=
 
 
 instance instNatCast : NatCast ℂ where
-  natCast n := ⟨n, 0⟩
+  natCast n := ofReal n
 
 @[simp]
 lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
@@ -341,7 +341,7 @@ lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
 
 
 instance instIntCast : IntCast ℂ where
-  intCast n := ⟨n, 0⟩
+  intCast n := ofReal n
 
 @[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
 @[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
@@ -351,7 +351,6 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast_zero := by ext <;> simp
     natCast_succ _ := by ext <;> simp
-    intCast n := ⟨n, 0⟩
     intCast_ofNat _ := by ext <;> simp
     intCast_negSucc _ := by ext <;> simp
     one := 1 }
