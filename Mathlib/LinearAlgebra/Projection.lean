@@ -390,6 +390,7 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
 theorem isIdempotentElem
     {T : M →ₗ[S] M} {U : Submodule S M} (h : IsProj U T) : IsIdempotentElem T :=
   T.isProj_iff_isIdempotentElem.mp ⟨U, h⟩
+
 namespace IsProj
 
 variable {p m}
