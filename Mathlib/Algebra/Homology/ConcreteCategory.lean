@@ -65,7 +65,27 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
     (forget₂ C Ab).map (hS.δ i j hij) x₃ = (forget₂ C Ab).map (S.X₁.homologyπ j) x₁ :=
   (HomologicalComplex.HomologySequence.snakeInput hS i j hij).δ_apply' x₃ x₂ x₁ h₂ h₁
 
+set_option linter.style.commandStart false in
 include hS in
+/--
+In the short exact sequence of complexes
+```
+       0            0            0
+       |            |            |
+       v            v            v
+...-> X_1,i -----> X_1,j --d--> X_1,k ->...
+       |            |            |
+       |          f |            |
+       v            v            v
+...-> X_2,i --d--> X_2,j -----> X_2,k ->...
+       |            |            |
+       v            v            v
+...-> X_3,i -----> X_3,j -----> X_3,k ->...
+       |            |            |
+       v            v            v
+       0            0            0
+```
+if `x₁ ∈ X_1,j` and `x₂ ∈ X_2,i` and if `f(x₁) = d(x₂)` then `d(x₁) = 0`. -/
 theorem d_eq_zero_of_f_eq_d_apply
     (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
     (hx₁ : ((forget₂ C Ab).map (S.f.f j)) x₁ = ((forget₂ C Ab).map (S.X₂.d i j)) x₂) (k : ι) :

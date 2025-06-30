@@ -12,8 +12,8 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 Given a commutative ring `k` and a group `G`, this file shows that a short exact sequence of
 `k`-linear `G`-representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` induces a short exact sequence of
-complexes of inhomogeneous cochains `0 ⟶ C(X₁) ⟶ C(X₂) ⟶ C(X₃) ⟶ 0`, where `Hⁿ(C(Xᵢ))`
-is the `n`th group cohomology of `Xᵢ`.
+complexes `0 ⟶ C(X₁) ⟶ C(X₂) ⟶ C(X₃) ⟶ 0`, where `C(Xᵢ)` is the complex of inhomogeneous
+cochains of `Xᵢ`, and hence `Hⁿ(C(Xᵢ))` is the `n`th group cohomology of `Xᵢ`.
 
 This allows us to specialize API about long exact sequences to group cohomology.
 
@@ -105,9 +105,14 @@ noncomputable abbrev cocyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) → X.X�
       (by simpa using hx) (j + 1))
 
 theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `z` be an `i`-cocycle for `X₃`
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
+    -- Let `y` be an `i`-cochain for `X₂` such that `g ∘ y = z`
     (y : (Fin i → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f i y = z)
+    -- Let `x` be an `i + 1`-cochain for `X₁` such that `f ∘ x = d(y)`
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
+    -- Then `x` is an `i + 1`-cocycle and `δ z = x` in `Hⁱ⁺¹(X₁)`.
     δ hX i j hij (π X.X₃ i <| cocyclesMk z (by subst hij; simpa using hz)) =
       π X.X₁ j (cocyclesMkOfCompEqD hX hx) := by
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
@@ -120,8 +125,13 @@ theorem mem_oneCocycles_of_comp_eq_dZero
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
-theorem δ₀_apply (z : X.X₃.ρ.invariants) (y : X.X₂)
-    (hy : X.g.hom y = z) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
+theorem δ₀_apply
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `z : X₃ᴳ` and `y : X₂` be such that `g(y) = z`.
+    (z : X.X₃.ρ.invariants) (y : X.X₂) (hy : X.g.hom y = z)
+    -- Let `x` be a 1-cochain for `X₁` such that `f ∘ x = d(y)`.
+    (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
+    -- Then `x` is a 1-cocycle and `δ z = x` in `H¹(X₁)`.
     δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = H1π X.X₁ ⟨x, mem_oneCocycles_of_comp_eq_dZero hX hx⟩ := by
   simpa [H0Iso, H1π, ← cocyclesMk_1_eq X.X₁, ← cocyclesMk_0_eq z] using
     δ_apply hX rfl ((zeroCochainsIso X.X₃).inv z.1) (by simp) ((zeroCochainsIso X.X₂).inv y)
@@ -137,8 +147,13 @@ theorem mem_twoCocycles_of_comp_eq_dOne
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
 
-theorem δ₁_apply (z : oneCocycles X.X₃) (y : G → X.X₂)
-    (hy : X.g.hom ∘ y = z) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
+theorem δ₁_apply
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `z` be a 1-cocycle for `X₃` and `y` be a 1-cochain for `X₂` such that `g ∘ y = z`.
+    (z : oneCocycles X.X₃) (y : G → X.X₂) (hy : X.g.hom ∘ y = z)
+    -- Let `x` be a 2-cochain for `X₁` such that `f ∘ x = d(y)`.
+    (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
+    -- Then `x` is a 2-cocycle and `δ z = x` in `H²(X₁)`.
     δ hX 1 2 rfl (H1π X.X₃ z) = H2π X.X₁ ⟨x, mem_twoCocycles_of_comp_eq_dOne hX hx⟩ := by
   simpa [H1π, H2π, ← cocyclesMk_2_eq X.X₁, ← cocyclesMk_1_eq X.X₃] using
     δ_apply hX rfl ((oneCochainsIso X.X₃).inv z) (by simp [oneCocycles.dOne_apply z])
