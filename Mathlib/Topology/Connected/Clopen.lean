@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Subset
+import Mathlib.Data.Fintype.Sum
 import Mathlib.Topology.Clopen
 import Mathlib.Topology.Connected.Basic
 
@@ -373,6 +374,13 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
   exact le_antisymm (iUnion_subset fun _ ↦ le_rfl) <|
     iUnion_subset fun hx ↦ subset_iUnion₂_of_subset (huv₁ hx) hx le_rfl
 
+lemma IsClopen.connectedComponentIn_eq {U : Set α} (hU : IsClopen U) {x : α} (hx : x ∈ U) :
+    connectedComponentIn U x = connectedComponent x :=
+  subset_antisymm ((isPreconnected_connectedComponentIn).subset_connectedComponent
+    (mem_connectedComponentIn hx)) <|
+    (isPreconnected_connectedComponent).subset_connectedComponentIn (mem_connectedComponent)
+    (hU.connectedComponent_subset hx)
+
 variable [TopologicalSpace β] {f : α → β}
 
 /-- The preimage of a connected component is preconnected if the function has connected fibers
@@ -523,6 +531,125 @@ theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=
 theorem range_coe : range (mk : α → ConnectedComponents α) = univ :=
   surjective_coe.range_eq
 
+lemma nonempty_iff_nonempty : Nonempty (ConnectedComponents α) ↔ Nonempty α :=
+  ⟨fun _ ↦ ConnectedComponents.surjective_coe.nonempty, fun h ↦ h.map ConnectedComponents.mk⟩
+
+instance [Nonempty α] : Nonempty (ConnectedComponents α) := by
+  rwa [ConnectedComponents.nonempty_iff_nonempty]
+
+lemma isEmpty_iff_isEmpty : IsEmpty (ConnectedComponents α) ↔ IsEmpty α := by
+  rw [← not_iff_not, not_isEmpty_iff, not_isEmpty_iff, nonempty_iff_nonempty]
+
+instance subsingleton [PreconnectedSpace α] : Subsingleton (ConnectedComponents α) := by
+  refine ⟨fun x y ↦ ?_⟩
+  obtain ⟨x, rfl⟩ := surjective_coe x
+  obtain ⟨y, rfl⟩ := surjective_coe y
+  simp_rw [coe_eq_coe, PreconnectedSpace.connectedComponent_eq_univ, ]
+
+section
+
+variable {ι : Type*} {U : ι → Set α} (hclopen : ∀ i, IsClopen (U i))
+  (hdisj : Pairwise (Disjoint on U)) (hunion : ⋃ i, U i = Set.univ)
+  (hconn : ∀ i, IsPreconnected (U i))
+
+include hclopen hdisj hunion in
+/-- A pairwise disjoint cover by clopens partitions the connected components. -/
+noncomputable def equivOfIsClopen : ConnectedComponents α ≃ Σ i, ConnectedComponents (U i) := by
+  have heq {x : α} {i} (hx : x ∈ U i) :
+      Subtype.val '' connectedComponent ⟨x, hx⟩ = connectedComponent x := by
+    rw [← connectedComponentIn_eq_image hx, (hclopen i).connectedComponentIn_eq hx]
+  refine .symm <| .ofBijective
+    (fun ⟨i, x⟩ ↦
+      Quotient.lift (ConnectedComponents.mk ∘ Subtype.val)
+        (fun x y (hxy : connectedComponent x = connectedComponent y) ↦ by
+          simp [← heq x.2, ← heq y.2, hxy])
+        x)
+    ⟨fun ⟨i, x⟩ ⟨j, y⟩ hxy ↦ ?_, fun x ↦ ?_⟩
+  · obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+    obtain ⟨i, hi⟩ := Set.iUnion_eq_univ_iff.mp hunion x
+    simp only [Sigma.exists]
+    use i, .mk ⟨x, hi⟩
+    rfl
+  · obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+    obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+    replace hxy : ConnectedComponents.mk x.val = ConnectedComponents.mk y.val := hxy
+    rw [ConnectedComponents.coe_eq_coe] at hxy
+    have : i = j := by
+      apply hdisj.eq
+      rw [Set.not_disjoint_iff]
+      exact ⟨x, x.2, (hclopen j).connectedComponent_subset y.2 (hxy ▸ mem_connectedComponent)⟩
+    subst this
+    simp [← Set.image_val_inj, heq, heq, hxy]
+
+include hclopen hdisj hunion in
+/-- If `ι` indexes a disjoint union decomposition of `α`, it is equivalent to the connected
+components of `α`. -/
+noncomputable def equivOfIsClopenOfIsConnected (hconn : ∀ i, IsConnected (U i)) :
+    ConnectedComponents α ≃ ι :=
+  have (i) : ConnectedSpace (U i) := isConnected_iff_connectedSpace.mp (hconn i)
+  letI (i) : Unique (ConnectedComponents <| U i) := (nonempty_unique _).some
+  (equivOfIsClopen hclopen hdisj hunion).trans (.sigmaUnique _ _)
+
+end
+
+variable (α) in
+open Set in
+/-- If `X` has infinitely many connected components, it admits disjoint union decompositions with
+arbitrarily many summands. -/
+lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : ℕ) (hn : 0 < n) :
+    ∃ (U : Fin n → Set α), (∀ i, IsClopen (U i)) ∧ (∀ i, (U i).Nonempty) ∧
+      Pairwise (Function.onFun Disjoint U) ∧ ⋃ i, U i = Set.univ :=
+  suffices h : ∃ (ι : Type) (e : ι ≃ Fin n) (U : ι → Set α), (∀ i, IsClopen (U i)) ∧
+      (∀ i, (U i).Nonempty) ∧ Pairwise (Function.onFun Disjoint U) ∧ ⋃ i, U i = Set.univ by
+    obtain ⟨ι, e, U, hU1, hU2, hU3, hU4⟩ := h
+    refine ⟨U ∘ e.symm, fun i ↦ hU1 _, fun i ↦ hU2 _,
+      fun i j h ↦ hU3 <| e.symm.injective.ne_iff.mpr h, iUnion_eq_univ_iff.mpr fun x ↦ ?_⟩
+    obtain ⟨i, hi⟩ := Set.iUnion_eq_univ_iff.mp hU4 x
+    exact ⟨e i, by simp [hi]⟩
+  have : Nonempty α := ConnectedComponents.nonempty_iff_nonempty.mp inferInstance
+  match n with
+  | 1 => ⟨Unit, Fintype.equivFinOfCardEq rfl, fun _ ↦ Set.univ, by simp [isClopen_univ],
+    by simp, Subsingleton.pairwise, by simp [Set.iUnion_const]⟩
+  | n + 2 => by
+    obtain ⟨U, hU₁, hU₂, hU₃, hU₄⟩ := exists_fun_isClopen_of_infinite (n + 1) (by simp)
+    obtain ⟨i, hi⟩ : ∃ (i : Fin (n + 1)), ¬ IsPreconnected (U i) := by
+      by_contra! h
+      exact Infinite.not_finite <|
+        .of_equiv _ (equivOfIsClopenOfIsConnected hU₁ hU₃ hU₄ fun i ↦ ⟨hU₂ i, h i⟩).symm
+    simp only [IsPreconnected, not_forall, Classical.not_imp, exists_and_left] at hi
+    obtain ⟨V, W, hV, hW, hle, hVU, hWU, h⟩ := hi
+    rw [Set.not_nonempty_iff_eq_empty, ← Set.inter_assoc] at h
+    have hunion : V ∩ U i ∪ W ∩ U i = U i := by rwa [← union_inter_distrib_right, inter_eq_right]
+    refine ⟨{ x : Fin (n + 1) // x ≠ i } ⊕ Unit ⊕ Unit, Fintype.equivFinOfCardEq (by simp),
+        Sum.elim (fun j ↦ U j) (Sum.elim (fun _ ↦ V ∩ U i) fun _ ↦ W ∩ U i), ?_, ?_, ?_, ?_⟩
+    · rintro (x|-|-)
+      · exact hU₁ _
+      all_goals simp only [ne_eq, Sum.elim_inr, Sum.elim_inl]; rw [Set.inter_comm]
+      · exact isClopen_inter_of_disjoint_cover_clopen' (hU₁ _) hle hV hW h
+      · refine isClopen_inter_of_disjoint_cover_clopen' (hU₁ _) (union_comm _ _ ▸ hle) hW hV ?_
+        rwa [Set.inter_assoc, Set.inter_comm W V, ← Set.inter_assoc]
+    · rintro (x|x|x)
+      · exact hU₂ _
+      · rwa [Sum.elim_inr, Sum.elim_inl, Set.inter_comm]
+      · rwa [Sum.elim_inr, Sum.elim_inr, Set.inter_comm]
+    · rintro (x|x|x) (y|y|y) hxy
+      · exact hU₃ fun hxy' ↦ hxy (congrArg Sum.inl <| Subtype.ext_iff.mpr hxy')
+      · exact Disjoint.inter_right' _ (hU₃ x.2)
+      · exact Disjoint.inter_right' _ (hU₃ x.2)
+      · exact Disjoint.inter_left' _ (hU₃ <| Ne.symm y.2)
+      · contradiction
+      · exact Disjoint.inter_right _ (disjoint_iff_inter_eq_empty.mpr <| inter_comm V (U i) ▸ h)
+      · exact Disjoint.inter_left' _ (hU₃ <| Ne.symm y.2)
+      · apply Disjoint.inter_right _ (disjoint_iff_inter_eq_empty.mpr ?_)
+        rwa [Sum.elim_inr, Sum.elim_inr, inter_comm W, inter_assoc, inter_comm W V, ← inter_assoc]
+      · contradiction
+    · simp only [iUnion_sumElim, iUnion_const, hunion, eq_univ_iff_forall, mem_union, mem_iUnion]
+      intro x
+      obtain ⟨j, hj⟩ := (Set.iUnion_eq_univ_iff.mp hU₄) x
+      by_cases h : j = i
+      · exact h ▸ Or.inr hj
+      · exact Or.inl ⟨⟨j, h⟩, hj⟩
+
 end ConnectedComponents
 
 /-- The preimage of a singleton in `connectedComponents` is the connected component
@@ -538,7 +665,10 @@ theorem connectedComponents_preimage_image (U : Set α) :
     (↑) ⁻¹' ((↑) '' U : Set (ConnectedComponents α)) = ⋃ x ∈ U, connectedComponent x := by
   simp only [connectedComponents_preimage_singleton, preimage_iUnion₂, image_eq_iUnion]
 
-
+lemma ConnectedComponents.discreteTopology_iff :
+    DiscreteTopology (ConnectedComponents α) ↔ ∀ x : α, IsOpen (connectedComponent x) := by
+  simp_rw [← singletons_open_iff_discrete, ← connectedComponents_preimage_singleton,
+    isQuotientMap_coe.isOpen_preimage, surjective_coe.forall]
 
 end connectedComponentSetoid
 
