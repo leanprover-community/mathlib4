@@ -64,6 +64,10 @@ theorem span_union (s t : Set α) : span (s ∪ t) = span s ⊔ span t :=
 theorem span_iUnion {ι} (s : ι → Set α) : span (⋃ i, s i) = ⨆ i, span (s i) :=
   Submodule.span_iUnion _
 
+theorem iSup_eq_span {ι} (p : ι → Ideal α) :
+    ⨆ i, p i = span (⋃ i, ↑(p i)) :=
+  Submodule.iSup_eq_span p
+
 theorem mem_span {s : Set α} (x) : x ∈ span s ↔ ∀ p : Ideal α, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
