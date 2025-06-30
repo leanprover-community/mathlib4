@@ -56,7 +56,7 @@ class MulArchimedean (M) [CommMonoid M] [PartialOrder M] : Prop where
 end MulArchimedean
 
 @[to_additive]
-lemma MulArchimedean.comap [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [CommGroup M]
+lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [IsOrderedMonoid G] [CommMonoid M]
     [PartialOrder M] [IsOrderedMonoid M] [MulArchimedean M] (f : G →* M) (hf : StrictMono f) :
     MulArchimedean G where
   arch x _ h := by
