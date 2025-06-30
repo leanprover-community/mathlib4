@@ -65,7 +65,7 @@ jobs:
                 --header 'Accept: application/vnd.github+json' \
                 --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
                 --header 'X-GitHub-Api-Version: 2022-11-28' \
-                --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels \
+                --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels" \
                 --data "${data}"
               printf $'%s POST done\n' "${inComment}"
 
