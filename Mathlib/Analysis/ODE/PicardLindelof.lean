@@ -589,7 +589,7 @@ theorem contDiffOn_enat_Icc_of_hasDerivWithinAt
       intro _ ht
       rw [Icc_eq_empty (not_le.mpr h)] at ht
       exfalso
-      exact not_mem_empty _ ht
+      exact notMem_empty _ ht
     | inr h =>
       rw [h, Icc_self]
       intro _ ht
