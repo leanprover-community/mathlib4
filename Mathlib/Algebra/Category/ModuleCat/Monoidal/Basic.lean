@@ -72,8 +72,9 @@ theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (Modu
   apply TensorProduct.ext
   rfl
 
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
-    (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
+    (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ = tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
@@ -160,7 +161,7 @@ open MonoidalCategory
 
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
   (tensor_id := fun M N ↦ tensor_id M N)
-  (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
+  (tensorHom_comp_tensorHom := fun f g h ↦ MonoidalCategory.tensorHom_comp_tensorHom f g h)
   (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
   (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
   (rightUnitor_naturality := fun f ↦ rightUnitor_naturality f)
