@@ -274,7 +274,7 @@ theorem basisOfBasisRight_apply (H : A.LinearDisjoint B) (H' : A.toSubalgebra �
   (linearDisjoint_iff'.mp H).basisOfBasisRight_apply H' b i
 
 theorem basisOfBasisRight_repr_apply (H : A.LinearDisjoint B)
-    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤)  {ι : Type*} (b : Basis ι F B) (x : B) (i : ι) :
+    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F B) (x : B) (i : ι) :
     algebraMap A E ((H.basisOfBasisRight H' b).repr x i) = algebraMap F E (b.repr x i) :=
   (linearDisjoint_iff'.mp H).basisOfBasisRight_repr_apply H' b x i
 
@@ -297,7 +297,7 @@ theorem basisOfBasisLeft_apply (H : A.LinearDisjoint B) (H' : A.toSubalgebra ⊔
   (linearDisjoint_iff'.mp H).basisOfBasisLeft_apply H' b i
 
 theorem basisOfBasisLeft_repr_apply (H : A.LinearDisjoint B)
-    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤)  {ι : Type*} (b : Basis ι F A) (x : A) (i : ι) :
+    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F A) (x : A) (i : ι) :
     algebraMap B E ((H.basisOfBasisLeft H' b).repr x i) = algebraMap F E (b.repr x i) :=
   (linearDisjoint_iff'.mp H).basisOfBasisLeft_repr_apply H' b x i
 
