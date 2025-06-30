@@ -266,7 +266,7 @@ lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [Decid
 
 theorem lowerTopology_closureOperator_eq_gc_closureOperator
     [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
-    (hG : OrderGenerate T):
+    (hG : OrderGenerate T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator = gc.closureOperator := by
   ext S a
   rw [gc_closureOperator_eq, (lowerTopology_closureOperator_eq hT hG)]
