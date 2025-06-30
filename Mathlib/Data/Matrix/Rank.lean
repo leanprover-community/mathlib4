@@ -199,8 +199,8 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
-/- - Taking a subset of the rows and permuting the columns reduces the rank. -/
 omit [Fintype n] in
+/-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] [Fintype m₀] (f : n₀ → n) (e : m₀ ≃ m)
     (A : Matrix n m R) : rank (A.submatrix f e) ≤ rank A := by
   rw [rank, rank, mulVecLin_submatrix, LinearMap.range_comp, LinearMap.range_comp,
