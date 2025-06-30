@@ -165,10 +165,10 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_map (f : X ⟶ Y) (𝒰 
       (𝒰.affineRefinement.openCover.pullbackCover f).map i =
       ((𝒰.obj i.1).affineCover.pullbackCover (𝒰.pullbackHom f i.1)).map i.2 ≫
         (𝒰.pullbackCover f).map i.1 := by
-  simp only [Cover.pullbackCover_obj, AffineCover.cover_obj, AffineCover.cover_map,
+  simp only [Cover.pullbackCover_obj,
     pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv, Iso.symm_inv, Category.assoc,
     Cover.pullbackCover_map, pullbackSymmetry_inv_comp_fst, IsIso.inv_comp_eq, limit.lift_π_assoc,
-    id_eq, PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app, pullbackSymmetry_hom_comp_fst]
+    PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app, pullbackSymmetry_hom_comp_fst]
   convert pullbackSymmetry_inv_comp_snd_assoc
     ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _) _ using 2
   exact pullbackRightPullbackFstIso_hom_snd _ _ _
@@ -179,10 +179,10 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
     (𝒰.pullbackCoverAffineRefinementObjIso f i).inv ≫
       𝒰.affineRefinement.openCover.pullbackHom f i =
       (𝒰.obj i.1).affineCover.pullbackHom (𝒰.pullbackHom f i.1) i.2 := by
-  simp only [Cover.pullbackCover_obj, Cover.pullbackHom, AffineCover.cover_obj,
+  simp only [Cover.pullbackCover_obj, Cover.pullbackHom,
     AffineOpenCover.openCover_map, pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv,
     Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π,
-    id_eq, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
+    PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
   convert pullbackSymmetry_inv_comp_fst ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 

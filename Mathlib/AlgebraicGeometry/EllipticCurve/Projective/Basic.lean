@@ -391,7 +391,7 @@ lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P 
 lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
     W'.Nonsingular P ↔
       W'.Equation P ∧ (3 * P x ^ 2 ≠ 0 ∨ P y ^ 2 + W'.a₁ * P x * P y - W'.a₂ * P x ^ 2 ≠ 0) := by
-  simp only [nonsingular_iff, hPz, add_zero, sub_zero, zero_sub, mul_zero,
+  simp only [nonsingular_iff, hPz, add_zero, zero_sub, mul_zero,
     zero_pow <| OfNat.ofNat_ne_zero _, neg_ne_zero, ne_self_iff_false, false_or]
 
 lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![0, 1, 0] := by

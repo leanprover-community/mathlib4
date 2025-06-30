@@ -68,7 +68,7 @@ def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by
   rw [Pseudoperfect, not_and_or]
-  simp only [not_lt, nonpos_iff_eq_zero, mem_powerset, not_exists, not_and, ne_eq]
+  simp only [not_lt, nonpos_iff_eq_zero, not_exists, not_and, ne_eq]
 
 theorem deficient_one : Deficient 1 := zero_lt_one
 theorem deficient_two : Deficient 2 := one_lt_two

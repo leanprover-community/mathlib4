@@ -167,7 +167,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj
   dsimp [diagram]
   apply Concrete.multiequalizer_ext (C := D)
   intro i
-  simp only [← ConcreteCategory.comp_apply, Category.assoc, Multiequalizer.lift_ι, Category.comp_id,
+  simp only [← ConcreteCategory.comp_apply, Category.assoc, Multiequalizer.lift_ι,
     Meq.equiv_symm_eq_apply]
   rfl
 
