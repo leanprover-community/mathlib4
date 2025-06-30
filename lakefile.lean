@@ -162,6 +162,13 @@ post_update pkg do
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
     let exeFile ← runBuild cache.fetch
-    let exitCode ← env exeFile.toString #["get"]
+    -- Run the command in the root package directory,
+    -- which is the one that holds the .lake folder and lean-toolchain file.
+    let cwd ← IO.Process.getCurrentDir
+    let exitCode ← try
+      IO.Process.setCurrentDir rootPkg.dir
+      env exeFile.toString #["get"]
+    finally
+      IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
       error s!"{pkg.name}: failed to fetch cache"

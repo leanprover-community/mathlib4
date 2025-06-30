@@ -94,8 +94,7 @@ lemma isClosedEmbedding_precomp_of_surjective
     isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.1)
   convert this
   ext x
-  simp only [Set.mem_range, Set.iInf_eq_iInter, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall,
-    RingHom.mem_ker]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall, RingHom.mem_ker]
   constructor
   · rintro ⟨g, rfl⟩ a ha; simp [ha]
   · exact fun H ↦ ⟨CommRingCat.ofHom (RingHom.liftOfSurjective f.hom hf ⟨x.hom, H⟩),
