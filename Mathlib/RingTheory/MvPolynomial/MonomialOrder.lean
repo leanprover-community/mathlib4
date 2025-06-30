@@ -756,13 +756,13 @@ theorem degree_sub_leadingTerm (f : MvPolynomial σ R) :
         refine mem_support_iff.mp ?_
         exact hin
       exact this hc
-    have h₃: m.toSyn (m.degree (f - m.leadingTerm f)) ≤  m.toSyn (m.degree f) := by
-      have h₃': m.toSyn (m.degree (f - m.leadingTerm f)) ≤
+    have h₃ : m.toSyn (m.degree (f - m.leadingTerm f)) ≤  m.toSyn (m.degree f) := by
+      have h₃' : m.toSyn (m.degree (f - m.leadingTerm f)) ≤
           m.toSyn (m.degree f) ⊔ m.toSyn (m.degree (m.leadingTerm f)) := by
         apply degree_sub_le
-      have h₃'':  m.toSyn (m.degree f) = m.toSyn (m.degree (m.leadingTerm f)) := by
+      have h₃'' : m.toSyn (m.degree f) = m.toSyn (m.degree (m.leadingTerm f)) := by
         exact Eq.symm (leadingTerm_degree_eq' f)
-      have h3:  m.toSyn (m.degree f) ⊔ m.toSyn (m.degree (m.leadingTerm f)) =
+      have h3 : m.toSyn (m.degree f) ⊔ m.toSyn (m.degree (m.leadingTerm f)) =
           m.toSyn (m.degree f) := by
         simp [max_le_iff, h₃'']
       exact le_of_le_of_eq h₃' h3
