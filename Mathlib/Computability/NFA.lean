@@ -290,7 +290,7 @@ theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
 
 @[simp]
 theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
-  simp [mem_accepts, ← Set.not_disjoint_iff, not_iff_not, disjoint_evalFrom_reverse_iff]
+  simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]
 
 end NFA
 

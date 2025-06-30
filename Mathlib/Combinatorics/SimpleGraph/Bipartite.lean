@@ -258,7 +258,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipa
   refine ⟨{v | c v = 0}, {v | c v = 1}, by aesop (add simp [Set.disjoint_left]), ?_⟩
   rintro v w hvw
   apply hc at hvw
-  simp [Set.mem_setOf_eq, Fin.forall_fin_two] at hvw ⊢
+  simp [Set.mem_setOf_eq] at hvw ⊢
   omega
 
 /-- If a simple graph `G` has a bipartition, then it is bipartite. -/

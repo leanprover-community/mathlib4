@@ -90,9 +90,9 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
   ext x
   by_cases h : p x
   · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, symm_apply_eq, this]
   · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, symm_apply_eq, this]
 
 @[simp]
 theorem Perm.subtypeCongr.trans :
@@ -101,9 +101,9 @@ theorem Perm.subtypeCongr.trans :
   ext x
   by_cases h : p x
   · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, this]
+    simp [h, this]
   · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, this]
 
 end subtypeCongr
 
