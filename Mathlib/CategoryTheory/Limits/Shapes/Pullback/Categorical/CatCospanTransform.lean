@@ -580,12 +580,37 @@ def counitIso : 𝔈.inverse.comp 𝔈.transform ≅ CatCospanTransform.id F' G'
   hom := 𝔈.counit
   inv := 𝔈.counitInv
 
+/-- Extract an equivalence of categories `A ≌ A'` as the left component of a
+`CatCospanEquivalence F _ F' _` for `F : A ⥤ _` and `A' : A' ⥤ _`. -/
+@[simps]
 def leftEquiv : A ≌ A' where
   functor := 𝔈.transform.left
   inverse := 𝔈.inverse.left
-  unitIso := ⟨𝔈.unitIso.hom.left, 𝔈.unitIso.hom.left, sorry, sorry⟩
+  unitIso := CatCospanTransform.leftIso 𝔈.unitIso
+  counitIso := CatCospanTransform.leftIso 𝔈.counitIso
+  functor_unitIso_comp x := 𝔈.leftAdjunction.left_triangle_components x
 
--- def mk' (leftEquiv : A ≌ A') (rightEquiv : C ≌ C') (baseEquiv : B ≌ B') 
+/-- Extract an equivalence of categories `A ≌ A'` as the right component of a
+`CatCospanEquivalence _ G _ G'` for `G : C ⥤ _` and `G' : C' ⥤ _`. -/
+@[simps]
+def rightEquiv : C ≌ C' where
+  functor := 𝔈.transform.right
+  inverse := 𝔈.inverse.right
+  unitIso := CatCospanTransform.rightIso 𝔈.unitIso
+  counitIso := CatCospanTransform.rightIso 𝔈.counitIso
+  functor_unitIso_comp x := 𝔈.rightAdjunction.left_triangle_components x
+
+/-- Extract an equivalence of categories `B ≌ B'` as the base component of a
+`CatCospanEquivalence F _ F' _` for `G : _ ⥤ B` and `G' : _ ⥤ B'`. -/
+@[simps]
+def baseEquiv : C ≌ C' where
+  functor := 𝔈.transform.right
+  inverse := 𝔈.inverse.right
+  unitIso := CatCospanTransform.rightIso 𝔈.unitIso
+  counitIso := CatCospanTransform.rightIso 𝔈.counitIso
+  functor_unitIso_comp x := 𝔈.rightAdjunction.left_triangle_components x
+
+-- def mk' (leftEquiv : A ≌ A') (rightEquiv : C ≌ C') (baseEquiv : B ≌ B')
 --   (squareLeft : ) (squareRight : )
 
 end CatCospanEquivalence
