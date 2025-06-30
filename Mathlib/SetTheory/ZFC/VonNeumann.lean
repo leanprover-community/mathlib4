@@ -40,7 +40,7 @@ decreasing_by exact a.2
 @[inherit_doc]
 scoped notation "V_ " => vonNeumann
 
-variable {a b o : Ordinal} {x : ZFSet.{u}}
+variable {a b o : Ordinal.{u}} {x : ZFSet.{u}}
 
 lemma mem_vonNeumann' : x ∈ V_ o ↔ ∃ a < o, x ⊆ V_ a := by rw [vonNeumann]; simp
 
