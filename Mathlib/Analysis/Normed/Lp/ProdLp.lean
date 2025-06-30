@@ -52,12 +52,12 @@ variable {p 𝕜 α β}
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
-/-- The projection on the first coordinate in `WithLp`. If `x : WithLp p (α × β)`, you
-shoudl always write `x.fst` instead of `x.1` to avoid defeq abuse. -/
+/-- The projection on the first coordinate in `WithLp`. If `x : WithLp p (α × β)`, one
+should always write `x.fst` instead of `x.1` to avoid defeq abuse. -/
 protected def fst (x : WithLp p (α × β)) : α := (ofLp x).fst
 
-/-- The projection on the scond coordinate in `WithLp`. If `x : WithLp p (α × β)`, you
-shoudl always write `x.snd` instead of `x.2` to avoid defeq abuse. -/
+/-- The projection on the second coordinate in `WithLp`. If `x : WithLp p (α × β)`, one
+should always write `x.snd` instead of `x.2` to avoid defeq abuse. -/
 protected def snd (x : WithLp p (α × β)) : β := (ofLp x).snd
 
 @[simp]
