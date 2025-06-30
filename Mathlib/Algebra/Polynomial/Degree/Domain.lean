@@ -48,9 +48,9 @@ lemma natDegree_smul {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisor
   · simp only [hp, smul_zero]
   · apply natDegree_eq_of_le_of_coeff_ne_zero
     · exact (natDegree_smul_le _ _).trans (le_refl _)
-    · simp
-      apply not_imp_not.mpr eq_zero_or_eq_zero_of_smul_eq_zero
-      simp [ha, hp]
+    · simp only [coeff_smul]
+      apply smul_ne_zero ha
+      simp [hp]
 
 @[simp]
 lemma natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
