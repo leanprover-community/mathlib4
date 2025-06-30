@@ -11,6 +11,8 @@ import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 New integral curves may be constructed by translating or scaling the domain of an existing integral
 curve.
 
+This file mirrors `Mathlib/Analysis/ODE/Transform`.
+
 ## Reference
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
