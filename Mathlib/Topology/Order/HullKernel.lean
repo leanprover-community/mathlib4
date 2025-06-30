@@ -66,7 +66,7 @@ open Set.Notation
 
 section SemilatticeInf
 
-variable [SemilatticeInf α] --[TopologicalSpace α] [IsLower α]
+variable [SemilatticeInf α]
 namespace PrimitiveSpectrum
 
 variable {T : Set α}
@@ -146,9 +146,9 @@ end SemilatticeInf
 
 section PrimativeSpectrum
 
-variable [CompleteLattice α] --[TopologicalSpace α] [IsLower α] [DecidableEq α]
+variable [CompleteLattice α]
 
-variable {T : Set α} --(hT : ∀ p ∈ T, InfPrime p)
+variable {T : Set α}
 
 namespace PrimitiveSpectrum
 
