@@ -50,9 +50,7 @@ theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
 termination_by o
 
 theorem vonNeumann_mem_of_lt (h : a < b) : V_ a ∈ V_ b := by
-  rw [vonNeumann, mem_sUnion]
-  refine ⟨_, mem_range_self ⟨a, h⟩, ?_⟩
-  rw [mem_powerset]
+  rw [vonNeumann]; aesop
 
 theorem vonNeumann_subset_of_le (h : a ≤ b) : V_ a ⊆ V_ b := by
   obtain rfl | h := h.eq_or_lt
