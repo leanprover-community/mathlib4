@@ -249,7 +249,7 @@ lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [Decidab
 
 lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
-    (TopologicalSpace.Closeds.gc (α := T)).closureOperator S  = T ↓∩ Ici (sInf S) := by
+    (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = T ↓∩ Ici (sInf S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   have e1 : IsClosed (T ↓∩ Ici (sInf ↑S)) ∧ S ⊆ T ↓∩ Ici (sInf ↑S) := by
       constructor
