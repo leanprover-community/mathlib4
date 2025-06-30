@@ -109,7 +109,7 @@ lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α
       preimage_iUnion, inf_insert, id_eq, ← (preimage_Ici_union_preimage_Ici hT), ← I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
-set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⊓ F`. -/
+set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⨅ F`. -/
 open Finset in
 lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
