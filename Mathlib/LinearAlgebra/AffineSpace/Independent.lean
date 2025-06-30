@@ -867,15 +867,14 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
   simp [faceOpposite]
 
 lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
-    (i : Fin (n + 1)) (j : Fin n) :
-    (s.faceOpposite i).points (Fin.cast (Nat.sub_one_add_one (NeZero.ne _)).symm j) =
-      s.points (Fin.succAbove i j) := by
+    (i : Fin (n + 1)) (j : Fin (n - 1 + 1)) :
+    (s.faceOpposite i).points j =
+      s.points (Fin.succAbove i (Fin.cast (Nat.sub_one_add_one (NeZero.ne _)) j)) := by
   simp_rw [faceOpposite, face, comp_apply]
   convert rfl
-  let j' : Fin (n - 1 + 1) := Fin.cast (Nat.sub_one_add_one (NeZero.ne _)).symm j
   rw [eq_comm]
-  change Finset.orderEmbOfFin _ _ j' =
-    (Fin.succAbove i ∘ Fin.cast (Nat.sub_one_add_one (NeZero.ne _))) j'
+  change Finset.orderEmbOfFin _ _ j =
+    (Fin.succAbove i ∘ Fin.cast (Nat.sub_one_add_one (NeZero.ne _))) j
   convert rfl
   convert Finset.orderEmbOfFin_unique _ (fun x ↦ ?_)
     ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
@@ -884,8 +883,7 @@ lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k 
 lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1) :
     (s.faceOpposite i).points n = s.points i.rev := by
   have h : i.rev = Fin.succAbove i n := by decide +revert
-  rw [h, ← faceOpposite_point_eq_point_succAbove]
-  simp
+  simp [h, faceOpposite_point_eq_point_succAbove]
 
 /-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
 instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
