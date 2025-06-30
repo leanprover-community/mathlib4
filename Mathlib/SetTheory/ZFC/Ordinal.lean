@@ -19,11 +19,12 @@ under `∈`.
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
 - `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`. We show multiple
   equivalences to this definition.
+- `Ordinal.toZFSet` converts Lean's type-theoretic ordinals into ZFC ordinals. We prove that these
+  two notions are order-isomorphic.
 
 ## TODO
 
 - Define the von Neumann hierarchy.
-- Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
 
 universe u
