@@ -102,9 +102,8 @@ theorem vonNeumann_zero : V_ 0 = ∅ :=
   (eq_empty _).2 (by simp [mem_vonNeumann])
 
 @[simp]
-theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) := by
-  ext
-  rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
+theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
+  ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
 
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
