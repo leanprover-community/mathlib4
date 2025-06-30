@@ -98,10 +98,8 @@ theorem vonNeumann_inj : V_ a = V_ b ↔ a = b :=
   vonNeumann_injective.eq_iff
 
 @[simp]
-theorem vonNeumann_zero : V_ 0 = ∅ := by
-  ext
-  rw [vonNeumann]
-  simp
+theorem vonNeumann_zero : V_ 0 = ∅ :=
+  (eq_empty _).2 (by simp [mem_vonNeumann])
 
 @[simp]
 theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) := by
