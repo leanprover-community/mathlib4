@@ -39,11 +39,8 @@ lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
   rw [mem_vadd_set_iff_neg_vadd_mem, neg_neg, vadd_eq_add, add_comm,
     ← mem_setOf (p := fun t ↦ t + dt ∈ s)] at ht
   have : -dt +ᵥ s ⊆ (fun x ↦ x + dt) ⁻¹' s := by
-    intro t' ht'
-    rw [Set.mem_vadd_set] at ht'
-    obtain ⟨t'', ht'', heq⟩ := ht'
-    rw [vadd_eq_add, neg_add_eq_iff_eq_add, add_comm] at heq
-    rwa [Set.mem_preimage, ← heq]
+    rw [Set.preimage, Set.subset_setOf]
+    simp_rw [Set.mem_neg_vadd_set_iff, vadd_eq_add, add_comm dt, imp_self, forall_true_iff]
   apply HasMFDerivWithinAt.comp t (hγ (t + dt) ht) _ this
   refine ⟨(continuous_add_right _).continuousWithinAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
@@ -107,13 +104,8 @@ lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
   rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
-  have : {t | t * a ∈ s} ⊆ (fun x ↦ x * a) ⁻¹' s := by
-    intro t' ht'
-    rw [Set.mem_setOf] at ht'
-    rw [Set.mem_preimage]
-    exact ht'
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
-    ⟨(continuous_mul_right _).continuousWithinAt, ?_⟩ this
+    ⟨(continuous_mul_right _).continuousWithinAt, ?_⟩ subset_rfl
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivWithinAt.mul_const' (hasFDerivWithinAt_id _ _) _
 
