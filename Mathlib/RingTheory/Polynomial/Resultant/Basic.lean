@@ -52,7 +52,8 @@ def sylvester (f g : R[X]) (m n : ℕ) : Matrix (Fin (n + m)) (Fin (n + m)) R :=
 
 variable (f g : R[X]) (m n : ℕ)
 
-@[simp] theorem sylvester_C (a : R) : sylvester f (C a) m 0 = Matrix.diagonal (fun _ ↦ a) := by
+@[simp] theorem sylvester_C_right (a : R) :
+    sylvester f (C a) m 0 = Matrix.diagonal (fun _ ↦ a) := by
   ext i j
   refine j.addCases (Fin.elim0 ·) (fun j ↦ ?_)
   rw [sylvester, Matrix.of_apply, Fin.addCases_right, Matrix.diagonal_apply]
@@ -75,10 +76,11 @@ def resultant (f g : R[X]) (m : ℕ := f.natDegree) (n : ℕ := g.natDegree) : R
 variable (f g : R[X]) (m n : ℕ)
 
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
-@[simp] theorem resultant_C_zero (a : R) : resultant f (C a) m 0 = a ^ m := by simp [resultant]
+@[simp]
+theorem resultant_C_zero_right (a : R) : resultant f (C a) m 0 = a ^ m := by simp [resultant]
 
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
-theorem resultant_C (a : R) : resultant f (C a) m = a ^ m := by simp
+theorem resultant_C_right (a : R) : resultant f (C a) m = a ^ m := by simp
 
 end resultant
 
