@@ -57,7 +57,7 @@ jobs:
               printf $'%s DELETE done\n' "${inComment}"
 
             else
-              data=$(printf $'{"labels":["%s"]}' "${label}")
+              data="$(printf $'{"labels":["%s"]}' "${label}")"
               printf $'Using data: %s\n' "${data}"
               # we use curl rather than octokit/request-action so that the job won't fail
               # (and send an annoying email) if the labels don't exist
