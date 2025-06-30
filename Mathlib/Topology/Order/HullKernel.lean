@@ -84,7 +84,7 @@ lemma preimage_Ici_union_preimage_Ici (hT : ∀ p ∈ T, InfPrime p) (a b : α) 
 
 /- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
-lemma Ici_compl_inter_Ici_compl_eq (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
+lemma preimage_Ici_compl_inter_preimage_Ici_compl (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (T ↓∩ (Ici a)ᶜ) ∩ (T ↓∩ (Ici b)ᶜ) = T ↓∩ (Ici (a ⊓ b))ᶜ := by
   rw [preimage_compl, preimage_compl, preimage_compl, ← (preimage_Ici_union_preimage_Ici hT),
     compl_union]
