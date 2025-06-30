@@ -74,10 +74,9 @@ theorem mem_vonNeumann {x : ZFSet} : x ∈ V_ o ↔ rank x < o := by
   exact ⟨fun ⟨a, h₁, h₂⟩ ↦ h₂.trans_lt h₁, by aesop⟩
 
 @[simp]
-theorem rank_vonNeumann (o : Ordinal) : rank (V_ o) = o := by
-  apply le_antisymm
-  · rw [← subset_vonNeumann]
-  · exact le_of_forall_lt fun a ha ↦ rank_vonNeumann a ▸ rank_lt_of_mem (vonNeumann_mem_of_lt ha)
+theorem rank_vonNeumann (o : Ordinal) : rank (V_ o) = o :=
+  le_antisymm (by rw [← subset_vonNeumann]) <| le_of_forall_lt fun a ha ↦
+    rank_vonNeumann a ▸ rank_lt_of_mem (vonNeumann_mem_of_lt ha)
 termination_by o
 
 @[simp]
