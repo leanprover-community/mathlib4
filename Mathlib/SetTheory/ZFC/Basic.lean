@@ -381,17 +381,17 @@ theorem singleton_eq_pair_iff {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y
 
 set_option linter.deprecated false in
 /-- `omega` is the first infinite von Neumann ordinal -/
-@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2025-06-30")]
 def omega : ZFSet :=
   mk PSet.omega
 
 set_option linter.deprecated false in
-@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2025-06-30")]
 theorem omega_zero : ∅ ∈ omega :=
   ⟨⟨0⟩, Equiv.rfl⟩
 
 set_option linter.deprecated false in
-@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2025-06-30")]
 theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
   Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
     ⟨⟨n + 1⟩,
