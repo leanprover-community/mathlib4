@@ -612,12 +612,15 @@ noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDime
     (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x X : E) : E' →ₗ[ℝ] E' where
   toFun := difference cov (CovariantDerivative.trivial E E') x X
   map_add' y y' := by
-    -- follows from the (not yet proven) smoothness
     have A : fderiv ℝ ((extend 𝓘(ℝ, E) E' y  (x := x)) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
         fderiv ℝ (extend 𝓘(ℝ, E) E' y (x := x)) x + fderiv ℝ (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
       rw [fderiv_add]
-      · sorry -- apply (contMDiff_extend _ _).contMDiffAt.DifferentiableAt
-      · sorry -- similar
+      · sorry -- like the sorry below!
+      · apply Differentiable.differentiableAt
+        rw [← mdifferentiable_iff_differentiable]
+        apply ContMDiff.mdifferentiable (n := 1) (hn := by norm_num)
+        sorry -- is contMDiff_extend, except that now we care about
+        -- the outcome of post-composing with the projection from Trivial E E' to E'...
     have B : cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y  (x := x) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
       cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y (x := x)) x +
         cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
