@@ -92,7 +92,7 @@ lemma preimage_Ici_compl_inter_preimage_Ici_compl (hT : ∀ p ∈ T, InfPrime p)
 variable [DecidableEq α] [OrderTop α]
 
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
-relative-closed set of the form `T ↓∩ Ici a` where `a = ⊓ F`. -/
+relative-closed set of the form `T ↓∩ Ici a` where `a = ⨅ F`. -/
 open Finset in
 lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ ↑(upperClosure F.toSet) = T ↓∩ Ici (inf F id) := by
