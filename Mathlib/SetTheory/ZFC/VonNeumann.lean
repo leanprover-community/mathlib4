@@ -19,6 +19,8 @@ that `⋃ o, V_ o = univ`.
 - `V_ o` is notation for `vonNeumann o`. It is scoped in the `ZFSet` namespace.
 -/
 
+universe u
+
 open Order
 
 namespace ZFSet
@@ -30,13 +32,15 @@ namespace ZFSet
 - `vonNeumann_succ`: `V_ (succ a) = powerset (V_ a)`
 - `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
 -/
-noncomputable def vonNeumann (o : Ordinal) : ZFSet :=
+noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
   ⋃₀ range fun a : Set.Iio o ↦ powerset (vonNeumann a)
 termination_by o
 decreasing_by exact a.2
 
 @[inherit_doc]
 scoped notation "V_ " => vonNeumann
+
+variable {a b o : Ordinal}
 
 theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   rw [vonNeumann]
@@ -45,12 +49,12 @@ theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   exact (isTransitive_vonNeumann a).powerset
 termination_by o
 
-theorem vonNeumann_mem_of_lt {a b : Ordinal} (h : a < b) : V_ a ∈ V_ b := by
+theorem vonNeumann_mem_of_lt (h : a < b) : V_ a ∈ V_ b := by
   rw [vonNeumann, mem_sUnion]
   refine ⟨_, mem_range_self ⟨a, h⟩, ?_⟩
   rw [mem_powerset]
 
-theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : V_ a ⊆ V_ b := by
+theorem vonNeumann_subset_of_le (h : a ≤ b) : V_ a ⊆ V_ b := by
   obtain rfl | h := h.eq_or_lt
   · rfl
   · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
@@ -69,7 +73,7 @@ theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ 
     rw [mem_powerset, subset_vonNeumann]
 termination_by o
 
-theorem mem_vonNeumann {o : Ordinal} {x : ZFSet} : x ∈ V_ o ↔ rank x < o := by
+theorem mem_vonNeumann {x : ZFSet} : x ∈ V_ o ↔ rank x < o := by
   rw [vonNeumann]
   simp_rw [mem_sUnion, mem_range]
   constructor
@@ -88,11 +92,11 @@ theorem rank_vonNeumann (o : Ordinal) : rank (V_ o) = o := by
 termination_by o
 
 @[simp]
-theorem vonNeumann_mem_vonNeumann_iff {a b : Ordinal} : V_ a ∈ V_ b ↔ a < b := by
+theorem vonNeumann_mem_vonNeumann_iff : V_ a ∈ V_ b ↔ a < b := by
   simp [mem_vonNeumann]
 
 @[simp]
-theorem vonNeumann_subset_vonNeumann_iff {a b : Ordinal} : V_ a ⊆ V_ b ↔ a ≤ b := by
+theorem vonNeumann_subset_vonNeumann_iff : V_ a ⊆ V_ b ↔ a ≤ b := by
   simp [subset_vonNeumann]
 
 theorem vonNeumann_strictMono : StrictMono vonNeumann :=
@@ -102,7 +106,7 @@ theorem vonNeumann_injective : Function.Injective vonNeumann :=
   vonNeumann_strictMono.injective
 
 @[simp]
-theorem vonNeumann_inj {a b : Ordinal} : V_ a = V_ b ↔ a = b :=
+theorem vonNeumann_inj : V_ a = V_ b ↔ a = b :=
   vonNeumann_injective.eq_iff
 
 @[simp]
@@ -116,7 +120,7 @@ theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) := by
   ext
   rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
 
-theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
+theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
   ext
   simpa [mem_vonNeumann] using h.lt_iff_exists_lt
@@ -127,8 +131,5 @@ theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o :=
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
-
-theorem rank_def {x : ZFSet} {o : Ordinal} : rank x = o ↔ x ⊆ V_ o ∧ ∀ o' < o, ¬ x ⊆ V_ o' := by
-  simp_rw [subset_vonNeumann, not_le, forall_lt_iff_le, le_antisymm_iff]
 
 end ZFSet
