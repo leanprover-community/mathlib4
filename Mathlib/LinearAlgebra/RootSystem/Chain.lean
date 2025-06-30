@@ -350,6 +350,12 @@ lemma chainTopCoeff_of_sub {k : ι} (hk : P.root k = P.root j - P.root i) :
   replace hk : P.root k = P.root j + P.root (-i) := by simpa [sub_eq_add_neg] using hk
   simpa using chainBotCoeff_of_add (by simpa) hk
 
+lemma chainTopCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
+    P.chainTopCoeff i j = P.chainTopCoeff i k + 1 := by
+  replace h : LinearIndependent R ![P.root i, P.root k] := by rw [hk, add_comm]; simpa
+  replace hk : P.root j = P.root k - P.root i := by rw [hk]; abel
+  exact chainTopCoeff_of_sub h hk
+
 omit h
 @[deprecated (since := "2025-05-28")]
 alias chainBotCoeff_reflection_perm_right := chainBotCoeff_reflectionPerm_right
@@ -488,6 +494,15 @@ lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
     chainBotCoeff_add_chainTopCoeff_eq_pairingIn_chainTopIdx h]
   have := IsNotG2.pairingIn_mem_zero_one_two (P := P) (P.chainTopIdx i j) i
   aesop
+
+@[simp] lemma Base.chainBotCoeff_eq_zero {b : P.Base} {i j : b.support} :
+    P.chainBotCoeff i j = 0 :=
+  chainBotCoeff_eq_zero_iff.mpr <| Or.inr <| b.sub_notMem_range_root j.property i.property
+
+lemma Base.chainTopCoeff_eq_of_ne [P.IsReduced] {b : P.Base} {i j : b.support} (hij : i ≠ j) :
+    P.chainTopCoeff i j = -P.pairingIn ℤ j i := by
+  rw [← chainTopCoeff_sub_chainBotCoeff (b.linearIndependent_pair_of_ne hij)]
+  simp
 
 /-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
 roots is a root, they cannot make an acute angle.

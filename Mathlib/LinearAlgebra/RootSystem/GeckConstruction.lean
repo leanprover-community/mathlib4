@@ -48,7 +48,6 @@ a base: https://mathoverflow.net/questions/495434/
 
 ## TODO
 * Lemma stating `LinearIndependent R h` (easy using `RootPairing.Base.cartanMatrix_nondegenerate`).
-* Lemma stating `⁅e i, f j⁆ = 0` when `i ≠ j` (Lemma 3.5 from [Geck](Geck2017)).
 * Instance stating `LieModule.IsIrreducible R (lieAlgebra b) (b.support ⊕ ι → R)`
   (Lemma 4.2 from [Geck](Geck2017)). This will immediately yield that the Geck construction is
   semisimple via `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`.
@@ -155,8 +154,10 @@ lemma ω_mul_f [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support)
   simp only [← mul_assoc, ω_mul_ω] at this
   simpa [mul_assoc, ω_mul_ω] using this.symm
 
+variable [Fintype b.support] [Fintype ι] (i j : b.support)
+
 omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
+lemma lie_h_h :
     ⁅h i, h j⁆ = 0 := by
   classical
   ext (k | k) (l | l)
@@ -168,7 +169,7 @@ lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
     aesop
 
 /-- Lemma 3.3 (a) from [Geck](Geck2017). -/
-lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
+lemma lie_h_e :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
   classical
   ext (k | k) (l | l)
@@ -195,7 +196,7 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     ring
 
 /-- Lemma 3.3 (b) from [Geck](Geck2017). -/
-lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
+lemma lie_h_f :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
   classical
   suffices ω b * ⁅h j, f i⁆ = ω b * (-b.cartanMatrix i j • f i) by
@@ -212,9 +213,10 @@ lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
   · rw [Matrix.mul_smul, ω_mul_f]
     simp [mul_assoc]
 
+variable [P.IsReduced]
+
 /-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_same`. -/
-private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) (k : ι)
-    (hki : k ≠ i) (hki' : k ≠ P.reflectionPerm i i) :
+private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflectionPerm i i) :
     ⁅e i, f i⁆ (Sum.inr k) (Sum.inr k) = h i (Sum.inr k) (Sum.inr k) := by
   classical
   have h_lin_ind : LinearIndependent R ![P.root i, P.root k] := by
@@ -260,7 +262,7 @@ private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i
            P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]⟩
 
 /-- Lemma 3.4 from [Geck](Geck2017). -/
-lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) :
+lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
   letI _i := P.indexNeg
   have _i : NoZeroSMulDivisors ℤ M := have := P.reflexive_left; .int_of_charZero R M
@@ -306,19 +308,201 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
 
-lemma isSl2Triple [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι] (i : b.support) :
+lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
   h_ne_zero := fun contra ↦ by simpa [h] using congr_fun₂ contra (.inr i) (.inr i)
   lie_e_f := by rw [lie_e_f_same]
   lie_h_e_nsmul := by rw [lie_h_e]; simp
   lie_h_f_nsmul := by rw [lie_h_f]; simp
 
-lemma cartanSubalgebra_le_lieAlgebra [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι] :
+lemma cartanSubalgebra_le_lieAlgebra [DecidableEq ι] :
     cartanSubalgebra b ≤ lieAlgebra b := by
   rw [cartanSubalgebra, lieAlgebra, LieSubalgebra.lieSpan_le]
   rintro - ⟨i, rfl⟩
   rw [← lie_e_f_same]
   apply LieSubalgebra.lie_mem <;>
   exact LieSubalgebra.subset_lieSpan <| by simp
+
+section lie_e_f_ne
+
+open scoped Matrix
+
+variable {i j}
+variable (hij : i ≠ j)
+
+omit [P.IsReduced] in
+private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
+    ⁅e i, f j⁆ (Sum.inl k) (Sum.inr l) = 0 := by
+  letI := P.indexNeg
+  have aux₁ : ∀ x ∈ Finset.univ, ¬ (P.root x = P.root i + P.root l ∧ k = j ∧ x = j) := by
+    rintro  x - ⟨hl, -, rfl⟩
+    exact b.sub_notMem_range_root i.property j.property ⟨-l, by simp [hl]⟩
+  have aux₂ : ∀ x ∈ Finset.univ, ¬ (P.root x = P.root l - P.root j ∧ k = i ∧ x = -i) := by
+    rintro  x - ⟨hl, -, rfl⟩
+    replace hl : P.root i = P.root j - P.root l := by simpa [neg_eq_iff_eq_neg] using hl
+    exact b.sub_notMem_range_root i.property j.property ⟨-l, by simp [hl]⟩
+  simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
+    Matrix.fromBlocks_apply₁₁, Matrix.zero_apply, Matrix.fromBlocks_apply₁₂, Matrix.of_apply,
+    mul_ite, mul_one, mul_zero, ite_self, Finset.sum_const_zero, Matrix.fromBlocks_apply₂₂,
+    ite_mul, one_mul, zero_mul, ← ite_and, zero_add, sub_eq_zero]
+  rw [Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂]
+
+include hij
+
+private lemma lie_e_f_ne_aux₁ :
+    ⁅e i, f j⁆ᵀ (Sum.inr j) = 0 := by
+  letI := P.indexNeg
+  classical
+  ext (k | k)
+  · rw [Matrix.transpose_apply]
+    simp [lie_e_f_ne_aux₀]
+  · simp only [Matrix.transpose_apply]
+    have hij' : (i : ι) ≠ -j := by simpa using b.root_ne_neg_of_ne i.property j.property (by aesop)
+    replace hij' : (j : ι) ≠ -i := by contrapose! hij'; rw [← neg_eq_iff_eq_neg, hij']
+    simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
+      Matrix.fromBlocks_apply₂₁, Matrix.of_apply, Matrix.fromBlocks_apply₁₂, and_true, mul_ite,
+      mul_one, mul_zero, ← ite_and, Matrix.fromBlocks_apply₂₂, sub_self, P.ne_zero, reduceIte,
+      Finset.sum_const_zero, add_zero, hij', and_false, Base.chainBotCoeff_eq_zero,
+      CharP.cast_eq_zero, zero_add]
+    rw [Finset.sum_eq_single_of_mem j (Finset.mem_univ _) (by aesop)]
+    rcases eq_or_ne k i with rfl | hk; swap
+    · rw [if_neg (by tauto), Finset.sum_ite_of_false (by aesop)]; simp
+    by_cases hij_mem : P.root i + P.root j ∈ range P.root
+    · obtain ⟨m, hm⟩ := hij_mem
+      rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by rintro x - hx; simp [← hm, hx]),
+        b.abs_cartanMatrix_apply, Base.cartanMatrix, Base.cartanMatrixIn_def]
+      have aux₁ := b.chainTopCoeff_eq_of_ne hij.symm
+      have aux₂ := chainTopCoeff_of_add (b.linearIndependent_pair_of_ne hij.symm) hm
+      norm_cast
+      aesop
+    · have aux : ∀ x ∈ Finset.univ,
+          ¬ (P.root x = P.root i + P.root j ∧ P.root i = P.root x - P.root j) := by
+        rintro x - ⟨hx, -⟩; exact hij_mem ⟨x, hx⟩
+      rw [Finset.sum_ite_of_false aux]
+      simp [b.cartanMatrix_apply_eq_zero_iff hij, hij_mem]
+
+private lemma lie_e_f_ne_aux₂ :
+    letI := P.indexNeg
+    ⁅e i, f j⁆ᵀ (Sum.inr (-i)) = 0 := by
+  letI := P.indexNeg
+  classical
+  ext (k | k)
+  · rw [Matrix.transpose_apply]
+    simp [lie_e_f_ne_aux₀]
+  · -- This proof is insane: fix it up!
+    have : ⁅e i, f j⁆ * ω b = - ω b * ⁅e j, f i⁆ := by
+      calc
+        ⁅e i, f j⁆ * ω b = e i * f j * ω b - f j * e i * ω b := by rw [Ring.lie_def, sub_mul]
+                       _ = ω b * (f i * e j) - ω b * (e j * f i) := ?_
+                       _ = -ω b * ⁅e j, f i⁆ := by rw [Ring.lie_def, mul_sub]; simp; abel
+      rw [mul_assoc, ← ω_mul_e, mul_assoc, ← ω_mul_f, ← mul_assoc, ← mul_assoc, ← ω_mul_f,
+        ← ω_mul_e, mul_assoc, mul_assoc]
+    have aux (A : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :
+        A (Sum.inr k) (Sum.inr (-i)) = (A * ω b) (Sum.inr k) (Sum.inr i) := by simp [ω]
+    rw [Matrix.transpose_apply, aux ⁅e i, f j⁆, this]
+    rw [← Matrix.transpose_apply (-ω b * ⁅e j, f i⁆)]
+    rw [Matrix.transpose_mul]
+    rw [Matrix.mul_apply']
+    change (⁅e j, f i⁆ᵀ (Sum.inr i)) ⬝ᵥ _ = _
+    rw [lie_e_f_ne_aux₁ hij.symm]
+    simp
+
+/-- Lemma 3.5 from [Geck](Geck2017).
+
+Note that the assumption `[P.IsNotG2]` is redundant and can be dropped by addressing:
+https://github.com/leanprover-community/mathlib4/blob/6a0a7c723bd4fdc5ca679048efb76eb2bf725b3e/Mathlib/LinearAlgebra/RootSystem/Chain.lean#L551
+-/
+lemma lie_e_f_ne [P.IsNotG2] :
+    ⁅e i, f j⁆ = 0 := by
+  letI := P.indexNeg
+  classical
+  ext (k | k) (l | l)
+  · simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
+      Matrix.fromBlocks_apply₁₁, Matrix.zero_apply, mul_zero, Finset.sum_const_zero,
+      Matrix.fromBlocks_apply₁₂, Matrix.of_apply, Matrix.fromBlocks_apply₂₁, mul_ite, ite_mul,
+      one_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, reduceIte, neg_inj, zero_add]
+    aesop
+  · exact lie_e_f_ne_aux₀ k l
+  · have aux₁ : P.root k ≠ P.root i - P.root j :=
+      fun contra ↦ b.sub_notMem_range_root i.property j.property ⟨k, contra⟩
+    simp [e, f, ← sub_eq_add_neg, if_neg aux₁]
+  · /- Geck Case 1. -/
+    rcases eq_or_ne l j with rfl | h₃
+    · rw [← Matrix.transpose_apply ⁅e i, f j⁆, lie_e_f_ne_aux₁ hij, Pi.zero_apply,
+        Matrix.zero_apply]
+    rcases eq_or_ne l (-i) with rfl | h₄
+    · rw [← Matrix.transpose_apply ⁅e i, f j⁆, lie_e_f_ne_aux₂ hij, Pi.zero_apply,
+        Matrix.zero_apply]
+    /- Geck Case 2.
+    It's all just definition unfolding and case analysis: the only real content is the external
+    lemma `chainBotCoeff_mul_chainTopCoeff`. -/
+    have aux₁ : ∀ x ∈ Finset.univ, ¬ ((x = i ∧ l = -i) ∧ k = -j) := by
+      rintro - - ⟨⟨-, contra⟩, -⟩
+      contradiction
+    have aux₂ : ∀ x ∈ Finset.univ, ¬ ((x = j ∧ l = j) ∧ k = i) := by
+      rintro - - ⟨⟨-, contra⟩, -⟩
+      contradiction
+    simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
+      Matrix.fromBlocks_apply₂₁, Matrix.of_apply, Matrix.fromBlocks_apply₁₂, mul_ite, mul_one,
+      mul_zero, ← ite_and, Matrix.fromBlocks_apply₂₂, ite_mul, zero_mul, Matrix.zero_apply]
+    rw [Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂]
+    simp only [Finset.sum_const_zero, zero_add]
+    by_cases h₅ : P.root l + P.root i - P.root j ∈ range P.root; swap
+    · have aux₃ : ∀ x ∈ Finset.univ,
+          ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
+        rintro x - ⟨hx, hx'⟩
+        exact h₅ ⟨k, by rw [hx', hx]; abel⟩
+      have aux₄ : ∀ x ∈ Finset.univ,
+          ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
+        rintro x - ⟨hx, hx'⟩
+        exact h₅ ⟨k, by rw [hx', hx]; abel⟩
+      rw [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
+      simp
+    by_cases h₆ : P.root l + P.root i ∈ range P.root; swap
+    · have h₇ : P.root l - P.root j ∉ range P.root := by
+        rwa [b.root_sub_mem_iff_root_add_mem i j l (by aesop) i.property j.property
+          (by aesop) (by aesop) h₅]
+      have aux₃ : ∀ x ∈ Finset.univ,
+          ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
+        rintro x - ⟨hx, -⟩
+        exact h₆ ⟨x, by rw [hx]; abel⟩
+      have aux₄ : ∀ x ∈ Finset.univ,
+          ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
+        rintro x - ⟨hx, hx'⟩
+        exact h₇ ⟨x, hx⟩
+      rw [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
+      simp
+    obtain ⟨m, hm : P.root m = P.root l - P.root j⟩ :=
+      b.root_sub_root_mem_of_mem_of_mem i j l (by aesop) i.property j.property h₅ h₃ h₆
+    obtain ⟨l', hl'⟩ := h₆
+    by_cases hk : P.root k = P.root l + P.root i - P.root j; swap
+    · have aux₃ : ∀ x ∈ Finset.univ,
+          ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
+        rintro x - ⟨hx, hx'⟩
+        exact hk <| by rw [hx', hx]; abel
+      have aux₄ : ∀ x ∈ Finset.univ,
+          ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
+        rintro x - ⟨hx, hx'⟩
+        exact hk <| by rw [hx', hx]; abel
+      rw [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
+      simp
+    have aux₃ (x) (hx : x ≠ m) :
+        ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
+      contrapose! hx
+      rw [← hx.1, EmbeddingLike.apply_eq_iff_eq] at hm
+      exact hm.symm
+    have aux₄ (x) (hx : x ≠ l') :
+        ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
+      contrapose! hx
+      rw [add_comm, ← hx.1, EmbeddingLike.apply_eq_iff_eq] at hl'
+      exact hl'.symm
+    rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₃ _ h)]),
+      Finset.sum_eq_single_of_mem l' (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₄ _ h)]),
+      if_pos (⟨hm, by rw [hm, hk]; abel⟩), if_pos ⟨by rw [hl', add_comm], by rw [hl', hk]⟩,
+      sub_eq_zero]
+    have := chainBotCoeff_mul_chainTopCoeff i.property j.property (by aesop) hl'.symm hm.symm h₅
+    norm_cast
+
+end lie_e_f_ne
 
 end RootPairing.GeckConstruction

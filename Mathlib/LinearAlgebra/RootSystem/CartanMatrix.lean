@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.RootSystem.Base
+import Mathlib.LinearAlgebra.RootSystem.Chain
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
@@ -113,6 +114,18 @@ lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i
   refine (not_linearIndependent_iff.mpr ?_) b.linearIndepOn_root
   refine ⟨⟨{i, j}, by simpa⟩, Finsupp.single i (1 : R) + Finsupp.single j (2 : R), ?_⟩
   simp [contra, hij, hij.symm]
+
+lemma cartanMatrix_eq_neg_chainTopCoeff [Finite ι] [IsDomain R] {i j : b.support} (hij : i ≠ j) :
+    b.cartanMatrix i j = - P.chainTopCoeff j i := by
+  replace hij := b.linearIndependent_pair_of_ne hij.symm
+  simp [cartanMatrix, cartanMatrixIn_def, ← chainBotCoeff_sub_chainTopCoeff hij]
+
+lemma cartanMatrix_apply_eq_zero_iff [Finite ι] [IsDomain R] {i j : b.support} (hij : i ≠ j) :
+    b.cartanMatrix i j = 0 ↔ P.root i + P.root j ∉ range P.root := by
+  rw [b.cartanMatrix_eq_neg_chainTopCoeff hij, neg_eq_zero, Int.natCast_eq_zero,
+    P.chainTopCoeff_eq_zero_iff]
+  replace hij := b.linearIndependent_pair_of_ne hij.symm
+  tauto
 
 lemma abs_cartanMatrix_apply [Finite ι] [DecidableEq ι] [IsDomain R] {i j : b.support} :
     |b.cartanMatrix i j| = (if i = j then 4 else 0) - b.cartanMatrix i j := by
