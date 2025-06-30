@@ -83,11 +83,9 @@ lemma isIntegralCurveAt_iff :
     rw [IsIntegralCurveAt, Filter.eventually_iff_exists_mem] at h
     obtain ⟨s, hs, h⟩ := h
     exact ⟨s, hs, fun t ht ↦ (h t ht).hasMFDerivWithinAt⟩
-  · intro h
+  · rintro ⟨s, hs, h⟩
     rw [IsIntegralCurveAt, Filter.eventually_iff_exists_mem]
-    obtain ⟨s, hs, h⟩ := h
-    rw [mem_nhds_iff] at hs
-    obtain ⟨s', h1, h2, h3⟩ := hs
+    obtain ⟨s', h1, h2, h3⟩ := mem_nhds_iff.mp hs
     refine ⟨s', h2.mem_nhds h3, ?_⟩
     intro t ht
     apply (h t (h1 ht)).hasMFDerivAt
@@ -103,9 +101,7 @@ lemma isIntegralCurveAt_iff' :
   · intro ⟨s, hs, h⟩
     rw [Metric.mem_nhds_iff] at hs
     obtain ⟨ε, hε, hε'⟩ := hs
-    refine ⟨ε, hε, ?_⟩
-    intro t ht
-    exact (h t (hε' ht)).mono hε'
+    refine ⟨ε, hε, fun t ht ↦ (h t (hε' ht)).mono hε'⟩
   · intro ⟨ε, hε, h⟩
     exact ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
 
