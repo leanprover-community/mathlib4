@@ -404,6 +404,7 @@ lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
     have (x') : (a * (B.repr v) x') = a • (B.repr v) x' := by rw [smul_eq_mul]
     simp_rw [this, IsScalarTower.smul_assoc a, Finset.smul_sum]
 
+variable (F) in
 omit [IsManifold I 0 M] in
 lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :

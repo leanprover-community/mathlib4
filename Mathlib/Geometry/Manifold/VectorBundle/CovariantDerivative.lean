@@ -113,6 +113,90 @@ lemma mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s �
 
 end prerequisites
 
+-- prerequisite: smoothness from smoothness on an open cover,
+-- and smoothness of pairing with a bump function
+section contMDiff_union
+
+open Set
+
+-- M be a smooth manifold modeled on (E, H)
+variable {𝕜 E E' M M' H H' : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E']
+  [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace H'] [TopologicalSpace M']
+  {n : WithTop ℕ∞} {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
+  [ChartedSpace H M] /-[IsManifold I n M]-/ [ChartedSpace H' M'] -- [IsManifold I' n M']
+  {f : M → M'} {s t : Set M}
+
+-- TODO: add ContMDiffWithinAt, perhaps ContmDiffAt versions!
+
+/-- If a function is `C^k` on two open sets, it is also `C^n` on their union. -/
+lemma ContMDiffOn.union_of_isOpen (hf : ContMDiffOn I I' n f s) (hf' : ContMDiffOn I I' n f t)
+    (hs : IsOpen s) (ht : IsOpen t) :
+    ContMDiffOn I I' n f (s ∪ t) := by
+  intro x hx
+  obtain (hx | hx) := hx
+  · exact (hf x hx).contMDiffAt (hs.mem_nhds hx) |>.contMDiffWithinAt
+  · exact (hf' x hx).contMDiffAt (ht.mem_nhds hx) |>.contMDiffWithinAt
+
+/-- A function is `C^k` on two open sets iff it is `C^k` on their union. -/
+lemma contMDiffOn_union_iff_of_isOpen (hs : IsOpen s) (ht : IsOpen t) :
+    ContMDiffOn I I' n f (s ∪ t) ↔ ContMDiffOn I I' n f s ∧ ContMDiffOn I I' n f t :=
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩,
+   fun ⟨hfs, hft⟩ ↦ ContMDiffOn.union_of_isOpen hfs hft hs ht⟩
+
+lemma contMDiff_of_contMDiffOn_union_of_isOpen (hf : ContMDiffOn I I' n f s)
+    (hf' : ContMDiffOn I I' n f t) (hst : s ∪ t = univ) (hs : IsOpen s) (ht : IsOpen t) :
+    ContMDiff I I' n f := by
+  rw [← contMDiffOn_univ, ← hst]
+  exact hf.union_of_isOpen hf' hs ht
+
+-- XXX: continuous version known?
+/-- If a function is `C^k` on open sets `s i`, it is `C^k` on their union -/
+lemma ContMDiffOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
+    (hf : ∀ i : ι, ContMDiffOn I I' n f (s i)) (hs : ∀ i, IsOpen (s i)) :
+    ContMDiffOn I I' n f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, rfl⟩, hxsi⟩
+  exact (hf i).contMDiffAt ((hs i).mem_nhds hxsi) |>.contMDiffWithinAt
+
+/-- A function is `C^k` on a union of open sets `s i` iff it is `C^k` on each `s i`. -/
+lemma contMDiffOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set M}
+    (hs : ∀ i, IsOpen (s i)) :
+    ContMDiffOn I I' n f (⋃ i, s i) ↔ ∀ i : ι, ContMDiffOn I I' n f (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
+   fun h ↦ ContMDiffOn.iUnion_of_isOpen h hs⟩
+
+lemma contMDiff_of_contMDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
+    (hf : ∀ i : ι, ContMDiffOn I I' n f (s i)) (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
+    ContMDiff I I' n f := by
+  rw [← contMDiffOn_univ, ← hs']
+  exact ContMDiffOn.iUnion_of_isOpen hf hs
+
+/-- A section is `C^n` whenever it is `C^n` on its support.
+This is a more global version of `contMDiff_of_tsupport` (which does not apply, as it assumes the
+co-domain has a zero: the total space of a vector bundle has none): in return for the additional
+generality, we need to add a hypothesis about the zero section being smooth. -/
+lemma ContMDiff.of_contMDiffOn_smul_bump_function [SMul 𝕜 M'] (hf : ContMDiffOn I I' n f s)
+    (hs : IsOpen s) {ψ : M → 𝕜} (hψ : ContMDiff I 𝓘(𝕜) n ψ) (hψ' : tsupport ψ ⊆ s)
+    -- XXX: is there a better abstraction of "the zero section"?
+    (hzero : ContMDiff I I' n (fun x ↦ (0 : 𝕜) • f x)) : ContMDiff I I' n (ψ • f) := by
+  apply contMDiff_of_contMDiffOn_union_of_isOpen ?_ ?_ ?_ hs
+    (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
+  · -- TODO: impose further typeclasses to make this true...
+    sorry -- scalar multiplication is C^n, for sections: will be done for local frames as well
+  · apply (hzero.contMDiffOn (s := (tsupport ψ)ᶜ)).congr
+    intro y hy
+    simp [image_eq_zero_of_notMem_tsupport hy]
+  · -- XXX: simplify/clean up this proof!
+    apply le_antisymm (by simp)
+    rw [← union_compl_self (s := tsupport ψ)]
+    change tsupport ψ ∪ (tsupport ψ)ᶜ ⊆ s ∪ (tsupport ψ)ᶜ
+    gcongr
+
+-- See also `ContMDiff.of_contMDiffOn_smul_bump_function` for the analogous result applying
+-- to sections of vector bundles (whose co-domain has no zero).
+
+end contMDiff_union
+
 @[ext]
 structure CovariantDerivative where
   toFun : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)
