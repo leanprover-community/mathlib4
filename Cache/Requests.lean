@@ -37,7 +37,7 @@ Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
   IO.println s!"Is {remoteName} a remote URL? {isRemoteURL remoteName}"
-  -- Remove the previous print statement and uncomment when confident
+  -- Remove the print statement above and uncomment the lines below when confident
   -- if isRemoteURL remoteName then
   --   return remoteName
   -- else
