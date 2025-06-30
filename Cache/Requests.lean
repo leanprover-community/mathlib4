@@ -28,10 +28,19 @@ def extractRepoFromUrl (url : String) : Option String := do
   let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
   return url.extract (url.next pos) url.endPos
 
+/-- Spot check if a URL is valid for a git remote -/
+def isRemoteURL (url : String) : Bool :=
+  "https://".isPrefixOf url || "http://".isPrefixOf url || "git@github.com:".isPrefixOf url
+
 /--
 Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
+  IO.println s!"Is {remoteName} a remote URL? {isRemoteURL remoteName}"
+  -- Remove the previous print statement and uncomment when confident
+  -- if isRemoteURL remoteName then
+  --   return remoteName
+  -- else
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
