@@ -149,11 +149,11 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ Action.res _ φ :=
 
 open Finsupp
 
-noncomputable instance : Limits.PreservesColimits (indFunctor k φ) :=
-  (indResAdjunction k φ).leftAdjoint_preservesColimits
+noncomputable instance : (indFunctor k φ).IsLeftAdjoint :=
+  (indResAdjunction k φ).isLeftAdjoint
 
-noncomputable instance : Limits.PreservesLimits (Action.res (ModuleCat.{u} k) φ) :=
-  (indResAdjunction k φ).rightAdjoint_preservesLimits
+noncomputable instance : (Action.res (ModuleCat.{u} k) φ).IsRightAdjoint :=
+  (indResAdjunction k φ).isRightAdjoint
 
 end Adjunction
 end Rep
