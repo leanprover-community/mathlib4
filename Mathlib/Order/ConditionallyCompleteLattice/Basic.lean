@@ -567,8 +567,6 @@ theorem Monotone.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : �
     (hf : Monotone f) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   (hf.map_isLeast (isLeast_csInf hs)).csInf_eq.symm
 
-
-
 end ConditionallyCompleteLinearOrder
 
 /-!
