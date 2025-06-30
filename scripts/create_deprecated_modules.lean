@@ -167,6 +167,9 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
 /--
 `mkModName fname` takes as input a file path and returns the guessed module name:
 the dir-separators get converted to `.` and a trailing `.lean` gets removed, if it exists.
+
+*Note*. The input path is relative to the root of the project.  E.g., within `mathlib`, every path
+effectively starts as `Mathlib/...`.
 -/
 def mkModName (fname : System.FilePath) : String :=
   let cpts := fname.components
@@ -180,16 +183,19 @@ def mkModName (fname : System.FilePath) : String :=
 #guard mkModName ("Mathlib" / "Data" / "Nat" / "Basic.lean") == "Mathlib.Data.Nat.Basic"
 
 /--
-`deprecateFilePath fname comment` takes as input
+`deprecateFilePath fname rename comment` takes as input
 * the path `fname` of a file that was deleted;
+* an optional module name `rename`, in case the file was renamed, rather than removed;
 * an optional comment to add in the `deprecated module` syntax.
 
 It returns a pair consisting of
 * an array of `MessageData` giving details about the last time that `fname` was modified
   and when it was deleted;
-* the content of the deprecated file, matching the original `fname` up to the last import command
-  followed by the `deprecated_module` command with the optional `comment` input, defaulting to
-  `Auto-generated deprecation` if `comment = none`.
+* if `rename = some preRenamedModule`, then a suggestion to create a file with `import newName`
+  in the regenerated module `preRenamedModule`; otherwise
+  the content of the deprecated file, matching the original `fname` up to the last import command.
+  In both cases, after the imports, there will be the `deprecated_module` command with the optional
+  `comment` input, defaulting to `Auto-generated deprecation` if `comment = none`.
 -/
 def deprecateFilePath (fname : String) (rename comment : Option String) :
     CommandElabM (Array MessageData × String) := do
@@ -202,7 +208,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   let log ← runCmd s!"git log --pretty=oneline -2 -- {fname}"
   let [deleted, lastModified] := log.trim.splitOn "\n" |
     throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
-      Please make sure the file {fname} actually exists"
+      Please make sure the file {fname} existed at some point!"
   let (_deleteHash, deletedMsg) ← processPrettyOneLine deleted "deleted" fname
   let (modifiedHash, modifiedMsg) ← processPrettyOneLine lastModified "last modified" fname
   msgs := msgs.push <| m!"The file {fname} was\n"
