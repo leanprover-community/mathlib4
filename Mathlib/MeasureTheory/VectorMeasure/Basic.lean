@@ -330,7 +330,7 @@ open Classical in
 @[simps]
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
   measureOf' := fun s : Set α => if MeasurableSet s then μ.real s else 0
-  empty' := by simp [μ.empty]
+  empty' := by simp
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
     simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁, measureReal_def]
@@ -382,7 +382,7 @@ open Classical in
 @[simps]
 def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   measureOf' := fun i : Set α => if MeasurableSet i then μ i else 0
-  empty' := by simp [μ.empty]
+  empty' := by simp
   not_measurable' _ hi := if_neg hi
   m_iUnion' _ hf₁ hf₂ := by
     rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
@@ -1172,7 +1172,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
       intro n m hnm
       exact ((hf₂ hnm).inf_left' i).inf_right' i
     simp only [toMeasureOfZeroLE', s.restrict_apply hi₁ (MeasurableSet.iUnion hf₁), Set.inter_comm,
-      Set.inter_iUnion, s.of_disjoint_iUnion h₁ h₂, ENNReal.some_eq_coe, id]
+      Set.inter_iUnion, s.of_disjoint_iUnion h₁ h₂]
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
       s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ Set.inter_subset_left hi₂)
     rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
@@ -1262,7 +1262,7 @@ theorem toSignedMeasure_toMeasureOfZeroLE :
 theorem toSignedMeasure_restrict_eq_restrict_toSignedMeasure (hs : MeasurableSet s) :
     μ.toSignedMeasure.restrict s = (μ.restrict s).toSignedMeasure := by
   ext A hA
-  simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs, restrict_apply]
+  simp [VectorMeasure.restrict_apply, toSignedMeasure_apply, hA, hs]
 
 theorem toSignedMeasure_le_toSignedMeasure_iff :
     μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν := by

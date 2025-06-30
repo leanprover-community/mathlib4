@@ -399,10 +399,10 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
         obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis α, y1 ∈ a ∧ a ⊆ u :=
           IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis α) yu u_open
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop]
         exact ⟨a, ya, ha, v, v_open, yv, (Set.prod_mono_left au).trans huv⟩
       · rintro ⟨y1, y2⟩ hy
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop] at hy
         rcases hy with ⟨a, ya, -, b, -, yb, hb⟩
         exact hb (mem_prod.2 ⟨ya, yb⟩)
     rw [this]
@@ -420,10 +420,10 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
         obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis β, y2 ∈ a ∧ a ⊆ v :=
           IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis β) yv v_open
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop]
         exact ⟨a, ⟨u, u_open, yu, (Set.prod_mono_right au).trans huv⟩, ha, ya⟩
       · rintro ⟨y1, y2⟩ hy
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop] at hy
         rcases hy with ⟨a, ⟨b, -, yb, hb⟩, -, ya⟩
         exact hb (mem_prod.2 ⟨yb, ya⟩)
     rw [this]

@@ -345,7 +345,7 @@ variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset �
 theorem filter_singleton (a : α) : filter p {a} = if p a then {a} else ∅ := by
   classical
     ext x
-    simp only [mem_singleton, forall_eq, mem_filter]
+    simp only [mem_singleton, mem_filter]
     split_ifs with h <;> by_cases h' : x = a <;> simp [h, h']
 
 theorem filter_cons_of_pos (a : α) (s : Finset α) (ha : a ∉ s) (hp : p a) :
@@ -424,12 +424,12 @@ theorem filter_or (s : Finset α) : (s.filter fun a => p a ∨ q a) = s.filter p
   ext fun _ => by simp [mem_filter, mem_union, and_or_left]
 
 theorem filter_and (s : Finset α) : (s.filter fun a => p a ∧ q a) = s.filter p ∩ s.filter q :=
-  ext fun _ => by simp [mem_filter, mem_inter, and_comm, and_left_comm, and_self_iff, and_assoc]
+  ext fun _ => by simp [mem_filter, mem_inter, and_comm, and_left_comm, and_assoc]
 
 theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p :=
   ext fun a => by
-    simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
-      Bool.not_eq_true, and_or_left, and_not_self, or_false]
+    simp only [mem_filter, and_comm, mem_sdiff, not_and_or,
+      and_or_left, and_not_self, or_false]
 
 lemma filter_and_not (s : Finset α) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     s.filter (fun a ↦ p a ∧ ¬ q a) = s.filter p \ s.filter q := by
@@ -446,7 +446,7 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
     · intro x
       simp
     · intro x
-      simp only [not_not, coe_filter, Set.mem_setOf_eq, Set.mem_diff, and_imp]
+      simp only [coe_filter, Set.mem_setOf_eq, Set.mem_diff, and_imp]
       intro hx hx₂
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
@@ -460,12 +460,12 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
     s.filter (Eq b) = ite (b ∈ s) {b} ∅ := by
   split_ifs with h
   · ext
-    simp only [mem_filter, mem_singleton, decide_eq_true_eq]
+    simp only [mem_filter, mem_singleton]
     refine ⟨fun h => h.2.symm, ?_⟩
     rintro rfl
     exact ⟨h, rfl⟩
   · ext
-    simp only [mem_filter, not_and, iff_false, notMem_empty, decide_eq_true_eq]
+    simp only [mem_filter, not_and, iff_false, notMem_empty]
     rintro m rfl
     exact h m
 
@@ -480,7 +480,7 @@ theorem filter_eq' [DecidableEq β] (s : Finset β) (b : β) :
 theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
     (s.filter fun a => b ≠ a) = s.erase b := by
   ext
-  simp only [mem_filter, mem_erase, Ne, decide_not, Bool.not_eq_true', decide_eq_false_iff_not]
+  simp only [mem_filter, mem_erase, Ne]
   tauto
 
 theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
@@ -673,7 +673,7 @@ variable [DecidableEq α]
 lemma toFinset_replicate (n : ℕ) (a : α) :
     (replicate n a).toFinset = if n = 0 then ∅ else {a} := by
   ext x
-  simp only [mem_toFinset, Finset.mem_singleton, mem_replicate]
+  simp only [mem_toFinset, mem_replicate]
   split_ifs with hn <;> simp [hn]
 
 end Multiset
