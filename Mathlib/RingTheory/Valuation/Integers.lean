@@ -96,7 +96,20 @@ theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
   rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
   exact mul_le_mul_left' (hv.2 z) _
 
+lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
+  constructor <;> intro h
+  · exact hv.hom_inj.nontrivial
+  · obtain ⟨o0, ho0⟩ := hv.exists_of_le_one (r := 0) (by simp)
+    obtain ⟨o1, ho1⟩ := hv.exists_of_le_one (r := 1) (by simp)
+    refine ⟨o0, o1, ?_⟩
+    rintro rfl
+    simp [ho1] at ho0
+
 end Integers
+
+lemma integers_nontrivial (v : Valuation R Γ₀) :
+    Nontrivial v.integer ↔ Nontrivial R :=
+  (Valuation.integer.integers v).nontrivial_iff
 
 end CommRing
 
