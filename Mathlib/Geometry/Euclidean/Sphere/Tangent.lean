@@ -179,6 +179,10 @@ lemma IsTangentAt.mem_and_mem_iff_eq {s : Sphere P} {p q : P} {as : AffineSubspa
   · rintro rfl
     exact ⟨h.mem_sphere, h.mem_space⟩
 
+lemma IsTangentAt.eq_of_mem_of_mem {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hs : q ∈ s) (has : q ∈ as) : q = p :=
+  h.mem_and_mem_iff_eq.1 ⟨hs, has⟩
+
 /-- The affine subspace `as` is tangent to the sphere `s` at some point. -/
 def IsTangent (s : Sphere P) (as : AffineSubspace ℝ P) : Prop :=
   ∃ p, s.IsTangentAt p as
