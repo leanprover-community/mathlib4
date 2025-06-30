@@ -43,6 +43,11 @@ theorem isClosed_ker (f : WeakBilin B →L[𝕜] 𝕜) :
     IsClosed (ker f : Set (WeakBilin B)) :=
   f.coe_ker ▸ IsClosed.preimage f.continuous (T1Space.t1 0)
 
+-- Kreyszig  2.7-9 continuous iff bounded, continuous iff continuous at a point
+
+-- Conway Theorem V1.3 p125 dual of dual - if `e` is in the topological dual of the topological dual
+-- of `E` then `e` is in `E`. Uses A 1.4 (intersection of kernels)
+
 end
 
 
