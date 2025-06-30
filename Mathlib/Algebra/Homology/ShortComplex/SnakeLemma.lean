@@ -378,6 +378,20 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ 
   congr 1
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
 
+theorem mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
+  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
+
+theorem epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
+  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
+
+theorem isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
+  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
+
+/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
+noncomputable def δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
+    S.L₀.X₃ ≅ S.L₃.X₁ :=
+  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
+
 variable (S₁ S₂ S₃ : SnakeInput C)
 
 /-- A morphism of snake inputs involve four morphisms of short complexes
