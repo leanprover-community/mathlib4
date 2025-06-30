@@ -764,7 +764,7 @@ theorem isCoboundary₂_of_mem_coboundaries₂
 
 end ofDistribMulAction
 
-/-! The next few sections, until the section `Cohomology`, are a multiplicative copy of the
+/-! The next few sections, until the section `CocyclesIso`, are a multiplicative copy of the
 previous few sections beginning with `IsCocycle`. Unfortunately `@[to_additive]` doesn't work with
 scalar actions. -/
 
