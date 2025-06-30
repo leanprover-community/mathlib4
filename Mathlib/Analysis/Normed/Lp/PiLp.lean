@@ -658,6 +658,10 @@ theorem dist_eq_of_L2 (x y : PiLp 2 β) :
     dist x y = √(∑ i, dist (x i) (y i) ^ 2) := by
   simp_rw [dist_eq_norm, norm_eq_of_L2, sub_apply]
 
+theorem dist_sq_eq_of_L2 (x y : PiLp 2 β) :
+    dist x y ^ 2 = ∑ i, dist (x i) (y i) ^ 2 := by
+  simp_rw [dist_eq_norm, norm_sq_eq_of_L2, sub_apply]
+
 theorem nndist_eq_of_L2 (x y : PiLp 2 β) :
     nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
   NNReal.eq <| by
