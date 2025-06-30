@@ -54,7 +54,7 @@ variable (f g : R[X]) (m n : ℕ)
 
 @[simp] theorem sylvester_C_right (a : R) :
     sylvester f (C a) m 0 = Matrix.diagonal (fun _ ↦ a) :=
-  Matrix.ext fun i j ↦ j.addCases (Fin.elim0 ·) fun j ↦ by
+  Matrix.ext fun i j ↦ j.addCases Fin.rec0 fun j ↦ by
     rw [sylvester, Matrix.of_apply, Fin.addCases_right, Matrix.diagonal_apply]
     split_ifs <;> simp_all [Fin.ext_iff]
 
