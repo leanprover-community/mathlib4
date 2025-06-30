@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+import Mathlib.CategoryTheory.Limits.Final
 
 /-! # Properties of the truncated simplex category
 
@@ -12,7 +13,7 @@ untruncated simplex category, and the inclusion functor from the `n`-truncated t
 simplex category, for `n ≤ m` are initial.
 -/
 
-open Simplicial CategoryTheory Limits
+open Simplicial CategoryTheory
 
 namespace SimplexCategory.Truncated
 
