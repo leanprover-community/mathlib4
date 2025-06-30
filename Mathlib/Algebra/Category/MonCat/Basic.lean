@@ -388,6 +388,12 @@ instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
     (f : X →* Y) :
     (forget₂ CommMonCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
 
+/-- The forget functor from `CommMonCat` to `MonCat` is fully faithful. -/
+@[to_additive fullyFaithfulForgetToAddMonCat
+  "The forget functor from `AddCommMonCat` to `AddMonCat` is fully faithful."]
+def fullyFaithfulForgetToMonCat : (forget₂ CommMonCat.{u} MonCat.{u}).FullyFaithful where
+  preimage f := ofHom f.hom
+
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
 
