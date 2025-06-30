@@ -52,6 +52,9 @@ We say that the bundle is *Riemannian* if the inner product depends continuously
 This assumption is spelled `IsContinuousRiemannianBundle F E` where `F` is the model fiber,
 and `E : B → Type*` is the bundle. -/
 class IsContinuousRiemannianBundle : Prop where
+  /-- There exists a bilinear form, depending continuously on the basepoint and defining the
+  inner product in the fibers. This is expressed as an existence statement so that it is Prop-valued
+  in terms of existing data, the inner product on the fibers and the fiber bundle structure. -/
   exists_continuous : ∃ g : (Π x, E x →L[ℝ] E x →L[ℝ] ℝ),
     Continuous (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] F →L[ℝ] ℝ) x (g x))
     ∧ ∀ (x : B) (v w : E x), ⟪v, w⟫ = g x v w
@@ -131,9 +134,19 @@ a point distort the norm by a factor arbitrarily close to 1. -/
 lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr : 1 < r) :
     ∀ᶠ y in 𝓝 x, ‖((trivializationAt F E x).symmL ℝ x)
       ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y)‖ < r := by
+  /- We will expand the definition of continuity of the inner product structure, in the chart.
+  Denote `g' x` the metric in the fiber of `x`, read in the chart. For `y` close to `x`, then
+  `g' y` and `g' x` are close. The inequality we have to prove reduces to comparing
+  `g' y w w` and `g' x w w`, where `w` is the image in the chart of a tangent vector `v` at `y`.
+  Their difference is controlled by `δ ‖w‖ ^ 2` for any small `δ > 0`. To conclude, we argue that
+  `‖w‖` is comparable to the norm inside the fiber over `x`, i.e., `g' x w w`, because there
+  is a continuous linear equivalence between these two spaces by definition of vector bundles. -/
   obtain ⟨r', hr', r'r⟩ : ∃ r', 1 < r' ∧ r' < r := exists_between hr
   have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   let G := (trivializationAt F E x).continuousLinearEquivAt ℝ x h'x
+  -- choose `δ` small enough that, in the end of the argument, the error `δ ‖w‖ ^ 2` will be small
+  -- enough in terms of `r`. The key player here is the norm of the linear equivalence between
+  -- the fiber over `x` and the model space, which is unknown a priori, but positive and finite.
   obtain ⟨δ, δpos, hδ, h'δ⟩ : ∃ δ, 0 < δ ∧ 0 < 1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2
       ∧ (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹ < r' ^ 2 := by
     have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
@@ -152,8 +165,8 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
       simpa using hr'.trans_le (le_abs_self _)
     exact (A.and (B'.and C')).exists
   rcases h.exists_continuous with ⟨g, g_cont, hg⟩
-  let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun x_1 ↦
-    inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x x_1 x x_1 (g x_1)
+  let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun y ↦
+    inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x y x y (g y)
   have hg' : ContinuousAt g' x := by
     have W := g_cont.continuousAt (x := x)
     simp only [continuousAt_hom_bundle] at W
@@ -163,7 +176,10 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     apply hg' _ δpos
   filter_upwards [this, (trivializationAt F E x).open_baseSet.mem_nhds h'x] with y hy h'y
   have : ‖g' x - g' y‖ ≤ δ := by rw [← dist_eq_norm']; exact hy.le
+  -- To show that the norm of the composition is bounded by `r'`, we start from a vector
+  -- `‖v‖`. We will show that its image has a controlled norm.
   apply (opNorm_le_bound _ (by linarith) (fun v ↦ ?_)).trans_lt r'r
+  -- rewrite the norm of `‖v‖` and of its image in terms of norms in the model space
   let w := (trivializationAt F E x).continuousLinearMapAt ℝ y v
   suffices ‖((trivializationAt F E x).symmL ℝ x) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
     le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
@@ -182,6 +198,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
     simp
   rw [hgx, hgy]
+  -- get a good control for the norms of `w` in the model space, using continuity
   have : g' x w w ≤ δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g' x w w + g' y w w := calc
         g' x w w
     _ = (g' x - g' y) w w + g' y w w := by simp
@@ -233,9 +250,19 @@ a point distort the norm by a factor arbitrarily close to 1. -/
 lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr : 1 < r) :
     ∀ᶠ y in 𝓝 x, ‖((trivializationAt F E x).symmL ℝ y)
       ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ x)‖ < r := by
+  /- We will expand the definition of continuity of the inner product structure, in the chart.
+  Denote `g' x` the metric in the fiber of `x`, read in the chart. For `y` close to `x`, then
+  `g' y` and `g' x` are close. The inequality we have to prove reduces to comparing
+  `g' y w w` and `g' x w w`, where `w` is the image in the chart of a tangent vector `v` at `x`.
+  Their difference is controlled by `δ ‖w‖ ^ 2` for any small `δ > 0`. To conclude, we argue that
+  `‖w‖` is comparable to the norm inside the fiber over `x`, i.e., `g' x w w`, because there
+  is a continuous linear equivalence between these two spaces by definition of vector bundles. -/
   obtain ⟨r', hr', r'r⟩ : ∃ r', 1 < r' ∧ r' < r := exists_between hr
   have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   let G := (trivializationAt F E x).continuousLinearEquivAt ℝ x h'x
+  -- choose `δ` small enough that, in the end of the argument, the error `δ ‖w‖ ^ 2` will be small
+  -- enough in terms of `r`. The key player here is the norm of the linear equivalence between
+  -- the fiber over `x` and the model space, which is unknown a priori, but positive and finite.
   obtain ⟨δ, δpos, h'δ⟩ : ∃ δ, 0 < δ
       ∧ (1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) < r' ^ 2 := by
     have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
@@ -248,8 +275,8 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
       simpa using hr'.trans_le (le_abs_self _)
     exact (A.and C').exists
   rcases h.exists_continuous with ⟨g, g_cont, hg⟩
-  let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun x_1 ↦
-    inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x x_1 x x_1 (g x_1)
+  let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun y ↦
+    inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x y x y (g y)
   have hg' : ContinuousAt g' x := by
     have W := g_cont.continuousAt (x := x)
     simp only [continuousAt_hom_bundle] at W
@@ -259,7 +286,10 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     apply hg' _ δpos
   filter_upwards [this, (trivializationAt F E x).open_baseSet.mem_nhds h'x] with y hy h'y
   have : ‖g' y - g' x‖ ≤ δ := by rw [← dist_eq_norm]; exact hy.le
+  -- To show that the norm of the composition is bounded by `r'`, we start from a vector
+  -- `‖v‖`. We will show that its image has a controlled norm.
   apply (opNorm_le_bound _ (by linarith) (fun v ↦ ?_)).trans_lt r'r
+  -- rewrite the norm of `‖v‖` and of its image in terms of norms in the model space
   let w := (trivializationAt F E x).continuousLinearMapAt ℝ x v
   suffices ‖((trivializationAt F E x).symmL ℝ y) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
     le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
@@ -278,6 +308,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     rw [inCoordinates_apply_eq₂ h'y h'y (Set.mem_univ _)]
     simp
   rw [hgx, hgy]
+  -- get a good control for the norms of `w` in the model space, using continuity
   calc g' y w w
     _ = (g' y - g' x) w w + g' x w w := by simp
     _ ≤ ‖g' y - g' x‖ * ‖w‖ * ‖w‖ + g' x w w := by
