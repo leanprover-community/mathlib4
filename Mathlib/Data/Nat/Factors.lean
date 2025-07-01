@@ -128,20 +128,17 @@ theorem primeFactorsList_eq_nil (n : ℕ) : n.primeFactorsList = [] ↔ n = 0 �
     · exact primeFactorsList_zero
     · exact primeFactorsList_one
 
-theorem primeFactorsList_length_ne_zero (n : ℕ) : n.primeFactorsList.length ≠ 0 ↔ 2 ≤ n := by
+theorem length_primeFactorsList_ne_zero (n : ℕ) : n.primeFactorsList.length ≠ 0 ↔ 2 ≤ n := by
   simp; omega
 
 @[simp]
 theorem primeFactorsList_length_eq_one (n : ℕ) : n.primeFactorsList.length = 1 ↔ n.Prime := by
   refine ⟨fun h ↦ ?_, fun h ↦ primeFactorsList_prime h ▸ rfl⟩
-  rcases List.length_eq_one_iff.mp h with ⟨p, hp⟩
+  obtain ⟨p, hp⟩ := List.length_eq_one_iff.mp h
   have : p = n := by
-    have : 2 ≤ n := n.primeFactorsList_length_ne_zero.mp (by simp +decide only [h])
-    have h₁ := n.prod_primeFactorsList (by omega)
-    simp only [hp, List.prod_singleton] at h₁
-    exact h₁
-  rw [this, primeFactorsList_prime_iff] at hp
-  exact hp
+    have : 2 ≤ n := n.length_primeFactorsList_ne_zero.mp (by simp +decide only [h])
+    simpa [hp, List.prod_singleton] using n.prod_primeFactorsList (by omega)
+  simpa [this, primeFactorsList_prime_iff] using hp
 
 open scoped List in
 theorem eq_of_perm_primeFactorsList {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
