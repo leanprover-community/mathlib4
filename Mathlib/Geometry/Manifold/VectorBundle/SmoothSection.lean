@@ -32,7 +32,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
 -- Binary and finite sums and scalar products of smooth sections are smooth
--- XXX: also add sub, neg, nsmul and zsmul lemma (re-using proofs later in this file)
+-- XXX: also add nsmul and zsmul lemmas (re-using proofs later in this file)
 section operations
 
 -- Let V be a vector bundle
@@ -78,6 +78,60 @@ lemma contMDiff_add_section
     (ht : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x))) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) :=
   fun x₀ ↦ contMDiffAt_add_section (hs x₀) (ht x₀)
+
+lemma contMDiffWithinAt_neg_section
+    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) u x₀ := by
+  rw [contMDiffWithinAt_section] at hs ⊢
+  set e := trivializationAt F V x₀
+  refine hs.neg.congr_of_eventuallyEq ?_ ?_
+  · apply eventually_of_mem (U := e.baseSet)
+    · exact mem_nhdsWithin_of_mem_nhds <|
+        (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
+    · intro x hx
+      apply (e.linear 𝕜 hx).map_neg
+  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg
+
+lemma contMDiffAt_neg_section
+    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) x₀ :=
+  contMDiffWithinAt_neg_section hs
+
+lemma contMDiffOn_neg_section
+    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) u :=
+  fun x₀ hx₀ ↦ contMDiffWithinAt_neg_section (hs x₀ hx₀)
+
+lemma contMDiff_neg_section
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) :=
+  fun x₀ ↦ contMDiffAt_neg_section (hs x₀)
+
+lemma contMDiffWithinAt_sub_section
+    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
+    (ht : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u x₀) :
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) u x₀ := by
+  rw [sub_eq_add_neg]
+  apply contMDiffWithinAt_add_section hs <| contMDiffWithinAt_neg_section ht
+
+lemma contMDiffAt_sub_section
+    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀)
+    (ht : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) x₀) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) x₀ := by
+  rw [sub_eq_add_neg]
+  apply contMDiffAt_add_section hs <| contMDiffAt_neg_section ht
+
+lemma contMDiffOn_sub_section
+    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u)
+    (ht : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) u :=
+  fun x₀ hx₀ ↦ contMDiffWithinAt_sub_section (hs x₀ hx₀) (ht x₀ hx₀)
+
+lemma contMDiff_sub_section
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)))
+    (ht : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x))) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) :=
+  fun x₀ ↦ contMDiffAt_sub_section (hs x₀) (ht x₀)
 
 lemma contMDiffWithinAt_smul_section
     (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
@@ -220,17 +274,8 @@ instance instAdd : Add Cₛ^n⟮I; F, V⟯ :=
 theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = ⇑s + t :=
   rfl
 
-instance instSub : Sub Cₛ^n⟮I; F, V⟯ := by
-  refine ⟨fun s t => ⟨s - t, ?_⟩⟩
-  intro x₀
-  have hs := s.contMDiff x₀
-  have ht := t.contMDiff x₀
-  rw [contMDiffAt_section] at hs ht ⊢
-  set e := trivializationAt F V x₀
-  refine (hs.sub ht).congr_of_eventuallyEq ?_
-  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
-  intro x hx
-  apply (e.linear 𝕜 hx).map_sub
+instance instSub : Sub Cₛ^n⟮I; F, V⟯ :=
+  ⟨fun s t ↦ ⟨s - t, contMDiff_sub_section s.contMDiff t.contMDiff⟩⟩
 
 @[simp]
 theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
@@ -246,16 +291,8 @@ instance inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
 theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
   rfl
 
-instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
-  refine ⟨fun s => ⟨-s, ?_⟩⟩
-  intro x₀
-  have hs := s.contMDiff x₀
-  rw [contMDiffAt_section] at hs ⊢
-  set e := trivializationAt F V x₀
-  refine hs.neg.congr_of_eventuallyEq ?_
-  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
-  intro x hx
-  apply (e.linear 𝕜 hx).map_neg
+instance instNeg : Neg Cₛ^n⟮I; F, V⟯ :=
+  ⟨fun s ↦ ⟨-s, contMDiff_neg_section s.contMDiff⟩⟩
 
 @[simp]
 theorem coe_neg (s : Cₛ^n⟮I; F, V⟯) : ⇑(-s : Cₛ^n⟮I; F, V⟯) = -s :=
