@@ -6,6 +6,7 @@ Authors: Patrick Massot, Michael Rothgang
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
+import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 /-!
 # The tensoriality criterion
@@ -84,25 +85,33 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDim
     | insert a s ha h =>
         change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
         simp [Finset.sum_insert ha, ← h]
-        erw [φ_add]
-        apply hσ a
-        sorry
+        exact φ_add _ _ (hσ a) (mdifferentiableAt_finsum_section hσ)
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
   let c := Basis.localFrame_repr t b
-  rw [locality _ _ (b.localFrame_repr_spec x_mem σ), locality _ _ (b.localFrame_repr_spec x_mem σ'),
-      sum_phi, sum_phi]
+  have hs (i) : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (s i x)) x:=
+      (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
+  have hc {σ : (x : M) → V x}
+      (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x) (i) :
+        MDifferentiableAt I 𝓘(ℝ, ℝ) ((c i) σ) x := by
+      sorry
+  have hφ {σ : (x : M) → V x}
+          (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x) :
+      φ σ x = φ (fun x' ↦ ∑ i, (c i) σ x' • s i x') x := by
+    exact
+      locality hσ
+        (mdifferentiableAt_finsum_section fun i ↦ mdifferentiableAt_smul_section (hs i) (hc hσ i))
+        (Basis.localFrame_repr_spec b x_mem σ)
+  rw [hφ hσ, hφ hσ', sum_phi, sum_phi]
   · change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
     congr
     ext i
-    rw [φ_smul, φ_smul]
-    · congr
-      apply b.localFrame_repr_congr
-      assumption
-    all_goals sorry
-  all_goals sorry
+    rw [φ_smul _ _ (hc hσ i) (hs i), φ_smul _ _ (hc hσ' i) (hs i),
+        Basis.localFrame_repr_congr b hσσ']
+  · exact fun i ↦ mdifferentiableAt_smul_section (hs i) (hc hσ' i)
+  · exact fun i ↦ mdifferentiableAt_smul_section (hs i) (hc hσ i)
 
 include I in
 omit [IsManifold I 1 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
