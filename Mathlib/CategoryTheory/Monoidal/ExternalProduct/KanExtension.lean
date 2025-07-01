@@ -59,11 +59,9 @@ def isPointwiseLeftKanExtensionAtExtensionUnitLeft
   letI : I.Final := by
     letI : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e)|>.Final :=
       Functor.final_fromPUnit_of_isTerminal <| CostructuredArrow.mkIdTerminal (S := 𝟭 E) (Y := e)
-    haveI := Functor.final_iff_final_comp
+    apply Iff.mp <| Functor.final_iff_final_comp
       (F := (prod.rightUnitorEquivalence <| CostructuredArrow L d).inverse)
       (G := (𝟭 _).prod <| Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e))
-    dsimp [I] at this ⊢
-    rw [← this]
     infer_instance
   apply Functor.Final.isColimitWhiskerEquiv I (Limits.Cocone.whisker equiv.functor cone)|>.toFun
   -- through all the equivalences above, the new cocone we consider is in fact
@@ -108,11 +106,9 @@ def isPointwiseLeftKanExtensionAtExtensionUnitRight
   letI : I.Final := by
     letI : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e)|>.Final :=
       Functor.final_fromPUnit_of_isTerminal <| CostructuredArrow.mkIdTerminal (S := 𝟭 E) (Y := e)
-    haveI := Functor.final_iff_final_comp
+    apply Iff.mp <| Functor.final_iff_final_comp
       (F := (prod.leftUnitorEquivalence <| CostructuredArrow L d).inverse)
       (G := Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e)|>.prod <| 𝟭 _)
-    dsimp [I] at this ⊢
-    rw [← this]
     infer_instance
   apply Functor.Final.isColimitWhiskerEquiv I (Limits.Cocone.whisker equiv.functor cone)|>.toFun
   -- through all the equivalences above, the new cocone we consider is in fact
