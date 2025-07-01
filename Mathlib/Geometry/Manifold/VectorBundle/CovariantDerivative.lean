@@ -189,6 +189,21 @@ structure CovariantDerivative where
   smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜),
     toFun X (a • σ) = a • toFun X σ
 
+variable {I F V}
+/--
+A covariant derivative ∇ is called of class `C^k` iff,
+whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
+This is a class so typeclass inference can deduce this automatically.
+-/
+class IsCkConnection (cov : CovariantDerivative I F V) (k : ℕ∞) where
+  regularity : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x),
+    ContMDiff I (I.prod 𝓘(𝕜, F)) (k + 1) (fun x ↦ TotalSpace.mk' F x (σ x)) →
+    -- TODO: this condition does not typecheck!
+    -- ContMDiff I I.tangent k (fun x ↦ (X x : TangentBundle I M)) →
+    ContMDiff I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (cov.toFun X σ x))
+
+-- future: if g is a C^k metric, the LC connection is of class C^k ?
+
 namespace CovariantDerivative
 
 attribute [coe] toFun
@@ -217,7 +232,6 @@ lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) 
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
   [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
-variable {I F V} in
 /-- If `σ` and `σ'` are equal sections of `E`, they have equal covariant derivatives. -/
 lemma congr_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) (x : M) :
@@ -236,9 +250,9 @@ lemma sum_X (cov : CovariantDerivative I F V)
 
 /-- A convex combination of covariant derivatives is a covariant derivative. -/
 @[simps]
-def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
+def convexCombination (cov cov' : CovariantDerivative I F V) (f : M → 𝕜) :
     CovariantDerivative I F V where
-  toFun X s := (t • (cov X s)) + (1 - t) • (cov' X s)
+  toFun X s := (f • (cov X s)) + (1 - f) • (cov' X s)
   addX X X' σ := by simp only [cov.addX, cov'.addX]; module
   smulX X σ f := by simp only [cov.smulX, cov'.smulX]; module
   addσ X σ σ' x hσ hσ' := by
@@ -251,9 +265,24 @@ def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
     simp [cov.leibniz X σ f x hσ hf, cov'.leibniz X σ f x hσ hf]
     module
 
+omit [IsManifold I 0 M]
+  [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+/-- A convex combination of two `C^k` connections is a `C^k` connection. -/
+lemma convexCombination_isRegular (cov cov' : CovariantDerivative I F V) {f : M → 𝕜} {n : ℕ∞}
+    (hf : ContMDiff I 𝓘(𝕜) n f)
+    (hcov : IsCkConnection cov n) (hcov' : IsCkConnection cov' n) :
+    IsCkConnection (convexCombination cov cov' f) n where
+  regularity X σ hX /-hσ-/ := by
+    apply contMDiff_add_section
+    · exact contMDiff_smul_section hf <| hcov.regularity X σ hX
+    · exact contMDiff_smul_section (contMDiff_const.sub hf) <| hcov'.regularity X σ hX
+
+-- Future: prove finsum version of this, and one with a locally finite sum
+
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 variable (E E') in
+/-- The trivial connection on a trivial bundle, given by the directional derivative -/
 @[simps]
 noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
@@ -270,6 +299,15 @@ noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
       fderiv_smul (by simp_all) (by simp_all)
     simp [this, bar]
     rfl
+
+open scoped Manifold
+
+/-- The trivial connection on the trivial bundle is smooth -/
+-- TODO: fix parsing error with putting exponent ∞
+lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial E E') 42 where
+  regularity X σ hX /-hσ-/ := by
+    simp [trivial]
+    sorry -- where's the relevant lemma in the library?
 
 open scoped Classical in
 @[simps]
@@ -295,6 +333,8 @@ noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
       fderiv_smul (by simp_all) (by simp_all)
     simp [this, bar]
     module
+
+-- TODO: prove something about the regularity of this connection
 
 section real
 
