@@ -49,7 +49,12 @@ We have thus opted to include these two axioms and obtain a `ValueGroupWithZero`
 a `ValuativeRel` in order to best align with the literature about valuations on commutative rings.
 
 Future work could refactor `ValuativeRel` by dropping the `rel_mul_cancel` and `not_rel_one_zero`
-aximoms, opting to make these mixins instead.
+axioms, opting to make these mixins instead.
+
+## Projects
+
+The `ValuativeRel` class should eventually replace the existing `Valued` typeclass.
+Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
 -/
 
