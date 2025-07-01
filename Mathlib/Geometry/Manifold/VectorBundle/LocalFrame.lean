@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.Algebra.Monoid
+import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 
 /-!
@@ -338,6 +339,120 @@ lemma contMDiffOn_baseSet_iff_localFrame_repr [Fintype ι] [FiniteDimensional �
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet := by
   rw [contMDiffOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
+
+-- TODO: start filling in all the details from here onwards!
+
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+/-- If `s` is diffentiable at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
+near `x` induced by `e` and `b` -/
+lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x}
+    (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x)
+    (i : ι) : MDifferentiableAt I 𝓘(𝕜) (b.localFrame_repr e i s) x := by
+  -- This boils down to computing the frame coefficients in a local trivialisation.
+  classical
+  sorry /-
+  -- step 1: on e.baseSet, can compute the coefficient very well
+  let aux := fun x ↦ b.repr (e (s x)).2 i
+  -- Since e.baseSet is open, this is sufficient.
+  suffices ContMDiffAt I 𝓘(𝕜) k aux x by
+    apply this.congr_of_eventuallyEq_of_mem ?_ trivial
+    apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
+    intro y hy
+    simp [aux, Basis.localFrame_repr_eq_repr hy]
+  simp only [aux]
+
+  -- step 2: `s` read in trivialization `e` is `C^k`
+  have h₁ : ContMDiffAt I 𝓘(𝕜, F) k (fun x ↦ (e (s x)).2) x := by
+    rw [contMDiffAt_section_of_mem_baseSet hxe] at hs
+    exact hs
+  -- step 3: `b.repr` is a linear map, so the composition is smooth
+  let bas := fun v ↦ b.repr v i
+  let basl : F →ₗ[𝕜] 𝕜 := {
+    toFun := bas
+    map_add' m m' := by simp [bas]
+    map_smul' m x := by simp [bas]
+  }
+  let basL : F →L[𝕜] 𝕜 := {
+    toLinearMap := basl
+    cont := basl.continuous_of_finiteDimensional
+  }
+  have hbas : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k basL (e (s x)).2 :=
+    contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
+  exact hbas.comp x h₁ -/
+
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+/-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_repr e i`
+in the local frame induced by `e` -/
+lemma mdifferentiableOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x} {t : Set M}
+    (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
+    (hs : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
+    MDifferentiableOn I 𝓘(𝕜) (b.localFrame_repr e i s) t :=
+  fun _ hx ↦ (mdifferentiableAt_localFrame_repr (ht' hx) b
+    (hs.mdifferentiableAt (ht.mem_nhds hx)) i).mdifferentiableWithinAt
+
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+/-- If `s` is differentiable on `e.baseSet`, so is its coefficient `b.localFrame_repr e i` in the
+local frame induced by `e` -/
+lemma mdifferentiableOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x}
+    (hs : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet)
+    (i : ι) :
+    MDifferentiableOn I 𝓘(𝕜) (b.localFrame_repr e i s) e.baseSet :=
+  mdifferentiableOn_localFrame_repr b e.open_baseSet (subset_refl _) hs _
+
+omit [IsManifold I 0 M] in
+/-- A section `s` of `V` is differentiable at `x ∈ e.baseSet` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma mdifferentiableAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {x' : M} (hx : x' ∈ e.baseSet) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x' ↔
+    ∀ i, MDifferentiableAt I 𝓘(𝕜) (b.localFrame_repr e i s) x' := by
+  refine ⟨fun h i ↦ mdifferentiableAt_localFrame_repr hx b h i, fun hi ↦ ?_⟩
+  have this (i) : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦
+      TotalSpace.mk' F x ((b.localFrame_repr e i) s x • b.localFrame e i x)) x' :=
+    mdifferentiableAt_smul_section (hi i)
+      ((contMDiffAt_localFrame_of_mem 1 e b i hx).mdifferentiableAt le_rfl)
+  have almost : MDifferentiableAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (∑ i, (b.localFrame_repr e i) s x • b.localFrame e i x)) x' :=
+    mdifferentiableAt_finsum_section fun i ↦ this i
+  apply almost.congr_of_eventuallyEq ?_
+  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (b.localFrame_repr_spec hx s)
+  exact eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx]
+
+omit [IsManifold I 0 M] in
+/-- A section `s` of `V` is differentiable on `t ⊆ e.baseSet` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma mdifferentiableOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {t : Set M}
+    (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
+    MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) t ↔
+    ∀ i, MDifferentiableOn I 𝓘(𝕜) (b.localFrame_repr e i s) t := by
+  refine ⟨fun h i ↦ mdifferentiableOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
+  have this (i) : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦
+      TotalSpace.mk' F x ((b.localFrame_repr e i) s x • b.localFrame e i x)) t :=
+    mdifferentiableOn_smul_section (hi i) <|
+      ((b.contMDiffOn_localFrame_baseSet 1 e i).mono ht').mdifferentiableOn le_rfl
+  let rhs := fun x' ↦ ∑ i, (b.localFrame_repr e i) s x' • b.localFrame e i x'
+  have almost : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (rhs x)) t :=
+    mdifferentiableOn_finsum_section fun i ↦ this i
+  sorry /- TODO, missing API: MDifferentiableOn.congr! #check ContMDiffOn.congr
+  apply almost.congr
+  intro y hy
+  congr
+  exact b.localFrame_repr_sum_eq s (ht' hy) -/
+
+omit [IsManifold I 0 M] in
+/-- A section `s` of `V` is differentiable on a trivialisation domain `e.baseSet` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma mdifferentiableOn_baseSet_iff_localFrame_repr
+    [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} :
+    MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
+    ∀ i, MDifferentiableOn I 𝓘(𝕜) (b.localFrame_repr e i s) e.baseSet := by
+  rw [mdifferentiableOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
 
 end
 
