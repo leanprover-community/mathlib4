@@ -197,11 +197,7 @@ lemma contMDiffWithinAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → 
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [Finset.sum_empty]
-    -- TODO: x₀ ∈ u should not be required -> add contMDiffWithinAt_zeroSection!
-    apply ContMDiff.contMDiffOn
-    · apply contMDiff_zeroSection
-    · sorry -- x₀ ∈ u...
+    simpa only [Finset.sum_empty] using contMDiffWithinAt_zeroSection ..
   | insert i s hi h => simpa [Finset.sum_insert hi] using contMDiffWithinAt_add_section (hs i) h
 
 lemma contMDiffAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x} {x₀ : M}

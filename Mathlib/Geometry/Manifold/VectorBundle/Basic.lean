@@ -276,6 +276,10 @@ theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSect
     (mem_baseSet_trivializationAt F E x)] with y hy
     using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
 
+theorem contMDiffWithinAt_zeroSection {t : Set B} {x : B} :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) t x :=
+  (contMDiff_zeroSection _ _ x).contMDiffWithinAt
+
 end Bundle
 
 end
