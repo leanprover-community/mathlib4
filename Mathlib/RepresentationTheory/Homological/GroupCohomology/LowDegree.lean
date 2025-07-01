@@ -163,7 +163,7 @@ theorem comp_dZero_eq :
     (zeroCochainsIso A).hom ≫ dZero A =
       (inhomogeneousCochains A).d 0 1 ≫ (oneCochainsIso A).hom := by
   ext x y
-  show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
+  change A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
   simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
     Finset.sum_singleton, sub_eq_add_neg]
   rcongr i <;> exact Fin.elim0 i
@@ -193,7 +193,7 @@ theorem comp_dOne_eq :
     (oneCochainsIso A).hom ≫ dOne A =
       (inhomogeneousCochains A).d 1 2 ≫ (twoCochainsIso A).hom := by
   ext x y
-  show A.ρ y.1 (x _) - x _ + x _ =  _ + _
+  change A.ρ y.1 (x _) - x _ + x _ =  _ + _
   rw [Fin.sum_univ_two]
   simp only [Fin.val_zero, zero_add, pow_one, neg_smul, one_smul, Fin.val_one,
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
@@ -224,7 +224,7 @@ theorem comp_dTwo_eq :
     (twoCochainsIso A).hom ≫ dTwo A =
       (inhomogeneousCochains A).d 2 3 ≫ (threeCochainsIso A).hom := by
   ext x y
-  show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
+  change A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
   rw [Fin.sum_univ_three]
   simp only [sub_eq_add_neg, add_assoc, Fin.val_zero, zero_add, pow_one, neg_smul,

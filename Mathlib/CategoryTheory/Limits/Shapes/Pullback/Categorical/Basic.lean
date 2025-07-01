@@ -205,7 +205,7 @@ namespace CatCommSqOver
 
 /-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps]
-def asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
+instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
   iso := S.iso
 
 @[reassoc (attr := simp)]

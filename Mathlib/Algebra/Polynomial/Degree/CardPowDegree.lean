@@ -90,7 +90,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
     pow_pos (Int.natCast_pos.mpr card_pos) n
   { map_lt_map_iff' := fun {p q} => by
       classical
-      show cardPowDegree p < cardPowDegree q ↔ degree p < degree q
+      change cardPowDegree p < cardPowDegree q ↔ degree p < degree q
       simp only [cardPowDegree_apply]
       split_ifs with hp hq hq
       · simp only [hp, hq, lt_self_iff_false]

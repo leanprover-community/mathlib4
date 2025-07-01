@@ -210,13 +210,7 @@ theorem map_bracket_eq [LieModule R L M] : map f ⁅I, N⁆ = ⁅I, map f N⁆ :
     lieIdeal_oper_eq_linear_span, Submodule.map_span]
   congr
   ext m
-  constructor
-  · rintro ⟨-, ⟨⟨x, ⟨n, hn⟩, rfl⟩, hm⟩⟩
-    simp only [LieModuleHom.coe_toLinearMap, LieModuleHom.map_lie] at hm
-    exact ⟨x, ⟨f n, (mem_map (f n)).mpr ⟨n, hn, rfl⟩⟩, hm⟩
-  · rintro ⟨x, ⟨m₂, hm₂ : m₂ ∈ map f N⟩, rfl⟩
-    obtain ⟨n, hn, rfl⟩ := (mem_map m₂).mp hm₂
-    exact ⟨⁅x, n⁆, ⟨x, ⟨n, hn⟩, rfl⟩, by simp⟩
+  simp
 
 theorem comap_bracket_eq [LieModule R L M] (hf₁ : f.ker = ⊥) (hf₂ : N₂ ≤ f.range) :
     comap f ⁅I, N₂⁆ = ⁅I, comap f N₂⁆ := by
