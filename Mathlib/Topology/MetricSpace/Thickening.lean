@@ -151,7 +151,7 @@ theorem thickening_singleton (δ : ℝ) (x : X) : thickening δ ({x} : Set X) = 
 
 theorem ball_subset_thickening {x : X} {E : Set X} (hx : x ∈ E) (δ : ℝ) :
     ball x δ ⊆ thickening δ E :=
-  Subset.trans (by simp [Subset.rfl]) (thickening_subset_of_subset δ <| singleton_subset_iff.mpr hx)
+  Subset.trans (by simp) (thickening_subset_of_subset δ <| singleton_subset_iff.mpr hx)
 
 /-- The (open) `δ`-thickening `Metric.thickening δ E` of a subset `E` in a metric space equals the
 union of balls of radius `δ` centered at points of `E`. -/
@@ -384,6 +384,22 @@ theorem thickening_closure : thickening δ (closure s) = thickening δ s := by
 @[simp]
 theorem cthickening_closure : cthickening δ (closure s) = cthickening δ s := by
   simp_rw [cthickening, infEdist_closure]
+
+lemma thickening_eq_empty_iff_of_pos (hε : 0 < ε) :
+    thickening ε s = ∅ ↔ s = ∅ :=
+  ⟨fun h ↦ subset_eq_empty (self_subset_thickening hε _) h, by simp +contextual⟩
+
+lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
+    (thickening ε s).Nonempty ↔ s.Nonempty := by
+  simp [nonempty_iff_ne_empty, thickening_eq_empty_iff_of_pos hε]
+
+@[simp] lemma thickening_eq_empty_iff : thickening ε s = ∅ ↔ ε ≤ 0 ∨ s = ∅ := by
+  obtain hε | hε := lt_or_ge 0 ε
+  · simp [thickening_eq_empty_iff_of_pos, hε]
+  · simp [hε, thickening_of_nonpos hε]
+
+@[simp] lemma thickening_nonempty_iff : (thickening ε s).Nonempty ↔ 0 < ε ∧ s.Nonempty := by
+  simp [nonempty_iff_ne_empty]
 
 open ENNReal
 
