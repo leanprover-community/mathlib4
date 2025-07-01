@@ -237,14 +237,13 @@ lemma mdifferentiableWithinAt_neg_section
     MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (- s x)) u x₀ := by
   rw [mdifferentiableWithinAt_section] at hs ⊢
   set e := trivializationAt F E x₀
-  sorry
-  -- refine hs.neg.congr_of_eventuallyEq ?_ ?_
-  -- · apply eventually_of_mem (U := e.baseSet)
-  --   · exact mem_nhdsWithin_of_mem_nhds <|
-  --       (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
-  --   · intro x hx
-  --     apply (e.linear 𝕜 hx).map_neg
-  -- · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg
+  refine hs.neg.congr_of_eventuallyEq ?_ ?_
+  · apply eventually_of_mem (U := e.baseSet)
+    · exact mem_nhdsWithin_of_mem_nhds <|
+        (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
+    · intro x hx
+      apply (e.linear 𝕜 hx).map_neg
+  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg
 
 lemma mdifferentiableAt_neg_section
     (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
