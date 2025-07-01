@@ -45,18 +45,11 @@ should hold in both worlds, usually with additional assumptions of countability.
 Note that `sSup s` and `sInf s` are only guaranteed to be the supremum and the infifmum of `s` when
 `s` is countable. If `s` is not countable and `IsLUB s a` is true, then `sSup s = a` might not hold.
 -/
-class SigmaCompleteLattice (α) extends Lattice α, SupSet α, InfSet α where
+class SigmaCompleteLattice (α) extends Lattice α, SupSet α, InfSet α, BoundedOrder α where
   /-- Any countable set has its supremum as a least upper bound. -/
   isLUB_σsSup (s : Set α) (hs : s.Countable) : IsLUB s (sSup s)
   /-- Any countable set has its infimum as a greatest lower bound. -/
   isGLB_σsInf (s : Set α) (hs : s.Countable) : IsGLB s (sInf s)
-
-instance (priority := 100) SigmaCompleteLattice.toBoundedOrder [SigmaCompleteLattice α] :
-    BoundedOrder α where
-  top := sInf ∅
-  bot := sSup ∅
-  le_top (a : α) := isGLB_empty_iff.1 (isGLB_σsInf ∅ Set.countable_empty) a
-  bot_le (a : α) := isLUB_empty_iff.1 (isLUB_σsSup ∅ Set.countable_empty) a
 
 /-- A complete lattice is a σ-complete lattice. -/
 instance (priority := 100) CompleteLattice.toSigmaCompleteLattice [CompleteLattice α] :
@@ -66,12 +59,8 @@ instance (priority := 100) CompleteLattice.toSigmaCompleteLattice [CompleteLatti
 
 instance OrderDual.instSigmaCompleteLattice (α : Type*) [SigmaCompleteLattice α] :
     SigmaCompleteLattice αᵒᵈ where
-  toSupSet := inferInstance
-  toInfSet := inferInstance
   isLUB_σsSup (s : Set α) (hs : s.Countable) := IsGLB.dual (SigmaCompleteLattice.isGLB_σsInf s hs)
   isGLB_σsInf (s : Set α) (hs : s.Countable) := IsLUB.dual (SigmaCompleteLattice.isLUB_σsSup s hs)
-
-
 
 /-- A Boolean σ-algebra is a `BooleanAlgebra` and a `SigmaCompleteLattice`.
 
