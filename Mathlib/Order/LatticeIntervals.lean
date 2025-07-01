@@ -45,7 +45,7 @@ instance orderBot [PartialOrder α] {a b : α} [Fact (a < b)] : OrderBot (Ico a 
   (isLeast_Ico Fact.out).orderBot
 
 @[simp, norm_cast]
-protected lemma coe_bot [PartialOrder α] {a b : α} [Fact (a < b)] : ↑(⊥ : Ico a b) = a := rfl
+protected lemma coe_bot [PartialOrder α] (a b : α) [Fact (a < b)] : ↑(⊥ : Ico a b) = a := rfl
 
 protected lemma disjoint_iff [SemilatticeInf α] {a b : α} [Fact (a < b)] {x y : Ico a b} :
     Disjoint x y ↔ ↑x ⊓ ↑y = a := by
@@ -80,7 +80,7 @@ instance orderTop [PartialOrder α] {a b : α} [Fact (a < b)] : OrderTop (Ioc a 
   (isGreatest_Ioc Fact.out).orderTop
 
 @[simp, norm_cast]
-protected lemma coe_top [PartialOrder α] {a b : α} [Fact (a < b)] : ↑(⊤ : Ioc a b) = b := rfl
+protected lemma coe_top [PartialOrder α] (a b : α) [Fact (a < b)] : ↑(⊤ : Ioc a b) = b := rfl
 
 protected lemma codisjoint_iff [SemilatticeSup α] {a b : α} [Fact (a < b)] {x y : Ioc a b} :
     Codisjoint x y ↔ ↑x ⊔ ↑y = b := by
@@ -128,9 +128,8 @@ instance orderTop [Preorder α] :
   top := ⟨a, le_refl a⟩
   le_top x := x.prop
 
-@[simp]
-theorem coe_top [Preorder α] : (⊤ : Iic a) = a :=
-  rfl
+@[simp, norm_cast]
+protected lemma coe_top [Preorder α] (a : α) : (⊤ : Iic a) = a := rfl
 
 protected lemma eq_top_iff [Preorder α] {x : Iic a} :
     x = ⊤ ↔ (x : α) = a := by
@@ -141,9 +140,8 @@ instance orderBot [Preorder α] [OrderBot α] :
   bot := ⟨⊥, bot_le⟩
   bot_le := fun ⟨_, _⟩ => Subtype.mk_le_mk.2 bot_le
 
-@[simp]
-theorem coe_bot [Preorder α] [OrderBot α] : (⊥ : Iic a) = (⊥ : α) :=
-  rfl
+@[simp, norm_cast]
+protected lemma coe_bot [Preorder α] [OrderBot α] (a : α) : (⊥ : Iic a) = (⊥ : α) := rfl
 
 instance [Preorder α] [OrderBot α] : BoundedOrder (Iic a) :=
   { Iic.orderTop, Iic.orderBot with }
@@ -196,18 +194,16 @@ instance orderBot [Preorder α] {a : α} :
   bot := ⟨a, le_refl a⟩
   bot_le x := x.prop
 
-@[simp]
-theorem coe_bot [Preorder α] {a : α} : ↑(⊥ : Ici a) = a :=
-  rfl
+@[simp, norm_cast]
+protected lemma coe_bot [Preorder α] (a : α) : ↑(⊥ : Ici a) = a := rfl
 
 instance orderTop [Preorder α] [OrderTop α] {a : α} :
     OrderTop (Ici a) where
   top := ⟨⊤, le_top⟩
   le_top := fun ⟨_, _⟩ => Subtype.mk_le_mk.2 le_top
 
-@[simp]
-theorem coe_top [Preorder α] [OrderTop α] {a : α} : ↑(⊤ : Ici a) = (⊤ : α) :=
-  rfl
+@[simp, norm_cast]
+protected lemma coe_top [Preorder α] [OrderTop α] (a : α) : ↑(⊤ : Ici a) = (⊤ : α) := rfl
 
 instance boundedOrder [Preorder α] [OrderTop α] {a : α} : BoundedOrder (Ici a) :=
   { Ici.orderTop, Ici.orderBot with }
@@ -254,14 +250,14 @@ instance [Preorder α] [Fact (a ≤ b)] : OrderBot (Icc a b) :=
   (isLeast_Icc Fact.out).orderBot
 
 @[simp, norm_cast]
-theorem coe_bot [Preorder α] [Fact (a ≤ b)] : ↑(⊥ : Icc a b) = a := rfl
+protected lemma coe_bot [Preorder α] (a b : α) [Fact (a ≤ b)] : ↑(⊥ : Icc a b) = a := rfl
 
 /-- `Icc a b` has a top element whenever `a ≤ b`. -/
 instance [Preorder α] [Fact (a ≤ b)] : OrderTop (Icc a b) :=
   (isGreatest_Icc Fact.out).orderTop
 
 @[simp, norm_cast]
-theorem coe_top [Preorder α] [Fact (a ≤ b)] : ↑(⊤ : Icc a b) = b := rfl
+protected lemma coe_top [Preorder α] (a b : α) [Fact (a ≤ b)] : ↑(⊤ : Icc a b) = b := rfl
 
 /-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
 instance [Preorder α] [Fact (a ≤ b)] : BoundedOrder (Icc a b) where
