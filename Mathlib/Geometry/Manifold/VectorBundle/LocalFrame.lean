@@ -3,8 +3,8 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.Algebra.Monoid
+import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 
 /-!
 # Local frames in a vector bundle
@@ -241,7 +241,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
     apply this.congr_of_eventuallyEq_of_mem ?_ trivial
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, hy, Basis.localFrame_repr_eq_repr hy]
+    simp [aux, Basis.localFrame_repr_eq_repr hy]
   simp only [aux]
 
   -- step 2: `s` read in trivialization `e` is `C^k`
@@ -307,14 +307,9 @@ lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [C
     -- lemma localFrame_repr is smooth, localFrame is smooth => scalar product is
     -- does this already exist? if not, missing API!
     sorry
-  let rhs₀ (i) := fun x' ↦ (localFrame_repr e b i) s x' • localFrame e b i x'
-  let rhs := fun x' ↦ ∑ i, rhs₀ i x'
-  have almost : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k
-      (fun x ↦ TotalSpace.mk' F x (rhs x)) t := by
-    unfold rhs
-    -- TODO: add a dependent function version of contMDiffOn_finsum, for sections of a vector bundle
-    -- have aux := contMDiffOn_finsum (I' := I) (I := I.prod 𝓘(𝕜, F)) (f := fun i x ↦ rhs₀ i x)
-    sorry
+  let rhs := fun x' ↦ ∑ i, (localFrame_repr e b i) s x' • localFrame e b i x'
+  have almost : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (rhs x)) t :=
+    contMDiffOn_finsum_section fun i ↦ inner i
   apply almost.congr
   intro y hy
   congr
