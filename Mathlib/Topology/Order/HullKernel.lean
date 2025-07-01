@@ -159,8 +159,7 @@ lemma sInter_preimage_Ici (S : Set α) : ⋂₀ { T ↓∩ Ici a | a ∈ S } = T
 /- When `α` is complete, the relative basis for the lower topology is also closed under arbitrary
 unions. -/
 lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
-  simp only [preimage_compl, sUnion_eq_compl_sInter_compl, sInter_image, mem_setOf_eq,
-    ← sInter_preimage_Ici, compl_sInter, mem_image, exists_exists_and_eq_and]
+  simp [sUnion_eq_compl_sInter_compl, ← sInter_preimage_Ici, compl_sInter]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
