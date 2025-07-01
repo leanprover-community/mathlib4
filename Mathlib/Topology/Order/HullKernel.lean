@@ -156,7 +156,7 @@ lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ Ici a | a ∈ S } = T ↓�
   simp_all only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     mem_preimage, mem_Ici, sSup_le_iff]
 
-/- When `α` is complete, the relative basis for the Lower topology is also closed under arbitary
+/- When `α` is complete, the relative basis for the lower topology is also closed under arbitrary
 unions. -/
 lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
   simp only [preimage_compl, sUnion_eq_compl_sInter_compl, sInter_image, mem_setOf_eq,
