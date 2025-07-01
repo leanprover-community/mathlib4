@@ -258,12 +258,54 @@ def convexCombination (cov cov' : CovariantDerivative I F V) (f : M → 𝕜) :
   addσ X σ σ' x hσ hσ' := by
     simp [cov.addσ X σ σ' x hσ hσ', cov'.addσ X σ σ' x hσ hσ']
     module
-  smul_const_σ X {σ x} /-hσ-/ := by
+  smul_const_σ X {σ a} /-hσ-/ := by
     simp [cov.smul_const_σ, cov'.smul_const_σ]
     module
   leibniz X σ f x hσ hf := by
     simp [cov.leibniz X σ f x hσ hf, cov'.leibniz X σ f x hσ hf]
     module
+
+/-- A finite convex combination of covariant derivatives is a covariant derivative. -/
+def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
+    (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
+    CovariantDerivative I F V where
+  toFun X t := ∑ i ∈ s, (f i) • (cov i) X t
+  addX X X' σ := by
+    rw [← Finset.sum_add_distrib]
+    congr
+    ext i
+    simp [(cov i).addX]
+  smulX X σ g := by
+    rw [Finset.smul_sum]
+    congr
+    ext i
+    simp [(cov i).smulX]
+    module
+  addσ X σ σ' x hσ hσ' := by
+    -- XXX: is this nicer using induction?
+    classical
+    induction s using Finset.induction with
+    | empty => simp
+    | insert a s has h =>
+      simp [Finset.sum_insert has]
+      sorry
+  smul_const_σ X {σ a} /-hσ-/ := by
+    rw [Finset.smul_sum]
+    congr
+    ext i x
+    simp [(cov i).smul_const_σ]
+    module
+  leibniz X σ g x hσ hf := by
+    calc (∑ i ∈ s, f i • (cov i) X (g • σ)) x
+      _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
+            + f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x) := sorry -- rewrite using (cov i).leibniz
+      _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
+        + ∑ i ∈ s, f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x) := by
+        rw [Finset.sum_add_distrib]
+        simp; sorry
+      _ = (g • ∑ i ∈ s, f i • (cov i) X σ) x + (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x :=
+        -- use hf and pull out g...
+        sorry
 
 omit [IsManifold I 0 M]
   [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
@@ -277,7 +319,26 @@ lemma convexCombination_isRegular (cov cov' : CovariantDerivative I F V) {f : M 
     · exact contMDiff_smul_section hf <| hcov.regularity X σ hX
     · exact contMDiff_smul_section (contMDiff_const.sub hf) <| hcov'.regularity X σ hX
 
--- Future: prove finsum version of this, and one with a locally finite sum
+omit [IsManifold I 0 M]
+  [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+/-- A convex combination of finitely many `C^k` connections is a `C^k` connection. -/
+lemma convexCombination'_isRegular {ι : Type*} {s : Finset ι} [Nonempty s]
+    (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞}
+    (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
+    (hcov : ∀ i ∈ s, IsCkConnection (cov i) n) :
+    IsCkConnection (convexCombination' cov hf) n where
+  regularity X σ hX /-hσ-/ := by
+    unfold convexCombination'
+    dsimp
+    have ms (i) (hi : i ∈ s) : ContMDiff I (I.prod 𝓘(𝕜, F)) n
+        fun x ↦ TotalSpace.mk' F x ((f i • (cov i) X σ) x) := by
+      apply contMDiff_smul_section (hf' i hi)
+      exact IsCkConnection.regularity X σ hX (self := hcov i hi)
+    simp only [Finset.sum_apply, Pi.smul_apply']
+    exact contMDiff_finsum_section (t := fun i ↦ f i • (cov i) X σ) ms
+
+-- Future: prove a version with a locally finite sum, and deduce that C^k connections always
+-- exist (using a partition of unity argument)
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
