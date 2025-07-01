@@ -45,29 +45,34 @@ instance : Inhabited (CommMon_ C) :=
 variable {M : CommMon_ C}
 
 instance : Category (CommMon_ C) :=
-  InducedCategory.category CommMon_.toMon_
+  inferInstanceAs (Category (InducedCategory _ CommMon_.toMon_))
 
 @[simp]
-theorem id_hom (A : CommMon_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom (A : CommMon_ C) : Mon_.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
 @[simp]
 theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+    Mon_.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
 
 @[ext]
-lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_.Hom.ext h
+lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
+  InducedCategory.hom_ext (Mon_.Hom.ext h)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): the following two lemmas `id'` and `comp'`
--- have been added to ease automation;
-@[simp]
-lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
+/-- Constructor for morphisms in `CommMon_ C`. -/
+@[simps]
+def homMk {A B : CommMon_ C} (f : A.toMon_ ⟶ B.toMon_) : A ⟶ B where
+  hom := f
 
-@[simp]
-lemma comp' {A₁ A₂ A₃ : CommMon_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+---- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): the following two lemmas `id'` and `comp'`
+---- have been added to ease automation;
+--@[simp]
+--lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
+--
+--@[simp]
+--lemma comp' {A₁ A₂ A₃ : CommMon_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+--    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
 
 section
 
@@ -96,7 +101,8 @@ theorem forget₂Mon_obj_mul (A : CommMon_ C) : μ[((forget₂Mon_ C).obj A).X] 
   rfl
 
 @[simp]
-theorem forget₂Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+theorem forget₂Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) :
+    ((forget₂Mon_ C).map f).hom = f.hom.hom :=
   rfl
 
 @[deprecated (since := "2025-02-07")] alias forget₂_Mon_obj_one := forget₂Mon_obj_one
@@ -124,13 +130,17 @@ variable {M N : CommMon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.
 def mkIso : M ≅ N :=
   (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso f one_f mul_f)
 
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
+@[simp] lemma mkIso_hom_hom_hom : (mkIso f one_f mul_f).hom.hom.hom = f.hom := rfl
+@[simp] lemma mkIso_inv_hom_hom : (mkIso f one_f mul_f).inv.hom.hom = f.inv := rfl
+
+@[deprecated (since := "2025-07-01")] alias mkIso_hom_hom :=  mkIso_hom_hom_hom
+@[deprecated (since := "2025-07-01")] alias mkIso_inv_hom :=  mkIso_inv_hom_hom
 
 end
 
 instance uniqueHomFromTrivial (A : CommMon_ C) : Unique (trivial C ⟶ A) :=
-  Mon_.uniqueHomFromTrivial A.toMon_
+  Equiv.unique (show _ ≃ (Mon_.trivial C ⟶ A.toMon_) from
+    InducedCategory.homEquiv)
 
 open CategoryTheory.Limits
 
@@ -160,7 +170,7 @@ def mapCommMon : CommMon_ C ⥤ CommMon_ D where
         { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
-  map f := F.mapMon.map f
+  map f := CommMon_.homMk (F.mapMon.map f.hom)
 
 @[simp]
 theorem mapCommMon_id_one (A : CommMon_ C) :
@@ -197,14 +207,13 @@ variable (C D) in
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
   obj F := F.mapCommMon
-  map α := { app A := .mk' (α.hom.app A.X) }
-  map_comp _ _ := rfl
+  map α := { app A := CommMon_.homMk (.mk' (α.hom.hom.app A.X)) }
 
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
 noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
     F.mapCommMon ⟶ F'.mapCommMon where
-  app X := .mk' (f.app _)
+  app X := CommMon_.homMk (.mk' (f.app _))
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[simps!]
@@ -280,8 +289,9 @@ variable (C)
 def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 1}) C where
   obj A := LaxBraidedFunctor.of (commMonToLaxBraidedObj A)
   map f :=
-    { hom := { app := fun _ => f.hom }
-      isMonoidal := { } }
+    { hom :=
+      { hom := { app _ := f.hom.hom }
+        isMonoidal := { } } }
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
