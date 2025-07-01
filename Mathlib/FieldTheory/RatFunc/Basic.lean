@@ -7,7 +7,6 @@ import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.Algebra.Polynomial.Basic
 
 /-!
