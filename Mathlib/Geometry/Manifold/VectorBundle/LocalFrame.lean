@@ -365,8 +365,8 @@ lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpac
 
   -- step 2: `s` read in trivialization `e` is differentiable
   have h₁ : MDifferentiableAt I 𝓘(𝕜, F) (fun x ↦ (e (s x)).2) x := by
-    sorry /-rw [mdifferentiableAt_section_of_mem_baseSet hxe] at hs
-    exact hs -/
+    rw [mdifferentiableAt_section_of_mem_baseSet hxe] at hs
+    exact hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
   let basl : F →ₗ[𝕜] 𝕜 := {
