@@ -218,8 +218,8 @@ end
 def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :
     F.FullyFaithful where
   preimage f := hFG.preimage (G.map f)
-  map_preimage f := G.map_injective (hFG.map_preimage (G.map f))
-  preimage_map f := hFG.preimage_map f
+  map_preimage f := G.map_injective <| comp_map F G _ ▸ hFG.map_preimage (G.map f)
+  preimage_map f := comp_map F G _ ▸ hFG.preimage_map f
 
 end FullyFaithful
 
@@ -255,11 +255,17 @@ variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
 instance Faithful.comp [F.Faithful] [G.Faithful] : (F ⋙ G).Faithful where
-  map_injective p := F.map_injective (G.map_injective p)
+  map_injective {X Y f g} p :=
+    have p : G.map (F.map f) = G.map (F.map g) := by simpa [← comp_map] using p
+    F.map_injective (G.map_injective p)
 
-theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
-  -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
-  { map_injective := fun {_ _} => Function.Injective.of_comp (F ⋙ G).map_injective }
+theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful where
+  map_injective := fun {X Y} => by
+    have : Function.Injective (fun f : X ⟶ Y ↦ G.map (F.map f)) := by
+      intro f g p
+      simp only [← comp_map] at p
+      apply (F ⋙ G).map_injective p
+    apply Function.Injective.of_comp this
 
 instance (priority := 100) [Quiver.IsThin C] : F.Faithful where
 
@@ -327,6 +333,7 @@ theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] 
   congr
   simp only [Function.comp_apply, heq_eq_eq] at h_map
   ext
+  simp only [compMap_def]
   exact h_map
 
 theorem Faithful.div_faithful (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
@@ -340,7 +347,9 @@ instance Full.comp [Full F] [Full G] : Full (F ⋙ G) where
 
 /-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/
 lemma Full.of_comp_faithful [Full <| F ⋙ G] [G.Faithful] : Full F where
-  map_surjective f := ⟨(F ⋙ G).preimage (G.map f), G.map_injective ((F ⋙ G).map_preimage _)⟩
+  map_surjective f := by
+    refine ⟨(F ⋙ G).preimage (G.map f), G.map_injective ?_⟩
+    simpa only [comp_map] using ((F ⋙ G).map_preimage (G.map f))
 
 /-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/
 lemma Full.of_comp_faithful_iso {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} [Full H] [G.Faithful]

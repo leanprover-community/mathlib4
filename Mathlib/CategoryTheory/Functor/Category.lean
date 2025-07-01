@@ -171,8 +171,8 @@ def associator (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 
-protected theorem assoc (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
-  rfl
+protected theorem assoc (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H := by
+  simp only [Functor.comp, compMap_def]
 
 end Functor
 
