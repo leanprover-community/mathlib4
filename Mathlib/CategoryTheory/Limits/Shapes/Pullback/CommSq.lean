@@ -883,12 +883,13 @@ theorem unop {P X Y Z : Cᵒᵖ} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {
       (Limits.PullbackCone.isLimitEquivIsColimitUnop h.flip.cone h.flip.isLimit)
       h.toCommSq.flip.coneUnop)
 
-theorem of_vert_isIso [IsIso snd] [IsIso f] (sq : CommSq fst snd f g) : IsPullback fst snd f g :=
-  IsPullback.flip (of_horiz_isIso sq.flip)
-
 theorem of_vert_isIso_mono [IsIso snd] [Mono f] (sq : CommSq fst snd f g)
     : IsPullback fst snd f g :=
   IsPullback.flip (of_horiz_isIso_mono sq.flip)
+
+theorem of_vert_isIso [IsIso snd] [IsIso f] (sq : CommSq fst snd f g)
+    : IsPullback fst snd f g :=
+  of_vert_isIso_mono sq
 
 lemma of_id_fst : IsPullback (𝟙 _) f f (𝟙 _) := IsPullback.of_horiz_isIso ⟨by simp⟩
 
