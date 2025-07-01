@@ -182,7 +182,7 @@ lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
   simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
 
-/- The pair of maps `S → ⊓ S` (kernel) and `a → T ↓∩ Ici a` (hull) form an antitone Galois
+/- The pair of maps `S ↦ sInf S` (kernel) and `a ↦ T ↓∩ Ici a` (hull) form an antitone Galois
 connection betwen the subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
