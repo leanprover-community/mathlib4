@@ -218,7 +218,7 @@ def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
       (hS.symm))
 
-lemma kernel_hull_eq (hG : OrderGenerate T) (a : α) : kernel (hull T a) = a := by
+lemma kernel_hull (hG : OrderGenerate T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
   rfl
 
@@ -226,7 +226,7 @@ lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [Decidab
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
     gc.closureOperator C = C := by
   obtain ⟨a, ha⟩ := (isClosed_iff hT C).mp h
-  rw [GaloisConnection.closureOperator_apply, ha, kernel_hull_eq hG, OrderDual.ofDual_toDual]
+  rw [GaloisConnection.closureOperator_apply, ha, kernel_hull hG, OrderDual.ofDual_toDual]
 
 lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
