@@ -70,8 +70,7 @@ instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   refine ⟨continuousAt_id, ?_⟩
   convert continuousAt_const (y := innerSL ℝ)
   ext v w
-  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply,
-    Trivial.trivialization_symm_apply B F₁]
+  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply]
 
 end Trivial
 
@@ -167,8 +166,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
   let w := (trivializationAt F E x).continuousLinearMapAt ℝ y v
   suffices ‖((trivializationAt F E x).symmL ℝ x) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
     le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
-  simp only [Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply, ←
-    real_inner_self_eq_norm_sq, hg]
+  simp only [Trivialization.symmL_apply, ← real_inner_self_eq_norm_sq, hg]
   have hgy : g y v v = g' y w w := by
     rw [inCoordinates_apply_eq₂ h'y h'y (Set.mem_univ _)]
     have A : ((trivializationAt F E x).symm y)
@@ -263,8 +261,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
   let w := (trivializationAt F E x).continuousLinearMapAt ℝ x v
   suffices ‖((trivializationAt F E x).symmL ℝ y) w‖ ^ 2 ≤ r' ^ 2 * ‖v‖ ^ 2 from
     le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
-  simp only [Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply, ←
-    real_inner_self_eq_norm_sq, hg]
+  simp only [Trivialization.symmL_apply, ← real_inner_self_eq_norm_sq, hg]
   have hgx : g x v v = g' x w w := by
     rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
     have A : ((trivializationAt F E x).symm x)

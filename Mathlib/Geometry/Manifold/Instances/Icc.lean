@@ -128,7 +128,7 @@ lemma contMDiffOn_projIcc :
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [sub_left_inj]
+    simp only [sub_right_inj]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
