@@ -55,20 +55,19 @@ noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
     then ENNReal.ofReal (∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ)
     else ∞
 
+attribute [local grind] klDiv_def
+
 lemma klDiv_of_ac_of_integrable (h1 : μ ≪ ν) (h2 : Integrable (llr μ ν) μ) :
     klDiv μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ) := by
-  rw [klDiv_def]
-  exact if_pos ⟨h1, h2⟩
+  grind
 
 @[simp]
 lemma klDiv_of_not_ac (h : ¬ μ ≪ ν) : klDiv μ ν = ∞ := by
-  rw [klDiv_def]
-  exact if_neg (not_and_of_not_left _ h)
+  grind
 
 @[simp]
 lemma klDiv_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : klDiv μ ν = ∞ := by
-  rw [klDiv_def]
-  exact if_neg (not_and_of_not_right _ h)
+  grind
 
 @[simp]
 lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
@@ -88,13 +87,10 @@ lemma klDiv_zero_right [NeZero μ] : klDiv μ 0 = ∞ :=
   klDiv_of_not_ac (Measure.absolutelyContinuous_zero_iff.mp.mt (NeZero.ne _))
 
 lemma klDiv_eq_top_iff : klDiv μ ν = ∞ ↔ μ ≪ ν → ¬ Integrable (llr μ ν) μ := by
-  constructor <;> intro h
-  · contrapose! h
-    simp [klDiv_of_ac_of_integrable h.1 h.2]
-  · rcases or_not_of_imp h with (h | h) <;> simp [h]
+  grind [ENNReal.ofReal_ne_top]
 
 lemma klDiv_ne_top_iff : klDiv μ ν ≠ ∞ ↔ μ ≪ ν ∧ Integrable (llr μ ν) μ := by
-  simp [ne_eq, klDiv_eq_top_iff]
+  grind [klDiv_eq_top_iff]
 
 section AlternativeFormulas
 
@@ -105,8 +101,7 @@ lemma klDiv_eq_integral_klFun :
     klDiv μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
       else ∞ := by
-  rw [klDiv_def]
-  exact if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
+  grind [integral_klFun_rnDeriv]
 
 open Classical in
 lemma klDiv_eq_lintegral_klFun :
@@ -122,11 +117,9 @@ lemma klDiv_eq_lintegral_klFun :
   by_cases h_int : Integrable (llr μ ν) μ
   · simp only [hμν, h_int, and_self, ↓reduceIte]
     rw [ofReal_integral_eq_lintegral_ofReal]
-    · rwa [integrable_klFun_rnDeriv_iff hμν]
+    · grind [integrable_klFun_rnDeriv_iff]
     · exact ae_of_all _ fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
-  · rw [← not_iff_not, ne_eq, Decidable.not_not] at h_int_iff
-    symm
-    simp [hμν, h_int, h_int_iff, integrable_klFun_rnDeriv_iff hμν]
+  · grind [integrable_klFun_rnDeriv_iff]
 
 end AlternativeFormulas
 
