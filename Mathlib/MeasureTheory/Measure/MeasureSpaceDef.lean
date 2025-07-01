@@ -426,6 +426,21 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   obtain ⟨y, hyu, hy⟩ := h u hxu hu
   exact hy u hyu hu
 
+lemma exists_mem_support_of_open_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
+  (U ∩ support μ).Nonempty := by sorry
+
+lemma support_subset_closure_of_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
+  support μ ⊆ closure U := by sorry
+
+open Set in
+lemma support_eq_compl_Union_open_null :
+  support μ = X \ ⋃₀ {U : Set X | IsOpen U ∧ μ U = 0} := sorry
+
+--The above need fixing, but maybe are worth proving.
+
+
+
+
 end Measure
 
 end MeasureTheory
