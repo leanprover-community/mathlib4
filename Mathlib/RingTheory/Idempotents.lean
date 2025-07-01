@@ -312,7 +312,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
-  have (i) : f (e' i) = e i := congr_fun h₂ i
+  have (i : _) : f (e' i) = e i := congr_fun h₂ i
   cases i using Fin.cases with
   | zero => simp [this, Fin.sum_univ_succ, ← he.complete]
   | succ i => simp [this]
@@ -455,7 +455,7 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentEle
   let o (i : Fin 2) : R := match i with
     | 0 => e
     | 1 => f
-  show Function.Bijective
+  change Function.Bijective
     (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
   rw [(Equiv.bijective _).of_comp_iff']
   apply pi_bijective_of_isIdempotentElem
