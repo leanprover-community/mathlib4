@@ -392,39 +392,39 @@ section ComplementedLattice
 
 variable [BoundedOrder α] [ComplementedLattice α]
 
-theorem exists_inf_eq_and_sup_eq (hb : b ≤ a) (hc : a ≤ c) : ∃ d, a ⊓ d = b ∧ a ⊔ d = c := by
-  obtain ⟨d, hdisjoint, hcodisjoint⟩ := exists_isCompl a
-  refine ⟨(d ⊔ b) ⊓ c, ?_, ?_⟩
+theorem exists_inf_eq_and_sup_eq (hb : a ≤ b) (hc : b ≤ c) : ∃ b', b ⊓ b' = a ∧ b ⊔ b' = c := by
+  obtain ⟨d, hdisjoint, hcodisjoint⟩ := exists_isCompl b
+  refine ⟨(d ⊔ a) ⊓ c, ?_, ?_⟩
   · simpa [← inf_assoc, ← inf_sup_assoc_of_le _ hb, hdisjoint.eq_bot] using hb.trans hc
   · simp [← sup_inf_assoc_of_le _ hc, ← sup_assoc, hcodisjoint.eq_top]
 
-theorem exists_disjoint_and_sup_eq (h : a ≤ b) : ∃ c, Disjoint a c ∧ a ⊔ c = b := by
+theorem exists_disjoint_and_sup_eq (h : a ≤ b) : ∃ a', Disjoint a a' ∧ a ⊔ a' = b := by
   simp_rw [disjoint_iff]
   apply exists_inf_eq_and_sup_eq (by simp) h
 
-theorem exists_inf_eq_and_codisjoint (h : b ≤ a) : ∃ c, a ⊓ c = b ∧ Codisjoint a c := by
+theorem exists_inf_eq_and_codisjoint (h : a ≤ b) : ∃ b', b ⊓ b' = a ∧ Codisjoint b b' := by
   simp_rw [codisjoint_iff]
   apply exists_inf_eq_and_sup_eq h (by simp)
 
 instance complementedLattice_Icc [Fact (a ≤ b)] : ComplementedLattice (Set.Icc a b) where
-  exists_isCompl := fun ⟨x, hx⟩ => by
-    obtain ⟨y, hinf, hsup⟩ := exists_inf_eq_and_sup_eq hx.1 hx.2
-    refine ⟨⟨y, by simp [← hinf], by simp [← hsup]⟩, ?_, ?_⟩
-    · exact disjoint_iff_inf_le.mpr hinf.le
-    · exact codisjoint_iff_le_sup.mpr hsup.symm.le
+  exists_isCompl := fun ⟨x, ha, hb⟩ => by
+    obtain ⟨y, rfl, rfl⟩ := exists_inf_eq_and_sup_eq ha hb
+    refine ⟨⟨y, inf_le_right, le_sup_right⟩, ?_, ?_⟩
+    · exact disjoint_iff_inf_le.mpr le_rfl
+    · exact codisjoint_iff_le_sup.mpr le_rfl
 
 instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
-    obtain ⟨y, hdisjoint, hsup⟩ := exists_disjoint_and_sup_eq hx
-    refine ⟨⟨y, by simp [← hsup]⟩, ?_, ?_⟩
-    · exact disjoint_iff_inf_le.mpr hdisjoint.le_bot
-    · exact codisjoint_iff_le_sup.mpr hsup.symm.le
+    obtain ⟨y, hdisjoint, rfl⟩ := exists_disjoint_and_sup_eq hx
+    refine ⟨⟨y, le_sup_right⟩, ?_, ?_⟩
+    · exact Icc.disjoint_iff
+    · exact codisjoint_iff_le_sup.mpr le_rfl
 
 instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
-    obtain ⟨y, hinf, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
-    refine ⟨⟨y, by simp [← hinf]⟩, ?_, ?_⟩
-    · exact disjoint_iff_inf_le.mpr hinf.le
+    obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
+    refine ⟨⟨y, inf_le_right⟩, ?_, ?_⟩
+    · exact disjoint_iff_inf_le.mpr le_rfl
     · exact codisjoint_iff_le_sup.mpr hcodisjoint.top_le
 
 end ComplementedLattice
