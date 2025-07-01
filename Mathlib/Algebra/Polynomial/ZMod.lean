@@ -141,7 +141,8 @@ def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (
         have last_zero := all_zero (Nat.log n m)
         simp only [List.toFinsupp_apply, List.getD_eq_getElem?_getD, List.getElem?_map,
           Finsupp.coe_zero, Pi.zero_apply] at last_zero
-        have ⟨ s, h1 , h2 , h3 ⟩  :∃ s : ℕ , 0<s ∧ s<n ∧ (n.digits m)[Nat.log n m]? = some s := by
+        have ⟨ s, h1 , h2 , h3 ⟩ : ∃ s : ℕ , 0 < s ∧ s < n ∧
+          (n.digits m)[Nat.log n m]? = some s := by
           use lastIdx
           constructor
           · exact Nat.zero_lt_of_ne_zero ldne0
