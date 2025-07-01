@@ -235,7 +235,7 @@ lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [Decid
       image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
-    rw [← (gc_closureOperator_of_isClosed hT hG hR.1), ← gc_closureOperator_eq]
+    rw [← (gc_closureOperator_of_isClosed hT hG hR.1), ← gc_closureOperator]
     exact ClosureOperator.monotone _ hR.2
 
 theorem lowerTopology_closureOperator_eq_gc_closureOperator
@@ -243,7 +243,7 @@ theorem lowerTopology_closureOperator_eq_gc_closureOperator
     (hG : OrderGenerate T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator = gc.closureOperator := by
   ext S a
-  rw [gc_closureOperator_eq, (lowerTopology_closureOperator_eq hT hG)]
+  rw [gc_closureOperator, (lowerTopology_closureOperator_eq hT hG)]
 
 end PrimitiveSpectrum
 
