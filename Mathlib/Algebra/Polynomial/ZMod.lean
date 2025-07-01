@@ -110,6 +110,7 @@ private theorem length_digits_sup (n m : ℕ) (h : 2 ≤ n) (h2 : (List.map (Nat
     · exact fslesup
   simp only [key3, lengt1, Nat.sub_add_cancel]
 
+/-- Equivalence between `ℕ` and finitely supported functions on `(ZMod n)`. -/
 def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (ZMod n) := by
   have _ : NeZero n := by exact NeZero.of_gt h
   exact {
@@ -448,6 +449,7 @@ def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (
           simp only [Option.map_some, Option.getD_some]
   }
 
+/-- Equivalence between `ℕ` and polynomials over `(ZMod n)`. -/
 def equiv_of_nat_of_polynomial_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Polynomial (ZMod n) where
   toFun a := .ofFinsupp (equiv_of_nat_of_finsupp_zmod n h a)
   invFun b := (equiv_of_nat_of_finsupp_zmod  n h).invFun b.toFinsupp
