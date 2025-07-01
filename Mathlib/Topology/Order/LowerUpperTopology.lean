@@ -559,4 +559,4 @@ instance : Topology.IsUpper Prop where
         rcases hs with (rfl | rfl)
         · use True
         · use False)
-      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_ge]))

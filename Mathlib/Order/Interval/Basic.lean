@@ -76,8 +76,6 @@ def toDualProdHom : NonemptyInterval α ↪o αᵒᵈ × α where
 def dual : NonemptyInterval α ≃ NonemptyInterval αᵒᵈ where
   toFun s := ⟨s.toProd.swap, s.fst_le_snd⟩
   invFun s := ⟨s.toProd.swap, s.fst_le_snd⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem fst_dual (s : NonemptyInterval α) : s.dual.fst = toDual s.snd :=

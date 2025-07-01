@@ -197,6 +197,10 @@ theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
+@[simp] -- Should be replaced with `SemilinearIsometryClass.enorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
+theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by
+  simp [enorm]
+
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
@@ -649,16 +653,33 @@ theorem symm_bijective : Function.Bijective (symm : (E₂ ≃ₛₗᵢ[σ₂₁]
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem toLinearEquiv_symm : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
+theorem toLinearEquiv_symm : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
 
 @[simp]
-theorem toIsometryEquiv_symm : e.toIsometryEquiv.symm = e.symm.toIsometryEquiv :=
+theorem coe_symm_toLinearEquiv : ⇑e.toLinearEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_symm :
+    e.symm.toContinuousLinearEquiv = e.toContinuousLinearEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousLinearEquiv : ⇑e.toContinuousLinearEquiv.symm = e.symm :=
   rfl
 
 @[simp]
-theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -691,6 +712,16 @@ theorem trans_apply (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛ�
 @[simp]
 theorem toLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
     (e.trans e').toLinearEquiv = e.toLinearEquiv.trans e'.toLinearEquiv :=
+  rfl
+
+@[simp]
+theorem toIsometryEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toIsometryEquiv = e.toIsometryEquiv.trans e'.toIsometryEquiv :=
+  rfl
+
+@[simp]
+theorem toHomeomorph_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toHomeomorph = e.toHomeomorph.trans e'.toHomeomorph :=
   rfl
 
 @[simp]

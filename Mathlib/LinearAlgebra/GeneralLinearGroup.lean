@@ -54,8 +54,6 @@ equivalences between `M` and itself. -/
 def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M where
   toFun := toLinearEquiv
   invFun := ofLinearEquiv
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
   map_mul' x y := by ext; rfl
 
 @[simp]

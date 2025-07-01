@@ -73,11 +73,11 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-  obtain hr | hr := lt_or_le r 0
+  obtain hr | hr := lt_or_ge r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
-    · exact (hr.trans_le (norm_nonneg _)).not_le
-    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact (hr.trans_le (norm_nonneg _)).not_ge
+    · exact fun h => hr.not_ge (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -90,7 +90,7 @@ def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
-  obtain hr | _ := lt_or_le r 0
+  obtain hr | _ := lt_or_ge r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
@@ -618,16 +618,16 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
   | inr c =>
     rcases c with ⟨w, j⟩
     fin_cases j
-    · simp only [Fin.zero_eta, Fin.isValue, id_eq, stdBasis_apply_isComplex_fst, re_eq_add_conj,
+    · simp only [Fin.zero_eta, Fin.isValue, stdBasis_apply_isComplex_fst, re_eq_add_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, ite_mul, cons_val_one, head_cons, sum_add_distrib, sum_ite_eq,
+        empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
         mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       field_simp
-    · simp only [Fin.mk_one, Fin.isValue, id_eq, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
+    · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, cons_val_one, head_fin_const, ite_mul, neg_mul, head_cons,
+        empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring_nf; field_simp
 

@@ -319,8 +319,7 @@ theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
     v.measurableEmbedding).1 A
   ext x
   simp only [v, Homeomorph.neg, sub_eq_add_neg, val_toAddUnits_apply, Homeomorph.trans_apply,
-    Equiv.neg_apply, Equiv.toFun_as_coe, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
-    Homeomorph.coe_addLeft]
+    Equiv.neg_apply, Homeomorph.homeomorph_mk_coe, Homeomorph.coe_addLeft]
 
 theorem _root_.HasCompactSupport.convolutionExists_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : Continuous g) : ConvolutionExists f g L μ := by
@@ -1080,8 +1079,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     · have H : (p, x) ∈ t := by
         apply hε
         refine mem_thickening_iff.2 ⟨(q₀.1, x), ?_, ?_⟩
-        · simp only [hx, singleton_prod, mem_image, Prod.mk_inj, eq_self_iff_true, true_and,
-            exists_eq_right]
+        · simp only [hx, singleton_prod, mem_image, Prod.mk_inj, true_and, exists_eq_right]
         · rw [← dist_eq_norm] at hp
           simpa only [Prod.dist_eq, εpos, dist_self, max_lt_iff, and_true] using hp
       have : g' (p, x) ∈ closedBall (0 : P × G →L[𝕜] E') C := hC (mem_image_of_mem _ H)
@@ -1253,7 +1251,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine contDiffOn_convolution_right_with_param_aux eL hes hek ?_ ?_ ?_
     · intro p x hp hx
-      simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prodCongr_apply, LinearIsometryEquiv.coe_coe,
+      simp only [eg,
         ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
     · exact (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2 hf
@@ -1271,9 +1269,8 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
   have : isoF ∘ R ∘ (isoP.prodCongr isoG).symm = fun q : P × G => (f ⋆[L, μ] g q.1) q.2 := by
     apply funext
     rintro ⟨p, x⟩
-    simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prodCongr_symm,
-      ContinuousLinearEquiv.prodCongr_apply]
-    simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
+    simp only [(· ∘ ·), ContinuousLinearEquiv.prodCongr_symm, ContinuousLinearEquiv.prodCongr_apply]
+    simp only [R, convolution]
     rw [IsClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     · rfl
     · exact isoG.symm.toHomeomorph.isClosedEmbedding
@@ -1290,7 +1287,7 @@ theorem contDiffOn_convolution_right_with_param_comp {n : ℕ∞} (L : E →L[�
     (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (f ⋆[L, μ] g x) (v x)) s := by
   apply (contDiffOn_convolution_right_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prodMk hv)
   intro x hx
-  simp only [hx, mem_preimage, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
+  simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 
 /-- The convolution `g * f` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly
 supported. Version where `g` depends on an additional parameter in an open subset `s` of a
@@ -1313,7 +1310,7 @@ theorem contDiffOn_convolution_left_with_param_comp [μ.IsAddLeftInvariant] [μ.
     (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (g x ⋆[L, μ] f) (v x)) s := by
   apply (contDiffOn_convolution_left_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prodMk hv)
   intro x hx
-  simp only [hx, mem_preimage, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
+  simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 
 theorem _root_.HasCompactSupport.contDiff_convolution_right {n : ℕ∞} (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n (f ⋆[L, μ] g) := by
@@ -1351,9 +1348,9 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
       integral_indicator (measurableSet_Ioo : MeasurableSet (Ioo 0 x))]
     congr 1 with t : 1
     have : t ≤ 0 ∨ t ∈ Ioo 0 x ∨ x ≤ t := by
-      rcases le_or_lt t 0 with (h | h)
+      rcases le_or_gt t 0 with (h | h)
       · exact Or.inl h
-      · rcases lt_or_le t x with (h' | h')
+      · rcases lt_or_ge t x with (h' | h')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
     · rw [indicator_of_notMem (notMem_Ioo_of_le ht), indicator_of_notMem (notMem_Ioi.mpr ht),

@@ -202,7 +202,7 @@ theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClose
 theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : IsClosed s)
     (ht : IsClosed t) : s ⊂ t ↔ vanishingIdeal t < vanishingIdeal s := by
   rw [Set.ssubset_def, vanishingIdeal_anti_mono_iff hs, vanishingIdeal_anti_mono_iff ht,
-    lt_iff_le_not_le]
+    lt_iff_le_not_ge]
 
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommSemiring R] :

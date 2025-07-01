@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Extension.Presentation.Basic
 In this file we define standard smooth algebras. For this we introduce
 the notion of a `PreSubmersivePresentation`. This is a presentation `P` that has
 fewer relations than generators. More precisely there exists an injective map from `σ`
-to `P.ι`. To such a presentation we may associate a jacobian. `P` is then a submersive
+to `ι`. To such a presentation we may associate a jacobian. `P` is then a submersive
 presentation, if its jacobian is invertible.
 
 Finally, a standard smooth algebra is an algebra that admits a submersive presentation.
@@ -27,7 +27,7 @@ generates the unit ideal, such that `Sₜ` is `R`-standard smooth for every `t` 
 All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 
 - `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
-  map `P.map` from `σ` to `P.vars`. This map is used to define the differential of a
+  map `P.map` from `σ` to `ι`. This map is used to define the differential of a
   presubmersive presentation.
 
 For a presubmersive presentation `P` of `S` over `R` we make the following definitions:
@@ -252,7 +252,7 @@ lemma toGenerators_comp : (Q.comp P).toGenerators = Q.toGenerators.comp P.toGene
 the sum of the dimensions. -/
 lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite σ] [Finite σ'] :
     (Q.comp P).dimension = Q.dimension + P.dimension := by
-  simp only [Presentation.dimension, toPresentation_comp, Presentation.toGenerators_comp]
+  simp only [Presentation.dimension]
   have : Nat.card σ ≤ Nat.card ι :=
     card_relations_le_card_vars_of_isFinite P
   have : Nat.card σ' ≤ Nat.card ι' :=
@@ -335,8 +335,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
   generalize P.jacobiMatrix i j = p
   induction p using MvPolynomial.induction_on with
   | C a =>
-    simp only [algHom_C, algebraMap_eq, eval₂_C,
-      ← Presentation.toGenerators_comp, ← toPresentation_comp]
+    simp only [algHom_C, algebraMap_eq, eval₂_C]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i hp =>
     simp only [map_mul, eval₂_mul, hp]
@@ -393,7 +392,7 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
     ext i j : 1
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply,
-      Presentation.baseChange_toGenerators, baseChange_toPresentation, MvPolynomial.pderiv_map]
+      Presentation.baseChange_toGenerators, MvPolynomial.pderiv_map]
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
   rw [P.algebraMap_apply]
@@ -419,7 +418,7 @@ lemma jacobiMatrix_reindex {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ)
     (P.reindex e f).jacobiMatrix =
       (P.jacobiMatrix.reindex f.symm f.symm).map (MvPolynomial.rename e.symm) := by
   ext i j : 1
-  simp [jacobiMatrix_apply, PreSubmersivePresentation.reindex_map,
+  simp [jacobiMatrix_apply,
     MvPolynomial.pderiv_rename e.symm.injective, reindex, Presentation.reindex]
 
 @[simp]
@@ -516,9 +515,9 @@ noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) ι σ where
 end BaseChange
 
 variable {R S ι σ} in
-/-- Given a submersive presentation `P` and equivalences `ι ≃ P.vars` and
-`κ ≃ σ`, this is the induced sumbersive presentation with variables indexed
-by `ι` and relations indexed by `κ -/
+/-- Given a submersive presentation `P` and equivalences `ι' ≃ ι` and
+`σ' ≃ σ`, this is the induced sumbersive presentation with variables indexed
+by `ι'` and relations indexed by `σ'` -/
 @[simps toPreSubmersivePresentation]
 noncomputable def reindex (P : SubmersivePresentation R S ι σ)
     {ι' σ' : Type*} [Finite σ'] (e : ι' ≃ ι) (f : σ' ≃ σ) : SubmersivePresentation R S ι' σ' where
@@ -534,8 +533,8 @@ open Classical in
 noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) :
     (σ → S) ≃ₗ[S] (σ → S) :=
   haveI : Fintype σ := Fintype.ofFinite σ
-  have : IsUnit (LinearMap.toMatrix (Pi.basisFun S σ) (Pi.basisFun S σ)
-        P.aevalDifferential).det := by
+  have :
+      IsUnit (LinearMap.toMatrix (Pi.basisFun S σ) (Pi.basisFun S σ) P.aevalDifferential).det := by
     convert P.jacobian_isUnit
     rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
       aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]

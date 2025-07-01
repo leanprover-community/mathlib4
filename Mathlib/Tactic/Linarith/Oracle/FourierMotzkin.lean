@@ -52,7 +52,7 @@ instance : SDiff (TreeSet α cmp) := ⟨TreeSet.sdiff⟩
 
 end Std.TreeSet
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 open Batteries
 open Std (format ToFormat TreeSet)
@@ -361,4 +361,4 @@ def CertificateOracle.fourierMotzkin : CertificateOracle where
     | (Except.ok _) => failure
     | (Except.error contr) => return contr.src.flatten
 
-end Linarith
+end Mathlib.Tactic.Linarith

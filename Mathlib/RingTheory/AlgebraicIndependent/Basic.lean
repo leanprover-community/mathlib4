@@ -178,7 +178,7 @@ theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R
   have : (aeval x : MvPolynomial ι K →ₐ[K] A).toRingHom.comp (MvPolynomial.map (algebraMap R K)) =
       (aeval x : MvPolynomial ι R →ₐ[R] A).toRingHom := by
     ext <;> simp [algebraMap_eq_smul_one]
-  show Injective (aeval x).toRingHom
+  change Injective (aeval x).toRingHom
   rw [← this, RingHom.coe_comp]
   exact Injective.comp ai (MvPolynomial.map_injective _ hinj)
 
