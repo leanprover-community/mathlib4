@@ -340,7 +340,8 @@ lemma contMDiffOn_baseSet_iff_localFrame_repr [Fintype ι] [FiniteDimensional �
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet := by
   rw [contMDiffOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
 
--- TODO: start filling in all the details from here onwards!
+-- Differentiability of a section can be checked in terms of its local frame coefficients
+section MDifferentiable
 
 omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- If `s` is diffentiable at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
@@ -352,21 +353,20 @@ lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpac
     (i : ι) : MDifferentiableAt I 𝓘(𝕜) (b.localFrame_repr e i s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
   classical
-  sorry /-
   -- step 1: on e.baseSet, can compute the coefficient very well
   let aux := fun x ↦ b.repr (e (s x)).2 i
   -- Since e.baseSet is open, this is sufficient.
-  suffices ContMDiffAt I 𝓘(𝕜) k aux x by
-    apply this.congr_of_eventuallyEq_of_mem ?_ trivial
+  suffices MDifferentiableAt I 𝓘(𝕜) aux x by
+    sorry /-apply this.congr_of_eventuallyEq_of_mem ?_ trivial
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, Basis.localFrame_repr_eq_repr hy]
+    simp [aux, Basis.localFrame_repr_eq_repr hy] -/
   simp only [aux]
 
-  -- step 2: `s` read in trivialization `e` is `C^k`
-  have h₁ : ContMDiffAt I 𝓘(𝕜, F) k (fun x ↦ (e (s x)).2) x := by
-    rw [contMDiffAt_section_of_mem_baseSet hxe] at hs
-    exact hs
+  -- step 2: `s` read in trivialization `e` is differentiable
+  have h₁ : MDifferentiableAt I 𝓘(𝕜, F) (fun x ↦ (e (s x)).2) x := by
+    sorry /-rw [mdifferentiableAt_section_of_mem_baseSet hxe] at hs
+    exact hs -/
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
   let basl : F →ₗ[𝕜] 𝕜 := {
@@ -378,9 +378,9 @@ lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpac
     toLinearMap := basl
     cont := basl.continuous_of_finiteDimensional
   }
-  have hbas : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k basL (e (s x)).2 :=
-    contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
-  exact hbas.comp x h₁ -/
+  have hbas : MDifferentiableAt 𝓘(𝕜, F) 𝓘(𝕜) basL (e (s x)).2 :=
+    mdifferentiableAt_iff_differentiableAt.mpr (basL.differentiable _)
+  exact hbas.comp x h₁
 
 omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_repr e i`
@@ -453,6 +453,8 @@ lemma mdifferentiableOn_baseSet_iff_localFrame_repr
     MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
     ∀ i, MDifferentiableOn I 𝓘(𝕜) (b.localFrame_repr e i s) e.baseSet := by
   rw [mdifferentiableOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
+
+end MDifferentiable
 
 end
 
