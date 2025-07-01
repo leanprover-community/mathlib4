@@ -332,8 +332,14 @@ lemma pentagon
       (α_ (ψ.comp φ) τ σ).hom ≫ (α_ ψ φ (τ.comp σ)).hom := by
   aesop_cat
 
+@[reassoc]
 lemma triangle :
     (α_ ψ (.id _ _) φ).hom ≫ ψ ◁ (λ_ φ).hom = (ρ_ ψ).hom ▷ φ := by
+  aesop_cat
+
+@[reassoc]
+lemma triangle_inv :
+     (α_ ψ (.id _ _) φ).inv ≫ (ρ_ ψ).hom ▷ φ = ψ ◁ (λ_ φ).hom := by
   aesop_cat
 
 section Isos
