@@ -383,6 +383,8 @@ protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).
 lemma support_def {x : X} {μ : Measure X} : x ∈ μ.support ↔ ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := by
   rfl
 
+/-- Do we really want this lemma? The reason I include it is because it looks closer
+ to the standard definition, although it still doesn't have that openness assumption. -/
 lemma support_set (μ : Measure X) : μ.support = {x : X | ∀ U ∈ 𝓝 x, 0 < μ U} := by
   ext x
   simp only [support_def, Set.mem_setOf, mem_setOf_eq, Filter.frequently_smallSets]
@@ -401,15 +403,18 @@ lemma not_mem_support_iff (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U 
        nonpos_iff_eq_zero]
      exact bex_def
 
-theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
+lemma _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
     x ∈ μ.support  ↔ ∀ (i : ι), p i → 0 < μ (s i) := by
   simp only [support_set, mem_setOf_eq]
   exact hl.forall_iff (fun U V hUV hUpos => lt_of_lt_of_le hUpos (measure_mono hUV))
 
-theorem support_eq_forall_isOpen : μ.support =
+lemma support_eq_forall_isOpen : μ.support =
     {x : X | ∀ u : Set X, x ∈ u → IsOpen u → 0 < μ u} := by
   simp [Set.ext_iff, (nhds_basis_opens _).mem_measureSupport]
+
+lemma measure_pos_of_mem_support {x : X} (h : x ∈ μ.support) :
+  ∀ U ∈ 𝓝 x, 0 < μ U := by rwa [support_set, mem_setOf_eq] at h
 
 lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   simp only [support_eq_forall_isOpen, isClosed_iff_frequently, Set.mem_setOf_eq,

@@ -808,6 +808,7 @@ lemma support_add (μ ν : Measure X) :
   ext; simp
 
 end Support
+
 section SMul
 
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
