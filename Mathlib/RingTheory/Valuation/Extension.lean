@@ -166,7 +166,7 @@ variable {K L Γ₀ Γ₁ : outParam Type*} [Field K] [Field L] [Algebra K L]
   [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₁] (vK : Valuation K Γ₀)
    (vL : Valuation L Γ₁) [vK.HasExtension vL]
 
-local notation "K₀" => vK.valuationSubring
+local notation "K₀" => Valuation.valuationSubring vK
 local notation "L₀" => Valuation.valuationSubring vL
 
 lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := by
@@ -190,26 +190,36 @@ lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
 
 instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L := by
   refine IsScalarTower.of_algebraMap_smul ?_
-  intro k l
-  have hkl : k • l = (k : K) • l := rfl
-  simp [Algebra.smul_def, hkl]
+  intro k
+  simp [Algebra.smul_def, Subring.smul_def k]
 
 instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L := by
   refine IsScalarTower.of_algebraMap_smul ?_
-  intro k l
-  have hkl : k • l = (k : K) • l := rfl
-  simp [Algebra.smul_def, hkl]
+  intro k
+  simp [Algebra.smul_def, Subring.smul_def k]
 
 lemma algebraMap_mem_maximalIdeal_iff {x : K₀} :
     algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) ↔ x ∈ maximalIdeal K₀ := by
   simp only [mem_maximalIdeal_iff, coe_algebraMap_valuationSubring_eq,
     val_map_lt_one_iff vK vL]
 
+lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
+    (maximalIdeal L₀).comap (algebraMap K₀ L₀) = maximalIdeal K₀ :=
+  Ideal.ext fun _ ↦ by rw [Ideal.mem_comap, algebraMap_mem_maximalIdeal_iff]
+
+instance : Ideal.LiesOver (maximalIdeal L₀) (maximalIdeal K₀) :=
+  ⟨(maximalIdeal_comap_algebraMap_eq_maximalIdeal _ _).symm⟩
+
 instance : Algebra (ResidueField K₀) (ResidueField L₀) :=
   (Ideal.Quotient.lift (maximalIdeal K₀)
     ((Ideal.Quotient.mk (maximalIdeal L₀)).comp (algebraMap K₀ L₀))
     (fun _ hx ↦ Ideal.Quotient.eq_zero_iff_mem.mpr
       ((algebraMap_mem_maximalIdeal_iff vK vL).mpr hx))).toAlgebra
+
+lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
+    (algebraMap (ResidueField K₀) (ResidueField L₀)) (IsLocalRing.residue K₀ x) =
+      IsLocalRing.residue L₀ (algebraMap K₀ L₀ x) :=
+  rfl
 
 end AlgebraInstances
 
