@@ -67,6 +67,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
   | _ => throwError "Constant {src} is not a theorem or definition."
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  inferDefEqAttr tgt
   let attrs := match attrs? with | some attrs => attrs | none => #[]
   _ ← Term.TermElabM.run' <| do
     let attrs ← elabAttrs attrs

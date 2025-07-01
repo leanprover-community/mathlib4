@@ -212,7 +212,7 @@ instance hasSMul' : SMul R₁ (⨂[R] i, s i) :=
     liftAddHom (fun f : R × Π i, s i ↦ tprodCoeff R (r • f.1) f.2)
       (fun r' f i hf ↦ by simp_rw [zero_tprodCoeff' _ f i hf])
       (fun f ↦ by simp [zero_tprodCoeff]) (fun r' f i m₁ m₂ ↦ by simp [add_tprodCoeff])
-      (fun r' r'' f ↦ by simp [add_tprodCoeff', mul_add]) fun z f i r' ↦ by
+      (fun r' r'' f ↦ by simp [add_tprodCoeff']) fun z f i r' ↦ by
       simp [smul_tprodCoeff, mul_smul_comm]⟩
 
 instance : SMul R (⨂[R] i, s i) :=
@@ -734,7 +734,7 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
   apply LinearEquiv.toLinearMap_injective
   ext f
   simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
-    LinearMap.coe_compMultilinearMap, Function.comp_apply, MultilinearMap.domDomCongr_apply,
+    LinearMap.coe_compMultilinearMap, Function.comp_apply,
     reindex_comp_tprod]
   congr
 
@@ -767,7 +767,7 @@ with `PiTensorProduct.map`. -/
 theorem map_comp_reindex_eq (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
     map (fun i ↦ f (e.symm i)) ∘ₗ reindex R s e = reindex R t e ∘ₗ map f := by
   ext m
-  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  simp only [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
     LinearMap.comp_apply, reindex_tprod, map_tprod]
 
 theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :

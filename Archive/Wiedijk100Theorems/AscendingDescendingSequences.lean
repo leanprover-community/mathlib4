@@ -144,7 +144,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
+    simp only [ran, mem_image, mem_range, mem_univ, mem_product, true_and,
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i

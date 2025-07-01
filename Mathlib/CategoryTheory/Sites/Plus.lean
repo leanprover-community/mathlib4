@@ -186,7 +186,7 @@ def toPlus : P ⟶ J.plusObj P where
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
-    simp only [Multiequalizer.lift_ι, Category.assoc]
+    simp only [Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
 

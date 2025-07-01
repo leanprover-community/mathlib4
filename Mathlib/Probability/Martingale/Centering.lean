@@ -113,7 +113,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
     add_zero (∑ i ∈ Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
   refine (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add ?_
   refine (eventuallyEq_sum fun k hk => h_ge k (Finset.mem_Ico.mp hk).1).trans ?_
-  simp only [Finset.sum_const_zero, Pi.zero_apply]
+  simp only [Finset.sum_const_zero]
   rfl
 
 -- The following two lemmas demonstrate the essential uniqueness of the decomposition

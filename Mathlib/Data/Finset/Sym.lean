@@ -136,7 +136,7 @@ theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   constructor
   · intro h
     use (x, y)
-    simp only [mem_product, h, and_self, true_and]
+    simp only [mem_product, h, and_self]
   · rintro ⟨⟨a, b⟩, h⟩
     simp only [mem_product, Sym2.eq_iff] at h
     obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
@@ -204,7 +204,7 @@ theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := b
       ⟨a, h _ <| Sym.mem_cons_self _ _,
         mem_image_of_mem _ <| ih.2 fun b hb ↦ h _ <| Sym.mem_cons_of_mem hb⟩
 
-@[simp]
+-- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
 theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=

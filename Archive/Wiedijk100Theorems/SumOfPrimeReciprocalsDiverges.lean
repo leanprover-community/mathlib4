@@ -132,7 +132,7 @@ theorem card_le_two_pow {x k : ℕ} : #{e ∈ M x k | Squarefree (e + 1)} ≤ 2 
   -- It follows that `e` is one less than such a product.
   have h : M₁ ⊆ image f K := by
     intro m hm
-    simp only [f, K, M₁, M, mem_filter, mem_range, mem_powerset, mem_image, exists_prop] at hm ⊢
+    simp only [f, K, M₁, M, mem_filter, mem_range, mem_powerset, mem_image] at hm ⊢
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
     use! (m + 1).primeFactorsList
     · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_primeFactorsList m.succ_ne_zero]
@@ -167,7 +167,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : #(M x k) ≤ 2 ^ k * Nat.sqrt x :
   -- smaller than or equal to `k`.
   have h1 : M x k ⊆ image f K := by
     intro m hm
-    simp only [f, K, M, M₁, M₂, mem_image, exists_prop, Prod.exists, mem_product,
+    simp only [f, K, M, M₁, M₂, mem_image, Prod.exists, mem_product,
                mem_filter, mem_range] at hm ⊢
     have hm' := m.zero_lt_succ
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'

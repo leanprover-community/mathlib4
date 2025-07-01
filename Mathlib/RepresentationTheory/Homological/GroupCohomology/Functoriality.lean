@@ -42,8 +42,6 @@ theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : (Action.res _ f₁)
   subst h
   rfl
 
-variable [DecidableEq G] [DecidableEq H]
-
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
 @[simps! -isSimp f f_hom]
@@ -72,8 +70,8 @@ lemma cochainsMap_id_f_hom_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
 alias cochainsMap_id_f_eq_compLeft := cochainsMap_id_f_hom_eq_compLeft
 
 @[reassoc]
-lemma cochainsMap_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
-    [Group K] [DecidableEq K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
+lemma cochainsMap_comp {G H K : Type u} [Group G] [Group H]
+    [Group K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
     (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) :
     cochainsMap (f.comp g) ((Action.res _ g).map φ ≫ ψ) =
       cochainsMap f φ ≫ cochainsMap g ψ := by
@@ -120,8 +118,8 @@ lemma cocyclesMap_id : cocyclesMap (MonoidHom.id G) (𝟙 B) n = 𝟙 _ :=
   HomologicalComplex.cyclesMap_id _ _
 
 @[reassoc]
-lemma cocyclesMap_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
-    [Group K] [DecidableEq K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
+lemma cocyclesMap_comp {G H K : Type u} [Group G] [Group H]
+    [Group K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
     (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) (n : ℕ) :
     cocyclesMap (f.comp g) ((Action.res _ g).map φ ≫ ψ) n =
       cocyclesMap f φ n ≫ cocyclesMap g ψ n := by
@@ -149,8 +147,8 @@ theorem π_map (n : ℕ) :
 lemma map_id : map (MonoidHom.id G) (𝟙 B) n = 𝟙 _ := HomologicalComplex.homologyMap_id _ _
 
 @[reassoc]
-lemma map_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
-    [Group K] [DecidableEq K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
+lemma map_comp {G H K : Type u} [Group G] [Group H]
+    [Group K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
     (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) (n : ℕ) :
     map (f.comp g) ((Action.res _ g).map φ ≫ ψ) n = map f φ n ≫ map g ψ n := by
   simp [map, ← HomologicalComplex.homologyMap_comp, ← cochainsMap_comp]
@@ -195,7 +193,7 @@ alias cochainsMap_f_0_comp_zeroCochainsLequiv := cochainsMap_f_0_comp_zeroCochai
 lemma cochainsMap_f_1_comp_oneCochainsIso :
     (cochainsMap f φ).f 1 ≫ (oneCochainsIso B).hom = (oneCochainsIso A).hom ≫ fOne f φ := by
   ext x
-  simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
+  simp only [cochainsMap_f]
   rfl
 
 @[deprecated (since := "2025-05-09")]
@@ -205,7 +203,7 @@ alias cochainsMap_f_1_comp_oneCochainsLequiv := cochainsMap_f_1_comp_oneCochains
 lemma cochainsMap_f_2_comp_twoCochainsIso :
     (cochainsMap f φ).f 2 ≫ (twoCochainsIso B).hom = (twoCochainsIso A).hom ≫ fTwo f φ := by
   ext x g
-  show φ.hom (x _) = φ.hom (x _)
+  change φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
 
@@ -216,7 +214,7 @@ alias cochainsMap_f_2_comp_twoCochainsLequiv := cochainsMap_f_2_comp_twoCochains
 lemma cochainsMap_f_3_comp_threeCochainsIso :
     (cochainsMap f φ).f 3 ≫ (threeCochainsIso B).hom = (threeCochainsIso A).hom ≫ fThree f φ := by
   ext x g
-  show φ.hom (x _) = φ.hom (x _)
+  change φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
 
@@ -242,8 +240,6 @@ alias H0Map_comp := map_comp
 
 @[deprecated (since := "2025-06-09")]
 alias H0Map_id_comp := map_id_comp
-
-variable [DecidableEq G] [DecidableEq H]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_H0Iso_hom_f :
@@ -344,7 +340,6 @@ lemma coe_mapOneCocycles (x) :
 @[deprecated (since := "2025-05-09")]
 alias mapOneCocycles_comp_subtype := mapOneCocycles_comp_i
 
-variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoOneCocycles_hom :
     cocyclesMap f φ 1 ≫ (isoOneCocycles B).hom = (isoOneCocycles A).hom ≫ mapOneCocycles f φ := by
@@ -356,7 +351,7 @@ theorem mapOneCocycles_one (φ : (Action.res _ 1).obj A ⟶ B) :
     mapOneCocycles 1 φ = 0 := by
   rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, cyclesMap'_i]
   refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
-  simp [mapShortComplexH1, shortComplexH1, moduleCatMk, Pi.zero_apply y]
+  simp [mapShortComplexH1, shortComplexH1, Pi.zero_apply y]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H¹(H, A) ⟶ H¹(G, B)`. -/
@@ -371,8 +366,6 @@ alias H1Map_comp := map_comp
 
 @[deprecated (since := "2025-06-09")]
 alias H1Map_id_comp := map_id_comp
-
-variable [DecidableEq G] [DecidableEq H]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_map :
@@ -392,7 +385,7 @@ alias H1Map_one := map_1_one
 
 section InfRes
 
-variable (A : Rep k G) (S : Subgroup G) [S.Normal] [DecidableEq (G ⧸ S)]
+variable (A : Rep k G) (S : Subgroup G) [S.Normal]
 
 /-- The short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
@@ -522,7 +515,6 @@ lemma coe_mapTwoCocycles (x) :
 @[deprecated (since := "2025-05-09")]
 alias mapTwoCocycles_comp_subtype := mapTwoCocycles_comp_i
 
-variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoTwoCocycles_hom :
     cocyclesMap f φ 2 ≫ (isoTwoCocycles B).hom = (isoTwoCocycles A).hom ≫ mapTwoCocycles f φ := by
@@ -543,7 +535,6 @@ alias H2Map_comp := map_comp
 @[deprecated (since := "2025-06-09")]
 alias H2Map_id_comp := map_id_comp
 
-variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2π_comp_map :
     H2π A ≫ map f φ 2 = mapTwoCocycles f φ ≫ H2π B := by
@@ -554,7 +545,6 @@ alias H2π_comp_H2Map := H2π_comp_map
 
 end H2
 
-variable [DecidableEq G]
 
 variable (k G) in
 /-- The functor sending a representation to its complex of inhomogeneous cochains. -/

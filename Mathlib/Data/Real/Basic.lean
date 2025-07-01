@@ -307,7 +307,7 @@ theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := b
   induction b using Real.ind_mk
   induction c using Real.ind_mk
   simp only [mk_lt, ← mk_add]
-  show Pos _ ↔ Pos _; rw [add_sub_add_left_eq_sub]
+  change Pos _ ↔ Pos _; rw [add_sub_add_left_eq_sub]
 
 instance partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)

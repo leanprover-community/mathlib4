@@ -310,7 +310,7 @@ def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
   | `Mathlib.Tactic.cases' => false
   | ``Lean.Parser.Tactic.obtain => false
-  | ``Lean.Parser.Tactic.tacticHave_ => false
+  | ``Lean.Parser.Tactic.tacticHave__ => false
   | ``Lean.Parser.Tactic.rcases => false
   | ``Lean.Parser.Tactic.specialize => false
   | ``Lean.Parser.Tactic.subst => false

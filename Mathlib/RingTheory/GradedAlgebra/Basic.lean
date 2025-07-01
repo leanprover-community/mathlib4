@@ -268,7 +268,7 @@ def GradedRing.projZeroRingHom : A →+* A where
       refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
-        simp only [Subtype.coe_mk]
+        simp only
         by_cases h : i + j = 0
         · rw [decompose_of_mem_same 𝒜
               (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),

@@ -393,6 +393,11 @@ theorem IsBigO.comp_tendsto (hfg : f =O[l] g) {k : β → α} {l' : Filter β} (
     (f ∘ k) =O[l'] (g ∘ k) :=
   isBigO_iff_isBigOWith.2 <| hfg.isBigOWith.imp fun _c h => h.comp_tendsto hk
 
+lemma IsBigO.comp_neg_int {f : ℤ → E} {g : ℤ → F} (hf : f =O[cofinite] g) :
+    (fun n => f (-n)) =O[cofinite] fun n => g (-n) := by
+  rw [← Equiv.neg_apply]
+  exact hf.comp_tendsto (Equiv.neg ℤ).injective.tendsto_cofinite
+
 theorem IsLittleO.comp_tendsto (hfg : f =o[l] g) {k : β → α} {l' : Filter β} (hk : Tendsto k l' l) :
     (f ∘ k) =o[l'] (g ∘ k) :=
   IsLittleO.of_isBigOWith fun _c cpos => (hfg.forall_isBigOWith cpos).comp_tendsto hk
@@ -1089,8 +1094,7 @@ variable {g g' l}
 
 @[simp]
 theorem isBigOWith_zero_right_iff : (IsBigOWith c l f'' fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 := by
-  simp only [IsBigOWith_def, exists_prop, norm_zero, mul_zero,
-    norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
+  simp only [IsBigOWith_def, norm_zero, mul_zero, norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
 
 @[simp]
 theorem isBigO_zero_right_iff : (f'' =O[l] fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 :=
@@ -1343,9 +1347,9 @@ variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
   induction s using Finset.cons_induction with
-  | empty => simp only [isBigOWith_zero', Finset.sum_empty, forall_true_iff]
+  | empty => simp only [isBigOWith_zero', Finset.sum_empty]
   | cons i s is IH =>
-    simp only [is, Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
+    simp only [Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
     exact h.1.add (IH h.2)
 
 theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by

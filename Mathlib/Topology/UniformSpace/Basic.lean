@@ -165,7 +165,7 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
   ext ⟨x, y⟩
   simp +contextual only
     [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_setOf_eq,
-      and_imp, mem_comp_comp, exists_prop, ← mem_inter_iff, inter_comm, Set.Nonempty]
+      and_imp, mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty]
 
 theorem uniformity_hasBasis_closed :
     HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsClosed V) id := by
@@ -376,7 +376,7 @@ instance [Subsingleton α] : Unique (UniformSpace α) where
 abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α where
   uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
   symm := by
-    simp only [tendsto_comap_iff, Prod.swap, (· ∘ ·)]
+    simp only [tendsto_comap_iff]
     exact tendsto_swap_uniformity.comp tendsto_comap
   comp := le_trans
     (by

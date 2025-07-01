@@ -192,9 +192,9 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext
           rintro (_ | _)
-          · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, Category.assoc, ←
+          · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, ←
               G.map_comp_assoc, coprod.inl_desc]
-          · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, Category.assoc, ←
+          · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, ←
               G.map_comp_assoc, coprod.inr_desc]
             exact
               (c.ι.naturality WalkingParallelPairHom.left).trans

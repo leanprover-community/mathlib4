@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
+import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
 ## `funProp` data structure holding information about a function
@@ -251,7 +252,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
 
     -- check if is non-triviality
     let f' ← fData.toExpr
-    if (← isDefEq f' f) || (← isDefEq f' g) then
+    if (← withReducibleAndInstances <| isDefEq f' f <||> isDefEq f' g) then
       return none
 
     return (f, g)

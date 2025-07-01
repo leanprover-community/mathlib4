@@ -148,8 +148,6 @@ theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => �
 
 end
 
-
-
 section
 
 variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}

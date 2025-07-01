@@ -220,10 +220,10 @@ instance : Add (CentroidHom α) :=
   ⟨fun f g ↦
     { (f + g : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        show f (a * b) + g (a * b) = a * (f b + g b)
+        change f (a * b) + g (a * b) = a * (f b + g b)
         simp [map_mul_left, mul_add]
       map_mul_right' := fun a b ↦ by
-        show f (a * b) + g (a * b) = (f a + g a) * b
+        change f (a * b) + g (a * b) = (f a + g a) * b
         simp [map_mul_right, add_mul] }⟩
 
 instance : Mul (CentroidHom α) :=

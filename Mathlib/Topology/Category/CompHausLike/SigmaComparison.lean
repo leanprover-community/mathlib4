@@ -54,7 +54,7 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   apply congrFun
   congr 2
   rw [← opCoproductIsoProduct_inv_comp_ι]
-  simp only [coe_of, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
+  simp only [Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
   simp only [opCoproductIsoProduct, ← unop_comp, opCoproductIsoProduct'_comp_self]
   erw [IsColimit.fac]
   rfl

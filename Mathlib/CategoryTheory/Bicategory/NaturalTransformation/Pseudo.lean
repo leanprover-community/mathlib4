@@ -185,6 +185,65 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (α_ _ _ _).hom :=
   η.toOplax.whiskerRight_naturality_id _
 
+@[reassoc, to_app]
+lemma naturality_id_hom (α : F ⟶ G) (a : B) :
+    (α.naturality (𝟙 a)).hom = (F.mapId a).hom ▷ α.app a ≫
+      (λ_ (α.app a)).hom ≫ (ρ_ (α.app a)).inv ≫ α.app a ◁ (G.mapId a).inv := by
+  simp [← assoc, ← IsIso.comp_inv_eq]
+
+lemma naturality_id_iso (α : F ⟶ G) (a : B) :
+    α.naturality (𝟙 a) = whiskerRightIso (F.mapId a) (α.app a) ≪≫
+      (λ_ (α.app a)) ≪≫ (ρ_ (α.app a)).symm ≪≫ whiskerLeftIso (α.app a) (G.mapId a).symm := by
+  ext
+  simp [naturality_id_hom]
+
+@[reassoc, to_app]
+lemma naturality_id_inv (α : F ⟶ G) (a : B) :
+    (α.naturality (𝟙 a)).inv = α.app a ◁ (G.mapId a).hom ≫ (ρ_ (α.app a)).hom ≫
+      (λ_ (α.app a)).inv ≫ (F.mapId a).inv ▷ α.app a := by
+  simp [naturality_id_iso]
+
+@[reassoc, to_app]
+lemma naturality_naturality_hom (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g):
+    (α.naturality g).hom =
+     (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
+  simp [← IsIso.inv_comp_eq, ← G.map₂_inv η.inv]
+
+lemma naturality_naturality_iso (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
+    α.naturality g = whiskerRightIso (F.map₂Iso η.symm) (α.app b) ≪≫
+      (α.naturality f) ≪≫ whiskerLeftIso (α.app a) (G.map₂Iso η) := by
+  ext
+  rw [naturality_naturality_hom α η]
+  simp
+
+lemma naturality_naturality_inv (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g):
+    (α.naturality g).inv =
+      α.app a ◁ G.map₂ η.inv ≫ (α.naturality f).inv ≫ F.map₂ η.hom ▷ α.app b := by
+  simp [naturality_naturality_iso α η]
+
+@[reassoc, to_app]
+lemma naturality_comp_hom (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+    (α.naturality (f ≫ g)).hom =
+      (F.mapComp f g).hom ▷ α.app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).hom ≫
+      (α_ _ _ _).inv ≫ (α.naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom ≫
+      α.app a ◁ (G.mapComp f g).inv := by
+  simp [← assoc, ← IsIso.comp_inv_eq]
+
+lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+    α.naturality (f ≫ g) = whiskerRightIso (F.mapComp f g) (α.app c) ≪≫ (α_ _ _ _) ≪≫
+      whiskerLeftIso (F.map f) (α.naturality g) ≪≫ (α_ _ _ _).symm ≪≫
+      whiskerRightIso (α.naturality f) (G.map g) ≪≫ α_ _ _ _ ≪≫
+      whiskerLeftIso (α.app a) (G.mapComp f g).symm := by
+  ext
+  simp [naturality_comp_hom α f g]
+
+lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+    (α.naturality (f ≫ g)).inv =
+      α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫
+      (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).inv ≫ (α_ _ _ _).inv ≫
+      (F.mapComp f g).inv ▷ α.app c := by
+  simp [naturality_comp_iso α f g]
+
 end
 
 end CategoryTheory.Pseudofunctor.StrongTrans

@@ -477,7 +477,7 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> si
 
 @[norm_cast, simp]
 lemma coe_ofNat {n : ℕ} [n.AtLeastTwo]:
-    ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) := by
+    ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them

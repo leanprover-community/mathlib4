@@ -35,7 +35,7 @@ noncomputable def inverse : CommGrp.{u} ⥤ CommGrp_ (Type u) where
   obj A :=
     { grpTypeEquivalenceGrp.inverse.obj ((forget₂ CommGrp Grp).obj A) with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
   map f := GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrp Grp).map f)

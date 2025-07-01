@@ -472,7 +472,7 @@ Multivariable calculus:
     inverse function theorem: 'HasStrictDerivAt.to_localInverse'
     implicit function theorem: 'ImplicitFunctionData.implicitFunction'
   Differential equations:
-    Cauchy-Lipschitz Theorem: 'IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq'
+    Cauchy-Lipschitz Theorem: 'IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt'
     maximal solutions: ''
     Grönwall lemma: 'norm_le_gronwallBound_of_norm_deriv_right_le'
     exit theorem of a compact subspace: ''

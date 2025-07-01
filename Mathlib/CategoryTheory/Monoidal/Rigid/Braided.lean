@@ -37,7 +37,7 @@ private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
       iterate 5 rw [← IsIso.comp_inv_eq]
       simpa using yang_baxter X Y X
     _ = 𝟙 X ⊗≫ (X ◁ η_ X Y ≫ (β_ X (X ⊗ Y)).hom) ⊗≫ ((β_ (Y ⊗ X) X).inv ≫ ε_ X Y ▷ X) ⊗≫ 𝟙 X := by
-      simp [monoidalComp, braiding_tensor_right, braiding_inv_tensor_left]
+      simp [monoidalComp, braiding_tensor_right_hom, braiding_tensor_left_inv]
     _ = _ := by
       rw [braiding_naturality_right, ← braiding_inv_naturality_right]
       simp [monoidalComp]
@@ -59,7 +59,7 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
       iterate 4 rw [← IsIso.comp_inv_eq]
       simpa using (yang_baxter Y X Y).symm
     _ = 𝟙 Y ⊗≫ (η_ X Y ▷ Y ≫ (β_ (X ⊗ Y) Y).hom) ⊗≫ ((β_ Y (Y ⊗ X)).inv ≫ Y ◁ ε_ X Y) ⊗≫ 𝟙 Y := by
-      simp [monoidalComp, braiding_tensor_left, braiding_inv_tensor_right]
+      simp [monoidalComp, braiding_tensor_left_hom, braiding_tensor_right_inv]
     _ = _ := by
       rw [braiding_naturality_left, ← braiding_inv_naturality_left]
       simp [monoidalComp]

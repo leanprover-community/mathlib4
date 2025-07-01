@@ -266,7 +266,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     simp only [le_sup'_iff, mem_univ, true_and]; use r
   · gcongr with r _
     exact le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound
-  · simp only [Nat.cast_mul, sum_const, card_univ, nsmul_eq_mul]
+  · simp only [sum_const, card_univ, nsmul_eq_mul]
     rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc,
       ← mul_assoc (q : ℝ), mul_assoc (q * _ : ℝ)]
     gcongr

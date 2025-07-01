@@ -107,6 +107,10 @@ variable {M}
 @[to_additive (attr := simp)]
 theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 
+@[to_additive]
+theorem coeHom_injective : Function.Injective (coeHom M) :=
+  Units.ext
+
 section DivisionMonoid
 
 variable [DivisionMonoid α]

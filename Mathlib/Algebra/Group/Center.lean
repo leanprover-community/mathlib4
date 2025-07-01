@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Centers of magmas and semigroups
@@ -167,6 +168,28 @@ instance decidableMemCentralizer [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a
 lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x * y = y * x) :
     ∀ x ∈ S.centralizer.centralizer, ∀ y ∈ S.centralizer.centralizer, x * y = y * x :=
   fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
+
+theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
+  simp only [centralizer, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, setOf_true,
+    top_eq_univ]
+
+/-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
+theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
+    (hS : S.Nonempty) (hT : T.Nonempty) :
+    (S ×ˢ T).centralizer = S.centralizer ×ˢ T.centralizer := by
+  ext
+  simp_rw [mem_prod, mem_centralizer_iff, mem_prod, and_imp, Prod.forall,
+    Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq]
+  obtain ⟨b, hb⟩ := hS
+  obtain ⟨c, hc⟩ := hT
+  exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
+    fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
+
+theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
+    S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
+  rw [subset_def]
+  simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
+  exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
 
 end Mul
 

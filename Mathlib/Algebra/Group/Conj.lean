@@ -214,8 +214,7 @@ theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
 def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (_ : α) _ => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
-    intro x
-    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩
+    solve_by_elim⟩
 
 end CommMonoid
 

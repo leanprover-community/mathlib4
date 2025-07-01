@@ -92,7 +92,7 @@ private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β)
 
 private lemma erase_eq_iff (hs : a ∉ s) : t.erase a = s ↔ t = s ∨ t = insert a s := by
   by_cases ht : a ∈ t <;>
-  · simp [ne_of_mem_of_not_mem', erase_eq_iff_eq_insert, *]
+  · simp [erase_eq_iff_eq_insert, *]
     aesop
 
 private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :

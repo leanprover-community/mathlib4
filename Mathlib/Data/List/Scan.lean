@@ -27,19 +27,19 @@ theorem scanl_nil (b : β) : scanl f b nil = [b] :=
 
 @[simp]
 theorem scanl_cons : scanl f b (a :: l) = [b] ++ scanl f (f b a) l := by
-  simp only [scanl, eq_self_iff_true, singleton_append, and_self_iff]
+  simp only [scanl, singleton_append]
 
 @[simp]
 theorem getElem?_scanl_zero : (scanl f b l)[0]? = some b := by
   cases l
-  · simp [scanl_nil]
-  · simp [scanl_cons, singleton_append]
+  · simp
+  · simp
 
 @[simp]
 theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b := by
   cases l
-  · simp [scanl_nil]
-  · simp [scanl_cons, singleton_append]
+  · simp
+  · simp
 
 theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     (scanl f b l)[i]?.bind fun x => l[i]?.map fun y => f x y := by
@@ -63,7 +63,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [scanl, length, zero_eq, lt_self_iff_false] at h
+    · simp only [scanl, length, lt_self_iff_false] at h
     · simp
   | succ i hi =>
     cases l

@@ -136,7 +136,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     have := derivWithin_congr ih' (ih h)
     simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this
     rw [iteratedDeriv_succ, this]
-    simp [Pi.mul_def, pow_succ, mul_assoc, Function.iterate_succ', Function.comp_def,
+    simp [Pi.mul_def, pow_succ, Function.iterate_succ',
       LSeries_deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
 
 /-!

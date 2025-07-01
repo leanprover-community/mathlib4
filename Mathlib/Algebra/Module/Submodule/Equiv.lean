@@ -72,7 +72,7 @@ submodule to that submodule.
 This is `LinearEquiv.ofSubmodule` but with `comap` on the left instead of `map` on the right. -/
 def ofSubmodule' [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂) (U : Submodule R₂ M₂) :
     U.comap (f : M →ₛₗ[σ₁₂] M₂) ≃ₛₗ[σ₁₂] U :=
-  (f.symm.ofSubmodules _ _ f.symm.map_eq_comap).symm
+  (f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.symm)).symm
 
 theorem ofSubmodule'_toLinearMap [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂)
     (U : Submodule R₂ M₂) :

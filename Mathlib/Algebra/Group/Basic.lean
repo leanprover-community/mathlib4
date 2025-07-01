@@ -182,7 +182,7 @@ lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
   | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
 
 @[to_additive]
-lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp [mul_right_iterate]
+lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
 
 @[to_additive]
 lemma mul_right_iterate_apply_one (a : M) : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
@@ -730,7 +730,7 @@ lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_di
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
-  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel_right]
+  rw [div_mul_eq_div_div_swap]; simp only [mul_div_cancel_right]
 
 @[to_additive eq_sub_of_add_eq]
 theorem eq_div_of_mul_eq' (h : a * c = b) : a = b / c := by simp [← h]
@@ -1062,3 +1062,33 @@ lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     rw [pow_zero, h1]
     rfl
   | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
+
+/-!
+# Instances for `grind`.
+-/
+
+open Lean
+
+variable (α : Type*)
+
+instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
+    Grind.NatModule α :=
+  { s with
+    hMul := s.nsmul
+    zero_hmul := AddMonoid.nsmul_zero
+    one_hmul := one_nsmul
+    add_hmul n m a := add_nsmul a n m
+    hmul_zero := nsmul_zero
+    hmul_add n a b := nsmul_add a b n }
+
+instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
+    Grind.IntModule α :=
+  { s with
+    hmulNat := ⟨s.nsmul⟩
+    hmulInt := ⟨s.zsmul⟩
+    zero_hmul := SubNegMonoid.zsmul_zero'
+    one_hmul := one_zsmul
+    add_hmul n m a := add_zsmul a n m
+    hmul_zero := zsmul_zero
+    hmul_add n a b := zsmul_add a b n
+    hmul_nat n a := by simp }

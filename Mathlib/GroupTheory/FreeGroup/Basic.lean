@@ -127,7 +127,7 @@ theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
   rcases h with - | ⟨L₁, L₂⟩
-  simp [List.nil_eq_append_iff] at h'
+  simp at h'
 
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
@@ -296,7 +296,7 @@ theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
   rcases to_append_iff.1 this with ⟨_ | ⟨p, L₃⟩, L₄, eq, h₁, h₂⟩
   · simp [nil_iff] at h₁
   · cases eq
-    show Red (L₃ ++ L₄) ([(x1, not b1), (x2, b2)] ++ L₂)
+    change Red (L₃ ++ L₄) ([(x1, not b1), (x2, b2)] ++ L₂)
     apply append_append _ h₂
     have h₁ : Red ((x1, not b1) :: (x1, b1) :: L₃) [(x1, not b1), (x2, b2)] := cons_cons h₁
     have h₂ : Red ((x1, not b1) :: (x1, b1) :: L₃) L₃ := Step.cons_not_rev.to_red
@@ -547,7 +547,7 @@ instance : Group (FreeGroup α) where
     rintro ⟨L⟩
     exact
       List.recOn L rfl fun ⟨x, b⟩ tl ih =>
-          Eq.trans (Quot.sound <| by simp [invRev, one_eq_mk]) ih
+          Eq.trans (Quot.sound <| by simp [invRev]) ih
 
 @[to_additive (attr := simp)]
 theorem pow_mk (n : ℕ) : mk L ^ n = mk (List.flatten <| List.replicate n L) :=
@@ -606,9 +606,9 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
         (g.map_one.symm)
         (by
         rintro ⟨x, _ | _⟩ t (ih : _ = g (mk t))
-        · show _ = g ((of x)⁻¹ * mk t)
+        · change _ = g ((of x)⁻¹ * mk t)
           simpa [Lift.aux] using ih
-        · show _ = g (of x * mk t)
+        · change _ = g (of x * mk t)
           simpa [Lift.aux] using ih)
 
 variable {f}
@@ -728,8 +728,8 @@ The converse can be found in `Mathlib/GroupTheory/FreeGroup/GeneratorEquiv.lean`
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
   toFun := map e
   invFun := map e.symm
-  left_inv x := by simp [Function.comp, map.comp]
-  right_inv x := by simp [Function.comp, map.comp]
+  left_inv x := by simp [map.comp]
+  right_inv x := by simp [map.comp]
   map_mul' := MonoidHom.map_mul _
 
 @[to_additive (attr := simp)]

@@ -196,7 +196,7 @@ def sigmaMk : (Σ i, f i) ≃ₜ (∐ f :) :=
 @[simp]
 lemma sigmaMk_mk (i) (x : f i) :
     sigmaMk f (.mk i x) = (Sigma.ι f i).base x := by
-  show ((TopCat.sigmaCofan (fun x ↦ (f x).toTopCat)).inj i ≫
+  change ((TopCat.sigmaCofan (fun x ↦ (f x).toTopCat)).inj i ≫
     (colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map (Sigma.ι f i) x
   congr 2
@@ -307,7 +307,7 @@ def coprodMk : X ⊕ Y ≃ₜ (X ⨿ Y : Scheme.{u}) :=
 @[simp]
 lemma coprodMk_inl (x : X) :
     coprodMk X Y (.inl x) = (coprod.inl : X ⟶ X ⨿ Y).base x := by
-  show ((TopCat.binaryCofan X Y).inl ≫
+  change ((TopCat.binaryCofan X Y).inl ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inl x
   congr 2
@@ -317,7 +317,7 @@ lemma coprodMk_inl (x : X) :
 @[simp]
 lemma coprodMk_inr (x : Y) :
     coprodMk X Y (.inr x) = (coprod.inr : Y ⟶ X ⨿ Y).base x := by
-  show ((TopCat.binaryCofan X Y).inr ≫
+  change ((TopCat.binaryCofan X Y).inr ≫
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inr x
   congr 2
@@ -385,9 +385,9 @@ lemma coprodSpec_coprodMk (x) :
   obtain (x | x) := x <;>
     simp only [coprodMk_inl, coprodMk_inr, ← Scheme.comp_base_apply,
       coprodSpec, coprod.inl_desc, coprod.inr_desc]
-  · show Ideal.comap _ _ = x.asIdeal.prod ⊤
+  · change Ideal.comap _ _ = x.asIdeal.prod ⊤
     ext; simp [Ideal.prod, CommRingCat.ofHom]
-  · show Ideal.comap _ _ = Ideal.prod ⊤ x.asIdeal
+  · change Ideal.comap _ _ = Ideal.prod ⊤ x.asIdeal
     ext; simp [Ideal.prod, CommRingCat.ofHom]
 
 lemma coprodSpec_apply (x) :
@@ -500,7 +500,8 @@ instance [Finite ι] (R : ι → CommRingCat.{u}) : IsIso (sigmaSpec R) := by
       (colimit.isoColimitCocone ⟨_,
         (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm _).symm (isColimitOfPreserves
           Scheme.Spec (Fan.IsLimit.op (CommRingCat.piFanIsLimit R)))⟩).hom := by
-    ext1; simp; rfl
+    ext1
+    simp; rfl
   rw [this]
   infer_instance
 

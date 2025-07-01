@@ -120,7 +120,7 @@ def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   map {_ _} r := .op <| .ofRel r.rel.inv
   map_id X := by
     congr
-    simp only [unop_op, RelCat.rel_id]
+    simp only [unop_op]
     ext x y
     exact Eq.comm
   map_comp {X Y Z} f g := by

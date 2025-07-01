@@ -99,7 +99,7 @@ theorem sheafificationWhiskerRightIso_hom_app :
 theorem sheafificationWhiskerRightIso_inv_app :
     (J.sheafificationWhiskerRightIso F).inv.app P = (J.sheafifyCompIso F P).inv := by
   dsimp [sheafificationWhiskerRightIso, sheafifyCompIso]
-  simp only [Category.id_comp, Category.comp_id]
+  simp only [Category.comp_id]
   erw [Category.id_comp]
 
 @[simp, reassoc]

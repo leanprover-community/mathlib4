@@ -671,7 +671,7 @@ noncomputable def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
     (tensorProductIsBinaryProduct _ _)
 
 @[simp]
-lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B := by
+lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B :=
   rfl
 
 instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A B) := by
@@ -880,7 +880,7 @@ end Monoidal
 namespace Monoidal
 
 instance [F.Monoidal] : PreservesFiniteProducts F :=
-  have (A B) : IsIso (CartesianMonoidalCategory.prodComparison F A B) :=
+  have (A B : _) : IsIso (CartesianMonoidalCategory.prodComparison F A B) :=
     δ_of_cartesianMonoidalCategory F A B ▸ inferInstance
   have : IsIso (CartesianMonoidalCategory.terminalComparison F) :=
     η_of_cartesianMonoidalCategory F ▸ inferInstance

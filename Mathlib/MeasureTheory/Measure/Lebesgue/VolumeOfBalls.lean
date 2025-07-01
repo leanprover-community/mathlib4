@@ -333,7 +333,7 @@ theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
       measurableSet_ball.nullMeasurableSet]
     simp only [Set.preimage, ball_zero_eq _ zero_le_one, one_pow, Set.mem_setOf_eq]
     convert volume_sum_rpow_lt_one ι one_le_two using 4
-    · simp [one_pow, Real.rpow_two, sq_abs, EuclideanSpace.measurableEquiv]
+    · simp [sq_abs, EuclideanSpace.measurableEquiv]
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
@@ -365,7 +365,7 @@ theorem volume_ball (x : E) (r : ℝ) :
   have := EuclideanSpace.volume_ball (Fin (finrank ℝ E)) ((stdOrthonormalBasis ℝ E).repr x) r
   simp_rw [Fintype.card_fin] at this
   convert this
-  simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, map_zero]
+  simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm]
 
 theorem volume_closedBall (x : E) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ finrank ℝ E *

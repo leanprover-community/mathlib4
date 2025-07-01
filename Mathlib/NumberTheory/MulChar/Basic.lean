@@ -568,7 +568,7 @@ theorem sum_one_eq_card_units [DecidableEq R] :
   · congr
     ext a
     simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_map,
-      Function.Embedding.coeFn_mk, exists_true_left, IsUnit]
+      Function.Embedding.coeFn_mk, IsUnit]
 
 end sum
 

@@ -211,7 +211,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   have claim1 : ∀ (B) (_ : B ∈ C0) (C) (_ : C ∈ C0), B ∩ C ∈ C0 := by
     rintro B ⟨Q, hQ, rfl⟩ C ⟨R, hR, rfl⟩
     use Q ∩ R
-    simp only [and_true, eq_self_iff_true, Set.preimage_inter]
+    simp only [and_true, Set.preimage_inter]
     exact inter_sets _ hQ hR
   -- All sets in C0 are nonempty.
   have claim2 : ∀ B ∈ C0, Set.Nonempty B := by
@@ -400,7 +400,7 @@ def homOfContinuous {X Y : Compactum} (f : X → Y) (cont : Continuous f) : X �
       rw [continuous_iff_ultrafilter] at cont
       ext (F : Ultrafilter X)
       specialize cont (X.str F) F (le_nhds_of_str_eq F (X.str F) rfl)
-      simp only [types_comp_apply, ofTypeFunctor_map]
+      simp only [types_comp_apply]
       exact str_eq_of_le_nhds (Ultrafilter.map f F) _ cont }
 
 end Compactum

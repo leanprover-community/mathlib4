@@ -447,7 +447,7 @@ lemma IsLocallyConstructible.isConstructible_of_subset_of_isCompact
     [PrespectralSpace X] [QuasiSeparatedSpace X]
     (hs : IsLocallyConstructible s) (hst : s ⊆ t) (ht : IsCompact t) :
     IsConstructible s := by
-  have (x) : ∃ U, IsOpen U ∧ IsCompact U ∧ x ∈ U ∧ IsConstructible (U ∩ s) :=
+  have (x : _) : ∃ U, IsOpen U ∧ IsCompact U ∧ x ∈ U ∧ IsConstructible (U ∩ s) :=
     have ⟨U, hxU, hU, hUs⟩ := hs x
     have ⟨V, ⟨hV₁, hV₂⟩, hxV, hVU⟩ := PrespectralSpace.isTopologicalBasis.mem_nhds_iff.mp hxU
     have : IsConstructible (V ↓∩ s) :=

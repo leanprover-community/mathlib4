@@ -1276,7 +1276,7 @@ theorem transHomeomorph_transHomeomorph (e : PartialHomeomorph X Y) (f' : Y ≃�
 theorem trans_transHomeomorph (e : PartialHomeomorph X Y) (e' : PartialHomeomorph Y Z)
     (f'' : Z ≃ₜ Z') :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
-  simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
+  simp only [transHomeomorph_eq_trans, trans_assoc]
 
 end transHomeomorph
 
@@ -1353,7 +1353,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
     rw [PartialHomeomorph.symm_source]
     exact hyV
   · rw [(V.partialHomeomorphSubtypeCoe hV).right_inv hyV]
-    show _ = U.partialHomeomorphSubtypeCoe hU _
+    change _ = U.partialHomeomorphSubtypeCoe hU _
     rw [(U.partialHomeomorphSubtypeCoe hU).right_inv hy.2]
 
 end subtypeRestr

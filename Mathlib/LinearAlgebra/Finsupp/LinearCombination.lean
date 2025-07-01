@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Module.Submodule.Equiv
+import Mathlib.Data.Finsupp.Option
 import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
@@ -78,7 +79,7 @@ theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [Decid
     linearCombination R (Pi.single a c) f = f a • c := by
   rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
   · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
-  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
+  · exact fun _ ↦ by simp only [zero_smul]
 
 variable {α M}
 
@@ -134,7 +135,7 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
-  simp [linearCombination_apply, Finsupp.sum_mapDomain_index, add_smul, h]
+  simp [linearCombination_apply, h]
 
 theorem linearCombination_comp_lmapDomain (f : α → α') :
     (linearCombination R v').comp (Finsupp.lmapDomain R R f) = linearCombination R (v' ∘ f) := by
@@ -277,8 +278,8 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
   toFun v := linearCombination R v
-  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+  map_add' u v := by ext; simp [Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [smul_comm]
 
 @[simp]
 theorem bilinearCombination_apply :

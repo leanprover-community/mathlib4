@@ -132,7 +132,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       refine ⟨?_, ?_, ?_⟩
       ·-- Build the matching function from the section
         exact fun i =>
-          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [Opposite.unop_op, mem_singleton]⟩
+          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
       · -- Show that it is injective
         intro i i'
         have subi : ({i} : Finset ι) ⊆ {i, i'} := by simp

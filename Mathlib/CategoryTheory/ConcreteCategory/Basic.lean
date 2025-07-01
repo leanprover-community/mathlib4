@@ -222,7 +222,7 @@ def HasForget₂.trans (C : Type u) [Category.{v} C] [HasForget.{w} C]
     [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
   forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
   forget_comp := by
-    show (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
+    change (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
     simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
@@ -324,12 +324,10 @@ instance toHasForget : HasForget C where
 
 end ConcreteCategory
 
-theorem forget_obj (X : C) : (forget C).obj X = ToType X := by
-  with_reducible_and_instances rfl
+theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
 @[simp]
-theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := by
-  with_reducible_and_instances rfl
+theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.

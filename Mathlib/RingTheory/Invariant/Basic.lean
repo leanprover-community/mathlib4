@@ -3,6 +3,7 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.RingTheory.Invariant.Defs
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
@@ -36,19 +37,6 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
 -/
 
 open scoped Pointwise
-
-namespace Algebra
-
-variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
-  [Group G] [MulSemiringAction G B]
-
-/-- An action of a group `G` on an extension of rings `B/A` is invariant if every fixed point of
-`B` lies in the image of `A`. The converse statement that every point in the image of `A` is fixed
-by `G` is `smul_algebraMap` (assuming `SMulCommClass A B G`). -/
-@[mk_iff] class IsInvariant : Prop where
-  isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
-
-end Algebra
 
 section Galois
 

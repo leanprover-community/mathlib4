@@ -35,7 +35,7 @@ theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and, eq_self_iff_true, insertIdx_succ_cons] at h
+    · simp only [insertIdx_succ_cons] at h
       rw [Nat.succ_inj]
       refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
@@ -101,7 +101,7 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
   | _ :: _, [], _ => rfl
   | [], _ :: _, _ => rfl
   | a :: as, b :: bs, s => by
-    simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
+    simp only [mapAccumr₂, mapAccumr₂_eq_foldr f as]
     rfl
 
 end MapAccumr

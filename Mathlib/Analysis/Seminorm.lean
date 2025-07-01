@@ -454,7 +454,7 @@ noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
         simp only [sub_self, map_zero, add_zero]; rfl
     inf_le_right := fun p q x =>
       ciInf_le_of_le bddBelow_range_add 0 <| by
-        simp only [sub_self, map_zero, zero_add, sub_zero]; rfl
+        simp only [map_zero, zero_add, sub_zero]; rfl
     le_inf := fun a _ _ hab hac _ =>
       le_ciInf fun _ => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
 

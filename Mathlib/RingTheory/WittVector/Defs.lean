@@ -213,7 +213,7 @@ theorem wittOne_zero_eq_one : wittOne p 0 = 1 := by
 @[simp]
 theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [wittOne, wittStructureRat, RingHom.map_zero, map_one, RingHom.map_one,
+  simp only [wittOne, wittStructureRat, RingHom.map_zero, map_one,
     map_wittStructureInt]
   induction n using Nat.strong_induction_on with | h n IH => ?_
   rw [xInTermsOfW_eq]
@@ -221,7 +221,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
     bind₁_C_right]
   rw [sub_mul, one_mul]
   rw [Finset.sum_eq_single 0]
-  · simp only [invOf_eq_inv, one_mul, inv_pow, tsub_zero, RingHom.map_one, pow_zero]
+  · simp only [invOf_eq_inv, one_mul, tsub_zero, pow_zero]
     simp only [one_pow, one_mul, xInTermsOfW_zero, sub_self, bind₁_X_right]
   · intro i hin hi0
     rw [Finset.mem_range] at hin

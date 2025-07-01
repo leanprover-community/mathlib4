@@ -54,7 +54,7 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
     Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_cancel_left,
-    Matrix.invOf_mul_cancel_right, Matrix.mul_assoc, add_sub_cancel]
+    Matrix.mul_assoc, add_sub_cancel]
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
 Schur complement. -/
@@ -244,13 +244,13 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
   · -- unfold the `Invertible` instances to get the raw factors
-    show
+    change
       _ =
         fromBlocks 1 0 (-(1 * (⅟ D * C) * 1)) 1 *
           (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * 0 * ⅟ D)) 0 (⅟ D) *
             fromBlocks 1 (-(1 * (B * ⅟ D) * 1)) 0 1)
     -- combine into a single block matrix
-    simp only [fromBlocks_multiply, invOf_one, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
+    simp only [fromBlocks_multiply, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
       Matrix.mul_zero, add_zero, zero_add, neg_zero, Matrix.mul_neg, Matrix.neg_mul, neg_neg, ←
       Matrix.mul_assoc, add_comm (⅟D)]
 
@@ -461,8 +461,8 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
         (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
-  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
-    dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hA.eq,
+  simp [Function.star_sumElim, vecMul_fromBlocks, add_vecMul,
+    dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, hA.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel
 
@@ -472,8 +472,8 @@ theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
         (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
-  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
-    dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hD.eq,
+  simp [Function.star_sumElim, vecMul_fromBlocks, add_vecMul,
+    dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, hD.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel
 

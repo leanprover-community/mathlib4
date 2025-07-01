@@ -186,7 +186,7 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
   simp_rw [← mem_sdiff] at hne
   have hkm := mem_sdiff.1 (min'_mem _ hne)
   refine ⟨min' _ hne, fun k hk ↦ ?_, ?_⟩
-  all_goals simp only [Pi.toLex_apply, ofLex_toLex, Finsupp.indicator_apply]
+  all_goals simp only [ofLex_toLex, Finsupp.indicator_apply]
   · have hki := mem_Iic.2 (hk.le.trans <| mem_Iic.1 hkm.1)
     rw [dif_pos hki, dif_pos]
     by_contra h

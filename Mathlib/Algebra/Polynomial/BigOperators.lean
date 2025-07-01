@@ -144,7 +144,7 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     apply right_ne_zero_of_mul h
   · rw [ih]
     · exact h
-    simp only [ne_eq, not_false_eq_true]
+    simp only [ne_eq]
     apply right_ne_zero_of_mul h
 
 /-- The leading coefficient of a product of polynomials is equal to
@@ -191,7 +191,7 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     rw [this]
     simp
   convert prod_replicate (Multiset.card t) (1 : R)
-  · simp only [eq_replicate, Multiset.card_map, eq_self_iff_true, true_and]
+  · simp only [eq_replicate, Multiset.card_map, true_and]
     rintro i hi
     obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hi
     apply h
@@ -269,7 +269,7 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
     exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
-  congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
+  congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [monic_X_sub_C]
 
 theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s) :
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by

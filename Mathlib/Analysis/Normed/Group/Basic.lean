@@ -461,6 +461,10 @@ lemma norm_mul₃_le' : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ := norm_
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
   simpa only [dist_eq_norm_div] using dist_triangle a b c
 
+@[to_additive]
+lemma norm_le_norm_div_add (a b : E) : ‖a‖ ≤ ‖a / b‖ + ‖b‖ := by
+  simpa only [div_one] using norm_div_le_norm_div_add_norm_div a b 1
+
 @[to_additive (attr := simp) norm_nonneg]
 theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
   rw [← dist_one_right]
@@ -621,7 +625,7 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
 
 @[to_additive] -- `simp` can prove this
-theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp [dist_eq_norm_div]
+theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp
 
 @[to_additive (attr := simp) norm_eq_of_mem_sphere]
 theorem norm_eq_of_mem_sphere' (x : sphere (1 : E) r) : ‖(x : E)‖ = r :=
@@ -929,7 +933,7 @@ lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := EN
 
 @[to_additive (attr := simp) enorm_eq_zero]
 lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [enorm, ENormedMonoid.enorm_eq_zero]
+  simp [ENormedMonoid.enorm_eq_zero]
 
 @[to_additive enorm_ne_zero]
 lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=

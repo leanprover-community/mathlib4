@@ -253,7 +253,7 @@ def boundary : Fin (c.length + 1) ↪o Fin (n + 1) :=
     Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ => c.sizeUpTo_strict_mono hi
 
 @[simp]
-theorem boundary_zero : c.boundary 0 = 0 := by simp [boundary, Fin.ext_iff]
+theorem boundary_zero : c.boundary 0 = 0 := by simp [boundary]
 
 @[simp]
 theorem boundary_last : c.boundary (Fin.last c.length) = Fin.last n := by
@@ -272,10 +272,10 @@ point of each block, and adding a virtual point at the right of the last block. 
 def toCompositionAsSet : CompositionAsSet n where
   boundaries := c.boundaries
   zero_mem := by
-    simp only [boundaries, Finset.mem_univ, exists_prop_of_true, Finset.mem_map]
+    simp only [boundaries, Finset.mem_univ, Finset.mem_map]
     exact ⟨0, And.intro True.intro rfl⟩
   getLast_mem := by
-    simp only [boundaries, Finset.mem_univ, exists_prop_of_true, Finset.mem_map]
+    simp only [boundaries, Finset.mem_univ, Finset.mem_map]
     exact ⟨Fin.last c.length, And.intro True.intro c.boundary_last⟩
 
 /-- The canonical increasing bijection between `Fin (c.length + 1)` and `c.boundaries` is
@@ -531,7 +531,7 @@ theorem single_blocks {n : ℕ} (h : 0 < n) : (single n h).blocks = [n] :=
 
 @[simp]
 theorem single_blocksFun {n : ℕ} (h : 0 < n) (i : Fin (single n h).length) :
-    (single n h).blocksFun i = n := by simp [blocksFun, single, blocks, i.2]
+    (single n h).blocksFun i = n := by simp [blocksFun, single]
 
 @[simp]
 theorem single_embedding {n : ℕ} (h : 0 < n) (i : Fin n) :
@@ -725,7 +725,7 @@ theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
   | cons n ns IH =>
     intro l h; simp only [sum_cons] at h
     have := le_trans (Nat.le_add_right _ _) h
-    simp only [splitWrtCompositionAux_cons, this]; dsimp
+    simp only [splitWrtCompositionAux_cons]; dsimp
     rw [length_take, IH] <;> simp [length_drop]
     · assumption
     · exact le_tsub_of_add_le_left h
@@ -759,7 +759,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
     · rw [Nat.add_zero, List.take_zero, sum_nil]
       simp
     · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
-          sum_cons, Nat.add_eq, add_zero, splitAt_eq, drop_take, drop_drop]
+          sum_cons, splitAt_eq, drop_take, drop_drop]
       rw [Nat.add_sub_add_left]
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
@@ -798,7 +798,7 @@ one gets back the original list of lists. -/
 @[simp]
 theorem splitWrtComposition_flatten (L : List (List α)) (c : Composition L.flatten.length)
     (h : map length L = c.blocks) : splitWrtComposition (flatten L) c = L := by
-  simp only [eq_self_iff_true, and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
+  simp only [and_self_iff, eq_iff_flatten_eq, flatten_splitWrtComposition,
     map_length_splitWrtComposition, h]
 
 end List
@@ -832,7 +832,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     intro c
     ext i
     simp only [add_comm, Set.toFinset_setOf, Finset.mem_univ,
-     forall_true_left, Finset.mem_filter, true_and, exists_prop]
+     Finset.mem_filter, true_and, exists_prop]
     constructor
     · rintro (rfl | rfl | ⟨j, hj1, hj2⟩)
       · exact c.zero_mem
@@ -854,7 +854,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact Nat.lt_of_lt_pred (Fin.pos i)
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
-      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
+      Finset.mem_univ, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and, reduceCtorEq]
     simp_rw [this, false_or, ← Fin.ext_iff, exists_eq_right']
 
@@ -932,9 +932,9 @@ theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     have A : i < c.blocks.length := by
       rw [c.card_boundaries_eq_succ_length] at h
       simp [blocks, Nat.lt_of_succ_lt_succ h]
-    have B : i < c.boundaries.card := lt_of_lt_of_le A (by simp [blocks, length, Nat.sub_le])
+    have B : i < c.boundaries.card := lt_of_lt_of_le A (by simp [blocks, length])
     rw [sum_take_succ _ _ A, IH B]
-    simp [blocks, blocksFun, get_ofFn]
+    simp [blocks, blocksFun]
 
 theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     j ∈ c.boundaries ↔ ∃ i < c.boundaries.card, (c.blocks.take i).sum = j := by
@@ -982,7 +982,7 @@ theorem Composition.toCompositionAsSet_length (c : Composition n) :
 @[simp]
 theorem CompositionAsSet.toComposition_length (c : CompositionAsSet n) :
     c.toComposition.length = c.length := by
-  simp [CompositionAsSet.toComposition, Composition.length, Composition.blocks]
+  simp [CompositionAsSet.toComposition, Composition.length]
 
 @[simp]
 theorem Composition.toCompositionAsSet_blocks (c : Composition n) :

@@ -234,7 +234,7 @@ open Hom
 
 @[simp]
 lemma Hom.id_eq (X : WalkingReflexivePair) :
-    Hom.id X = 𝟙 X := by rfl
+    Hom.id X = 𝟙 X := rfl
 
 @[reassoc (attr := simp)]
 lemma reflexion_comp_left : reflexion ≫ left = 𝟙 zero := rfl
@@ -412,10 +412,8 @@ def mkNatTrans : F ⟶ G where
     cases f
     all_goals
       dsimp
-      simp only [Functor.map_id, Category.id_comp, Category.comp_id,
-        Functor.map_comp, h₁, h₂, h₃, reassoc_of% h₁, reassoc_of% h₂,
-        reflexivePair_map_reflexion, reflexivePair_map_left, reflexivePair_map_right,
-        Category.assoc]
+      simp only [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
+        reassoc_of% h₁, reassoc_of% h₂, Category.assoc]
 
 @[simp]
 lemma mkNatTrans_app_zero : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl

@@ -70,7 +70,7 @@ def raise' : List ℕ → ℕ → List ℕ
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
-  | m :: l, n => by simp [raise', lower', Nat.add_sub_cancel_right, lower_raise']
+  | m :: l, n => by simp [raise', lower', lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl

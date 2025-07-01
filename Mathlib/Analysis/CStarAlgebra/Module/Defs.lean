@@ -181,7 +181,7 @@ protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inne
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
   ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self (A := A), inner_self] using h,
-    fun h => by simp [norm, h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
+    fun h => by simp [h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
 
 end
 

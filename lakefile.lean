@@ -2,22 +2,21 @@ import Lake
 
 open Lake DSL
 
-
 /-!
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.62" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "batteries" @ git "nightly-testing"
+require "leanprover-community" / "Qq" @ git "nightly-testing"
+require "leanprover-community" / "aesop" @ git "nightly-testing"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.63-pre" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
     If this does not work, report your issue on the Lean Zulip."
-require "leanprover-community" / "importGraph" @ git "main"
+require "leanprover-community" / "importGraph" @ git "nightly-testing"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "main"
+require "leanprover-community" / "plausible" @ git "nightly-testing"
 
 /-!
 ## Options for building mathlib
@@ -161,6 +160,13 @@ post_update pkg do
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
     let exeFile ← runBuild cache.fetch
-    let exitCode ← env exeFile.toString #["get"]
+    -- Run the command in the root package directory,
+    -- which is the one that holds the .lake folder and lean-toolchain file.
+    let cwd ← IO.Process.getCurrentDir
+    let exitCode ← try
+      IO.Process.setCurrentDir rootPkg.dir
+      env exeFile.toString #["get"]
+    finally
+      IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
       error s!"{pkg.name}: failed to fetch cache"

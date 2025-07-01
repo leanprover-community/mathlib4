@@ -70,7 +70,7 @@ lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B) :
   induction a using TensorProduct.induction_on with
   | zero => simp
   | tmul a a' =>
-    ext; simp [AlgHom.mulLeftRight_apply, LinearEquiv.algConj, LinearEquiv.conj]
+    ext; simp [AlgHom.mulLeftRight_apply, LinearEquiv.algConj]
   | add _ _ _ _ => simp_all [map_add]
 
 theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=

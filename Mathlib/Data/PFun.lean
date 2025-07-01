@@ -438,7 +438,7 @@ theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Do
 theorem preimage_asSubtype (f : α →. β) (s : Set β) :
     f.asSubtype ⁻¹' s = Subtype.val ⁻¹' f.preimage s := by
   ext x
-  simp only [Set.mem_preimage, Set.mem_setOf_eq, PFun.asSubtype, PFun.mem_preimage]
+  simp only [Set.mem_preimage, PFun.asSubtype, PFun.mem_preimage]
   show f.fn x.val _ ∈ s ↔ ∃ y ∈ s, y ∈ f x.val
   exact
     Iff.intro (fun h => ⟨_, h, Part.get_mem _⟩) fun ⟨y, ys, fxy⟩ =>

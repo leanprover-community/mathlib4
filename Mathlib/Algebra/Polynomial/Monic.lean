@@ -555,7 +555,7 @@ theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
   rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
   obtain ⟨k, hk⟩ := h
   simp only [← hk, smul_eq_mul, ← Units.val_mul, Units.val_eq_one, inv_mul_eq_iff_eq_mul]
-  simp [Units.ext_iff, IsUnit.unit_spec]
+  simp
 
 theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q : R[X]} :
     p * q = 0 ↔ q = 0 := by
@@ -580,7 +580,7 @@ theorem isUnit_leadingCoeff_mul_left_eq_zero_iff (h : IsUnit p.leadingCoeff) {q 
     simp only [zero_mul] at hp
     rwa [mul_assoc, Monic.mul_left_eq_zero_iff] at hp
     refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
-    simp [Units.mul_inv_eq_iff_eq_mul, IsUnit.unit_spec]
+    simp
   · rintro rfl
     rw [zero_mul]
 

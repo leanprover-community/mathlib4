@@ -84,7 +84,7 @@ protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affin
 @[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
     [SMulCommClass G k V] {p : ι → V} {a : G} :
     AffineIndependent k (a • p) ↔ AffineIndependent k p := by
-  simp +contextual [AffineIndependent, weightedVSub_smul,
+  simp +contextual [AffineIndependent,
     ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
 
 protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
@@ -300,7 +300,7 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
     have hs' : fs'.weightedVSub p w' = (0 : V) := by
       rw [← hs, Finset.weightedVSub_map]
       congr with i
-      simp_all only [comp_apply, EmbeddingLike.apply_eq_iff_eq, exists_eq, dite_true]
+      simp_all only [comp_apply]
     rw [← ha fs' w' hw's hs' (f i0) ((Finset.mem_map' _).2 hi0), hw']
 
 /-- If a family is affinely independent, so is any subfamily indexed

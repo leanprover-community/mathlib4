@@ -132,7 +132,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
   { pt := {
       toTop := (TopCat.limitCone FF).pt
       is_compact := by
-        show CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
+        change CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
         rw [← isCompact_iff_compactSpace]
         apply IsClosed.isCompact
         have :
@@ -159,7 +159,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
-        simp only [CategoryTheory.comp_apply, Functor.const_obj_map, CategoryTheory.id_apply]
+        simp only [Functor.const_obj_map]
         exact (hx f).symm } }
 
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/

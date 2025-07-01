@@ -236,12 +236,12 @@ theorem whiskerLeft_comp (W : C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[reassoc, simp]
 theorem id_whiskerLeft {X Y : C} (f : X ⟶ Y) :
     𝟙_ C ◁ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
-  rw [← assoc, ← leftUnitor_naturality]; simp [id_tensorHom]
+  rw [← assoc, ← leftUnitor_naturality]; simp
 
 @[reassoc, simp]
 theorem tensor_whiskerLeft (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
     (X ⊗ Y) ◁ f = (α_ X Y Z).hom ≫ X ◁ Y ◁ f ≫ (α_ X Y Z').inv := by
-  simp only [← id_tensorHom, ← tensorHom_id]
+  simp only [← id_tensorHom]
   rw [← assoc, ← associator_naturality]
   simp
 
@@ -253,14 +253,14 @@ theorem comp_whiskerRight {W X Y : C} (f : W ⟶ X) (g : X ⟶ Y) (Z : C) :
 @[reassoc, simp]
 theorem whiskerRight_id {X Y : C} (f : X ⟶ Y) :
     f ▷ 𝟙_ C = (ρ_ X).hom ≫ f ≫ (ρ_ Y).inv := by
-  rw [← assoc, ← rightUnitor_naturality]; simp [tensorHom_id]
+  rw [← assoc, ← rightUnitor_naturality]; simp
 
 @[reassoc, simp]
 theorem whiskerRight_tensor {X X' : C} (f : X ⟶ X') (Y Z : C) :
     f ▷ (Y ⊗ Z) = (α_ X Y Z).inv ≫ f ▷ Y ▷ Z ≫ (α_ X' Y Z).hom := by
-  simp only [← id_tensorHom, ← tensorHom_id]
+  simp only [← tensorHom_id]
   rw [associator_naturality]
-  simp [tensor_id]
+  simp
 
 @[reassoc, simp]
 theorem whisker_assoc (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C) :
@@ -600,16 +600,20 @@ theorem whiskerLeft_rightUnitor_inv (X Y : C) :
   eq_of_inv_eq_inv (by simp)
 
 @[reassoc]
-theorem leftUnitor_tensor (X Y : C) :
+theorem leftUnitor_tensor_hom (X Y : C) :
     (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ (λ_ X).hom ▷ Y := by simp
+
+@[deprecated (since := "2025-06-24")] alias leftUnitor_tensor := leftUnitor_tensor_hom
 
 @[reassoc]
 theorem leftUnitor_tensor_inv (X Y : C) :
     (λ_ (X ⊗ Y)).inv = (λ_ X).inv ▷ Y ≫ (α_ (𝟙_ C) X Y).hom := by simp
 
 @[reassoc]
-theorem rightUnitor_tensor (X Y : C) :
+theorem rightUnitor_tensor_hom (X Y : C) :
     (ρ_ (X ⊗ Y)).hom = (α_ X Y (𝟙_ C)).hom ≫ X ◁ (ρ_ Y).hom := by simp
+
+@[deprecated (since := "2025-06-24")] alias rightUnitor_tensor := rightUnitor_tensor_hom
 
 @[reassoc]
 theorem rightUnitor_tensor_inv (X Y : C) :

@@ -85,7 +85,7 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
   congr 1
   apply Multiset.filter_congr
   intro d h
-  simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
+  simp only [eq_comm, Finset.mem_val.mp h, exists_const]
 
 @[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
@@ -171,7 +171,7 @@ theorem sign_of_cycleType (f : Perm α) :
   | empty => rfl
   | cons a s ihs =>
     rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
-    simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
+    simp only [pow_add, pow_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
 @[simp]
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
@@ -648,7 +648,7 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
     rw [← card_support_eq_three_iff, h]
     simp [ab, ac, bc]
   apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => ?_
-  · simp [ab, ac, bc]
+  · simp [ab, ac]
   · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rw [mem_support]
     simp only [Perm.coe_mul, Function.comp_apply, Ne]

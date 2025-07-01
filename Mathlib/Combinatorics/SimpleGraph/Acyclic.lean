@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 
@@ -97,7 +97,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
     rcases h with h | h
     · cases q with
-      | nil => simp [Walk.isPath_def] at hp
+      | nil => simp at hp
       | cons _ q =>
         rw [Walk.cons_isPath_iff] at hp hq
         simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff, true_and] at h
@@ -175,7 +175,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
         omega
-      · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
+      · simp only [isPath_copy]
         exact (hf _).tail
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
@@ -188,7 +188,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       rw [← hf' _ nil IsPath.nil, length_nil,
           ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
-      simp [Nat.le_zero, Nat.one_ne_zero] at h'
+      simp at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
     · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
     case contra =>

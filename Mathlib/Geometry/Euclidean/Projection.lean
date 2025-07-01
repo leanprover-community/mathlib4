@@ -445,7 +445,7 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
   have : ∀ a : s, ∀ b : V, s.direction.orthogonalProjection b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro _ _ h
-    simp [reflection, h]
+    simp [reflection]
   rw [← vsub_vadd p (orthogonalProjection s p)]
   exact this (orthogonalProjection s p) _ (orthogonalProjection_vsub_orthogonalProjection s p)
 

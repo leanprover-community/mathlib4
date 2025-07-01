@@ -333,7 +333,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
   obtain ⟨z, hz⟩ := IsAlgClosed.exists_root _ (degree_cyclotomic_pos n E (NeZero.pos _)).ne.symm
   apply (algebraMap K E).injective
   letI := IsCyclotomicExtension.finiteDimensional {n} K L
-  letI := IsCyclotomicExtension.isGalois n K L
+  letI := IsCyclotomicExtension.isGalois {n} K L
   rw [norm_eq_prod_embeddings]
   conv_lhs =>
     congr
@@ -364,7 +364,7 @@ theorem sub_one_norm_isPrimePow (hn : IsPrimePow n) [IsCyclotomicExtension {n} K
       ((n.factorization.mem_support_toFun n.minFac).1 <|
         mem_primeFactors_iff_mem_primeFactorsList.2 <|
           (mem_primeFactorsList (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
-  simp [hk, sub_one_norm_eq_eval_cyclotomic hζ this hirr]
+  simp [hk]
 
 end
 
@@ -417,7 +417,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     convert hη using 1
     rw [Nat.sub_add_comm hs]
   have := IsCyclotomicExtension.finiteDimensional {p ^ (k + 1)} K L
-  have := IsCyclotomicExtension.isGalois (p ^ (k + 1)) K L
+  have := IsCyclotomicExtension.isGalois {p ^ (k + 1)} K L
   rw [norm_eq_norm_adjoin K]
   have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
   swap; · exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)

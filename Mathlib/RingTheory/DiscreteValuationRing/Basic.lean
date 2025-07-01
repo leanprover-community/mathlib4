@@ -220,7 +220,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   congr 1
   symm
   rw [Multiset.eq_replicate]
-  simp only [true_and, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map, exists_imp]
+  simp only [true_and, and_imp, Multiset.card_map, Multiset.mem_map, exists_imp]
   rintro _ q hq rfl
   rw [Associates.mk_eq_mk_iff_associated]
   apply h₂ (hfx.1 _ hq) hp
@@ -246,7 +246,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain
     simpa only [Units.mul_inv_cancel_right] using I.mul_mem_right (↑u⁻¹) hxI
   constructor
   use p ^ Nat.find ex
-  show I = Ideal.span _
+  change I = Ideal.span _
   apply le_antisymm
   · intro r hr
     by_cases hr0 : r = 0
@@ -324,7 +324,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
   congr 1
   rw [Multiset.eq_replicate]
-  simp only [true_and, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map, exists_imp]
+  simp only [true_and, and_imp, Multiset.card_map, Multiset.mem_map, exists_imp]
   rintro _ _ _ rfl
   rw [Associates.mk_eq_mk_iff_associated]
   refine associated_of_irreducible _ ?_ hirr
