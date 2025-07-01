@@ -34,8 +34,39 @@ variable {𝕜 E M H : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
   {I : ModelWithCorners 𝕜 E H} [ChartedSpace H M] [IsManifold I ω M]
 ```
 
-Let f : M \to N be smooth.
-Let f : M \to E (a normed space) be smooth.
+Differentiability of functions between manifolds
+```
+import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
+
+variable
+  -- Given a non-trivially normed field 𝕜
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
+  -- A manifold M over 𝕜
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] 
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] 
+  -- A manifold M' over 𝕜
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') 
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] 
+  -- A function from M to M' and x in M
+  (f : M → M') (x : M)
+
+variable (x : M) in
+-- f is differentiable at x
+#check MDifferentiableAt I I' f x
+
+variable (n : WithTop ℕ∞) in -- A natural number or ∞ or ω
+#check ContMDiff I I' n f 
+
+
+variable 
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] 
+  (g : M → F) in
+open scoped Manifold in
+#check ContMDiff I 𝓘(𝕜, F) n g  -- g is n times continuously differentiable 
+```
 
 Consider the product manifold M \times N.
 
