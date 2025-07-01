@@ -329,6 +329,7 @@ instance addCommGroup : AddCommGroup ℂ :=
     add_comm := by intros; ext <;> simp <;> ring
     neg_add_cancel := by intros; ext <;> simp }
 
+/-! ### Casts -/
 
 instance instNatCast : NatCast ℂ where natCast n := ofReal n
 instance instIntCast : IntCast ℂ where intCast n := ofReal n
@@ -352,6 +353,8 @@ instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
 
+
+/-! ### Ring structure -/
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
@@ -408,8 +411,6 @@ def imAddGroupHom : ℂ →+ ℝ where
 @[simp]
 theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
-
-/-! ### Cast lemmas -/
 
 lemma re_nsmul (n : ℕ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
 lemma im_nsmul (n : ℕ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
