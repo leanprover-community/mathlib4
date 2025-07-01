@@ -596,7 +596,9 @@ lemma _root_.contMDiff_section_of_smul_smoothBumpFunction' [T2Space M] [IsManifo
   -- apply contMDiff_of_smul_smoothBumpFunction (s := s) (hn := hn) --?_ ?_ ?_ ?_
   sorry
 
-lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V x) :
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
+    [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (fun x ↦ TotalSpace.mk' F x (extend I F σ₀ x)) := by
   letI t := trivializationAt F V x
   letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)

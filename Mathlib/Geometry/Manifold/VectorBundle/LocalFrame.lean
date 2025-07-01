@@ -96,7 +96,7 @@ noncomputable def localFrame
 -- TODO: understand why this isn’t already a simp lemma
 attribute [simp] Trivialization.apply_mk_symm
 
-omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+omit [IsManifold I 0 M] in
 /-- Each local frame `s^i ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
 is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_localFrame_baseSet
@@ -109,7 +109,7 @@ lemma contMDiffOn_localFrame_baseSet
   intro y hy
   simp [localFrame, hy, localFrame_toBasis_at]
 
-omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+omit [IsManifold I 0 M] in
 lemma _root_.contMDiffAt_localFrame_of_mem
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) {x : M} (hx : x ∈ e.baseSet) :
@@ -234,12 +234,12 @@ end Basis
 variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x : M}
 
-omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+omit [IsManifold I 0 M] in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
 near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞}
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
     (i : ι) : ContMDiffAt I 𝓘(𝕜) k (b.localFrame_repr e i s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
@@ -256,8 +256,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
 
   -- step 2: `s` read in trivialization `e` is `C^k`
   have h₁ : ContMDiffAt I 𝓘(𝕜, F) k (fun x ↦ (e (s x)).2) x := by
-    rw [contMDiffAt_section_of_mem_baseSet hxe] at hs
-    exact hs
+    exact contMDiffAt_section_of_mem_baseSet hxe |>.1 hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
   let basl : F →ₗ[𝕜] 𝕜 := {
@@ -273,11 +272,11 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
     contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
   exact hbas.comp x h₁
 
-omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+omit [IsManifold I 0 M] in
 /-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_repr e i`
 in the local frame induced by `e` -/
 lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M}
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M} [ContMDiffVectorBundle k F V I]
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t :=
@@ -288,7 +287,7 @@ omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_repr e i` in the local frame
 induced by `e` -/
 lemma contMDiffOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞}
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet :=
   contMDiffOn_localFrame_repr b e.open_baseSet (subset_refl _) hs _
@@ -297,7 +296,8 @@ omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` at `x ∈ e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
 lemma contMDiffAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} {x' : M} (hx : x' ∈ e.baseSet) :
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
+    {x' : M} (hx : x' ∈ e.baseSet) :
     ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x' ↔
     ∀ i, ContMDiffAt I 𝓘(𝕜) k (b.localFrame_repr e i s) x' := by
   refine ⟨fun h i ↦ contMDiffAt_localFrame_repr hx b h i, fun hi ↦ ?_⟩
@@ -315,8 +315,8 @@ omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
 lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M}
-    (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
+    {t : Set M} (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t ↔
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t := by
   refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
@@ -335,7 +335,7 @@ omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
 lemma contMDiffOn_baseSet_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} :
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I] :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet := by
   rw [contMDiffOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
@@ -536,7 +536,7 @@ lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
 variable (F) in
 omit [IsManifold I 0 M] in
 lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
-    {x : M} (hx : x ∈ e.baseSet) (v : V x) :
+    {x : M} (hx : x ∈ e.baseSet) (v : V x) [ContMDiffVectorBundle ∞ F V I] :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) ∞
     (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) e.baseSet := by
   -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
