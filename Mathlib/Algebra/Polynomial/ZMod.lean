@@ -388,7 +388,7 @@ def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (
               simp only [Option.not_isNone, Option.isSome_eq_false_iff, Option.isNone_iff_eq_none]
                 at falsy
               assumption
-            have exi : ∃ k ≠ j , (List.range (f.support.sup id + 1))[j]? = some k :=by
+            have exi : ∃ k ≠ j , (List.range (f.support.sup id + 1))[j]? = some k := by
               by_contra hexi
               push_neg at hexi
               have ⟨ k , hk ⟩ := (Option.isSome_iff_exists.mp) issom
