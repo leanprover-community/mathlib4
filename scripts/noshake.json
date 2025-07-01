@@ -348,12 +348,9 @@
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.KrullDimension.Basic":
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
-  "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
-  ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Ideal.Norm.AbsNorm":
   ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
-  "Mathlib.RingTheory.Finiteness.Defs":
-  ["Mathlib.Data.Finsupp.Defs", "Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Data.Finsupp.Defs"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
@@ -385,6 +382,7 @@
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
+  "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
