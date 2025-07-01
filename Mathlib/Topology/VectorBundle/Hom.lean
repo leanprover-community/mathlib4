@@ -365,9 +365,9 @@ another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) →
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
 Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-continuous, but we want to apply this lemma with only local information. Therefore, we formulate it
-using continuity of `ϕ` read in coordinates.
+as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only have a nice topology when `b₁` and `b₂` are
+globally continuous, but we want to apply this lemma with only local information. Therefore, we
+formulate it using continuity of `ϕ` read in coordinates.
 
 Version for `ContinuousAt`. We also give a version for `ContinuousWithinAt`, but no version for
 `ContinuousOn` or `Continuous` as our assumption, written in coordinates, only makes sense around

@@ -252,7 +252,7 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
   nth_rw 2 [hP]
   rw [PolarizationIn_apply]
   simp only [coroot'In_rootSpanMem_eq_pairingIn, pairingIn_reflectionPerm,
-    pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul, Finset.sum_neg_distrib,
+    pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul,
     smul_sub, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add, RootFormIn]
   simp only [LinearMap.coeFn_sum, LinearMap.coe_smulRight, Finset.sum_apply,
@@ -363,7 +363,7 @@ theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
     this ▸ IsSumSq.sum_mul_self Finset.univ s
   apply FaithfulSMul.algebraMap_injective S R
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
-  simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
+  simp [hs, rootForm_apply_apply]
 
 lemma posRootForm_posForm_apply_apply (x y : P.rootSpan S) : (P.posRootForm S).posForm x y =
     ∑ i, P.coroot'In S i x * P.coroot'In S i y := by
