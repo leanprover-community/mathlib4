@@ -132,7 +132,7 @@ theorem eval₂_mul : ∀ {p}, (p * q).eval₂ f g = p.eval₂ f g * q.eval₂ f
   apply MvPolynomial.induction_on q
   · simp [eval₂_C, eval₂_mul_C]
   · simp +contextual [mul_add, eval₂_add]
-  · simp +contextual [X, eval₂_monomial, eval₂_mul_monomial, ← mul_assoc]
+  · simp +contextual [X, eval₂_mul_monomial, ← mul_assoc]
 
 @[simp]
 theorem eval₂_pow {p : MvPolynomial σ R} : ∀ {n : ℕ}, (p ^ n).eval₂ f g = p.eval₂ f g ^ n
@@ -220,7 +220,7 @@ theorem eval₂_congr (g₁ g₂ : σ → S₁)
 
 theorem eval₂_assoc (q : S₂ → MvPolynomial σ R) (p : MvPolynomial S₂ R) :
     eval₂ f (fun t => eval₂ f g (q t)) p = eval₂ f g (eval₂ C q p) := by
-  show _ = eval₂Hom f g (eval₂ C q p)
+  change _ = eval₂Hom f g (eval₂ C q p)
   rw [eval₂_comp_left (eval₂Hom f g)]; congr with a; simp
 
 end Eval₂
@@ -383,8 +383,8 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
     simp only [hp, hq, (map f).map_add, coeff_add]
     rw [f.map_add]
   · intro p i hp m
-    simp only [hp, (map f).map_mul, map_X]
-    simp only [hp, mem_support_iff, coeff_mul_X']
+    simp only [(map f).map_mul, map_X]
+    simp only [hp, coeff_mul_X']
     split_ifs
     · rfl
     rw [f.map_zero]
@@ -560,7 +560,7 @@ lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f :
   ext
   rw [Subalgebra.mem_toSubmodule, ← SetLike.mem_coe, AlgHom.coe_range, mapAlgHom, AlgHom.coe_mk,
     mem_range_map_iff_coeffs_subset, mem_coeffsIn_iff_coeffs_subset]
-  simp [Algebra.ofId_apply, Set.subset_def]
+  simp [Set.subset_def]
 
 end Map
 

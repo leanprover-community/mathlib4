@@ -655,7 +655,7 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
   refine ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ ?_⟩
   rintro (n | _ | n)
   · exact hf n.lt_succ_self
-  · show g 1 < f 0
+  · change g 1 < f 0
     rw [hf₀, ← hg₀]
     exact hg Nat.zero_lt_one
   · exact hg (Nat.lt_succ_self _)

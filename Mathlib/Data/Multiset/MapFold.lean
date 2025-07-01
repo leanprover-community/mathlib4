@@ -364,7 +364,7 @@ variable [DecidableEq α] {s t u : Multiset α} {a : α}
 
 lemma sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase s t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by
-    show ofList (l₁.diff l₂) = foldl erase l₁ l₂
+    change ofList (l₁.diff l₂) = foldl erase l₁ l₂
     rw [diff_eq_foldl l₁ l₂]
     symm
     exact foldl_hom _ fun x y => rfl

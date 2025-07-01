@@ -433,7 +433,7 @@ theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J
 
 @[reassoc] -- Porting note: both versions proven by simp
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
-    biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp [biproduct.ι_π]
+    biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp
 
 @[reassoc]
 theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
@@ -532,7 +532,7 @@ def HasBiproductsOfShape.colimIsoLim [HasBiproductsOfShape J C] :
     fun η => colimit.hom_ext fun ⟨i⟩ => limit.hom_ext fun ⟨j⟩ => by
       classical
       by_cases h : i = j <;>
-       simp_all [h, Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
+       simp_all [Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
 
 theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     biproduct.map p = biproduct.map' p := by
@@ -540,8 +540,7 @@ theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] 
   ext
   dsimp
   simp only [Discrete.natTrans_app, Limits.IsColimit.ι_map_assoc, Limits.IsLimit.map_π,
-    Category.assoc, ← Bicone.toCone_π_app_mk, ← biproduct.bicone_π, ← Bicone.toCocone_ι_app_mk,
-    ← biproduct.bicone_ι]
+    ← Bicone.toCone_π_app_mk, ← Bicone.toCocone_ι_app_mk]
   dsimp
   rw [biproduct.ι_π_assoc, biproduct.ι_π]
   split_ifs with h
@@ -634,7 +633,7 @@ lemma biproduct.whiskerEquiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
   by_cases h : k = e j
   · subst h
     simp
-  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+  · simp only [ι_desc_assoc, Category.assoc, lift_π]
     rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
     · simp
     · rintro rfl
@@ -652,7 +651,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
     simp only [ι_desc_assoc, ← eqToHom_iso_hom_naturality_assoc w (e.symm_apply_apply j).symm,
       Equiv.symm_apply_apply, eqToHom_comp_ι, Category.assoc, bicone_ι_π_self, Category.comp_id,
       lift_π, bicone_ι_π_self_assoc]
-  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+  · simp only [ι_desc_assoc, Category.assoc, lift_π]
     rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
     · simp
     · exact h

@@ -506,7 +506,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rw [mul_comm]
   smul_def' r x := by
     ext
-    simp only [Subring.coe_mul, Algebra.smul_def]
+    simp only [Algebra.smul_def]
     rfl
 
 variable {R K} in

@@ -177,7 +177,7 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
 instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
   zsmul_zero' f   := by simp only [Int.cast_zero, zero_smul]
-  zsmul_succ' n f := by simp only [Int.ofNat_eq_coe, Nat.cast_succ, Int.cast_add, Int.cast_natCast,
+  zsmul_succ' n f := by simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast,
     Int.cast_one, add_smul, _root_.one_smul]
   zsmul_neg' n f  := by
     ext S _ _ m
@@ -217,7 +217,7 @@ theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : 
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
   convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
-  · simp only [Function.comp_apply, lid_symm_apply, includeRight_lid]
+  · simp only [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
 /-- The map ground assigning a function `M → N` to a polynomial map `f : M →ₚₗ[R] N` as a

@@ -34,7 +34,7 @@ open AffineMap
 
 theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
     IsClosed (s.direction : Set W) ↔ IsClosed (s : Set Q) := by
-  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp [isClosed_singleton]
+  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp
   rw [← (IsometryEquiv.vaddConst x).toHomeomorph.symm.isClosed_image,
     AffineSubspace.coe_direction_eq_vsub_set_right hx]
   rfl

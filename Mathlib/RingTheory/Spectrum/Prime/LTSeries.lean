@@ -106,7 +106,7 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
         exact Nat.sub_ne_zero_iff_lt.mp h0
       simp only [Fin.one_eq_mk_of_lt h, Fin.castSucc_mk, Fin.mk_one]
     simp only [h1, RelSeries.snoc_castSucc, hxQ]
-  · simp only [hQ, RelSeries.snoc_length, Nat.add_left_cancel_iff]
+  · simp only [hQ, RelSeries.snoc_length]
   · simp only [RelSeries.head_snoc, ← hh, RelSeries.head_eraseLast]
   · simp only [RelSeries.last_snoc]
 

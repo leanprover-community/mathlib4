@@ -126,7 +126,7 @@ def toNormedField : NormedField L :=
           use δ, hδ_pos
           apply subset_trans _ hε
           intro x hx
-          simp only [mem_setOf_eq, norm, hδ, NNReal.val_eq_coe, NNReal.coe_lt_coe] at hx
+          simp only [mem_setOf_eq, norm, hδ, NNReal.coe_lt_coe] at hx
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
         · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr

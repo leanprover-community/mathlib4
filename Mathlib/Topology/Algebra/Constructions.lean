@@ -33,11 +33,11 @@ instance instTopologicalSpaceMulOpposite [TopologicalSpace M] : TopologicalSpace
 
 variable [TopologicalSpace M]
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_unop : Continuous (unop : Mᵐᵒᵖ → M) :=
   continuous_induced_dom
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 

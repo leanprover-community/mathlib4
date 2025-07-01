@@ -146,7 +146,7 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 @[simp]
 theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
     (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A * B := by
-  simp [mulᵣ, Function.comp, Matrix.transpose]
+  simp [mulᵣ, Matrix.transpose]
   rfl
 
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
@@ -170,7 +170,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 @[simp]
 theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
     mulVecᵣ A v = A *ᵥ v := by
-  simp [mulVecᵣ, Function.comp]
+  simp [mulVecᵣ]
   rfl
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
@@ -192,7 +192,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 @[simp]
 theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
     vecMulᵣ v A = v ᵥ* A := by
-  simp [vecMulᵣ, Function.comp]
+  simp [vecMulᵣ]
   rfl
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :

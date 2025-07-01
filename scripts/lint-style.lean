@@ -68,7 +68,7 @@ def getLakefileLeanOptions : IO Lean.Options := do
       exe.config.leanOptions
     else
       #[]
-  return toLeanOptions (rootOpts ++ defaultOpts)
+  return Lean.LeanOptions.toOptions (rootOpts.appendArray defaultOpts)
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib -/
 register_option linter.checkInitImports : Bool := { defValue := false }

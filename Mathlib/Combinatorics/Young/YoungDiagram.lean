@@ -409,7 +409,7 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
   induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
-  · simp [YoungDiagram.cellsOfRowLens]
+  · simp
   · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
 
 /-- Young diagram from a sorted list -/

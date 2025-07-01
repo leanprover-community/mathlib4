@@ -154,7 +154,7 @@ protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
     smul_mem' := fun r a (ha : a ∈ s) => by
-      show r • a ∈ s
+      change r • a ∈ s
       rw [hs] at ha ⊢
       exact S.smul_mem' r ha }
 
@@ -572,7 +572,7 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
@@ -676,7 +676,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
       case Hsmul_r => exact fun r x y _ _ hxy ↦ by simpa [mul_smul_comm] using smul_mem _ _ hxy
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
-    show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
+    change Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
 
 variable (R A)

@@ -88,7 +88,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 lemma ValuativeCriterion.iff {f : X ⟶ Y} :
     ValuativeCriterion f ↔ Existence f ∧ Uniqueness f := by
-  show (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
+  change (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
   simp_rw [← forall_and, unique_iff_subsingleton_and_nonempty, and_comm, CommSq.HasLift.iff]
 
 lemma ValuativeCriterion.eq :
@@ -156,7 +156,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
   have hαβ : α ≫ β = CommRingCat.ofHom (algebraMap R K) := by
     simp only [CommRingCat.coe_of, Iso.trans_hom, Iso.symm_hom, TopCat.Presheaf.stalkCongr_hom,
       Category.assoc, α, e, β, stalkClosedPointIso_inv, StructureSheaf.toStalk]
-    show (Scheme.ΓSpecIso (.of R)).inv ≫ (Spec (.of R)).presheaf.germ _ _ _ ≫ _ = _
+    change (Scheme.ΓSpecIso (.of R)).inv ≫ (Spec (.of R)).presheaf.germ _ _ _ ≫ _ = _
     simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ_assoc]
     -- `map_top` introduces defeq problems, according to `check_compositions`.
     -- This is probably the cause of the `erw` needed below.
@@ -304,7 +304,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
         RingHom.toMorphismProperty <| fun f ↦ Function.Injective f
       have : (RingHom.toMorphismProperty <| fun f ↦ Function.Injective f).RespectsIso :=
         RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.injective_respectsIso
-      show P _
+      change P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]
       exact FaithfulSMul.algebraMap_injective S.R S.K
     rw [Scheme.comp_appTop] at this
@@ -329,7 +329,7 @@ lemma IsProper.eq_valuativeCriterion :
     UniversallyClosed.eq_valuativeCriterion]
   simp_rw [inf_assoc]
   ext X Y f
-  show _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
+  change _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
   tauto
 
 /-- The **valuative criterion** for proper morphisms. -/

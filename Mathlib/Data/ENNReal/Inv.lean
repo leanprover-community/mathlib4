@@ -171,14 +171,14 @@ protected lemma mul_div_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (b / a) 
   ENNReal.mul_div_cancel' (by simp [ha₀]) (by simp [ha])
 
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
-  simp only [div_eq_mul_inv, mul_left_comm, mul_comm, mul_assoc]
+  simp only [div_eq_mul_inv, mul_left_comm, mul_comm]
 
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by
   simp only [div_eq_mul_inv, mul_right_comm]
 
 instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
-    by_cases a = 0 <;> cases a <;> simp_all [none_eq_top, some_eq_coe, -coe_inv, (coe_inv _).symm]
+    by_cases a = 0 <;> cases a <;> simp_all [-coe_inv, (coe_inv _).symm]
 
 @[simp] protected lemma inv_eq_one : a⁻¹ = 1 ↔ a = 1 := by rw [← inv_inj, inv_inv, inv_one]
 
@@ -336,6 +336,21 @@ theorem top_div_of_lt_top (h : a < ∞) : ∞ / a = ∞ := top_div_of_ne_top h.n
 
 theorem div_eq_top : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞ := by
   simp [div_eq_mul_inv, ENNReal.mul_eq_top]
+
+/-- See `ENNReal.div_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma div_div_cancel' (h₀ : a = 0 → b = 0) (h₁ : a = ∞ → b = 0) :
+    a / (a / b) = b := by
+  obtain rfl | ha := eq_or_ne a 0
+  · simp [h₀]
+  obtain rfl | ha' := eq_or_ne a ∞
+  · simp [h₁, top_div_of_lt_top]
+  rw [ENNReal.div_eq_inv_mul, ENNReal.inv_div (Or.inr ha') (Or.inr ha),
+    ENNReal.div_mul_cancel ha ha']
+
+/-- See `ENNReal.div_div_cancel'` for a stronger version. -/
+protected lemma div_div_cancel {a b : ℝ≥0∞} (h₀ : a ≠ 0) (h₁ : a ≠ ∞) :
+    a / (a / b) = b :=
+  ENNReal.div_div_cancel' (by simp [h₀]) (by simp [h₁])
 
 protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ ∨ c ≠ ∞) :
     a ≤ c / b ↔ a * b ≤ c := by
@@ -559,7 +574,7 @@ def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
     (fun x y hxy => ?_) (fun x => (x.1⁻¹ - 1)⁻¹) fun x => Subtype.ext ?_
   · simpa only [Subtype.mk_lt_mk, ENNReal.inv_lt_inv, ENNReal.add_lt_add_iff_right one_ne_top]
   · have : (1 : ℝ≥0∞) ≤ x.1⁻¹ := ENNReal.one_le_inv.2 x.2
-    simp only [inv_inv, Subtype.coe_mk, tsub_add_cancel_of_le this]
+    simp only [inv_inv, tsub_add_cancel_of_le this]
 
 @[simp]
 theorem orderIsoIicOneBirational_symm_apply (x : Iic (1 : ℝ≥0∞)) :
@@ -612,7 +627,7 @@ theorem exists_nat_pos_inv_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) :
 theorem exists_nnreal_pos_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) : ∃ n > 0, ↑(n : ℝ≥0) * a < b := by
   rcases exists_nat_pos_inv_mul_lt ha hb with ⟨n, npos : 0 < n, hn⟩
   use (n : ℝ≥0)⁻¹
-  simp [*, npos.ne', zero_lt_one]
+  simp [*, npos.ne']
 
 theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
   rcases exists_inv_nat_lt ha with ⟨n, hn⟩
@@ -631,7 +646,7 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
   · simpa using ENNReal.pow_pos ha.bot_lt _
-  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne, not_false, ENNReal.inv_pos, false_and,
+  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne, ENNReal.inv_pos, false_and,
       not_false_eq_true]
 
 theorem zpow_lt_top (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : a ^ n < ∞ := by

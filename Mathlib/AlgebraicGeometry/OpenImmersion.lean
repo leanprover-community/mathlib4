@@ -339,7 +339,7 @@ def Scheme.ofRestrict : X.restrict h ⟶ X :=
 @[simp]
 lemma Scheme.ofRestrict_app (V) :
     (X.ofRestrict h).app V = X.presheaf.map (h.isOpenMap.adjunction.counit.app V).op  :=
-  Scheme.ofRestrict_toLRSHom_c_app X h (op V)
+  rfl
 
 instance IsOpenImmersion.ofRestrict : IsOpenImmersion (X.ofRestrict h) :=
   show PresheafedSpace.IsOpenImmersion (X.toPresheafedSpace.ofRestrict h) by infer_instance
@@ -666,7 +666,7 @@ lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Open
     (ΓIso f U).inv = f.appLE (f.opensRange ⊓ U) (f⁻¹ᵁ U)
       (by rw [← f.image_preimage_eq_opensRange_inter, f.preimage_image_eq]) := by
   simp only [ΓIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op,
-    asIso_inv, IsIso.comp_inv_eq, Iso.symm_inv, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE]
+    Iso.symm_inv, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE]
 
 @[reassoc, elementwise]
 lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :

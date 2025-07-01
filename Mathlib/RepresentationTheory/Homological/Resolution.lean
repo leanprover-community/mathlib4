@@ -138,7 +138,7 @@ def ofMulActionBasisAux :
         show (r * x) ⊗ₜ y = _
         rw [← ofMulAction_self_smul_eq_mul, smul_tprod_one_asModule]
       · rw [smul_add, hz, hy, smul_add] -/
-      show _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
+      change _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
       refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
       · rw [smul_zero, map_zero]
@@ -335,10 +335,10 @@ a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
   refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
-  show mapDomain _ _ _ = Finsupp.linearCombination _ _ _
+  change mapDomain _ _ _ = Finsupp.linearCombination _ _ _
   simp only [HomotopyEquiv.ofIso, Iso.symm_hom, compForgetAugmented, compForgetAugmentedIso,
     eqToIso.inv, HomologicalComplex.eqToHom_f]
-  show mapDomain _ (single x r) _ = _
+  change mapDomain _ (single x r) _ = _
   simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
 
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by

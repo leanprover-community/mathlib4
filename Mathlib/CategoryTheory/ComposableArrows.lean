@@ -347,7 +347,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     · dsimp
       rw [id_comp]
     · obtain _ | _ | k := k
-      · simp [Nat.succ.injEq] at hjk
+      · simp at hjk
       · simp
       · rfl
     · obtain _ | _ | k := k

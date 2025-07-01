@@ -198,6 +198,26 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
 
 section prod
 
+variable (X Y W Z)
+
+/-- `X × {*}` is homeomorphic to `X`. -/
+@[simps! symm_apply_snd]
+def prodUnique [Unique Y] :
+    X × Y ≃ₜ X where
+  toEquiv := Equiv.prodUnique X Y
+  continuous_toFun := continuous_fst
+  continuous_invFun := continuous_id.prodMk continuous_const
+
+@[simp] theorem coe_prodUnique [Unique Y] : ⇑(prodUnique X Y) = Prod.fst := rfl
+
+/-- `X × {*}` is homeomorphic to `X`. -/
+@[simps! symm_apply_snd]
+def uniqueProd (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] [Unique X] :
+    X × Y ≃ₜ Y :=
+  (prodComm _ _).trans (prodUnique Y X)
+
+@[simp] theorem coe_uniqueProd [Unique X] : ⇑(uniqueProd X Y) = Prod.snd := rfl
+
 /-- The product over `S ⊕ T` of a family of topological spaces
 is homeomorphic to the product of (the product over `S`) and (the product over `T`).
 

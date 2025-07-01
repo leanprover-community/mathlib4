@@ -110,7 +110,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
       congr
       exact symm (tsum_eq_single a fun b hb => if_neg hb)
     _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := ENNReal.tsum_add.symm
-    _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero, le_rfl]
+    _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero]
 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
   classical

@@ -118,7 +118,7 @@ theorem isClosed_iff_coe_preimage {s : Set β} :
 
 theorem isLocallyClosed_iff_coe_preimage {s : Set β} :
     IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
-  have (i) : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s :=
+  have (i : _) : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s :=
     (U i).isOpen.isOpenEmbedding_subtypeVal.coborder_preimage _
   simp [isLocallyClosed_iff_isOpen_coborder, hU.isOpen_iff_coe_preimage, this]
 

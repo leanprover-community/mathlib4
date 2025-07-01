@@ -143,7 +143,7 @@ theorem order_abs [Zero Γ] (x : Lex (HahnSeries Γ R)) : (ofLex |x|).order = (o
   · simp
   · have hne' : ofLex x ≠ 0 := hne
     have habs : ofLex |x| ≠ 0 := by
-      show |x| ≠ 0
+      change |x| ≠ 0
       simpa using hne
     apply WithTop.coe_injective
     rw [order_eq_orderTop_of_ne habs, order_eq_orderTop_of_ne hne']

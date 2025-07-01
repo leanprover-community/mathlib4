@@ -148,7 +148,7 @@ def universalHom : R[S⁻¹] →+* T :=
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
-      simp only [RingHom.toMonoidHom_eq_coe, smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
+      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
         Submonoid.smul_def]
       simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
@@ -247,7 +247,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
       · by_cases ht : t = 0
         · exfalso
           apply nonZeroDivisors.coe_ne_zero ⟨_, hst⟩
-          simp [ht, mul_zero]
+          simp [ht]
         · simp only [hr, ht, dif_neg, not_false_iff, or_self_iff, mul_eq_zero, smul_eq_mul]
           apply OreLocalization.expand)
 

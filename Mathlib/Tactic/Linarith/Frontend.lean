@@ -69,7 +69,7 @@ There are two oracles that can be used in `linarith` so far.
   by counting how many copies of each original comparison appear in the history.
   This oracle was historically implemented earlier, and is sometimes faster on small states, but it
   has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and can not handle
-  large problems. You can use it with `linarith (config := { oracle := .fourierMotzkin })`.
+  large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
   This oracle reduces the search for a unsatisfiability certificate to some Linear Programming
@@ -77,7 +77,7 @@ There are two oracles that can be used in `linarith` so far.
   [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
   terminates.
   The default version of the algorithm operates with sparse matrices as it is usually faster. You
-  can invoke the dense version by `linarith (config := { oracle := .simplexAlgorithmDense })`.
+  can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
 
 ## Implementation details
 

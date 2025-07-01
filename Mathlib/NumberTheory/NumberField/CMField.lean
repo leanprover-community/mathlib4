@@ -147,9 +147,9 @@ instance isQuadraticExtension : IsQuadraticExtension (maximalRealSubfield K) K :
 
 noncomputable instance starRing : StarRing K where
   star := CMExtension.complexConj (maximalRealSubfield K) K
-  star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
-  star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
-  star_add := fun _ _ ↦ by rw [map_add]
+  star_involutive _ := CMExtension.complexConj_apply_apply _ _
+  star_mul _ _ := by rw [map_mul, mul_comm]
+  star_add _ _ := by rw [map_add]
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace (maximalRealSubfield K)) = Fintype.card (InfinitePlace K) :=

@@ -109,8 +109,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
             split at b <;> rename_i h'
             · subst h'; simp_all
-            · simp_all only [ne_eq, vars, List.singleton_append, List.cons_append,
-                Bool.not_eq_true, List.mem_cons, List.mem_append, false_or]
+            · simp_all only [vars, List.cons_append, List.mem_cons, List.mem_append, false_or]
               cases b <;> simp_all⟩
     | some b =>
       have ⟨e', he'⟩ := normalize' l (.ite (lit b) t e)

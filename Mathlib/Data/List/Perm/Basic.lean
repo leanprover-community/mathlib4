@@ -44,7 +44,7 @@ theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l
 
 theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
     l.set n a ~ a :: l.eraseIdx n := by
-  rw [← insertIdx_eraseIdx h.ne]
+  rw [← insertIdx_eraseIdx_self h.ne]
   apply perm_insertIdx
   rw [length_eraseIdx_of_lt h]
   exact Nat.le_sub_one_of_lt h

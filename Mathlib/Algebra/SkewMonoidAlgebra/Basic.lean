@@ -186,7 +186,7 @@ theorem coeff_zero (g : G) : coeff (0 : SkewMonoidAlgebra k G) g = 0 := rfl
 @[simp]
 theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support ↔ f.coeff a ≠ 0 := by
   rcases f with ⟨⟩
-  simp only [coeff, support_ofFinsupp, Finsupp.mem_support_iff, ne_eq, implies_true]
+  simp only [coeff, support_ofFinsupp, Finsupp.mem_support_iff, ne_eq]
 
 theorem notMem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
     a ∉ f.support ↔ f.coeff a = 0 := by
@@ -413,7 +413,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
     (a : G) (b : G → k → N) : (f.sum fun (x : G) (v : k) ↦ if x = a then b x v else 0) =
       if a ∈ f.support then b a (f.coeff a) else 0 := by
-  simp only [sum_def', Finsupp.sum, f.toFinsupp.support.sum_ite_eq', support]
+  simp only [sum_def', f.toFinsupp.support.sum_ite_eq', support]
 
 theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
     {v : SkewMonoidAlgebra k G} {c : R} {h : G → k → M} :

@@ -62,8 +62,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
     by_cases h : 0 ≤ log⁺ ‖f θ‖ - log⁺ ‖f θ - a₀‖
     · simpa [abs_of_nonneg h, sub_le_iff_le_add, add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
         using (posLog_norm_add_le (f θ - a₀) a₀)
-    · simp [abs_of_nonpos (le_of_not_ge h), neg_sub, sub_le_iff_le_add,
-        add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
+    · simp [abs_of_nonpos (le_of_not_ge h), neg_sub, add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
       convert posLog_norm_add_le (-f θ) (a₀) using 2
       · rw [← norm_neg]
         abel_nf

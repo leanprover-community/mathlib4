@@ -94,9 +94,8 @@ theorem iteratedDerivWithin_vcomp_three
     ← (OrderedFinpartition.extendEquiv 2).sum_comp, Fintype.sum_sigma,
     Fintype.sum_option, Nat.reduceAdd, OrderedFinpartition.extendEquiv_apply,
     OrderedFinpartition.extend_none, OrderedFinpartition.extend_some,
-    OrderedFinpartition.extendMiddle_length, OrderedFinpartition.default_eq,
-    OrderedFinpartition.atomic_length, OrderedFinpartition.extendLeft_length,
-    Fintype.sum_unique, Fin.sum_univ_zero, Fin.sum_univ_two]
+    OrderedFinpartition.extendMiddle_length, OrderedFinpartition.default_eq, Fintype.sum_unique,
+    OrderedFinpartition.atomic_length, OrderedFinpartition.extendLeft_length, Fin.sum_univ_two]
   simp? [add_assoc, two_smul, iteratedFDerivWithin_one_apply (ht _ <| hst hx)] says
     simp only [OrderedFinpartition.extendLeft_partSize, OrderedFinpartition.extendLeft_length,
       OrderedFinpartition.atomic_length, Nat.reduceAdd, OrderedFinpartition.atomic_partSize,
@@ -104,7 +103,7 @@ theorem iteratedDerivWithin_vcomp_three
       Fin.cons_one, Fin.default_eq_zero, OrderedFinpartition.extendMiddle_length, Fin.cons_update,
       Fin.succ_zero_eq_one, update_self, update_idem,
       iteratedFDerivWithin_one_apply (ht _ <| hst hx), add_assoc, two_smul]
-  have (j) : (Fin.cons 1 (Fin.cons 1 fun _ ↦ 1) : Fin 3 → ℕ) j = 1 := by
+  have (j : _) : (Fin.cons 1 (Fin.cons 1 fun _ ↦ 1) : Fin 3 → ℕ) j = 1 := by
     fin_cases j <;> rfl
   congr <;> ext x <;> fin_cases x <;> simp [this]
 

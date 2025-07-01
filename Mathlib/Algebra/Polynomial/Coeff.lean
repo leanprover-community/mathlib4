@@ -289,7 +289,7 @@ theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
   rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, map_sum]
-  simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C, Nat.cast_id]
+  simp only [lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C]
   rw [Finset.sum_eq_single k, coeff_X_pow_self, one_mul]
   · intro _ _ h
     simp [coeff_X_pow, h.symm]

@@ -61,7 +61,7 @@ theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
   apply (em (Disjoint (orbit G a) (orbit G b))).symm.imp _ id
   simp +contextual
-    only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, and_imp, eq_comm, implies_true]
+    only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, eq_comm, implies_true]
 
 @[to_additive]
 theorem orbit.pairwiseDisjoint :
@@ -443,8 +443,8 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     obtain ⟨b : X, hb : b ∈ B⟩ := hBe
     obtain ⟨g, rfl⟩ := exists_smul_eq G b a
     use g • B
-    simp only [Set.smul_mem_smul_set_iff, hb, existsUnique_iff_exists, Set.mem_range,
-      exists_apply_eq_apply, exists_const, exists_prop, and_imp, forall_exists_index,
+    simp only [Set.smul_mem_smul_set_iff, hb, Set.mem_range,
+      exists_apply_eq_apply, and_imp, forall_exists_index,
       forall_apply_eq_imp_iff, true_and]
     exact fun g' ha ↦ hB.smul_eq_smul_of_nonempty ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
 
@@ -453,7 +453,7 @@ section Normal
 @[to_additive]
 lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) :
     g • orbit N a = orbit N (g • a) := by
-  simp only [orbit, Set.image_smul, Set.smul_set_range]
+  simp only [orbit, Set.smul_set_range]
   ext
   simp only [Set.mem_range]
   constructor
@@ -464,7 +464,7 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
     simp only [Subgroup.mk_smul]
-    simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
+    simp only [← smul_smul, smul_inv_smul]
 
 /-- An orbit of a normal subgroup is a block -/
 @[to_additive "An orbit of a normal subgroup is a block"]

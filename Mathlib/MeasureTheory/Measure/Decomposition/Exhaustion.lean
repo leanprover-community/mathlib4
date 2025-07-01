@@ -171,7 +171,7 @@ lemma sigmaFinite_restrict_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeas
     this.sigmaFinite
   let e : ℕ ≃ ℕ × ℕ := Nat.pairEquiv.symm
   refine ⟨fun n ↦ f (e n), fun _ ↦ by simp, fun n ↦ ?_, ?_⟩
-  · simp only [Nat.pairEquiv_symm_apply, gt_iff_lt, measure_union_lt_top_iff, f, e]
+  · simp only [Nat.pairEquiv_symm_apply, measure_union_lt_top_iff, f, e]
     rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT', Set.compl_inter_self,
       Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT']
     simp only [measure_empty, ENNReal.zero_lt_top, true_and]

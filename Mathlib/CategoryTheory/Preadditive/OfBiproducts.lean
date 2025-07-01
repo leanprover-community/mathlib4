@@ -52,12 +52,12 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
     intro f
     ext
     · simp
-    · simp [biprod.lift_fst, Category.assoc, biprod.inr_fst, comp_zero]
+    · simp [Category.assoc]
   have hl : ∀ f : X ⟶ Y, biprod.lift f (0 : X ⟶ Y) = f ≫ biprod.inl := by
     intro f
     ext
     · simp
-    · simp [biprod.lift_snd, Category.assoc, biprod.inl_snd, comp_zero]
+    · simp [biprod.lift_snd, Category.assoc, comp_zero]
   exact {
     left_id := fun f => by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc],
     right_id := fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]

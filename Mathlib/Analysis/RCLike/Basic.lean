@@ -300,7 +300,7 @@ theorem conj_I : conj (I : K) = -I :=
 @[simp, rclike_simps]
 theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
-  simp only [ofReal_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
+  simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
 -- replaced by `RCLike.conj_ofNat`
 
@@ -484,11 +484,11 @@ theorem inv_im (z : K) : im z⁻¹ = -im z / normSq z := by
   rw [inv_def, normSq_eq_def', mul_comm, im_ofReal_mul, conj_im, div_eq_inv_mul]
 
 theorem div_re (z w : K) : re (z / w) = re z * re w / normSq w + im z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg, map_neg,
+  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, neg_mul, mul_neg, neg_neg,
     rclike_simps]
 
 theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / normSq w := by
-  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg, map_neg,
+  simp only [div_eq_mul_inv, mul_assoc, sub_eq_add_neg, add_comm, neg_mul, mul_neg,
     rclike_simps]
 
 @[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`

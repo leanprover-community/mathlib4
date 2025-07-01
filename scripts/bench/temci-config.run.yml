@@ -27,8 +27,8 @@
       properties: ['wall-clock', 'task-clock', 'instructions:u']
     rusage_properties: ['maxrss']
     cmd: |
-      # run lake+lean like the file worker would
-      LEAN_PATH=$(lake setup-file --no-build Mathlib Mathlib | jq -r '.paths.oleanPath | join(":")') lean Mathlib.lean
+      # approximate `import Mathlib` in the editor
+      lake lean Mathlib.lean
     runs: 5
 - attributes:
     description: size

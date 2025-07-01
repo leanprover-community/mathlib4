@@ -332,7 +332,7 @@ instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
     dsimp
     simp only [Equiv.apply_symm_apply, ← StructuredArrow.w φ]
     dsimp [yonedaEquiv]
-    simp only [yonedaMap_app_apply, Functor.map_id]
+    simp only [Functor.map_id]
 
 /-- Given `F : C ⥤ D` and `X : C`, `yoneda.obj (F.obj X) : Dᵒᵖ ⥤ Type _` is the
 left Kan extension of `yoneda.obj X : Cᵒᵖ ⥤ Type _` along `F.op`. -/

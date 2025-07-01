@@ -122,7 +122,7 @@ theorem exp_zero : exp 0 = 1 :=
 @[simp]
 theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y :=
   Subtype.ext <| by
-    simp only [coe_exp, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add, coe_mul]
+    simp only [coe_exp, ofReal_add, add_mul, Complex.exp_add, coe_mul]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/

@@ -110,7 +110,7 @@ variable {ι : Type*} {α : ι → Type*} [DecidableEq ι] [∀ i, One (α i)] [
 
 @[to_additive (attr := simp)]
 lemma mulSingle_le_mulSingle : mulSingle i a ≤ mulSingle i b ↔ a ≤ b := by
-  simp [mulSingle, update_le_update_iff]
+  simp [mulSingle]
 
 @[to_additive (attr := gcongr)] alias ⟨_, GCongr.mulSingle_mono⟩ := mulSingle_le_mulSingle
 

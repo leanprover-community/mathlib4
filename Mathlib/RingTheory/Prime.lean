@@ -39,10 +39,10 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
     obtain ⟨d, rfl⟩ | ⟨d, rfl⟩ : p i ∣ b ∨ p i ∣ c := hpi.dvd_or_dvd ⟨a, by rw [← hbc, mul_comm]⟩
     · rw [mul_assoc, mul_comm a, mul_right_inj' hpi.ne_zero] at hbc
       exact ⟨insert i t, u, d, c, by rw [insert_union, htus], disjoint_insert_left.2 ⟨hiu, htu⟩, by
-          simp [hbc, prod_insert hit, mul_assoc, mul_comm, mul_left_comm]⟩
+          simp [hbc, prod_insert hit, mul_comm, mul_left_comm]⟩
     · rw [← mul_assoc, mul_right_comm b, mul_left_inj' hpi.ne_zero] at hbc
       exact ⟨t, insert i u, b, d, by rw [union_insert, htus], disjoint_insert_right.2 ⟨hit, htu⟩, by
-          simp [← hbc, prod_insert hiu, mul_assoc, mul_comm, mul_left_comm]⟩
+          simp [← hbc, prod_insert hiu, mul_comm, mul_left_comm]⟩
 
 /-- If `x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
   as the product of a power of `p` and a divisor of `a`. -/

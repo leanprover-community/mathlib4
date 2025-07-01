@@ -148,7 +148,7 @@ theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Idea
   constructor
   · contrapose! h
     rw [h, prod_top_top, isPrime_iff]
-    simp [isPrime_iff, h]
+    simp
   · intro x y hxy
     have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ := by
       rw [Prod.mk_mul_mk, mul_one, mem_prod]

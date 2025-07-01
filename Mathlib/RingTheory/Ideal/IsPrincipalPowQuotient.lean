@@ -45,7 +45,7 @@ def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
   have hI : I = Ideal.span {ϖ} := h.principal.choose_spec
   have hϖ : ϖ ^ n ∈ I ^ n := hI ▸ (Ideal.pow_mem_pow (Ideal.mem_span_singleton_self _) n)
   let g : R →ₗ[R] (I ^ n : Ideal R) := (LinearMap.mulRight R ϖ^n).codRestrict _ fun x ↦ by
-    simp only [LinearMap.pow_mulRight, LinearMap.mulRight_apply, Ideal.submodule_span_eq]
+    simp only [LinearMap.pow_mulRight, LinearMap.mulRight_apply]
     -- TODO: change argument of Ideal.pow_mem_of_mem
     exact Ideal.mul_mem_left _ _ hϖ
   have : I = LinearMap.ker (f.comp g) := by

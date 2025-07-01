@@ -128,7 +128,7 @@ protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
   obtain ⟨s, hμs, hfε⟩ := hf hε
   refine ⟨s, hμs, fun n => (le_of_eq <| eLpNorm_congr_ae ?_).trans (hfε n)⟩
   filter_upwards [hfg n] with x hx
-  simp only [indicator, mem_compl_iff, ite_not, hx]
+  simp only [indicator, mem_compl_iff, hx]
 
 end UnifTight
 

@@ -170,7 +170,7 @@ lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     ← Subgroup.coe_pow]
   congr 2
   norm_cast
-  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff, SubmonoidClass.coe_pow,
+  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff,
     ZMod.natCast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
 
 end modularCyclotomicCharacter
@@ -258,7 +258,7 @@ open scoped Classical in
 /-- The underlying function of the cyclotomic character. See `cyclotomicCharacter`. -/
 noncomputable def cyclotomicCharacter.toFun (p : ℕ) [Fact p.Prime] (g : L ≃+* L) : ℤ_[p] :=
   if H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i) then
-    haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+    haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
     PadicInt.ofIntSeq _ (PadicInt.isCauSeq_padicNorm_of_pow_dvd_sub
       (aux g <| p ^ ·) _ fun i ↦ pow_dvd_aux_pow_sub_aux_pow g p i.le_succ)
   else 1
@@ -305,13 +305,13 @@ noncomputable def cyclotomicCharacter (p : ℕ) [Fact p.Prime] :
   { toFun g := cyclotomicCharacter.toFun p g
     map_one' := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
       · simp [cyclotomicCharacter.toFun, dif_neg H]
     map_mul' f g := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
       · simp [cyclotomicCharacter.toFun, dif_neg H] }
@@ -335,7 +335,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
   · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
     exact continuous_const (y := 1)
-  haveI (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+  haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
   choose ζ hζ using H
   refine Continuous.of_coeHom_comp ?_
   apply continuous_of_continuousAt_one

@@ -74,7 +74,7 @@ def I : Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G where
   { hom := TopModuleCat.ofHom (ContinuousLinearMap.compLeftContinuous _ _ φ.hom.hom)
     comm g := by
       ext f g'
-      show (M.ρ g ≫ φ.hom).hom (f (g⁻¹ * g')) = (φ.hom ≫ N.ρ g).hom (f (g⁻¹ * g'))
+      change (M.ρ g ≫ φ.hom).hom (f (g⁻¹ * g')) = (φ.hom ≫ N.ρ g).hom (f (g⁻¹ * g'))
       rw [φ.comm] }
   map_id _ := rfl
   map_comp _ _ := rfl

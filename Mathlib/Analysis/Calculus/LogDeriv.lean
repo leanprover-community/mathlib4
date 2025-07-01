@@ -47,13 +47,13 @@ theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
 theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
       logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
-  simp only [logDeriv_apply, deriv_mul hdf hdg]
+  simp only [logDeriv_apply]
   field_simp [mul_comm]
 
 theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
     logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
-  simp only [logDeriv_apply, deriv_div hdf hdg]
+  simp only [logDeriv_apply]
   field_simp [mul_comm]
   ring
 
@@ -78,7 +78,7 @@ theorem logDeriv_prod {ι : Type*} (s : Finset ι) (f : ι → 𝕜 → 𝕜') (
     · exact hf.1
     · simpa [Finset.prod_eq_zero_iff] using hf.2
     · exact hd.1
-    · exact .finset_prod hd.2
+    · exact .fun_finset_prod hd.2
 
 lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℤ) :
     logDeriv (f · ^ n) x = n * logDeriv f x := by

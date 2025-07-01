@@ -45,7 +45,7 @@ scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 lemma conjTranspose_single [DecidableEq n] [DecidableEq m] [AddMonoid α]
     [StarAddMonoid α] (i : m) (j : n) (a : α) :
     (single i j a)ᴴ = single j i (star a) := by
-  show (single i j a).transpose.map starAddEquiv = single j i (star a)
+  change (single i j a).transpose.map starAddEquiv = single j i (star a)
   simp
 
 @[deprecated (since := "2025-05-05")] alias conjTranspose_stdBasisMatrix := conjTranspose_single

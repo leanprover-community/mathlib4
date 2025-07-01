@@ -50,7 +50,7 @@ section NonAssocSemiring
 variable [NonAssocSemiring α]
 
 @[simp, norm_cast] lemma cast_mul (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
-  induction n <;> simp [mul_succ, mul_add, *]
+  induction n <;> simp [mul_add, *]
 
 variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/

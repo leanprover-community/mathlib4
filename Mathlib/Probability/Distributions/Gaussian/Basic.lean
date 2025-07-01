@@ -161,7 +161,7 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ x + c)) := by
   have hL_comp : L ∘ (fun x ↦ x + c) = fun x ↦ L x + L c := by ext; simp
   rw [variance_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
     hL_comp, variance_add_const (by fun_prop), integral_complex_ofReal, integral_complex_ofReal]
-  simp only [map_add, ofReal_add]
+  simp only [map_add]
   rw [integral_add (by fun_prop) (by fun_prop)]
   congr
   simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, ofReal_add]

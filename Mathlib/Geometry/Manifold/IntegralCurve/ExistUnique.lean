@@ -62,8 +62,8 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
-  obtain ⟨f, hf1, hf2⟩ := exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
-    (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
+  obtain ⟨f, hf1, hf2⟩ := hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)
+    |>.snd.exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀ t₀
   simp_rw [← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hf2
   -- use continuity of `f` so that `f t` remains inside `interior (extChartAt I x₀).target`
   have ⟨a, ha, hf2'⟩ := Metric.eventually_nhds_iff_ball.mp hf2
@@ -93,7 +93,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
   refine ⟨(continuousAt_extChartAt_symm'' hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
-  show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
+  change HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
   -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
   -- `HasFDerivAt.comp_hasDerivAt` on `h`
   rw [← tangentCoordChange_self (I := I) (x := xₜ) (z := xₜ) (v := v xₜ) hft2,

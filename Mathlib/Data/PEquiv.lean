@@ -240,7 +240,7 @@ theorem symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.
 theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]
-  simp only [eq_some_iff f, Option.isSome_iff_exists, Option.mem_def, bind_eq_some_iff,
+  simp only [eq_some_iff f, Option.isSome_iff_exists, bind_eq_some_iff,
     ofSet_eq_some_iff]
   constructor
   · rintro ⟨b, hb₁, hb₂⟩
@@ -294,9 +294,9 @@ def single (a : α) (b : β) :
   inv x y := by
     split_ifs with h1 h2
     · simp [*]
-    · simp only [mem_def, some.injEq, iff_false, reduceCtorEq] at *
+    · simp only [some.injEq, iff_false] at *
       exact Ne.symm h2
-    · simp only [mem_def, some.injEq, false_iff, reduceCtorEq] at *
+    · simp only [some.injEq, false_iff] at *
       exact Ne.symm h1
     · simp
 
@@ -343,7 +343,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp only [mem_def, bind_eq_some_iff, iff_false, not_exists, not_and, reduceCtorEq]
+  simp only [bind_eq_some_iff, iff_false, not_exists, not_and, reduceCtorEq]
   intros
   split_ifs <;> simp_all
 
@@ -390,7 +390,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           · contrapose! h2
             rw [h2]
             rw [← h1, hf, h2] at hg
-            simp only [mem_def, true_iff, eq_self_iff_true] at hg
+            simp only [true_iff] at hg
             rw [hg]
           · contrapose! h1
             rw [h1] at hf h2

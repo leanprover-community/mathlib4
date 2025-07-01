@@ -222,7 +222,7 @@ theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
   simp only [RightTotal, IsEmpty.forall_iff]
 
 theorem rightTotal_iff_isEmpty_right [IsEmpty α] : RightTotal R ↔ IsEmpty β := by
-  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff, imp_self]
+  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff]
 
 @[simp]
 theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=

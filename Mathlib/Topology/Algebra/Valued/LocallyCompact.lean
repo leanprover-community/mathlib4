@@ -143,8 +143,8 @@ lemma totallyBounded_iff_finite_residueField [IsDiscreteValuationRing 𝒪[K]] :
     have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
     refine ⟨Quotient.out '' (Set.univ (α := 𝒪[K] ⧸ (𝓂[K] ^ n))), Set.toFinite _, ?_⟩
     simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_closedBall_pow,
-      AddSubgroupClass.coe_norm, Set.image_add_left, preimage_add_closedBall, sub_neg_eq_add,
-      zero_add, Set.image_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
+      AddSubgroupClass.coe_norm,
+      Set.image_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
       Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
     intro
     exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
@@ -228,7 +228,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     -- the `z` is inside closed ball case, which is a contradiction since we know `y` is outside
     · simp [hy.not_ge] at hz'
     -- the `z` is gives a sphere, so we plug it in
-    · simp only [Set.mem_setOf_eq, U] at hz'
+    · simp only [Set.mem_setOf_eq] at hz'
       exact ⟨z, hz, hz'.symm⟩
   -- Pick an element of the valuation ring to use as the excluded element of the subcover
   -- (since we know that all elements of the valuation ring have valuation less than or equal to 1).
@@ -295,7 +295,7 @@ lemma isDiscreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
         Ideal.mem_bot, not_forall, isUnit_iff_norm_eq_one]
       refine ⟨x, ?_⟩
       simp only [← coe_lt_coe, coe_zero, coe_nnnorm, norm_pos_iff, ne_eq,
-        ZeroMemClass.coe_eq_zero, nnnorm_one, coe_one] at hx hx'
+        nnnorm_one, coe_one] at hx hx'
       simpa [hx] using hx'.ne
   }
 

@@ -414,7 +414,7 @@ This is a non-dependent version of `pi_congr` that allows the domains to be diff
 private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
     (α → β) = (α' → β') := by
   cases h
-  show (∀ (x : α), (fun _ => β) x) = _
+  change (∀ (x : α), (fun _ => β) x) = _
   rw [funext h']
 
 /-- A version of `Lean.MVarId.congrImplies?` that uses `implies_congr'`
@@ -712,7 +712,7 @@ while `congr! 2` produces the intended `⊢ x + y = y + x`.
 
 The `congr!` tactic also takes a configuration option, for example
 ```lean
-congr! (config := {transparency := .default}) 2
+congr! (transparency := .default) 2
 ```
 This overrides the default, which is to apply congruence lemmas at reducible transparency.
 

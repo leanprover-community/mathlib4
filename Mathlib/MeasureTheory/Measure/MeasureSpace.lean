@@ -885,7 +885,7 @@ theorem coe_nnreal_smul_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Meas
 
 @[simp]
 theorem nnreal_smul_coe_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Measure α) (s : Set α) :
-    c • μ s = c * μ s := by
+    c • μ s = c * μ s :=
   rfl
 
 theorem ae_smul_measure {p : α → Prop} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -1053,7 +1053,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
       · simp only [ite_eq_left_iff]
         intro n hn₁ hn₀
-        simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, iInf_pair, le_refl, inf_of_le_left]
+        simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, le_refl, inf_of_le_left]
   · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
     -- Conversely, fixing `t' : ℕ → Set α` such that `s ⊆ ⋃ n, t' n`, we construct `t : Set α`
     -- for which `μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n, μ (t' n) ⊓ ν (t' n)`.
@@ -1251,7 +1251,7 @@ theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ
 
 theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs
-  simp only [add_apply, sum_apply _ hs, Pi.add_apply, coe_add,
+  simp only [add_apply, sum_apply _ hs,
     ENNReal.summable.tsum_add ENNReal.summable]
 
 @[simp] lemma sum_comp_equiv {ι ι' : Type*} (e : ι' ≃ ι) (m : ι → Measure α) :

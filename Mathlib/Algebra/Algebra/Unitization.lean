@@ -562,12 +562,12 @@ instance instAlgebra : Algebra S (Unitization R A) where
   commutes' := fun s x => by
     induction x with
     | inl_add_inr =>
-      show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
+      change inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
       rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
   smul_def' := fun s x => by
     induction x with
     | inl_add_inr =>
-      show _ = inl (algebraMap S R s) * _
+      change _ = inl (algebraMap S R s) * _
       rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
         smul_one_mul, inl_smul, inr_smul, smul_one_smul]
 
@@ -814,7 +814,7 @@ variable [StarAddMonoid R] [Star A] {a : A}
 
 @[simp]
 lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
-  simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+  simp only [isSelfAdjoint_iff, ← inr_star, inr_injective.eq_iff]
 
 alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
 
