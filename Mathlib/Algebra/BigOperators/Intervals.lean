@@ -153,8 +153,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
   · have : n + 1 - k ≤ n + 1 - m := by
       rw [tsub_le_tsub_iff_left h]
       exact hkm
-    simp only [hkm, Ico_eq_empty_of_le, prod_empty, tsub_le_iff_right, Ico_eq_empty_of_le
-      this]
+    simp only [hkm, Ico_eq_empty_of_le, prod_empty, Ico_eq_empty_of_le this]
 
 theorem sum_Ico_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (k : ℕ) {m n : ℕ}
     (h : m ≤ n + 1) : (∑ j ∈ Ico k m, f (n - j)) = ∑ j ∈ Ico (n + 1 - m) (n + 1 - k), f j :=
@@ -209,9 +208,8 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
   rw [prod_sigma', prod_sigma']
   refine prod_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
     simp +contextual only [mem_sigma, mem_range, lt_tsub_iff_left,
-      Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
-      implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
-      add_tsub_cancel_left, heq_eq_eq]
+      Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, implies_true,
+      Sigma.forall, add_tsub_cancel_of_le, add_tsub_cancel_left]
   exact fun a b han hba ↦ lt_of_le_of_lt hba han
 
 end Generic

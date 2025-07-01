@@ -473,9 +473,7 @@ lemma mulShift_unit_eq_one_iff (ψ : AddChar R M) {u : R} (hu : IsUnit u) :
   · ext1 y
     rw [show y = u * (hu.unit⁻¹ * y) by rw [← mul_assoc, IsUnit.mul_val_inv, one_mul]]
     simpa only [mulShift_apply] using DFunLike.ext_iff.mp h (hu.unit⁻¹ * y)
-  · rintro rfl
-    ext1 y
-    rw [mulShift_apply, one_apply, one_apply]
+  · solve_by_elim
 
 end Ring
 

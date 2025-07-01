@@ -85,7 +85,7 @@ instance : Category.{max v₁ v₂} (C ⋆ D) where
     cases b <;>
     cases c <;>
     cases d <;>
-    simp only [Hom, id, comp, Category.assoc] <;>
+    simp only [Hom, comp, Category.assoc] <;>
     tauto
   id_comp {x y} f := by
     cases x <;> cases y <;> simp only [Hom, id, comp, Category.id_comp] <;> tauto
