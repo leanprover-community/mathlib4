@@ -71,16 +71,17 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
   -- `V` vector bundle
 
-namespace Basis
+section
 
 variable {ι : Type*}
+
+namespace Basis
 
 noncomputable def localFrame_toBasis_at
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) {x : M} (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
-
 
 open scoped Classical in
 -- If x is outside of `e.baseSet`, this returns the junk value 0.
@@ -156,18 +157,17 @@ noncomputable def localFrame_repr
     by_cases hx : x ∈ e.baseSet <;> simp [hx]
 
 variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] {b : Basis ι 𝕜 F}
+  [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x : M}
 
 variable (e b) in
 @[simp]
-lemma localFrame_repr_apply_of_notMem_baseSet {x : M}
-    (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) : b.localFrame_repr e i s x = 0 := by
+lemma localFrame_repr_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) :
+    b.localFrame_repr e i s x = 0 := by
   simpa [localFrame_repr] using fun hx' ↦ (hx hx').elim
 
 variable (e b) in
 @[simp]
-lemma localFrame_repr_apply_of_mem_baseSet {x : M}
-    (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
+lemma localFrame_repr_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
     b.localFrame_repr e i s x = (b.localFrame_toBasis_at e hx).repr (s x) i := by
   simp [localFrame_repr, hx]
 
@@ -185,10 +185,6 @@ variable (b) in
 lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_repr e i s x') • b.localFrame e i x' :=
   eventually_nhds_iff.mpr ⟨e.baseSet, fun _ h ↦ localFrame_repr_sum_eq s h, e.open_baseSet, hxe⟩
-
-variable {ι : Type*} {x : M}
-  {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-  [MemTrivializationAtlas e]
 
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_repr_congr (b : Basis ι 𝕜 F)
@@ -223,6 +219,11 @@ equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
 lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i : ι} {s : Π x : M, V x} :
     b.localFrame_repr e i s x = b.repr (e (s x)).2 i := by
   simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
+
+end Basis
+
+variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x : M}
 
 omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
@@ -271,7 +272,7 @@ lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t) (i : ι) :
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t :=
-  fun _ hx ↦ (b.contMDiffAt_localFrame_repr (ht' hx)
+  fun _ hx ↦ (contMDiffAt_localFrame_repr (ht' hx) b
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
 omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
@@ -289,7 +290,7 @@ lemma contMDiffAt_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 
     {s : Π x : M,  V x} {k : WithTop ℕ∞} {x' : M} (hx : x' ∈ e.baseSet) :
     ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x' ↔
     ∀ i, ContMDiffAt I 𝓘(𝕜) k (b.localFrame_repr e i s) x' := by
-  refine ⟨fun h i ↦ b.contMDiffAt_localFrame_repr hx h i, fun i ↦ ?_⟩
+  refine ⟨fun h i ↦ contMDiffAt_localFrame_repr hx b h i, fun i ↦ ?_⟩
   -- needs two missing API lemmas, see below
   sorry
 
@@ -303,15 +304,15 @@ lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [C
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t := by
   refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
   have this (i) : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦
-      TotalSpace.mk' F x ((localFrame_repr e b i) s x • localFrame e b i x)) t :=
-    contMDiffOn_smul_section ((contMDiffOn_localFrame_baseSet k e b i).mono ht') (hi i)
-  let rhs := fun x' ↦ ∑ i, (localFrame_repr e b i) s x' • localFrame e b i x'
+      TotalSpace.mk' F x ((b.localFrame_repr e i) s x • b.localFrame e i x)) t :=
+    contMDiffOn_smul_section ((b.contMDiffOn_localFrame_baseSet k e i).mono ht') (hi i)
+  let rhs := fun x' ↦ ∑ i, (b.localFrame_repr e i) s x' • b.localFrame e i x'
   have almost : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (rhs x)) t :=
     contMDiffOn_finsum_section fun i ↦ this i
   apply almost.congr
   intro y hy
   congr
-  exact localFrame_repr_sum_eq s (ht' hy)
+  exact b.localFrame_repr_sum_eq s (ht' hy)
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
@@ -320,9 +321,9 @@ lemma contMDiffOn_baseSet_iff_localFrame_repr [Fintype ι] [FiniteDimensional �
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet := by
-  rw [b.contMDiffOn_iff_localFrame_repr e.open_baseSet (subset_refl _)]
+  rw [contMDiffOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
 
-end Basis
+end
 
 -- local extension of a vector field in a trivialisation's base set
 section extendLocally
@@ -407,7 +408,7 @@ lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace �
     (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) e.baseSet := by
   -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
   -- constant, hence smoothness follows.
-  rw [b.contMDiffOn_baseSet_iff_localFrame_repr]
+  rw [contMDiffOn_baseSet_iff_localFrame_repr b]
   intro i
   apply (contMDiffOn_const (c := (b.localFrame_repr e i) (localExtensionOn b e x v) x)).congr
   intro y hy
