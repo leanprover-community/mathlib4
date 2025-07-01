@@ -537,7 +537,7 @@ variable (F) in
 omit [IsManifold I 0 M] in
 lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) 1
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) ∞
     (fun x' ↦ TotalSpace.mk' F x' (localExtensionOn b e x v x')) e.baseSet := by
   -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
   -- constant, hence smoothness follows.

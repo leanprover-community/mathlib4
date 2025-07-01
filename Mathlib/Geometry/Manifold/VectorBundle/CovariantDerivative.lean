@@ -543,31 +543,23 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
   simpa [extend] using
     localExtensionOn_apply_self _ _ (FiberBundle.mem_baseSet_trivializationAt' x) v
 
-lemma contMDiff_extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V x) :
-    ContMDiff I (I.prod 𝓘(ℝ, F)) 1 (fun x ↦ TotalSpace.mk' F x (extend I F σ₀ x)) := by
-  --letI b := Basis.ofVectorSpace ℝ F
-  --letI V₀ := localExtensionOn b t x σ₀
-  -- Choose a smooth bump function ψ near `x`, supported within t.baseSet
-  -- and return ψ • V₀ instead.
+lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V x) :
+    ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (fun x ↦ TotalSpace.mk' F x (extend I F σ₀ x)) := by
   letI t := trivializationAt F V x
   letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)
+  have hx : x ∈ t.baseSet := by exact FiberBundle.mem_baseSet_trivializationAt' x
   let ψ := Classical.choose <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
   -- XXX: extract ψ and hψ as helper declarations, perhaps private to prevent API leakage?
   let hψ :=
     Classical.choose_spec <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
-  --let res := ψ.toFun • localExtensionOn b t x σ₀
-  unfold extend
-  -- show ContMDiff I (I.prod 𝓘(ℝ, F)) 1 fun x_1 ↦ TotalSpace.mk' F x_1 (extend I F σ₀ x_1)
   -- use contMDiffOn_localExtensionOn, plus an abstract result about capping with a bump function
   -- the latter is easier to just prove directly by hand
   refine contMDiff_of_contMDiffOn_union_of_isOpen ?_ ?_ ?_ t.open_baseSet (t := (tsupport ψ)ᶜ) ?_
-  · sorry
-  · have aux : ContMDiffOn I (I.prod 𝓘(ℝ, F)) 1
-      (fun x_1 ↦ TotalSpace.mk' F x_1 (0 : V x_1)) (tsupport ↑ψ)ᶜ := by
-      apply ContMDiff.contMDiffOn
-      -- #check contMDiff_of_locally_contMDiffOn for the helper lemmas above
-      -- should be contMDiff_zero_section
-      sorry
+  · exact contMDiffOn_smul_section ψ.contMDiff.contMDiffOn <|
+      contMDiffOn_localExtensionOn _ (FiberBundle.mem_baseSet_trivializationAt' x) σ₀
+  · have aux : ContMDiffOn I (I.prod 𝓘(ℝ, F)) ∞
+      (fun x_1 ↦ TotalSpace.mk' F x_1 (0 : V x_1)) (tsupport ↑ψ)ᶜ :=
+      (contMDiff_zeroSection _ _).contMDiffOn
     apply aux.congr fun y hy ↦ ?_
     simpa [extend] using Or.inl <| image_eq_zero_of_notMem_tsupport hy
   · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr hψ.1
@@ -623,8 +615,8 @@ noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDime
       cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y (x := x)) x +
         cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
       apply cov.addσ
-      · exact (contMDiff_extend _ _).mdifferentiableAt (n := 1) (hn := by norm_num)
-      · apply (contMDiff_extend _ _).mdifferentiableAt (n := 1) (hn := by norm_num)
+      · exact (contMDiff_extend _ _).mdifferentiableAt (n := ∞) (hn := by norm_num)
+      · apply (contMDiff_extend _ _).mdifferentiableAt (n := ∞) (hn := by norm_num)
     simp [A, B]
     module
   map_smul' a v := by

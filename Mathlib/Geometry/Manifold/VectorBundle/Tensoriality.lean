@@ -95,8 +95,8 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDim
       (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
   have hc {σ : (x : M) → V x}
       (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x) (i) :
-        MDifferentiableAt I 𝓘(ℝ, ℝ) ((c i) σ) x := by
-      sorry
+        MDifferentiableAt I 𝓘(ℝ, ℝ) ((c i) σ) x :=
+    mdifferentiableAt_localFrame_repr x_mem b hσ i
   have hφ {σ : (x : M) → V x}
           (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x) :
       φ σ x = φ (fun x' ↦ ∑ i, (c i) σ x' • s i x') x := by
@@ -145,9 +145,9 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
        rw [show (fun x' : M ↦ (0 : V x')) = (0 : M → ℝ) • fun x' ↦ 0 by simp;rfl, φ_smul]
        simp
     | insert a s ha h =>
-        change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
-        simp [Finset.sum_insert ha, ← h]
-        erw [φ_add]
+      change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
+      simp [Finset.sum_insert ha, ← h]
+      erw [φ_add]
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
