@@ -291,16 +291,19 @@ variable
     {τ τ' : CatCospanTransform F'' G'' F''' G'''}
     (γ : τ ⟶ τ')
 
+@[reassoc]
 lemma whisker_exchange : ψ ◁ θ ≫ η ▷ φ' = η ▷ φ ≫ ψ' ◁ θ := by aesop_cat
 
 @[simp]
 lemma id_whiskerRight : 𝟙 ψ ▷ φ = 𝟙 _ := by aesop_cat
 
+@[reassoc]
 lemma whiskerRight_id : η ▷ (.id _ _) = (ρ_ _).hom ≫ η ≫ (ρ_ _).inv := by aesop_cat
 
 @[simp, reassoc]
 lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by aesop_cat
 
+@[reassoc]
 lemma whiskerRight_comp :
     η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _ ).hom := by
   aesop_cat
@@ -308,15 +311,18 @@ lemma whiskerRight_comp :
 @[simp]
 lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by aesop_cat
 
+@[reassoc]
 lemma id_whiskerLeft : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by aesop_cat
 
 @[simp, reassoc]
 lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := by aesop_cat
 
+@[reassoc]
 lemma comp_whiskerLeft :
     (ψ.comp φ) ◁ γ = (α_ _ _ _).hom ≫ (ψ ◁ (φ ◁ γ)) ≫ (α_ _ _ _).inv := by
   aesop_cat
 
+@[reassoc]
 lemma pentagon
     {A'''' : Type u₁₃} {B'''' : Type u₁₄} {C'''' : Type u₁₅}
     [Category.{v₁₃} A''''] [Category.{v₁₄} B''''] [Category.{v₁₅} C'''']
