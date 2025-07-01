@@ -55,17 +55,19 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     exact hx
   · simp only [mfld_simps]
 
-lemma MDifferentiableWithinAt.coordChange {𝕜  : Type*}
-    {B : Type*} {F : Type*} {M : Type*} {E : B → Type*} [NontriviallyNormedField 𝕜]
-    [TopologicalSpace (TotalSpace F E)] [(x : B) → TopologicalSpace (E x)] {EB : Type*}
-    [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-    (IB : ModelWithCorners 𝕜 EB HB) {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
-    {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M]
-    [ChartedSpace HM M] [TopologicalSpace B] [ChartedSpace HB B]
-    [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)] [NormedAddCommGroup F]
-    [NormedSpace 𝕜 F] [FiberBundle F E] [VectorBundle 𝕜 F E]
-    [ContMDiffVectorBundle 1 F E IB] {e : Trivialization F TotalSpace.proj}
-    (e' : Trivialization F TotalSpace.proj) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
+theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
+    MDifferentiableAt IM (IB.prod 𝓘(𝕜, F)) f x₀ ↔
+      MDifferentiableAt IM IB (fun x => (f x).proj) x₀ ∧
+      MDifferentiableAt IM 𝓘(𝕜, F)
+        (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f
+
+variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
+         [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
+
+lemma MDifferentiableWithinAt.coordChange
+    {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
+    (e' : Trivialization F TotalSpace.proj)  [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (hex₀ : (f x₀).proj ∈ e.baseSet) (he'x₀ : (f x₀).proj ∈ e'.baseSet)
     (hf : MDifferentiableWithinAt IM IB (fun x ↦ (f x).proj) s x₀)
@@ -86,17 +88,8 @@ lemma MDifferentiableWithinAt.coordChange {𝕜  : Type*}
     exact bar.clm_apply he'f
   rw [e'.coordChangeL_apply e ⟨he'x₀, hex₀⟩, e'.symm_proj_apply (f x₀) he'x₀]
 
-theorem mdifferentiableWithinAt_coordChange {𝕜 : Type*}
-    {B : Type*} {F : Type*} {M : Type*} {E : B → Type*} [NontriviallyNormedField 𝕜]
-    [TopologicalSpace (TotalSpace F E)] [(x : B) → TopologicalSpace (E x)] {EB : Type*}
-    [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-    (IB : ModelWithCorners 𝕜 EB HB) {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
-    {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M]
-    [ChartedSpace HM M] [TopologicalSpace B] [ChartedSpace HB B]
-    [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)] [NormedAddCommGroup F]
-    [NormedSpace 𝕜 F] [FiberBundle F E] [VectorBundle 𝕜 F E]
-    [ContMDiffVectorBundle 1 F E IB]
-    (e e' : Trivialization F TotalSpace.proj) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
+theorem mdifferentiableWithinAt_coordChange
+    {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (hex₀ : (f x₀).proj ∈ e.baseSet) (he'x₀ : (f x₀).proj ∈ e'.baseSet)
     (hf : MDifferentiableWithinAt IM IB (fun x ↦ (f x).proj) s x₀) :
@@ -104,11 +97,18 @@ theorem mdifferentiableWithinAt_coordChange {𝕜 : Type*}
     MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e' (f x)).2) s x₀ :=
   ⟨hf.coordChange IB e he'x₀ hex₀, hf.coordChange IB e' hex₀ he'x₀⟩
 
+theorem mdifferentiableAt_change_triv
+    {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
+    {f : M → TotalSpace F E} {x₀ : M}
+    (hex₀ : (f x₀).proj ∈ e.baseSet) (he'x₀ : (f x₀).proj ∈ e'.baseSet)
+    (hf : MDifferentiableAt IM IB (fun x ↦ (f x).proj) x₀) :
+    MDifferentiableAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) x₀ ↔
+    MDifferentiableAt IM 𝓘(𝕜, F) (fun x ↦ (e' (f x)).2) x₀ := by
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_coordChange IB hex₀ he'x₀ hf
+
 /-- Characterization of differentiable functions into a vector bundle in terms
-of any trivialization. -/
-theorem mdifferentiableWithinAt_totalSpace'
-    [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
-    [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
+of any trivialization. Version at a point within at set. -/
+theorem Trivialization.mdifferentiableWithinAt_totalSpace_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (f : M → TotalSpace F E) {s : Set M} {x₀ : M}
     (hex₀ : (f x₀).proj ∈ e.baseSet) :
@@ -119,16 +119,22 @@ theorem mdifferentiableWithinAt_totalSpace'
   rw [mdifferentiableWithinAt_totalSpace]
   apply and_congr_right
   intro hf
-  rw [mdifferentiableWithinAt_coordChange IB e (trivializationAt F E (f x₀).proj) hex₀
-       (FiberBundle.mem_baseSet_trivializationAt' _) hf]
+  rw [mdifferentiableWithinAt_coordChange IB hex₀ (FiberBundle.mem_baseSet_trivializationAt' _) hf]
 
-theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
+/-- Characterization of differentiable functions into a vector bundle in terms
+of any trivialization. Version at a point. -/
+theorem Trivialization.mdifferentiableAt_totalSpace_iff
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
+    (f : M → TotalSpace F E) {x₀ : M}
+    (hex₀ : (f x₀).proj ∈ e.baseSet) :
     MDifferentiableAt IM (IB.prod 𝓘(𝕜, F)) f x₀ ↔
       MDifferentiableAt IM IB (fun x => (f x).proj) x₀ ∧
       MDifferentiableAt IM 𝓘(𝕜, F)
-        (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f
-
+        (fun x ↦ (e (f x)).2) x₀ := by
+  rw [mdifferentiableAt_totalSpace]
+  apply and_congr_right
+  intro hf
+  rw [mdifferentiableAt_change_triv IB hex₀ (FiberBundle.mem_baseSet_trivializationAt' _) hf]
 end
 
 section
