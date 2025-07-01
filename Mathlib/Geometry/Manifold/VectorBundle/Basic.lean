@@ -211,16 +211,17 @@ theorem contMDiffAt_section {s : ∀ x, E x} (x₀ : B) :
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
-/-- Continuity of a `C^n` section at `x` can be determined
+/-- Smoothness of a `C^n` section at `x` can be determined
 using any trivialisation whose `baseSet` contains `x`. -/
 theorem contMDiffAt_section_of_mem_baseSet {s : ∀ x, E x} {x₀ : B}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
     [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
-  sorry -- use the WithinAt version
+  simp_rw [← contMDiffWithinAt_univ]
+  exact contMDiffWithinAt_section_of_mem_BaseSet s univ e hx₀
 
-/-- Continuity of a `C^n` section on `s` can be determined
+/-- Smoothness of a `C^n` section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
 theorem contMDiffOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
@@ -238,7 +239,7 @@ theorem contMDiffOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
       (h x hx).contMDiffAt <| ha.mem_nhds hx
     exact ((contMDiffAt_section_of_mem_baseSet (ha' hx)).mpr this).contMDiffWithinAt
 
-/-- For any trivialization `e`, the continuity of a `C^n` section on `e.baseSet`
+/-- For any trivialization `e`, the smoothness of a `C^n` section on `e.baseSet`
 can be determined using `e`. -/
 theorem contMDiffOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
