@@ -244,7 +244,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
   · -- unfold the `Invertible` instances to get the raw factors
-    show
+    change
       _ =
         fromBlocks 1 0 (-(1 * (⅟ D * C) * 1)) 1 *
           (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * 0 * ⅟ D)) 0 (⅟ D) *

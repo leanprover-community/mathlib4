@@ -83,7 +83,7 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : 
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.closedBall y r) :=
   .of_homeo <| by
-    show (Metric.closedBall y r) ≃ₜ (Metric.closedBall (0 : E) 1)
+    change (Metric.closedBall y r) ≃ₜ (Metric.closedBall (0 : E) 1)
     symm
     apply (DilationEquiv.smulTorsor y (k := (r : 𝕜)) <| by exact_mod_cast hr.ne').toHomeomorph.sets
     ext x

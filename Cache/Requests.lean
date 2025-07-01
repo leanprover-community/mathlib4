@@ -160,6 +160,13 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
         let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
         let refsInfo ← IO.Process.output
           {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+        -- The code below is for debugging purposes currently
+        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
+        {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
+        let refsInfo' ← IO.Process.output
+          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
+        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
+        {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
 
         if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
           let prRefs := refsInfo.stdout.trim.split (· == '\n')
