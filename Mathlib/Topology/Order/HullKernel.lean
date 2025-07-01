@@ -176,7 +176,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
   · obtain ⟨a, ha⟩ := h
     exact ⟨(Ici a)ᶜ, ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩⟩
 
-/- When `α` is complete, a set is Lower topology relative-closed if and only if it is of the form
+/- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the form
 `T ↓∩ Ici a` for some `a` in `α`.-/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
