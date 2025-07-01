@@ -75,7 +75,7 @@ variable {T : Set α}
 
 /- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
 pairwise union. -/
-lemma preimage_Ici_union_preimage_Ici (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
+lemma hull_union_hull (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     hull T a ∪ hull T b = hull T (a ⊓ b) := by
   ext p
   constructor <;> intro h
@@ -86,9 +86,9 @@ lemma preimage_Ici_union_preimage_Ici (hT : ∀ p ∈ T, InfPrime p) (a b : α) 
 
 /- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
-lemma preimage_Ici_compl_inter_preimage_Ici_compl (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
+lemma hull_compl_inter_hull_compl (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (hull T a)ᶜ ∩ (hull T b)ᶜ = (hull T (a ⊓ b))ᶜ := by
-  rw [← (preimage_Ici_union_preimage_Ici hT), compl_union]
+  rw [← (hull_union_hull hT), compl_union]
 
 variable [DecidableEq α] [OrderTop α]
 
@@ -107,7 +107,7 @@ lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α
     obtain ⟨x, hx⟩ := hf
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr (eq_top_iff.mpr hx))
   · simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
-      preimage_iUnion, inf_insert, id_eq, ← (preimage_Ici_union_preimage_Ici hT), ← I4]
+      preimage_iUnion, inf_insert, id_eq, ← (hull_union_hull hT), ← I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
 set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⨅ F`. -/
@@ -153,15 +153,15 @@ variable {T : Set α}
 
 namespace PrimitiveSpectrum
 
-lemma sInter_preimage_Ici (S : Set α) : ⋂₀ { hull T a | a ∈ S } = hull T (sSup S) := by
+lemma sInter_hull (S : Set α) : ⋂₀ { hull T a | a ∈ S } = hull T (sSup S) := by
   ext x : 1
   simp_all only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     mem_preimage, mem_Ici, sSup_le_iff]
 
 /- When `α` is complete, the relative basis for the lower topology is also closed under arbitrary
 unions. -/
-lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { (hull T a)ᶜ | a ∈ S } = (hull T (sSup S))ᶜ := by
-  simp [sUnion_eq_compl_sInter_compl, ← sInter_preimage_Ici, compl_sInter]
+lemma sUnion_hull_Compl_eq (S : Set α) : ⋃₀ { (hull T a)ᶜ | a ∈ S } = (hull T (sSup S))ᶜ := by
+  simp [sUnion_eq_compl_sInter_compl, ← sInter_hull, compl_sInter]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
