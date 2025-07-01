@@ -151,7 +151,7 @@ variable {T : Set α}
 
 namespace PrimitiveSpectrum
 
-lemma sInter_Ici_eq (S : Set α) : ⋂₀ { T ↓∩ Ici a | a ∈ S } = T ↓∩ Ici (sSup S) := by
+lemma sInter_preimage_Ici (S : Set α) : ⋂₀ { T ↓∩ Ici a | a ∈ S } = T ↓∩ Ici (sSup S) := by
   ext x : 1
   simp_all only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     mem_preimage, mem_Ici, sSup_le_iff]
