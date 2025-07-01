@@ -76,7 +76,7 @@ theorem hyperoperation_two_two_eq_four (n : ℕ) : hyperoperation (n + 1) 2 2 = 
 @[grind =]
 theorem hyperoperation_ge_three_one (n k : ℕ) : hyperoperation (n + 3) 1 k = 1 := by
   induction n generalizing k with
-  | zero => grind [one_pow]
+  | zero => grind
   | succ n ih =>
     cases k
     · grind
