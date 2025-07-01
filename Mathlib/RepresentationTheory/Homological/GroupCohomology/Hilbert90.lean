@@ -87,7 +87,7 @@ theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
   use (Units.mk0 (aux f z) hz)⁻¹
   intro g
 /- Then the equality follows from the hypothesis that `f` is a 1-cocycle. -/
-  simp only [IsMulOneCocycle, IsMulOneCoboundary, AlgEquiv.smul_units_def,
+  simp only [IsMulOneCocycle, AlgEquiv.smul_units_def,
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
     Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
@@ -101,7 +101,7 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
-  uniq := fun a => Quotient.inductionOn' a fun x => (H1π_eq_zero_iff _).2 <| by
+  uniq := fun a => H1_induction_on a fun x => (H1π_eq_zero_iff _).2 <| by
     refine (oneCoboundariesOfIsMulOneCoboundary ?_).2
     rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x.1
       (isMulOneCocycle_of_mem_oneCocycles _ x.2) with ⟨β, hβ⟩
