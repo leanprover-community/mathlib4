@@ -215,11 +215,14 @@ end Dependent
 
 section NonDependent
 
+namespace DFunLike
+
 /-! ### `FunLike F α β` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort*} [i : FunLike F α β]
 
-namespace DFunLike
+variable {F α β : Sort*}
+
+variable [i : FunLike F α β]
 
 protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
   congr (congr_arg _ h₁) h₂
@@ -236,5 +239,82 @@ theorem ite_apply {P : Prop} [Decidable P] (f g : F) (x : α) :
   dite_apply _ _ _
 
 end DFunLike
+
+namespace FunLike
+
+variable {F G H K L M N α β γ δ : Sort*}
+
+/-- A class that represents a `FunLike` type as an identity function. -/
+class Id (F : Sort*) {α : outParam Sort*} [FunLike F α α] where
+  /-- The element of F that acts as the identity on `α`. -/
+  id : F
+  protected coe_id' : ⇑id = _root_.id := by rfl
+
+/-- The element of F that acts as the identity on `α`. -/
+def id [FunLike F α α] [Id F] : F := Id.id
+
+section Id
+
+instance [FunLike F α α] : Subsingleton (Id F) where
+  allEq a b := by
+    cases a with | mk id ha; cases b with | mk id' hb
+    cases (by simp only [DFunLike.ext'_iff, ha, hb] : id = id')
+    rfl
+
+@[inherit_doc] notation "𝕀" => id
+
+recommended_spelling "id" for "𝕀" in [id, «term𝕀»]
+
+variable [FunLike F α α] [Id F] {a : α} {f : F}
+
+@[simp] theorem coe_id : ⇑(𝕀 : F) = _root_.id := Id.coe_id'
+
+@[simp] theorem id_apply : (𝕀 : F) a = a := congrFun coe_id a
+
+end Id
+
+/-- A class that represents composition of `FunLike` types. -/
+class Comp (F G : Sort*) (H : outParam Sort*) {α β γ : outParam Sort*}
+  [FunLike F β γ] [FunLike G α β] [FunLike H α γ] where
+  /-- Composition operation. -/
+  comp : F → G → H
+  protected coe_comp' : ∀ {f g}, ⇑(comp f g) = ⇑f ∘ ⇑g := by exact fun {f g} => rfl
+
+/-- Composition operation. -/
+def comp [FunLike F β γ] [FunLike G α β] [FunLike H α γ] [Comp F G H] : F → G → H := Comp.comp
+
+section Comp
+
+instance [FunLike F β γ] [FunLike G α β] [FunLike H α γ] : Subsingleton (Comp F G H) where
+  allEq a b := by
+    cases a with | mk comp ha; cases b with | mk comp' hb
+    cases (funext₂ (fun _ _ => by simp only [DFunLike.ext'_iff, ha, hb]) : comp = comp')
+    rfl
+
+@[inherit_doc] infixr:90 " ∘∘ " => comp
+recommended_spelling "comp" for "∘∘" in [Comp.comp, «term_∘∘_»]
+
+variable [FunLike F β γ] [FunLike G α β] [FunLike H α γ] [FunLike K γ δ] [FunLike L α δ]
+  [FunLike M β δ] [Comp F G H] [Comp K F M] [Comp K H L] [Comp M G L]
+    {a : α} {f : F} {g : G} {h : H} {k : K}
+
+@[simp] theorem coe_comp : ⇑(f ∘∘ g) = ⇑f ∘ ⇑g := Comp.coe_comp'
+
+@[simp] theorem comp_apply : (f ∘∘ g ) a = f (g a) := congrFun coe_comp a
+
+theorem comp_assoc : comp (comp k f) g = comp k (comp f g) :=
+  DFunLike.ext _ _ <| fun _ => by simp only [comp_apply]
+
+theorem id_comp {G} [FunLike F β β] [FunLike G α β] [Comp F G G] [Id F]
+    {g : G} : (𝕀 : F) ∘∘ g = g :=
+  DFunLike.ext _ _ <| fun _ => by simp only [comp_apply, id_apply]
+
+theorem comp_id {F} [FunLike F β γ] [FunLike G β β] [Comp F G F] [Id G]
+    {f : F} : f ∘∘ (𝕀 : G) = f :=
+  DFunLike.ext _ _ <| fun _ => by simp only [comp_apply, id_apply]
+
+end Comp
+
+end FunLike
 
 end NonDependent
