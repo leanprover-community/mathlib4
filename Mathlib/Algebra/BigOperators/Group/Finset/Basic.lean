@@ -618,6 +618,19 @@ theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
   | zero => rw [Finset.prod_range_zero, base]
   | succ k hk => simp only [hk, Finset.prod_range_succ, step, mul_comm]
 
+/-- A version of `Finset.prod_range_induction` where the ratios of adjacent terms only needs to be
+checked for terms up to `n` -/
+@[to_additive "A version of `Finset.sum_range_induction` where the differences of adjacent terms
+only needs to be checked for terms up to `n`"]
+theorem prod_range_induction' (f s : ℕ → M) (base : s 0 = 1)
+    (n : ℕ) (step : ∀ k < n, s (k + 1) = s k * f k) :
+    ∏ k ∈ Finset.range n, f k = s n := by
+  induction n with
+  | zero => rw [Finset.prod_range_zero, base]
+  | succ k hk =>
+    rw [Finset.prod_range_succ, step _ (Nat.lt_succ_self _), hk]
+    exact fun _ hl ↦ step _ (Nat.lt_succ_of_lt hl)
+
 @[to_additive (attr := simp)]
 theorem prod_const (b : M) : ∏ _x ∈ s, b = b ^ #s :=
   (congr_arg _ <| s.val.map_const b).trans <| Multiset.prod_replicate #s b
