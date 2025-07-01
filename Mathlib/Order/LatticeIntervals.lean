@@ -37,8 +37,9 @@ instance semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Ico a b
 
 @[simp, norm_cast]
 protected lemma coe_inf [SemilatticeInf α] {a b : α} {x y : Ico a b} :
-    (↑(x ⊓ y) : α) = (x : α) ⊓ (y : α) :=
+    ↑(x ⊓ y) = (↑x ⊓ ↑y : α) :=
   rfl
+
 /-- `Ico a b` has a bottom element whenever `a < b`. -/
 instance orderBot [PartialOrder α] {a b : α} [Fact (a < b)] : OrderBot (Ico a b) :=
   (isLeast_Ico Fact.out).orderBot
@@ -47,7 +48,7 @@ instance orderBot [PartialOrder α] {a b : α} [Fact (a < b)] : OrderBot (Ico a 
 protected lemma coe_bot [PartialOrder α] {a b : α} [Fact (a < b)] : ↑(⊥ : Ico a b) = a := rfl
 
 protected lemma disjoint_iff [SemilatticeInf α] {a b : α} [Fact (a < b)] {x y : Ico a b} :
-    Disjoint x y ↔ (x : α) ⊓ (y : α) = a := by
+    Disjoint x y ↔ ↑x ⊓ ↑y = a := by
   simp [_root_.disjoint_iff, Subtype.ext_iff]
 
 end Ico
@@ -59,7 +60,7 @@ instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Iio a) :=
 
 @[simp, norm_cast]
 protected lemma coe_inf [SemilatticeInf α] {a : α} {x y : Iio a} :
-    (↑(x ⊓ y) : α) = (x : α) ⊓ (y : α) :=
+    ↑(x ⊓ y) = (↑x ⊓ ↑y : α) :=
   rfl
 
 end Iio
@@ -71,7 +72,7 @@ instance semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Ioc a b
 
 @[simp, norm_cast]
 protected lemma coe_sup [SemilatticeSup α] {a b : α} {x y : Ioc a b} :
-    (↑(x ⊔ y) : α) = (x : α) ⊔ (y : α) :=
+    ↑(x ⊔ y) = (↑x ⊔ ↑y : α) :=
   rfl
 
 /-- `Ioc a b` has a top element whenever `a < b`. -/
@@ -82,7 +83,7 @@ instance orderTop [PartialOrder α] {a b : α} [Fact (a < b)] : OrderTop (Ioc a 
 protected lemma coe_top [PartialOrder α] {a b : α} [Fact (a < b)] : ↑(⊤ : Ioc a b) = b := rfl
 
 protected lemma codisjoint_iff [SemilatticeSup α] {a b : α} [Fact (a < b)] {x y : Ioc a b} :
-    Codisjoint x y ↔ (x : α) ⊔ (y : α) = b := by
+    Codisjoint x y ↔ ↑x ⊔ ↑y = b := by
   simp [_root_.codisjoint_iff, Subtype.ext_iff]
 
 end Ioc
@@ -94,7 +95,7 @@ instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Ioi a) :=
 
 @[simp, norm_cast]
 protected lemma coe_sup [SemilatticeSup α] {a : α} {x y : Ioi a} :
-    (↑(x ⊔ y) : α) = (x : α) ⊔ (y : α) :=
+    ↑(x ⊔ y) = (↑x ⊔ ↑y : α) :=
   rfl
 
 end Ioi
@@ -108,7 +109,7 @@ instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (Iic a) :=
 
 @[simp, norm_cast]
 protected lemma coe_inf [SemilatticeInf α] {x y : Iic a} :
-    (↑(x ⊓ y) : α) = (x : α) ⊓ (y : α) :=
+    ↑(x ⊓ y) = (↑x ⊓ ↑y : α) :=
   rfl
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (Iic a) :=
@@ -116,7 +117,7 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (Iic a) :=
 
 @[simp, norm_cast]
 protected lemma coe_sup [SemilatticeSup α] {x y : Iic a} :
-    (↑(x ⊔ y) : α) = (x : α) ⊔ (y : α) :=
+    ↑(x ⊔ y) = (↑x ⊔ ↑y : α) :=
   rfl
 
 instance [Lattice α] : Lattice (Iic a) :=
@@ -152,11 +153,11 @@ protected lemma disjoint_iff [SemilatticeInf α] [OrderBot α] {x y : Iic a} :
   simp [_root_.disjoint_iff, Subtype.ext_iff]
 
 protected lemma codisjoint_iff [SemilatticeSup α] {x y : Iic a} :
-    Codisjoint x y ↔ (x : α) ⊔ (y : α) = a := by
+    Codisjoint x y ↔ ↑x ⊔ ↑y = a := by
   simpa only [_root_.codisjoint_iff] using Iic.eq_top_iff
 
 protected lemma isCompl_iff [Lattice α] [OrderBot α] {x y : Iic a} :
-    IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ (x : α) ⊔ (y : α) = a := by
+    IsCompl x y ↔ Disjoint (x : α) (y : α) ∧ ↑x ⊔ ↑y = a := by
   rw [_root_.isCompl_iff, Iic.disjoint_iff, Iic.codisjoint_iff]
 
 protected lemma complementedLattice_iff [Lattice α] [OrderBot α] :
@@ -173,7 +174,7 @@ instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Ici a) :=
 
 @[simp, norm_cast]
 protected lemma coe_inf [SemilatticeInf α] {a : α} {x y : Ici a} :
-    (↑(x ⊓ y) : α) = (x : α) ⊓ (y : α) :=
+    ↑(x ⊓ y) = (↑x ⊓ ↑y : α) :=
   rfl
 
 instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Ici a) :=
@@ -181,7 +182,7 @@ instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Ici a) :=
 
 @[simp, norm_cast]
 protected lemma coe_sup [SemilatticeSup α] {a : α} {x y : Ici a} :
-    (↑(x ⊔ y) : α) = (x : α) ⊔ (y : α) :=
+    ↑(x ⊔ y) = (↑x ⊔ ↑y : α) :=
   rfl
 
 instance lattice [Lattice α] {a : α} : Lattice (Ici a) :=
@@ -211,7 +212,6 @@ theorem coe_top [Preorder α] [OrderTop α] {a : α} : ↑(⊤ : Ici a) = (⊤ :
 instance boundedOrder [Preorder α] [OrderTop α] {a : α} : BoundedOrder (Ici a) :=
   { Ici.orderTop, Ici.orderBot with }
 
-
 protected lemma disjoint_iff [SemilatticeInf α] {a : α} {x y : Ici a} :
     Disjoint x y ↔ ↑x ⊓ ↑y = a := by
   simp [_root_.disjoint_iff, Subtype.ext_iff]
@@ -221,7 +221,7 @@ protected lemma codisjoint_iff [SemilatticeSup α] [OrderTop α] {a : α} {x y :
   simp [_root_.codisjoint_iff, Subtype.ext_iff]
 
 protected lemma isCompl_iff [Lattice α] [OrderTop α] {a : α} {x y : Ici a} :
-    IsCompl x y ↔ (x : α) ⊓ (y : α) = a ∧ Codisjoint (x : α) (y : α) := by
+    IsCompl x y ↔ ↑x ⊓ ↑y = a ∧ Codisjoint (x : α) (y : α) := by
   rw [_root_.isCompl_iff, Ici.disjoint_iff, Ici.codisjoint_iff]
 
 end Ici
@@ -235,7 +235,7 @@ instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (Icc a b) :=
 
 @[simp, norm_cast]
 protected lemma coe_inf [SemilatticeInf α] {x y : Icc a b} :
-    (↑(x ⊓ y) : α) = (x : α) ⊓ (y : α) :=
+    ↑(x ⊓ y) = (↑x ⊓ ↑y : α) :=
   rfl
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (Icc a b) :=
@@ -243,7 +243,7 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (Icc a b) :=
 
 @[simp, norm_cast]
 protected lemma coe_sup [SemilatticeSup α] {x y : Icc a b} :
-    (↑(x ⊔ y) : α) = (x : α) ⊔ (y : α) :=
+    ↑(x ⊔ y) = (↑x ⊔ ↑y : α) :=
   rfl
 
 instance lattice [Lattice α] : Lattice (Icc a b) :=
@@ -275,7 +275,7 @@ protected lemma codisjoint_iff [SemilatticeSup α] [Fact (a ≤ b)] {x y : Icc a
   simp [_root_.codisjoint_iff, Subtype.ext_iff]
 
 protected lemma isCompl_iff [Lattice α] [Fact (a ≤ b)] {x y : Icc a b} :
-    IsCompl x y ↔ (x : α) ⊓ (y : α) = a ∧ (x : α) ⊔ (y : α) = b := by
+    IsCompl x y ↔ ↑x ⊓ ↑y = a ∧ ↑x ⊔ ↑y = b := by
   rw [_root_.isCompl_iff, Icc.disjoint_iff, Icc.codisjoint_iff]
 
 end Icc
