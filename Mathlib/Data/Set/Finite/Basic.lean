@@ -631,7 +631,7 @@ theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β 
 
 theorem finset_subset_preimage_of_finite_image
     {s : Set α} {f : α → β} (h : (f '' s).Finite) :
-    ∃ (s' : Finset α), ↑s' ⊆ s ∧ f '' s' = f '' s ∧ s'.card = h.toFinset.card := by
+    ∃ s' : Finset α, ↑s' ⊆ s ∧ f '' s' = f '' s ∧ s'.card = h.toFinset.card := by
   have ⟨s', hs', hs'₁⟩ := Set.exists_subset_bijOn s f
   have h' := Set.Finite.of_finite_image (hs'₁.image_eq.symm ▸ h) hs'₁.injOn
   use h'.toFinset
