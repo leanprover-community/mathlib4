@@ -169,26 +169,6 @@ lemma contMDiff_of_contMDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
   rw [← contMDiffOn_univ, ← hs']
   exact ContMDiffOn.iUnion_of_isOpen hf hs
 
-/-- A section is `C^n` whenever it is `C^n` on its support.
-This is a more global version of `contMDiff_of_tsupport` (which does not apply, as it assumes the
-co-domain has a zero: the total space of a vector bundle has none): in return for the additional
-generality, we need to add a hypothesis about the zero section being smooth. -/
-lemma ContMDiff.of_contMDiffOn_smul_bump_function [SMul 𝕜 M'] (hf : ContMDiffOn I I' n f s)
-    (hs : IsOpen s) {ψ : M → 𝕜} (hψ : ContMDiff I 𝓘(𝕜) n ψ) (hψ' : tsupport ψ ⊆ s)
-    -- XXX: is there a better abstraction of "the zero section"?
-    (hzero : ContMDiff I I' n (fun x ↦ (0 : 𝕜) • f x)) : ContMDiff I I' n (ψ • f) := by
-  apply contMDiff_of_contMDiffOn_union_of_isOpen ?_ ?_ ?_ hs
-    (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
-  · -- TODO: impose further typeclasses to make this true...
-    sorry -- scalar multiplication is C^n, for sections: will be done for local frames as well
-  · apply (hzero.contMDiffOn (s := (tsupport ψ)ᶜ)).congr
-    intro y hy
-    simp [image_eq_zero_of_notMem_tsupport hy]
-  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr hψ'
-
--- See also `ContMDiff.of_contMDiffOn_smul_bump_function` for the analogous result applying
--- to sections of vector bundles (whose co-domain has no zero).
-
 end contMDiff_union
 
 @[ext]
@@ -471,6 +451,7 @@ lemma differenceAux_smul_eq' (cov cov' : CovariantDerivative I F V)
     differenceAux cov cov' (f • X) σ x = f x • differenceAux cov cov' X σ x := by
   simp [differenceAux, cov.smulX, cov'.smulX, smul_sub]
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 /-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
 lemma differenceAux_tensorial (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     [FiniteDimensional ℝ F]
@@ -543,6 +524,39 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
   simpa [extend] using
     localExtensionOn_apply_self _ _ (FiberBundle.mem_baseSet_trivializationAt' x) v
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+/-- If `ψ: M → ℝ` a smooth bump function and `s` is a section of a smooth vector bundle `V → M`,
+the scalar product `ψ s` is `C^n` if `s` is `C^n` on an open set containing `tsupport ψ`.
+This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
+but we only consider sections of the form `ψ s`. -/
+lemma _root_.contMDiff_section_of_smul_smoothBumpFunction [T2Space M] [IsManifold I ∞ M]
+    {s : Π (x : M), V x} {ψ : SmoothBumpFunction I x} {t : Set M}
+    (hs : ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) t)
+    (ht : IsOpen t) (ht' : tsupport ψ ⊆ t) (hn : n ≤ ∞) :
+    ContMDiff I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  apply contMDiff_of_contMDiffOn_union_of_isOpen
+      (contMDiffOn_smul_section (ψ.contMDiff.of_le hn).contMDiffOn hs) ?_ ?_ ht
+      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
+  · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
+    intro y hy
+    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
+
+-- unused, but might be nice to have
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+/-- If `ψ: M → ℝ` a smooth bump function and `s` is a section of a smooth vector bundle `V → M`,
+the scalar product `ψ s` is `C^n` if `s` is `C^n` at each `x ∈ tsupport ψ`.
+This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
+but we only consider sections of the form `ψ s`. -/
+lemma _root_.contMDiff_section_of_smul_smoothBumpFunction' [T2Space M] [IsManifold I ∞ M]
+    {s : Π (x : M), V x} {ψ : SmoothBumpFunction I x} (hn : n ≤ ∞)
+    (hs : ∀ x ∈ tsupport ψ,
+      ContMDiffAt I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) x) :
+    ContMDiff I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  -- apply contMDiff_of_smul_smoothBumpFunction (s := s) (hn := hn) --?_ ?_ ?_ ?_
+  sorry
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (fun x ↦ TotalSpace.mk' F x (extend I F σ₀ x)) := by
   letI t := trivializationAt F V x
@@ -552,18 +566,8 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
   -- XXX: extract ψ and hψ as helper declarations, perhaps private to prevent API leakage?
   let hψ :=
     Classical.choose_spec <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
-  -- use contMDiffOn_localExtensionOn, plus an abstract result about capping with a bump function
-  -- the latter is easier to just prove directly by hand
-  refine contMDiff_of_contMDiffOn_union_of_isOpen ?_ ?_ ?_ t.open_baseSet (t := (tsupport ψ)ᶜ) ?_
-  · exact contMDiffOn_smul_section ψ.contMDiff.contMDiffOn <|
-      contMDiffOn_localExtensionOn _ (FiberBundle.mem_baseSet_trivializationAt' x) σ₀
-  · have aux : ContMDiffOn I (I.prod 𝓘(ℝ, F)) ∞
-      (fun x_1 ↦ TotalSpace.mk' F x_1 (0 : V x_1)) (tsupport ↑ψ)ᶜ :=
-      (contMDiff_zeroSection _ _).contMDiffOn
-    apply aux.congr fun y hy ↦ ?_
-    simpa [extend] using Or.inl <| image_eq_zero_of_notMem_tsupport hy
-  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr hψ.1
-  · exact isOpen_compl_iff.mpr <| isClosed_tsupport ψ
+  apply _root_.contMDiff_section_of_smul_smoothBumpFunction _ ?_ t.open_baseSet hψ.1 le_rfl
+  apply contMDiffOn_localExtensionOn _ hx
 
 /-- The difference of two covariant derivatives, as a tensorial map -/
 noncomputable def difference
