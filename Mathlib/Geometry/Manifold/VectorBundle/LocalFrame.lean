@@ -248,7 +248,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
   let aux := fun x ↦ b.repr (e (s x)).2 i
   -- Since e.baseSet is open, this is sufficient.
   suffices ContMDiffAt I 𝓘(𝕜) k aux x by
-    apply this.congr_of_eventuallyEq_of_mem ?_ trivial
+    apply this.congr_of_eventuallyEq ?_
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
     simp [aux, Basis.localFrame_repr_eq_repr hy]
@@ -357,10 +357,10 @@ lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpac
   let aux := fun x ↦ b.repr (e (s x)).2 i
   -- Since e.baseSet is open, this is sufficient.
   suffices MDifferentiableAt I 𝓘(𝕜) aux x by
-    sorry /-apply this.congr_of_eventuallyEq_of_mem ?_ trivial
+    apply this.congr_of_eventuallyEq
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, Basis.localFrame_repr_eq_repr hy] -/
+    simp [aux, Basis.localFrame_repr_eq_repr hy]
   simp only [aux]
 
   -- step 2: `s` read in trivialization `e` is differentiable
