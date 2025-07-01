@@ -200,16 +200,13 @@ open MeasureTheory
 
 open Measure
 
-lemma support_mono {μ ν : Measure X} (hμν : μ ≪ ν) : μ.support ≤ ν.support := by
-  dsimp only [Set.le_eq_subset, support] at *
+lemma AbsolutelyContinuous.support_mono {μ ν : Measure X} (hμν : μ ≪ ν) :
+     μ.support ≤ ν.support := by
+  dsimp only [Set.le_eq_subset, support_def] at *
   intro x
   dsimp only [AbsolutelyContinuous, Set.mem_setOf_eq] at *
   contrapose
-  push_neg
-  simp only [nonpos_iff_eq_zero] at *
-  intro hU
-  obtain ⟨_, h1, h2⟩ := hU
-  exact Filter.frequently_principal.mp fun a ↦ a h1 (hμν h2)
-
+  simp only [support_def, Filter.not_frequently, not_lt, nonpos_iff_eq_zero] at *
+  exact fun a ↦ Filter.Eventually.mono a hμν
 
 end Support
