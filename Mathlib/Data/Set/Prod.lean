@@ -50,9 +50,13 @@ theorem prod_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ×ˢ t₁ ⊆
 theorem prod_mono_left (hs : s₁ ⊆ s₂) : s₁ ×ˢ t ⊆ s₂ ×ˢ t :=
   prod_mono hs Subset.rfl
 
+alias prod_subset_prod_left := prod_mono_left
+
 @[gcongr]
 theorem prod_mono_right (ht : t₁ ⊆ t₂) : s ×ˢ t₁ ⊆ s ×ˢ t₂ :=
   prod_mono Subset.rfl ht
+
+alias prod_subset_prod_right := prod_mono_right
 
 @[simp]
 theorem prod_self_subset_prod_self : s₁ ×ˢ s₁ ⊆ s₂ ×ˢ s₂ ↔ s₁ ⊆ s₂ :=
@@ -351,12 +355,6 @@ theorem prod_subset_prod_iff' (h : (s ×ˢ t).Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ
   rw [prod_subset_prod_iff, or_iff_left]
   rw [← Set.prod_eq_empty_iff]
   exact h.ne_empty
-
-theorem prod_subset_prod_left (h : s ⊆ s₁) : s ×ˢ t ⊆ s₁ ×ˢ t :=
-  prod_subset_prod_iff.mpr <| Or.inl ⟨h, subset_rfl⟩
-
-theorem prod_subset_prod_right (h : t ⊆ t₁) : s ×ˢ t ⊆ s ×ˢ t₁ :=
-  prod_subset_prod_iff.mpr <| Or.inl ⟨subset_rfl, h⟩
 
 theorem prod_subset_prod_iff_left (h : t.Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ t ↔ s ⊆ s₁ := by
   rw [prod_subset_prod_iff, ← or_assoc, or_iff_left h.ne_empty, and_iff_left subset_rfl,
