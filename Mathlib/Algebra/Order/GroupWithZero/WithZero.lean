@@ -3,6 +3,8 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
+import Mathlib.Algebra.Order.Monoid.Units
+import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
@@ -78,3 +80,24 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
         dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_le_mul_right' h x
+
+open MonoidHomWithZero
+
+variable {A B F : Type*} [FunLike F A B] (f : F)
+variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+variable [Preorder A] [LinearOrder B]
+
+-- instance : GroupWithZero (valueGroup₀ f) := inferInstance
+
+def valueGroup_embedding : (valueGroup₀ f) →*₀ B := by
+--   toFun := by
+    let φ : (valueGroup f) →* Bˣ := by sorry
+    let ψ := WithZero.map' φ
+    let ζ := (WithZero.withZeroUnitsEquiv (G := B))
+    -- let α := MonoidWithZeroHom.comp ζ ψ
+
+--   inj' := _
+
+def valueGroup_OrderEmbedding : WithZero (valueGroup f) ↪o B where
+    __ := valueGroup_embedding
+    map_rel_iff' := sorry
