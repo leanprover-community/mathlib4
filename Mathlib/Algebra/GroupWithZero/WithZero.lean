@@ -314,7 +314,7 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
-variable (G₀' : Type*) [GroupWithZero G₀']
+variable {G₀' : Type*} [GroupWithZero G₀']
 
 def withZeroUnitsHom [DecidablePred (fun a : G₀' ↦ a = 0)] :
     WithZero G₀'ˣ →*₀ G₀' where
@@ -323,9 +323,7 @@ def withZeroUnitsHom [DecidablePred (fun a : G₀' ↦ a = 0)] :
   map_one' := rfl
 
 lemma withZeroUnitsHom_inj [DecidablePred (fun a : G₀' ↦ a = 0)] :
-    Function.Injective (withZeroUnitsHom G₀') := MulEquiv.injective WithZero.withZeroUnitsEquiv
-
-variable {G₀'}
+    Injective (withZeroUnitsHom (G₀' := G₀')) := MulEquiv.injective WithZero.withZeroUnitsEquiv
 
 protected lemma map_eq_zero_iff {G₀ : Type*} [MulZeroOneClass G₀] [Nontrivial G₀]
     {f : G₀' →*₀ G₀} {x : G₀'}:
