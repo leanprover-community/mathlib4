@@ -111,7 +111,6 @@ instance [IsRankOneDiscrete v] : v.IsNontrivial := by
     simp only [← coe_one, ne_eq, Subtype.mk.injEq] at hγ
     simp [hγ, Units.val_eq_one]
 
-
 end IsRankOneDiscrete
 
 end Valuation
