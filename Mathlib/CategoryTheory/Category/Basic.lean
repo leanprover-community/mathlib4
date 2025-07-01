@@ -107,15 +107,6 @@ open Lean Meta Elab.Tactic in
   else
     throwError "The goal does not contain `sorry`"
 
-open Lean Meta Grind in
-def fallback : Fallback := do
-  let nodes ← filterENodes fun _ => pure true
-  let mut data : Std.HashMap Expr (Std.HashSet Expr) := {}
-  for n in nodes do
-    if n.self != n.root then
-      data := data.alter n.root (fun s? => s?.getD {} |>.insert n.self)
-  logInfo m!"{data.toList.map fun (k, v) => (k, v.toList)}"
-
 /--
 `rfl_cat` is a macro for `intros; rfl` which is attempted in `aesop_cat` before
 doing the more expensive `aesop` tactic.
