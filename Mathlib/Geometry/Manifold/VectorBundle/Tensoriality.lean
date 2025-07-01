@@ -25,8 +25,8 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
   (n : WithTop ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
-  [∀ x : M, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
-  [∀ x, ContinuousSMul ℝ (V x)]
+  [∀ x : M, TopologicalSpace (V x)]
+  -- [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
   [FiberBundle F V] [VectorBundle ℝ F V]
   -- `V` vector bundle
 
@@ -34,9 +34,10 @@ variable (F' : Type*) [NormedAddCommGroup F'] [NormedSpace ℝ F']
   (m : WithTop ℕ∞)
   (V' : M → Type*) [TopologicalSpace (TotalSpace F' V')]
   [∀ x, AddCommGroup (V' x)] [∀ x, Module ℝ (V' x)]
-  [∀ x : M, TopologicalSpace (V' x)] [∀ x, IsTopologicalAddGroup (V' x)]
-  [∀ x, ContinuousSMul ℝ (V' x)]
+  [∀ x : M, TopologicalSpace (V' x)]
+  -- [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul ℝ (V' x)]
 
+omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in
 lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDimensional ℝ E]
     [FiniteDimensional ℝ F] [FiberBundle F' V'] [VectorBundle ℝ F' V'] [T2Space M]
     [IsManifold I ∞ M]
@@ -114,9 +115,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDim
   · exact fun i ↦ mdifferentiableAt_smul_section (hc hσ i) (hs i)
 
 include I in
-omit [IsManifold I 1 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
-  [∀ (x : M), ContinuousSMul ℝ (V x)] [FiberBundle F V] [VectorBundle ℝ F V]
-  [∀ (x : M), IsTopologicalAddGroup (V' x)] [∀ (x : M), ContinuousSMul ℝ (V' x)] in
+omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in
 lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDimensional ℝ E]
     [FiniteDimensional ℝ F] [FiberBundle F' V'] [VectorBundle ℝ F' V'] [T2Space M]
     {φ : (Π x : M, V x) → (Π x, V' x)} {x}
