@@ -1198,7 +1198,6 @@ instance Pi.infSet {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] : Inf
 
 instance Pi.instCompleteLattice {α : Type*} {β : α → Type*} [∀ i, CompleteLattice (β i)] :
     CompleteLattice (∀ i, β i) where
-  __ := instBoundedOrder
   le_sSup s f hf := fun i => le_iSup (fun f : s => (f : ∀ i, β i) i) ⟨f, hf⟩
   sInf_le s f hf := fun i => iInf_le (fun f : s => (f : ∀ i, β i) i) ⟨f, hf⟩
   sSup_le _ _ hf := fun i => iSup_le fun g => hf g g.2 i
@@ -1356,8 +1355,8 @@ congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| 
 protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α where
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) :
+    CompleteLattice α where
   -- we cannot use BoundedOrder.lift here as the `LE` instance doesn't exist yet
   __ := hf.lattice f map_sup map_inf
   le_sSup _ a h := (le_iSup₂ a h).trans (map_sSup _).ge
