@@ -401,7 +401,7 @@ def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (
               | inr hc =>
                 have mp := hexi k hc
                 trivial
-            have ⟨ hf , hhf⟩ :=exi
+            have ⟨ hf , hhf ⟩ :=exi
             have lrjsome : (List.range (f.support.sup id + 1))[j]? = some j := by
               have split : j < (f.support.sup id + 1) ∨ (f.support.sup id + 1) ≤ j :=
                Nat.lt_or_ge j (f.support.sup id + 1)
