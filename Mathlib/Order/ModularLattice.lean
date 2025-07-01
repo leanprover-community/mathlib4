@@ -408,24 +408,21 @@ theorem exists_inf_eq_and_codisjoint (h : a ≤ b) : ∃ b', b ⊓ b' = a ∧ Co
 
 instance complementedLattice_Icc [Fact (a ≤ b)] : ComplementedLattice (Set.Icc a b) where
   exists_isCompl := fun ⟨x, ha, hb⟩ => by
+    simp_rw [Set.Icc.isCompl_iff]
     obtain ⟨y, rfl, rfl⟩ := exists_inf_eq_and_sup_eq ha hb
-    refine ⟨⟨y, inf_le_right, le_sup_right⟩, ?_, ?_⟩
-    · exact disjoint_iff_inf_le.mpr le_rfl
-    · exact codisjoint_iff_le_sup.mpr le_rfl
+    exact ⟨⟨y, inf_le_right, le_sup_right⟩, rfl, rfl⟩
 
 instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
+    simp_rw [Set.Iic.isCompl_iff]
     obtain ⟨y, hdisjoint, rfl⟩ := exists_disjoint_and_sup_eq hx
-    refine ⟨⟨y, le_sup_right⟩, ?_, ?_⟩
-    · exact Icc.disjoint_iff
-    · exact codisjoint_iff_le_sup.mpr le_rfl
+    exact ⟨⟨y, le_sup_right⟩, hdisjoint, rfl⟩
 
 instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
+    simp_rw [Set.Ici.isCompl_iff]
     obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
-    refine ⟨⟨y, inf_le_right⟩, ?_, ?_⟩
-    · exact disjoint_iff_inf_le.mpr le_rfl
-    · exact codisjoint_iff_le_sup.mpr hcodisjoint.top_le
+    exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
 
 end ComplementedLattice
 
