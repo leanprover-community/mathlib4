@@ -160,8 +160,8 @@ lemma sInter_preimage_Ici (S : Set α) : ⋂₀ { T ↓∩ Ici a | a ∈ S } = T
 unions. -/
 lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { T ↓∩ (Ici a)ᶜ | a ∈ S } = T ↓∩ (Ici (sSup S))ᶜ := by
   simp only [preimage_compl, sUnion_eq_compl_sInter_compl, sInter_image, mem_setOf_eq,
-    iInter_exists, biInter_and', iInter_iInter_eq_right, compl_compl, compl_iInter, ← sInter_Ici_eq,
-    compl_sInter, mem_image, exists_exists_and_eq_and]
+    iInter_exists, biInter_and', iInter_iInter_eq_right, compl_compl, compl_iInter,
+    ← sInter_preimage_Ici, compl_sInter, mem_image, exists_exists_and_eq_and]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
@@ -176,8 +176,8 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
   · obtain ⟨a, ha⟩ := h
     exact ⟨(Ici a)ᶜ, ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩⟩
 
-/- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the form
-`T ↓∩ Ici a` for some `a` in `α`.-/
+/- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the
+form `T ↓∩ Ici a` for some `a` in `α`.-/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
   simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
