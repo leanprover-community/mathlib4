@@ -399,10 +399,11 @@ lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
   ext x'
   by_cases hx: x ∈ e.baseSet; swap
   · simp [hx, localExtensionOn]
-  · simp [hx, localExtensionOn]
+  · simp [hx, localExtensionOn, Finset.smul_sum]
     set B := Basis.localFrame_toBasis_at e b hx
-    have (x') : (a * (B.repr v) x') = a • (B.repr v) x' := by rw [smul_eq_mul]
-    simp_rw [this, IsScalarTower.smul_assoc a, Finset.smul_sum]
+    congr
+    ext i
+    rw [mul_smul a ((B.repr v) i)]
 
 variable (F) in
 omit [IsManifold I 0 M] in

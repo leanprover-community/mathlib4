@@ -422,7 +422,7 @@ lemma sum_X (cov : CovariantDerivative I F V)
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert a s ha h => simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h, cov.addX]
+  | insert a s ha h => simp [Finset.sum_insert ha, ← h, cov.addX]
 
 /-- A convex combination of covariant derivatives is a covariant derivative. -/
 @[simps]
@@ -469,22 +469,21 @@ noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
   addX X X' σ := by
     ext x
     by_cases h : DifferentiableAt 𝕜 σ x
-    · simp [h, map_add]; abel
+    · simp [map_add]; abel
     · simp [fderiv_zero_of_not_differentiableAt h]
   smulX X σ c' := by ext; simp
   addσ X σ σ' e hσ hσ' := by
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
-    rw [fderiv_add hσ hσ']
-    simp [hσ, hσ']
+    simp [fderiv_add hσ hσ']
     abel
   smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
   leibniz X σ f x hσ hf := by
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
     rw [mdifferentiableAt_iff_differentiableAt] at hf
-    have h : DifferentiableAt 𝕜 (f • σ) x := hf.smul hσ
+    -- have h : DifferentiableAt 𝕜 (f • σ) x := hf.smul hσ
     have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
       fderiv_smul (by simp_all) (by simp_all)
-    simp [this, bar, hσ, h]
+    simp [this, bar]
     module
 
 section real
@@ -686,7 +685,6 @@ noncomputable def extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x)
     (x' : M) → V x' :=
   letI b := Basis.ofVectorSpace ℝ F
   letI t := trivializationAt F V x
-  letI V₀ := localExtensionOn b t x v
   -- Choose a smooth bump function ψ near `x`, supported within t.baseSet
   -- and return ψ • V₀ instead.
   letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)
@@ -746,7 +744,8 @@ lemma contMDiff_extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V 
   · exact isOpen_compl_iff.mpr <| isClosed_tsupport ψ
 
 /-- The difference of two covariant derivatives, as a tensorial map -/
-noncomputable def difference [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I 1 M]
+noncomputable def difference
+    [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I 1 M]
     (cov cov' : CovariantDerivative I F V) :
     Π x : M, TangentSpace I x → V x → V x :=
   fun x X₀ σ₀ ↦ differenceAux cov cov' (extend I E X₀) (extend I F σ₀) x
@@ -789,7 +788,8 @@ noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDime
         apply ContMDiff.mdifferentiable (n := 1) (hn := by norm_num)
         sorry -- is contMDiff_extend, except that now we care about
         -- the outcome of post-composing with the projection from Trivial E E' to E'...
-    have B : cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y  (x := x) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
+    have B : cov (extend 𝓘(ℝ, E) E X (x := x))
+        (extend 𝓘(ℝ, E) E' y (x := x) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
       cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y (x := x)) x +
         cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
       apply cov.addσ
@@ -813,7 +813,8 @@ noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDi
   toFun X := cov.endomorph_of_trivial_aux' x X
   map_add' X Y := by
     ext Z
-    simp [cov.addX (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E Y (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x))]
+    simp [cov.addX (extend 𝓘(ℝ, E) E X (x := x))
+      (extend 𝓘(ℝ, E) E Y (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x))]
     module
   map_smul' t X := by
     ext Z

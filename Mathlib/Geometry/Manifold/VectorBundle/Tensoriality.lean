@@ -83,7 +83,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDim
        apply (contMDiff_zeroSection _ _).mdifferentiableAt ENat.LEInfty.out
     | insert a s ha h =>
         change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
-        simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h]
+        simp [Finset.sum_insert ha, ← h]
         erw [φ_add]
         apply hσ a
         sorry
@@ -137,7 +137,7 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
        simp
     | insert a s ha h =>
         change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
-        simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h]
+        simp [Finset.sum_insert ha, ← h]
         erw [φ_add]
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
