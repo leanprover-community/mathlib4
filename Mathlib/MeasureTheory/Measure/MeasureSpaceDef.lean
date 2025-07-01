@@ -367,7 +367,9 @@ end MeasureTheory
 section Support
 
 /- Ok. Prove all of the *obvious* results (invisible mathematics) you can think of
-surrounding this topic, as well as the basic things one would want to know about it. -/
+surrounding this topic, as well as the basic things one would want to know about it. It's probably
+a good exercise to just write out a bunch of basic theorems like this so that the statements parse.
+That can be the next exercise.-/
 namespace MeasureTheory
 namespace Measure
 
@@ -385,13 +387,10 @@ lemma support_set (μ : Measure X) : μ.support = {x : X | ∀ U ∈ 𝓝 x, 0 <
   ext x
   simp only [support_def, Set.mem_setOf, mem_setOf_eq, Filter.frequently_smallSets]
   constructor
-  · -- (→) from “every small set eventually has a pos‐measure subset”
-    intro h U hU
+  · intro h U hU
     obtain ⟨t, htsub, htpos⟩ := h U hU
-    -- by monotonicity, μ U ≥ μ t > 0
     exact lt_of_lt_of_le htpos (measure_mono htsub)
-  · -- (←) if every U has μ U > 0, then for each U pick t = U
-    intro h U hU
+  · intro h U hU
     exact ⟨U, Subset.refl U, h U hU⟩
 
 variable {μ : Measure X}
