@@ -425,6 +425,10 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   obtain ⟨y, hyu, hy⟩ := h u hxu hu
   exact hy u hyu hu
 
+lemma support_le_of_absolutely_continuous {μ ν : Measure X}
+  (h : μ ≪ ν) : support μ ⊆ support ν
+
+
 end Measure
 
 end MeasureTheory
