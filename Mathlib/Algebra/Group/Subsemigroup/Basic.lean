@@ -84,10 +84,6 @@ instance : CompleteLattice (Subsemigroup M) :=
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
-    bot := ⊥
-    bot_le := fun _ _ hx => (notMem_bot hx).elim
-    top := ⊤
-    le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)
     sInf := InfSet.sInf
     le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩

@@ -276,8 +276,6 @@ theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
 /-- Subfields of a ring form a complete lattice. -/
 instance : CompleteLattice (Subfield K) :=
   { completeLatticeOfInf (Subfield K) isGLB_sInf with
-    top := ⊤
-    le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right

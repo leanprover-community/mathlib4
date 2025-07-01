@@ -623,8 +623,6 @@ variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 instance completeLattice : CompleteLattice (StarSubalgebra R A) where
   __ := GaloisInsertion.liftCompleteLattice StarAlgebra.gi
-  bot := { toSubalgebra := ⊥, star_mem' := fun ⟨r, hr⟩ => ⟨star r, hr ▸ algebraMap_star_comm _⟩ }
-  bot_le S := (bot_le : ⊥ ≤ S.toSubalgebra)
 
 instance inhabited : Inhabited (StarSubalgebra R A) :=
   ⟨⊤⟩

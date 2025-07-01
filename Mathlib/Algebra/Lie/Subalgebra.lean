@@ -478,13 +478,6 @@ We provide explicit values for the fields `bot`, `top`, `inf` to get more conven
 than we would otherwise obtain from `completeLatticeOfInf`. -/
 instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
   { completeLatticeOfInf _ sInf_glb with
-    bot := ⊥
-    bot_le := fun N _ h ↦ by
-      rw [mem_bot] at h
-      rw [h]
-      exact N.zero_mem'
-    top := ⊤
-    le_top := fun _ _ _ ↦ trivial
     inf := (· ⊓ ·)
     le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left

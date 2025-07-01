@@ -261,10 +261,6 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   __ := inferInstanceAs (SemilatticeSup (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeInf (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeSup (fixedPoints f))
-  top := ⟨f.gfp, f.isFixedPt_gfp⟩
-  bot := ⟨f.lfp, f.isFixedPt_lfp⟩
-  le_top x := f.le_gfp x.2.ge
-  bot_le x := f.lfp_le x.2.le
 
 open OmegaCompletePartialOrder fixedPoints
 

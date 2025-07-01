@@ -96,10 +96,6 @@ instance : CompleteLattice (Submonoid M) :=
         isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
-    bot := ⊥
-    bot_le := fun S _ hx => (mem_bot.1 hx).symm ▸ S.one_mem
-    top := ⊤
-    le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)
     sInf := InfSet.sInf
     le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩

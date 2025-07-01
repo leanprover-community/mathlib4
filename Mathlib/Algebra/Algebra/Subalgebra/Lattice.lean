@@ -45,8 +45,6 @@ protected def gi : GaloisInsertion (adjoin R : Set A → Subalgebra R A) (↑) w
 
 instance : CompleteLattice (Subalgebra R A) where
   __ := GaloisInsertion.liftCompleteLattice Algebra.gi
-  bot := (Algebra.ofId R A).range
-  bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
 theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
 
