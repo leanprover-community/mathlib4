@@ -18,7 +18,39 @@ We introduce the notation `x ≤ᵥ y` for this relation.
 
 Recall that the equivalence class of a valuation is *completely* characterized by
 such a preorder. Thus, we can think of `ValuativeRel R` as a way of
-saying that `R` is endowed with an equivalence class of a valuation.
+saying that `R` is endowed with an equivalence class of valuations.
+
+## Main Definitions
+
+- `ValuativeRel R` endows a commutative ring `R` with a relation arising from a valuation.
+  This is equivalent to fixing an equivalence class of valuations on `R`.
+  Use the notation `x ≤ᵥ y` for this relation.
+- `ValuativeRel.Valuation R` is the "canonical" valuation associated to `ValuativeRel R`,
+  taking values in `ValuativeRel.ValueGroupWithZero R`.
+- Given a valution `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
+  ensures that the relation `x ≤ᵥ y` is equivalent to `v x ≤ v y`. Note that
+  it is possible to have `[v.Compatible]` and `[w.Compatible]` for two different valuations on `R`.
+- If we have both `[ValuativeRel R]` and `[TopologicalSpace R]`, then writing
+  `[ValuativeTopology R]` ensures that the topology on `R` agrees with the one induced by the
+  valuation.
+- Given `[ValuativeRel A]`, `[ValuativeRel B]` and `[Algebra A B]`, the class
+  `[ValuativeExtension A B]` ensures that the algebra map `A → B` is compatible with the valuations
+  on `A` and `B`. For example, this can be used to talk about extensions of valued fields.
+
+
+## Remark
+
+The last two axioms in `ValuativeRel`, namely `rel_mul_cancel` and `not_rel_one_zero`, are
+used to ensure that we have a well-behaved valuation taking values in a *value group* (with zero).
+In principle, it should be possible to drop these two axioms and obtain a value monoid,
+however, such a value monoid would not necessarily embed into an ordered abelian group with zero.
+Similarly, without these axioms, the support of the valuation need not be a prime ideal.
+We have thus opted to include these two axioms and obtain a `ValueGroupWithZero` associated to
+a `ValuativeRel` in order to best align with the literature about valuations on commutative rings.
+
+Future work could refactor `ValuativeRel` by dropping the `rel_mul_cancel` and `not_rel_one_zero`
+aximoms, opting to make these mixins instead.
+
 -/
 
 noncomputable section
