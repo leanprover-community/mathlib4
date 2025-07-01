@@ -347,6 +347,29 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
     simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
     exact prod_mono H.1 H.2
 
+theorem prod_subset_prod_iff' (h : (s ×ˢ t).Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ := by
+  rw [prod_subset_prod_iff, or_iff_left]
+  rw [← Set.prod_eq_empty_iff]
+  exact h.ne_empty
+
+theorem prod_subset_prod_left (h : s ⊆ s₁) : s ×ˢ t ⊆ s₁ ×ˢ t :=
+  prod_subset_prod_iff.mpr <| Or.inl ⟨h, subset_rfl⟩
+
+theorem prod_subset_prod_right (h : t ⊆ t₁) : s ×ˢ t ⊆ s ×ˢ t₁ :=
+  prod_subset_prod_iff.mpr <| Or.inl ⟨subset_rfl, h⟩
+
+theorem prod_subset_prod_iff_left (h : t.Nonempty) : s ×ˢ t ⊆ s₁ ×ˢ t ↔ s ⊆ s₁ := by
+  rw [prod_subset_prod_iff, ← or_assoc, or_iff_left h.ne_empty, and_iff_left subset_rfl,
+    or_iff_left_of_imp]
+  intro heq
+  simp [heq]
+
+theorem prod_subset_prod_iff_right (h : s.Nonempty) : s ×ˢ t ⊆ s ×ˢ t₁ ↔ t ⊆ t₁ := by
+  rw [prod_subset_prod_iff, or_comm (a := s = ∅), ← or_assoc, or_iff_left h.ne_empty,
+    and_iff_right subset_rfl, or_iff_left_of_imp]
+  intro heq
+  simp [heq]
+
 theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
     s ×ˢ t = s₁ ×ˢ t₁ ↔ s = s₁ ∧ t = t₁ := by
   constructor
