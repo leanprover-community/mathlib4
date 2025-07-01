@@ -43,9 +43,9 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 * `MeasureTheory.addContent_union_le`: for `s, t ∈ C`, `m (s ∪ t) ≤ m s + m t`
 * `MeasureTheory.addContent_le_diff`: for `s, t ∈ C`, `m s - m t ≤ m (s \ t)`
 * `IsSetRing.addContent_of_union`: a function on a ring of sets which is additive on pairs of
-disjoint sets defines an additive content
+  disjoint sets defines an additive content
 * `addContent_iUnion_eq_sum_of_tendsto_zero`: if an additive content is continuous at `∅`, then
-its value on a countable disjoint union is the sum of the values
+  its value on a countable disjoint union is the sum of the values
 * `MeasureTheory.isSigmaSubadditive_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
   σ-additive on a set ring, then it is σ-subadditive.
 
@@ -165,7 +165,7 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
   conv_lhs => rw [← hC.sUnion_insert_disjointOfDiff ht hs hst]
   rw [← coe_insert, addContent_sUnion]
   · rw [sum_insert]
-    exact hC.nmem_disjointOfDiff ht hs
+    exact hC.notMem_disjointOfDiff ht hs
   · rw [coe_insert]
     exact Set.insert_subset hs (hC.subset_disjointOfDiff ht hs)
   · rw [coe_insert]
@@ -355,7 +355,7 @@ def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C)
     | insert s I hsI h =>
       rw [Finset.coe_insert] at *
       rw [Set.insert_subset_iff] at h_ss
-      rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis
+      rw [Set.pairwiseDisjoint_insert_of_notMem] at h_dis
       swap; · exact hsI
       have h_sUnion_mem : ⋃₀ ↑I ∈ C := by
         rw [Set.sUnion_eq_biUnion]

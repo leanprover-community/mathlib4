@@ -31,6 +31,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 section genericPoint
 
 /-- `x` is a generic point of `S` if `S` is the closure of `x`. -/
+@[stacks 004X "(1)"]
 def IsGenericPoint (x : α) (S : Set α) : Prop :=
   closure ({x} : Set α) = S
 
@@ -100,7 +101,7 @@ end genericPoint
 section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
-@[mk_iff]
+@[mk_iff, stacks 004X "(3)"]
 class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 
@@ -166,7 +167,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
   map_rel_iff' := by
     rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp [hs'.closure_eq, ht'.closure_eq]
+    simp
     rfl
 
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :

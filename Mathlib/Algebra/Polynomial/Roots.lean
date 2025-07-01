@@ -87,7 +87,7 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
     Multiset.card (p - C a).roots ≤ natDegree p :=
   WithBot.coe_le_coe.1
     (le_trans (card_roots_sub_C hp0)
-      (le_of_eq <| degree_eq_natDegree fun h => by simp_all [lt_irrefl]))
+      (le_of_eq <| degree_eq_natDegree fun h => by simp_all))
 
 @[simp]
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
@@ -157,7 +157,7 @@ theorem mem_roots_sub_C' {p : R[X]} {a x : R} : x ∈ (p - C a).roots ↔ p ≠ 
 
 theorem mem_roots_sub_C {p : R[X]} {a x : R} (hp0 : 0 < degree p) :
     x ∈ (p - C a).roots ↔ p.eval x = a :=
-  mem_roots_sub_C'.trans <| and_iff_right fun hp => hp0.not_le <| hp.symm ▸ degree_C_le
+  mem_roots_sub_C'.trans <| and_iff_right fun hp => hp0.not_ge <| hp.symm ▸ degree_C_le
 
 @[simp]
 theorem roots_X_sub_C (r : R) : roots (X - C r) = {r} := by
@@ -281,7 +281,7 @@ theorem mem_nthRoots {n : ℕ} (hn : 0 < n) {a x : R} : x ∈ nthRoots n a ↔ x
 
 @[simp]
 theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
-  simp only [empty_eq_zero, pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
+  simp only [pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
 
 @[simp]
 theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] (n : ℕ) :
@@ -292,7 +292,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
   classical exact
   (if hn : n = 0 then
     if h : (X : R[X]) ^ n - C a = 0 then by
-      simp [Nat.zero_le, nthRoots, roots, h, dif_pos rfl, empty_eq_zero, Multiset.card_zero]
+      simp [nthRoots, roots, h, empty_eq_zero, Multiset.card_zero]
     else
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
@@ -306,7 +306,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
 
 @[simp]
 theorem nthRoots_two_eq_zero_iff {r : R} : nthRoots 2 r = 0 ↔ ¬IsSquare r := by
-  simp_rw [isSquare_iff_exists_sq, eq_zero_iff_forall_not_mem, mem_nthRoots (by norm_num : 0 < 2),
+  simp_rw [isSquare_iff_exists_sq, eq_zero_iff_forall_notMem, mem_nthRoots (by norm_num : 0 < 2),
     ← not_exists, eq_comm]
 
 /-- The multiset `nthRoots ↑n a` as a Finset. Previously `nthRootsFinset n` was defined to be
@@ -349,7 +349,7 @@ theorem mul_mem_nthRootsFinset
     η₁ * η₂ ∈ nthRootsFinset n (a₁ * a₂) := by
   cases n with
   | zero =>
-    simp only [nthRootsFinset_zero, not_mem_empty] at hη₁
+    simp only [nthRootsFinset_zero, notMem_empty] at hη₁
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
     rw [mul_pow, hη₁, hη₂]
@@ -360,7 +360,7 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} {a : R} (ha : a ≠ 0) (hη : η 
   rintro rfl
   cases n with
   | zero =>
-    simp only [nthRootsFinset_zero, not_mem_empty] at hη
+    simp only [nthRootsFinset_zero, notMem_empty] at hη
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_ne_zero] at hη
     exact ha hη.symm
@@ -729,7 +729,7 @@ variable {A B : Type*} [CommRing A] [CommRing B]
 theorem le_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0) (a : A) :
     rootMultiplicity a p ≤ rootMultiplicity (f a) (p.map f) := by
   rw [le_rootMultiplicity_iff hmap]
-  refine _root_.trans ?_ ((mapRingHom f).map_dvd (pow_rootMultiplicity_dvd p a))
+  refine _root_.trans ?_ (_root_.map_dvd (mapRingHom f) (pow_rootMultiplicity_dvd p a))
   rw [map_pow, map_sub, coe_mapRingHom, map_X, map_C]
 
 theorem eq_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hf : Function.Injective f) (a : A) :

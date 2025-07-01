@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`
@@ -47,7 +48,7 @@ so we may as well get this done first.)
 -/
 theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤ := by
-  rcases lt_or_le a b with h | h
+  rcases lt_or_ge a b with h | h
   -- (Otherwise it's easy; we'll deal with that later.)
   · -- We can pullback continuous functions on `[a,b]` to continuous functions on `[0,1]`,
     -- by precomposing with an affine map.

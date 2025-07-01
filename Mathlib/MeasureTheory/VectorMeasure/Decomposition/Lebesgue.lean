@@ -160,7 +160,7 @@ end
 `rnDeriv s μ` satisfies `μ.withDensityᵥ (s.rnDeriv μ) = s`
 if and only if `s` is absolutely continuous with respect to `μ` and this fact is known as
 `MeasureTheory.SignedMeasure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`
-and can be found in `Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym`. -/
+and can be found in `Mathlib/MeasureTheory/Measure/Decomposition/RadonNikodym.lean`. -/
 def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
   (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal
@@ -343,7 +343,7 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
 
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
-  cases le_or_lt 0 r with
+  cases le_or_gt 0 r with
   | inl hr =>
     lift r to ℝ≥0 using hr
     exact singularPart_smul_nnreal s μ r

@@ -143,7 +143,6 @@ any presieve, as does constructing a family of elements from a co-cone. Showing 
 family needs the sieve condition.
 Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
 -/
-
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
     (hx : FamilyOfElements.Compatible x) :
     Cocone (R.diagram) where

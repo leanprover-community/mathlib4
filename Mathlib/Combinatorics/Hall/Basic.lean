@@ -132,7 +132,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       refine ⟨?_, ?_, ?_⟩
       ·-- Build the matching function from the section
         exact fun i =>
-          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [Opposite.unop_op, mem_singleton]⟩
+          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
       · -- Show that it is injective
         intro i i'
         have subi : ({i} : Finset ι) ⊆ {i, i'} := by simp
@@ -189,7 +189,6 @@ theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {�
   simp only [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 
--- TODO: decidable_pred makes Yael sad. When an appropriate decidable_rel-like exists, fix it.
 /-- This is a version of **Hall's Marriage Theorem** in terms of a relation to a finite type.
 There is a transversal of the relation (an injective function `α → β` whose graph is a subrelation
 of the relation) iff every subset of `k` terms of `α` is related to at least `k` terms of `β`.
@@ -198,7 +197,7 @@ It is like `Fintype.all_card_le_rel_image_card_iff_exists_injective` but uses `F
 rather than `Rel.image`.
 -/
 theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : Type v} [Fintype β]
-    (r : α → β → Prop) [∀ a, DecidablePred (r a)] :
+    (r : α → β → Prop) [DecidableRel r] :
     (∀ A : Finset α, #A ≤ #{b | ∃ a ∈ A, r a b}) ↔ ∃ f : α → β, Injective f ∧ ∀ x, r x (f x) := by
   haveI := Classical.decEq β
   let r' a : Finset β := {b | r a b}

@@ -12,7 +12,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 
 ## Main results
 
- * `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
+* `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
 -/
 
 

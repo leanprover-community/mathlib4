@@ -170,10 +170,10 @@ Certain instances trigger further searches when they are considered as candidate
 these instances should be assigned a priority lower than the default of 1000 (for example, 900).
 
 The conditions for this rule are as follows:
- * a class `C` has instances `instT : C T` and `instT' : C T'`
- * types `T` and `T'` are both specializations of another type `S`
- * the parameters supplied to `S` to produce `T` are not (fully) determined by `instT`,
-   instead they have to be found by instance search
+* a class `C` has instances `instT : C T` and `instT' : C T'`
+* types `T` and `T'` are both specializations of another type `S`
+* the parameters supplied to `S` to produce `T` are not (fully) determined by `instT`,
+  instead they have to be found by instance search
 If those conditions hold, the instance `instT` should be assigned lower priority.
 
 For example, suppose the search for an instance of `DecidableEq (Multiset α)` tries the
@@ -214,8 +214,7 @@ theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
 def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (_ : α) _ => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
-    intro x
-    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩
+    solve_by_elim⟩
 
 end CommMonoid
 

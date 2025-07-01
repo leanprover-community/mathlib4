@@ -9,24 +9,24 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 # Perfect pairings of modules
 
 A perfect pairing of two (left) modules may be defined either as:
- 1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
-    bijective. It follows from this that both `M` and `N` are reflexive modules.
- 2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
-    reflexive.)
+1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
+  bijective. It follows from this that both `M` and `N` are reflexive modules.
+2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
+  reflexive.)
 
 In this file we provide a `PerfectPairing` definition corresponding to 1 above, together with logic
 to connect 1 and 2.
 
 ## Main definitions
 
- * `PerfectPairing`
- * `PerfectPairing.flip`
- * `PerfectPairing.dual`
- * `PerfectPairing.toDualLeft`
- * `PerfectPairing.toDualRight`
- * `LinearEquiv.flip`
- * `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
- * `LinearEquiv.toPerfectPairing`
+* `PerfectPairing`
+* `PerfectPairing.flip`
+* `PerfectPairing.dual`
+* `PerfectPairing.toDualLeft`
+* `PerfectPairing.toDualRight`
+* `LinearEquiv.flip`
+* `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
+* `LinearEquiv.toPerfectPairing`
 
 -/
 

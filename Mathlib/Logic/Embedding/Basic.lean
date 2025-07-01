@@ -170,7 +170,8 @@ is already occupied by some `f a'`, then swap the values at these two points. -/
 def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
-    intro x y (h : ite _ _ _ = ite _ _ _)
+    intro x y h
+    simp only at h
     split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc⟩
 
 @[simp]
@@ -230,6 +231,14 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
   ⟨fun _ => b, by
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
+
+/-- The equivalence `one ↪ α` with `α`, for `Unique one`. -/
+def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
+  toFun f := f default
+  invFun a := {
+    toFun := fun _ ↦ a
+    inj' x y h := by simp [Unique.uniq inferInstance] }
+  left_inv f := by ext; simp [Unique.uniq]
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
@@ -361,8 +370,6 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
     { f : α → β // Injective f } ≃ (α ↪ β) where
   toFun f := ⟨f.val, f.property⟩
   invFun f := ⟨f, f.injective⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/

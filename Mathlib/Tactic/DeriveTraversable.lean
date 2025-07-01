@@ -86,7 +86,7 @@ This is convenient to make a definition with equation lemmas. -/
 def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
     (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
-  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (.mkStr (n?.getD type) "match") 1)
+  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxDeclName (.mkStr (n?.getD type) "match"))
   let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
     mkForallFVars iargs (motive.beta iargs)
   let iinfo ← getConstInfoInduct type

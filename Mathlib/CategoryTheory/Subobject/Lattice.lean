@@ -575,8 +575,8 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
       eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
   · dsimp [sInf]
-    simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
-      Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
+    simp only [Category.assoc, ← underlyingIso_hom_comp_eq_mk,
+      Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
     simp
 
@@ -694,9 +694,7 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
   invFun Z := Subobject.mk (ofLE _ _ Z.2)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by aesop_cat)
-  right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by
-          dsimp
-          simp [← Iso.eq_inv_comp]))
+  right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by
     dsimp
     constructor

@@ -248,7 +248,6 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
     F.postcomp G ≅ F.postcomp G' :=
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
-    dsimp
     simp [NatTrans.shift_app e.hom n])
 
 end SingleFunctors

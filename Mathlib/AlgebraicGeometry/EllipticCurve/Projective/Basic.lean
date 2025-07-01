@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
@@ -28,13 +28,13 @@ for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Form
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
- * `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
+* `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
+* `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
+* `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
 
 ## Main statements
 
- * `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
+* `WeierstrassCurve.Projective.polynomial_relation`: Euler's homogeneous function theorem.
 
 ## Implementation notes
 
@@ -127,7 +127,7 @@ variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K]
   {W : Projective F}
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] := by
-  simp [← List.ofFn_inj]
+  simp [← List.ofFn_inj, List.ofFn_succ]
 
 lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z :=
@@ -391,7 +391,7 @@ lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P 
 lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
     W'.Nonsingular P ↔
       W'.Equation P ∧ (3 * P x ^ 2 ≠ 0 ∨ P y ^ 2 + W'.a₁ * P x * P y - W'.a₂ * P x ^ 2 ≠ 0) := by
-  simp only [nonsingular_iff, hPz, add_zero, sub_zero, zero_sub, mul_zero,
+  simp only [nonsingular_iff, hPz, add_zero, zero_sub, mul_zero,
     zero_pow <| OfNat.ofNat_ne_zero _, neg_ne_zero, ne_self_iff_false, false_or]
 
 lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![0, 1, 0] := by

@@ -91,6 +91,17 @@ theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
   rintro x (rfl : x = α)
   rwa [isAlgebraic_iff_isIntegral]
 
+lemma finite_of_fg_of_isAlgebraic
+    (h : IntermediateField.FG (⊤ : IntermediateField F E)) [Algebra.IsAlgebraic F E] :
+    Module.Finite F E := by
+  obtain ⟨s, hs⟩ := h
+  have : Algebra.FiniteType F E := by
+    use s
+    rw [← IntermediateField.adjoin_algebraic_toSubalgebra
+      (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
+    simpa [← IntermediateField.toSubalgebra_inj] using hs
+  exact Algebra.IsIntegral.finite
+
 section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)

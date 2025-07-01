@@ -30,17 +30,17 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 
 ## Main definitions
 
- * `IsDedekindDomain.selmerGroup`: the Selmer group.
- * TODO: maps in the sequence.
+* `IsDedekindDomain.selmerGroup`: the Selmer group.
+* TODO: maps in the sequence.
 
 ## Main statements
 
- * TODO: proofs of exactness of the sequence.
- * TODO: proofs of finiteness for global fields.
+* TODO: proofs of exactness of the sequence.
+* TODO: proofs of finiteness for global fields.
 
 ## Notations
 
- * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
+* `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
 ## Implementation notes
 
@@ -186,7 +186,7 @@ theorem valuation_ker_eq :
     by_cases hv : v ∈ S
     · exact congr_fun hx' ⟨v, hv⟩
     · exact hx v hv
-  · exact fun hx' => funext fun v => hx' v <| Set.not_mem_empty v
+  · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 
 /-- The natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ where

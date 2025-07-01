@@ -122,14 +122,14 @@ instance : Category (Grothendieck F) where
   id_comp f := by ext <;> simp [comp, id]
   assoc f g h := by
     ext
-    · simp [comp, id]
+    · simp [comp]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
       simp
 
 @[simp]
 theorem id_base (X : Grothendieck F) :
-    Hom.base (𝟙 X) = 𝟙 X.base := by
+    Hom.base (𝟙 X) = 𝟙 X.base :=
   rfl
 
 @[simp]
@@ -151,7 +151,6 @@ theorem comp_fiber {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
-  dsimp
   simp
 
 @[simp]
@@ -243,7 +242,7 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   map_comp {X Y Z} f g := by
     dsimp
     congr 1
-    simp only [comp_fiber f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
+    simp only [← Category.assoc, Functor.map_comp, eqToHom_map]
     congr 1
     simp only [Cat.eqToHom_app, Cat.comp_obj, eqToHom_trans, eqToHom_map, Category.assoc,
       ← Cat.comp_map]
@@ -346,7 +345,7 @@ def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
           eqToHom_map, id_fiber, Category.assoc, eqToHom_trans_assoc,
           compAsSmallFunctorEquivalenceInverse_map_fiber,
           compAsSmallFunctorEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
-        simp only [eqToHom_trans_assoc, Category.assoc, conj_eqToHom_iff_heq']
+        simp only [conj_eqToHom_iff_heq']
         rw [G.map_id]
         simp )
 
@@ -408,7 +407,6 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rfl)
   functor_unitIso_comp := by
     rintro ⟨_, ⟨⟩⟩
-    dsimp
     simp
     rfl
 
@@ -488,7 +486,7 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
   counitIso := preNatIso F G.counitIso.symm |>.symm
   functor_unitIso_comp := by
     intro X
-    simp only [preInv, Grothendieck.preUnitIso, eq_mpr_eq_cast, cast_eq, pre_id, id_eq,
+    simp only [preInv, Grothendieck.preUnitIso, pre_id,
       Iso.trans_hom, eqToIso.hom, eqToHom_app, eqToHom_refl, isoWhiskerLeft_hom, NatTrans.comp_app]
     fapply Grothendieck.ext <;> simp [preNatIso, transportIso]
 

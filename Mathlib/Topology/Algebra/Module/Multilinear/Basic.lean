@@ -257,7 +257,6 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
     (map_continuous f).comp (continuous_apply i)⟩
   invFun f := ⟨(MultilinearMap.ofSubsingleton R M₂ M₃ i).symm f.toMultilinearMap,
     (map_continuous f).comp <| continuous_pi fun _ ↦ continuous_id⟩
-  left_inv _ := rfl
   right_inv f := toMultilinearMap_injective <|
     (MultilinearMap.ofSubsingleton R M₂ M₃ i).apply_symm_apply f.toMultilinearMap
 
@@ -307,8 +306,6 @@ def prodEquiv :
   toFun f := f.1.prod f.2
   invFun f := ((ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f,
     (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem prod_ext_iff {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)} :
     f = g ↔ (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f =
@@ -355,8 +352,6 @@ def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     (∀ i, ContinuousMultilinearMap R M₁ (M' i)) ≃ ContinuousMultilinearMap R M₁ (∀ i, M' i) where
   toFun := ContinuousMultilinearMap.pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] M' i).compContinuousMultilinearMap f
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- An equivalence of the index set defines an equivalence between the spaces of continuous
 multilinear maps. This is the forward map of this equivalence. -/
@@ -391,7 +386,7 @@ def linearDeriv : (∀ i, M₁ i) →L[R] M₂ := ∑ i : ι, (f.toContinuousLin
 lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
   unfold linearDeriv toContinuousLinearMap
   simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
+    ContinuousLinearMap.coe_mk', Finset.sum_apply]
   rfl
 
 end linearDeriv
@@ -528,6 +523,15 @@ writing `f (fun i ↦ c i • m i)` as `(∏ i, c i) • f m`. -/
 theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
+
+/-- If two continuous `R`-multilinear maps from `R` are equal on 1, then they are equal.
+
+This is the multilinear version of `ContinuousLinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring [Finite ι] [TopologicalSpace R]
+    ⦃f g : ContinuousMultilinearMap R (fun _ : ι => R) M₂⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  toMultilinearMap_injective <| MultilinearMap.ext_ring h
 
 end CommSemiring
 

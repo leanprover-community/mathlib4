@@ -208,13 +208,13 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
   · simp_rw [sum_pointsWithCircumcenter, pointsWithCircumcenter_eq_circumcenter,
       pointsWithCircumcenter_point, Pi.sub_apply, pointWeightsWithCircumcenter]
     rw [← sum_subset fs.subset_univ _]
-    · simp_rw [fs, sum_insert (not_mem_singleton.2 h), sum_singleton]
+    · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
       repeat rw [← sum_subset fs.subset_univ _]
-      · simp_rw [fs, sum_insert (not_mem_singleton.2 h), sum_singleton]
+      · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
         simp [h, Ne.symm h, dist_comm (s.points i₁)]
       all_goals intro i _ hi; simp [hfs i hi]
     · intro i _ hi
-      simp [hfs i hi, pointsWithCircumcenter]
+      simp [hfs i hi]
   · intro i _ hi
     simp [hfs i hi]
 
@@ -341,10 +341,10 @@ planes. -/
 theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
   have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by decide +revert
-  have he : univ.erase i₁ = {i₂, i₃} := by decide +revert
-  rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
-    coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
-  simp [h₂₃, Submodule.span_insert_eq_span]
+  have he : ({i₁}ᶜ : Set (Fin 3)) = {i₂, i₃} := by ext; decide +revert
+  rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton,
+    vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
+  simp [h₂₃]
 
 /-- The orthocenter lies in the altitudes. -/
 theorem orthocenter_mem_altitude (t : Triangle ℝ P) {i₁ : Fin 3} :
@@ -397,7 +397,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
     dist t.orthocenter
         (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.circumcenter) =
       t.circumradius := by
-  simp only [mem_singleton, coe_insert, coe_singleton, Set.mem_singleton_iff]
+  simp only [coe_insert, coe_singleton]
   exact dist_orthocenter_reflection_circumcenter _ h
 
 /-- The affine span of the orthocenter and a vertex is contained in
@@ -426,12 +426,12 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
     refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_le_of_subset_coe ?_))
       ?_
-    · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
+    · have hu : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
+        ext
         decide +revert
-      rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
-        Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
-        h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
+      rw [← Set.image_univ, hu, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁,
+        h₂, h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
       exact
         ⟨t₁.orthocenter_mem_affineSpan, mem_affineSpan ℝ (Set.mem_range_self _),
           mem_affineSpan ℝ (Set.mem_range_self _)⟩
@@ -440,17 +440,19 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
         t₂.independent.finrank_vectorSpan (Fintype.card_fin _)]
   rw [he]
   use mem_affineSpan ℝ (Set.mem_range_self _)
-  have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
+  have hu : ({j₂}ᶜ : Set _) = {j₁, j₃} := by
     clear h₁ h₂ h₃
+    ext
     decide +revert
-  rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
+  rw [hu, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
   refine hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) ?_)
-  have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
+  have hui : ({i₃}ᶜ : Set _) = {i₁, i₂} := by
     clear hle h₂ h₃
+    ext
     decide +revert
-  rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
+  rw [hui, Set.image_insert_eq, Set.image_singleton]
   exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 
 /-- Suppose we are given a triangle `t₁`, and replace one of its
@@ -520,7 +522,7 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
     exact ⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩
   · right
     have hs := Set.subset_diff_singleton hps h
-    rw [Set.insert_diff_self_of_not_mem ho] at hs
+    rw [Set.insert_diff_self_of_notMem ho] at hs
     classical
     refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]

@@ -167,12 +167,12 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
 
-theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
-    [IsCountablyGenerated (𝓝 x)] (htx : IsLUB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
+theorem IsLUB.exists_seq_strictMono_tendsto_of_notMem {t : Set α} {x : α}
+    [IsCountablyGenerated (𝓝 x)] (htx : IsLUB t x) (notMem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   obtain ⟨v, hvx, hvt⟩ := exists_seq_forall_of_frequently (htx.frequently_mem ht)
   replace hvx := hvx.mono_right nhdsWithin_le_nhds
-  have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
+  have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) notMem)
   have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
   choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
   refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
@@ -180,12 +180,16 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
 
+@[deprecated (since := "2025-05-23")]
+alias IsLUB.exists_seq_strictMono_tendsto_of_not_mem :=
+  IsLUB.exists_seq_strictMono_tendsto_of_notMem
+
 theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsLUB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Monotone u ∧ (∀ n, u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   by_cases h : x ∈ t
   · exact ⟨fun _ => x, monotone_const, fun n => le_rfl, tendsto_const_nhds, fun _ => h⟩
-  · rcases htx.exists_seq_strictMono_tendsto_of_not_mem h ht with ⟨u, hu⟩
+  · rcases htx.exists_seq_strictMono_tendsto_of_notMem h ht with ⟨u, hu⟩
     exact ⟨u, hu.1.monotone, fun n => (hu.2.1 n).le, hu.2.2⟩
 
 theorem exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [TopologicalSpace α]
@@ -193,7 +197,7 @@ theorem exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [Topologica
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x) := by
   have hx : x ∉ Ioo y x := fun h => (lt_irrefl x h.2).elim
   have ht : Set.Nonempty (Ioo y x) := nonempty_Ioo.2 hy
-  rcases (isLUB_Ioo hy).exists_seq_strictMono_tendsto_of_not_mem hx ht with ⟨u, hu⟩
+  rcases (isLUB_Ioo hy).exists_seq_strictMono_tendsto_of_notMem hx ht with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2.symm⟩
 
 theorem exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α] [FirstCountableTopology α]
@@ -221,7 +225,7 @@ theorem Dense.exists_seq_strictMono_tendsto_of_lt [DenselyOrdered α] [FirstCoun
     obtain ⟨z, hyz, hzx⟩ := hs.exists_between hy
     exact ⟨z, mem_inter hzx hyz⟩
   have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
-  apply hx.exists_seq_strictMono_tendsto_of_not_mem (by aesop) hnonempty |>.imp
+  apply hx.exists_seq_strictMono_tendsto_of_notMem (by aesop) hnonempty |>.imp
   aesop
 
 theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
@@ -253,10 +257,14 @@ theorem DenseRange.exists_seq_strictMono_tendsto {β : Type*} [LinearOrder β] [
   obtain rfl : f ∘ v = u := funext hv
   exact ⟨v, fun a b hlt ↦ hmono.reflect_lt <| hu hlt, hux, hlim⟩
 
-theorem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
-    [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
+theorem IsGLB.exists_seq_strictAnti_tendsto_of_notMem {t : Set α} {x : α}
+    [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (notMem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
-  IsLUB.exists_seq_strictMono_tendsto_of_not_mem (α := αᵒᵈ) htx not_mem ht
+  IsLUB.exists_seq_strictMono_tendsto_of_notMem (α := αᵒᵈ) htx notMem ht
+
+@[deprecated (since := "2025-05-23")]
+alias IsGLB.exists_seq_strictAnti_tendsto_of_not_mem :=
+  IsGLB.exists_seq_strictAnti_tendsto_of_notMem
 
 theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsGLB t x) (ht : t.Nonempty) :

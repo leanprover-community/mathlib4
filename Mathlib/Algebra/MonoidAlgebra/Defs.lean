@@ -103,10 +103,10 @@ theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.si
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
-@[simp]
 theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
     (h_zero : h a 0 = 0) :
-    (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
+    (single a b).sum h = h a b := by
+  simp [h_zero]
 
 @[simp]
 theorem sum_single (f : MonoidAlgebra k G) : f.sum single = f :=
@@ -236,11 +236,10 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
     one_mul := fun f => by
-      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
-        one_mul, sum_single]
+      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, one_mul,
+        sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
-        mul_one, sum_single] }
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, mul_one, sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
@@ -534,7 +533,6 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
       (f * single x r) z
       _ = sum f fun a b => ite (a * x = z) (b * r) 0 :=
         (mul_apply _ _ _).trans <| Finsupp.sum_congr fun _ _ => sum_single_index (by simp)
-
       _ = f.sum fun a b => ite (a = y) (b * r) 0 := Finsupp.sum_congr fun x hx => by
         simp only [H _ hx]
       _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _
@@ -816,10 +814,18 @@ endowed with the convolution product.
 def AddMonoidAlgebra :=
   G →₀ k
 
-@[inherit_doc]
-scoped[AddMonoidAlgebra] notation:9000 R:max "[" A "]" => AddMonoidAlgebra R A
-
 namespace AddMonoidAlgebra
+
+@[inherit_doc AddMonoidAlgebra]
+scoped syntax:max (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($k[$g]) => `(AddMonoidAlgebra $k $g)
+
+/-- Unexpander for `AddMonoidAlgebra`. -/
+@[scoped app_unexpander AddMonoidAlgebra]
+def unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $k $g) => `($k[$g])
+  | _ => throw ()
 
 instance inhabited : Inhabited k[G] :=
   inferInstanceAs (Inhabited (G →₀ k))
@@ -852,10 +858,10 @@ theorem single_zero (a : G) : (single a 0 : k[G]) = 0 := Finsupp.single_zero a
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
-@[simp]
 theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
     (h_zero : h a 0 = 0) :
-    (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
+    (single a b).sum h = h a b := by
+  simp [h_zero]
 
 @[simp]
 theorem sum_single (f : k[G]) : f.sum single = f :=
@@ -925,7 +931,7 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
     nsmul_zero := by
       intros
       refine Finsupp.ext fun _ => ?_
-      simp [-nsmul_eq_mul, add_smul]
+      simp [-nsmul_eq_mul]
     nsmul_succ := by
       intros
       refine Finsupp.ext fun _ => ?_
@@ -993,8 +999,8 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
     mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
-        mul_one, sum_single] }
+      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, add_zero, mul_one,
+        sum_single] }
 
 theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
@@ -1349,7 +1355,7 @@ def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
   { singleAddHom 0 with
     toFun := single 0
     map_one' := rfl
-    map_mul' := fun x y => by simp only [Finsupp.singleAddHom, single_mul_single, zero_add] }
+    map_mul' := fun x y => by simp only [single_mul_single, zero_add] }
 
 /-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
 and `single 0 b`, then they are equal. -/
@@ -1384,7 +1390,7 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
     map_mul' := by
       let f : k[G]ᵐᵒᵖ ≃+ kᵐᵒᵖ[G] :=
         opAddEquiv.symm.trans (mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ))
-      show ∀ (x y : k[G]ᵐᵒᵖ), f (x * y) = f x * f y
+      change ∀ (x y : k[G]ᵐᵒᵖ), f (x * y) = f x * f y
       rw [← AddEquiv.coe_toAddMonoidHom, AddMonoidHom.map_mul_iff]
       ext i₁ r₁ i₂ r₂ : 6
       dsimp only [f, AddMonoidHom.compr₂_apply, AddMonoidHom.compl₂_apply,

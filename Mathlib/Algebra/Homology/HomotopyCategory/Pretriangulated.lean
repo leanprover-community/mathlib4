@@ -72,7 +72,7 @@ lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.
     Preadditive.comp_neg, inr_f_fst_v, neg_zero]
 
 @[reassoc (attr := simp)]
-lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by ext; dsimp; simp
+lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by ext; simp
 
 /-- The (distinguished) triangle in the homotopy category that is associated to
 a morphism `φ : K ⟶ L` in the category `CochainComplex C ℤ`. -/
@@ -308,7 +308,7 @@ noncomputable def rotateTrianglehIso :
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     (((HomotopyCategory.quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app K ≪≫
       HomotopyCategory.isoOfHomotopyEquiv (rotateHomotopyEquiv φ))
-        (by dsimp; simp) (by dsimp; simp) (by
+        (by simp) (by simp) (by
         dsimp
         rw [CategoryTheory.Functor.map_id, comp_id, assoc, ← Functor.map_comp_assoc,
           rotateHomotopyEquiv_comm₃, Functor.map_neg, Preadditive.neg_comp,
