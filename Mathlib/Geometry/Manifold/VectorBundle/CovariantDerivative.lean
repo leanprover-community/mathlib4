@@ -127,8 +127,6 @@ variable {𝕜 E E' M M' H H' : Type*} [NontriviallyNormedField 𝕜]
   [ChartedSpace H M] /-[IsManifold I n M]-/ [ChartedSpace H' M'] -- [IsManifold I' n M']
   {f : M → M'} {s t : Set M}
 
--- TODO: add ContMDiffWithinAt, perhaps ContmDiffAt versions!
-
 /-- If a function is `C^k` on two open sets, it is also `C^n` on their union. -/
 lemma ContMDiffOn.union_of_isOpen (hf : ContMDiffOn I I' n f s) (hf' : ContMDiffOn I I' n f t)
     (hs : IsOpen s) (ht : IsOpen t) :
@@ -192,6 +190,176 @@ lemma ContMDiff.of_contMDiffOn_smul_bump_function [SMul 𝕜 M'] (hf : ContMDiff
 -- to sections of vector bundles (whose co-domain has no zero).
 
 end contMDiff_union
+
+section contMDiff_addsmulfinsum_section
+
+-- Proofs taken from SmoothSection: TODO golf those with these lemmas!
+-- XXX: also add sub, neg, nsmul, zsmul lemmas?
+
+variable {I F n V}
+
+variable {f : M → 𝕜} {a : 𝕜} {s t : Π x : M, V x} {u : Set M} {x₀ : M}
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffWithinAt_add_section
+    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
+    (ht : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u x₀) :
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) u x₀ := by
+  rw [contMDiffWithinAt_section] at hs ht ⊢
+  set e := trivializationAt F V x₀
+
+  refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
+  · apply eventually_of_mem (U := e.baseSet)
+    · exact mem_nhdsWithin_of_mem_nhds <|
+        (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
+    · intro x hx
+      apply (e.linear 𝕜 hx).1
+  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffAt_add_section
+    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀)
+    (ht : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) x₀) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) x₀ := by
+  rw [contMDiffAt_section] at hs ht ⊢
+  set e := trivializationAt F V x₀
+  refine (hs.add ht).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
+  intro x hx
+  apply (e.linear 𝕜 hx).1
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffOn_add_section
+    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u)
+    (ht : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) u :=
+  fun x₀ hx₀ ↦ contMDiffWithinAt_add_section (hs x₀ hx₀) (ht x₀ hx₀)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiff_add_section
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)))
+    (ht : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x))) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) :=
+  fun x₀ ↦ contMDiffAt_add_section (hs x₀) (ht x₀)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffWithinAt_smul_section
+    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
+    (hf : ContMDiffWithinAt I 𝓘(𝕜) n f u x₀) :
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) u x₀ := by
+  rw [contMDiffWithinAt_section] at hs ⊢
+  set e := trivializationAt F V x₀
+  refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
+  · apply eventually_of_mem (U := e.baseSet)
+    · exact mem_nhdsWithin_of_mem_nhds <|
+        (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
+    · intro x hx
+      apply (e.linear 𝕜 hx).2
+  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffAt_smul_section
+    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀)
+    (hf : ContMDiffAt I 𝓘(𝕜) n f x₀) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) x₀ := by
+  rw [contMDiffAt_section] at hs ⊢
+  set e := trivializationAt F V x₀
+  refine (hf.smul hs).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
+  intro x hx
+  apply (e.linear 𝕜 hx).2
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffOn_smul_section
+    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u)
+    (hf : ContMDiffOn I 𝓘(𝕜) n f u) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) u :=
+  fun x₀ hx₀ ↦ contMDiffWithinAt_smul_section (hs x₀ hx₀) (hf x₀ hx₀)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiff_smul_section
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)))
+    (hf : ContMDiff I 𝓘(𝕜) n f) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) :=
+  fun x₀ ↦ contMDiffAt_smul_section (hs x₀) (hf x₀)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffWithinAt_smul_const_section
+    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u x₀ :=
+  contMDiffWithinAt_smul_section hs contMDiffWithinAt_const
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffAt_smul_const_section
+    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) x₀ :=
+  contMDiffAt_smul_section hs contMDiffAt_const
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffOn_smul_const_section
+    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u :=
+  contMDiffOn_smul_section hs contMDiffOn_const
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiff_smul_const_section
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) :=
+  fun x₀ ↦ contMDiffAt_smul_const_section (hs x₀)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffWithinAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
+    (hs : ∀ i, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n
+      (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u x₀ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty =>
+    simp only [Finset.sum_empty]
+    -- TODO: x₀ ∈ u should not be required -> add contMDiffWithinAt_zeroSection!
+    apply ContMDiff.contMDiffOn
+    · apply contMDiff_zeroSection
+    · sorry -- x₀ ∈ u...
+  | insert i s hi h => simpa [Finset.sum_insert hi] using contMDiffWithinAt_add_section (hs i) h
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x} {x₀ : M}
+    (hs : ∀ i, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simpa using contMDiff_zeroSection ..
+  | insert i s hi h => simpa [Finset.sum_insert hi] using contMDiffWithinAt_add_section (hs i) h
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiffOn_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
+    (hs : ∀ i, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
+    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u :=
+  fun x₀ hx₀ ↦ contMDiffWithinAt_finsum_section fun i ↦ hs i x₀ hx₀
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
+lemma contMDiff_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
+    (hs : ∀ i, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
+  fun x₀ ↦ contMDiffAt_finsum_section fun i ↦ (hs i) x₀
+
+end contMDiff_addsmulfinsum_section
 
 @[ext]
 structure CovariantDerivative where
