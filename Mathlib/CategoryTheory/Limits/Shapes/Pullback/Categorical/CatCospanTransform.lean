@@ -697,6 +697,7 @@ def mk'
             _ ◁ ((ρ_ transform).hom ▷ _) ≫
             (α_ _ _ _).inv ≫
             counitIso.hom ▷ inverse := by
+        rw [← CatCospanTransform.whisker_exchange_assoc]
       _ = _ := sorry
 
 
