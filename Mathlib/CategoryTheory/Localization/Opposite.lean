@@ -56,10 +56,10 @@ instance IsLocalization.op : L.op.IsLocalization W.op :=
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 
 instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty Cᵒᵖ)
-    [L.IsLocalization W] : L.unop.IsLocalization W.unop := by
+    [L.IsLocalization W] : L.unop.IsLocalization W.unop :=
   have : CatCommSq (opOpEquivalence C).functor L.op L.unop
     (opOpEquivalence D).functor := ⟨Iso.refl _⟩
-  exact of_equivalences L.op W.op L.unop W.unop
+  of_equivalences L.op W.op L.unop W.unop
     (opOpEquivalence C) (opOpEquivalence D)
     (fun _ _ _ hf ↦ MorphismProperty.le_isoClosure _ _ hf)
     (fun _ _ _ hf ↦ by
