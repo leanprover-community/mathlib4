@@ -120,7 +120,7 @@ lemma eComp_eHomWhiskerLeft (X Y : C) {Z Z' : C} (g : Z ⟶ Z') :
       _ ◁ eHomWhiskerLeft V Y g ≫ eComp V X Y Z' := by
   dsimp [eHomWhiskerLeft]
   rw [rightUnitor_inv_naturality_assoc, ← whisker_exchange_assoc]
-  simp [e_assoc']
+  simp
 
 /-- Given an isomorphism `α : Y ≅ Y₁` in C, the enriched composition map
 `eComp V X Y Z : (X ⟶[V] Y) ⊗ (Y ⟶[V] Z) ⟶ (X ⟶[V] Z)` factors through the `V`

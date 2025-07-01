@@ -417,10 +417,10 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
 theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
   induction φ with
   | falsum => rfl
-  | equal => simp [Fin.castLE_of_eq]
-  | rel => simp [Fin.castLE_of_eq]
-  | imp _ _ ih1 ih2 => simp [Fin.castLE_of_eq, ih1, ih2]
-  | all _ ih3 => simp [Fin.castLE_of_eq, ih3]
+  | equal => simp
+  | rel => simp
+  | imp _ _ ih1 ih2 => simp [ih1, ih2]
+  | all _ ih3 => simp [ih3]
 
 @[simp]
 theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
@@ -431,7 +431,7 @@ theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormu
   | equal => simp
   | rel =>
     intros
-    simp only [castLE, eq_self_iff_true, heq_iff_eq]
+    simp only [castLE]
     rw [← Function.comp_assoc, Term.relabel_comp_relabel]
     simp
   | imp _ _ ih1 ih2 => simp [ih1, ih2]
@@ -667,7 +667,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
-    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
+    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2]
   | all _ ih3 => simp only [ih3, onBoundedFormula, Function.comp_apply]
 
 /-- Maps a formula's symbols along a language map. -/
@@ -896,7 +896,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     refine congr(_ '' ($(?_) ∩ _))
     ext ⟨i, j⟩
     simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
-      mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
+      mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right]
     refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp
