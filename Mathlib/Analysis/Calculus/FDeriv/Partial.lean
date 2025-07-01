@@ -94,7 +94,7 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousOn_prod_open
   simp only [hasFDerivWithinAt_iff_tendsto, tendsto_nhdsWithin_nhds, dist_eq_norm] at ⊢ hf'xz
   simp only [ContinuousLinearMap.coprod_apply, sub_zero, norm_mul, norm_inv,
     norm_norm] at ⊢ hf'xz
-  simp only [Metric.continuousOn_iff, dist_eq_norm, norm_eq_abs] at hf'y_cont
+  simp only [Metric.continuousOn_iff, dist_eq_norm] at hf'y_cont
   -- get a target ε' and immediately shrink it to ε for convenice
   intro ε' hε'
   rw [show ε' = (ε'/2/2/2)*2 + (ε'/2/2/2)*2 + (ε'/2/2/2)*2 + (ε'/2/2/2)*2 by ring]
