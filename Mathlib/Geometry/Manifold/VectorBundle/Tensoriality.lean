@@ -102,7 +102,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDim
       φ σ x = φ (fun x' ↦ ∑ i, (c i) σ x' • s i x') x := by
     exact
       locality hσ
-        (mdifferentiableAt_finsum_section fun i ↦ mdifferentiableAt_smul_section (hs i) (hc hσ i))
+        (mdifferentiableAt_finsum_section fun i ↦ mdifferentiableAt_smul_section (hc hσ i) (hs i))
         (Basis.localFrame_repr_spec b x_mem σ)
   rw [hφ hσ, hφ hσ', sum_phi, sum_phi]
   · change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
@@ -110,8 +110,8 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDim
     ext i
     rw [φ_smul _ _ (hc hσ i) (hs i), φ_smul _ _ (hc hσ' i) (hs i),
         Basis.localFrame_repr_congr b hσσ']
-  · exact fun i ↦ mdifferentiableAt_smul_section (hs i) (hc hσ' i)
-  · exact fun i ↦ mdifferentiableAt_smul_section (hs i) (hc hσ i)
+  · exact fun i ↦ mdifferentiableAt_smul_section (hc hσ' i) (hs i)
+  · exact fun i ↦ mdifferentiableAt_smul_section (hc hσ i) (hs i)
 
 include I in
 omit [IsManifold I 1 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
