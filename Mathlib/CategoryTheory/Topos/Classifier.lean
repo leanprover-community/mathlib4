@@ -419,8 +419,8 @@ noncomputable def ofMonoTruth
     truth := iso.hom ≫ truth,
     χ := χ,
     isPullback {U X} m inst :=
-      let χ₀_iso : χ₀ m ≫ iso.inv = terminal.from U := terminal.hom_ext _ _
-      χ₀_iso ▸ pullback_reassoc m (χ₀ m) (χ m) truth (isPullback m) iso.symm,
+      let eq : χ₀ m ≫ iso.inv = terminal.from U := terminal.hom_ext _ _
+      eq ▸ pullback_reassoc m (χ₀ m) (χ m) truth (isPullback m) iso.symm,
     uniq {U X} m inst χ' hχ' :=
       let pb := pullback_reassoc m (terminal.from U) χ' (iso.hom ≫ truth) hχ' iso
       let eq : iso.inv ≫ iso.hom ≫ truth = truth := by simp
