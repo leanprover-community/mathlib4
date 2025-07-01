@@ -41,7 +41,8 @@ instance : CoeSort FiniteGrp.{u} (Type u) where
   coe G := G.toGrp
 
 @[to_additive]
-instance : Category FiniteGrp := InducedCategory.category FiniteGrp.toGrp
+instance : Category FiniteGrp :=
+  inferInstanceAs (Category (InducedCategory _ FiniteGrp.toGrp))
 
 @[to_additive]
 instance : ConcreteCategory FiniteGrp (· →* ·) := InducedCategory.concreteCategory FiniteGrp.toGrp
@@ -62,7 +63,7 @@ def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
 /-- The morphism in `FiniteGrp`, induced from a morphism of the category `Grp`. -/
 @[to_additive "The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrp`"]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
-  Grp.ofHom f
+  InducedCategory.homMk (Grp.ofHom f)
 
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) (x : X) :

@@ -256,6 +256,7 @@ import Mathlib.Algebra.Divisibility.Units
 import Mathlib.Algebra.DualNumber
 import Mathlib.Algebra.DualQuaternion
 import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstanceRing
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.EuclideanDomain.Field
