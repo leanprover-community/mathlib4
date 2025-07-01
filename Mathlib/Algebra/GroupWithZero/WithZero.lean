@@ -314,6 +314,17 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
+open WithZero
+variable {α : Type*} [Group α]
+
+example : MulZeroOneClass (WithZero α) := inferInstance
+
+def withZeroUnitsHom {G : Type*} [GroupWithZero G] [DecidablePred (fun a : G ↦ a = 0)] :
+    WithZero Gˣ →*₀ G where
+  __ := WithZero.withZeroUnitsEquiv
+  map_zero' := rfl
+  map_one' := rfl
+
 protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
     [MulZeroOneClass G₀'] [Nontrivial G₀']
     {f : G₀ →*₀ G₀'} {x : G₀}:
