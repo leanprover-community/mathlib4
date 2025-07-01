@@ -21,7 +21,7 @@ The pair of maps `S → ⊓ S` and `a → T ↓∩ Ici a` are often referred to 
 They form an antitone Galois connection between the subsets of `T` and `α`. When `α` can be
 generated from `T` by taking infs, this becomes a Galois insertion and the topological closure
 coincides with the closure arising from the Galois insertion. For this reason the relative lower
-topology on `T` is often refereed to as the hull-kernel topology. The names Jacobson topology and
+topology on `T` is often referred to as the hull-kernel topology. The names Jacobson topology and
 structure topology also occur in the literature.
 
 ## Main statements
