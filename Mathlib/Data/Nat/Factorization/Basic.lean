@@ -46,7 +46,7 @@ theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime)
 /-- The only numbers with empty prime factorization are `0` and `1` -/
 theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1 := by
   rw [factorization_eq_primeFactorsList_multiset n]
-  simp [factorization, AddEquiv.map_eq_zero_iff, Multiset.coe_eq_zero]
+  simp [Multiset.coe_eq_zero]
 
 /-! ## Lemmas about factorizations of products and powers -/
 
@@ -429,7 +429,7 @@ lemma factorizationLCMRight_pos :
   rw [factorizationLCMRight, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
-  · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq, reduceCtorEq] at H
+  · simp only [h, reduceIte, reduceCtorEq] at H
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
 
@@ -494,7 +494,7 @@ theorem prod_primeFactors_gcd_mul_prod_primeFactors_mul {β : Type*} [CommMonoid
 theorem setOf_pow_dvd_eq_Icc_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     { i : ℕ | i ≠ 0 ∧ p ^ i ∣ n } = Set.Icc 1 (n.factorization p) := by
   ext
-  simp [Nat.lt_succ_iff, one_le_iff_ne_zero, pp.pow_dvd_iff_le_factorization hn]
+  simp [one_le_iff_ne_zero, pp.pow_dvd_iff_le_factorization hn]
 
 /-- The set of positive powers of prime `p` that divide `n` is exactly the set of
 positive natural numbers up to `n.factorization p`. -/
@@ -585,7 +585,7 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n 
     · simp
     simp_rw [← Ico_add_one_add_one_eq_Ioc, Ico_insert_right (add_le_add_right hn.le 1),
       Ico_add_one_right_eq_Icc]
-  simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, card_insert_eq_ite, IH,
+  simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, IH,
     Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.

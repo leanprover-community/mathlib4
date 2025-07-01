@@ -117,7 +117,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           apply hs <;> simp
         exact ⟨⟨z', z'_mem⟩, le_of_lt hz'⟩
       use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => (this l z).choose
-      simp only [Nat.add_zero, Nat.rec_zero, Nat.rec_add_one, true_and]
+      simp only [Nat.add_zero, Nat.rec_zero, true_and]
       exact fun k => (this k _).choose_spec
     -- it follows from the previous bound that `z` is a Cauchy sequence
     have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
@@ -130,8 +130,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
       mem_iInter.2 fun k =>
         mem_closure_of_tendsto y_lim
           (by
-            simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop, Set.mem_preimage,
-              Set.preimage_iUnion]
+            simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
             exact ⟨k, fun m hm => ⟨n + m, by omega, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
@@ -167,7 +166,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
   refine tendsto_atTop.2 fun ε εpos => ?_
   have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=
     ENNReal.Tendsto.const_mul (ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one <|
-      by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)
+      by simp) (Or.inr <| by simp)
   rw [mul_zero] at this
   obtain ⟨N, hN⟩ : ∃ N, ∀ b ≥ N, ε > 2 * B b :=
     ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop

@@ -195,7 +195,7 @@ theorem, and is shown by
 `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition`. -/
 def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
   let i := s.exists_compl_positive_negative.choose
-  let hi := s.exists_compl_positive_negative.choose_spec
+  have hi := s.exists_compl_positive_negative.choose_spec
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
     negPart := s.toMeasureOfLEZero iᶜ hi.1.compl hi.2.2
     posPart_finite := inferInstance
@@ -229,7 +229,7 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
   ext k hk
   rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_real_apply _ hi₂ hi₁ hk,
     toMeasureOfLEZero_real_apply _ hi₃ hi₁.compl hk]
-  simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
+  simp only [sub_neg_eq_add]
   rw [← of_union _ (MeasurableSet.inter hi₁ hk) (MeasurableSet.inter hi₁.compl hk),
     Set.inter_comm i, Set.inter_comm iᶜ, Set.inter_union_compl _ _]
   exact (disjoint_compl_right.inf_left _).inf_right _
