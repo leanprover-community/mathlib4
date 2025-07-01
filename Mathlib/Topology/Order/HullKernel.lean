@@ -68,6 +68,7 @@ section SemilatticeInf
 variable [SemilatticeInf α]
 namespace PrimitiveSpectrum
 
+/-- For `a` of type `α` the set of element of `T` which dominate `a` is the `hull` of `a` in `T`. -/
 abbrev hull (T : Set α) (a : α) := T ↓∩ Ici a
 
 variable {T : Set α}
@@ -180,6 +181,7 @@ lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = hull T a := by
   simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
 
+/-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
 abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
 
 /- The pair of maps `S ↦ sInf S` (kernel) and `a ↦ T ↓∩ Ici a` (hull) form an antitone Galois
