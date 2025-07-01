@@ -165,9 +165,9 @@ lemma sUnion_Ici_Compl_eq (S : Set α) : ⋃₀ { (hull T a)ᶜ | a ∈ S } = (h
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
 lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
-    (S : Set T) : IsOpen S ↔ ∃ (a : α), S = T ↓∩ (Ici a)ᶜ := by
+    (S : Set T) : IsOpen S ↔ ∃ (a : α), S = (hull T a)ᶜ := by
   constructor <;> intro h
-  · let R := {a : α | T ↓∩ (Ici a)ᶜ ⊆ S}
+  · let R := {a : α | (hull T a)ᶜ ⊆ S}
     use sSup R
     rw [IsTopologicalBasis.open_eq_sUnion' (relativeLowerIsTopologicalBasis hT) h]
     aesop
@@ -231,7 +231,7 @@ lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [Decid
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = hull T (sInf S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   constructor
-  · exact fun ⦃a⦄ a ↦ a (T ↓∩ Ici (sInf ↑S)) ⟨(isClosed_iff hT _).mpr ⟨sInf ↑S, rfl⟩,
+  · exact fun ⦃a⦄ a ↦ a (hull T (sInf ↑S)) ⟨(isClosed_iff hT _).mpr ⟨sInf ↑S, rfl⟩,
       image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
