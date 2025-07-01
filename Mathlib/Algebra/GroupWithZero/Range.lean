@@ -66,10 +66,6 @@ def valueMonoid : Submonoid Bˣ where
     rw [map_mul, hy, hy', @Units.val_mul]
   one_mem' := ⟨1, by simp⟩
 
-lemma one_mem_valueMonoid : 1 ∈ valueMonoid f := ⟨1, map_one ..⟩
-
-lemma coe_one : (⟨(1 : Bˣ), (one_mem_valueMonoid f)⟩ : valueMonoid f) = 1 := rfl
-
 lemma mem_valueMonoid_iff {b : Bˣ} : b ∈ valueMonoid f ↔ b ∈ (↑)⁻¹' (range f) := Iff.rfl
 
 lemma valueMonoid_eq_closure : valueMonoid f = Submonoid.closure ((↑)⁻¹' (range f)) :=
