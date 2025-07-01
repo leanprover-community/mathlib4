@@ -910,7 +910,7 @@ variable (R) in
 endomorphisms. -/
 @[simps!] def LinearEquiv.algConj (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
   __ := e.conjRingEquiv
-  commutes' := fun _ ↦ by ext; show e.restrictScalars R _ = _; simp
+  commutes' := fun _ ↦ by ext; change e.restrictScalars R _ = _; simp
 
 /-- A basis of a module induces an equivalence of algebras from the endomorphisms of the module to
 square matrices. -/

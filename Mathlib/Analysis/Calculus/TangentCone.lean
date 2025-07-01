@@ -183,7 +183,7 @@ theorem subset_tangentConeAt_prod_left {t : Set F} {y : F} (ht : y ∈ closure t
     exact ⟨z - y, by simpa using hzt, by simpa using hz⟩
   choose d' hd' using this
   refine ⟨c, fun n => (d n, d' n), ?_, hc, ?_⟩
-  · show ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
+  · change ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
   · apply Tendsto.prodMk_nhds hy _
@@ -205,7 +205,7 @@ theorem subset_tangentConeAt_prod_right {t : Set F} {y : F} (hs : x ∈ closure 
     exact ⟨z - x, by simpa using hzs, by simpa using hz⟩
   choose d' hd' using this
   refine ⟨c, fun n => (d' n, d n), ?_, hc, ?_⟩
-  · show ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
+  · change ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
   · apply Tendsto.prodMk_nhds _ hy

@@ -97,7 +97,7 @@ theorem mem_powerset {s t : Multiset α} : s ∈ powerset t ↔ s ≤ t :=
 theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset s :=
   Quotient.inductionOn s fun l => by
     simp only [powerset_coe, quot_mk_to_coe, coe_le, map_coe]
-    show l.map (((↑) : List α → Multiset α) ∘ pure) <+~ (sublists l).map (↑)
+    change l.map (((↑) : List α → Multiset α) ∘ pure) <+~ (sublists l).map (↑)
     rw [← List.map_map]
     exact ((map_pure_sublist_sublists _).map _).subperm
 

@@ -194,7 +194,7 @@ protected def copy (S : NonUnitalStarSubalgebra R A) (s : Set A) (hs : s = ↑S)
     NonUnitalStarSubalgebra R A :=
   { S.toNonUnitalSubalgebra.copy s hs with
     star_mem' := @fun x (hx : x ∈ s) => by
-      show star x ∈ s
+      change star x ∈ s
       rw [hs] at hx ⊢
       exact S.star_mem' hx }
 
@@ -1170,7 +1170,7 @@ theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s)
 
 theorem mem_centralizer_iff {s : Set A} {z : A} :
     z ∈ centralizer R s ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g := by
-  show (∀ g ∈ s ∪ star s, g * z = z * g) ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g
+  change (∀ g ∈ s ∪ star s, g * z = z * g) ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g
   simp only [Set.mem_union, or_imp, forall_and, and_congr_right_iff]
   exact fun _ =>
     ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
