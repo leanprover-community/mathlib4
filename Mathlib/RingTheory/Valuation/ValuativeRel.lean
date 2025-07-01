@@ -491,19 +491,25 @@ instance : (supp R).IsPrime := by
 
 open NNReal in variable (R) in
 /-- An auxiliary structure used to define `IsRankOne`. -/
-structure RankOneStruct where
+structure RankLeOneStruct where
   /-- The embedding of the value group-with-zero into the nonnegative reals. -/
   emb : ValueGroupWithZero R →*₀ ℝ≥0
   strictMono : StrictMono emb
-  nontrivial : ∃ γ : ValueGroupWithZero R, emb γ ≠ 0 ∧ emb γ ≠ 1
 
 variable (R) in
 /-- We say that a ring with a valuative relation is of rank one if
 there exists a strictly monotone embedding of the "canonical" value group-with-zero into
 the nonnegative reals, and the image of this embedding contains some element different
 from `0` and `1`. -/
-class IsRankOne where
-  nonempty : Nonempty (RankOneStruct R)
+class IsRankLeOne where
+  nonempty : Nonempty (RankLeOneStruct R)
+
+variable (R) in
+/-- We say that a valuative relation on a ring is *nontrivial* if the
+  value group-with-zero is nontrivial, meaning that it has an element
+  which is different from 0 and 1. -/
+class IsNontrivial where
+  condition : ∃ γ : ValueGroupWithZero R, γ ≠ 0 ∧ γ ≠ 1
 
 variable (R) in
 /-- A ring with a valuative relation is discrete if its value group-with-zero
