@@ -570,4 +570,257 @@ lemma mateEquivRightAdjointSquaresHom :
 
 end CatCospanAdjunction
 
+/-- A `CatCospanEquivalence F G F' G'` is a diagram
+```
+    F   G
+  A ⥤ B ⥢ C
+H₁|   |H₂ |H₃
+  v   v   v
+  A'⥤ B'⥢ C'
+    F'  G'
+```
+where H₁, H₂ and H₃ are equivalences, along with commutative 2-squares structure
+on the squares in the forward direction.
+It is defined as a `CatCospanAdjunction F G F' G'` with given inverses to the unit and counit
+morphisms. See `CatCospanEquivalence.mk'` for a constructor that asks for 3 equivalences and
+squares only on their functors (the square on inverses being uniquely determined). -/
+structure CatCospanEquivalence
+    {A B C : Type*} [Category A] [Category B] [Category C]
+    (F : A ⥤ B) (G : C ⥤ B)
+    {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
+    (F' : A' ⥤ B') (G' : C' ⥤ B') extends CatCospanAdjunction F G F' G' where
+  /-- the unit morphism of `CatCospanTransform` -/
+  unitInv : leftAdjoint.comp rightAdjoint ⟶ CatCospanTransform.id F G
+  /-- the counit morphism of `CatCospanTransform` -/
+  counitInv : CatCospanTransform.id F' G' ⟶ rightAdjoint.comp leftAdjoint
+  unit_hom_inv_id : unit ≫ unitInv = 𝟙 _ := by aesop_cat
+  unit_inv_hom_id : unitInv ≫ unit = 𝟙 _ := by aesop_cat
+  counit_hom_inv_id : counit ≫ counitInv = 𝟙 _ := by aesop_cat
+  counit_inv_hom_id : counitInv ≫ counit = 𝟙 _ := by aesop_cat
+
+namespace CatCospanEquivalence
+
+attribute [reassoc (attr := simp)] unit_hom_inv_id unit_inv_hom_id
+  counit_inv_hom_id counit_hom_inv_id
+
+variable {A B C : Type*} [Category A] [Category B] [Category C]
+    {F : A ⥤ B} {G : C ⥤ B}
+    {A' B' C' : Type*} [Category A'] [Category B'] [Category C']
+    {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+    (𝔈 : CatCospanEquivalence F G F' G')
+
+/-- A shorthand for the "forward" direction of a `CatCospanEquivalence`. -/
+abbrev transform : CatCospanTransform F G F' G' := 𝔈.leftAdjoint
+
+/-- A shorthand for the "inverse" direction of a `CatCospanEquivalence`. -/
+abbrev inverse : CatCospanTransform F' G' F G := 𝔈.rightAdjoint
+
+/-- The unit of the `CatCospanEquivalence` as an isomorphism. -/
+@[simps]
+def unitIso : CatCospanTransform.id F G ≅ 𝔈.transform.comp 𝔈.inverse where
+  hom := 𝔈.unit
+  inv := 𝔈.unitInv
+
+/-- The counit of the `CatCospanEquivalence` as an isomorphism. -/
+@[simps]
+def counitIso : 𝔈.inverse.comp 𝔈.transform ≅ CatCospanTransform.id F' G' where
+  hom := 𝔈.counit
+  inv := 𝔈.counitInv
+
+/-- Extract an equivalence of categories `A ≌ A'` as the left component of a
+`CatCospanEquivalence F _ F' _` for `F : A ⥤ _` and `A' : A' ⥤ _`. -/
+@[simps]
+def leftEquiv : A ≌ A' where
+  functor := 𝔈.transform.left
+  inverse := 𝔈.inverse.left
+  unitIso := CatCospanTransform.leftIso 𝔈.unitIso
+  counitIso := CatCospanTransform.leftIso 𝔈.counitIso
+  functor_unitIso_comp x := 𝔈.leftAdjunction.left_triangle_components x
+
+/-- Extract an equivalence of categories `A ≌ A'` as the right component of a
+`CatCospanEquivalence _ G _ G'` for `G : C ⥤ _` and `G' : C' ⥤ _`. -/
+@[simps]
+def rightEquiv : C ≌ C' where
+  functor := 𝔈.transform.right
+  inverse := 𝔈.inverse.right
+  unitIso := CatCospanTransform.rightIso 𝔈.unitIso
+  counitIso := CatCospanTransform.rightIso 𝔈.counitIso
+  functor_unitIso_comp x := 𝔈.rightAdjunction.left_triangle_components x
+
+/-- Extract an equivalence of categories `B ≌ B'` as the base component of a
+`CatCospanEquivalence F _ F' _` for `G : _ ⥤ B` and `G' : _ ⥤ B'`. -/
+@[simps]
+def baseEquiv : C ≌ C' where
+  functor := 𝔈.transform.right
+  inverse := 𝔈.inverse.right
+  unitIso := CatCospanTransform.rightIso 𝔈.unitIso
+  counitIso := CatCospanTransform.rightIso 𝔈.counitIso
+  functor_unitIso_comp x := 𝔈.rightAdjunction.left_triangle_components x
+
+/-- Construct a `CatCospanEquivalence F G F' G'` from data similar to an
+equivalence of categories: a `CatCospanTransform` in each direction,
+unit and counit isomorphisms, and a proof of only the left triangle identity. -/
+@[simps!]
+def mk'
+    (transform : CatCospanTransform F G F' G')
+    (inverse : CatCospanTransform F' G' F G)
+    (unitIso : CatCospanTransform.id F G ≅ transform.comp inverse)
+    (counitIso : inverse.comp transform ≅ CatCospanTransform.id F' G')
+    (left_triangle :
+        unitIso.hom ▷ transform ≫ (α_ _ _ _).hom ≫ transform ◁ counitIso.hom =
+        (λ_ _).hom ≫ (ρ_ _).inv := by
+      aesop_cat) :
+    CatCospanEquivalence F G F' G' where
+  leftAdjoint := transform
+  rightAdjoint := inverse
+  unit := unitIso.hom
+  unitInv := unitIso.inv
+  counit := counitIso.hom
+  counitInv := counitIso.inv
+  left_triangle := left_triangle
+  right_triangle := by
+    -- This is a copy of the proof of Bicategory.right_triangle_of_left_triangle
+    -- except we can’t use bicategorical comp or the bicategory tactic
+    rw [← cancel_epi <|
+        inverse ◁ unitIso.hom ≫ (α_ inverse transform inverse).inv ≫
+          counitIso.hom ▷ inverse ≫
+          (λ_ _).hom ≫ (ρ_ _).inv]
+    simp only [Category.assoc]
+    calc
+      _ = inverse ◁ unitIso.hom ≫
+            (α_ _ _ _).inv ≫ (ρ_ _).inv ≫
+            (counitIso.hom ▷ inverse ▷ (.id _ _)) ≫
+            ((CatCospanTransform.id F' G').comp inverse) ◁ unitIso.hom ≫
+            (λ_ _).hom ▷ _ ≫ (α_ _ _ _).inv  ≫
+            counitIso.hom ▷ inverse := by
+          aesop_cat
+      _ = inverse ◁ (λ_ _).inv ≫
+            inverse ◁
+              (unitIso.hom ▷ (.id _ _) ≫
+                (transform.comp inverse) ◁ unitIso.hom) ≫
+            inverse ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
+            _ ◁ (α_ _ _ _).inv ≫ (α_ _ _ _).inv ≫
+            (counitIso.hom ▷ (inverse.comp transform) ≫
+              (CatCospanTransform.id _ _) ◁ counitIso.hom) ▷ inverse ≫
+            (ρ_ _).hom ▷ inverse := by
+          rw [← CatCospanTransform.whisker_exchange_assoc]
+          aesop_cat
+      _ = inverse ◁ unitIso.hom ≫
+            _ ◁ ((λ_ transform).inv ▷ _) ≫
+            inverse ◁
+              (unitIso.hom ▷ transform ≫
+                (α_ _ _ _).hom ≫
+                transform ◁ counitIso.hom) ▷ inverse ≫
+            _ ◁ ((ρ_ transform).hom ▷ _) ≫
+            (α_ _ _ _).inv ≫
+            counitIso.hom ▷ inverse := by
+          rw [← CatCospanTransform.whisker_exchange,
+            ← CatCospanTransform.whisker_exchange]
+          ext x <;>
+          ( dsimp
+            simp [Category.id_comp, Functor.map_id, Category.comp_id,
+              Category.assoc, Functor.map_comp] )
+      _ = inverse ◁ unitIso.hom ≫
+            _ ◁ ((λ_ transform).inv ▷ _) ≫
+            inverse ◁ ((λ_ _).hom ≫ (ρ_ _).inv) ▷ inverse ≫
+            _ ◁ ((ρ_ transform).hom ▷ _) ≫
+            (α_ _ _ _).inv ≫
+            counitIso.hom ▷ inverse := by rw [left_triangle]
+      _ = _ := by aesop_cat
+
+/-- Construct a `CatCospanEquivalence F G F' G'` from the data of individual
+equivalences of categories for the left, base and right components, as well
+as the data of `CatCommSq` on their forward functor. -/
+def mk''
+    (leftEquiv : A ≌ A') (rightEquiv : C ≌ C') (baseEquiv : B ≌ B')
+    (squareLeft :
+        CatCommSq F leftEquiv.functor baseEquiv.functor F' := by
+      infer_instance)
+    (squareRight :
+        CatCommSq G rightEquiv.functor baseEquiv.functor G' := by
+      infer_instance) :
+    CatCospanEquivalence F G F' G' :=
+  .mk'
+    (transform :=
+      { left := leftEquiv.functor
+        right := rightEquiv.functor
+        base := baseEquiv.functor
+        squareLeft := squareLeft
+        squareRight := squareRight })
+    (inverse :=
+      { left := leftEquiv.inverse
+        right := rightEquiv.inverse
+        base := baseEquiv.inverse
+        squareLeft := .mk <| Iso.isoInverseComp <|
+          (Functor.associator _ _ _).symm ≪≫
+            (Iso.compInverseIso squareLeft.iso.symm)
+        squareRight :=
+          .mk <| Iso.isoInverseComp <|
+            (Functor.associator _ _ _).symm ≪≫
+              (Iso.compInverseIso squareRight.iso.symm) })
+    (unitIso := CatCospanTransform.mkIso
+      leftEquiv.unitIso rightEquiv.unitIso baseEquiv.unitIso
+      (by
+        ext x
+        dsimp
+        simp only [CatCommSq.vId_iso_hom_app, Category.id_comp,
+          CatCommSq.vComp_iso_hom_app, Iso.isoInverseComp_hom_app,
+          Functor.comp_obj, Functor.comp_map, Iso.trans_hom, Iso.symm_hom,
+          NatTrans.comp_app, Functor.associator_inv_app,
+          Iso.compInverseIso_hom_app]
+        simp only [← Functor.map_comp_assoc]
+        conv_rhs =>
+          enter [2, 1]
+          congr
+          simp only [Equivalence.counitInv_app_functor, Functor.id_obj,
+            Functor.comp_obj, CatCommSq.iso_inv_naturality,
+            Iso.hom_inv_id_app_assoc]
+        simp)
+      (by
+        ext x
+        dsimp
+        simp only [CatCommSq.vId_iso_hom_app, Category.id_comp,
+          CatCommSq.vComp_iso_hom_app, Iso.isoInverseComp_hom_app,
+          Functor.comp_obj, Functor.comp_map, Iso.trans_hom, Iso.symm_hom,
+          NatTrans.comp_app, Functor.associator_inv_app,
+          Iso.compInverseIso_hom_app]
+        simp only [← Functor.map_comp_assoc]
+        conv_rhs =>
+          enter [2, 1]
+          congr
+          simp only [Equivalence.counitInv_app_functor, Functor.id_obj,
+            Functor.comp_obj, CatCommSq.iso_inv_naturality,
+            Iso.hom_inv_id_app_assoc]
+        simp))
+    (counitIso :=
+      CatCospanTransform.mkIso
+        leftEquiv.counitIso rightEquiv.counitIso baseEquiv.counitIso
+        (by
+          ext x
+          dsimp
+          simp only [CatCommSq.vComp_iso_hom_app, Iso.isoInverseComp_hom_app,
+            Functor.comp_obj, Functor.comp_map, Iso.trans_hom, Iso.symm_hom,
+            NatTrans.comp_app, Functor.associator_inv_app,
+            Iso.compInverseIso_hom_app, Category.id_comp, Functor.map_comp,
+            Equivalence.fun_inv_map, Functor.id_obj, Category.assoc,
+            Equivalence.counitInv_functor_comp, Category.comp_id,
+            Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app,
+            CatCommSq.vId_iso_hom_app]
+          simp [← Functor.map_comp])
+        (by
+          ext x
+          dsimp
+          simp only [CatCommSq.vComp_iso_hom_app, Iso.isoInverseComp_hom_app,
+            Functor.comp_obj, Functor.comp_map, Iso.trans_hom, Iso.symm_hom,
+            NatTrans.comp_app, Functor.associator_inv_app,
+            Iso.compInverseIso_hom_app, Category.id_comp, Functor.map_comp,
+            Equivalence.fun_inv_map, Functor.id_obj, Category.assoc,
+            Equivalence.counitInv_functor_comp, Category.comp_id,
+            Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app,
+            CatCommSq.vId_iso_hom_app]
+          simp [← Functor.map_comp]))
+    (left_triangle := by aesop_cat)
+
+end CatCospanEquivalence
+
 end CategoryTheory.Limits
