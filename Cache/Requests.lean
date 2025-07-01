@@ -36,9 +36,11 @@ def isRemoteURL (url : String) : Bool :=
 Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
-  if isRemoteURL remoteName then
-    return remoteName
-  else
+  IO.println s!"Is {remoteName} a remote URL? {isRemoteURL remoteName}"
+  -- Remove the print statement above and uncomment the lines below when confident
+  -- if isRemoteURL remoteName then
+  --   return remoteName
+  -- else
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
