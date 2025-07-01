@@ -108,6 +108,14 @@ lemma contMDiffOn_localFrame_baseSet
   intro y hy
   simp [localFrame, hy, localFrame_toBasis_at]
 
+omit [IsManifold I 0 M] [ContMDiffVectorBundle n F V I] in
+lemma _root_.contMDiffAt_localFrame_of_mem
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) {x : M} (hx : x ∈ e.baseSet) :
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n
+      (fun x ↦ TotalSpace.mk' F x (b.localFrame e i x)) x :=
+  (contMDiffOn_localFrame_baseSet n e b i).contMDiffAt <| e.open_baseSet.mem_nhds hx
+
 @[simp]
 lemma localFrame_apply_of_mem_baseSet
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
@@ -284,15 +292,23 @@ lemma contMDiffOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSp
     ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) e.baseSet :=
   contMDiffOn_localFrame_repr b e.open_baseSet (subset_refl _) hs _
 
+omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` at `x ∈ e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma contMDiffAt_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
-    {s : Π x : M,  V x} {k : WithTop ℕ∞} {x' : M} (hx : x' ∈ e.baseSet) :
+lemma contMDiffAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} {x' : M} (hx : x' ∈ e.baseSet) :
     ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x' ↔
     ∀ i, ContMDiffAt I 𝓘(𝕜) k (b.localFrame_repr e i s) x' := by
-  refine ⟨fun h i ↦ contMDiffAt_localFrame_repr hx b h i, fun i ↦ ?_⟩
-  -- needs two missing API lemmas, see below
-  sorry
+  refine ⟨fun h i ↦ contMDiffAt_localFrame_repr hx b h i, fun hi ↦ ?_⟩
+  have this (i) : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦
+      TotalSpace.mk' F x ((b.localFrame_repr e i) s x • b.localFrame e i x)) x' :=
+    contMDiffAt_smul_section (contMDiffAt_localFrame_of_mem k e b i hx) (hi i)
+  have almost : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k
+      (fun x ↦ TotalSpace.mk' F x (∑ i, (b.localFrame_repr e i) s x • b.localFrame e i x)) x' :=
+    contMDiffAt_finsum_section fun i ↦ this i
+  apply almost.congr_of_eventuallyEq ?_
+  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (b.localFrame_repr_spec hx s)
+  exact eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx]
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
