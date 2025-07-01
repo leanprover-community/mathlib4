@@ -3,7 +3,8 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -58,8 +59,6 @@ def Types.sections.equivFixedPoints :
     J.sections ≃ MulAction.fixedPoints M (J.obj (SingleObj.star M)) where
   toFun s := ⟨s.val _, s.property⟩
   invFun p := ⟨fun _ ↦ p.val, p.property⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The limit of `J : SingleObj M ⥤ Type u` is equivalent to the fixed points of the
 induced action on `J.obj (SingleObj.star M)`. -/

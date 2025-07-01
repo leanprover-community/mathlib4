@@ -3,7 +3,6 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Basic
@@ -74,8 +73,8 @@ section NonUnitalRingHomClass
 /-- `NonUnitalRingHomClass F α β` states that `F` is a type of non-unital (semi)ring
 homomorphisms. You should extend this class when you extend `NonUnitalRingHom`. -/
 class NonUnitalRingHomClass (F : Type*) (α β : outParam Type*) [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] [FunLike F α β]
-  extends MulHomClass F α β, AddMonoidHomClass F α β : Prop
+  [NonUnitalNonAssocSemiring β] [FunLike F α β] : Prop
+  extends MulHomClass F α β, AddMonoidHomClass F α β
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [FunLike F α β]
 variable [NonUnitalRingHomClass F α β]
@@ -319,8 +318,8 @@ This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
 class RingHomClass (F : Type*) (α β : outParam Type*)
-    [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β]
-  extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β : Prop
+    [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β] : Prop
+  extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β
 
 variable [FunLike F α β]
 
@@ -463,18 +462,6 @@ protected theorem map_add (f : α →+* β) : ∀ a b, f (a + b) = f a + f b :=
 /-- Ring homomorphisms preserve multiplication. -/
 protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
   map_mul f
-
-@[simp]
-theorem map_ite_zero_one {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F)
-    (p : Prop) [Decidable p] :
-    f (ite p 0 1) = ite p 0 1 := by
-  split_ifs with h <;> simp [h]
-
-@[simp]
-theorem map_ite_one_zero {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F)
-    (p : Prop) [Decidable p] :
-    f (ite p 1 0) = ite p 1 0 := by
-  split_ifs with h <;> simp [h]
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
 theorem codomain_trivial_iff_map_one_eq_zero : (0 : β) = 1 ↔ f 1 = 0 := by rw [map_one, eq_comm]

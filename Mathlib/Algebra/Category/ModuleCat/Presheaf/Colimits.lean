@@ -68,13 +68,14 @@ noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   map_id X := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app]
-    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X)).hom),
-      ModuleCat.restrictScalarsId'App_inv_naturality]
-    rw [map_id]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X)).hom)]
+    rw [ModuleCat.restrictScalarsId'App_inv_naturality, map_id]
     dsimp)
   map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g)).hom),
       ι_preservesColimitIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f).hom)]
     rw [← Functor.map_comp_assoc, ι_colimMap_assoc]

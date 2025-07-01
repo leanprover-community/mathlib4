@@ -270,9 +270,9 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
   | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
   | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
   | @tensor W X Y Z f g hf hg =>
-      have : homMk f ⊗ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
+      have : homMk f ⊗ₘ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
         Quotient.sound (HomEquiv.tensorHom_def f g)
-      change motive (homMk f ⊗ homMk g)
+      change motive (homMk f ⊗ₘ homMk g)
       rw [this]
       exact comp _ _ (whiskerRight _ _ (hf ⟦f⟧)) (whiskerLeft _ _ (hg ⟦g⟧))
 
@@ -305,7 +305,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.comp f g => projectMapAux f ≫ projectMapAux g
   | _, _, Hom.whiskerLeft X p => projectObj f X ◁ projectMapAux p
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
-  | _, _, Hom.tensor f g => projectMapAux f ⊗ projectMapAux g
+  | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
 -- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/

@@ -93,13 +93,51 @@ lemma map_mk {M N : ModuleCat.{v} R} (f : M ⟶ N) {n : ℕ} (x : Fin n → M) :
     map f n (mk x) = mk (f ∘ x) := by
   apply exteriorPower.map_apply_ιMulti
 
-variable (R)
-
+variable (R) in
 /-- The functor `ModuleCat R ⥤ ModuleCat R` which sends a module to its
 `n`th exterior power. -/
+@[simps]
 noncomputable def functor (n : ℕ) : ModuleCat.{v} R ⥤ ModuleCat.{max u v} R where
   obj M := M.exteriorPower n
   map f := map f n
+
+/-- The isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
+noncomputable def iso₀ (M : ModuleCat.{u} R) : M.exteriorPower 0 ≅ ModuleCat.of R R :=
+  (exteriorPower.zeroEquiv R M).toModuleIso
+
+@[simp]
+lemma iso₀_hom_apply {M : ModuleCat.{u} R} (f : Fin 0 → M) :
+    (iso₀ M).hom (mk f) = 1 :=
+  exteriorPower.zeroEquiv_ιMulti _
+
+@[reassoc (attr := simp)]
+lemma iso₀_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
+    map f 0 ≫ (iso₀ N).hom = (iso₀ M).hom :=
+  ModuleCat.hom_ext (exteriorPower.zeroEquiv_naturality f.hom)
+
+/-- The isomorphism `M.exteriorPower 0 ≅ M`. -/
+noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
+  (exteriorPower.oneEquiv R M).toModuleIso
+
+@[simp]
+lemma iso₁_hom_apply {M : ModuleCat.{u} R} (f : Fin 1 → M) :
+    (iso₁ M).hom (mk f) = f 0 :=
+  exteriorPower.oneEquiv_ιMulti _
+
+@[reassoc (attr := simp)]
+lemma iso₁_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
+    map f 1 ≫ (iso₁ N).hom = (iso₁ M).hom ≫ f :=
+  ModuleCat.hom_ext (exteriorPower.oneEquiv_naturality f.hom)
+
+variable (R)
+
+/-- The natural isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
+noncomputable def natIso₀ : functor.{u} R 0 ≅ (Functor.const _).obj (ModuleCat.of R R) :=
+  NatIso.ofComponents iso₀
+
+/-- The natural isomorphism `M.exteriorPower 1 ≅ M`. -/
+noncomputable def natIso₁ : functor.{u} R 1 ≅ 𝟭 _ :=
+  NatIso.ofComponents iso₁
 
 end exteriorPower
 

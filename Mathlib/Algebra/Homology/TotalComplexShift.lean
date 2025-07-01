@@ -11,7 +11,7 @@ import Mathlib.Algebra.Homology.TotalComplex
 
 There are two ways to shift objects in `HomologicalComplex₂ C (up ℤ) (up ℤ)`:
 * by shifting the first indices (and changing signs of horizontal differentials),
-which corresponds to the shift by `ℤ` on `CochainComplex (CochainComplex C ℤ) ℤ`.
+  which corresponds to the shift by `ℤ` on `CochainComplex (CochainComplex C ℤ) ℤ`.
 * by shifting the second indices (and changing signs of vertical differentials).
 
 These two sorts of shift functors shall be abbreviated as
@@ -77,10 +77,10 @@ variable (x y : ℤ) [K.HasTotal (up ℤ)]
 instance : ((shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := fun n =>
   hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + x)) _
     { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a + x, b⟩, by
-        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
         omega⟩
       invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a - x, b), by
-        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
         omega⟩
       left_inv := by
         rintro ⟨⟨a, b⟩, h⟩
@@ -99,10 +99,10 @@ instance : ((shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := fun n =>
 instance : ((shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := fun n =>
   hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + y)) _
     { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a, b + y⟩, by
-        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
         omega⟩
       invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a, b - y), by
-        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
         omega⟩
       left_inv _ := by simp
       right_inv _ := by simp }

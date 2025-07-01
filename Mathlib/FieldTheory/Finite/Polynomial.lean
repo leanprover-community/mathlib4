@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.LinearAlgebra.Dual
 
 /-!
 ## Polynomials over finite fields
@@ -100,7 +100,7 @@ variable [Field K]
 
 theorem eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (indicator b) = 0 := by
   obtain ⟨i, hi⟩ : ∃ i, a i ≠ b i := by rwa [Ne, funext_iff, not_forall] at h
-  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
+  simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C,
     Finset.prod_eq_zero_iff]
   refine ⟨i, Finset.mem_univ _, ?_⟩
   rw [FiniteField.pow_card_sub_one_eq_one, sub_self]
@@ -152,11 +152,11 @@ universe u
 
 variable (σ : Type u) (K : Type u) [Fintype K]
 
--- Porting note: `@[derive [AddCommGroup, Module K, Inhabited]]` done by hand.
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
 def R [CommRing K] : Type u :=
   restrictDegree σ K (Fintype.card K - 1)
+-- The `AddCommGroup, Module K, Inhabited` instances should be constructed by a deriving handler.
 
 noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
   inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
@@ -168,7 +168,7 @@ noncomputable instance [CommRing K] : Inhabited (R σ K) :=
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
 /-- Evaluation in the `MvPolynomial.R` subtype. -/
-def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
+noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 
 -- TODO: would be nice to replace this by suitable decidability assumptions

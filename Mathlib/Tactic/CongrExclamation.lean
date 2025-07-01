@@ -371,7 +371,7 @@ where
         let cinfo ← getConstInfo congrTheorem.theoremName
         let us ← cinfo.levelParams.mapM fun _ => mkFreshLevelMVar
         let proof := mkConst congrTheorem.theoremName us
-        let ptype ← instantiateTypeLevelParams cinfo us
+        let ptype ← instantiateTypeLevelParams cinfo.toConstantVal us
         applyCongrThm? config mvarId ptype proof
       if let some mvars := res then
         return mvars
@@ -401,7 +401,7 @@ Try to apply `Function.hfunext`, returning the new goals if it succeeds.
 Like `Lean.MVarId.obviousFunext?`, we only do so if at least one side of the `HEq` is a lambda.
 This prevents unfolding of things like `Set`.
 
-Need to have `Mathlib.Logic.Function.Basic` imported for this to succeed.
+Need to have `Mathlib/Logic/Function/Basic.lean` imported for this to succeed.
 -/
 def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext <| observing? do

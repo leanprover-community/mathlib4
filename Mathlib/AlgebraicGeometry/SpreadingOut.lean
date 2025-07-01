@@ -141,6 +141,8 @@ lemma Scheme.IsGermInjective.Spec
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
     RingHom.mem_ker, RingHom.algebraMap_toAlgebra] at hx
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
+  -- There is an `Opposite.unop (Opposite.op _)` in `hx` which doesn't seem removable using
+  -- `simp`/`rw`.
   erw [StructureSheaf.germ_toOpen] at hx
   obtain ⟨⟨y, hy⟩, hy'⟩ := (IsLocalization.map_eq_zero_iff p.asIdeal.primeCompl
     ((Spec.structureSheaf R).presheaf.stalk p) _).mp hx
@@ -344,7 +346,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
   · rw [W.fromSpecStalkOfMem_toSpecΓ_assoc x hxW, ← Spec.map_comp_assoc, ← h₁,
       Spec.map_comp, Category.assoc, ← IsAffineOpen.fromSpecStalk,
       IsAffineOpen.fromSpecStalk_eq_fromSpecStalk]
-  · simp only [Category.assoc, IsAffineOpen.isoSpec_inv_ι_assoc]
+  · simp only [Category.assoc]
     rw [← IsAffineOpen.Spec_map_appLE_fromSpec sY hU hV iVU, ← Spec.map_comp_assoc, ← h₂,
       ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.Spec_map_appLE_fromSpec sX hU hW i,
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]

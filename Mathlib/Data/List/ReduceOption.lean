@@ -18,7 +18,7 @@ variable {α β : Type*}
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
     reduceOption (some x :: l) = x :: l.reduceOption := by
-  simp only [reduceOption, filterMap, id, eq_self_iff_true, and_self_iff]
+  simp only [reduceOption, filterMap, id]
 
 @[simp]
 theorem reduceOption_cons_of_none (l : List (Option α)) :
@@ -34,11 +34,11 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
   induction' l with hd tl hl
   · simp only [reduceOption_nil, map_nil]
   · cases hd <;>
-      simpa [Option.map_some', map, eq_self_iff_true, reduceOption_cons_of_some] using hl
+      simpa [Option.map_some, map, eq_self_iff_true, reduceOption_cons_of_some] using hl
 
 theorem reduceOption_append (l l' : List (Option α)) :
     (l ++ l').reduceOption = l.reduceOption ++ l'.reduceOption :=
-  filterMap_append l l' id
+  filterMap_append
 
 @[simp]
 theorem reduceOption_replicate_none {n : ℕ} : (replicate n (@none α)).reduceOption = [] := by
@@ -102,7 +102,7 @@ theorem reduceOption_length_eq {l : List (Option α)} :
 
 theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
     l.length = l.reduceOption.length + (l.filter Option.isNone).length := by
-  simp_rw [reduceOption_length_eq, l.length_eq_length_filter_add Option.isSome, Option.bnot_isSome]
+  simp_rw [reduceOption_length_eq, l.length_eq_length_filter_add Option.isSome, Option.not_isSome]
 
 theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
   rw [length_eq_reduceOption_length_add_filter_none]
@@ -110,7 +110,7 @@ theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length �
 
 theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
-  rw [reduceOption_length_eq, List.filter_length_eq_length]
+  rw [reduceOption_length_eq, List.length_filter_eq_length_iff]
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
@@ -135,8 +135,11 @@ theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
 theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
   simp only [reduceOption, id, mem_filterMap, exists_eq_right]
 
-theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
-    (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
-  rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
+theorem reduceOption_getElem?_iff {l : List (Option α)} {x : α} :
+    (∃ i : ℕ, l[i]? = some (some x)) ↔ ∃ i : ℕ, l.reduceOption[i]? = some x := by
+  rw [← mem_iff_getElem?, ← mem_iff_getElem?, reduceOption_mem_iff]
+
+@[deprecated (since := "2025-02-21")]
+alias reduceOption_get?_iff := reduceOption_getElem?_iff
 
 end List

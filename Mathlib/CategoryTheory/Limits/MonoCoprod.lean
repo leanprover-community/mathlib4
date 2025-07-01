@@ -31,11 +31,11 @@ TODO: define distributive categories, and show that they satisfy `MonoCoprod`, s
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-
 universe u
 
 namespace CategoryTheory
+
+open CategoryTheory.Category CategoryTheory.Limits
 
 namespace Limits
 
@@ -246,6 +246,12 @@ instance [HasForget C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget 
 end Concrete
 
 end MonoCoprod
+
+instance (A : C) [HasCoproducts.{u} C] [MonoCoprod C] :
+    (sigmaConst.{u}.obj A).PreservesMonomorphisms where
+  preserves {J I} ι hι := by
+    rw [mono_iff_injective] at hι
+    exact MonoCoprod.mono_map'_of_injective (fun (i : I) ↦ A) ι hι
 
 end Limits
 

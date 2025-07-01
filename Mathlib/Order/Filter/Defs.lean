@@ -59,6 +59,8 @@ at the cost of including the assumption `[NeBot f]` in a number of lemmas and de
 *  [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
 
+assert_not_exists RelIso
+
 open Set
 
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
@@ -428,7 +430,7 @@ elab_rules : tactic
       return [m.mvarId!]
   liftMetaTactic fun goal => do
     goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-  evalTactic <|← `(tactic| dsimp (config := {zeta := false}) only [Set.mem_setOf_eq])
+  evalTactic <|← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
   if let some l := wth then
     evalTactic <|← `(tactic| intro $[$l]*)
   if let some e := usingArg then

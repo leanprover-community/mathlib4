@@ -23,7 +23,7 @@ Given `MulAction G X` where `G` is a group,
 - `MulAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
   iff every element is translated from `a`
 
-- `MulAction.IsPretransitive.iff_orbit_eq_top G a` shows that `MulAction.IsPretransitive G X`
+- `MulAction.isPretransitive_iff_orbit_eq_univ G a` shows that `MulAction.IsPretransitive G X`
   iff `MulAction.orbit G a` is full.
 
 -/

@@ -95,7 +95,6 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
   · rw [single_eq_of_ne, single_eq_of_ne hi, zero_apply]
     simp [hi]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), δ i j) :
@@ -118,26 +117,22 @@ def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), �
             | inr ha => right; simp [toFun_eq_coe (f i) ▸ ha]
           | inr hi => right; simp [toFun_eq_coe f ▸ hi]⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)]
     (f : Π₀ (i) (j), δ i j) (i : ι) (j : α i) :
     sigmaUncurry f ⟨i, j⟩ = f i j :=
   rfl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)] :
     sigmaUncurry (0 : Π₀ (i) (j), δ i j) = 0 :=
   rfl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i) (j), δ i j) :
     sigmaUncurry (f + g) = sigmaUncurry f + sigmaUncurry g :=
   DFunLike.coe_injective rfl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i j, DistribMulAction γ (δ i j)]
@@ -160,7 +155,6 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
   · rw [single_eq_of_ne hi, single_eq_of_ne, zero_apply]
     simp [hi]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/

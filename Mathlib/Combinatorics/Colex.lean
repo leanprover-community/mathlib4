@@ -7,7 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Colexigraphic order
@@ -57,7 +57,7 @@ Related files are:
 colex, colexicographic, binary
 -/
 
-open Finset Function
+open Function
 
 variable {α β : Type*}
 
@@ -104,15 +104,15 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
   let s' : Finset α := {b ∈ s | b ∉ t ∧ a ≤ b}
-  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
+  have ⟨b, hb, hbmax⟩ := s'.exists_maximal ⟨a, by simp [s', has, hat]⟩
   simp only [s', mem_filter, and_imp] at hb hbmax
   have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
   by_cases hcu : c ∈ u
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
   have ⟨d, hdu, hdt, hcd⟩ := htu hct hcu
   have had : a ≤ d := hb.2.2.trans <| hbc.trans hcd
-  refine ⟨d, hdu, fun hds ↦ ?_, had⟩
-  exact hbmax d hds hdt had <| hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
+  refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_ge.2 (hbmax hds hdt had) ?_, had⟩
+  exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
@@ -187,7 +187,7 @@ lemma forall_lt_mono (hst : toColex s ≤ toColex t) (ht : ∀ b ∈ t, b < a) :
 /-- `s ≤ {a}` in colex iff all elements of `s` are strictly less than `a`, except possibly `a` in
 which case `s = {a}`. -/
 lemma toColex_le_singleton : toColex s ≤ toColex {a} ↔ ∀ b ∈ s, b ≤ a ∧ (a ∈ s → b = a) := by
-  simp only [toColex_le_toColex, mem_singleton, and_assoc, exists_eq_left]
+  simp only [toColex_le_toColex, mem_singleton, exists_eq_left]
   refine forall₂_congr fun b _ ↦ ?_; obtain rfl | hba := eq_or_ne b a <;> aesop
 
 /-- `s < {a}` in colex iff all elements of `s` are strictly less than `a`. -/
@@ -220,11 +220,11 @@ variable [DecidableEq α]
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
-instance instDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· ≤ ·) :=
+instance instDecidableLE [DecidableLE α] : DecidableLE (Colex α) :=
   fun s t ↦ decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· < ·) :=
+instance instDecidableLT [DecidableLE α] : DecidableLT (Colex α) :=
   decidableLTOfDecidableLE
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
@@ -245,7 +245,7 @@ lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
   simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 @[simp] lemma toColex_sdiff_lt_toColex_sdiff' :
- toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
+    toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
   simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 end DecidableEq
@@ -296,8 +296,8 @@ instance instLinearOrder : LinearOrder (Colex α) where
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
-  decidableLE := instDecidableLE
-  decidableLT := instDecidableLT
+  toDecidableLE := instDecidableLE
+  toDecidableLT := instDecidableLT
 
 open scoped symmDiff
 
@@ -307,7 +307,7 @@ private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofCo
 lemma toColex_lt_toColex_iff_exists_forall_lt :
     toColex s < toColex t ↔ ∃ a ∈ t, a ∉ s ∧ ∀ b ∈ s, b ∉ t → b < a := by
   rw [← not_le, toColex_le_toColex, not_forall]
-  simp only [not_forall, not_exists, not_and, not_le, exists_prop, exists_and_left]
+  simp only [not_forall, not_exists, not_and, not_le, exists_prop]
 
 lemma lt_iff_exists_forall_lt {s t : Colex α} :
     s < t ↔ ∃ a ∈ ofColex t, a ∉ ofColex s ∧ ∀ b ∈ ofColex s, b ∉ ofColex t → b < a :=
@@ -352,7 +352,7 @@ lemma lt_iff_exists_filter_lt :
     refine ⟨m, hmt, hms, fun a hma ↦ ⟨fun has ↦ not_imp_comm.1 (hm _ has) hma.asymm, fun hat ↦ ?_⟩⟩
     by_contra has
     have hau : a ∈ u := mem_u.2 ⟨hat, has, fun b hbs hbt ↦ (hm _ hbs hbt).trans hma⟩
-    exact hma.not_le <| le_max' _ _ hau
+    exact hma.not_ge <| le_max' _ _ hau
   · rintro ⟨w, hwt, hws, hw⟩
     refine ⟨w, hwt, hws, fun a has hat ↦ ?_⟩
     by_contra! hwa
@@ -372,11 +372,11 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
   replace hst := hst.lt_of_ne <| toColex_inj.not.2 h'
   simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst
   obtain ⟨w, hwt, hws, hw⟩ := hst
-  obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_lt
+  obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_gt
   -- If `w < a`, then `a` is the colex witness for `s \ {a} < t \ {m}`
   · have hma : m < a := (min'_le _ _ hwt).trans_lt hwa
     refine (lt_iff_exists_forall_lt.2 ⟨a, mem_erase.2 ⟨hma.ne', (hw hwa).1 ha⟩,
-      not_mem_erase _ _, fun b hbs hbt ↦ ?_⟩).le
+      notMem_erase _ _, fun b hbs hbt ↦ ?_⟩).le
     change b ∉ t.erase m at hbt
     rw [mem_erase, not_and_or, not_ne_iff] at hbt
     obtain rfl | hbt := hbt
@@ -496,8 +496,6 @@ lemma isInitSeg_iff_exists_initSeg :
 
 end Colex
 
-open Colex
-
 /-!
 ### Colex on `ℕ`
 
@@ -558,8 +556,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
   invFun s := equivBitIndices.symm s.ofColex
   left_inv n := equivBitIndices.symm_apply_apply n
   right_inv s :=  Finset.toColex_inj.2 (equivBitIndices.apply_symm_apply s.ofColex)
-  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le),
-    toFinset_bitIndices_twoPowSum]
+  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le)]
 
 end Nat
 end Finset

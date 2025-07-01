@@ -111,7 +111,7 @@ of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `
 lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
-  cases' h_op with A h_op
+  obtain ⟨A, h_op⟩ := h_op
   rcases hg with ⟨C, hC⟩; rw [eventually_map] at hC
   rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
   intro ε ε₀
@@ -138,6 +138,13 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le {f : α → E} {g : α → F} {l
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∀ x y, ‖op x y‖ ≤ ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) :=
   hf.op_one_isBoundedUnder_le' hg op ⟨1, fun x y => (one_mul ‖x‖).symm ▸ h_op x y⟩
+
+@[to_additive tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding]
+lemma tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding' {X : Type*} [TopologicalSpace X]
+    [DiscreteTopology X] [ProperSpace E] {e : X → E}
+    (he : Topology.IsClosedEmbedding e) : Tendsto (norm ∘ e) cofinite atTop := by
+  rw [← Filter.cocompact_eq_cofinite X]
+  apply tendsto_norm_cocompact_atTop'.comp (Topology.IsClosedEmbedding.tendsto_cocompact he)
 
 end SeminormedGroup
 

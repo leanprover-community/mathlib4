@@ -101,10 +101,9 @@ theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
     (f a)! * (f b)! * multinomial {a, b} f = (f a + f b)! := by
   simpa [Finset.sum_pair hab, Finset.prod_pair hab] using multinomial_spec {a, b} f
 
-@[simp]
 theorem binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
     multinomial {a, b} f = (f b).succ := by
-  simp [multinomial_insert_one (Finset.not_mem_singleton.mpr h) h₁]
+  simp [h, h₁]
 
 theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} (Function.update (Function.update f a (f a).succ) b (f b).succ) =
@@ -128,8 +127,8 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
 
 theorem multinomial_univ_two (a b : ℕ) :
     multinomial Finset.univ ![a, b] = (a + b)! / (a ! * b !) := by
-  rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one,
-    Matrix.head_cons]
+  rw [multinomial, Fin.sum_univ_two, Fin.prod_univ_two]
+  dsimp only [Matrix.cons_val]
 
 theorem multinomial_univ_three (a b c : ℕ) :
     multinomial Finset.univ ![a, b, c] = (a + b + c)! / (a ! * b ! * c !) := by
@@ -159,11 +158,11 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
   simp only [multinomial_eq]
   classical
     by_cases h : a ∈ f.support
-    · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
+    · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.notMem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
       exact Nat.multinomial_congr fun _ h ↦ (Function.update_of_ne (mem_erase.1 h).1 0 f).symm
-    rw [not_mem_support_iff] at h
+    rw [notMem_support_iff] at h
     rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
 
 end Finsupp
@@ -217,10 +216,10 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   induction' s using Finset.cons_induction with a s has ih generalizing n
   · cases n <;> simp
   rw [Finset.sum_cons, piAntidiag_cons, sum_disjiUnion]
-  simp only [sum_map, Function.Embedding.coeFn_mk, Pi.add_apply, multinomial_cons,
-    Pi.add_apply, eq_self_iff_true, if_true, Nat.cast_mul, noncommProd_cons, eq_self_iff_true,
+  simp only [sum_map, Pi.add_apply, multinomial_cons,
+    Pi.add_apply, if_true, Nat.cast_mul, noncommProd_cons,
     if_true, sum_add_distrib, sum_ite_eq', has, if_false, add_zero,
-    addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
+    addRightEmbedding_apply]
   suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
     ∑ g ∈ piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
       multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
@@ -260,18 +259,13 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
   induction' s using Finset.induction with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
-      -- Porting note: Lean cannot infer this instance by itself
-    · haveI : Subsingleton (Sym α 0) := Unique.instSubsingleton
-      rw [_root_.pow_zero, Fintype.sum_subsingleton]
+    · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
-        -- Porting note: Lean cannot infer this instance by itself
-      · have : Zero (Sym α 0) := Sym.instZeroSym
-        exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
+      · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
-      -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
@@ -332,18 +326,21 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
     (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
   rw [Multiset.multinomial_filter_ne x]
   rw [← mem_coe] at hx
   refine congrArg₂ _ ?_ ?_
-  · rw [card_coe, count_coe_fill_self_of_not_mem hx]
+  · rw [card_coe, count_coe_fill_self_of_notMem hx]
   · refine congrArg _ ?_
     rw [coe_fill, coe_replicate, Multiset.filter_add]
     rw [Multiset.filter_eq_self.mpr]
-    · rw [add_right_eq_self]
+    · rw [add_eq_left]
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
+
+@[deprecated (since := "2025-05-23")]
+alias multinomial_coe_fill_of_not_mem := multinomial_coe_fill_of_notMem
 
 end Sym

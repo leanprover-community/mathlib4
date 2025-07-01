@@ -31,7 +31,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f : 𝕜 → F}
 variable {f' : F}
-variable {x : 𝕜}
+variable {s : Set 𝕜} {x : 𝕜} {c : F}
 
 theorem HasStrictDerivAt.hasStrictFDerivAt_equiv {f : 𝕜 → 𝕜} {f' x : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hf' : f' ≠ 0) :
@@ -84,15 +84,40 @@ theorem PartialHomeomorph.hasDerivAt_symm (f : PartialHomeomorph 𝕜 𝕜) {a f
     (hf' : f' ≠ 0) (htff' : HasDerivAt f f' (f.symm a)) : HasDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 
-theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
-    ∀ᶠ z in 𝓝[≠] x, f z ≠ f x :=
-  (hasDerivAt_iff_hasFDerivAt.1 h).eventually_ne
+theorem HasDerivWithinAt.eventually_ne (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
+    ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c :=
+  h.hasFDerivWithinAt.eventually_ne
     ⟨‖f'‖⁻¹, fun z => by field_simp [norm_smul, mt norm_eq_zero.1 hf']⟩
 
-theorem HasDerivAt.tendsto_punctured_nhds (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
+theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
+    ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
+  simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).eventually_ne hf'
+
+theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
     (h.eventually_ne hf')
+
+@[deprecated (since := "2025-03-02")]
+alias HasDerivAt.tendsto_punctured_nhds := HasDerivAt.tendsto_nhdsNE
+
+/-- If a function is equal to a constant at a set of points that accumulates to `x` in `s`,
+then its derivative within `s` at `x` equals zero,
+either because it has derivative zero or because it isn't differentiable at this point. -/
+theorem derivWithin_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[s \ {x}] x, f y = c) :
+    derivWithin f s x = 0 := by
+  by_cases hf : DifferentiableWithinAt 𝕜 f s x
+  · contrapose h
+    rw [not_frequently]
+    exact hf.hasDerivWithinAt.eventually_ne h
+  · exact derivWithin_zero_of_not_differentiableWithinAt hf
+
+/-- If a function is equal to a constant at a set of points that accumulates to `x`,
+then its derivative at `x` equals zero,
+either because it has derivative zero or because it isn't differentiable at this point. -/
+theorem deriv_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[≠] x, f y = c) : deriv f x = 0 := by
+  rw [← derivWithin_univ, derivWithin_zero_of_frequently_const]
+  rwa [← compl_eq_univ_diff]
 
 theorem not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero {f g : 𝕜 → 𝕜} {a : 𝕜}
     {s t : Set 𝕜} (ha : a ∈ s) (hsu : UniqueDiffWithinAt 𝕜 s a) (hf : HasDerivWithinAt f 0 t (g a))

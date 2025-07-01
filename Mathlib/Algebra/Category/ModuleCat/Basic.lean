@@ -46,7 +46,7 @@ variable (R : Type u) [Ring R]
 
 /-- The category of R-modules and their morphisms.
 
- Note that in the case of `R = ℤ`, we can not
+Note that in the case of `R = ℤ`, we can not
 impose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
@@ -58,11 +58,6 @@ structure ModuleCat where
   [isModule : Module R carrier]
 
 attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
-
-/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
-Since the universe the ring lives in can be inferred, we put that last. -/
-@[nolint checkUnivs]
-abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
 
 namespace ModuleCat
 
@@ -157,8 +152,6 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
 
-@[deprecated (since := "2024-10-06")] alias asHom := ModuleCat.ofHom
-
 @[simp]
 lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
@@ -180,22 +173,16 @@ lemma ofHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGrou
 lemma ofHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by
-  rw [← comp_apply]
   simp
 
 /-- `ModuleCat.Hom.hom` bundled as an `Equiv`. -/
 def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end
 
@@ -221,11 +208,6 @@ theorem forget₂_obj (X : ModuleCat R) :
     (forget₂ (ModuleCat R) AddCommGrp).obj X = AddCommGrp.of X :=
   rfl
 
--- Porting note: the simpNF linter correctly doesn't like this.
--- I'm not sure what this is for, actually.
--- If it is really needed, better might be a simp lemma that says
--- `AddCommGrp.of (ModuleCat.of R X) = AddCommGrp.of X`.
--- @[simp 900]
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGrp).obj (of R X) = AddCommGrp.of X :=
   rfl
@@ -244,7 +226,7 @@ variable {R}
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 module. -/
-@[simps]
+@[deprecated Iso.refl (since := "2025-05-15")]
 def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
@@ -253,7 +235,6 @@ theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M whe
   unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
     ext x
     rw [Subsingleton.elim x (0 : M)]
-    dsimp
     simp⟩⟩
   unique_from X := ⟨⟨⟨ofHom (0 : X →ₗ[R] M)⟩, fun f => by
     ext x
@@ -271,8 +252,6 @@ open ModuleCat
 
 /-- Reinterpreting a linear map in the category of `R`-modules -/
 scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
-
-@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
 
 -- Since `of` and the coercion now roundtrip reducibly, we don't need to distinguish in which place
 -- we need to add `of` when coercing from linear maps to morphisms.
@@ -390,6 +369,11 @@ def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
   { homEquiv with
     map_add' := fun _ _ => rfl }
 
+theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
+  refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
+  rw [← LinearMap.id_apply (R := R) x, ← ModuleCat.hom_id]
+  simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, LinearMap.zero_apply]
+
 end AddCommGroup
 
 section SMul
@@ -479,8 +463,6 @@ variable (M N : ModuleCat.{v} R)
   toFun := ModuleCat.Hom.hom
   invFun := ModuleCat.ofHom
   map_mul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 /-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
@@ -491,8 +473,8 @@ a morphism of rings from `R` to the endomorphisms of the underlying abelian grou
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
   toFun r := AddCommGrp.ofHom
     { toFun := fun (m : M) => r • m
-      map_zero' := by dsimp; rw [smul_zero]
-      map_add' := fun x y => by dsimp; rw [smul_add] }
+      map_zero' := by rw [smul_zero]
+      map_add' := fun x y => by rw [smul_add] }
   map_one' := AddCommGrp.ext (fun x => by simp)
   map_zero' := AddCommGrp.ext (fun x => by simp)
   map_mul' r s := AddCommGrp.ext (fun (x : M) => (smul_smul r s x).symm)
@@ -504,8 +486,7 @@ lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
   ext x
   exact (f.hom.map_smul r x).symm
 
-variable (R)
-
+variable (R) in
 /-- The scalar multiplication on `ModuleCat R` considered as a morphism of rings
 to the endomorphisms of the forgetful functor to `AddCommGrp)`. -/
 @[simps]
@@ -517,8 +498,6 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   map_zero' := NatTrans.ext (by aesop_cat)
   map_mul' _ _ := NatTrans.ext (by aesop_cat)
   map_add' _ _ := NatTrans.ext (by aesop_cat)
-
-variable {R}
 
 /-- Given `A : AddCommGrp` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/
@@ -552,8 +531,6 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
 end

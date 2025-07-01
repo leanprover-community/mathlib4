@@ -6,12 +6,13 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.NNRat.Defs
 
 /-!
 # The rational numbers form a linear ordered field
 
-This file contains the linear ordered field instance on the rational numbers.
+This file used to contain the linear ordered field instance on the rational numbers.
+
+TODO: rename this file to `Mathlib/Algebra/Order/GroupWithZero/NNRat.lean`
 
 See note [foundational algebra order theory].
 
@@ -20,12 +21,4 @@ See note [foundational algebra order theory].
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
-namespace Rat
-
-instance instLinearOrderedField : LinearOrderedField ℚ where
-  __ := instLinearOrderedCommRing
-  __ := instField
-
-end Rat
-
-deriving instance LinearOrderedSemifield, LinearOrderedCommGroupWithZero for NNRat
+deriving instance LinearOrderedCommGroupWithZero for NNRat

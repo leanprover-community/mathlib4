@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Order
+import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
@@ -63,13 +63,11 @@ theorem coe_smul {R} (r : R) (s : ℝ≥0) [SMul R ℝ≥0] [SMul R ℝ≥0∞] 
   rw [← smul_one_smul ℝ≥0 r (s : ℝ≥0∞), smul_def, smul_eq_mul, ← ENNReal.coe_mul, smul_mul_assoc,
     one_mul]
 
--- Porting note: added missing `DecidableEq R`
 theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [NoZeroSMulDivisors R ℝ≥0∞] [DecidableEq R] (c : R) :
     c • ∞ = if c = 0 then 0 else ∞ := by
   rw [← smul_one_mul, mul_top']
-  -- Porting note: need the primed version of `one_ne_zero` now
-  simp_rw [smul_eq_zero, or_iff_left (one_ne_zero' ℝ≥0∞)]
+  simp_rw [smul_eq_zero, or_iff_left one_ne_zero]
 
 lemma nnreal_smul_lt_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y < ⊤) : x • y < ⊤ := mul_lt_top (by simp) hy
 lemma nnreal_smul_ne_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y ≠ ⊤) : x • y ≠ ⊤ := mul_ne_top (by simp) hy

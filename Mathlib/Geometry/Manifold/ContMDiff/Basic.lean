@@ -14,7 +14,7 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
 * `contMDiff_const` gives the smoothness of constant functions
 * `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is `C^n`
 * `contMDiff_isOpenEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
-embedding `e : M → H`, then `e` is `C^n`.
+  embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
 chain rule, manifolds, higher derivative
@@ -62,7 +62,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds (I := I) x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
-    simp only [e, e.map_source hx', true_and, e.left_inv hx', st hx's, *]
+    simp only [e, true_and, e.left_inv hx', st hx's, *]
   refine ((hg.2.comp _ (hf.2.mono inter_subset_right)
       ((mapsTo_preimage _ _).mono_left inter_subset_left)).mono_of_mem_nhdsWithin
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
@@ -124,6 +124,13 @@ theorem ContMDiffAt.comp_contMDiffWithinAt {g : M' → M''} (x : M)
 
 @[deprecated (since := "2024-11-20")]
 alias SmoothAt.comp_smoothWithinAt := ContMDiffAt.comp_contMDiffWithinAt
+
+/-- `g ∘ f` is `C^n` within `s` at `x` if `g` is `C^n` at `f x` and
+`f` is `C^n` within `s` at `x`. -/
+theorem ContMDiffAt.comp_contMDiffWithinAt_of_eq {g : M' → M''} {x : M} {y : M'}
+    (hg : ContMDiffAt I' I'' n g y) (hf : ContMDiffWithinAt I I' n f s x) (hx : f x = y) :
+    ContMDiffWithinAt I I'' n (g ∘ f) s x := by
+  subst hx; exact hg.comp_contMDiffWithinAt x hf
 
 /-- The composition of `C^n` functions at points is `C^n`. -/
 nonrec theorem ContMDiffAt.comp {g : M' → M''} (x : M) (hg : ContMDiffAt I' I'' n g (f x))
@@ -253,6 +260,13 @@ theorem contMDiffWithinAt_of_subsingleton [Subsingleton M'] : ContMDiffWithinAt 
 theorem contMDiffOn_of_subsingleton [Subsingleton M'] : ContMDiffOn I I' n f s :=
   contMDiff_of_subsingleton.contMDiffOn
 
+lemma contMDiff_of_discreteTopology [DiscreteTopology M] :
+    ContMDiff I I' n f := by
+  intro x
+  -- f is locally constant, and constant functions are smooth.
+  apply contMDiff_const (c := f x).contMDiffAt.congr_of_eventuallyEq
+  simp [EventuallyEq]
+
 end const
 
 /-- `f` is continuously differentiable if it is cont. differentiable at
@@ -265,20 +279,32 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
   by_cases hx : x ∈ mulTSupport f
   · exact hf x hx
   · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
-      (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
+      (notMem_mulTSupport_iff_eventuallyEq.1 hx)
 
-@[to_additive contMDiffWithinAt_of_not_mem]
-theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+@[to_additive contMDiffWithinAt_of_notMem]
+theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
   apply contMDiffWithinAt_const.congr_of_eventuallyEq
-    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
-    (image_eq_one_of_nmem_mulTSupport hx)
+    (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
+    (image_eq_one_of_notMem_mulTSupport hx)
+
+@[deprecated (since := "2025-05-23")]
+alias contMDiffWithinAt_of_not_mem := contMDiffWithinAt_of_notMem
+
+@[to_additive existing contMDiffWithinAt_of_not_mem, deprecated (since := "2025-05-23")]
+alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
-@[to_additive contMDiffAt_of_not_mem]
-theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+@[to_additive contMDiffAt_of_notMem]
+theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
-  contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
+  contMDiffWithinAt_of_notMem_mulTSupport hx n univ
+
+@[deprecated (since := "2025-05-23")]
+alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
+
+@[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
+alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
 
 /-! ### The inclusion map from one open set to another is `C^n` -/
@@ -362,9 +388,6 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
       h.toPartialHomeomorph_target] at this
     exact this
 
-@[deprecated (since := "2024-10-18")]
-alias contMDiff_openEmbedding := contMDiff_isOpenEmbedding
-
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
@@ -388,9 +411,6 @@ lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     apply I.right_inv
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _) hz.1
 
-@[deprecated (since := "2024-10-18")]
-alias contMDiffOn_openEmbedding_symm := contMDiffOn_isOpenEmbedding_symm
-
 variable [ChartedSpace H M]
 variable [Nonempty M'] {e' : M' → H'} (h' : IsOpenEmbedding e')
 
@@ -407,8 +427,5 @@ lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf
   simp
-
-@[deprecated (since := "2024-10-18")]
-alias ContMDiff.of_comp_openEmbedding := ContMDiff.of_comp_isOpenEmbedding
 
 end

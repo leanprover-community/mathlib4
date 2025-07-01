@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -48,6 +48,7 @@ transformations (in the pseudo- sense) of the identity 2-functor on `C`, which s
 `0`-morphism to `X`.
 -/
 structure HalfBraiding (X : C) where
+  /-- The family of isomorphisms `X ⊗ U ≅ U ⊗ X` -/
   β : ∀ U, X ⊗ U ≅ U ⊗ X
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
@@ -75,6 +76,7 @@ variable {C}
 /-- A morphism in the Drinfeld center of `C`. -/
 @[ext]
 structure Hom (X Y : Center C) where
+  /-- The underlying morphism between the first components of the objects involved -/
   f : X.1 ⟶ Y.1
   comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
 
@@ -194,7 +196,7 @@ def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
 @[simps]
 def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂ where
-  f := f.f ⊗ g.f
+  f := f.f ⊗ₘ g.f
   comm U := by
     rw [tensorHom_def, comp_whiskerRight_assoc, whiskerLeft_comm, whiskerRight_comm_assoc,
       MonoidalCategory.whiskerLeft_comp]
@@ -260,7 +262,7 @@ theorem whiskerRight_f {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C)
   rfl
 
 @[simp]
-theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ g).f = f.f ⊗ g.f :=
+theorem tensor_f {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (f ⊗ₘ g).f = f.f ⊗ₘ g.f :=
   rfl
 
 @[simp]

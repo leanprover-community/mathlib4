@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
@@ -15,14 +15,14 @@ import Mathlib.RingTheory.SimpleRing.Basic
 
 ## Main definitions
 
- * `IsFractionRing R K` expresses that `K` is a field of fractions of `R`, as an abbreviation of
-   `IsLocalization (NonZeroDivisors R) K`
+* `IsFractionRing R K` expresses that `K` is a field of fractions of `R`, as an abbreviation of
+  `IsLocalization (NonZeroDivisors R) K`
 
 ## Main results
 
- * `IsFractionRing.field`: a definition (not an instance) stating the localization of an integral
-   domain `R` at `R \ {0}` is a field
- * `Rat.isFractionRing` is an instance stating `ℚ` is the field of fractions of `ℤ`
+* `IsFractionRing.field`: a definition (not an instance) stating the localization of an integral
+  domain `R` at `R \ {0}` is a field
+* `Rat.isFractionRing` is an instance stating `ℚ` is the field of fractions of `ℤ`
 
 ## Implementation notes
 
@@ -66,6 +66,23 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
 namespace IsFractionRing
 
 open IsLocalization
+
+theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
+    (surj : ∀ z : K, ∃ x y, z = algebraMap R K x / algebraMap R K y) :
+    IsFractionRing R K :=
+  have inj := FaithfulSMul.algebraMap_injective R K
+  have := inj.noZeroDivisors _ (map_zero _) (map_mul _)
+  have := Module.nontrivial R K
+{ map_units' x :=
+    .mk0 _ <| (map_ne_zero_iff _ inj).mpr <| mem_nonZeroDivisors_iff_ne_zero.mp x.2
+  surj' z := by
+    have ⟨x, y, eq⟩ := surj z
+    obtain rfl | hy := eq_or_ne y 0
+    · obtain rfl : z = 0 := by simpa using eq
+      exact ⟨(0, 1), by simp⟩
+    exact ⟨⟨x, y, mem_nonZeroDivisors_iff_ne_zero.mpr hy⟩,
+      (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
+  exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
 variable {R K}
 
@@ -128,6 +145,7 @@ See note [reducible non-instances]. -/
 @[stacks 09FJ]
 noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
+  inv := IsFractionRing.inv A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
   inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
   nnqsmul := _
@@ -435,18 +453,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
-  ext x
-  erw [Submonoid.map_equiv_eq_comap_symm]
-  simp only [MulEquiv.coe_toMonoidHom, RingEquiv.toMulEquiv_eq_coe, Submonoid.mem_comap]
-  constructor
-  · rintro hx z (hz : z * h.symm x = 0)
-    rw [← h.map_eq_zero_iff]
-    apply hx
-    simpa only [h.map_zero, h.apply_symm_apply, h.map_mul] using congr_arg h hz
-  · rintro (hx : h.symm x ∈ _) z hz
-    rw [← h.symm.map_eq_zero_iff]
-    apply hx
-    rw [← h.symm.map_mul, hz, h.symm.map_zero]
+  exact (MulEquivClass.map_nonZeroDivisors h).symm
 
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
@@ -509,19 +516,37 @@ theorem mk_eq_div {r s} :
       (algebraMap _ _ r / algebraMap A _ s : FractionRing A) := by
   rw [Localization.mk_eq_mk', IsFractionRing.mk'_eq_div]
 
+section liftAlgebra
+
+variable [Field K] [Algebra R K] [FaithfulSMul R K]
+
 /-- This is not an instance because it creates a diamond when `K = FractionRing R`.
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
-noncomputable abbrev liftAlgebra [IsDomain R] [Field K] [Algebra R K]
-    [FaithfulSMul R K] : Algebra (FractionRing R) K :=
-  RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _))
+noncomputable abbrev liftAlgebra : Algebra (FractionRing R) K :=
+  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R K))
+
+attribute [local instance] liftAlgebra
 
 -- Porting note: had to fill in the `_` by hand for this instance
-instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [FaithfulSMul R K] :
-    by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
-  letI := liftAlgebra R K
-  exact IsScalarTower.of_algebraMap_eq fun x =>
+instance isScalarTower_liftAlgebra : IsScalarTower R (FractionRing R) K :=
+  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  .of_algebraMap_eq fun x ↦
     (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R K) x).symm
+
+lemma algebraMap_liftAlgebra :
+    have := (FaithfulSMul.algebraMap_injective R K).isDomain
+    algebraMap (FractionRing R) K = IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _) :=
+  rfl
+
+instance {R₀} [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ K] [IsScalarTower R₀ R K] :
+    IsScalarTower R₀ (FractionRing R) K where
+  smul_assoc r₀ r k := r.ind fun ⟨r, s⟩ ↦ by
+    simp_rw [Localization.smul_mk, Algebra.smul_def, Localization.mk_eq_mk',
+      algebraMap_liftAlgebra, IsFractionRing.lift_mk', mul_comm_div, ← Algebra.smul_def, smul_assoc]
+
+end liftAlgebra
 
 /-- Given a ring `A` and a localization map to a fraction ring
 `f : A →+* K`, we get an `A`-isomorphism between the fraction ring of `A` as a quotient

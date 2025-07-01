@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.Zorn
 
@@ -104,7 +105,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
         let ⟨f, hf⟩ := Classical.axiom_of_choice h
         have : f ∈ s :=
           have : insert f s ∈ sets β := fun i x hx y hy => by
-            cases' hx with hx hx <;> cases' hy with hy hy; · simp [hx, hy]
+            rcases hx with hx | hx <;> rcases hy with hy | hy; · simp [hx, hy]
             · subst x
               exact fun e => (hf i y hy e.symm).elim
             · subst y

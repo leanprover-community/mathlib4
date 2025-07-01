@@ -3,7 +3,7 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
@@ -12,15 +12,17 @@ import Mathlib.Topology.ContinuousMap.Basic
 We introduce the bundled category `TopCat` of topological spaces together with the functors
 `TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
 with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
+resp. right adjoint to the forgetful functor, see
+`Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
 -/
 
+assert_not_exists Module
 
 open CategoryTheory TopologicalSpace Topology
 
 universe u
 
-/-- The category of semirings. -/
+/-- The category of topological spaces. -/
 structure TopCat where
   private mk ::
   /-- The underlying type. -/
@@ -130,13 +132,11 @@ lemma ofHom_comp {X Y Z : Type u} [TopologicalSpace X] [TopologicalSpace Y] [Top
 lemma ofHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
-lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  CategoryTheory.congr_fun f.hom_inv_id x
+lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
+  simp
 
-@[simp]
-lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  CategoryTheory.congr_fun f.inv_hom_id y
+lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
+  simp
 
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
@@ -201,31 +201,30 @@ theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso 
 
 lemma isIso_of_bijective_of_isOpenMap {X Y : TopCat.{u}} (f : X ⟶ Y)
     (hfbij : Function.Bijective f) (hfcl : IsOpenMap f) : IsIso f :=
-  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousOpen
-    (Equiv.ofBijective f hfbij) f.hom.continuous hfcl
+  let e : X ≃ₜ Y :=
+    (Equiv.ofBijective f hfbij).toHomeomorphOfContinuousOpen f.hom.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
 lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
     (hfbij : Function.Bijective f) (hfcl : IsClosedMap f) : IsIso f :=
-  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousClosed
-    (Equiv.ofBijective f hfbij) f.hom.continuous hfcl
+  let e : X ≃ₜ Y :=
+    (Equiv.ofBijective f hfbij).toHomeomorphOfContinuousClosed f.hom.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
+
+lemma isIso_iff_isHomeomorph {X Y : TopCat.{u}} (f : X ⟶ Y) :
+    IsIso f ↔ IsHomeomorph f :=
+  ⟨fun _ ↦ (homeoOfIso (asIso f)).isHomeomorph,
+    fun H ↦ isIso_of_bijective_of_isOpenMap _ H.bijective H.isOpenMap⟩
 
 theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_comp_isIso := isOpenEmbedding_iff_comp_isIso
-
 @[simp]
 theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
-  simp only [← Functor.map_comp]
+  simp only
   exact isOpenEmbedding_iff_comp_isIso f g
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_comp_isIso' := isOpenEmbedding_iff_comp_isIso'
 
 theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
@@ -235,16 +234,10 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
     exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_isIso_comp := isOpenEmbedding_iff_isIso_comp
-
 @[simp]
 theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
-  simp only [← Functor.map_comp]
+  simp only
   exact isOpenEmbedding_iff_isIso_comp f g
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_isIso_comp' := isOpenEmbedding_iff_isIso_comp'
 
 end TopCat

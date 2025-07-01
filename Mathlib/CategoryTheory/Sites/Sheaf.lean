@@ -106,8 +106,6 @@ def conesEquivSieveCompatibleFamily :
         rw [id_comp]
         convert rfl
         rw [Over.w] }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -126,8 +124,6 @@ def homEquivAmalgamation :
     (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (P S)
 
@@ -225,7 +221,7 @@ def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : 
     (hx : ∀ ⦃I₁ I₂ : S.Arrow⦄ (r : I₁.Relation I₂),
        x I₁ ≫ P.map r.g₁.op = x I₂ ≫ P.map r.g₂.op) : E ⟶ P.obj (op X) :=
   (hP _ _ S.condition).amalgamate (fun Y f hf => x ⟨Y, f, hf⟩) fun _ _ _ _ _ _ _ h₁ h₂ w =>
-    @hx { hf := h₁ } { hf := h₂ } { w := w }
+    @hx { hf := h₁, .. } { hf := h₂, .. } { w := w, .. }
 
 @[reassoc (attr := simp)]
 theorem IsSheaf.amalgamate_map {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
@@ -345,6 +341,12 @@ def sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A where
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
+/-- The sheaf sections functor on `X` is given by evaluation of presheaves on `X`. -/
+@[simps!]
+def sheafSectionsNatIsoEvaluation {X : C} :
+    (sheafSections J A).obj (op X) ≅ sheafToPresheaf J A ⋙ (evaluation _ _).obj (op X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
 /-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
 @[simps]
 def fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful where
@@ -447,7 +449,7 @@ instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
         naturality := fun U V i => by
-          induction' n using Int.induction_on with n ih n ih
+          induction' n with n ih n ih
           · simp only [zero_smul, comp_zero, zero_comp]
           · simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
               add_left_inj]
@@ -465,7 +467,7 @@ instance sheafHomHasNSMul : SMul ℕ (P ⟶ Q) where
         naturality := fun U V i => by
           induction n with
           | zero => simp only [zero_smul, comp_zero, zero_comp]
-          | succ n ih => simp only [Nat.succ_eq_add_one, add_smul, ih, one_nsmul, comp_add,
+          | succ n ih => simp only [add_smul, ih, one_nsmul, comp_add,
               NatTrans.naturality, add_comp] }
 
 instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0
@@ -517,7 +519,7 @@ section MultiequalizerConditions
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
-    (fun _ _ r => E.condition ⟨_, _, r⟩)
+    (fun _ _ r => E.condition ⟨r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)
     · apply hP.amalgamate_map

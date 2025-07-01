@@ -73,7 +73,7 @@ variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [Monoid P]
 /-- Coproduct of two `MonoidHom`s with the same codomain,
   with a commutation assumption:
   `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
-  (Noncommutative case; in the commutative case, use `MonoidHom.coprod`.)-/
+  (Noncommutative case; in the commutative case, use `MonoidHom.coprod`.) -/
 @[to_additive (attr := simps)
     "Coproduct of two `AddMonoidHom`s with the same codomain,
     with a commutation assumption:
@@ -103,7 +103,7 @@ theorem noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
 theorem noncommCoprod_unique (f : M × N →* P) :
     (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (fun _ _ => (commute_inl_inr _ _).map f)
       = f :=
-  ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
+  ext fun x => by simp [inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :

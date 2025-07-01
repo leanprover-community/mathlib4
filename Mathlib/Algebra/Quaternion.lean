@@ -77,22 +77,19 @@ open Quaternion
 
 /-- The equivalence between a quaternion algebra over `R` and `R × R × R × R`. -/
 @[simps]
-def equivProd {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ R × R × R × R where
+def equivProd {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ R × R × R × R where
   toFun a := ⟨a.1, a.2, a.3, a.4⟩
   invFun a := ⟨a.1, a.2.1, a.2.2.1, a.2.2.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
 @[simps symm_apply]
-def equivTuple {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 4 → R) where
+def equivTuple {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 4 → R) where
   toFun a := ![a.1, a.2, a.3, a.4]
   invFun a := ⟨a 0, a 1, a 2, a 3⟩
-  left_inv _ := rfl
-  right_inv f := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
+  right_inv _ := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
 
 @[simp]
-theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃: R) (x : ℍ[R,c₁,c₂,c₃]) :
+theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃ : R) (x : ℍ[R,c₁,c₂,c₃]) :
     equivTuple c₁ c₂ c₃ x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 
@@ -512,28 +509,28 @@ section
 
 variable (c₁ c₂ c₃)
 
-/-- `QuaternionAlgebra.re` as a `LinearMap`-/
+/-- `QuaternionAlgebra.re` as a `LinearMap` -/
 @[simps]
 def reₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := re
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imI` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imI` as a `LinearMap` -/
 @[simps]
 def imIₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imI
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imJ` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imJ` as a `LinearMap` -/
 @[simps]
 def imJₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imJ
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imK` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imK` as a `LinearMap` -/
 @[simps]
 def imKₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imK
@@ -1138,7 +1135,7 @@ variable {R : Type*}
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing R] {a : ℍ[R]}
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
@@ -1183,31 +1180,7 @@ end LinearOrderedCommRing
 
 section Field
 
-variable [LinearOrderedField R] (a b : ℍ[R])
-
-@[simps (config := .lemmasOnly)]
-instance instInv : Inv ℍ[R] :=
-  ⟨fun a => (normSq a)⁻¹ • star a⟩
-
-instance instGroupWithZero : GroupWithZero ℍ[R] :=
-  { Quaternion.instNontrivial with
-    inv := Inv.inv
-    inv_zero := by rw [instInv_inv, star_zero, smul_zero]
-    mul_inv_cancel := fun a ha => by
-      rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
-        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
-
-@[norm_cast, simp]
-theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
-  map_inv₀ (algebraMap R ℍ[R]) _
-
-@[norm_cast, simp]
-theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
-  map_div₀ (algebraMap R ℍ[R]) x y
-
-@[norm_cast, simp]
-theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
-  map_zpow₀ (algebraMap R ℍ[R]) x z
+variable [Field R] (a b : ℍ[R])
 
 instance instNNRatCast : NNRatCast ℍ[R] where nnratCast q := (q : R)
 instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
@@ -1226,6 +1199,32 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 @[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
 
 @[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
+
+variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
+
+@[simps -isSimp]
+instance instInv : Inv ℍ[R] :=
+  ⟨fun a => (normSq a)⁻¹ • star a⟩
+
+instance instGroupWithZero : GroupWithZero ℍ[R] :=
+  { Quaternion.instNontrivial with
+    inv := Inv.inv
+    inv_zero := by rw [inv_def, star_zero, smul_zero]
+    mul_inv_cancel := fun a ha => by
+      rw [inv_def, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
+        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
+
+@[norm_cast, simp]
+theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
+  map_inv₀ (algebraMap R ℍ[R]) _
+
+@[norm_cast, simp]
+theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
+  map_div₀ (algebraMap R ℍ[R]) x y
+
+@[norm_cast, simp]
+theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
+  map_zpow₀ (algebraMap R ℍ[R]) x z
 
 instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instRing
