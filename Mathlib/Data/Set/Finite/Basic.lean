@@ -763,7 +763,7 @@ theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintyp
 
 @[simp]
 theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
-  Fintype.card_ofSubsingleton _
+  rfl
 
 theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :
     Fintype.card s < Fintype.card t :=

@@ -383,7 +383,7 @@ theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f
           (inv f hf - const abv (lim f)⁻¹ -
             (const abv (lim f) - f) * (inv f hf * const abv (lim f)⁻¹)) := by
               rw [sub_mul, ← sub_add, sub_sub, sub_add_eq_sub_sub, sub_right_comm, sub_add]
-              show LimZero
+              change LimZero
                 (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) -
                   (const abv (lim f)⁻¹ - f * (inv f hf * const abv (lim f)⁻¹)))
               exact sub_limZero
