@@ -79,54 +79,6 @@ theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
       MDifferentiableAt IB 𝓘(𝕜, F) (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
 
-variable {IB} in
-theorem mdifferentiableWithinAt_section_of_mem_BaseSet (s : ∀ x, E x) (a : Set B) {x₀ : B}
-     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
-    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
-    MDifferentiableWithinAt IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
-      MDifferentiableWithinAt IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) a x₀ := by
-  sorry
-
-variable {IB} in
-/-- Differentiability of a section at `x` can be determined
-using any trivialisation whose `baseSet` contains `x`. -/
-theorem mdifferentiableAt_section_of_mem_baseSet {s : ∀ x, E x} {x₀ : B}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
-    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
-    MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
-      MDifferentiableAt IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
-  simp_rw [← mdifferentiableWithinAt_univ]
-  exact mdifferentiableWithinAt_section_of_mem_BaseSet s univ e hx₀
-
-variable {IB} in
-/-- Differentiability of a section on `s` can be determined
-using any trivialisation whose `baseSet` contains `s`. -/
-theorem mdifferentiableOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
-    [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
-    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
-      MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) a := by
-  -- golfing useful?
-  constructor
-  · intro h x hx
-    have : MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x :=
-      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
-    exact ((mdifferentiableAt_section_of_mem_baseSet (ha' hx)).mp this).mdifferentiableWithinAt
-  · intro h x hx
-    have : MDifferentiableAt IB 𝓘(𝕜, F) (fun x ↦ (e { proj := x, snd := s x }).2) x :=
-      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
-    exact ((mdifferentiableAt_section_of_mem_baseSet (ha' hx)).mpr this).mdifferentiableWithinAt
-
-variable {IB} in
-/-- For any trivialization `e`, the differentiability of a section on `e.baseSet`
-can be determined using `e`. -/
-theorem mdifferentiableOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
-    [MemTrivializationAtlas e] :
-    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
-      MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
-  mdifferentiableOn_section_of_mem_baseSet e.open_baseSet (subset_refl _)
-
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
          [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 
@@ -223,6 +175,36 @@ theorem Trivialization.mdifferentiableAt_section_iff
     MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun b ↦ TotalSpace.mk' F b (s b)) b₀ ↔
       MDifferentiableAt IB 𝓘(𝕜, F) (fun x ↦ (e (s x)).2) b₀ := by
   simpa [← mdifferentiableWithinAt_univ] using e.mdifferentiableWithinAt_section_iff IB s hex₀
+
+variable {IB} in
+/-- Differentiability of a section on `s` can be determined
+using any trivialisation whose `baseSet` contains `s`. -/
+theorem mdifferentiableOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
+    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
+      MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) a := by
+  -- golfing useful?
+  constructor
+  · intro h x hx
+    have : MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x :=
+      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
+    exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mp this).mdifferentiableWithinAt
+  · intro h x hx
+    have : MDifferentiableAt IB 𝓘(𝕜, F) (fun x ↦ (e { proj := x, snd := s x }).2) x :=
+      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
+    exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mpr this).mdifferentiableWithinAt
+
+variable {IB} in
+/-- For any trivialization `e`, the differentiability of a section on `e.baseSet`
+can be determined using `e`. -/
+theorem mdifferentiableOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] :
+    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
+      MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
+  mdifferentiableOn_section_of_mem_baseSet e.open_baseSet (subset_refl _)
+
 end
 
 section operations

@@ -454,7 +454,7 @@ lemma differenceAux_smul_eq' (cov cov' : CovariantDerivative I F V)
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 /-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
 lemma differenceAux_tensorial (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
-    [FiniteDimensional ℝ F]
+    [FiniteDimensional ℝ F] [ContMDiffVectorBundle 1 F V I]
     (X X' : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x₀ : M)
     (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x₀)
     (hσ' : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x₀)
@@ -556,7 +556,6 @@ lemma _root_.contMDiff_section_of_smul_smoothBumpFunction' [T2Space M] [IsManifo
   -- apply contMDiff_of_smul_smoothBumpFunction (s := s) (hn := hn) --?_ ?_ ?_ ?_
   sorry
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M] {x : M} (σ₀ : V x) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (fun x ↦ TotalSpace.mk' F x (extend I F σ₀ x)) := by
   letI t := trivializationAt F V x
@@ -583,7 +582,8 @@ noncomputable def difference
 -- @[simp]
 -- lemma difference_toFun [FiniteDimensional ℝ F] [FiniteDimensional ℝ E] [IsManifold I 1 M]
 --     (cov cov' : CovariantDerivative I F V) :
---     cov.difference cov' = fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀) (extend F σ₀) x := rfl
+--     cov.difference cov' = fun x X₀ σ₀ ↦ differenceAux cov cov' (extend E X₀)
+--       (extend F σ₀) x := rfl
 
 -- show? the map differenceAux to difference is injective
 

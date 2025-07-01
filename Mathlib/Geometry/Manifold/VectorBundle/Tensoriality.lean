@@ -38,7 +38,8 @@ variable (F' : Type*) [NormedAddCommGroup F'] [NormedSpace ℝ F']
   -- [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul ℝ (V' x)]
 
 omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in
-lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDimensional ℝ E]
+lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
+    [ContMDiffVectorBundle 1 F V I] [FiniteDimensional ℝ E]
     [FiniteDimensional ℝ F] [FiberBundle F' V'] [VectorBundle ℝ F' V'] [T2Space M]
     [IsManifold I ∞ M]
     {φ : (Π x : M, V x) → (Π x, V' x)} {x}
