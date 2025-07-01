@@ -667,13 +667,32 @@ def mk'
   counitInv := counitIso.inv
   left_triangle := left_triangle
   right_triangle := by
-    haveI :
-        Epi <| inverse ◁ unitIso.hom ≫
-            (α_ inverse transform inverse).inv ≫
-            counitIso.hom ▷ inverse ≫
-            (λ_ _).hom ≫ (ρ_ inverse).inv := by
-      infer_instance
-    rw [← cancel_epi (inverse ◁ unitIso.hom ≫ (α_ inverse transform inverse).inv ≫ counitIso.hom ▷ inverse ≫ (λ_ _).hom ≫ (ρ_ _).inv)]
+    -- This is a copy of the proof of Bicategory.right_triangle_of_left_triangle
+    -- except we can’t use bicategorical comp or the bicategory tactic...
+    rw [← cancel_epi <|
+        inverse ◁ unitIso.hom ≫ (α_ inverse transform inverse).inv ≫
+          counitIso.hom ▷ inverse ≫
+          (λ_ _).hom ≫ (ρ_ _).inv]
+    simp only [Category.assoc]
+    calc
+      _ = inverse ◁ unitIso.hom ≫
+            (α_ _ _ _).inv ≫ (ρ_ _).inv ≫
+            (counitIso.hom ▷ inverse ▷ (.id _ _)) ≫
+            ((CatCospanTransform.id F' G').comp inverse) ◁ unitIso.hom ≫
+            (λ_ _).hom ▷ _ ≫ (α_ _ _ _).inv  ≫
+            counitIso.hom ▷ inverse := by
+          aesop_cat
+      _ = inverse ◁ unitIso.hom ≫
+            _ ◁ ((λ_ transform).inv ▷ _) ≫
+            inverse ◁
+              (unitIso.hom ▷ transform ≫
+                (α_ _ _ _).hom ≫
+                transform ◁ counitIso.hom) ▷ inverse ≫
+            _ ◁ ((ρ_ transform).hom ▷ _) ≫
+            (α_ _ _ _).inv ≫
+            counitIso.hom ▷ inverse := by
+      _ = _ := sorry
+
 
 /-- Construct a `CatCospanEquivalence F G F' G'` from the data of individual
 equivalences of categories for the left, base and right components, as well
