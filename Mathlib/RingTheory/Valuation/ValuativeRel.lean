@@ -56,7 +56,7 @@ aximoms, opting to make these mixins instead.
 noncomputable section
 
 /-- The class `[ValuativeRel R]` class introduces an operator `x ≤ᵥ y : Prop` for `x y : R`
-which is the natural relation arising from an equivalence class of a valuation on `R`.
+which is the natural relation arising from (the equivalence class of) a valuation on `R`.
 More precisely, if v is a valuation on R then the associated relation is `x ≤ᵥ y ↔ v x ≤ v y`.
 Use this class to talk about the case where `R` is equipped with an equivalence class
 of valuations. -/
