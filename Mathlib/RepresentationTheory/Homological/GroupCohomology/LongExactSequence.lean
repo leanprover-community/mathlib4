@@ -12,10 +12,11 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 Given a commutative ring `k` and a group `G`, this file shows that a short exact sequence of
 `k`-linear `G`-representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` induces a short exact sequence of
-complexes `0 ⟶ C(X₁) ⟶ C(X₂) ⟶ C(X₃) ⟶ 0`, where `C(Xᵢ)` is the complex of inhomogeneous
-cochains of `Xᵢ`, and hence `Hⁿ(C(Xᵢ))` is the `n`th group cohomology of `Xᵢ`.
+complexes
+`0 ⟶ inhomogeneousCochains X₁ ⟶ inhomogeneousCochains X₂ ⟶ inhomogeneousCochains X₃ ⟶ 0`.
 
-This allows us to specialize API about long exact sequences to group cohomology.
+Since the cohomology of `inhomogeneousCochains Xᵢ` is the group cohomology of `Xᵢ`, this allows us
+to specialize API about long exact sequences to group cohomology.
 
 ## Main definitions
 
