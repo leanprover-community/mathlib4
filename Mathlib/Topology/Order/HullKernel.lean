@@ -17,20 +17,20 @@ Let `α` be a `CompleteLattice` and let `T` be a subset of `α`. The relative to
 `InfPrime` in `α`. In this case, the relative-open sets are exactly the sets of the form
 `T ↓∩ (Ici a)ᶜ` for some `a` in `α`.
 
-The pair of maps `S → ⊓ S` and `a → T ↓∩ Ici a` are often referred to as the kernel and the hull.
-They form an antitone Galois connection between the subsets of `T` and `α`. When `α` can be
-generated from `T` by taking infs, this becomes a Galois insertion and the topological closure
-coincides with the closure arising from the Galois insertion. For this reason the relative lower
-topology on `T` is often referred to as the "hull-kernel topology". The names "Jacobson topology"
-and "structure topology" also occur in the literature.
+The pair of maps `S → ⊓ S` and `a → T ↓∩ Ici a` are often referred to as the `kernel` and the `hull`
+respectively. They form an antitone Galois connection between the subsets of `T` and `α`. When `α`
+can be generated from `T` by taking infs, this becomes a Galois insertion and the topological
+closure coincides with the closure arising from the Galois insertion. For this reason the relative
+lower topology on `T` is often referred to as the "hull-kernel topology". The names "Jacobson
+topology" and "structure topology" also occur in the literature.
 
 ## Main statements
 
-- `PrimitiveSpectrum.relativeLowerIsTopologicalBasis` - the sets `T ↓∩ Ici a` form a basis for the
+- `PrimitiveSpectrum.relativeLowerIsTopologicalBasis` - the sets `(hull a)ᶜ` form a basis for the
   relative lower topology on `T`.
-- `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `T ↓∩ Ici a` are the relative
+- `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `(hull a)ᶜ` are the relative
   topology.
-- `PrimitiveSpectrum.gc` - the kernel and the hull form a Galois connection
+- `PrimitiveSpectrum.gc` - the `kernel` and the `hull` form a Galois connection
 - `PrimitiveSpectrum.gi` - when `T` generates `α`, the Galois connection becomes an insertion.
 - `PrimitiveSpectrum.lowerTopology_closureOperator_eq_gc_closureOperator` - relative lower topology
   closure coincides with the "hull-kernel" closure arising from the Galois insertion.
@@ -73,7 +73,7 @@ abbrev hull (T : Set α) (a : α) := T ↓∩ Ici a
 
 variable {T : Set α}
 
-/- The set of relative-closed sets of the form `T ↓∩ Ici a` for some `a` in `α` is closed under
+/- The set of relative-closed sets of the form `hull T a` for some `a` in `α` is closed under
 pairwise union. -/
 lemma hull_union_hull (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     hull T a ∪ hull T b = hull T (a ⊓ b) := by
@@ -84,7 +84,7 @@ lemma hull_union_hull (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     · exact inf_le_of_right_le h3
   · exact (hT p p.2).2 h
 
-/- The set of relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for some `a` in `α` is closed under
+/- The set of relative-open sets of the form `(hull T a)ᶜ` for some `a` in `α` is closed under
 pairwise intersection. -/
 lemma hull_compl_inter_hull_compl (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (hull T a)ᶜ ∩ (hull T b)ᶜ = (hull T (a ⊓ b))ᶜ := by
@@ -93,7 +93,7 @@ lemma hull_compl_inter_hull_compl (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
 variable [DecidableEq α] [OrderTop α]
 
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
-relative-closed set of the form `T ↓∩ Ici a` where `a = ⨅ F`. -/
+relative-closed set of the form `hull T a` where `a = ⨅ F`. -/
 open Finset in
 lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ upperClosure F.toSet = hull T (inf F id) := by
@@ -110,7 +110,7 @@ lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α
       preimage_iUnion, inf_insert, id_eq, ← (hull_union_hull hT), ← I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
-set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⨅ F`. -/
+set of the form `(hull T a)ᶜ` where `a = ⨅ F`. -/
 open Finset in
 lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     T ↓∩ (upperClosure F.toSet)ᶜ = (hull T (inf F id))ᶜ := by
@@ -119,7 +119,7 @@ lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Fin
 variable [TopologicalSpace α] [IsLower α]
 
 /-
-The relative-open sets of the form `T ↓∩ (Ici a)ᶜ` for `a` in `α` form a basis for the relative
+The relative-open sets of the form `(hull T a)ᶜ` for `a` in `α` form a basis for the relative
 Lower topology.
 -/
 lemma relativeLowerIsTopologicalBasis (hT : ∀ p ∈ T, InfPrime p) :
@@ -164,7 +164,7 @@ lemma sUnion_hull_Compl_eq (S : Set α) : ⋃₀ { (hull T a)ᶜ | a ∈ S } = (
   simp [sUnion_eq_compl_sInter_compl, ← sInter_hull, compl_sInter]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
-`T ↓∩ (Ici a)ᶜ` for some `a` in `α`.-/
+`(hull T a)ᶜ` for some `a` in `α`.-/
 lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsOpen S ↔ ∃ (a : α), S = (hull T a)ᶜ := by
   constructor <;> intro h
@@ -176,7 +176,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
     exact ⟨(Ici a)ᶜ, ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩⟩
 
 /- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the
-form `T ↓∩ Ici a` for some `a` in `α`.-/
+form `hull T a` for some `a` in `α`.-/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = hull T a := by
   simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
@@ -184,8 +184,8 @@ lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀
 /-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
 abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
 
-/- The pair of maps `S ↦ sInf S` (kernel) and `a ↦ T ↓∩ Ici a` (hull) form an antitone Galois
-connection betwen the subsets of `T` and `α`. -/
+/- The pair of maps `S ↦ kernel S` and `a ↦ hull a` form an antitone Galois connection betwen the
+subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => toDual (kernel S)) (fun a => hull T (ofDual a)) := fun S a => by
@@ -200,13 +200,13 @@ lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) 
 variable (T)
 
 /-- `T` is said to order generate `α` if, for every `a` in `α`, there exists a subset of `T` such
-that `a` is the inf of `S`. -/
+that `a` is the `kernel` of `S`. -/
 def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = kernel S
 
 variable {T}
 
 /--
-When `T` is order generating, the kernel and the hull form a Galois insertion
+When `T` is order generating, the `kernel` and the `hull` form a Galois insertion
 -/
 def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun S => OrderDual.toDual (kernel S))
