@@ -89,16 +89,7 @@ def print_error(message: str) -> None:
 def run_command(cmd: List[str], capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess:
     """Run a command and return the result with Windows compatibility."""
     try:
-        # On Windows, we need to use shell=True for some commands
-        use_shell = platform.system() == 'Windows' and any(c in cmd[0] for c in ['|', '>', '<', '&'])
-
-        # Convert command to string if using shell
-        if use_shell:
-            cmd_str = ' '.join(cmd)
-            result = subprocess.run(cmd_str, shell=True, capture_output=capture_output, text=True, check=check)
-        else:
-            result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
-        return result
+        return subprocess.run(cmd, capture_output=capture_output, text=True, encoding="utf8", check=check)
     except subprocess.CalledProcessError as e:
         if not check:
             return e
@@ -188,8 +179,10 @@ def check_gh_token_scopes() -> bool:
             print_warning("Could not verify token scopes, but basic API access works")
             return True
 
-        # Parse the output to check for required scopes
-        auth_output = result.stdout
+        # Hackily check the output for required scopes
+        # Versions of gh before v2.31.0 print this info on stderr, not stdout.
+        # See https://github.com/cli/cli/issues/7447
+        auth_output = result.stdout + result.stderr
         if 'repo' not in auth_output:  # or 'workflow' not in auth_output:
             print_error("GitHub CLI token lacks required scopes.")
             print("Required scopes: repo, workflow")
@@ -331,6 +324,12 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
     """
     print_step(4, "Setting up git remotes")
 
+    # This will sync the local references with the upstream ones and delete refs to branches that
+    # don't exist anymore on upstream repos.
+    # In particular, this will ensure the branches with duplicate names up to case that were recently
+    # deleted on the main repository do not cause trouble in the migration.
+    run_command(['git', 'fetch', '--all', '--prune'])
+
     remotes = get_current_remotes()
 
     # Determine URL format based on SSH availability
@@ -398,23 +397,23 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
             print_success("Origin remote (fork) already configured correctly")
             fork_remote_name = 'origin'
     else:
-        # Check if origin exists and is not the fork
+        # No fork remote found - need to add one
+        # Check if 'origin' is available for the fork
         if 'origin' in remotes:
-            if f'{username}/mathlib4' not in remotes['origin']:
-                print(f"Current origin: {remotes['origin']}")
-                if yes_no_prompt("Replace existing 'origin' with your fork?", auto_accept=auto_accept):
-                    run_command(['git', 'remote', 'remove', 'origin'])
-                    run_command(['git', 'remote', 'add', 'origin', fork_url])
-                    print_success("Set origin to your fork")
-                    fork_remote_name = 'origin'
-                else:
-                    run_command(['git', 'remote', 'add', 'fork', fork_url])
-                    print_warning("Added fork as 'fork' remote instead of 'origin'")
-                    fork_remote_name = 'fork'
-            else:
-                print_success("Origin already points to your fork")
+            # 'origin' exists but doesn't point to user's fork
+            print(f"Current origin: {remotes['origin']}")
+            if yes_no_prompt("Replace existing 'origin' with your fork?", auto_accept=auto_accept):
+                run_command(['git', 'remote', 'remove', 'origin'])
+                run_command(['git', 'remote', 'add', 'origin', fork_url])
+                print_success("Set origin to your fork")
                 fork_remote_name = 'origin'
+            else:
+                # User wants to keep existing origin, ask for alternative name
+                fork_remote_name = get_user_input("What would you like to name the remote for your fork?", "fork")
+                run_command(['git', 'remote', 'add', fork_remote_name, fork_url])
+                print_success(f"Added fork as '{fork_remote_name}' remote")
         else:
+            # 'origin' doesn't exist, safe to add it
             run_command(['git', 'remote', 'add', 'origin', fork_url])
             print_success("Added origin remote pointing to your fork")
             fork_remote_name = 'origin'
@@ -437,21 +436,19 @@ def validate_branch_for_migration(branch: str, auto_accept: bool = False) -> Non
     print(f"\n{Colors.BOLD}Current branch: {branch}{Colors.END}")
 
     # Check for system branches that shouldn't be migrated
-    invalid_branches = []
+    is_invalid_branch = (
+        branch == 'master' or
+        branch == 'nightly-testing' or
+        re.match(r'^lean-pr-testing-\d+$', branch)
+    )
 
-    if branch == 'master':
-        invalid_branches.append("master (main development branch)")
-    elif branch == 'nightly-testing':
-        invalid_branches.append("nightly-testing (CI testing branch)")
-    elif re.match(r'^lean-pr-testing-\d+$', branch):
-        invalid_branches.append(f"{branch} (Lean PR testing branch)")
-
-    if invalid_branches:
+    if is_invalid_branch:
         print_error(f"Cannot migrate branch '{branch}'")
         print(f"The branch '{branch}' is a system branch that should not be migrated to a fork.")
         print("\nSystem branches that cannot be migrated:")
-        for invalid_branch in invalid_branches:
-            print(f"  • {invalid_branch}")
+        print("  • master (main development branch)")
+        print("  • nightly-testing (CI testing branch)")
+        print("  • lean-pr-testing-* (Lean PR testing branches)")
 
         print(f"\n{Colors.BOLD}What you should do:{Colors.END}")
         print("1. Switch to the feature branch you want to migrate:")
@@ -602,8 +599,11 @@ def get_pr_comments_summary(pr_number: int) -> Optional[str]:
         for comment in comments:
             author = comment.get('author', {}).get('login', 'unknown')
 
-            # Skip bot comments (usernames ending with -bot)
-            if author.endswith('-bot'):
+            # Skip bot comments (usernames ending with -bot, except 'FR-vdash-bot')
+            if author.endswith('-bot') and not author == 'FR-vdash-bot':
+                continue
+            # These are bots posting about merge conflicts and benchmark summaries, respectively.
+            if author in ['leanprover-community-bot-assistant', 'github-actions']:
                 continue
 
             created_at = comment.get('createdAt', '')
@@ -676,10 +676,11 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
                 labels.append('migrated-from-branch')  # Add label for new PR
 
                 # Prepare the new body with migration notice
+                body_suffix = f"---\n\n*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
                 if original_body.strip():
-                    body = f"{original_body}\n\n---\n\n*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+                    body = f"{original_body}\n\n{body_suffix}"
                 else:
-                    body = f"*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+                    body = body_suffix
 
                 print_success(f"Found {len(labels)} labels to copy: {', '.join([label['name'] for label in labels])}" if labels else "No labels found on original PR")
 

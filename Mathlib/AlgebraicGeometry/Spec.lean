@@ -316,7 +316,7 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
   -- See https://github.com/leanprover/lean4/issues/2273
   refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
-  show
+  change
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M
       x.asIdeal).toRingEquiv.toCommRingCatIso.hom
   infer_instance
@@ -412,7 +412,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         U.2
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
+    simp only [map_zero] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=

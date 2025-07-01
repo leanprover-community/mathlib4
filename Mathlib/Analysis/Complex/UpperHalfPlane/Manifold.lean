@@ -33,8 +33,6 @@ instance : IsManifold 𝓘(ℂ) ω ℍ :=
 theorem contMDiff_coe : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
   fun _ => contMDiffAt_extChartAt
 
-@[deprecated (since := "2024-11-20")] alias smooth_coe := contMDiff_coe
-
 /-- The inclusion map `ℍ → ℂ` is a differentiable map of manifolds. -/
 theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) :=
   contMDiff_coe.mdifferentiable le_top
@@ -49,8 +47,6 @@ lemma contMDiffAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     simpa [ofComplex_apply_of_im_pos hz] using tendsto_id
   · -- smoothness in local chart
     simpa using contDiffAt_id.congr_of_eventuallyEq (eventuallyEq_coe_comp_ofComplex hz)
-
-@[deprecated (since := "2024-11-20")] alias smoothAt_ofComplex := contMDiffAt_ofComplex
 
 lemma mdifferentiableAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) ofComplex z :=
