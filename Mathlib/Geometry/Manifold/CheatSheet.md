@@ -41,15 +41,15 @@ import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 variable
   -- Given a non-trivially normed field 𝕜
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- A manifold M over 𝕜
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] 
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] 
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- A manifold M' over 𝕜
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') 
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] 
+  {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   -- A function from M to M' and x in M
   (f : M → M') (x : M)
 
@@ -58,14 +58,14 @@ variable (x : M) in
 #check MDifferentiableAt I I' f x
 
 variable (n : WithTop ℕ∞) in -- A natural number or ∞ or ω
-#check ContMDiff I I' n f 
+#check ContMDiff I I' n f
 
 
-variable 
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] 
+variable
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   (g : M → F) in
 open scoped Manifold in
-#check ContMDiff I 𝓘(𝕜, F) n g  -- g is n times continuously differentiable 
+#check ContMDiff I 𝓘(𝕜, F) n g  -- g is n times continuously differentiable
 ```
 
 Consider the product manifold M \times N.
@@ -82,8 +82,25 @@ Let E\to M be a topological vector bundle.
 Let E\to M be a smooth vector bundle.
 
 Let s be a section of E.
-Let s be a C^k section of E. / The section s of E is C^k.
+```
+variable (s : Π x : M, V x)
+```
+Let X be a vector field on `M`
+```
+(X : Π x : M, TangentSpace I x)
+```
 
+Let s be a C^k section of E. / The section s of E is C^k.
+```
+ContMDiff I (I.prod 𝓘(𝕜, F)) (k + 1) (fun x ↦ TotalSpace.mk' F x (σ x))
+```
+
+Let `X` be a C^k vector field on M.
+```
+variable {X : Π x : M, TangentSpace I x}
+-- TODO: this doesn't work!
+-- variable (___hX: ContMDiff I I.tangent 2 (fun x ↦ (X x : TangentBundle I M)))
+```
 
 Let \phi be the preferred local trivialisation at x\in E.
 Let \phi be any compatible trivialisation on M.
@@ -91,7 +108,6 @@ Let \phi be any compatible trivialisation on M.
 Consider the tangent bundle TM of M.
 
 Let X be a C^k vector field on M.
-
 
 explain TotalSpace.mk' somewhere in here...
 
