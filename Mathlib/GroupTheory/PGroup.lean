@@ -121,7 +121,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
   cases finite_or_infinite G
   · obtain ⟨n, hn⟩ := iff_card.mp hG
     rw [hn]
-    cases' n with n n
+    rcases n with - | n
     · exact Or.inl rfl
     · exact Or.inr ⟨p ^ n, by rw [pow_succ']⟩
   · rw [Nat.card_eq_zero_of_infinite]

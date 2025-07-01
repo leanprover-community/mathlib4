@@ -37,7 +37,6 @@ such that `f ≫ retraction f = 𝟙 X`.
 
 Every split monomorphism is a monomorphism.
 -/
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance] -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
@@ -52,7 +51,7 @@ class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitMono : Nonempty (SplitMono f)
 
-/-- A composition of `SplitMono` is a `SplitMono`. --/
+/-- A composition of `SplitMono` is a `SplitMono`. -/
 @[simps]
 def SplitMono.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (smf : SplitMono f) (smg : SplitMono g) :
     SplitMono (f ≫ g) where
@@ -68,12 +67,11 @@ such that `section_ f ≫ f = 𝟙 Y`.
 
 Every split epimorphism is an epimorphism.
 -/
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance] -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
-  /--  `section_` composed with `f` is the identity -/
+  /-- `section_` composed with `f` is the identity -/
   id : section_ ≫ f = 𝟙 Y := by aesop_cat
 
 attribute [reassoc (attr := simp)] SplitEpi.id
@@ -83,7 +81,7 @@ class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitEpi : Nonempty (SplitEpi f)
 
-/-- A composition of `SplitEpi` is a split `SplitEpi`. --/
+/-- A composition of `SplitEpi` is a split `SplitEpi`. -/
 @[simps]
 def SplitEpi.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (sef : SplitEpi f) (seg : SplitEpi g) :
     SplitEpi (f ≫ g) where

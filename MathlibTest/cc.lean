@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 import Mathlib.Data.Vector.Defs
 import Mathlib.Tactic.CC
 
@@ -250,7 +250,7 @@ axiom C : (a : A) → B a → Type
 axiom D : (a : A) → (ba : B a) → C a ba → Type
 axiom E : (a : A) → (ba : B a) → (cba : C a ba) → D a ba cba → Type
 axiom F : (a : A) → (ba : B a) → (cba : C a ba) → (dcba : D a ba cba) → E a ba cba dcba → Type
-axiom C_ss : ∀ a ba, Subsingleton (C a ba)
+axiom C_ss : ∀ a ba, Lean.Meta.FastSubsingleton (C a ba)
 axiom a1 : A
 axiom a2 : A
 axiom a3 : A
@@ -552,8 +552,8 @@ example {G : Type*} [AddCommMonoid G] (a b : G) :
     @HAdd.hAdd _ _ _ (@instHAdd _ (@AddSemigroup.toAdd _ AddCommSemigroup.toAddSemigroup)) a b =
       @HAdd.hAdd _ _ _ (@instHAdd _ (@AddSemigroup.toAdd _ AddMonoid.toAddSemigroup)) a b := by
   success_if_fail_with_msg "cc tactic failed"
-    cc (config := { ignoreInstances := false, ac := false })
-  cc (config := { ac := false })
+    cc -ignoreInstances -ac
+  cc -ac
 
 end Config
 

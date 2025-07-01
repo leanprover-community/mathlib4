@@ -109,7 +109,7 @@ $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k
 linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
 -/
-@[stacks 00HK, stacks 058D "except (3)"]
+@[stacks 00HK, stacks 058D "(1) ↔ (2)"]
 theorem tfae_equational_criterion : List.TFAE [
     Flat R M,
     ∀ I : Ideal R, Function.Injective (rTensor M I.subtype),
@@ -120,7 +120,7 @@ theorem tfae_equational_criterion : List.TFAE [
       ∃ (k : ℕ) (a : (Fin l →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
         x = y ∘ₗ a ∧ a f = 0] := by
   classical
-  tfae_have 1 ↔ 2 := iff_rTensor_injective' R M
+  tfae_have 1 ↔ 2 := iff_rTensor_injective'
   tfae_have 3 ↔ 2 := forall_vanishesTrivially_iff_forall_rTensor_injective R
   tfae_have 3 ↔ 4 := by
     simp [(TensorProduct.lid R M).injective.eq_iff.symm, isTrivialRelation_iff_vanishesTrivially]

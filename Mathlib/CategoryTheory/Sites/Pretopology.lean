@@ -52,13 +52,12 @@ three axioms:
 In some sense, a pretopology can be seen as Grothendieck topology with weaker saturation conditions,
 in that each covering is not necessarily downward closed.
 
-See: https://ncatlab.org/nlab/show/Grothendieck+pretopology, or
-https://stacks.math.columbia.edu/tag/00VH, or [MM92] Chapter III, Section 2, Definition 2.
-Note that Stacks calls a category together with a pretopology a site, and [MM92] calls this
-a basis for a topology.
--/
-@[ext]
+See: https://ncatlab.org/nlab/show/Grothendieck+pretopology or [MM92] Chapter III,
+Section 2, Definition 2. -/
+@[ext, stacks 00VH "Note that Stacks calls a category together with a pretopology a site,
+and [MM92] calls this a basis for a topology."]
 structure Pretopology where
+  /-- For all `X : C`, the coverings of `X` (sets of families of morphisms with target `X`) -/
   coverings : ∀ X : C, Set (Presieve X)
   has_isos : ∀ ⦃X Y⦄ (f : Y ⟶ X) [IsIso f], Presieve.singleton f ∈ coverings X
   pullbacks : ∀ ⦃X Y⦄ (f : Y ⟶ X) (S), S ∈ coverings X → pullbackArrows f S ∈ coverings Y
@@ -101,8 +100,9 @@ instance : Inhabited (Pretopology C) :=
 /-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
 `J`-covering if it contains a family in `K`.
 
-See <https://stacks.math.columbia.edu/tag/00ZC>, or [MM92] Chapter III, Section 2, Equation (2).
+See also [MM92] Chapter III, Section 2, Equation (2).
 -/
+@[stacks 00ZC]
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   sieves X S := ∃ R ∈ K X, R ≤ (S : Presieve _)
   top_mem' _ := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
@@ -128,11 +128,9 @@ theorem mem_toGrothendieck (K : Pretopology C) (X S) :
 See [MM92] Chapter III, Section 2, Equations (3,4).
 -/
 def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
-  coverings X R := Sieve.generate R ∈ J X
+  coverings X := {R | Sieve.generate R ∈ J X}
   has_isos X Y f i := J.covering_of_eq_top (by simp)
-  pullbacks X Y f R hR := by
-    simp only [Set.mem_def, Sieve.pullbackArrows_comm]
-    apply J.pullback_stable f hR
+  pullbacks X Y f R hR := by simpa [Sieve.pullbackArrows_comm] using J.pullback_stable f hR
   transitive X S Ti hS hTi := by
     apply J.transitive hS
     intro Y f
@@ -162,10 +160,8 @@ lemma mem_ofGrothendieck (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
 
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
-also known as the indiscrete, coarse, or chaotic topology.
-
-See <https://stacks.math.columbia.edu/tag/07GE>
--/
+also known as the indiscrete, coarse, or chaotic topology. -/
+@[stacks 07GE]
 def trivial : Pretopology C where
   coverings X S := ∃ (Y : _) (f : Y ⟶ X) (_ : IsIso f), S = Presieve.singleton f
   has_isos _ _ _ i := ⟨_, _, i, rfl⟩
@@ -231,7 +227,7 @@ instance : InfSet (Pretopology C) where
 
 lemma mem_sInf (T : Set (Pretopology C)) {X : C} (S : Presieve X) :
     S ∈ sInf T X ↔ ∀ t ∈ T, S ∈ t X := by
-  show S ∈ sInf (Pretopology.coverings '' T) X ↔ _
+  change S ∈ sInf (Pretopology.coverings '' T) X ↔ _
   simp
 
 lemma sInf_ofGrothendieck (T : Set (GrothendieckTopology C)) :

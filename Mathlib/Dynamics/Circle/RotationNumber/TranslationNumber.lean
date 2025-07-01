@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
@@ -124,7 +123,7 @@ open Function hiding Commute
 -/
 
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
-structure CircleDeg1Lift extends ℝ →o ℝ : Type where
+structure CircleDeg1Lift : Type extends ℝ →o ℝ where
   map_add_one' : ∀ x, toFun (x + 1) = toFun x + 1
 
 namespace CircleDeg1Lift
@@ -409,12 +408,12 @@ theorem map_map_zero_le : f (g 0) ≤ f 0 + ⌈g 0⌉ :=
 theorem floor_map_map_zero_le : ⌊f (g 0)⌋ ≤ ⌊f 0⌋ + ⌈g 0⌉ :=
   calc
     ⌊f (g 0)⌋ ≤ ⌊f 0 + ⌈g 0⌉⌋ := floor_mono <| f.map_map_zero_le g
-    _ = ⌊f 0⌋ + ⌈g 0⌉ := floor_add_int _ _
+    _ = ⌊f 0⌋ + ⌈g 0⌉ := floor_add_intCast _ _
 
 theorem ceil_map_map_zero_le : ⌈f (g 0)⌉ ≤ ⌈f 0⌉ + ⌈g 0⌉ :=
   calc
     ⌈f (g 0)⌉ ≤ ⌈f 0 + ⌈g 0⌉⌉ := ceil_mono <| f.map_map_zero_le g
-    _ = ⌈f 0⌉ + ⌈g 0⌉ := ceil_add_int _ _
+    _ = ⌈f 0⌉ + ⌈g 0⌉ := ceil_add_intCast _ _
 
 theorem map_map_zero_lt : f (g 0) < f 0 + g 0 + 1 :=
   calc
@@ -432,12 +431,12 @@ theorem le_map_map_zero : f 0 + ⌊g 0⌋ ≤ f (g 0) :=
 
 theorem le_floor_map_map_zero : ⌊f 0⌋ + ⌊g 0⌋ ≤ ⌊f (g 0)⌋ :=
   calc
-    ⌊f 0⌋ + ⌊g 0⌋ = ⌊f 0 + ⌊g 0⌋⌋ := (floor_add_int _ _).symm
+    ⌊f 0⌋ + ⌊g 0⌋ = ⌊f 0 + ⌊g 0⌋⌋ := (floor_add_intCast _ _).symm
     _ ≤ ⌊f (g 0)⌋ := floor_mono <| f.le_map_map_zero g
 
 theorem le_ceil_map_map_zero : ⌈f 0⌉ + ⌊g 0⌋ ≤ ⌈(f * g) 0⌉ :=
   calc
-    ⌈f 0⌉ + ⌊g 0⌋ = ⌈f 0 + ⌊g 0⌋⌉ := (ceil_add_int _ _).symm
+    ⌈f 0⌉ + ⌊g 0⌋ = ⌈f 0 + ⌊g 0⌋⌉ := (ceil_add_intCast _ _).symm
     _ ≤ ⌈f (g 0)⌉ := ceil_mono <| f.le_map_map_zero g
 
 theorem lt_map_map_zero : f 0 + g 0 - 1 < f (g 0) :=
@@ -613,7 +612,7 @@ theorem translationNumber_eq_of_dist_bounded {f g : CircleDeg1Lift} (C : ℝ)
 
 @[simp]
 theorem translationNumber_one : τ 1 = 0 :=
-  translationNumber_eq_of_tendsto₀ _ <| by simp [tendsto_const_nhds]
+  translationNumber_eq_of_tendsto₀ _ <| by simp
 
 theorem translationNumber_eq_of_semiconjBy {f g₁ g₂ : CircleDeg1Lift} (H : SemiconjBy f g₁ g₂) :
     τ g₁ = τ g₂ :=
@@ -673,7 +672,7 @@ theorem tendsto_translation_number₀' :
         ((tendsto_const_div_atTop_nhds_zero_nat 1).comp (tendsto_add_atTop_nat 1))
   dsimp
   have : (0 : ℝ) < n + 1 := n.cast_add_one_pos
-  rw [Real.dist_eq, div_sub' _ _ _ (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
+  rw [Real.dist_eq, div_sub' (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
     Nat.cast_add_one, div_le_div_iff_of_pos_right this, ← Nat.cast_add_one]
   apply dist_pow_map_zero_mul_translationNumber_le
 
@@ -855,7 +854,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
   refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x => ?_⟩,
-    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
+    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
     exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)

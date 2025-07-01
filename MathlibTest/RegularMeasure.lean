@@ -7,7 +7,7 @@ topological group is automatically regular and inner regular. -/
 open MeasureTheory Measure
 
 variable {G : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
-  [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G]
+  [IsTopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G]
   (μ : Measure G) [IsHaarMeasure μ]
 
 example : Regular μ := inferInstance

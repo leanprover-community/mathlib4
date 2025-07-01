@@ -3,7 +3,6 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Order.Fin.Basic
 import Mathlib.Order.SuccPred.Basic
 
@@ -22,50 +21,62 @@ namespace Fin
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
   | 0 => by constructor <;> intro a <;> exact elim0 a
   | n + 1 =>
-    SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
-      (by
-        intro a ha b
-        rw [isMax_iff_eq_top, eq_top_iff, not_le, top_eq_last] at ha
-        dsimp
-        rw [if_pos ha, lt_iff_val_lt_val, le_iff_val_le_val, val_add_one_of_lt ha]
-        exact Nat.lt_iff_add_one_le)
-      (by
-        intro a ha
-        rw [isMax_iff_eq_top, top_eq_last] at ha
-        dsimp
-        rw [if_neg ha.not_lt])
+    SuccOrder.ofCore (Fin.lastCases (Fin.last n) Fin.succ)
+      (fun {i} hi j ↦ by
+        obtain ⟨i, rfl⟩ := Fin.eq_castSucc_of_ne_last (by simpa using hi)
+        simp [castSucc_lt_iff_succ_le])
+      (fun i hi ↦ by
+        obtain rfl : i = Fin.last n := by simpa using hi
+        simp)
+
+lemma orderSucc_eq {n : ℕ} :
+    Order.succ = Fin.lastCases (Fin.last n) Fin.succ := rfl
+
+lemma orderSucc_apply {n : ℕ} (i : Fin (n + 1)) :
+    Order.succ i = Fin.lastCases (Fin.last n) Fin.succ i := rfl
 
 @[simp]
-theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a => if a < Fin.last n then a + 1 else a :=
-  rfl
+lemma orderSucc_last (n : ℕ)  :
+    Order.succ (Fin.last n) = Fin.last n := by
+  simp [orderSucc_apply]
 
 @[simp]
-theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a + 1 else a :=
-  rfl
+lemma orderSucc_castSucc {n : ℕ} (i : Fin n) :
+    Order.succ i.castSucc = i.succ := by
+  simp [orderSucc_apply]
+
+@[deprecated (since := "2025-02-06")] alias succ_eq := orderSucc_eq
+@[deprecated (since := "2025-02-06")] alias succ_apply := orderSucc_apply
 
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
-    PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
-      (by
-        intro a ha b
-        rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha
-        dsimp
-        rw [if_neg ha.ne', lt_iff_val_lt_val, le_iff_val_le_val, coe_sub_one, if_neg ha.ne',
-          Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
-        exact ha)
-      (by
-        intro a ha
-        rw [isMin_iff_eq_bot, bot_eq_zero] at ha
-        dsimp
-        rwa [if_pos ha, eq_comm])
+    PredOrder.ofCore
+      (Fin.cases 0 Fin.castSucc)
+      (fun {i} hi j ↦ by
+        obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (by simpa using hi)
+        simp [le_castSucc_iff])
+      (fun i hi ↦ by
+        obtain rfl : i = 0 := by simpa using hi
+        rfl)
+
+lemma orderPred_eq {n : ℕ} :
+    Order.succ = Fin.lastCases (Fin.last n) Fin.succ := rfl
+
+lemma orderPred_apply {n : ℕ} (i : Fin (n + 1)) :
+    Order.pred i = Fin.cases 0 Fin.castSucc i := rfl
 
 @[simp]
-theorem pred_eq {n} : PredOrder.pred = fun a : Fin (n + 1) => if a = 0 then 0 else a - 1 :=
+lemma orderPred_zero (n : ℕ) :
+    Order.pred (0 : Fin (n + 1)) = 0 :=
   rfl
 
 @[simp]
-theorem pred_apply {n : ℕ} (a : Fin (n + 1)) : PredOrder.pred a = if a = 0 then 0 else a - 1 :=
+lemma orderPred_succ {n : ℕ} (i : Fin n) :
+    Order.pred i.succ = i.castSucc :=
   rfl
+
+@[deprecated (since := "2025-02-06")] alias pred_eq := orderPred_eq
+@[deprecated (since := "2025-02-06")] alias pred_apply := orderPred_apply
 
 end Fin

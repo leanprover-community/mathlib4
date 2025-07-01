@@ -80,8 +80,7 @@ theorem lTensorBot_one_tmul (a : A) : A.lTensorBot (1 ⊗ₜ[R] a) = a :=
 @[simp]
 theorem lTensorBot_symm_apply (a : A) : A.lTensorBot.symm a = 1 ⊗ₜ[R] a := rfl
 
-variable (A)
-
+variable (A) in
 /-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `A ⊗[R] i(R)` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `Algebra.TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`.
@@ -100,8 +99,6 @@ def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
       (toSubmodule A).rTensorOne_tmul (x' * y') (a * b)]
     rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
   · exact Submodule.rTensorOne_tmul_one _
-
-variable {A}
 
 @[simp]
 theorem rTensorBot_tmul (x : R) (a : A) : A.rTensorBot (a ⊗ₜ[R] algebraMap R _ x) = x • a :=

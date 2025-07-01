@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
+import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
 ## `funProp` data structure holding information about a function
@@ -169,11 +170,10 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
       | .eq => return .exact
       | .lt => return .overApplied
       | .gt => return .underApplied
-  match f.args.size with
+  match h : f.args.size with
   | 0 => return .none
-  | _ =>
-    let n := f.args.size
-    if f.args[n-1]!.coe.isSome then
+  | n + 1 =>
+    if f.args[n].coe.isSome then
       return .exact
     else if f.args.any (fun a => a.coe.isSome) then
       return .overApplied
@@ -252,7 +252,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
 
     -- check if is non-triviality
     let f' ← fData.toExpr
-    if (← isDefEq f' f) || (← isDefEq f' g) then
+    if (← withReducibleAndInstances <| isDefEq f' f <||> isDefEq f' g) then
       return none
 
     return (f, g)

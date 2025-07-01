@@ -80,22 +80,6 @@ instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i
   · obtain ⟨a, t, ht, rfl⟩ := Sigma.isConnected_iff.1 ⟨h, hs⟩
     exact ht.isPreconnected.subsingleton.image _
 
--- Porting note: reformulated using `Pairwise`
-/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
-  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
-    (hX : Pairwise fun x y => ∃ (U : Set X), IsClopen U ∧ x ∈ U ∧ y ∉ U) :
-    IsTotallyDisconnected (Set.univ : Set X) := by
-  rintro S - hS
-  unfold Set.Subsingleton
-  by_contra! h_contra
-  rcases h_contra with ⟨x, hx, y, hy, hxy⟩
-  obtain ⟨U, hU, hxU, hyU⟩ := hX hxy
-  specialize
-    hS U Uᶜ hU.2 hU.compl.2 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
-  rw [inter_compl_self, Set.inter_empty] at hS
-  exact Set.not_nonempty_empty hS
-
 /-- A space is totally disconnected iff its connected components are subsingletons. -/
 theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, (connectedComponent x).Subsingleton := by
@@ -133,6 +117,11 @@ theorem Continuous.image_connectedComponent_eq_singleton {β : Type*} [Topologic
 theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSpace α] (s : Set α) :
     IsTotallyDisconnected s := fun t _ ht =>
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
+
+lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
+    [PreconnectedSpace α] [TotallyDisconnectedSpace β] (f : α → β) (hf : Continuous f)
+    (i j : α) : f i = f j :=
+  (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
 
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
@@ -220,7 +209,7 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 
 theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace α] :
-    TotallySeparatedSpace α ↔ ∀ x y : α, x ≠ y → ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
+    TotallySeparatedSpace α ↔ Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) := by
   simp only [totallySeparatedSpace_iff, IsTotallySeparated, Set.Pairwise, mem_univ, true_implies]
   refine forall₃_congr fun x y _ ↦
     ⟨fun ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ ↦ ?_, fun ⟨U, hU, Ux, Ucy⟩ ↦ ?_⟩
@@ -229,9 +218,17 @@ theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace
   · exact ⟨U, Uᶜ, hU.2, hU.compl.2, Ux, Ucy, (Set.union_compl_self U).ge, disjoint_compl_right⟩
 
 theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
-    [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
-    ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ :=
-  totallySeparatedSpace_iff_exists_isClopen.mp ‹_› _ _ hxy
+    [TotallySeparatedSpace α] : Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
+  totallySeparatedSpace_iff_exists_isClopen.mp ‹_›
+
+/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
+  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
+@[deprecated totallySeparatedSpace_iff_exists_isClopen (since := "2025-04-03")]
+theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
+    (hX : Pairwise (∃ (U : Set X), IsClopen U ∧ · ∈ U ∧ · ∉ U)) :
+    IsTotallyDisconnected (Set.univ : Set X) :=
+  (totallySeparatedSpace_iff X).mp (totallySeparatedSpace_iff_exists_isClopen.mpr hX)
+    |>.isTotallyDisconnected
 
 end TotallySeparated
 

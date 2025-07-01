@@ -5,8 +5,9 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Pullback and pushout squares, and bicartesian squares
@@ -125,8 +126,8 @@ end CommSq
 ```
 is a pullback square. (Also known as a fibered product or cartesian square.)
 -/
-structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z) extends
-  CommSq fst snd f g : Prop where
+structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z) : Prop
+    extends CommSq fst snd f g where
   /-- the pullback cone is a limit -/
   isLimit' : Nonempty (IsLimit (PullbackCone.mk _ _ w))
 
@@ -142,8 +143,8 @@ structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z)
 ```
 is a pushout square. (Also known as a fiber coproduct or cocartesian square.)
 -/
-structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P) extends
-  CommSq f g inl inr : Prop where
+structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P) : Prop
+    extends CommSq f g inl inr where
   /-- the pushout cocone is a colimit -/
   isColimit' : Nonempty (IsColimit (PushoutCocone.mk _ _ w))
 
@@ -161,8 +162,8 @@ section
 ```
 that is both a pullback square and a pushout square.
 -/
-structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) extends
-  IsPullback f g h i, IsPushout f g h i : Prop
+structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop
+    extends IsPullback f g h i, IsPushout f g h i
 
 -- Lean should make these parent projections as `lemma`, not `def`.
 attribute [nolint defLemma docBlame] BicartesianSq.toIsPushout
@@ -253,9 +254,7 @@ theorem of_is_product {c : BinaryFan X Y} (h : Limits.IsLimit c) (t : IsTerminal
       (IsLimit.ofIsoLimit h
         (Limits.Cones.ext (Iso.refl c.pt)
           (by
-            rintro ⟨⟨⟩⟩ <;>
-              · dsimp
-                simp))))
+            rintro ⟨⟨⟩⟩ <;> simp))))
 
 /-- A variant of `of_is_product` that is more useful with `apply`. -/
 theorem of_is_product' (h : Limits.IsLimit (BinaryFan.mk fst snd)) (t : IsTerminal Z) :
@@ -382,6 +381,20 @@ lemma isIso_snd_iso_of_mono {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X �
 
 end
 
+section
+
+lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) [IsIso g] : IsIso fst := by
+  have := h.hasPullback
+  rw [← h.isoPullback_hom_fst]
+  infer_instance
+
+lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) [IsIso f] : IsIso snd := by
+  have := h.hasPullback
+  rw [← h.isoPullback_hom_snd]
+  infer_instance
+
+end
+
 end IsPullback
 
 namespace IsPushout
@@ -463,9 +476,7 @@ theorem of_is_coproduct {c : BinaryCofan X Y} (h : Limits.IsColimit c) (t : IsIn
       (IsColimit.ofIsoColimit h
         (Limits.Cocones.ext (Iso.refl c.pt)
           (by
-            rintro ⟨⟨⟩⟩ <;>
-              · dsimp
-                simp))))
+            rintro ⟨⟨⟩⟩ <;> simp))))
 
 /-- A variant of `of_is_coproduct` that is more useful with `apply`. -/
 theorem of_is_coproduct' (h : Limits.IsColimit (BinaryCofan.mk inl inr)) (t : IsInitial Z) :
@@ -487,7 +498,7 @@ theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] [HasZeroObject C] [HasZer
 
 section
 
-variable {P': C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
+variable {P' : C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
 
 /-- Any object at the bottom right of a pushout square is isomorphic to the object at the bottom
 right of any other pushout square with the same span. -/
@@ -578,6 +589,20 @@ lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) : IsIso inl :=
 
 lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) : IsIso inr :=
   h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
+
+end
+
+section
+
+lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) [IsIso g] : IsIso inl := by
+  have := h.hasPushout
+  rw [← h.inl_isoPushout_inv]
+  infer_instance
+
+lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) [IsIso f] : IsIso inr := by
+  have := h.hasPushout
+  rw [← h.inr_isoPushout_inv]
+  infer_instance
 
 end
 

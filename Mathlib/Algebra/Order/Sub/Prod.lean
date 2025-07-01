@@ -3,8 +3,9 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Products of `OrderedSub` types.

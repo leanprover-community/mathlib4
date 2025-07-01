@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Empty
+import Mathlib.Data.Multiset.Filter
 
 /-!
 # Filtering a finite set
@@ -135,7 +136,7 @@ variable (p)
 
 theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a :=
   ext fun a => by
-    simp only [mem_filter, and_assoc, Bool.decide_and, Bool.decide_coe, Bool.and_eq_true]
+    simp only [mem_filter, and_assoc]
 
 theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filter p := by
   simp_rw [filter_filter, and_comm]
@@ -212,10 +213,8 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
 theorem disjoint_filter_and_not_filter :
     Disjoint (s.filter (fun x ↦ p x ∧ ¬q x)) (s.filter (fun x ↦ q x ∧ ¬p x)) := by
   intro _ htp htq
-  simp [bot_eq_empty, le_eq_subset, subset_empty]
-  by_contra hn
-  rw [← not_nonempty_iff_eq_empty, not_not] at hn
-  obtain ⟨_, hx⟩ := hn
+  simp only [bot_eq_empty, le_eq_subset, subset_empty, ← not_nonempty_iff_eq_empty]
+  rintro ⟨_, hx⟩
   exact (mem_filter.mp (htq hx)).2.2 (mem_filter.mp (htp hx)).2.1
 
 variable {p q}

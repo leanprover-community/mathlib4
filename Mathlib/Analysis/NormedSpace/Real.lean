@@ -76,7 +76,7 @@ theorem frontier_ball (x : E) {r : ℝ} (hr : r ≠ 0) :
 
 theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
-  cases' hr.lt_or_lt with hr hr
+  rcases hr.lt_or_gt with hr | hr
   · rw [closedBall_eq_empty.2 hr, ball_eq_empty.2 hr.le, interior_empty]
   refine Subset.antisymm ?_ ball_subset_interior_closedBall
   intro y hy
@@ -98,7 +98,7 @@ theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
 
 theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r) = ∅ := by
-  rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
+  rw [← frontier_closedBall x hr, interior_frontier isClosed_closedBall]
 
 theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
@@ -117,7 +117,7 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rw [← norm_ne_zero_iff] at hx
   use c • ‖x‖⁻¹ • x
-  simp [norm_smul, Real.norm_of_nonneg hc, abs_of_nonneg hc, inv_mul_cancel₀ hx]
+  simp [norm_smul, Real.norm_of_nonneg hc, inv_mul_cancel₀ hx]
 
 @[simp]
 theorem range_norm : range (norm : E → ℝ) = Ici 0 :=
@@ -142,7 +142,7 @@ theorem frontier_closedBall' (x : E) (r : ℝ) : frontier (closedBall x r) = sph
 
 @[simp]
 theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
-  rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
+  rw [← frontier_closedBall' x, interior_frontier isClosed_closedBall]
 
 @[simp]
 theorem frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by

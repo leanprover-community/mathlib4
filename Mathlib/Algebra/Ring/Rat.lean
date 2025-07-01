@@ -17,7 +17,7 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid Field PNat Nat.dvd_mul IsDomain.toCancelMonoidWithZero
+assert_not_exists OrderedCommMonoid Field PNat Nat.gcd_greatest IsDomain.toCancelMonoidWithZero
 
 namespace Rat
 
@@ -59,7 +59,7 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance commSemiring : CommSemiring ℚ := by infer_instance
-instance semiring     : Semiring ℚ     := by infer_instance
+instance semiring : Semiring ℚ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
@@ -78,7 +78,7 @@ lemma num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_natCast, ← divInt_eq_div, num_divInt_den]
 
 @[simp] lemma divInt_pow (num : ℕ) (den : ℤ) (n : ℕ) : (num /. den) ^ n = num ^ n /. den ^ n := by
-  simp [divInt_eq_div, div_pow, Int.natCast_pow]
+  simp [divInt_eq_div, div_pow]
 
 @[simp] lemma mkRat_pow (num den : ℕ) (n : ℕ) : mkRat num den ^ n = mkRat (num ^ n) (den ^ n) := by
   rw [mkRat_eq_divInt, mkRat_eq_divInt, divInt_pow, Int.natCast_pow]
@@ -93,7 +93,5 @@ lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast
   rw [divInt_mul_divInt _ _ this Int.one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 
 @[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
-
-@[deprecated (since := "2024-04-07")] alias coe_nat_eq_divInt := natCast_eq_divInt
 
 end Rat

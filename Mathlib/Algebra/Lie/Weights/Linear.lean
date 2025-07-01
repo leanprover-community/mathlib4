@@ -15,9 +15,9 @@ studies `M` via its weights. These are functions `χ : L → R` whose correspond
 `LieModule.genWeightSpace M χ`, is non-trivial. If `L` is Abelian or if `R` has characteristic zero
 (and `M` is finite-dimensional) then such `χ` are necessarily `R`-linear. However in general
 non-linear weights do exist. For example if we take:
- * `R`: the field with two elements (or indeed any perfect field of characteristic two),
- * `L`: `sl₂` (this is nilpotent in characteristic two),
- * `M`: the natural two-dimensional representation of `L`,
+* `R`: the field with two elements (or indeed any perfect field of characteristic two),
+* `L`: `sl₂` (this is nilpotent in characteristic two),
+* `M`: the natural two-dimensional representation of `L`,
 
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
 chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
@@ -27,15 +27,15 @@ have linear weights and provide typeclass instances in the two important cases t
 or `R` has characteristic zero.
 
 ## Main definitions
- * `LieModule.LinearWeights`: a typeclass encoding the fact that a given Lie module has linear
-   weights, and furthermore that the weights vanish on the derived ideal.
- * `LieModule.instLinearWeightsOfCharZero`: a typeclass instance encoding the fact that for an
-   Abelian Lie algebra, the weights of any Lie module are linear.
- * `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
-   characteristic zero, the weights of any finite-dimensional Lie module are linear.
- * `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
-   eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
-   with linear weights.
+* `LieModule.LinearWeights`: a typeclass encoding the fact that a given Lie module has linear
+  weights, and furthermore that the weights vanish on the derived ideal.
+* `LieModule.instLinearWeightsOfCharZero`: a typeclass instance encoding the fact that for an
+  Abelian Lie algebra, the weights of any Lie module are linear.
+* `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
+  characteristic zero, the weights of any finite-dimensional Lie module are linear.
+* `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
+  eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
+  with linear weights.
 
 -/
 
@@ -128,9 +128,6 @@ lemma trace_comp_toEnd_genWeightSpace_eq (χ : L → R) :
   rw [LinearMap.comp_apply, LieHom.coe_toLinearMap, h₁, map_add, h₂]
   simp [mul_comm (χ x)]
 
-@[deprecated (since := "2024-04-06")]
-alias trace_comp_toEnd_weight_space_eq := trace_comp_toEnd_genWeightSpace_eq
-
 variable {R L M} in
 lemma zero_lt_finrank_genWeightSpace {χ : L → R} (hχ : genWeightSpace M χ ≠ ⊥) :
     0 < finrank R (genWeightSpace M χ) := by
@@ -175,7 +172,7 @@ instance : LieRingModule L (shiftedGenWeightSpace R L M χ) where
     abel
   lie_add x m n := by
     nontriviality shiftedGenWeightSpace R L M χ
-    simp only [lie_add, LinearWeights.map_add χ (aux R L M χ), smul_add]
+    simp only [lie_add, smul_add]
     abel
   leibniz_lie x y m := by
     nontriviality shiftedGenWeightSpace R L M χ
@@ -255,8 +252,7 @@ lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [M
     rw [not_nonempty_iff] at contra
     simpa only [iSup_of_empty, bot_ne_top] using LieModule.iSup_genWeightSpace_eq_top' k L M
   obtain ⟨m, hm₀, hm⟩ := exists_forall_lie_eq_smul k L M χ
-  simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, Weight.coe_coe, ne_eq,
-    not_forall, Classical.not_imp]
+  simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, ne_eq, not_forall]
   exact ⟨χ.toLinear, m, by simpa [mem_weightSpace], hm₀⟩
 
 end LieModule

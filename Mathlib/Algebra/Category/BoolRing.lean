@@ -56,26 +56,28 @@ variable {R} in
 structure Hom (R S : BoolRing) where
   private mk ::
   /-- The underlying ring hom. -/
-  hom : R →+* S
+  hom' : R →+* S
 
 instance : Category BoolRing where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
-  comp f g := ⟨g.hom.comp f.hom⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
+
+instance : ConcreteCategory BoolRing (· →+* ·) where
+  hom f := f.hom'
+  ofHom f := ⟨f⟩
+
+/-- Turn a morphism in `BoolRing` back into a `RingHom`. -/
+abbrev Hom.hom {X Y : BoolRing} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := BoolRing) f
+
+/-- Typecheck a `RingHom` as a morphism in `BoolRing`. -/
+abbrev ofHom {R S : Type u} [BooleanRing R] [BooleanRing S] (f : R →+* S) : of R ⟶ of S :=
+  ConcreteCategory.ofHom f
 
 @[ext]
 lemma hom_ext {R S : BoolRing} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-/-- Typecheck a `RingHom` as a morphism in `BoolRing`. -/
-abbrev ofHom {R S : Type u} [BooleanRing R] [BooleanRing S] (f : R →+* S) : of R ⟶ of S :=
-  ⟨f⟩
-
-instance : ConcreteCategory BoolRing where
-  forget :=
-    { obj := fun R ↦ R
-      map := fun f ↦ f.hom }
-  forget_faithful := ⟨fun h ↦ by ext x; simpa using congrFun h x⟩
 
 instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
   forget₂ :=
@@ -94,26 +96,25 @@ end BoolRing
 
 /-! ### Equivalence between `BoolAlg` and `BoolRing` -/
 
--- Porting note: Added. somehow it does not find this instance.
+-- We have to add this instance since Lean doesn't see through `X.toBddDistLat`.
 instance {X : BoolAlg} :
     BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
-  BoolAlg.instBooleanAlgebra _
+  BoolAlg.str _
 
+-- We have to add this instance since Lean doesn't see through `R.toBddDistLat`.
 instance {R : Type u} [BooleanRing R] :
     BooleanRing (BoolAlg.of (AsBoolAlg ↑R)).toBddDistLat.toBddLat.toLat :=
   inferInstanceAs <| BooleanRing R
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
-  forget₂ :=
-    { obj := fun X ↦ BoolAlg.of (AsBoolAlg X)
-      map := fun {R S} f ↦ RingHom.asBoolAlg f.hom }
+  forget₂.obj X := .of (AsBoolAlg X)
+  forget₂.map f := BoolAlg.ofHom f.hom.asBoolAlg
 
 @[simps]
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
-  forget₂ :=
-    { obj := fun X => BoolRing.of (AsBoolRing X)
-      map := fun {_ _} f => BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f }
+  forget₂.obj X := .of (AsBoolRing X)
+  forget₂.map f := BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f.hom
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/
 @[simps functor inverse]

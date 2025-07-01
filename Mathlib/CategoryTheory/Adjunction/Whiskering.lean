@@ -29,11 +29,11 @@ protected def whiskerRight (adj : F ⊣ G) :
   unit :=
     { app := fun X =>
         (Functor.rightUnitor _).inv ≫ whiskerLeft X adj.unit ≫ (Functor.associator _ _ _).inv
-      naturality := by intros; ext; dsimp; simp }
+      naturality := by intros; ext; simp }
   counit :=
     { app := fun X =>
         (Functor.associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (Functor.rightUnitor _).hom
-      naturality := by intros; ext; dsimp; simp }
+      naturality := by intros; ext; simp }
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
