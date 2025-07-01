@@ -484,7 +484,7 @@ theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
 theorem ofInt'_eq : ∀ n : ℤ, ZNum.ofInt' n = n
   | (n : ℕ) => rfl
   | -[n+1] => by
-    show Num.toZNumNeg (n + 1 : ℕ) = -(n + 1 : ℕ)
+    change Num.toZNumNeg (n + 1 : ℕ) = -(n + 1 : ℕ)
     rw [← neg_inj, neg_neg, Nat.cast_succ, Num.add_one, Num.zneg_toZNumNeg, Num.toZNum_succ,
       Nat.cast_succ, ZNum.add_one]
     rfl

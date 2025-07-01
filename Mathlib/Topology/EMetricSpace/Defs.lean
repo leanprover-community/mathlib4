@@ -53,12 +53,27 @@ class EDist (α : Type*) where
 export EDist (edist)
 
 /-- Creating a uniform space from an extended distance. -/
-def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
+@[reducible] def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : UniformSpace α :=
   .ofFun edist edist_self edist_comm edist_triangle fun ε ε0 =>
     ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩
+
+/-- Creating a uniform space from an extended distance. We assume that
+there is a preexisting topology, for which the neighborhoods can be expressed using the distance,
+and we make sure that the uniform space structure we construct has a topology which is defeq
+to the original one. -/
+@[reducible] noncomputable def uniformSpaceOfEDistOfHasBasis [TopologicalSpace α]
+    (edist : α → α → ℝ≥0∞)
+    (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z)
+    (basis : ∀ x, (𝓝 x).HasBasis (fun c ↦ 0 < c) (fun c ↦ {y | edist x y < c})) :
+    UniformSpace α :=
+  .ofFunOfHasBasis edist edist_self edist_comm edist_triangle (fun ε ε0 =>
+    ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
+      (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩) basis
 
 /-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
 satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
@@ -287,6 +302,21 @@ theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
     edist (⟨x, hx⟩ : Subtype p) ⟨y, hy⟩ = edist x y :=
   rfl
 
+/-- Consider an extended distance on a topological space, for which the neighborhoods can be
+expressed in terms of the distance. Then we define the emetric space structure associated to this
+distance, with a topology defeq to the initial one. -/
+@[reducible] noncomputable def PseudoEmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α]
+    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
+    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
+    (h_basis : ∀ x, (𝓝 x).HasBasis (fun c ↦ 0 < c) (fun c ↦ {y | d x y < c})) :
+    PseudoEMetricSpace α where
+  edist := d
+  edist_self := h_self
+  edist_comm := h_comm
+  edist_triangle := h_triangle
+  toUniformSpace := uniformSpaceOfEDistOfHasBasis d h_self h_comm h_triangle h_basis
+  uniformity_edist := rfl
+
 namespace MulOpposite
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
@@ -441,38 +471,6 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, ball x ε ⊆ s :=
 
 theorem mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, ball x ε ∩ t ⊆ s :=
   nhdsWithin_basis_eball.mem_iff
-
-/-- If an extended distance on a topological space defines balls which are neighborhoods of points,
-and is such that any neighborhood contains a ball, then the topology defined by the distance
-coincides with the initial topology. -/
-lemma topologicalSpace_eq_uniformSpaceOfEdist_toTopologicalSpace
-    {α : Type*} [T : TopologicalSpace α]
-    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
-    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (h₁ : ∀ x, ∀ c > 0, {y | d x y < c} ∈ 𝓝 x)
-    (h₂ : ∀ x, ∀ s ∈ 𝓝 x, ∃ c > 0, {y | d x y < c} ⊆ s) :
-    T = (uniformSpaceOfEDist d h_self h_comm h_triangle).toTopologicalSpace := by
-  apply TopologicalSpace.ext_nhds (fun x ↦ ?_)
-  let m : PseudoEMetricSpace α :=
-    { edist := d
-      edist_self := h_self
-      edist_comm := h_comm
-      edist_triangle := h_triangle }
-  have A (x c) : @EMetric.ball α m x c = {y | d x y < c} := by
-    ext y
-    simp only [EMetric.mem_ball']
-    exact Iff.rfl
-  apply le_antisymm
-  · intro t ht
-    have h't : t ∈ @nhds α m.toUniformSpace.toTopologicalSpace x := ht
-    rcases EMetric.mem_nhds_iff.1 h't with ⟨c, c_pos, hc⟩
-    apply Filter.mem_of_superset (h₁ x c c_pos)
-    rwa [A] at hc
-  · intro t ht
-    rcases h₂ x t ht with ⟨c, c_pos, hc⟩
-    change t ∈ @nhds α m.toUniformSpace.toTopologicalSpace x
-    apply EMetric.mem_nhds_iff.2 ⟨c, c_pos, ?_⟩
-    rwa [← A] at hc
 
 section
 
@@ -656,33 +654,6 @@ abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricS
   edist_triangle := edist_triangle
   toUniformSpace := m.toUniformSpace.replaceTopology H
   uniformity_edist := PseudoEMetricSpace.uniformity_edist
-
-/-- Consider an extended distance on a topological space for which the balls are neighborhoods of
-points, and such that any neighborhood contains a ball. Then we define the emetric
-space structure associated to this distance, with a topology defeq to the initial one. -/
-@[reducible] def EmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α] [T0Space α]
-    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
-    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (h₁ : ∀ x, ∀ c > 0, {y | d x y < c} ∈ 𝓝 x)
-    (h₂ : ∀ x, ∀ s ∈ 𝓝 x, ∃ c > 0, {y | d x y < c} ⊆ s) :
-    EMetricSpace α where
-  edist := d
-  edist_self := h_self
-  edist_comm := h_comm
-  edist_triangle := h_triangle
-  eq_of_edist_eq_zero := by
-    intro x y hxy
-    contrapose! hxy
-    intro hd
-    rcases exists_isOpen_xor'_mem hxy with ⟨u, u_open, hu⟩
-    rcases hu with ⟨ux, uy⟩ | ⟨uy, ux⟩
-    · rcases h₂ x _ (u_open.mem_nhds ux) with ⟨c, c_pos, hc⟩
-      exact uy (hc (by simpa [hd] using c_pos))
-    · rcases h₂ y _ (u_open.mem_nhds uy) with ⟨c, c_pos, hc⟩
-      exact ux (hc (by simpa [hd, h_comm] using c_pos))
-  toUniformSpace := (uniformSpaceOfEDist d h_self h_comm h_triangle).replaceTopology
-    (topologicalSpace_eq_uniformSpaceOfEdist_toTopologicalSpace d h_self h_comm h_triangle h₁ h₂)
-  uniformity_edist := rfl
 
 /-- The extended metric induced by an injective function taking values in an emetric space.
 See Note [reducible non-instances]. -/

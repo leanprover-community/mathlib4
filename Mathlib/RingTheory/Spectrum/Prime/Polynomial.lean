@@ -138,7 +138,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     let e : R[X] ⊗[R] x.asIdeal.ResidueField ≃ₐ[R] x.asIdeal.ResidueField[X] :=
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    show (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ Polynomial.mapRingHom _ f = 0
+    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ Polynomial.mapRingHom _ f = 0
     congr!
     ext1
     · ext; simp [e]
@@ -200,7 +200,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     let e : MvPolynomial σ R ⊗[R] x.asIdeal.ResidueField ≃ₐ[R]
         MvPolynomial σ x.asIdeal.ResidueField := scalarRTensorAlgEquiv
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    show (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ MvPolynomial.map _ f = 0
+    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ MvPolynomial.map _ f = 0
     congr!
     ext
     · simp [scalarRTensorAlgEquiv, e, coeff_map,

@@ -294,7 +294,7 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
 @[simp, norm_cast] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
 
 /-- This is a special case of `WithTop.top_sub_coe` in the `ENNReal` namespace -/
-@[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := WithTop.top_sub_coe
+@[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := rfl
 
 @[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
 
@@ -521,7 +521,7 @@ theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
   refine eq_of_forall_ge_iff fun c => ?_
   rw [tsub_le_iff_right, add_comm, iInf_add]
-  simp [tsub_le_iff_right, sub_eq_add_neg, add_comm]
+  simp [tsub_le_iff_right, add_comm]
 
 theorem sInf_add {s : Set ℝ≥0∞} : sInf s + a = ⨅ b ∈ s, b + a := by simp [sInf_eq_iInf, iInf_add]
 

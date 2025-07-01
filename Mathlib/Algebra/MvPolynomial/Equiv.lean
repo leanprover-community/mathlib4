@@ -67,7 +67,7 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
   left_inv := by
     let f : R[X] →+* MvPolynomial PUnit R := Polynomial.eval₂RingHom MvPolynomial.C (X PUnit.unit)
     let g : MvPolynomial PUnit R →+* R[X] := eval₂Hom Polynomial.C fun _ => Polynomial.X
-    show ∀ p, f.comp g p = p
+    change ∀ p, f.comp g p = p
     apply is_id
     · ext a
       dsimp [f, g]
@@ -401,7 +401,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
       commutes' := fun r => by
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
-  show
+  change
     aeval (fun x ↦ Option.elim x y s) f =
       (Polynomial.aeval y).comp (φ.comp (optionEquivLeft _ _).toAlgHom) f
   congr 2
@@ -559,7 +559,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
       commutes' := fun r => by
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
-  show
+  change
     aeval (Fin.cons y s : Fin (n + 1) → R) f =
       (Polynomial.aeval y).comp (φ.comp (finSuccEquiv R n).toAlgHom) f
   congr 2

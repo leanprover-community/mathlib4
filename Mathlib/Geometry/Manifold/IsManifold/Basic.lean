@@ -151,7 +151,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
     PartialEquiv H E where
   source_eq : source = univ
   /-- To check this condition when the space already has a real normed space structure,
-  use `Convex.convex_isRCLikeNormedField` which eliminates the `letI`s below. -/
+  use `Convex.convex_isRCLikeNormedField` which eliminates the `letI`s below, or the constructor
+  `ModelWithCorners.of_convex_range` -/
   convex_range' :
     if h : IsRCLikeNormedField 𝕜 then
       letI := h.rclike 𝕜;
@@ -297,6 +298,22 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   convert hs hu hv ha hb hab using 2
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
+
+/-- Construct a model with corners over `ℝ` from a continuous partial equiv with convex range. -/
+def of_convex_range
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+    (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
+    (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
+    ModelWithCorners ℝ E H where
+  toPartialEquiv := φ
+  source_eq := hsource
+  convex_range' := by
+    have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
+    simp only [instIsRCLikeNormedField, ↓reduceDIte, this]
+    exact htarget.convex_isRCLikeNormedField
+  nonempty_interior' := by
+    have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
+    simp [this, hint]
 
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
