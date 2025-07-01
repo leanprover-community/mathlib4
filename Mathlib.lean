@@ -2923,6 +2923,7 @@ import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.FlagRange
 import Mathlib.Data.Fin.Parity
+import Mathlib.Data.Fin.Pigeonhole
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
