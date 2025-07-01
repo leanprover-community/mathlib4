@@ -132,7 +132,7 @@ variable {f} {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
 def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobject f : C) ⟶ (kernelSubobject f' : C) :=
   Subobject.factorThru _ ((kernelSubobject f).arrow ≫ sq.left)
-    (kernelSubobject_factors _ _ (by simp [sq.w]))
+    (kernelSubobject_factors _ _ (by simp))
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
@@ -285,7 +285,7 @@ instance [HasEqualizers C] : Epi (factorThruImageSubobject f) := by
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem imageSubobject_arrow_comp : factorThruImageSubobject f ≫ (imageSubobject f).arrow = f := by
-  simp [factorThruImageSubobject, imageSubobject_arrow]
+  simp [factorThruImageSubobject]
 
 theorem imageSubobject_arrow_comp_eq_zero [HasZeroMorphisms C] {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z}
     [HasImage f] [Epi (factorThruImageSubobject f)] (h : f ≫ g = 0) :

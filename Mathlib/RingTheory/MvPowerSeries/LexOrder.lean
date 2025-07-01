@@ -123,7 +123,7 @@ theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
   rintro ⟨u, v⟩ h h'
   simp only [Finset.mem_antidiagonal] at h
   rcases trichotomy_of_add_eq_add (congrArg toLex h) with h'' | h'' | h''
-  · exact False.elim (h' (by simp [Prod.ext_iff, h''.1, h''.2]))
+  · exact False.elim (h' (by simp [h''.1, h''.2]))
   · rw [coeff_eq_zero_of_lt_lexOrder (d := u), zero_mul]
     rw [hp]
     norm_cast

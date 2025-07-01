@@ -334,7 +334,7 @@ def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S
   map_add' a b := coprod_add ..
   map_smul' r a := by
     dsimp
-    ext <;> simp [smul_add, smul_apply, Prod.smul_snd, Prod.smul_fst, coprod_apply]
+    ext <;> simp [smul_apply]
 
 end AddCommMonoid
 

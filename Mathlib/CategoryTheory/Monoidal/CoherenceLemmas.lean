@@ -24,14 +24,18 @@ variable {C : Type*} [Category C] [MonoidalCategory C]
 
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]
-theorem leftUnitor_tensor'' (X Y : C) :
+theorem leftUnitor_tensor_hom'' (X Y : C) :
     (α_ (𝟙_ C) X Y).hom ≫ (λ_ (X ⊗ Y)).hom = (λ_ X).hom ⊗ₘ 𝟙 Y := by
   monoidal_coherence
 
+@[deprecated (since := "2025-06-24")] alias leftUnitor_tensor'' := leftUnitor_tensor_hom''
+
 @[reassoc]
-theorem leftUnitor_tensor' (X Y : C) :
+theorem leftUnitor_tensor_hom' (X Y : C) :
     (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ ((λ_ X).hom ⊗ₘ 𝟙 Y) := by
   monoidal_coherence
+
+@[deprecated (since := "2025-06-24")] alias leftUnitor_tensor' := leftUnitor_tensor_hom'
 
 @[reassoc]
 theorem leftUnitor_tensor_inv' (X Y : C) :
