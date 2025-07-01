@@ -40,12 +40,12 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     intro a ha
     conv_rhs => rw [← List.map_id a]
     rw [List.map_pmap]
-    simp [klift, Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id']
+    simp [klift, Fin.valEmbedding_apply, List.pmap_eq_map, List.map_id']
   use l.map (List.map (Fintype.equivFin α).symm)
   constructor
   · -- length
     rw [← ranges_length c]
-    simp only [l, klift', map_map, map_pmap, Function.comp_apply, length_map, length_pmap,
+    simp only [l, klift', map_pmap, length_pmap,
       pmap_eq_map]
   constructor
   · -- nodup

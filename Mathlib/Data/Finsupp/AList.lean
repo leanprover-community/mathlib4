@@ -38,7 +38,7 @@ noncomputable def toAList (f : α →₀ M) : AList fun _x : α => M :=
 theorem toAList_keys_toFinset [DecidableEq α] (f : α →₀ M) :
     f.toAList.keys.toFinset = f.support := by
   ext
-  simp [toAList, AList.mem_keys, AList.keys, List.keys]
+  simp [toAList, AList.keys, List.keys]
 
 @[simp]
 theorem mem_toAlist {f : α →₀ M} {x : α} : x ∈ f.toAList ↔ f x ≠ 0 := by
@@ -113,7 +113,7 @@ theorem _root_.Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.looku
     by_cases h : f a = 0
     · suffices f.toAList.lookup a = none by simp [h, this]
       simp [lookup_eq_none, h]
-    · suffices f.toAList.lookup a = some (f a) by simp [h, this]
+    · suffices f.toAList.lookup a = some (f a) by simp [this]
       apply mem_lookup_iff.2
       simpa using h
 
