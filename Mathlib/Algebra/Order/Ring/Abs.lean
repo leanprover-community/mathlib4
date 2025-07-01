@@ -44,8 +44,7 @@ lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
-    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, eq_self_iff_true, neg_mul,
-      mul_neg, neg_neg, *]
+    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, neg_mul, mul_neg, neg_neg, *]
 
 /-- `abs` as a `MonoidWithZeroHom`. -/
 def absHom : α →*₀ α where
@@ -179,7 +178,9 @@ private theorem pow_sub_pow_eq_sub_mul_geomSum :
 theorem abs_pow_sub_pow_le : |a ^ n - b ^ n| ≤ |a - b| * n * max |a| |b| ^ (n - 1) := by
   obtain _ | n := n; · simp
   rw [Nat.add_sub_cancel, pow_sub_pow_eq_sub_mul_geomSum, abs_mul, mul_assoc, Nat.cast_succ]
-  exact mul_le_mul_of_nonneg_left (abs_geomSum_le ..) (abs_nonneg _)
+  gcongr
+  · exact abs_nonneg _
+  · exact abs_geomSum_le ..
 
 end LinearOrderedCommRing
 

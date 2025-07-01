@@ -111,7 +111,7 @@ theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
 
 @[simp]
 theorem birthday_ordinalToPGame (o : Ordinal) : o.toPGame.birthday = o := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [toPGame, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
   conv_rhs => rw [← lsub_typein o]

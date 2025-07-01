@@ -129,11 +129,11 @@ lemma σ_im_ne_zero {g z} : (σ g z).im ≠ 0 ↔ z.im ≠ 0 := by
 
 lemma σ_mul (g g' : GL (Fin 2) ℝ) (z : ℂ) : σ (g * g') z = σ g (σ g' z) := by
   simp only [σ, map_mul, Units.val_mul]
-  rcases g.det_ne_zero.lt_or_lt with (h | h) <;>
-  rcases g'.det_ne_zero.lt_or_lt with (h' | h')
-  · simp [mul_pos_of_neg_of_neg h h', h.not_lt, h'.not_lt]
-  · simp [(mul_neg_of_neg_of_pos h h').not_lt, h.not_lt, h']
-  · simp [(mul_neg_of_pos_of_neg h h').not_lt, h, h'.not_lt]
+  rcases g.det_ne_zero.lt_or_gt with (h | h) <;>
+  rcases g'.det_ne_zero.lt_or_gt with (h' | h')
+  · simp [mul_pos_of_neg_of_neg h h', h.not_gt, h'.not_gt]
+  · simp [(mul_neg_of_neg_of_pos h h').not_gt, h.not_gt, h']
+  · simp [(mul_neg_of_pos_of_neg h h').not_gt, h, h'.not_gt]
   · simp [mul_pos h h', h, h']
 
 lemma σ_mul_comm (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ h z) = σ h (σ g z) := by
@@ -191,8 +191,8 @@ transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using comp
 instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
-    show smulAux 1 z = z
-    simp [UpperHalfPlane.ext_iff, smulAux, coe_mk, smulAux', num, denom, σ]
+    change smulAux 1 z = z
+    simp [smulAux, smulAux', num, denom, σ]
   mul_smul := mul_smul'
 
 lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
@@ -267,13 +267,13 @@ instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
 theorem modular_S_smul (z : ℍ) :
     ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
   rw [specialLinearGroup_apply]
-  simp [ModularGroup.S, neg_div, inv_neg, toGL]
+  simp [ModularGroup.S, neg_div, inv_neg]
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
   rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, coe_specialLinearGroup_apply]
-  simp [toGL, ModularGroup.coe_T_zpow,
-    of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
-    head_cons, algebraMap.coe_zero, zero_mul, zero_add, div_one]
+  simp [ModularGroup.coe_T_zpow,
+    of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
+    zero_mul, zero_add, div_one]
 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
