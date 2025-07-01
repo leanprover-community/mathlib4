@@ -528,19 +528,12 @@ theorem ofFractionRing_algebraMap (x : K[X]) :
 /--
 The equivalence between `RatFunc K` and the field of fractions of `K[X]`
 -/
-def toFractionRingRAlgEquiv {R : Type*} [CommSemiring R]
-  [IsDomain K] [Algebra R K]:
+def toFractionRingRAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]]:
   RatFunc K ≃ₐ[R] FractionRing K[X] := {
     RatFunc.toFractionRingRingEquiv K with
     commutes' r := by
-      simp_rw [RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-        RatFunc.toFractionRingRingEquiv_apply]
-      let _ : Algebra R[X] (RatFunc K) := by
-        let _ : Algebra R[X] K[X] := Polynomial.algebra R K
-        exact RatFunc.instAlgebraOfPolynomial K R[X]
-      rw [show (algebraMap R _) r = (algebraMap K[X] (RatFunc K))
-        (Polynomial.C ((algebraMap R K) r)) by rfl]
-      rw [← RatFunc.ofFractionRing_algebraMap]; rfl
+      change (RatFunc.mk (algebraMap R K[X] r) 1).toFractionRing = _
+      rw [mk_one']; rfl
   }
 
 @[simp]
