@@ -94,7 +94,7 @@ variable [DecidableEq α] [OrderTop α]
 relative-closed set of the form `T ↓∩ Ici a` where `a = ⨅ F`. -/
 open Finset in
 lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
-    T ↓∩ ↑(upperClosure F.toSet) = T ↓∩ Ici (inf F id) := by
+    T ↓∩ upperClosure F.toSet = T ↓∩ Ici (inf F id) := by
   rw [coe_upperClosure]
   induction' F using Finset.induction_on with a F' _ I4
   · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
