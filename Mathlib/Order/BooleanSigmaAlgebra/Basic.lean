@@ -252,53 +252,53 @@ theorem σsInf_le_σsInf_of_forall_exists_le (hs : s.Countable) (ht : t.Countabl
   σsSup_le_σsSup_of_forall_exists_le (α := αᵒᵈ) hs ht h
 
 @[simp]
-theorem σsSup_empty [OrderBot α] : sSup ∅ = (⊥ : α) :=
+theorem σsSup_empty : sSup ∅ = (⊥ : α) :=
   (@isLUB_empty α _ _).σsSup_eq Set.countable_empty
 
 @[simp]
-theorem σsInf_empty [OrderTop α] : sInf ∅ = (⊤ : α) :=
+theorem σsInf_empty : sInf ∅ = (⊤ : α) :=
   σsSup_empty (α := αᵒᵈ)
 
-theorem σsSup_le_σsSup_of_subset_insert_bot [OrderBot α] (ht : t.Countable) (h : s ⊆ insert ⊥ t) :
+theorem σsSup_le_σsSup_of_subset_insert_bot (ht : t.Countable) (h : s ⊆ insert ⊥ t) :
     sSup s ≤ sSup t :=
   (σsSup_le_σsSup (ht.insert ⊥) h).trans_eq ((σsSup_insert ht).trans (bot_sup_eq _))
 
-theorem σsInf_le_σsInf_of_subset_insert_top [OrderTop α] (ht : t.Countable) (h : s ⊆ insert ⊤ t) :
+theorem σsInf_le_σsInf_of_subset_insert_top (ht : t.Countable) (h : s ⊆ insert ⊤ t) :
     sInf t ≤ sInf s :=
   σsSup_le_σsSup_of_subset_insert_bot (α := αᵒᵈ) ht h
 
 @[simp]
-theorem σsSup_diff_singleton_bot [OrderBot α] (hs : s.Countable) : sSup (s \ {⊥}) = sSup s :=
+theorem σsSup_diff_singleton_bot (hs : s.Countable) : sSup (s \ {⊥}) = sSup s :=
   (σsSup_le_σsSup hs Set.diff_subset).antisymm <|
     σsSup_le_σsSup_of_subset_insert_bot (hs.mono Set.diff_subset) <|
       Set.subset_insert_diff_singleton _ _
 
 @[simp]
-theorem σsInf_diff_singleton_top [OrderTop α] (hs : s.Countable) : sInf (s \ {⊤}) = sInf s :=
+theorem σsInf_diff_singleton_top (hs : s.Countable) : sInf (s \ {⊤}) = sInf s :=
   σsSup_diff_singleton_bot (α := αᵒᵈ) hs
 
 @[simp]
-theorem σsSup_eq_bot [OrderBot α] (hs : s.Countable) : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
+theorem σsSup_eq_bot (hs : s.Countable) : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
   ⟨fun h _ ha => bot_unique <| h ▸ le_σsSup hs ha, fun h =>
     bot_unique <| σsSup_le hs fun a ha => le_bot_iff.2 <| h a ha⟩
 
 @[simp]
-theorem σsInf_eq_top [OrderTop α] (hs : s.Countable) : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
+theorem σsInf_eq_top (hs : s.Countable) : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   σsSup_eq_bot (α := αᵒᵈ) hs
 
-lemma σsSup_eq_bot' [OrderBot α] (hs : s.Countable) : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
+lemma σsSup_eq_bot' (hs : s.Countable) : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
   rw [σsSup_eq_bot hs, ← Set.subset_singleton_iff_eq, Set.subset_singleton_iff]
 
-lemma σsInf_eq_bot' [OrderTop α] (hs : s.Countable) : sInf s = ⊤ ↔ s = ∅ ∨ s = {⊤} :=
+lemma σsInf_eq_bot' (hs : s.Countable) : sInf s = ⊤ ↔ s = ∅ ∨ s = {⊤} :=
   σsSup_eq_bot' (α := αᵒᵈ) hs
 
-theorem eq_singleton_bot_of_σsSup_eq_bot_of_nonempty [OrderBot α] (hs : s.Countable)
+theorem eq_singleton_bot_of_σsSup_eq_bot_of_nonempty (hs : s.Countable)
     (h_sup : sSup s = ⊥) (hne : s.Nonempty) : s = {⊥} := by
   rw [Set.eq_singleton_iff_nonempty_unique_mem]
   rw [σsSup_eq_bot hs] at h_sup
   exact ⟨hne, h_sup⟩
 
-theorem eq_singleton_top_of_σsInf_eq_top_of_nonempty [OrderTop α] (hs : s.Countable)
+theorem eq_singleton_top_of_σsInf_eq_top_of_nonempty (hs : s.Countable)
     (h_inf : sInf s = ⊤) (hne : s.Nonempty) : s = {⊤} :=
   eq_singleton_bot_of_σsSup_eq_bot_of_nonempty (α := αᵒᵈ) hs h_inf hne
 
