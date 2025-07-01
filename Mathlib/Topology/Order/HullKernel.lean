@@ -189,7 +189,7 @@ theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
       exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
   exact ⟨fun h b hbS => h _ (Subtype.coe_prop b) hbS, fun h b _ hbS => h hbS⟩
 
-lemma gc_closureOperator_eq (S : Set T) : gc.closureOperator S = T ↓∩ Ici (sInf S) := by
+lemma gc_closureOperator (S : Set T) : gc.closureOperator S = T ↓∩ Ici (sInf S) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
