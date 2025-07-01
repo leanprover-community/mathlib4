@@ -438,11 +438,10 @@ lemma mdifferentiableOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜
   let rhs := fun x' ↦ ∑ i, (b.localFrame_repr e i) s x' • b.localFrame e i x'
   have almost : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (rhs x)) t :=
     mdifferentiableOn_finsum_section fun i ↦ this i
-  sorry /- TODO, missing API: MDifferentiableOn.congr! #check ContMDiffOn.congr
   apply almost.congr
   intro y hy
   congr
-  exact b.localFrame_repr_sum_eq s (ht' hy) -/
+  exact b.localFrame_repr_sum_eq s (ht' hy)
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is differentiable on a trivialisation domain `e.baseSet` iff each of its
