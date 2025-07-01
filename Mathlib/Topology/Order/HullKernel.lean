@@ -180,16 +180,18 @@ lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = hull T a := by
   simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
 
+abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
+
 /- The pair of maps `S ↦ sInf S` (kernel) and `a ↦ T ↓∩ Ici a` (hull) form an antitone Galois
 connection betwen the subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
-    (fun S => toDual (sInf (S : Set α))) (fun a => hull T (ofDual a)) := fun S a => by
+    (fun S => toDual (kernel S)) (fun a => hull T (ofDual a)) := fun S a => by
   simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
       exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
   exact ⟨fun h b hbS => h _ (Subtype.coe_prop b) hbS, fun h b _ hbS => h hbS⟩
 
-lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (sInf S) := by
+lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
@@ -197,7 +199,7 @@ variable (T)
 
 /-- `T` is said to order generate `α` if, for every `a` in `α`, there exists a subset of `T` such
 that `a` is the inf of `S`. -/
-def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = sInf (S : Set α)
+def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = kernel S
 
 variable {T}
 
@@ -205,7 +207,7 @@ variable {T}
 When `T` is order generating, the kernel and the hull form a Galois insertion
 -/
 def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
-    (fun S => OrderDual.toDual (sInf (Subtype.val '' S)))
+    (fun S => OrderDual.toDual (kernel S))
     (fun a => hull T (OrderDual.ofDual a)) :=
   gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
@@ -214,7 +216,7 @@ def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
       (hS.symm))
 
-lemma kernel_hull_eq (hG : OrderGenerate T) (a : α) : sInf (hull T a : Set α) = a := by
+lemma kernel_hull_eq (hG : OrderGenerate T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
   rfl
 
@@ -222,16 +224,14 @@ lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [Decidab
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
     gc.closureOperator C = C := by
   obtain ⟨a, ha⟩ := (isClosed_iff hT C).mp h
-  simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
-  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq, ha,
-    (kernel_hull_eq hG)]
+  rw [GaloisConnection.closureOperator_apply, ha, kernel_hull_eq hG, OrderDual.ofDual_toDual]
 
 lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
-    (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = hull T (sInf S) := by
+    (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = hull T (kernel S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   constructor
-  · exact fun ⦃a⦄ a ↦ a (hull T (sInf ↑S)) ⟨(isClosed_iff hT _).mpr ⟨sInf ↑S, rfl⟩,
+  · exact fun ⦃a⦄ a ↦ a (hull T (kernel S)) ⟨(isClosed_iff hT _).mpr ⟨kernel S, rfl⟩,
       image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
