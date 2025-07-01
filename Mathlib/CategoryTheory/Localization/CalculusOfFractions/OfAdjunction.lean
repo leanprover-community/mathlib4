@@ -77,8 +77,8 @@ lemma isLocalization_leftAdjoint
     ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e _⟩
   exact Functor.IsLocalization.of_equivalence_target W.Q W _
     (Equivalence.mk Φ (F ⋙ W.Q)
-    (Localization.liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _
-      (W.Q.leftUnitor.symm ≪≫ asIso (whiskerRight adj.unit W.Q) ≪≫ Functor.associator _ _ _))
+      (Localization.liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _
+        (W.Q.leftUnitor.symm ≪≫ asIso (whiskerRight adj.unit W.Q) ≪≫ Functor.associator _ _ _))
       (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫ asIso adj.counit)) e
 
 lemma isLocalization_rightAdjoint
