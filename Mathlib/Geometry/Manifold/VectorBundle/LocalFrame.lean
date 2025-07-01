@@ -293,6 +293,7 @@ lemma contMDiffAt_iff_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 
   -- needs two missing API lemmas, see below
   sorry
 
+omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
 lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
@@ -300,21 +301,19 @@ lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [C
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) t ↔
     ∀ i, ContMDiffOn I 𝓘(𝕜) k (b.localFrame_repr e i s) t := by
-  refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun i ↦ ?_⟩
-
-  have inner (i) : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦
-      TotalSpace.mk' F x ((localFrame_repr e b i) s x • localFrame e b i x)) t := by
-    -- lemma localFrame_repr is smooth, localFrame is smooth => scalar product is
-    -- does this already exist? if not, missing API!
-    sorry
+  refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
+  have this (i) : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦
+      TotalSpace.mk' F x ((localFrame_repr e b i) s x • localFrame e b i x)) t :=
+    contMDiffOn_smul_section ((contMDiffOn_localFrame_baseSet k e b i).mono ht') (hi i)
   let rhs := fun x' ↦ ∑ i, (localFrame_repr e b i) s x' • localFrame e b i x'
   have almost : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (rhs x)) t :=
-    contMDiffOn_finsum_section fun i ↦ inner i
+    contMDiffOn_finsum_section fun i ↦ this i
   apply almost.congr
   intro y hy
   congr
   exact localFrame_repr_sum_eq s (ht' hy)
 
+omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
 lemma contMDiffOn_baseSet_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
