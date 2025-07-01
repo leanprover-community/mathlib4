@@ -25,7 +25,7 @@ lemma Integers.isIntegral_iff_v_le_one {v : Valuation R Γ₀} (hv : v.Integers 
     by_cases hn : f.natDegree = 0
     · rw [Polynomial.natDegree_eq_zero] at hn
       obtain ⟨c, rfl⟩ := hn
-      simp [map_eq_zero_iff _ hv.hom_inj, hm.C_ne_zero] at hf
+      simp [map_eq_zero_iff _ hv.hom_inj, hm.ne_zero_of_C] at hf
     simp only [Polynomial.eval₂_eq_sum_range, Finset.sum_range_succ, hm.coeff_natDegree, map_one,
       one_mul, add_eq_zero_iff_eq_neg] at hf
     apply_fun v at hf

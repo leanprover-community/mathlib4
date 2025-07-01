@@ -465,7 +465,7 @@ theorem Monic.ne_zero_of_ne (h : (0 : R) ≠ 1) {p : R[X]} (hp : p.Monic) : p �
   nontriviality R
   exact hp.ne_zero
 
-lemma Monic.C_ne_zero [Nontrivial R] {c : R} (hc : Monic (C c)) : c ≠ 0 := by
+lemma Monic.ne_zero_of_C [Nontrivial R] {c : R} (hc : Monic (C c)) : c ≠ 0 := by
   rintro rfl
   simp [Monic] at hc
 
