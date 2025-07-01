@@ -102,7 +102,7 @@ lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
   rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
     ⟨(continuous_mul_right _).continuousWithinAt, ?_⟩ subset_rfl
-  simp only [mfld_simps, hasFDerivWithinAt_univ]
+  simp only [mfld_simps]
   exact HasFDerivWithinAt.mul_const' (hasFDerivWithinAt_id _ _) _
 
 lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
