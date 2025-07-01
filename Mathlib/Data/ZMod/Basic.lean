@@ -36,6 +36,8 @@ open Function ZMod
 
 namespace ZMod
 
+instance : IsDomain (ZMod 0) := inferInstanceAs (IsDomain ℤ)
+
 /-- For non-zero `n : ℕ`, the ring `Fin n` is equivalent to `ZMod n`. -/
 def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
   | 0, h => (h.ne _ rfl).elim
@@ -140,6 +142,12 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
 @[simp]
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
+
+lemma natCast_pow_eq_zero_of_le (p : ℕ) {m n : ℕ} (h : n ≤ m) :
+    (p ^ m : ZMod (p ^ n)) = 0 := by
+  obtain ⟨q, rfl⟩ := Nat.exists_eq_add_of_le h
+  rw [pow_add, ← Nat.cast_pow]
+  simp
 
 section UniversalProperty
 
@@ -276,7 +284,7 @@ variable {m : ℕ} [CharP R m]
 theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   rcases n with - | n
   · exact Int.cast_one
-  show ((1 % (n + 1) : ℕ) : R) = 1
+  change ((1 % (n + 1) : ℕ) : R) = 1
   cases n
   · rw [Nat.dvd_one] at h
     subst m
@@ -339,6 +347,9 @@ theorem cast_natCast (h : m ∣ n) (k : ℕ) : (cast (k : ZMod n) : R) = k :=
 @[simp, norm_cast]
 theorem cast_intCast (h : m ∣ n) (k : ℤ) : (cast (k : ZMod n) : R) = k :=
   map_intCast (castHom h R) k
+
+theorem castHom_surjective (h : m ∣ n) : Function.Surjective (castHom h (ZMod m)) :=
+  fun a ↦ by obtain ⟨a, rfl⟩ := intCast_surjective a; exact ⟨a, map_intCast ..⟩
 
 end CharDvd
 
@@ -812,6 +823,10 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
 protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_of_unit a ⟨⟨a, b, h, mul_comm a b ▸ h⟩, rfl⟩) h
 
+@[simp]
+theorem inv_neg_one (n : ℕ) : (-1 : ZMod n)⁻¹ = -1 :=
+  ZMod.inv_eq_of_mul_eq_one n (-1) (-1) (by simp)
+
 lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod n) :
     a⁻¹ * b = 1 ↔ a = b := by
   -- ideally, this would be `ha.inv_mul_eq_one`, but `ZMod n` is not a `DivisionMonoid`...
@@ -1057,7 +1072,7 @@ theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [NonAssocSemiring R] (f g : ZMod 
   obtain ⟨k, rfl⟩ := ZMod.intCast_surjective a
   let φ : ℤ →+* R := f.comp (Int.castRingHom (ZMod n))
   let ψ : ℤ →+* R := g.comp (Int.castRingHom (ZMod n))
-  show φ k = ψ k
+  change φ k = ψ k
   rw [φ.ext_int ψ]
 
 namespace ZMod
