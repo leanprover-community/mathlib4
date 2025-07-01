@@ -3,8 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
-import Mathlib.Order.Filter.Basic
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
 
 /-!
 # Cardinality of a set with a countable cover
@@ -16,22 +17,22 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
 
-set_option autoImplicit true
-
 open Set Order Filter
 open scoped Cardinal
 
 namespace Cardinal
 
+universe u v
+
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`.
-Supersed by `mk_le_of_countable_eventually_mem` which does not assume
+Superseded by `mk_le_of_countable_eventually_mem` which does not assume
 that the indexing set lives in the same universe. -/
 lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardinal}
     [Countable ι] {f : ι → Set α} {l : Filter ι} [NeBot l]
     {t : Set α} (ht : ∀ x ∈ t, ∀ᶠ i in l, x ∈ f i)
     (h'f : ∀ i, #(f i) ≤ a) : #t ≤ a := by
-  rcases lt_or_le a ℵ₀ with ha|ha
+  rcases lt_or_ge a ℵ₀ with ha|ha
   /- case `a` finite. In this case, it suffices to show that any finite subset `s` of `t` has
   cardinality at most `a`. For this, we pick `i` such that `f i` contains all the points in `s`,
   and apply the assumption that the cardinality of `f i` is at most `a`.   -/
@@ -43,10 +44,10 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
     have : ∀ i, Fintype (f i) := fun i ↦ (lt_aleph0_iff_fintype.1 ((h'f i).trans_lt ha)).some
     let u : Finset α := (f i).toFinset
     have I1 : s.card ≤ u.card := by
-      have : s ⊆ u := fun x hx ↦ by simpa only [Set.mem_toFinset] using hi x hx
-      exact Finset.card_le_of_subset this
-    have I2: (u.card : Cardinal) ≤ n := by
-      convert h'f i; simp only [Set.toFinset_card, mk_fintype]
+      have : s ⊆ u := fun x hx ↦ by simpa only [u, Set.mem_toFinset] using hi x hx
+      exact Finset.card_le_card this
+    have I2 : (u.card : Cardinal) ≤ n := by
+      convert h'f i; simp only [u, Set.toFinset_card, mk_fintype]
     exact I1.trans (Nat.cast_le.1 I2)
   -- case `a` infinite:
   · have : t ⊆ ⋃ i, f i := by
@@ -74,7 +75,7 @@ lemma mk_subtype_le_of_countable_eventually_mem {α : Type u} {ι : Type v} {a :
   · intro x hx
     simpa only [Function.comp_apply, mem_preimage, eventually_map] using ht _ hx
   · intro i
-    simpa using h'f i.down
+    simpa [g] using h'f i.down
 
 /-- If a space is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of the space is also bounded by `a`. -/

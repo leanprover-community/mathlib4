@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Real.Cardinality
-import Mathlib.Topology.Separation
 import Mathlib.Topology.TietzeExtension
 /-!
 # Not normal topological spaces
@@ -31,22 +30,22 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
   haveI := htc.to_subtype
   -- To obtain a contradiction, we will prove `2 ^ 𝔠 ≤ 𝔠`.
-  refine (Cardinal.cantor 𝔠).not_le ?_
+  refine (Cardinal.cantor 𝔠).not_ge ?_
   calc
     -- Any function `s → ℝ` is continuous, hence `2 ^ 𝔠 ≤ #C(s, ℝ)`
     2 ^ 𝔠 ≤ #C(s, ℝ) := by
-      rw [(ContinuousMap.equivFnOfDiscrete _ _).cardinal_eq, mk_arrow, mk_real, lift_continuum,
+      rw [ContinuousMap.equivFnOfDiscrete.cardinal_eq, mk_arrow, mk_real, lift_continuum,
         lift_uzero]
       exact (power_le_power_left two_ne_zero h).trans (power_le_power_right (nat_lt_continuum 2).le)
     -- By the Tietze Extension Theorem, any function `f : C(s, ℝ)` can be extended to `C(X, ℝ)`,
     -- hence `#C(s, ℝ) ≤ #C(X, ℝ)`
     _ ≤ #C(X, ℝ) := by
-      choose f hf using (ContinuousMap.exists_restrict_eq_of_closed · hs)
+      choose f hf using ContinuousMap.exists_restrict_eq (Y := ℝ) hs
       have hfi : Injective f := LeftInverse.injective hf
       exact mk_le_of_injective hfi
     -- Since `t` is dense, restriction `C(X, ℝ) → C(t, ℝ)` is injective, hence `#C(X, ℝ) ≤ #C(t, ℝ)`
     _ ≤ #C(t, ℝ) := mk_le_of_injective <| ContinuousMap.injective_restrict htd
-    _ ≤ #(t → ℝ) := mk_le_of_injective FunLike.coe_injective
+    _ ≤ #(t → ℝ) := mk_le_of_injective DFunLike.coe_injective
     -- Since `t` is countable, we have `#(t → ℝ) ≤ 𝔠`
     _ ≤ 𝔠 := by
       rw [mk_arrow, mk_real, lift_uzero, lift_continuum, continuum, ← power_mul]
@@ -55,4 +54,4 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
 /-- Let `s` be a closed set in a separable space. If the induced topology on `s` is discrete and `s`
 has cardinality at least continuum, then the ambient space is not a normal space. -/
 theorem IsClosed.not_normal_of_continuum_le_mk {s : Set X} (hs : IsClosed s) [DiscreteTopology s]
-    (hmk : 𝔠 ≤ #s) : ¬NormalSpace X := fun _ ↦ hs.mk_lt_continuum.not_le hmk
+    (hmk : 𝔠 ≤ #s) : ¬NormalSpace X := fun _ ↦ hs.mk_lt_continuum.not_ge hmk

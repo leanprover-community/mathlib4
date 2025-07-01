@@ -3,10 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.StoneCech
-
-#align_import topology.extremally_disconnected from "leanprover-community/mathlib"@"7e281deff072232a3c5b3e90034bd65dde396312"
 
 /-!
 # Extremally disconnected spaces
@@ -30,15 +28,11 @@ compact Hausdorff spaces.
 [Gleason, *Projective topological spaces*][gleason1958]
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
-open Classical Function Set
+open Function Set
 
 universe u
-
-section
 
 variable (X : Type u) [TopologicalSpace X]
 
@@ -47,7 +41,12 @@ in which the closure of every open set is open. -/
 class ExtremallyDisconnected : Prop where
   /-- The closure of every open set is open. -/
   open_closure : ∀ U : Set X, IsOpen U → IsOpen (closure U)
-#align extremally_disconnected ExtremallyDisconnected
+
+theorem extremallyDisconnected_of_homeo {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [ExtremallyDisconnected X] (e : X ≃ₜ Y) : ExtremallyDisconnected Y where
+  open_closure U hU := by
+    rw [e.symm.isInducing.closure_eq_preimage_closure_image, Homeomorph.isOpen_preimage]
+    exact ExtremallyDisconnected.open_closure _ (e.symm.isOpen_image.mpr hU)
 
 section TotallySeparated
 
@@ -55,13 +54,13 @@ section TotallySeparated
 instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
-    obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
+    obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
-    refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
+    refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
@@ -77,7 +76,6 @@ def CompactT2.Projective : Prop :=
     ∀ [CompactSpace Y] [T2Space Y] [CompactSpace Z] [T2Space Z],
       ∀ {f : X → Z} {g : Y → Z} (_ : Continuous f) (_ : Continuous g) (_ : Surjective g),
         ∃ h : X → Y, Continuous h ∧ g ∘ h = f
-#align compact_t2.projective CompactT2.Projective
 
 variable {X}
 
@@ -89,13 +87,12 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   have ht : Continuous t := continuous_of_discreteTopology
   let h : StoneCech X → Y := stoneCechExtend ht
   have hh : Continuous h := continuous_stoneCechExtend ht
-  refine' ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf _⟩
-  rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, comp.left_id]
-#align stone_cech.projective StoneCech.projective
+  refine ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf ?_⟩
+  rw [comp_assoc, stoneCechExtend_extends ht, ← comp_assoc, hs, id_comp]
 
 protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [T2Space X]
     (h : CompactT2.Projective X) : ExtremallyDisconnected X := by
-  refine' { open_closure := fun U hU => _ }
+  refine { open_closure := fun U hU => ?_ }
   let Z₁ : Set (X × Bool) := Uᶜ ×ˢ {true}
   let Z₂ : Set (X × Bool) := closure U ×ˢ {false}
   let Z : Set (X × Bool) := Z₁ ∪ Z₂
@@ -120,16 +117,14 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
       ← preimage_subtype_coe_eq_compl Subset.rfl]
     · exact hZ₁.preimage hφ
     · rw [hZ₁₂.inter_eq, inter_empty]
-  refine' (closure_minimal _ <| hZ₂.preimage hφ).antisymm fun x hx => _
+  refine (closure_minimal ?_ <| hZ₂.preimage hφ).antisymm fun x hx => ?_
   · intro x hx
     have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
-    -- Porting note: Originally `simpa [hx, hφ₁] using this`
-    cases' this with hφ hφ
+    rcases this with hφ | hφ
     · exact ((hφ₁ x ▸ hφ.1) hx).elim
     · exact hφ
   · rw [← hφ₁ x]
     exact hx.1
-#align compact_t2.projective.extremally_disconnected CompactT2.Projective.extremallyDisconnected
 
 end
 
@@ -147,12 +142,13 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
   -- suffices to apply Zorn's lemma on the subsets of $D$ that are closed and mapped onto $A$
   let S : Set <| Set D := {E : Set D | IsClosed E ∧ π '' E = univ}
   suffices ∀ (C : Set <| Set D) (_ : C ⊆ S) (_ : IsChain (· ⊆ ·) C), ∃ s ∈ S, ∀ c ∈ C, s ⊆ c by
-    rcases zorn_superset S this with ⟨E, ⟨E_closed, E_surj⟩, E_min⟩
+    rcases zorn_superset S this with ⟨E, E_min⟩
+    obtain ⟨E_closed, E_surj⟩ := E_min.prop
     refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
     intro E₀ E₀_min E₀_closed
     contrapose! E₀_min
     exact eq_univ_of_image_val_eq <|
-      E_min E₀ ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
+      E_min.eq_of_subset ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
         image_val_subset
   -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
@@ -164,7 +160,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
   · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
-      IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _
+      IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
       ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
       have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
@@ -177,7 +173,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
 /-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
 if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$
 satisfying the "Zorn subset condition", then $\rho(G)$ is contained in
-the closure of $A \setminus \rho(E \setminus G)}$ for any open set $G$ of $E$. -/
+the closure of $A \setminus \rho(E \setminus G)$ for any open set $G$ of $E$. -/
 lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ)
     {G : Set E} (hG : IsOpen G) : ρ '' G ⊆ closure ((ρ '' Gᶜ)ᶜ) := by
@@ -249,7 +245,7 @@ noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnecte
 
 /-- Theorem 2.5 in [Gleason, *Projective topological spaces*][gleason1958]:
 in the category of compact spaces and continuous maps,
-the projective spaces are precisely the extremally disconnected spaces.-/
+the projective spaces are precisely the extremally disconnected spaces. -/
 protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconnected A]
     [CompactSpace A] [T2Space A] : CompactT2.Projective A := by
   -- let $B$ and $C$ be compact; let $f : B \twoheadrightarrow C$ and $\phi : A \to C$ be continuous
@@ -274,11 +270,11 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
   refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
   suffices f ∘ E.restrict π₂ = φ ∘ ρ' by
-    rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp.right_id]
+    rw [← comp_assoc, this, comp_assoc, Homeomorph.self_comp_symm, comp_id]
   ext x
   exact x.val.mem.symm
 
-protected theorem CompactT2.projective_iff_extremallyDisconnnected [CompactSpace A] [T2Space A] :
+protected theorem CompactT2.projective_iff_extremallyDisconnected [CompactSpace A] [T2Space A] :
     Projective A ↔ ExtremallyDisconnected A :=
   ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
 
@@ -286,15 +282,15 @@ end
 
 -- Note: It might be possible to use Gleason for this instead
 /-- The sigma-type of extremally disconnected spaces is extremally disconnected. -/
-instance instExtremallyDisconnected {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [h₀ : ∀ i, ExtremallyDisconnected (π i)] : ExtremallyDisconnected (Σ i, π i) := by
   constructor
   intro s hs
   rw [isOpen_sigma_iff] at hs ⊢
   intro i
   rcases h₀ i with ⟨h₀⟩
-  suffices h : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
-  · rw [h]
+  suffices h : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s) by
+    rw [h]
     exact h₀ _ (hs i)
   apply IsOpenMap.preimage_closure_eq_closure_preimage
   · intro U _
@@ -304,4 +300,6 @@ instance instExtremallyDisconnected {π : ι → Type*} [∀ i, TopologicalSpace
     · rwa [← ij, sigma_mk_preimage_image_eq_self]
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
-  · continuity
+  · fun_prop
+
+end

@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Probability.CondCount
+import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Notation
-
-#align_import wiedijk_100_theorems.birthday_problem from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Birthday Problem
@@ -29,14 +27,8 @@ local notation "‖" x "‖" => Fintype.card x
 /-- **Birthday Problem**: set cardinality interpretation. -/
 theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
-  -- This used to be
-  -- `simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]`
-  -- but after leanprover/lean4#2790 that triggers a max recursion depth exception.
-  -- As a workaround, we make some of the reduction steps more explicit.
-  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
-  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
+  simp only [Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
   decide
-#align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
 
@@ -59,17 +51,16 @@ instance : MeasurableSingletonClass (Fin m) :=
 
 /- We then endow the space with a canonical measure, which is called ℙ.
 We define this to be the conditional counting measure. -/
-noncomputable instance : MeasureSpace (Fin n → Fin m) :=
-  ⟨condCount Set.univ⟩
+noncomputable instance measureSpace : MeasureSpace (Fin n → Fin m) :=
+  ⟨uniformOn Set.univ⟩
 
 -- The canonical measure on `Fin n → Fin m` is a probability measure (except on an empty space).
 instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
-  condCount_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
+  uniformOn_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
 
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
-  erw [condCount_univ, Measure.count_apply_finite]
-#align theorems_100.fin_fin.measure_apply Theorems100.FinFin.measure_apply
+  rw [volume, measureSpace, uniformOn_univ, Measure.count_apply_finite]
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
@@ -85,10 +76,9 @@ theorem birthday_measure :
     · rw [Fintype.card_embedding_eq, Fintype.card_fin, Fintype.card_fin]
       rfl
   rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
-  rotate_left; (iterate 2 right; norm_num); decide; (iterate 2 left; norm_num)
-  simp only [Fintype.card_pi]
-  norm_num
-#align theorems_100.birthday_measure Theorems100.birthday_measure
+  all_goals
+    simp only [Fintype.card_pi, Fintype.card_fin, Finset.prod_const, Finset.card_univ]
+    norm_num
 
 end MeasureTheory
 

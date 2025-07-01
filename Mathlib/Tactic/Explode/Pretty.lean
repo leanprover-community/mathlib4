@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
-import Lean
+import Lean.Meta.Basic
 import Mathlib.Tactic.Explode.Datatypes
 
 /-!
@@ -63,3 +63,7 @@ def entriesToMessageData (entries : Entries) : MetaM MessageData := do
   let paddedThms ← padRight <| entries.l.map (·.thm)
 
   rowToMessageData paddedLines paddedDeps paddedThms entries.l
+
+end Explode
+
+end Mathlib

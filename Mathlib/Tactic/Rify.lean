@@ -3,8 +3,9 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
-import Mathlib.Tactic.Qify
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Qify
 
 /-!
 # `rify` tactic
@@ -48,7 +49,7 @@ The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith
 ```
 example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
     (0 : ℝ) < n - k - 1 := by
-  rify at hn hk /- Now have hn : 8 ≤ (n : ℝ)   hk : 2 * (k : ℝ) ≤ (n : ℝ) + 2-/
+  rify at hn hk /- Now have hn : 8 ≤ (n : ℝ)   hk : 2 * (k : ℝ) ≤ (n : ℝ) + 2 -/
   linarith
 ```
 
@@ -70,14 +71,15 @@ macro_rules
 | `(tactic| rify $[[$simpArgs,*]]? $[at $location]?) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
-    simp (config := {decide := false}) only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
+    simp -decide only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
       $[at $location]?)
 
-@[rify_simps] lemma rat_cast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
-@[rify_simps] lemma rat_cast_le (a b : ℚ) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
-@[rify_simps] lemma rat_cast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
-@[rify_simps] lemma rat_cast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_le (a b : ℚ) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
 
--- See note [no_index around OfNat.ofNat]
 @[rify_simps] lemma ofNat_rat_real (a : ℕ) [a.AtLeastTwo] :
-    ((no_index (OfNat.ofNat a : ℚ)) : ℝ) = (OfNat.ofNat a : ℝ) := rfl
+    ((ofNat(a) : ℚ) : ℝ) = (ofNat(a) : ℝ) := rfl
+
+end Mathlib.Tactic.Rify

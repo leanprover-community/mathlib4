@@ -6,32 +6,50 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.Group.Basic
 
-#align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
-# Lemmas about semiconjugate elements of a semigroup
+# Lemmas about semiconjugate elements of a group
 
 -/
 
+assert_not_exists MonoidWithZero DenselyOrdered
+
 namespace SemiconjBy
+variable {G : Type*}
 
 section DivisionMonoid
-
-variable {G : Type*} [DivisionMonoid G] {a x y : G}
+variable [DivisionMonoid G] {a x y : G}
 
 @[to_additive (attr := simp)]
-theorem inv_inv_symm_iff : SemiconjBy a⁻¹ x⁻¹ y⁻¹ ↔ SemiconjBy a y x :=
-  inv_involutive.injective.eq_iff.symm.trans <| by
-    rw [mul_inv_rev, mul_inv_rev, inv_inv, inv_inv, inv_inv, eq_comm, SemiconjBy]
-#align semiconj_by.inv_inv_symm_iff SemiconjBy.inv_inv_symm_iff
-#align add_semiconj_by.neg_neg_symm_iff AddSemiconjBy.neg_neg_symm_iff
+theorem inv_inv_symm_iff : SemiconjBy a⁻¹ x⁻¹ y⁻¹ ↔ SemiconjBy a y x := by
+  simp_rw [SemiconjBy, ← mul_inv_rev, inv_inj, eq_comm]
 
-@[to_additive]
-theorem inv_inv_symm : SemiconjBy a x y → SemiconjBy a⁻¹ y⁻¹ x⁻¹ :=
-  inv_inv_symm_iff.2
-#align semiconj_by.inv_inv_symm SemiconjBy.inv_inv_symm
-#align add_semiconj_by.neg_neg_symm AddSemiconjBy.neg_neg_symm
+@[to_additive] alias ⟨_, inv_inv_symm⟩ := inv_inv_symm_iff
 
 end DivisionMonoid
 
+section Group
+variable [Group G] {a x y : G}
+
+@[to_additive (attr := simp)] lemma inv_symm_left_iff : SemiconjBy a⁻¹ y x ↔ SemiconjBy a x y := by
+  simp_rw [SemiconjBy, eq_mul_inv_iff_mul_eq, mul_assoc, inv_mul_eq_iff_eq_mul, eq_comm]
+
+@[to_additive] alias ⟨_, inv_symm_left⟩ := inv_symm_left_iff
+
+@[to_additive (attr := simp)] lemma inv_right_iff : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y := by
+  rw [← inv_symm_left_iff, inv_inv_symm_iff]
+
+@[to_additive] alias ⟨_, inv_right⟩ := inv_right_iff
+
+@[to_additive (attr := simp)] lemma zpow_right (h : SemiconjBy a x y) :
+    ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
+  | (n : ℕ)    => by simp [zpow_natCast, h.pow_right n]
+  | .negSucc n => by
+    simp only [zpow_negSucc, inv_right_iff]
+    apply pow_right h
+
+variable (a) in
+@[to_additive] lemma eq_one_iff (h : SemiconjBy a x y): x = 1 ↔ y = 1 := by
+  rw [← conj_eq_one_iff (a := a) (b := x), h.eq, mul_inv_cancel_right]
+
+end Group
 end SemiconjBy

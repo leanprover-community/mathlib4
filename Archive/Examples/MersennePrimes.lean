@@ -1,11 +1,9 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.NumberTheory.LucasLehmer
-
-#align_import examples.mersenne_primes from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
 
 /-!
 # Explicit Mersenne primes
@@ -82,8 +80,22 @@ example : (mersenne 4253).Prime :=
 example : (mersenne 4423).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
--- First failure ("deep recursion detected")
 /-
-example : (mersenne 9689).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+`mersenne 9689` seems to be system dependent:
+locally it works fine, but in CI it fails with `(kernel) deep recursion detected`
 -/
+-- example : (mersenne 9689).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-
+`mersenne 9941` seems to be system dependent:
+locally it works fine, but in CI it fails with `(kernel) deep recursion detected`
+-/
+-- example : (mersenne 9941).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-
+`mersenne 11213` fails with `(kernel) deep recursion detected` locally as well.
+-/
+-- example : (mersenne 11213).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)

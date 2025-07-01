@@ -24,14 +24,13 @@ see `birkhoffAverage_congr_ring`.
 -/
 
 open Finset
-open scoped BigOperators
 
 section birkhoffAverage
 
 variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The average value of `g` on the first `n` points of the orbit of `x` under `f`,
-i.e. the Birkhoff sum `∑ k in Finset.range n, g (f^[k] x)` divided by `n`.
+i.e. the Birkhoff sum `∑ k ∈ Finset.range n, g (f^[k] x)` divided by `n`.
 
 This average appears in many ergodic theorems
 which say that `(birkhoffAverage R f g · x)`
@@ -56,10 +55,10 @@ theorem birkhoffAverage_one' (f : α → α) (g : α → M) : birkhoffAverage R 
   funext <| birkhoffAverage_one R f g
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
-    [DivisionSemiring S] [AddCommMonoid N] [Module S N]
+    [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
-  simp only [birkhoffAverage, map_inv_nat_cast_smul g' R S, map_birkhoffSum]
+  simp only [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
 
 theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
     (f : α → α) (g : α → M) (n : ℕ) (x : α) :
@@ -72,7 +71,7 @@ theorem birkhoffAverage_congr_ring' (S : Type*) [DivisionSemiring S] [Module S M
 
 theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n x = g x := by
-  rw [birkhoffAverage, h.birkhoffSum_eq, nsmul_eq_smul_cast R, inv_smul_smul₀]
+  rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
   rwa [Nat.cast_ne_zero]
 
 end birkhoffAverage

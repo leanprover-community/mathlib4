@@ -1,16 +1,15 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Pseudoelements
-
-#align_import category_theory.abelian.diagram_lemmas.four from "leanprover-community/mathlib"@"d34cbcf6c94953e965448c933cd9cc485115ebbd"
+import Mathlib.Algebra.Homology.ExactSequence
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The four and five lemmas
 
-Consider the following commutative diagram with exact rows in an abelian category:
+Consider the following commutative diagram with exact rows in an abelian category `C`:
 
 ```
 A ---f--> B ---g--> C ---h--> D ---i--> E
@@ -30,19 +29,13 @@ We show:
 
 ## Implementation details
 
-To show the mono version, we use pseudoelements. For the epi version, we use a completely different
-arrow-theoretic proof. In theory, it should be sufficient to have one version and the other should
-follow automatically by duality. In practice, mathlib's knowledge about duality isn't quite at the
-point where this is doable easily.
+The diagram of the five lemmas is given by a morphism in the category `ComposableArrows C 4`
+between two objects which satisfy `ComposableArrows.Exact`. Similarly, the two versions of the
+four lemma are stated in terms of the category `ComposableArrows C 3`.
 
-However, one key duality statement about exactness is needed in the proof of the epi version of the
-four lemma: we need to know that exactness of a pair `(f, g)`, which we defined via the map from
-the image of `f` to the kernel of `g`, is the same as "co-exactness", defined via the map from the
-cokernel of `f` to the coimage of `g` (more precisely, we only need the consequence that if `(f, g)`
-is exact, then the factorization of `g` through the cokernel of `f` is monomorphic). Luckily, in the
-case of abelian categories, we have the characterization that `(f, g)` is exact if and only if
-`f ≫ g = 0` and `kernel.ι g ≫ cokernel.π f = 0`, and the latter condition is self dual, so the
-equivalence of exactness and co-exactness follows easily.
+The five lemmas is deduced from the two versions of the four lemma. Both of these versions
+are proved separately. It would be easy to deduce the epi version from the mono version
+using duality, but this would require lengthy API developments for `ComposableArrows` (TODO).
 
 ## Tags
 
@@ -50,169 +43,212 @@ four lemma, five lemma, diagram lemma, diagram chase
 -/
 
 
-open CategoryTheory hiding comp_apply
+namespace CategoryTheory
 
-open CategoryTheory.Abelian.Pseudoelement
+open Category Limits Preadditive
 
-open CategoryTheory.Limits
+namespace Abelian
 
-universe v u
+variable {C : Type*} [Category C] [Abelian C]
 
-variable {V : Type u} [Category.{v} V] [Abelian V]
+open ComposableArrows
 
-attribute [local instance] Preadditive.hasEqualizers_of_hasKernels
+section Four
 
-open Pseudoelement
+variable {R₁ R₂ : ComposableArrows C 3} (φ : R₁ ⟶ R₂)
 
-namespace CategoryTheory.Abelian
+theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
+    (hR₁' : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
+    (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact)
+    (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) (h₃ : Mono (app' φ 3)) :
+    Mono (app' φ 2) := by
+  apply mono_of_cancel_zero
+  intro A f₂ h₁
+  have h₂ : f₂ ≫ R₁.map' 2 3 = 0 := by
+    rw [← cancel_mono (app' φ 3 _), assoc, NatTrans.naturality, reassoc_of% h₁,
+      zero_comp, zero_comp]
+  obtain ⟨A₁, π₁, _, f₁, hf₁⟩ := (hR₁'.exact 0).exact_up_to_refinements f₂ h₂
+  dsimp at hf₁
+  have h₃ : (f₁ ≫ app' φ 1) ≫ R₂.map' 1 2 = 0 := by
+    rw [assoc, ← NatTrans.naturality, ← reassoc_of% hf₁, h₁, comp_zero]
+  obtain ⟨A₂, π₂, _, g₀, hg₀⟩ := (hR₂.exact 0).exact_up_to_refinements _ h₃
+  obtain ⟨A₃, π₃, _, f₀, hf₀⟩ := surjective_up_to_refinements_of_epi (app' φ 0 _) g₀
+  have h₄ : f₀ ≫ R₁.map' 0 1 = π₃ ≫ π₂ ≫ f₁ := by
+    rw [← cancel_mono (app' φ 1 _), assoc, assoc, assoc, NatTrans.naturality,
+      ← reassoc_of% hf₀, hg₀]
+    rfl
+  rw [← cancel_epi π₁, comp_zero, hf₁, ← cancel_epi π₂, ← cancel_epi π₃, comp_zero,
+    comp_zero, ← reassoc_of% h₄, ← R₁.map'_comp 0 1 2, hR₁, comp_zero]
 
-variable {A B C D A' B' C' D' : V}
+theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+    (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) (h₃ : Mono (app' φ 3)) :
+    Mono (app' φ 2) :=
+  mono_of_epi_of_mono_of_mono' φ
+    (by simpa only [R₁.map'_comp 0 1 2] using hR₁.toIsComplex.zero 0)
+    (hR₁.exact 1).exact_toComposableArrows (hR₂.exact 0).exact_toComposableArrows h₀ h₁ h₃
 
-variable {f : A ⟶ B} {g : B ⟶ C} {h : C ⟶ D}
+theorem epi_of_epi_of_epi_of_mono'
+    (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
+    (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact) (hR₂' : R₂.map' 1 3 = 0)
+    (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3)) :
+    Epi (app' φ 1) := by
+  rw [epi_iff_surjective_up_to_refinements]
+  intro A g₁
+  obtain ⟨A₁, π₁, _, f₂, h₁⟩ :=
+    surjective_up_to_refinements_of_epi (app' φ 2 _) (g₁ ≫ R₂.map' 1 2)
+  have h₂ : f₂ ≫ R₁.map' 2 3 = 0 := by
+    rw [← cancel_mono (app' φ 3 _), assoc, zero_comp, NatTrans.naturality, ← reassoc_of% h₁,
+      ← R₂.map'_comp 1 2 3, hR₂', comp_zero, comp_zero]
+  obtain ⟨A₂, π₂, _, f₁, h₃⟩ := (hR₁.exact 0).exact_up_to_refinements _ h₂
+  dsimp at f₁ h₃
+  have h₄ : (π₂ ≫ π₁ ≫ g₁ - f₁ ≫ app' φ 1 _) ≫ R₂.map' 1 2 = 0 := by
+    rw [sub_comp, assoc, assoc, assoc, ← NatTrans.naturality, ← reassoc_of% h₃, h₁, sub_self]
+  obtain ⟨A₃, π₃, _, g₀, h₅⟩ := (hR₂.exact 0).exact_up_to_refinements _ h₄
+  dsimp at g₀ h₅
+  rw [comp_sub] at h₅
+  obtain ⟨A₄, π₄, _, f₀, h₆⟩ := surjective_up_to_refinements_of_epi (app' φ 0 _) g₀
+  refine ⟨A₄, π₄ ≫ π₃ ≫ π₂ ≫ π₁, inferInstance,
+    π₄ ≫ π₃ ≫ f₁ + f₀ ≫ (by exact R₁.map' 0 1), ?_⟩
+  rw [assoc, assoc, assoc, add_comp, assoc, assoc, assoc, NatTrans.naturality,
+    ← reassoc_of% h₆, ← h₅, comp_sub]
+  dsimp
+  rw [add_sub_cancel]
 
-variable {f' : A' ⟶ B'} {g' : B' ⟶ C'} {h' : C' ⟶ D'}
+theorem epi_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+    (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3)) :
+    Epi (app' φ 1) :=
+  epi_of_epi_of_epi_of_mono' φ (hR₁.exact 1).exact_toComposableArrows
+    (hR₂.exact 0).exact_toComposableArrows
+    (by simpa only [R₂.map'_comp 1 2 3] using hR₂.toIsComplex.zero 1) h₀ h₂ h₃
 
-variable {α : A ⟶ A'} {β : B ⟶ B'} {γ : C ⟶ C'} {δ : D ⟶ D'}
-
-variable (comm₁ : α ≫ f' = f ≫ β) (comm₂ : β ≫ g' = g ≫ γ) (comm₃ : γ ≫ h' = h ≫ δ)
-
-section
-
-variable (hfg : Exact f g) (hgh : Exact g h) (hf'g' : Exact f' g')
-
-/-- The four lemma, mono version. For names of objects and morphisms, refer to the following
-    diagram:
-
-```
-A ---f--> B ---g--> C ---h--> D
-|         |         |         |
-α         β         γ         δ
-|         |         |         |
-v         v         v         v
-A' --f'-> B' --g'-> C' --h'-> D'
-```
--/
-theorem mono_of_epi_of_mono_of_mono (hα : Epi α) (hβ : Mono β) (hδ : Mono δ) : Mono γ :=
-  mono_of_zero_of_map_zero _ fun c hc =>
-    have : h c = 0 :=
-      suffices δ (h c) = 0 from zero_of_map_zero _ (pseudo_injective_of_mono _) _ this
-      calc
-        δ (h c) = h' (γ c) := by rw [← Pseudoelement.comp_apply, ← comm₃, Pseudoelement.comp_apply]
-        _ = h' 0 := by rw [hc]
-        _ = 0 := apply_zero _
-    Exists.elim ((pseudo_exact_of_exact hgh).2 _ this) fun b hb =>
-      have : g' (β b) = 0 :=
-        calc
-          g' (β b) = γ (g b) := by rw [← Pseudoelement.comp_apply, comm₂, Pseudoelement.comp_apply]
-          _ = γ c := by rw [hb]
-          _ = 0 := hc
-      Exists.elim ((pseudo_exact_of_exact hf'g').2 _ this) fun a' ha' =>
-        Exists.elim (pseudo_surjective_of_epi α a') fun a ha =>
-          have : f a = b :=
-            suffices β (f a) = β b from pseudo_injective_of_mono _ this
-            calc
-              β (f a) = f' (α a) := by
-                rw [← Pseudoelement.comp_apply, ← comm₁, Pseudoelement.comp_apply]
-              _ = f' a' := by rw [ha]
-              _ = β b := ha'
-          calc
-            c = g b := hb.symm
-            _ = g (f a) := by rw [this]
-            _ = 0 := (pseudo_exact_of_exact hfg).1 _
-#align category_theory.abelian.mono_of_epi_of_mono_of_mono CategoryTheory.Abelian.mono_of_epi_of_mono_of_mono
-
-end
-
-section
-
-variable (hgh : Exact g h) (hf'g' : Exact f' g') (hg'h' : Exact g' h')
-
-/-- The four lemma, epi version. For names of objects and morphisms, refer to the following
-    diagram:
-
-```
-A ---f--> B ---g--> C ---h--> D
-|         |         |         |
-α         β         γ         δ
-|         |         |         |
-v         v         v         v
-A' --f'-> B' --g'-> C' --h'-> D'
-```
--/
-theorem epi_of_epi_of_epi_of_mono (hα : Epi α) (hγ : Epi γ) (hδ : Mono δ) : Epi β :=
-  Preadditive.epi_of_cancel_zero _ fun {R} r hβr => by
-    have hf'r : f' ≫ r = 0 :=
-      Limits.zero_of_epi_comp α <|
-        calc
-          α ≫ f' ≫ r = f ≫ β ≫ r := by rw [reassoc_of% comm₁]
-          _ = f ≫ 0 := by rw [hβr]
-          _ = 0 := HasZeroMorphisms.comp_zero _ _
-    let y : R ⟶ pushout r g' := pushout.inl
-    let z : C' ⟶ pushout r g' := pushout.inr
-    -- Porting note: Added instance for `Mono (cokernel.desc f' g' hf'g'.w)`
-    have : Mono (cokernel.desc f' g' hf'g'.w) := mono_cokernel_desc_of_exact _ _ hf'g'
-    have : Mono y :=
-      mono_inl_of_factor_thru_epi_mono_factorization r g' (cokernel.π f')
-        (cokernel.desc f' g' hf'g'.w) (by simp) (cokernel.desc f' r hf'r) (by simp) _
-        (colimit.isColimit _)
-    have hz : g ≫ γ ≫ z = 0 :=
-      calc
-        g ≫ γ ≫ z = β ≫ g' ≫ z := by rw [← reassoc_of% comm₂]
-        _ = β ≫ r ≫ y := by rw [← pushout.condition]
-        _ = 0 ≫ y := by rw [reassoc_of% hβr]
-        _ = 0 := HasZeroMorphisms.zero_comp _ _
-    let v : pushout r g' ⟶ pushout (γ ≫ z) (h ≫ δ) := pushout.inl
-    let w : D' ⟶ pushout (γ ≫ z) (h ≫ δ) := pushout.inr
-    -- Porting note: Added instance for `Mono (cokernel.desc g h hgh.w)`
-    have : Mono (cokernel.desc g h hgh.w) := mono_cokernel_desc_of_exact _ _ hgh
-    have : Mono v :=
-      mono_inl_of_factor_thru_epi_mono_factorization _ _ (cokernel.π g)
-        (cokernel.desc g h hgh.w ≫ δ) (by simp) (cokernel.desc _ _ hz) (by simp) _
-        (colimit.isColimit _)
-    have hzv : z ≫ v = h' ≫ w :=
-      (cancel_epi γ).1 <|
-        calc
-          γ ≫ z ≫ v = h ≫ δ ≫ w := by rw [← Category.assoc, pushout.condition, Category.assoc]
-          _ = γ ≫ h' ≫ w := by rw [reassoc_of% comm₃]
-    suffices (r ≫ y) ≫ v = 0 from zero_of_comp_mono _ (zero_of_comp_mono _ this)
-    calc
-      (r ≫ y) ≫ v = g' ≫ z ≫ v := by rw [pushout.condition, Category.assoc]
-      _ = g' ≫ h' ≫ w := by rw [hzv]
-      _ = 0 ≫ w := (hg'h'.w_assoc _)
-      _ = 0 := HasZeroMorphisms.zero_comp _ _
-#align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono
-
-end
+end Four
 
 section Five
 
-variable {E E' : V} {i : D ⟶ E} {i' : D' ⟶ E'} {ε : E ⟶ E'} (comm₄ : δ ≫ i' = i ≫ ε)
+variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+include hR₁ hR₂
 
-variable (hfg : Exact f g) (hgh : Exact g h) (hhi : Exact h i)
-
-variable (hf'g' : Exact f' g') (hg'h' : Exact g' h') (hh'i' : Exact h' i')
-
-variable [Epi α] [IsIso β] [IsIso δ] [Mono ε]
-
-/-- The five lemma. For names of objects and morphisms, refer to the following diagram:
-
-```
-A ---f--> B ---g--> C ---h--> D ---i--> E
-|         |         |         |         |
-α         β         γ         δ         ε
-|         |         |         |         |
-v         v         v         v         v
-A' --f'-> B' --g'-> C' --h'-> D' --i'-> E'
-```
--/
-theorem isIso_of_epi_of_isIso_of_isIso_of_mono : IsIso γ :=
-  have : Mono γ := by
-    apply mono_of_epi_of_mono_of_mono comm₁ comm₂ comm₃ hfg hgh hf'g' <;> infer_instance
-  have : Epi γ := by
-    apply epi_of_epi_of_epi_of_mono comm₂ comm₃ comm₄ hhi hg'h' hh'i' <;> infer_instance
-  isIso_of_mono_of_epi _
-#align category_theory.abelian.is_iso_of_is_iso_of_is_iso_of_is_iso_of_is_iso CategoryTheory.Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono
+/-- The five lemma. -/
+theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
+    (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
+  dsimp at h₀ h₁ h₂ h₃
+  have : Mono (app' φ 2) := by
+    apply mono_of_epi_of_mono_of_mono (δlastFunctor.map φ) (R₁.exact_iff_δlast.1 hR₁).1
+      (R₂.exact_iff_δlast.1 hR₂).1 <;> dsimp <;> infer_instance
+  have : Epi (app' φ 2) := by
+    apply epi_of_epi_of_epi_of_mono (δ₀Functor.map φ) (R₁.exact_iff_δ₀.1 hR₁).2
+      (R₂.exact_iff_δ₀.1 hR₂).2 <;> dsimp <;> infer_instance
+  apply isIso_of_mono_of_epi
 
 end Five
 
-end CategoryTheory.Abelian
+/-! The following "three lemmas" for morphisms in `ComposableArrows C 2` are
+special cases of "four lemmas" applied to diagrams where some of the
+leftmost or rightmost maps (or objects) are zero. -/
+
+section Three
+
+variable {R₁ R₂ : ComposableArrows C 2} (φ : R₁ ⟶ R₂)
+
+attribute [local simp] Precomp.map
+
+theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁.map' 1 2))
+    (hR₂ : R₂.Exact) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
+    Mono (app' φ 2) := by
+  let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶
+    mk₃ (R₂.map' 0 1) (R₂.map' 1 2) (0 : _ ⟶ R₁.obj' 0) := homMk₃ (app' φ 0) (app' φ 1)
+      (app' φ 2) (𝟙 _) (naturality' φ 0 1) (naturality' φ 1 2) (by simp)
+  refine mono_of_epi_of_mono_of_mono' ψ ?_ (exact₂_mk _ (by simp) ?_)
+    (hR₂.exact 0).exact_toComposableArrows h₀ h₁ (by dsimp [ψ]; infer_instance)
+  · dsimp
+    rw [← Functor.map_comp]
+    exact hR₁
+  · rw [ShortComplex.exact_iff_epi _ (by simp)]
+    exact hR₁'
+
+theorem mono_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+    (hR₁' : Epi (R₁.map' 1 2)) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
+    Mono (app' φ 2) :=
+  mono_of_epi_of_epi_mono' φ (by simpa only [map'_comp R₁ 0 1 2] using hR₁.toIsComplex.zero 0)
+    hR₁' hR₂ h₀ h₁
+
+theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 = 0)
+    (hR₂' : Mono (R₂.map' 0 1)) (h₀ : Epi (app' φ 1)) (h₁ : Mono (app' φ 2)) :
+    Epi (app' φ 0) := by
+  let ψ : mk₃ (0 : R₁.obj' 0 ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
+    mk₃ (0 : R₁.obj' 0 ⟶ _) (R₂.map' 0 1) (R₂.map' 1 2) := homMk₃ (𝟙 _) (app' φ 0) (app' φ 1)
+      (app' φ 2) (by simp) (naturality' φ 0 1) (naturality' φ 1 2)
+  refine epi_of_epi_of_epi_of_mono' ψ (hR₁.exact 0).exact_toComposableArrows
+    (exact₂_mk _ (by simp) ?_) ?_ (by dsimp [ψ]; infer_instance) h₀ h₁
+  · rw [ShortComplex.exact_iff_mono _ (by simp)]
+    exact hR₂'
+  · dsimp
+    rw [← Functor.map_comp]
+    exact hR₂
+
+theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+    (hR₂' : Mono (R₂.map' 0 1)) (h₀ : Epi (app' φ 1)) (h₁ : Mono (app' φ 2)) :
+    Epi (app' φ 0) :=
+  epi_of_mono_of_epi_of_mono' φ hR₁
+    (by simpa only [map'_comp R₂ 0 1 2] using hR₂.toIsComplex.zero 0) hR₂' h₀ h₁
+
+theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
+    (hR₂' : Mono (R₂.map' 0 1))
+    (h₀ : Mono (app' φ 0))
+    (h₁ : Mono (app' φ 2)) :
+    Mono (app' φ 1) := by
+  let ψ : mk₃ (0 : R₁.obj' 0 ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
+    mk₃ (0 : R₁.obj' 0 ⟶ _) (R₂.map' 0 1) (R₂.map' 1 2) := homMk₃ (𝟙 _) (app' φ 0) (app' φ 1)
+      (app' φ 2) (by simp) (naturality' φ 0 1) (naturality' φ 1 2)
+  refine mono_of_epi_of_mono_of_mono' ψ (by simp)
+    (hR₁.exact 0).exact_toComposableArrows
+    (exact₂_mk _ (by simp) ?_) (by dsimp [ψ]; infer_instance) h₀ h₁
+  rw [ShortComplex.exact_iff_mono _ (by simp)]
+  exact hR₂'
+
+theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1 2))
+    (h₀ : Epi (app' φ 0)) (h₁ : Epi (app' φ 2)) :
+    Epi (app' φ 1) := by
+  let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶
+    mk₃ (R₂.map' 0 1) (R₂.map' 1 2) (0 : _ ⟶ R₁.obj' 0) := homMk₃ (app' φ 0) (app' φ 1)
+      (app' φ 2) (𝟙 _) (naturality' φ 0 1) (naturality' φ 1 2) (by simp)
+  refine epi_of_epi_of_epi_of_mono' ψ (exact₂_mk _ (by simp) ?_)
+    (hR₂.exact 0).exact_toComposableArrows (by simp)
+    h₀ h₁ (by dsimp [ψ]; infer_instance)
+  rw [ShortComplex.exact_iff_epi _ (by simp)]
+  exact hR₁'
+
+end Three
+
+end Abelian
+
+namespace ShortComplex
+
+variable {C : Type*} [Category C] [Abelian C]
+variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
+
+attribute [local simp] ComposableArrows.Precomp.map
+
+theorem mono_of_epi_of_epi_of_mono (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g)
+    (h₀ : Epi φ.τ₁) (h₁ : Mono φ.τ₂) : Mono (φ.τ₃) :=
+  Abelian.mono_of_epi_of_epi_mono' (ShortComplex.mapToComposableArrows φ)
+    (by simp) hR₁' hR₂.exact_toComposableArrows h₀ h₁
+
+theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact)
+    (hR₂' : Mono R₂.f) (h₀ : Epi φ.τ₂) (h₁ : Mono φ.τ₃) : Epi φ.τ₁ :=
+  Abelian.epi_of_mono_of_epi_of_mono' (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows (by simp) hR₂' h₀ h₁
+
+theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂' : Mono R₂.f) (h₀ : Mono φ.τ₁)
+    (h₁ : Mono φ.τ₃) : Mono φ.τ₂ :=
+  Abelian.mono_of_mono_of_mono_of_mono (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows hR₂' h₀ h₁
+
+theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g) (h₀ : Epi φ.τ₁)
+    (h₁ : Epi φ.τ₃) : Epi φ.τ₂ :=
+  Abelian.epi_of_epi_of_epi_of_epi (ShortComplex.mapToComposableArrows φ)
+    hR₂.exact_toComposableArrows hR₁' h₀ h₁
+
+end ShortComplex
+
+end CategoryTheory

@@ -8,7 +8,6 @@ import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.RingTheory.FreeCommRing
 
 /-!
-
 # Making a term in the language of rings from an element of the FreeCommRing
 
 This file defines the function `FirstOrder.Ring.termOfFreeCommRing` which constructs a
@@ -16,7 +15,6 @@ This file defines the function `FirstOrder.Ring.termOfFreeCommRing` which constr
 
 The theorem `FirstOrder.Ring.realize_termOfFreeCommRing` shows that the term constructed when
 realized in a ring `R` is equal to the lift of the element of `FreeCommRing α` to `R`.
-
 -/
 
 namespace FirstOrder
