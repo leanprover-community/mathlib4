@@ -64,14 +64,14 @@ private theorem length_digits_sup (n m : ℕ) (h : 2 ≤ n) (h2 : (List.map (Nat
     simp at h2
   have _ : NeZero m := NeZero.mk mne0
 
-  have lengt1 : 1 ≤ (n.digits m).length :=by
+  have lengt1 : 1 ≤ (n.digits m).length := by
     by_contra hc
     simp only [not_le, Nat.lt_one_iff, List.length_eq_zero_iff] at hc
     rw[hc] at h2
     simp at h2
 
   have key : ((List.map (Nat.cast (R:=(ZMod n))) (n.digits m)).toFinsupp)
-   ((n.digits m).length - 1 ) ≠ 0 :=by
+   ((n.digits m).length - 1 ) ≠ 0 := by
     simp only [List.toFinsupp_apply, List.getD_eq_getElem?_getD, List.getElem?_map, ne_eq]
     have ⟨ y , hl, hr, hsome ⟩  := exists_zmod_sol_some_aux n m h
     rw [hsome]
@@ -232,7 +232,7 @@ def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (
                       rw [isnoned] at hs
                       simp only [Option.map_none, Option.getD_none, not_true_eq_false] at hs
                     have jjb : j ∈ (List.map (Nat.cast (R:=(ZMod n)))
-                      (n.digits m)).toFinsupp.support :=by
+                      (n.digits m)).toFinsupp.support := by
                       simp only [Finsupp.mem_support_iff, List.toFinsupp_apply,
                         List.getD_eq_getElem?_getD, List.getElem?_map, ne_eq]
                       rw [hd]
@@ -249,7 +249,7 @@ def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (
                       rw [hd]
                       simp
                     have nonempty : (List.map (Nat.cast (R:=(ZMod n)))
-                      (n.digits m)).toFinsupp.support.Nonempty :=by
+                      (n.digits m)).toFinsupp.support.Nonempty := by
                       use j
                     refine Finset.le_sup_of_le jjb ?_
                     simp only [id_eq, le_refl]
@@ -380,7 +380,7 @@ def equiv_of_nat_of_finsupp_zmod (n : ℕ) (h : 2 ≤ n) : ℕ ≃ Finsupp ℕ (
             by_contra hc22
             push_neg at hc22
             have ⟨ hc1, hc2 ⟩ := hc22
-            have issom : (List.range (f.support.sup id + 1))[j]?.isSome :=by
+            have issom : (List.range (f.support.sup id + 1))[j]?.isSome := by
               contrapose! hc2
               have falsy : (List.range (f.support.sup id + 1))[j]?.isSome = false :=
                 eq_false_of_ne_true hc2
