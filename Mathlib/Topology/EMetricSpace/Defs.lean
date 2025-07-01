@@ -470,38 +470,6 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ ε > 0, ball x ε ⊆ s :=
 theorem mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, ball x ε ∩ t ⊆ s :=
   nhdsWithin_basis_eball.mem_iff
 
-/-- If an extended distance on a topological space defines balls which are neighborhoods of points,
-and is such that any neighborhood contains a ball, then the topology defined by the distance
-coincides with the initial topology. -/
-lemma topologicalSpace_eq_uniformSpaceOfEdist_toTopologicalSpace
-    {α : Type*} [T : TopologicalSpace α]
-    (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
-    (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (h₁ : ∀ x, ∀ c > 0, {y | d x y < c} ∈ 𝓝 x)
-    (h₂ : ∀ x, ∀ s ∈ 𝓝 x, ∃ c > 0, {y | d x y < c} ⊆ s) :
-    T = (uniformSpaceOfEDist d h_self h_comm h_triangle).toTopologicalSpace := by
-  apply TopologicalSpace.ext_nhds (fun x ↦ ?_)
-  let m : PseudoEMetricSpace α :=
-    { edist := d
-      edist_self := h_self
-      edist_comm := h_comm
-      edist_triangle := h_triangle }
-  have A (x c) : @EMetric.ball α m x c = {y | d x y < c} := by
-    ext y
-    simp only [EMetric.mem_ball']
-    exact Iff.rfl
-  apply le_antisymm
-  · intro t ht
-    have h't : t ∈ @nhds α m.toUniformSpace.toTopologicalSpace x := ht
-    rcases EMetric.mem_nhds_iff.1 h't with ⟨c, c_pos, hc⟩
-    apply Filter.mem_of_superset (h₁ x c c_pos)
-    rwa [A] at hc
-  · intro t ht
-    rcases h₂ x t ht with ⟨c, c_pos, hc⟩
-    change t ∈ @nhds α m.toUniformSpace.toTopologicalSpace x
-    apply EMetric.mem_nhds_iff.2 ⟨c, c_pos, ?_⟩
-    rwa [← A] at hc
-
 section
 
 variable [PseudoEMetricSpace β] {f : α → β}
