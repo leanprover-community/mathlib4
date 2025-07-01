@@ -157,16 +157,14 @@ instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒ
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
-  CompleteSemilatticeInf α, Top α, Bot α where
-  /-- Any element is less than the top one. -/
-  protected le_top : ∀ x : α, x ≤ ⊤
-  /-- Any element is more than the bottom one. -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
+  CompleteSemilatticeInf α where
 
 -- see Note [lower instance priority]
-instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] :
-    BoundedOrder α :=
-  { ‹CompleteLattice α› with }
+instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] : BoundedOrder α where
+  top := sInf ∅
+  bot := sSup ∅
+  le_top (a : α) := isGLB_empty_iff.1 (isGLB_sInf ∅) a
+  bot_le (a : α) := isLUB_empty_iff.1 (isLUB_sSup ∅) a
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
@@ -186,10 +184,6 @@ instance : CompleteLattice my_T where
 def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
     (isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)) : CompleteLattice α where
   __ := H1; __ := H2
-  bot := sInf univ
-  bot_le _ := (isGLB_sInf univ).1 trivial
-  top := sInf ∅
-  le_top a := (isGLB_sInf ∅).2 <| by simp
   sup a b := sInf { x : α | a ≤ x ∧ b ≤ x }
   inf a b := sInf {a, b}
   le_inf a b c hab hac := by
@@ -233,10 +227,6 @@ instance : CompleteLattice my_T where
 def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
   __ := H1; __ := H2
-  top := sSup univ
-  le_top _ := (isLUB_sSup univ).1 trivial
-  bot := sSup ∅
-  bot_le x := (isLUB_sSup ∅).2 <| by simp
   sup a b := sSup {a, b}
   sup_le a b c hac hbc := (isLUB_sSup _).2 (by simp [*])
   le_sup_left _ _ := (isLUB_sSup _).1 <| mem_insert _ _
