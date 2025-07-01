@@ -1,477 +1,209 @@
 /-
-Copyright (c) 2022 Amelia Livingston. All rights reserved.
+Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.AlgebraicTopology.ExtraDegeneracy
-import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.RepresentationTheory.Rep
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+import Mathlib.Algebra.Homology.Opposite
+import Mathlib.RepresentationTheory.Homological.Resolution
+import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
-# The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
+# The group cohomology of a `k`-linear `G`-representation
 
-Given a commutative ring `k` and a group `G`, this file defines two projective resolutions of `k`
-as a trivial `k`-linear `G`-representation.
+Let `k` be a commutative ring and `G` a group. This file defines the group cohomology of
+`A : Rep k G` to be the cohomology of the complex
+$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
+with differential $d^n$ sending $f: G^n \to A$ to the function mapping $(g_0, \dots, g_n)$ to
+$$\rho(g_0)(f(g_1, \dots, g_n))$$
+$$+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
+$$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
 
-The first one, the standard resolution, has objects `k[Gⁿ⁺¹]` equipped with the diagonal
-representation, and differential defined by `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`.
+We have a `k`-linear isomorphism
+$\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)$, where
+the righthand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
+representation. If we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism,
+where `P` is the bar resolution of `k` as a trivial `k`-linear `G`-representation, then the
+resulting map agrees with the differential $d^n$ defined above, a fact we prove.
 
-We define this as the alternating face map complex associated to an appropriate simplicial
-`k`-linear `G`-representation. This simplicial object is the `linearization` of the simplicial
-`G`-set given by the universal cover of the classifying space of `G`, `EG`. We prove this
-simplicial `G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets
-`G ⟶ {pt}`.
+This gives us for free a proof that our $d^n$ squares to zero. It also gives us an isomorphism
+$\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
+`Rep k G`.
 
-We then use this isomorphism to deduce that as a complex of `k`-modules, the standard resolution
-of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
-elsewhere.
-
-Putting this material together allows us to define `Rep.standardResolution`, the
-standard projective resolution of `k` as a trivial `k`-linear `G`-representation.
-
-We then construct the bar resolution. The `n`th object in this complex is the representation on
-`Gⁿ →₀ k[G]` defined pointwise by the left regular representation on `k[G]`. The differentials are
-defined by sending `(g₀, ..., gₙ)` to
-`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`.
-
-In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
-`k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
-We show that this isomorphism defines a commutative square with the bar resolution differential and
-the standard resolution differential, and thus conclude that the bar resolution differential
-squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism between the two
-complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
-is a projective resolution too, in `Rep.barResolution`.
-
-In `RepresentationTheory/Homological/Group(Co)homology/Basic.lean`, we then use
-`Rep.barResolution` to define the inhomogeneous (co)chains of a representation, useful for
-computing group (co)homology.
+To talk about cohomology in low degree, please see the file
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`, which provides API
+specialized to `H⁰`, `H¹`, `H²`.
 
 ## Main definitions
 
- * `groupCohomology.resolution.ofMulActionBasis`
- * `classifyingSpaceUniversalCover`
- * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
- * `Rep.standardResolution`
+* `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
+  $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
+* `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above complex and the
+  complex $\mathrm{Hom}(P, A),$ where `P` is the bar resolution of `k` as a trivial resolution.
+* `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of
+  `inhomogeneousCochains A`.
+* `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
+  (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
 
+## Implementation notes
+
+Group cohomology is typically stated for `G`-modules, or equivalently modules over the group ring
+`ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
+Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
+definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
+possible scalar action diamonds.
+
+## TODO
+
+* The long exact sequence in cohomology attached to a short exact sequence of representations.
+* Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
+* Profinite cohomology.
+
+Longer term:
+* The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
+  spectral sequences in general).
 -/
 
-suppress_compilation
 
 noncomputable section
 
-universe u v w
+universe u
 
 variable {k G : Type u} [CommRing k] {n : ℕ}
 
-open CategoryTheory Finsupp
+open CategoryTheory
 
-local notation "Gⁿ" => Fin n → G
-
-set_option quotPrecheck false
-local notation "Gⁿ⁺¹" => Fin (n + 1) → G
-
-namespace groupCohomology.resolution
-
-open Finsupp hiding lift
-open MonoidalCategory
-open Fin (partialProd)
-
-section Basis
-
-variable (k G n) [Group G]
-
-open scoped TensorProduct
-
-open Representation
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.actionDiagonalSucc := Action.diagonalSuccIsoTensorTrivial
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.actionDiagonalSucc_hom_apply :=
-  Action.diagonalSuccIsoTensorTrivial_hom_hom_apply
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.actionDiagonalSucc_inv_apply :=
-  Action.diagonalSuccIsoTensorTrivial_inv_hom_apply
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc := Rep.diagonalSuccIsoTensorTrivial
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_hom_single :=
-  Rep.diagonalSuccIsoTensorTrivial_hom_hom_single
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_inv_single_single :=
-  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_single
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_inv_single_left :=
-  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_left
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
-  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
-
-/-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
-the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
-`Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
-of the righthand side. -/
-@[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
-def ofMulActionBasisAux :
-    MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
-      (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
-    (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
-  { e with
-    map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
-      congr 1
-      /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
-      · simp only [smul_zero]
-      · simp only [TensorProduct.smul_tmul']
-        show (r * x) ⊗ₜ y = _
-        rw [← ofMulAction_self_smul_eq_mul, smul_tprod_one_asModule]
-      · rw [smul_add, hz, hy, smul_add] -/
-      change _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
-        (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
-      refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
-      · rw [smul_zero, map_zero]
-      · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
-        exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
-      · rw [smul_add, hz, hy, map_add] }
-
-/-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
-`k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
-@[deprecated "We now favour `Representation.freeAsModuleBasis`; the old definition can be derived
-from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMulActionBasis := Representation.freeAsModuleBasis
-
-@[deprecated "We now favour `Representation.free_asModule_free`; the old theorem can be derived
-from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMulAction_free := Representation.free_asModule_free
-
-end Basis
-
-end groupCohomology.resolution
-
-variable (G)
-
-/-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
-@[simps obj map]
-def classifyingSpaceUniversalCover [Monoid G] :
-    SimplicialObject (Action (Type u) G) where
-  obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
-  map f :=
-    { hom := fun x => x ∘ f.unop.toOrderHom
-      comm := fun _ => rfl }
-  map_id _ := rfl
-  map_comp _ _ := rfl
-
-namespace classifyingSpaceUniversalCover
-
-open CategoryTheory.Limits
+namespace groupCohomology
 
 variable [Monoid G]
 
-/-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
-isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
-def cechNerveTerminalFromIso :
-    cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
-  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
-    dsimp only [cechNerveTerminalFrom, Pi.lift]
-    rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
-    exact (limit.isoLimitCone_hom_π _ _).symm
+/-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
+`G`-representation. -/
+@[deprecated "We now use `(Rep.barComplex k G).linearYonedaObj k A instead"
+  (since := "2025-06-08")]
+abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
+  (Rep.standardComplex k G).linearYonedaObj k A
 
-/-- As a simplicial set, `cechNerveTerminalFrom` of a monoid `G` is isomorphic to the universal
-cover of the classifying space of `G` as a simplicial set. -/
-def cechNerveTerminalFromIsoCompForget :
-    cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
-  NatIso.ofComponents (fun _ => Types.productIso _) fun _ =>
-    Matrix.ext fun _ _ => Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
+end groupCohomology
 
-variable (k)
+namespace inhomogeneousCochains
 
-open AlgebraicTopology SimplicialObject.Augmented SimplicialObject CategoryTheory.Arrow
+open Rep groupCohomology
 
-/-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
-from `Fin 1 → G` to the terminal object in `Type u`. -/
-def compForgetAugmented : SimplicialObject.Augmented (Type u) :=
-  SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
-    (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
+/-- The differential in the complex of inhomogeneous cochains used to
+calculate group cohomology. -/
+@[simps! -isSimp]
+def d [Monoid G] (A : Rep k G) (n : ℕ) :
+    ModuleCat.of k ((Fin n → G) → A) ⟶ ModuleCat.of k ((Fin (n + 1) → G) → A) :=
+  ModuleCat.ofHom
+  { toFun f g :=
+      A.ρ (g 0) (f fun i => g i.succ) + Finset.univ.sum fun j : Fin (n + 1) =>
+        (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
+    map_add' f g := by
+      ext
+      simp [Finset.sum_add_distrib, add_add_add_comm]
+    map_smul' r f := by
+      ext
+      simp [Finset.smul_sum, ← smul_assoc, mul_comm r] }
 
-/-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
-extra degeneracy. -/
-def extraDegeneracyAugmentedCechNerve :
-    ExtraDegeneracy (Arrow.mk <| terminal.from G).augmentedCechNerve :=
-  AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from G)
-    ⟨fun _ => (1 : G),
-      @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _⟩
+variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
 
-/-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
-from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
-def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G) := by
-  refine
-    ExtraDegeneracy.ofIso (?_ : (Arrow.mk <| terminal.from G).augmentedCechNerve ≅ _)
-      (extraDegeneracyAugmentedCechNerve G)
-  exact
-    Comma.isoMk (CechNerveTerminalFrom.iso G ≪≫ cechNerveTerminalFromIsoCompForget G)
-      (Iso.refl _) (by ext : 1; exact IsTerminal.hom_ext terminalIsTerminal _ _)
+theorem d_eq :
+    d A n =
+      (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
+        ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
+          (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
+  ext
+  simp [d_hom_apply, map_add, barComplex.d_single (k := k)]
 
-/-- The free functor `Type u ⥤ ModuleCat.{u} k` applied to the universal cover of the classifying
-space of `G` as a simplicial set, augmented by the map from `Fin 1 → G` to the terminal object
-in `Type u`. -/
-def compForgetAugmented.toModule : SimplicialObject.Augmented (ModuleCat.{u} k) :=
-  ((SimplicialObject.Augmented.whiskering _ _).obj (ModuleCat.free k)).obj (compForgetAugmented G)
+end inhomogeneousCochains
 
-/-- If we augment the universal cover of the classifying space of `G` as a simplicial set by the
-map from `Fin 1 → G` to the terminal object in `Type u`, then apply the free functor
-`Type u ⥤ ModuleCat.{u} k`, the resulting augmented simplicial `k`-module has an extra
-degeneracy. -/
-def extraDegeneracyCompForgetAugmentedToModule :
-    ExtraDegeneracy (compForgetAugmented.toModule k G) :=
-  ExtraDegeneracy.map (extraDegeneracyCompForgetAugmented G) (ModuleCat.free k)
+namespace groupCohomology
 
-end classifyingSpaceUniversalCover
+variable [Group G] (n) (A : Rep k G)
 
-variable (k)
+open inhomogeneousCochains Rep
 
-/-- The standard resolution of `k` as a trivial representation, defined as the alternating
-face map complex of a simplicial `k`-linear `G`-representation. -/
-def Rep.standardComplex [Monoid G] :=
-  (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
-    (classifyingSpaceUniversalCover G ⋙ linearization k G)
+/-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
+$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
+which calculates the group cohomology of `A`. -/
+noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
+  CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
+    (fun n => inhomogeneousCochains.d A n) fun n => by
+    classical
+    simp only [d_eq]
+    slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
+    slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
+    simp
 
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.resolution := Rep.standardComplex
+variable {A n} in
+@[ext]
+theorem inhomogeneousCochains.ext {x y : (inhomogeneousCochains A).X n} (h : ∀ g, x g = y g) :
+    x = y := funext h
 
-namespace Rep.standardComplex
+theorem inhomogeneousCochains.d_def (n : ℕ) :
+    (inhomogeneousCochains A).d n (n + 1) = d A n := by
+  simp
 
-open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
+theorem inhomogeneousCochains.d_comp_d :
+    d A n ≫ d A (n + 1) = 0 := by
+  simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
 
-variable [Monoid G]
+/-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
+to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
+def inhomogeneousCochainsIso [DecidableEq G] :
+    inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
+  refine HomologicalComplex.Hom.isoOfComponents
+    (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
+  rintro i j (h : i + 1 = j)
+  subst h
+  simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
 
-/-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
-`k`-linear `G`-representation. It sends `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`. -/
-def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n → G) →₀ k :=
-  Finsupp.lift ((Fin n → G) →₀ k) k (Fin (n + 1) → G) fun g =>
-    (@Finset.univ (Fin (n + 1)) _).sum fun p =>
-      Finsupp.single (g ∘ p.succAbove) ((-1 : k) ^ (p : ℕ))
+/-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
+`n`th differential in the complex of inhomogeneous cochains. -/
+abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
-variable {k G}
+/-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
+abbrev iCocycles (n : ℕ) : cocycles A n ⟶ (inhomogeneousCochains A).X n :=
+  (inhomogeneousCochains A).iCycles n
 
-@[simp]
-theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
-    d k G n (Finsupp.single c 1) =
-      Finset.univ.sum fun p : Fin (n + 1) =>
-        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
-  simp [d]
+/-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
+inhomogeneous cochains. -/
+abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
+  (inhomogeneousCochains A).toCycles i j
 
-variable (k G)
+end groupCohomology
 
-/-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
-equipped with the representation induced by the diagonal action of `G`. -/
-def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
-  Iso.refl _
+open groupCohomology
 
-instance x_projective (G : Type u) [Group G] [DecidableEq G] (n : ℕ) :
-    Projective ((standardComplex k G).X n) :=
-  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
+/-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
+of inhomogeneous cochains. -/
+def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
+  (inhomogeneousCochains A).homology n
 
-/-- Simpler expression for the differential in the standard resolution of `k` as a
-`G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
-    ModuleCat.ofHom (d k G (n + 1)) := by
-  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
-    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
+/-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
+`G`-representation `A`. -/
+abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
+    groupCohomology.cocycles A n ⟶ groupCohomology A n :=
+  (inhomogeneousCochains A).homologyπ n
 
-section Exactness
+@[deprecated (since := "2025-06-11")]
+noncomputable alias groupCohomologyπ := groupCohomology.π
 
-/-- The standard resolution of `k` as a trivial representation as a complex of `k`-modules. -/
-def forget₂ToModuleCat :=
-  ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj (standardComplex k G)
+@[elab_as_elim]
+theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
+    {C : groupCohomology A n → Prop} (x : groupCohomology A n)
+    (h : ∀ x : cocycles A n, C (π A n x)) : C x := by
+  rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
+  exact h y
 
-/-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the
-classifying space of `G` as a simplicial set, then take the alternating face map complex, the result
-is isomorphic to the standard resolution of the trivial `G`-representation `k` as a complex of
-`k`-modules. -/
-def compForgetAugmentedIso :
-    AlternatingFaceMapComplex.obj
-        (SimplicialObject.Augmented.drop.obj (compForgetAugmented.toModule k G)) ≅
-      standardComplex.forget₂ToModuleCat k G :=
-  eqToIso
-    (Functor.congr_obj (map_alternatingFaceMapComplex (forget₂ (Rep k G) (ModuleCat.{u} k))).symm
-      (classifyingSpaceUniversalCover G ⋙ linearization k G))
+/-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
+`Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
+def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
+    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
+    (Rep.barResolution.extIso k G A n).symm
 
-/-- As a complex of `k`-modules, the standard resolution of the trivial `G`-representation `k` is
-homotopy equivalent to the complex which is `k` at 0 and 0 elsewhere. -/
-def forget₂ToModuleCatHomotopyEquiv :
-    HomotopyEquiv (standardComplex.forget₂ToModuleCat k G)
-      ((ChainComplex.single₀ (ModuleCat k)).obj ((forget₂ (Rep k G) _).obj <| Rep.trivial k G k)) :=
-  (HomotopyEquiv.ofIso (compForgetAugmentedIso k G).symm).trans <|
-    (SimplicialObject.Augmented.ExtraDegeneracy.homotopyEquiv
-          (extraDegeneracyCompForgetAugmentedToModule k G)).trans
-      (HomotopyEquiv.ofIso <|
-        (ChainComplex.single₀ (ModuleCat.{u} k)).mapIso
-          (@Finsupp.LinearEquiv.finsuppUnique k k _ _ _ (⊤_ Type u)
-              Types.terminalIso.toEquiv.unique).toModuleIso)
-
-/-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
-def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
-    (by simp [ModuleCat.endRingEquiv])
-
-/-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
-a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
-`∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
-theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
-    (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
-  refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
-  change mapDomain _ _ _ = Finsupp.linearCombination _ _ _
-  simp only [HomotopyEquiv.ofIso, Iso.symm_hom, compForgetAugmented, compForgetAugmentedIso,
-    eqToIso.inv, HomologicalComplex.eqToHom_f]
-  change mapDomain _ (single x r) _ = _
-  simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
-
-theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
-  ext : 3
-  have : (forget₂ToModuleCat k G).d 1 0
-      ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
-    rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
-      ← (forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
-    exact comp_zero
-  exact LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp this) _
-
-/-- The chain map from the standard resolution of `k` to `k[0]` given by `∑ nᵢgᵢ ↦ ∑ nᵢ` in
-degree zero. -/
-def εToSingle₀ :
-    standardComplex k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
-  ((standardComplex k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
-
-theorem εToSingle₀_comp_eq :
-    ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
-        (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =
-      (forget₂ToModuleCatHomotopyEquiv k G).hom := by
-  dsimp
-  ext1
-  simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
-
-theorem quasiIso_forget₂_εToSingle₀ :
-    QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
-  have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := inferInstance
-  rw [← εToSingle₀_comp_eq k G] at h
-  exact quasiIso_of_comp_right (hφφ' := h)
-
-instance : QuasiIso (εToSingle₀ k G) := by
-  rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
-  apply quasiIso_forget₂_εToSingle₀
-
-end Exactness
-end standardComplex
-
-open HomologicalComplex.Hom standardComplex
-
-variable [Group G] [DecidableEq G]
-
-/-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
-def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
-  complex := standardComplex k G
-  π := εToSingle₀ k G
-
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.projectiveResolution := Rep.standardResolution
-
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
-`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-standard resolution of `k` called `standardComplex k G`. -/
-def standardResolution.extIso (V : Rep k G) (n : ℕ) :
-    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      ((standardComplex k G).linearYonedaObj k V).homology n :=
-  (standardResolution k G).isoExt n V
-
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.extIso := Rep.standardResolution.extIso
-
-namespace barComplex
-
-open Rep Finsupp
-
-variable (n)
-
-/-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
-`k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
-`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`. -/
-def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
-  freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
-    Finset.univ.sum fun j : Fin (n + 1) =>
-      single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
-
-variable {k G} in
-lemma d_single (x : Gⁿ⁺¹) :
-    (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
-      Finset.univ.sum fun j : Fin (n + 1) =>
-        single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
-  simp [d]
-
-lemma d_comp_diagonalSuccIsoFree_inv_eq :
-    d k G n ≫ (diagonalSuccIsoFree k G n).inv =
-      (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
-  free_ext _ _ fun i => by
-    simpa [diagonalSuccIsoFree_inv_hom_single_single (k := k), d_single (k := k),
-      standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i), Fin.sum_univ_succ,
-      Fin.partialProd_contractNth] using
-      congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
-
-end barComplex
-
-open barComplex
-
-/-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
-differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
-`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`. -/
-noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
-  ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
-    ext x
-    simp [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _)]
-
-namespace barComplex
-
-@[simp]
-theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
-
-/-- Isomorphism between the bar resolution and standard resolution, with `n`th map
-`(Gⁿ →₀ k[G]) → k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ) ↦ (1, g₁, g₁g₂, ..., g₁...gₙ)`. -/
-def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
-  HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
-    rintro (rfl : j + 1 = i)
-    simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
-
-end barComplex
-
-/-- The chain complex `barComplex k G` as a projective resolution of `k` as a trivial
-`k`-linear `G`-representation. -/
-@[simps complex]
-def barResolution : ProjectiveResolution (Rep.trivial k G k) where
-  complex := barComplex k G
-  projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
-  π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
-
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
-`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-bar resolution of `k`. -/
-def barResolution.extIso (V : Rep k G) (n : ℕ) :
-    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      ((barComplex k G).linearYonedaObj k V).homology n :=
-  (barResolution k G).isoExt n V
-
-end Rep
+lemma isZero_groupCohomology_succ_of_subsingleton
+    [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
+    Limits.IsZero (groupCohomology A (n + 1)) :=
+  (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
