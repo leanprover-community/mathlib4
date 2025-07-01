@@ -52,7 +52,7 @@ class EDist (α : Type*) where
 export EDist (edist)
 
 /-- Creating a uniform space from an extended distance. -/
-def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
+@[reducible] def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : UniformSpace α :=
   .ofFun edist edist_self edist_comm edist_triangle fun ε ε0 =>
@@ -63,7 +63,8 @@ def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x :
 there is a preexisting topology, for which the neighborhoods can be expressed using the distance,
 and we make sure that the uniform space structure we construct has a topology which is defeq
 to the original one. -/
-def uniformSpaceOfEDistOfHasBasis [TopologicalSpace α] (edist : α → α → ℝ≥0∞)
+@[reducible] noncomputable def uniformSpaceOfEDistOfHasBasis [TopologicalSpace α]
+    (edist : α → α → ℝ≥0∞)
     (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z)
@@ -303,7 +304,7 @@ theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
 /-- Consider an extended distance on a topological space, for which the neighborhoods can be
 expressed in terms of the distance. Then we define the emetric space structure associated to this
 distance, with a topology defeq to the initial one. -/
-@[reducible] def PseudoEmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α]
+@[reducible] noncomputable def PseudoEmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α]
     (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
     (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
     (h_basis : ∀ x, (𝓝 x).HasBasis (fun c ↦ 0 < c) (fun c ↦ {y | d x y < c})) :
