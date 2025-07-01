@@ -306,7 +306,7 @@ lemma contMDiffAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [C
     contMDiffAt_smul_section (hi i) (contMDiffAt_localFrame_of_mem k e b i hx)
   have almost : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k
       (fun x ↦ TotalSpace.mk' F x (∑ i, (b.localFrame_repr e i) s x • b.localFrame e i x)) x' :=
-    contMDiffAt_finsum_section fun i ↦ this i
+    contMDiffAt_finsum_section fun i _ ↦ this i
   apply almost.congr_of_eventuallyEq ?_
   obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (b.localFrame_repr_spec hx s)
   exact eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx]
@@ -325,7 +325,7 @@ lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [C
     contMDiffOn_smul_section (hi i) ((b.contMDiffOn_localFrame_baseSet k e i).mono ht')
   let rhs := fun x' ↦ ∑ i, (b.localFrame_repr e i) s x' • b.localFrame e i x'
   have almost : ContMDiffOn I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (rhs x)) t :=
-    contMDiffOn_finsum_section fun i ↦ this i
+    contMDiffOn_finsum_section fun i _ ↦ this i
   apply almost.congr
   intro y hy
   congr

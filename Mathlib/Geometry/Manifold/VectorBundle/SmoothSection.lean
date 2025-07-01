@@ -180,30 +180,34 @@ lemma contMDiff_smul_const_section
   fun x₀ ↦ contMDiffAt_smul_const_section (hs x₀)
 
 lemma contMDiffWithinAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
-    (hs : ∀ i, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    (hs : ∀ i ∈ s,
+      ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
     ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n
       (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u x₀ := by
   classical
   induction s using Finset.induction_on with
   | empty =>
     simpa only [Finset.sum_empty] using contMDiffWithinAt_zeroSection ..
-  | insert i s hi h => simpa [Finset.sum_insert hi] using contMDiffWithinAt_add_section (hs i) h
+  | insert i s hi h =>
+    simp only [Finset.sum_insert hi]
+    apply contMDiffWithinAt_add_section (hs _ (s.mem_insert_self i))
+    exact h fun i a ↦ hs _ (s.mem_insert_of_mem a)
 
 lemma contMDiffAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x} {x₀ : M}
-    (hs : ∀ i, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
+    (hs : ∀ i ∈ s, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
     ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ := by
   simp_rw [← contMDiffWithinAt_univ] at hs ⊢
   exact contMDiffWithinAt_finsum_section hs
 
 lemma contMDiffOn_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
-    (hs : ∀ i, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
+    (hs : ∀ i ∈ s, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u :=
-  fun x₀ hx₀ ↦ contMDiffWithinAt_finsum_section fun i ↦ hs i x₀ hx₀
+  fun x₀ hx₀ ↦ contMDiffWithinAt_finsum_section fun i hi ↦ hs i hi x₀ hx₀
 
 lemma contMDiff_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
-    (hs : ∀ i, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    (hs : ∀ i ∈ s, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
-  fun x₀ ↦ contMDiffAt_finsum_section fun i ↦ (hs i) x₀
+  fun x₀ ↦ contMDiffAt_finsum_section fun i hi ↦ (hs i hi) x₀
 
 end operations
 
