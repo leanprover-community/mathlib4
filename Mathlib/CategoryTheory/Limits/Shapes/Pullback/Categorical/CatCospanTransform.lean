@@ -582,8 +582,13 @@ H₁|   |H₂ |H₃
 where H₁, H₂ and H₃ are equivalences, along with commutative 2-squares structure
 on the squares in the forward direction.
 It is defined as a `CatCospanAdjunction F G F' G'` with given inverses to the unit and counit
-morphisms. See `CatCospanEquivalence.mk'` for a constructor that asks for 3 equivalences and
-squares only on their functors (the square on inverses being uniquely determined). -/
+morphisms.
+
+See `CatCospanEquivalence.mk'` for a constructor that asks for the forward and inverse direction of
+the equivalence, as well as unit and counit isomorphisms satisfying only the left
+triangle identity, mirorring the constructor for equivalences of categories..
+See `CatCospanEquivalence.mk''` for a constructor that asks for 3 equivalences and
+squares only on their functors (the squares on inverses being uniquely determined). -/
 structure CatCospanEquivalence
     {A B C : Type*} [Category A] [Category B] [Category C]
     (F : A ⥤ B) (G : C ⥤ B)
