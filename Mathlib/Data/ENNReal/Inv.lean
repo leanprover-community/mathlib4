@@ -347,7 +347,7 @@ protected lemma div_div_cancel' (h₀ : a = 0 → b = 0) (h₁ : a = ∞ → b =
   rw [ENNReal.div_eq_inv_mul, ENNReal.inv_div (Or.inr ha') (Or.inr ha),
     ENNReal.div_mul_cancel ha ha']
 
-/-- See `ENReal.div_div_cancel'` for a stronger version. -/
+/-- See `ENNReal.div_div_cancel'` for a stronger version. -/
 protected lemma div_div_cancel {a b : ℝ≥0∞} (h₀ : a ≠ 0) (h₁ : a ≠ ∞) :
     a / (a / b) = b :=
   ENNReal.div_div_cancel' (by simp [h₀]) (by simp [h₁])
