@@ -313,7 +313,7 @@ def of_convex_range
     exact htarget.convex_isRCLikeNormedField
   nonempty_interior' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
-    simp [this, htarget, hint]
+    simp [this, hint]
 
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
