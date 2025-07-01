@@ -396,9 +396,7 @@ lemma coe_corootSpace_eq_span_singleton' (α : Weight K H L) :
     rw [Submodule.span_span] at this
     rw [Submodule.mem_span_singleton] at this ⊢
     obtain ⟨t, rfl⟩ := this
-    use t
-    simp only [Subtype.ext_iff]
-    rw [Submodule.coe_smul_of_tower]
+    solve_by_elim
   · simp only [Submodule.span_singleton_le_iff_mem, LieSubmodule.mem_toSubmodule]
     exact cartanEquivDual_symm_apply_mem_corootSpace α
 

@@ -216,10 +216,10 @@ variable [PreGaloisCategory C] [FiberFunctor F]
 lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
   rw [(IsInitial.isInitialIffObj F X).nonempty_congr]
   haveI : PreservesFiniteColimits (forget FintypeCat) := by
-    show PreservesFiniteColimits FintypeCat.incl
+    change PreservesFiniteColimits FintypeCat.incl
     infer_instance
   haveI : ReflectsColimit (Functor.empty.{0} _) (forget FintypeCat) := by
-    show ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
+    change ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
     infer_instance
   exact Concrete.initial_iff_empty_of_preserves_of_reflects (F.obj X)
 
@@ -312,7 +312,7 @@ lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A
 /-- The evaluation map on automorphisms is injective for connected objects. -/
 lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj A) :
     Function.Injective (fun f : Aut A ↦ F.map (f.hom) a) := by
-  show Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
+  change Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
   apply Function.Injective.comp
   · exact evaluation_injective_of_isConnected F A A a
   · exact @Aut.ext _ _ A

@@ -487,7 +487,7 @@ lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.take ((L.map length).take i).sum = (L.take i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [take_length_add_append, *]
 
 /-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
@@ -495,7 +495,7 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.drop ((L.map length).take i).sum = (L.drop i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [*]
 
 @[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
 @[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten
