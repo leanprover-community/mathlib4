@@ -40,7 +40,8 @@ variable
 
 section
 
-variable [EMetricSpace M] [ChartedSpace H M] [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+variable [PseudoEMetricSpace M] [ChartedSpace H M]
+[RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 variable (I M) in
 /-- Consider a manifold in which the tangent spaces are already endowed with an inner product, and
@@ -295,8 +296,8 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
   -- controlled set.
   have hη : Icc 0 1 ⊆ ⇑η ⁻¹' ((extChartAt I x).target ∩
         {y | ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ₑ < C}) := by
-    simp only [← preimage_inter, ← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq,
-      ← segment_eq_image_lineMap, η]
+    simp only [← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq,
+     ← segment_eq_image_lineMap, η]
     apply Subset.trans _ hr
     exact ((convex_ball _ _).inter I.convex_range).segment_subset (by simp [r_pos]) hy
   simp only [preimage_inter, subset_inter_iff] at hη
@@ -507,6 +508,31 @@ lemma setOf_riemmanianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M}
   exact ⟨c, mod_cast c_pos, hc⟩
 
 variable (M) in
+/-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
+so that the topology is defeq to the original one.
+
+This should only be used when constructing data in specific situtations. To develop the theory,
+one should rather assume that there is an already existing emetric space structure, which satisfies
+additionally the predicate `IsRiemannianManifold I M`. -/
+@[reducible] def PseudoEmetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
+  PseudoEmetricSpace.ofEdistOfTopology (riemannianEDist I (M := M))
+    (fun _ ↦ riemannianEDist_self)
+    (fun _ _ ↦ riemannianEDist_comm)
+    (fun _ _ _ ↦ riemannianEDist_triangle)
+    (fun x ↦ (basis_sets (𝓝 x)).to_hasBasis'
+      (fun _ hs ↦ setOf_riemmanianEDist_lt_subset_nhds' I hs)
+      (fun _ hc ↦ eventually_riemmanianEDist_lt I x hc))
+
+/-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
+by definition the distance is the infimum of the length of paths between the points, i.e., the
+manifold satsifies the `IsRiemannianManifold I M` predicate. -/
+instance [RegularSpace M] :
+    letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M;
+    IsRiemannianManifold I M := by
+  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
+  exact ⟨fun x y ↦ rfl⟩
+
+variable (M) in
 /-- The emetric space structure associated to a Riemannian metric on a manifold. Designed
 so that the topology is defeq to the original one.
 
@@ -514,20 +540,7 @@ This should only be used when constructing data in specific situtations. To deve
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
 @[reducible] def EmetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
-  EmetricSpace.ofEdistOfTopology (riemannianEDist I (M := M))
-    (fun _ ↦ riemannianEDist_self)
-    (fun _ _ ↦ riemannianEDist_comm)
-    (fun _ _ _ ↦ riemannianEDist_triangle)
-    (fun x _ hc ↦ eventually_riemmanianEDist_lt I x hc)
-    (fun _ _ hs ↦ setOf_riemmanianEDist_lt_subset_nhds' I hs)
-
-/-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
-by definition the distance is the infimum of the length of paths between the points, i.e., the
-manifold satsifies the `IsRiemannianManifold I M` predicate. -/
-instance [T3Space M] :
-    letI : EMetricSpace M := EmetricSpace.ofRiemannianMetric I M;
-    IsRiemannianManifold I M := by
-  letI : EMetricSpace M := EmetricSpace.ofRiemannianMetric I M
-  exact ⟨fun x y ↦ rfl⟩
+  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M;
+  EMetricSpace.ofT0PseudoEMetricSpace M
 
 end
