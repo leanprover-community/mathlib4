@@ -736,6 +736,7 @@ def mk'
 /-- Construct a `CatCospanEquivalence F G F' G'` from the data of individual
 equivalences of categories for the left, base and right components, as well
 as the data of `CatCommSq` on their forward functor. -/
+@[simps!]
 def mk''
     (leftEquiv : A ≌ A') (rightEquiv : C ≌ C') (baseEquiv : B ≌ B')
     (squareLeft :
