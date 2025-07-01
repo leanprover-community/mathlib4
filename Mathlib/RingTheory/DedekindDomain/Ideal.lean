@@ -1304,7 +1304,7 @@ theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
   · simp only [span_singleton_pow, heq, dvd_span_singleton, mem_span_singleton]
     rw [pow_add, pow_one, mul_dvd_mul_iff_left (pow_ne_zero n hx0)]
     exact ha
-  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, not_false_eq_true]
+  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot]
     aesop
   · exact (span_singleton_prime hx0).mpr hx
   · simp only [ne_eq, span_singleton_eq_bot]; exact hx0
