@@ -283,7 +283,7 @@ variable {A}
 
 theorem mem_cycles₁_iff (x : G →₀ A) :
     x ∈ cycles₁ A ↔ x.sum (fun g a => A.ρ g⁻¹ a) = x.sum (fun _ a => a) := by
-  show x.sum (fun g a => A.ρ g⁻¹ a - a) = 0 ↔ _
+  change x.sum (fun g a => A.ρ g⁻¹ a - a) = 0 ↔ _
   rw [sum_sub, sub_eq_zero]
 
 theorem single_mem_cycles₁_iff (g : G) (a : A) :
@@ -312,8 +312,8 @@ abbrev cycles₁IsoOfIsTrivial [A.IsTrivial] :
 theorem mem_cycles₂_iff (x : G × G →₀ A) :
     x ∈ cycles₂ A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
       x.sum (fun g a => single (g.1 * g.2) a) := by
-  show x.sum (fun g a => _) = 0 ↔ _
-  simp [sub_add_eq_add_sub, sum_sub_index, sub_eq_zero]
+  change x.sum (fun g a => _) = 0 ↔ _
+  simp [sub_add_eq_add_sub, sub_eq_zero]
 
 theorem single_mem_cycles₂_iff_inv (g : G × G) (a : A) :
     single g a ∈ cycles₂ A ↔ single g.2 (A.ρ g.1⁻¹ a) + single g.1 a = single (g.1 * g.2) a := by
