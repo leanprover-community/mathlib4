@@ -49,7 +49,6 @@ def isPointwiseLeftKanExtensionAtExtensionUnitLeft
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorRight <| K.obj e)] :
     Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K)|>.IsPointwiseLeftKanExtensionAt
       (d, e) := by
-  dsimp [Functor.LeftExtension.IsPointwiseLeftKanExtensionAt]
   set cone := Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K)|>.coconeAt (d, e)
   let equiv := CostructuredArrow.prodEquivalence L (𝟭 E) d e|>.symm
   apply Limits.IsColimit.ofWhiskerEquivalence equiv
@@ -98,7 +97,6 @@ def isPointwiseLeftKanExtensionAtExtensionUnitRight
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorLeft <| K.obj e)] :
     (Functor.LeftExtension.mk (K ⊠ H')
       (extensionUnitRight H' α K)).IsPointwiseLeftKanExtensionAt (e, d) := by
-  dsimp [Functor.LeftExtension.IsPointwiseLeftKanExtensionAt]
   set cone := Functor.LeftExtension.mk (K ⊠ H')
     (extensionUnitRight H' α K)|>.coconeAt (e, d)
   let equiv := CostructuredArrow.prodEquivalence (𝟭 E) L e d|>.symm
