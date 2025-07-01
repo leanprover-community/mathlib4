@@ -364,14 +364,26 @@ variable
 
 lemma whisker_exchange : ψ ◁ θ ≫ η ▷ φ' = η ▷ φ ≫ ψ' ◁ θ := by aesop_cat
 
+@[simp]
+lemma id_whiskerRight : 𝟙 ψ ▷ φ = 𝟙 _ := by aesop_cat
+
 lemma whiskerRight_id : η ▷ (.id _ _) = (ρ_ _).hom ≫ η ≫ (ρ_ _).inv := by aesop_cat
+
+@[simp, reassoc]
 lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by aesop_cat
+
 lemma whiskerRight_comp :
     η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _ ).hom := by
   aesop_cat
 
-lemma whiskerLeft_id : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by aesop_cat
+@[simp]
+lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by aesop_cat
+
+lemma id_whiskerLeft : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by aesop_cat
+
+@[simp, reassoc]
 lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := by aesop_cat
+
 lemma comp_whiskerLeft :
     (ψ.comp φ) ◁ γ = (α_ _ _ _).hom ≫ (ψ ◁ (φ ◁ γ)) ≫ (α_ _ _ _).inv := by
   aesop_cat
@@ -385,7 +397,30 @@ lemma pentagon
       (α_ (ψ.comp φ) τ σ).hom ≫ (α_ ψ φ (τ.comp σ)).hom := by
   aesop_cat
 
-lemma triangle : (α_ ψ (.id _ _) φ).hom ≫ ψ ◁ (λ_ φ).hom = (ρ_ ψ).hom ▷ φ := by aesop_cat
+lemma triangle :
+    (α_ ψ (.id _ _) φ).hom ≫ ψ ◁ (λ_ φ).hom = (ρ_ ψ).hom ▷ φ := by
+  aesop_cat
+
+section Isos
+
+variable {ψ ψ' : CatCospanTransform F G F' G'} (η : ψ ⟶ ψ') [IsIso η]
+    {φ φ' : CatCospanTransform F' G' F'' G''} (θ : φ ⟶ φ') [IsIso θ]
+
+instance : IsIso (ψ ◁ θ) :=
+    ⟨ψ ◁ inv θ, ⟨by simp [← whiskerLeft_comp], by simp [← whiskerLeft_comp]⟩⟩
+
+lemma inv_whiskerLeft : inv (ψ ◁ θ) = ψ ◁ inv θ := by
+  apply IsIso.inv_eq_of_hom_inv_id
+  simp [← whiskerLeft_comp]
+
+instance : IsIso (η ▷ φ) :=
+    ⟨inv η ▷ φ, ⟨by simp [← comp_whiskerRight], by simp [← comp_whiskerRight]⟩⟩
+
+lemma inv_whiskerRight : inv (η ▷ φ) = inv η ▷ φ := by
+  apply IsIso.inv_eq_of_hom_inv_id
+  simp [← comp_whiskerRight]
+
+end Isos
 
 end lemmas
 
