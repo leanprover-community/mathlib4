@@ -32,7 +32,7 @@ inequality.
 ## See also
 
 In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
-does. See `Mathlib.Combinatorics.Additive.SmallTripling`.
+does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
 
 open MulOpposite Nat

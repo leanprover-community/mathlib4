@@ -106,7 +106,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     · refine ⟨fun _ => 0, ?_, lowerSemicontinuous_const, ?_⟩
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
-          eq_self_iff_true, SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
+          SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
           SimpleFunc.coe_piecewise, le_zero_iff]
       · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have ne_top : μ s ≠ ⊤ := by
@@ -293,7 +293,6 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
           rw [ENNReal.toReal_add int_f_ne_top ENNReal.coe_ne_top, ENNReal.coe_toReal]
         _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := add_lt_add_left hδε _
         _ = (∫⁻ a : α, ENNReal.ofReal ↑(f a) ∂μ).toReal + ε := by simp
-
     · apply Filter.Eventually.of_forall fun x => _; simp
     · exact fmeas.coe_nnreal_real.aestronglyMeasurable
     · apply Filter.Eventually.of_forall fun x => _; simp
@@ -316,12 +315,12 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     · refine ⟨fun _ => 0, ?_, upperSemicontinuous_const, ?_⟩
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
-          eq_self_iff_true, SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
+          SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
           SimpleFunc.coe_piecewise, le_zero_iff]
       · classical
         simp only [hc, Set.indicator_zero', lintegral_const, zero_mul, Pi.zero_apply,
           SimpleFunc.const_zero, zero_add, zero_le', SimpleFunc.coe_zero,
-          Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise, zero_le]
+          Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise]
     have μs_lt_top : μ s < ∞ := by
       classical
       simpa only [hs, hc, lt_top_iff_ne_top, true_and, SimpleFunc.coe_const, or_false,

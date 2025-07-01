@@ -3,7 +3,7 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Iso
+import Mathlib.Tactic.CategoryTheory.IsoReassoc
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 
@@ -264,15 +264,30 @@ instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso 
   (isoWhiskerRight (asIso α) F).isIso_hom
 
 @[simp]
+theorem inv_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
+    inv (whiskerRight α F) = whiskerRight (inv α) F := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← whiskerRight_comp]
+
+@[simp]
+theorem inv_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
+    inv (whiskerLeft F α) = whiskerLeft F (inv α) := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← whiskerLeft_comp]
+
+@[simp, reassoc]
 theorem isoWhiskerLeft_trans (F : C ⥤ D) {G H K : D ⥤ E} (α : G ≅ H) (β : H ≅ K) :
     isoWhiskerLeft F (α ≪≫ β) = isoWhiskerLeft F α ≪≫ isoWhiskerLeft F β :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem isoWhiskerRight_trans {G H K : C ⥤ D} (α : G ≅ H) (β : H ≅ K) (F : D ⥤ E) :
     isoWhiskerRight (α ≪≫ β) F = isoWhiskerRight α F ≪≫ isoWhiskerRight β F :=
   ((whiskeringRight C D E).obj F).mapIso_trans α β
 
+@[reassoc]
 theorem isoWhiskerLeft_trans_isoWhiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α : F ≅ G) (β : H ≅ K) :
     isoWhiskerLeft F β ≪≫ isoWhiskerRight α K = isoWhiskerRight α H ≪≫ isoWhiskerLeft G β := by
   ext
@@ -304,18 +319,20 @@ theorem isoWhiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H
     (Functor.associator _ _ _).symm ≪≫ isoWhiskerLeft (F ⋙ G) α ≪≫ Functor.associator _ _ _ := by
   aesop_cat
 
-@[simp]
+@[simp, reassoc]
 theorem isoWhiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ≅ K) :
     isoWhiskerRight (isoWhiskerRight α F) G =
     Functor.associator _ _ _ ≪≫ isoWhiskerRight α (F ⋙ G) ≪≫ (Functor.associator _ _ _).symm := by
   aesop_cat
 
+@[reassoc]
 theorem isoWhiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
     isoWhiskerRight (isoWhiskerLeft F α) K =
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft F (isoWhiskerRight α K) ≪≫
       Functor.associator _ _ _ := by
   aesop_cat
 
+@[reassoc]
 theorem isoWhiskerLeft_right (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
     isoWhiskerLeft F (isoWhiskerRight α K) =
     (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (isoWhiskerLeft F α) K ≪≫
@@ -332,10 +349,12 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
   {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D] {E : Type u₅} [Category.{v₅} E]
   (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
+@[reassoc]
 theorem triangleIso :
     associator F (𝟭 B) G ≪≫ isoWhiskerLeft F (leftUnitor G) =
       isoWhiskerRight (rightUnitor F) G := by aesop_cat
 
+@[reassoc]
 theorem pentagonIso :
     isoWhiskerRight (associator F G H) K ≪≫
         associator F (G ⋙ H) K ≪≫ isoWhiskerLeft F (associator G H K) =

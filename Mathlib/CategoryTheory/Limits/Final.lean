@@ -211,12 +211,10 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
   · intro j₁ j₂ f a
     fapply h₁ _ _ _ _ f.right _ a
     convert f.w.symm
-    dsimp
     simp
   · intro j₁ j₂ f a
     fapply h₂ _ _ _ _ f.right _ a
     convert f.w.symm
-    dsimp
     simp
 
 variable {F G}
@@ -555,12 +553,10 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
   · intro j₁ j₂ f a
     fapply h₁ _ _ _ _ f.left _ a
     convert f.w
-    dsimp
     simp
   · intro j₁ j₂ f a
     fapply h₂ _ _ _ _ f.left _ a
     convert f.w
-    dsimp
     simp
 
 variable {F G}
@@ -598,9 +594,9 @@ lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X �
   apply induction (k₀ := f) (z := rfl) F fun Z g =>
     c.π.app Z ≫ G.map g = c.π.app X ≫ G.map f
   · intro _ _ _ _ _ h₁ h₂
-    simp [← h₂, ← h₁, ← Functor.comp_map, c.π.naturality]
+    simp [← h₂, ← h₁, ← Functor.comp_map]
   · intro _ _ _ _ _ h₁ h₂
-    simp [← h₁, ← Functor.comp_map, c.π.naturality, h₂]
+    simp [← h₁, ← Functor.comp_map, h₂]
 
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
@@ -1010,6 +1006,7 @@ variable (F : D ⥤ Cat) (G : C ⥤ D)
 
 open Functor
 
+set_option backward.dsimp.proofs true in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :

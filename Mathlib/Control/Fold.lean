@@ -118,7 +118,7 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
   map_one' := rfl
   map_mul' := by
     intros
-    simp only [FreeMonoid.toList_mul, unop_op, List.foldl_append, op_inj, Function.flip_def]
+    simp only [FreeMonoid.toList_mul, List.foldl_append, Function.flip_def]
     rfl
 
 abbrev Foldr (α : Type u) : Type u :=
@@ -299,7 +299,7 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
             simp [Function.flip_def, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
       _ = toList xs := by
             rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
-            simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
+            simp only [toList, foldl, Foldl.get, foldl.ofFreeMonoid_comp_of,
               Function.comp_apply]
 
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
@@ -330,7 +330,7 @@ theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : t β) :
 @[simp]
 theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
     foldr f a (g <$> l) = foldr (f ∘ g) a l := by
-  simp only [foldr, foldMap_map, Function.comp_def, flip]
+  simp only [foldr, foldMap_map, Function.comp_def]
 
 @[simp]
 theorem toList_eq_self {xs : List α} : toList xs = xs := by
@@ -373,7 +373,7 @@ theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) 
 @[simp]
 theorem foldrm_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
     foldrm f a (g <$> l) = foldrm (f ∘ g) a l := by
-  simp only [foldrm, foldMap_map, Function.comp_def, flip]
+  simp only [foldrm, foldMap_map, Function.comp_def]
 
 end Equalities
 

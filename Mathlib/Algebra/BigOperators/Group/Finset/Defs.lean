@@ -26,6 +26,11 @@ Let `s` be a `Finset α`, and `f : α → β` a function.
   (assuming `α` is a `Fintype` and `β` is a `CommMonoid`)
 * `∑ x, f x` is notation for `Finset.sum Finset.univ f`
   (assuming `α` is a `Fintype` and `β` is an `AddCommMonoid`)
+* `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
+* `∑ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
+* `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
+* `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
+* Other supported binders: `x < n`, `x > n`, `x ≤ n`, `x ≥ n`, `x ≠ n`, `x ∉ s`, `x + y = n`
 
 ## Implementation Notes
 
@@ -119,6 +124,8 @@ def processBigOpBinder (processed : (Array (Term × Term)))
       | _ => return processed |>.push (x, ← ``(Finset.univ))
     | `(bigOpBinder| $x : $t) => return processed |>.push (x, ← ``((Finset.univ : Finset $t)))
     | `(bigOpBinder| $x ∈ $s) => return processed |>.push (x, ← `(finset% $s))
+    | `(bigOpBinder| $x ∉ $s) => return processed |>.push (x, ← `(finset% $sᶜ))
+    | `(bigOpBinder| $x ≠ $n) => return processed |>.push (x, ← `(Finset.univ.erase $n))
     | `(bigOpBinder| $x < $n) => return processed |>.push (x, ← `(Finset.Iio $n))
     | `(bigOpBinder| $x ≤ $n) => return processed |>.push (x, ← `(Finset.Iic $n))
     | `(bigOpBinder| $x > $n) => return processed |>.push (x, ← `(Finset.Ioi $n))
@@ -228,7 +235,7 @@ elab_rules : term
 
 end deprecated
 
-open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
+open PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
 
 /-- The possibilities we distinguish to delaborate the finset indexing a big operator:
@@ -752,7 +759,7 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
   | cons b bs ih =>
     simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
-    simp [and_congr_left_iff, ih]
+    simp [ih]
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
     Disjoint a l.sum ↔ ∀ b ∈ l, Disjoint a b := by
@@ -771,7 +778,7 @@ theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
 theorem disjoint_finset_sum_left {β : Type*} {i : Finset β} {f : β → Multiset α} {a : Multiset α} :
     Disjoint (i.sum f) a ↔ ∀ b ∈ i, Disjoint (f b) a := by
   convert @disjoint_sum_left _ a (map f i.val)
-  simp [and_congr_left_iff]
+  simp
 
 theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multiset α}
     {a : Multiset α} : Disjoint a (i.sum f) ↔ ∀ b ∈ i, Disjoint a (f b) := by

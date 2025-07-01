@@ -171,7 +171,7 @@ theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
   refine isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.2 ⟨algebraicIndependent_X .., ?_⟩
   rw [adjoin_range_X]
   set A := MvPolynomial ι R
-  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (A := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
+  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (B := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
   infer_instance
 
 theorem IsTranscendenceBasis.mvPolynomial' [Nonempty ι] :
@@ -198,7 +198,7 @@ theorem IsTranscendenceBasis.sumElim_comp [NoZeroDivisors A] {x : ι → S} {y :
   let Rxy := adjoin Rx (range y)
   rw [show adjoin R (range <| Sum.elim y (algebraMap S A ∘ x)) = Rxy.restrictScalars R by
     rw [← adjoin_algebraMap_image_union_eq_adjoin_adjoin, Sum.elim_range, union_comm, range_comp]]
-  show Algebra.IsAlgebraic Rxy A
+  change Algebra.IsAlgebraic Rxy A
   have := hx.1.algebraMap_injective.nontrivial
   have := hy.1.algebraMap_injective.nontrivial
   have := hy.isAlgebraic
@@ -516,7 +516,7 @@ theorem isTranscendenceBasis_of_trdeg_le {ι : Type w} {x : ι → A} (hx : Alge
 theorem isTranscendenceBasis_of_lift_trdeg_le_of_finite [Finite ι] (hx : AlgebraicIndependent R x)
     (le : lift.{u} (trdeg R A) ≤ lift.{w} #ι) : IsTranscendenceBasis R x :=
   isTranscendenceBasis_of_lift_trdeg_le hx
-    (lift_lt.mp <| le.trans_lt <| by simp [mk_lt_aleph0_iff]) le
+    (lift_lt.mp <| le.trans_lt <| by simp) le
 
 theorem isTranscendenceBasis_of_trdeg_le_of_finite {ι : Type w} [Finite ι] {x : ι → A}
     (hx : AlgebraicIndependent R x) (le : trdeg R A ≤ #ι) : IsTranscendenceBasis R x :=

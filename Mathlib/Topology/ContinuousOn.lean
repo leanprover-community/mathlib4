@@ -316,7 +316,7 @@ theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x
       (⨅ i ∈ I, comap (fun x => x i) (𝓝[s i] x i)) ⊓
         ⨅ (i) (_ : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
   simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← iInf_principal_finite hI, comap_inf,
-    comap_principal, eval]
+    comap_principal]
   rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
   simp only [iInf_inf_eq]
 
@@ -564,11 +564,14 @@ theorem ContinuousWithinAt.preimage_mem_nhdsWithin'' {y : β} {s t : Set β}
   rw [hxy] at ht
   exact h.preimage_mem_nhdsWithin' (nhdsWithin_mono _ (image_preimage_subset f s) ht)
 
-theorem continuousWithinAt_of_not_mem_closure (hx : x ∉ closure s) :
+theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
     ContinuousWithinAt f s x := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
+
+@[deprecated (since := "2025-05-23")]
+alias continuousWithinAt_of_not_mem_closure := continuousWithinAt_of_notMem_closure
 
 /-!
 ### `ContinuousOn`
@@ -1360,9 +1363,9 @@ open Classical in
 theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
     (hs : IsClosed s) (ht : IsClosed t) : ContinuousOn f (s ∪ t) := by
   refine fun x hx ↦ .union ?_ ?_
-  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
+  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [hs.closure_eq]
-  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
+  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [ht.closure_eq]
 
 @[deprecated ContinuousOn.union_of_isClosed (since := "2025-04-10")]

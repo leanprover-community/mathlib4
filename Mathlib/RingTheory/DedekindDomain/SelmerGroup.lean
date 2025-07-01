@@ -186,7 +186,7 @@ theorem valuation_ker_eq :
     by_cases hv : v ∈ S
     · exact congr_fun hx' ⟨v, hv⟩
     · exact hx v hv
-  · exact fun hx' => funext fun v => hx' v <| Set.not_mem_empty v
+  · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 
 /-- The natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ where
