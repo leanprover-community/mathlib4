@@ -38,7 +38,7 @@ lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
   rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivWithinAt.comp t (hγ (t + dt) ht) _ subset_rfl
   refine ⟨(continuous_add_right _).continuousWithinAt, ?_⟩
-  simp only [mfld_simps, hasFDerivWithinAt_univ]
+  simp only [mfld_simps]
   exact (hasFDerivWithinAt_id _ _).add_const _
 
 lemma isIntegralCurveOn_comp_add {dt : ℝ} :
