@@ -96,7 +96,7 @@ theorem subset_insert_iff_of_notMem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ 
 alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by
-  simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
+  simp only [insert_subset_iff, ssubset_def, not_subset]
   aesop
 
 theorem _root_.HasSubset.Subset.ssubset_of_mem_notMem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
@@ -146,7 +146,7 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
 
 theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
-  simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
+  simp [mem_insert_iff, or_and_right, exists_or]
 
 theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
@@ -160,8 +160,8 @@ def subtypeInsertEquivOption
   invFun y := (y.elim ⟨x, mem_insert _ _⟩) fun z => ⟨z, mem_insert_of_mem _ z.2⟩
   left_inv y := by
     by_cases h : ↑y = x
-    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]
-    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta, Subtype.coe_mk]
+    · simp only [Subtype.ext_iff, h, Option.elim, dif_pos]
+    · simp only [h, Option.elim, dif_neg, not_false_iff, Subtype.coe_eta]
   right_inv := by
     rintro (_ | y)
     · simp only [Option.elim, dif_pos]
@@ -405,8 +405,8 @@ theorem insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \
   classical
     ext x
     by_cases h' : x ∈ t
-    · simp [h, h', ne_of_mem_of_not_mem h' h]
-    · simp [h, h']
+    · simp [h', ne_of_mem_of_not_mem h' h]
+    · simp [h']
 
 @[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
 
@@ -515,7 +515,7 @@ theorem subset_pair_iff : s ⊆ {a, b} ↔ ∀ x ∈ s, x = a ∨ x = b := by
   simp [subset_def]
 
 theorem subset_pair_iff_eq {x y : α} : s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x, y} := by
-  refine ⟨?_, by rintro (rfl | rfl | rfl | rfl) <;> simp [pair_subset_iff]⟩
+  refine ⟨?_, by rintro (rfl | rfl | rfl | rfl) <;> simp⟩
   rw [subset_insert_iff, subset_singleton_iff_eq, subset_singleton_iff_eq,
     ← subset_empty_iff (s := s \ {x}), diff_subset_iff, union_empty, subset_singleton_iff_eq]
   have h : x ∈ s → {y} = s \ {x} → s = {x,y} := fun h₁ h₂ ↦ by simp [h₁, h₂]

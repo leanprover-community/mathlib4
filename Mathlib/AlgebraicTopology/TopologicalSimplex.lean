@@ -106,7 +106,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     classical
     intro Δ
     ext f
-    simp [Finset.sum_filter, CategoryTheory.id_apply]
+    simp [Finset.sum_filter]
   map_comp := fun f g => by
     classical
     ext h : 3

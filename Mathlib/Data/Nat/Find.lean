@@ -84,7 +84,7 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
     fun ⟨_, hmn, hm⟩ ↦ Nat.lt_of_le_of_lt (Nat.find_min' h hm) hmn⟩
 
 @[simp] lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← Nat.lt_succ_iff, find_lt_iff]
+  simp only [← Nat.lt_succ_iff, find_lt_iff]
 
 @[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬ p m := by
   simp only [← not_lt, find_lt_iff, not_exists, not_and]
@@ -179,7 +179,7 @@ lemma findGreatest_eq_iff :
   induction k generalizing m with
   | zero =>
     rw [eq_comm, Iff.comm]
-    simp only [zero_eq, Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
+    simp only [Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
     exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by omega⟩
   | succ k ihk =>

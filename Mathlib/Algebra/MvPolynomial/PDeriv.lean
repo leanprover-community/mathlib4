@@ -133,7 +133,7 @@ lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
   | add p q hp hq => simp [hp, hq]
   | mul_X p a h =>
     simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
-      Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
+      Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add]
     split_ifs <;> simp
 
 lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]

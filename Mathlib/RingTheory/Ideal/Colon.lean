@@ -30,7 +30,7 @@ variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 def colon (N P : Submodule R M) : Ideal R where
   carrier := {r : R | (r • P : Set M) ⊆ N}
   add_mem' ha hb :=
-    (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp [← coe_sup]))
+    (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp))
   zero_mem' := by simp [Set.zero_smul_set P.nonempty]
   smul_mem' r := by
     simp only [Set.mem_setOf_eq, smul_eq_mul, mul_smul, Set.smul_set_subset_iff]

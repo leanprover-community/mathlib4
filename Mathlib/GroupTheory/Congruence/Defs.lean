@@ -457,7 +457,7 @@ theorem sSup_def {S : Set (Con M)} :
     sSup S = conGen (sSup ((⇑) '' S)) := by
   rw [sSup_eq_conGen, sSup_image]
   congr with (x y)
-  simp only [sSup_image, iSup_apply, iSup_Prop_eq, exists_prop, rel_eq_coe]
+  simp only [iSup_apply, iSup_Prop_eq, exists_prop]
 
 variable (M)
 
