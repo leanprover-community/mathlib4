@@ -384,7 +384,9 @@ lemma support_def {x : X} {μ : Measure X} : x ∈ μ.support ↔ ∃ᶠ u in (�
   rfl
 
 /-- Do we really want this lemma? The reason I include it is because it looks closer
- to the standard definition, although it still doesn't have that openness assumption. -/
+ to the standard definition, although it still doesn't have that openness assumption.
+ Some of the subsequent lemmas are easily proven using it, but it may be better to prove
+ these directly using filters. -/
 lemma support_set (μ : Measure X) : μ.support = {x : X | ∀ U ∈ 𝓝 x, 0 < μ U} := by
   ext x
   simp only [support_def, Set.mem_setOf, mem_setOf_eq, Filter.frequently_smallSets]
