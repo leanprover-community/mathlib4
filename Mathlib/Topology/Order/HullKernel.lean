@@ -111,7 +111,7 @@ lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α
 set of the form `T ↓∩ (Ici a)ᶜ` where `a = ⨅ F`. -/
 open Finset in
 lemma preimage_upperClosure_compl_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
-    T ↓∩ (↑(upperClosure F.toSet))ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
+    T ↓∩ (upperClosure F.toSet)ᶜ = T ↓∩ (Ici (inf F id))ᶜ := by
   rw [Set.preimage_compl, Set.preimage_compl, (preimage_upperClosure_finset hT)]
 
 variable [TopologicalSpace α] [IsLower α]
