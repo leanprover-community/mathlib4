@@ -56,7 +56,7 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
   simp only [moment, hp, zero_pow, Ne, not_false_iff, Pi.zero_apply, integral_const,
-    smul_eq_mul, mul_zero, integral_zero]
+    smul_eq_mul, mul_zero]
 
 @[simp]
 lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
@@ -71,7 +71,7 @@ lemma centralMoment_zero_measure : centralMoment X p (0 : Measure Ω) = 0 := by
   simp [centralMoment]
 
 theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
-    centralMoment X 1 μ = (1 - (μ Set.univ).toReal) * μ[X] := by
+    centralMoment X 1 μ = (1 - μ.real Set.univ) * μ[X] := by
   simp only [centralMoment, Pi.sub_apply, pow_one]
   rw [integral_sub h_int (integrable_const _)]
   simp only [sub_mul, integral_const, smul_eq_mul, one_mul]
@@ -82,7 +82,7 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
   · simp [centralMoment]
   by_cases h_int : Integrable X μ
   · rw [centralMoment_one' h_int]
-    simp only [measure_univ, ENNReal.one_toReal, sub_self, zero_mul]
+    simp
   · simp only [centralMoment, Pi.sub_apply, pow_one]
     have : ¬Integrable (fun x => X x - integral μ X) μ := by
       refine fun h_sub => h_int ?_
@@ -107,11 +107,11 @@ def cgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
   log (mgf X μ t)
 
 @[simp]
-theorem mgf_zero_fun : mgf 0 μ t = (μ Set.univ).toReal := by
+theorem mgf_zero_fun : mgf 0 μ t = μ.real Set.univ := by
   simp only [mgf, Pi.zero_apply, mul_zero, exp_zero, integral_const, smul_eq_mul, mul_one]
 
 @[simp]
-theorem cgf_zero_fun : cgf 0 μ t = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero_fun]
+theorem cgf_zero_fun : cgf 0 μ t = log (μ.real Set.univ) := by simp only [cgf, mgf_zero_fun]
 
 @[simp]
 theorem mgf_zero_measure : mgf X (0 : Measure Ω) = 0 := by ext; simp [mgf]
@@ -120,33 +120,33 @@ theorem mgf_zero_measure : mgf X (0 : Measure Ω) = 0 := by ext; simp [mgf]
 theorem cgf_zero_measure : cgf X (0 : Measure Ω) = 0 := by ext; simp [cgf]
 
 @[simp]
-theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
+theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = μ.real Set.univ * exp (t * c) := by
   simp only [mgf, integral_const, smul_eq_mul]
 
 theorem mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = exp (t * c) := by
-  simp only [mgf_const', measure_univ, ENNReal.one_toReal, one_mul]
+  simp
 
 @[simp]
 theorem cgf_const' [IsFiniteMeasure μ] (hμ : μ ≠ 0) (c : ℝ) :
-    cgf (fun _ => c) μ t = log (μ Set.univ).toReal + t * c := by
+    cgf (fun _ => c) μ t = log (μ.real Set.univ) + t * c := by
   simp only [cgf, mgf_const']
   rw [log_mul _ (exp_pos _).ne']
   · rw [log_exp _]
-  · rw [Ne, ENNReal.toReal_eq_zero_iff, Measure.measure_univ_eq_zero]
-    simp only [hμ, measure_ne_top μ Set.univ, or_self_iff, not_false_iff]
+  · rw [Ne, measureReal_eq_zero_iff, Measure.measure_univ_eq_zero]
+    simp only [hμ, not_false_iff]
 
 @[simp]
 theorem cgf_const [IsProbabilityMeasure μ] (c : ℝ) : cgf (fun _ => c) μ t = t * c := by
   simp only [cgf, mgf_const, log_exp]
 
 @[simp]
-theorem mgf_zero' : mgf X μ 0 = (μ Set.univ).toReal := by
+theorem mgf_zero' : mgf X μ 0 = μ.real Set.univ := by
   simp only [mgf, zero_mul, exp_zero, integral_const, smul_eq_mul, mul_one]
 
 theorem mgf_zero [IsProbabilityMeasure μ] : mgf X μ 0 = 1 := by
-  simp only [mgf_zero', measure_univ, ENNReal.one_toReal]
+  simp [mgf_zero']
 
-theorem cgf_zero' : cgf X μ 0 = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero']
+theorem cgf_zero' : cgf X μ 0 = log (μ.real Set.univ) := by simp only [cgf, mgf_zero']
 
 @[simp]
 theorem cgf_zero [IsZeroOrProbabilityMeasure μ] : cgf X μ 0 = 0 := by
@@ -189,17 +189,24 @@ lemma mgf_pos_iff [hμ : NeZero μ] :
   contrapose! h with h
   simp [mgf_undef h]
 
-lemma exp_cgf_of_neZero [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+lemma exp_cgf [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
-lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
-    exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos hX)]
+@[deprecated (since := "2025-03-08")]
+alias exp_cgf_of_neZero := exp_cgf
+
+lemma mgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ}
+    (hY : AEMeasurable Y μ) {t : ℝ} (hX : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :
+    mgf X (μ.map Y) t = mgf (X ∘ Y) μ t := by
+  simp_rw [mgf, integral_map hY hX, Function.comp_apply]
 
 lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
-  rw [mgf, integral_map hX]
-  · rfl
-  · exact (measurable_const_mul _).exp.aestronglyMeasurable
+  rw [mgf_map hX, Function.id_comp]
+  exact (measurable_const_mul _).exp.aestronglyMeasurable
+
+lemma mgf_congr {Y : Ω → ℝ} (h : X =ᵐ[μ] Y) : mgf X μ t = mgf Y μ t :=
+  integral_congr_ae <| by filter_upwards [h] with ω hω using by rw [hω]
 
 lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
     {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
@@ -214,13 +221,26 @@ theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
   simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
 
 theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
-  rw [mgf, mgf, ← integral_mul_left]
+  rw [mgf, mgf, ← integral_const_mul]
   congr with x
   dsimp
   rw [mul_add, exp_add]
 
 theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
+
+lemma mgf_add_measure {ν : Measure Ω}
+    (hμ : Integrable (fun ω ↦ exp (t * X ω)) μ) (hν : Integrable (fun ω ↦ exp (t * X ω)) ν) :
+    mgf X (μ + ν) t = mgf X μ t + mgf X ν t := by
+  rw [mgf, integral_add_measure hμ hν, mgf, mgf]
+
+lemma mgf_sum_measure {ι : Type*} {μ : ι → Measure Ω}
+    (hμ : Integrable (fun ω ↦ exp (t * X ω)) (Measure.sum μ)) :
+    mgf X (Measure.sum μ) t = ∑' i, mgf X (μ i) t := by
+  simp_rw [mgf, integral_sum_measure hμ]
+
+lemma mgf_smul_measure (c : ℝ≥0∞) : mgf X (c • μ) t = c.toReal * mgf X μ t := by
+  rw [mgf, integral_smul_measure, mgf, smul_eq_mul]
 
 /-- The moment generating function is monotone in the random variable for `t ≥ 0`. -/
 lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
@@ -287,10 +307,12 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
     (h_int : ∀ i ∈ s, AEStronglyMeasurable (fun ω => exp (t * X i ω)) μ) :
     AEStronglyMeasurable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
-  · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
+  induction s using Finset.induction_on with
+  | empty =>
+    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
-  · have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
+  | insert i s hi_notin_s h_rec =>
+    have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
       h_int i (mem_insert_of_mem hi)
     specialize h_rec this
     rw [sum_insert hi_notin_s]
@@ -304,38 +326,41 @@ theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X
   exact (h_indep.exp_mul t t).integrable_mul h_int_X h_int_Y
 
 theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     Integrable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
-  · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
+  induction s using Finset.induction_on with
+  | empty =>
+    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
-  · have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
+  | insert i s hi_notin_s h_rec =>
+    have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
       h_int i (mem_insert_of_mem hi)
     specialize h_rec this
     rw [sum_insert hi_notin_s]
     refine IndepFun.integrable_exp_mul_add ?_ (h_int i (mem_insert_self _ _)) h_rec
-    exact (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm
+    exact (h_indep.indepFun_finset_sum_of_notMem h_meas hi_notin_s).symm
 
 -- TODO(vilin97): weaken `h_meas` to `AEMeasurable (X i)` or `AEStronglyMeasurable (X i)` throughout
 -- https://github.com/leanprover-community/mathlib4/issues/20367
 theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
-  · simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.one_toReal, prod_empty]
-  · have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s hi_notin_s h_rec =>
+    have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable
     rw [sum_insert hi_notin_s,
-      IndepFun.mgf_add (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm (h_int' i)
+      IndepFun.mgf_add (h_indep.indepFun_finset_sum_of_notMem h_meas hi_notin_s).symm (h_int' i)
         (aestronglyMeasurable_exp_mul_sum fun i _ => h_int' i),
       h_rec, prod_insert hi_notin_s]
 
 theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
@@ -355,7 +380,7 @@ theorem mgf_sum_of_identDistrib
     {X : ι → Ω → ℝ}
     {s : Finset ι} {j : ι}
     (h_meas : ∀ i, Measurable (X i))
-    (h_indep : iIndepFun (fun _ => inferInstance) X μ)
+    (h_indep : iIndepFun X μ)
     (hident : ∀ i ∈ s, ∀ j ∈ s, IdentDistrib (X i) (X j) μ μ)
     (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s := by
   rw [h_indep.mgf_sum h_meas]
@@ -367,20 +392,20 @@ section Chernoff
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε) * mgf X μ t := by
+    μ.real {ω | ε ≤ X ω} ≤ exp (-t * ε) * mgf X μ t := by
   rcases ht.eq_or_lt with ht_zero_eq | ht_pos
   · rw [ht_zero_eq.symm]
     simp only [neg_zero, zero_mul, exp_zero, mgf_zero', one_mul]
     gcongr
     exacts [measure_ne_top _ _, Set.subset_univ _]
   calc
-    (μ {ω | ε ≤ X ω}).toReal = (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal := by
+    μ.real {ω | ε ≤ X ω} = μ.real {ω | exp (t * ε) ≤ exp (t * X ω)} := by
       congr with ω
-      simp only [Set.mem_setOf_eq, exp_le_exp, gt_iff_lt]
+      simp only [Set.mem_setOf_eq, exp_le_exp]
       exact ⟨fun h => mul_le_mul_of_nonneg_left h ht_pos.le,
         fun h => le_of_mul_le_mul_left h ht_pos⟩
     _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by
-      have : exp (t * ε) * (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal ≤
+      have : exp (t * ε) * μ.real {ω | exp (t * ε) ≤ exp (t * X ω)} ≤
           μ[fun ω => exp (t * X ω)] :=
         mul_meas_ge_le_integral_of_nonneg (ae_of_all _ fun x => (exp_pos _).le) h_int _
       rwa [mul_comm (exp (t * ε))⁻¹, ← div_eq_mul_inv, le_div_iff₀' (exp_pos _)]
@@ -389,7 +414,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
 /-- **Chernoff bound** on the lower tail of a real random variable. -/
 theorem measure_le_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | X ω ≤ ε}).toReal ≤ exp (-t * ε) * mgf X μ t := by
+    μ.real {ω | X ω ≤ ε} ≤ exp (-t * ε) * mgf X μ t := by
   rw [← neg_neg t, ← mgf_neg, neg_neg, ← neg_mul_neg (-t)]
   refine Eq.trans_le ?_ (measure_ge_le_exp_mul_mgf (-ε) (neg_nonneg.mpr ht) ?_)
   · congr with ω
@@ -400,7 +425,7 @@ theorem measure_le_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε + cgf X μ t) := by
+    μ.real {ω | ε ≤ X ω} ≤ exp (-t * ε + cgf X μ t) := by
   refine (measure_ge_le_exp_mul_mgf ε ht h_int).trans ?_
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
@@ -408,7 +433,7 @@ theorem measure_ge_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
 /-- **Chernoff bound** on the lower tail of a real random variable. -/
 theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
-    (μ {ω | X ω ≤ ε}).toReal ≤ exp (-t * ε + cgf X μ t) := by
+    μ.real {ω | X ω ≤ ε} ≤ exp (-t * ε + cgf X μ t) := by
   refine (measure_le_le_exp_mul_mgf ε ht h_int).trans ?_
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
@@ -419,6 +444,10 @@ lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = ex
   have : IsProbabilityMeasure (μ.map X) := by rw [hX]; infer_instance
   rw [← mgf_id_map (.of_map_ne_zero <| IsProbabilityMeasure.ne_zero _), mgf, hX, integral_dirac,
     mul_comm, id_def]
+
+lemma mgf_dirac' [MeasurableSingletonClass Ω] {ω : Ω} :
+    mgf X (Measure.dirac ω) t = exp (t * X ω) := by
+  rw [mgf, integral_dirac]
 
 end MomentGeneratingFunction
 

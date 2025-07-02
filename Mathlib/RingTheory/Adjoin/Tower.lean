@@ -10,10 +10,10 @@ import Mathlib.RingTheory.Adjoin.FG
 
 ## Main results
 
- * `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
-   then `A` is finitely generated as `R`-algebra
- * `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
-   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
+* `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
+  then `A` is finitely generated as `R`-algebra
+* `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
+  C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
 
 
@@ -86,11 +86,11 @@ open Finset Submodule
 
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
-  cases' hAC with x hx
-  cases' hBC with y hy
+  obtain ⟨x, hx⟩ := hAC
+  obtain ⟨y, hy⟩ := hBC
   have := hy
   simp_rw [eq_top_iff', mem_span_finset] at this
-  choose f hf using this
+  choose f _ hf using this
   classical
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
   have hxy :

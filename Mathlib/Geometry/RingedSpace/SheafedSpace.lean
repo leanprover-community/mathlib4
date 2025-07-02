@@ -20,7 +20,7 @@ presheaves.
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor Topology
 
-universe u v
+universe u v w' w
 
 variable (C : Type u) [Category.{v} C]
 
@@ -97,12 +97,12 @@ def isoMk {X Y : SheafedSpace C} (e : X.toPresheafedSpace ≅ Y.toPresheafedSpac
 @[simps! obj map]
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: can't derive `Full` functor automatically
 instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
   map_surjective f := ⟨f, rfl⟩
 
--- Porting note: can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
@@ -194,20 +194,28 @@ theorem Γ_map {X Y : (SheafedSpace C)ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.
 theorem Γ_map_op {X Y : SheafedSpace C} (f : X ⟶ Y) : Γ.map f.op = f.c.app (op ⊤) :=
   rfl
 
+noncomputable instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
+    CreatesColimitsOfShape J (forgetToPresheafedSpace : SheafedSpace.{_, _, v} C ⥤ _) :=
+  ⟨fun {K} =>
+    createsColimitOfFullyFaithfulOfIso
+      ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
+        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
+      (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩
+
 noncomputable instance [HasLimits C] :
-    CreatesColimits (forgetToPresheafedSpace : SheafedSpace C ⥤ _) :=
-  ⟨fun {_ _} =>
-    ⟨fun {K} =>
-      createsColimitOfFullyFaithfulOfIso
-        ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
-          limit_isSheaf _ fun j => Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
-        (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
+    CreatesColimits (forgetToPresheafedSpace : SheafedSpace C ⥤ _) where
 
-instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
-  hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
+instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
+    HasColimitsOfShape J (SheafedSpace.{_, _, v} C) :=
+  hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape forgetToPresheafedSpace
 
-noncomputable instance [HasLimits C] : PreservesColimits (forget.{_, _, v} C) :=
-  Limits.comp_preservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
+instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) where
+
+instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
+    PreservesColimitsOfShape J (forget.{_, _, v} C) :=
+  Limits.comp_preservesColimitsOfShape forgetToPresheafedSpace (PresheafedSpace.forget C)
+
+noncomputable instance [HasLimits C] : PreservesColimits (forget.{_, _, v} C) where
 
 section ConcreteCategory
 

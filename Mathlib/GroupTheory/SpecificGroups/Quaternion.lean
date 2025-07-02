@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Quaternion Groups
@@ -155,7 +156,7 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
-  ⟨⟨a 0, xa 0, by simp [← a_zero]⟩⟩
+  ⟨⟨a 0, xa 0, by simp [- a_zero]⟩⟩
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
@@ -165,9 +166,10 @@ theorem card [NeZero n] : Fintype.card (QuaternionGroup n) = 4 * n := by
 
 @[simp]
 theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
-  induction' k with k IH
-  · rw [Nat.cast_zero]; rfl
-  · rw [pow_succ, IH, a_mul_a]
+  induction k with
+  | zero => rw [Nat.cast_zero]; rfl
+  | succ k IH =>
+    rw [pow_succ, IH, a_mul_a]
     congr 1
     norm_cast
 

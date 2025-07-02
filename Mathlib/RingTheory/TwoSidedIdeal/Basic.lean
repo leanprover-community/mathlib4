@@ -5,8 +5,9 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Congruence.Opposite
 
 /-!
 # Two Sided Ideals
@@ -64,6 +65,12 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
+@[simp]
+lemma mem_mk {x : R} {c : RingCon R} : x ∈ mk c ↔ c x 0 := Iff.rfl
+
+@[simp, norm_cast]
+lemma coe_mk {c : RingCon R} : (mk c : Set R) = {x | c x 0} := rfl
+
 lemma rel_iff (x y : R) : I.ringCon x y ↔ x - y ∈ I := by
   rw [mem_iff]
   constructor
@@ -82,11 +89,10 @@ def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
 lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := Iff.rfl
 
 /-- Two-sided-ideals corresponds to congruence relations on a ring. -/
+@[simps apply symm_apply]
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
@@ -192,11 +198,47 @@ instance addCommGroup : AddCommGroup I :=
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The coercion into the ring as a `AddMonoidHom` -/
-@[simp]
+@[simps]
 def coeAddMonoidHom : I →+ R where
   toFun := (↑)
   map_zero' := rfl
   map_add' _ _ := rfl
+
+/-- If `I` is a two-sided ideal of `R`, then `{op x | x ∈ I}` is a two-sided ideal in `Rᵐᵒᵖ`. -/
+@[simps]
+def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
+  ringCon := I.ringCon.op
+
+@[simp]
+lemma mem_op_iff {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} : x ∈ I.op ↔ x.unop ∈ I :=
+  I.ringCon.comm'
+
+@[simp, norm_cast]
+lemma coe_op {I : TwoSidedIdeal R} : (I.op : Set Rᵐᵒᵖ) = MulOpposite.unop ⁻¹' I :=
+  Set.ext fun _ => mem_op_iff
+
+
+/-- If `I` is a two-sided ideal of `Rᵐᵒᵖ`, then `{x.unop | x ∈ I}` is a two-sided ideal in `R`. -/
+@[simps]
+def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where
+  ringCon := I.ringCon.unop
+
+@[simp]
+lemma mem_unop_iff {I : TwoSidedIdeal Rᵐᵒᵖ} {x : R} : x ∈ I.unop ↔ MulOpposite.op x ∈ I :=
+  I.ringCon.comm'
+
+@[simp, norm_cast]
+lemma coe_unop {I : TwoSidedIdeal Rᵐᵒᵖ} : (I.unop : Set R) = MulOpposite.op ⁻¹' I :=
+  Set.ext fun _ => mem_unop_iff
+
+/--
+Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
+-/
+@[simps]
+def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
+  toFun := op
+  invFun := unop
+  map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
 
 end NonUnitalNonAssocRing
 

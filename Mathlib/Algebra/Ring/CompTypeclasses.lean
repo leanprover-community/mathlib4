@@ -13,6 +13,7 @@ This file contains three typeclasses used in the definition of (semi)linear maps
 * `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
 * `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
 * `RingHomSurjective σ`, which states that `σ` is surjective
+
 These typeclasses ensure that objects such as `σ₂₃.comp σ₁₂` never end up in the type of a
 semilinear map; instead, the typeclass system directly finds the appropriate `RingHom` to use.
 A typical use-case is conjugate-linear maps, i.e. when `σ = Complex.conj`; this system ensures that
@@ -47,7 +48,7 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 -- This at first seems not very useful. However we need this when considering
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
--- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
+-- See `Mathlib/Algebra/Category/ModuleCat/Presheaf.lean`.
 class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 

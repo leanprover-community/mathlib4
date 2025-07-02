@@ -15,11 +15,15 @@ set_option autoImplicit true
 -- We deliberately mock R and C here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
+@[instance] axiom Real.field : Field ℝ
+@[instance] axiom Real.linearOrder : LinearOrder ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 axiom NNReal : Type
 notation "ℝ≥0" => NNReal
-@[instance] axiom NNReal.linearOrderedsemifield : LinearOrderedSemifield ℝ≥0
+@[instance] axiom NNReal.semifield : Semifield ℝ≥0
+@[instance] axiom NNReal.linearOrder : LinearOrder ℝ≥0
+@[instance] axiom NNReal.isStrictOrderedRing : IsStrictOrderedRing ℝ≥0
 
 axiom Complex : Type
 notation "ℂ" => Complex
@@ -224,7 +228,7 @@ section Order
 
 section Nat
 
-variable [OrderedSemiring α] [CharZero α]
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α] [CharZero α]
 
 -- Normalize to True
 example : 1 ≤ 1 := by norm_num1
@@ -244,7 +248,7 @@ end Nat
 
 section Int
 
-variable [OrderedRing α] [Nontrivial α]
+variable [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
 
 -- Normalize to True
 example : (1 : ℤ) ≤ 1 := by norm_num1
@@ -276,7 +280,7 @@ end Int
 
 section OrderedCharZeroRing
 
-variable [OrderedRing α] [CharZero α]
+variable [Ring α] [PartialOrder α] [IsOrderedRing α] [CharZero α]
 
 example : (-1 : α) < 2 := by norm_num1
 
@@ -284,7 +288,7 @@ end OrderedCharZeroRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
 
 example : (1 : α) ≤ 1 := by norm_num1
 example : (-1 : α) ≤ -1 := by norm_num1
@@ -298,7 +302,7 @@ end LinearOrderedRing
 
 section Rat
 
-variable [LinearOrderedField α] [Nontrivial α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
 
 -- Normalize to True
 example : (1 : ℚ) ≤ 1 := by norm_num1
@@ -430,99 +434,108 @@ noncomputable def foo : ℝ := 1
 example : foo = 1 := by norm_num [foo]
 
 section
-  variable [AddMonoidWithOne α]
-  example : (1 + 0 : α) = (0 + 1 : α) := by norm_num1
-  example : (0 + (2 + 3) + 1 : α) = 6 := by norm_num1
+
+variable [AddMonoidWithOne α]
+example : (1 + 0 : α) = (0 + 1 : α) := by norm_num1
+example : (0 + (2 + 3) + 1 : α) = 6 := by norm_num1
+
 end
 
 section
-  variable [Semiring α]
-  example : (70 * (33 + 2) : α) = 2450 := by norm_num1
-  example : (8 + 2 ^ 2 * 3 : α) = 20 := by norm_num1
-  example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by norm_num1
-end
-section
-  variable [Ring α]
 
-  example : (-1 : α) * 1 = -1 := by norm_num1
-  example : (-2 : α) * 1 = -2 := by norm_num1
-  example : (-2 : α) * -1 = 2 := by norm_num1
-  example : (-2 : α) * -2 = 4 := by norm_num1
-  example : (1 : α) * 0 = 0 := by norm_num1
-
-  example : ((1 : α) + 1) * 5 = 6 + 4 := by norm_num1
-
-  example : (1 : α) = 0 + 1 := by norm_num1
-  example : (1 : α) = 1 + 0 := by norm_num1
-  example : (2 : α) = 1 + 1 := by norm_num1
-  example : (2 : α) = 0 + 2 := by norm_num1
-  example : (3 : α) = 1 + 2 := by norm_num1
-  example : (3 : α) = 2 + 1 := by norm_num1
-  example : (4 : α) = 3 + 1 := by norm_num1
-  example : (4 : α) = 2 + 2 := by norm_num1
-  example : (5 : α) = 4 + 1 := by norm_num1
-  example : (5 : α) = 3 + 2 := by norm_num1
-  example : (5 : α) = 2 + 3 := by norm_num1
-  example : (6 : α) = 0 + 6 := by norm_num1
-  example : (6 : α) = 3 + 3 := by norm_num1
-  example : (6 : α) = 4 + 2 := by norm_num1
-  example : (6 : α) = 5 + 1 := by norm_num1
-  example : (7 : α) = 4 + 3 := by norm_num1
-  example : (7 : α) = 1 + 6 := by norm_num1
-  example : (7 : α) = 6 + 1 := by norm_num1
-  example : 33 = 5 + (28 : α) := by norm_num1
-
-  example : (12 : α) = 0 + (2 + 3) + 7 := by norm_num1
-  example : (105 : α) = 70 + (33 + 2) := by norm_num1
-
-  example : (45000000000 : α) = 23000000000 + 22000000000 := by norm_num1
-
-  example : (0 : α) - 3 = -3 := by norm_num1
-  example : (0 : α) - 2 = -2 := by norm_num1
-  example : (1 : α) - 3 = -2 := by norm_num1
-  example : (1 : α) - 1 = 0 := by norm_num1
-  example : (0 : α) - 3 = -3 := by norm_num1
-  example : (0 : α) - 3 = -3 := by norm_num1
-  example : (12 : α) - 4 - (5 + -2) = 5 := by norm_num1
-  example : (12 : α) - 4 - (5 + -2) - 20 = -15 := by norm_num1
-
-  example : (0 : α) * 0 = 0 := by norm_num1
-  example : (0 : α) * 1 = 0 := by norm_num1
-  example : (0 : α) * 2 = 0 := by norm_num1
-  example : (2 : α) * 0 = 0 := by norm_num1
-  example : (1 : α) * 0 = 0 := by norm_num1
-  example : (1 : α) * 1 = 1 := by norm_num1
-  example : (2 : α) * 1 = 2 := by norm_num1
-  example : (1 : α) * 2 = 2 := by norm_num1
-  example : (2 : α) * 2 = 4 := by norm_num1
-  example : (3 : α) * 2 = 6 := by norm_num1
-  example : (2 : α) * 3 = 6 := by norm_num1
-  example : (4 : α) * 1 = 4 := by norm_num1
-  example : (1 : α) * 4 = 4 := by norm_num1
-  example : (3 : α) * 3 = 9 := by norm_num1
-  example : (3 : α) * 4 = 12 := by norm_num1
-  example : (4 : α) * 4 = 16 := by norm_num1
-  example : (11 : α) * 2 = 22 := by norm_num1
-  example : (15 : α) * 6 = 90 := by norm_num1
-  example : (123456 : α) * 123456 = 15241383936 := by norm_num1
+variable [Semiring α]
+example : (70 * (33 + 2) : α) = 2450 := by norm_num1
+example : (8 + 2 ^ 2 * 3 : α) = 20 := by norm_num1
+example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by norm_num1
 end
 
 section
-  variable [LinearOrderedField α]
-  example : (4 : α) / 2 = 2 := by norm_num1
-  example : (4 : α) / 1 = 4 := by norm_num1
-  example : (4 : α) / 3 = 4 / 3 := by norm_num1
-  example : (50 : α) / 5 = 10 := by norm_num1
-  example : (1056 : α) / 1 = 1056 := by norm_num1
-  example : (6 : α) / 4 = 3/2 := by norm_num1
-  example : (0 : α) / 3 = 0 := by norm_num1
-  example : (3 : α) / 0 = 0 := by norm_num1
-  example : (9 * 9 * 9) * (12 : α) / 27 = 81 * (2 + 2) := by norm_num1
-  example : (-2 : α) * 4 / 3 = -8 / 3 := by norm_num1
-  example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
+
+variable [Ring α]
+
+example : (-1 : α) * 1 = -1 := by norm_num1
+example : (-2 : α) * 1 = -2 := by norm_num1
+example : (-2 : α) * -1 = 2 := by norm_num1
+example : (-2 : α) * -2 = 4 := by norm_num1
+example : (1 : α) * 0 = 0 := by norm_num1
+
+example : ((1 : α) + 1) * 5 = 6 + 4 := by norm_num1
+
+example : (1 : α) = 0 + 1 := by norm_num1
+example : (1 : α) = 1 + 0 := by norm_num1
+example : (2 : α) = 1 + 1 := by norm_num1
+example : (2 : α) = 0 + 2 := by norm_num1
+example : (3 : α) = 1 + 2 := by norm_num1
+example : (3 : α) = 2 + 1 := by norm_num1
+example : (4 : α) = 3 + 1 := by norm_num1
+example : (4 : α) = 2 + 2 := by norm_num1
+example : (5 : α) = 4 + 1 := by norm_num1
+example : (5 : α) = 3 + 2 := by norm_num1
+example : (5 : α) = 2 + 3 := by norm_num1
+example : (6 : α) = 0 + 6 := by norm_num1
+example : (6 : α) = 3 + 3 := by norm_num1
+example : (6 : α) = 4 + 2 := by norm_num1
+example : (6 : α) = 5 + 1 := by norm_num1
+example : (7 : α) = 4 + 3 := by norm_num1
+example : (7 : α) = 1 + 6 := by norm_num1
+example : (7 : α) = 6 + 1 := by norm_num1
+example : 33 = 5 + (28 : α) := by norm_num1
+
+example : (12 : α) = 0 + (2 + 3) + 7 := by norm_num1
+example : (105 : α) = 70 + (33 + 2) := by norm_num1
+
+example : (45000000000 : α) = 23000000000 + 22000000000 := by norm_num1
+
+example : (0 : α) - 3 = -3 := by norm_num1
+example : (0 : α) - 2 = -2 := by norm_num1
+example : (1 : α) - 3 = -2 := by norm_num1
+example : (1 : α) - 1 = 0 := by norm_num1
+example : (0 : α) - 3 = -3 := by norm_num1
+example : (0 : α) - 3 = -3 := by norm_num1
+example : (12 : α) - 4 - (5 + -2) = 5 := by norm_num1
+example : (12 : α) - 4 - (5 + -2) - 20 = -15 := by norm_num1
+
+example : (0 : α) * 0 = 0 := by norm_num1
+example : (0 : α) * 1 = 0 := by norm_num1
+example : (0 : α) * 2 = 0 := by norm_num1
+example : (2 : α) * 0 = 0 := by norm_num1
+example : (1 : α) * 0 = 0 := by norm_num1
+example : (1 : α) * 1 = 1 := by norm_num1
+example : (2 : α) * 1 = 2 := by norm_num1
+example : (1 : α) * 2 = 2 := by norm_num1
+example : (2 : α) * 2 = 4 := by norm_num1
+example : (3 : α) * 2 = 6 := by norm_num1
+example : (2 : α) * 3 = 6 := by norm_num1
+example : (4 : α) * 1 = 4 := by norm_num1
+example : (1 : α) * 4 = 4 := by norm_num1
+example : (3 : α) * 3 = 9 := by norm_num1
+example : (3 : α) * 4 = 12 := by norm_num1
+example : (4 : α) * 4 = 16 := by norm_num1
+example : (11 : α) * 2 = 22 := by norm_num1
+example : (15 : α) * 6 = 90 := by norm_num1
+example : (123456 : α) * 123456 = 15241383936 := by norm_num1
+
+end
+
+section
+
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+example : (4 : α) / 2 = 2 := by norm_num1
+example : (4 : α) / 1 = 4 := by norm_num1
+example : (4 : α) / 3 = 4 / 3 := by norm_num1
+example : (50 : α) / 5 = 10 := by norm_num1
+example : (1056 : α) / 1 = 1056 := by norm_num1
+example : (6 : α) / 4 = 3/2 := by norm_num1
+example : (0 : α) / 3 = 0 := by norm_num1
+example : (3 : α) / 0 = 0 := by norm_num1
+example : (9 * 9 * 9) * (12 : α) / 27 = 81 * (2 + 2) := by norm_num1
+example : (-2 : α) * 4 / 3 = -8 / 3 := by norm_num1
+example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
+
 end
 
 -- user command
+set_option linter.style.commandStart false
 
 /-- info: True -/
 #guard_msgs in #norm_num 1 = 1
@@ -573,7 +586,7 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 end norm_num_erase
 
 -- auto gen tests
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 example : ((25 * (1 / 1)) + (30 - 16)) = (39 : α) := by norm_num1
 example : ((19 * (- 2 - 3)) / 6) = (-95/6 : α) := by norm_num1
 example : - (3 * 28) = (-84 : α) := by norm_num1
@@ -680,7 +693,9 @@ example : 1 + 100 + a = a + 101 := by
   norm_num [add_comm]
 
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance : LinearOrderedField (R a b) := test_sorry
+noncomputable instance : Field (R a b) := test_sorry
+noncomputable instance : LinearOrder (R a b) := test_sorry
+noncomputable instance : IsStrictOrderedRing (R a b) := test_sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num

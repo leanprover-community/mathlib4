@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Tree.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
@@ -64,14 +64,16 @@ theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
     k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel_right₀ _ h2]
 
-theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
 
-theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_le {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
@@ -286,7 +288,9 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   have ar := (← mkOfNat α amwo <| mkRawNatLit ar).1
   have gcd := (← mkOfNat α amwo <| mkRawNatLit gcd).1
   let (al_cond, ar_cond, gcd_cond) ← if ord then do
-      let _ ← synthInstanceQ q(LinearOrderedField $α)
+      let _ ← synthInstanceQ q(Field $α)
+      let _ ← synthInstanceQ q(LinearOrder $α)
+      let _ ← synthInstanceQ q(IsStrictOrderedRing $α)
       let al_pos : Q(Prop) := q(0 < $al)
       let ar_pos : Q(Prop) := q(0 < $ar)
       let gcd_pos : Q(Prop) := q(0 < $gcd)

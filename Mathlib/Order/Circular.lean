@@ -3,7 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Tactic.Order
 
 /-!
 # Circular order hierarchy
@@ -71,7 +72,7 @@ What's next is to define circular groups and provide instances for `ZMod n`, the
 to work?
 
 We should have circular order homomorphisms. The typical example is
-`days_to_month : days_of_the_year →c months_of_the_year` which relates the circular order of days
+`daysToMonth : DaysOfTheYear →c MonthsOfTheYear` which relates the circular order of days
 and the circular order of months. Is `α →c β` a good notation?
 
 ## References
@@ -84,6 +85,7 @@ and the circular order of months. Is `α →c β` a good notation?
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
 
+assert_not_exists RelIso
 
 /-- Syntax typeclass for a betweenness relation. -/
 class Btw (α : Type*) where
@@ -346,27 +348,20 @@ See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
-  btw_refl _ := Or.inl ⟨le_rfl, le_rfl⟩
-  btw_cyclic_left {a b c} h := by
-    dsimp
-    rwa [← or_assoc, or_comm]
+  btw_refl _ := .inl ⟨le_rfl, le_rfl⟩
+  btw_cyclic_left {a b c} := .rotate
   sbtw_trans_left {a b c d} := by
-    rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hbd, hdc⟩ | ⟨hdc, hcb⟩ | ⟨hcb, hbd⟩)
-    · exact Or.inl ⟨hab.trans hbd, hdc⟩
-    · exact (hbc.not_lt hcb).elim
-    · exact (hbc.not_lt hcb).elim
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact (hbc.not_lt hcb).elim
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact Or.inr (Or.inr ⟨hca, hab.trans hbd⟩)
+    rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hbd, hdc⟩ | ⟨hdc, hcb⟩ | ⟨hcb, hbd⟩) <;>
+      first
+      | refine .inl ?_; constructor <;> order
+      | refine .inr <| .inl ?_; constructor <;> order
+      | refine .inr <| .inr ?_; constructor <;> order
   sbtw_iff_btw_not_btw {a b c} := by
-    simp_rw [lt_iff_le_not_le]
+    simp_rw [lt_iff_le_not_ge]
     have h1 := le_trans a b c
     have h2 := le_trans b c a
     have h3 := le_trans c a b
-    -- Porting note: was `tauto`, but this is a much faster tactic proof
+    -- `tauto` closes the goal from here, but is quite slow (`grind` is fast).
     revert h1 h2 h3
     generalize (a ≤ b) = p1
     generalize (b ≤ a) = p2

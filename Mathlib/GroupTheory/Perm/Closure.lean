@@ -56,7 +56,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     intro n
     induction n with
     | zero =>
-      simp only [pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
+      simp only [pow_zero, coe_one, id_eq, swap_self]
       convert H.one_mem
     | succ n ih =>
       by_cases h5 : x = (σ ^ n) x
@@ -114,7 +114,7 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
   rw [h5, ← hi]
   refine closure_cycle_coprime_swap
     (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 ?_)) h1 h2 x
-  cases' h with m hm
+  obtain ⟨m, hm⟩ := h
   rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
     one_apply] at hi
 

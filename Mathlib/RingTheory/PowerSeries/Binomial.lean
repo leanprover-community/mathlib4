@@ -12,18 +12,18 @@ We introduce formal power series of the form `(1 + X) ^ r`, where `r` is an elem
 commutative binomial ring `R`.
 
 ## Main Definitions
- * `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
+* `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
   of a commutative binomial ring `R`.
 
 ## Main Results
- * `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
- * `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
- * `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map
-   `X ↦ (-X)` is `(1 + X) ^ (-d)`
+* `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
+* `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
+* `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map
+  `X ↦ (-X)` is `(1 + X) ^ (-d)`
 
 ## TODO
- * When `A` is a commutative `R`-algebra, the exponentiation action makes the multiplicative group
-   `1 + XA[[X]]` into an `R`-module.
+* When `A` is a commutative `R`-algebra, the exponentiation action makes the multiplicative group
+  `1 + XA[[X]]` into an `R`-module.
 
 -/
 
@@ -66,14 +66,14 @@ lemma binomialSeries_nat [CommRing A] (d : ℕ) :
     rw [one_pow, mul_one, coeff_X_pow_mul']
     have hkd : k ≤ d := mem_range_succ_iff.mp hk
     simp only [hkd.trans (le_of_lt h), ↓reduceIte]
-    rw [show d.choose k = C A (d.choose k) by rfl, coeff_ne_zero_C (by omega)]
+    rw [← map_natCast (C A), coeff_ne_zero_C (by omega)]
   · rw [binomialSeries_coeff, add_comm, add_pow]
     simp only [zsmul_eq_mul, mul_one, one_pow, map_sum]
     rw [sum_eq_single_of_mem n (by simp only [mem_range]; omega) ?_, coeff_X_pow_mul',
       Ring.choose_eq_nat_choose]
     · simp
     · intro k hk hkn
-      rw [mul_comm, show d.choose k = C A (d.choose k) by rfl, coeff_C_mul_X_pow]
+      rw [mul_comm, ← map_natCast (C A), coeff_C_mul_X_pow]
       exact if_neg (Ne.symm hkn)
 
 lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :

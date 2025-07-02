@@ -31,12 +31,15 @@ variable {C : Type u} [Category.{v} C]
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
 of LocallyRingedSpaces
 -/
-abbrev IsOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop :=
-  LocallyRingedSpace.IsOpenImmersion f.toLRSHom
+abbrev IsOpenImmersion : MorphismProperty (Scheme.{u}) :=
+  fun _ _ f ↦ LocallyRingedSpace.IsOpenImmersion f.toLRSHom
+
+instance : IsOpenImmersion.IsStableUnderComposition where
+  comp_mem f g := fun _ _ ↦ LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 instance IsOpenImmersion.comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
-  [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion (f ≫ g) :=
-LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
+    [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion (f ≫ g) :=
+  LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
 
 namespace LocallyRingedSpace.IsOpenImmersion
 
@@ -71,9 +74,6 @@ variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
 
 theorem isOpenEmbedding : IsOpenEmbedding f.base :=
   H.base_open
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
 
 /-- The image of an open immersion as an open set. -/
 @[simps]
@@ -151,6 +151,10 @@ lemma map_mem_image_iff {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
 lemma preimage_opensRange {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
     f ⁻¹ᵁ f.opensRange = ⊤ := by
   simp [Scheme.Hom.opensRange]
+
+lemma isIso_app (V : Y.Opens) (hV : V ≤ f.opensRange) : IsIso (f.app V) := by
+  rw [show V = f ''ᵁ f ⁻¹ᵁ V from Opens.ext (Set.image_preimage_eq_of_subset hV).symm]
+  infer_instance
 
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
 def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
@@ -319,7 +323,7 @@ section Restrict
 variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : IsOpenEmbedding f)
 
 /-- The restriction of a Scheme along an open embedding. -/
-@[simps! (config := .lemmasOnly) carrier, simps! presheaf_obj]
+@[simps! -isSimp carrier, simps! presheaf_obj]
 def Scheme.restrict : Scheme :=
   { PresheafedSpace.IsOpenImmersion.toScheme X (X.toPresheafedSpace.ofRestrict h) with
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
@@ -328,14 +332,14 @@ lemma Scheme.restrict_toPresheafedSpace :
     (X.restrict h).toPresheafedSpace = X.toPresheafedSpace.restrict h := rfl
 
 /-- The canonical map from the restriction to the subspace. -/
-@[simps! toLRSHom_base, simps! (config := .lemmasOnly) toLRSHom_c_app]
+@[simps! toLRSHom_base, simps! -isSimp toLRSHom_c_app]
 def Scheme.ofRestrict : X.restrict h ⟶ X :=
   ⟨X.toLocallyRingedSpace.ofRestrict h⟩
 
 @[simp]
 lemma Scheme.ofRestrict_app (V) :
     (X.ofRestrict h).app V = X.presheaf.map (h.isOpenMap.adjunction.counit.app V).op  :=
-  Scheme.ofRestrict_toLRSHom_c_app X h (op V)
+  rfl
 
 instance IsOpenImmersion.ofRestrict : IsOpenImmersion (X.ofRestrict h) :=
   show PresheafedSpace.IsOpenImmersion (X.toPresheafedSpace.ofRestrict h) by infer_instance
@@ -411,9 +415,9 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
     convert_to
       IsIso
         (TopCat.isoOfHomeo
-            (Homeomorph.homeomorphOfContinuousOpen
-              (.ofBijective _ ⟨h₂.injective, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
-              h₂.isOpenMap)).hom
+          (Equiv.toHomeomorphOfContinuousOpen
+            (.ofBijective _ ⟨h₂.injective, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
+            h₂.isOpenMap)).hom
     infer_instance
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
 
@@ -428,14 +432,17 @@ instance mono : Mono f :=
   Scheme.forgetToLocallyRingedSpace.mono_of_mono_map
     (show Mono f.toLRSHom by infer_instance)
 
+lemma le_monomorphisms :
+    IsOpenImmersion ≤ MorphismProperty.monomorphisms Scheme.{u} := fun _ _ _ _ ↦
+  MorphismProperty.monomorphisms.infer_property _
+
 instance forget_map_isOpenImmersion : LocallyRingedSpace.IsOpenImmersion ((forget).map f) :=
   ⟨H.base_open, H.c_iso⟩
 
 instance hasLimit_cospan_forget_of_left :
     HasLimit (cospan f g ⋙ Scheme.forgetToLocallyRingedSpace) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
-  change HasLimit (cospan ((forget).map f) ((forget).map g))
-  infer_instance
+  rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
+  exact inferInstanceAs (HasLimit (cospan ((forget).map f) ((forget).map g)))
 
 open CategoryTheory.Limits.WalkingCospan
 
@@ -444,9 +451,8 @@ instance hasLimit_cospan_forget_of_left' :
   show HasLimit (cospan ((forget).map f) ((forget).map g)) from inferInstance
 
 instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
-  change HasLimit (cospan ((forget).map g) ((forget).map f))
-  infer_instance
+  rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
+  exact inferInstanceAs (HasLimit (cospan ((forget).map g) ((forget).map f)))
 
 instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=
@@ -483,17 +489,13 @@ instance pullback_snd_of_left : IsOpenImmersion (pullback.snd f g) := by
 
 instance pullback_fst_of_right : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
-  -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
+  infer_instance
 
 instance pullback_to_base [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl]
   change IsOpenImmersion (_ ≫ f)
-  -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
-  -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
+  infer_instance
 
 instance forgetToTop_preserves_of_left : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
@@ -506,6 +508,10 @@ instance forgetToTop_preserves_of_left : PreservesLimit (cospan f g) Scheme.forg
 
 instance forgetToTop_preserves_of_right : PreservesLimit (cospan g f) Scheme.forgetToTop :=
   preservesPullback_symmetry _ _ _
+
+instance : PreservesLimit (cospan f g) Scheme.forget := by delta Scheme.forget; infer_instance
+
+instance : PreservesLimit (cospan g f) Scheme.forget := by delta Scheme.forget; infer_instance
 
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd f g).base = (g ⁻¹ᵁ f.opensRange).1 := by
@@ -580,7 +586,7 @@ commutes with these maps.
 def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   ⟨LocallyRingedSpace.IsOpenImmersion.lift f.toLRSHom g.toLRSHom H'⟩
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem lift_fac (H' : Set.range g.base ⊆ Set.range f.base) : lift f g H' ≫ f = g :=
   Scheme.Hom.ext' <| LocallyRingedSpace.IsOpenImmersion.lift_fac f.toLRSHom g.toLRSHom H'
 
@@ -589,6 +595,19 @@ theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl
   Scheme.Hom.ext' <| LocallyRingedSpace.IsOpenImmersion.lift_uniq
     f.toLRSHom g.toLRSHom H' l.toLRSHom congr(($hl).toLRSHom)
 
+@[reassoc]
+lemma comp_lift {Y' : Scheme} (g' : Y' ⟶ Y) (H : Set.range g.base ⊆ Set.range f.base) :
+    g' ≫ lift f g H = lift f (g' ≫ g) (.trans (by simp [Set.range_comp_subset_range]) H) := by
+  simp [← cancel_mono f]
+
+theorem isPullback_lift_id
+    {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]
+    (H : Set.range f.base ⊆ Set.range g.base) :
+    IsPullback (IsOpenImmersion.lift g f H) (𝟙 _) g f := by
+  convert IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
+  · exact (Category.comp_id _).symm
+  · simp
+
 /-- Two open immersions with equal range are isomorphic. -/
 def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) : X ≅ Y where
   hom := lift g f (le_of_eq e)
@@ -596,13 +615,13 @@ def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
   hom_inv_id := by rw [← cancel_mono f]; simp
   inv_hom_id := by rw [← cancel_mono g]; simp
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma isoOfRangeEq_hom_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
     (isoOfRangeEq f g e).hom ≫ g = f :=
   lift_fac _ _ (le_of_eq e)
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
     (isoOfRangeEq f g e).inv ≫ f = g :=
@@ -647,7 +666,7 @@ lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Open
     (ΓIso f U).inv = f.appLE (f.opensRange ⊓ U) (f⁻¹ᵁ U)
       (by rw [← f.image_preimage_eq_opensRange_inter, f.preimage_image_eq]) := by
   simp only [ΓIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op,
-    asIso_inv, IsIso.comp_inv_eq, Iso.symm_inv, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE]
+    Iso.symm_inv, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE]
 
 @[reassoc, elementwise]
 lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :
@@ -674,6 +693,13 @@ instance {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsOpenImmersion f]
   IsOpenImmersion.of_comp _ f
 
 end IsOpenImmersion
+
+lemma isIso_of_isOpenImmersion_of_opensRange_eq_top {X Y : Scheme.{u}} (f : X ⟶ Y)
+    [IsOpenImmersion f] (hf : f.opensRange = ⊤) : IsIso f := by
+  rw [isIso_iff_isOpenImmersion]
+  refine ⟨inferInstance, ?_⟩
+  rw [TopCat.epi_iff_surjective, ← Set.range_eq_univ]
+  exact TopologicalSpace.Opens.ext_iff.mp hf
 
 section MorphismProperty
 

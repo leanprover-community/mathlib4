@@ -115,7 +115,7 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
   { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
     toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
     commutes' := fun r => by
-      show toModule R _ _ f (algebraMap R _ r) = _
+      change toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
         ← lof_eq_of R, toModule_lof, hone] }
 
@@ -149,9 +149,7 @@ end DirectSum
 /-! ### Concrete instances -/
 
 
-/-- A direct sum of copies of an `Algebra` inherits the algebra structure.
-
--/
+/-- A direct sum of copies of an `Algebra` inherits the algebra structure. -/
 @[simps]
 instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
     [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where

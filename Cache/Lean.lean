@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Arthur Paulino
 -/
 
-import Lean.Util.Paths
+import Lean.Data.Json
+import Lean.Util.Path
 
 /-!
 # Helper Functions
@@ -26,6 +27,34 @@ def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
 /-- Format hash as hex digit with extension `.ltar` -/
 def UInt64.asLTar (n : UInt64) : String :=
   s!"{Nat.toHexDigits n.toNat 8}.ltar"
+
+-- copied from Mathlib
+/-- Create a `Name` from a list of components. -/
+def Lean.Name.fromComponents : List Name → Name := go .anonymous where
+  go : Name → List Name → Name
+  | n, []        => n
+  | n, s :: rest => go (s.updatePrefix n) rest
+
+namespace Lean.SearchPath
+
+open System in
+
+/--
+Find the source directory for a module. This could be `.`
+(or in fact also something uncleaned like `./././.`) if the
+module is part of the current package, or something like `.lake/packages/mathlib` if the
+module is from a dependency.
+
+This is an exact copy of the first part of `Lean.SearchPath.findWithExt` which, in turn,
+is used by `Lean.findLean sp mod`. In the future, `findWithExt` could be refactored to
+expose this base path.
+-/
+def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : IO (Option FilePath) := do
+  let pkg := mod.getRoot.toString (escape := false)
+  sp.findM? fun p =>
+    (p / pkg).isDir <||> ((p / pkg).addExtension ext).pathExists
+
+end Lean.SearchPath
 
 namespace System.FilePath
 

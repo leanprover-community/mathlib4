@@ -133,14 +133,10 @@ lemma ofHom_comp {X Y Z : Type u} [Frame X] [Frame Y] [Frame Z]
 lemma ofHom_apply {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : Frm} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : Frm} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited Frm :=

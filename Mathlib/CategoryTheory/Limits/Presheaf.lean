@@ -123,7 +123,7 @@ variable (L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ) (α : A ⟶ yoneda ⋙ L) [L.IsLe
 /-- Auxiliary definition for `yonedaAdjunction`. -/
 noncomputable def restrictedYonedaHomEquiv (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
     (L.obj P ⟶ E) ≃ (P ⟶ (restrictedYoneda A).obj E) :=
-  ((Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv E).trans
+  (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv.trans
     (restrictedYonedaHomEquiv' A P E)
 
 /-- If `L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ` is a pointwise left Kan extension
@@ -332,7 +332,7 @@ instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
     dsimp
     simp only [Equiv.apply_symm_apply, ← StructuredArrow.w φ]
     dsimp [yonedaEquiv]
-    simp only [yonedaMap_app_apply, Functor.map_id]
+    simp only [Functor.map_id]
 
 /-- Given `F : C ⥤ D` and `X : C`, `yoneda.obj (F.obj X) : Dᵒᵖ ⥤ Type _` is the
 left Kan extension of `yoneda.obj X : Cᵒᵖ ⥤ Type _` along `F.op`. -/
@@ -561,7 +561,6 @@ variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
     Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
   apply Functor.final_of_isTerminal_colimit_comp_yoneda
-
   suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt)) by
     apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
@@ -570,7 +569,6 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
     apply HasColimit.isoOfNatIso
     exact isoWhiskerLeft _
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
-
   apply IsTerminal.ofIso Over.mkIdTerminal
   let isc : IsColimit ((Over.forget _).mapCocone _) := isColimitOfPreserves _
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙

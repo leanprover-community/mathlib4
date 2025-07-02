@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
-import Mathlib.Order.BooleanAlgebra
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
@@ -14,6 +13,8 @@ import Mathlib.Order.SymmDiff
 import Mathlib.Data.Set.Basic
 
 /-! # Symmetric differences of sets -/
+
+assert_not_exists RelIso
 
 namespace Set
 

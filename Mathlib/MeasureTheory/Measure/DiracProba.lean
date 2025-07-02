@@ -86,20 +86,20 @@ lemma injective_diracProba_of_T0 [T0Space X] :
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :
     ¬ Tendsto diracProba L (𝓝 (diracProba x)) := by
-  obtain ⟨U, U_nhd, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
+  obtain ⟨U, U_nhds, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
     by_contra! con
     apply h
-    intro U U_nhd
-    simpa only [not_frequently, not_not] using con U U_nhd
-  have Uint_nhd : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhd
+    intro U U_nhds
+    simpa only [not_frequently, not_not] using con U U_nhds
+  have Uint_nhds : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhds
   obtain ⟨f, fx_eq_one, f_vanishes_outside⟩ :=
     CompletelyRegularSpace.exists_BCNN isOpen_interior.isClosed_compl
-      (by simpa only [mem_compl_iff, not_not] using mem_of_mem_nhds Uint_nhd)
+      (by simpa only [mem_compl_iff, not_not] using mem_of_mem_nhds Uint_nhds)
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, not_forall]
   use f
   simp only [diracProba, ProbabilityMeasure.coe_mk, fx_eq_one,
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
-  apply not_tendsto_iff_exists_frequently_nmem.mpr
+  apply not_tendsto_iff_exists_frequently_notMem.mpr
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
           hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
@@ -169,7 +169,7 @@ lemma continuous_diracProbaEquivSymm [T0Space X] [CompletelyRegularSpace X] :
   apply continuous_iff_continuousAt.mpr
   intro μ
   apply continuousAt_of_tendsto_nhds (y := diracProbaInverse μ)
-  exact (tendsto_diracProbaEquivSymm_iff_tendsto _).mpr fun _ mem_nhd ↦ mem_nhd
+  exact (tendsto_diracProbaEquivSymm_iff_tendsto _).mpr fun _ mem_nhds ↦ mem_nhds
 
 /-- In a completely regular T0 topological space `X`, `diracProbaEquiv` is a homeomorphism to
 its image in `ProbabilityMeasure X`. -/

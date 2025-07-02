@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -46,7 +46,7 @@ structure IwasawaStructure where
   /-- The subgroups of the Iwasawa structure -/
   T : α → Subgroup M
   /-- The commutativity property of the subgroups -/
-  is_comm : ∀ x : α, (T x).IsCommutative
+  is_comm : ∀ x : α, IsMulCommutative (T x)
   /-- The conjugacy property of the subgroups -/
   is_conj : ∀ g : M, ∀ x : α, T (g • x) = MulAut.conj g • T x
   /-- The subgroups generate the group -/

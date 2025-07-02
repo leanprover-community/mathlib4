@@ -140,7 +140,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
     LiftP p x ↔ ∃ a f, x = ⟨a, f⟩ ∧ ∀ i j, p (f i j) := by
   constructor
   · rintro ⟨y, hy⟩
-    cases' h : y with a f
+    rcases h : y with ⟨a, f⟩
     refine ⟨a, fun i j => (f i j).val, ?_, fun i j => (f i j).property⟩
     rw [← hy, h, map_eq]
     rfl
@@ -150,7 +150,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
 
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
-  simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
+  simp only [liftP_iff]; constructor
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
   · intro
@@ -160,7 +160,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     LiftR @r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
-    cases' h : u with a f
+    rcases h : u with ⟨a, f⟩
     use a, fun i j => (f i j).val.fst, fun i j => (f i j).val.snd
     constructor
     · rw [← xeq, h]
@@ -177,7 +177,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     rfl
   rw [yeq]; rfl
 
-open Set MvFunctor
+open Set
 
 theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
     @supp.{u} _ P.Obj _ α (⟨a, f⟩ : P α) i = f i '' univ := by

@@ -17,6 +17,8 @@ This defines left Ore sets on arbitrary monoids.
 
 -/
 
+assert_not_exists RelIso
+
 namespace AddOreLocalization
 
 /-- A submonoid `S` of an additive monoid `R` is (left) Ore if common summands on the right can be

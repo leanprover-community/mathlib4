@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Characteristic zero rings

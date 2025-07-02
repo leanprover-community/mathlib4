@@ -53,7 +53,7 @@ file can also be used to display the string diagram for general bicategories (se
 PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
 categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
 Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
+`Mathlib/CategoryTheory/Bicategory/SingleObj.lean`, although the string diagram widget does not use
 it directly.
 
 -/

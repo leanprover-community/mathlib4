@@ -87,8 +87,8 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
   -- The `≤` inequality is trivial
   refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
   -- A bit of rewriting to get a nice intermediate statement.
-  change comap _ _ ≤ comap _ _
-  simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp_def]
+  simp_rw [UniformSpace.comap, UniformSpace.le_def, uniformity_comap, Pi.uniformity,
+    Filter.comap_iInf, comap_comap, Function.comp_def]
   refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
   -- Core of the proof: we need to show that, for any entourage `U` in `α`,
   -- the set `𝐓(U) := {(i,j) : ι × ι | ∀ x : X, (F i x, F j x) ∈ U}` belongs to the filter
@@ -117,7 +117,7 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
     -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
     -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
-    exact hVU (prod_mk_mem_compRel (prod_mk_mem_compRel
+    exact hVU (prodMk_mem_compRel (prodMk_mem_compRel
       (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
   -- This completes the proof.
   exact mem_of_superset
@@ -138,10 +138,6 @@ lemma Equicontinuous.isUniformInducing_uniformFun_iff_pi [UniformSpace ι] [Comp
   rw [isUniformInducing_iff_uniformSpace, isUniformInducing_iff_uniformSpace,
       ← F_eqcont.comap_uniformFun_eq]
   rfl
-
-@[deprecated (since := "2024-10-05")]
-alias Equicontinuous.uniformInducing_uniformFun_iff_pi :=
-  Equicontinuous.isUniformInducing_uniformFun_iff_pi
 
 /-- Let `X` be a compact topological space, `α` a uniform space, and `F : ι → (X → α)` an
 equicontinuous family. Then, the topologies of uniform convergence and pointwise convergence induce
@@ -261,10 +257,6 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
       ← EquicontinuousOn.comap_uniformOnFun_eq 𝔖_compact F_eqcont]
   rfl
 
-@[deprecated (since := "2024-10-05")]
-alias EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi' :=
-  EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi'
-
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the uniform
 structures of uniform convergence on `𝔖` and pointwise convergence induce the same
@@ -285,10 +277,6 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
   rw [EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.isUniformInducing.comp H, fun H ↦ φ.symm.isUniformInducing.comp H⟩
-
-@[deprecated (since := "2024-10-05")]
-alias EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi :=
-  EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi
 
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the topologies
@@ -468,9 +456,6 @@ theorem ArzelaAscoli.compactSpace_of_isClosedEmbedding [TopologicalSpace ι] {�
   compactSpace_of_closed_inducing' 𝔖_compact F_clemb.isInducing F_clemb.isClosed_range
     F_eqcont F_pointwiseCompact
 
-@[deprecated (since := "2024-10-20")]
-alias ArzelaAscoli.compactSpace_of_closedEmbedding := ArzelaAscoli.compactSpace_of_isClosedEmbedding
-
 /-- A version of the **Arzela-Ascoli theorem**.
 
 Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a T2 uniform space,
@@ -501,10 +486,6 @@ theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι
   exact ArzelaAscoli.compactSpace_of_isClosedEmbedding 𝔖_compact
     (F_clemb.comp isClosed_closure.isClosedEmbedding_subtypeVal) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ArzelaAscoli.isCompact_closure_of_closedEmbedding :=
-  ArzelaAscoli.isCompact_closure_of_isClosedEmbedding
 
 /-- A version of the **Arzela-Ascoli theorem**.
 

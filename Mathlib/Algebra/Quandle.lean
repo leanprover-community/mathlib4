@@ -3,10 +3,10 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.End
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Ring
+
 /-!
 # Racks and Quandles
 
@@ -91,7 +91,7 @@ universe u v
 The binary operation is regarded as a left action of the type on itself.
 -/
 class Shelf (α : Type u) where
-  /-- The action of the `Shelf` over `α`-/
+  /-- The action of the `Shelf` over `α` -/
   act : α → α → α
   /-- A verification that `act` is self-distributive -/
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)
@@ -237,7 +237,7 @@ instance oppositeRack : Rack Rᵐᵒᵖ where
     induction x
     induction y
     induction z
-    simp only [op_inj, unop_op, op_unop]
+    simp only [op_inj, unop_op]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
   left_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
@@ -384,9 +384,9 @@ instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G) where
     simp [mul_assoc]
   invAct x := (@MulAut.conj G _ x).symm
   left_inv x y := by
-    simp [act', mul_assoc]
+    simp [mul_assoc]
   right_inv x y := by
-    simp [act', mul_assoc]
+    simp [mul_assoc]
   fix := by simp
 
 @[simp]
@@ -658,11 +658,9 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
         simp only [Quotient.lift_mk, mapAux]
       map_mul' := fun x y =>
         Quotient.inductionOn₂ x y fun x y => by
-          simp only [toEnvelGroup.mapAux]
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }
   invFun F := (Quandle.Conj.map F).comp (toEnvelGroup R)
-  left_inv f := by ext; rfl
   right_inv F :=
     MonoidHom.ext fun x =>
       Quotient.inductionOn x fun x => by
@@ -673,7 +671,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
           have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
           suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
-            simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk, hm]
+            simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
             rw [← ih_x, ← ih_y, mapAux]
           exact F.map_mul
         | inv x ih_x =>

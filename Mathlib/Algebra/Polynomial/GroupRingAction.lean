@@ -23,8 +23,8 @@ open Polynomial
 namespace Polynomial
 
 variable (R : Type*) [Semiring R]
-variable {M}
 
+variable {M} in
 -- In this statement, we use `HSMul.hSMul m` as LHS instead of `(m • ·)`
 -- to avoid a spurious lambda-expression that complicates rewriting with this lemma.
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :
@@ -36,8 +36,6 @@ theorem smul_eq_map [MulSemiringAction M R] (m : M) :
   ext n r : 2
   change m • monomial n r = map (MulSemiringAction.toRingHom M R m) (monomial n r)
   rw [Polynomial.map_monomial, Polynomial.smul_monomial, MulSemiringAction.toRingHom_apply]
-
-variable (M)
 
 noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
   { Polynomial.distribMulAction with

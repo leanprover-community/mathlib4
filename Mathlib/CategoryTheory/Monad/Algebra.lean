@@ -156,12 +156,9 @@ def adj : T.free ⊣ T.forget :=
         { toFun := fun f => T.η.app X ≫ f.f
           invFun := fun f =>
             { f := T.map f ≫ Y.a
-              h := by
-                dsimp
-                simp [← Y.assoc, ← T.μ.naturality_assoc] }
+              h := by simp [← Y.assoc, ← T.μ.naturality_assoc] }
           left_inv := fun f => by
             ext
-            dsimp
             simp
           right_inv := fun f => by
             dsimp only [forget_obj]
@@ -205,25 +202,21 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
   obj A :=
     { A := A.A
       a := h.app A.A ≫ A.a
-      unit := by
-        dsimp
-        simp [A.unit]
-      assoc := by
-        dsimp
-        simp [A.assoc] }
+      unit := by simp [A.unit]
+      assoc := by simp [A.assoc] }
   map f := { f := f.f }
 
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
 -- Porting note: `semireducible -> default`
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
@@ -233,7 +226,7 @@ are isomorphic.
 We define it like this as opposed to using `eqToIso` so that the components are nicer to prove
 lemmas about.
 -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : f = g) :
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
@@ -386,9 +379,7 @@ def adj : G.forget ⊣ G.cofree :=
     { homEquiv := fun X Y =>
         { toFun := fun f =>
             { f := X.a ≫ G.map f
-              h := by
-                dsimp
-                simp [← Coalgebra.coassoc_assoc] }
+              h := by simp [← Coalgebra.coassoc_assoc] }
           invFun := fun g => g.f ≫ G.ε.app Y
           left_inv := fun f => by
             dsimp

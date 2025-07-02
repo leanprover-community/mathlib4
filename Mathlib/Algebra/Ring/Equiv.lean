@@ -3,12 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Util.AssertExists
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # (Semi)ring equivs
@@ -76,8 +76,8 @@ add_decl_doc RingEquiv.toMulEquiv
 
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
-class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S]
-  extends MulEquivClass F R S : Prop where
+class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S] : Prop
+  extends MulEquivClass F R S where
   /-- By definition, a ring isomorphism preserves the additive structure. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 
@@ -289,6 +289,14 @@ theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).sy
   rfl
 
 @[simp]
+theorem coe_toMulEquiv_symm (e : R ≃+* S) : (e.symm : S ≃* R) = (e : R ≃* S).symm :=
+  rfl
+
+@[simp]
+theorem coe_toAddEquiv_symm (e : R ≃+* S) : (e.symm : S ≃+ R) = (e : R ≃+ S).symm :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 
@@ -372,12 +380,6 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     α ≃+* β ≃ (αᵐᵒᵖ ≃+* βᵐᵒᵖ) where
   toFun f := { AddEquiv.mulOp f.toAddEquiv, MulEquiv.op f.toMulEquiv with }
   invFun f := { AddEquiv.mulOp.symm f.toAddEquiv, MulEquiv.op.symm f.toMulEquiv with }
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 /-- The 'unopposite' of a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. Inverse to `RingEquiv.op`. -/
 @[simp]
@@ -448,7 +450,7 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
 
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAssocSemiring (R i)] :
     (∀ i, R i) ≃+* R default where
   __ := Equiv.piUnique R
@@ -531,10 +533,10 @@ def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAss
   toEquiv := Equiv.prodCongr f g
   map_mul' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_mul, map_mul, Prod.snd_mul, Prod.mk_mul_mk]
+      Prod.map, map_mul, Prod.mk_mul_mk]
   map_add' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_add, map_add, Prod.snd_add, Prod.mk_add_mk]
+      Prod.map, map_add, Prod.mk_add_mk]
 
 @[simp]
 theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
@@ -590,7 +592,7 @@ theorem coe_monoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S �
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem coe_addMonoidHom_trans [NonUnitalNonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+ S') = (e₂ : S →+ S').comp ↑e₁ :=
   rfl
 

@@ -22,7 +22,7 @@ namespace PMF
 open ENNReal NNReal
 /-- The binomial `PMF`: the probability of observing exactly `i` “heads” in a sequence of `n`
 independent coin tosses, each having probability `p` of coming up “heads”. -/
-def binomial (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
+noncomputable def binomial (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
   .ofFintype (fun i =>
       -- Using `toNNReal` here makes this computable
       ↑(p.toNNReal^(i : ℕ) * (1-p.toNNReal)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ))) (by
@@ -53,7 +53,7 @@ theorem binomial_apply_last (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
   simp [binomial_apply]
 
 theorem binomial_apply_self (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n n = p^n := by simp
+    binomial p h n (.last n) = p^n := by simp
 
 /-- The binomial distribution on one coin is the Bernoulli distribution. -/
 theorem binomial_one_eq_bernoulli (p : ℝ≥0∞) (h : p ≤ 1) :

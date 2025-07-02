@@ -29,9 +29,10 @@ their action on pseudoelements. Thus, a usual style of proofs in abelian categor
 First, we construct some morphism using universal properties, and then we use diagram chasing
 of pseudoelements to verify that is has some desirable property such as exactness.
 
-It should be noted that the Freyd-Mitchell embedding theorem gives a vastly stronger notion of
-pseudoelement (in particular one that gives extensionality). However, this theorem is quite
-difficult to prove and probably out of reach for a formal proof for the time being.
+It should be noted that the Freyd-Mitchell embedding theorem
+(see `CategoryTheory.Abelian.FreydMitchell`) gives a vastly stronger notion of
+pseudoelement (in particular one that gives extensionality) and this file should be updated to
+go use that instead!
 
 ## Main results
 
@@ -344,7 +345,7 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 end
 
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
-  fun h => by simp [over_coe_def, pseudoApply_mk', Over.coe_hom, h]
+  fun h => by simp [over_coe_def, pseudoApply_mk', h]
 
 section
 
@@ -426,7 +427,7 @@ section Module
 
 /-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
-theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCat R} {x y : Over G}
+theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [Ring R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom.hom = LinearMap.range y.hom.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
   refine Submodule.ext fun a => ⟨fun ha => ?_, fun ha => ?_⟩

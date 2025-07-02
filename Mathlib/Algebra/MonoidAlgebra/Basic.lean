@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.MonoidAlgebra.MapDomain
 import Mathlib.Data.Finsupp.SMul
@@ -63,7 +62,6 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
       toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
-        beta_reduce
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc, MonoidHom.id_apply]
         · intro m
@@ -285,6 +283,9 @@ theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomain
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
 
+@[simp] lemma domCongr_comp_lsingle (e : G ≃* H) (g : G) :
+    (domCongr k A e).toLinearMap ∘ₗ lsingle g = lsingle (e g) := by ext; simp
+
 @[simp] theorem domCongr_refl : domCongr k A (MulEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
 
@@ -328,7 +329,7 @@ def equivariantOfLinearOfComm
     · simp
     · intro g r c' _nm _nz w
       dsimp at *
-      simp only [add_smul, f.map_add, w, add_left_inj, single_eq_algebraMap_mul_of, ← smul_smul]
+      simp only [add_smul, f.map_add, w, single_eq_algebraMap_mul_of, ← smul_smul]
       rw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
         of_apply, h g v]
 
@@ -572,6 +573,9 @@ theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomain
 @[simp] theorem domCongr_single (e : G ≃+ H) (g : G) (a : A) :
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
+
+@[simp] lemma domCongr_comp_lsingle (e : G ≃+ H) (g : G) :
+    (domCongr k A e).toLinearMap ∘ₗ lsingle g = lsingle (e g) := by ext; simp
 
 @[simp] theorem domCongr_refl : domCongr k A (AddEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The monoidal coherence theorem
@@ -29,7 +29,7 @@ is thin.
 ## References
 
 * [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
-   proof of normalization for monoids][beylin1996]
+  proof of normalization for monoids][beylin1996]
 
 -/
 
@@ -215,7 +215,7 @@ theorem normalizeIsoApp_unitor (n : N C) : normalizeIsoApp C (𝟙_ (F C)) n = �
   rfl
 
 /-- Auxiliary definition for `normalizeIso`. -/
-@[simp]
+@[simps!]
 def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
   NatIso.ofComponents (normalizeIsoApp C X)
     (by

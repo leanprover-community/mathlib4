@@ -55,7 +55,7 @@ open Lean Elab Meta
 initialize registerTraceClass `Elab.congr
 
 /--
-`congr(expr)` generates an congruence from an expression containing
+`congr(expr)` generates a congruence from an expression containing
 congruence holes of the form `$h` or `$(h)`.
 In these congruence holes, `h : a = b` indicates that, in the generated congruence,
 on the left-hand side `a` is substituted for `$h`
@@ -104,7 +104,7 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `Mathlib.Tactic.TermCongr.CongrResult`. -/
+See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 

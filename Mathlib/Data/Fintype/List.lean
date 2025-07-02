@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.List.Permutation
 
 /-!
@@ -27,11 +27,10 @@ open List
 
 namespace Multiset
 
-/--  Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`.
--/
+/-- Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`. -/
 def lists : Multiset α → Multiset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
-    simp only [mem_permutations, List.mem_toFinset]
+    simp only
     refine coe_eq_coe.mpr ?_
     exact Perm.permutations h
 
@@ -79,7 +78,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
       have := Multiset.coe_disjoint m.toList.permutations n.toList.permutations
       rw  [_root_.Disjoint] at this
       rw [this]
-      simp only [Multiset.coe_disjoint, ne_eq]
+      simp only [ne_eq]
       rw [List.disjoint_iff_ne]
       constructor
       · intro h
@@ -101,7 +100,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert  Set.mem_def.mpr f.nodup
+      convert f.nodup
       rw [hf]
       rfl
     · intro h

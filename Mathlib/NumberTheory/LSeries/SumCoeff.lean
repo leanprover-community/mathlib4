@@ -101,9 +101,9 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ (x : ℂ) ^ (-s)) t :=
     differentiableAt_id.ofReal_cpow_const (zero_lt_one.trans_le ht).ne' (neg_ne_zero.mpr h₂)
   have h₄ : ∀ n, ∑ k ∈ Icc 0 n, f k = ∑ k ∈ Icc 1 n, f k := fun n ↦ by
-    rw [← Nat.Icc_insert_succ_left n.zero_le, sum_insert (by aesop), hf, zero_add, zero_add]
+    rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert (by aesop), hf, zero_add, zero_add]
   simp_rw [← h₄] at hO
-  rw [← integral_mul_left]
+  rw [← integral_const_mul]
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).mpr hS.hasSum.tendsto_sum_nat) ?_
   simp_rw [Nat.range_succ_eq_Icc_zero, LSeries.term_def₀ hf, mul_comm (f _)]
   convert tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (f := fun x ↦ (x : ℂ) ^ (-s)) (l := 0)
@@ -135,7 +135,7 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
     LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) := by
   rw [← LSeriesSummable_congr' s (f := fun n ↦ if n = 0 then 0 else f n)
     (by filter_upwards [eventually_ne_atTop 0] with n h using if_neg h)] at hS
-  have (n) : ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k :=
+  have (n : _) : ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k :=
     Finset.sum_congr rfl fun k hk ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
   rw [← LSeries_congr _ (fun _ ↦ if_neg _), LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
   simp_all
@@ -234,7 +234,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
         rw [h ht', ← mul_assoc]
         exact mul_le_mul_of_nonneg_right (hT t ht.le) (Real.rpow_nonneg ht'.le _)
     _ ≤ ε * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, t ^ (-s)) := by
-      rw [integral_mul_left, ← mul_assoc, ← mul_assoc, mul_comm ε]
+      rw [integral_const_mul, ← mul_assoc, ← mul_assoc, mul_comm ε]
       refine mul_le_mul_of_nonneg_left (setIntegral_mono_set ?_ ?_
         (Set.Ioi_subset_Ioi hT₁).eventuallyLE) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
       · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
@@ -291,7 +291,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
         (hfS _ hs), neg_add', mul_assoc]
       exact isBigO_atTop_natCast_rpow_of_tendsto_div_rpow (a := l) (by simpa using hlim)
     _ = ‖(s - 1) * s * ∫ t in Set.Ioi 1, (S t * (t : ℂ) ^ (-s - 1 : ℂ) - l * t ^ (-s : ℂ))‖ := by
-      rw [integral_sub, integral_mul_left]
+      rw [integral_sub, integral_const_mul]
       · congr; ring
       · exact (lemma₁ hlim hs).mono_set Set.Ioi_subset_Ici_self
       · exact (integrableOn_Ioi_cpow_of_lt
@@ -321,7 +321,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     -- The first part can be bounded by `C` using `h₄`.
     _ ≤ (s - 1) * s * C + s * ((s - 1) * ∫ t in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := by
       rw [mul_add, ← mul_assoc, mul_comm s]
-      exact add_le_add_right (mul_le_mul_of_nonneg_left h₄ hs') _
+      gcongr
     -- The second part is bounded using `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂`
     -- since `‖S t - l t‖ ≤ ε * t` for all `t ≥ T`.
     _ ≤ (s - 1) * s * C + s * ε := by

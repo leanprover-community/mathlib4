@@ -80,7 +80,7 @@ theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
   wlog h' : 0 ≤ x * y generalizing x y z; swap
   · rw [div_mul_eq_mul_div, le_div_iff₀' zero_lt_32]
     exact subst_wlog h' hxyz
-  cases' (mul_nonneg_of_three x y z).resolve_left h' with h h
+  rcases (mul_nonneg_of_three x y z).resolve_left h' with h | h
   · convert this y z x _ h using 2 <;> linarith
   · convert this z x y _ h using 2 <;> linarith
 
@@ -107,7 +107,7 @@ theorem proof₂ (M : ℝ)
   calc 18 ^ 2 * 2 * α
       = 18 ^ 2 * α ^ 2 * α := by linear_combination -324 * α * hα
     _ = abs (-(18 ^ 2 * α ^ 2 * α)) := by rw [abs_neg, abs_of_nonneg]; positivity
-    _ = |a * 2 * (a ^ 2 - 2 ^ 2) + 2 * c * (2 ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| := by ring_nf
+    _ = |a * 2 * (a ^ 2 - 2 ^ 2) + 2 * c * (2 ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| := by ring_nf!
     _ ≤ M * (a ^ 2 + 2 ^ 2 + c ^ 2) ^ 2 := by apply h
     _ = M * 48 ^ 2 := by linear_combination (324 * α ^ 2 + 1080) * M * hα
 
