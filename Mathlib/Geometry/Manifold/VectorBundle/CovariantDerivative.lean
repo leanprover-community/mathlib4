@@ -10,6 +10,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
+import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
 /-!
 # Covariant derivatives
@@ -819,6 +820,53 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
   module
 
 end classification
+
+section torsion
+
+variable [h : IsManifold I ∞ M]
+
+-- The torsion tensor of a covariant derivative on the tangent bundle `TM`.
+variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
+
+omit [FiniteDimensional ℝ E]
+
+variable (cov) in
+noncomputable def torsion :
+    (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
+  fun X Y ↦ cov X Y - cov Y X - VectorField.mlieBracket I X Y
+
+omit [FiniteDimensional ℝ E] in
+lemma torsion_self (X : Π x : M, TangentSpace I x) : torsion cov X X = 0 := by
+  simp [torsion]
+
+omit [FiniteDimensional ℝ E] in
+lemma torsion_antisymm (X Y : Π x : M, TangentSpace I x) : torsion cov X Y = - torsion cov Y X := by
+  simp only [torsion]
+  rw [VectorField.mlieBracket_swap]
+  module
+
+@[simp]
+lemma torsion_zero (X : Π x : M, TangentSpace I x) : torsion cov 0 X = 0 := by
+  ext x
+  simp [torsion]
+  sorry -- missing lemma?
+
+@[simp]
+lemma torsion_zero' (X : Π x : M, TangentSpace I x) : torsion cov X 0 = 0 := by
+  rw [torsion_antisymm, torsion_zero]; simp
+
+-- next steps: torsion_add, torsion_smul (in the left and right arguments)
+-- conclude: torsion is tensorial
+
+variable (cov) in
+/-- A covariant derivation is called **torsion-free** iff its torsion tensor vanishes. -/
+def IsTorsionFree : Prop := torsion cov = 0
+
+lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
+
+-- lemma: the trivial connection is torsion free
+
+end torsion
 
 end real
 
