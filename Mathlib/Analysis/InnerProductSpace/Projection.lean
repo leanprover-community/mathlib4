@@ -475,6 +475,12 @@ theorem orthogonalProjectionFn_eq (v : E) :
     K.orthogonalProjectionFn v = (K.orthogonalProjection v : E) :=
   rfl
 
+/-- The orthogonal projection onto a subspace as a map from the full space to itself,
+as opposed to `Submodule.orthogonalProjection`, which maps into the subtype. This
+version is important as it satisfies `IsStarProjection`. -/
+def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjection
+
 /-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem orthogonalProjection_inner_eq_zero (v : E) :
@@ -517,6 +523,13 @@ theorem orthogonalProjection_orthogonal (u : E) :
       ⟨u - K.orthogonalProjection u, sub_orthogonalProjection_mem_orthogonal _⟩ :=
   Subtype.eq <| orthogonalProjection_orthogonal_val _
 
+lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
+  ext
+  simp only [starProjection, ContinuousLinearMap.comp_apply,
+    orthogonalProjection_orthogonal]
+  rfl
+
 /-- The orthogonal projection of `y` on `U` minimizes the distance `‖y - x‖` for `x ∈ U`. -/
 theorem orthogonalProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (y : E) :
     ‖y - U.orthogonalProjection y‖ = ⨅ x : U, ‖y - x‖ := by
@@ -540,6 +553,13 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (K.orthogonalProjection v : E
   · rw [← h]
     simp
   · simp
+
+lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
+  ext
+  exact orthogonalProjection_eq_self_iff.mpr trivial
+
+lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
+  starProjection_top
 
 @[simp]
 theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 ↔ v ∈ Kᗮ := by
@@ -580,6 +600,9 @@ theorem orthogonalProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
 @[simp]
 theorem orthogonalProjection_bot : (⊥ : Submodule 𝕜 E).orthogonalProjection = 0 := by ext
+
+lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
+  rw [starProjection, orthogonalProjection_bot, ContinuousLinearMap.comp_zero]
 
 variable (K)
 
@@ -643,33 +666,6 @@ theorem orthogonalProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
   simp [hv]
 
 end orthogonalProjection
-
-section StarProjection
-
-/-- The orthogonal projection onto a subspace as a map from the full space to itself,
-as opposed to `Submodule.orthogonalProjection`, which maps into the subtype. This
-version is important as it satisfies `IsStarProjection`. -/
-noncomputable def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjection
-
-lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
-  rw [starProjection, orthogonalProjection_bot, ContinuousLinearMap.comp_zero]
-
-lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
-  ext
-  exact orthogonalProjection_eq_self_iff.mpr trivial
-
-lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
-  starProjection_top
-
-lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
-  ext
-  simp only [starProjection, ContinuousLinearMap.comp_apply,
-    orthogonalProjection_orthogonal]
-  rfl
-
-end StarProjection
 
 section reflection
 
@@ -1470,3 +1466,15 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
     rw [← h.span_eq, coe_h, hv_coe]
 
 end OrthonormalBasis
+
+open LinearMap in
+theorem ContinuousLinearMap.IsIdempotentElem.range_eq_ker {p : E →L[𝕜] E}
+    (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
+  have hp' : IsIdempotentElem (LinearMapClass.linearMap p) :=
+    congr(LinearMapClass.linearMap $(hp.eq))
+  hp'.range_eq_ker
+
+open ContinuousLinearMap in
+theorem ContinuousLinearMap.IsIdempotentElem.isClosed_range {p : E →L[𝕜] E}
+    (hp : IsIdempotentElem p) : IsClosed (LinearMap.range p : Set E) :=
+  hp.range_eq_ker ▸ ContinuousLinearMap.isClosed_ker (1 - p)
