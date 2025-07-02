@@ -105,7 +105,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
   ext m
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
-    RingHom.id_apply, LinearMap.smul_apply]
+    LinearMap.smul_apply]
   rw [smul_comm]
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
@@ -230,7 +230,7 @@ theorem rTensorHomEquivHomRTensor_toLinearMap :
   refine (cancel_right h).1 ?_
   ext f p q m
   simp only [e, rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
-    LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply,
     dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul,
     dualTensorHomEquivOfBasis_symm_cancel_left, LinearEquiv.refl_apply, assoc_tmul,
     dualTensorHom_apply, rTensorHomToHomRTensor_apply, smul_tmul']
