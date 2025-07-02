@@ -835,28 +835,83 @@ noncomputable def torsion :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   fun X Y ↦ cov X Y - cov Y X - VectorField.mlieBracket I X Y
 
-omit [FiniteDimensional ℝ E] in
-lemma torsion_self (X : Π x : M, TangentSpace I x) : torsion cov X X = 0 := by
+variable {X X' Y : Π x : M, TangentSpace I x}
+
+variable (X) in
+lemma torsion_self : torsion cov X X = 0 := by
   simp [torsion]
 
-omit [FiniteDimensional ℝ E] in
-lemma torsion_antisymm (X Y : Π x : M, TangentSpace I x) : torsion cov X Y = - torsion cov Y X := by
+variable (X Y) in
+lemma torsion_antisymm : torsion cov X Y = - torsion cov Y X := by
   simp only [torsion]
   rw [VectorField.mlieBracket_swap]
   module
 
+variable (X) in
 @[simp]
-lemma torsion_zero (X : Π x : M, TangentSpace I x) : torsion cov 0 X = 0 := by
+lemma torsion_zero : torsion cov 0 X = 0 := by
   ext x
   simp [torsion]
   sorry -- missing lemma?
 
+variable (X) in
 @[simp]
-lemma torsion_zero' (X : Π x : M, TangentSpace I x) : torsion cov X 0 = 0 := by
-  rw [torsion_antisymm, torsion_zero]; simp
+lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_zero]; simp
 
--- next steps: torsion_add, torsion_smul (in the left and right arguments)
--- conclude: torsion is tensorial
+variable (Y) in
+lemma torsion_add_left [CompleteSpace E]
+    (hX : MDifferentiable I I.tangent (fun x ↦ TotalSpace.mk' E x (X x)))
+    (hX' : MDifferentiable I I.tangent (fun x ↦ TotalSpace.mk' E x (X' x))) :
+    torsion cov (X + X') Y = torsion cov X Y + torsion cov X' Y := by
+  ext x
+  simp [torsion, cov.addX]
+  rw [cov.addσ _ X X' _ (hX x) (hX' x), VectorField.mlieBracket_add_left (hX x) (hX' x)]
+  module
+
+lemma torsion_add_right [CompleteSpace E]
+    (hX : MDifferentiable I I.tangent (fun x ↦ TotalSpace.mk' E x (X x)))
+    (hX' : MDifferentiable I I.tangent (fun x ↦ TotalSpace.mk' E x (X' x))) :
+    torsion cov Y (X + X') = torsion cov Y X + torsion cov Y X' := by
+  rw [torsion_antisymm, torsion_add_left _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
+
+-- TODO: prove (for sections in any vector bundle); follow-up to 24932
+lemma _root_.VectorField.mlieBracket_fun_smul_left' {f : M → ℝ} (hf : MDifferentiableAt I 𝓘(ℝ) f x)
+    {V W : Π x : M, TangentSpace I x}
+    (hV : MDifferentiableAt I I.tangent (fun x ↦ TotalSpace.mk' E x (V x)) x) :
+    VectorField.mlieBracket I (fun y ↦ f y • V y) W x =
+      - (mfderiv I 𝓘(ℝ) f x) (W x) • (V x)  + (f x) • VectorField.mlieBracket I V W x := by
+  sorry
+
+-- TODO: prove (for sections in any vector bundle); follow-up to 24932
+lemma _root_.VectorField.mlieBracket_smul_left' {f : M → ℝ} (hf : MDifferentiableAt I 𝓘(ℝ) f x)
+    {V W : Π x : M, TangentSpace I x}
+    (hV : MDifferentiableAt I I.tangent (fun x ↦ TotalSpace.mk' E x (V x)) x) :
+    VectorField.mlieBracket I (f • V) W x =
+      - (mfderiv I 𝓘(ℝ) f x) (W x) • (V x)  + (f x) • VectorField.mlieBracket I V W x := by
+  sorry
+
+variable (Y) in
+lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable I 𝓘(ℝ) f)
+    (hX : MDifferentiable I I.tangent (fun x ↦ TotalSpace.mk' E x (X x))) :
+    torsion cov (f • X) Y = f • torsion cov X Y := by
+  simp only [torsion, cov.smulX]
+  ext x
+  simp [cov.leibniz Y X f x (hX x) (hf x)]
+  rw [VectorField.mlieBracket_smul_left' (hf x) (hX x)]
+  have missing : (bar (f x)) ((mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)) • X x -
+      -(mfderiv I 𝓘(ℝ, ℝ) f x) (Y x) • X x = 0 := by
+    set A := mfderiv I 𝓘(ℝ, ℝ) f x (Y x)
+    set B := X x
+    sorry -- should be a lemma about `bar` now...
+  sorry -- should be missing and `module` now
+
+variable (X) in
+lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable I 𝓘(ℝ) f)
+    (hY : MDifferentiable I I.tangent (fun x ↦ TotalSpace.mk' E x (Y x))) :
+    torsion cov X (f • Y) = f • torsion cov X Y := by
+  rw [torsion_antisymm, torsion_smul_left X hf hY, torsion_antisymm X]; module
+
+-- finally, conclude that torsion is tensorial
 
 variable (cov) in
 /-- A covariant derivation is called **torsion-free** iff its torsion tensor vanishes. -/
@@ -865,6 +920,17 @@ def IsTorsionFree : Prop := torsion cov = 0
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
 
 -- lemma: the trivial connection is torsion free
+
+-- API for the trivial bundle (does some of this exist already?)
+-- there is a single trivialisation, whose baseSet is univ
+-- make a new abbrev Bundle.Trivial.globalFrame --- which is localFrame for the std basis of F,
+--    w.r.t. to this trivialisation
+-- add lemmas: globalFrame is contMDiff globally
+
+-- proof of above lemma: write sections s and t in the global frame above
+-- by linearity (proven above), suffices to consider s = s^i and t = s^j (two sections in the frame)
+-- compute: their Lie bracket is zero (intuitively, as their flows commute)
+-- compute: the other two terms cancel, done
 
 end torsion
 
