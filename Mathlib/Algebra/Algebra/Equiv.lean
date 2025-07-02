@@ -760,6 +760,7 @@ end
 end MulSemiringAction
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
+@[simps! -isSimp apply]
 def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
