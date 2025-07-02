@@ -387,15 +387,19 @@ that `Ω₀` is terminal and define the classifier structure. -/
 noncomputable def ofMonoTruth
     {C : Type u} [Category.{v} C]
     (Ω₀ Ω : C)
-    (truth : Ω₀ ⟶ Ω) [Mono truth]
+    (truth : Ω₀ ⟶ Ω) [mt : Mono truth]
     (χ₀ : ∀ {U X : C} (m : U ⟶ X) [Mono m], U ⟶ Ω₀)
     (χ : ∀ {U X : C} (m : U ⟶ X) [Mono m], X ⟶ Ω)
     (isPullback : ∀ {U X : C} (m : U ⟶ X) [Mono m], IsPullback m (χ₀ m) (χ m) truth)
-    (uniq₀ : ∀ {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
-      (_ : IsPullback m χ₀' χ' truth), χ₀' = χ₀ m)
     (uniq : ∀ {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
       (_ : IsPullback m χ₀' χ' truth), χ' = χ m) :
   Σ' (_ : HasTerminal C), Classifier C :=
+
+  -- Step 0: χ₀ is unique similar to χ
+  let uniq₀ {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
+      (pb' : IsPullback m χ₀' χ' truth) : χ₀' = χ₀ m :=
+    let pb := (isPullback m)
+    mt.right_cancellation _ _ (by rw [← pb'.w, uniq m χ₀' χ' pb', pb.w])
 
   -- Step 1: Show Ω₀ is terminal
   have : ∀ Y : C, Unique (Y ⟶ Ω₀) := fun Y => {
@@ -406,7 +410,7 @@ noncomputable def ofMonoTruth
       let pb_def := isPullback (𝟙 Y)
       let eq_f := uniq₀ (𝟙 Y) f (f ≫ truth) pb_f
       let eq_def := uniq₀ (𝟙 Y) (χ₀ (𝟙 Y)) (χ (𝟙 Y)) pb_def
-      eq_f.trans eq_def.symm
+      by rw [eq_def, eq_f]
   }
 
   let isTerminal := IsTerminal.ofUnique Ω₀
