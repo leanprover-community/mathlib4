@@ -955,7 +955,7 @@ open ShortComplex
 
 section CocyclesIso
 
-section zeroCocyclesIso
+section cocyclesIso₀
 
 instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
@@ -979,45 +979,48 @@ def dArrowIso₀₁ :
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
-def zeroCocyclesIso : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
+def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
 
+@[deprecated (since := "2025-07-02")] noncomputable alias zeroCocyclesIso := cocyclesIso₀
 @[deprecated (since := "2025-06-12")]
 noncomputable alias isoZeroCocycles := zeroCocyclesIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma zeroCocyclesIso_hom_comp_f :
-    (zeroCocyclesIso A).hom ≫ (shortComplexH0 A).f =
-      iCocycles A 0 ≫ (cochainsIso₀ A).hom := by
-  dsimp [zeroCocyclesIso]
+lemma cocyclesIso₀_hom_comp_f :
+    (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f = iCocycles A 0 ≫ (cochainsIso₀ A).hom := by
+  dsimp [cocyclesIso₀]
   apply KernelFork.mapOfIsLimit_ι
 
+@[deprecated (since := "2025-07-02")]
+noncomputable alias zeroCocyclesIso_hom_comp_f := cocyclesIso₀_hom_comp_f
 @[deprecated (since := "2025-06-12")]
 alias isoZeroCocycles_hom_comp_subtype := zeroCocyclesIso_hom_comp_f
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma zeroCocyclesIso_inv_comp_iCocycles :
-    (zeroCocyclesIso A).inv ≫ iCocycles A 0 =
+lemma cocyclesIso₀_inv_comp_iCocycles :
+    (cocyclesIso₀ A).inv ≫ iCocycles A 0 =
       (shortComplexH0 A).f ≫ (cochainsIso₀ A).inv := by
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, zeroCocyclesIso_hom_comp_f]
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, cocyclesIso₀_hom_comp_f]
 
+@[deprecated (since := "2025-07-02")]
+noncomputable alias zeroCocyclesIso_inv_comp_iCocycles := cocyclesIso₀_inv_comp_iCocycles
 @[deprecated (since := "2025-06-12")]
 alias isoZeroCocycles_inv_comp_iCocycles := zeroCocyclesIso_inv_comp_iCocycles
 
 variable {A} in
 lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
     cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
-      inhomogeneousCochains.d, Pi.zero_apply (M := fun _ => A)]) = (zeroCocyclesIso A).inv x :=
+      inhomogeneousCochains.d, Pi.zero_apply (M := fun _ => A)]) = (cocyclesIso₀ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCocycles A 0).1 inferInstance <| by
     rw [iCocycles_mk]
-    exact (zeroCocyclesIso_inv_comp_iCocycles_apply A x).symm
+    exact (cocyclesIso₀_inv_comp_iCocycles_apply A x).symm
 
-@[deprecated (since := "2025-07-02")]
-alias cocyclesMk_0_eq := cocyclesMk₀_eq
+@[deprecated (since := "2025-07-02")] alias cocyclesMk_0_eq := cocyclesMk₀_eq
 
-end zeroCocyclesIso
+end cocyclesIso₀
 
 section isoCocycles₁
 
@@ -1075,8 +1078,7 @@ lemma cocyclesMk₁_eq (x : cocycles₁ A) :
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
 
-@[deprecated (since := "2025-07-02")]
-alias cocyclesMk_1_eq := cocyclesMk₁_eq
+@[deprecated (since := "2025-07-02")] alias cocyclesMk_1_eq := cocyclesMk₁_eq
 
 end isoCocycles₁
 
@@ -1137,8 +1139,7 @@ lemma cocyclesMk₂_eq (x : cocycles₂ A) :
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
 
-@[deprecated (since := "2025-07-02")]
-alias cocyclesMk_2_eq := cocyclesMk₂_eq
+@[deprecated (since := "2025-07-02")] alias cocyclesMk_2_eq := cocyclesMk₂_eq
 
 end isoCocycles₂
 end CocyclesIso
@@ -1154,14 +1155,14 @@ abbrev H0 := groupCohomology A 0
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
 def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
-  (CochainComplex.isoHomologyπ₀ _).symm ≪≫ zeroCocyclesIso A
+  (CochainComplex.isoHomologyπ₀ _).symm ≪≫ cocyclesIso₀ A
 
 @[deprecated (since := "2025-06-11")]
 noncomputable alias isoH0 := H0Iso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H0Iso_hom  :
-    π A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
+    π A 0 ≫ (H0Iso A).hom = (cocyclesIso₀ A).hom := by
   simp [H0Iso]
 
 @[deprecated (since := "2025-06-12")]
