@@ -189,7 +189,7 @@ variable (T)
 
 /-- `T` is said to order generate `α` if, for every `a` in `α`, there exists a subset of `T` such
 that `a` is the `kernel` of `S`. -/
-def OrderGenerate := ∀ (a : α), ∃ (S : Set T), a = kernel S
+def OrderGenerates := ∀ (a : α), ∃ (S : Set T), a = kernel S
 
 variable {T}
 
