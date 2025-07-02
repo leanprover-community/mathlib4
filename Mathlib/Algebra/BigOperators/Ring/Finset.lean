@@ -178,7 +178,7 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
         (by simp_rw [Finset.ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
         (fun a _ ↦ by
           simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
-            Subtype.map_coe, id_eq, prod_attach, filter_congr_decidable]
+            Subtype.map_coe, id_eq, prod_attach]
           congr 2 with x
           simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
           tauto)

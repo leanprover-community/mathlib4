@@ -420,7 +420,7 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   change _ ≫ _ ≫ e₂.inv = (_ ≫ e₁.inv) ≫ _
   have h₁ := ((iteration I κ).map φ).w =≫ e₂.inv
   have h₂ : φ.right ≫ e₂.hom = e₁.hom ≫ ((iteration I κ).map φ).right :=
-    ((whiskerRight (ιIteration I κ) Arrow.rightFunc).naturality φ)
+    ((Functor.whiskerRight (ιIteration I κ) Arrow.rightFunc).naturality φ)
   dsimp at h₁
   rw [assoc] at h₁
   apply h₁.trans
