@@ -18,40 +18,42 @@ We also provide some basic API.
 
 namespace Polynomial
 
+variable {R : Type*}
+
 /-- This says that `p` has `natDegree` `n` and is monic. -/
-def IsMonicOfDegree {R : Type*} [Semiring R] (p : R[X]) (n : ℕ) : Prop :=
+def IsMonicOfDegree [Semiring R] (p : R[X]) (n : ℕ) : Prop :=
   p.natDegree = n ∧ p.Monic
 
-lemma IsMonicOfDegree.monic {R : Type*} [Semiring R] {p : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.monic [Semiring R] {p : R[X]} {n : ℕ}
     (h : IsMonicOfDegree p n) :
     p.Monic :=
   h.2
 
-lemma IsMonicOfDegree.natDegree_eq {R : Type*} [Semiring R] {p : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.natDegree_eq [Semiring R] {p : R[X]} {n : ℕ}
     (h : IsMonicOfDegree p n) :
     p.natDegree = n :=
   h.1
 
-lemma IsMonicOfDegree.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.ne_zero [Semiring R] [Nontrivial R] {p : R[X]} {n : ℕ}
     (h : IsMonicOfDegree p n) :
     p ≠ 0 :=
   h.2.ne_zero
 
 @[simp]
-lemma isMonicOfDegree_zero {R : Type*} [Semiring R] {p : R[X]} :
+lemma isMonicOfDegree_zero [Semiring R] {p : R[X]} :
     IsMonicOfDegree p 0 ↔ p = 1 := by
   simp only [IsMonicOfDegree]
   refine ⟨fun ⟨H₁, H₂⟩ ↦ eq_one_of_monic_natDegree_zero H₂ H₁, fun H ↦ ?_⟩
   subst H
   simp
 
-lemma IsMonicOfDegree.leadingCoeff_eq {R : Type*} [Semiring R] {p : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.leadingCoeff_eq [Semiring R] {p : R[X]} {n : ℕ}
     (hp : IsMonicOfDegree p n) :
     p.leadingCoeff = 1 :=
   Monic.def.mp hp.monic
 
 @[simp]
-lemma isMonicOfDegree_iff_of_subsingleton {R : Type*} [Semiring R] [Subsingleton R]
+lemma isMonicOfDegree_iff_of_subsingleton [Semiring R] [Subsingleton R]
     (p : R[X]) (n : ℕ) :
     IsMonicOfDegree p n ↔ n = 0 := by
   rw [Subsingleton.eq_one p]
@@ -59,14 +61,14 @@ lemma isMonicOfDegree_iff_of_subsingleton {R : Type*} [Semiring R] [Subsingleton
   · rwa [natDegree_one, eq_comm] at H
   · rw [H, isMonicOfDegree_zero]
 
-lemma isMonicOfDegree_iff {R : Type*} [Semiring R] [Nontrivial R] (p : R[X]) (n : ℕ) :
+lemma isMonicOfDegree_iff [Semiring R] [Nontrivial R] (p : R[X]) (n : ℕ) :
     IsMonicOfDegree p n ↔ p.natDegree ≤ n ∧ p.coeff n = 1 := by
   simp only [IsMonicOfDegree]
   refine ⟨fun ⟨H₁, H₂⟩ ↦ ⟨H₁.le, H₁ ▸ Monic.coeff_natDegree H₂⟩, fun ⟨H₁, H₂⟩ ↦ ⟨?_, ?_⟩⟩
   · exact natDegree_eq_of_le_of_coeff_ne_zero H₁ <| H₂ ▸ one_ne_zero
   · exact monic_of_natDegree_le_of_coeff_eq_one n H₁ H₂
 
-lemma IsMonicOfDegree.exists_natDegree_lt {R : Type*} [Semiring R] {p : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.exists_natDegree_lt [Semiring R] {p : R[X]} {n : ℕ}
     (hn : n ≠ 0)  (hp : IsMonicOfDegree p n) :
     ∃ q : R[X], p = X ^ n + q ∧ q.natDegree < n := by
   refine ⟨p.eraseLead, ?_, ?_⟩
@@ -76,13 +78,13 @@ lemma IsMonicOfDegree.exists_natDegree_lt {R : Type*} [Semiring R] {p : R[X]} {n
     rw [hp.natDegree_eq]
     omega
 
-lemma IsMonicOfDegree.natDegree_sub_X_pow {R : Type*} [Ring R] {p : R[X]} {n : ℕ} (hn : n ≠ 0)
+lemma IsMonicOfDegree.natDegree_sub_X_pow [Ring R] {p : R[X]} {n : ℕ} (hn : n ≠ 0)
     (hp : IsMonicOfDegree p n) :
     (p - X ^ n).natDegree < n := by
   obtain ⟨q, hq₁, hq₂⟩ := hp.exists_natDegree_lt hn
   simpa [hq₁]
 
-lemma IsMonicOfDegree.natDegree_sub_lt {R : Type*} [Ring R] {p q : R[X]} {n : ℕ} (hn : n ≠ 0)
+lemma IsMonicOfDegree.natDegree_sub_lt [Ring R] {p q : R[X]} {n : ℕ} (hn : n ≠ 0)
     (hp : IsMonicOfDegree p n) (hq : IsMonicOfDegree q n) :
     (p - q).natDegree < n := by
   rw [← sub_sub_sub_cancel_right p q (X ^ n)]
@@ -92,7 +94,7 @@ lemma IsMonicOfDegree.natDegree_sub_lt {R : Type*} [Ring R] {p q : R[X]} {n : �
   set q' := q - X ^ n
   compute_degree!
 
-lemma IsMonicOfDegree.mul {R : Type*} [Semiring R] {p q : R[X]} {m n : ℕ}
+lemma IsMonicOfDegree.mul [Semiring R] {p q : R[X]} {m n : ℕ}
     (hp : IsMonicOfDegree p m) (hq : IsMonicOfDegree q n) :
     IsMonicOfDegree (p * q) (m + n) := by
   rcases subsingleton_or_nontrivial R with H | H
@@ -104,7 +106,7 @@ lemma IsMonicOfDegree.mul {R : Type*} [Semiring R] {p q : R[X]} {m n : ℕ}
     exact one_ne_zero
   rw [natDegree_mul' this, hp.1, hq.1]
 
-lemma IsMonicOfDegree.pow {R : Type*} [Semiring R] {p : R[X]} {m : ℕ} (hp : IsMonicOfDegree p m)
+lemma IsMonicOfDegree.pow [Semiring R] {p : R[X]} {m : ℕ} (hp : IsMonicOfDegree p m)
     (n : ℕ) :
     IsMonicOfDegree (p ^ n) (m * n) := by
   induction n with
@@ -120,11 +122,11 @@ lemma isMonicOfDegree_X_pow (R : Type*) [Semiring R] [Nontrivial R] (n : ℕ) :
     IsMonicOfDegree ((X : R[X]) ^ n) n :=
   (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_pow_le n, coeff_X_pow_self n⟩
 
-lemma isMonicOfDegree_monomial_one {R : Type*} [Semiring R] [Nontrivial R] (n : ℕ) :
+lemma isMonicOfDegree_monomial_one [Semiring R] [Nontrivial R] (n : ℕ) :
     IsMonicOfDegree (monomial n (1 : R)) n := by
   simpa only [monomial_one_right_eq_X_pow] using isMonicOfDegree_X_pow R n
 
-lemma IsMonicOfDegree.coeff_eq {R : Type*} [Semiring R] {p q : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.coeff_eq [Semiring R] {p q : R[X]} {n : ℕ}
     (hp : IsMonicOfDegree p n) (hq : IsMonicOfDegree q n) {m : ℕ} (hm : n ≤ m) :
     p.coeff m = q.coeff m := by
   nontriviality R
@@ -135,7 +137,7 @@ lemma IsMonicOfDegree.coeff_eq {R : Type*} [Semiring R] {p q : R[X]} {n : ℕ}
     replace hq : q.natDegree < m := hq.1.trans_lt hm
     rw [coeff_eq_zero_of_natDegree_lt hp, coeff_eq_zero_of_natDegree_lt hq]
 
-lemma IsMonicOfDegree.of_mul_left {R : Type*} [Semiring R] {p q : R[X]} {m n : ℕ}
+lemma IsMonicOfDegree.of_mul_left [Semiring R] {p q : R[X]} {m n : ℕ}
     (hp : IsMonicOfDegree p m) (hpq : IsMonicOfDegree (p * q) (m + n)) :
     IsMonicOfDegree q n := by
   rcases subsingleton_or_nontrivial R with H | H
@@ -150,7 +152,7 @@ lemma IsMonicOfDegree.of_mul_left {R : Type*} [Semiring R] {p q : R[X]} {m n : �
   rw [natDegree_mul' h, hp.1] at this
   exact (Nat.add_left_cancel this.symm).symm
 
-lemma IsMonicOfDegree.of_mul_right {R : Type*} [Semiring R]  {p q : R[X]} {m n : ℕ}
+lemma IsMonicOfDegree.of_mul_right [Semiring R]  {p q : R[X]} {m n : ℕ}
     (hq : IsMonicOfDegree q n) (hpq : IsMonicOfDegree (p * q) (m + n)) :
     IsMonicOfDegree p m := by
   rcases subsingleton_or_nontrivial R with H | H
@@ -165,7 +167,7 @@ lemma IsMonicOfDegree.of_mul_right {R : Type*} [Semiring R]  {p q : R[X]} {m n :
   rw [natDegree_mul' h, hq.1] at this
   exact (Nat.add_right_cancel this.symm).symm
 
-lemma IsMonicOfDegree.add_right {R : Type*} [Semiring R] {p q : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.add_right [Semiring R] {p q : R[X]} {n : ℕ}
     (hp : IsMonicOfDegree p n) (hq : q.natDegree < n) :
     IsMonicOfDegree (p + q) n := by
   rcases subsingleton_or_nontrivial R with H | H
@@ -175,19 +177,19 @@ lemma IsMonicOfDegree.add_right {R : Type*} [Semiring R] {p q : R[X]} {n : ℕ}
   · rw [coeff_add_eq_left_of_lt hq]
     exact ((isMonicOfDegree_iff p n).mp hp).2
 
-lemma IsMonicOfDegree.sub {R : Type*} [Ring R] {p q : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.sub [Ring R] {p q : R[X]} {n : ℕ}
     (hp : IsMonicOfDegree p n) (hq : q.natDegree < n) :
     IsMonicOfDegree (p - q) n := by
   rw [sub_eq_add_neg]
   exact hp.add_right <| (natDegree_neg q) ▸ hq
 
-lemma IsMonicOfDegree.add_left {R : Type*} [Semiring R] {p q : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.add_left [Semiring R] {p q : R[X]} {n : ℕ}
     (hp : p.natDegree < n) (hq : IsMonicOfDegree q n) :
     IsMonicOfDegree (p + q) n := by
   rw [add_comm]
   exact hq.add_right hp
 
-lemma IsMonicOfDegree.of_dvd_add {R : Type*} [CommRing R] {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m)
+lemma IsMonicOfDegree.of_dvd_add [CommRing R] {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m)
     (ha : IsMonicOfDegree a m) (hb : IsMonicOfDegree b n) (hr : r.natDegree < m) (h : b ∣ a + r) :
     ∃ q : R[X], IsMonicOfDegree q (m - n) ∧ a = q * b - r := by
   obtain ⟨q, hq⟩ :=exists_eq_mul_left_of_dvd  h
@@ -195,14 +197,14 @@ lemma IsMonicOfDegree.of_dvd_add {R : Type*} [CommRing R] {a b r : R[X]} {m n : 
   rw [← hq, show m - n + n = m by omega]
   exact ha.add_right hr
 
-lemma IsMonicOfDegree.of_dvd_sub {R : Type*} [CommRing R] {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m)
+lemma IsMonicOfDegree.of_dvd_sub [CommRing R] {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m)
     (ha : IsMonicOfDegree a m) (hb : IsMonicOfDegree b n) (hr : r.natDegree < m) (h : b ∣ a - r) :
     ∃ q : R[X], IsMonicOfDegree q (m - n) ∧ a = q * b + r := by
   convert ha.of_dvd_add hmn hb ?_ h using 4 with q
   · rw [sub_neg_eq_add]
   · rwa [natDegree_neg]
 
-lemma IsMonicOfDegree.comp {R : Type*} [Semiring R] {p q : R[X]} {m n : ℕ} (hn : n ≠ 0)
+lemma IsMonicOfDegree.comp [Semiring R] {p q : R[X]} {m n : ℕ} (hn : n ≠ 0)
     (hp : IsMonicOfDegree p m) (hq : IsMonicOfDegree q n) :
     IsMonicOfDegree (p.comp q) (m * n) := by
   rcases subsingleton_or_nontrivial R with h | h
@@ -213,15 +215,15 @@ lemma IsMonicOfDegree.comp {R : Type*} [Semiring R] {p q : R[X]} {m n : ℕ} (hn
   rw [coeff_comp_degree_mul_degree (hq.natDegree_eq ▸ hn), hp.leadingCoeff_eq, hq.leadingCoeff_eq,
     one_pow, one_mul]
 
-lemma isMonicOfDegree_X_add_one {R : Type*} [Semiring R] [Nontrivial R] (r : R) :
+lemma isMonicOfDegree_X_add_one [Semiring R] [Nontrivial R] (r : R) :
     IsMonicOfDegree (X + C r) 1 :=
   (isMonicOfDegree_X R).add_right (by compute_degree!)
 
-lemma isMonicOfDegree_X_sub_one {R : Type*} [Ring R] [Nontrivial R] (r : R) :
+lemma isMonicOfDegree_X_sub_one [Ring R] [Nontrivial R] (r : R) :
     IsMonicOfDegree (X - C r) 1 :=
   (isMonicOfDegree_X R).sub (by compute_degree!)
 
-lemma isMonicOfDegree_one_iff {R : Type*} [Semiring R] [Nontrivial R] {f : R[X]} :
+lemma isMonicOfDegree_one_iff [Semiring R] [Nontrivial R] {f : R[X]} :
     IsMonicOfDegree f 1 ↔ ∃ r : R, f = X + C r := by
   refine ⟨fun H ↦ ?_, fun ⟨r, H⟩ ↦ H ▸ isMonicOfDegree_X_add_one r⟩
   refine ⟨f.coeff 0, ?_⟩
@@ -230,7 +232,7 @@ lemma isMonicOfDegree_one_iff {R : Type*} [Semiring R] [Nontrivial R] {f : R[X]}
   · simp
   · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by omega)
 
-lemma IsMonicOfDegree.aeval_add {R : Type*} [CommRing R] {p : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.aeval_add [CommRing R] {p : R[X]} {n : ℕ}
     (hp : IsMonicOfDegree p n) (r : R) :
     IsMonicOfDegree (aeval (X + C r) p) n := by
   rcases subsingleton_or_nontrivial R with H | H
@@ -238,23 +240,23 @@ lemma IsMonicOfDegree.aeval_add {R : Type*} [CommRing R] {p : R[X]} {n : ℕ}
   rw [← mul_one n]
   exact hp.comp one_ne_zero (isMonicOfDegree_X_add_one r)
 
-lemma IsMonicOfDegree.aeval_sub {R : Type*} [CommRing R] {p : R[X]} {n : ℕ}
+lemma IsMonicOfDegree.aeval_sub [CommRing R] {p : R[X]} {n : ℕ}
     (hp : IsMonicOfDegree p n) (r : R) :
     IsMonicOfDegree (aeval (X - C r) p) n := by
   rw [sub_eq_add_neg, ← map_neg]
   exact aeval_add hp (-r)
 
-lemma isMonicOfDegree_add_add_two {R : Type*} [CommSemiring R] [Nontrivial R] (a b : R) :
+lemma isMonicOfDegree_add_add_two [CommSemiring R] [Nontrivial R] (a b : R) :
     IsMonicOfDegree (X ^ 2 + C a * X + C b) 2 := by
   rw [add_assoc]
   exact (isMonicOfDegree_X_pow R 2).add_right <| by compute_degree!
 
-lemma isMonicOfDegree_sub_add_two {R : Type*} [CommRing R] [Nontrivial R] (a b : R) :
+lemma isMonicOfDegree_sub_add_two [CommRing R] [Nontrivial R] (a b : R) :
     IsMonicOfDegree (X ^ 2 - C a * X + C b) 2 := by
   rw [sub_add]
   exact (isMonicOfDegree_X_pow R 2).add_right <| by compute_degree!
 
-lemma isMonicOfDegree_two_iff {R : Type*} [CommSemiring R] [Nontrivial R] {f : R[X]} :
+lemma isMonicOfDegree_two_iff [CommSemiring R] [Nontrivial R] {f : R[X]} :
     IsMonicOfDegree f 2 ↔ ∃ a b : R, f = X ^ 2 + C a * X + C b := by
   refine ⟨fun H ↦ ?_, fun ⟨a, b, h⟩ ↦ h ▸ isMonicOfDegree_add_add_two a b⟩
   refine ⟨f.coeff 1, f.coeff 0, ext fun n ↦ ?_⟩
@@ -265,7 +267,7 @@ lemma isMonicOfDegree_two_iff {R : Type*} [CommSemiring R] [Nontrivial R] {f : R
   · exact H.coeff_eq (isMonicOfDegree_add_add_two ..) (by omega)
 
 /-- A version of `Polynomial.isMonicOfDegree_two_iff` with negated middle coefficient. -/
-lemma isMonicOfDegree_two_iff' {R : Type*} [CommRing R] [Nontrivial R] {f : R[X]} :
+lemma isMonicOfDegree_two_iff' [CommRing R] [Nontrivial R] {f : R[X]} :
     IsMonicOfDegree f 2 ↔ ∃ a b : R, f = X ^ 2 - C a * X + C b := by
   refine ⟨fun H ↦ ?_, fun ⟨a, b, h⟩ ↦ h ▸ isMonicOfDegree_sub_add_two a b⟩
   simp only [sub_eq_add_neg, ← neg_mul, ← map_neg]
