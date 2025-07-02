@@ -18,10 +18,10 @@ open TopologicalSpace Opposite CategoryTheory
 @[simps]
 def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
   obj X := Frm.of (Opens (unop X : TopCat))
-  map f := Opens.comap <| (Quiver.Hom.unop f).hom
-  map_id _ := Opens.comap_id
+  map f := Frm.ofHom <| Opens.comap <| (Quiver.Hom.unop f).hom
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=
   ⟨fun {X _ _ _} h =>  Quiver.Hom.unop_inj <| ConcreteCategory.ext <|
-    Opens.comap_injective (β := (unop X).toTop) h⟩
+    Opens.comap_injective (β := (unop X).toTop) <| FrameHom.ext <|
+      CategoryTheory.congr_fun h⟩

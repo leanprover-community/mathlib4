@@ -25,9 +25,9 @@ section Unital
 
 /-- An extension of the `ContinuousFunctionalCalculus` requiring that `cfcHom` is an isometry. -/
 class IsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
-    [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-    [Ring A] [StarRing A] [MetricSpace A] [Algebra R A]
-    extends ContinuousFunctionalCalculus R p : Prop where
+    [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+    [Ring A] [StarRing A] [MetricSpace A] [Algebra R A] : Prop
+    extends ContinuousFunctionalCalculus R A p where
   isometric (a : A) (ha : p a) : Isometry (cfcHom ha (R := R))
 
 section MetricSpace
@@ -35,7 +35,7 @@ section MetricSpace
 open scoped ContinuousFunctionalCalculus
 
 lemma isometry_cfcHom {R A : Type*} {p : outParam (A → Prop)} [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
     (a : A) (ha : p a := by cfc_tac) :
     Isometry (cfcHom (show p a from ha) (R := R)) :=
@@ -165,8 +165,8 @@ end NormedRing
 namespace SpectrumRestricts
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Semifield S] [StarRing S] [MetricSpace S] [IsTopologicalSemiring S] [ContinuousStar S]
 variable [Ring A] [StarRing A] [Algebra S A]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [MetricSpace A] [IsometricContinuousFunctionalCalculus S A q]
@@ -208,16 +208,16 @@ section NonUnital
 /-- An extension of the `NonUnitalContinuousFunctionalCalculus` requiring that `cfcₙHom` is an
 isometry. -/
 class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
-    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A]
-    extends NonUnitalContinuousFunctionalCalculus R p : Prop where
+    [IsScalarTower R A A] [SMulCommClass R A A] : Prop
+    extends NonUnitalContinuousFunctionalCalculus R A p where
   isometric (a : A) (ha : p a) : Isometry (cfcₙHom ha (R := R))
 
 section MetricSpace
 
 variable {R A : Type*} {p : outParam (A → Prop)}
-variable [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+variable [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
 variable [ContinuousStar R]
 variable [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
 variable [IsScalarTower R A A] [SMulCommClass R A A]
@@ -354,8 +354,8 @@ namespace QuasispectrumRestricts
 open NonUnitalIsometricContinuousFunctionalCalculus
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [Field S] [StarRing S] [MetricSpace S] [TopologicalRing S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [Field S] [StarRing S] [MetricSpace S] [IsTopologicalRing S] [ContinuousStar S]
 variable [NonUnitalRing A] [StarRing A] [Module S A] [IsScalarTower S A A]
 variable [SMulCommClass S A A]
 variable [Algebra R S] [Module R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
@@ -396,7 +396,7 @@ end NonUnital
 /-! ### Instances of isometric continuous functional calculi
 
 The instances for `ℝ` and `ℂ` can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic`, as those require an actual
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean`, as those require an actual
 `CStarAlgebra` instance on `A`, whereas the one for `ℝ≥0` is simply inherited from an existing
 instance for `ℝ`.
 -/
@@ -610,11 +610,10 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
       exact h_cpct |>.union isCompact_singleton
     rw [cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
     refine isometry_cfcHom a |>.comp ?_
-    simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom,
-      NonUnitalStarAlgHom.coe_coe]
+    simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom]
     refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
     let ι : C(σ 𝕜 a, σₙ 𝕜 a) := ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum 𝕜 a⟩
-    show ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
+    change ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
     apply le_antisymm (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
       (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
     · rintro ⟨x, hx⟩
@@ -622,7 +621,7 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
     · rintro ⟨x, hx⟩
       obtain (rfl | hx') : x = 0 ∨ x ∈ σ 𝕜 a := by
         simpa [quasispectrum_eq_spectrum_union_zero] using hx
-      · show ‖f 0‖ ≤ _
+      · change ‖f 0‖ ≤ _
         simp
       · exact (f : C(σₙ 𝕜 a, 𝕜)).comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
 

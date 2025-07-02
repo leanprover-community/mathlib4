@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Closed monoidal categories
@@ -49,6 +50,7 @@ This isn't an instance because it's not usually how we want to construct interna
 we'll usually prove all objects are closed uniformly.
 -/
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
+  rightAdj := Closed.rightAdj X ⋙ Closed.rightAdj Y
   adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
 
 /-- The unit object is always closed.
@@ -72,6 +74,9 @@ namespace ihom
 /-- The adjunction between `A ⊗ -` and `A ⟹ -`. -/
 def adjunction : tensorLeft A ⊣ ihom A :=
   Closed.adj
+
+instance : (tensorLeft A).IsLeftAdjoint  :=
+  (ihom.adjunction A).isLeftAdjoint
 
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
@@ -131,13 +136,9 @@ def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X) :=
 def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
   ((ihom.adjunction A).homEquiv _ _).symm
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -207,7 +208,7 @@ theorem uncurry_ihom_map (g : Y ⟶ Y') :
   apply curry_injective
   rw [curry_uncurry, curry_natural_right, ← uncurry_id_eq_ev, curry_uncurry, id_comp]
 
-/-- The internal hom out of the unit is naturally isomorphic to the identity functor.-/
+/-- The internal hom out of the unit is naturally isomorphic to the identity functor. -/
 def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
     (leftUnitorNatIso C)
@@ -267,6 +268,13 @@ end Pre
 def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
+
+/-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
+and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
+@[simps!]
+def internalHomAdjunction₂ [MonoidalClosed C] :
+    curriedTensor C ⊣₂ internalHom where
+  adj _ := ihom.adjunction _
 
 section OfEquiv
 
@@ -402,12 +410,11 @@ lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
     (α_ _ _ _).inv ≫ comp w x y ▷ _ ≫ comp w y z = _ ◁ comp x y z ≫ comp w x z := by
   apply uncurry_injective
   simp only [uncurry_natural_left, comp_eq]
-  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq, Category.assoc]
+  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq]
   rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
   rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
     ← uncurry_eq, uncurry_curry]
-  simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
-    whiskerRight_tensor, Iso.hom_inv_id_assoc]
+  simp
 
 end Enriched
 
@@ -489,7 +496,7 @@ lemma curry'_ihom_map {X Y Z : C} [Closed X] (f : X ⟶ Y) (g : Y ⟶ Z) :
   simp only [curry', ← curry_natural_right, Category.assoc]
 
 lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) :
-    curry' (f ≫ g) = (λ_ (𝟙_ C)).inv ≫ (curry' f ⊗ curry' g) ≫ comp X Y Z := by
+    curry' (f ≫ g) = (λ_ (𝟙_ C)).inv ≫ (curry' f ⊗ₘ curry' g) ≫ comp X Y Z := by
   rw [tensorHom_def_assoc, whiskerLeft_curry'_comp, MonoidalCategory.whiskerRight_id,
     Category.assoc, Category.assoc, Iso.inv_hom_id_assoc, ← unitors_equal,
     Iso.inv_hom_id_assoc, curry'_ihom_map]
@@ -497,6 +504,5 @@ lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) 
 end OrdinaryEnriched
 
 end MonoidalClosed
-attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
-  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
+
 end CategoryTheory

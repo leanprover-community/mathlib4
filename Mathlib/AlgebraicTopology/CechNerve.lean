@@ -122,11 +122,9 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
         intro x y f
         dsimp
         ext
-        · dsimp
-          simp only [WidePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
+        · simp only [WidePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
           rfl
-        · dsimp
-          simp }
+        · simp }
   right := G.right
 
 /-- A helper function used in defining the Čech adjunction. -/
@@ -138,24 +136,13 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
   left_inv := by
     intro A
     ext
-    · dsimp
-      rw [WidePullback.lift_π]
-      nth_rw 2 [← Category.id_comp A.left]
-      congr 1
-      convert X.left.map_id _
-      rw [← op_id]
-      congr 1
-      ext ⟨a, ha⟩
-      change a < 1 at ha
-      change 0 = a
-      omega
+    · simp
     · rfl
   right_inv := by
     intro A
     ext x : 2
     · refine WidePullback.hom_ext _ _ _ (fun j => ?_) ?_
-      · dsimp
-        simp
+      · simp
         rfl
       · simpa using congr_app A.w.symm x
     · rfl
@@ -276,8 +263,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
           simp only [WidePushout.ι_desc_assoc, WidePushout.ι_desc]
           rw [Category.assoc, ← X.right.map_comp]
           rfl
-        · dsimp
-          simp [← NatTrans.naturality] }
+        · simp [← NatTrans.naturality] }
 
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps]
@@ -308,9 +294,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       congr 1
       convert X.right.map_id _
       ext ⟨a, ha⟩
-      change a < 1 at ha
-      change 0 = a
-      omega
+      simp
 
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/
 abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ ⥤ Arrow C) :=
@@ -347,7 +331,7 @@ def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
           naturality := fun i j f => by
             cases f
             · cases i
-              all_goals dsimp; simp
+              all_goals simp
             · simp only [Functor.const_obj_obj, Functor.const_obj_map, terminal.comp_from]
               subsingleton } }
   isLimit :=
@@ -368,24 +352,20 @@ instance hasWidePullback [Finite ι] (X : C) :
   cases nonempty_fintype ι
   exact ⟨⟨wideCospan.limitCone ι X⟩⟩
 
--- Porting note: added to make the following definitions work
 instance hasWidePullback' [Finite ι] (X : C) :
     HasWidePullback (⊤_ C)
       (fun _ : ι => X)
       (fun _ => terminal.from X) :=
   hasWidePullback _ _
 
--- Porting note: added to make the following definitions work
 instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
 
--- Porting note: added to ease the definition of `iso`
 /-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/
 def wideCospan.limitIsoPi [Finite ι] (X : C) :
     limit (wideCospan ι X) ≅ ∏ᶜ fun _ : ι => X :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
     (wideCospan.limitCone ι X).2)
 
--- Porting note: added to ease the definition of `iso`
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=

@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 
 /-!
@@ -17,12 +17,12 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 
 ## Main results
 
- * `IsScalarTower.Subalgebra`: if `A/S/R` is a tower and `S₀` is a subalgebra
-   between `S` and `R`, then `A/S/S₀` is a tower
- * `IsScalarTower.Subalgebra'`: if `A/S/R` is a tower and `S₀` is a subalgebra
-   between `S` and `R`, then `A/S₀/R` is a tower
- * `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
-   given that `A/S/R` is a tower
+* `IsScalarTower.Subalgebra`: if `A/S/R` is a tower and `S₀` is a subalgebra
+  between `S` and `R`, then `A/S/S₀` is a tower
+* `IsScalarTower.Subalgebra'`: if `A/S/R` is a tower and `S₀` is a subalgebra
+  between `S` and `R`, then `A/S₀/R` is a tower
+* `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
+  given that `A/S/R` is a tower
 
 -/
 
@@ -119,9 +119,7 @@ lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
     [Algebra R A] (S : Subalgebra R A) :
     LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
   ext
-  simp only [← Submodule.range_subtype (Subalgebra.toSubmodule S), LinearMap.mem_range,
-    IsScalarTower.coe_toAlgHom', Subalgebra.mem_toSubmodule]
-  rfl
+  simp [algebraMap_eq]
 
 end CommSemiring
 

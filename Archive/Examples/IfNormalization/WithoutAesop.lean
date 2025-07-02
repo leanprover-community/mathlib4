@@ -90,8 +90,9 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
               · simp_all
         · have := ht₃ v
           have := he₃ v
-          simp_all? says simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not,
-              Bool.not_true, AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert]
+          simp_all? says
+            simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not, Bool.not_true,
+              AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert, reduceCtorEq, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
@@ -101,14 +102,14 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           have := he₃ w
           by_cases h : w = v
           · subst h; simp_all
-          · simp_all? says simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not,
-              Bool.not_true, AList.lookup_insert_eq_none, ne_eq, not_false_eq_true,
-              AList.lookup_insert_ne, implies_true]
+          · simp_all? says
+              simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_eq_eq_not, Bool.not_true,
+                AList.lookup_insert_eq_none, ne_eq, not_false_eq_true, AList.lookup_insert_ne,
+                implies_true]
             obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
             split at b <;> rename_i h'
             · subst h'; simp_all
-            · simp_all only [ne_eq, vars, List.singleton_append, List.cons_append,
-                Bool.not_eq_true, List.mem_cons, List.mem_append, false_or]
+            · simp_all only [vars, List.cons_append, List.mem_cons, List.mem_append, false_or]
               cases b <;> simp_all⟩
     | some b =>
       have ⟨e', he'⟩ := normalize' l (.ite (lit b) t e)

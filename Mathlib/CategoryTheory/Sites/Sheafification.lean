@@ -15,7 +15,7 @@ Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the in
 `A`-valued sheaves on `C` to presheaves admits a left exact left adjoint (sheafification).
 
 Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
-`Mathlib.CategoryTheory.Sites.LeftExact`.
+`Mathlib/CategoryTheory/Sites/LeftExact.lean`.
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -41,29 +41,29 @@ Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and 
 -/
 class HasSheafify : Prop where
   isRightAdjoint : HasWeakSheafify J A
-  isLeftExact : Nonempty (PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint))
+  isLeftExact : PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint)
 
 instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
 
 noncomputable section
 
 instance [HasSheafify J A] : PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint) :=
-  HasSheafify.isLeftExact.some
+  HasSheafify.isLeftExact
 
 theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
     [PreservesFiniteLimits F] : HasSheafify J A where
   isRightAdjoint := ⟨F, ⟨adj⟩⟩
   isLeftExact := ⟨by
     have : (sheafToPresheaf J A).IsRightAdjoint := ⟨_, ⟨adj⟩⟩
-    exact ⟨fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
-      (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩⟩
+    exact fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
+      (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   (sheafToPresheaf J A).leftAdjoint
 
 instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
-  HasSheafify.isLeftExact.some
+  HasSheafify.isLeftExact
 
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [HasWeakSheafify J A] :
@@ -73,6 +73,7 @@ instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
 instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
+  L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
 instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=

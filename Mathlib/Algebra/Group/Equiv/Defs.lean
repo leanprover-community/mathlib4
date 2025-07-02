@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Defs
 
 /-!
@@ -243,9 +242,6 @@ section map
 protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
   map_mul f
 
-attribute [deprecated map_mul (since := "2024-08-08")] MulEquiv.map_mul
-attribute [deprecated map_add (since := "2024-08-08")] AddEquiv.map_add
-
 end map
 
 section bijective
@@ -450,14 +446,10 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
--- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
--- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
     (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
 
@@ -497,7 +489,6 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
     (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
@@ -545,7 +536,7 @@ end MulEquiv
 `f.comp g = id`, returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Given a pair of additive homomorphisms `f`, `g` such that `g.comp f = id` and
   `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
@@ -561,7 +552,7 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
 returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`
   and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
@@ -573,7 +564,3 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
   left_inv := DFunLike.congr_fun h₁
   right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
-
-namespace Equiv
-
-end Equiv

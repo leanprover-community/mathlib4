@@ -61,7 +61,7 @@ theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : 
     (w : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
   rcases p with ⟨⟩
   have := supp_subset_range w
-  simp only [Polynomial.sum, support, coeff, natDegree, degree] at this ⊢
+  simp only [Polynomial.sum, support, coeff] at this ⊢
   exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.

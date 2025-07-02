@@ -67,7 +67,7 @@ theorem lt_birthday_iff {x : PGame} {o : Ordinal} :
   constructor
   · rw [birthday_def]
     intro h
-    cases' lt_max_iff.1 h with h' h'
+    rcases lt_max_iff.1 h with h' | h'
     · left
       rwa [lt_lsub_iff] at h'
     · right
@@ -111,7 +111,7 @@ theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
 
 @[simp]
 theorem birthday_ordinalToPGame (o : Ordinal) : o.toPGame.birthday = o := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [toPGame, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
   conv_rhs => rw [← lsub_typein o]
@@ -182,7 +182,7 @@ theorem birthday_eq_pGameBirthday (x : Game) :
   refine csInf_mem (Set.image_nonempty.2 ?_)
   exact ⟨_, x.out_eq⟩
 
-theorem birthday_quot_le_pGameBirthday  (x : PGame) : birthday ⟦x⟧ ≤ x.birthday :=
+theorem birthday_quot_le_pGameBirthday (x : PGame) : birthday ⟦x⟧ ≤ x.birthday :=
   csInf_le' ⟨x, rfl, rfl⟩
 
 @[simp]

@@ -96,7 +96,6 @@ def Coloring.sumEquiv : (G ⊕g H).Coloring γ ≃ G.Coloring γ × H.Coloring �
   toFun c := ⟨c.sumLeft, c.sumRight⟩
   invFun p := p.1.sum p.2
   left_inv c := by simp [sum_sumLeft_sumRight c]
-  right_inv p := rfl
 
 /-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
 with `Fin m` -/
@@ -128,10 +127,11 @@ theorem chromaticNumber_le_sum_right : H.chromaticNumber ≤ (G ⊕g H).chromati
 @[simp]
 theorem chromaticNumber_sum :
     (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
-  refine eq_max chromaticNumber_le_sum_left chromaticNumber_le_sum_right ?_
-  rintro (n | n) hG hH
-  · simp [show (none : ℕ∞) = (⊤ : ℕ∞) from rfl]
-  · let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
+  refine eq_max chromaticNumber_le_sum_left chromaticNumber_le_sum_right fun {d} hG hH => ?_
+  cases d with
+  | top => simp
+  | coe n =>
+    let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
     let cH : H.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hH).some
     exact chromaticNumber_le_iff_colorable.mpr (Nonempty.intro (cG.sum cH))
 

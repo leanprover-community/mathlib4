@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.AtTopBot.Defs
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Indicator function and filters
@@ -29,7 +32,7 @@ theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] 
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
       (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
-      (fun hxs => by simp only [mulIndicator_of_not_mem, hxs, mt hst.2 hxs, not_false_eq_true])
+      (fun hxs => by simp only [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
 
 end One
 
@@ -40,7 +43,7 @@ variable [Monoid M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 @[to_additive]
 theorem mulIndicator_union_eventuallyEq (h : ∀ᶠ a in l, a ∉ s ∩ t) :
     mulIndicator (s ∪ t) f =ᶠ[l] mulIndicator s f * mulIndicator t f :=
-  h.mono fun _a ha => mulIndicator_union_of_not_mem_inter ha _
+  h.mono fun _a ha => mulIndicator_union_of_notMem_inter ha _
 
 end Monoid
 

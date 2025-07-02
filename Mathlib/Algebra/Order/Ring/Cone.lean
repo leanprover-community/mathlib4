@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Group.Cone
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
@@ -19,8 +18,8 @@ cones in rings and the corresponding ordered rings.
 -/
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
-class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R]
-    extends AddGroupConeClass S R, SubsemiringClass S R : Prop
+class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R] : Prop
+    extends AddGroupConeClass S R, SubsemiringClass S R
 
 /-- A (positive) cone in a ring is a subsemiring that
 does not contain both `a` and `-a` for any nonzero `a`.
@@ -45,7 +44,7 @@ instance RingCone.instRingConeClass (R : Type*) [Ring R] :
 
 namespace RingCone
 
-variable {T : Type*} [OrderedRing T] {a : T}
+variable {T : Type*} [Ring T] [PartialOrder T] [IsOrderedRing T] {a : T}
 
 variable (T) in
 /-- Construct a cone from the set of non-negative elements of a partially ordered ring. -/
@@ -58,29 +57,19 @@ def nonneg : RingCone T where
 @[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-instance nonneg.isMaxCone {T : Type*} [LinearOrderedRing T] : IsMaxCone (nonneg T) where
-  mem_or_neg_mem := mem_or_neg_mem (C := AddGroupCone.nonneg T)
+instance nonneg.isMaxCone {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
+    IsMaxCone (nonneg T) where
+  mem_or_neg_mem' := mem_or_neg_mem (AddGroupCone.nonneg T)
 
 end RingCone
 
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
-/-- Construct a partially ordered ring by designating a cone in a ring.
-Warning: using this def as a constructor in an instance can lead to diamonds
-due to non-customisable field: `lt`. -/
-@[reducible] def OrderedRing.mkOfCone [RingConeClass S R] : OrderedRing R where
-  __ := ‹Ring R›
-  __ := OrderedAddCommGroup.mkOfCone C
-  zero_le_one := show _ ∈ C by simpa using one_mem C
-  mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
-
-/-- Construct a linearly ordered domain by designating a maximal cone in a domain.
-Warning: using this def as a constructor in an instance can lead to diamonds
-due to non-customisable fields: `lt`, `decidableLT`, `decidableEq`, `compare`. -/
-@[reducible] def LinearOrderedRing.mkOfCone
-    [IsDomain R] [RingConeClass S R] [IsMaxCone C]
-    (dec : DecidablePred (· ∈ C)) : LinearOrderedRing R where
-  __ := OrderedRing.mkOfCone C
-  __ := OrderedRing.toStrictOrderedRing R
-  le_total a b := by simpa using mem_or_neg_mem (b - a)
-  decidableLE _ _ := dec _
+/-- Construct a partially ordered ring by designating a cone in a ring. -/
+lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
+    letI _ : PartialOrder R := .mkOfAddGroupCone C
+    IsOrderedRing R :=
+  letI _ : PartialOrder R := .mkOfAddGroupCone C
+  haveI : IsOrderedAddMonoid R := .mkOfCone C
+  haveI : ZeroLEOneClass R := ⟨show _ ∈ C by simpa using one_mem C⟩
+  .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ C by simpa using mul_mem xnn ynn

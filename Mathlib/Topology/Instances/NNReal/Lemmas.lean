@@ -3,12 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.NNReal.Star
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topology on `ℝ≥0`
@@ -38,6 +37,8 @@ noncomputable section
 
 open Filter Metric Set TopologicalSpace Topology
 
+variable {ι : Sort*} {n : ℕ}
+
 namespace NNReal
 
 variable {α : Type*}
@@ -49,11 +50,12 @@ lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
 
 open Filter Finset
 
+@[fun_prop]
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
@@ -173,7 +175,7 @@ nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} 
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
-  (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
+  (((summable_nat_add_iff k).2 hf).sum_add_tsum_nat_add').symm
 
 theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
     ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
@@ -233,4 +235,45 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 
 end Monotone
 
+lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
+  (NNReal.powOrderIso n hn).map_ciSup' _
+
+lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · exact iSup_pow_of_ne_zero hn _
+
 end NNReal
+
+namespace ENNReal
+
+attribute [simp] ENNReal.top_pow
+
+/-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0∞`.
+
+See also `ENNReal.orderIsoRpow`. -/
+def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0∞ ≃o ℝ≥0∞ :=
+  (NNReal.powOrderIso n hn).withTopCongr.copy (· ^ n) _
+    (by cases n; (· cases hn rfl); · ext (_ | _) <;> rfl) rfl
+
+lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0∞) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
+  (powOrderIso n hn).map_iSup _
+
+open NNReal ENNReal in
+lemma iSup_pow [Nonempty ι] (f : ι → ℝ≥0∞) (n : ℕ) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · exact iSup_pow_of_ne_zero hn _
+
+end ENNReal
+
+open NNReal in
+lemma Real.iSup_pow [Nonempty ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) (n : ℕ) :
+    (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  lift f to ι → ℝ≥0 using hf; dsimp; exact mod_cast NNReal.iSup_pow f n
+
+lemma Real.iSup_pow_of_ne_zero {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) (hn : n ≠ 0) :
+    (⨆ i, f i) ^ n = ⨆ i, f i ^ n := by
+  cases isEmpty_or_nonempty ι
+  · simp [hn]
+  · exact iSup_pow hf _

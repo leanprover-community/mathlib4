@@ -10,7 +10,7 @@ import Mathlib.Data.ZMod.Basic
 # Automorphism Group of `ZMod`.
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Field TwoSidedIdeal
 
 namespace ZMod
 

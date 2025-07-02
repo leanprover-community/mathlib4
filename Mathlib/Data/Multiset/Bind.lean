@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Bind operation for multisets
@@ -170,6 +169,7 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).prod = (s.map fun a => (t a).prod).prod := by simp [bind]
 
+open scoped Relator in
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
     {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) :
     Rel p (s.bind f) (t.bind g) := by
@@ -193,7 +193,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed because not in normal form
+@[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
@@ -217,8 +217,17 @@ lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : 
   ext x
   -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
   simp_rw [count_dedup]
-  refine if_congr ?_ rfl rfl
+  congr 1
   simp
+
+variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative op]
+
+theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
+    (s.bind t).fold op ((s.map b).fold op b₀) =
+    (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
+  induction' s using Multiset.induction_on with a ha ih
+  · rw [zero_bind, map_zero, map_zero, fold_zero]
+  · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 
 end Bind
 
@@ -270,7 +279,7 @@ theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s �
 theorem product_add (s : Multiset α) : ∀ t u : Multiset β, s ×ˢ (t + u) = s ×ˢ t + s ×ˢ u :=
   Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_product, IH]
-    simp [add_comm, add_left_comm, add_assoc]
+    simp [add_left_comm, add_assoc]
 
 @[simp]
 theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod, product]
@@ -334,7 +343,7 @@ theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
 variable {s t}
 
 @[simp] lemma mem_sigma : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
-  | ⟨a, b⟩ => by simp [Multiset.sigma, and_assoc, and_left_comm]
+  | ⟨a, b⟩ => by simp [Multiset.sigma, and_left_comm]
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=

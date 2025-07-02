@@ -60,7 +60,7 @@ instance : LieGroup 𝓘(𝕜, R) n Rˣ where
     rw [this]
     have : ContMDiff (𝓘(𝕜, R).prod 𝓘(𝕜, R)) 𝓘(𝕜, R × R) n
       (fun x : Rˣ × Rˣ => ((x.1 : R), (x.2 : R))) :=
-      (contMDiff_val.comp contMDiff_fst).prod_mk_space (contMDiff_val.comp contMDiff_snd)
+      (contMDiff_val.comp contMDiff_fst).prodMk_space (contMDiff_val.comp contMDiff_snd)
     refine ContMDiff.comp ?_ this
     rw [contMDiff_iff_contDiff]
     exact contDiff_mul
@@ -70,6 +70,6 @@ instance : LieGroup 𝓘(𝕜, R) n Rˣ where
     rw [this, ContMDiff]
     refine fun x => ContMDiffAt.comp x ?_ (contMDiff_val x)
     rw [contMDiffAt_iff_contDiffAt]
-    exact contDiffAt_ring_inverse _ _
+    exact contDiffAt_ringInverse _ _
 
 end Units

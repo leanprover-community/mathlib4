@@ -47,13 +47,9 @@ namespace IsSplittingField
 
 variable {K}
 
--- Porting note: infer kinds are unsupported
--- so we provide a version of `splits'` with `f` explicit.
 theorem splits (f : K[X]) [IsSplittingField K L f] : Splits (algebraMap K L) f :=
   splits'
 
--- Porting note: infer kinds are unsupported
--- so we provide a version of `adjoin_rootSet'` with `f` explicit.
 theorem adjoin_rootSet (f : K[X]) [IsSplittingField K L f] :
     Algebra.adjoin K (f.rootSet L : Set L) = ⊤ :=
   adjoin_rootSet'
@@ -71,7 +67,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
-  ⟨fun h => by -- Porting note: replaced term-mode proof
+  ⟨fun h => by
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy

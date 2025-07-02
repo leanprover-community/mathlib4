@@ -17,14 +17,14 @@ spanned by the norms of elements in `I`.
 
 ## Main definitions
 
- * `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
-    This is used to define `Ideal.relNorm`.
- * `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
-   defined as the ideal spanned by the norms of elements in `I`.
+* `Ideal.spanNorm R (I : Ideal S)`: the ideal spanned by the norms of elements in `I`.
+  This is used to define `Ideal.relNorm`.
+* `Ideal.relNorm R (I : Ideal S)`: the relative ideal norm as a bundled monoid-with-zero morphism,
+  defined as the ideal spanned by the norms of elements in `I`.
 
 ## Main results
 
- * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
+* `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 -/
 
 open scoped nonZeroDivisors
@@ -46,22 +46,19 @@ over `I`.
 
 See also `Ideal.relNorm`.
 -/
-def spanNorm (I : Ideal S) : Ideal R :=
+noncomputable def spanNorm (I : Ideal S) : Ideal R :=
   Ideal.map (Algebra.intNorm R S) I
 
 @[simp]
 theorem spanNorm_bot :
     spanNorm R (⊥ : Ideal S) = ⊥ := span_eq_bot.mpr fun x hx => by simpa using hx
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
   simp only [spanNorm, span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map]
-  rfl
-
-variable (R)
+    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map,
+    mem_bot]
 
 theorem intNorm_mem_spanNorm {I : Ideal S} {x : S} (hx : x ∈ I) :
     Algebra.intNorm R S x ∈ I.spanNorm R :=
@@ -87,7 +84,7 @@ theorem spanNorm_singleton {r : S} :
 theorem spanNorm_top : spanNorm R (⊤ : Ideal S) = ⊤ := by
   simp [← Ideal.span_singleton_one]
 
-theorem map_spanIntNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
+theorem map_spanIntNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (spanNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) := by
   rw [spanNorm]
   nth_rw 2 [map]
@@ -138,16 +135,16 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     obtain ⟨⟨a, ha⟩, ⟨_, ⟨s, hs, rfl⟩⟩, has⟩ := ha'
     refine ⟨⟨Algebra.intNorm R S a, intNorm_mem_spanNorm _ ha⟩,
       ⟨s ^ Module.finrank K L, pow_mem hs _⟩, ?_⟩
-    simp only [Submodule.coe_mk, Subtype.coe_mk, map_pow] at has ⊢
+    simp only [map_pow] at has ⊢
     apply_fun algebraMap _ L at has
     apply_fun Algebra.norm K at has
-    simp only [_root_.map_mul, IsScalarTower.algebraMap_apply R Rₘ Sₘ] at has
+    simp only [map_mul] at has
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R K L,
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
-    simp only [_root_.map_mul, map_pow]
+    simp only [map_mul, map_pow]
     have : FiniteDimensional K L := Module.Finite_of_isLocalization R S _ _ R⁰
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
@@ -187,7 +184,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   nontriviality R
   cases subsingleton_or_nontrivial S
   · have : ∀ I : Ideal S, I = ⊤ := fun I ↦ Subsingleton.elim I ⊤
-    simp [this I, this J, this (I * J)]
+    simp [this I, this J]
   refine eq_of_localization_maximal (fun P hP ↦ ?_)
   by_cases hP0 : P = ⊥
   · subst hP0
@@ -228,20 +225,18 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
       AlgEquiv.commutes, IsScalarTower.algebraMap_apply R S L,
       IsScalarTower.algebraMap_apply S Sₚ L, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
     simp only [← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply R Rₚ (FractionRing Rₚ),
-      ← IsScalarTower.algebraMap_apply Rₚ, ← IsScalarTower.algebraMap_apply]
   simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (S := S)
     (Rₘ := Localization.AtPrime P) (Sₘ := Localization P') _ _ P.primeCompl_le_nonZeroDivisors]
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,
     span_singleton_mul_span_singleton, spanNorm_singleton, spanNorm_singleton,
-      spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
+    spanNorm_singleton, span_singleton_mul_span_singleton, map_mul]
 
 /-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
-def relNorm : Ideal S →*₀ Ideal R where
+noncomputable def relNorm : Ideal S →*₀ Ideal R where
   toFun := spanNorm R
   map_zero' := spanNorm_bot R
-  map_one' := by dsimp only; rw [one_eq_top, spanNorm_top R, one_eq_top]
+  map_one' := by rw [one_eq_top, spanNorm_top R, one_eq_top]
   map_mul' := spanNorm_mul R
 
 theorem relNorm_apply (I : Ideal S) :
@@ -259,13 +254,10 @@ theorem relNorm_bot : relNorm R (⊥ : Ideal S) = ⊥ := by
 theorem relNorm_top : relNorm R (⊤ : Ideal S) = ⊤ := by
   simpa only [one_eq_top] using map_one (relNorm R : Ideal S →*₀ _)
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem relNorm_eq_bot_iff {I : Ideal S} : relNorm R I = ⊥ ↔ I = ⊥ :=
   spanNorm_eq_bot_iff
-
-variable (R)
 
 theorem norm_mem_relNorm [Module.Free R S] (I : Ideal S) {x : S} (hx : x ∈ I) :
     Algebra.norm R x ∈ relNorm R I :=
@@ -275,7 +267,7 @@ theorem norm_mem_relNorm [Module.Free R S] (I : Ideal S) {x : S} (hx : x ∈ I) 
 theorem relNorm_singleton (r : S) : relNorm R (span ({r} : Set S)) = span {Algebra.intNorm R S r} :=
   spanNorm_singleton R
 
-theorem map_relNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
+theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (relNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) :=
   map_spanIntNorm R I f
 

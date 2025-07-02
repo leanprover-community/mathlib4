@@ -36,10 +36,14 @@ abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 /-- A category `C` `IsSfited` if
 1. the diagonal functor `C ⥤ C × C` is final.
 2. there exists some object. -/
-class IsSifted extends IsSiftedOrEmpty C : Prop where
+class IsSifted : Prop extends IsSiftedOrEmpty C where
   [nonempty : Nonempty C]
 
-attribute [instance] IsSifted.nonempty
+/- This instance is scoped since
+- it applies unconditionally (which can be a performance drain),
+- infers a *very* generic typeclass,
+- and does so from a *very* specialised class. -/
+attribute [scoped instance] IsSifted.nonempty
 
 namespace IsSifted
 

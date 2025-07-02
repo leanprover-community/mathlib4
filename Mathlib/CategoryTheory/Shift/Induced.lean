@@ -156,7 +156,7 @@ end HasShift
 
 lemma shiftFunctor_of_induced (a : A) :
     letI := HasShift.induced F A s i
-    shiftFunctor D a = s a := by
+    shiftFunctor D a = s a :=
   rfl
 
 variable (A)
@@ -206,7 +206,7 @@ variable (A)
 /-- When the target category of a functor `F : C ⥤ D` is equipped with
 the induced shift, this is the compatibility of `F` with the shifts on
 the categories `C` and `D`. -/
-def Functor.CommShift.ofInduced :
+noncomputable def Functor.CommShift.ofInduced :
     letI := HasShift.induced F A s i
     F.CommShift A := by
   letI := HasShift.induced F A s i

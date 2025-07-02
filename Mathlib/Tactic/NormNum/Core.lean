@@ -123,7 +123,7 @@ def deriveRat {α : Q(Type u)} (e : Q($α))
 /-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
 and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
 def deriveBool (p : Q(Prop)) : MetaM ((b : Bool) × BoolResult p b) := do
-  let .isBool b prf ← derive (α := (q(Prop) : Q(Type))) p | failure
+  let .isBool b prf ← derive q($p) | failure
   pure ⟨b, prf⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
@@ -145,13 +145,13 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
- { d with erased := d.erased.insert declName }
+  { d with erased := d.erased.insert declName }
 
 /--
-  Erase a name marked as a `norm_num` attribute.
+Erase a name marked as a `norm_num` attribute.
 
-  Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
-  found somewhere in the state's tree, and is not erased.
+Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
+found somewhere in the state's tree, and is not erased.
 -/
 def NormNums.erase {m : Type → Type} [Monad m] [MonadError m] (d : NormNums) (declName : Name) :
     m NormNums := do
@@ -240,7 +240,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
     let r ← deriveSimp ctx useSimp type
     match r.proof? with
     | some _ =>
-      let some (value, type) ← applySimpResultToProp g (mkFVar fvarId) type r
+      let some (value, type) ← applySimpResult g (mkFVar fvarId) type r
         | return none
       toAssert := toAssert.push { userName := localDecl.userName, type, value }
     | none =>
@@ -270,16 +270,11 @@ def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Contex
   let config ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, simprocs := _, starArg } ←
+  let { ctx, .. } ←
     elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
       (← Simp.mkContext config (simpTheorems := #[simpTheorems])
         (congrTheorems := ← getSimpCongrTheorems))
-  unless starArg do return ctx
-  let mut simpTheorems := ctx.simpTheorems
-  for h in ← getPropHyps do
-    unless simpTheorems.isErased (.fvar h) do
-      simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-  return ctx.setSimpTheorems simpTheorems
+  return ctx
 
 open Elab.Tactic in
 /--

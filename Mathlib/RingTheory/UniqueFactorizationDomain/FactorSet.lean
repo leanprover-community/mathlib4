@@ -88,7 +88,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   unfold FactorSet at p
   induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
-  · simp only [eq_self_iff_true, Associates.prod_top]
+  · simp only [Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false, not_exists]
     exact fun a => not_and_of_not_right _ a.prop.ne_zero
@@ -97,7 +97,7 @@ section count
 
 variable [DecidableEq (Associates α)]
 
-/-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`)-/
+/-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`). -/
 def bcount (p : { a : Associates α // Irreducible a }) :
     FactorSet α → ℕ
   | ⊤ => 0
@@ -154,13 +154,16 @@ theorem mem_factorSet_some {p : Associates α} {hp : Irreducible p}
     p ∈ (l : FactorSet α) ↔ Subtype.mk p hp ∈ l := by
   dsimp only [Membership.mem]; dsimp only [FactorSetMem]; split_ifs; rfl
 
-theorem reducible_not_mem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
-    ¬p ∈ s := fun h ↦ by
+theorem reducible_notMem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
+    p ∉ s := fun h ↦ by
   rwa [← factorSetMem_eq_mem, FactorSetMem, dif_neg hp] at h
+
+@[deprecated (since := "2025-05-23")]
+alias reducible_not_mem_factorSet := reducible_notMem_factorSet
 
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=
-  by_contra fun hp ↦ reducible_not_mem_factorSet hp s h
+  by_contra fun hp ↦ reducible_notMem_factorSet hp s h
 
 end Mem
 
@@ -523,7 +526,7 @@ theorem count_mul_of_coprime {a : Associates α} {b : Associates α}
     count p a.factors = 0 ∨ count p a.factors = count p (a * b).factors := by
   by_cases ha : a = 0
   · simp [ha]
-  cases' count_of_coprime ha hb hab hp with hz hb0; · tauto
+  rcases count_of_coprime ha hb hab hp with hz | hb0; · tauto
   apply Or.intro_right
   rw [count_mul ha hb hp, hb0, add_zero]
 
@@ -535,7 +538,7 @@ theorem count_mul_of_coprime' {a b : Associates α} {p : Associates α}
   by_cases hb : b = 0
   · simp [hb]
   rw [count_mul ha hb hp]
-  cases' count_of_coprime ha hb hab hp with ha0 hb0
+  rcases count_of_coprime ha hb hab hp with ha0 | hb0
   · apply Or.intro_right
     rw [ha0, zero_add]
   · apply Or.intro_left
@@ -546,7 +549,7 @@ theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
     (habk : k ∣ count p (a * b).factors) : k ∣ count p a.factors := by
   by_cases ha : a = 0
   · simpa [*] using habk
-  cases' count_of_coprime ha hb hab hp with hz h
+  rcases count_of_coprime ha hb hab hp with hz | h
   · rw [hz]
     exact dvd_zero k
   · rw [count_mul ha hb hp, h] at habk
@@ -610,7 +613,7 @@ theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
     symm
     exact eq_pow_count_factors_of_dvd_pow hp h
   · have hph := pow_ne_zero (@Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩) hp.ne_zero
-    cases' subsingleton_or_nontrivial α with hα hα
+    rcases subsingleton_or_nontrivial α with hα | hα
     · simp [eq_iff_true_of_subsingleton] at hph
     convert count_le_count_of_le hph hp (@Nat.find_spec (fun n => a ∣ p ^ n) _ ⟨n, h⟩)
     rw [count_pow hp.ne_zero hp, count_self hp, mul_one]

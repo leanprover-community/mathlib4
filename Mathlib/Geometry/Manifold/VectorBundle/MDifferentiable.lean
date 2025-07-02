@@ -30,7 +30,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
   {n : ℕ∞}
 
-
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
 /-- Characterization of differentiable functions into a vector bundle. -/
@@ -39,7 +38,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
       MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
       MDifferentiableWithinAt IM 𝓘(𝕜, F)
         (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
-  simp (config := { singlePass := true }) only [mdifferentiableWithinAt_iff_target]
+  simp +singlePass only [mdifferentiableWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
@@ -55,8 +54,14 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     exact hx
   · simp only [mfld_simps]
 
-end
+theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
+    MDifferentiableAt IM (IB.prod 𝓘(𝕜, F)) f x₀ ↔
+      MDifferentiableAt IM IB (fun x => (f x).proj) x₀ ∧
+      MDifferentiableAt IM 𝓘(𝕜, F)
+        (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f
 
+end
 
 section
 
@@ -97,7 +102,7 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
 version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
 only makes sense around a point.
- -/
+-/
 lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hϕ : MDifferentiableWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) s m₀)
@@ -135,7 +140,7 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableAt`. We also give a version for `MDifferentiableWithinAt`,
 but no version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written
 in coordinates, only makes sense around a point.
- -/
+-/
 lemma MDifferentiableAt.clm_apply_of_inCoordinates
     (hϕ : MDifferentiableAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
       (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)

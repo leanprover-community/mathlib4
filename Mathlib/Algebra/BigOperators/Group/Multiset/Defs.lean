@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.Multiset.Filter
 
 /-!
 # Sums and products over multisets
@@ -66,7 +67,7 @@ theorem prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
 
 @[to_additive (attr := simp)]
 theorem prod_singleton (a : α) : prod {a} = a := by
-  simp only [mul_one, prod_cons, ← cons_zero, eq_self_iff_true, prod_zero]
+  simp only [mul_one, prod_cons, ← cons_zero, prod_zero]
 
 @[to_additive]
 theorem prod_pair (a b : α) : ({a, b} : Multiset α).prod = a * b := by

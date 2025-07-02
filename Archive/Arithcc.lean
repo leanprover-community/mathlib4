@@ -3,7 +3,7 @@ Copyright (c) 2020 Xi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
@@ -220,7 +220,6 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   · simp_all only
   · trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
@@ -231,7 +230,6 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
   simp [StateEq]; intros
   trans ζ₂ <;> assumption
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 
@@ -243,7 +241,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
   intro r hr
   have hr : r ≤ t := Register.le_of_lt_succ hr
   rcases lt_or_eq_of_le hr with hr | hr
-  · cases' h with _ h
+  · obtain ⟨_, h⟩ := h
     specialize h r hr
     simp_all
   · simp_all
@@ -262,7 +260,7 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
   simp [StateEq, StateEqRs] at *
   constructor; · exact h.1
   intro r hr
-  cases' h with _ h
+  obtain ⟨_, h⟩ := h
   specialize h r (lt_trans hr (Register.lt_succ_self _))
   rwa [if_neg (ne_of_lt hr)] at h
 
@@ -283,8 +281,7 @@ theorem compiler_correctness
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
-    simp only [compile, List.append_assoc, List.singleton_append, List.cons_append, outcome_append,
-      outcome, value]
+    simp only [compile, List.append_assoc, List.cons_append, outcome_append, outcome, value]
     generalize value e_s₁ ξ = ν₁ at e_ih_s₁ ⊢
     generalize value e_s₂ ξ = ν₂ at e_ih_s₂ ⊢
     generalize dν : ν₁ + ν₂ = ν
@@ -320,7 +317,7 @@ theorem compiler_correctness
     have hζ₃_ν₂ : ζ₃.ac = ν₂ := by simp_all [StateEq]
     have hζ₃_ν₁ : read t ζ₃ = ν₁ := by
       simp [StateEq, StateEqRs] at hζ₃ ⊢
-      cases' hζ₃ with _ hζ₃
+      obtain ⟨_, hζ₃⟩ := hζ₃
       specialize hζ₃ t (Register.lt_succ_self _)
       simp_all
     have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := calc

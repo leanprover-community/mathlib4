@@ -15,7 +15,7 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 a linearly ordered abelian group and `R` is a field, in which case `HahnSeries Γ R` is a
 valued field, with value group `Γ`.
 These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
-in the file `RingTheory/LaurentSeries`.
+in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main Definitions
 * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
@@ -88,6 +88,9 @@ instance : Inhabited (HahnSeries Γ R) :=
 instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
   ⟨fun _ _ => HahnSeries.ext (by subsingleton)⟩
 
+theorem coeff_zero' : (0 : HahnSeries Γ R).coeff = 0 :=
+  rfl
+
 @[simp]
 theorem coeff_zero {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
   rfl
@@ -138,8 +141,7 @@ def ofIterate [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
 
 @[simp]
 lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
-  rw [HahnSeries.ext_iff]
-  rfl
+  simp_rw [HahnSeries.ext_iff, funext_iff, coeff_zero, Pi.zero_apply]
 
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
 def toIterate [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
@@ -177,13 +179,13 @@ variable {a b : Γ} {r : R}
 
 @[simp]
 theorem coeff_single_same (a : Γ) (r : R) : (single a r).coeff a = r := by
-  classical exact Pi.single_eq_same (f := fun _ => R) a r
+  classical exact Pi.single_eq_same (M := fun _ => R) a r
 
 @[deprecated (since := "2025-01-31")] alias single_coeff_same := coeff_single_same
 
 @[simp]
 theorem coeff_single_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
-  classical exact Pi.single_eq_of_ne (f := fun _ => R) h r
+  classical exact Pi.single_eq_of_ne (M := fun _ => R) h r
 
 @[deprecated (since := "2025-01-31")] alias single_coeff_of_ne := coeff_single_of_ne
 
@@ -240,6 +242,10 @@ def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
 theorem orderTop_zero : orderTop (0 : HahnSeries Γ R) = ⊤ :=
   dif_pos rfl
 
+@[simp]
+theorem orderTop_of_Subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.orderTop = ⊤ :=
+  (Subsingleton.eq_zero x) ▸ orderTop_zero
+
 theorem orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
@@ -265,8 +271,8 @@ theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
     WithTop.untop x.orderTop (ne_zero_iff_orderTop.mp hx) =
       x.isWF_support.min (support_nonempty_iff.2 hx) :=
-    WithTop.coe_inj.mp ((WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)).trans
-      (orderTop_of_ne hx))
+  WithTop.coe_inj.mp ((WithTop.coe_untop (orderTop x) (ne_zero_iff_orderTop.mp hx)).trans
+    (orderTop_of_ne hx))
 
 theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
     x.coeff g ≠ 0 := by
@@ -326,9 +332,14 @@ theorem leadingCoeff_eq_iff {x : HahnSeries Γ R} : x.leadingCoeff = 0 ↔ x = 0
 theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x.leadingCoeff ≠ 0 ↔ x ≠ 0 :=
   leadingCoeff_eq_iff.not
 
+@[simp]
 theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
   simp only [leadingCoeff, single_eq_zero_iff]
   by_cases h : r = 0 <;> simp [h]
+
+theorem coeff_untop_eq_leadingCoeff {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    x.coeff (x.orderTop.untop (ne_zero_iff_orderTop.mp hx)) = x.leadingCoeff := by
+  rw [HahnSeries.leadingCoeff_of_ne hx, (WithTop.untop_eq_iff _).mpr (HahnSeries.orderTop_of_ne hx)]
 
 variable [Zero Γ]
 
@@ -353,7 +364,7 @@ theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.ord
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
-theorem order_le_of_coeff_ne_zero {Γ} [AddMonoid Γ] [LinearOrder Γ] {x : HahnSeries Γ R}
+theorem order_le_of_coeff_ne_zero {Γ} [Zero Γ] [LinearOrder Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
   le_trans (le_of_eq (order_of_ne (ne_zero_of_coeff_ne_zero h)))
     (Set.IsWF.min_le _ _ ((mem_support _ _).2 h))
@@ -385,7 +396,7 @@ theorem zero_lt_orderTop_of_order {x : HahnSeries Γ R} (hx : 0 < x.order) : 0 <
 theorem zero_le_orderTop_iff {x : HahnSeries Γ R} : 0 ≤ x.orderTop ↔ 0 ≤ x.order := by
   by_cases h : x = 0
   · simp_all
-  · simp_all [order_of_ne h, orderTop_of_ne h, zero_lt_orderTop_iff]
+  · simp_all [order_of_ne h, orderTop_of_ne h]
 
 theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0
@@ -471,7 +482,7 @@ section LocallyFiniteLinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
@@ -499,7 +510,7 @@ theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 
   rfl
 
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
-    (hn : ∀(m : Γ), m < n → f m = 0) :
+    (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   dsimp only [order]
   by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0

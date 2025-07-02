@@ -53,7 +53,7 @@ lemma enrichedCategorySelf_comp (X Y Z : C) :
 
 end
 
-/-- A monoidal closed category is an enriched ordinary category over itself.  -/
+/-- A monoidal closed category is an enriched ordinary category over itself. -/
 scoped instance enrichedOrdinaryCategorySelf : EnrichedOrdinaryCategory C C where
   homEquiv := curryHomEquiv'
   homEquiv_id X := curry'_id X

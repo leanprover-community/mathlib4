@@ -38,7 +38,7 @@ theorem exists_reduced_fraction (x : K) :
   obtain ⟨_, b'_nonzero⟩ := mul_mem_nonZeroDivisors.mp b_nonzero
   refine ⟨a', ⟨b', b'_nonzero⟩, no_factor, ?_⟩
   refine mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) ?_
-  simp only [Subtype.coe_mk, RingHom.map_mul, Algebra.smul_def] at *
+  simp only [RingHom.map_mul, Algebra.smul_def] at *
   rw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
 
 /-- `f.num x` is the numerator of `x : f.codomain` as a reduced fraction. -/
@@ -95,7 +95,7 @@ lemma num_eq_zero (x : K) : IsFractionRing.num A x = 0 ↔ x = 0 :=
   ⟨eq_zero_of_num_eq_zero, fun h ↦ h ▸ num_zero⟩
 
 theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A x := by
-  cases' h with d hd
+  obtain ⟨d, hd⟩ := h
   have d_ne_zero : algebraMap A K (den A x) ≠ 0 :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).2
   use ↑d⁻¹ * num A x

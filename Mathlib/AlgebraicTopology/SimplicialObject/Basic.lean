@@ -3,12 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.Util.Superscript
 
 /-!
 # Simplicial objects in a category.
@@ -22,6 +23,12 @@ The following notations can be enabled via `open Simplicial`.
 
 - `X _⦋n⦌` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
 - `X ^⦋n⦌` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
+
+The following notations can be enabled via
+`open CategoryTheory.SimplicialObject.Truncated`.
+
+- `X _⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated simplicial object `X`.
+- `X ^⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated cosimplicial object `X`.
 -/
 
 open Opposite
@@ -74,7 +81,6 @@ instance [HasColimits C] : HasColimits (SimplicialObject C) :=
 
 variable {C}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
@@ -90,7 +96,7 @@ def δ {n} (i : Fin (n + 2)) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
 def σ {n} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   X.map (SimplexCategory.σ i).op
 
-/-- The diagonal of a simplex is the long edge of the simplex.-/
+/-- The diagonal of a simplex is the long edge of the simplex. -/
 def diagonal {n : ℕ} : X _⦋n⦌ ⟶ X _⦋1⦌ := X.map ((SimplexCategory.diag n).op)
 
 /-- Isomorphisms from identities in ℕ. -/
@@ -236,14 +242,33 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
-variable {C}
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. -/
+scoped syntax:max (name := mkNotation)
+  term " _⦋" term ("," term)? "⦌" noWs subscriptTerm : term
+
+open scoped SimplexCategory.Truncated in
+scoped macro_rules
+  | `($X:term _⦋$m:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
+  | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
+
+variable (C) in
+/-- Further truncation of truncated simplicial objects. -/
+@[simps!]
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.incl m n).op
 
 end Truncated
 
@@ -252,6 +277,11 @@ section Truncation
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
+  Iso.refl _
 
 end Truncation
 
@@ -284,7 +314,7 @@ end
 
 section adjunctions
 /- When the left and right Kan extensions exist, `Truncated.sk n` and `Truncated.cosk n`
-respectively define left and right adjoints to `truncation n`.-/
+respectively define left and right adjoints to `truncation n`. -/
 
 
 variable (n : ℕ)
@@ -293,11 +323,11 @@ variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F]
 
-/-- The adjunction between the n-skeleton and n-truncation.-/
+/-- The adjunction between the n-skeleton and n-truncation. -/
 noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
   lanAdjunction _ _
 
-/-- The adjunction between n-truncation and the n-coskeleton.-/
+/-- The adjunction between n-truncation and the n-coskeleton. -/
 noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
@@ -313,7 +343,7 @@ instance : ((cosk n).obj X).IsRightKanExtension ((coskAdj n).counit.app _) := by
 
 namespace Truncated
 /- When the left and right Kan extensions exist and are pointwise Kan extensions,
-`skAdj n` and `coskAdj n` are respectively coreflective and reflective.-/
+`skAdj n` and `coskAdj n` are respectively coreflective and reflective. -/
 
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasPointwiseRightKanExtension F]
@@ -326,7 +356,7 @@ instance cosk_reflective : IsIso (coskAdj (C := C) n).counit :=
 instance sk_coreflective : IsIso (skAdj (C := C) n).unit :=
   coreflective' (SimplexCategory.Truncated.inclusion n).op
 
-/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it. -/
 noncomputable def cosk.fullyFaithful :
     (Truncated.cosk (C := C) n).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
@@ -339,7 +369,7 @@ instance cosk.faithful : (Truncated.cosk (C := C) n).Faithful :=
 noncomputable instance coskAdj.reflective : Reflective (Truncated.cosk (C := C) n) :=
   Reflective.mk (truncation _) (coskAdj _)
 
-/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it. -/
 noncomputable def sk.fullyFaithful : (Truncated.sk (C := C) n).FullyFaithful :=
   Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj n)
 
@@ -374,7 +404,6 @@ variable {C}
 
 namespace Augmented
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
@@ -448,6 +477,17 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
 
 variable {C}
 
+/-- The constant augmented simplicial object functor. -/
+@[simps]
+def const : C ⥤ Augmented C where
+  obj X :=
+    { left := (SimplicialObject.const C).obj X
+      right := X
+      hom := 𝟙 _ }
+  map f :=
+    { left := (SimplicialObject.const C).map f
+      right := f }
+
 end Augmented
 
 /-- Augment a simplicial object with an object. -/
@@ -466,7 +506,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
         rw [← g.op_unop]
         simpa only [← X.map_comp, ← Category.assoc, Category.comp_id, ← op_comp] using w _ _ _ }
 
--- Porting note: removed @[simp] as the linter complains
+-- Not `@[simp]` since `simp` can prove this.
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
 
@@ -476,12 +516,12 @@ end SimplicialObject
 def CosimplicialObject :=
   SimplexCategory ⥤ C
 
+namespace CosimplicialObject
+
 @[simps!]
 instance : Category (CosimplicialObject C) := by
   dsimp only [CosimplicialObject]
   infer_instance
-
-namespace CosimplicialObject
 
 /-- `X ^⦋n⦌` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
@@ -506,7 +546,6 @@ instance [HasColimits C] : HasColimits (CosimplicialObject C) :=
 
 variable {C}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
@@ -546,14 +585,14 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
       X.δ (j.pred fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_δ' H]
 
 @[reassoc]
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     X.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ X.δ j.succ =
       X.δ j ≫ X.δ i := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ'' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_δ'' H]
 
 /-- The special case of the first cosimplicial identity -/
 @[reassoc]
@@ -613,7 +652,7 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
         X.δ (i.pred <|
           fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
 /-- The fifth cosimplicial identity -/
 @[reassoc]
@@ -667,14 +706,32 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
 instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-variable (C)
-
+variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
 @[simps!]
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
-variable {C}
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
+proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. -/
+scoped syntax:max (name := mkNotation)
+  term " ^⦋" term ("," term)? "⦌" noWs subscriptTerm : term
+
+open scoped SimplexCategory.Truncated in
+scoped macro_rules
+  | `($X:term ^⦋$m:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      fail "Failed to prove truncation property. Try writing `X ^⦋m, by ...⦌ₙ`."⟩)
+  | `($X:term ^⦋$m:term, $p:term⦌$n:subscript) =>
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, $p⟩)
+
+variable (C) in
+/-- Further truncation of truncated cosimplicial objects. -/
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj <| SimplexCategory.Truncated.incl m n
 
 end Truncated
 
@@ -683,6 +740,11 @@ section Truncation
 /-- The truncation functor from cosimplicial objects to truncated cosimplicial objects. -/
 def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n)
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
+  Iso.refl _
 
 end Truncation
 
@@ -705,7 +767,6 @@ variable {C}
 
 namespace Augmented
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
@@ -768,9 +829,20 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
             ext n
             dsimp
             rw [Category.id_comp, Category.id_comp, η.naturality] }
-      naturality := fun _ _ f => by ext <;> dsimp <;> simp }
+      naturality := fun _ _ f => by ext <;> simp }
 
 variable {C}
+
+/-- The constant augmented cosimplicial object functor. -/
+@[simps]
+def const : C ⥤ Augmented C where
+  obj X :=
+    { left := X
+      right := (CosimplicialObject.const C).obj X
+      hom := 𝟙 _ }
+  map f :=
+    { left := f
+      right := (CosimplicialObject.const C).map f }
 
 end Augmented
 
@@ -790,7 +862,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
         dsimp
         rw [Category.id_comp, Category.assoc, ← X.map_comp, w] }
 
--- Porting note: removed @[simp] as the linter complains
+-- Not `@[simp]` since `simp` can prove this.
 theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌) (w) :
     (X.augment X₀ f w).hom.app ⦋0⦌ = f := by simp
 

@@ -17,7 +17,7 @@ and use this type alias to provide a `Category` instance
 whose Hom type are Unit types.
 
 `Codiscrete.functor` promotes a function `f : C → A` (for any category `C`) to a functor
- `f : C ⥤ Codiscrete A`.
+`f : C ⥤ Codiscrete A`.
 
 Similarly, `Codiscrete.natTrans` and `Codiscrete.natIso` promote `I`-indexed families of morphisms,
 or `I`-indexed families of isomorphisms to natural transformations or natural isomorphism.
@@ -65,7 +65,7 @@ instance (A : Type*) : Category (Codiscrete A) where
 section
 variable {C : Type u} [Category.{v} C] {A : Type w}
 
-/-- Any function `C → A` lifts to a functor `C ⥤ Codiscrete A`.-/
+/-- Any function `C → A` lifts to a functor `C ⥤ Codiscrete A`. -/
 def functor (F : C → A) : C ⥤ Codiscrete A where
   obj := Codiscrete.mk ∘ F
   map _ := ⟨⟩
@@ -73,12 +73,12 @@ def functor (F : C → A) : C ⥤ Codiscrete A where
 /-- The underlying function `C → A` of a functor `C ⥤ Codiscrete A`. -/
 def invFunctor (F : C ⥤ Codiscrete A) : C → A := Codiscrete.as ∘ F.obj
 
-/-- Given two functors to a codiscrete category, there is a trivial natural transformation.-/
+/-- Given two functors to a codiscrete category, there is a trivial natural transformation. -/
 def natTrans {F G : C ⥤ Codiscrete A} : F ⟶ G where
   app _ := ⟨⟩
 
 /-- Given two functors into a codiscrete category, the trivial natural transformation is an
-natural isomorphism.-/
+natural isomorphism. -/
 def natIso {F G : C ⥤ Codiscrete A} : F ≅ G where
   hom := natTrans
   inv := natTrans
@@ -90,7 +90,7 @@ def natIsoFunctor {F : C ⥤ Codiscrete A} : F ≅ functor (Codiscrete.as ∘ F.
 
 end
 
-/-- A function induces a functor between codiscrete categories.-/
+/-- A function induces a functor between codiscrete categories. -/
 def functorOfFun {A B : Type*} (f : A → B) : Codiscrete A ⥤ Codiscrete B :=
   functor (f ∘ Codiscrete.as)
 
@@ -103,7 +103,7 @@ def oppositeEquivalence (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A wher
   unitIso := NatIso.ofComponents (fun _ => by exact Iso.refl _)
   counitIso := natIso
 
-/-- `Codiscrete.functorToCat` turns a type into a codiscrete category-/
+/-- `Codiscrete.functorToCat` turns a type into a codiscrete category. -/
 def functorToCat : Type u ⥤ Cat.{0,u} where
   obj A := Cat.of (Codiscrete A)
   map := functorOfFun
@@ -111,16 +111,14 @@ def functorToCat : Type u ⥤ Cat.{0,u} where
 open Adjunction Cat
 
 /-- For a category `C` and type `A`, there is an equivalence between functions `objects.obj C ⟶ A`
-and functors `C ⥤ Codiscrete A`.-/
+and functors `C ⥤ Codiscrete A`. -/
 def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
     (C → A) ≃ (C ⥤ Codiscrete A) where
   toFun := functor
   invFun := invFunctor
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The functor that turns a type into a codiscrete category is right adjoint to the objects
-functor.-/
+functor. -/
 def adj : objects ⊣ functorToCat := mkOfHomEquiv {
   homEquiv := fun _ _ => equivFunctorToCodiscrete
   homEquiv_naturality_left_symm := fun _ _ => rfl

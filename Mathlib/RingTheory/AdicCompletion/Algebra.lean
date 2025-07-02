@@ -60,18 +60,19 @@ def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
 
 /-- `AdicCompletion I R` is an `R`-subalgebra of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
 def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
-  Submodule.toSubalgebra (submodule I R) (fun _ ↦ by simp)
-    (fun x y hx hy m n hmn ↦ by simp [hx hmn, hy hmn])
+  Submodule.toSubalgebra (submodule I R) (fun _ ↦ by simp [transitionMap_map_one I])
+    (fun x y hx hy m n hmn ↦ by simp [hx hmn, hy hmn, transitionMap_map_mul I hmn])
 
 /-- `AdicCompletion I R` is a subring of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
 def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
   Subalgebra.toSubring (subalgebra I)
 
 instance : Mul (AdicCompletion I R) where
-  mul x y := ⟨x.val * y.val, by simp [x.property, y.property]⟩
+  mul x y := ⟨x.val * y.val, fun hmn ↦ by
+    simp [x.property, y.property, transitionMap_map_mul I hmn]⟩
 
 instance : One (AdicCompletion I R) where
-  one := ⟨1, by simp⟩
+  one := ⟨1, by simp [transitionMap_map_one I]⟩
 
 instance : NatCast (AdicCompletion I R) where
   natCast n := ⟨n, fun _ ↦ rfl⟩
@@ -80,7 +81,7 @@ instance : IntCast (AdicCompletion I R) where
   intCast n := ⟨n, fun _ ↦ rfl⟩
 
 instance : Pow (AdicCompletion I R) ℕ where
-  pow x n := ⟨x.val ^ n, fun _ ↦ by simp [x.property]⟩
+  pow x n := ⟨x.val ^ n, fun hmn ↦ by simp [x.property, transitionMap_map_pow I hmn]⟩
 
 instance : CommRing (AdicCompletion I R) :=
   let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
@@ -90,9 +91,11 @@ instance : CommRing (AdicCompletion I R) :=
 
 instance [Algebra S R] : Algebra S (AdicCompletion I R) where
   algebraMap :=
-  { toFun r := ⟨algebraMap S (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by
-      simp [-Ideal.Quotient.mk_algebraMap,
-        IsScalarTower.algebraMap_apply S R (R ⧸ (I ^ _ • ⊤ : Ideal R))]⟩
+  { toFun r := ⟨algebraMap S (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, fun hmn ↦ by
+      simp only [Pi.algebraMap_apply,
+        IsScalarTower.algebraMap_apply S R (R ⧸ (I ^ _ • ⊤ : Ideal R)),
+        Ideal.Quotient.algebraMap_eq, mapQ_eq_factor]
+      rfl⟩
     map_one' := Subtype.ext <| map_one _
     map_mul' x y := Subtype.ext <| map_mul _ x y
     map_zero' := Subtype.ext <| map_zero _
@@ -239,8 +242,8 @@ instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
     property := fun {m n} hmn ↦ by
       apply induction_on I R r (fun r ↦ ?_)
       apply induction_on I M x (fun x ↦ ?_)
-      simp only [coe_eval, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
-        mk_smul_mk, LinearMapClass.map_smul, transitionMap_mk]
+      simp only [coe_eval, mapQ_eq_factor, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
+        mk_smul_mk, map_smul, mapQ_apply, LinearMap.id_coe, id_eq]
       rw [smul_mk I hmn]
   }
 
@@ -259,7 +262,7 @@ instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
     simp only [smul_eval, val_mul, mul_smul]
   smul_zero r := by ext n; simp
   smul_add r x y := by ext n; simp
-  add_smul r s x := by ext n; simp [val_smul, add_smul]
+  add_smul r s x := by ext n; simp [add_smul]
   zero_smul x := by ext n; simp
 
 instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where

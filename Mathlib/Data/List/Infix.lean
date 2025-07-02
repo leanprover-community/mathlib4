@@ -3,7 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.List.Induction
 
 /-!
 # Prefixes, suffixes, infixes
@@ -16,7 +17,7 @@ This file proves properties about
 * `List.tails`: The list of prefixes of a list.
 * `insert` on lists
 
-All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
+All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 
 ## Notation
 
@@ -25,7 +26,7 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace List
 
@@ -34,22 +35,6 @@ variable {l l₁ l₂ l₃ : List α} {a b : α}
 /-! ### prefix, suffix, infix -/
 
 section Fix
-
-@[deprecated IsSuffix.reverse (since := "2024-08-12")] alias isSuffix.reverse := IsSuffix.reverse
-@[deprecated IsPrefix.reverse (since := "2024-08-12")] alias isPrefix.reverse := IsPrefix.reverse
-@[deprecated IsInfix.reverse (since := "2024-08-12")] alias isInfix.reverse := IsInfix.reverse
-
-@[deprecated IsInfix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_infix_of_length_eq (h : l₁ <:+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
-
-@[deprecated IsPrefix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
-
-@[deprecated IsSuffix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
 
 @[gcongr] lemma IsPrefix.take (h : l₁ <+: l₂) (n : ℕ) : l₁.take n <+: l₂.take n := by
   simpa [prefix_take_iff, Nat.min_le_left] using (take_prefix n l₁).trans h
@@ -65,6 +50,39 @@ lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l�
 
 @[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
   simp [prefix_take_iff, take_prefix]; omega
+
+@[gcongr]
+protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :
+    l₁.flatten <+: l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsPrefix.flatMap (h : l₁ <+: l₂) (f : α → List β) :
+    l₁.flatMap f <+: l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
+protected theorem IsSuffix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+ l₂) :
+    l₁.flatten <:+ l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsSuffix.flatMap (h : l₁ <:+ l₂) (f : α → List β) :
+    l₁.flatMap f <:+ l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
+protected theorem IsInfix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+: l₂) :
+    l₁.flatten <:+: l₂.flatten := by
+  rcases h with ⟨l, l', rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsInfix.flatMap (h : l₁ <:+: l₂) (f : α → List β) :
+    l₁.flatMap f <:+: l₂.flatMap f :=
+  (h.map _).flatten
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
@@ -101,11 +119,6 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
     letI := l₁.decidableInfix l₂
     @decidable_of_decidable_of_iff (l₁ <+: b :: l₂ ∨ l₁ <:+: l₂) _ _
       infix_cons_iff.symm
-
-@[deprecated cons_prefix_cons (since := "2024-08-14")]
-theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
-  simp
-
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
@@ -192,23 +205,23 @@ theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| t
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
   | [] => by simp
-  | a :: l => by simp [tails_eq_inits l, append_left_inj]
+  | a :: l => by simp [tails_eq_inits l]
 
 theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 @[simp]
 theorem length_tails (l : List α) : length (tails l) = length l + 1 := by
@@ -252,7 +265,7 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction' l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take]; omega)
+  apply ext_getElem <;> (simp [take_take] <;> omega)
 
 end InitsTails
 
@@ -270,8 +283,8 @@ theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l el
 @[simp]
 theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   by_cases h : a ∈ l
-  · simp only [insert_of_mem h, insert, suffix_refl]
-  · simp only [insert_of_not_mem h, suffix_cons, insert]
+  · simp only [insert_of_mem h, suffix_refl]
+  · simp only [insert_of_not_mem h, suffix_cons]
 
 theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix
@@ -283,14 +296,5 @@ theorem subset_insert (a : α) (l : List α) : l ⊆ l.insert a :=
   (sublist_insert a l).subset
 
 end Insert
-
-@[deprecated (since := "2024-08-15")] alias mem_of_mem_suffix := IsSuffix.mem
-
-@[deprecated IsPrefix.getElem (since := "2024-08-15")]
-theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
-    x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
-  simp only [get_eq_getElem, IsPrefix.getElem h hn]
-
-@[deprecated (since := "2024-08-15")] alias IsPrefix.head_eq := IsPrefix.head
 
 end List

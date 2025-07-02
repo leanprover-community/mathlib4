@@ -32,8 +32,8 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     Partrec.nat_iff.1
       (Partrec.rfindOpt <|
         Primrec.option_orElse.to_comp.comp
-          (Code.evaln_prim.to_comp.comp <| (snd.pair (const cf)).pair fst)
-          (Code.evaln_prim.to_comp.comp <| (snd.pair (const cg)).pair fst))
+          (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cf)).pair fst)
+          (Code.primrec_evaln.to_comp.comp <| (snd.pair (const cg)).pair fst))
   refine ⟨_, this, fun n => ?_⟩
   have : ∀ x ∈ rfindOpt fun k ↦ HOrElse.hOrElse (Code.evaln k cf n) fun _x ↦ Code.evaln k cg n,
       x ∈ Code.eval cf n ∨ x ∈ Code.eval cg n := by
@@ -41,7 +41,7 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
     revert e
     simp only [Option.mem_def]
-    cases' e' : cf.evaln k n with y <;> simp <;> intro e
+    rcases e' : cf.evaln k n with - | y <;> simp <;> intro e
     · exact Or.inr (Code.evaln_sound e)
     · subst y
       exact Or.inl (Code.evaln_sound e')
@@ -51,11 +51,11 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
   simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
   obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
   · refine ⟨k, x, ?_⟩
-    simp only [e, Option.some_orElse, Option.mem_def]
+    simp only [e, Option.orElse_some, Option.mem_def, Option.orElse_eq_orElse]
   · refine ⟨k, ?_⟩
-    cases' cf.evaln k n with y
-    · exact ⟨x, by simp only [e, Option.mem_def, Option.none_orElse]⟩
-    · exact ⟨y, by simp only [Option.some_orElse, Option.mem_def]⟩
+    rcases cf.evaln k n with - | y
+    · exact ⟨x, by simp only [e, Option.mem_def, Option.orElse_eq_orElse, Option.orElse_none]⟩
+    · exact ⟨y, by simp only [Option.orElse_eq_orElse, Option.orElse_some, Option.mem_def]⟩
 
 end Nat.Partrec
 
@@ -80,7 +80,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
       fun a => ?_⟩
   have : ∀ x ∈ k' a, x ∈ f a ∨ x ∈ g a := by
     intro x h'
-    simp only [k', exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
+    simp only [k', mem_coe, mem_bind_iff, Option.mem_def] at h'
     obtain ⟨n, hn, hx⟩ := h'
     have := (H _).1 _ hn
     simp only [decode₂_encode, coe_some, bind_some, mem_map_iff] at this
@@ -94,7 +94,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
   have hk : (k (encode a)).Dom :=
     (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using h)
   exists hk
-  simp only [exists_prop, mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
+  simp only [mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
   obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
     simp only [e.symm, encodek, coe_some, some_dom]
 
@@ -106,7 +106,7 @@ theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
     ⟨(K _).1 _, fun h => by
       have : (k a).Dom := (K _).2.2 (h.imp Exists.fst Exists.fst)
       refine ⟨this, ?_⟩
-      cases' h with h h <;> cases' (K _).1 _ ⟨this, rfl⟩ with h' h'
+      rcases h with h | h <;> rcases (K _).1 _ ⟨this, rfl⟩ with h' | h'
       · exact mem_unique h' h
       · exact (H _ _ h _ h').symm
       · exact H _ _ h' _ h
@@ -120,13 +120,15 @@ theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computabl
     ((@Computable.decode σ _).comp snd).ofOption.to₂).of_eq
     fun a => by cases c a <;> simp [ef, eg, encodek]
 
-nonrec theorem sum_casesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ →. σ} (hf : Computable f)
+nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Partrec₂ h) : @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
-    (cond (sum_casesOn hf (const true).to₂ (const false).to₂)
-          (sum_casesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
-          (sum_casesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
+    (cond (sumCasesOn hf (const true).to₂ (const false).to₂)
+          (sumCasesOn_left hf (option_some_iff.2 hg).to₂ (const Option.none).to₂)
+          (sumCasesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
       fun a => by cases f a <;> simp only [Bool.cond_true, Bool.cond_false]
+
+@[deprecated (since := "2025-02-21")] alias sum_casesOn := Partrec.sumCasesOn
 
 end Partrec
 
@@ -135,17 +137,17 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
   ∃ _ : DecidablePred p, Computable fun a => decide (p a)
 
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
- -/
+-/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
 @[deprecated (since := "2025-02-06")] alias RePred := REPred
 
-@[deprecated (since := "2025-02-06")] alias RePred.of_eq := RePred
-
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
+
+@[deprecated (since := "2025-02-06")] alias RePred.of_eq := REPred.of_eq
 
 theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β} (h : Partrec f) :
     REPred fun a => (f a).Dom :=
@@ -197,7 +199,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
-  cases' h with _ h
+  obtain ⟨_, h⟩ := h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
@@ -354,16 +356,16 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
     ((prim Nat.Primrec'.pred).comp₁ Nat.pred hf)).of_eq
     fun v =>
     Part.ext fun b => by
-      simp only [Nat.rfindOpt, exists_prop, Nat.sub_eq_zero_iff_le, PFun.coe_val, Part.mem_bind_iff,
+      simp only [Nat.rfindOpt, Nat.sub_eq_zero_iff_le, PFun.coe_val, Part.mem_bind_iff,
         Part.mem_some_iff, Option.mem_def, Part.mem_coe]
       refine
         exists_congr fun a => (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h => ?_)
       · congr
         funext n
-        cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ] <;> rfl
+        cases f (n ::ᵥ v) <;> simp <;> rfl
       · have := Nat.rfind_spec h
         simp only [Part.coe_some, Part.mem_some_iff] at this
-        revert this; cases' f (a ::ᵥ v) with c <;> intro this
+        revert this; rcases f (a ::ᵥ v) with - | c <;> intro this
         · cases this
         rw [← Option.some_inj, eq_comm]
         rfl
@@ -383,7 +385,7 @@ theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
       rfindOpt <|
         of_prim <|
           Primrec.encode_iff.2 <|
-            evaln_prim.comp <|
+            primrec_evaln.comp <|
               (Primrec.vector_head.pair (_root_.Primrec.const c)).pair <|
                 Primrec.vector_head.comp Primrec.vector_tail)
 

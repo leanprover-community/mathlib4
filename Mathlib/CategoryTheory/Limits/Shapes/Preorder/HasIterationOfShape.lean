@@ -35,6 +35,8 @@ class HasIterationOfShape : Prop where
 
 attribute [instance] HasIterationOfShape.hasColimitsOfShape
 
+instance [HasColimitsOfSize.{w, w} C] : HasIterationOfShape J C where
+
 variable [HasIterationOfShape J C]
 
 variable {J} in
@@ -63,7 +65,7 @@ instance : HasIterationOfShape J (K ⥤ C) where
 variable {J} [SuccOrder J] [WellFoundedLT J]
 
 lemma hasColimitsOfShape_of_initialSeg
-    {α : Type*} [LinearOrder α] (f : α ≤i J) [Nonempty α] :
+    {α : Type*} [PartialOrder α] (f : α ≤i J) [Nonempty α] :
     HasColimitsOfShape α C := by
   by_cases hf : Function.Surjective f
   · exact hasColimitsOfShape_of_equivalence
@@ -71,10 +73,10 @@ lemma hasColimitsOfShape_of_initialSeg
   · let s := f.toPrincipalSeg hf
     obtain ⟨i, hi₀⟩ : ∃ i, i = s.top := ⟨_, rfl⟩
     induction i using SuccOrder.limitRecOn with
-    | hm i hi =>
+    | isMin i hi =>
       subst hi₀
       exact (hi.not_lt (s.lt_top (Classical.arbitrary _))).elim
-    | hs i hi _ =>
+    | succ i hi _ =>
       obtain ⟨a, rfl⟩ := (s.mem_range_iff_rel (b := i)).2 (by
         simpa only [← hi₀] using Order.lt_succ_of_not_isMax hi)
       have : OrderTop α :=
@@ -83,7 +85,7 @@ lemma hasColimitsOfShape_of_initialSeg
             rw [← s.le_iff_le]
             exact Order.le_of_lt_succ (by simpa only [hi₀] using s.lt_top b) }
       infer_instance
-    | hl i hi =>
+    | isSuccLimit i hi =>
       subst hi₀
       exact hasColimitsOfShape_of_isSuccLimit' C s hi
 
@@ -97,5 +99,8 @@ lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
       exact ⟨⟨a, ha⟩⟩
     exact hasColimitsOfShape_of_initialSeg  _
       (InitialSeg.trans (Set.principalSegIio j) h)
+
+instance (j : J) : HasIterationOfShape (Set.Iic j) C :=
+  hasIterationOfShape_of_initialSeg C (Set.initialSegIic j)
 
 end CategoryTheory.Limits

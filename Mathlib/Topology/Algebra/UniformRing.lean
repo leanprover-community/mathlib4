@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Completion of topological rings:
@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.UniformGroup.Basic
 This files endows the completion of a topological ring with a ring structure.
 More precisely the instance `UniformSpace.Completion.ring` builds a ring structure
 on the completion of a ring endowed with a compatible uniform structure in the sense of
-`UniformAddGroup`. There is also a commutative version when the original ring is commutative.
+`IsUniformAddGroup`. There is also a commutative version when the original ring is commutative.
 Moreover, if a topological ring is an algebra over a commutative semiring, then so is its
 `UniformSpace.Completion`.
 
@@ -56,14 +56,14 @@ theorem coe_one : ((1 : α) : Completion α) = 1 :=
 
 end one_and_mul
 
-variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
+variable {α : Type*} [Ring α] [UniformSpace α] [IsTopologicalRing α]
 
 @[norm_cast]
 theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
   ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 
-variable [UniformAddGroup α]
+variable [IsUniformAddGroup α]
 
 instance : ContinuousMul (Completion α) where
   continuous_mul := by
@@ -139,7 +139,7 @@ def coeRingHom : α →+* Completion α where
 theorem continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :=
   continuous_coe α
 
-variable {β : Type u} [UniformSpace β] [Ring β] [UniformAddGroup β] [TopologicalRing β]
+variable {β : Type u} [UniformSpace β] [Ring β] [IsUniformAddGroup β] [IsTopologicalRing β]
   (f : α →+* β) (hf : Continuous f)
 
 /-- The completion extension as a ring morphism. -/
@@ -170,7 +170,7 @@ theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α) :
   simp only [Completion.extensionHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     UniformSpace.Completion.extension_coe <| uniformContinuous_addMonoidHom_of_continuous hf]
 
-instance topologicalRing : TopologicalRing (Completion α) where
+instance topologicalRing : IsTopologicalRing (Completion α) where
   continuous_add := continuous_add
   continuous_mul := continuous_mul
 
@@ -180,8 +180,8 @@ def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
 
 section Algebra
 
-variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [TopologicalRing A] (R : Type*)
-  [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
+variable (A : Type*) [Ring A] [UniformSpace A] [IsUniformAddGroup A] [IsTopologicalRing A]
+  (R : Type*) [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
@@ -207,7 +207,7 @@ end Algebra
 
 section CommRing
 
-variable (R : Type*) [CommRing R] [UniformSpace R] [UniformAddGroup R] [TopologicalRing R]
+variable (R : Type*) [CommRing R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
 
 instance commRing : CommRing (Completion R) :=
   { Completion.ring with
@@ -228,7 +228,7 @@ namespace UniformSpace
 variable {α : Type*}
 
 -- TODO: move (some of) these results to the file about topological rings
-theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologicalRing α] :
     inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
@@ -236,7 +236,7 @@ theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [Topolog
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
-def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
   toEquiv := Quotient.congrRight fun x y => by rw [inseparableSetoid_ring]
   continuous_toFun := continuous_id.quotient_map' <| by
@@ -244,19 +244,19 @@ def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [Topologi
   continuous_invFun := continuous_id.quotient_map' <| by
     rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
 
-instance commRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+instance commRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
     CommRing (SeparationQuotient α) :=
   (sepQuotHomeomorphRingQuot _).commRing
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an equivalence between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
-def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure :=
   (sepQuotHomeomorphRingQuot _).ringEquiv
 
-instance topologicalRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
-    TopologicalRing (SeparationQuotient α) where
+instance topologicalRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+    IsTopologicalRing (SeparationQuotient α) where
   toContinuousAdd :=
     (sepQuotHomeomorphRingQuot α).isInducing.continuousAdd (sepQuotRingEquivRingQuot α)
   toContinuousMul :=
@@ -270,8 +270,8 @@ end UniformSpace
 section UniformExtension
 
 variable {α : Type*} [UniformSpace α] [Semiring α]
-variable {β : Type*} [UniformSpace β] [Semiring β] [TopologicalSemiring β]
-variable {γ : Type*} [UniformSpace γ] [Semiring γ] [TopologicalSemiring γ]
+variable {β : Type*} [UniformSpace β] [Semiring β] [IsTopologicalSemiring β]
+variable {γ : Type*} [UniformSpace γ] [Semiring γ] [IsTopologicalSemiring γ]
 variable [T2Space γ] [CompleteSpace γ]
 
 /-- The dense inducing extension as a ring homomorphism. -/

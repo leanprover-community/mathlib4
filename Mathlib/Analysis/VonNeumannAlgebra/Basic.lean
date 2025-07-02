@@ -60,7 +60,6 @@ Thus we can't say that the bounded operators `H →L[ℂ] H` form a `VonNeumannA
 (although we will later construct the instance `WStarAlgebra (H →L[ℂ] H)`),
 and instead will use `⊤ : VonNeumannAlgebra H`.
 -/
--- Porting note: I don't think the nonempty instance linter exists yet
 structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] extends StarSubalgebra ℂ (H →L[ℂ] H) where
   /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/
@@ -80,7 +79,6 @@ instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
--- Porting note: `StarMemClass` should be in `Prop`?
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'
 
@@ -116,7 +114,7 @@ theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
   S.centralizer_centralizer'
 
 /-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`. -/
-def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
+noncomputable def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
   toStarSubalgebra := StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H))
   centralizer_centralizer' := by simp
 

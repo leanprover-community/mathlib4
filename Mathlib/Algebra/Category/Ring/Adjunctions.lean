@@ -5,8 +5,8 @@ Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.CategoryTheory.Adjunction.Over
--- import Mathlib.Algebra.Category.Mon
+import Mathlib.CategoryTheory.Comma.Over.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Adjunctions in `CommRingCat`
@@ -40,10 +40,7 @@ def free : Type u ⥤ CommRingCat.{u} where
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α ℤ :=
   rfl
 
--- The `simpNF` linter complains here, even though it is a `rfl` lemma,
--- because the implicit arguments on the left-hand side simplify via `dsimp`.
--- (That is, the left-hand side really is not in simp normal form.)
-@[simp, nolint simpNF]
+-- This is not a `@[simp]` lemma as the left-hand side simplifies via `dsimp`.
 theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 
@@ -90,11 +87,13 @@ def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
 
-@[simps]
+@[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
+set_option maxHeartbeats 400000 in
+-- `simp` is taking longer after nightly-2025-03-25.
 /-- The adjunction `G ↦ R[G]` and `S ↦ S` between `CommGrp` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :
     monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
