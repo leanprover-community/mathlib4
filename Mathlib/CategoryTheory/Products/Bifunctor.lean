@@ -98,3 +98,5 @@ lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X
     (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
 
 end NatTrans
+
+end CategoryTheory
