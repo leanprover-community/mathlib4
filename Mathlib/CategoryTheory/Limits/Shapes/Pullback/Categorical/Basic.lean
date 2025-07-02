@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.CatCommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 
 /-! # Categorical pullbacks
 
@@ -40,8 +41,6 @@ equivalent to `CatCommSqOver F G X`.
   example 5.3.9, although we take a slightly different (equivalent) model of the object.
 
 ## TODOs:
-* 2-functoriality of the construction with respect to "transformation of categorical
-  cospans".
 * Full equivalence-invariance of the notion (follows from suitable 2-functoriality).
 * Define a `CatPullbackSquare` typeclass extending `CatCommSq`that encodes the
   fact that a given `CatCommSq` defines an equivalence between the top left
@@ -54,7 +53,8 @@ equivalent to `CatCommSqOver F G X`.
 
 -/
 
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ v₁₃
+universe u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂ u₁₃
 
 namespace CategoryTheory.Limits
 
@@ -364,6 +364,150 @@ end
 end functorEquiv
 
 end
+
+section Bifunctoriality
+
+namespace CatCommSqOver
+
+variable {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
+  [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
+  {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+
+/-- Transform a `CatCommSqOver F G X` by "whiskering it" with a
+`CatCospanTransform`. -/
+@[simps!]
+def transform (X : Type u₇) [Category.{v₇} X]
+    (ψ : CatCospanTransform F G F' G') :
+    CatCommSqOver F G X ⥤ CatCommSqOver F' G' X where
+  obj S :=
+    { fst := S.fst ⋙ ψ.left
+      snd := S.snd ⋙ ψ.right
+      iso :=
+        (Functor.associator _ _ _) ≪≫
+          isoWhiskerLeft S.fst (ψ.squareLeft.iso.symm) ≪≫
+          (Functor.associator _ _ _).symm ≪≫
+          isoWhiskerRight S.iso _ ≪≫
+          isoWhiskerLeft S.snd (ψ.squareRight.iso) ≪≫
+          (Functor.associator _ _ _).symm }
+  map {x y} f :=
+    { fst := whiskerRight f.fst ψ.left
+      snd := whiskerRight f.snd ψ.right
+      w := by
+        ext x
+        dsimp
+        simp only [Category.comp_id, Category.id_comp,
+          CatCommSq.iso_inv_naturality_assoc, Category.assoc,
+          NatIso.cancel_natIso_inv_left, Functor.comp_obj]
+        simp [← Functor.map_comp_assoc] }
+
+/-- A morphism of `CatCospanTransform` induce a natural transformation of
+the functor they induce on `CatCommSqOver`. -/
+@[simps!]
+def transform₂ (X : Type u₇) [Category.{v₇} X]
+    {ψ ψ' : CatCospanTransform F G F' G'} (η : ψ ⟶ ψ') :
+    transform X ψ ⟶ transform X ψ' where
+  app S :=
+    { fst := { app y := η.left.app (S.fst.obj y) }
+      snd := { app y := η.right.app (S.snd.obj y) }
+      w := by
+        ext t
+        dsimp
+        simp only [transform_obj_iso_hom_app, Category.assoc,
+          CatCospanTransformMorphism.right_coherence_app, Functor.comp_obj,
+          NatTrans.naturality_assoc]
+        haveI := ψ.squareLeft.iso.inv.app (S.fst.obj t) ≫=
+          η.left_coherence_app (S.fst.obj t)
+        simp only [Iso.inv_hom_id_app_assoc] at this
+        simp [this] }
+
+variable {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
+  [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
+  {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
+
+/-- The construction `CatCommSqOver.transform` respects vertical composition
+of `CatCospanTransform`. -/
+@[simps!]
+def transformComp (X : Type u₁₀) [Category.{v₁₀} X]
+    (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
+    transform X (ψ.comp ψ') ≅ (transform X ψ) ⋙ (transform X ψ') :=
+  NatIso.ofComponents fun _ =>
+    CategoricalPullback.mkIso
+      (Functor.associator _ _ _).symm
+      (Functor.associator _ _ _).symm
+
+/-- The construction `CatCommSqOver.transform` respects the identity
+`CatCospanTransform`. -/
+@[simps!]
+def transformId (X : Type u₄) [Category.{v₄} X]
+    (F : A ⥤ B) (G : C ⥤ B) :
+    transform X (CatCospanTransform.id F G) ≅ 𝟭 _ :=
+  NatIso.ofComponents fun _ =>
+    CategoricalPullback.mkIso
+      (Functor.rightUnitor _)
+      (Functor.rightUnitor _)
+
+-- Time for our beloved pseudofunctors lemmas.
+
+open scoped CatCospanTransform
+
+lemma transform₂_whiskerLeft
+    (X : Type u₇) [Category.{v₇} X]
+    (ψ : CatCospanTransform F G F' G')
+    {φ φ' : CatCospanTransform F' G' F'' G''} (α : φ ⟶ φ') :
+    transform₂ X (ψ ◁ α) =
+    (transformComp X ψ φ).hom ≫
+      whiskerLeft (transform X ψ) (transform₂ X α) ≫
+      (transformComp X ψ φ').inv := by
+  aesop_cat
+
+lemma transform₂_whiskerRight
+    (X : Type u₇) [Category.{v₇} X]
+    {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ⟶ ψ')
+    (φ : CatCospanTransform F' G' F'' G'') :
+    transform₂ X (α ▷ φ) =
+    (transformComp X ψ φ).hom ≫
+      whiskerRight (transform₂ X α) (transform X φ) ≫
+      (transformComp X ψ' φ).inv := by
+  aesop_cat
+
+lemma transform₂_associator
+    {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
+    [Category.{v₁₀} A'''] [Category.{v₁₁} B'''] [Category.{v₁₂} C''']
+    {F''' : A''' ⥤ B'''} {G''' : C''' ⥤ B'''}
+    (X : Type u₁₃) [Category.{v₁₃} X]
+    (ψ : CatCospanTransform F G F' G') (φ : CatCospanTransform F' G' F'' G'')
+    (τ : CatCospanTransform F'' G'' F''' G''') :
+    transform₂ X (α_ ψ φ τ).hom =
+    (transformComp X (ψ.comp φ) τ).hom ≫
+      whiskerRight (transformComp X ψ φ).hom (transform X τ) ≫
+      ((transform X ψ).associator (transform X φ) (transform X τ)).hom ≫
+      whiskerLeft (transform X ψ) (transformComp X φ τ).inv ≫
+      (transformComp X ψ (φ.comp τ)).inv := by
+  aesop_cat
+
+lemma transform₂_leftUnitor (X : Type u₇) [Category.{v₇} X]
+    (ψ : CatCospanTransform F G F' G') :
+    transform₂ X (λ_ ψ).hom =
+    (transformComp X (.id F G) ψ).hom ≫
+      whiskerRight (transformId X F G).hom (transform X ψ) ≫
+      (transform X ψ).leftUnitor.hom := by
+  aesop_cat
+
+lemma transform₂_rightUnitor (X : Type u₇) [Category.{v₇} X]
+    (ψ : CatCospanTransform F G F' G') :
+    transform₂ X (ρ_ ψ).hom =
+    (transformComp X ψ (.id F' G')).hom ≫
+      whiskerLeft  (transform X ψ) (transformId X F' G').hom ≫
+      (transform X ψ).rightUnitor.hom := by
+  aesop_cat
+
+end CatCommSqOver
+
+namespace CategoricalPullback
+
+end CategoricalPullback
+
+end Bifunctoriality
 
 end CategoricalPullback
 
