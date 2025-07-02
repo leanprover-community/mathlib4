@@ -133,7 +133,7 @@ equals the functor `(J ⥤ C) ⥤ (J ⥤ Karoubi C)` given by the composition wi
 `toKaroubi C : C ⥤ Karoubi C`. -/
 theorem toKaroubi_comp_karoubiFunctorCategoryEmbedding :
     toKaroubi _ ⋙ karoubiFunctorCategoryEmbedding J C =
-      (whiskeringRight J _ _).obj (toKaroubi C) := by
+      (Functor.whiskeringRight J _ _).obj (toKaroubi C) := by
   apply Functor.ext
   · intro X Y f
     ext j
