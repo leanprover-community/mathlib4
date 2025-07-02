@@ -674,7 +674,8 @@ theorem adjoin_eq_starClosure_adjoin (s : Set A) :
       (NonUnitalSubalgebra.star_adjoin_comm R s).symm ▸ NonUnitalAlgebra.adjoin_union s (star s)
 
 theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
-    (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) := rfl
+    (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) :=
+  rfl
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
