@@ -333,6 +333,32 @@ theorem not_inr_le_inl [LE α] [LE β] {a : α} {b : β} : ¬toLex (inr b) ≤ t
 theorem not_inr_lt_inl [LT α] [LT β] {a : α} {b : β} : ¬toLex (inr b) < toLex (inl a) :=
   lex_inr_inl
 
+/-- `toLex` promoted to a `RelIso` between `<` relations. -/
+def toLexRelIsoLT [LT α] [LT β] :
+    Sum.Lex (· < · : α → α → Prop) (· < · : β → β → Prop) ≃r (· < · : α ⊕ₗ β → _ → _) :=
+  RelIso.refl _
+
+@[simp]
+theorem toLexRelIsoLT_apply [LT α] [LT β] (x : α ⊕ β) : toLexRelIsoLT x = toLex x :=
+  rfl
+
+@[simp]
+theorem toLexRelIsoLT_symm_apply [LT α] [LT β] (x : α ⊕ₗ β) : toLexRelIsoLT.symm x = ofLex x :=
+  rfl
+
+/-- `toLex` promoted to a `RelIso` between `≤` relations. -/
+def toLexRelIsoLE [LE α] [LE β] :
+    Sum.Lex (· ≤ · : α → α → Prop) (· ≤ · : β → β → Prop) ≃r (· ≤ · : α ⊕ₗ β → _ → _) :=
+  RelIso.refl _
+
+@[simp]
+theorem toLexRelIsoLE_apply [LE α] [LE β] (x : α ⊕ β) : toLexRelIsoLE x = toLex x :=
+  rfl
+
+@[simp]
+theorem toLexRelIsoLE_symm_apply [LE α] [LE β] (x : α ⊕ₗ β) : toLexRelIsoLE.symm x = ofLex x :=
+  rfl
+
 section Preorder
 
 variable [Preorder α] [Preorder β]
