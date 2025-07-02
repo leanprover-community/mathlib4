@@ -756,7 +756,7 @@ noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDi
     congr
     -- TODO: this is almost the item we want, but not quite! not sure where the mismatch comes from
     let asdf := cov.smulX (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) (fun x ↦ t)
-    sorry
+    simpa using congr_fun asdf x
 
 @[simps!]
 noncomputable def endomorph_of_trivial_aux''' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
