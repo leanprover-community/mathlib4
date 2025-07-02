@@ -747,16 +747,14 @@ noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDi
     module
   map_smul' t X := by
     ext Z
-    simp
-
+    simp only [endomorph_of_trivial_aux'_apply, extend_smul, map_smul, RingHom.id_apply,
+      ContinuousLinearMap.coe_smul', Pi.smul_apply]
     -- The following lines should ideally mold into the simp call above.
     trans t • (cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) x)
       - t • (fderiv ℝ (extend 𝓘(ℝ, E)  E' Z (x := x)) x) X
     swap; · module
-    congr
-    -- TODO: this is almost the item we want, but not quite! not sure where the mismatch comes from
-    let asdf := cov.smulX (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) (fun x ↦ t)
-    simpa using congr_fun asdf x
+    let h := cov.smulX (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) (fun x ↦ t)
+    simpa using congr_fun h x
 
 @[simps!]
 noncomputable def endomorph_of_trivial_aux''' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
