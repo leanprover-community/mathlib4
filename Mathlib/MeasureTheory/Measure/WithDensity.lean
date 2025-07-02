@@ -145,6 +145,16 @@ theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure 
   rw [withDensity_apply _ hs₁]
   exact setLIntegral_measure_zero _ _ hs₂
 
+theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
+    μ.withDensity f s = ∫⁻ a in s, f a ∂μ := by
+  let t := toMeasurable μ s
+  have A : ∫⁻ a in t, f a ∂μ = ∫⁻ a in s, f a ∂μ :=
+    setLIntegral_congr hs.toMeasurable_ae_eq
+  have B : μ.withDensity f t = μ.withDensity f s :=
+    measure_congr (withDensity_absolutelyContinuous μ f hs.toMeasurable_ae_eq)
+  rw [← A, ← B]
+  exact withDensity_apply _ (measurableSet_toMeasurable μ s)
+
 instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
   measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
 
@@ -236,17 +246,17 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
       EventuallyEq, ae_restrict_iff'₀, ae_iff] at A
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
-    simp only [Pi.zero_apply, mem_setOf_eq, Filter.mem_mk] at A
+    simp only [Pi.zero_apply] at A
     convert A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
-      mem_compl_iff, not_forall]
+      not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
       intro x hx
       rcases eq_or_ne (f x) 0 with (fx | fx)
-      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true]
+      · simp only [fx, mem_union, mem_setOf_eq, or_true]
       · left
         apply subset_toMeasurable _ _
         exact ⟨fx, hx⟩

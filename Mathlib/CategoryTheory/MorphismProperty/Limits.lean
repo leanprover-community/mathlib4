@@ -237,7 +237,7 @@ instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
     [P.IsStableUnderBaseChange] : P.HasOfPostcompProperty (MorphismProperty.monomorphisms C) where
   of_postcomp {X Y Z} f g (hg : Mono g) hcomp := by
     have : f = (asIso (pullback.fst (f ≫ g) g)).inv ≫ pullback.snd (f ≫ g) g := by
-      simp [Iso.eq_inv_comp, ← cancel_mono g, pullback.condition]
+      simp [← cancel_mono g, pullback.condition]
     rw [this, cancel_left_of_respectsIso (P := P)]
     exact P.pullback_snd _ _ hcomp
 
@@ -350,6 +350,12 @@ instance IsStableUnderCobaseChange.inf {P Q : MorphismProperty C} [IsStableUnder
     [IsStableUnderCobaseChange Q] :
     IsStableUnderCobaseChange (P ⊓ Q) where
   of_isPushout hp hg := ⟨of_isPushout hp hg.left, of_isPushout hp hg.right⟩
+
+instance : (⊤ : MorphismProperty C).IsStableUnderBaseChange where
+  of_isPullback _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).IsStableUnderCobaseChange where
+  of_isPushout _ _ := trivial
 
 end
 
@@ -802,7 +808,7 @@ theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
 theorem universally_inf (P Q : MorphismProperty C) :
     (P ⊓ Q).universally = P.universally ⊓ Q.universally := by
   ext X Y f
-  show _ ↔ _ ∧ _
+  change _ ↔ _ ∧ _
   simp_rw [universally, ← forall_and]
   rfl
 
