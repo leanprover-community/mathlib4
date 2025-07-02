@@ -73,7 +73,7 @@ lemma epiModSerre_iff {X Y : C} (f : X ⟶ Y) :
     P.epiModSerre f ↔ P (cokernel f) := Iff.rfl
 
 lemma epimorphisms_le_epiModSerre : epimorphisms C ≤ P.epiModSerre :=
-    fun _ _ f (_ : Epi f) ↦ P.prop_of_isZero (isZero_cokernel_of_epi f)
+  fun _ _ f (_ : Epi f) ↦ P.prop_of_isZero (isZero_cokernel_of_epi f)
 
 lemma epiModSerre_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] :
     P.epiModSerre f :=
