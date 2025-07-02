@@ -90,7 +90,7 @@ lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
   rw [coe_upperClosure]
   induction' F using Finset.induction_on with a F' _ I4
   · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
-      inf_empty, Set.Ici_top]
+      inf_empty]
     by_contra hf
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
     obtain ⟨x, hx⟩ := hf
@@ -159,7 +159,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
 form `hull T a` for some `a` in `α`.-/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     {S : Set T} : IsClosed S ↔ ∃ (a : α), S = hull T a := by
-  simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
+  simp only [← isOpen_compl_iff, (isOpen_iff hT), compl_inj_iff]
 
 /-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
 abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
