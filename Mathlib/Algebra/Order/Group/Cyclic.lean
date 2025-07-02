@@ -53,6 +53,14 @@ lemma genLTOne_lt_one : H.genLTOne < 1 :=
 lemma genLTOne_zpowers_eq_top : Subgroup.zpowers H.genLTOne = H :=
   H.exists_generator_lt_one.choose_spec.2
 
+lemma genLTOne_mem : H.genLTOne ∈ H := by
+  nth_rewrite 1 [← H.genLTOne_zpowers_eq_top]
+  exact Subgroup.mem_zpowers (Subgroup.genLTOne H)
+
+-- Will be done in #24435.
+lemma genLTOne_unique (g : H) : g < 1 ∧ Subgroup.zpowers g = ⊤ → g = H.genLTOne := by
+  sorry
+
 end Subgroup
 
 section IsCyclic
