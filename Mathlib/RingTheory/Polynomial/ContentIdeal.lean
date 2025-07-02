@@ -51,8 +51,11 @@ def contentIdeal := span p.coeffs.toSet
 theorem contentIdeal_def : p.contentIdeal = span p.coeffs.toSet := rfl
 
 @[simp]
-theorem contenIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
+theorem contentIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
   simp [contentIdeal_def]
+
+@[deprecated (since := "2025-07-01")]
+alias contenIdeal_zero := contentIdeal_zero
 
 @[simp]
 theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by

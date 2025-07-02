@@ -69,6 +69,9 @@ lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
   | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
   | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
 
+lemma ofNat_nsmul_eq_mul (n : ℕ) [n.AtLeastTwo] (a : α) : ofNat(n) • a = ofNat(n) * a := by
+  simp [nsmul_eq_mul]
+
 end NonAssocSemiring
 
 section Semiring

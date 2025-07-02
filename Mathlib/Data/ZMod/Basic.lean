@@ -284,7 +284,7 @@ variable {m : ℕ} [CharP R m]
 theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   rcases n with - | n
   · exact Int.cast_one
-  show ((1 % (n + 1) : ℕ) : R) = 1
+  change ((1 % (n + 1) : ℕ) : R) = 1
   cases n
   · rw [Nat.dvd_one] at h
     subst m
@@ -1072,7 +1072,7 @@ theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [NonAssocSemiring R] (f g : ZMod 
   obtain ⟨k, rfl⟩ := ZMod.intCast_surjective a
   let φ : ℤ →+* R := f.comp (Int.castRingHom (ZMod n))
   let ψ : ℤ →+* R := g.comp (Int.castRingHom (ZMod n))
-  show φ k = ψ k
+  change φ k = ψ k
   rw [φ.ext_int ψ]
 
 namespace ZMod
