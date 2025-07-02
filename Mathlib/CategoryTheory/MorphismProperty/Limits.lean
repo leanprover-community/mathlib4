@@ -808,7 +808,7 @@ theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
 theorem universally_inf (P Q : MorphismProperty C) :
     (P ⊓ Q).universally = P.universally ⊓ Q.universally := by
   ext X Y f
-  show _ ↔ _ ∧ _
+  change _ ↔ _ ∧ _
   simp_rw [universally, ← forall_and]
   rfl
 

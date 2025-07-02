@@ -361,7 +361,7 @@ theorem jacobson_matricesOver (I : TwoSidedIdeal R) :
     (I.matricesOver n).jacobson = I.jacobson.matricesOver n := by
   apply le_antisymm
   · apply jacobson_matricesOver_le
-  · show asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
+  · change asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
     simp [asIdeal_jacobson, asIdeal_matricesOver, Ideal.matricesOver_jacobson_le]
 
 theorem matricesOver_jacobson_bot :

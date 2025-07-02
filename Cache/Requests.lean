@@ -28,10 +28,19 @@ def extractRepoFromUrl (url : String) : Option String := do
   let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
   return url.extract (url.next pos) url.endPos
 
+/-- Spot check if a URL is valid for a git remote -/
+def isRemoteURL (url : String) : Bool :=
+  "https://".isPrefixOf url || "http://".isPrefixOf url || "git@github.com:".isPrefixOf url
+
 /--
 Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
+  IO.println s!"Is {remoteName} a remote URL? {isRemoteURL remoteName}"
+  -- Remove the print statement above and uncomment the lines below when confident
+  -- if isRemoteURL remoteName then
+  --   return remoteName
+  -- else
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
@@ -151,6 +160,13 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
         let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
         let refsInfo ← IO.Process.output
           {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+        -- The code below is for debugging purposes currently
+        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
+        {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
+        let refsInfo' ← IO.Process.output
+          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
+        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
+        {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
 
         if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
           let prRefs := refsInfo.stdout.trim.split (· == '\n')
