@@ -560,9 +560,6 @@ theorem ne_univ_iff_exists_notMem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃
 theorem not_subset_iff_exists_mem_notMem {α : Type*} {s t : Set α} :
     ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
 
-theorem univ_unique [Unique α] : @Set.univ α = {default} :=
-  Set.ext fun x => iff_of_true trivial <| Subsingleton.elim x default
-
 theorem ssubset_univ_iff : s ⊂ univ ↔ s ≠ univ :=
   lt_top_iff_ne_top
 
@@ -1029,6 +1026,22 @@ theorem mem_iff_nonempty {α : Type*} [Subsingleton α] {s : Set α} {x : α} : 
   ⟨fun hx => ⟨x, hx⟩, fun ⟨y, hy⟩ => Subsingleton.elim y x ▸ hy⟩
 
 end Subsingleton
+
+namespace Set
+
+section Unique
+
+variable {α : Type*} [Unique α]
+
+theorem univ_unique : @Set.univ α = {default} :=
+  ext fun x => iff_of_true trivial <| Subsingleton.elim x default
+
+theorem eq_empty_or_singleton_of_unique (s : Set α) : s = ∅ ∨ s = {default} :=
+  s.eq_empty_or_nonempty.imp_right <| univ_unique (α := α) ▸ Subsingleton.eq_univ_of_nonempty
+
+end Unique
+
+end Set
 
 /-! ### Decidability instances for sets -/
 
