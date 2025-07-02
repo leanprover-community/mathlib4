@@ -227,12 +227,7 @@ lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℕ) (i : ι) : (x ^ n) i = x i ^ n :=
   rfl
 
-instance [Π i, AddMonoid (R i)] [∀ i, AddSubmonoidClass (S i) (R i)] :
-    AddMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
-  haveI : ∀ i, SMulMemClass (S i) ℕ (R i) := fun _ ↦ AddSubmonoidClass.nsmulMemClass
-  DFunLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-
-@[to_additive existing]
+@[to_additive]
 instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Monoid (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -368,7 +363,7 @@ def mapAlong (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]
   filter_upwards [hf.eventually x.2, hφ] using fun _ h1 h2 ↦ h2 h1⟩
 
 @[simp]
-lemma map_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
+lemma mapAlong_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
     x.mapAlong R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
   rfl
 
@@ -382,6 +377,14 @@ def map {G H : ι → Type*}
     (hφ : ∀ᶠ i in 𝓕, Set.MapsTo (φ i) (C i) (D i))
     (x : Πʳ i, [G i, C i]_[𝓕]) : (Πʳ i, [H i, D i]_[𝓕]) :=
   mapAlong G H id Filter.tendsto_id φ hφ x
+
+@[simp]
+lemma map_apply {G H : ι → Type*} {C : (i : ι) → Set (G i)}
+    {D : (i : ι) → Set (H i)} (φ : (i : ι) → G i → H i)
+    (hφ : ∀ᶠ i in 𝓕, Set.MapsTo (φ i) (C i) (D i))
+    (x : Πʳ i, [G i, C i]_[𝓕]) (j : ι) :
+    x.map φ hφ j = φ j (x j) :=
+  rfl
 
 end set
 
