@@ -16,10 +16,22 @@ import Mathlib.Data.Option.NAry
 
 This file proves that one can adjoin a new zero element to a group and get a group with zero.
 
+In valuation theory, valuations have codomain `{0} ∪ {c ^ n | n : ℤ}` for some `c > 1`, which we can
+formalise as `ℤᵐ⁰ := WithZero (Multiplicative ℤ)`. It is important to be able to talk about the maps
+`n ↦ c ^ n` and `c ^ n ↦ n`. We define these as `exp : ℤ → ℤᵐ⁰` and `log : ℤᵐ⁰ → ℤ` with junk value
+`log 0 = 0`. Junkless versions are defined as `expEquiv : ℤ ≃ ℤᵐ⁰ˣ` and `logEquiv : ℤᵐ⁰ˣ ≃ ℤ`.
+
+## Notation
+
+* `ℕᵐ⁰` for `WithZero (Multiplicative ℕ)`
+* `ℤᵐ⁰` for `WithZero (Multiplicative ℤ)`
+
 ## Main definitions
 
 * `WithZero.map'`: the `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by
   a monoid homomorphism `f : α →* β`.
+* `WithZero.exp`: The "exponential map" `M → Mᵐ⁰`
+* `WithZero.exp`: The "logarithm" `Mᵐ⁰ → M`
 -/
 
 open Function
@@ -310,89 +322,77 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
   natCast_zero := rfl
   natCast_succ n := by cases n <;> simp
 
-/-!
-### Exponential and logarithm
-
-In valuation theory, valuations have codomain `{0} ∪ {c ^ n | n : ℤ}` for some `c > 1`, which we can
-formalise as `ℤₘ₀ := WithZero (Multiplicative ℤ)`. It is important to be able to talk about the maps
-n ↦ c ^ n` and `c ^ n ↦ n`. We define these as `exp : ℤ → ℤₘ₀` and `log : ℤₘ₀ → ℤ` with junk value
-log 0 = 0`. Junkless versions are defined as `expEquiv : ℤ ≃ ℤₘ₀ˣ` and `logEquiv : ℤₘ₀ˣ ≃ ℤ`. -/
+/-! ### Exponential and logarithm -/
 
 variable {M G : Type*}
 
+scoped notation:1024 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
+
 section AddMonoid
 
-local notation "Mₘ" => Multiplicative G
-local notation "Mₘ₀" => WithZero Mₘ
+/-- The exponential map as a function `M → Mᵐ⁰`. -/
+def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
-/-- The exponential map as a function `G → WithZero (Multiplicative G)`. -/
-def exp (a : G) : Mₘ₀ := .coe <| Multiplicative.ofAdd a
+variable [AddMonoid M]
 
-variable [AddMonoid G]
+/-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
+def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 
-/-- The logarithm as a function `WithZero (Multiplicative G) → G` with junk value `log 0 = 0`. -/
-def log (x : Mₘ₀) : G := x.recZeroCoe 0 Multiplicative.toAdd
+@[simp] lemma log_exp (a : M) : log (exp a) = a := rfl
+@[simp] lemma exp_log {x : Mᵐ⁰} (hx : x ≠ 0) : exp (log x) = x := by
+  lift x to Multiplicative M using hx; rfl
 
-@[simp] lemma log_exp (a : G) : log (exp a) = a := rfl
-@[simp] lemma exp_log {x : Mₘ₀} (hx : x ≠ 0) : exp (log x) = x := by
-  lift x to Mₘ using hx; rfl
+@[simp] lemma log_zero : log 0 = (0 : M) := rfl
 
-@[simp] lemma log_zero : log 0 = (0 : G) := rfl
+@[simp] lemma exp_zero : exp (0 : M) = 1 := rfl
+@[simp] lemma log_one : log 1 = (0 : M) := rfl
 
-@[simp] lemma exp_zero : exp (0 : G) = 1 := rfl
-@[simp] lemma log_one : log 1 = (0 : G) := rfl
+lemma exp_add (a b : M) : exp (a + b) = exp a * exp b := rfl
+lemma log_mul {x y : Mᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
+  lift x to Multiplicative M using hx; lift y to Multiplicative M using hy; rfl
 
-@[simp] lemma exp_add (a b : G) : exp (a + b) = exp a * exp b := rfl
-@[simp] lemma log_mul {x y : Mₘ₀} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
-  lift x to Mₘ using hx; lift y to Mₘ using hy; rfl
-
-@[simp] lemma exp_nsmul (n : ℕ) (a : G) : exp (n • a) = exp a ^ n := rfl
-@[simp] lemma log_pow : ∀ (x : Mₘ₀) (n : ℕ), log (x ^ n) = n • log x
+lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
+lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
   | 0, 0 => by simp
   | 0, n + 1 => by simp
-  | (x : Mₘ), n => rfl
+  | (x : Multiplicative M), n => rfl
 
 end AddMonoid
 
 section AddGroup
 variable [AddGroup G]
 
-local notation "Gₘ" => Multiplicative G
-local notation "Gₘ₀" => WithZero Gₘ
+/-- The exponential map as an equivalence between `G` and `(Gᵐ⁰)ˣ`. -/
+def expEquiv : G ≃ (Gᵐ⁰)ˣ := Multiplicative.ofAdd.trans unitsWithZeroEquiv.symm.toEquiv
 
-/-- The exponential map as an equivalence between `G` and `(WithZero (Multiplicative G))ˣ`. -/
-def expEquiv : G ≃ Gₘ₀ˣ := Multiplicative.ofAdd.trans unitsWithZeroEquiv.symm.toEquiv
-
-/-- The logarithm as an equivalence between `(WithZero (Multiplicative G))ˣ` and `G`. -/
-def logEquiv : Gₘ₀ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicative.toAdd
+/-- The logarithm as an equivalence between `(Gᵐ⁰)ˣ` and `G`. -/
+def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicative.toAdd
 
 @[simp] lemma logEquiv_symm : (logEquiv (G := G)).symm = expEquiv := rfl
 @[simp] lemma expEquiv_symm : (expEquiv (G := G)).symm = logEquiv := rfl
 
 @[simp] lemma coe_expEquiv_apply (a : G) : expEquiv a = exp a := rfl
 
-@[simp] lemma logEquiv_apply (x : Gₘ₀ˣ) : logEquiv x = log x := by
+@[simp] lemma logEquiv_apply (x : (Gᵐ⁰)ˣ) : logEquiv x = log x := by
   obtain ⟨_ | a, _ | b, hab, hba⟩ := x
   · cases hab
   · cases hab
   · cases hab
   · rfl
 
-lemma logEquiv_unitsMk0 (x : Gₘ₀) (hx : x ≠ 0) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
+lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx : x ≠ 0) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
-@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
-@[simp] lemma log_div {x y : Gₘ₀} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
-  lift x to Gₘ using hx; lift y to Gₘ using hy; rfl
+lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
+lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
+  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
-@[simp] lemma log_inv : ∀ (x : Gₘ₀), log x⁻¹ = -log x
+lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
   | 0 => by simp
-  | (x : Gₘ) => rfl
+  | (x : Multiplicative G) => rfl
 
-@[simp] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
-@[simp] lemma log_zpow (x : Gₘ₀) : ∀ n : ℤ, log (x ^ n) = n • log x
-  | (n : ℕ) => by simp
-  | .negSucc n => by simp
+lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
+lemma log_zpow (x : Gᵐ⁰) (n : ℤ) : log (x ^ n) = n • log x := by cases n <;> simp [log_pow, log_inv]
 
 end AddGroup
 end WithZero
@@ -437,13 +437,3 @@ lemma comp_one {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀]
   ext <| apply_one_apply_eq _
 
 end MonoidWithZeroHom
-
-namespace Multiplicative
-
-/-- Notation for `WithZero (Multiplicative ℕ)`. -/
-scoped notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)`. -/
-scoped notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end Multiplicative

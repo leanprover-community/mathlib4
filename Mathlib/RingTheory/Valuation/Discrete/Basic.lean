@@ -3,6 +3,7 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.RingTheory.Valuation.Basic
 
@@ -11,8 +12,8 @@ import Mathlib.RingTheory.Valuation.Basic
 
 Given a linearly ordered commutative group with zero `Γ`, a valuation `v : A → Γ` on a ring `A` is
 *discrete*, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
-implemented as `MonoidWithZeroHom.valueGroup v`. When `Γ := ℤₘ₀` (defined in
-`Multiplicative.termℤₘ₀`), `γ` = ofAdd (-1)` and the condition of being discrete is
+implemented as `MonoidHomWithZero.valueGroup v`. When `Γ := ℤᵐ⁰`, `γ = ofAdd (-1)` and the condition
+of being discrete is
 equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to asking that
 `1 : ℤ` belongs to the image of the corresponding *additive* valuation.
 

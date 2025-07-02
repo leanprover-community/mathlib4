@@ -22,7 +22,8 @@ They are placed here in a separate file (rather than incorporated as a continuat
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
 
-open Multiplicative Set
+open Set
+open scoped WithZero
 
 -- no earlier file imports the necessary requirements for the next two
 
@@ -360,10 +361,10 @@ def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α
     simp
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
-either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
+either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
-    Nonempty (G ≃*o ℤₘ₀) ∨ DenselyOrdered G := by
+    Nonempty (G ≃*o ℤᵐ⁰) ∨ DenselyOrdered G := by
   classical
   rw [← denselyOrdered_units_iff]
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
@@ -372,10 +373,10 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
 
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
-either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered, exclusively -/
+either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered, exclusively -/
 lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
-    Nonempty (G ≃*o ℤₘ₀) ↔ ¬ DenselyOrdered G := by
+    Nonempty (G ≃*o ℤᵐ⁰) ↔ ¬ DenselyOrdered G := by
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
@@ -463,7 +464,7 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
 
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
-    Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
+    Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
   suffices Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔
     Set.WellFoundedOn {x : G₀ˣ | Units.mk0 g hg ≤ x} (· < ·) by
     rw [this, LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete]
@@ -493,7 +494,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
 
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
-    Set.WellFoundedOn {x : G₀ | x ≤ g} (· > ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
+    Set.WellFoundedOn {x : G₀ | x ≤ g} (· > ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
   have hg' : g⁻¹ ≠ 0 := by simp [hg]
   rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero hg',
     ← Set.wellFoundedOn_sdiff_singleton (a := 0)]

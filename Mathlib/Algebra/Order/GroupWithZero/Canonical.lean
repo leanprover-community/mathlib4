@@ -402,34 +402,34 @@ instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsO
 variable {G : Type*} [Preorder G] {a b : G}
 
 local notation "Gₘ" => Multiplicative G
-local notation "Gₘ₀" => WithZero Gₘ
+local notation "Gᵐ⁰" => WithZero Gₘ
 
 @[simp] lemma exp_le_exp : exp a ≤ exp b ↔ a ≤ b := by simp [exp]
 
 variable [AddGroup G]
 
-@[simp] lemma log_le_log {x y : Gₘ₀} (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
+@[simp] lemma log_le_log {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
   lift x to Gₘ using hx; lift y to Gₘ using hy; simp [log]
 
-lemma log_le_iff_le_exp {x : Gₘ₀} (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
+lemma log_le_iff_le_exp {x : Gᵐ⁰} (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
   lift x to Gₘ using hx; simpa [log, exp] using .rfl
 
-lemma log_lt_iff_lt_exp {x : Gₘ₀} (hx : x ≠ 0) : log x < a ↔ x < exp a := by
+lemma log_lt_iff_lt_exp {x : Gᵐ⁰} (hx : x ≠ 0) : log x < a ↔ x < exp a := by
   lift x to Gₘ using hx; simpa [log, exp] using .rfl
 
-lemma le_log_iff_exp_le {x : Gₘ₀} (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
+lemma le_log_iff_exp_le {x : Gᵐ⁰} (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
   lift x to Gₘ using hx; simpa [log, exp] using .rfl
 
-lemma lt_log_iff_exp_lt {x : Gₘ₀} (hx : x ≠ 0) : a < log x ↔ exp a < x := by
+lemma lt_log_iff_exp_lt {x : Gᵐ⁰} (hx : x ≠ 0) : a < log x ↔ exp a < x := by
   lift x to Gₘ using hx; simpa [log, exp] using .rfl
 
 /-- The exponential map as an order isomorphism between `G` and `(WithZero (Multiplicative G))ˣ`. -/
-@[simps!] def expOrderIso : G ≃o Gₘ₀ˣ where
+@[simps!] def expOrderIso : G ≃o Gᵐ⁰ˣ where
   __ := expEquiv
   map_rel_iff' := by simp [← Units.val_le_val]
 
 /-- The logarithm as an order isomorphism between `(WithZero (Multiplicative G))ˣ` and `G`. -/
-@[simps!] def logOrderIso : Gₘ₀ˣ ≃o G where
+@[simps!] def logOrderIso : Gᵐ⁰ˣ ≃o G where
   __ := logEquiv
   map_rel_iff' := by simp
 

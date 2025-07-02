@@ -215,7 +215,7 @@ open scoped Multiplicative
 
 open Polynomial
 
-instance : Valued (RatFunc K) ℤₘ₀ := Valued.mk' ((idealX K).valuation _)
+instance : Valued (RatFunc K) ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
 theorem WithZero.valued_def {x : RatFunc K} :
