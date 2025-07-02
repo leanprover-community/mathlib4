@@ -529,7 +529,7 @@ variable (K) in
 The equivalence between `RatFunc K` and the field of fractions of `K[X]`
 -/
 @[simps! apply]
-def toFractionRingRAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
+def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
     RatFunc K ≃ₐ[R] FractionRing K[X] where
   __ := RatFunc.toFractionRingRingEquiv K
   commutes' r := by
