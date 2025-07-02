@@ -395,13 +395,13 @@ noncomputable def ofMonoTruth
       (_ : IsPullback m χ₀' χ' truth), χ' = χ m) :
   Σ' (_ : HasTerminal C), Classifier C :=
 
-  -- Step 0: χ₀ is unique similar to χ
+  -- Step 0: `χ₀` is unique similar to `χ`
   let uniq₀ {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
       (pb' : IsPullback m χ₀' χ' truth) : χ₀' = χ₀ m :=
     let pb := (isPullback m)
     Mono.right_cancellation _ _ (by rw [← pb'.w, uniq m χ₀' χ' pb', pb.w])
 
-  -- Step 1: Show Ω₀ is terminal
+  -- Step 1: Show `Ω₀` is terminal
   have : ∀ Y : C, Unique (Y ⟶ Ω₀) := fun Y => {
     default := χ₀ (𝟙 Y),
     uniq f :=
