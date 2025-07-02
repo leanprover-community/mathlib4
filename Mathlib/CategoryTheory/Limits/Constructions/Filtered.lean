@@ -148,7 +148,7 @@ def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
     (fun β => by
       simp only [Functor.comp_obj, colim_obj, Functor.comp_map, colim_map, Iso.symm_hom]
       ext J
-      simp only [liftToFinset_obj_obj, liftToFinset_map_app]
+      simp only [liftToFinset_obj_obj]
       ext j
       simp only [liftToFinset, ι_colimMap_assoc, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
         Discrete.natTrans_app, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc,

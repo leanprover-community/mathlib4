@@ -1079,7 +1079,7 @@ theorem inter_subset (a b c : Set α) : a ∩ b ⊆ c ↔ a ⊆ bᶜ ∪ c :=
   forall_congr' fun _ => and_imp.trans <| imp_congr_right fun _ => imp_iff_not_or
 
 theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s ⊆ t :=
-  (not_subset.trans <| exists_congr fun x => by simp [mem_compl]).symm
+  (not_subset.trans <| exists_congr fun x => by simp).symm
 
 /-! ### Lemmas about set difference -/
 

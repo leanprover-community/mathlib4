@@ -312,7 +312,6 @@ instance {R : CommRingCat} [IsNoetherianRing R] :
 instance {R} [CommRing R] [IsNoetherianRing R] :
     IsNoetherian (Spec (.of R)) := by
   suffices IsNoetherianRing (CommRingCat.of R) by infer_instance
-  simp only [CommRingCat.coe_of]
   assumption
 
 /-- `R` is a Noetherian ring if and only if `Spec R` is a Noetherian scheme. -/

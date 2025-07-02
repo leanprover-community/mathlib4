@@ -212,7 +212,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add, ofFinsupp_add, ofFinsupp_single]
+  · simp only [add_zero, zero_add]
     -- Porting note: added next two lines (less powerful `simp`).
     rw [ofFinsupp_add]
     simp only [ofFinsupp_single]
