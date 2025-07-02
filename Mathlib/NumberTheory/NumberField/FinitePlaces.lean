@@ -116,7 +116,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
-  Valued.toNormedField (adicCompletion K v) (WithZero (Multiplicative ℤ))
+  Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/

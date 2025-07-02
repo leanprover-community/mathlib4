@@ -326,7 +326,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
 
 variable {M G : Type*}
 
-scoped notation:1024 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
+scoped notation:1025 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
 
 section AddMonoid
 
