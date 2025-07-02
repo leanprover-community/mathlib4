@@ -99,14 +99,15 @@ irreducible_def compMap (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
    G.obj (F.obj X) ⟶ G.obj (F.obj Y) :=
   G.map (F.map f)
 
+attribute [simp] compMap_def
+
 /-- `F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).
 -/
 @[simps obj]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := compMap F G f
-  map_comp := by intros; simp only [compMap_def, F.map_comp, G.map_comp]
-  map_id := by intros; simp only [compMap_def, F.map_id, G.map_id]
+  map_comp := by intros; simp [F.map_comp, G.map_comp]
 
 /-- Notation for composition of functors. -/
 scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
@@ -119,10 +120,10 @@ theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
 -- is not necessarily a good idea.
 -- Natural isomorphisms are also provided in `Whiskering.lean`.
 protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by
-  simp only [comp, id_obj, compMap_def, id_map]
+  simp [comp]
 
 protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by
-  simp only [comp, id_obj, compMap_def, id_map]
+  simp [comp]
 
 @[simp]
 theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
@@ -133,10 +134,7 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
 @[simp]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := by
-  dsimp only [Functor.comp, Prefunctor.comp]
-  congr
-  ext X Y f
-  simp [compMap_def]
+  simp [Functor.comp, Prefunctor.comp]
 
 end
 

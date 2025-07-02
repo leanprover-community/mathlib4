@@ -96,7 +96,7 @@ def natTrans {F G : (Σ i, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ incl i �
   app := fun ⟨j, X⟩ => (h j).app X
   naturality := by
     rintro ⟨j, X⟩ ⟨_, _⟩ ⟨f⟩
-    apply (h j).naturality
+    simpa using (h j).naturality f
 
 @[simp]
 lemma natTrans_app {F G : (Σ i, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ incl i ⋙ G) (i : I)
@@ -152,7 +152,7 @@ lemma inclDesc_inv_app (i : I) (X : C i) : (inclDesc F i).inv.app X = 𝟙 ((F i
 def descUniq (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i) : q ≅ desc F :=
   NatIso.ofComponents (fun ⟨i, X⟩ => (h i).app X) <| by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
-    apply (h i).hom.naturality f
+    simpa using (h i).hom.naturality f
 
 @[simp]
 lemma descUniq_hom_app (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i) (i : I) (X : C i) :
@@ -195,7 +195,7 @@ lemma map_map {j : J} {X Y : C (g j)} (f : X ⟶ Y) :
 -/
 @[simps!]
 def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
-  Iso.refl _
+  NatIso.ofComponents (fun _ => Iso.refl _)
 
 variable (I)
 
@@ -211,8 +211,12 @@ variable {I} {K : Type w₃}
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
-  (descUniq _ _) fun k =>
-    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g :) :) ≪≫ inclCompMap _ _ _
+  (descUniq _ _) fun k => by
+  apply _ ≪≫ inclCompMap _ _ _
+  apply (Functor.associator _ _ _).symm ≪≫ _
+  apply isoWhiskerRight
+  sorry
+      -- (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g :) :) ≪≫ inclCompMap _ _ _
 
 end
 

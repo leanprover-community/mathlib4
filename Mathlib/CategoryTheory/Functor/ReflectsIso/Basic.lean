@@ -55,16 +55,16 @@ instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
 
 instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
-    (F ⋙ G).ReflectsIsomorphisms :=
-  ⟨fun f (hf : IsIso (G.map _)) => by
+    (F ⋙ G).ReflectsIsomorphisms where
+  reflects f hf :=
+    haveI : IsIso (G.map (F.map f)) := Functor.comp_map F G f ▸ hf
     haveI := isIso_of_reflects_iso (F.map f) G
-    exact isIso_of_reflects_iso f F⟩
+    isIso_of_reflects_iso f F
 
 lemma reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
     [(F ⋙ G).ReflectsIsomorphisms] : F.ReflectsIsomorphisms where
   reflects f _ := by
-    rw [← isIso_iff_of_reflects_iso _ (F ⋙ G)]
-    dsimp
+    rw [← isIso_iff_of_reflects_iso _ (F ⋙ G), Functor.comp_map]
     infer_instance
 
 instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
