@@ -175,28 +175,19 @@ lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := 
   exact x.2
 
 instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
-  let f : K₀ →+* L₀ := {
-    toFun := fun x ↦ ⟨algebraMap K L x, algebraMap_mem_valuationSubring vK vL x⟩
-    map_one'  := by simp [_root_.map_one, ← @OneMemClass.coe_eq_one]
-    map_mul'  := by simp [MulMemClass.coe_mul, _root_.map_mul, MulMemClass.mk_mul_mk, implies_true]
-    map_zero' := by simp [← ZeroMemClass.coe_eq_zero, _root_.map_zero]
-    map_add'  := by simp only [AddMemClass.coe_add, _root_.map_add, AddMemClass.mk_add_mk,
-      implies_true] }
-  f.toAlgebra
+  inferInstanceAs (Algebra vK.integer vL.integer)
 
 @[simp]
 lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
   (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
 
-instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L := by
-  refine IsScalarTower.of_algebraMap_smul ?_
-  intro k
-  simp [Algebra.smul_def, Subring.smul_def k]
+instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
+  inferInstanceAs (IsScalarTower vK.integer K L)
 
-instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L := by
-  refine IsScalarTower.of_algebraMap_smul ?_
-  intro k
-  simp [Algebra.smul_def, Subring.smul_def k]
+instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L :=
+  instIsScalarTowerInteger
+
+instance : IsLocalHom (algebraMap K₀ L₀) := instIsLocalHomValuationInteger
 
 lemma algebraMap_mem_maximalIdeal_iff {x : K₀} :
     algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) ↔ x ∈ maximalIdeal K₀ := by
@@ -210,11 +201,7 @@ lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
 instance : Ideal.LiesOver (maximalIdeal L₀) (maximalIdeal K₀) :=
   ⟨(maximalIdeal_comap_algebraMap_eq_maximalIdeal _ _).symm⟩
 
-instance : Algebra (ResidueField K₀) (ResidueField L₀) :=
-  (Ideal.Quotient.lift (maximalIdeal K₀)
-    ((Ideal.Quotient.mk (maximalIdeal L₀)).comp (algebraMap K₀ L₀))
-    (fun _ hx ↦ Ideal.Quotient.eq_zero_iff_mem.mpr
-      ((algebraMap_mem_maximalIdeal_iff vK vL).mpr hx))).toAlgebra
+noncomputable instance : Algebra (ResidueField K₀) (ResidueField L₀) := inferInstance
 
 lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
     (algebraMap (ResidueField K₀) (ResidueField L₀)) (IsLocalRing.residue K₀ x) =
