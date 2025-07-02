@@ -58,7 +58,7 @@ theorem precoherent_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.p
   refine ⟨fun hF ↦ ((e.sheafCongrPrecoherent A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]
   · exact (e.sheafCongrPrecoherent A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
-  · exact isoWhiskerRight e.op.unitIso F
+  · exact Functor.isoWhiskerRight e.op.unitIso F
 
 /--
 The coherent sheaf condition on an essentially small site can be checked after precomposing with
@@ -106,7 +106,7 @@ theorem preregular_isSheaf_iff (e : C ≌ D) (F : Cᵒᵖ ⥤ A) : haveI := e.pr
   refine ⟨fun hF ↦ ((e.sheafCongrPreregular A).functor.obj ⟨F, hF⟩).cond, fun hF ↦ ?_⟩
   rw [isSheaf_of_iso_iff (P' := e.functor.op ⋙ e.inverse.op ⋙ F)]
   · exact (e.sheafCongrPreregular A).inverse.obj ⟨e.inverse.op ⋙ F, hF⟩ |>.cond
-  · exact isoWhiskerRight e.op.unitIso F
+  · exact Functor.isoWhiskerRight e.op.unitIso F
 
 /--
 The regular sheaf condition on an essentially small site can be checked after precomposing with
