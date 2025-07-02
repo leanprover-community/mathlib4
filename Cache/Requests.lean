@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Arthur Paulino. All rights reserved.
+Copyrighe (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
@@ -36,36 +36,31 @@ def isRemoteURL (url : String) : Bool :=
 Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
-  IO.println s!"Is {remoteName} a remote URL? {isRemoteURL remoteName}"
-  let testRemote := if isRemoteURL remoteName then
-    extractRepoFromUrl remoteName |>.getD "Could not extract repo from remote URL"
-    else
-    ""
-  IO.println s!"Extracted repo from remote URL: {testRemote}"
-  -- if isRemoteURL remoteName then
-  --   if let some repo := extractRepoFromUrl remoteName then
-  --     return repo
-  --   else
-  --     throw <| IO.userError s!"\
-  --       Failed to determine Mathlib's repository from remote URL: {remoteName}.\n\
-  --       {errorContext}\n\
-  --       Please ensure the remote URL is valid and points to a GitHub repository."
-  -- else
+  -- If the remote is already a valid URL, attempt to extract the repo from it. This happens with `gh pr checkout`
+  if isRemoteURL remoteName then
+    repoFromURL remoteName
+  else
+  -- If not, we use `git remote get-url` to find the URL of the remote. This assumes the remote has a
+  -- standard name like `origin` or `upstream` or it errors out.
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
+  -- If `git remote get-url` fails then bail out with an error to help debug
+  let output := out.stdout.trim
   unless out.exitCode == 0 do
     throw <| IO.userError s!"\
       Failed to run Git to determine Mathlib's repository from {remoteName} remote (exit code: {out.exitCode}).\n\
       {errorContext}\n\
-      Stdout:\n{out.stdout.trim}\nStderr:\n{out.stderr.trim}\n"
-
-  if let some repo := extractRepoFromUrl out.stdout.trim then
-    return repo
-  else
-    throw <| IO.userError s!"\
-      Failed to determine Mathlib's repository from {remoteName} remote URL.\n\
-      {errorContext}\n\
-      Detected URL: {out.stdout.trim}"
+      Stdout:\n{output}\nStderr:\n{out.stderr.trim}\n"
+  -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
+  repoFromURL output
+where repoFromURL (url : String) : IO String := do
+    if let some repo := extractRepoFromUrl url then
+      return repo
+    else
+      throw <| IO.userError s!"\
+        Failed to extract repository from remote URL: {url}.\n\
+        {errorContext}\n\
+        Please ensure the remote URL is valid and points to a GitHub repository."
 
 /--
 Finds the remote name that points to `leanprover-community/mathlib4` repository.
