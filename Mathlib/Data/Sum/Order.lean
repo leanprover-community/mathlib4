@@ -489,20 +489,18 @@ variable [LE α] [LE β] [LE γ] (a : α) (b : β) (c : γ)
 
 /-- `Equiv.sumCongr` promoted to an order isomorphism. -/
 @[simps! apply]
-def sumCongr {α₁ α₂ β₁ β₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂]
-    (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ ≃o α₂ ⊕ β₂ where
+def sumCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ ≃o α₂ ⊕ β₂ where
   toEquiv := .sumCongr ea eb
   map_rel_iff' := by rintro (a | a) (b | b) <;> simp
 
 @[simp]
-theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂] [LE γ₁] [LE γ₂]
-    (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
-      (e₁.sumCongr e₂).trans (f₁.sumCongr f₂) = (e₁.trans f₁).sumCongr (e₂.trans f₂) := by
+theorem sumCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
+    (e₁.sumCongr e₂).trans (f₁.sumCongr f₂) = (e₁.trans f₁).sumCongr (e₂.trans f₂) := by
   ext; simp
 
 @[simp]
-theorem sumCongr_symm {α₁ α₂ β₁ β₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂]
-    (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : (ea.sumCongr eb).symm = ea.symm.sumCongr eb.symm :=
+theorem sumCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
+    (ea.sumCongr eb).symm = ea.symm.sumCongr eb.symm :=
   rfl
 
 @[simp]
