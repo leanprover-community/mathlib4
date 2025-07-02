@@ -712,7 +712,7 @@ theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
     rw [alternatingProd, Finset.prod_eq_one]
     rintro ⟨i, ⟨⟩⟩
   | g::[] => by
-    show g = ∏ i : Fin 1, [g][i] ^ (-1 : ℤ) ^ (i : ℕ)
+    change g = ∏ i : Fin 1, [g][i] ^ (-1 : ℤ) ^ (i : ℕ)
     rw [Fin.prod_univ_succ]; simp
   | g::h::L =>
     calc g * h⁻¹ * L.alternatingProd

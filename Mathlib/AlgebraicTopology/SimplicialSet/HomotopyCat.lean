@@ -167,7 +167,7 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
     SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
     Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
     Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
-  show X.map (𝟙 _) = _
+  change X.map (𝟙 _) = _
   rw [X.map_id]
   rfl
 

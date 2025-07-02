@@ -188,9 +188,9 @@ theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
-  -- Porting note: this `show` feels like defeq abuse, but I can't find the appropriate lemmas
-  show AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
-  simp [C_apply, single_mul_single]
+  -- Porting note: this `change` feels like defeq abuse, but I can't find the appropriate lemmas
+  change AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
+  simp [single_mul_single]
 
 @[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
@@ -348,7 +348,7 @@ theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
     (mul_X : ∀ p n, motive p → motive (p * X n)) : ∀ s a, motive (monomial s a) := by
   intro s a
   apply @Finsupp.induction σ ℕ _ _ s
-  · show motive (monomial 0 a)
+  · change motive (monomial 0 a)
     exact C a
   · intro n e p _hpn _he ih
     have : ∀ e : ℕ, motive (monomial p a * X n ^ e) := by
