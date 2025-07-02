@@ -32,7 +32,7 @@ structure IsMonicOfDegree (p : R[X]) (n : ℕ) : Prop where
 
 lemma IsMonicOfDegree.ne_zero [Nontrivial R] {p : R[X]} {n : ℕ} (h : IsMonicOfDegree p n) :
     p ≠ 0 :=
-  h.2.ne_zero
+  h.monic.ne_zero
 
 @[simp]
 lemma isMonicOfDegree_zero {p : R[X]} : IsMonicOfDegree p 0 ↔ p = 1 := by
@@ -76,11 +76,11 @@ lemma IsMonicOfDegree.mul {p q : R[X]} {m n : ℕ} (hp : IsMonicOfDegree p m)
   rcases subsingleton_or_nontrivial R with H | H
   · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero] at hp hq ⊢
     exact ⟨hp, hq⟩
-  refine ⟨?_, hp.2.mul hq.2⟩
+  refine ⟨?_, hp.monic.mul hq.monic⟩
   have : p.leadingCoeff * q.leadingCoeff ≠ 0 := by
     rw [hp.leadingCoeff_eq, hq.leadingCoeff_eq, one_mul]
     exact one_ne_zero
-  rw [natDegree_mul' this, hp.1, hq.1]
+  rw [natDegree_mul' this, hp.natDegree_eq, hq.natDegree_eq]
 
 lemma IsMonicOfDegree.pow {p : R[X]} {m : ℕ} (hp : IsMonicOfDegree p m) (n : ℕ) :
     IsMonicOfDegree (p ^ n) (m * n) := by
@@ -120,13 +120,13 @@ lemma IsMonicOfDegree.of_mul_left {p q : R[X]} {m n : ℕ} (hp : IsMonicOfDegree
   rcases subsingleton_or_nontrivial R with H | H
   · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero] at hpq ⊢
     exact hpq.2
-  have h₂ : q.Monic := hp.2.of_mul_monic_left hpq.2
+  have h₂ : q.Monic := hp.monic.of_mul_monic_left hpq.monic
   refine ⟨?_, h₂⟩
-  have := hpq.1
+  have := hpq.natDegree_eq
   have h : p.leadingCoeff * q.leadingCoeff ≠ 0 := by
     rw [hp.leadingCoeff_eq, h₂.leadingCoeff, one_mul]
     exact one_ne_zero
-  rw [natDegree_mul' h, hp.1] at this
+  rw [natDegree_mul' h, hp.natDegree_eq] at this
   exact (Nat.add_left_cancel this.symm).symm
 
 lemma IsMonicOfDegree.of_mul_right  {p q : R[X]} {m n : ℕ} (hq : IsMonicOfDegree q n)
@@ -135,13 +135,13 @@ lemma IsMonicOfDegree.of_mul_right  {p q : R[X]} {m n : ℕ} (hq : IsMonicOfDegr
   rcases subsingleton_or_nontrivial R with H | H
   · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero] at hpq ⊢
     exact hpq.1
-  have h₂ : p.Monic := hq.2.of_mul_monic_right hpq.2
+  have h₂ : p.Monic := hq.monic.of_mul_monic_right hpq.monic
   refine ⟨?_, h₂⟩
-  have := hpq.1
+  have := hpq.natDegree_eq
   have h : p.leadingCoeff * q.leadingCoeff ≠ 0 := by
     rw [h₂.leadingCoeff, hq.leadingCoeff_eq, one_mul]
     exact one_ne_zero
-  rw [natDegree_mul' h, hq.1] at this
+  rw [natDegree_mul' h, hq.natDegree_eq] at this
   exact (Nat.add_right_cancel this.symm).symm
 
 lemma IsMonicOfDegree.add_right {p q : R[X]} {n : ℕ} (hp : IsMonicOfDegree p n)
