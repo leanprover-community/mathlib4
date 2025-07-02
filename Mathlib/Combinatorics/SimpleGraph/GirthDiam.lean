@@ -279,7 +279,7 @@ lemma Walk.IsTrail.append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (hp : p.IsTrail) (hq : q.IsTrail) (h_disjoint : p.edges.Disjoint q.edges) :
     (p.append q).IsTrail := by
   rw [Walk.isTrail_def, Walk.edges_append, List.nodup_append]
-  exact ⟨hp.edges_nodup, hq.edges_nodup, h_disjoint⟩
+  exact ⟨hp.edges_nodup, hq.edges_nodup, fun _ x _ y ↦ ne_of_mem_of_not_mem x (h_disjoint.symm y)⟩
 
 lemma Walk.IsPath.mem_edge_mem_support_tail {u v a b : V} {p : G.Walk u v} (hp : p.IsPath)
     (he : s(a, b) ∈ p.edges) :
@@ -446,7 +446,7 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
     omega
   · rw [Walk.tail_support_append, List.nodup_append]
     exact ⟨p.support.tail_sublist.nodup (p.isPath_def.mp hp), q.support.tail_sublist.nodup
-      (q.isPath_def.mp hq), h⟩
+      (q.isPath_def.mp hq), fun _ x _ y ↦ ne_of_mem_of_not_mem x (h.symm y)⟩
 
 lemma Walk.mem_take_support {u v x n} {p : G.Walk u v} (h : x ∈ (p.take n).support) :
     ∃ k, k ≤ n ∧ x = p.getVert k := by
@@ -496,7 +496,7 @@ lemma List.mem_dropLast_nodup {α a} {L : List α} (h : a ∈ L.dropLast) (hL : 
   have : L = L.dropLast ++ [a] := by rw [hc, List.dropLast_concat_getLast]
   rw [this, List.nodup_append] at hL
   obtain ⟨_, _, hL⟩ := hL
-  rw [List.disjoint_singleton] at hL
+  rw [← List.disjoint_iff_ne, List.disjoint_singleton] at hL
   exact hL h
 
 section takeAt
@@ -781,7 +781,7 @@ theorem egirth_le_two_mul_girth_add_one (h : ¬ G.IsAcyclic) (hc : G.Connected) 
       exact this
     obtain ⟨h₃, h₄⟩ := hc
     by_cases hik : i = k
-    · simp only [Walk.getLast_support, ne_eq, Cpw, Cp] at h₄
+    · simp only [Walk.getLast_support, ne_eq] at h₄
       rw [hik] at hi₂
       rw [hi₂] at h₄
       exact h₄ hm₂
