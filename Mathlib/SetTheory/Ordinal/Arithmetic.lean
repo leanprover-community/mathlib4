@@ -297,6 +297,101 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
   rw [lift_card, ← typein_ordinal]
   rfl
 
+/-! ### The predecessor of an ordinal -/
+
+/-- The ordinal predecessor of `o` is `o'` if `o = succ o'`, and `o` otherwise. -/
+def pred (o : Ordinal) : Ordinal :=
+  isSuccPrelimitRecOn o (fun a _ ↦ a) (fun a _ ↦ a)
+
+@[simp]
+theorem pred_succ (o) : pred (succ o) = o :=
+  isSuccPrelimitRecOn_succ ..
+
+theorem pred_eq_of_isSuccPrelimit {o} : IsSuccPrelimit o → pred o = o :=
+  isSuccPrelimitRecOn_of_isSuccPrelimit _ _
+
+alias _root_.Order.IsSuccPrelimit.ordinalPred_eq := pred_eq_of_isSuccPrelimit
+
+theorem _root_.Order.IsSuccLimit.ordinalPred_eq {o} (ho : IsSuccLimit o) : pred o = o :=
+  ho.isSuccPrelimit.ordinalPred_eq
+
+@[simp]
+theorem pred_zero : pred 0 = 0 :=
+  isSuccPrelimit_zero.ordinalPred_eq
+
+@[simp]
+theorem pred_le_iff_le_succ {a b} : pred a ≤ b ↔ a ≤ succ b := by
+  obtain ⟨a, rfl⟩ | ha := mem_range_succ_or_isSuccPrelimit a
+  · simp
+  · rw [ha.ordinalPred_eq, ha.le_succ_iff]
+
+@[deprecated pred_le_iff_le_succ (since := "2025-02-11")]
+alias pred_le := pred_le_iff_le_succ
+
+@[simp]
+theorem lt_pred_iff_succ_lt {a b} : a < pred b ↔ succ a < b :=
+  le_iff_le_iff_lt_iff_lt.1 pred_le_iff_le_succ
+
+@[deprecated lt_pred_iff_succ_lt (since := "2025-02-11")]
+alias lt_pred := lt_pred_iff_succ_lt
+
+theorem pred_le_self (o) : pred o ≤ o := by
+  simpa using le_succ o
+
+/-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
+def pred_succ_gi : GaloisInsertion pred succ :=
+  GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
+
+theorem pred_surjective : Function.Surjective pred :=
+  pred_succ_gi.l_surjective
+
+theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
+  pred_succ_gi.gc.le_u_l o
+
+theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
+  obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
+  · simpa using (lt_succ a).ne
+  · simp_rw [ho.ordinalPred_eq, ho]
+
+@[deprecated pred_eq_iff_isSuccPrelimit (since := "2025-02-11")]
+theorem pred_eq_iff_not_succ {o} : pred o = o ↔ ¬∃ a, o = succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_eq_iff_isSuccPrelimit
+
+@[deprecated pred_eq_iff_isSuccPrelimit (since := "2025-02-11")]
+theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, o ≠ succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_eq_iff_isSuccPrelimit
+
+theorem pred_lt_iff_not_isSuccPrelimit {o} : pred o < o ↔ ¬ IsSuccPrelimit o := by
+  rw [(pred_le_self o).lt_iff_ne]
+  exact pred_eq_iff_isSuccPrelimit.not
+
+@[deprecated pred_lt_iff_not_isSuccPrelimit (since := "2025-02-11")]
+theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_lt_iff_not_isSuccPrelimit
+
+theorem succ_pred_eq_iff_not_isSuccPrelimit {o} : succ (pred o) = o ↔ ¬ IsSuccPrelimit o := by
+  rw [← (self_le_succ_pred o).le_iff_eq, succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
+
+@[deprecated succ_pred_iff_is_succ (since := "2025-02-11")]
+theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a := by
+  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using succ_pred_eq_iff_not_isSuccPrelimit
+
+@[deprecated IsSuccPrelimit.succ_lt_iff (since := "2025-02-11")]
+theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o := by
+  apply (isSuccPrelimit_of_succ_ne _).succ_lt_iff
+  simpa [eq_comm] using h
+
+@[deprecated isSuccPrelimit_lift (since := "2025-02-11")]
+theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a := by
+  simpa [eq_comm, not_isSuccPrelimit_iff', - isSuccPrelimit_lift] using
+    isSuccPrelimit_lift.not
+
+@[simp]
+theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
+  obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
+  · simp
+  · rwa [ho.ordinalPred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift]
+
 /-! ### Normal ordinal functions -/
 
 /-- A normal ordinal function is a strictly increasing function which is
