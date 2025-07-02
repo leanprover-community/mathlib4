@@ -390,7 +390,7 @@ lemma support_def {x : X} {μ : Measure X} : x ∈ μ.support ↔ ∃ᶠ u in (�
  these directly using filters. -/
 lemma support_set (μ : Measure X) : μ.support = {x : X | ∀ U ∈ 𝓝 x, 0 < μ U} := by
   ext x
-  simp only [support_def, Set.mem_setOf, mem_setOf_eq, Filter.frequently_smallSets]
+  simp only [support_def, Set.mem_setOf, Filter.frequently_smallSets]
   constructor
   · intro h U hU
     obtain ⟨t, htsub, htpos⟩ := h U hU
@@ -402,7 +402,7 @@ variable {μ : Measure X}
 
 @[simp]
 lemma not_mem_support_iff (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
-     simp only [support_set, mem_setOf_eq, not_forall, Classical.not_imp, not_lt,
+     simp only [support_set, mem_setOf_eq, not_forall, not_lt,
        nonpos_iff_eq_zero]
      exact bex_def
 
