@@ -684,54 +684,28 @@ def mk'
   counitInv := counitIso.inv
   left_triangle := left_triangle
   right_triangle := by
-    -- This is a copy of the proof of Bicategory.right_triangle_of_left_triangle
-    -- except we can’t use bicategorical comp or the bicategory tactic
-    rw [← cancel_epi <|
-        inverse ◁ unitIso.hom ≫ (α_ inverse transform inverse).inv ≫
-          counitIso.hom ▷ inverse ≫
-          (λ_ _).hom ≫ (ρ_ _).inv]
-    simp only [Category.assoc]
-    calc
-      _ = inverse ◁ unitIso.hom ≫
-            (α_ _ _ _).inv ≫ (ρ_ _).inv ≫
-            (counitIso.hom ▷ inverse ▷ (.id _ _)) ≫
-            ((CatCospanTransform.id F' G').comp inverse) ◁ unitIso.hom ≫
-            (λ_ _).hom ▷ _ ≫ (α_ _ _ _).inv  ≫
-            counitIso.hom ▷ inverse := by
-          aesop_cat
-      _ = inverse ◁ (λ_ _).inv ≫
-            inverse ◁
-              (unitIso.hom ▷ (.id _ _) ≫
-                (transform.comp inverse) ◁ unitIso.hom) ≫
-            inverse ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
-            _ ◁ (α_ _ _ _).inv ≫ (α_ _ _ _).inv ≫
-            (counitIso.hom ▷ (inverse.comp transform) ≫
-              (CatCospanTransform.id _ _) ◁ counitIso.hom) ▷ inverse ≫
-            (ρ_ _).hom ▷ inverse := by
-          rw [← CatCospanTransform.whisker_exchange_assoc]
-          aesop_cat
-      _ = inverse ◁ unitIso.hom ≫
-            _ ◁ ((λ_ transform).inv ▷ _) ≫
-            inverse ◁
-              (unitIso.hom ▷ transform ≫
-                (α_ _ _ _).hom ≫
-                transform ◁ counitIso.hom) ▷ inverse ≫
-            _ ◁ ((ρ_ transform).hom ▷ _) ≫
-            (α_ _ _ _).inv ≫
-            counitIso.hom ▷ inverse := by
-          rw [← CatCospanTransform.whisker_exchange,
-            ← CatCospanTransform.whisker_exchange]
-          ext x <;>
-          ( dsimp
-            simp [Category.id_comp, Functor.map_id, Category.comp_id,
-              Category.assoc, Functor.map_comp] )
-      _ = inverse ◁ unitIso.hom ≫
-            _ ◁ ((λ_ transform).inv ▷ _) ≫
-            inverse ◁ ((λ_ _).hom ≫ (ρ_ _).inv) ▷ inverse ≫
-            _ ◁ ((ρ_ transform).hom ▷ _) ≫
-            (α_ _ _ _).inv ≫
-            counitIso.hom ▷ inverse := by rw [left_triangle]
-      _ = _ := by aesop_cat
+    ext x <;> dsimp <;> simp only [Category.comp_id, Category.id_comp]
+    · exact Equivalence.unit_inverse_comp (C := A) (D := A')
+        { functor := transform.left
+          inverse := inverse.left
+          unitIso := CatCospanTransform.leftIso unitIso
+          counitIso := CatCospanTransform.leftIso counitIso
+          functor_unitIso_comp x := by
+            simpa using congr_arg (fun t ↦ t.left.app x) left_triangle } x
+    · exact Equivalence.unit_inverse_comp (C := C) (D := C')
+        { functor := transform.right
+          inverse := inverse.right
+          unitIso := CatCospanTransform.rightIso unitIso
+          counitIso := CatCospanTransform.rightIso counitIso
+          functor_unitIso_comp x := by
+            simpa using congr_arg (fun t ↦ t.right.app x) left_triangle } x
+    · exact Equivalence.unit_inverse_comp (C := B) (D := B')
+        { functor := transform.base
+          inverse := inverse.base
+          unitIso := CatCospanTransform.baseIso unitIso
+          counitIso := CatCospanTransform.baseIso counitIso
+          functor_unitIso_comp x := by
+            simpa using congr_arg (fun t ↦ t.base.app x) left_triangle } x
 
 /-- Construct a `CatCospanEquivalence F G F' G'` from the data of individual
 equivalences of categories for the left, base and right components, as well
