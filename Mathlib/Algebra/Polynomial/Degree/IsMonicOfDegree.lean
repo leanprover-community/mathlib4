@@ -51,7 +51,7 @@ lemma IsMonicOfDegree.leadingCoeff_eq {p : R[X]} {n : ℕ} (hp : IsMonicOfDegree
   Monic.def.mp hp.monic
 
 @[simp]
-lemma isMonicOfDegree_iff_of_subsingleton [Subsingleton R] (p : R[X]) (n : ℕ) :
+lemma isMonicOfDegree_iff_of_subsingleton [Subsingleton R] {p : R[X]} {n : ℕ} :
     IsMonicOfDegree p n ↔ n = 0 := by
   rw [Subsingleton.eq_one p]
   refine ⟨fun ⟨H, _⟩ ↦ ?_, fun H ↦ ?_⟩
