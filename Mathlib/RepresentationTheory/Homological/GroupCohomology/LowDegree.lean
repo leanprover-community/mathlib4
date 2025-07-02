@@ -163,7 +163,7 @@ theorem comp_dZero_eq :
     (zeroCochainsIso A).hom ≫ dZero A =
       (inhomogeneousCochains A).d 0 1 ≫ (oneCochainsIso A).hom := by
   ext x y
-  show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
+  change A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
   simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
     Finset.sum_singleton, sub_eq_add_neg]
   rcongr i <;> exact Fin.elim0 i
@@ -193,7 +193,7 @@ theorem comp_dOne_eq :
     (oneCochainsIso A).hom ≫ dOne A =
       (inhomogeneousCochains A).d 1 2 ≫ (twoCochainsIso A).hom := by
   ext x y
-  show A.ρ y.1 (x _) - x _ + x _ =  _ + _
+  change A.ρ y.1 (x _) - x _ + x _ =  _ + _
   rw [Fin.sum_univ_two]
   simp only [Fin.val_zero, zero_add, pow_one, neg_smul, one_smul, Fin.val_one,
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
@@ -224,7 +224,7 @@ theorem comp_dTwo_eq :
     (twoCochainsIso A).hom ≫ dTwo A =
       (inhomogeneousCochains A).d 2 3 ≫ (threeCochainsIso A).hom := by
   ext x y
-  show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
+  change A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
   rw [Fin.sum_univ_three]
   simp only [sub_eq_add_neg, add_assoc, Fin.val_zero, zero_add, pow_one, neg_smul,
@@ -333,7 +333,7 @@ theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCocycles A :=
   (mem_oneCocycles_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
-      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
+      isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
 variable (A) in
@@ -799,6 +799,14 @@ lemma zeroCocyclesIso_inv_comp_iCocycles :
 @[deprecated (since := "2025-06-12")]
 alias isoZeroCocycles_inv_comp_iCocycles := zeroCocyclesIso_inv_comp_iCocycles
 
+variable {A} in
+lemma cocyclesMk_0_eq (x : A.ρ.invariants) :
+    cocyclesMk ((zeroCochainsIso A).inv x.1) (by ext g; simp [zeroCochainsIso, x.2 (g 0),
+      inhomogeneousCochains.d, Pi.zero_apply (M := fun _ => A)]) = (zeroCocyclesIso A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCocycles A 0).1 inferInstance <| by
+    rw [iCocycles_mk]
+    exact (zeroCocyclesIso_inv_comp_iCocycles_apply A x).symm
+
 end zeroCocyclesIso
 
 section isoOneCocycles
@@ -837,6 +845,15 @@ lemma toCocycles_comp_isoOneCocycles_hom :
       (zeroCochainsIso A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_dZero_eq,
     shortComplexH1_f]
+
+lemma cocyclesMk_1_eq (x : oneCocycles A) :
+    cocyclesMk ((oneCochainsIso A).inv x) (by
+      simp [← inhomogeneousCochains.d_def, oneCocycles.dOne_apply x]) =
+      (isoOneCocycles A).inv x := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using
+    (isoOneCocycles_inv_comp_iCocycles_apply _ x).symm
 
 end isoOneCocycles
 
@@ -878,6 +895,15 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_dOne_eq,
     shortComplexH2_f]
 
+lemma cocyclesMk_2_eq (x : twoCocycles A) :
+    cocyclesMk ((twoCochainsIso A).inv x) (by
+      simp [← inhomogeneousCochains.d_def, twoCocycles.dTwo_apply x]) =
+      (isoTwoCocycles A).inv x := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using
+    (isoTwoCocycles_inv_comp_iCocycles_apply _ x).symm
+
 end isoTwoCocycles
 end CocyclesIso
 
@@ -900,7 +926,7 @@ noncomputable alias isoH0 := H0Iso
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H0Iso_hom  :
     π A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
-  simp [← cancel_mono (shortComplexH0 A).f, H0Iso]
+  simp [H0Iso]
 
 @[deprecated (since := "2025-06-12")]
 alias groupCohomologyπ_comp_isoH0_hom := π_comp_H0Iso_hom

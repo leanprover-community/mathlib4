@@ -325,7 +325,7 @@ theorem compactOpen_eq_iInf_induced :
   refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
-  simp [mapsTo_univ_iff, Subtype.forall, MapsTo]
+  simp [Subtype.forall, MapsTo]
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
@@ -468,7 +468,7 @@ but the `mkD` spelling appears naturally in the context of `C(α, β)`-valued in
 lemma continuous_mkD_of_uncurry
     (f : T → X → Y) (g : C(X, Y)) (f_cont : Continuous (Function.uncurry f)) :
     Continuous (fun x ↦ mkD (f x) g) := by
-  have (x) : Continuous (f x) := f_cont.comp (Continuous.prodMk_right x)
+  have (x : _) : Continuous (f x) := f_cont.comp (Continuous.prodMk_right x)
   refine continuous_of_continuous_uncurry _ ?_
   conv in mkD _ _ => rw [mkD_of_continuous (this x)]
   exact f_cont
@@ -489,7 +489,7 @@ open Set in
 lemma continuous_mkD_restrict_of_uncurry {t : Set X}
     (f : T → X → Y) (g : C(t, Y)) (f_cont : ContinuousOn (Function.uncurry f) (univ ×ˢ t)) :
     Continuous (fun x ↦ mkD (t.restrict (f x)) g) := by
-  have (x) : ContinuousOn (f x) t :=
+  have (x : _) : ContinuousOn (f x) t :=
     f_cont.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
   refine continuous_of_continuous_uncurry _ ?_
   conv in mkD _ _ => rw [mkD_of_continuousOn (this x)]
