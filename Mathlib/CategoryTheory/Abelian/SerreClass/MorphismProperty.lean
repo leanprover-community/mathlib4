@@ -63,7 +63,7 @@ lemma monoModSerre_iff {X Y : C} (f : X ⟶ Y) :
     P.monoModSerre f ↔ P (kernel f) := Iff.rfl
 
 lemma monomorphisms_le_monoModSerre : monomorphisms C ≤ P.monoModSerre :=
-    fun _ _ f (_ : Mono f) ↦ P.prop_of_isZero (isZero_kernel_of_mono f)
+  fun _ _ f (_ : Mono f) ↦ P.prop_of_isZero (isZero_kernel_of_mono f)
 
 lemma monoModSerre_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] :
     P.monoModSerre f :=
