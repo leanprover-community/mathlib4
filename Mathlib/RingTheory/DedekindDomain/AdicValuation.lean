@@ -603,7 +603,7 @@ def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue 
   map_mul' _ _ := by simp [adicAbvDef]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
-  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ zero_le _
+  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
 
 variable {R K} in
 /-- The `v`-adic absolute value is nonarchimedean -/
