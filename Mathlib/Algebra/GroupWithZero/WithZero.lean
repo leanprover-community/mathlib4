@@ -316,6 +316,7 @@ namespace MonoidWithZeroHom
 
 variable {G₀' : Type*} [GroupWithZero G₀']
 
+/-- The map `withZeroUnitsEquiv` as a `MonoidWithZeroHom`. -/
 def withZeroUnitsHom [DecidablePred (fun a : G₀' ↦ a = 0)] :
     WithZero G₀'ˣ →*₀ G₀' where
   __ := WithZero.withZeroUnitsEquiv
