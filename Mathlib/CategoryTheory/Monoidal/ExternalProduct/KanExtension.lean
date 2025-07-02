@@ -24,6 +24,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 namespace CategoryTheory.MonoidalCategory.ExternalProduct
 
 noncomputable section
+open scoped Prod
 
 variable {V : Type u₁} [Category.{v₁} V] [MonoidalCategory V]
   {D : Type u₂} {D' : Type u₃} {E : Type u₄}
@@ -33,12 +34,12 @@ variable {V : Type u₁} [Category.{v₁} V] [MonoidalCategory V]
 /-- Given an extension `α : H ⟶ L ⋙ H'`, this is the canonical extension
 `H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K` it induces through bifunctoriality of the external product. -/
 abbrev extensionUnitLeft : H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K :=
-    (externalProductBifunctor D E V).map ((α, K.leftUnitor.inv) : (H, K) ⟶ (L ⋙ H', 𝟭 E ⋙ K))
+    (externalProductBifunctor D E V).map (α ×ₘ K.leftUnitor.inv)
 
 /-- Given an extension `α : H ⟶ L ⋙ H'`, this is the canonical extension
 `K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H'` it induces through bifunctoriality of the external product. -/
 abbrev extensionUnitRight : K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H' :=
-    (externalProductBifunctor E D V).map ((K.leftUnitor.inv, α) : (K, H) ⟶ (𝟭 E ⋙ K, L ⋙ H'))
+    (externalProductBifunctor E D V).map (K.leftUnitor.inv ×ₘ α)
 
 /-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` at `(d : D')`
 and if tensoring right with an object preserves colimits in `V`,
