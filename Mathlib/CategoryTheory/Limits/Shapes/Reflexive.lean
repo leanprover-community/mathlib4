@@ -470,7 +470,7 @@ lemma whiskerRightMkNatTrans {F G : WalkingReflexivePair ⥤ C}
     {h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right}
     {h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion}
     {D : Type u₂} [Category.{v₂} D] (H : C ⥤ D) :
-    whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H =
+    Functor.whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H =
       mkNatTrans (H.map e₀) (H.map e₁)
           (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
           (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])

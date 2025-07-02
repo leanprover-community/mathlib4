@@ -16,7 +16,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory
 
-open Sum
+open Sum Functor
 
 namespace CategoryTheory.sum
 
