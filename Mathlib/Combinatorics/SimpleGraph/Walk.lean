@@ -870,6 +870,10 @@ lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) : (
 lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
   cases p <;> simp
 
+@[simp] lemma nil_copy {x y x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
+    (p.copy hx hy).Nil = p.Nil := by
+  subst_vars; rfl
+
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
@@ -915,6 +919,10 @@ lemma drop_length_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     rw [Walk.length_cons, Nat.add_le_add_iff_right] at h
     simp [Walk.drop, ih h]
 
+lemma drop_length_nil_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    (p.drop n).Nil := by
+  simp [drop_length_of_le h]
+
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
@@ -957,10 +965,10 @@ lemma take_support_sublist_of_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
 
 lemma take_support_sublist {u v n} (p : G.Walk u v) :
     (p.take n).support.Sublist p.support := by
-  by_cases h : n ≤ p.length
+  cases le_or_gt n p.length
   · have : p.support = (p.take p.length).support := by simp [take_of_length_le le_rfl]
-    exact this ▸ take_support_sublist_of_le p h
-  simp [take_of_length_le (not_le.mp h).le]
+    exact this ▸ p.take_support_sublist_of_le ‹_›
+  · simp [take_of_length_le (le_of_lt ‹_›)]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
@@ -1091,10 +1099,6 @@ protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by cases 
 
 lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil := mt Nil.tail hp
 
-@[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
-    (p.copy hx hy).Nil = p.Nil := by
-  subst_vars; rfl
-
 @[simp] lemma support_tail (p : G.Walk v v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
@@ -1130,10 +1134,10 @@ lemma drop_support_sublist_of_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
 
 lemma drop_support_sublist {u v n} (p : G.Walk u v) :
     (p.drop n).support.Sublist p.support := by
-  by_cases h : n ≤ p.length
+  cases le_or_gt n p.length
   · have : p.support = (p.drop 0).support := by cases p <;> simp [Walk.drop]
-    exact this ▸ drop_support_sublist_of_le p n.zero_le
-  simp [drop_length_of_le (not_le.mp h).le]
+    exact this ▸ p.drop_support_sublist_of_le n.zero_le
+  · simp [drop_length_of_le (le_of_lt ‹_›)]
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
