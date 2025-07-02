@@ -37,9 +37,19 @@ Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
   IO.println s!"Is {remoteName} a remote URL? {isRemoteURL remoteName}"
-  -- Remove the print statement above and uncomment the lines below when confident
+  let testRemote := if isRemoteURL remoteName then
+    extractRepoFromUrl remoteName |>.getD "Could not extract repo from remote URL"
+    else
+    ""
+  IO.println s!"Extracted repo from remote URL: {testRemote}"
   -- if isRemoteURL remoteName then
-  --   return remoteName
+  --   if let some repo := extractRepoFromUrl remoteName then
+  --     return repo
+  --   else
+  --     throw <| IO.userError s!"\
+  --       Failed to determine Mathlib's repository from remote URL: {remoteName}.\n\
+  --       {errorContext}\n\
+  --       Please ensure the remote URL is valid and points to a GitHub repository."
   -- else
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
@@ -281,7 +291,9 @@ def downloadFiles
     IO.println s!"Attempting to download {size} file(s) from {repo} cache"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
-      let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+      let args := #["--request", "GET", "--parallel",
+          -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+          "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
