@@ -82,12 +82,6 @@ lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     · exact inf_le_of_left_le h1
     · exact inf_le_of_right_le h3
 
-/- The set of relative-open sets of the form `(hull T a)ᶜ` for some `a` in `α` is closed under
-pairwise intersection. -/
-lemma hull_compl_inter_hull_compl (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
-    (hull T a)ᶜ ∩ (hull T b)ᶜ = (hull T (a ⊓ b))ᶜ := by
-  rw [hull_inf hT, compl_union]
-
 variable [DecidableEq α] [OrderTop α]
 
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
@@ -149,11 +143,6 @@ lemma sInter_hull (S : Set α) : ⋂₀ { hull T a | a ∈ S } = hull T (sSup S)
   ext x : 1
   simp_all only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     mem_preimage, mem_Ici, sSup_le_iff]
-
-/- When `α` is complete, the relative basis for the lower topology is also closed under arbitrary
-unions. -/
-lemma sUnion_hull_compl (S : Set α) : ⋃₀ { (hull T a)ᶜ | a ∈ S } = (hull T (sSup S))ᶜ := by
-  simp [sUnion_eq_compl_sInter_compl, ← sInter_hull, compl_sInter]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `(hull T a)ᶜ` for some `a` in `α`.-/
@@ -231,12 +220,5 @@ lemma lowerTopology_closureOperator [TopologicalSpace α] [IsLower α] [Decidabl
     intro R hR
     rw [← (gc_closureOperator_of_isClosed hT hG hR.1), ← gc_closureOperator]
     exact ClosureOperator.monotone _ hR.2
-
-theorem lowerTopology_closureOperator_eq_gc_closureOperator
-    [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
-    (hG : OrderGenerate T) :
-    (TopologicalSpace.Closeds.gc (α := T)).closureOperator = gc.closureOperator := by
-  ext S a
-  rw [gc_closureOperator, (lowerTopology_closureOperator hT hG)]
 
 end PrimitiveSpectrum
