@@ -91,7 +91,7 @@ theorem sumLexIioIci_symm_apply_of_lt (h : y < x) :
     (sumLexIioIci x).symm y = toLex (Sum.inl ⟨y, h⟩) := by
   rw [symm_apply_eq, sumLexIioIci_apply_inl]
 
-theorem sumLexIioIci_symm_apply_of_le {y : α} (h : x ≤ y) :
+theorem sumLexIioIci_symm_apply_of_ge {y : α} (h : x ≤ y) :
     (sumLexIioIci x).symm y = toLex (Sum.inr ⟨y, h⟩) := by
   rw [symm_apply_eq, sumLexIioIci_apply_inr]
 
@@ -101,7 +101,7 @@ theorem sumLexIioIci_symm_apply_Iio (a : Iio x) : (sumLexIioIci x).symm a = toLe
 
 @[simp]
 theorem sumLexIioIci_symm_apply_Ici (a : Ici x) : (sumLexIioIci x).symm a = toLex (Sum.inr a) :=
-  sumLexIioIci_symm_apply_of_le a.2
+  sumLexIioIci_symm_apply_of_ge a.2
 
 variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less or equal to `x` and
