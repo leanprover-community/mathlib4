@@ -294,18 +294,6 @@ theorem coe_update [DecidableEq α] : (f.update a b : α → M) = Function.updat
   dsimp
   split_ifs <;> simp
 
-theorem update_apply [DecidableEq α] : f.update a b a' = if a' = a then b else f a' := by
-  rw [coe_update, Function.update_apply]
-
-@[simp]
-theorem update_self_apply : f.update a b a = b := by
-  simp [update]
-
-@[simp]
-theorem update_apply_of_ne (h : a' ≠ a) : f.update a b a' = f a' := by
-  classical
-  simp [update_apply, h]
-
 @[simp]
 theorem update_self : f.update a (f a) = f := by
   classical
