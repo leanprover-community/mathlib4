@@ -180,7 +180,7 @@ theorem comp_d₀₁_eq :
     (cochainsIso₀ A).hom ≫ d₀₁ A =
       (inhomogeneousCochains A).d 0 1 ≫ (cochainsIso₁ A).hom := by
   ext x y
-  show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
+  change A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
   simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
     Finset.sum_singleton, sub_eq_add_neg]
   rcongr i <;> exact Fin.elim0 i
@@ -214,7 +214,7 @@ theorem comp_d₁₂_eq :
     (cochainsIso₁ A).hom ≫ d₁₂ A =
       (inhomogeneousCochains A).d 1 2 ≫ (cochainsIso₂ A).hom := by
   ext x y
-  show A.ρ y.1 (x _) - x _ + x _ =  _ + _
+  change A.ρ y.1 (x _) - x _ + x _ =  _ + _
   rw [Fin.sum_univ_two]
   simp only [Fin.val_zero, zero_add, pow_one, neg_smul, one_smul, Fin.val_one,
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
@@ -249,7 +249,7 @@ theorem comp_d₂₃_eq :
     (cochainsIso₂ A).hom ≫ d₂₃ A =
       (inhomogeneousCochains A).d 2 3 ≫ (cochainsIso₃ A).hom := by
   ext x y
-  show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
+  change A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
   rw [Fin.sum_univ_three]
   simp only [sub_eq_add_neg, add_assoc, Fin.val_zero, zero_add, pow_one, neg_smul,
@@ -1006,6 +1006,17 @@ lemma zeroCocyclesIso_inv_comp_iCocycles :
 @[deprecated (since := "2025-06-12")]
 alias isoZeroCocycles_inv_comp_iCocycles := zeroCocyclesIso_inv_comp_iCocycles
 
+variable {A} in
+lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
+    cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
+      inhomogeneousCochains.d, Pi.zero_apply (M := fun _ => A)]) = (zeroCocyclesIso A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCocycles A 0).1 inferInstance <| by
+    rw [iCocycles_mk]
+    exact (zeroCocyclesIso_inv_comp_iCocycles_apply A x).symm
+
+@[deprecated (since := "2025-07-02")]
+alias cocyclesMk_0_eq := cocyclesMk₀_eq
+
 end zeroCocyclesIso
 
 section isoCocycles₁
@@ -1054,6 +1065,18 @@ lemma toCocycles_comp_isoCocycles₁_hom :
 
 @[deprecated (since := "2025-06-25")]
 alias toCocycles_comp_isoOneCocycles_hom := toCocycles_comp_isoCocycles₁_hom
+
+lemma cocyclesMk_1_eq (x : cocycles₁ A) :
+    cocyclesMk ((cochainsIso₁ A).inv x) (by
+      simp [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
+      (isoCocycles₁ A).inv x := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using
+    (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
+
+@[deprecated (since := "2025-07-02")]
+alias cocyclesMk_1_eq := cocyclesMk₁_eq
 
 end isoCocycles₁
 
@@ -1104,6 +1127,18 @@ lemma toCocycles_comp_isoCocycles₂_hom :
 
 @[deprecated (since := "2025-06-25")]
 alias toCocycles_comp_isoTwoCocycles_hom := toCocycles_comp_isoCocycles₂_hom
+
+lemma cocyclesMk_2_eq (x : cocycles₂ A) :
+    cocyclesMk ((cochainsIso₂ A).inv x) (by
+      simp [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
+      (isoCocycles₂ A).inv x := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using
+    (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
+
+@[deprecated (since := "2025-07-02")]
+alias cocyclesMk_2_eq := cocyclesMk₂_eq
 
 end isoCocycles₂
 end CocyclesIso

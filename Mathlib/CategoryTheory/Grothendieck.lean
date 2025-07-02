@@ -52,6 +52,8 @@ universe w u v u₁ v₁ u₂ v₂
 
 namespace CategoryTheory
 
+open Functor
+
 variable {C : Type u} [Category.{v} C]
 variable {D : Type u₁} [Category.{v₁} D]
 variable (F : C ⥤ Cat.{v₂, u₂})
@@ -129,7 +131,7 @@ instance : Category (Grothendieck F) where
 
 @[simp]
 theorem id_base (X : Grothendieck F) :
-    Hom.base (𝟙 X) = 𝟙 X.base := by
+    Hom.base (𝟙 X) = 𝟙 X.base :=
   rfl
 
 @[simp]

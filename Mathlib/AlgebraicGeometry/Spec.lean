@@ -115,7 +115,7 @@ theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S
     ext
     -- Porting note: was one liner
     -- `dsimp, rw category_theory.functor.map_id, rw category.comp_id, erw comap_comp f g, refl`
-    rw [NatTrans.comp_app, sheafedSpaceMap_c_app, whiskerRight_app, eqToHom_refl]
+    rw [NatTrans.comp_app, sheafedSpaceMap_c_app, Functor.whiskerRight_app, eqToHom_refl]
     erw [(sheafedSpaceObj T).presheaf.map_id]
     dsimp only [CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
     rw [comap_comp]
@@ -316,7 +316,7 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
   -- See https://github.com/leanprover/lean4/issues/2273
   refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
-  show
+  change
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M
       x.asIdeal).toRingEquiv.toCommRingCatIso.hom
   infer_instance

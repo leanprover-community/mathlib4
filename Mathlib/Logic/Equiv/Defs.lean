@@ -109,7 +109,7 @@ instance : FunLike (α ≃ β) α β where
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
     ((e : α ≃ β) : α → β) = e := rfl
 
-@[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
+@[simp, grind =] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
@@ -233,9 +233,9 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 
 @[simp] theorem trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) := rfl
 
-@[simp] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
+@[simp, grind =] theorem apply_symm_apply (e : α ≃ β) (x : β) : e (e.symm x) = x := e.right_inv x
 
-@[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x := e.left_inv x
+@[simp, grind =] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x := e.left_inv x
 
 @[simp] theorem symm_comp_self (e : α ≃ β) : e.symm ∘ e = id := funext e.symm_apply_apply
 
@@ -647,15 +647,15 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 @[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort _}
     (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
-  Equiv.sigmaCongrRight_trans F G
+  rfl
 
 @[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
-  Equiv.sigmaCongrRight_symm F
+  rfl
 
 @[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
-  Equiv.sigmaCongrRight_refl
+  rfl
 
 end Perm
 
@@ -689,7 +689,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
   (sigmaCongrRight F).trans (sigmaCongrLeft f)
 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
-@[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
+@[simps (attrs := [`mfld_simps]) apply symm_apply]
 def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 

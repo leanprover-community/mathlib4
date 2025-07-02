@@ -448,7 +448,7 @@ theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
     rintro _ ⟨x, rfl⟩
     let I : Ideal (S ⊗[R] S) := Ideal.span
       ((EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)))
-    show _ - _ ∈ I
+    change _ - _ ∈ I
     have : (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeRight =
         (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeLeft := by
       apply EssFiniteType.algHom_ext
