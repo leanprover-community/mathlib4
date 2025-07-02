@@ -380,36 +380,27 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 protected def support (μ : Measure X) : Set X := {x : X | ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u}
 
-@[simp]
-lemma support_def {x : X} {μ : Measure X} : x ∈ μ.support ↔ ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := by
-  rfl
-
-/-- Do we really want this lemma? The reason I include it is because it looks closer
- to the standard definition, although it still doesn't have that openness assumption.
- Some of the subsequent lemmas are easily proven using it, but it may be better to prove
- these directly using filters. -/
-lemma support_set (μ : Measure X) : μ.support = {x : X | ∀ U ∈ 𝓝 x, 0 < μ U} := by
-  ext x
-  simp only [support_def, Set.mem_setOf, Filter.frequently_smallSets]
-  constructor
-  · intro h U hU
-    obtain ⟨t, htsub, htpos⟩ := h U hU
-    exact lt_of_lt_of_le htpos (measure_mono htsub)
-  · intro h U hU
-    exact ⟨U, Subset.refl U, h U hU⟩
-
 variable {μ : Measure X}
 
-@[simp]
+lemma mem_support_iff {x : X} : x ∈ μ.support ↔
+    ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := Iff.rfl
+
+lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U := by
+   simp [mem_support_iff, Filter.frequently_smallSets]
+   constructor
+   · intro h U hU
+     obtain ⟨t, htsub, htpos⟩ := h U hU
+     exact lt_of_lt_of_le htpos (measure_mono htsub)
+   · intro h U hU
+     exact ⟨U, Subset.refl U, h U hU⟩
+
 lemma not_mem_support_iff (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
-     simp only [support_set, mem_setOf_eq, not_forall, not_lt,
-       nonpos_iff_eq_zero]
-     exact bex_def
+     simp only [mem_support_iff_forall, not_forall, not_lt, nonpos_iff_eq_zero, bex_def]
 
 lemma _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
     x ∈ μ.support  ↔ ∀ (i : ι), p i → 0 < μ (s i) := by
-  simp only [support_set, mem_setOf_eq]
+  simp only [mem_support_iff_forall]
   exact hl.forall_iff (fun U V hUV hUpos => lt_of_lt_of_le hUpos (measure_mono hUV))
 
 lemma support_eq_forall_isOpen : μ.support =
@@ -417,7 +408,7 @@ lemma support_eq_forall_isOpen : μ.support =
   simp [Set.ext_iff, (nhds_basis_opens _).mem_measureSupport]
 
 lemma measure_pos_of_mem_support {x : X} (h : x ∈ μ.support) :
-  ∀ U ∈ 𝓝 x, 0 < μ U := by rwa [support_set, mem_setOf_eq] at h
+  ∀ U ∈ 𝓝 x, 0 < μ U := by rwa [mem_support_iff_forall] at h
 
 lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   simp only [support_eq_forall_isOpen, isClosed_iff_frequently, Set.mem_setOf_eq,
@@ -426,8 +417,12 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   obtain ⟨y, hyu, hy⟩ := h u hxu hu
   exact hy u hyu hu
 
---lemma exists_mem_support_of_open_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
---  (U ∩ support μ).Nonempty := by sorry
+/-- This theorem says that if U has positive measure then there has to be a point in U, all of
+    neighborhoods have positive measure. It's probably better to prove that union result
+    below first and then use that theorem to prove this one under second countable
+    hypothesis, etc. -/
+lemma exists_mem_support_of_open_pos {U : Set X} (hU : IsOpen U) (hμ : 0 < μ U) :
+  (U ∩ μ.support).Nonempty := by sorry
 
 --lemma support_subset_closure_of_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
 --  support μ ⊆ closure U := by sorry
