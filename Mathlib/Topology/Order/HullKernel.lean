@@ -214,7 +214,7 @@ lemma hull_kernel_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
      hull T (kernel C) = C := by
   obtain ⟨a, ha⟩ := (isClosed_iff hT).mp h
-  rw [GaloisConnection.closureOperator_apply, ha, kernel_hull hG, OrderDual.ofDual_toDual]
+  rw [ha, kernel_hull hG]
 
 lemma lowerTopology_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
@@ -225,7 +225,7 @@ lemma lowerTopology_closureOperator [TopologicalSpace α] [IsLower α] [Decidabl
       image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
-    rw [← (gc_closureOperator_of_isClosed hT hG hR.1), ← gc_closureOperator]
+    rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]
     exact ClosureOperator.monotone _ hR.2
 
 end PrimitiveSpectrum
