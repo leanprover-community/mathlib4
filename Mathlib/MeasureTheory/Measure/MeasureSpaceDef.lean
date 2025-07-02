@@ -386,16 +386,20 @@ lemma mem_support_iff {x : X} : x ∈ μ.support ↔
     ∃ᶠ u in (𝓝 x).smallSets, 0 < μ u := Iff.rfl
 
 lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 < μ U := by
-   simp [mem_support_iff, Filter.frequently_smallSets]
-   constructor
-   · intro h U hU
-     obtain ⟨t, htsub, htpos⟩ := h U hU
-     exact lt_of_lt_of_le htpos (measure_mono htsub)
-   · intro h U hU
-     exact ⟨U, Subset.refl U, h U hU⟩
+  simp [mem_support_iff, Filter.frequently_smallSets]
+  constructor
+  · intro h U hU
+    obtain ⟨t, htsub, htpos⟩ := h U hU
+    exact lt_of_lt_of_le htpos (measure_mono htsub)
+  · intro h U hU
+    exact ⟨U, Subset.refl U, h U hU⟩
 
-lemma not_mem_support_iff (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
-     simp only [mem_support_iff_forall, not_forall, not_lt, nonpos_iff_eq_zero, bex_def]
+lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
+  simp only [mem_support_iff, not_frequently, not_lt, nonpos_iff_eq_zero]
+
+lemma notMem_support_iff_exists (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
+  simp only [notMem_support_iff]
+  refine eventually_smallSets' <| fun ⦃s t⦄ a a_1 ↦ measure_mono_null a a_1
 
 lemma _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
