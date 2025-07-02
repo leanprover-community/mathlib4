@@ -504,7 +504,7 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
 
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
-  show _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
+  change _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
   rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
   exact WellFounded.min_mem _ _ _

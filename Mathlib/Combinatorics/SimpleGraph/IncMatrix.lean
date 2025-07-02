@@ -141,8 +141,7 @@ theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] 
     refine e.ind ?_
     intro v w h
     rw [← Nat.cast_two, ← card_pair (G.ne_of_adj h)]
-    simp only [mk'_mem_incidenceSet_iff, G.mem_edgeSet.mp h, true_and, mem_univ, forall_true_left,
-      forall_eq_or_imp, forall_eq, and_self, mem_singleton, ne_eq]
+    simp only [mk'_mem_incidenceSet_iff, G.mem_edgeSet.mp h, true_and]
     congr 2
     ext u
     simp

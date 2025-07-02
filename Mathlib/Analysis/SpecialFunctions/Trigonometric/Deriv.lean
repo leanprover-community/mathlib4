@@ -80,7 +80,7 @@ theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   simp only [sin, div_eq_mul_inv, neg_mul_eq_neg_mul]
   convert (((hasStrictDerivAt_id x).mul_const I).cexp.add
     ((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹ using 1
-  simp only [Function.comp, id]
+  simp only [id]
   ring
 
 /-- The complex cosine function is everywhere differentiable, with the derivative `-sin x`. -/
