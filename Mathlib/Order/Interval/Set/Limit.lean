@@ -23,7 +23,7 @@ lemma isSuccLimit_coe {J : Type u} [LinearOrder J] {j : J}
     (m : Set.Ici j) (hm : Order.IsSuccLimit m) :
     Order.IsSuccLimit m.1 :=
   ⟨Set.not_isMin_coe _ hm.1, fun b ↦ by
-    simp only [CovBy, not_lt, not_and, not_forall, Classical.not_imp, not_le]
+    simp only [CovBy, not_lt, not_and, not_forall, not_le]
     intro hb
     by_cases hb' : j ≤ b
     · have := hm.2 ⟨b, hb'⟩
