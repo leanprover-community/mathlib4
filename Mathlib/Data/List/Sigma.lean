@@ -332,10 +332,7 @@ def kreplace (a : α) (b : β a) : List (Sigma β) → List (Sigma β) :=
 theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
     (H : ∀ b : β a, Sigma.mk a b ∉ l) : kreplace a b l = l :=
   lookmap_of_forall_not _ <| by
-    rintro ⟨a', b'⟩ h; dsimp; split_ifs
-    · subst a'
-      exact H _ h
-    · rfl
+    grind
 
 theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys l)
     (h : Sigma.mk a b ∈ l) : kreplace a b l = l := by
