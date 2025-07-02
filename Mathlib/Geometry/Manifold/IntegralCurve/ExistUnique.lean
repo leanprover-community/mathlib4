@@ -150,7 +150,8 @@ theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
     mem_of_mem_of_subset (hmem hx ht) interior_subset
   -- main proof
   refine ⟨U, ?_, ε, hε, γ, fun x hx ↦
-    ⟨?_, fun t ht ↦ hasMFDerivAt_extChartAt_comp_of_hasDerivAt (hmem hx ht) (hderiv hx ht), ?_⟩⟩
+    ⟨?_, fun t ht ↦ hasMFDerivAt_extChartAt_comp_of_hasDerivAt (hmem hx ht) (hderiv hx ht)
+      |>.hasMFDerivWithinAt, ?_⟩⟩
   · apply Filter.inter_mem _ (extChartAt_source_mem_nhds _)
     exact continuousAt_extChartAt _ |>.preimage_mem_nhds <| Filter.inter_mem hu0 hu
   · symm
