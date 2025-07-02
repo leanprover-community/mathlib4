@@ -234,19 +234,26 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 /-! ### Inaccessible cardinals -/
 
 /-- A cardinal is inaccessible if it is an uncountable regular strong limit cardinal. -/
-def IsInaccessible (c : Cardinal) :=
-  ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c
+structure IsInaccessible (c : Cardinal) : Prop where
+  aleph_lt : ℵ₀ < c
+  le_cof_ord : c ≤ c.ord.cof
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c : IsStrongLimit c
 
-theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2 ^ x) < c) :
-    IsInaccessible c :=
-  ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', @h₃⟩
+theorem IsInaccesible.isRegular {c : Cardinal} (h : IsInaccesible c) : IsRegular c :=
+  ⟨h.aleph_lt.le, h.le_cof_ord⟩
+
+theorem IsInaccesible.IsStrongLimit {x : Cardinal} (h : IsInaccesible c) : IsStrongLimit c :=
+  ⟨(aleph0_pos.trans h₁).ne', @h₃⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
-theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
-  IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h => by
-    rcases lt_univ'.1 h with ⟨c, rfl⟩
-    rw [← lift_two_power]
-    apply lift_lt_univ'
+theorem IsInaccessible.univ : IsInaccessible univ.{u, v} := by
+  refine ⟨by simpa using lift_lt_univ' ℵ₀, by simp, fun c h => ?_⟩
+  rcases lt_univ'.1 h with ⟨c, rfl⟩
+  rw [← lift_two_power]
+  apply lift_lt_univ'
+
+@[deprecated IsInaccesible.univ (since := "2025-07-01")]
+alias univ_inaccessible := IsInaccesible.univ
 
 -- TODO: prove that `IsInaccessible o.card` implies `IsInaccesible (ℵ_ o)` and
 -- `IsInaccesible (ℶ_ o)`
