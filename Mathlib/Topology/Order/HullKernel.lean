@@ -143,13 +143,8 @@ end PrimitiveSpectrum
 
 end SemilatticeInf
 
-section PrimativeSpectrum
-
-variable [CompleteLattice α]
-
-variable {T : Set α}
-
 namespace PrimitiveSpectrum
+variable [CompleteLattice α] {T : Set α}
 
 lemma sInter_hull (S : Set α) : ⋂₀ { hull T a | a ∈ S } = hull T (sSup S) := by
   ext x : 1
