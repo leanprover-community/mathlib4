@@ -179,7 +179,7 @@ theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
   exact ⟨fun h b hbS => h _ (Subtype.coe_prop b) hbS, fun h b _ hbS => h hbS⟩
 
 @[simp]
-lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) := by
+lemma gc_closureOperator (S : Set T) : hull T (kernel S) = gc.closureOperator S := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
 
@@ -223,7 +223,7 @@ lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq 
       image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
-    rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]
+    rw [← (hull_kernel_of_isClosed hT hG hR.1), gc_closureOperator]
     exact ClosureOperator.monotone _ hR.2
 
 end PrimitiveSpectrum
