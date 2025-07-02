@@ -72,6 +72,7 @@ theorem some_single_some (a : α) (m : M) :
 
 @[simp]
 lemma some_update_none (f : Option α →₀ M) (y : M) : (update f none y).some = f.some := by
+  classical
   ext
   simp
 
@@ -79,6 +80,7 @@ lemma some_update_none (f : Option α →₀ M) (y : M) : (update f none y).some
 lemma some_update_some (f : Option α →₀ M) (x : α) (y : M) :
     (f.update (Option.some x) y).some = (f.some.update x y) := by
   ext a
+  classical
   by_cases h : a = x
   · simp [h]
   · simp [h]
@@ -111,10 +113,12 @@ def optionElim' (y : M) (f : α →₀ M) : Option α →₀ M :=
   optionEquiv.invFun (y, f)
 
 lemma optionElim'_apply_none (y : M) (f : α →₀ M) : f.optionElim' y none = y := by
+  classical
   simp [optionElim']
 
 lemma optionElim'_apply_some (y : M) (f : α →₀ M) (x : α) :
     f.optionElim' y (Option.some x) = f x := by
+  classical
   simp [optionElim']
 
 @[simp]
