@@ -147,6 +147,15 @@ def derivFamily (f : ι → Ordinal.{u} → Ordinal.{u}) : Ordinal.{u} → Ordin
 theorem derivFamily_eq_enumOrd : derivFamily f = enumOrd (⋂ i, Function.fixedPoints (f i)) :=
   rfl
 
+theorem isNormal_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
+    IsNormal (derivFamily f) := by
+  apply isNormal_enumOrd (fun t ht ht₀ ht' ↦ ?_) (not_bddAbove_fp_family H)
+  aesop (add simp [IsNormal.map_sSup_of_bddAbove, Set.subset_def, IsFixedPt])
+
+theorem derivFamily_strictMono [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
+    StrictMono (derivFamily f) :=
+  (isNormal_derivFamily H).strictMono
+
 theorem derivFamily_fp [Small.{u} ι] {i} (H : ∀ i, IsNormal (f i)) (o : Ordinal) :
     f i (derivFamily f o) = derivFamily f o :=
   (Set.mem_iInter.1 <| enumOrd_mem (not_bddAbove_fp_family H) o) i
@@ -159,15 +168,6 @@ theorem mem_range_derivFamily_iff [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {o}
     o ∈ Set.range (derivFamily f) ↔ ∀ i, f i o = o := by
   rw [range_derivFamily H]
   simp [IsFixedPt]
-
-theorem isNormal_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
-    IsNormal (derivFamily f) := by
-  apply isNormal_enumOrd (fun t ht ht₀ ht' ↦ ?_) (not_bddAbove_fp_family H)
-  aesop (add simp [IsNormal.map_sSup_of_bddAbove, Set.subset_def, IsFixedPt])
-
-theorem derivFamily_strictMono [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
-    StrictMono (derivFamily f) :=
-  (isNormal_derivFamily H).strictMono
 
 @[deprecated mem_range_derivFamily_iff (since := "2025-07-01")]
 theorem fp_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
@@ -224,7 +224,7 @@ theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : U
 
 theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
     ⨆ n : ℕ, f^[n] a = nfp f a := by
-  refine Equiv.listUnitEquiv.symm.iSup_congr fun n ↦ ?_
+  refine (Equiv.listUniqueEquiv _).symm.iSup_congr fun n ↦ ?_
   induction n with
   | zero => rfl
   | succ n IH => rw [Function.iterate_succ_apply', ← IH]; rfl
@@ -308,6 +308,18 @@ theorem deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily f
 theorem deriv_eq_enumOrd : deriv f = enumOrd (Function.fixedPoints f) := by
   rw [deriv, derivFamily, Set.iInter_const]
 
+protected theorem IsNormal.deriv (H : IsNormal f) : IsNormal (deriv f) :=
+  isNormal_derivFamily fun _ ↦ H
+
+@[deprecated (since := "2025-07-01")]
+alias isNormal_deriv := IsNormal.deriv
+
+theorem IsNormal.deriv_strictMono (H : IsNormal f) : StrictMono (deriv f) :=
+  derivFamily_strictMono fun _ ↦ H
+
+@[deprecated (since := "2025-07-01")]
+alias deriv_strictMono := IsNormal.deriv_strictMono
+
 theorem IsNormal.deriv_fp (H : IsNormal f) : ∀ o : Ordinal, f (deriv f o) = deriv f o :=
   derivFamily_fp.{u} (i := ()) fun _ ↦ H
 
@@ -316,20 +328,6 @@ theorem IsNormal.range_deriv (H : IsNormal f) : Set.range (deriv f) = Function.f
 
 theorem mem_range_deriv_iff (H : IsNormal f) {o} : o ∈ Set.range (deriv f) ↔ f o = o := by
   simpa using mem_range_derivFamily_iff fun _ : Unit ↦ H
-
-protected theorem IsNormal.deriv (H : IsNormal f) : IsNormal (deriv f) :=
-  isNormal_derivFamily fun _ ↦ H
-
-@[deprecated (since := "2025-07-01")]
-alias isNormal_deriv := IsNormal.deriv
-@[deprecated isNormal_deriv (since := "2024-10-11")]
-alias deriv_isNormal := isNormal_deriv
-
-theorem IsNormal.deriv_strictMono (H : IsNormal f) : StrictMono (deriv f) :=
-  derivFamily_strictMono fun _ ↦ H
-
-@[deprecated (since := "2025-07-01")]
-alias deriv_strictMono := IsNormal.deriv_strictMono
 
 set_option linter.deprecated false in
 @[deprecated mem_range_deriv_iff (since := "2025-07-01")]

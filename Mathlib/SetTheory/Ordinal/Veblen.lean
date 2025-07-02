@@ -350,10 +350,10 @@ theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := b
   rw [epsilon, ← succ_zero, veblen_succ, veblen_zero]
 
 theorem epsilon0_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
-  rw [epsilon_eq_deriv, deriv_zero_right]
+  rw [epsilon_eq_deriv, deriv_zero_right (isNormal_opow one_lt_omega0)]
 
 theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
-  rw [epsilon_eq_deriv, epsilon_eq_deriv, deriv_succ]
+  rw [epsilon_eq_deriv, epsilon_eq_deriv, deriv_succ (isNormal_opow one_lt_omega0)]
 
 theorem epsilon0_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
   rw [epsilon0_eq_nfp]
@@ -399,7 +399,7 @@ of `veblen ε₀ 0`, `veblen (veblen ε₀ 0) 0`, etc. -/
 scoped notation "Γ₀" => Γ_ 0
 
 theorem isNormal_gamma : IsNormal gamma :=
-  isNormal_deriv _
+  isNormal_veblen_zero.deriv
 
 theorem strictMono_gamma : StrictMono gamma :=
   isNormal_gamma.strictMono
@@ -424,10 +424,10 @@ theorem veblen_gamma_zero (o : Ordinal) : veblen (Γ_ o) 0 = Γ_ o :=
   isNormal_veblen_zero.deriv_fp o
 
 theorem gamma0_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
-  deriv_zero_right _
+  deriv_zero_right isNormal_veblen_zero
 
 theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) :=
-  deriv_succ _ _
+  deriv_succ isNormal_veblen_zero _
 
 theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
   rw [gamma0_eq_nfp]
