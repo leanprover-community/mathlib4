@@ -139,7 +139,7 @@ end SemilatticeInf
 namespace PrimitiveSpectrum
 variable [CompleteLattice α] {T : Set α}
 
-lemma sInter_hull (S : Set α) : ⋂₀ { hull T a | a ∈ S } = hull T (sSup S) := by
+lemma hull_sSup (S : Set α) : hull T (sSup S) = ⋂₀ { hull T a | a ∈ S } := by
   ext x : 1
   simp_all only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     mem_preimage, mem_Ici, sSup_le_iff]
