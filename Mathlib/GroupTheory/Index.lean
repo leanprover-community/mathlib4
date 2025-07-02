@@ -588,10 +588,27 @@ instance finite_quotient_of_finiteIndex [FiniteIndex H] : Finite (G ⧸ H) :=
 theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
   ⟨index_ne_zero_of_finite⟩
 
+@[to_additive]
+theorem finiteIndex_iff_finite_quotient : FiniteIndex H ↔ Finite (G ⧸ H) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ finiteIndex_of_finite_quotient⟩
+
 -- Porting note: had to manually provide finite instance for quotient when it should be automatic
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)
+
+variable (H) in
+@[to_additive]
+theorem finite_iff_finite_and_finiteIndex : Finite G ↔ Finite H ∧ H.FiniteIndex where
+  mp _ := ⟨inferInstance, inferInstance⟩
+  mpr := fun ⟨_, _⟩ ↦ Nat.finite_of_card_ne_zero <|
+    H.card_mul_index ▸ mul_ne_zero Nat.card_pos.ne' FiniteIndex.index_ne_zero
+
+@[to_additive]
+theorem _root_.MonoidHom.finite_iff_finite_ker_range (f : G →* G') :
+    Finite G ↔ Finite f.ker ∧ Finite f.range := by
+  rw [finite_iff_finite_and_finiteIndex f.ker, ← (QuotientGroup.quotientKerEquivRange f).finite_iff,
+    finiteIndex_iff_finite_quotient]
 
 @[to_additive]
 instance : FiniteIndex (⊤ : Subgroup G) :=
@@ -716,7 +733,7 @@ lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy 
   congr 2 with g
   simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
   let f' := MonoidHomClass.toMonoidHom f
-  show f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
+  change f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
   rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 
 end MonoidHom

@@ -28,10 +28,29 @@ def extractRepoFromUrl (url : String) : Option String := do
   let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
   return url.extract (url.next pos) url.endPos
 
+/-- Spot check if a URL is valid for a git remote -/
+def isRemoteURL (url : String) : Bool :=
+  "https://".isPrefixOf url || "http://".isPrefixOf url || "git@github.com:".isPrefixOf url
+
 /--
 Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
+  IO.println s!"Is {remoteName} a remote URL? {isRemoteURL remoteName}"
+  let testRemote := if isRemoteURL remoteName then
+    extractRepoFromUrl remoteName |>.getD "Could not extract repo from remote URL"
+    else
+    ""
+  IO.println s!"Extracted repo from remote URL: {testRemote}"
+  -- if isRemoteURL remoteName then
+  --   if let some repo := extractRepoFromUrl remoteName then
+  --     return repo
+  --   else
+  --     throw <| IO.userError s!"\
+  --       Failed to determine Mathlib's repository from remote URL: {remoteName}.\n\
+  --       {errorContext}\n\
+  --       Please ensure the remote URL is valid and points to a GitHub repository."
+  -- else
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
@@ -151,6 +170,13 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
         let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
         let refsInfo ← IO.Process.output
           {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+        -- The code below is for debugging purposes currently
+        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
+        {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
+        let refsInfo' ← IO.Process.output
+          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
+        IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
+        {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
 
         if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
           let prRefs := refsInfo.stdout.trim.split (· == '\n')
@@ -265,7 +291,9 @@ def downloadFiles
     IO.println s!"Attempting to download {size} file(s) from {repo} cache"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
-      let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+      let args := #["--request", "GET", "--parallel",
+          -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+          "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
