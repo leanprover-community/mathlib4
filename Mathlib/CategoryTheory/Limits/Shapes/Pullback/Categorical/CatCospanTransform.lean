@@ -174,8 +174,7 @@ lemma right_coherence_app {ψ ψ' : CatCospanTransform F G F' G'}
 /-- Whiskering left of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
 def whiskerLeft (φ : CatCospanTransform F G F' G')
-    {ψ ψ' : CatCospanTransform F' G' F'' G''}
-    (α : ψ ⟶ ψ') :
+    {ψ ψ' : CatCospanTransform F' G' F'' G''} (α : ψ ⟶ ψ') :
     (φ.comp ψ) ⟶ (φ.comp ψ') where
   left := CategoryTheory.whiskerLeft φ.left α.left
   right := CategoryTheory.whiskerLeft φ.right α.right
