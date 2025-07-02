@@ -393,6 +393,138 @@ theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
   rw [Uniformizer.is_generator ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
   exact hπ.of_associated hr
 
+section CyclicNontrivial
+
+variable [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)]
+
+theorem ideal_isPrincipal (I : Ideal K₀) : I.IsPrincipal := by
+  suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by
+    exact (IsPrincipalIdealRing.of_prime this).principal I
+  intro P hP
+  by_cases h_ne_bot : P = ⊥
+  · rw [h_ne_bot]; exact bot_isPrincipal
+  · let π : Uniformizer v := Nonempty.some (by infer_instance)
+    obtain ⟨x, ⟨hx_mem, hx₀⟩⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_ne_bot
+    obtain ⟨n, ⟨u, hu⟩⟩ := pow_Uniformizer hx₀ π
+    by_cases hn : n = 0
+    · rw [← Subring.coe_mul, hn, pow_zero, one_mul, SetLike.coe_eq_coe] at hu
+      refine (hP.ne_top (Ideal.eq_top_of_isUnit_mem P hx_mem ?_)).elim
+      simp only [hu, Units.isUnit]
+    · rw [← Subring.coe_mul, SetLike.coe_eq_coe] at hu
+      rw [hu, Ideal.mul_unit_mem_iff_mem P u.isUnit,
+        IsPrime.pow_mem_iff_mem hP _ (pos_iff_ne_zero.mpr hn), ← Ideal.span_singleton_le_iff_mem,
+        ← π.is_generator ] at hx_mem
+      rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
+      exact ⟨π.1, π.is_generator⟩
+
+theorem valuationSubring_isPrincipalIdealRing : IsPrincipalIdealRing K₀ :=
+  ⟨fun I ↦ ideal_isPrincipal v I⟩
+
+/-- This is Chapter I, Section 1, Proposition 1 in Serre's Local Fields -/
+instance valuationSubring_isDiscreteValuationRing [IsCyclic (valueGroup v)]
+    [Nontrivial (valueGroup v)] : IsDiscreteValuationRing K₀ where
+  toIsPrincipalIdealRing := valuationSubring_isPrincipalIdealRing v
+  toIsLocalRing := inferInstance
+  not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact not_isField v
+
+end CyclicNontrivial
+
 end Field
 
 end Valuation
+
+namespace IsDiscreteValuationRing
+
+open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum IsDiscreteValuationRing
+  IsLocalRing MonoidWithZeroHom Multiplicative Subring Valuation
+
+variable (A K : Type*) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A] [Field K]
+  [Algebra A K] [IsFractionRing A K]
+
+/-- The maximal ideal of a DVR-/
+def maximalIdeal : HeightOneSpectrum A where
+  asIdeal := IsLocalRing.maximalIdeal A
+  isPrime := Ideal.IsMaximal.isPrime (maximalIdeal.isMaximal A)
+  ne_bot := by
+    simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using not_isField A
+
+instance isRankOneDiscrete :
+    IsRankOneDiscrete ((maximalIdeal A).valuation K) := by
+  have : Nontrivial ↥(valueGroup (valuation K (maximalIdeal A))) := by
+    let v := (maximalIdeal A).valuation K
+    set π := valuation_exists_uniformizer K (maximalIdeal A)|>.choose with hπ_def
+    have hπ : v π = ↑(ofAdd (-1 : ℤ)) :=
+      valuation_exists_uniformizer K (maximalIdeal A)|>.choose_spec
+    rw [Subgroup.nontrivial_iff_exists_ne_one]
+    use Units.mk0 (v π) (by simp [hπ])
+    constructor
+    · apply mem_valueGroup
+      simp only [Units.val_mk0, Set.mem_range]
+      use π
+    · simp only [hπ]
+      exact not_eq_of_beq_eq_false rfl
+  infer_instance
+
+variable {A K}
+
+theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ (1 : ℤₘ₀)) :
+    ∃ a : A, algebraMap A K a = x := by
+  obtain ⟨π, hπ⟩ := exists_irreducible A
+  obtain ⟨a, ⟨b, ⟨hb, h_frac⟩⟩⟩ := IsFractionRing.div_surjective (A := A) x
+  by_cases ha : a = 0
+  · rw [← h_frac]
+    use 0
+    rw [ha, _root_.map_zero, zero_div]
+  · rw [← h_frac] at H
+    obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible ha hπ
+    obtain ⟨m, w, rfl⟩ := eq_unit_mul_pow_irreducible (nonZeroDivisors.ne_zero hb) hπ
+    replace hb := (mul_mem_nonZeroDivisors.mp hb).2
+    rw [mul_comm (w : A) _, _root_.map_mul _ (u : A) _, _root_.map_mul _ _ (w : A),
+      div_eq_mul_inv, mul_assoc, Valuation.map_mul, Integers.one_of_isUnit' u.isUnit,
+      one_mul, mul_inv, ← mul_assoc, Valuation.map_mul, _root_.map_mul] at H
+    simp only [map_inv₀] at H
+    rw [Integers.one_of_isUnit' w.isUnit, inv_one, mul_one, ← div_eq_mul_inv, ← map_div₀,
+      ← @IsFractionRing.mk'_mk_eq_div _ _ K _ _ _ (π ^ n) _ hb] at H
+    erw [@valuation_of_mk' A _ _ K _ _ _ (maximalIdeal A) (π ^ n) ⟨π ^ m, hb⟩,
+      _root_.map_pow, _root_.map_pow] at H
+    have h_mn : m ≤ n := by
+      have π_lt_one :=
+        (intValuation_lt_one_iff_dvd (maximalIdeal A) π).mpr
+          (dvd_of_eq ((irreducible_iff_uniformizer _).mp hπ))
+      have : (maximalIdeal A).intValuation π ≠ 0 := intValuation_ne_zero _ _ hπ.ne_zero
+      zify
+      rw [← WithZero.coe_one, div_eq_mul_inv, ← zpow_natCast, ← zpow_natCast, ← ofAdd_zero,
+        ← zpow_neg, ← zpow_add₀, ← sub_eq_add_neg] at H
+      rw [← sub_nonneg, ← zpow_le_one_iff_right_of_lt_one₀ _ π_lt_one]
+      exacts [H, zero_lt_iff.mpr this, this]
+    use u * π ^ (n - m) * w.2
+    simp only [← h_frac, Units.inv_eq_val_inv, _root_.map_mul, _root_.map_pow, map_units_inv,
+      mul_assoc, mul_div_assoc ((algebraMap A _) ↑u) _ _]
+    congr 1
+    rw [div_eq_mul_inv, mul_inv, mul_comm ((algebraMap A _) ↑w)⁻¹ _, ←
+      mul_assoc _ _ ((algebraMap A _) ↑w)⁻¹]
+    congr
+    rw [pow_sub₀ _ _ h_mn]
+    apply IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
+    rw [mem_nonZeroDivisors_iff_ne_zero]
+    exacts [hπ.ne_zero, valuation_le_one (maximalIdeal A), valuation_le_one (maximalIdeal A)]
+
+theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =
+    ((maximalIdeal A).valuation K).valuationSubring.toSubring := by
+  ext
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨_, _, rfl⟩ := Subring.mem_map.mp h
+    apply valuation_le_one
+  · obtain ⟨y, rfl⟩ := exists_lift_of_le_one h
+    rw [Subring.mem_map]
+    exact ⟨y, mem_top _, rfl⟩
+
+/-- The ring isomorphism between a DVR `A` and the valuation subring of a field of fractions
+  of `A` endowed with the adic valuation of the maximal ideal. -/
+noncomputable def equivValuationSubring :
+    A ≃+* ((maximalIdeal A).valuation K).valuationSubring :=
+  (topEquiv.symm.trans (equivMapOfInjective ⊤ (algebraMap A K)
+    (IsFractionRing.injective A _))).trans
+      (RingEquiv.subringCongr map_algebraMap_eq_valuationSubring)
+
+end IsDiscreteValuationRing
