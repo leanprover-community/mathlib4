@@ -556,7 +556,7 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
 /-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
 lemma differenceAux_tensorial (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     [FiniteDimensional ℝ F] [ContMDiffVectorBundle 1 F V I]
-    (X X' : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x₀ : M)
+    {X X' : Π x : M, TangentSpace I x} {σ σ' : Π x : M, V x} {x₀ : M}
     (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x₀)
     (hσ' : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x₀)
     (hXX' : X x₀ = X' x₀) (hσσ' : σ x₀ = σ' x₀) :
@@ -784,8 +784,7 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
   have h₁ : cov X σ x - (trivial E E') X σ x = cov.difference (trivial E E') x (X x) (σ x) := by
     -- Do not unfold differenceAux: we use the tensoriality of differenceAux.
     rw [difference]
-    -- Should x be implicit? Or X, X', σ, σ' perhaps?
-    exact differenceAux_tensorial cov (trivial E E') _ _ _ _ _ hσ hσ'
+    exact differenceAux_tensorial cov (trivial E E') hσ hσ'
       (extend_apply_self (X x)).symm (extend_apply_self (σ x)).symm
   have h₂ : cov.difference (trivial E E') x (X x) (σ x) =
       cov (extend 𝓘(ℝ, E) E (X x)) (extend 𝓘(ℝ, E) E' (σ x)) x
