@@ -33,6 +33,9 @@ an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
   a uniformizer if `v π` is a generator of the value group that is `<1`.
 * `Valuation.Uniformizer`: A structure bundling an element of a ring and a proof that it is a
   uniformizer.
+* `Valuation.valuationSubring_isDiscreteValuationRing_of_isCyclic_of_Nontrivial`: this instance is
+  the formalization of Chapter I, Section 1, Proposition 1 in [serre1968] showing that
+  the unit ball of a discretely-valued field is a DVR.
 
 ## Main Results
 * `Valuation.IsUniformizer.of_associated`: An element associated to a uniformizer is itself a
@@ -46,6 +49,14 @@ an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
   whose value group is cyclic and nontrivial, then there exists a uniformizer for `v`.
 * `Valuation.isUniformizer_of_maximalIdeal_eq_span`: Given a discrete valuation `v` on a field `K`,
   a generator of the maximal ideal of `v.valuationSubring` is a uniformizer for `v`.
+* `Valuation.valuationSubring_isDiscreteValuationRing` : If `v` is a valuation on a field `K`
+  whose value group is cyclic and nontrivial, then `v.valuationSubring` is a discrete
+  valuation ring.
+* `IsDiscreteValuationRing.isRankOneDiscrete`: Given a DVR `A` and a field `K` satisfying
+  `IsFractionRing A K`, the valuation induced on `K` is discrete.
+* `IsDiscreteValuationRing.equivValuationSubring` The ring isomorphism between a DVR and the
+  unit ball in its field of fractions endowed with the adic valuation of the maximal ideal.
+
 
 ## TODO
 * Relate discrete valuations and discrete valuation rings (contained in the project
