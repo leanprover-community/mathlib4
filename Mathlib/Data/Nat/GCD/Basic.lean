@@ -231,21 +231,20 @@ theorem gcd_mul_gcd_eq_iff_dvd_mul_of_coprime (hcop : Coprime n m) :
 lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n := by
   rcases n.eq_zero_or_pos with hn | hn
   · simp [hn]
-  refine Eq.symm (Nat.div_eq_of_eq_mul_left hn ?_)
+  refine (Nat.div_eq_of_eq_mul_left hn ?_).symm
   rw [mul_assoc, Nat.div_mul_cancel hkn, Nat.div_mul_cancel hkm]
 
-lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n := by
-  use m / n
-  exact Eq.symm (div_mul_div hkm hkn)
+lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
+  ⟨_, (div_mul_div hkm hkn).symm⟩
 
 lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
   rw [Nat.lcm_eq_iff]
   refine ⟨div_dvd_div_left hkm (Nat.gcd_dvd_left m n),
         div_dvd_div_left hkn (Nat.gcd_dvd_right m n), fun c hmc hnc ↦ ?_⟩
   rcases m.eq_zero_or_pos with hm | hm
-  · simp [show c = 0 by simpa [hm] using hmc, hmc]
+  · simp_all
   rcases n.eq_zero_or_pos with hn | hn
-  · simp [show c = 0 by simpa [hn] using  hnc, hnc]
+  · simp_all
   rw [Nat.div_dvd_iff_dvd_mul hkm hm] at hmc
   rw [Nat.div_dvd_iff_dvd_mul hkn hn] at hnc
   simpa [Nat.div_dvd_iff_dvd_mul (Nat.dvd_trans (Nat.gcd_dvd_left m n) hkm)
