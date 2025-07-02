@@ -187,8 +187,8 @@ lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) 
 
 variable (T)
 
-/-- `T` is said to order generate `α` if, for every `a` in `α`, there exists a subset of `T` such
-that `a` is the `kernel` of `S`. -/
+/-- `T` order generates `α` if, for every `a` in `α`, there exists a subset of `T` such that `a` is
+the `kernel` of `S`. -/
 def OrderGenerates := ∀ (a : α), ∃ (S : Set T), a = kernel S
 
 variable {T}
@@ -196,7 +196,7 @@ variable {T}
 /--
 When `T` is order generating, the `kernel` and the `hull` form a Galois insertion
 -/
-def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
+def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (OrderDual.toDual ∘ kernel)
     (hull T ∘ OrderDual.ofDual) :=
   gc.toGaloisInsertion fun a ↦ (by
@@ -206,18 +206,18 @@ def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
       (hS.symm))
 
-lemma kernel_hull (hG : OrderGenerate T) (a : α) : kernel (hull T a) = a := by
+lemma kernel_hull (hG : OrderGenerates T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
   rfl
 
 lemma hull_kernel_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
-    (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
+    (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerates T) {C : Set T} (h : IsClosed C) :
      hull T (kernel C) = C := by
   obtain ⟨a, ha⟩ := (isClosed_iff hT).mp h
   rw [ha, kernel_hull hG]
 
 lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq α]
-    (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
+    (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerates T) (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = hull T (kernel S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
   constructor
