@@ -44,7 +44,7 @@ def P_functor : ℰᵒᵖ ⥤ ℰ := {
   obj B := P (unop B),
   map h := P_morph (unop h),
   map_id B := Eq.symm (uniq _ _ (by rfl)),
-  map_comp := sorry
+  map_comp h h' := Eq.symm (uniq (hat _ _) _ (comm (hat _ _)))
 }
 
 end CategoryTheory
