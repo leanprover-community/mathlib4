@@ -258,7 +258,7 @@ end Single
 
 section Update
 
-variable [Zero M] (f : α →₀ M) (a a' : α) (b : M) (i : α)
+variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
 
 /-- Replace the value of a `α →₀ M` at a given point `a : α` by a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the `Finsupp.support`.
