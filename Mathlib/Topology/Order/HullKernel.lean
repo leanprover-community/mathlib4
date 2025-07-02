@@ -196,8 +196,8 @@ variable {T}
 When `T` is order generating, the `kernel` and the `hull` form a Galois insertion
 -/
 def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
-    (fun S => OrderDual.toDual (kernel S))
-    (fun a => hull T (OrderDual.ofDual a)) :=
+    (OrderDual.toDual ∘ kernel)
+    (hull T ∘ OrderDual.ofDual) :=
   gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
     obtain ⟨S, hS⟩ := hG a
