@@ -16,7 +16,7 @@ namespace NNRat
 
 section DivisionSemiring
 
-variable {K : Type} [DivisionSemiring K] [CharZero K]
+variable (K : Type*) [DivisionSemiring K] [CharZero K]
 
 @[norm_cast]
 theorem cast_listSum (l : List ℚ≥0) : (l.sum : K) = (l.map (↑)).sum :=
@@ -28,7 +28,7 @@ theorem cast_listSum (l : List ℚ≥0) : (l.sum : K) = (l.map (↑)).sum :=
 theorem cast_listProd (l : List ℚ≥0) : (l.prod : K) = (l.map (↑)).prod :=
   map_list_prod (castHom _) _
 
-@[deprecated (since := "2025-06-30")] alias cast_list_prod := cast_listProd
+@[deprecated (since := "2025-06-30")] alias coe_list_prod := cast_listProd
 
 @[norm_cast]
 theorem cast_multisetSum (s : Multiset ℚ≥0) : (s.sum : K) = (s.map (↑)).sum :=
@@ -37,7 +37,7 @@ theorem cast_multisetSum (s : Multiset ℚ≥0) : (s.sum : K) = (s.map (↑)).su
 @[deprecated (since := "2025-06-30")] alias coe_multiset_sum := cast_multisetSum
 
 @[norm_cast]
-theorem cast_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : K) :=
+theorem cast_sum (s : Finset α) (f : α → ℚ≥0) : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : K) :=
   map_sum (castHom _) _ _
 
 @[deprecated (since := "2025-06-30")] alias coe_sum := cast_sum
@@ -46,7 +46,7 @@ end DivisionSemiring
 
 section Semifield
 
-variable {K : Type} [Semifield K] [CharZero K]
+variable (K : Type*) [Semifield K] [CharZero K]
 
 @[norm_cast]
 theorem cast_multisetProd (s : Multiset ℚ≥0) : (s.prod : K) = (s.map (↑)).prod :=
@@ -55,7 +55,7 @@ theorem cast_multisetProd (s : Multiset ℚ≥0) : (s.prod : K) = (s.map (↑)).
 @[deprecated (since := "2025-06-30")] alias coe_multiset_prod := cast_multisetProd
 
 @[norm_cast]
-theorem cast_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : K) :=
+theorem cast_prod (s : Finset α) (f : α → ℚ≥0) : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : K) :=
   map_prod (castHom _) _ _
 
 @[deprecated (since := "2025-06-30")] alias coe_prod := cast_prod
