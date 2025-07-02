@@ -192,7 +192,7 @@ lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, deriv.fun_neg',
-    Function.comp_apply, differentiableAt_fun_id, differentiableAt_log_iff, ne_eq] at h ⊢
+    Function.comp_apply] at h ⊢
   rw [h]
 
 lemma strictConcaveOn_negMulLog : StrictConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog := by
