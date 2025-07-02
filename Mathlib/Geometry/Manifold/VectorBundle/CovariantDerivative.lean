@@ -764,28 +764,34 @@ noncomputable def endomorph_of_trivial_aux''' [FiniteDimensional ℝ E] [FiniteD
 
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
+
+For technical reasons, this is only almost true: the left hand sides agree for all `X`, `σ` and `x`
+such that `σ` is differentiable at `x`. (Since the literature mostly considers smooth connections,
+this is not an issue for mathematical practice at all.)
+The reason is because of the construction of a covariant derivative from a zero-order term `A`:
+`of_endomorphism A X₀ σ₀` is defined by turning the tangent vectors `X₀` and `σ₀` at `x`
+into vector fields near `x` --- which are smooth by construction. Thus, if `σ` is not differentiable
+at `x`, `of_endomorphism A` at `x` uses a smooth extension of `σ x`, with different results.
 -/
 lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) :
-    ∃ (A : E → E →L[ℝ] E' →L[ℝ] E'), cov = .of_endomorphism A := by
+    ∃ (A : E → E →L[ℝ] E' →L[ℝ] E'),
+    ∀ X : (x : E) → TangentSpace 𝓘(ℝ, E) x, ∀ σ : (x : E) → Trivial E E' x, ∀ x : E,
+    MDifferentiableAt 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
+      (fun x' ↦ TotalSpace.mk' E' x' (σ x')) x →
+    cov X σ x = (CovariantDerivative.of_endomorphism A) X σ x := by
   use cov.endomorph_of_trivial_aux'''
-  ext X σ x
+  intro X σ x hσ
   -- TODO: this is unfolding too much; need to fix this manually below...
   -- think about a better design that actually works...
   simp only [of_endomorphism_toFun, endomorph_of_trivial_aux'''_apply_apply]
-
-  -- TODO: this case has a gap; if hσ is false, currently hσ' is still true...
-  have hσ : MDifferentiableAt 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
-      (fun x' ↦ TotalSpace.mk' E' x' (σ x')) x := sorry
-  have hσ' : MDifferentiableAt 𝓘(ℝ, E) (𝓘(ℝ, E).prod 𝓘(ℝ, E'))
-      (fun x' ↦ TotalSpace.mk' E' x' ((extend 𝓘(ℝ, E) E' (σ x)) x')) x := sorry
-
   rw [← CovariantDerivative.trivial_toFun]
   have h₁ : cov X σ x - (trivial E E') X σ x = cov.difference (trivial E E') x (X x) (σ x) := by
     -- Do not unfold differenceAux: we use the tensoriality of differenceAux.
     rw [difference]
-    exact differenceAux_tensorial cov (trivial E E') hσ hσ'
+    apply differenceAux_tensorial cov (trivial E E') hσ ?_
       (extend_apply_self (X x)).symm (extend_apply_self (σ x)).symm
+    exact ((contMDiff_extend _).contMDiffAt).mdifferentiableAt (by norm_num)
   have h₂ : cov.difference (trivial E E') x (X x) (σ x) =
       cov (extend 𝓘(ℝ, E) E (X x)) (extend 𝓘(ℝ, E) E' (σ x)) x
         - (fderiv ℝ (extend 𝓘(ℝ, E) E' (σ x) (x := x)) x) (X x) := by
