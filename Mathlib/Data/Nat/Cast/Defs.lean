@@ -111,7 +111,7 @@ namespace Nat
 
 variable [AddMonoidWithOne R]
 
-@[simp, norm_cast]
+@[simp, norm_cast, grind =]
 theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
 
