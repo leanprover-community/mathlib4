@@ -159,9 +159,7 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
       · simp
       · intro i hi h'i
         simp [q, h'i.symm]
-    · intro m hm
-      have : n ≠ m := by omega
-      simp [q, this]
+    · grind
   have B : HasFPowerSeriesWithinOnBall g q s x r :=
     A.toHasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
   have J1 : iteratedFDerivWithin 𝕜 n f s x =

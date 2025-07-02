@@ -946,7 +946,7 @@ theorem orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     have : ‖b default‖ = 1 := b.orthonormal.1 _
     rwa [Real.norm_eq_abs, abs_eq (zero_le_one' ℝ)] at this
   rw [eq_const_of_unique b]
-  refine this.imp ?_ ?_ <;> (intro; ext; simp [*])
+  grind
 
 variable {𝕜 E}
 
