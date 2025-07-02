@@ -122,7 +122,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp only [Subset.antisymm_iff] at e
       simp only [le_antisymm_iff]
       rcases h with h | h <;>
-      simp only [gt_iff_lt, not_lt, Ico_subset_Ico_iff h] at e <;>
+      simp only [Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
       tauto,
@@ -365,7 +365,7 @@ theorem Iic_union_Ioo_eq_Iio (h : a < b) : Iic a ∪ Ioo a b = Iio b :=
 theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   ext x
   rcases lt_or_ge x b with hba | hba
-  · simp [hba, h₁]
+  · simp [hba]
   · simp only [mem_Iio, mem_union, mem_Ioo, lt_max_iff]
     refine or_congr Iff.rfl ⟨And.right, ?_⟩
     exact fun h₂ => ⟨h₁.trans_le hba, h₂⟩
@@ -565,8 +565,8 @@ Otherwise for `b < a = d < c` the l.h.s. is `∅` and the r.h.s. is `{a}`.
 theorem Icc_union_Icc (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Icc a b ∪ Icc c d = Icc (min a c) (max b d) := by
   rcases le_or_gt a b with hab | hab <;> rcases le_or_gt c d with hcd | hcd <;>
-    simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, min_eq_left_of_lt,
-      min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt, hab, hcd] at h₁ h₂
+    simp only [min_eq_left, max_eq_right,
+      min_eq_right_of_lt, max_eq_left_of_lt, hab, hcd] at h₁ h₂
   · exact Icc_union_Icc' h₂.le h₁.le
   all_goals simp [*, min_eq_left_of_lt, max_eq_left_of_lt, min_eq_right_of_lt, max_eq_right_of_lt]
 
@@ -596,7 +596,7 @@ theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, hab, hcd] at h₁ h₂
   · exact Ioo_union_Ioo' h₂ h₁
   all_goals
-    simp [*, min_eq_left_of_lt, min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt,
+    simp [*,
       le_of_lt h₂, le_of_lt h₁]
 
 theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁ ≤ d) :
@@ -703,7 +703,7 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   rw [Ioc_union_Ioc, Ioc_union_Ioc]
   · ac_rfl
   all_goals
-  solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
-       le_max_of_le_left, le_max_of_le_right, le_refl]
+  solve_by_elim (maxDepth := 5) [min_le_of_left_le, min_le_of_right_le,
+    le_max_of_le_left, le_max_of_le_right, le_refl]
 
 end Set

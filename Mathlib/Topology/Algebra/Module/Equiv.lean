@@ -427,10 +427,10 @@ This is `Equiv.prodUnique` as a continuous linear equivalence. -/
 def prodUnique : (M × N) ≃L[R] M where
   toLinearEquiv := LinearEquiv.prodUnique
   continuous_toFun := by
-    show Continuous (Equiv.prodUnique M N)
+    change Continuous (Equiv.prodUnique M N)
     dsimp; fun_prop
   continuous_invFun := by
-    show Continuous fun x ↦ (x, default)
+    change Continuous fun x ↦ (x, default)
     fun_prop
 
 @[simp]
@@ -447,10 +447,10 @@ This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
 def uniqueProd : (N × M) ≃L[R] M where
   toLinearEquiv := LinearEquiv.uniqueProd
   continuous_toFun := by
-    show Continuous (Equiv.uniqueProd M N)
+    change Continuous (Equiv.uniqueProd M N)
     dsimp; fun_prop
   continuous_invFun := by
-    show Continuous fun x ↦ (default, x)
+    change Continuous fun x ↦ (default, x)
     fun_prop
 
 @[simp]
@@ -1198,7 +1198,7 @@ lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
       (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
   let ⟨f, hf⟩ := hp
   ⟨LinearMap.ker f, .equivOfRightInverse _ p.subtypeL hf,
-    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp [hf], fun _ ↦ rfl⟩
+    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp, fun _ ↦ rfl⟩
 
 end Submodule
 

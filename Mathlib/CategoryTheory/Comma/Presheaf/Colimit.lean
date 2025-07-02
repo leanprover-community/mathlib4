@@ -39,19 +39,20 @@ noncomputable def CostructuredArrow.toOverCompYonedaColimit :
     ≅ yoneda.op ⋙ yoneda.obj (E.obj (colimit F)) :=
         CostructuredArrow.toOverCompYoneda A _
   _ ≅ yoneda.op ⋙ yoneda.obj (colimit (F ⋙ E)) :=
-        isoWhiskerLeft yoneda.op (yoneda.mapIso (preservesColimitIso _ F))
+        Functor.isoWhiskerLeft yoneda.op (yoneda.mapIso (preservesColimitIso _ F))
   _ ≅ yoneda.op ⋙ colimit ((F ⋙ E) ⋙ yoneda) :=
         yonedaYonedaColimit _
   _ ≅ yoneda.op ⋙ ((F ⋙ E) ⋙ yoneda).flip ⋙ colim :=
-        isoWhiskerLeft _ (colimitIsoFlipCompColim _)
-  _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj E) ⋙
-          (whiskeringLeft _ _ _).obj F ⋙ colim :=
+        Functor.isoWhiskerLeft _ (colimitIsoFlipCompColim _)
+  _ ≅ (yoneda.op ⋙ coyoneda ⋙ (Functor.whiskeringLeft _ _ _).obj E) ⋙
+          (Functor.whiskeringLeft _ _ _).obj F ⋙ colim :=
         Iso.refl _
-  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        isoWhiskerRight (CostructuredArrow.toOverCompCoyoneda _).symm _
+  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙
+          (Functor.whiskeringLeft _ _ _).obj F ⋙ colim :=
+        Functor.isoWhiskerRight (CostructuredArrow.toOverCompCoyoneda _).symm _
   _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ (F ⋙ yoneda).flip ⋙ colim :=
         Iso.refl _
   _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) :=
-      isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
+      Functor.isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
 
 end CategoryTheory
