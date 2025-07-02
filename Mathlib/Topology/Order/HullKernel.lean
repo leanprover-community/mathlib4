@@ -158,7 +158,7 @@ lemma sInter_hull (S : Set α) : ⋂₀ { hull T a | a ∈ S } = hull T (sSup S)
 
 /- When `α` is complete, the relative basis for the lower topology is also closed under arbitrary
 unions. -/
-lemma sUnion_hull_Compl_eq (S : Set α) : ⋃₀ { (hull T a)ᶜ | a ∈ S } = (hull T (sSup S))ᶜ := by
+lemma sUnion_hull_compl (S : Set α) : ⋃₀ { (hull T a)ᶜ | a ∈ S } = (hull T (sSup S))ᶜ := by
   simp [sUnion_eq_compl_sInter_compl, ← sInter_hull, compl_sInter]
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
@@ -226,7 +226,7 @@ lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [Decidab
   obtain ⟨a, ha⟩ := (isClosed_iff hT C).mp h
   rw [GaloisConnection.closureOperator_apply, ha, kernel_hull hG, OrderDual.ofDual_toDual]
 
-lemma lowerTopology_closureOperator_eq [TopologicalSpace α] [IsLower α] [DecidableEq α]
+lemma lowerTopology_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = hull T (kernel S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
@@ -243,7 +243,7 @@ theorem lowerTopology_closureOperator_eq_gc_closureOperator
     (hG : OrderGenerate T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator = gc.closureOperator := by
   ext S a
-  rw [gc_closureOperator, (lowerTopology_closureOperator_eq hT hG)]
+  rw [gc_closureOperator, (lowerTopology_closureOperator hT hG)]
 
 end PrimitiveSpectrum
 
