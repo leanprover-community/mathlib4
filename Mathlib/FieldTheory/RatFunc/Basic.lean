@@ -524,6 +524,7 @@ theorem ofFractionRing_algebraMap (x : K[X]) :
     ofFractionRing (algebraMap _ (FractionRing K[X]) x) = algebraMap _ _ x := by
   rw [← mk_one, mk_one']
 
+variable (K) in
 /--
 The equivalence between `RatFunc K` and the field of fractions of `K[X]`
 -/
