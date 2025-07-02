@@ -34,7 +34,6 @@ theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
   refine isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => ?_
   exact isOpen_ball.inter isClosed_singleton.isOpen_compl
 
-@[deprecated (since := "2024-02-15")] alias isGδ_setOf_liouville := IsGδ.setOf_liouville
 
 theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
     { x | Liouville x } =
@@ -66,7 +65,7 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
         -- `Expr.mdata` that would cause `norm_cast` to skip a numeral.
         rw [Eq.refl (2 : ℝ)]
         norm_cast
-        simp [Rat.divInt_mul_right (two_ne_zero), Rat.mkRat_self]
+        simp [Rat.divInt_mul_right (two_ne_zero)]
       · refine one_div_pos.2 (pow_pos (Int.cast_pos.2 ?_) _)
         exact mul_pos (Int.natCast_pos.2 r.pos) zero_lt_two
 

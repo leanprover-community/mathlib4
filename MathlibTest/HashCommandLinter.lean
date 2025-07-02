@@ -2,12 +2,6 @@ import Lean.Elab.GuardMsgs
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.HashCommandLinter
 
-
--- #adaptation_note
--- The hashCommand linter started failing after https://github.com/leanprover/lean4/pull/6299
--- Disabling aync elaboration fixes it, but of course we're not going to do that globally.
-set_option Elab.async false
-
 set_option linter.hashCommand true
 
 section ignored_commands
@@ -35,7 +29,8 @@ section ignored_commands
 
 /--
 warning: `#`-commands, such as '#eval', are not allowed in 'Mathlib'
-note: this linter can be disabled with `set_option linter.hashCommand false`
+
+Note: This linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 -- emits an empty message -- the linter allows it
@@ -48,7 +43,8 @@ end ignored_commands
 section linted_commands
 /--
 warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
-note: this linter can be disabled with `set_option linter.hashCommand false`
+
+Note: This linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 #guard true
@@ -56,7 +52,8 @@ note: this linter can be disabled with `set_option linter.hashCommand false`
 set_option linter.unusedTactic false in
 /--
 warning: `#`-commands, such as '#check_tactic', are not allowed in 'Mathlib'
-note: this linter can be disabled with `set_option linter.hashCommand false`
+
+Note: This linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 #check_tactic True ~> True by skip
@@ -65,7 +62,8 @@ note: this linter can be disabled with `set_option linter.hashCommand false`
 
 /--
 warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
-note: this linter can be disabled with `set_option linter.hashCommand false`
+
+Note: This linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 variable (n : Nat) in
@@ -73,7 +71,8 @@ variable (n : Nat) in
 
 /--
 warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
-note: this linter can be disabled with `set_option linter.hashCommand false`
+
+Note: This linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 open Nat in
@@ -83,7 +82,8 @@ variable (n : Nat) in
 
 /--
 warning: `#`-commands, such as '#guard', are not allowed in 'Mathlib'
-note: this linter can be disabled with `set_option linter.hashCommand false`
+
+Note: This linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 open Nat in

@@ -90,6 +90,28 @@ variable (Q : Set ℕ → Prop)
 #guard_msgs in
 #check (x : Nat) → α x
 
+/-!
+Disabling binder predicates
+-/
+/-- info: ∀ x > 0, P x : Prop -/
+#guard_msgs in
+#check ∀ x > 0, P x
+/-- info: ∀ (x : ℕ), x > 0 → P x : Prop -/
+#guard_msgs in
+set_option pp.mathlib.binderPredicates false in
+#check ∀ x > 0, P x
+
+/-- info: ∃ x > 0, P x : Prop -/
+#guard_msgs in
+#check ∃ x > 0, P x
+/-- info: ∃ x, x > 0 ∧ P x : Prop -/
+#guard_msgs in
+set_option pp.mathlib.binderPredicates false in
+#check ∃ x > 0, P x
+
+/-!
+Opening the `PiNotation` namespace enables `Π` notation.
+-/
 open PiNotation
 
 /-- info: Π (x : ℕ), α x : Type -/
@@ -99,6 +121,18 @@ open PiNotation
 /-- info: ∀ (x : ℕ), P x : Prop -/
 #guard_msgs in
 #check (x : Nat) → P x
+
+/-!
+Note that the implementation of the `Π` delaborator in `Mathlib/Util/Delaborators.lean`
+does not (yet?) make use of binder predicates.
+-/
+/-- info: Π (x : ℕ), x > 0 → α x : Type -/
+#guard_msgs in
+#check Π x > 0, α x
+/-- info: Π (x : ℕ), x > 0 → α x : Type -/
+#guard_msgs in
+set_option pp.mathlib.binderPredicates false in
+#check Π x > 0, α x
 
 end PiNotation
 

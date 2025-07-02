@@ -20,6 +20,8 @@ Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe v u
 
 namespace CategoryTheory
@@ -65,7 +67,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       ((CategoryTheory.shiftFunctorZero C ℤ).app _) ((CategoryTheory.shiftFunctorZero C ℤ).app _)
-      (by aesop_cat) (by aesop_cat) (by
+      (by simp) (by simp) (by
         dsimp
         simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
@@ -109,7 +111,7 @@ noncomputable def rotateRotateRotateIso :
     rotate C ⋙ rotate C ⋙ rotate C ≅ Triangle.shiftFunctor C 1 :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat))
+      (by simp) (by simp) (by simp))
     (by aesop_cat)
 
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
@@ -117,8 +119,8 @@ noncomputable def invRotateInvRotateInvRotateIso :
     invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat)
-      (by aesop_cat)
+      (by simp)
+      (by simp)
       (by
         dsimp [shiftFunctorCompIsoId]
         simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))

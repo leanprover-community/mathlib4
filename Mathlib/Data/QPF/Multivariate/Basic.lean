@@ -57,14 +57,14 @@ matched because they preserve the properties of QPF. The latter example,
 
 ## Related modules
 
- * constructions
-   * Fix
-   * Cofix
-   * Quot
-   * Comp
-   * Sigma / Pi
-   * Prj
-   * Const
+* constructions
+  * Fix
+  * Cofix
+  * Quot
+  * Comp
+  * Sigma / Pi
+  * Prj
+  * Const
 
 each proves that some operations on functors preserves the QPF structure
 -/
@@ -120,7 +120,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     LiftP p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i j, p (f i j) := by
   constructor
   · rintro ⟨y, hy⟩
-    cases' h : repr y with a f
+    rcases h : repr y with ⟨a, f⟩
     use a, fun i j => (f i j).val
     constructor
     · rw [← hy, ← abs_repr y, h, ← abs_map]; rfl
@@ -130,11 +130,11 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 
-theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i → Prop) (x y : F α) :
+theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) :
     LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
-    cases' h : repr u with a f
+    rcases h : repr u with ⟨a, f⟩
     use a, fun i j => (f i j).val.fst, fun i j => (f i j).val.snd
     constructor
     · rw [← xeq, ← abs_repr u, h, ← abs_map]; rfl
@@ -149,8 +149,6 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i →
   rw [yeq, ← abs_map]; rfl
 
 open Set
-
-open MvFunctor (LiftP LiftR)
 
 theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
     u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by
@@ -220,7 +218,7 @@ theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.P.A) (f :
 theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p : ∀ i, α i → Prop) :
     LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u := by
   rw [liftP_iff, ← abs_repr x]
-  cases' repr x with a f; constructor
+  obtain ⟨a, f⟩ := repr x; constructor
   · rintro ⟨a', f', abseq, hf⟩ u
     rw [supp_eq_of_isUniform h, h _ _ _ _ abseq]
     rintro b ⟨i, _, hi⟩
@@ -233,7 +231,7 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
 
 theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α) (i) :
     supp (g <$$> x) i = g i '' supp x i := by
-  rw [← abs_repr x]; cases' repr x with a f; rw [← abs_map, MvPFunctor.map_eq]
+  rw [← abs_repr x]; obtain ⟨a, f⟩ := repr x; rw [← abs_map, MvPFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, ← image_comp]
   rfl
 

@@ -3,8 +3,9 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.SmoothNumbers
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.PSeries
+import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
 # The sum of the reciprocals of the primes diverges
@@ -27,8 +28,8 @@ open scoped Topology
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
--- This needs `Mathlib.Analysis.RCLike.Basic`, so we put it here
--- instead of in `Mathlib.NumberTheory.SmoothNumbers`.
+-- This needs `Mathlib/Analysis/RCLike/Basic.lean`, so we put it here
+-- instead of in `Mathlib/NumberTheory/SmoothNumbers.lean`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
     (roughNumbersUpTo N k).card ≤
       N * (N.succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 : ℝ) / p) := by
@@ -71,12 +72,12 @@ theorem not_summable_one_div_on_primes :
     convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
-  convert sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
+  convert Summable.sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
     (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using 2 with p hp
   obtain ⟨hp₁, hp₂⟩ := mem_setOf_eq ▸ Finset.mem_sdiff.mp hp
   have hpp := prime_of_mem_primesBelow hp₁
-  refine (indicator_of_mem (mem_def.mpr ⟨hpp, ?_⟩) fun n : ℕ ↦ (1 / n : ℝ)).symm
-  exact not_lt.mp <| (not_and_or.mp <| (not_congr mem_primesBelow).mp hp₂).neg_resolve_right hpp
+  refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
+  exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
 
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by

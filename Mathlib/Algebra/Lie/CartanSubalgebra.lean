@@ -44,10 +44,10 @@ namespace LieSubalgebra
 
 A _splitting_ Cartan subalgebra can be defined by mixing in `LieModule.IsTriangularizable R H L`. -/
 class IsCartanSubalgebra : Prop where
-  nilpotent : LieAlgebra.IsNilpotent R H
+  nilpotent : LieRing.IsNilpotent H
   self_normalizing : H.normalizer = H
 
-instance [H.IsCartanSubalgebra] : LieAlgebra.IsNilpotent R H :=
+instance [H.IsCartanSubalgebra] : LieRing.IsNilpotent H :=
   IsCartanSubalgebra.nilpotent
 
 @[simp]
@@ -66,7 +66,7 @@ theorem ucs_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCartanSub
 theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubmodule.IsUcsLimit := by
   constructor
   · intro h
-    have h₁ : LieAlgebra.IsNilpotent R H := by infer_instance
+    have h₁ : LieRing.IsNilpotent H := by infer_instance
     obtain ⟨k, hk⟩ := H.toLieSubmodule.isNilpotent_iff_exists_self_le_ucs.mp h₁
     replace hk : H.toLieSubmodule = LieSubmodule.ucs k ⊥ :=
       le_antisymm hk
@@ -77,7 +77,10 @@ theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubm
   · rintro ⟨k, hk⟩
     exact
       { nilpotent := by
-          dsimp only [LieAlgebra.IsNilpotent]
+          dsimp only [LieRing.IsNilpotent]
+          -- The instance for the second `H` in the goal is `lieRingSelfModule`
+          -- but `rw` expects it to be `H.toLieSubmodule.instLieRingModuleSubtypeMem`,
+          -- and these are not reducibly defeq.
           erw [H.toLieSubmodule.isNilpotent_iff_exists_lcs_eq_bot]
           use k
           rw [_root_.eq_bot_iff, LieSubmodule.lcs_le_iff, hk k (le_refl k)]
@@ -113,7 +116,7 @@ theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [CommRing R] [LieRi
 open LieIdeal
 
 /-- A nilpotent Lie algebra is its own Cartan subalgebra. -/
-instance LieAlgebra.top_isCartanSubalgebra_of_nilpotent [LieAlgebra.IsNilpotent R L] :
+instance LieAlgebra.top_isCartanSubalgebra_of_nilpotent [LieRing.IsNilpotent L] :
     LieSubalgebra.IsCartanSubalgebra (⊤ : LieSubalgebra R L) where
   nilpotent := inferInstance
   self_normalizing := by rw [← top_toLieSubalgebra, normalizer_eq_top, top_toLieSubalgebra]

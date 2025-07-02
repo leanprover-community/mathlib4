@@ -102,7 +102,7 @@ noncomputable def homEquivOfIsRightKanExtension (G : D ⥤ H) :
     (G ⟶ F') ≃ (L ⋙ G ⟶ F) where
   toFun β := whiskerLeft _ β ≫ α
   invFun β := liftOfIsRightKanExtension _ α _ β
-  left_inv β := Functor.hom_ext_of_isRightKanExtension _ α _ _ (by aesop_cat)
+  left_inv β := Functor.hom_ext_of_isRightKanExtension _ α _ _ (by simp)
   right_inv := by aesop_cat
 
 lemma isRightKanExtension_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C ⥤ D} {F : C ⥤ H}
@@ -189,11 +189,12 @@ lemma hom_ext_of_isLeftKanExtension {G : D ⥤ H} (γ₁ γ₂ : F' ⟶ G)
 
 /-- If `(F', α)` is a left Kan extension of `F` along `L`, then this
 is the induced bijection `(F' ⟶ G) ≃ (F ⟶ L ⋙ G)` for all `G`. -/
+@[simps!]
 noncomputable def homEquivOfIsLeftKanExtension (G : D ⥤ H) :
     (F' ⟶ G) ≃ (F ⟶ L ⋙ G) where
   toFun β := α ≫ whiskerLeft _ β
   invFun β := descOfIsLeftKanExtension _ α _ β
-  left_inv β := Functor.hom_ext_of_isLeftKanExtension _ α _ _ (by aesop_cat)
+  left_inv β := Functor.hom_ext_of_isLeftKanExtension _ α _ _ (by simp)
   right_inv := by aesop_cat
 
 lemma isLeftKanExtension_of_iso {F' : D ⥤ H} {F'' : D ⥤ H} (e : F' ≅ F'')
@@ -388,6 +389,50 @@ end
 
 section
 
+variable (L : C ⥤ D) (F : C ⥤ H) (G : H ⥤ D')
+
+/-- Given a left extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
+`E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
+on the right. -/
+@[simps!]
+def LeftExtension.postcompose₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ G) :=
+  StructuredArrow.map₂
+    (F := (whiskeringRight _ _ _).obj G)
+    (G := (whiskeringRight _ _ _).obj G)
+    (𝟙 _) ({app _ := (Functor.associator _ _ _).hom})
+
+/-- Given a right extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
+`E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
+on the right. -/
+@[simps!]
+def RightExtension.postcompose₂ : RightExtension L F ⥤ RightExtension L (F ⋙ G) :=
+  CostructuredArrow.map₂
+    (F := (whiskeringRight _ _ _).obj G)
+    (G := (whiskeringRight _ _ _).obj G)
+    ({app _ := Functor.associator _ _ _|>.inv}) (𝟙 _)
+
+variable {L F} {F' : D ⥤ H}
+/-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
+`LeftExtension.mk _ α`. -/
+@[simps!]
+def LeftExtension.postcompose₂ObjMkIso (α : F ⟶ L ⋙ F') :
+    (LeftExtension.postcompose₂ L F G).obj (.mk F' α) ≅
+    .mk (F' ⋙ G) <| CategoryTheory.whiskerRight α G ≫ (Functor.associator _ _ _).hom :=
+  StructuredArrow.isoMk (.refl _)
+
+/-- An isomorphism to describe the action of `RightExtension.postcompose₂` on terms of the form
+`RightExtension.mk _ α`. -/
+@[simps!]
+def RightExtension.postcompose₂ObjMkIso (α : L ⋙ F' ⟶ F) :
+    (RightExtension.postcompose₂ L F G).obj (.mk F' α) ≅
+    .mk (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫
+      CategoryTheory.whiskerRight α G :=
+  CostructuredArrow.isoMk (.refl _)
+
+end
+
+section
+
 variable (L : C ⥤ D) (F : C ⥤ H) (F' : D ⥤ H) (G : C' ⥤ C)
 
 /-- The functor `LeftExtension L F ⥤ LeftExtension (G ⋙ L) (G ⋙ F)`
@@ -559,7 +604,7 @@ noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
 left Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coconeOfIsLeftKanExtension α c` is
 a colimit cocone, too. -/
 @[simps]
-def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
+noncomputable def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
     IsColimit (F'.coconeOfIsLeftKanExtension α c) where
   desc s := hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))
   fac s := by
@@ -610,7 +655,7 @@ noncomputable def coneOfIsRightKanExtension (c : Cone F) : Cone F' where
 right Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coneOfIsRightKanExtension α c` is
 a limit cone, too. -/
 @[simps]
-def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
+noncomputable def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
     IsLimit (F'.coneOfIsRightKanExtension α c) where
   lift s := hc.lift (Cone.mk _ (whiskerLeft L s.π ≫ α))
   fac s := by

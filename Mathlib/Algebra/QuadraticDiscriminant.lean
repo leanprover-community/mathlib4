@@ -32,6 +32,7 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 polynomial, quadratic, discriminant, root
 -/
 
+assert_not_exists Finite Finset
 
 open Filter
 
@@ -98,11 +99,26 @@ theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b
   have : discrim a b c = 0 * 0 := by rw [h, mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
 
+theorem discrim_eq_zero_of_existsUnique (ha : a ≠ 0) (h : ∃! x, a * (x * x) + b * x + c = 0) :
+    discrim a b c = 0 := by
+  simp_rw [quadratic_eq_zero_iff_discrim_eq_sq ha] at h
+  generalize discrim a b c = d at h
+  obtain ⟨x, rfl, hx⟩ := h
+  specialize hx (-(x + b / a))
+  field_simp [ha] at hx
+  specialize hx (by ring)
+  linear_combination -(2 * a * x + b) * hx
+
+theorem discrim_eq_zero_iff (ha : a ≠ 0) :
+    discrim a b c = 0 ↔ (∃! x, a * (x * x) + b * x + c = 0) := by
+  refine ⟨fun hd => ?_, discrim_eq_zero_of_existsUnique ha⟩
+  simp_rw [quadratic_eq_zero_iff_of_discrim_eq_zero ha hd, existsUnique_eq]
+
 end Field
 
 section LinearOrderedField
 
-variable {K : Type*} [LinearOrderedField K] {a b c : K}
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {a b c : K}
 
 /-- If a polynomial of degree 2 is always nonnegative, then its discriminant is nonpositive -/
 theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim a b c ≤ 0 := by
@@ -110,11 +126,11 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
   obtain ha | rfl | ha : a < 0 ∨ a = 0 ∨ 0 < a := lt_trichotomy a 0
   -- if a < 0
   · have : Tendsto (fun x => (a * x + b) * x + c) atTop atBot :=
-      tendsto_atBot_add_const_right _ c
-        ((tendsto_atBot_add_const_right _ b (tendsto_id.const_mul_atTop_of_neg ha)).atBot_mul_atTop
-          tendsto_id)
+      tendsto_atBot_add_const_right _ c <|
+        (tendsto_atBot_add_const_right _ b (tendsto_id.const_mul_atTop_of_neg ha)).atBot_mul_atTop₀
+          tendsto_id
     rcases (this.eventually (eventually_lt_atBot 0)).exists with ⟨x, hx⟩
-    exact False.elim ((h x).not_lt <| by rwa [← mul_assoc, ← add_mul])
+    exact False.elim ((h x).not_gt <| by rwa [← mul_assoc, ← add_mul])
   -- if a = 0
   · rcases eq_or_ne b 0 with (rfl | hb)
     · simp

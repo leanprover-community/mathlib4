@@ -105,6 +105,11 @@ class FastIsEmpty (α : Sort u) : Prop where
 protected theorem FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
   h.inst.allEq
 
+protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
+    (h₂ : α = β) (a : α) (b : β) : HEq a b := by
+  have : Subsingleton α := FastSubsingleton.inst
+  exact Subsingleton.helim h₂ a b
+
 instance (priority := 100) {α : Type u} [inst : FastIsEmpty α] : FastSubsingleton α where
   inst := have := inst.inst; inferInstance
 
@@ -184,12 +189,12 @@ this function supports generating lemmas where certain parameters
 are meant to be fixed:
 
 * If `fixedFun` is `false` (the default) then the lemma starts with three arguments for `f`, `f'`,
-and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
+  and `h : f = f'`. Otherwise, if `fixedFun` is `true` then the lemma starts with just `f`.
 
 * If the `fixedParams` argument has `true` for a particular argument index, then this is a hint
-that the congruence lemma may use the same parameter for both sides of the equality. There is
-no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
-does not depend on non-fixed parameters).
+  that the congruence lemma may use the same parameter for both sides of the equality. There is
+  no guarantee -- it respects it if the types are equal for that parameter (i.e., if the parameter
+  does not depend on non-fixed parameters).
 
 If `forceHEq` is `true` then the conclusion of the generated theorem is a `HEq`.
 Otherwise it might be an `Eq` if the equality is homogeneous.

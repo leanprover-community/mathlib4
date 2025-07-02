@@ -14,8 +14,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 This file proves that the Cardinality of ℚ is ℵ₀
 -/
 
-assert_not_exists Module
-assert_not_exists Field
+assert_not_exists Module Field
 
 open Cardinal
 

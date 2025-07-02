@@ -56,7 +56,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   leibniz_lie x y t := by
     suffices (hasBracketAux x).comp (hasBracketAux y) =
         hasBracketAux ⁅x, y⁆ + (hasBracketAux y).comp (hasBracketAux x) by
-      simp only [← LinearMap.add_apply]; rw [← LinearMap.comp_apply, this]; rfl
+      rw [← LinearMap.comp_apply, this]; rfl
     ext m n
     simp only [hasBracketAux, AlgebraTensorModule.curry_apply, curry_apply, sub_tmul, tmul_sub,
       LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.coe_comp,
@@ -174,7 +174,7 @@ def toModuleHom : L ⊗[R] M →ₗ⁅R,L⁆ M :=
 @[simp]
 theorem toModuleHom_apply (x : L) (m : M) : toModuleHom R L M (x ⊗ₜ m) = ⁅x, m⁆ := by
   simp only [toModuleHom, TensorProduct.LieModule.liftLie_apply, LieModuleHom.coe_mk,
-    LinearMap.coe_mk, LinearMap.coe_toAddHom, LieHom.coe_toLinearMap, toEnd_apply_apply]
+    LieHom.coe_toLinearMap, toEnd_apply_apply]
 
 end LieModule
 

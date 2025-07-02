@@ -26,9 +26,6 @@ namespace Profinite
 
 open CategoryTheory Limits
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] ConcreteCategory.instFunLike
-
 universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{max u v}} (C : Cone F)
@@ -48,8 +45,8 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
-    exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).continuous,
-      hV.2.preimage ((F ⋙ toTopCat).map f).continuous⟩
+    exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).hom.continuous,
+      hV.2.preimage ((F ⋙ toTopCat).map f).hom.continuous⟩
     -- Porting note: `<;> continuity` fails
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
@@ -59,18 +56,17 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
   have hV : ∀ s : S, IsClopen (V s) ∧ s.1 = C.π.app (j s) ⁻¹' V s := fun s =>
     (hS s.2).choose_spec.choose_spec
-
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
-  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i) := by
+  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (C.π.app (j s)) ⁻¹' V s) i) := by
     intro s
-    exact (hV s).1.2.preimage (C.π.app (j s)).continuous
-  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i := by
+    exact (hV s).1.2.preimage (C.π.app (j s)).hom.continuous
+  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ C.π.app (j s) ⁻¹' V s) i := by
     dsimp only
     rw [h]
     rintro x ⟨T, hT, hx⟩
     refine ⟨_, ⟨⟨T, hT⟩, rfl⟩, ?_⟩
-    dsimp only [forget_map_eq_coe]
+    dsimp only
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
   -- Porting note: same remark as after `hB`
@@ -90,24 +86,25 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     intro s hs
     dsimp [W]
     rw [dif_pos hs]
-    exact ⟨(hV s).1.1.preimage (F.map _).continuous, (hV s).1.2.preimage (F.map _).continuous⟩
+    exact ⟨(hV s).1.1.preimage (F.map _).hom.continuous,
+      (hV s).1.2.preimage (F.map _).hom.continuous⟩
   · ext x
     constructor
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine ⟨s, hs, ?_⟩
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w]
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w]
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine ⟨s.1, s.2, ?_⟩
       rw [(hV s).2]
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w] at hx
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
 
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
-    ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _) := by
+    ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _).hom := by
   let U := f ⁻¹' {0}
   have hU : IsClopen U := f.isLocallyConstant.isClopen_fiber _
   obtain ⟨j, V, hV, h⟩ := exists_isClopen_of_cofiltered C hC hU
@@ -116,13 +113,12 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← h]
+  exact h
 
 open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
-      (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _) := by
+      (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _).hom := by
   cases nonempty_fintype α
   let ι : α → α → Fin 2 := fun x y => if x = y then 0 else 1
   let ff := (f.map ι).flip
@@ -134,14 +130,14 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
     intro a
     simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]
   let fs : ∀ a : α, j0 ⟶ j a := fun a => (hj0 (hj a)).some
-  let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _))
+  let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _)).hom
   let ggg := LocallyConstant.unflip gg
   refine ⟨j0, ggg, ?_⟩
   have : f.map ι = LocallyConstant.unflip (f.map ι).flip := by simp
   rw [this]; clear this
   have :
-    LocallyConstant.comap (C.π.app j0) ggg =
-      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0) ggg).flip := by
+    LocallyConstant.comap (C.π.app j0).hom ggg =
+      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0).hom ggg).flip := by
     simp
   rw [this]; clear this
   congr 1
@@ -155,7 +151,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
 
 theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
-    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
+    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom := by
   inhabit α
   obtain ⟨j, gg, h⟩ := exists_locallyConstant_finite_aux _ hC f
   classical
@@ -171,8 +167,9 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     rw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [dif_pos h2]
+  rw [dif_pos]
+  swap
+  · assumption
   apply_fun ι
   · rw [h2.choose_spec]
     exact h1
@@ -187,7 +184,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
-    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
+    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom := by
   let S := f.discreteQuotient
   let ff : S → α := f.lift
   cases isEmpty_or_nonempty S

@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.Topology.ApproximateUnit
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
@@ -119,7 +118,7 @@ open Metric Filter Topology
 
 /-- An *increasing approximate unit* in a C⋆-algebra is an approximate unit contained in the
 closed unit ball of nonnegative elements. -/
-structure Filter.IsIncreasingApproximateUnit (l : Filter A) extends l.IsApproximateUnit : Prop where
+structure Filter.IsIncreasingApproximateUnit (l : Filter A) : Prop extends l.IsApproximateUnit where
   eventually_nonneg : ∀ᶠ x in l, 0 ≤ x
   eventually_norm : ∀ᶠ x in l, ‖x‖ ≤ 1
 
@@ -149,7 +148,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
     Tendsto (· * m) l (𝓝 m) := by
   obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-    show m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
+    change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
     simp [span_nonneg_inter_unitBall]
   simp_rw [Finset.mul_sum]
   refine tendsto_finset_sum _ fun i _ ↦ ?_

@@ -14,7 +14,7 @@ If `C` has limits (of a given shape), so does `Mon_ C`,
 and the forgetful functor preserves these limits.
 
 (This could potentially replace many individual constructions for concrete categories,
-in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
+in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 -/
 
 
@@ -44,7 +44,7 @@ def limit (F : J ⥤ Mon_ C) : Mon_ C :=
 def limitCone (F : J ⥤ Mon_ C) : Cone F where
   pt := limit F
   π :=
-    { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j }
+    { app := fun j => .mk' (limit.π (F ⋙ Mon_.forget C) j)
       naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
 
 /-- The image of the proposed limit cone for `F : J ⥤ Mon_ C` under the forgetful functor
@@ -52,7 +52,7 @@ def limitCone (F : J ⥤ Mon_ C) : Cone F where
 -/
 def forgetMapConeLimitConeIso (F : J ⥤ Mon_ C) :
     (forget C).mapCone (limitCone F) ≅ limit.cone (F ⋙ forget C) :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _) (by simp)
 
 /-- Implementation of `Mon_.hasLimitsOfShape`:
 the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
@@ -61,12 +61,13 @@ the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
 def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   lift s :=
     { hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
-      mul_hom := limit.hom_ext (fun j ↦ by
-        dsimp
-        simp only [Category.assoc, limit.lift_π, Functor.mapCone_pt, forget_obj,
-          Functor.mapCone_π_app, forget_map, Hom.mul_hom, limMap_π, tensorObj_obj, Functor.comp_obj,
-          MonFunctorCategoryEquivalence.inverseObj_mul_app, lim_μ_π_assoc, lim_obj,
-          ← MonoidalCategory.tensor_comp_assoc]) }
+      is_mon_hom :=
+        { mul_hom := limit.hom_ext (fun j ↦ by
+          dsimp
+          simp only [Category.assoc, limit.lift_π, Functor.mapCone_pt, forget_obj,
+            Functor.mapCone_π_app, forget_map, IsMon_Hom.mul_hom, limMap_π, tensorObj_obj,
+            Functor.comp_obj, MonFunctorCategoryEquivalence.inverseObj_mon_mul_app, lim_μ_π_assoc,
+            lim_obj, ← tensor_comp_assoc]) } }
   fac s h := by ext; simp
   uniq s m w := by
     ext1

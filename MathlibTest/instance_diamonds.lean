@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
@@ -34,11 +35,11 @@ example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.smul : SMul ℕ (α × β)) = AddMonoid.toNatSMul := by
+    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNatSMul := by
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
-    (Prod.smul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
+    (Prod.instSMul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
@@ -112,24 +113,6 @@ example {α : Type*} [CommMonoid α] :
 end Units
 
 end SMul
-
-/-! ## `WithTop` (Type with point at infinity) instances -/
-
-
-section WithTop
-
-example (R : Type _) [h : StrictOrderedSemiring R] :
-    @WithTop.addCommMonoid R
-        (@NonUnitalNonAssocSemiring.toAddCommMonoid R
-          (@NonAssocSemiring.toNonUnitalNonAssocSemiring R
-            (@Semiring.toNonAssocSemiring R (@StrictOrderedSemiring.toSemiring R h)))) =
-      @OrderedAddCommMonoid.toAddCommMonoid (WithTop R)
-        (@WithTop.orderedAddCommMonoid R
-          (@OrderedCancelAddCommMonoid.toOrderedAddCommMonoid R
-            (@StrictOrderedSemiring.toOrderedCancelAddCommMonoid R h))) := by
-  with_reducible_and_instances rfl
-
-end WithTop
 
 /-! ## `Multiplicative` instances -/
 
@@ -226,8 +209,8 @@ end Polynomial
 section Subtype
 
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
-example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableRel (α := α) (· < ·)]
-    [DecidableRel (α := α) (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
+example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableLT α]
+    [DecidableLE α] (p : α → Prop) [DecidablePred p] :
     Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder := by
   fail_if_success rfl
   exact Subsingleton.elim _ _
@@ -246,6 +229,9 @@ example :
       ZMod.commRing p := by
   with_reducible_and_instances rfl
 
+-- We need `open Fin.CommRing`, as otherwise `Fin.instCommRing` is not an instance,
+-- so `with_reducible_and_instances` doesn't have the desired effect.
+open Fin.CommRing in
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
   with_reducible_and_instances rfl
 

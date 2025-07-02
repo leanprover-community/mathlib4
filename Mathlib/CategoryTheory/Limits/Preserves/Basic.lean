@@ -179,9 +179,6 @@ section
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
 variable (F : C ⥤ D) (G : D ⥤ E)
 
--- Porting note: made this global by removing local
-attribute [elab_without_expected_type] PreservesLimit.preserves PreservesColimit.preserves
-
 instance comp_preservesLimit [PreservesLimit K F] [PreservesLimit (K ⋙ F) G] :
     PreservesLimit K (F ⋙ G) where
   preserves hc := ⟨isLimitOfPreserves G (isLimitOfPreserves F hc)⟩
@@ -248,7 +245,7 @@ preservesLimit_of_preserves_limit_cone h hF
 lemma preservesLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
     [PreservesLimit K₁ F] : PreservesLimit K₂ F where
   preserves {c} t := ⟨by
-    apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _ _
+    apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) _ _
     have := (IsLimit.postcomposeInvEquiv h c).symm t
     apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
     exact Cones.ext (Iso.refl _)⟩
@@ -297,7 +294,6 @@ lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e 
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
         refine Cones.ext (Iso.refl _) fun j => ?_
-        dsimp
         simp [equ, ← Functor.map_comp]⟩ }
 
 @[deprecated "use preservesLimitsOfShape_of_equiv" (since := "2024-11-19")]
@@ -316,7 +312,6 @@ lemma preservesLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂
     [PreservesLimitsOfSize.{w', w₂'} F] : PreservesLimitsOfSize.{w, w₂} F :=
   preservesLimitsOfSize_of_univLE.{w', w₂'} F
 
--- See library note [dsimp, simp].
 /-- `PreservesLimitsOfSize_shrink.{w w'} F` tries to obtain `PreservesLimitsOfSize.{w w'} F`
 from some other `PreservesLimitsOfSize F`.
 -/
@@ -354,7 +349,7 @@ lemma preservesColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K
     [PreservesColimit K₁ F] :
     PreservesColimit K₂ F where
   preserves {c} t := ⟨by
-    apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _ _
+    apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) _ _
     have := (IsColimit.precomposeHomEquiv h c).symm t
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
     exact Cocones.ext (Iso.refl _)⟩
@@ -404,7 +399,6 @@ lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (
         have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
         refine Cocones.ext (Iso.refl _) fun j => ?_
-        dsimp
         simp [equ, ← Functor.map_comp]⟩ }
 
 @[deprecated "use preservesColimitsOfShape_of_equiv" (since := "2024-11-19")]
@@ -423,7 +417,6 @@ lemma preservesColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w�
     [PreservesColimitsOfSize.{w', w₂'} F] : PreservesColimitsOfSize.{w, w₂} F :=
   preservesColimitsOfSize_of_univLE.{w', w₂'} F
 
--- See library note [dsimp, simp].
 /--
 `PreservesColimitsOfSize_shrink.{w w'} F` tries to obtain `PreservesColimitsOfSize.{w w'} F`
 from some other `PreservesColimitsOfSize F`.
@@ -693,7 +686,7 @@ lemma reflectsLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁
     ReflectsLimit K₂ F where
   reflects {c} t := ⟨by
     apply IsLimit.postcomposeInvEquiv h c (isLimitOfReflects F _)
-    apply ((IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _).symm t).ofIsoLimit _
+    apply ((IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) _).symm t).ofIsoLimit _
     exact Cones.ext (Iso.refl _)⟩
 
 @[deprecated "use reflectsLimit_of_iso_diagram" (since := "2024-11-19")]
@@ -868,7 +861,7 @@ lemma reflectsColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K�
     ReflectsColimit K₂ F where
   reflects {c} t := ⟨by
     apply IsColimit.precomposeHomEquiv h c (isColimitOfReflects F _)
-    apply ((IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _).symm t).ofIsoColimit _
+    apply ((IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) _).symm t).ofIsoColimit _
     exact Cocones.ext (Iso.refl _)⟩
 
 @[deprecated "use reflectsColimit_of_iso_diagram" (since := "2024-11-19")]

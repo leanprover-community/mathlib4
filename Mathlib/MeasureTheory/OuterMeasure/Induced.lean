@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.ENNReal.Action
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
 /-!
@@ -110,7 +112,7 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     · apply msU h
     funext i
     apply extend_eq _ (h i)
-  · cases' not_forall.1 h with i hi
+  · obtain ⟨i, hi⟩ := not_forall.1 h
     exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
 
 end Subadditive
@@ -274,7 +276,7 @@ theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ 
 theorem extend_iUnion_le_tsum_nat : ∀ s : ℕ → Set α,
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
   refine extend_iUnion_le_tsum_nat' MeasurableSet.iUnion ?_; intro f h
-  simp (config := { singlePass := true }) only [iUnion_disjointed.symm]
+  simp +singlePass only [iUnion_disjointed.symm]
   rw [mU (MeasurableSet.disjointed h) (disjoint_disjointed _)]
   refine ENNReal.tsum_le_tsum fun i => ?_
   rw [← extend_eq m, ← extend_eq m]
@@ -305,7 +307,10 @@ theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
 
 theorem le_trim : m ≤ m.trim := le_trim_iff.2 fun _ _ ↦ le_rfl
 
-@[simp] -- Porting note: added `simp`
+lemma null_of_trim_null {s : Set α} (h : m.trim s = 0) : m s = 0 :=
+  nonpos_iff_eq_zero.1 <| (le_trim m s).trans_eq h
+
+@[simp]
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => measure_iUnion_le f)
     (fun _ _ _ _ h => measure_mono h) hs
@@ -334,7 +339,7 @@ theorem trim_eq_trim_iff {m₁ m₂ : OuterMeasure α} :
   simp only [le_antisymm_iff, trim_le_trim_iff, forall_and]
 
 theorem trim_eq_iInf (s : Set α) : m.trim s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), m t := by
-  simp (config := { singlePass := true }) only [iInf_comm]
+  simp +singlePass only [iInf_comm]
   exact
     inducedOuterMeasure_eq_iInf MeasurableSet.iUnion (fun f _ => measure_iUnion_le f)
       (fun _ _ _ _ h => measure_mono h) s

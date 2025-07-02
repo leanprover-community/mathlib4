@@ -47,9 +47,9 @@ General algebra:
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
-    first Sylow theorem: Sylow.exists_subgroup_card_pow_prime
-    second Sylow theorem: Sylow.isPretransitive_of_finite
-    third Sylow theorem: card_sylow_modEq_one
+    first Sylow theorem: 'Sylow.exists_subgroup_card_pow_prime'
+    second Sylow theorem: 'Sylow.isPretransitive_of_finite'
+    third Sylow theorem: 'card_sylow_modEq_one'
 
   Rings:
     ring: 'Ring'
@@ -63,7 +63,7 @@ General algebra:
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient ring: 'Ideal.instHasQuotient'
+    quotient ring: 'Ideal.Quotient.ring'
     prime ideal: 'Ideal.IsPrime'
     maximal ideal: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'
@@ -98,7 +98,7 @@ General algebra:
 
   Algebras over a ring:
     associative algebra over a commutative ring: 'Algebra'
-    the category of algebras over a ring: 'AlgebraCat'
+    the category of algebras over a ring: 'AlgCat'
     free algebra of a commutative ring: 'FreeAlgebra'
     tensor product of algebras: 'Algebra.TensorProduct.instAlgebra'
     tensor algebra of a commutative ring: 'TensorAlgebra'
@@ -145,6 +145,7 @@ General algebra:
   Algebraic Number Theory:
     Finiteness of the class number: 'NumberField.RingOfIntegers.instFintypeClassGroup'
     Dirichlet unit theorem: 'NumberField.Units.exist_unique_eq_mul_prod'
+    Dirichlet class number formula: 'NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT'
 
   Representation theory:
     representation : 'Representation'
@@ -236,10 +237,10 @@ Topology:
     intermediate value theorem: 'intermediate_value_Icc'
     extreme value theorem: 'IsCompact.exists_isMinOn'
     limit infimum and supremum: 'order/liminf_limsup.html'
-    topological group: 'TopologicalGroup'
+    topological group: 'IsTopologicalGroup'
     completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
     infinite sum: 'HasSum'
-    topological ring: 'TopologicalRing'
+    topological ring: 'IsTopologicalRing'
     completion of a topological ring: 'UniformSpace.Completion.ring'
     topological module: 'ContinuousSMul'
     continuous linear map: 'ContinuousLinearMap'
@@ -265,7 +266,7 @@ Analysis:
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
-    topology on a normed vector space: 'NormedSpace.boundedSMul'
+    topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
     Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
@@ -283,8 +284,8 @@ Analysis:
     Cauchy-Schwarz inequality: 'inner_mul_inner_self_le'
     adjoint operator: 'LinearPMap.adjoint'
     self-adjoint operator: 'IsSelfAdjoint'
-    orthogonal projection: 'orthogonalProjection'
-    reflection: 'reflection'
+    orthogonal projection: 'Submodule.orthogonalProjection'
+    reflection: 'Submodule.reflection'
     orthogonal complement: 'Submodule.orthogonal'
     existence of Hilbert basis: 'exists_hilbertBasis'
     eigenvalues from Rayleigh quotient: 'IsSelfAdjoint.hasEigenvector_of_isLocalExtrOn'
@@ -377,7 +378,7 @@ Probability Theory:
     independent events: 'ProbabilityTheory.iIndepSet'
     independent sigma-algebras: 'ProbabilityTheory.iIndep'
     conditional probability: 'ProbabilityTheory.cond'
-    conditional expectation: 'MeasureTheory.condexp'
+    conditional expectation: 'MeasureTheory.condExp'
   Random variables and their laws:
     discrete law: 'PMF'
     probability density function: 'MeasureTheory.HasPDF'
@@ -412,12 +413,35 @@ Geometry:
     angle: 'InnerProductGeometry.angle'
 
   Differentiable manifolds:
-    smooth manifold (with boundary and corners): 'SmoothManifoldWithCorners'
-    smooth map between manifolds: 'MDifferentiableAt'
+    smooth or analytic manifold (with boundary and corners): 'IsManifold'
+    smooth map between manifolds: 'ContMDiff'
+    product of manifolds: 'IsManifold.prod'
+    disjoint union of manifolds: 'IsManifold.disjointUnion'
+    interior of a manifold: 'ModelWithCorners.interior'
+    boundary of a manifold: 'ModelWithCorners.boundary'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
+    pullback of vector fields: 'VectorField.mpullback'
+    Lie bracket of vector field: 'VectorField.mlieBracket'
+    Jacobi/Leibniz identity: 'VectorField.leibniz_identity_mlieBracket'
+    integral curves: 'IsIntegralCurve'
+    local existence of integral curves: 'exists_isIntegralCurveAt_of_contMDiffAt_boundaryless'
+    uniform time existence: 'exists_isIntegralCurve_of_isIntegralCurveOn'
+    # corollary for compact manifolds PRed, but not yet merged
+    uniqueness of integral curves: 'isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless'
     Lie group: 'LieGroup'
-    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
+    Lie algebra of a Lie group: 'GroupLieAlgebra'
+    sphere: 'EuclideanSpace.instIsManifoldSphere'
+    closed interval: 'instIsManifoldIcc'
+    general linear group as a Lie group: 'Units.instLieGroupModelWithCornersSelf'
+
+  Smooth vector and fiber bundles:
+    (topological) fiber bundle: 'FiberBundle'
+    (smooth) vector bundle: 'ContMDiffVectorBundle'
+    (smooth) trivial vector bundle: 'Bundle.Trivial.contMDiffVectorBundle'
+    (smooth) direct sum of vector bundles: 'Bundle.Prod.contMDiffVectorBundle'
+    (smooth) pullback vector bundle: 'ContMDiffVectorBundle.pullback'
+    (smooth) Hom bundle: 'ContMDiffVectorBundle.continuousLinearMap'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
@@ -427,17 +451,63 @@ Geometry:
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
 
 Combinatorics:
-  Graph theory:
-    simple graph: 'SimpleGraph'
-    degree-sum formula: 'SimpleGraph.sum_degrees_eq_twice_card_edges'
-    matching: 'SimpleGraph.Subgraph.IsMatching'
-    adjacency matrix: 'SimpleGraph.adjMatrix'
   Pigeonhole principles:
     finite: 'Fintype.exists_ne_map_eq_of_card_lt'
     infinite: 'Finite.exists_infinite_fiber'
     strong pigeonhole principle: 'Fintype.exists_lt_card_fiber_of_mul_lt_card'
   Transversals:
     Hall's marriage theorem: 'Finset.all_card_le_biUnion_card_iff_exists_injective'
+  Enumerative combinatorics:
+    Catalan numbers: 'catalan'
+    Bell numbers: 'Multiset.bell'
+    Dyck words: 'DyckWord'
+  Set families:
+    # Correlation inequalities:
+    Four functions theorem: 'four_functions_theorem'
+    Harris-Kleitman inequality: 'IsLowerSet.le_card_inter_finset'
+    # Antichains:
+    Ahlswede-Zhang identity: 'AhlswedeZhang.infSum_eq_one'
+    LYM inequality: 'Finset.lubell_yamamoto_meshalkin_inequality_sum_card_div_choose'
+    Sperner's theorem: 'IsAntichain.sperner'
+    # Intersecting families:
+    Maximum size of an intersecting family: 'Set.Intersecting.is_max_iff_card_eq'
+    Kleitman's theorem: 'Finset.card_biUnion_le_of_intersecting'
+    # VC dimension:
+    VC dimension: 'Finset.vcDim'
+    Sauer-Shelah lemma: 'Finset.card_shatterer_le_sum_vcDim'
+    Kruskal-Katona theorem: 'Finset.kruskal_katona'
+  Graph theory:
+    simple graph: 'SimpleGraph'
+    degree-sum formula: 'SimpleGraph.sum_degrees_eq_twice_card_edges'
+    matching: 'SimpleGraph.Subgraph.IsMatching'
+    adjacency matrix: 'SimpleGraph.adjMatrix'
+    Strongly regular graphs: 'SimpleGraph.IsSRGWith'
+    # Extremal graph theory:
+    Turán's theorem: 'SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph'
+    Regularity lemma: 'szemeredi_regularity'
+    Triangle counting lemma: 'SimpleGraph.triangle_counting'
+    Triangle removal lemma: 'SimpleGraph.triangle_removal'
+  Ramsey theory:
+    van der Waerden theorem: 'Combinatorics.exists_mono_homothetic_copy'
+    Hales-Jewett theorem: 'Combinatorics.Line.exists_mono_in_high_dimension'
+    Hindman's theorem: 'Hindman.FS_partition_regular'
+  Additive combinatorics:
+    # Avoiding patterns:
+    sets without arithmetic progressions: 'ThreeAPFree'
+    Roth's theorem: 'roth_3ap_theorem_nat'
+    Corners theorem: corners_theorem_nat
+    Behrend's construction: 'Behrend.roth_lower_bound'
+    # Growth:
+    doubling constant: 'Finset.addConst'
+    Ruzsa covering lemma: 'Finset.exists_subset_add_sub'
+    Ruzsa triangle inequality: 'Finset.ruzsa_triangle_inequality_sub_sub_sub'
+    Plünnecke-Petridis inequality: 'Finset.pluennecke_petridis_inequality_add'
+    Small tripling implies small powers: 'Finset.small_pow_of_small_tripling'
+    Dyson transform: 'Finset.addDysonETransform'
+    Cauchy-Davenport theorem: 'ZMod.cauchy_davenport'
+    Erdős–Ginzburg–Ziv theorem: 'ZMod.erdos_ginzburg_ziv'
+    Additive energy: 'Finset.addEnergy'
+    Freiman homomorphisms: 'IsAddFreimanHom'
 
 Dynamics:
   Circle dynamics:
@@ -457,7 +527,7 @@ Data structures:
     array: 'Array'
     # buffer: 'buffer'
     difference list: 'Batteries.DList'
-    lazy list: 'LazyList'
+    lazy list: 'MLList'
     stream: 'Stream'''
     sequence: 'Stream''.Seq'
     weak sequence: 'Stream''.WSeq'
@@ -483,11 +553,28 @@ Data structures:
 
 Logic and computation:
   Computability:
-    computable function: 'Computable'
+    computable function:
+      in terms of general recursive functions: 'Computable'
+      in terms of Turing machines: 'Turing.TM2Computable'
+    primitive recursive function: 'Primrec'
+    Ackermann function: 'ack'
     Turing machine: 'Turing.TM0.Machine'
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
     combinatorial game: 'SetTheory.Game'
+    Turing degrees: 'TuringDegree'
+  Complexity:
+    polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
+  Formal languages:
+    language: 'Language'
+    Arden's lemma: 'Language.self_eq_mul_add_iff'
+    regular language: 'Language.IsRegular'
+    DFA: 'DFA'
+    NFA: 'NFA'
+    '$\varepsilon$-NFA': 'εNFA'
+    regular expression: 'RegularExpression'
+    context-free language: 'Language.IsContextFree'
+    context-free grammar: 'ContextFreeGrammar'
   Set theory:
     ordinal: 'Ordinal'
     cardinal: 'Cardinal'
