@@ -3,11 +3,9 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Algebra.Group.WithOne.Basic
-import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Units
 /-!
 
 # Covariant instances on `WithZero`
@@ -85,29 +83,15 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
 variable {A B F : Type*} [FunLike F A B] (f : F)
 variable [LinearOrderedCommGroupWithZero A] [LinearOrderedCommGroupWithZero B]
 variable [MonoidWithZeroHomClass F A B] {f}
--- variable [Preorder A] [LinearOrder B]
 
 open WithZero
 
 section Units
 
--- section test
---
--- variable (G : Type*) [Group G] [LinearOrder G]
---
--- #synth LE (WithBot G)
---
--- example (a b : Aˣ) : (a : (WithZero Aˣ)) ≤ (b : (WithZero Aˣ))
---     ↔ (some a : Option Aˣ) ≤ (some b : Option Aˣ) := by
---   simp only [coe_le_coe, Option.some_le_some]
---
--- example : (0 : WithZero Aˣ) = (none : Option Aˣ) := rfl
---
--- end test
-
+/-- Given any linearly ordered commutative group with zero `A`, this is the order isomorphism
+between `WithZero Aˣ` with `A`. -/
 @[simps!]
-def withZeroUnits_OrderIso : --[DecidablePred (fun a : A ↦ a = 0)] :
-    WithZero Aˣ ≃o A where
+def withZeroUnits_OrderIso : WithZero Aˣ ≃o A where
   __ := withZeroUnitsEquiv
   map_rel_iff' /- {⟨u | u⟩ ⟨v | v⟩} -/ := by
       intro a b
@@ -133,6 +117,8 @@ def withZeroUnits_OrderIso : --[DecidablePred (fun a : A ↦ a = 0)] :
             rw [← WithZero.coe_le_coe]
             exact h
 
+/-- Given any linearly ordered commutative group with zero `A`, this is the inclusion of
+`WithZero Aˣ` into `A` as an ordered embedding. -/
 def withZeroUnits_OrderEmbedding : WithZero Aˣ ↪o A := withZeroUnits_OrderIso.toOrderEmbedding
 
 
@@ -142,14 +128,11 @@ section MonoidWithZeroHom
 
 open MonoidWithZeroHom
 
+/-- The inclusion of `valueGroup₀ f` into `B` a a multiplicative homomorphism. -/
 def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
   (withZeroUnitsHom).comp <| WithZero.map' (valueGroup f).subtype
 
-def valueGroup_OrderEmbedding : valueGroup f ↪o Bˣ := OrderEmbedding.subtype ..
-  -- toFun := (valueGroup f).subtype
-  -- inj' := by simp
-  -- map_rel_iff' := by simp
-
+/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
 def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o WithZero Bˣ where
   toFun := WithZero.map' (valueGroup f).subtype
   inj' := WithZero.map'_injective Subtype.val_injective ..
@@ -174,7 +157,7 @@ def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o WithZero Bˣ where
     · apply WithZero.map'_mono _ h
       exact fun _ _ x ↦ x
 
-
+/-- The inclusion of `valueGroup₀ f` into `B` as an order embedding. -/
 def valueGroup₀_OrderEmbedding : WithZero (valueGroup f) ↪o B :=
   valueGroup₀_OrderEmbedding'.trans withZeroUnits_OrderEmbedding
 
