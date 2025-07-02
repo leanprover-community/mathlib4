@@ -211,7 +211,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
         ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
-  | isLimit b hb H =>
+  | limit b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
     have : ⨆ a : Iio b, _ = _ :=
