@@ -163,9 +163,9 @@ theorem δ₁_apply
     -- Then `x` is a 2-cocycle and `δ z = x` in `H²(X₁)`.
     δ hX 1 2 rfl (H1π X.X₃ z) = H2π X.X₁ ⟨x, mem_cocycles₂_of_comp_eq_d₁₂ hX hx⟩ := by
   simpa [H1π, H2π, ← cocyclesMk₂_eq X.X₁, ← cocyclesMk₁_eq X.X₃] using
-    δ_apply hX rfl ((cochainsIso₁ X.X₃).inv z) (by simp [cocycles₁.d₁₂_apply z])
+    δ_apply hX rfl ((cochainsIso₂ X.X₃).inv z) (by simp [cocycles₁.d₁₂_apply z])
     ((cochainsIso₁ X.X₂).inv y) (by ext; simp [cochainsIso₁, ← hy])
-    ((cochainsIso₁ X.X₁).inv x) <| by
+    ((cochainsIso₂ X.X₁).inv x) <| by
       ext g
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x)) g
