@@ -414,8 +414,8 @@ theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
 
-theorem card_le_aleph (o : Ordinal) : o.card ≤ ℵ_ o := by
-  apply (card_le_preAleph o).trans (preAleph_le_aleph o)
+theorem card_le_aleph (o : Ordinal) : o.card ≤ ℵ_ o :=
+  (card_le_preAleph o).trans (preAleph_le_aleph o)
 
 @[simp]
 theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
