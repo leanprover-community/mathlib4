@@ -504,7 +504,7 @@ theorem sumCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
   rfl
 
 @[simp]
-theorem sumCongr_refl : sumCongr (OrderIso.refl α) (OrderIso.refl β) = OrderIso.refl _ := by
+theorem sumCongr_refl : sumCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
 
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
