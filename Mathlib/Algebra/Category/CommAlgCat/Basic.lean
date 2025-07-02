@@ -5,6 +5,8 @@ Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
 import Mathlib.Algebra.Category.AlgCat.Basic
 import Mathlib.Algebra.Category.Ring.Under.Basic
+import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # The category of commutative algebras over a commutative ring
@@ -178,5 +180,11 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
   unitIso := NatIso.ofComponents fun A ↦
     CommAlgCat.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
   counitIso := .refl _
+
+instance : HasColimits (CommAlgCat.{u} R) :=
+  Adjunction.has_colimits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
+
+instance : HasLimits (CommAlgCat.{u} R) :=
+  Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
 
 end CategoryTheory
