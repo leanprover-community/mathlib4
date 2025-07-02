@@ -45,7 +45,7 @@ def monoModSerre [P.IsSerreClass] : MorphismProperty C :=
 
 /-- The class of epimorphisms modulo a Serre class: given a
 Serre class `P : ObjectProperty C`, this is the class of morphisms `f`
-such that `cokernel f` satisfy `P`. -/
+such that `cokernel f` satisfies `P`. -/
 @[nolint unusedArguments]
 def epiModSerre [P.IsSerreClass] : MorphismProperty C :=
   fun _ _ f ↦ P (cokernel f)
