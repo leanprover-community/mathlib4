@@ -491,7 +491,7 @@ variable {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*} [LE α] [LE β] [LE γ]
 @[simps! apply]
 def sumCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ ≃o α₂ ⊕ β₂ where
   toEquiv := .sumCongr ea eb
-  map_rel_iff' := by rintro (a | a) (b | b) <;> simp
+  map_rel_iff' := by aesop
 
 @[simp]
 theorem sumCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
@@ -504,7 +504,7 @@ theorem sumCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
   rfl
 
 @[simp]
-theorem sumCongr_refl : sumCongr (OrderIso.refl α) (OrderIso.refl β) = OrderIso.refl _ := by
+theorem sumCongr_refl : sumCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
 
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
@@ -593,7 +593,7 @@ theorem sumLexCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
   rfl
 
 @[simp]
-theorem sumLexCongr_refl : (OrderIso.refl α).sumLexCongr (OrderIso.refl β) = OrderIso.refl _ := by
+theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
 
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
