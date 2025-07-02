@@ -80,7 +80,8 @@ theorem hyperoperation_ge_three_one (n k : ℕ) : hyperoperation (n + 3) 1 k = 1
   | succ n ih =>
     cases k
     · grind
-    · rw [hyperoperation_recursion, ih]
+    · #adaptation_note /-- This will work by `grind` after nightly-2025-07-02. -/
+      rw [hyperoperation_recursion, ih]
 
 @[grind =]
 theorem hyperoperation_ge_four_zero (n k : ℕ) :
