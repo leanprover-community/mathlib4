@@ -298,7 +298,8 @@ def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
   leibniz X σ g x hσ hf := by
     calc (∑ i ∈ s, f i • (cov i) X (g • σ)) x
       _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
-            + f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x) := sorry -- rewrite using (cov i).leibniz
+            + f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x) :=
+        sorry -- rewrite using (cov i).leibniz
       _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
         + ∑ i ∈ s, f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜, 𝕜) g x) (X x)) • σ x) := by
         rw [Finset.sum_add_distrib]
@@ -361,14 +362,32 @@ noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
     simp [this, bar]
     rfl
 
-open scoped Manifold
+-- TODO: does it make sense to speak of analytic connections? if so, change the definition of
+-- regularity and use ∞ from `open scoped ContDiff` instead.
 
 /-- The trivial connection on the trivial bundle is smooth -/
--- TODO: fix parsing error with putting exponent ∞
-lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial E E') 42 where
+lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial E E') (⊤ : ℕ∞) where
   regularity X σ hX /-hσ-/ := by
-    simp [trivial]
-    sorry -- where's the relevant lemma in the library?
+    -- except for locla trivialisations, contDiff_infty_iff_fderiv covers this well
+    simp only [trivial]
+    -- use a local trivialisation
+    intro x
+    specialize hX x
+    -- TODO: use contMDiffOn instead, to get something like
+    -- have hX' : ContMDiffOn 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (∞ + 1)
+    --  (fun x ↦ TotalSpace.mk' E' x (σ x)) (trivializationAt x).baseSet := hX.contMDiffOn
+    -- then want a version contMDiffOn_totalSpace
+    rw [contMDiffAt_totalSpace] at hX ⊢
+    simp only [Trivial.fiberBundle_trivializationAt', Trivial.trivialization_apply]
+    refine ⟨contMDiff_id _, ?_⟩
+    obtain ⟨h₁, h₂⟩ := hX
+    -- ... hopefully telling me
+    -- have h₂scifi : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E') ∞
+    --   (fun x ↦ σ x) (trivializationAt _).baseSet_ := sorry
+    simp at h₂
+    -- now use ContMDiffOn.congr and contDiff_infty_iff_fderiv,
+    -- or perhaps a contMDiffOn version of this lemma?
+    sorry
 
 open scoped Classical in
 @[simps]
