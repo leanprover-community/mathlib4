@@ -624,8 +624,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
       blocks_fun i = (compChangeOfVariables m M N _ H).2.blocksFun _ :=
         (compChangeOfVariables_blocksFun m M N H i).symm
       _ = (compChangeOfVariables m M N _ H').2.blocksFun _ := by
-        apply Composition.blocksFun_congr <;>
-        first | rw [heq] | rfl
+        grind
       _ = blocks_fun' i := compChangeOfVariables_blocksFun m M N H' i
   -- 3 - show that the map is surjective
   · intro i hi
