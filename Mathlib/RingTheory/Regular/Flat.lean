@@ -29,11 +29,9 @@ include hf
 
 theorem IsSMulRegular.of_flat_isBaseChange {x : R} (reg : IsSMulRegular M x) :
     IsSMulRegular N (algebraMap R S x) := by
-  have eq : hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) :=
-    hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])
-  convert Module.Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
-  rw [eq]
-  rfl
+  have h := Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
+  rwa [show hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x)
+    from hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])] at h
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base
   change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is

@@ -572,7 +572,7 @@ theorem smul_top_ne_top_of_isBaseChange (hf : IsBaseChange S f) {I : Ideal R}
     Submodule.subsingleton_quotient_iff_eq_top.mpr eq
   have : Subsingleton (S ⊗[R] (M ⧸ I • ⊤)) :=
     (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
-      hf.tensorEquiv  _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (by rfl) ≪≫ₗ
+      hf.tensorEquiv  _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (.refl R M) ≪≫ₗ
         AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
           (tensorQuotEquivQuotSMul M I).baseChange R S _ _ |>.symm.subsingleton
   have : Subsingleton (M ⧸ (I • (⊤ : Submodule R M))) := lTensor_reflects_triviality R S _
