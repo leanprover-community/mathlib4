@@ -118,13 +118,13 @@ theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset 
 theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = s.biUnion fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = t.biUnion fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 /-- See also `Finset.sup_product_left`. -/
@@ -146,7 +146,7 @@ lemma nontrivial_prod_iff : (s ×ˢ t).Nontrivial ↔
 theorem filter_product (p : α → Prop) (q : β → Prop) [DecidablePred p] [DecidablePred q] :
     ((s ×ˢ t).filter fun x : α × β => p x.1 ∧ q x.2) = s.filter p ×ˢ t.filter q := by
   ext ⟨a, b⟩
-  simp [mem_filter, mem_product, decide_eq_true_eq, and_comm, and_left_comm, and_assoc]
+  simp [mem_filter, mem_product, and_comm, and_left_comm, and_assoc]
 
 theorem filter_product_left (p : α → Prop) [DecidablePred p] :
     ((s ×ˢ t).filter fun x : α × β => p x.1) = s.filter p ×ˢ t := by
@@ -167,9 +167,9 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
     ext ⟨a, b⟩
     simp only [filter_union_right, mem_filter, mem_product]
     constructor <;> intro h <;> use h.1
-    · simp only [h.2, Function.comp_apply, Decidable.em, and_self]
+    · simp only [h.2, Decidable.em, and_self]
     · revert h
-      simp only [Function.comp_apply, and_imp]
+      simp only [and_imp]
       rintro _ _ (_|_) <;> simp [*]
   · apply Finset.disjoint_filter_filter'
     exact (disjoint_compl_right.inf_left _).inf_right _

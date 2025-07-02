@@ -96,8 +96,8 @@ theorem exp_zero : exp 0 = 1 := by
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
     induction' j with j ih
-    · dsimp [exp']; simp [show Nat.succ 0 = 1 from rfl]
-    · rw [← ih (by simp [Nat.succ_le_succ])]
+    · dsimp [exp']; simp
+    · rw [← ih (by simp)]
       simp only [sum_range_succ, pow_succ]
       simp
 
@@ -116,7 +116,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
     simp only [mul_left_comm (m.choose I : ℂ), mul_assoc, mul_left_comm (m.choose I : ℂ)⁻¹,
       mul_comm (m.choose I : ℂ)]
     rw [inv_mul_cancel₀ h₁]
-    simp [div_eq_mul_inv, mul_comm, mul_assoc, mul_left_comm]
+    simp [div_eq_mul_inv, mul_assoc, mul_left_comm]
   simp_rw [exp, exp', lim_mul_lim]
   apply (lim_eq_lim_of_equiv _).symm
   simp only [hj]
@@ -151,7 +151,7 @@ theorem exp_ne_zero : exp x ≠ 0 := fun h =>
   zero_ne_one (α := ℂ) <| by rw [← exp_zero, ← add_neg_cancel x, exp_add, h]; simp
 
 theorem exp_neg : exp (-x) = (exp x)⁻¹ := by
-  rw [← mul_right_inj' (exp_ne_zero x), ← exp_add]; simp [mul_inv_cancel₀ (exp_ne_zero x)]
+  rw [← mul_right_inj' (exp_ne_zero x), ← exp_add]; simp
 
 theorem exp_sub : exp (x - y) = exp x / exp y := by
   simp [sub_eq_add_neg, exp_add, exp_neg, div_eq_mul_inv]
@@ -252,9 +252,9 @@ lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x 
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i ∈ range 3, x ^ i / i ! := by
-        simp only [sum_range_succ, range_one, sum_singleton, _root_.pow_zero, factorial, cast_one,
-          ne_eq, one_ne_zero, not_false_eq_true, div_self, pow_one, mul_one, div_one, Nat.mul_one,
-          cast_succ, add_right_inj]
+        simp only [sum_range_succ, range_one, sum_singleton, _root_.pow_zero, factorial,
+          pow_one, mul_one, Nat.mul_one,
+          cast_succ]
         ring_nf
     _ ≤ exp x := sum_le_exp_of_nonneg hx 3
 
@@ -353,7 +353,7 @@ theorem sum_div_factorial_le {α : Type*} [Field α] [LinearOrder α] [IsStrictO
       rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
       exact Nat.factorial_mul_pow_le_factorial
     _ = (n.factorial : α)⁻¹ * ∑ m ∈ range (j - n), (n.succ : α)⁻¹ ^ m := by
-      simp [mul_inv, ← mul_sum, ← sum_mul, mul_comm, inv_pow]
+      simp [← mul_sum, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
@@ -390,7 +390,7 @@ theorem exp_bound {x : ℂ} (hx : ‖x‖ ≤ 1) {n : ℕ} (hn : 0 < n) :
       rw [Complex.norm_pow]
       exact pow_le_one₀ (norm_nonneg _) hx
     _ = ‖x‖ ^ n * ∑ m ∈ range j with n ≤ m, (1 / m.factorial : ℝ) := by
-      simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
+      simp [← mul_sum]
     _ ≤ ‖x‖ ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
       gcongr
       exact sum_div_factorial_le _ _ hn
@@ -432,10 +432,10 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : ‖x‖ / n.succ ≤ 1 / 2) :
 
 theorem norm_exp_sub_one_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1‖ ≤ 2 * ‖x‖ :=
   calc
-    ‖exp x - 1‖ = ‖exp x - ∑ m ∈ range 1, x ^ m / m.factorial‖ := by simp [sum_range_succ]
+    ‖exp x - 1‖ = ‖exp x - ∑ m ∈ range 1, x ^ m / m.factorial‖ := by simp
     _ ≤ ‖x‖ ^ 1 * ((Nat.succ 1 : ℝ) * ((Nat.factorial 1) * (1 : ℕ) : ℝ)⁻¹) :=
       (exp_bound hx (by decide))
-    _ = 2 * ‖x‖ := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul, Nat.factorial]
+    _ = 2 * ‖x‖ := by simp [mul_two, mul_add, mul_comm, Nat.factorial]
 
 theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1 - x‖ ≤ ‖x‖ ^ 2 :=
   calc
@@ -564,7 +564,7 @@ theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
-      mul_inv, Nat.factorial]
+      Nat.factorial]
   ac_rfl
 
 theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
@@ -586,7 +586,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
   convert mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n))
       (le_sub_iff_add_le'.1 e) ?_ using 1
-  · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv, Nat.factorial]
+  · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, Nat.factorial]
     ac_rfl
   · simp [div_nonneg, abs_nonneg]
 

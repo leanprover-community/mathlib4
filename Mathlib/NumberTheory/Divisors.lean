@@ -360,7 +360,7 @@ theorem map_div_right_divisors :
       n.divisorsAntidiagonal := by
   ext ⟨d, nd⟩
   simp only [mem_map, mem_divisorsAntidiagonal, Function.Embedding.coeFn_mk, mem_divisors,
-    Prod.ext_iff, exists_prop, and_left_comm, exists_eq_left]
+    Prod.ext_iff, and_left_comm, exists_eq_left]
   constructor
   · rintro ⟨⟨⟨k, rfl⟩, hn⟩, rfl⟩
     rw [Nat.mul_div_cancel_left _ (left_ne_zero_of_mul hn).bot_lt]
@@ -473,12 +473,12 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
     · match n with
       | 0 => contradiction
       | 1 => contradiction
-      | Nat.succ (Nat.succ n) => simp [succ_le_succ]
+      | Nat.succ (Nat.succ n) => simp
     · rw [← mem_singleton, ← h, mem_properDivisors]
       have := Nat.le_of_dvd ?_ hdvd
       · simpa [hdvd, this] using (le_iff_eq_or_lt.mp this).symm
       · by_contra!
-        simp only [nonpos_iff_eq_zero.mp this, this] at h
+        simp only [nonpos_iff_eq_zero.mp this] at h
         contradiction
   · exact fun h => Prime.properDivisors h
 
@@ -513,8 +513,7 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
-  simp only [mem_properDivisors, Nat.isUnit_iff, mem_map, mem_range, Function.Embedding.coeFn_mk,
-    pow_eq]
+  simp only [mem_properDivisors, mem_map, mem_range, Function.Embedding.coeFn_mk]
   have := mem_properDivisors_prime_pow pp k (x := a)
   rw [mem_properDivisors] at this
   rw [this]
@@ -648,7 +647,7 @@ lemma mem_divisorsAntidiag :
   | .negSucc n, (negSucc x, negSucc y) => by
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast
-    simp +contextual [eq_comm]
+    simp +contextual
   | .negSucc n, ((x : ℕ), negSucc y) => by
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast
@@ -694,7 +693,7 @@ lemma neg_mem_divisorsAntidiag : -xy ∈ z.divisorsAntidiag ↔ xy ∈ z.divisor
 @[simp]
 lemma map_prodComm_divisorsAntidiag :
     z.divisorsAntidiag.map (Equiv.prodComm _ _).toEmbedding = z.divisorsAntidiag := by
-  ext; simp [mem_divisorsAntidiag, mul_comm]
+  ext; simp [mem_divisorsAntidiag]
 
 @[simp]
 lemma map_neg_divisorsAntidiag :

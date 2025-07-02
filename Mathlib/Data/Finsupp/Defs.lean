@@ -379,10 +379,10 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff, Ne]
+    · simp only [h, true_iff]
       rw [← notMem_support_iff, not_not]
       classical apply Finset.choose_mem
-    · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
+    · simp only [h, not_true_eq_false]
 
 @[simp]
 theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).support = v.support.map f :=

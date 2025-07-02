@@ -271,7 +271,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]
-    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, map_coe, coe_subtype, h i]
+    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, h i]
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -432,7 +432,7 @@ lemma repr_eq_zero_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
-  simp [Finsupp.single_apply, hi, snf.snf, map_finsuppSum]
+  simp [hi, snf.snf, map_finsuppSum]
 
 @[deprecated (since := "2025-05-24")]
 alias repr_eq_zero_of_nmem_range := repr_eq_zero_of_notMem_range
@@ -596,8 +596,8 @@ theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
   have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
   exact
     ⟨bM, a ∘ e.symm, bN.reindex e, fun i ↦ by
-      simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
-          restrictScalarsEquiv_apply, Basis.coe_reindex, (· ∘ ·)]⟩
+      simp only [snf, fe,
+          Basis.coe_reindex, (· ∘ ·)]⟩
 
 /--
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,

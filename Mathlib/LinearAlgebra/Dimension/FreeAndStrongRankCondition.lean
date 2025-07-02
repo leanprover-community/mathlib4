@@ -120,19 +120,7 @@ its span. -/
 theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
-  constructor
-  · rintro ⟨⟨v₀, hv₀⟩, h⟩
-    use v₀, hv₀
-    intro v hv
-    obtain ⟨r, hr⟩ := h ⟨v, hv⟩
-    use r
-    rwa [Subtype.ext_iff, coe_smul] at hr
-  · rintro ⟨v₀, hv₀, h⟩
-    use ⟨v₀, hv₀⟩
-    rintro ⟨v, hv⟩
-    obtain ⟨r, hr⟩ := h v hv
-    use r
-    rwa [Subtype.ext_iff, coe_smul]
+  simp
 
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in

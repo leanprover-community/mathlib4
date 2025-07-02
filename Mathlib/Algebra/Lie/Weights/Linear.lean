@@ -172,7 +172,7 @@ instance : LieRingModule L (shiftedGenWeightSpace R L M χ) where
     abel
   lie_add x m n := by
     nontriviality shiftedGenWeightSpace R L M χ
-    simp only [lie_add, LinearWeights.map_add χ (aux R L M χ), smul_add]
+    simp only [lie_add, smul_add]
     abel
   leibniz_lie x y m := by
     nontriviality shiftedGenWeightSpace R L M χ
@@ -252,8 +252,7 @@ lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [M
     rw [not_nonempty_iff] at contra
     simpa only [iSup_of_empty, bot_ne_top] using LieModule.iSup_genWeightSpace_eq_top' k L M
   obtain ⟨m, hm₀, hm⟩ := exists_forall_lie_eq_smul k L M χ
-  simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, Weight.coe_coe, ne_eq,
-    not_forall, Classical.not_imp]
+  simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, ne_eq, not_forall]
   exact ⟨χ.toLinear, m, by simpa [mem_weightSpace], hm₀⟩
 
 end LieModule

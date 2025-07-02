@@ -55,16 +55,16 @@ noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) where
   { toFun := fun p z => algebraMap S T (aeval z p)
     map_one' := by
       funext z
-      simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
+      simp only [Pi.one_apply, map_one]
     map_mul' := fun f g => by
       funext z
       simp only [Pi.mul_apply, map_mul]
     map_zero' := by
       funext z
-      simp only [Polynomial.aeval_zero, Pi.zero_apply, map_zero]
+      simp only [Pi.zero_apply, map_zero]
     map_add' := fun f g => by
       funext z
-      simp only [Polynomial.aeval_add, Pi.add_apply, map_add] }
+      simp only [Pi.add_apply, map_add] }
   commutes' := fun p f => by
     funext z
     exact mul_comm _ _

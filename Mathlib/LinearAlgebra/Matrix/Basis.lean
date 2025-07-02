@@ -74,7 +74,7 @@ theorem coePiBasisFun.toMatrix_eq_transpose [Finite ι] :
 theorem toMatrix_self [DecidableEq ι] : e.toMatrix e = 1 := by
   unfold Basis.toMatrix
   ext i j
-  simp [Basis.equivFun, Matrix.one_apply, Finsupp.single_apply, eq_comm]
+  simp [Matrix.one_apply, Finsupp.single_apply, eq_comm]
 
 theorem toMatrix_update [DecidableEq ι'] (x : M) :
     e.toMatrix (Function.update v j x) = Matrix.updateCol (e.toMatrix v) j (e.repr x) := by

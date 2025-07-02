@@ -171,14 +171,14 @@ noncomputable instance commShiftOp [CommShift F A] :
     rw [commShiftIso_zero]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
-      CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app, op_map]
+      CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
     rfl
   add a b := by
     rw [commShiftIso_add]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
-      CommShift.isoAdd_inv_app, op_comp, Category.assoc, CommShift.isoAdd_hom_app, op_map]
+      CommShift.isoAdd_inv_app, op_comp, Category.assoc, CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
@@ -197,14 +197,14 @@ noncomputable def commShiftUnop
     rw [commShiftIso_zero]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      CommShift.isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, CommShift.isoZero_hom_app]
+      CommShift.isoZero_inv_app, unop_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
     rfl
   add a b := by
     rw [commShiftIso_add]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      CommShift.isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc,
+      CommShift.isoAdd_inv_app, unop_comp, Category.assoc,
       CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
     rfl
@@ -224,7 +224,7 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
     simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
-      Functor.op_obj, comp_id]
+      comp_id]
     exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
 
 end NatTrans

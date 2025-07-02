@@ -288,7 +288,7 @@ lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
     have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
       ext m f
       exact DFunLike.congr_arg f (e.apply_symm_apply m).symm
-    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+    simp only [this,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 

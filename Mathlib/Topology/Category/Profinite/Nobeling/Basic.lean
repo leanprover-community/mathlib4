@@ -217,7 +217,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app := fun s ↦ TopCat.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj, Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe,
+      simp only [Functor.const_obj_obj,
         Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
         (leOfHom h.unop)]
       rfl }

@@ -379,14 +379,14 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
       mem_degreeLT.2 <| degree_interpolate_lt _ hvs⟩
   left_inv := by
     rintro ⟨f, hf⟩
-    simp only [Subtype.mk_eq_mk, Subtype.coe_mk, dite_eq_ite]
+    simp only [Subtype.mk_eq_mk, dite_eq_ite]
     rw [mem_degreeLT] at hf
     conv => rhs; rw [eq_interpolate hvs hf]
     exact interpolate_eq_of_values_eq_on _ _ fun _ hi => if_pos hi
   right_inv := by
     intro f
     ext ⟨i, hi⟩
-    simp only [Subtype.coe_mk, eval_interpolate_at_node _ hvs hi]
+    simp only [eval_interpolate_at_node _ hvs hi]
     exact dif_pos hi
 
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)

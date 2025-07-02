@@ -771,7 +771,7 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom_inv_id := by
     apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only [limit.lift_π]
+    · simp only
       apply Quiver.Hom.op_inj
       simp
   inv_hom_id := by

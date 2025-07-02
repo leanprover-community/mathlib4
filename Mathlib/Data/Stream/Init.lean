@@ -60,7 +60,7 @@ theorem drop_drop (n m : ℕ) (s : Stream' α) : drop n (drop m s) = drop (m + n
 @[simp] theorem get_tail {n : ℕ} {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
 @[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i + 1) := by
-  ext; simp [Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
+  ext; simp [Nat.add_comm, Nat.add_left_comm]
 
 @[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i + 1) := rfl
 

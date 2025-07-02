@@ -32,7 +32,7 @@ def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 
 theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, x ≠ a / b := by
-  simp only [Irrational, Rat.forall, cast_mk, not_exists, Set.mem_range, cast_intCast, cast_div,
+  simp only [Irrational, Rat.forall, not_exists, Set.mem_range, cast_intCast, cast_div,
     eq_comm]
 
 /-- A transcendental real number is irrational. -/
@@ -73,7 +73,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
     simp [hxr, multiplicity_of_one_right (mt isUnit_iff_dvd_one.1
-      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one)), Nat.zero_mod] at hv
+      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one))] at hv
   refine irrational_nrt_of_notint_nrt _ _ hxr ?_ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr

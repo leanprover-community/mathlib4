@@ -95,7 +95,7 @@ instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : A
   algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
   smul := (· • ·)
   smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
-  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes]
+  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
@@ -350,7 +350,7 @@ def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
     simp only [AddSubgroup.coe_add, smul_add, AddMemClass.mk_add_mk]
   map_smul' a b := by
     ext
-    simp only [neg_smul, skewAdjoint.val_smul, AddSubgroup.coe_mk, RingHom.id_apply,
+    simp only [neg_smul, skewAdjoint.val_smul, RingHom.id_apply,
       selfAdjoint.val_smul, smul_neg, neg_inj]
     rw [smul_comm]
 
@@ -496,7 +496,7 @@ lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
   _         = z.re                       := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
-    simp [conj_ofReal, ← two_mul]
+    simp
 
 lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalNonAssocRing A] [StarRing A]
     [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :

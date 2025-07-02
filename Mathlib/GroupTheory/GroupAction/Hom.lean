@@ -292,7 +292,7 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
   map_smul' m x :=
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
-      _ = g (f (m • g x)) := by simp only [map_smul, id_eq]
+      _ = g (f (m • g x)) := by simp only [map_smul]
       _ = m • g x := by rw [h₁]
 
 
@@ -331,7 +331,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
       = MulActionHom.id M := by
   rw [MulActionHom.ext_iff]
   intro x
-  simp only [comp_apply, inverse_apply, id_apply]
+  simp only [comp_apply, id_apply]
   exact h₁ x
 
 @[to_additive]
@@ -341,7 +341,7 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
   rw [MulActionHom.ext_iff]
   intro x
-  simp only [comp_apply, inverse_apply, id_apply]
+  simp only [comp_apply, id_apply]
   exact h₂ x
 
 /-- If actions of `M` and `N` on `α` commute,

@@ -422,7 +422,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
   left_inv i := iterate_succ_toZ i bot_le
   right_inv n := by
     ext1
-    simp only [Subtype.coe_mk]
+    simp only
     refine le_antisymm ?_ ?_
     · rw [Int.toNat_le]
       exact toZ_iterate_succ_le _

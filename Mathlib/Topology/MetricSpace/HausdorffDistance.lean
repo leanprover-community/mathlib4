@@ -225,7 +225,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
       ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one a_lt_one
     rcases ((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
-    simp only [mem_iUnion, mem_Ici, mem_preimage]
+    simp only [mem_iUnion]
     exact ⟨n, hn.le⟩
   show Monotone F
   intro m n hmn x hx

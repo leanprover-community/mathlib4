@@ -618,8 +618,7 @@ theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤))
 
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
-  simp only [preimage_basicOpen, Hom.appLE, CommRingCat.comp_apply, RingHom.coe_comp,
-    Function.comp_apply]
+  simp only [preimage_basicOpen, Hom.appLE, CommRingCat.comp_apply]
   rw [basicOpen_res]
 
 @[simp]
@@ -747,7 +746,7 @@ end Scheme
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Spec R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x
-  simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top, Opens.coe_top]
+  simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top]
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
   rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x).hom,
     StructureSheaf.stalkToFiberRingHom_toStalk]

@@ -114,8 +114,8 @@ protected lemma sup_apply [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [A
 instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
     SemilatticeSup (PseudoMetric X R) where
   sup := max
-  le_sup_left := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
-  le_sup_right := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
+  le_sup_left := by simp [← PseudoMetric.coe_le_coe]
+  le_sup_right := by simp [← PseudoMetric.coe_le_coe]
   sup_le _ _ _ := fun h h' _ _ ↦ sup_le (h _ _) (h' _ _)
 
 section OrderBot
@@ -172,7 +172,7 @@ instance IsUltra.sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRig
   intro x y z
   simp only [PseudoMetric.sup_apply]
   calc d x z ⊔ d' x z ≤ d x y ⊔ d y z ⊔ (d' x y ⊔ d' y z) := sup_le_sup le_sup le_sup
-  _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_assoc, sup_left_comm]
+  _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_left_comm]
 
 lemma IsUltra.finsetSup {Y : Type*} [AddCommMonoid R] [LinearOrder R] [AddLeftStrictMono R]
     [IsOrderedAddMonoid R] {f : Y → PseudoMetric X R} {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :

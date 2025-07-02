@@ -56,7 +56,7 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
   simp only [moment, hp, zero_pow, Ne, not_false_iff, Pi.zero_apply, integral_const,
-    smul_eq_mul, mul_zero, integral_zero]
+    smul_eq_mul, mul_zero]
 
 @[simp]
 lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
@@ -133,7 +133,7 @@ theorem cgf_const' [IsFiniteMeasure μ] (hμ : μ ≠ 0) (c : ℝ) :
   rw [log_mul _ (exp_pos _).ne']
   · rw [log_exp _]
   · rw [Ne, measureReal_eq_zero_iff, Measure.measure_univ_eq_zero]
-    simp only [hμ, measure_ne_top μ Set.univ, or_self_iff, not_false_iff]
+    simp only [hμ, not_false_iff]
 
 @[simp]
 theorem cgf_const [IsProbabilityMeasure μ] (c : ℝ) : cgf (fun _ => c) μ t = t * c := by
@@ -309,7 +309,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -332,7 +332,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
+    simp only [sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
   | insert i s hi_notin_s h_rec =>
     have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -401,7 +401,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
   calc
     μ.real {ω | ε ≤ X ω} = μ.real {ω | exp (t * ε) ≤ exp (t * X ω)} := by
       congr with ω
-      simp only [Set.mem_setOf_eq, exp_le_exp, gt_iff_lt]
+      simp only [Set.mem_setOf_eq, exp_le_exp]
       exact ⟨fun h => mul_le_mul_of_nonneg_left h ht_pos.le,
         fun h => le_of_mul_le_mul_left h ht_pos⟩
     _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by

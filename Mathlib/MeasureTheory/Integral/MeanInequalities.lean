@@ -179,7 +179,7 @@ theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
   have h2p : 1 < 1 / p := by
     rw [one_div, one_lt_inv₀ hp]
     linarith
-  have h2pq : (1 / p)⁻¹ + (1 / q)⁻¹ = 1 := by simp [hp.ne', hq.ne', hpq]
+  have h2pq : (1 / p)⁻¹ + (1 / q)⁻¹ = 1 := by simp [hpq]
   have := ENNReal.lintegral_mul_le_Lp_mul_Lq μ (Real.holderConjugate_iff.mpr ⟨h2p, h2pq⟩)
     (hf.pow_const p) (hg.pow_const q)
   simpa [← ENNReal.rpow_mul, hp.ne', hq.ne'] using this
@@ -271,7 +271,7 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
       dsimp only
       have h_zero_lt_half_rpow : (0 : ℝ≥0∞) < (1 / 2 : ℝ≥0∞) ^ p := by
         rw [← ENNReal.zero_rpow_of_pos hp0_lt]
-        exact ENNReal.rpow_lt_rpow (by simp [zero_lt_one]) hp0_lt
+        exact ENNReal.rpow_lt_rpow (by simp) hp0_lt
       have h_rw : (1 / 2 : ℝ≥0∞) ^ p * (2 : ℝ≥0∞) ^ (p - 1) = 1 / 2 := by
         rw [sub_eq_add_neg, ENNReal.rpow_add _ _ two_ne_zero ENNReal.coe_ne_top, ← mul_assoc, ←
           ENNReal.mul_rpow_of_nonneg _ _ hp0, one_div,
@@ -304,7 +304,7 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
   let p2 := q / p
   let q2 := p2.conjExponent
   have hp2q2 : p2.HolderConjugate q2 :=
-    .conjExponent (by simp [p2, q2, _root_.lt_div_iff₀, hpq, hp0_lt])
+    .conjExponent (by simp [p2, _root_.lt_div_iff₀, hpq, hp0_lt])
   calc
     (∫⁻ a : α, (f * g) a ^ p ∂μ) ^ (1 / p) = (∫⁻ a : α, f a ^ p * g a ^ p ∂μ) ^ (1 / p) := by
       simp_rw [Pi.mul_apply, ENNReal.mul_rpow_of_nonneg _ _ hp0]
@@ -386,7 +386,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
       (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p) := by
   have hp_not_nonpos : ¬p ≤ 0 := by simp [hpq.pos]
   have h0_rpow : (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≠ 0 := by
-    simp [h_add_zero, h_add_top, hpq.nonneg, hp_not_nonpos, -Pi.add_apply]
+    simp [h_add_zero, h_add_top, -Pi.add_apply]
   suffices h :
     1 ≤
       (∫⁻ a : α, (f + g) a ^ p ∂μ) ^ (-(1 / p)) *

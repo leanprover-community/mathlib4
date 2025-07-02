@@ -336,7 +336,7 @@ lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
   have h : f = (spectrum R a).restrict (Function.extend Subtype.val f g) := by
-    ext; simp [Subtype.val_injective.extend_apply]
+    ext; simp
   have hg : ContinuousOn (Function.extend Subtype.val f g) (spectrum R a) :=
     continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
   rw [cfc_apply ..]

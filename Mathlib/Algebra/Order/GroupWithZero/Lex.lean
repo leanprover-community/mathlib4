@@ -130,7 +130,7 @@ nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
     cases y
     · simp
     · simp
-    · simp [WithZero.zero_lt_coe]
+    · simp
     · simpa using Prod.Lex.monotone_fst _ _
 
 @[simp]

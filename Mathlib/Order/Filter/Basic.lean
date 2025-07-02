@@ -329,7 +329,7 @@ theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ =
 @[simp] theorem join_principal_eq_sSup {s : Set (Filter α)} : join (𝓟 s) = sSup s := rfl
 
 @[simp] theorem principal_univ : 𝓟 (univ : Set α) = ⊤ :=
-  top_unique <| by simp only [le_principal_iff, mem_top, eq_self_iff_true]
+  top_unique <| by simp only [le_principal_iff, mem_top]
 
 @[simp]
 theorem principal_empty : 𝓟 (∅ : Set α) = ⊥ :=
@@ -467,7 +467,7 @@ instance : DistribLattice (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     le_sup_inf := by
       intro x y z s
-      simp only [and_assoc, mem_inf_iff, mem_sup, exists_prop, exists_imp, and_imp]
+      simp only [and_assoc, mem_inf_iff, mem_sup, exists_imp, and_imp]
       rintro hs t₁ ht₁ t₂ ht₂ rfl
       exact
         ⟨t₁, x.sets_of_superset hs inter_subset_left, ht₁, t₂,

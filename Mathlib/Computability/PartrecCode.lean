@@ -165,7 +165,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     conv_rhs => rw [← Nat.bit_decomp n, ← Nat.bit_decomp n.div2]
     simp only [ofNatCode.eq_5]
     cases n.bodd <;> cases n.div2.bodd <;>
-      simp [m, encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
+      simp [m, encodeCode, IH, IH1, IH2, Nat.bit_val]
 
 instance instDenumerable : Denumerable Code :=
   mk'
@@ -329,7 +329,7 @@ theorem primrec_recOn' {α σ}
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁, m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
+  simp [G₁, m, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -444,7 +444,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁, m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
+  simp [G₁, m, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -944,7 +944,7 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
       rcases k with - | k'
       · simp [evaln]
       let k := k' + 1
-      simp only [show k'.succ = k from rfl]
+      simp only
       simp? [Nat.lt_succ_iff] at nk says simp only [List.mem_range, Nat.lt_succ_iff] at nk
       have hg :
         ∀ {k' c' n},
@@ -970,7 +970,7 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases n.unpair.2
         · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq]
+        simp only
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
         cases evaln k' _ _
         · rfl
@@ -979,8 +979,8 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         rcases evaln k cf n with - | x
         · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq, Option.bind_some]
-        cases x <;> simp [Nat.succ_ne_zero]
+        simp only [Option.bind_some]
+        cases x <;> simp
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
   (Primrec.option_bind
     (Primrec.list_getElem?.comp (this.comp (_root_.Primrec.const ())

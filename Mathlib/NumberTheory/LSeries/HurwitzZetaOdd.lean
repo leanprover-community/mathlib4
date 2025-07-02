@@ -240,7 +240,7 @@ lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     (sinKernel ↑a t) := by
   rw [← hasSum_ofReal]
   have := (hasSum_int_sinKernel a ht).nat_add_neg
-  simp only [Int.cast_zero, sq (0 : ℂ), zero_mul, mul_zero, add_zero] at this
+  simp only [Int.cast_zero, zero_mul, mul_zero, add_zero] at this
   refine this.congr_fun fun n ↦ ?_
   simp_rw [Int.cast_neg, neg_sq, mul_neg, ofReal_mul, Int.cast_natCast, ofReal_natCast,
       ofReal_ofNat, ← add_mul, ofReal_sin, Complex.sin]

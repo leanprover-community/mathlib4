@@ -234,18 +234,18 @@ section Ord
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl, reduceCtorEq]
+  split_ifs <;> simp only [*, lt_irrefl]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
+  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt]
   case _ h₁ h₂ =>
     have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
     rwa [true_iff]
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> try simp only [reduceCtorEq]
+  split_ifs <;> try simp only
   case _ h   => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => rwa [true_iff]
   case _ _ h => rwa [false_iff]

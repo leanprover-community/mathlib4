@@ -132,7 +132,7 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   obtain rfl | hf := f.eq_or_neBot
-  · simp [limsup, limsSup, Real.sInf_of_not_bddBelow]
+  · simp [limsup, limsSup]
   by_cases hf : f.IsBoundedUnder (· ≤ ·) u; swap
   · simp [*]
   have : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault

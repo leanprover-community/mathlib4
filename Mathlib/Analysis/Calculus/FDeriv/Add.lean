@@ -149,7 +149,7 @@ section Add
 nonrec theorem HasStrictFDerivAt.fun_add (hf : HasStrictFDerivAt f f' x)
     (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
    .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
-    simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
+    simp only [map_sub, add_apply]
     abel
 
 @[fun_prop]
@@ -160,7 +160,7 @@ nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
 theorem HasFDerivAtFilter.fun_add (hf : HasFDerivAtFilter f f' x L)
     (hg : HasFDerivAtFilter g g' x L) : HasFDerivAtFilter (fun y => f y + g y) (f' + g') x L :=
   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun _ => by
-    simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
+    simp only [map_sub, add_apply]
     abel
 
 theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' x L)
@@ -992,7 +992,7 @@ open scoped Pointwise Topology
 theorem hasFDerivWithinAt_comp_add_left (a : E) :
     HasFDerivWithinAt (fun x ↦ f (a + x)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (a + x) := by
   have : map (a + ·) (𝓝[s] x) = 𝓝[a +ᵥ s] (a + x) := by
-    simp only [add_comm x a, nhdsWithin, Filter.map_inf (add_right_injective a)]
+    simp only [nhdsWithin, Filter.map_inf (add_right_injective a)]
     simp [← Set.image_vadd]
   simp [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS, ← this, Function.comp_def]
 

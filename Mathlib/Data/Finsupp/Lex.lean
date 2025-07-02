@@ -114,7 +114,7 @@ theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
 
 theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
     a ≤ b ↔ ofLex a default ≤ ofLex b default := by
-  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  simp only [le_iff_eq_or_lt]
   apply or_congr _ lex_lt_iff_of_unique
   conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
   simp only [Finsupp.ext_iff, Unique.forall_iff]

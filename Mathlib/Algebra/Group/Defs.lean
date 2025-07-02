@@ -335,7 +335,7 @@ include hn ha
 @[to_additive] theorem npowRec_add : npowRec (m + n) a = npowRec m a * npowRec n a := by
   obtain _ | n := n; · exact (hn rfl).elim
   induction n with
-  | zero => simp only [Nat.zero_add, npowRec, ha]
+  | zero => simp only [npowRec, ha]
   | succ n ih => rw [← Nat.add_assoc, npowRec, ih n.succ_ne_zero]; simp only [npowRec, mul_assoc]
 
 @[to_additive] theorem npowRec_succ : npowRec (n + 1) a = a * npowRec n a := by
@@ -472,7 +472,7 @@ theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k �
   induction k using Nat.strongRecOn with
   | ind k' ih =>
     match k' with
-    | 1 => simp [npowRec', mul_assoc]
+    | 1 => simp [npowRec']
     | k + 2 => simp [npowRec', ← mul_assoc, ih]
 
 @[to_additive]
@@ -498,7 +498,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | z₁ => simp [npowRec']
   | f b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
-    cases b <;> simp only [Nat.bit, cond_false, cond_true, ← Nat.two_mul, npowRec'_two_mul]
+    cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
       ← npowRec'_mul_comm (by omega), mul_assoc]
 
@@ -594,7 +594,7 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
     (a * b) ^ n * a = a * (b * a) ^ n := by
   induction n with
   | zero => simp
-  | succ n ih => simp [pow_succ', ← ih, Nat.mul_add, mul_assoc]
+  | succ n ih => simp [pow_succ', ← ih, mul_assoc]
 
 @[to_additive]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']

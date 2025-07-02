@@ -226,7 +226,7 @@ lemma Hom.comp_id (f : Hom P P') : f.comp (Hom.id P) = f := by ext; simp
 
 @[simp]
 lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
-  ext; simp [Hom.id, aeval_X_left]
+  ext; simp [Hom.id]
 
 /-- A map between extensions induce a map between kernels. -/
 @[simps]

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
+Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.Tactic.GRewrite
@@ -294,3 +294,10 @@ example (h : p → q) (h' : q → r) : p → r := by
   exact h'
 
 end apply
+
+-- previously, `grw` failed to rewrite in expressions with syntheticOpaque metavariables
+example : ∃ n, n < 2 := by
+  refine ⟨?_, ?_⟩
+  on_goal 2 => grw [← one_lt_two]
+  exact 0
+  refine zero_lt_one

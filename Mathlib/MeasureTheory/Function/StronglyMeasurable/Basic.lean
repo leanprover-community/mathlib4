@@ -791,7 +791,7 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
   ext x
   by_cases hxs : x ∈ s
   · lift x to s using hxs
-    simp [Subtype.coe_injective.extend_apply]
+    simp
   · lift x to t using (h trivial).resolve_left hxs
     rw [extend_apply', Subtype.coe_injective.extend_apply]
     exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.2

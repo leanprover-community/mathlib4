@@ -205,7 +205,7 @@ variable {R M N P}
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
   have h := LinearMap.ext_iff.1 (trace_prodMap R M N) (f, g)
-  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id,
+  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id,
     prodMapLinear_apply] at h
   exact h
 
@@ -219,7 +219,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
         (show Surjective (dualTensorHom R N N) from (dualTensorHomEquiv R N N).surjective)).1
   ext f m g n
-  simp only [AlgebraTensorModule.curry_apply, toFun_eq_coe, TensorProduct.curry_apply,
+  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
     trace_eq_contract_apply, contractLeft_apply, lsmul_apply, Algebra.id.smul_eq_mul,
     map_dualTensorHom, dualDistrib_apply]

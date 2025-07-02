@@ -332,6 +332,9 @@ lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x :
   rw [mkD_of_continuousOn hf]
   rfl
 
+lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
+  mkD_of_continuous f.continuous
+
 end mkD
 
 section Gluing

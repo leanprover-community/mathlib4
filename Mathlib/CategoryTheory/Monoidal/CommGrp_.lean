@@ -209,8 +209,8 @@ theorem comp_mapCommGrp_mul (A : CommGrp_ C) :
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
-  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp)
+    (by simp))
 
 /-- The composition functor is also the composition on commutative group objects. -/
 @[simps!]

@@ -214,11 +214,11 @@ lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
       ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
   have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
   simp only [comp_obj, CommShift.isoAdd_hom_app,
-    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)), Category.assoc,
-    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp, F.map_comp] at eq
+    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
+    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at eq
   simp only [shiftFunctorComm_eq D a b _ rfl]
   dsimp
-  simp only [Functor.map_comp, shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
+  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
     ← reassoc_of% eq, shiftFunctorComm_eq C a b _ rfl]
   dsimp
   rw [Functor.map_comp]

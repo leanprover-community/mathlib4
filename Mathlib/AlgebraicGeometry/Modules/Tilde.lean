@@ -126,7 +126,7 @@ noncomputable def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     rcases wr (Opens.infLERight _ _ y) with ⟨nmr, wr⟩
     fconstructor
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul, Opens.apply_def] at wa wr ⊢
+    · simp only [Pi.smul_apply, LinearMapClass.map_smul, Opens.apply_def] at wa wr ⊢
       rw [mul_comm, ← Algebra.smul_def] at wr
       rw [sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc, mul_comm sr, mul_smul,
         wr, mul_comm rr, Algebra.smul_def, ← map_mul]
@@ -248,7 +248,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
   obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
   refine ⟨y.1.asIdeal.primeCompl.mul_mem y.2.2.2 h1, ?_⟩
-  simp only [Opens.coe_inf, Opens.apply_def, isLocallyFraction_pred, mkLinearMap_apply,
+  simp only [Opens.apply_def, isLocallyFraction_pred, mkLinearMap_apply,
     smul_eq_iff_of_mem (S := y.1.1.primeCompl) (hr := h1), mk_smul_mk, one_smul, mul_one] at h2 ⊢
   simpa only [h2, mk_smul_mk, one_smul, smul'_mk, mk_eq] using ⟨1, by simp only [one_smul]; rfl⟩
 

@@ -355,6 +355,9 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : Subsemirin
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
@@ -640,10 +643,10 @@ theorem prod_mono_left (t : Subsemiring S) : Monotone fun s : Subsemiring R => s
   fun _ _ hs => prod_mono hs (le_refl t)
 
 theorem prod_top (s : Subsemiring R) : s.prod (⊤ : Subsemiring S) = s.comap (RingHom.fst R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x => by simp [mem_prod]
 
 theorem top_prod (s : Subsemiring S) : (⊤ : Subsemiring R).prod s = s.comap (RingHom.snd R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x => by simp [mem_prod]
 
 @[simp]
 theorem top_prod_top : (⊤ : Subsemiring R).prod (⊤ : Subsemiring S) = ⊤ :=
@@ -672,8 +675,7 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
 theorem mem_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
-    exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=

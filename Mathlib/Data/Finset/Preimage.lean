@@ -161,5 +161,5 @@ lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : 
     ⇑((e.restrictPreimageFinset s).piCongrLeft (fun b : s ↦ (π b))) ∘
     (s.preimage e e.injective.injOn).restrict := by
   ext x b
-  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast, cast_inj,
+  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast,
     Equiv.restrictPreimageFinset_symm_apply_coe]

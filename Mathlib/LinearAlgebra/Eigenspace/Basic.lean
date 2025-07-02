@@ -108,7 +108,7 @@ lemma genEigenspace_eq_iSup_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ∞
 lemma genEigenspace_top (f : End R M) (μ : R) :
     f.genEigenspace μ ⊤ = ⨆ k : ℕ, f.genEigenspace μ k := by
   rw [genEigenspace_eq_iSup_genEigenspace_nat, iSup_subtype]
-  simp only [le_top, iSup_pos, OrderHom.coe_mk]
+  simp only [le_top, iSup_pos]
 
 lemma genEigenspace_one {f : End R M} {μ : R} :
     f.genEigenspace μ 1 = LinearMap.ker (f - μ • 1) := by
@@ -636,7 +636,7 @@ lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
     apply isNilpotent_restrict_genEigenspace_nat
     apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
     apply isNilpotent_restrict_genEigenspace_nat
-  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂, sub_smul]
+  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂]
   rw [hf₁₂, IsNilpotent.map_iff (FaithfulSMul.algebraMap_injective R (End R p)),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
@@ -689,7 +689,7 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
   let g := f - μ₂ • 1
   simp_rw [mem_genEigenspace, ← exists_prop] at hy ⊢
   peel hy with l hlk hl
-  simp only [mem_genEigenspace_nat, LinearMap.mem_ker] at hl
+  simp only [LinearMap.mem_ker] at hl
   have hyz : (g ^ l) (y + z) ∈
       (f.genEigenspace μ₁ k) ⊓ s.sup fun μ ↦ f.genEigenspace μ k := by
     refine ⟨f.mapsTo_genEigenspace_of_comm (g := g ^ l) ?_ μ₁ k hx, ?_⟩
@@ -753,7 +753,7 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
     simp_rw [mem_genEigenspace, ← mem_genEigenspace_nat, this,
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
-  simp only [genEigenspace_nat, OrderHom.coe_mk, ← LinearMap.ker_comp]
+  simp only [genEigenspace_nat, ← LinearMap.ker_comp]
   induction l with
   | zero =>
     rw [pow_zero, pow_zero, Module.End.one_eq_id]

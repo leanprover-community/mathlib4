@@ -86,7 +86,7 @@ theorem ae_lineDifferentiableAt
   have : DifferentiableAt ℝ (fun t ↦ s + t) 0 := differentiableAt_id.const_add _
   simp only [LineDifferentiableAt]
   convert h's.comp 0 this with _ t
-  simp only [LineDifferentiableAt, add_assoc, Function.comp_apply, add_smul]
+  simp only [add_assoc, Function.comp_apply, add_smul]
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
@@ -156,7 +156,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         contrapose! hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
         simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,
-          abs_of_nonneg t_pos.le, norm_pos_iff]
+          abs_of_nonneg t_pos.le]
         exact mul_le_of_le_one_left (norm_nonneg v) ht.2
       simp only [B, A, _root_.sub_self, smul_eq_mul, mul_zero, zero_mul, norm_zero]
       exact indicator_nonneg (fun y _hy ↦ by positivity) _
@@ -187,7 +187,7 @@ theorem integral_lineDeriv_mul_eq
     simp only [S1] at A; exact tendsto_nhds_unique A B
   intro t
   suffices S2 : ∫ x, (f (x + t • v) - f x) * g x ∂μ = ∫ x, f x * (g (x + t • (-v)) - g x) ∂μ by
-    simp only [smul_eq_mul, mul_assoc, integral_const_mul, S2, mul_neg, mul_comm (f _)]
+    simp only [smul_eq_mul, mul_assoc, integral_const_mul, S2, mul_comm (f _)]
   have S3 : ∫ x, f (x + t • v) * g x ∂μ = ∫ x, f x * g (x + t • (-v)) ∂μ := by
     rw [← integral_add_right_eq_self _ (t • (-v))]; simp
   simp_rw [_root_.sub_mul, _root_.mul_sub]

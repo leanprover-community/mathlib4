@@ -245,6 +245,7 @@ theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' :
 abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
   limit.lift _ (Fan.mk P p)
 
+@[reassoc]
 theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
@@ -259,6 +260,7 @@ def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
 abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ∐ f ⟶ P :=
   colimit.desc _ (Cofan.mk P p)
 
+@[reassoc]
 theorem Sigma.ι_desc {β : Type w} {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) (b : β) :
     Sigma.ι f b ≫ Sigma.desc p = p b := by
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
@@ -621,7 +623,7 @@ theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext j
-  simp only [Discrete.functor_obj, Category.assoc, piComparison_comp_π, ← G.map_comp,
+  simp only [Category.assoc, piComparison_comp_π, ← G.map_comp,
     limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
@@ -640,7 +642,7 @@ theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (
     (g : ∀ j, f j ⟶ P) :
     sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
   ext j
-  simp only [Discrete.functor_obj, ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
+  simp only [ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
     Cofan.mk_pt, Cofan.mk_ι_app]
 
 end Comparison
@@ -838,5 +840,31 @@ theorem Sigma.ι_reindex_inv (b : β) :
 end
 
 end Reindex
+
+section Fubini
+
+variable {ι ι' : Type*} {X : ι → ι' → C}
+
+/-- A product over products is a product indexed by a product. -/
+def Fan.IsLimit.prod (c : ∀ i : ι, Fan (fun j : ι' ↦ X i j)) (hc : ∀ i : ι, IsLimit (c i))
+    (c' : Fan (fun i : ι ↦ (c i).pt)) (hc' : IsLimit c') :
+    (IsLimit <| Fan.mk c'.pt fun p : ι × ι' ↦ c'.proj _ ≫ (c p.1).proj p.2) := by
+  refine mkFanLimit _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
+  · exact Fan.IsLimit.desc hc' fun i ↦ Fan.IsLimit.desc (hc i) fun j ↦ t.proj (i, j)
+  · simp
+  · refine Fan.IsLimit.hom_ext hc' _ _ fun i ↦ ?_
+    exact Fan.IsLimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
+
+/-- A coproduct over coproducts is a coproduct indexed by a product. -/
+def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : ∀ i : ι, IsColimit (c i))
+    (c' : Cofan (fun i : ι ↦ (c i).pt)) (hc' : IsColimit c') :
+    (IsColimit <| Cofan.mk c'.pt fun p : ι × ι' ↦ (c p.1).inj p.2 ≫ c'.inj _) := by
+  refine mkCofanColimit _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
+  · exact Cofan.IsColimit.desc hc' fun i ↦ Cofan.IsColimit.desc (hc i) fun j ↦ t.inj (i, j)
+  · simp
+  · refine Cofan.IsColimit.hom_ext hc' _ _ fun i ↦ ?_
+    exact Cofan.IsColimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
+
+end Fubini
 
 end CategoryTheory.Limits

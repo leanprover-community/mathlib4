@@ -103,7 +103,7 @@ theorem noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
 theorem noncommCoprod_unique (f : M × N →* P) :
     (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (fun _ _ => (commute_inl_inr _ _).map f)
       = f :=
-  ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
+  ext fun x => by simp [inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :

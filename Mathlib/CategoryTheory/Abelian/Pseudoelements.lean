@@ -345,7 +345,7 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 end
 
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
-  fun h => by simp [over_coe_def, pseudoApply_mk', Over.coe_hom, h]
+  fun h => by simp [over_coe_def, pseudoApply_mk', h]
 
 section
 

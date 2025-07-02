@@ -142,7 +142,8 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
     let π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst _ _
     refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨?_, ?_⟩⟩
     · constructor
-      exact ⟨hα, Z', π', ⟨by simp only, FinitaryPreExtensive.sigma_desc_iso (fun x => π x) f h_iso⟩⟩
+      exact ⟨hα, Z', π', ⟨by simp only,
+        FinitaryPreExtensive.isIso_sigmaDesc_fst (fun x => π x) f h_iso⟩⟩
     · intro W g hg
       rcases hg with ⟨a⟩
       refine ⟨Z a, pullback.snd _ _, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩

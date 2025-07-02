@@ -50,7 +50,7 @@ lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
 
 @[to_additive (attr := simp)]
 lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by
-  simp [ENat.card, ← toENat_cardinalMk]
+  simp [← toENat_cardinalMk]
 
 @[to_additive (attr := simp)]
 lemma ncard_inv (s : Set G) : s⁻¹.ncard = s.ncard := by simp [ncard]
@@ -85,7 +85,7 @@ lemma natCard_smul_set (a : G) (s : Set α) : Nat.card ↥(a • s) = Nat.card s
 
 @[to_additive (attr := simp)]
 lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by
-  simp [ENat.card, ← toENat_cardinalMk]
+  simp [← toENat_cardinalMk]
 
 @[to_additive (attr := simp)]
 lemma ncard_smul_set (a : G) (s : Set α) : (a • s).ncard = s.ncard := by simp [ncard]

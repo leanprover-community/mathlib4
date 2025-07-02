@@ -170,8 +170,8 @@ lemma Quot.desc_quotQuotUliftAddEquiv [DecidableEq J] (c : Cocone F) :
     AddEquiv.ulift.symm.toAddMonoidHom.comp (Quot.desc F c) := by
   refine Quot.addMonoidHom_ext _ (fun j a ↦ ?_)
   dsimp
-  simp only [quotToQuotUlift_ι, Functor.comp_obj, uliftFunctor_obj, ι_desc,
-    Functor.const_obj_obj, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply, ι_desc]
+  simp only [quotToQuotUlift_ι, Functor.comp_obj, uliftFunctor_obj, ι_desc, Functor.const_obj_obj,
+    ι_desc]
   erw [Quot.ι_desc]
   rfl
 

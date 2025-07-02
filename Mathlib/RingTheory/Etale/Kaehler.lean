@@ -159,7 +159,7 @@ def tensorCotangentInvFun
       simp only [LinearEquiv.map_add, Submodule.coe_add, add_smul, zero_add, *]
     | tmul a b =>
       induction y with
-      | zero => simp only [LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
+      | zero => simp only [LinearMap.map_zero, smul_zero]
       | add x y hx hy => simp only [LinearMap.map_add, smul_add, hx, hy, zero_add]
       | tmul c d =>
         simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
@@ -203,7 +203,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
         obtain ⟨b, rfl⟩ := Cotangent.mk_surjective b
         obtain ⟨a, rfl⟩ := Q.algebraMap_surjective a
         simp only [LinearMap.liftBaseChange_tmul, Cotangent.map_mk, Hom.toAlgHom_apply,
-          algebraMap_smul, map_smul]
+          algebraMap_smul]
         refine (tensorCotangentInvFun_smul_mk f halg H a b).trans ?_
         simp [algebraMap_eq_smul_one, TensorProduct.smul_tmul']
     right_inv x := by
@@ -333,7 +333,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
   simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
     Generators.toExtension_commRing, Generators.toExtension_algebra₂,
-    AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
+    Extension.tensorH1Cotangent,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
   letI P : Extension R S := (Generators.self R S).toExtension

@@ -29,8 +29,8 @@ functorial way, inducing a functor `Dᵒᵖ ⥤ Cat`. -/
 def functor (T : C ⥤ D) : Dᵒᵖ ⥤ Cat where
   obj d := .of <| StructuredArrow d.unop T
   map f := map f.unop
-  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
-  map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp)
+  map_comp f g := Functor.ext (fun _ => by simp)
 
 end StructuredArrow
 

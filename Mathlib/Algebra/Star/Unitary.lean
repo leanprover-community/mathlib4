@@ -233,7 +233,7 @@ variable [Ring R] [StarRing R]
 
 instance : Neg (unitary R) where
   neg U :=
-    ⟨-U, by simp [mem_iff, star_neg, neg_mul_neg]⟩
+    ⟨-U, by simp [mem_iff, star_neg]⟩
 
 @[norm_cast]
 theorem coe_neg (U : unitary R) : ↑(-U) = (-U : R) :=
