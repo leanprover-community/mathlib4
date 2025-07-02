@@ -81,11 +81,63 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
         norm_cast at h ⊢
         exact mul_le_mul_right' h x
 
-open MonoidWithZeroHom
-
 variable {A B F : Type*} [FunLike F A B] (f : F)
-variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
-variable [Preorder A] [LinearOrder B]
+variable [LinearOrderedCommGroupWithZero A] [LinearOrderedCommGroupWithZero B]
+variable [MonoidWithZeroHomClass F A B] {f}
+-- variable [Preorder A] [LinearOrder B]
+
+open WithZero
+
+section Units
+
+-- section test
+--
+-- variable (G : Type*) [Group G] [LinearOrder G]
+--
+-- #synth LE (WithBot G)
+--
+-- example (a b : Aˣ) : (a : (WithZero Aˣ)) ≤ (b : (WithZero Aˣ))
+--     ↔ (some a : Option Aˣ) ≤ (some b : Option Aˣ) := by
+--   simp only [coe_le_coe, Option.some_le_some]
+--
+-- example : (0 : WithZero Aˣ) = (none : Option Aˣ) := rfl
+--
+-- end test
+
+@[simps!]
+def withZeroUnits_OrderIso [DecidablePred (fun a : A ↦ a = 0)] :
+    WithZero Aˣ ≃o A where
+  __ := withZeroUnitsEquiv
+  map_rel_iff' /- {⟨u | u⟩ ⟨v | v⟩} -/ := by
+      intro a b
+      simp [recZeroCoe]
+      split
+      · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+        · exact WithZero.zero_le b
+        · rcases b with a | a
+          · rfl
+          · simp
+      · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+        · rcases b with u | u
+          · simp at h
+          · simp only [Units.val_le_val] at h
+            rw [← WithZero.coe_le_coe] at h
+            convert h
+        · rcases b with u | u
+          · simp
+            replace h := LE.le.not_gt h
+            apply h
+            exact compareOfLessAndEq_eq_lt.mp rfl --surely wrong
+          · simp
+            rw [← WithZero.coe_le_coe]
+            exact h
+
+
+end Units
+
+section MonoidWithZeroHom
+
+open MonoidWithZeroHom
 
 def valueGroup_MulWithZeroEmbedding : (valueGroup₀ f) →*₀ B :=
   (withZeroUnitsHom).comp (WithZero.map' (valueGroup f).subtype)
@@ -94,13 +146,14 @@ def valueGroup_OrderEmbedding : WithZero (valueGroup f) ↪o B where
   __ := valueGroup_MulWithZeroEmbedding
   inj' := by
     apply Function.Injective.comp (withZeroUnitsHom_inj)
-    rw [WithZero.map'_injective_iff]
-    exact Subgroup.subtype_injective ..
+    simp [map'_injective_iff]
   map_rel_iff' := by
     intro a b
     simp [valueGroup_MulWithZeroEmbedding]
-    have one :  ((WithZero.map' (valueGroup f).subtype) a) ≤
-      ((WithZero.map' (valueGroup f).subtype) b) ↔ a ≤ b := by sorry
+    have one :  ((map' (valueGroup f).subtype) a) ≤
+      ((map' (valueGroup f).subtype) b) ↔ a ≤ b := by sorry
     rw [← one]
     have two (x y : WithZero Bˣ) : withZeroUnitsHom x ≤ withZeroUnitsHom y ↔ x ≤ y := sorry
     apply two
+
+end MonoidWithZeroHom
