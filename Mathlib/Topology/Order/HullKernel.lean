@@ -216,7 +216,7 @@ lemma hull_kernel_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α
   obtain ⟨a, ha⟩ := (isClosed_iff hT).mp h
   rw [ha, kernel_hull hG]
 
-lemma lowerTopology_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq α]
+lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) (S : Set T) :
     (TopologicalSpace.Closeds.gc (α := T)).closureOperator S = hull T (kernel S) := by
   simp only [GaloisConnection.closureOperator_apply, Closeds.coe_closure, closure, le_antisymm_iff]
