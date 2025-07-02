@@ -58,6 +58,8 @@ end Quiver
 
 namespace CategoryTheory
 
+open Functor
+
 variable [Category.{v₁} C]
 
 /-- The opposite category. -/
