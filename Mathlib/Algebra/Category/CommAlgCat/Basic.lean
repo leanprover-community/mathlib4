@@ -181,9 +181,11 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
     CommAlgCat.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
   counitIso := .refl _
 
+-- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasColimits (CommAlgCat.{u} R) :=
   Adjunction.has_colimits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
 
+-- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasLimits (CommAlgCat.{u} R) :=
   Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
 
