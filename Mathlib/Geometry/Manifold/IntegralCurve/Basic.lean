@@ -183,6 +183,8 @@ lemma isMIntegralCurveOn_iff_isMIntegralCurveAt (hs : IsOpen s) :
 lemma IsMIntegralCurveOn.continuousWithinAt (hγ : IsMIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
     ContinuousWithinAt γ s t₀ := (hγ t₀ ht).1
 
+@[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.continuousAt :=
+  IsMIntegralCurveOn.continuousWithinAt
 @[deprecated (since := "2025-06-29")] alias IsIntegralCurveOn.continuousWithinAt :=
   IsMIntegralCurveOn.continuousWithinAt
 
