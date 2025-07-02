@@ -433,7 +433,7 @@ a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
 def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
     ComposableArrows C m ⥤ ComposableArrows C n where
   obj F := F.whiskerLeft Φ
-  map f := CategoryTheory.whiskerLeft Φ f
+  map f := Functor.whiskerLeft Φ f
 
 /-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.succ`. -/
 @[simps]
