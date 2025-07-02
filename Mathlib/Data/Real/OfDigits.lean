@@ -86,7 +86,7 @@ theorem ofDigits_nonneg {b : ℕ} {digits : ℕ → Fin b} : 0 ≤ ofDigits digi
   intro i
   exact ofDigitsTerm_nonneg
 
-theorem ofDigits_le_one {b : ℕ} {digits : ℕ → Fin b}  :
+theorem ofDigits_le_one {b : ℕ} {digits : ℕ → Fin b} :
     ofDigits digits ≤ 1 := by
   have hb : 0 < b := by
     by_contra! hb
@@ -109,7 +109,7 @@ theorem ofDigits_le_one {b : ℕ} {digits : ℕ → Fin b}  :
     apply Summable.mul_left
     apply summable_geometric_of_lt_one (by simp) (inv_lt_one_of_one_lt₀ hb')
   convert Summable.tsum_mono (ofDigitsTerm_Summable) hg_summable _
-  · simp [g, tsum_mul_left, ← inv_pow]
+  · simp [g, tsum_mul_left, -inv_pow]
     rw [tsum_geometric_of_lt_one hb_inv_nonneg hb_inv_lt_one, mul_inv_cancel₀]
     linarith
   · intro i
@@ -177,7 +177,7 @@ lemma ofDigits_toDigits_partial_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < 
     move_mul [← ((b : ℝ)^n)⁻¹]
     rw [inv_mul_cancel₀ (by positivity), one_mul]
     norm_cast
-    rw [← Nat.mul_floor_div_eq_floor (y := y) (show 0 < b by omega)]
+    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by omega)]
     conv => rhs; rw [← Nat.mod_add_div ⌊(b : ℝ) * y⌋₊ b]
 
 lemma ofDigits_toDigits_partial_sum_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)

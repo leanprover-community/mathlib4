@@ -412,14 +412,6 @@ theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊n * a⌋
 theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊a * n⌋₊ / n = ⌊a⌋₊ := by
   rw [mul_comm, cast_mul_floor_div_cancel hn]
 
-theorem mul_floor_div_eq_floor {y : K} {b : ℕ} (hb : 0 < b) :
-    ⌊b * y⌋₊ / b = ⌊y⌋₊ := by
-  convert (floor_div_natCast (y * b) b).symm using 3
-  · rw [mul_comm]
-  · rw [mul_div_cancel_right₀]
-    norm_cast
-    exact Nat.ne_zero_of_lt hb
-
 @[deprecated (since := "2025-04-01")] alias floor_div_nat := floor_div_natCast
 
 theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
