@@ -170,16 +170,14 @@ theorem mem_range_derivFamily_iff [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {o}
   simp [IsFixedPt]
 
 @[deprecated mem_range_derivFamily_iff (since := "2025-07-01")]
+theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
+    (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily f o = a := by
+  simpa [(H _).le_iff_eq] using (mem_range_derivFamily_iff H).symm
+
+@[deprecated mem_range_derivFamily_iff (since := "2025-07-01")]
 theorem fp_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a = a) ↔ ∃ o, derivFamily f o = a := by
   simpa using (mem_range_derivFamily_iff H).symm
-
-set_option linter.deprecated false in
-@[deprecated mem_range_derivFamily_iff (since := "2025-07-01")]
-theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
-    (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily f o = a := by
-  convert fp_iff_derivFamily H using 2
-  exact (H _).le_iff_eq
 
 theorem derivFamily_zero [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
     derivFamily f 0 = nfpFamily f 0 := by
@@ -239,9 +237,6 @@ theorem le_nfp (f a) : a ≤ nfp f a :=
 theorem lt_nfp_iff {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
   rw [← iSup_iterate_eq_nfp]
   exact Ordinal.lt_iSup_iff
-
-@[deprecated lt_nfp_iff (since := "2024-02-14")]
-alias lt_nfp := lt_nfp_iff
 
 theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
   rw [← iSup_iterate_eq_nfp]
@@ -308,17 +303,22 @@ theorem deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily f
 theorem deriv_eq_enumOrd : deriv f = enumOrd (Function.fixedPoints f) := by
   rw [deriv, derivFamily, Set.iInter_const]
 
-protected theorem IsNormal.deriv (H : IsNormal f) : IsNormal (deriv f) :=
+theorem isNormal_deriv (H : IsNormal f) : IsNormal (deriv f) :=
   isNormal_derivFamily fun _ ↦ H
 
-@[deprecated (since := "2025-07-01")]
-alias isNormal_deriv := IsNormal.deriv
+protected alias IsNormal.deriv := isNormal_deriv
 
-theorem IsNormal.deriv_strictMono (H : IsNormal f) : StrictMono (deriv f) :=
+theorem deriv_strictMono (H : IsNormal f) : StrictMono (deriv f) :=
   derivFamily_strictMono fun _ ↦ H
 
-@[deprecated (since := "2025-07-01")]
-alias deriv_strictMono := IsNormal.deriv_strictMono
+protected alias IsNormal.deriv_strictMono := deriv_strictMono
+
+@[deprecated "on normal functions, `nfp f = id` implies `f = id`" (since := "2025-07-01")]
+theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) (H : IsNormal f) :
+    deriv f = id := by
+  apply_fun Set.range at h
+  rw [Set.range_id, range_nfp H] at h
+  rw [deriv_eq_enumOrd, h, enumOrd_univ]
 
 theorem IsNormal.deriv_fp (H : IsNormal f) : ∀ o : Ordinal, f (deriv f o) = deriv f o :=
   derivFamily_fp.{u} (i := ()) fun _ ↦ H
@@ -350,16 +350,6 @@ set_option linter.deprecated false in
 theorem deriv_limit (H : IsNormal f) {o} :
     IsLimit o → deriv f o = ⨆ b : Set.Iio o, deriv f b :=
   derivFamily_limit fun _ ↦ H
-
-@[deprecated "on normal functions, `nfp f = id` implies `f = id`" (since := "2025-07-01")]
-theorem deriv_id_of_nfp_id {f : Ordinal → Ordinal} (h : nfp f = id) (H : IsNormal f) :
-    deriv f = id := by
-  apply_fun Set.range at h
-  rw [Set.range_id, range_nfp H] at h
-  rw [deriv_eq_enumOrd, h, enumOrd_univ]
-
-@[deprecated (since := "2025-07-01")]
-alias deriv_eq_id_of_nfp_eq_id := deriv_id_of_nfp_id
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
