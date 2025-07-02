@@ -32,13 +32,9 @@ setup_remotes() {
   # Check if we have a remote for the main mathlib4 repository
   MAIN_REMOTE=$(find_remote "leanprover-community/mathlib4")
   if [ -z "$MAIN_REMOTE" ]; then
-    echo "Error: Could not find remote for leanprover-community/mathlib4"
-    echo "Available remotes:"
-    git remote -v
-    echo ""
-    echo "Please add a remote for the main repository:"
-    echo "  git remote add origin https://github.com/leanprover-community/mathlib4.git"
-    exit 1
+    echo "Adding remote 'upstream' for leanprover-community/mathlib4"
+    git remote add upstream https://github.com/leanprover-community/mathlib4.git
+    MAIN_REMOTE="upstream"
   fi
 
   # Check if we have a remote for the nightly-testing fork
@@ -69,7 +65,7 @@ usage() {
 # Function to find remote for a given repository
 find_remote() {
   local repo_pattern="$1"
-  git remote -v | grep "$repo_pattern" | grep "(fetch)" | head -n1 | cut -f1
+  git remote -v | grep "$repo_pattern\.git" | grep "(fetch)" | head -n1 | cut -f1
 }
 
 # Parse arguments
@@ -240,8 +236,8 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo
   echo "### [auto] post a link to the PR on Zulip"
 
-  zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body=$(printf "> %s\n\nPlease review this PR. At the end of the month this diff will land in 'master'." "$pr_title #$pr_number")
+  zulip_title="nightly#$pr_number adaptations for nightly-$NIGHTLYDATE"
+  zulip_body=$(printf "> %s\n\nPlease review this PR. At the end of the month this diff will land in 'master'." "$pr_title nightly#$pr_number")
 
   echo "Posting the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is the message:"
