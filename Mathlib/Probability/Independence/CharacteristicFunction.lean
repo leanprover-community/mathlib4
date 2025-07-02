@@ -16,7 +16,7 @@ and a finite family of variables. Then we do the same in Banach spaces, with an 
 Lp norm.
 -/
 
-open Complex MeasureTheory Measure
+open Complex MeasureTheory Measure WithLp
 
 open scoped ENNReal RealInnerProductSpace
 
@@ -35,10 +35,9 @@ variable {E F Ω : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [InnerPr
 is the product of the charactersitic functions. This is the version for Hilbert spaces,
 see `IndepFun.charFunDual_eq_mul` for the Banach space version. -/
 lemma IndepFun.charFun_eq_mul (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) (h : IndepFun X Y μ) :
-    charFun (μ.map fun ω ↦ (WithLp.equiv 2 _).symm (X ω, Y ω)) t =
-      charFun (μ.map X) (WithLp.equiv 2 (E × F) t).1 *
-      charFun (μ.map Y) (WithLp.equiv 2 (E × F) t).2 := by
-  change charFun (μ.map (_ ∘ _)) _ = _
+    charFun (μ.map fun ω ↦ toLp 2 (X ω, Y ω)) t =
+      charFun (μ.map X) t.fst * charFun (μ.map Y) t.snd := by
+  change charFun (μ.map ((toLp 2) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable,
     (indepFun_iff_map_prod_eq_prod_map_map mX mY).1 h, charFun_prod]
   all_goals fun_prop
@@ -50,10 +49,9 @@ lemma indepFun_iff_charFun_eq_mul [CompleteSpace E] [CompleteSpace F] [BorelSpac
     [SecondCountableTopology E] [SecondCountableTopology F]
     (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) :
     IndepFun X Y μ ↔ ∀ t,
-      charFun (μ.map fun ω ↦ (WithLp.equiv 2 _).symm (X ω, Y ω)) t =
-      charFun (μ.map X) (WithLp.equiv 2 (E × F) t).1 *
-      charFun (μ.map Y) (WithLp.equiv 2 (E × F) t).2 := by
-  change _ ↔ ∀ _, charFun (μ.map (_ ∘ _)) _ = _
+      charFun (μ.map fun ω ↦ toLp 2 (X ω, Y ω)) t =
+      charFun (μ.map X) t.fst * charFun (μ.map Y) t.snd := by
+  change _ ↔ ∀ _, charFun (μ.map ((toLp 2) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable, charFun_eq_prod_iff,
     indepFun_iff_map_prod_eq_prod_map_map mX mY]
   all_goals fun_prop
@@ -71,9 +69,8 @@ variable {ι Ω : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGr
 is the product of the charactersitic functions. This is the version for Hilbert spaces,
 see `iIndepFun.charFunDual_eq_mul` for the Banach space version. -/
 lemma iIndepFun.charFun_eq_pi (mX : ∀ i, AEMeasurable (X i) μ) (h : iIndepFun X μ) :
-    charFun (μ.map fun ω ↦ (WithLp.equiv 2 _).symm fun i ↦ X i ω) t =
-    ∏ i, charFun (μ.map (X i)) (t i) := by
-  change charFun (μ.map (_ ∘ _)) _ = _
+    charFun (μ.map fun ω ↦ toLp 2 (X · ω)) t = ∏ i, charFun (μ.map (X i)) (t i) := by
+  change charFun (μ.map ((toLp 2) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable, (iIndepFun_iff_map_fun_eq_pi_map mX).1 h, charFun_pi]
   all_goals fun_prop
 
@@ -83,9 +80,8 @@ see `iIndepFun_iff_charFunDual_eq_mul` for the Banach space version. -/
 lemma iIndepFun_iff_charFun_eq_pi [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)]
     [∀ i, SecondCountableTopology (E i)] (mX : ∀ i, AEMeasurable (X i) μ) :
     iIndepFun X μ ↔ ∀ t,
-      charFun (μ.map fun ω ↦ (WithLp.equiv 2 _).symm fun i ↦ X i ω) t =
-      ∏ i, charFun (μ.map (X i)) (t i) := by
-  change _ ↔ ∀ _, charFun (μ.map (_ ∘ _)) _ = _
+      charFun (μ.map fun ω ↦ toLp 2 (X · ω)) t = ∏ i, charFun (μ.map (X i)) (t i) := by
+  change _ ↔ ∀ _, charFun (μ.map ((toLp 2) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable, charFun_eq_pi_iff,
     iIndepFun_iff_map_fun_eq_pi_map mX]
   all_goals fun_prop
@@ -117,14 +113,10 @@ is the product of the charactersitic functions. This is `IndepFun.charFunDual_eq
 See `IndepFun.charFun_eq_mul` for the Hilbert space version. -/
 lemma IndepFun.charFunDual_eq_mul' (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ)
     (h : IndepFun X Y μ) (L : NormedSpace.Dual ℝ (WithLp p (E × F))) :
-    charFunDual (μ.map fun ω ↦ (WithLp.equiv p (E × F)).symm (X ω, Y ω)) L =
-      charFunDual (μ.map X) (L.comp
-        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
-          (.inl ℝ E F))) *
-      charFunDual (μ.map Y) (L.comp
-        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
-          (.inr ℝ E F))) := by
-  change charFunDual (μ.map (_ ∘ _)) _ = _
+    charFunDual (μ.map fun ω ↦ toLp p (X ω, Y ω)) L =
+      charFunDual (μ.map X) (L.comp (WithLp.inl p ℝ E F).toContinuousLinearMap) *
+      charFunDual (μ.map Y) (L.comp (WithLp.inr p ℝ E F).toContinuousLinearMap) := by
+  change charFunDual (μ.map ((toLp p) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable,
     (indepFun_iff_map_prod_eq_prod_map_map mX mY).1 h, charFunDual_prod']
   all_goals fun_prop
@@ -149,14 +141,10 @@ lemma indepFun_iff_charFunDual_eq_mul' [CompleteSpace E] [CompleteSpace F] [Bore
     [BorelSpace F] [SecondCountableTopology E] [SecondCountableTopology F]
     (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) :
     IndepFun X Y μ ↔ ∀ L,
-      charFunDual (μ.map fun ω ↦ (WithLp.equiv p (E × F)).symm (X ω, Y ω)) L =
-      charFunDual (μ.map X) (L.comp
-        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
-          (.inl ℝ E F))) *
-      charFunDual (μ.map Y) (L.comp
-        ((WithLp.prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
-          (.inr ℝ E F))) := by
-  change _ ↔ ∀ _, charFunDual (μ.map (_ ∘ _)) _ = _
+      charFunDual (μ.map fun ω ↦ toLp p (X ω, Y ω)) L =
+      charFunDual (μ.map X) (L.comp (WithLp.inl p ℝ E F).toContinuousLinearMap) *
+      charFunDual (μ.map Y) (L.comp (WithLp.inr p ℝ E F).toContinuousLinearMap) := by
+  change _ ↔ ∀ _, charFunDual (μ.map ((toLp p) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable, charFunDual_eq_prod_iff',
     indepFun_iff_map_prod_eq_prod_map_map mX mY]
   all_goals fun_prop
@@ -183,10 +171,9 @@ is the product of the charactersitic functions. This is `iIndepFun.charFunDual_e
 See `iIndepFun.charFun_eq_mul` for the Hilbert space version. -/
 lemma iIndepFun.charFunDual_eq_pi' (mX : ∀ i, AEMeasurable (X i) μ) (h : iIndepFun X μ)
     (L : NormedSpace.Dual ℝ (PiLp p E)) :
-    charFunDual (μ.map fun ω ↦ (WithLp.equiv p (Π i, E i)).symm fun i ↦ X i ω) L =
-      ∏ i, charFunDual (μ.map (X i)) (L.comp
-        ((PiLp.continuousLinearEquiv p ℝ E).symm.toContinuousLinearMap.comp (.single ℝ E i))) := by
-  change charFunDual (μ.map (_ ∘ _)) _ = _
+    charFunDual (μ.map fun ω ↦ toLp p (X · ω)) L =
+      ∏ i, charFunDual (μ.map (X i)) (L.comp (PiLp.single p ℝ).toContinuousLinearMap) := by
+  change charFunDual (μ.map ((toLp p) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable, (iIndepFun_iff_map_fun_eq_pi_map mX).1 h,
     charFunDual_pi']
   all_goals fun_prop
@@ -208,10 +195,9 @@ See `iIndepFun_iff_charFun_eq_mul` for the Hilbert space version. -/
 lemma iIndepFun_iff_charFunDual_eq_pi' [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)]
     [∀ i, SecondCountableTopology (E i)] (mX : ∀ i, AEMeasurable (X i) μ) :
     iIndepFun X μ ↔ ∀ L,
-      charFunDual (μ.map fun ω ↦ (WithLp.equiv p (Π i, E i)).symm fun i ↦ X i ω) L =
-      ∏ i, charFunDual (μ.map (X i)) (L.comp
-        ((PiLp.continuousLinearEquiv p ℝ E).symm.toContinuousLinearMap.comp (.single ℝ E i))) := by
-  change _ ↔ ∀ _, charFunDual (μ.map (_ ∘ _)) _ = _
+      charFunDual (μ.map fun ω ↦ toLp p (X · ω)) L =
+      ∏ i, charFunDual (μ.map (X i)) (L.comp (PiLp.single p ℝ).toContinuousLinearMap) := by
+  change _ ↔ ∀ _, charFunDual (μ.map ((toLp p) ∘ _)) _ = _
   rw [← AEMeasurable.map_map_of_aemeasurable, charFunDual_eq_pi_iff',
     iIndepFun_iff_map_fun_eq_pi_map mX]
   all_goals fun_prop
