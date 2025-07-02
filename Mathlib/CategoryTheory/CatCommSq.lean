@@ -41,13 +41,13 @@ namespace CatCommSq
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
-    R.map (T.map f) ≫ (iso T L R B).hom.app y = (iso T L R B).hom.app x ≫ B.map (L.map f) :=
-  (iso T L R B).hom.naturality f
+    R.map (T.map f) ≫ (iso T L R B).hom.app y = (iso T L R B).hom.app x ≫ B.map (L.map f) := by
+  simpa using (iso T L R B).hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma iso_inv_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
-    B.map (L.map f) ≫ (iso T L R B).inv.app y = (iso T L R B).inv.app x ≫ R.map (T.map f) :=
-  (iso T L R B).inv.naturality f
+    B.map (L.map f) ≫ (iso T L R B).inv.app y = (iso T L R B).inv.app x ≫ R.map (T.map f) := by
+  simpa using (iso T L R B).inv.naturality f
 
 /-- Horizontal composition of 2-commutative squares -/
 @[simps!]
@@ -89,11 +89,11 @@ lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
   rw [hInv_iso_hom_app]
   simp only [Equivalence.symm_functor]
   rw [hInv_iso_inv_app]
-  dsimp
-  simp only [Functor.comp_obj, assoc, ← Functor.map_comp, Iso.inv_hom_id_app,
-    Equivalence.counitInv_app_functor, Functor.map_id]
-  simp only [Functor.map_comp, Equivalence.fun_inv_map, assoc,
-    Equivalence.counitInv_functor_comp, comp_id, Iso.inv_hom_id_app_assoc]
+  simp only [Equivalence.symm_inverse, comp_obj, id_obj, Equivalence.symm_unitIso, Iso.symm_hom,
+    Equivalence.counitInv_app_functor, Equivalence.symm_counitIso, ← map_comp, assoc,
+    Functor.comp_map, Iso.inv_hom_id_app, map_id, comp_id, iso_hom_naturality]
+  simp only [map_comp, Equivalence.fun_inv_map, comp_obj, id_obj, assoc,
+    Equivalence.counitInv_functor_comp, comp_id, Iso.inv_hom_id_app_assoc, iso_hom_naturality]
 
 /-- In a square of categories, when the top and bottom functors are part
 of equivalence of categories, it is equivalent to show 2-commutativity for
@@ -127,18 +127,13 @@ lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
   dsimp
   rw [vInv_iso_inv_app]
   rw [← cancel_mono (B.map (L.functor.map (NatTrans.app L.unitIso.hom X)))]
-  rw [← Functor.comp_map]
+  simp only [← Functor.comp_map]
   erw [← (iso T L.functor R.functor B).hom.naturality (L.unitIso.hom.app X)]
-  dsimp
-  simp only [Functor.map_comp, Equivalence.fun_inv_map, Functor.comp_obj,
-    Functor.id_obj, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_id]
-  rw [← B.map_comp, L.counit_app_functor, ← L.functor.map_comp, ← NatTrans.comp_app,
+  simp only [comp_obj, id_obj, Functor.comp_map, map_comp, Equivalence.fun_inv_map, assoc,
+    Iso.inv_hom_id_app_assoc, Equivalence.functor_unit_comp_assoc, Iso.inv_hom_id_app, comp_id,
+    iso_hom_naturality_assoc, iso_hom_naturality, NatIso.cancel_natIso_hom_left]
+  rw [← Functor.map_comp, L.counit_app_functor, ← L.functor.map_comp, ← NatTrans.comp_app,
     Iso.inv_hom_id, NatTrans.id_app, L.functor.map_id]
-  simp only [Functor.comp_obj]
-  rw [B.map_id]
-  rw [comp_id, R.counit_app_functor,
-    ← R.functor.map_comp_assoc, ← R.functor.map_comp_assoc, assoc, ← NatTrans.comp_app,
-    Iso.hom_inv_id, NatTrans.id_app]
   simp
 
 /-- In a square of categories, when the left and right functors are part

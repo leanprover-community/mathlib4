@@ -113,8 +113,8 @@ def opOp : C ⥤ Cᵒᵖᵒᵖ where
 def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   functor := unopUnop C
   inverse := opOp C
-  unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
-  counitIso := Iso.refl (opOp C ⋙ unopUnop C)
+  unitIso := NatIso.ofComponents (fun X ↦ Iso.refl X)
+  counitIso := NatIso.ofComponents (fun X ↦ Iso.refl X)
 
 instance : (opOp C).IsEquivalence :=
   (opOpEquivalence C).isEquivalence_inverse
@@ -213,11 +213,13 @@ variable {E : Type*} [Category E]
 
 /-- Compatibility of `Functor.op` with respect to functor composition. -/
 @[simps!]
-def opComp (F : C ⥤ D) (G : D ⥤ E) : (F ⋙ G).op ≅ F.op ⋙ G.op := Iso.refl _
+def opComp (F : C ⥤ D) (G : D ⥤ E) : (F ⋙ G).op ≅ F.op ⋙ G.op :=
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 /-- Compatibility of `Functor.unop` with respect to functor composition. -/
 @[simps!]
-def unopComp (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Eᵒᵖ) : (F ⋙ G).unop ≅ F.unop ⋙ G.unop := Iso.refl _
+def unopComp (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Eᵒᵖ) : (F ⋙ G).unop ≅ F.unop ⋙ G.unop :=
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 variable (C) in
 /-- `Functor.op` transforms identity functors to identity functors. -/
@@ -290,13 +292,13 @@ protected def FullyFaithful.rightOp {F : Cᵒᵖ ⥤ D} (hF : F.FullyFaithful) :
 @[simps!]
 def rightOpComp {E : Type*} [Category E] (F : Cᵒᵖ ⥤ D) (G : D ⥤ E) :
     (F ⋙ G).rightOp ≅ F.rightOp ⋙ G.op :=
-  Iso.refl _
+  NatIso.ofComponents (fun X => Iso.refl _)
 
 /-- Compatibility of `Functor.leftOp` with respect to functor composition. -/
 @[simps!]
 def leftOpComp {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ Eᵒᵖ) :
     (F ⋙ G).leftOp ≅ F.op ⋙ G.leftOp :=
-  Iso.refl _
+  NatIso.ofComponents (fun X => Iso.refl _)
 
 section
 variable (C)
@@ -701,8 +703,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
   functor := e.functor.op
   inverse := e.inverse.op
-  unitIso := (NatIso.op e.unitIso).symm
-  counitIso := (NatIso.op e.counitIso).symm
+  unitIso := (opId C).symm ≪≫ (NatIso.op e.unitIso).symm ≪≫ e.functor.opComp e.inverse
+  counitIso := (e.inverse.opComp e.functor).symm ≪≫ (NatIso.op e.counitIso).symm ≪≫ opId D
   functor_unitIso_comp X := by
     apply Quiver.Hom.unop_inj
     simp
@@ -713,8 +715,8 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
 def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
   functor := e.functor.unop
   inverse := e.inverse.unop
-  unitIso := (NatIso.unop e.unitIso).symm
-  counitIso := (NatIso.unop e.counitIso).symm
+  unitIso := (unopId C).symm ≪≫ (NatIso.unop e.unitIso).symm ≪≫ e.functor.unopComp e.inverse
+  counitIso := (e.inverse.unopComp e.functor).symm ≪≫ (NatIso.unop e.counitIso).symm ≪≫ unopId D
   functor_unitIso_comp X := by
     apply Quiver.Hom.op_inj
     simp
@@ -780,7 +782,7 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ where
       (by
         intro F G f
         dsimp [opUnopIso]
-        rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
+        rw [show f = f.unop.op by simp, ← op_comp]
         congr 1
         aesop_cat)
   counitIso := NatIso.ofComponents fun F => F.unopOpIso
@@ -800,7 +802,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
       (by
         intro F G η
         dsimp
-        rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
+        rw [show η = η.unop.op by simp, ← op_comp]
         congr 1
         aesop_cat)
   counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
