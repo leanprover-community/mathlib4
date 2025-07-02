@@ -176,22 +176,24 @@ theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
 theorem Nodup.of_append_right : Nodup (l₁ ++ l₂) → Nodup l₂ :=
   Nodup.sublist (sublist_append_right l₁ l₂)
 
-theorem nodup_append {l₁ l₂ : List α} :
+/-- This is a variant of the `nodup_append` from the standard library,
+which does not use `Disjoint`. -/
+theorem nodup_append' {l₁ l₂ : List α} :
     Nodup (l₁ ++ l₂) ↔ Nodup l₁ ∧ Nodup l₂ ∧ Disjoint l₁ l₂ := by
   simp only [Nodup, pairwise_append, disjoint_iff_ne]
 
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
-  (nodup_append.1 d).2.2
+  (nodup_append'.1 d).2.2
 
 theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
-  nodup_append.2 ⟨d₁, d₂, dj⟩
+  nodup_append'.2 ⟨d₁, d₂, dj⟩
 
 theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup (l₂ ++ l₁) := by
-  simp only [nodup_append, and_left_comm, disjoint_comm]
+  simp only [nodup_append', and_left_comm, disjoint_comm]
 
 theorem nodup_middle {a : α} {l₁ l₂ : List α} :
     Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) := by
-  simp only [nodup_append, not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
+  simp only [nodup_append', not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=

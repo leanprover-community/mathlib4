@@ -278,12 +278,12 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
       rintro ⟨_, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
       rw [Subtype.coe_mk]
-      exact hγ.continuousAt ht
+      exact hγ.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
     · rw [continuous_iff_continuousAt]
       rintro ⟨_, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
       rw [Subtype.coe_mk]
-      exact hγ'.continuousAt ht
+      exact hγ'.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [isOpen_iff_mem_nhds]
     intro t₁ ht₁
     have hmem := Ioo_mem_nhds ht₁.2.1 ht₁.2.2
