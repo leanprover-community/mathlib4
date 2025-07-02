@@ -901,6 +901,20 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | p, 0 => p.copy (getVert_zero p).symm rfl
   | .cons _ q, (n + 1) => q.drop n
 
+lemma drop_zero {u v} (p : G.Walk u v) :
+    p.drop 0 = p.copy (getVert_zero p).symm rfl := by
+  cases p <;> simp [Walk.drop]
+
+lemma drop_length_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.drop n = Walk.nil.copy (p.getVert_of_length_le h).symm rfl := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [Walk.drop] at h ⊢
+  | succ n ih =>
+    cases p
+    · simp [Walk.drop]
+    rw [Walk.length_cons, Nat.add_le_add_iff_right] at h
+    simp [Walk.drop, ih h]
+
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
@@ -917,6 +931,36 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   | .nil, _ => .nil
   | p, 0 => nil.copy rfl (getVert_zero p).symm
   | .cons h q, (n + 1) => .cons h (q.take n)
+
+lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [Walk.take] at h ⊢
+  | succ n ih =>
+    cases p
+    · simp [Walk.take]
+    rw [Walk.length_cons, Nat.add_le_add_iff_right] at h
+    simp [Walk.take, ih h]
+
+lemma take_support_sublist_succ {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.take n).support.Sublist (p.take (n + 1)).support := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [Walk.take]
+  | succ _ ih => cases p <;> simp [Walk.take, ih]
+
+lemma take_support_sublist_of_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.take n).support.Sublist (p.take k).support := by
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
+  induction t with
+  | zero => rfl
+  | succ t ih => exact (ih (n.le_add_right t)).trans <| take_support_sublist_succ p (n + t)
+
+lemma take_support_sublist {u v n} (p : G.Walk u v) :
+    (p.take n).support.Sublist p.support := by
+  by_cases h : n ≤ p.length
+  · have : p.support = (p.take p.length).support := by simp [take_of_length_le le_rfl]
+    exact this ▸ take_support_sublist_of_le p h
+  simp [take_of_length_le (not_le.mp h).le]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
@@ -1068,6 +1112,28 @@ lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
   | .nil => simp only [nil_nil, not_true_eq_false] at hnp
   | .cons h q =>
     simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
+
+lemma drop_support_sublist_succ {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.drop (n + 1)).support.Sublist (p.drop n).support := by
+  induction n generalizing p u with
+  | zero =>
+    rw [Walk.drop_zero, ← Walk.tail]
+    cases p <;> simp
+  | succ _ ih => cases p <;> simp [Walk.drop, ih]
+
+lemma drop_support_sublist_of_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.drop k).support.Sublist (p.drop n).support := by
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
+  induction t with
+  | zero => rfl
+  | succ t ih => exact (drop_support_sublist_succ p (n + t)).trans <| ih (n.le_add_right t)
+
+lemma drop_support_sublist {u v n} (p : G.Walk u v) :
+    (p.drop n).support.Sublist p.support := by
+  by_cases h : n ≤ p.length
+  · have : p.support = (p.drop 0).support := by cases p <;> simp [Walk.drop]
+    exact this ▸ drop_support_sublist_of_le p n.zero_le
+  simp [drop_length_of_le (not_le.mp h).le]
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
