@@ -27,9 +27,7 @@ variable {r : α → α → Prop} {x y : α} [IsTrans α r] [IsTrichotomous α r
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements less than `x` and elements not
 less than `x`. -/
--- The explicit type signature stops `simp` from complaining.
-def sumLexComplLeft :
-    @Sum.Lex {y // r y x} {y // ¬ r y x} (Subrel r {y | r y x}) (Subrel r {y | ¬ r y x}) ≃r r where
+def sumLexComplLeft : Sum.Lex (Subrel r (r · x)) (Subrel r (¬ r · x)) ≃r r where
   toEquiv := Equiv.sumCompl (r · x)
   map_rel_iff' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
@@ -49,9 +47,7 @@ theorem sumLexComplLeft_symm_apply (a) : sumLexComplLeft r x a = Equiv.sumCompl 
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements not greater than `x` and elements
 greater than `x`. -/
--- The explicit type signature stops `simp` from complaining.
-def sumLexComplRight :
-    @Sum.Lex {y // ¬ r x y} {y // r x y} (Subrel r {y | ¬ r x y}) (Subrel r {y | r x y}) ≃r r where
+def sumLexComplRight : Sum.Lex (Subrel r (¬ r x ·)) (Subrel r (r x ·)) ≃r r where
   toEquiv := (Equiv.sumComm _ _).trans <| Equiv.sumCompl (r x ·)
   map_rel_iff' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
@@ -84,27 +80,27 @@ def sumLexIioIci : Iio x ⊕ₗ Ici x ≃o α :=
     ofRelIsoLT (RelIso.sumLexComplLeft (· < ·) x)
 
 @[simp]
-theorem sumLexIioIci_apply_inl (a : Iio x) : sumLexIioIci x (ofLex <| Sum.inl a) = a :=
+theorem sumLexIioIci_apply_inl (a : Iio x) : sumLexIioIci x (toLex <| Sum.inl a) = a :=
   rfl
 
 @[simp]
-theorem sumLexIioIci_apply_inr (a : Ici x) : sumLexIioIci x (ofLex <| Sum.inr a) = a :=
+theorem sumLexIioIci_apply_inr (a : Ici x) : sumLexIioIci x (toLex <| Sum.inr a) = a :=
   rfl
 
 theorem sumLexIioIci_symm_apply_of_lt (h : y < x) :
-    (sumLexIioIci x).symm y = ofLex <| Sum.inl ⟨y, h⟩ := by
+    (sumLexIioIci x).symm y = toLex (Sum.inl ⟨y, h⟩) := by
   rw [symm_apply_eq, sumLexIioIci_apply_inl]
 
 theorem sumLexIioIci_symm_apply_of_le {y : α} (h : x ≤ y) :
-    (sumLexIioIci x).symm y = ofLex <| Sum.inr ⟨y, h⟩ := by
+    (sumLexIioIci x).symm y = toLex (Sum.inr ⟨y, h⟩) := by
   rw [symm_apply_eq, sumLexIioIci_apply_inr]
 
 @[simp]
-theorem sumLexIioIci_symm_apply_Iio (a : Iio x) : (sumLexIioIci x).symm a = ofLex <| Sum.inl a :=
+theorem sumLexIioIci_symm_apply_Iio (a : Iio x) : (sumLexIioIci x).symm a = toLex (Sum.inl a) :=
   sumLexIioIci_symm_apply_of_lt a.2
 
 @[simp]
-theorem sumLexIioIci_symm_apply_Ici (a : Ici x) : (sumLexIioIci x).symm a = ofLex <| Sum.inr a :=
+theorem sumLexIioIci_symm_apply_Ici (a : Ici x) : (sumLexIioIci x).symm a = toLex (Sum.inr a) :=
   sumLexIioIci_symm_apply_of_le a.2
 
 variable (x) in
@@ -115,19 +111,19 @@ def sumLexIicIoi : Iic x ⊕ₗ Ioi x ≃o α :=
     ofRelIsoLT (RelIso.sumLexComplRight (· < ·) x)
 
 @[simp]
-theorem sumLexIicIoi_apply_inl (a : Iic x) : sumLexIicIoi x (ofLex <| Sum.inl a) = a :=
+theorem sumLexIicIoi_apply_inl (a : Iic x) : sumLexIicIoi x (toLex <| Sum.inl a) = a :=
   rfl
 
 @[simp]
-theorem sumLexIicIoi_apply_inr (a : Ioi x) : sumLexIicIoi x (ofLex <| Sum.inr a) = a :=
+theorem sumLexIicIoi_apply_inr (a : Ioi x) : sumLexIicIoi x (toLex <| Sum.inr a) = a :=
   rfl
 
 theorem sumLexIicIoi_symm_apply_of_le (h : y ≤ x) :
-    (sumLexIicIoi x).symm y = ofLex <| Sum.inl ⟨y, h⟩ := by
+    (sumLexIicIoi x).symm y = toLex (Sum.inl ⟨y, h⟩) := by
   rw [symm_apply_eq, sumLexIicIoi_apply_inl]
 
 theorem sumLexIicIoi_symm_apply_of_lt {y : α} (h : x < y) :
-    (sumLexIicIoi x).symm y = ofLex <| Sum.inr ⟨y, h⟩ := by
+    (sumLexIicIoi x).symm y = toLex (Sum.inr ⟨y, h⟩) := by
   rw [symm_apply_eq, sumLexIicIoi_apply_inr]
 
 @[simp]
