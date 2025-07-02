@@ -210,9 +210,9 @@ lemma kernel_hull (hG : OrderGenerate T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
   rfl
 
-lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
+lemma hull_kernel_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
-    gc.closureOperator C = C := by
+     hull T (kernel C) = C := by
   obtain ⟨a, ha⟩ := (isClosed_iff hT).mp h
   rw [GaloisConnection.closureOperator_apply, ha, kernel_hull hG, OrderDual.ofDual_toDual]
 
