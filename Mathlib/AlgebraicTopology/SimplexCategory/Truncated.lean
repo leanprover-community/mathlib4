@@ -19,7 +19,8 @@ namespace SimplexCategory.Truncated
 
 /-- For `0 < n`, the inclusion functor from the `n`-truncated simplex category to the untruncated
 simplex category is initial. -/
-theorem initial_inclusion {n : ℕ} (hn : 0 < n) : (inclusion n).Initial := by
+instance initial_inclusion {n : ℕ} [NeZero n] : (inclusion n).Initial := by
+  have := Nat.pos_of_neZero n
   constructor
   intro Δ
   have : Nonempty (CostructuredArrow (inclusion n) Δ) := ⟨⟨⦋0⦌ₙ, ⟨⟨⟩⟩, ⦋0⦌.const _ 0 ⟩⟩
@@ -41,8 +42,7 @@ theorem initial_inclusion {n : ℕ} (hn : 0 < n) : (inclusion n).Initial := by
 
 /-- For `0 < n ≤ m`, the inclusion functor from the `n`-truncated simplex category to the
 `m`-truncated simplex category is initial. -/
-theorem initial_incl {n m : ℕ} (hn : 0 < n) (hm : n ≤ m) : (incl n m).Initial := by
-  have := initial_inclusion hn
+theorem initial_incl {n m : ℕ} [NeZero n] (hm : n ≤ m) : (incl n m).Initial := by
   have : (incl n m hm ⋙ inclusion m).Initial :=
     Functor.initial_of_natIso (inclCompInclusion _).symm
   apply Functor.initial_of_comp_full_faithful _ (inclusion m)
