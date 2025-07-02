@@ -217,7 +217,7 @@ lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α] [DecidableEq 
       image_subset_iff.mp (fun _ hbS => CompleteSemilatticeInf.sInf_le _ _ hbS)⟩
   · simp_rw [le_eq_subset, subset_sInter_iff]
     intro R hR
-    rw [← (hull_kernel_of_isClosed hT hG hR.1), gc_closureOperator]
+    rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]
     exact ClosureOperator.monotone _ hR.2
 
 end PrimitiveSpectrum
