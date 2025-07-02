@@ -28,7 +28,7 @@ universe v₁ v₂ v₃ v₄ v₄' v₅ v₅' v₆ u₁ u₂ u₃ u₄ u₄' u�
 
 namespace CategoryTheory
 
-open Localization
+open Localization Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
@@ -108,13 +108,13 @@ lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
     calc
       L₁ ⋙ G ⋙ E₂.functor ≅ Φ.functor ⋙ L₂ ⋙ E₂.functor :=
-          (Functor.associator _ _ _).symm ≪≫
+          (associator _ _ _).symm ≪≫
             isoWhiskerRight (CatCommSq.iso Φ.functor L₁ L₂ G).symm E₂.functor ≪≫
-            Functor.associator _ _ _
+            associator _ _ _
       _ ≅ Φ.functor ⋙ L₂' := isoWhiskerLeft Φ.functor (compUniqFunctor L₂ L₂' W₂)
       _ ≅ L₁' ⋙ G' := CatCommSq.iso Φ.functor L₁' L₂' G'
       _ ≅ L₁ ⋙ E₁.functor ⋙ G' :=
-            isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ Functor.associator _ _ _
+            isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ associator _ _ _
   have := Functor.isEquivalence_of_iso
     (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e)
   Functor.isEquivalence_of_comp_left E₁.functor G'
@@ -155,7 +155,7 @@ lemma IsLocalizedEquivalence.of_isLocalization_of_isLocalization
     [(Φ.functor ⋙ L₂).IsLocalization W₁] :
     IsLocalizedEquivalence Φ := by
   have : CatCommSq Φ.functor (Φ.functor ⋙ L₂) L₂ (𝟭 D₂) :=
-    CatCommSq.mk (Functor.rightUnitor _).symm
+    CatCommSq.mk (rightUnitor _).symm
   exact IsLocalizedEquivalence.mk' Φ (Φ.functor ⋙ L₂) L₂ (𝟭 D₂)
 
 /-- When the underlying functor `Φ.functor` of `Φ : LocalizerMorphism W₁ W₂` is
@@ -165,9 +165,9 @@ lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
   haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
     refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
-      (Functor.asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
-      ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
-        Functor.leftUnitor _)
+      (asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
+      ((associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
+        leftUnitor _)
     erw [W₁.isoClosure.inverseImage_equivalence_functor_eq_map_inverse]
     rw [MorphismProperty.map_isoClosure]
     exact h

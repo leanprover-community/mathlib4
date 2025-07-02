@@ -69,7 +69,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
         MorphismProperty.pullback_snd _ _ inferInstance
       isAffine_of_isAffineHom (pullback.snd (D.map i'.hom) (𝒰.map j))
     have (i' : _) : Nonempty (F.obj i') := H i'.hom
-    let e : F ⟶ (F ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := whiskerLeft F ΓSpec.adjunction.unit
+    let e : F ⟶ (F ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := Functor.whiskerLeft F ΓSpec.adjunction.unit
     have (i : _) : IsIso (e.app i) := IsAffine.affine
     have : IsIso e := NatIso.isIso_of_isIso_app e
     let c' : LimitCone F := ⟨_, (IsLimit.postcomposeInvEquiv (asIso e) _).symm
@@ -81,8 +81,8 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
         simp
       exact CommRingCat.FilteredColimits.nontrivial
         (isColimitCoconeLeftOpOfCone _ (limit.isLimit (F ⋙ Scheme.Γ.rightOp)))
-    let α : F ⟶ Over.forget _ ⋙ D := whiskerRight
-      (whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.map j)).counit) (Over.forget _)
+    let α : F ⟶ Over.forget _ ⋙ D := Functor.whiskerRight
+      (Functor.whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.map j)).counit) (Over.forget _)
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
         ((Cones.postcompose α).obj c'.1)).base
 
