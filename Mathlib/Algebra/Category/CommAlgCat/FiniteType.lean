@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.Algebra.Category.CommAlgCat.Basic
-
-universe w v u
+import Mathlib.CategoryTheory.MorphismProperty.Comma
+import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # The category of finitely generated `R`-algebras
@@ -13,43 +14,9 @@ universe w v u
 We define the category of finitely generated `R`-algebras and show it is essentially small.
 -/
 
+universe w v u
+
 open CategoryTheory Limits
-
-section
-
-namespace CategoryTheory.MorphismProperty
-
-variable {A : Type*} [Category A] {B : Type*} [Category B] {T : Type*} [Category T]
-  (L : A ⥤ T) (R : B ⥤ T)
-
-variable {P P' : MorphismProperty T} {Q Q' : MorphismProperty A} {W W' : MorphismProperty B}
-  (hP : P ≤ P') (hQ : Q ≤ Q') (hW : W ≤ W')
-
-variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsMultiplicative]
-
-def Comma.changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
-  obj X := ⟨X.toComma, hP _ X.2⟩
-  map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
-
-def Comma.fullyFaithfulChangeProp :
-    (Comma.changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
-  preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
-
-instance : (Comma.changeProp L R hP hQ hW).Faithful where
-  map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
-
-instance : (Comma.changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
-  (Comma.fullyFaithfulChangeProp ..).full
-
-end CategoryTheory.MorphismProperty
-
-lemma RingHom.finiteType_algebraMap {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] :
-    (algebraMap A B).FiniteType ↔ Algebra.FiniteType A B := by
-  delta FiniteType
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
-
-end
 
 variable (R : Type u) [CommRing R]
 
@@ -61,7 +28,9 @@ instance (A : FGAlgCat R) : Algebra.FiniteType R A.1 := A.2
 
 /-- (Implementation detail): A small skeleton of `FGAlgCat`. -/
 structure FGAlgCatSkeleton where
+  /-- The number of generators. -/
   n : ℕ
+  /-- The defining ideal. -/
   I : Ideal (MvPolynomial (Fin n) R)
 
 /-- (Implementation detail): Realisation of a `FGAlgCatSkeleton`. -/
