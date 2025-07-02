@@ -163,9 +163,10 @@ example : Baz 0 3 := by use 4
 error: type mismatch
   3
 has type
-  Nat : Type
-but is expected to have type
-  Baz 1 3 : Prop
+  Nat
+of sort `Type` but is expected to have type
+  Baz 1 3
+of sort `Prop`
 -/
 #guard_msgs in
 example : Baz 1 3 := by use (3 : Nat)
