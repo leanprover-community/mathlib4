@@ -24,14 +24,12 @@ topology" also occur in the literature.
 
 ## Main statements
 
-- `PrimitiveSpectrum.relativeLowerIsTopologicalBasis` - the sets `(hull a)ᶜ` form a basis for the
+- `PrimitiveSpectrum.isTopologicalBasis_relativeLower` - the sets `(hull a)ᶜ` form a basis for the
   relative lower topology on `T`.
 - `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `(hull a)ᶜ` are the relative
   topology.
 - `PrimitiveSpectrum.gc` - the `kernel` and the `hull` form a Galois connection
 - `PrimitiveSpectrum.gi` - when `T` generates `α`, the Galois connection becomes an insertion.
-- `PrimitiveSpectrum.lowerTopology_closureOperator_eq_gc_closureOperator` - relative lower topology
-  closure coincides with the "hull-kernel" closure arising from the Galois insertion.
 
 ## Implementation notes
 
