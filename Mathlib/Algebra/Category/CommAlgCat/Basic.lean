@@ -17,7 +17,7 @@ namespace CategoryTheory
 
 open Limits
 
-universe v u
+universe w v u
 
 variable {R : Type u} [CommRing R]
 
@@ -164,6 +164,25 @@ instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomo
     let i := asIso ((forget (CommAlgCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact (isoMk e).isIso_hom
+
+variable (R)
+
+/-- Universe lift functor for commutative algebras. -/
+def uliftFunctor : CommAlgCat.{v} R ⥤ CommAlgCat.{max v w} R where
+  obj A := .of R <| ULift A
+  map {A B} f := CommAlgCat.ofHom <|
+    ULift.algEquiv.symm.toAlgHom.comp <| f.hom.comp ULift.algEquiv.toAlgHom
+
+/-- The universe lift functor for commutative algebras is fully faithful. -/
+def fullyFaithfulUliftFunctor : (CommAlgCat.uliftFunctor R).FullyFaithful where
+  preimage {A B} f :=
+    CommAlgCat.ofHom <| ULift.algEquiv.toAlgHom.comp <| f.hom.comp ULift.algEquiv.symm.toAlgHom
+
+instance : (uliftFunctor R).Full :=
+  (fullyFaithfulUliftFunctor R).full
+
+instance : (CommAlgCat.uliftFunctor R).Faithful :=
+  (CommAlgCat.fullyFaithfulUliftFunctor R).faithful
 
 end CommAlgCat
 
