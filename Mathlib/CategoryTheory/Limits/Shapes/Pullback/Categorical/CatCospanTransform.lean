@@ -89,8 +89,8 @@ def comp
   left := ψ.left ⋙ ψ'.left
   base := ψ.base ⋙ ψ'.base
   right := ψ.right ⋙ ψ'.right
-  squareLeft := ψ.squareLeft.vComp' (ψ'.squareLeft)
-  squareRight := ψ.squareRight.vComp' (ψ'.squareRight)
+  squareLeft := ψ.squareLeft.vComp' ψ'.squareLeft
+  squareRight := ψ.squareRight.vComp' ψ'.squareRight
 
 end
 
@@ -183,7 +183,7 @@ def whiskerLeft (φ : CatCospanTransform F G F' G')
 /-- Whiskering right of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
 def whiskerRight {ψ ψ' : CatCospanTransform F G F' G'}
-    (α : CatCospanTransformMorphism ψ ψ')
+    (α : ψ ⟶ ψ')
     (φ : CatCospanTransform F' G' F'' G'') :
     (ψ.comp φ) ⟶ (ψ'.comp φ) where
   left := CategoryTheory.whiskerRight α.left φ.left
