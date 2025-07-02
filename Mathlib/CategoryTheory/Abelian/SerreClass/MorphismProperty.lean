@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
-# The classes of isomorphisms modulo a Serre class
+# The class of isomorphisms modulo a Serre class
 
 Let `C` be an abelian category and `P : ObjectProperty C` a Serre class.
 We define `P.isoModSerre : MorphismProperty C`, which is the class of
