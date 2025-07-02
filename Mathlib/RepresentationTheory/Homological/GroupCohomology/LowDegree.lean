@@ -1066,7 +1066,7 @@ lemma toCocycles_comp_isoCocycles₁_hom :
 @[deprecated (since := "2025-06-25")]
 alias toCocycles_comp_isoOneCocycles_hom := toCocycles_comp_isoCocycles₁_hom
 
-lemma cocyclesMk_1_eq (x : cocycles₁ A) :
+lemma cocyclesMk₁_eq (x : cocycles₁ A) :
     cocyclesMk ((cochainsIso₁ A).inv x) (by
       simp [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
       (isoCocycles₁ A).inv x := by
@@ -1128,7 +1128,7 @@ lemma toCocycles_comp_isoCocycles₂_hom :
 @[deprecated (since := "2025-06-25")]
 alias toCocycles_comp_isoTwoCocycles_hom := toCocycles_comp_isoCocycles₂_hom
 
-lemma cocyclesMk_2_eq (x : cocycles₂ A) :
+lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     cocyclesMk ((cochainsIso₂ A).inv x) (by
       simp [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
       (isoCocycles₂ A).inv x := by
