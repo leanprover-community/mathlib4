@@ -18,11 +18,15 @@ namespace RingHom
 
 variable {R S : Type u} [CommRing R] [CommRing S]
 
+-- Note: `algebraize` currently does not work here, because it is broken mathlib wide
 /-- A ring hom `R →+* S` is etale, if `S` is an etale `R`-algebra. -/
-@[algebraize Algebra.Etale]
+@[algebraize Algebra.Etale.toAlgebra]
 def Etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
-  letI := f.toAlgebra
-  Algebra.Etale R S
+  @Algebra.Etale R _ S _ f.toAlgebra
+
+/-- Helper lemma for the `algebraize` tactic -/
+lemma Etale.toAlgebra {f : R →+* S} (hf : Etale f) :
+    @Algebra.Etale R _ S _ f.toAlgebra := hf
 
 variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
 
@@ -39,17 +43,17 @@ lemma etale_iff_formallyUnramified_and_smooth : f.Etale ↔ f.FormallyUnramified
   · rw [Algebra.FormallyEtale.iff_unramified_and_smooth]
     constructor <;> infer_instance
 
-lemma Etale.eq_and :
+lemma Etale.eq_formallyUnramified_and_smooth :
     @Etale = fun R S (_ : CommRing R) (_ : CommRing S) f ↦ f.FormallyUnramified ∧ f.Smooth := by
   ext
   rw [etale_iff_formallyUnramified_and_smooth]
 
 lemma Etale.isStableUnderBaseChange : IsStableUnderBaseChange Etale := by
-  rw [eq_and]
+  rw [eq_formallyUnramified_and_smooth]
   exact FormallyUnramified.isStableUnderBaseChange.and Smooth.isStableUnderBaseChange
 
 lemma Etale.propertyIsLocal : PropertyIsLocal Etale := by
-  rw [eq_and]
+  rw [eq_formallyUnramified_and_smooth]
   exact FormallyUnramified.propertyIsLocal.and Smooth.propertyIsLocal
 
 lemma Etale.respectsIso : RespectsIso Etale :=
@@ -62,7 +66,7 @@ lemma Etale.ofLocalizationSpan : OfLocalizationSpan Etale :=
   propertyIsLocal.ofLocalizationSpan
 
 lemma Etale.stableUnderComposition : StableUnderComposition Etale := by
-  rw [eq_and]
+  rw [eq_formallyUnramified_and_smooth]
   exact FormallyUnramified.stableUnderComposition.and Smooth.stableUnderComposition
 
 end RingHom
