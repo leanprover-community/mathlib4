@@ -464,6 +464,14 @@ theorem LinearMap.toMatrixAlgEquiv'_mul (f g : (n → R) →ₗ[R] n → R) :
       LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
   LinearMap.toMatrixAlgEquiv'_comp f g
 
+@[simp]
+theorem LinearMap.isUnit_toMatrix'_iff {f : (n → R) →ₗ[R] n → R} : IsUnit f.toMatrix' ↔ IsUnit f :=
+  isUnit_map_iff LinearMap.toMatrixAlgEquiv' f
+
+@[simp]
+theorem Matrix.isUnit_toLin'_iff {M : Matrix n n R} : IsUnit M.toLin' ↔ IsUnit M :=
+  isUnit_map_iff LinearMap.toMatrixAlgEquiv'.symm M
+
 end ToMatrix'
 
 section ToMatrix
@@ -748,6 +756,14 @@ theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
   convert Matrix.toLin_mul v₁ v₁ v₁ A B
 
 @[simp]
+theorem LinearMap.isUnit_toMatrix_iff {f : M₁ →ₗ[R] M₁} : IsUnit (f.toMatrix v₁ v₁) ↔ IsUnit f :=
+  isUnit_map_iff (LinearMap.toMatrixAlgEquiv _) f
+
+@[simp]
+theorem Matrix.isUnit_toLin_iff {M : Matrix n n R} : IsUnit (M.toLin v₁ v₁) ↔ IsUnit M :=
+  isUnit_map_iff (LinearMap.toMatrixAlgEquiv _).symm M
+
+@[simp]
 theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] x =
       (a * x.fst + b * x.snd, c * x.fst + d * x.snd) := by
@@ -901,9 +917,7 @@ variable [SMul R S] [IsScalarTower R S M₁] [IsScalarTower R S M₂]
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
-  { LinearMap.toMatrix' with
-    map_mul' := LinearMap.toMatrix'_comp
-    commutes' := LinearMap.toMatrix'_algebraMap }
+  LinearMap.toMatrixAlgEquiv'
 
 variable (R) in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
