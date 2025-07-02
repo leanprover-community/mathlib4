@@ -196,40 +196,41 @@ theorem nfp_lt_ord_of_isRegular {f : Ordinal → Ordinal} {c} (hc : IsRegular c)
   nfp_lt_ord (by rw [hc.cof_eq]; exact lt_of_le_of_ne hc.1 hc'.symm) hf
 
 theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
-    (hι : lift.{v} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ i, ∀ b < c.ord, f i b < c.ord) {a} :
+    (hι : lift.{v} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ i, ∀ b < c.ord, f i b < c.ord)
+    (H : ∀ i, IsNormal (f i)) {a} :
     a < c.ord → derivFamily f a < c.ord := by
   have hω : ℵ₀ < c.ord.cof := by
     rw [hc.cof_eq]
     exact lt_of_le_of_ne hc.1 hc'.symm
   induction a using limitRecOn with
   | zero =>
-    rw [derivFamily_zero]
+    rw [derivFamily_zero H]
     exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
   | succ b hb =>
     intro hb'
-    rw [derivFamily_succ]
+    rw [derivFamily_succ H]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
         ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
-  | isLimit b hb H =>
+  | isLimit b hb H' =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
-    have : ⨆ a : Iio b, _ = _ :=
-      iSup_eq_bsup.{max u v, max u v} (f := fun x (_ : x < b) ↦ derivFamily f x)
-    rw [derivFamily_limit f hb, this]
+    have : ⨆ a : Iio b, _ = _ := iSup_eq_bsup (f := fun x (_ : x < b) ↦ derivFamily f x)
+    rw [(isNormal_derivFamily H).apply_of_isLimit hb, this]
     exact
       bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>
-        H o' ho' (ho'.trans hb')
+        H' o' ho' (ho'.trans hb')
 
 theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c)
-    (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) {a} :
+    (hc' : c ≠ ℵ₀) (hf : ∀ (i), ∀ b < c.ord, f i b < c.ord) (H : ∀ i, IsNormal (f i)) {a} :
     a < c.ord → derivFamily.{u, u} f a < c.ord :=
-  derivFamily_lt_ord_lift hc (by rwa [lift_id]) hc' hf
+  derivFamily_lt_ord_lift hc (by rwa [lift_id]) hc' hf H
 
 theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
-    (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → deriv f a < c.ord :=
+    (hf : ∀ i < c.ord, f i < c.ord) {a} (H : IsNormal f) : a < c.ord → deriv f a < c.ord :=
   derivFamily_lt_ord_lift hc
-    (by simpa using Cardinal.one_lt_aleph0.trans (lt_of_le_of_ne hc.1 hc'.symm)) hc' fun _ => hf
+    (by simpa using Cardinal.one_lt_aleph0.trans (lt_of_le_of_ne hc.1 hc'.symm)) hc' (fun _ ↦ hf)
+    fun _ ↦ H
 
 /-! ### Inaccessible cardinals -/
 
