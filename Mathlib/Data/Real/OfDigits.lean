@@ -10,19 +10,21 @@ import Mathlib.Tactic.Rify
 /-!
 # Representation of reals in positional system
 
-This file defines `ofDigits` and `toDigits` functions which allows to work with the representations
-of reals as sequences of digits in positional system.
+This file defines `Real.ofDigits` and `Real.digits` functions which allows to work with the
+representations of reals as sequences of digits in positional system.
 
 ## Main Definitions
 
 * `ofDigits`: takes a sequence of digits `(d₀, d₁, ...)` (as an `ℕ → Fin b`),
   and returns the real number `0.d₀d₁d₂...`.
-* `toDigits`: takes a real number in [0,1) and returns the sequence of its digits.
+* `digits`: takes a real number in [0,1) and returns the sequence of its digits.
 
-* `toDigits_ofDigits` states that `ofDigits (toDigits x b) = x`.
+* `digits_ofDigits` states that `ofDigits (digits x b) = x`.
 -/
 
-/-- Term of `ofDigits` sum. -/
+namespace Real
+
+/-- Term of the `ofDigits` sum. -/
 noncomputable def ofDigitsTerm {b : ℕ} (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * ((b : ℝ)^(i + 1))⁻¹
 
@@ -76,7 +78,8 @@ theorem ofDigitsTerm_Summable {b : ℕ} {digits : ℕ → Fin b} :
   · simp
   · rw [inv_pow]
 
-/-- The number `0.d₀d₁d₂...` in the system with base `b`. -/
+/-- The number `0.d₀d₁d₂...` in the system with base `b`.
+We allow repeating representations like `0.999...` here. -/
 noncomputable def ofDigits {b : ℕ} (digits : ℕ → Fin b) : ℝ :=
   ∑' n, ofDigitsTerm digits n
 
@@ -113,21 +116,21 @@ theorem ofDigits_le_one {b : ℕ} {digits : ℕ → Fin b} :
     rw [tsum_geometric_of_lt_one hb_inv_nonneg hb_inv_lt_one, mul_inv_cancel₀]
     linarith
   · intro i
-    simp [g]
+    simp only [inv_pow, g]
     convert ofDigitsTerm_le using 1
     field_simp
     left
     rw [pow_succ']
 
-lemma ofDigits_eq_partial_sum_add_ofDigits {b : ℕ} (a : ℕ → Fin b) (n : ℕ) :
+theorem ofDigits_eq_partial_sum_add_ofDigits {b : ℕ} (a : ℕ → Fin b) (n : ℕ) :
     ofDigits a = (∑ i ∈ Finset.range n, ofDigitsTerm a i) +
       ((b : ℝ)^n)⁻¹ * ofDigits (fun i ↦ a (i + n)) := by
-  simp [ofDigits]
+  simp only [ofDigits]
   rw [← Summable.sum_add_tsum_nat_add n ofDigitsTerm_Summable,
     ← Summable.tsum_mul_left _ ofDigitsTerm_Summable]
   congr
   ext i
-  simp [ofDigitsTerm]
+  simp only [ofDigitsTerm]
   ring
 
 theorem ofDigits_close_of_common_prefix {b : ℕ} {x y : ℕ → Fin b} {n : ℕ}
@@ -147,13 +150,14 @@ theorem ofDigits_close_of_common_prefix {b : ℕ} {x y : ℕ → Fin b} {n : ℕ
     ofDigits_nonneg (digits := fun i ↦ y (i + n)), ofDigits_le_one (digits := fun i ↦ x (i + n)),
     ofDigits_le_one (digits := fun i ↦ y (i + n))]
 
-/-- Converts a real number `x` into sequence of its digits in base `b`. -/
-noncomputable def toDigits (x : ℝ) (b : ℕ) [NeZero b] : ℕ → Fin b :=
+/-- Converts a real number `x` from the interval `[0, 1)` into sequence of
+its digits in base `b`. -/
+noncomputable def digits (x : ℝ) (b : ℕ) [NeZero b] : ℕ → Fin b :=
   fun i ↦ Fin.ofNat _ <| ⌊x * b^(i + 1)⌋₊ % b
 
-lemma ofDigits_toDigits_partial_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
+theorem ofDigits_digits_partial_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
     (hx : x ∈ Set.Ico 0 1) {n : ℕ} :
-    b^n * ∑ i ∈ Finset.range n, ofDigitsTerm (toDigits x b) i = ⌊b^n * x⌋₊ := by
+    b^n * ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i = ⌊b^n * x⌋₊ := by
   induction n with
   | zero =>
     simp only [pow_zero, Finset.range_zero, Finset.sum_empty, mul_zero, one_mul]
@@ -164,7 +168,7 @@ lemma ofDigits_toDigits_partial_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < 
     exact hx.right
   | succ n ih =>
     rw [Finset.sum_range_succ, mul_add, pow_succ', mul_assoc, ih]
-    simp only [ofDigitsTerm, toDigits]
+    simp only [ofDigitsTerm, digits]
     rw [show x * (b : ℝ) ^ (n + 1) = b * (b^n * x) by ring]
     conv => rhs; rw [mul_assoc]
     set y := (b : ℝ) ^ n * x
@@ -180,29 +184,29 @@ lemma ofDigits_toDigits_partial_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < 
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by omega)]
     conv => rhs; rw [← Nat.mod_add_div ⌊(b : ℝ) * y⌋₊ b]
 
-lemma ofDigits_toDigits_partial_sum_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
+theorem ofDigits_digits_partial_sum_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
     (hx : x ∈ Set.Ico 0 1) {n : ℕ} :
-    x - (b⁻¹ : ℝ)^n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (toDigits x b) i := by
-  have := ofDigits_toDigits_partial_sum_eq hb hx (n := n)
+    x - (b⁻¹ : ℝ)^n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
+  have := ofDigits_digits_partial_sum_eq hb hx (n := n)
   have h_le := Nat.lt_floor_add_one (b^n * x)
   rw [← this] at h_le
   rw [← mul_le_mul_left (show 0 < (b : ℝ)^n by positivity),
     mul_sub, inv_pow, mul_inv_cancel₀ (by positivity)]
   linarith
 
-lemma ofDigits_toDigits_partial_sum_le {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b) {n : ℕ}
+theorem ofDigits_digits_partial_sum_le {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b) {n : ℕ}
     (hx : x ∈ Set.Ico 0 1) :
-    ∑ i ∈ Finset.range n, ofDigitsTerm (toDigits x b) i ≤ x := by
-  have := ofDigits_toDigits_partial_sum_eq hb hx (n := n)
+    ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i ≤ x := by
+  have := ofDigits_digits_partial_sum_eq hb hx (n := n)
   have h_le := Nat.floor_le (a := b^n * x) (by simp at hx; apply mul_nonneg _ hx.left; positivity)
   rw [← this, mul_le_mul_iff_of_pos_left (by positivity)] at h_le
   exact h_le
 
-theorem ofDigits_toDigits_HasSum (x : ℝ) (b : ℕ) [NeZero b] (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
-    HasSum (ofDigitsTerm (toDigits x b)) x := by
+theorem ofDigits_digits_HasSum (x : ℝ) (b : ℕ) [NeZero b] (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
+    HasSum (ofDigitsTerm (digits x b)) x := by
   rw [hasSum_iff_tendsto_nat_of_summable_norm]
   swap
-  · conv => arg 1; ext i; simp; rw [abs_of_nonneg (by simp [ofDigitsTerm]; positivity)]
+  · conv => arg 1; ext i; rw [norm_eq_abs, abs_of_nonneg (by simp [ofDigitsTerm]; positivity)]
     exact ofDigitsTerm_Summable
   rw [← tendsto_sub_nhds_zero_iff]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le (g := fun n ↦ -(b⁻¹ : ℝ)^n) (h := 0)
@@ -215,16 +219,18 @@ theorem ofDigits_toDigits_HasSum (x : ℝ) (b : ℕ) [NeZero b] (hb : 1 < b) (hx
   · apply tendsto_const_nhds
   · intro n
     simp only [inv_pow, neg_le_sub_iff_le_add]
-    have := ofDigits_toDigits_partial_sum_ge hb hx (n := n)
+    have := ofDigits_digits_partial_sum_ge hb hx (n := n)
     simp only [inv_pow, tsub_le_iff_right] at this
     linarith
   · intro n
     simp only [Pi.zero_apply, tsub_le_iff_right, zero_add]
-    exact ofDigits_toDigits_partial_sum_le hb hx
+    exact ofDigits_digits_partial_sum_le hb hx
 
-theorem toDigits_ofDigits (b : ℕ) [NeZero b] (x : ℝ) (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
-    ofDigits (toDigits x b) = x := by
+theorem digits_ofDigits (b : ℕ) [NeZero b] (x : ℝ) (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
+    ofDigits (digits x b) = x := by
   simp only [ofDigits]
   rw [← Summable.hasSum_iff]
-  · exact ofDigits_toDigits_HasSum x b hb hx
+  · exact ofDigits_digits_HasSum x b hb hx
   · exact ofDigitsTerm_Summable
+
+end Real
