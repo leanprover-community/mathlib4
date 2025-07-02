@@ -534,9 +534,12 @@ theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
 theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
 
-theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
+theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq (List.eraseIdx_insertIdx ..)
+  Subtype.eq (List.eraseIdx_insertIdx_self ..)
+
+@[deprecated (since := "2025-06-17")]
+alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
