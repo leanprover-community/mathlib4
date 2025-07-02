@@ -329,8 +329,9 @@ open scoped Matrix
 
 variable {i j}
 variable (hij : i ≠ j)
+omit [P.IsReduced]
 
-omit [P.IsReduced] in
+/-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_ne`. -/
 private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
     ⁅e i, f j⁆ (Sum.inl k) (Sum.inr l) = 0 := by
   letI := P.indexNeg
@@ -349,6 +350,7 @@ private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
 
 include hij
 
+/-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_ne`. -/
 private lemma lie_e_f_ne_aux₁ :
     ⁅e i, f j⁆ᵀ (Sum.inr j) = 0 := by
   letI := P.indexNeg
@@ -381,6 +383,7 @@ private lemma lie_e_f_ne_aux₁ :
       rw [Finset.sum_ite_of_false aux]
       simp [b.cartanMatrix_apply_eq_zero_iff hij, hij_mem]
 
+/-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_ne`. -/
 private lemma lie_e_f_ne_aux₂ :
     letI := P.indexNeg
     ⁅e i, f j⁆ᵀ (Sum.inr (-i)) = 0 := by

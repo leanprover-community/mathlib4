@@ -499,7 +499,7 @@ lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
     P.chainBotCoeff i j = 0 :=
   chainBotCoeff_eq_zero_iff.mpr <| Or.inr <| b.sub_notMem_range_root j.property i.property
 
-lemma Base.chainTopCoeff_eq_of_ne [P.IsReduced] {b : P.Base} {i j : b.support} (hij : i ≠ j) :
+lemma Base.chainTopCoeff_eq_of_ne {b : P.Base} {i j : b.support} (hij : i ≠ j) :
     P.chainTopCoeff i j = -P.pairingIn ℤ j i := by
   rw [← chainTopCoeff_sub_chainBotCoeff (b.linearIndependent_pair_of_ne hij)]
   simp
