@@ -714,6 +714,9 @@ theorem isCocycle₁_of_mem_cocycles₁
     IsCocycle₁ f :=
   fun _ _ => (mem_cocycles₁_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
 
+@[deprecated (since := "2025-07-02")]
+alias isOneCocycle_of_mem_oneCocycles := isCocycle₁_of_mem_cocycles₁
+
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-coboundary condition, produces a 1-coboundary for the representation
 on `A` induced by the `DistribMulAction`. -/
@@ -731,6 +734,9 @@ theorem isCoboundary₁_of_mem_coboundaries₁
   rcases hf with ⟨a, rfl⟩
   exact ⟨a, fun _ => rfl⟩
 
+@[deprecated (since := "2025-07-02")]
+alias isOneCoboundary_of_mem_oneCoboundaries := isCoboundary₁_of_mem_coboundaries₁
+
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-cocycle condition, produces a 2-cocycle for the representation on
 `A` induced by the `DistribMulAction`. -/
@@ -744,6 +750,9 @@ def cocyclesOfIsCocycle₂ {f : G × G → A} (hf : IsCocycle₂ f) :
 theorem isCocycle₂_of_mem_cocycles₂
     (f : G × G → A) (hf : f ∈ cocycles₂ (Rep.ofDistribMulAction k G A)) :
     IsCocycle₂ f := (mem_cocycles₂_iff (A := Rep.ofDistribMulAction k G A) f).1 hf
+
+@[deprecated (since := "2025-07-02")]
+alias isTwoCocycle_of_mem_twoCocycles := isCocycle₂_of_mem_cocycles₂
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-coboundary condition, produces a 2-coboundary for the
@@ -761,6 +770,9 @@ theorem isCoboundary₂_of_mem_coboundaries₂
     IsCoboundary₂ f := by
   rcases hf with ⟨a, rfl⟩
   exact ⟨a, fun _ _ => rfl⟩
+
+@[deprecated (since := "2025-07-02")]
+alias isTwoCoboundary_of_mem_twoCoboundaries := isCoboundary₂_of_mem_coboundaries₂
 
 end ofDistribMulAction
 
@@ -832,6 +844,9 @@ theorem smul_map_inv_div_map_inv_of_isMulCocycle₂
   simp only [mul_inv_cancel, inv_mul_cancel, map_one_fst_of_isMulCocycle₂ hf g] at this
   exact div_eq_div_iff_mul_eq_mul.2 this.symm
 
+@[deprecated (since := "2025-07-02")]
+alias smul_map_inv_div_map_inv_of_isMulTwoCocycle := smul_map_inv_div_map_inv_of_isMulCocycle₂
+
 end
 
 end IsMulCocycle
@@ -874,6 +889,9 @@ theorem isMulCocycle₁_of_mem_cocycles₁
     IsMulCocycle₁ (Additive.toMul ∘ f) :=
   (mem_cocycles₁_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
 
+@[deprecated (since := "2025-07-02")]
+alias isMulOneCocycle_of_mem_oneCocycles := isMulCocycle₁_of_mem_cocycles₁
+
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-coboundary condition, produces a
 1-coboundary for the representation on `Additive M` induced by the `MulDistribMulAction`. -/
@@ -891,6 +909,9 @@ theorem isMulCoboundary₁_of_mem_coboundaries₁
   rcases hf with ⟨x, rfl⟩
   exact ⟨x, fun _ =>  rfl⟩
 
+@[deprecated (since := "2025-07-02")]
+alias isMulOneCoboundary_of_mem_oneCoboundaries := isMulCoboundary₁_of_mem_coboundaries₁
+
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
 representation on `Additive M` induced by the `MulDistribMulAction`. -/
@@ -905,6 +926,9 @@ theorem isMulCocycle₂_of_mem_cocycles₂
     (f : G × G → M) (hf : f ∈ cocycles₂ (Rep.ofMulDistribMulAction G M)) :
     IsMulCocycle₂ (Additive.toMul ∘ f) :=
   (mem_cocycles₂_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
+
+@[deprecated (since := "2025-07-02")]
+alias isMulTwoCocycle_of_mem_twoCocycles := isMulCocycle₂_of_mem_cocycles₂
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-coboundary condition, produces a
@@ -921,6 +945,9 @@ theorem isMulCoboundary₂_of_mem_coboundaries₂
     IsMulCoboundary₂ (M := M) (Additive.toMul ∘ f) := by
   rcases hf with ⟨x, rfl⟩
   exact ⟨x, fun _ _ => rfl⟩
+
+@[deprecated (since := "2025-07-02")]
+alias isMulTwoCoboundary_of_mem_twoCoboundaries := isMulCoboundary₂_of_mem_coboundaries₂
 
 end ofMulDistribMulAction
 
