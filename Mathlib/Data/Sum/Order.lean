@@ -484,8 +484,8 @@ open OrderDual Sum
 
 namespace OrderIso
 
-variable [LE α] [LE β] [LE γ] (a : α) (b : β) (c : γ)
-  {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂] [LE γ₁] [LE γ₂]
+variable {α₁ α₂ β₁ β₂ γ₁ γ₂ : Type*} [LE α] [LE β] [LE γ]
+  [LE α₁] [LE α₂] [LE β₁] [LE β₂] [LE γ₁] [LE γ₂] (a : α) (b : β) (c : γ)
 
 /-- `Equiv.sumCongr` promoted to an order isomorphism. -/
 @[simps! apply]
@@ -517,7 +517,7 @@ theorem sumComm_symm (α β : Type*) [LE α] [LE β] :
     (OrderIso.sumComm α β).symm = OrderIso.sumComm β α :=
   rfl
 
-/-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
+/-- `Equiv.sumAssoc` promoted to an order isomorphism between disjoint sums. -/
 def sumAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ β) ⊕ γ ≃o α ⊕ (β ⊕ γ) :=
   { Equiv.sumAssoc α β γ with
     map_rel_iff' := fun {a b} => by
@@ -576,7 +576,7 @@ theorem sumDualDistrib_symm_inl : (sumDualDistrib α β).symm (inl (toDual a)) =
 theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) = toDual (inr b) :=
   rfl
 
-/-- `Equiv.sumCongr` promoted to an order isomorphism. -/
+/-- `Equiv.sumCongr` promoted to an order isomorphism between lexicographic sums. -/
 @[simps! apply]
 def sumLexCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ β₁ ≃o α₂ ⊕ₗ β₂ where
   toEquiv := ofLex.trans ((Equiv.sumCongr ea eb).trans toLex)
