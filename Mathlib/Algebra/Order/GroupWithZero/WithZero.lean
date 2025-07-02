@@ -3,6 +3,7 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
+import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
@@ -105,7 +106,7 @@ section Units
 -- end test
 
 @[simps!]
-def withZeroUnits_OrderIso [DecidablePred (fun a : A ↦ a = 0)] :
+def withZeroUnits_OrderIso : --[DecidablePred (fun a : A ↦ a = 0)] :
     WithZero Aˣ ≃o A where
   __ := withZeroUnitsEquiv
   map_rel_iff' /- {⟨u | u⟩ ⟨v | v⟩} -/ := by
@@ -132,6 +133,8 @@ def withZeroUnits_OrderIso [DecidablePred (fun a : A ↦ a = 0)] :
             rw [← WithZero.coe_le_coe]
             exact h
 
+def withZeroUnits_OrderEmbedding : WithZero Aˣ ↪o A := withZeroUnits_OrderIso.toOrderEmbedding
+
 
 end Units
 
@@ -139,21 +142,40 @@ section MonoidWithZeroHom
 
 open MonoidWithZeroHom
 
-def valueGroup_MulWithZeroEmbedding : (valueGroup₀ f) →*₀ B :=
-  (withZeroUnitsHom).comp (WithZero.map' (valueGroup f).subtype)
+def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
+  (withZeroUnitsHom).comp <| WithZero.map' (valueGroup f).subtype
 
-def valueGroup_OrderEmbedding : WithZero (valueGroup f) ↪o B where
-  __ := valueGroup_MulWithZeroEmbedding
-  inj' := by
-    apply Function.Injective.comp (withZeroUnitsHom_inj)
-    simp [map'_injective_iff]
+def valueGroup_OrderEmbedding : valueGroup f ↪o Bˣ := OrderEmbedding.subtype ..
+  -- toFun := (valueGroup f).subtype
+  -- inj' := by simp
+  -- map_rel_iff' := by simp
+
+def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o WithZero Bˣ where
+  toFun := WithZero.map' (valueGroup f).subtype
+  inj' := WithZero.map'_injective Subtype.val_injective ..
   map_rel_iff' := by
     intro a b
-    simp [valueGroup_MulWithZeroEmbedding]
-    have one :  ((map' (valueGroup f).subtype) a) ≤
-      ((map' (valueGroup f).subtype) b) ↔ a ≤ b := by sorry
-    rw [← one]
-    have two (x y : WithZero Bˣ) : withZeroUnitsHom x ≤ withZeroUnitsHom y ↔ x ≤ y := sorry
-    apply two
+    simp
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · revert a
+      simp [WithZero.forall]
+      intro a ha h_le
+      have hb : b ≠ 0 := by
+        by_contra H
+        have := WithZero.zero_lt_coe a
+        rw [lt_iff_not_ge] at this
+        apply this
+        convert h_le
+        rw [H]
+        simp
+      obtain ⟨u, rfl⟩ := WithZero.ne_zero_iff_exists.mp hb
+      simp only [coe_le_coe, ge_iff_le, map'_coe, Subgroup.subtype_apply] at h_le ⊢
+      exact h_le
+    · apply WithZero.map'_mono _ h
+      exact fun _ _ x ↦ x
+
+
+def valueGroup₀_OrderEmbedding : WithZero (valueGroup f) ↪o B :=
+  valueGroup₀_OrderEmbedding'.trans withZeroUnits_OrderEmbedding
 
 end MonoidWithZeroHom
