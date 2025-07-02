@@ -593,7 +593,7 @@ theorem sumLexCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
   rfl
 
 @[simp]
-theorem sumLexCongr_refl : (OrderIso.refl α).sumLexCongr (OrderIso.refl β) = OrderIso.refl _ := by
+theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
 
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
