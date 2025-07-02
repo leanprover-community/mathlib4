@@ -25,15 +25,10 @@ section Semiring
 variable [Semiring R]
 
 /-- This says that `p` has `natDegree` `n` and is monic. -/
-def IsMonicOfDegree (p : R[X]) (n : ℕ) : Prop :=
-  p.natDegree = n ∧ p.Monic
-
-lemma IsMonicOfDegree.monic {p : R[X]} {n : ℕ} (h : IsMonicOfDegree p n) : p.Monic :=
-  h.2
-
-lemma IsMonicOfDegree.natDegree_eq {p : R[X]} {n : ℕ} (h : IsMonicOfDegree p n) :
-    p.natDegree = n :=
-  h.1
+@[mk_iff isMonicOfDegree_iff']
+structure IsMonicOfDegree (p : R[X]) (n : ℕ) : Prop where
+  natDegree_eq : p.natDegree = n
+  monic : p.Monic
 
 lemma IsMonicOfDegree.ne_zero [Nontrivial R] {p : R[X]} {n : ℕ} (h : IsMonicOfDegree p n) :
     p ≠ 0 :=
@@ -41,7 +36,7 @@ lemma IsMonicOfDegree.ne_zero [Nontrivial R] {p : R[X]} {n : ℕ} (h : IsMonicOf
 
 @[simp]
 lemma isMonicOfDegree_zero {p : R[X]} : IsMonicOfDegree p 0 ↔ p = 1 := by
-  simp only [IsMonicOfDegree]
+  simp only [isMonicOfDegree_iff']
   refine ⟨fun ⟨H₁, H₂⟩ ↦ eq_one_of_monic_natDegree_zero H₂ H₁, fun H ↦ ?_⟩
   subst H
   simp
@@ -60,7 +55,7 @@ lemma isMonicOfDegree_iff_of_subsingleton [Subsingleton R] {p : R[X]} {n : ℕ} 
 
 lemma isMonicOfDegree_iff [Nontrivial R] (p : R[X]) (n : ℕ) :
     IsMonicOfDegree p n ↔ p.natDegree ≤ n ∧ p.coeff n = 1 := by
-  simp only [IsMonicOfDegree]
+  simp only [isMonicOfDegree_iff']
   refine ⟨fun ⟨H₁, H₂⟩ ↦ ⟨H₁.le, H₁ ▸ Monic.coeff_natDegree H₂⟩, fun ⟨H₁, H₂⟩ ↦ ⟨?_, ?_⟩⟩
   · exact natDegree_eq_of_le_of_coeff_ne_zero H₁ <| H₂ ▸ one_ne_zero
   · exact monic_of_natDegree_le_of_coeff_eq_one n H₁ H₂
