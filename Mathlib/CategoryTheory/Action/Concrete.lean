@@ -97,11 +97,11 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
 def ofMulAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat G where
   V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := InducedCategory.endEquiv.symm.toMonoidHom.comp MulAction.toEndHom
 
 @[simp]
 theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
-    (g : G) (x : H) : (FintypeCat.ofMulAction G H).ρ g x = (g • x : H) :=
+    (g : G) (x : H) : ((FintypeCat.ofMulAction G H).ρ g).hom x = (g • x : H) :=
   rfl
 
 section
@@ -115,20 +115,20 @@ variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
 multiplication with `g⁻¹` on the right. -/
 def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
-  toFun v := {
-    hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
+  toFun v :=
+  { hom := FintypeCat.homMk (Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
       apply (QuotientGroup.leftRel_apply).mpr
       -- We avoid `group` here to minimize imports while low in the hierarchy;
       -- typically it would be better to invoke the tactic.
-      simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
+      simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _)
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
       induction' x using Quotient.inductionOn with x
       simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
-      show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
-      simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
-      rfl
-  }
+      dsimp
+      apply (Quotient.lift_mk _ _ _).trans
+      simp only [smul_eq_mul, QuotientGroup.mk_mul, mul_assoc]
+      rfl }
   map_one' := by
     apply Action.hom_ext
     ext (x : G ⧸ N)
@@ -165,8 +165,8 @@ lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
 /-- If `N` and `H` are subgroups of a group `G` with `N ≤ H`, this is the canonical
 `G`-morphism `G ⧸ N ⟶ G ⧸ H`. -/
 def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ (G ⧸ₐ H) where
-  hom := Quotient.lift _ <| fun _ _ hab ↦ Quotient.sound <|
-    (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab)
+  hom := FintypeCat.homMk (Quotient.lift _ <| fun _ _ hab ↦ Quotient.sound <|
+    (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab))
   comm g := by
     ext (x : G ⧸ N)
     induction' x using Quotient.inductionOn with μ

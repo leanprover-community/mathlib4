@@ -192,4 +192,11 @@ end FullyFaithful
 
 end Functor
 
+/-- The multiplicative bijection `End X ≃* End (F X)` when `X : InducedCategory C F`. -/
+@[simps!]
+def InducedCategory.endEquiv {D : Type*} {F : D → C}
+    {X : InducedCategory C F} : End X ≃* End (F X) where
+  toEquiv := InducedCategory.homEquiv
+  map_mul' _ _ := rfl
+
 end CategoryTheory
