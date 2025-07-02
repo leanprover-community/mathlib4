@@ -35,8 +35,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 assert_not_exists Equiv.Perm.cycleType
 
-suppress_compilation
-
 open scoped TensorProduct
 
 open TensorProduct
