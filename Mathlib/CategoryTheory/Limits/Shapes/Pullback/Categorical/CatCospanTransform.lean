@@ -28,10 +28,6 @@ transformations are used to encode 2-functoriality of categorical pullback squar
 
 namespace CategoryTheory.Limits
 
-attribute [local simp]
-  CatCommSq.iso_hom_naturality CatCommSq.iso_hom_naturality_assoc
-  CatCommSq.iso_hom_naturality CatCommSq.iso_inv_naturality_assoc
-
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂
 
 /-- A `CatCospanTransform F G F' G'` is a diagram
