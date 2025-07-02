@@ -143,26 +143,20 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
   obtain ⟨r', hr', r'r⟩ : ∃ r', 1 < r' ∧ r' < r := exists_between hr
   have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   let G := (trivializationAt F E x).continuousLinearEquivAt ℝ x h'x
-  -- choose `δ` small enough that, in the end of the argument, the error `δ ‖w‖ ^ 2` will be small
-  -- enough in terms of `r`. The key player here is the norm of the linear equivalence between
-  -- the fiber over `x` and the model space, which is unknown a priori, but positive and finite.
-  obtain ⟨δ, δpos, hδ, h'δ⟩ : ∃ δ, 0 < δ ∧ 0 < 1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2
-      ∧ (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹ < r' ^ 2 := by
+  let C := (‖(G : E x →L[ℝ] F)‖) ^ 2
+  -- choose `δ` small enough that the computation below works when the metrics at `x` and `y`
+  -- are `δ` close. When writing this proof, I have followed my nose in the computation, and
+  -- recorded only in the end how small `δ` needs to be. The reader should skip the precise
+  -- condition for now, as it doesn't give any useful insight.
+  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (r' ^ 2) ⁻¹ < 1 - δ * C := by
     have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
-    have B : Tendsto (fun δ ↦ 1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2)
-        (𝓝[>] 0) (𝓝 (1 - 0 * (‖(G : E x →L[ℝ] F)‖) ^ 2)) := by
+    have B : Tendsto (fun δ ↦ 1 - δ * C) (𝓝[>] 0) (𝓝 (1 - 0 * C)) := by
       apply tendsto_inf_left
       exact tendsto_const_nhds.sub (tendsto_id.mul tendsto_const_nhds)
-    have B' : ∀ᶠ δ in 𝓝[>] 0, 0 < 1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 :=
-      (tendsto_order.1 B).1 _ (by simp)
-    have C : Tendsto (fun δ ↦ (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹) (𝓝[>] 0)
-        (𝓝 ((1 - 0 * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹)) := by
-      apply tendsto_inf_left
-      exact (tendsto_const_nhds.sub (tendsto_id.mul tendsto_const_nhds)).inv₀ (by simp)
-    have C' : ∀ᶠ δ in 𝓝[>] 0, (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) ⁻¹ < r' ^ 2 := by
-      apply (tendsto_order.1 C).2
-      simpa using hr'.trans_le (le_abs_self _)
-    exact (A.and (B'.and C')).exists
+    have B' : ∀ᶠ δ in 𝓝[>] 0, (r' ^ 2) ⁻¹ < 1 - δ * C := by
+      apply (tendsto_order.1 B).1
+      simpa using inv_lt_one_of_one_lt₀ (by nlinarith)
+    exact (A.and B').exists
   rcases h.exists_continuous with ⟨g, g_cont, hg⟩
   let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun y ↦
     inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x y x y (g y)
@@ -197,7 +191,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     simp
   rw [hgx, hgy]
   -- get a good control for the norms of `w` in the model space, using continuity
-  have : g' x w w ≤ δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g' x w w + g' y w w := calc
+  have : g' x w w ≤ δ * C * g' x w w + g' y w w := calc
         g' x w w
     _ = (g' x - g' y) w w + g' y w w := by simp
     _ ≤ ‖g' x - g' y‖ * ‖w‖ * ‖w‖ + g' y w w := by
@@ -209,17 +203,18 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
       have : w = G (G.symm w) := by simp
       conv_lhs => rw [this]
       exact le_opNorm (G : E x →L[ℝ] F) (G.symm w)
-    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * ‖G.symm w‖^2 + g' y w w := by ring
-    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g x (G.symm w) (G.symm w) + g' y w w := by
+    _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by
       simp [← real_inner_self_eq_norm_sq, hg]
-    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g' x w w + g' y w w := by
+    _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
-  have : (1 - δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) * g' x w w ≤ g' y w w := by linarith
-  rw [← (le_div_iff₀' hδ), div_eq_inv_mul] at this
+  have : (1 - δ * C) * g' x w w ≤ g' y w w := by linarith
+  rw [← (le_div_iff₀' (lt_of_le_of_lt (by positivity) hδ )), div_eq_inv_mul] at this
   apply this.trans
   gcongr
-  rw [← hgy, ← hg,real_inner_self_eq_norm_sq]
-  positivity
+  · rw [← hgy, ← hg,real_inner_self_eq_norm_sq]
+    positivity
+  · exact inv_le_of_inv_le₀ (by positivity) hδ.le
 
 /-- In a continuous Riemannian bundle, the trivialization at a point is locally bounded in norm. -/
 lemma eventually_norm_trivializationAt_lt (x : B) :
@@ -258,20 +253,20 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
   obtain ⟨r', hr', r'r⟩ : ∃ r', 1 < r' ∧ r' < r := exists_between hr
   have h'x : x ∈ (trivializationAt F E x).baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   let G := (trivializationAt F E x).continuousLinearEquivAt ℝ x h'x
-  -- choose `δ` small enough that, in the end of the argument, the error `δ ‖w‖ ^ 2` will be small
-  -- enough in terms of `r`. The key player here is the norm of the linear equivalence between
-  -- the fiber over `x` and the model space, which is unknown a priori, but positive and finite.
-  obtain ⟨δ, δpos, h'δ⟩ : ∃ δ, 0 < δ
-      ∧ (1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) < r' ^ 2 := by
+  let C := (‖(G : E x →L[ℝ] F)‖) ^ 2
+  -- choose `δ` small enough that the computation below works when the metrics at `x` and `y`
+  -- are `δ` close. When writing this proof, I have followed my nose in the computation, and
+  -- recorded only in the end how small `δ` needs to be. The reader should skip the precise
+  -- condition for now, as it doesn't give any useful insight.
+  obtain ⟨δ, δpos, h'δ⟩ : ∃ δ, 0 < δ ∧ (1 + δ * C) < r' ^ 2 := by
     have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
-    have C : Tendsto (fun δ ↦ 1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) (𝓝[>] 0)
-        (𝓝 (1 + 0 * (‖(G : E x →L[ℝ] F)‖) ^ 2)) := by
+    have B : Tendsto (fun δ ↦ 1 + δ * C) (𝓝[>] 0) (𝓝 (1 + 0 * C)) := by
       apply tendsto_inf_left
       exact tendsto_const_nhds.add (tendsto_id.mul tendsto_const_nhds)
-    have C' : ∀ᶠ δ in 𝓝[>] 0, 1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 < r' ^ 2 := by
-      apply (tendsto_order.1 C).2
+    have B' : ∀ᶠ δ in 𝓝[>] 0, 1 + δ * C < r' ^ 2 := by
+      apply (tendsto_order.1 B).2
       simpa using hr'.trans_le (le_abs_self _)
-    exact (A.and C').exists
+    exact (A.and B').exists
   rcases h.exists_continuous with ⟨g, g_cont, hg⟩
   let g' : B → F →L[ℝ] F →L[ℝ] ℝ := fun y ↦
     inCoordinates F E (F →L[ℝ] ℝ) (fun x ↦ E x →L[ℝ] ℝ) x y x y (g y)
@@ -317,16 +312,16 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
       have : w = G (G.symm w) := by simp
       conv_lhs => rw [this]
       exact le_opNorm (G : E x →L[ℝ] F) (G.symm w)
-    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * ‖G.symm w‖^2 + g' x w w := by ring
-    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g x (G.symm w) (G.symm w) + g' x w w := by
+    _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by
       simp [← real_inner_self_eq_norm_sq, hg]
-    _ = δ * (‖(G : E x →L[ℝ] F)‖) ^ 2 * g' x w w + g' x w w := by
+    _ = δ * C * g' x w w + g' x w w := by
       congr
       rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
       simp only [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization,
         LinearMap.id_coe, id_eq, w]
       rfl
-    _ = (1 + δ * (‖(G : E x →L[ℝ] F)‖) ^ 2) * g' x w w := by ring
+    _ = (1 + δ * C) * g' x w w := by ring
     _ ≤ r' ^ 2 * g' x w w := by
       gcongr
       rw [← hgx, ← hg,real_inner_self_eq_norm_sq]
