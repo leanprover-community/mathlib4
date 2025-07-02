@@ -159,7 +159,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
 form `hull T a` for some `a` in `α`.-/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     {S : Set T} : IsClosed S ↔ ∃ (a : α), S = hull T a := by
-  simp only [← isOpen_compl_iff, (isOpen_iff hT), compl_inj_iff]
+  simp only [← isOpen_compl_iff, isOpen_iff hT, compl_inj_iff]
 
 /-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
 abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
