@@ -16,7 +16,7 @@ namespace NNRat
 
 section DivisionSemiring
 
-variable (K : Type*) [DivisionSemiring K] [CharZero K]
+variable {K : Type*} [DivisionSemiring K] [CharZero K]
 
 @[norm_cast]
 theorem cast_listSum (l : List ℚ≥0) : (l.sum : K) = (l.map (↑)).sum :=
@@ -46,7 +46,7 @@ end DivisionSemiring
 
 section Semifield
 
-variable (K : Type*) [Semifield K] [CharZero K]
+variable {K : Type*} [Semifield K] [CharZero K]
 
 @[norm_cast]
 theorem cast_multisetProd (s : Multiset ℚ≥0) : (s.prod : K) = (s.map (↑)).prod :=
