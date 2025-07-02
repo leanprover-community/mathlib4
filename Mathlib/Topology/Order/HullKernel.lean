@@ -141,10 +141,7 @@ universe v
 
 lemma hull_iSup {ι : Sort v} (s : ι → α) : hull T (iSup s) = ⋂ i, hull T (s i) := by aesop
 
-lemma hull_sSup (S : Set α) : hull T (sSup S) = ⋂₀ { hull T a | a ∈ S } := by
-  ext x : 1
-  simp_all only [mem_preimage, mem_Ici, sSup_le_iff, mem_sInter, mem_setOf_eq, forall_exists_index,
-    and_imp, forall_apply_eq_imp_iff₂]
+lemma hull_sSup (S : Set α) : hull T (sSup S) = ⋂₀ { hull T a | a ∈ S } := by aesop
 
 /- When `α` is complete, a set is Lower topology relative-open if and only if it is of the form
 `(hull T a)ᶜ` for some `a` in `α`.-/
