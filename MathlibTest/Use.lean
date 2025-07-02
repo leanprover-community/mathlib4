@@ -39,7 +39,7 @@ numerals are polymorphic in Lean, but the numeral `42` cannot be used in a conte
   Nat × Nat
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use 42; sorry
@@ -96,7 +96,7 @@ numerals are polymorphic in Lean, but the numeral `1` cannot be used in a contex
   Option Nat
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Option Nat := by use 1
@@ -108,7 +108,7 @@ numerals are polymorphic in Lean, but the numeral `1` cannot be used in a contex
   Nat → Nat
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Nat → Nat := by use 1

@@ -249,7 +249,7 @@ theorem antipode_comul₂ (A : C) [Hopf_Class A] :
     simp only [MonoidalCategory.whiskerLeft_comp]
   slice_lhs 5 7 =>
     rw [associator_inv_naturality_right_assoc, whisker_exchange]
-  simp only [Mon_.monMonoidalStruct_tensorObj_X, Mon_.tensorUnit_X, braiding_tensorUnit_left,
+  simp only [braiding_tensorUnit_left,
     MonoidalCategory.whiskerLeft_comp, whiskerLeft_rightUnitor_inv,
     MonoidalCategory.whiskerRight_id, whiskerLeft_rightUnitor, Category.assoc, Iso.hom_inv_id_assoc,
     Iso.inv_hom_id_assoc, whiskerLeft_inv_hom_assoc, antipode_right_assoc]
@@ -296,8 +296,7 @@ theorem mul_antipode₁ (A : C) [Hopf_Class A] :
     rw [associator_naturality_left]
   slice_lhs 8 9 =>
     rw [← tensorHom_def]
-  simp only [Mon_.monMonoidalStruct_tensorObj_X, Category.assoc, pentagon_inv_inv_hom_hom_inv_assoc,
-    Mon_.tensorUnit_X]
+  simp only [Category.assoc, pentagon_inv_inv_hom_hom_inv_assoc]
   slice_lhs 1 7 =>
     rw [Bimon_.compatibility]
   slice_lhs 2 4 =>
@@ -401,7 +400,7 @@ theorem mul_antipode₂ (A : C) [Hopf_Class A] :
     rw [← BraidedCategory.braiding_naturality_right]
     simp only [MonoidalCategory.whiskerLeft_comp]
   rw [← associator_naturality_middle_assoc]
-  simp only [Mon_.tensorUnit_X, braiding_tensorUnit_right, MonoidalCategory.whiskerLeft_comp]
+  simp only [braiding_tensorUnit_right, MonoidalCategory.whiskerLeft_comp]
   slice_lhs 6 7 =>
     simp only [← MonoidalCategory.whiskerLeft_comp]
     rw [Iso.inv_hom_id]

@@ -90,7 +90,7 @@ instance [Monad m] : MonadLift m (ContT r m) where
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
+  simp only [monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
     ContT.monadLift]
 
 instance : MonadCont (ContT r m) where
@@ -145,7 +145,7 @@ instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m)
   callCC_bind_right := by
     intros; simp only [callCC, ExceptT.callCC, ExceptT.run_bind, callCC_bind_right]; ext
     dsimp
-    congr with ⟨⟩ <;> simp [ExceptT.bindCont, @callCC_dummy m _]
+    congr with ⟨⟩ <;> simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
     simp only [callCC, ExceptT.callCC, ExceptT.goto_mkLabel, map_eq_bind_pure_comp, Function.comp,

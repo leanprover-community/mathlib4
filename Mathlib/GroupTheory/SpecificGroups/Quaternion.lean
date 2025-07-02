@@ -156,7 +156,7 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
-  ⟨⟨a 0, xa 0, by simp [← a_zero]⟩⟩
+  ⟨⟨a 0, xa 0, by simp [- a_zero]⟩⟩
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/

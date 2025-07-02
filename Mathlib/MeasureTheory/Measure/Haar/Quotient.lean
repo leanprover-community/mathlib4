@@ -244,9 +244,9 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     apply measure_mono
     refine interior_subset.trans ?_
     rw [QuotientGroup.coe_mk']
-    show (K : Set G) ⊆ π ⁻¹' (π '' K)
+    change (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K
-  · show ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
+  · change ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt
     refine lt_of_le_of_lt ?_ finiteCovol.lt_top
     apply measure_mono
