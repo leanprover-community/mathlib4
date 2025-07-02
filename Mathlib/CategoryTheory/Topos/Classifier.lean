@@ -387,7 +387,7 @@ that `Ω₀` is terminal and define the classifier structure. -/
 noncomputable def ofMonoTruth
     {C : Type u} [Category.{v} C]
     (Ω₀ Ω : C)
-    (truth : Ω₀ ⟶ Ω) [mt : Mono truth]
+    (truth : Ω₀ ⟶ Ω) [Mono truth]
     (χ₀ : ∀ {U X : C} (m : U ⟶ X) [Mono m], U ⟶ Ω₀)
     (χ : ∀ {U X : C} (m : U ⟶ X) [Mono m], X ⟶ Ω)
     (isPullback : ∀ {U X : C} (m : U ⟶ X) [Mono m], IsPullback m (χ₀ m) (χ m) truth)
@@ -399,7 +399,7 @@ noncomputable def ofMonoTruth
   let uniq₀ {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
       (pb' : IsPullback m χ₀' χ' truth) : χ₀' = χ₀ m :=
     let pb := (isPullback m)
-    mt.right_cancellation _ _ (by rw [← pb'.w, uniq m χ₀' χ' pb', pb.w])
+    Mono.right_cancellation _ _ (by rw [← pb'.w, uniq m χ₀' χ' pb', pb.w])
 
   -- Step 1: Show Ω₀ is terminal
   have : ∀ Y : C, Unique (Y ⟶ Ω₀) := fun Y => {
