@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Logic.Small.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstanceRing
 
 /-!
 # Transfer ring structures from `α` to `Shrink α`.
