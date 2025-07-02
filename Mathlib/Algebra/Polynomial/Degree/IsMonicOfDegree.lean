@@ -30,10 +30,6 @@ structure IsMonicOfDegree (p : R[X]) (n : ℕ) : Prop where
   natDegree_eq : p.natDegree = n
   monic : p.Monic
 
-lemma IsMonicOfDegree.ne_zero [Nontrivial R] {p : R[X]} {n : ℕ} (h : IsMonicOfDegree p n) :
-    p ≠ 0 :=
-  h.monic.ne_zero
-
 @[simp]
 lemma isMonicOfDegree_zero {p : R[X]} : IsMonicOfDegree p 0 ↔ p = 1 := by
   simp only [isMonicOfDegree_iff']
@@ -89,19 +85,6 @@ lemma IsMonicOfDegree.pow {p : R[X]} {m : ℕ} (hp : IsMonicOfDegree p m) (n : �
   | succ n ih =>
     rw [pow_succ, mul_add, mul_one]
     exact ih.mul hp
-
-variable (R) in
-lemma isMonicOfDegree_X [Nontrivial R] : IsMonicOfDegree (X : R[X]) 1 :=
-  (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_le, coeff_X_one⟩
-
-variable (R)  in
-lemma isMonicOfDegree_X_pow [Nontrivial R] (n : ℕ) :
-    IsMonicOfDegree ((X : R[X]) ^ n) n :=
-  (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_pow_le n, coeff_X_pow_self n⟩
-
-lemma isMonicOfDegree_monomial_one [Nontrivial R] (n : ℕ) :
-    IsMonicOfDegree (monomial n (1 : R)) n := by
-  simpa only [monomial_one_right_eq_X_pow] using isMonicOfDegree_X_pow R n
 
 lemma IsMonicOfDegree.coeff_eq {p q : R[X]} {n : ℕ} (hp : IsMonicOfDegree p n)
     (hq : IsMonicOfDegree q n) {m : ℕ} (hm : n ≤ m) :
@@ -171,11 +154,26 @@ lemma IsMonicOfDegree.comp {p q : R[X]} {m n : ℕ} (hn : n ≠ 0) (hp : IsMonic
   rw [coeff_comp_degree_mul_degree (hq.natDegree_eq ▸ hn), hp.leadingCoeff_eq, hq.leadingCoeff_eq,
     one_pow, one_mul]
 
-lemma isMonicOfDegree_X_add_one [Nontrivial R] (r : R) : IsMonicOfDegree (X + C r) 1 :=
+variable [Nontrivial R]
+
+lemma IsMonicOfDegree.ne_zero {p : R[X]} {n : ℕ} (h : IsMonicOfDegree p n) : p ≠ 0 :=
+  h.monic.ne_zero
+
+variable (R) in
+lemma isMonicOfDegree_X : IsMonicOfDegree (X : R[X]) 1 :=
+  (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_le, coeff_X_one⟩
+
+variable (R)  in
+lemma isMonicOfDegree_X_pow (n : ℕ) : IsMonicOfDegree ((X : R[X]) ^ n) n :=
+  (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_pow_le n, coeff_X_pow_self n⟩
+
+lemma isMonicOfDegree_monomial_one (n : ℕ) : IsMonicOfDegree (monomial n (1 : R)) n := by
+  simpa only [monomial_one_right_eq_X_pow] using isMonicOfDegree_X_pow R n
+
+lemma isMonicOfDegree_X_add_one (r : R) : IsMonicOfDegree (X + C r) 1 :=
   (isMonicOfDegree_X R).add_right (by compute_degree!)
 
-lemma isMonicOfDegree_one_iff [Nontrivial R] {f : R[X]} :
-    IsMonicOfDegree f 1 ↔ ∃ r : R, f = X + C r := by
+lemma isMonicOfDegree_one_iff {f : R[X]} : IsMonicOfDegree f 1 ↔ ∃ r : R, f = X + C r := by
   refine ⟨fun H ↦ ?_, fun ⟨r, H⟩ ↦ H ▸ isMonicOfDegree_X_add_one r⟩
   refine ⟨f.coeff 0, ?_⟩
   ext1 n
@@ -183,12 +181,11 @@ lemma isMonicOfDegree_one_iff [Nontrivial R] {f : R[X]} :
   · simp
   · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by omega)
 
-lemma isMonicOfDegree_add_add_two [Nontrivial R] (a b : R) :
-    IsMonicOfDegree (X ^ 2 + C a * X + C b) 2 := by
+lemma isMonicOfDegree_add_add_two (a b : R) : IsMonicOfDegree (X ^ 2 + C a * X + C b) 2 := by
   rw [add_assoc]
   exact (isMonicOfDegree_X_pow R 2).add_right <| by compute_degree!
 
-lemma isMonicOfDegree_two_iff [Nontrivial R] {f : R[X]} :
+lemma isMonicOfDegree_two_iff {f : R[X]} :
     IsMonicOfDegree f 2 ↔ ∃ a b : R, f = X ^ 2 + C a * X + C b := by
   refine ⟨fun H ↦ ?_, fun ⟨a, b, h⟩ ↦ h ▸ isMonicOfDegree_add_add_two a b⟩
   refine ⟨f.coeff 1, f.coeff 0, ext fun n ↦ ?_⟩
@@ -225,16 +222,17 @@ lemma IsMonicOfDegree.sub {p q : R[X]} {n : ℕ} (hp : IsMonicOfDegree p n) (hq 
   rw [sub_eq_add_neg]
   exact hp.add_right <| (natDegree_neg q) ▸ hq
 
-lemma isMonicOfDegree_X_sub_one [Nontrivial R] (r : R) : IsMonicOfDegree (X - C r) 1 :=
+variable [Nontrivial R]
+
+lemma isMonicOfDegree_X_sub_one (r : R) : IsMonicOfDegree (X - C r) 1 :=
   (isMonicOfDegree_X R).sub (by compute_degree!)
 
-lemma isMonicOfDegree_sub_add_two [Nontrivial R] (a b : R) :
-    IsMonicOfDegree (X ^ 2 - C a * X + C b) 2 := by
+lemma isMonicOfDegree_sub_add_two (a b : R) : IsMonicOfDegree (X ^ 2 - C a * X + C b) 2 := by
   rw [sub_add]
   exact (isMonicOfDegree_X_pow R 2).add_right <| by compute_degree!
 
 /-- A version of `Polynomial.isMonicOfDegree_two_iff` with negated middle coefficient. -/
-lemma isMonicOfDegree_two_iff' [Nontrivial R] {f : R[X]} :
+lemma isMonicOfDegree_two_iff' {f : R[X]} :
     IsMonicOfDegree f 2 ↔ ∃ a b : R, f = X ^ 2 - C a * X + C b := by
   refine ⟨fun H ↦ ?_, fun ⟨a, b, h⟩ ↦ h ▸ isMonicOfDegree_sub_add_two a b⟩
   simp only [sub_eq_add_neg, ← neg_mul, ← map_neg]
