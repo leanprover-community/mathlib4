@@ -203,6 +203,23 @@ lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := b
 
 end PartialOrder
 
+/-- A star projection operator is positive.
+The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
+have `StarOrderedRing (E →L[𝕜] E)`. -/
+theorem isStarProjection_isPositive {p : E →L[𝕜] E}
+    (hp : IsStarProjection p) : p.IsPositive := by
+  refine ⟨hp.isSelfAdjoint, ?_⟩
+  rw [← hp.isIdempotentElem.eq]
+  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
+  intro x
+  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
+  exact inner_self_nonneg
+
+/-- An idempotent operator is positive if and only if it is self-adjoint. -/
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
+  ⟨fun h => h.isSelfAdjoint, fun h => isStarProjection_isPositive ⟨hp, h⟩⟩
+
 end ContinuousLinearMap
 
 namespace LinearMap
