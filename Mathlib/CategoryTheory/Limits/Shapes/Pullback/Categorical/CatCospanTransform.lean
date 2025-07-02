@@ -119,13 +119,13 @@ structure CatCospanTransformMorphism
   base : ψ.base ⟶ ψ'.base
   /-- the coherence condition for the left square -/
   left_coherence :
-      ψ.squareLeft.iso.hom ≫ whiskerRight left F' =
-      whiskerLeft F base ≫ ψ'.squareLeft.iso.hom := by
+      ψ.squareLeft.iso.hom ≫ Functor.whiskerRight left F' =
+      Functor.whiskerLeft F base ≫ ψ'.squareLeft.iso.hom := by
     aesop_cat
   /-- the coherence condition for the right square -/
   right_coherence :
-      ψ.squareRight.iso.hom ≫ whiskerRight right G' =
-      whiskerLeft G base ≫ ψ'.squareRight.iso.hom := by
+      ψ.squareRight.iso.hom ≫ Functor.whiskerRight right G' =
+      Functor.whiskerLeft G base ≫ ψ'.squareRight.iso.hom := by
     aesop_cat
 
 namespace CatCospanTransform
@@ -176,18 +176,18 @@ lemma right_coherence_app {ψ ψ' : CatCospanTransform F G F' G'}
 def whiskerLeft (φ : CatCospanTransform F G F' G')
     {ψ ψ' : CatCospanTransform F' G' F'' G''} (α : ψ ⟶ ψ') :
     (φ.comp ψ) ⟶ (φ.comp ψ') where
-  left := CategoryTheory.whiskerLeft φ.left α.left
-  right := CategoryTheory.whiskerLeft φ.right α.right
-  base := CategoryTheory.whiskerLeft φ.base α.base
+  left := Functor.whiskerLeft φ.left α.left
+  right := Functor.whiskerLeft φ.right α.right
+  base := Functor.whiskerLeft φ.base α.base
 
 /-- Whiskering right of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
 def whiskerRight {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ⟶ ψ')
     (φ : CatCospanTransform F' G' F'' G'') :
     (ψ.comp φ) ⟶ (ψ'.comp φ) where
-  left := CategoryTheory.whiskerRight α.left φ.left
-  right := CategoryTheory.whiskerRight α.right φ.right
-  base := CategoryTheory.whiskerRight α.base φ.base
+  left := Functor.whiskerRight α.left φ.left
+  right := Functor.whiskerRight α.right φ.right
+  base := Functor.whiskerRight α.base φ.base
   left_coherence := by
     ext x
     dsimp
@@ -211,12 +211,12 @@ def mkIso {ψ ψ' : CatCospanTransform F G F' G'}
     (left : ψ.left ≅ ψ'.left) (right : ψ.right ≅ ψ'.right)
     (base : ψ.base ≅ ψ'.base)
     (left_coherence :
-        ψ.squareLeft.iso.hom ≫ CategoryTheory.whiskerRight left.hom F' =
-        CategoryTheory.whiskerLeft F base.hom ≫ ψ'.squareLeft.iso.hom := by
+        ψ.squareLeft.iso.hom ≫ Functor.whiskerRight left.hom F' =
+        Functor.whiskerLeft F base.hom ≫ ψ'.squareLeft.iso.hom := by
       aesop_cat)
     (right_coherence :
-        ψ.squareRight.iso.hom ≫ CategoryTheory.whiskerRight right.hom G' =
-        CategoryTheory.whiskerLeft G base.hom ≫ ψ'.squareRight.iso.hom := by
+        ψ.squareRight.iso.hom ≫ Functor.whiskerRight right.hom G' =
+        Functor.whiskerLeft G base.hom ≫ ψ'.squareRight.iso.hom := by
       aesop_cat) :
     ψ ≅ ψ' where
   hom :=
