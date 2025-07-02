@@ -3,6 +3,8 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
+import Mathlib.Algebra.Order.Monoid.Units
+import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
@@ -78,3 +80,27 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
         dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_le_mul_right' h x
+
+open MonoidWithZeroHom
+
+variable {A B F : Type*} [FunLike F A B] (f : F)
+variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+variable [Preorder A] [LinearOrder B]
+
+def valueGroup_MulWithZeroEmbedding : (valueGroup₀ f) →*₀ B :=
+  (withZeroUnitsHom).comp (WithZero.map' (valueGroup f).subtype)
+
+def valueGroup_OrderEmbedding : WithZero (valueGroup f) ↪o B where
+  __ := valueGroup_MulWithZeroEmbedding
+  inj' := by
+    apply Function.Injective.comp (withZeroUnitsHom_inj)
+    rw [WithZero.map'_injective_iff]
+    exact Subgroup.subtype_injective ..
+  map_rel_iff' := by
+    intro a b
+    simp [valueGroup_MulWithZeroEmbedding]
+    have one :  ((WithZero.map' (valueGroup f).subtype) a) ≤
+      ((WithZero.map' (valueGroup f).subtype) b) ↔ a ≤ b := by sorry
+    rw [← one]
+    have two (x y : WithZero Bˣ) : withZeroUnitsHom x ≤ withZeroUnitsHom y ↔ x ≤ y := sorry
+    apply two
