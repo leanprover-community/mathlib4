@@ -171,7 +171,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
 /- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the
 form `hull T a` for some `a` in `α`.-/
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
-    (S : Set T) : IsClosed S ↔ ∃ (a : α), S = hull T a := by
+    {S : Set T} : IsClosed S ↔ ∃ (a : α), S = hull T a := by
   simp only [← isOpen_compl_iff, (isOpen_iff hT), preimage_compl, compl_inj_iff]
 
 /-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
