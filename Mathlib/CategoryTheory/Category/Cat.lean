@@ -26,7 +26,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory
+open Bicategory Functor
 
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/

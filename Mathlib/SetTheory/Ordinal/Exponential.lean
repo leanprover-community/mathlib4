@@ -310,7 +310,7 @@ theorem log_zero_left : ∀ b, log 0 b = 0 :=
 @[simp]
 theorem log_zero_right (b : Ordinal) : log b 0 = 0 := by
   obtain hb | hb := lt_or_ge 1 b
-  · rw [log_def hb, ← Ordinal.le_zero, pred_le, succ_zero]
+  · rw [log_def hb, ← Ordinal.le_zero, pred_le_iff_le_succ, succ_zero]
     apply csInf_le'
     rw [mem_setOf, opow_one]
     exact bot_lt_of_lt hb
@@ -327,7 +327,8 @@ theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
   rcases zero_or_succ_or_isSuccLimit t with (h | h | h)
   · refine ((one_le_iff_ne_zero.2 hx).not_gt ?_).elim
     simpa only [h, opow_zero] using this
-  · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
+  · rw [log_def hb x, succ_pred_eq_iff_not_isSuccPrelimit, not_isSuccPrelimit_iff']
+    simpa [eq_comm] using h
   · rcases (lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
     exact h₁.not_ge.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
 
