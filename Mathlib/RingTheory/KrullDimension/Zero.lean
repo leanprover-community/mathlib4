@@ -64,7 +64,7 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
       (nilradical R).IsMaximal ] := by
   tfae_have 1 → 3 := by
     intro ⟨h₁, h₂⟩ x
-    show x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
+    change x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
     rw [nilradical, Ideal.radical_eq_sInf]
     simp [← Ideal.isMaximal_iff_isPrime, IsLocalRing.isMaximal_iff]
   tfae_have 3 → 4 := by

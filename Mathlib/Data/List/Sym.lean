@@ -157,7 +157,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
       rw [List.mem_map] at hx hy
       obtain ⟨a, hx, rfl⟩ := hx
       obtain ⟨b, hy, hx⟩ := hy
-      simp [Sym2.mk_eq_mk_iff, Ne.symm h.1] at hx
+      simp [Ne.symm h.1] at hx
       obtain ⟨rfl, rfl⟩ := hx
       exact h.2 hy
     · exact ih h.2
@@ -193,7 +193,7 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
       ← Multiset.coe_add, ← Multiset.singleton_add]
-    simp only [add_assoc, add_left_comm]
+    simp only [add_left_comm]
   | trans _ _ ih1 ih2 => exact ih1.trans ih2
 
 protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.sym2 := by
