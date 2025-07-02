@@ -743,14 +743,7 @@ lemma mul_eq_top (a b : EReal) :
   induction a, b using EReal.induction₂_symm with
   | symm h =>
     rw [EReal.mul_comm, h]
-    refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩ <;>
-    cases H with
-      | inl h => exact Or.inr (Or.inl ⟨h.2, h.1⟩)
-      | inr h => cases h with
-        | inl h => exact Or.inl ⟨h.2, h.1⟩
-        | inr h => cases h with
-          | inl h => exact Or.inr (Or.inr (Or.inr ⟨h.2, h.1⟩))
-          | inr h => exact Or.inr (Or.inr (Or.inl ⟨h.2, h.1⟩))
+    grind
   | top_top => simp
   | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
   | top_zero => simp
