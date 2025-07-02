@@ -139,9 +139,7 @@ variable [CompleteLattice α] {T : Set α}
 
 universe v
 
-lemma hull_iSup {ι : Sort v} (s : ι → α) : hull T (iSup s) = ⋂ i ,hull T (s i) := by
-  ext x : 1
-  simp_all only [mem_preimage, mem_Ici, iSup_le_iff, mem_iInter]
+lemma hull_iSup {ι : Sort v} (s : ι → α) : hull T (iSup s) = ⋂ i, hull T (s i) := by aesop
 
 lemma hull_sSup (S : Set α) : hull T (sSup S) = ⋂₀ { hull T a | a ∈ S } := by
   ext x : 1
