@@ -73,8 +73,8 @@ variable {T : Set α}
 
 /- The set of relative-closed sets of the form `hull T a` for some `a` in `α` is closed under
 pairwise union. -/
-lemma hull_union_hull (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
-    hull T a ∪ hull T b = hull T (a ⊓ b) := by
+lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
+    hull T (a ⊓ b) = hull T a ∪ hull T b := by
   ext p
   constructor <;> intro h
   · rcases h with (h1 | h3)
