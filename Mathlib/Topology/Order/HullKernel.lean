@@ -93,8 +93,8 @@ variable [DecidableEq α] [OrderTop α]
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
 relative-closed set of the form `hull T a` where `a = ⨅ F`. -/
 open Finset in
-lemma preimage_upperClosure_finset (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
-    T ↓∩ upperClosure F.toSet = hull T (inf F id) := by
+lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
+    hull T (inf F id) = T ↓∩ upperClosure F.toSet := by
   rw [coe_upperClosure]
   induction' F using Finset.induction_on with a F' _ I4
   · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
