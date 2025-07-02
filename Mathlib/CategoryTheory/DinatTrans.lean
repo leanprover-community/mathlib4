@@ -36,8 +36,8 @@ structure DinatTrans (F G : Cᵒᵖ × C ⥤ D) : Type max u₁ v₂ where
   /-- The commutativity square for a given morphism. -/
   dinaturality {X Y : C} (f : X ⟶ Y) :
       F.map (f.op ×ₘ 𝟙 _) ≫ app X ≫ G.map (𝟙 (op _) ×ₘ f) =
-      F.map (𝟙 (op _) ×ₘ f) ≫ app Y ≫ G.map (f.op ×ₘ 𝟙 _) :=
-        by aesop_cat
+      F.map (𝟙 (op _) ×ₘ f) ≫ app Y ≫ G.map (f.op ×ₘ 𝟙 _) := by 
+    aesop_cat
 
 attribute [reassoc (attr := simp)] DinatTrans.dinaturality
 
@@ -57,13 +57,14 @@ variable {F G H : Cᵒᵖ × C ⥤ D}
 @[simps]
 def DinatTrans.compNatTrans (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H where
   app X := δ.app X ≫ α.app (op X, X)
-  dinaturality f := by simp; rw [←α.naturality, reassoc_of% δ.dinaturality f,←α.naturality]
+  dinaturality f := by rw [Category.assoc, ← α.naturality, reassoc_of% δ.dinaturality f, 
+    Category.assoc, ← α.naturality]
 
 /-- Pre-composition with a natural transformation. -/
 @[simps]
 def DinatTrans.precompNatTrans (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H where
   app X := α.app (op X, X) ≫ δ.app X
-  dinaturality {X Y} f := by simp only [Category.assoc, NatTrans.naturality_assoc, dinaturality]
+  dinaturality := by simp
 
 /-- Opposite of a dinatural transformation. -/
 @[simps]
