@@ -47,9 +47,9 @@ def functorObjObj (A : C ⥤ D) [Mon_Class A] (X : C) : Mon_ D where
   mon :=
   { one := η[A].app X
     mul := μ[A].app X
-    one_mul' := congr_app (one_mul A) X
-    mul_one' := congr_app (mul_one A) X
-    mul_assoc' := congr_app (mul_assoc A) X }
+    one_mul := congr_app (one_mul A) X
+    mul_one := congr_app (mul_one A) X
+    mul_assoc := congr_app (mul_assoc A) X }
 
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
@@ -136,9 +136,9 @@ def functorObjObj (A : C ⥤ D) [Comon_Class A] (X : C) : Comon_ D where
   comon :=
   { counit := ε[A].app X
     comul := Δ[A].app X
-    counit_comul' := congr_app (counit_comul A) X
-    comul_counit' := congr_app (comul_counit A) X
-    comul_assoc' := congr_app (comul_assoc A) X }
+    counit_comul := congr_app (counit_comul A) X
+    comul_counit := congr_app (comul_counit A) X
+    comul_assoc := congr_app (comul_assoc A) X }
 
 /--
 A comonoid object in a functor category induces a functor to the category of comonoid objects.
@@ -235,7 +235,7 @@ def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D where
     { (monFunctorCategoryEquivalence C D).functor.obj A.toMon_ with
       obj := fun X =>
         { ((monFunctorCategoryEquivalence C D).functor.obj A.toMon_).obj X with
-          comm := { mul_comm' := congr_app (IsCommMon.mul_comm A.X) X } } }
+          comm := { mul_comm := congr_app (IsCommMon.mul_comm A.X) X } } }
   map f := { app := fun X => ((monFunctorCategoryEquivalence C D).functor.map f).app X }
 
 /-- Functor translating a functor into the category of commutative monoid objects
@@ -245,8 +245,8 @@ to a commutative monoid object in the functor category
 def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
   obj F :=
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon_.forget₂Mon_ D) with
-      comm := { mul_comm' := by ext X; exact IsCommMon.mul_comm (F.obj X).X } }
-  map α := (monFunctorCategoryEquivalence C D).inverse.map (whiskerRight α _)
+      comm := { mul_comm := by ext X; exact IsCommMon.mul_comm (F.obj X).X } }
+  map α := (monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _)
 
 /-- The unit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/
