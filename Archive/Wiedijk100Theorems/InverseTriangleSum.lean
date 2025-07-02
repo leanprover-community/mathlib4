@@ -32,5 +32,6 @@ theorem Theorems100.inverse_triangle_sum :
   apply sum_range_induction _ _ rfl
   rintro (_ | _)
   · norm_num
-  field_simp
-  ring_nf
+  · field_simp
+    ring_nf
+    simp
