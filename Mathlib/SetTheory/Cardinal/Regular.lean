@@ -245,11 +245,17 @@ theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃
 theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
   h.1
 
+theorem IsInaccessible.pos {c : Cardinal} (h : IsInaccessible c) : 0 < c :=
+  aleph0_pos.trans h.1
+
+theorem IsInaccessible.ne_zero {c : Cardinal} (h : IsInaccessible c) : c ≠ 0 :=
+  h.pos.ne'
+
 theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegular c :=
   ⟨h.aleph0_lt.le, h.2.1⟩
 
 theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
-  ⟨(aleph0_pos.trans h.aleph0_lt).ne', h.2.2⟩
+  ⟨h.ne_zero, h.2.2⟩
 
 theorem isInaccesible_def {c : Cardinal} :
     IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
