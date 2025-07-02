@@ -269,8 +269,7 @@ variable {C}
 
 /-- An isomorphism of monads gives a natural isomorphism of the underlying functors.
 -/
-/- Porting note: removed
-`@[simps (config := { rhsMd := semireducible })]`
+/- Porting note: removed `@[simps (rhsMd := semireducible)]`
 and replaced with `@[simps]` in the two declarations below -/
 @[simps!]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=

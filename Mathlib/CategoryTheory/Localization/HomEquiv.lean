@@ -74,7 +74,7 @@ lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) 
   change e'.hom.app X ≫ G'.map f ≫ e'.inv.app Y = _
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   let α : G' ≅ G := Localization.liftNatIso L₁ W₁ (L₁ ⋙ G') (Φ.functor ⋙ L₂) _ _ e'.symm
-  have : e = e' ≪≫ isoWhiskerLeft _ α := by
+  have : e = e' ≪≫ Functor.isoWhiskerLeft _ α := by
     ext X
     dsimp [α]
     rw [Localization.liftNatTrans_app]
@@ -97,8 +97,8 @@ lemma homMap_homMap (f : L₁.obj X ⟶ L₁.obj Y) :
   let e' : Ψ.functor ⋙ L₃ ≅ L₂ ⋙ G' := CatCommSq.iso _ _ _ _
   rw [Φ.homMap_apply L₁ L₂ G e, Ψ.homMap_apply L₂ L₃ G' e',
     (Φ.comp Ψ).homMap_apply L₁ L₃ (G ⋙ G')
-      (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e' ≪≫
-      (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e _ ≪≫
+      (Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ e' ≪≫
+      (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight e _ ≪≫
       Functor.associator _ _ _)]
   dsimp
   simp only [Functor.map_comp, assoc, comp_id, id_comp]

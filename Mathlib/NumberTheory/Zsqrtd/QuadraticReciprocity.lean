@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Facts about the gaussian integers relying on quadratic reciprocity.
