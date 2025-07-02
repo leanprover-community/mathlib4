@@ -63,6 +63,7 @@ theorem hyperoperation_two (m k : ℕ) : hyperoperation 2 m k = m * k := by
 
 @[simp, grind =]
 theorem hyperoperation_three (m k : ℕ) : hyperoperation 3 m k = m ^ k := by
+  #adaptation_note /-- `Nat.pow_succ` will not be necessary after nightly-2025-07-02. -/
   induction k with grind [Nat.pow_succ]
 
 @[grind =]
