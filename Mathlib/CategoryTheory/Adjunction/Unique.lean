@@ -20,7 +20,7 @@ This file shows that adjoints are unique up to natural isomorphism.
 
 -/
 
-open CategoryTheory
+open CategoryTheory Functor
 
 variable {C D : Type*} [Category C] [Category D]
 
