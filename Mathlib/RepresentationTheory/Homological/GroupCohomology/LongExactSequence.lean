@@ -157,9 +157,9 @@ alias mem_twoCocycles_of_comp_eq_dOne := mem_cocycles₂_of_comp_eq_d₁₂
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` be a 1-cocycle for `X₃` and `y` be a 1-cochain for `X₂` such that `g ∘ y = z`.
-    (z : cocycles₂ X.X₃) (y : G → X.X₂) (hy : X.g.hom ∘ y = z)
+    (z : cocycles₁ X.X₃) (y : G → X.X₂) (hy : X.g.hom ∘ y = z)
     -- Let `x` be a 2-cochain for `X₁` such that `f ∘ x = d(y)`.
-    (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
+    (x : G × G → X.X₁) (hx : X.f.hom ∘ x = d₁₂ X.X₂ y) :
     -- Then `x` is a 2-cocycle and `δ z = x` in `H²(X₁)`.
     δ hX 1 2 rfl (H1π X.X₃ z) = H2π X.X₁ ⟨x, mem_cocycles₂_of_comp_eq_d₁₂ hX hx⟩ := by
   simpa [H1π, H2π, ← cocyclesMk₂_eq X.X₁, ← cocyclesMk₁_eq X.X₃] using
