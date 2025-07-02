@@ -58,7 +58,7 @@ lemma piRightHom_tmul (x : N) (f : ∀ i, M i) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private noncomputable
+private
 def piRightInv : (∀ i, N ⊗[R] M i) →ₗ[S] N ⊗[R] ∀ i, M i :=
   LinearMap.lsum S (fun i ↦ N ⊗[R] M i) S <| fun i ↦
     AlgebraTensorModule.map LinearMap.id (single R M i)
@@ -132,7 +132,7 @@ lemma piScalarRightHom_tmul (x : N) (f : ι → R) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private noncomputable
+private
 def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
   LinearMap.lsum S (fun _ ↦ N) S <| fun i ↦ {
     toFun := fun n ↦ n ⊗ₜ Pi.single i 1
