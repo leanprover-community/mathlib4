@@ -182,8 +182,7 @@ def whiskerLeft (φ : CatCospanTransform F G F' G')
 
 /-- Whiskering right of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
-def whiskerRight {ψ ψ' : CatCospanTransform F G F' G'}
-    (α : ψ ⟶ ψ')
+def whiskerRight {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ⟶ ψ')
     (φ : CatCospanTransform F' G' F'' G'') :
     (ψ.comp φ) ⟶ (ψ'.comp φ) where
   left := CategoryTheory.whiskerRight α.left φ.left
