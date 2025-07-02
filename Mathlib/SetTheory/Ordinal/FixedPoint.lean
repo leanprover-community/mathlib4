@@ -314,7 +314,7 @@ theorem deriv_strictMono (H : IsNormal f) : StrictMono (deriv f) :=
 protected alias IsNormal.deriv_strictMono := deriv_strictMono
 
 @[deprecated "on normal functions, `nfp f = id` implies `f = id`" (since := "2025-07-01")]
-theorem deriv_eq_id_of_nfp_id (h : nfp f = id) (H : IsNormal f) : deriv f = id := by
+theorem deriv_id_of_nfp_id (h : nfp f = id) (H : IsNormal f) : deriv f = id := by
   apply_fun Set.range at h
   rw [Set.range_id, range_nfp H] at h
   rw [deriv_eq_enumOrd, h, enumOrd_univ]
@@ -334,7 +334,7 @@ theorem IsNormal.fp_iff_deriv {f} (H : IsNormal f) {a} : f a = a ↔ ∃ o, deri
   simpa using fp_iff_derivFamily fun _ : Unit ↦ H
 
 @[deprecated (since := "2025-07-01")]
-alias deriv_eq_id_of_nfp_eq_id := deriv_eq_id_of_nfp_id
+alias deriv_eq_id_of_nfp_eq_id := deriv_id_of_nfp_id
 
 theorem deriv_zero_right (H : IsNormal f) : deriv f 0 = nfp f 0 :=
   derivFamily_zero fun _ ↦ H
