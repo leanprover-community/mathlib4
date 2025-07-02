@@ -102,9 +102,8 @@ theorem RingTheory.Sequence.IsWeaklyRegular.isRegular_of_isLocalizedModule_of_me
     (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] {rs : List R} (reg : IsWeaklyRegular M rs)
     (mem : ∀ r ∈ rs, r ∈ p) : IsRegular Mₚ (rs.map (algebraMap R Rₚ)) := by
   have : IsLocalRing Rₚ := IsLocalization.AtPrime.isLocalRing Rₚ p
-  refine (IsLocalRing.isRegular_iff_isWeaklyRegular_of_subset_maximalIdeal ?_).mpr <|
+  refine (IsLocalRing.isRegular_iff_isWeaklyRegular_of_subset_maximalIdeal (fun _ hr ↦ ?_)).mpr <|
     reg.of_isLocalizedModule p.primeCompl Rₚ f
-  intro _ hr
   rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
   simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
 
