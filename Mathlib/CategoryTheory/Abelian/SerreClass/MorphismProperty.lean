@@ -38,7 +38,7 @@ variable (P : ObjectProperty C)
 
 /-- The class of monomorphisms modulo a Serre class: given a
 Serre class `P : ObjectProperty C`, this is the class of morphisms `f`
-such that `kernel f` satisfy `P`. -/
+such that `kernel f` satisfies `P`. -/
 @[nolint unusedArguments]
 def monoModSerre [P.IsSerreClass] : MorphismProperty C :=
   fun _ _ f ↦ P (kernel f)
