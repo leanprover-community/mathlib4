@@ -153,7 +153,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
     rw [IsTopologicalBasis.open_eq_sUnion' (isTopologicalBasis_relativeLower hT) h]
     aesop
   · obtain ⟨a, ha⟩ := h
-    exact ⟨(Ici a)ᶜ, ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩⟩
+    exact ⟨(Ici a)ᶜ, isClosed_Ici.isOpen_compl, ha.symm⟩
 
 /- When `α` is complete, a set is closed in the relative lower topology if and only if it is of the
 form `hull T a` for some `a` in `α`.-/
