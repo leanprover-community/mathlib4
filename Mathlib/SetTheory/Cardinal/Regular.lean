@@ -234,16 +234,27 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 /-! ### Inaccessible cardinals -/
 
 /-- A cardinal is inaccessible if it is an uncountable regular strong limit cardinal. -/
-structure IsInaccessible (c : Cardinal) : Prop where
-  aleph_lt : ℵ₀ < c
-  le_cof_ord : c ≤ c.ord.cof
-  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c : IsStrongLimit c
+def IsInaccessible (c : Cardinal) : Prop :=
+  ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
 
-theorem IsInaccesible.isRegular {c : Cardinal} (h : IsInaccesible c) : IsRegular c :=
-  ⟨h.aleph_lt.le, h.le_cof_ord⟩
+@[deprecated "use the default constructor for `IsInaccesible`" (since := "2025-07-01")]
+theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2 ^ x) < c) :
+    IsInaccessible c :=
+  ⟨h₁, h₂, h₃⟩
 
-theorem IsInaccesible.IsStrongLimit {x : Cardinal} (h : IsInaccesible c) : IsStrongLimit c :=
-  ⟨(aleph0_pos.trans h₁).ne', @h₃⟩
+theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
+  h.1
+
+theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegular c :=
+  ⟨h.aleph0_lt.le, h.2.1⟩
+
+theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
+  ⟨(aleph0_pos.trans h.aleph0_lt).ne', h.2.2⟩
+
+theorem isInaccesible_def {c : Cardinal} :
+    IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
+  mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
+  mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} := by
@@ -252,8 +263,8 @@ theorem IsInaccessible.univ : IsInaccessible univ.{u, v} := by
   rw [← lift_two_power]
   apply lift_lt_univ'
 
-@[deprecated IsInaccesible.univ (since := "2025-07-01")]
-alias univ_inaccessible := IsInaccesible.univ
+@[deprecated IsInaccessible.univ (since := "2025-07-01")]
+alias univ_inaccessible := IsInaccessible.univ
 
 -- TODO: prove that `IsInaccessible o.card` implies `IsInaccesible (ℵ_ o)` and
 -- `IsInaccesible (ℶ_ o)`
