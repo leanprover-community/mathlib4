@@ -237,7 +237,7 @@ noncomputable def _root_.Ideal.qoutMapEquivTensorQout {I : Ideal R} :
     ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R _
   map_smul' := by
     rintro _ ⟨_⟩
-    rfl
+    congr
 
 variable (M) in
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`,

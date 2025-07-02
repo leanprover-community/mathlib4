@@ -348,8 +348,7 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
 
 theorem tsmul_eq_smul_one_tuml {S : Type*} [Semiring S] [Module R S] [SMulCommClass R S S]
     (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
-  nth_rw 1 [show s = s • 1 from by simp]
-  rfl
+  nth_rw 1 [← mul_one s, ← smul_eq_mul, smul_tmul']
 
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { add_smul := TensorProduct.add_smul
