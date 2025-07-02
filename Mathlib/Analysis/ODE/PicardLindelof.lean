@@ -66,7 +66,7 @@ Cauchy-Lipschitz theorem
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
 
-/-! ## Assumptions of the Picard-Lindelof theorem -/
+/-! ## Assumptions of the Picard-Lindelöf theorem-/
 
 /-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
 `IsPicardLindelof f t₀ x₀ a r L K`, where `t₀ ∈ Icc tmin tmax`, means that the time-dependent vector
