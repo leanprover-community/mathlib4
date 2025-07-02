@@ -297,7 +297,7 @@ def boundedLimitRecOn {l : Ordinal} (lLim : l.IsLimit) {motive : Iio l → Sort*
     (succ : (o : Iio l) → motive o → motive ⟨succ o, lLim.succ_lt o.2⟩)
     (isLimit : (o : Iio l) → IsLimit o → (Π o' < o, motive o') → motive o) : motive o :=
   limitRecOn (motive := fun p ↦ (h : p < l) → motive ⟨p, h⟩) o.1 (fun _ ↦ zero)
-    (fun o ih h ↦ succ ⟨o, _⟩ <| ih <| (lt_succ o).trans h)
+    (fun o ih h ↦ succ ⟨o, _⟩ <| ih <| (lt_succ o).trans h) 
     (fun _o ho ih _ ↦ isLimit _ ho fun _o' h ↦ ih _ h _) o.2
 
 @[simp]
