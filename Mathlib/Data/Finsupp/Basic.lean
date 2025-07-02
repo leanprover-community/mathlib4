@@ -17,8 +17,6 @@ import Mathlib.Data.Rat.BigOperators
 * `Finsupp.mapDomain`: maps the domain of a `Finsupp` by a function and by summing.
 * `Finsupp.comapDomain`: postcomposition of a `Finsupp` with a function injective on the preimage
   of its support.
-* `Finsupp.some`: restrict a finitely supported function on `Option α` to a finitely supported
-  function on `α`.
 * `Finsupp.filter`: `filter p f` is the finitely supported function that is `f a` if `p a` is true
   and 0 otherwise.
 * `Finsupp.frange`: the image of a finitely supported function on its support.
@@ -714,6 +712,7 @@ theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
 end FInjective
 
 end ComapDomain
+
 
 /-! ### Declarations about `Finsupp.filter` -/
 
@@ -1412,5 +1411,3 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
-
-set_option linter.style.longFile 1700

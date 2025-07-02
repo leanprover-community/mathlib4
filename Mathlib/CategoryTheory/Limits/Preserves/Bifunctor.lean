@@ -127,7 +127,7 @@ a colimit of `uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)` a
 noncomputable def isoObjCoconePointsOfIsColimit
     {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
     {c₂ : Cocone K₂} (hc₂ : IsColimit c₂)
-    {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+    {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
     (hc₃ : IsColimit c₃) :
     (G.obj c₁.pt).obj c₂.pt ≅ c₃.pt :=
   IsColimit.coconePointUniqueUpToIso (isColimitOfPreserves₂ G hc₁ hc₂) hc₃
@@ -136,7 +136,7 @@ section
 
 variable {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
   {c₂ : Cocone K₂} (hc₂ : IsColimit c₂)
-  {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+  {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
   (hc₃ : IsColimit c₃)
 
 /-- Characterize the inverse direction of the isomorphism
@@ -255,7 +255,7 @@ a limit of `uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)` and
 noncomputable def isoObjConePointsOfIsLimit
     {c₁ : Cone K₁} (hc₁ : IsLimit c₁)
     {c₂ : Cone K₂} (hc₂ : IsLimit c₂)
-    {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+    {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
     (hc₃ : IsLimit c₃) :
     (G.obj c₁.pt).obj c₂.pt ≅ c₃.pt :=
   IsLimit.conePointUniqueUpToIso (isLimitOfPreserves₂ G hc₁ hc₂) hc₃
@@ -264,7 +264,7 @@ section
 
 variable {c₁ : Cone K₁} (hc₁ : IsLimit c₁)
   {c₂ : Cone K₂} (hc₂ : IsLimit c₂)
-  {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)}
+  {c₃ : Cone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
   (hc₃ : IsLimit c₃)
 
 /-- Characterize the forward direction of the isomorphism

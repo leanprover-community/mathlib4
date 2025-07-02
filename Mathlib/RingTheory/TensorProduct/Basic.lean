@@ -17,7 +17,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 ## Main declarations
 
-- `LinearMap.baseChange A f` is the `A`-linear map `A ⊗ f`, for an `R`-linear map `f`.
 - `Algebra.TensorProduct.semiring`: the ring structure on `A ⊗[R] B` for two `R`-algebras `A`, `B`.
 - `Algebra.TensorProduct.leftAlgebra`: the `S`-algebra structure on `A ⊗[R] B`, for when `A` is
   additionally an `S` algebra.
@@ -44,112 +43,6 @@ open TensorProduct
 
 
 namespace LinearMap
-
-open TensorProduct
-
-/-!
-### The base-change of a linear map of `R`-modules to a linear map of `A`-modules
--/
-
-
-section Semiring
-
-variable {R A B M N P : Type*} [CommSemiring R]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [Module R M] [Module R N] [Module R P]
-variable (r : R) (f g : M →ₗ[R] N)
-
-variable (A) in
-/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
-
-This "base change" operation is also known as "extension of scalars". -/
-def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
-
-@[simp]
-theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
-  rfl
-
-theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
-  rfl
-
-@[simp]
-theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
-  ext
-  -- Porting note: added `-baseChange_tmul`
-  simp [baseChange_eq_ltensor, -baseChange_tmul]
-
-@[simp]
-theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
-  ext
-  simp [baseChange_eq_ltensor]
-
-@[simp]
-theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
-  ext
-  simp [baseChange_tmul]
-
-@[simp]
-lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
-  ext; simp
-
-lemma baseChange_comp (g : N →ₗ[R] P) :
-    (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
-  ext; simp
-
-variable (R M) in
-@[simp]
-lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
-
-lemma baseChange_mul (f g : Module.End R M) :
-    (f * g).baseChange A = f.baseChange A * g.baseChange A := by
-  ext; simp
-
-variable (R A M N)
-
-/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
-def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.congr (.refl _ _) e
-
-/-- `baseChange` as a linear map.
-
-When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
-@[simps]
-def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
-  toFun := baseChange A
-  map_add' := baseChange_add
-  map_smul' := baseChange_smul
-
-/-- `baseChange` as an `AlgHom`. -/
-@[simps!]
-def _root_.Module.End.baseChangeHom : Module.End R M →ₐ[R] Module.End A (A ⊗[R] M) :=
-  .ofLinearMap (LinearMap.baseChangeHom _ _ _ _) (baseChange_one _ _) baseChange_mul
-
-lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
-    (f ^ n).baseChange A = f.baseChange A ^ n :=
-  map_pow (Module.End.baseChangeHom _ _ _) f n
-
-end Semiring
-
-section Ring
-
-variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
-variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-variable (f g : M →ₗ[R] N)
-
-@[simp]
-theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
-  ext
-  simp [baseChange_eq_ltensor, tmul_sub]
-
-@[simp]
-theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
-  ext
-  simp [baseChange_eq_ltensor, tmul_neg]
-
-end Ring
 
 section liftBaseChange
 
@@ -1166,6 +1059,22 @@ lemma tmul_one_eq_one_tmul (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ alg
 
 end
 
+variable (R A B) in
+lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] :
+    Subring.closure (Set.range (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∪
+      Set.range Algebra.TensorProduct.includeRight) = ⊤ := by
+  rw [← top_le_iff]
+  rintro x -
+  induction x with
+  | zero => exact zero_mem _
+  | tmul x y =>
+    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
+      (Algebra.TensorProduct.includeRight y) ∈ _
+    · simp
+    · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
+        (Subring.subset_closure (.inr ⟨_, rfl⟩))
+  | add x y _ _ => exact add_mem ‹_› ‹_›
 section
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]

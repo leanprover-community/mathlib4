@@ -466,6 +466,11 @@ variable [T0Space α] [T0Space β]
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
   Prod.instT0Space
 
+variable [SecondCountableTopology α] [SecondCountableTopology β]
+
+instance secondCountableTopology : SecondCountableTopology (WithLp p (α × β)) :=
+  inferInstanceAs <| SecondCountableTopology (α × β)
+
 end TopologicalSpace
 
 section UniformSpace

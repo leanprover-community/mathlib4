@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Kim Morrison, Bolton Bailey
+Authors: Kim Morrison
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Algebra.Module.Defs
@@ -83,24 +83,42 @@ lemma some_update_some (f : Option α →₀ M) (x : α) (y : M) :
   · simp [h]
   · simp [h]
 
+@[simp] lemma some_embDomain_some (f : α →₀ M) : (f.embDomain .some).some = f := by
+  ext; rw [some_apply]; exact embDomain_apply _ _ _
+
+@[simp] lemma embDomain_some_none (f : α →₀ M) : f.embDomain .some .none = 0 :=
+  embDomain_notin_range _ _ _ (by simp)
+
+@[simp]
+theorem embDomain_some_some (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by
+  simp [← Function.Embedding.some_apply]
+
+/-- `Finsupp`s from `Option` are equivalent to
+pairs of an element and a `Finsupp` on the original type. -/
+@[simps]
+noncomputable
+def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
+  toFun P := (P .none, P.some)
+  invFun P := (P.2.embDomain .some).update .none P.1
+  left_inv P := by ext (_|a) <;> simp [Finsupp.update]
+  right_inv P := by ext <;> simp [Finsupp.update]
+
 /--
 Extend a finitely supported function on `α` to a finitely supported function on `Option α`,
 provided a default value for `none`.
 -/
 def optionElim' (y : M) (f : α →₀ M) : Option α →₀ M :=
-  (Finsupp.embDomain Function.Embedding.some f).update none y
+  optionEquiv.invFun (y, f)
 
 lemma optionElim'_apply_none (y : M) (f : α →₀ M) : f.optionElim' y none = y := by
   simp [optionElim']
 
 lemma optionElim'_apply_some (y : M) (f : α →₀ M) (x : α) :
     f.optionElim' y (Option.some x) = f x := by
-  have : Option.some x = Embedding.some x := by rfl
-  simp only [optionElim', ne_eq, reduceCtorEq, not_false_eq_true, update_apply_of_ne]
-  rw [this, embDomain_apply]
+  simp [optionElim']
 
 @[simp]
-lemma optionElim'_apply (y : M) (f : α →₀ M) (a : Option α) :
+lemma optionElim'_apply_eq_elim (y : M) (f : α →₀ M) (a : Option α) :
     f.optionElim' y a = a.elim y f := by
   cases a with
   | none => exact optionElim'_apply_none y f
@@ -108,7 +126,7 @@ lemma optionElim'_apply (y : M) (f : α →₀ M) (a : Option α) :
 
 lemma optionElim'_eq_elim' (y : M) (f : α →₀ M) (a : Option α) :
     optionElim' y f a = Option.elim' y f a := by
-  rw [optionElim'_apply, Option.elim'_eq_elim]
+  rw [optionElim'_apply_eq_elim, Option.elim'_eq_elim]
 
 @[simp]
 lemma some_optionElim' (y : M) (f : α →₀ M) : (f.optionElim' y).some = f := by
@@ -133,7 +151,7 @@ theorem optionElim'_ne_zero_of_left (y : M) (f : α →₀ M) (h : y ≠ 0) : f.
   contrapose! h with c
   have : f.optionElim' y none = (0 : Option α →₀ M) none := by
     rw [c]
-  simp only [optionElim'_apply, Option.elim_none, coe_zero, Pi.zero_apply] at this
+  simp only [optionElim'_apply_eq_elim, Option.elim_none, coe_zero, Pi.zero_apply] at this
   exact this
 
 theorem optionElim'_ne_zero_of_right (y : M) (f : α →₀ M) (h : f ≠ 0) : f.optionElim' y ≠ 0 := by
@@ -141,7 +159,7 @@ theorem optionElim'_ne_zero_of_right (y : M) (f : α →₀ M) (h : f ≠ 0) : f
   ext a
   have : f.optionElim' y (Option.some a) = (0 : Option α →₀ M) (Option.some a) := by
     rw [c]
-  simp only [optionElim'_apply, Option.elim_some, coe_zero, Pi.zero_apply] at this
+  simp only [optionElim'_apply_eq_elim, Option.elim_some, coe_zero, Pi.zero_apply] at this
   exact this
 
 theorem optionElim'_ne_zero_iff (y : M) (f : α →₀ M) :
@@ -162,6 +180,10 @@ end Zero
 theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
   ext
   simp
+
+theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
+    n = (embDomain Embedding.some m).update none i ↔ n none = i ∧ n.some = m :=
+  (optionEquiv.apply_eq_iff_eq_symm_apply (y := (_, _))).symm.trans Prod.ext_iff
 
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)

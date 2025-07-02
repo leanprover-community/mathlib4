@@ -101,8 +101,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
     rw [matPolyEquiv_coeff_apply_aux_2]
     dsimp [single]
     split_ifs <;> rename_i h
-    · rcases h with ⟨rfl, rfl⟩
-      simp [single]
+    · constructor
     · simp [single, h]
 
 @[simp]
