@@ -651,7 +651,7 @@ lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
     coeff R n (φ ^ k) = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff R (l i) φ := by
   have h₁ (i : ℕ) : Function.const ℕ φ i = φ := rfl
   have h₂ (i : ℕ) : ∏ j ∈ range i, Function.const ℕ φ j = φ ^ i := by
-    apply prod_range_induction (fun _ => φ) (fun i => φ ^ i) rfl (fun _ => congrFun rfl) i
+    apply prod_range_induction (fun _ => φ) (fun i => φ ^ i) rfl i (fun _ => congrFun rfl)
   rw [← h₂, ← h₁ k]
   apply coeff_prod (f := Function.const ℕ φ) (d := n) (s := range k)
 
