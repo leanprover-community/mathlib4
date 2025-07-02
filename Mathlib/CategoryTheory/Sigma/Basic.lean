@@ -210,13 +210,11 @@ variable {I} {K : Type w₃}
 -- so that the suitable category instances could be found
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
-def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
-  (descUniq _ _) fun k => by
-  apply _ ≪≫ inclCompMap _ _ _
-  apply (Functor.associator _ _ _).symm ≪≫ _
-  apply isoWhiskerRight
-  sorry
-      -- (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g :) :) ≪≫ inclCompMap _ _ _
+def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ map C g ≅ map C (g ∘ f) :=
+  (descUniq _ _) fun k =>
+    (Functor.associator _ _ _).symm ≪≫
+      Functor.isoWhiskerRight (inclCompMap (fun x ↦ C (g x)) f k) (map C g) ≪≫
+        inclCompMap C g (f k)
 
 end
 
@@ -227,8 +225,13 @@ variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the sigma types.
 -/
+@[simps! -isSimp]
 def sigma (F : ∀ i, C i ⥤ D i) : (Σ i, C i) ⥤ Σ i, D i :=
   desc fun i => F i ⋙ incl i
+
+theorem sigma_map_mk (F : ∀ i, C i ⥤ D i) (i : I) (X Y : C i) (f : X ⟶ Y) :
+    (sigma F).map (SigmaHom.mk f) = SigmaHom.mk ((F i).map f) := by
+  simp [sigma_map, descMap]
 
 end Functor
 
@@ -243,6 +246,7 @@ def sigma (α : ∀ i, F i ⟶ G i) : Functor.sigma F ⟶ Functor.sigma G where
   app f := SigmaHom.mk ((α f.1).app _)
   naturality := by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
+    simp only [Functor.sigma_map_mk]
     change SigmaHom.mk _ = SigmaHom.mk _
     rw [(α i).naturality]
 

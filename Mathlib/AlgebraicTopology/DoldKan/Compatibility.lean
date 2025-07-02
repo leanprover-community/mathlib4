@@ -72,9 +72,11 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
   calc
     (e'.inverse ⋙ eA.inverse) ⋙ F ≅ (e'.inverse ⋙ eA.inverse) ⋙ eA.functor ⋙ e'.functor :=
       isoWhiskerLeft _ hF.symm
-    _ ≅ e'.inverse ⋙ (eA.inverse ⋙ eA.functor) ⋙ e'.functor := Iso.refl _
+    _ ≅ e'.inverse ⋙ (eA.inverse ⋙ eA.functor ⋙ e'.functor) := associator _ _ _
+    _ ≅ e'.inverse ⋙ (eA.inverse ⋙ eA.functor) ⋙ e'.functor :=
+      isoWhiskerLeft _ (associator _ _ _).symm
     _ ≅ e'.inverse ⋙ 𝟭 _ ⋙ e'.functor := isoWhiskerLeft _ (isoWhiskerRight eA.counitIso _)
-    _ ≅ e'.inverse ⋙ e'.functor := Iso.refl _
+    _ ≅ e'.inverse ⋙ e'.functor := isoWhiskerLeft _ (leftUnitor _)
     _ ≅ 𝟭 B' := e'.counitIso
 
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by

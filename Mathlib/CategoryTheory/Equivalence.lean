@@ -193,23 +193,23 @@ theorem Equivalence_mk'_counitInv (functor inverse unit_iso counit_iso f) :
 
 @[reassoc]
 theorem counit_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
-    e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f :=
-  e.counit.naturality f
+    e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f := by
+  simpa using e.counit.naturality f
 
 @[reassoc]
 theorem unit_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
-    e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y :=
-  (e.unit.naturality f).symm
+    e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y := by
+  simpa using (e.unit.naturality f).symm
 
 @[reassoc]
 theorem counitInv_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
-    e.counitInv.app X ≫ e.functor.map (e.inverse.map f) = f ≫ e.counitInv.app Y :=
-  (e.counitInv.naturality f).symm
+    e.counitInv.app X ≫ e.functor.map (e.inverse.map f) = f ≫ e.counitInv.app Y := by
+  simpa using (e.counitInv.naturality f).symm
 
 @[reassoc]
 theorem unitInv_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
-    e.inverse.map (e.functor.map f) ≫ e.unitInv.app Y = e.unitInv.app X ≫ f :=
-  e.unitInv.naturality f
+    e.inverse.map (e.functor.map f) ≫ e.unitInv.app Y = e.unitInv.app X ≫ f := by
+  simpa using e.unitInv.naturality f
 
 @[reassoc (attr := simp)]
 theorem functor_unit_comp (e : C ≌ D) (X : C) :
@@ -286,13 +286,13 @@ theorem unitInv_app_inverse (e : C ≌ D) (Y : D) :
 
 @[reassoc, simp]
 theorem fun_inv_map (e : C ≌ D) (X Y : D) (f : X ⟶ Y) :
-    e.functor.map (e.inverse.map f) = e.counit.app X ≫ f ≫ e.counitInv.app Y :=
-  (NatIso.naturality_2 e.counitIso f).symm
+    e.functor.map (e.inverse.map f) = e.counit.app X ≫ f ≫ e.counitInv.app Y := by
+  simpa using (NatIso.naturality_2 e.counitIso f).symm
 
 @[reassoc, simp]
 theorem inv_fun_map (e : C ≌ D) (X Y : C) (f : X ⟶ Y) :
-    e.inverse.map (e.functor.map f) = e.unitInv.app X ≫ f ≫ e.unit.app Y :=
-  (NatIso.naturality_1 e.unitIso f).symm
+    e.inverse.map (e.functor.map f) = e.unitInv.app X ≫ f ≫ e.unit.app Y := by
+  simpa using (NatIso.naturality_1 e.unitIso f).symm
 
 section
 
@@ -316,11 +316,16 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
   dsimp [adjointifyη,Trans.trans]
-  simp only [comp_id, assoc, map_comp]
-  have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
+  simp only [comp_id, assoc, map_comp, Functor.comp_map]
+  have : F.map (G.map (F.map (η.inv.app X))) ≫ ε.hom.app (F.obj X) =
+      ε.hom.app (F.obj (G.obj (F.obj X))) ≫ F.map (η.inv.app X) := by
+    simpa using ε.hom.naturality (F.map (η.inv.app X))
+  rw [this]; clear this
   rw [← assoc _ _ (F.map _)]
-  have := ε.hom.naturality (ε.inv.app <| F.obj X); dsimp at this; rw [this]; clear this
-  have := (ε.app <| F.obj X).hom_inv_id; dsimp at this; rw [this]; clear this
+  have : F.map (G.map (ε.inv.app (F.obj X))) ≫ ε.hom.app (F.obj (G.obj (F.obj X))) =
+      𝟙 (F.obj (G.obj (F.obj X))) := by
+    simpa using ε.hom.naturality (ε.inv.app <| F.obj X)
+  rw [this]; clear this
   rw [id_comp]; have := (F.mapIso <| η.app X).hom_inv_id; dsimp at this; rw [this]
 
 end
@@ -334,7 +339,7 @@ protected def mk (F : C ⥤ D) (G : D ⥤ C) (η : 𝟭 C ≅ F ⋙ G) (ε : G �
 /-- Equivalence of categories is reflexive. -/
 @[refl, simps]
 def refl : C ≌ C :=
-  ⟨𝟭 C, 𝟭 C, Iso.refl _, Iso.refl _, fun _ => Category.id_comp _⟩
+  ⟨𝟭 C, 𝟭 C, (rightUnitor _).symm, rightUnitor _, fun _ => Category.id_comp _⟩
 
 instance : Inhabited (C ≌ C) :=
   ⟨refl⟩
@@ -362,9 +367,11 @@ def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   -- but we choose to avoid using that here, for the sake of good structure projection `simp`
   -- lemmas.
   functor_unitIso_comp X := by
-    dsimp
-    simp only [comp_id, id_comp, map_comp, fun_inv_map, comp_obj, id_obj, counitInv,
-      functor_unit_comp_assoc, assoc]
+    simp only [id_obj, comp_obj, isoWhiskerRight_trans, Iso.trans_assoc, Iso.trans_hom,
+      isoWhiskerRight_hom, Iso.symm_hom, isoWhiskerLeft_hom, NatTrans.comp_app, whiskerRight_app,
+      rightUnitor_inv_app, map_id, whiskerLeft_app, associator_inv_app, associator_hom_app, comp_id,
+      id_comp, Functor.comp_map, map_comp, fun_inv_map, functor_unit_comp_assoc,
+      rightUnitor_hom_app, assoc]
     slice_lhs 2 3 => rw [← Functor.map_comp, Iso.inv_hom_id_app]
     simp
 
@@ -421,7 +428,7 @@ def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
   functor := (whiskeringRight _ _ _).obj e.functor
   inverse := (whiskeringRight _ _ _).obj e.inverse
   unitIso := NatIso.ofComponents
-      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _
+      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ (Functor.associator _ _ _).symm
   counitIso := NatIso.ofComponents
       fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor
 
@@ -666,6 +673,7 @@ lemma isEquivalence_iff_of_iso {F G : C ⥤ D} (e : F ≅ G) :
 lemma isEquivalence_of_comp_right {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ E)
     [IsEquivalence G] [IsEquivalence (F ⋙ G)] : IsEquivalence F := by
   rw [isEquivalence_iff_of_iso (F.rightUnitor.symm ≪≫ isoWhiskerLeft F (G.asEquivalence.unitIso))]
+  rw [isEquivalence_iff_of_iso (associator _ _ _).symm]
   exact ((F ⋙ G).asEquivalence.trans G.asEquivalence.symm).isEquivalence_functor
 
 /-- If `F` and `F ⋙ G` are equivalence of categories, then `G` is also an equivalence. -/
@@ -673,6 +681,7 @@ lemma isEquivalence_of_comp_left {E : Type*} [Category E] (F : C ⥤ D) (G : D �
     [IsEquivalence F] [IsEquivalence (F ⋙ G)] : IsEquivalence G := by
   rw [isEquivalence_iff_of_iso (G.leftUnitor.symm ≪≫
     isoWhiskerRight F.asEquivalence.counitIso.symm G)]
+  rw [isEquivalence_iff_of_iso (associator _ _ _)]
   exact (F.asEquivalence.symm.trans (F ⋙ G).asEquivalence).isEquivalence_functor
 
 end Functor
@@ -697,8 +706,8 @@ def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
     P.FullSubcategory ≌ P'.FullSubcategory where
   functor := ObjectProperty.ιOfLE h.le
   inverse := ObjectProperty.ιOfLE h.symm.le
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
+  unitIso := NatIso.ofComponents (fun X ↦ Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 @[deprecated (since := "2025-03-04")]
 alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
