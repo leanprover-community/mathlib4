@@ -44,7 +44,7 @@ noncomputable def inverse : Grp.{u} ⥤ Grp_ (Type u) where
           right_inv := by
             ext x
             exact mul_inv_cancel (G := A) x } }
-  map f := Grp_.homMk (MonTypeEquivalenceMon.inverse.map ((forget₂ Grp MonCat).map f))
+  map f := Grp_.homMk' (MonTypeEquivalenceMon.inverse.map ((forget₂ Grp MonCat).map f))
 
 end GrpTypeEquivalenceGrp
 
