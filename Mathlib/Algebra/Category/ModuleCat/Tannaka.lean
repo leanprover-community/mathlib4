@@ -25,30 +25,33 @@ the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 def ringEquivEndForget₂ (R : Type u) [Ring R] :
     R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) where
   toFun r :=
-    { app := fun M =>
-        @AddCommGrp.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r) }
-  invFun φ := φ.app (ModuleCat.of R R) (1 : R)
+    ObjectProperty.homMk
+      { app M := @AddCommGrp.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r) }
+  invFun φ := φ.hom.app (ModuleCat.of R R) (1 : R)
   left_inv := by
     intro r
     simp
   right_inv := by
     intro φ
+    apply ObjectProperty.hom_ext
     apply NatTrans.ext
     ext M (x : M)
     have w := CategoryTheory.congr_fun
-      (φ.naturality (ModuleCat.ofHom (LinearMap.toSpanSingleton R M x))) (1 : R)
-    exact w.symm.trans (congr_arg (φ.app M) (one_smul R x))
+      (φ.hom.naturality (ModuleCat.ofHom (LinearMap.toSpanSingleton R M x))) (1 : R)
+    exact w.symm.trans (congr_arg (φ.hom.app M) (one_smul R x))
   map_add' := by
     intros
+    apply ObjectProperty.hom_ext
     apply NatTrans.ext
+    dsimp
     ext
-    simp only [AdditiveFunctor.of_fst, ModuleCat.forget₂_obj, DistribMulAction.toAddMonoidHom_apply,
-      add_smul, AddCommGrp.hom_ofHom]
+    simp only [DistribMulAction.toAddMonoidHom_apply, add_smul, AddCommGrp.hom_ofHom]
     rfl
   map_mul' := by
     intros
+    apply ObjectProperty.hom_ext
     apply NatTrans.ext
+    dsimp
     ext
-    simp only [AdditiveFunctor.of_fst, ModuleCat.forget₂_obj, DistribMulAction.toAddMonoidHom_apply,
-      mul_smul, AddCommGrp.hom_ofHom]
+    simp only [DistribMulAction.toAddMonoidHom_apply, mul_smul, AddCommGrp.hom_ofHom]
     rfl

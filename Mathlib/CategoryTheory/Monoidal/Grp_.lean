@@ -79,27 +79,45 @@ instance : Inhabited (Grp_ C) where
 @[deprecated (since := "2025-06-15")] alias mk' := mk
 
 instance : Category (Grp_ C) :=
-  InducedCategory.category Grp_.toMon_
+  inferInstanceAs (Category (InducedCategory _ Grp_.toMon_))
 
 @[simp]
-theorem id_hom (A : Grp_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom_hom (A : Grp_ C) : Mon_.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
 @[simp]
-theorem comp_hom {R S T : Grp_ C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+theorem comp_hom_hom {R S T : Grp_ C} (f : R ⟶ S) (g : S ⟶ T) :
+    Mon_.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
+
+@[deprecated (since := "2025-07-03")] alias id_hom := id_hom_hom
+@[deprecated (since := "2025-07-03")] alias comp_hom := comp_hom_hom
 
 @[ext]
-theorem hom_ext {A B : Grp_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_.Hom.ext h
+theorem hom_ext {A B : Grp_ C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
+  InducedCategory.hom_ext (Mon_.Hom.ext h)
+
+/-- Constructor for morphisms in `Grp_ C`. -/
+@[simps]
+def homMk {A B : Grp_ C} (f : A.toMon_ ⟶ B.toMon_) : A ⟶ B where
+  hom := f
+
+/-- Constructor for morphisms in `Grp_ C`. -/
+@[simps!]
+def homMk' {A B : Grp_ C} (f : A.X ⟶ B.X)
+    (one_f : η ≫ f = η := by aesop_cat)
+    (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by aesop_cat) : A ⟶ B :=
+  haveI : IsMon_Hom f := ⟨one_f, mul_f⟩
+  homMk (.mk f)
 
 @[simp]
-lemma id' (A : Grp_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
+lemma id' (A : Grp_ C) :
+    (InducedCategory.Hom.hom (𝟙 A) : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : Grp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+    (InducedCategory.Hom.hom (f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) =
+      f.hom ≫ g.hom := rfl
 
 end Grp_
 
@@ -286,7 +304,8 @@ theorem forget₂Mon_obj_mul (A : Grp_ C) : μ[((forget₂Mon_ C).obj A).X] = μ
   rfl
 
 @[simp]
-theorem forget₂Mon_map_hom {A B : Grp_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+theorem forget₂Mon_map_hom {A B : Grp_ C} (f : A ⟶ B) :
+    ((forget₂Mon_ C).map f).hom = f.hom.hom :=
   rfl
 
 variable (C)
@@ -312,13 +331,17 @@ variable {M N : Grp_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] :
 def mkIso : M ≅ N :=
   (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso f one_f mul_f)
 
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
+@[simp] lemma mkIso_hom_hom_hom : (mkIso f one_f mul_f).hom.hom.hom = f.hom := rfl
+@[simp] lemma mkIso_inv_hom_hom : (mkIso f one_f mul_f).inv.hom.hom = f.inv := rfl
+
+@[deprecated (since := "2025-07-03")] alias mkIso_hom_hom := mkIso_hom_hom_hom
+@[deprecated (since := "2025-07-03")] alias mkIso_inv_hom := mkIso_inv_hom_hom
 
 end
 
 instance uniqueHomFromTrivial (A : Grp_ C) : Unique (trivial C ⟶ A) :=
-  Mon_.uniqueHomFromTrivial A.toMon_
+  Equiv.unique (show _ ≃ (Mon_.trivial C ⟶ A.toMon_) from
+    InducedCategory.homEquiv)
 
 instance : HasInitial (Grp_ C) :=
   hasInitial_of_unique (trivial C)
@@ -349,7 +372,7 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
         right_inv := by
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
-  map f := F.mapMon.map f
+  map f := Grp_.homMk (F.mapMon.map f.hom)
 
 @[simp]
 theorem mapGrp_id_one (A : Grp_ C) :
@@ -386,7 +409,7 @@ noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]
 noncomputable def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
-  app X := .mk' (f.app _)
+  app X := Grp_.homMk ((mapMonNatTrans f).app _)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[simps!]
@@ -398,7 +421,7 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   obj F := F.1.mapGrp
-  map {F G} α := { app A := .mk' (α.app A.X) }
+  map {F G} α := { app A := Grp_.homMk' (α.hom.app A.X) }
 
 end Functor
 
