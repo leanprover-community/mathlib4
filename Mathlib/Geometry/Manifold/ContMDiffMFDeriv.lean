@@ -468,7 +468,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     the target chart, which is obviously smooth. -/
     have smooth_pM : ContMDiffAt (I.tangent.prod I'.tangent) I.tangent n Prod.fst (a, b) :=
       contMDiffAt_fst
-    apply ((contMDiffAt_totalSpace _ _).1 smooth_pM).2.congr_of_eventuallyEq
+    apply (contMDiffAt_totalSpace.1 smooth_pM).2.congr_of_eventuallyEq
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM` read in target chart.
@@ -507,7 +507,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     the target chart, which is obviously smooth. -/
     have smooth_pM' : ContMDiffAt (I.tangent.prod I'.tangent) I'.tangent n Prod.snd (a, b) :=
       contMDiffAt_snd
-    apply ((contMDiffAt_totalSpace _ _).1 smooth_pM').2.congr_of_eventuallyEq
+    apply (contMDiffAt_totalSpace.1 smooth_pM').2.congr_of_eventuallyEq
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM'` read in target chart.
