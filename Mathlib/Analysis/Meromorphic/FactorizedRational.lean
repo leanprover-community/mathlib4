@@ -412,7 +412,7 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt_extract_zeros_poles
           h₁x h₂x h),
     ((FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x).meromorphicTrailingCoeffAt_smul
       h₁g.meromorphicAt, h₁g.meromorphicTrailingCoeffAt_of_ne_zero h₂g,
-    norm_smul, log_mul, log_norm_leadCoefficient hD]
+    norm_smul, log_mul, log_norm_meromorphicTrailingCoeffAt hD]
   · simp only [ne_eq, norm_eq_zero]
     apply MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero
       ((FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x)
