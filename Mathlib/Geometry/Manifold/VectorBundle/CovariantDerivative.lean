@@ -825,6 +825,36 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
 
 end classification
 
+section horiz
+
+def proj (cov : CovariantDerivative I F V) (e : TotalSpace F V) :
+    TangentSpace (I.prod 𝓘(ℝ, F)) e →L[ℝ] V e.proj := by
+  sorry
+
+noncomputable def horiz (cov : CovariantDerivative I F V) (e : TotalSpace F V) :
+    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) e) :=
+  LinearMap.ker (cov.proj e)
+
+noncomputable def _root_.Bundle.vert (e : TotalSpace F V) :
+    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) e) :=
+  LinearMap.ker (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj e)
+
+lemma horiz_vert_direct_sum (cov : CovariantDerivative I F V) (e : TotalSpace F V) :
+    IsCompl (cov.horiz e) (vert e) := by
+  sorry
+
+variable [IsManifold I 1 M]
+variable {cov : CovariantDerivative I F V}
+
+lemma proj_mderiv {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} (x : M)
+    (hX : MDifferentiableAt I I.tangent (fun x ↦ TotalSpace.mk' E x (X x)) x)
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x) :
+    cov X σ x = cov.proj (σ x)
+      (mfderiv I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x (X x)) := by
+  sorry
+
+end horiz
+
 section torsion
 
 variable [h : IsManifold I ∞ M]
@@ -935,7 +965,7 @@ lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTo
 end torsion
 
 end real
-
+#where
 end CovariantDerivative
 
 end

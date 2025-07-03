@@ -82,6 +82,8 @@ theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
          [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 
+-- TODO: compare with ContMDiffWithinAt.change_section_trivialization
+
 lemma MDifferentiableWithinAt.coordChange
     {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
     (e' : Trivialization F TotalSpace.proj)  [MemTrivializationAtlas e']
