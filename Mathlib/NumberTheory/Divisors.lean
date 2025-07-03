@@ -26,9 +26,9 @@ Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
 * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
 * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
-similarly let `z : ℤ`. All of the following definitions are in the `Int` namespace:
-* `divisors n` is the `Finset` of natural numbers that divide `n`.
-* `divisorsAntidiag n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
+Similarly let `z : ℤ`. All of the following definitions are in the `Int` namespace:
+* `divisors z` is the `Finset` of integers that divide `z`.
+* `divisorsAntidiag z` is the `Finset` of integer pairs `(x,y)` such that `x * y = z`.
 
 ## Conventions
 
@@ -607,17 +607,14 @@ local notation "natCast" => Nat.castEmbedding (R := ℤ)
 local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
 
-/-- `divisors n` is the `Finset` of divisors of `n`. By convention, we set `divisors 0 = ∅`. -/
-def divisors : (z : ℤ) → Finset ℤ
-  | (n : ℕ) =>
-    let s : Finset ℕ := n.divisors
+/-- `divisors z` is the `Finset` of integer divisors of `z`. By convention, we set
+`divisors 0 = ∅`. -/
+def divisors (z : ℤ) : Finset ℤ :=
+    let s : Finset ℕ := z.natAbs.divisors
     (s.map natCast).disjUnion (s.map negNatCast) <| by
-      simp +contextual [disjoint_left, s, -Nat.mem_divisors]
-      exact fun a ha b hb hb_ne_zero ha_zero ↦ by simp [ha_zero] at ha
-  | negSucc n =>
-    let s : Finset ℕ := (n + 1).divisors
-    (s.map natCast).disjUnion (s.map negNatCast) <| by
-      simp +contextual [disjoint_left, s, -Nat.mem_divisors]
+      simp +contextual only [disjoint_left, mem_map, Nat.castEmbedding_apply,
+        Function.Embedding.trans_apply, Equiv.coe_toEmbedding, Equiv.neg_apply, not_exists, not_and,
+        forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Nat.neg_cast_eq_cast, s]
       exact fun a ha b hb hb_ne_zero ha_zero ↦ by simp [ha_zero] at ha
 
 /-- Pairs of divisors of an integer as a finset.
@@ -637,21 +634,13 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
       simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
 
 @[simp]
-theorem mem_divisors : ∀ {z x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0
-  | (n : ℕ), (m : ℕ) => by
-    simp [divisors]
-    norm_cast
-    simp
-  | (negSucc n), (m : ℕ) => by
-    simp [divisors]
-    norm_cast
-  | (n : ℕ), (negSucc m) => by
-    simp [divisors]
-    norm_cast
-    simp
-  | (negSucc n), (negSucc m) => by
-    simp [divisors]
-    norm_cast
+theorem mem_divisors : ∀ {z x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := by
+  rintro z x
+  rw [ne_eq, ← natAbs_eq_zero (a := z), ← natAbs_dvd_natAbs, ← Nat.mem_divisors]
+  simp only [divisors, disjUnion_eq_union, mem_union]
+  match x with
+  | (n : ℕ) => simp
+  | (negSucc n) => simp
 
 @[simp]
 theorem divisors_zero : divisors 0 = ∅ := by
@@ -702,7 +691,7 @@ lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 :=
   not_nonempty_iff_eq_empty.symm.trans nonempty_divisors.not_left
 
 theorem divisors_subset_of_dvd (hzero : z ≠ 0) (h : x ∣ z) : divisors x ⊆ divisors z :=
-  Finset.subset_iff.2 fun _y hy => mem_divisors.mpr ⟨(mem_divisors.mp hy).1.trans h, hzero⟩
+  Finset.subset_iff.2 fun _y hy ↦ mem_divisors.mpr ⟨(mem_divisors.mp hy).1.trans h, hzero⟩
 
 theorem dvd_of_divisors_subset (hzero : x ≠ 0) (h : divisors x ⊆ divisors z) : x ∣ z :=
   (mem_divisors.mp  <| Finset.mem_of_subset h <| mem_divisors_self hzero).left
@@ -825,7 +814,7 @@ lemma divisorsAntidiag_ofNat (n : ℕ) :
           simp +contextual [disjoint_left, eq_comm]) := rfl
 
 theorem map_div_right_divisors :
-    z.divisors.map ⟨fun d => (d, z / d), fun _ _ => congr_arg Prod.fst⟩ =
+    z.divisors.map ⟨fun d => (d, z / d), fun _ _ ↦ congr_arg Prod.fst⟩ =
       z.divisorsAntidiag := by
   ext ⟨d, nd⟩
   simp only [mem_map, mem_divisorsAntidiag, Function.Embedding.coeFn_mk, mem_divisors,
@@ -838,7 +827,7 @@ theorem map_div_right_divisors :
     exact ⟨⟨dvd_mul_right _ _, hn⟩, mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left⟩
 
 theorem map_div_left_divisors :
-    z.divisors.map ⟨fun d => (z / d, d), fun _ _ => congr_arg Prod.snd⟩ =
+    z.divisors.map ⟨fun d => (z / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ =
       z.divisorsAntidiag := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
   ext
