@@ -74,13 +74,13 @@ lemma isLocalization_leftAdjoint
     intro X
     exact Localization.inverts W.Q W _ (hW' X)
   have : Localization.Lifting W.Q W (G ⋙ F ⋙ W.Q) (Φ ⋙ F ⋙ W.Q) :=
-    ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e _⟩
+    ⟨(Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight e _⟩
   exact Functor.IsLocalization.of_equivalence_target W.Q W _
     (Equivalence.mk Φ (F ⋙ W.Q)
       (Localization.liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _
         (W.Q.leftUnitor.symm ≪≫ asIso (Functor.whiskerRight adj.unit W.Q) ≪≫
         Functor.associator _ _ _))
-      (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫ asIso adj.counit)) e
+      (Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ e ≪≫ asIso adj.counit)) e
 
 lemma isLocalization_rightAdjoint
     (adj : F ⊣ G) (W : MorphismProperty C₁)
