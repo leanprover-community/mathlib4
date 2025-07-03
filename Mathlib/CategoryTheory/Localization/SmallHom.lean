@@ -264,9 +264,9 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
     SmallHom.equiv_equiv_symm W₂ W₂.Q L₂ E₂ α₂]
   change α₂.inv.app _ ≫ E₂.map (β.hom.app X ≫ G'.map g ≫ β.inv.app Y) ≫ _ = _
   let γ : G' ⋙ E₂ ≅ E₁ ⋙ G := liftNatIso W₁.Q W₁ (W₁.Q ⋙ G' ⋙ E₂) (W₁.Q ⋙ E₁ ⋙ G) _ _
-    ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight β.symm E₂ ≪≫
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ α₂ ≪≫ e ≪≫
-      isoWhiskerRight α₁.symm G ≪≫ Functor.associator _ _ _)
+    ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight β.symm E₂ ≪≫
+      Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ α₂ ≪≫ e ≪≫
+      Functor.isoWhiskerRight α₁.symm G ≪≫ Functor.associator _ _ _)
   have hγ : ∀ (X : C₁), γ.hom.app (W₁.Q.obj X) =
       E₂.map (β.inv.app X) ≫ α₂.hom.app (Φ.functor.obj X) ≫
         e.hom.app X ≫ G.map (α₁.inv.app X) := fun X ↦ by

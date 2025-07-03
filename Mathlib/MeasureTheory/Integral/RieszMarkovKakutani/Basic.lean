@@ -252,11 +252,11 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
   have f_eq_sum : f = g₁ * f + g₂ * f := by
     ext x
     simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mul,
-      Pi.add_apply, Pi.mul_apply, NNReal.coe_add, NNReal.coe_mul,
-      Eq.symm (RightDistribClass.right_distrib _ _ _), ← NNReal.coe_add, ← Pi.add_apply]
+      Pi.mul_apply, NNReal.coe_mul,
+      Eq.symm (RightDistribClass.right_distrib _ _ _)]
     by_cases h : f x = 0
     · rw [h]
-      simp only [NNReal.coe_zero, NNReal.coe_add, mul_zero]
+      simp only [NNReal.coe_zero, mul_zero]
     · push_neg at h
       simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
         CompactlySupportedContinuousMap.coe_toContinuousMap] at sum_g
@@ -333,14 +333,14 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   rw [← TopologicalSpace.Compacts.coe_mk K hK]
   simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
     (contentRegular_rieszContent Λ)]
-  simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe, Content.mk_apply]
+  simp only [rieszContent, ENNReal.coe_le_coe, Content.mk_apply]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ ⟨K, hK⟩ hε
   apply le_trans _ hg.2.le
   apply monotone_of_nnreal Λ
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
+  simp only
   by_cases hx : x ∈ tsupport f
   · exact le_trans (hf x) (hg.1 x (Set.mem_of_subset_of_mem h hx))
   · rw [image_eq_zero_of_notMem_tsupport hx]
