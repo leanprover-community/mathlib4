@@ -354,14 +354,6 @@ instance TensorProduct.simple
       rw [this, mul_zero, zero_mul]
       rfl
     · right
-      rw [h, TwoSidedIdeal.coe_top] at eq1
-      rw [eq1, eq_top_iff, TwoSidedIdeal.le_iff]
-      rintro x -
-      rw [SetLike.mem_coe]
-      induction x using TensorProduct.induction_on with
-      | zero => simp [TwoSidedIdeal.zero_mem]
-      | tmul a b =>
-        rw [show a ⊗ₜ[K] b = (a ⊗ₜ 1) * (1 ⊗ₜ b) by simp]
-        exact TwoSidedIdeal.mul_mem_right _ _ _ <| TwoSidedIdeal.subset_span ⟨a, ⟨⟩, rfl⟩
-      | add x y hx hy => exact TwoSidedIdeal.add_mem _ hx hy
+      rw [← TwoSidedIdeal.one_mem_iff, eq1, h]
+      exact TwoSidedIdeal.subset_span ⟨1, by simp⟩
   exact TensorProduct.map_comap_eq_of_isSimple_isCentralSimple K
