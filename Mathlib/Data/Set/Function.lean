@@ -22,6 +22,8 @@ This file contains basic results on the following predicates of functions and se
   we have `Set.LeftInvOn f' f s` and `Set.RightInvOn f' f t`.
 -/
 
+assert_not_exists BooleanAlgebra
+
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv Equiv.Perm Function
