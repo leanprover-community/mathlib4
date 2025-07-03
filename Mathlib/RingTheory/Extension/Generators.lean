@@ -258,18 +258,16 @@ lemma reindex_val (P : Generators R S ι') (e : ι ≃ ι') :
     (P.reindex e).val = P.val ∘ e :=
   rfl
 
-lemma _root_.MvPolynomial.aeval_mk_X_eq_mk {σ : Type*} (I : Ideal (MvPolynomial σ R)) :
-    aeval (fun i ↦ Ideal.Quotient.mk I (X i)) = Ideal.Quotient.mkₐ _ I := by
-  rw [aeval_unique (Ideal.Quotient.mkₐ _ I)]
-  rfl
-
 section
 
 variable {σ : Type*} {I : Ideal (MvPolynomial σ R)}
   (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R)
   (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
-/-- The naive generators for a `` -/
+/--
+The naive generators for a quotient `R[Xᵢ] ⧸ I`.
+If the definitional equality of the section matters, it can be explicitly provided.
+-/
 @[simps val]
 noncomputable
 def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
@@ -278,7 +276,9 @@ def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
     Generators R (MvPolynomial σ R ⧸ I) σ where
   val i := Ideal.Quotient.mk _ (X i)
   σ' := s
-  aeval_val_σ' x := by simpa [aeval_mk_X_eq_mk] using hs x
+  aeval_val_σ' x := by
+    conv_rhs => rw [← hs x, ← Ideal.Quotient.mkₐ_eq_mk R, aeval_unique (Ideal.Quotient.mkₐ _ I)]
+    simp [Function.comp_def]
   algebra := inferInstance
   algebraMap_eq := by ext x <;> simp [IsScalarTower.algebraMap_apply R (MvPolynomial σ R)]
 
