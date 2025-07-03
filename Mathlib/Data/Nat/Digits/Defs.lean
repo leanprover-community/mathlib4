@@ -368,18 +368,18 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 
+theorem digits_base_mul {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    b.digits (b * m) = 0 :: b.digits m := by
+  rw [digits_def' hb (by positivity)]
+  simp [mul_div_right m (by positivity)]
+
 theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     digits b (b ^ k * m) = List.replicate k 0 ++ digits b m := by
   induction k generalizing m with
   | zero => simp
   | succ k ih =>
-    have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
-    let h1 := digits_def' hb hmb
-    have h2 : m = m * b / b :=
-      Nat.eq_div_of_mul_eq_left (ne_zero_of_lt hb) rfl
-    simp only [mul_mod_left, ← h2] at h1
-    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
-    ring_nf
+    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm]
+    rfl
 
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
