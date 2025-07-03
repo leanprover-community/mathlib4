@@ -398,7 +398,7 @@ noncomputable def ofMonoTruth
   -- Step 0: `χ₀` is unique similar to `χ`
   let uniq₀ {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
       (pb' : IsPullback m χ₀' χ' truth) : χ₀' = χ₀ m :=
-    let pb := (isPullback m)
+    let pb := isPullback m
     Mono.right_cancellation _ _ (by rw [← pb'.w, uniq m χ₀' χ' pb', pb.w])
 
   -- Step 1: Show `Ω₀` is terminal
