@@ -119,7 +119,7 @@ theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
 
 theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
-    cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
+    cases n <;> simp [*, Int.castDef, neg, natCast] <;> rfl
 
 end mapFun
 

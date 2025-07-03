@@ -167,7 +167,7 @@ instance : PartialOrder (Setoid α) where
   lt r s := r ≤ s ∧ ¬s ≤ r
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h => h1 h, fun h => h2 h⟩
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
@@ -306,7 +306,6 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
-  left_inv := fun ⟨_, _⟩ => Subtype.eq <| funext fun _ => rfl
   right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
@@ -411,8 +410,8 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
     (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
       fun _ _ H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
-    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by show ⟦_⟧ = _; rfl
-  right_inv x := Quotient.inductionOn' x fun y => by show ⟦_⟧ = _; rfl
+    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by change ⟦_⟧ = _; rfl
+  right_inv x := Quotient.inductionOn' x fun y => by change ⟦_⟧ = _; rfl
 
 variable {r f}
 
@@ -427,7 +426,6 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
     ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
       fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
-  left_inv _ := rfl
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=
     ⟨fun h x y hs ↦ @h ⟦x⟧ ⟦y⟧ hs, fun h x y ↦ Quotient.inductionOn₂ x y fun _ _ hs ↦ h hs⟩
@@ -445,16 +443,15 @@ end Setoid
 
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
-  simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
-    forall_const]
+  simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]
   refine Quotient.mk'_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quotient.mk'_surjective.forall.trans (forall_congr' fun b => ?_)
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) :
     Subsingleton (Quot r) ↔ Relation.EqvGen r = ⊤ := by
-  simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
+  simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply]
   refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]
+  simp only [forall_const, le_Prop_eq, Prop.top_eq_true]

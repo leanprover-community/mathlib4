@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Parity
 
@@ -119,7 +118,7 @@ lemma _root_.Odd.intCast (hn : Odd n) : Odd (n : α) := hn.map (castRingHom α)
 end Ring
 
 theorem cast_dvd_cast [Ring α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
-  RingHom.map_dvd (Int.castRingHom α) h
+  map_dvd (Int.castRingHom α) h
 
 end cast
 
@@ -195,6 +194,17 @@ theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A 
   ext_int <| by simp [h1]
 
 end AddMonoidHom
+
+namespace AddEquiv
+variable {A : Type*}
+
+/-- Two additive monoid isomorphisms `f`, `g` from `ℤ` to an additive monoid are equal
+if `f 1 = g 1`. -/
+@[ext high]
+theorem ext_int [AddMonoid A] {f g : ℤ ≃+ A} (h1 : f 1 = g 1) : f = g :=
+  toAddMonoidHom_injective <| AddMonoidHom.ext_int h1
+
+end AddEquiv
 
 theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
     (f : F) (h₁ : f 1 = 1) :

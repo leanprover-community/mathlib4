@@ -76,6 +76,13 @@ theorem exists_maximal [Nontrivial α] : ∃ M : Ideal α, M.IsMaximal :=
   let ⟨I, ⟨hI, _⟩⟩ := exists_le_maximal (⊥ : Ideal α) bot_ne_top
   ⟨I, hI⟩
 
+theorem ne_top_iff_exists_maximal {I : Ideal α} : I ≠ ⊤ ↔ ∃ M : Ideal α, M.IsMaximal ∧ I ≤ M := by
+  refine ⟨exists_le_maximal I, ?_⟩
+  contrapose!
+  rintro rfl _ hMmax
+  rw [top_le_iff]
+  exact IsMaximal.ne_top hMmax
+
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
   rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
@@ -159,7 +166,7 @@ theorem exists_disjoint_powers_of_span_eq_top (s : Set α) (hs : span s = ⊤) (
 
 theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
     span ({x} : Set α) < span ({y} : Set α) ↔ DvdNotUnit y x := by
-  rw [lt_iff_le_not_le, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
+  rw [lt_iff_le_not_ge, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
     dvd_and_not_dvd_iff]
 
 lemma isPrime_of_maximally_disjoint (I : Ideal α)
@@ -175,7 +182,7 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
     by_contra! rid
     have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_notMem.mpr rid.1)
     have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_notMem.mpr rid.2)
-    simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
+    simp only [Set.not_disjoint_iff, SetLike.mem_coe, Submodule.mem_sup,
       mem_span_singleton] at hx hy
     obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
     obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂⟩⟩, hs₂⟩ := hy

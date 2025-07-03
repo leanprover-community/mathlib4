@@ -128,11 +128,9 @@ theorem mem_toGrothendieck (K : Pretopology C) (X S) :
 See [MM92] Chapter III, Section 2, Equations (3,4).
 -/
 def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
-  coverings X R := Sieve.generate R ∈ J X
+  coverings X := {R | Sieve.generate R ∈ J X}
   has_isos X Y f i := J.covering_of_eq_top (by simp)
-  pullbacks X Y f R hR := by
-    simp only [Set.mem_def, Sieve.pullbackArrows_comm]
-    apply J.pullback_stable f hR
+  pullbacks X Y f R hR := by simpa [Sieve.pullbackArrows_comm] using J.pullback_stable f hR
   transitive X S Ti hS hTi := by
     apply J.transitive hS
     intro Y f
@@ -229,7 +227,7 @@ instance : InfSet (Pretopology C) where
 
 lemma mem_sInf (T : Set (Pretopology C)) {X : C} (S : Presieve X) :
     S ∈ sInf T X ↔ ∀ t ∈ T, S ∈ t X := by
-  show S ∈ sInf (Pretopology.coverings '' T) X ↔ _
+  change S ∈ sInf (Pretopology.coverings '' T) X ↔ _
   simp
 
 lemma sInf_ofGrothendieck (T : Set (GrothendieckTopology C)) :

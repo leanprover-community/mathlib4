@@ -38,7 +38,7 @@ variable (F₁ F₂ : J ⥤ C)
 @[simps]
 def chosenProd : J ⥤ C where
   obj j := F₁.obj j ⊗ F₂.obj j
-  map φ := F₁.map φ ⊗ F₂.map φ
+  map φ := F₁.map φ ⊗ₘ F₂.map φ
 
 namespace chosenProd
 
@@ -77,7 +77,7 @@ lemma tensorObj_obj (F₁ F₂ : J ⥤ C) (j : J) : (F₁ ⊗ F₂).obj j = (F�
 
 @[simp]
 lemma tensorObj_map (F₁ F₂ : J ⥤ C) {j j' : J} (f : j ⟶ j') :
-    (F₁ ⊗ F₂).map f = (F₁.map f) ⊗ (F₂.map f) := rfl
+    (F₁ ⊗ F₂).map f = (F₁.map f) ⊗ₘ (F₂.map f) := rfl
 
 @[simp]
 lemma fst_app (F₁ F₂ : J ⥤ C) (j : J) : (fst F₁ F₂).app j = fst (F₁.obj j) (F₂.obj j) := rfl
@@ -107,15 +107,15 @@ lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
 
 @[reassoc (attr := simp)]
 lemma tensorHom_app_fst {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
-    (f ⊗ g).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
-  change (f ⊗ g).app j ≫ (fst F₁' F₂').app j = _
+    (f ⊗ₘ g).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
+  change (f ⊗ₘ g).app j ≫ (fst F₁' F₂').app j = _
   rw [← NatTrans.comp_app, tensorHom_fst, NatTrans.comp_app]
   rfl
 
 @[reassoc (attr := simp)]
 lemma tensorHom_app_snd {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
-    (f ⊗ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j := by
-  change (f ⊗ g).app j ≫ (snd F₁' F₂').app j = _
+    (f ⊗ₘ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j := by
+  change (f ⊗ₘ g).app j ≫ (snd F₁' F₂').app j = _
   rw [← NatTrans.comp_app, tensorHom_snd, NatTrans.comp_app]
   rfl
 

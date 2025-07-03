@@ -218,7 +218,7 @@ protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ 
     let ⟨u, hu⟩ := h
     ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
       hu ▸ by
-        simp only [IsUnit.mul_iff, Units.isUnit, and_true, IsUnit.mul_right_dvd]
+        simp only [Units.isUnit, IsUnit.mul_right_dvd]
         intro a b
         exact hp.dvd_or_dvd⟩⟩
 
@@ -313,7 +313,7 @@ theorem Associated.of_mul_left [CancelCommMonoidWithZero M] {a b c d : M} (h : a
     mul_left_cancel₀ ha
       (by
         rw [← hv, mul_assoc c (v : M) d, mul_left_comm c, ← hu]
-        simp [hv.symm, mul_assoc, mul_comm, mul_left_comm])⟩
+        simp [hv.symm, mul_comm, mul_left_comm])⟩
 
 theorem Associated.of_mul_right [CancelCommMonoidWithZero M] {a b c d : M} :
     a * b ~ᵤ c * d → b ~ᵤ d → b ≠ 0 → a ~ᵤ c := by
@@ -524,7 +524,7 @@ section Order
 theorem mul_mono {a b c d : Associates M} (h₁ : a ≤ b) (h₂ : c ≤ d) : a * c ≤ b * d :=
   let ⟨x, hx⟩ := h₁
   let ⟨y, hy⟩ := h₂
-  ⟨x * y, by simp [hx, hy, mul_comm, mul_assoc, mul_left_comm]⟩
+  ⟨x * y, by simp [hx, hy, mul_comm, mul_left_comm]⟩
 
 theorem one_le {a : Associates M} : 1 ≤ a :=
   Dvd.intro _ (one_mul a)
@@ -668,7 +668,7 @@ theorem mk_dvdNotUnit_mk_iff {a b : M} :
 theorem dvdNotUnit_of_lt {a b : Associates M} (hlt : a < b) : DvdNotUnit a b := by
   constructor
   · rintro rfl
-    apply not_lt_of_le _ hlt
+    apply not_lt_of_ge _ hlt
     apply dvd_zero
   rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
   refine ⟨x, ?_, rfl⟩

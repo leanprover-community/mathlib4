@@ -58,6 +58,8 @@ end Quiver
 
 namespace CategoryTheory
 
+open Functor
+
 variable [Category.{v₁} C]
 
 /-- The opposite category. -/
@@ -743,8 +745,6 @@ def opEquiv''' (A B : C) : (Opposite.op A ⟶ Opposite.op B) ≃ (B ⟶ A) :=
 def opEquiv (A B : Cᵒᵖ) : (A ⟶ B) ≃ (B.unop ⟶ A.unop) where
   toFun f := f.unop
   invFun g := g.op
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)] : Subsingleton (A ⟶ B) :=
   (opEquiv A B).subsingleton
@@ -763,12 +763,6 @@ Note this is definitionally the same as the other three variants:
 def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop) where
   toFun f := f.unop
   invFun g := g.op
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
 
 namespace Functor
 

@@ -24,7 +24,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     ⟨(inl.trans f, inr.trans f), by
       rw [Set.disjoint_left]
       rintro _ ⟨a, h⟩ ⟨b, rfl⟩
-      simp only [trans_apply, inl_apply, inr_apply] at h
+      simp only at h
       have : Sum.inl a = Sum.inr b := f.injective h
       simp only [reduceCtorEq] at this⟩
   invFun := fun ⟨⟨f, g⟩, disj⟩ =>
@@ -33,10 +33,10 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
       | Sum.inl a => f a
       | Sum.inr b => g b, by
       rintro (a₁ | b₁) (a₂ | b₂) f_eq <;>
-        simp only [Equiv.coe_fn_symm_mk, Sum.elim_inl, Sum.elim_inr] at f_eq
+        simp only at f_eq
       · rw [f.injective f_eq]
       · exfalso
-        exact disj.le_bot ⟨⟨a₁, f_eq⟩, ⟨b₂, by simp [f_eq]⟩⟩
+        exact disj.le_bot ⟨⟨a₁, f_eq⟩, ⟨b₂, by simp⟩⟩
       · exfalso
         exact disj.le_bot ⟨⟨a₂, rfl⟩, ⟨b₁, f_eq⟩⟩
       · rw [g.injective f_eq]⟩
@@ -45,7 +45,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     ext x
     cases x <;> simp!
   right_inv := fun ⟨⟨f, g⟩, _⟩ => by
-    simp only [Prod.mk_inj]
+    simp only
     constructor
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
@@ -55,8 +55,6 @@ def codRestrict (α : Type*) {β : Type*} (bs : Set β) :
       (α ↪ bs) where
   toFun f := (f : α ↪ β).codRestrict bs f.prop
   invFun f := ⟨f.trans (Function.Embedding.subtype _), fun a => (f a).prop⟩
-  left_inv x := by ext; rfl
-  right_inv x := by ext; rfl
 
 /-- Pairs of embeddings with disjoint ranges are equivalent to a dependent sum of embeddings,
 in which the second embedding cannot take values in the range of the first. -/
