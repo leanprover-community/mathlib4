@@ -33,7 +33,7 @@ number field, places, finite places
 
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
-open scoped Multiplicative NNReal
+open scoped WithZero NNReal
 
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 

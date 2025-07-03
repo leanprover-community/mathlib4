@@ -211,7 +211,7 @@ end Polynomial
 
 namespace RatFunc
 
-open scoped Multiplicative
+open scoped WithZero
 
 open Polynomial
 

@@ -23,8 +23,8 @@ formalise as `ℤᵐ⁰ := WithZero (Multiplicative ℤ)`. It is important to be
 
 ## Notation
 
-* `ℕᵐ⁰` for `WithZero (Multiplicative ℕ)`
-* `ℤᵐ⁰` for `WithZero (Multiplicative ℤ)`
+In locale `WithZero`:
+* `Mᵐ⁰` for `WithZero (Multiplicative M)`
 
 ## Main definitions
 
@@ -326,7 +326,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
 
 variable {M G : Type*}
 
-scoped notation:1025 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
+scoped notation:1024 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
 
 section AddMonoid
 

@@ -1,4 +1,4 @@
-  /-
+/-
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
@@ -68,7 +68,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Multiplicative nonZeroDivisors
+open scoped WithZero nonZeroDivisors
 
 universe u v
 
