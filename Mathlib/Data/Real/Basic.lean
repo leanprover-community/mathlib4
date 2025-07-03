@@ -555,6 +555,13 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
         · exact hb ha'
       _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
+lemma div_nat_le_self_of_nonnneg {a : ℝ} (h : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+  mul_le_of_le_one_right h <| if h : n = 0 then by simp [h]
+    else inv_le_one_of_one_le₀ (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h))
+
+lemma div_nat_lt_self_of_pos_of_two_le {a : ℝ} (h : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
+  mul_lt_of_lt_one_right h (inv_lt_one_of_one_lt₀ (Nat.one_lt_cast.mpr hn))
+
 end Real
 
 /-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
