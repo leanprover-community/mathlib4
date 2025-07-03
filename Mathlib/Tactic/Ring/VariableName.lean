@@ -6,7 +6,7 @@ Authors: Adam Topaz
 import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
-The command `name_variables` names variables in
+The command `name_poly_vars` names variables in
 `MvPolynomial (Fin n) R` for the appropriate value of `n`.
 The notation introduced by this command is local.
 
@@ -15,7 +15,7 @@ Usage:
 ```lean
 variable (R : Type) [CommRing R]
 
-name_variables X, Y, Z over R
+name_poly_vars X, Y, Z over R
 
 #check Y -- Y : MvPolynomial (Fin 3) R
 ```
@@ -26,7 +26,7 @@ open Lean Elab Command
 namespace Mathlib.Tactic
 
 /--
-The command `name_variables` names variables in
+The command `name_poly_vars` names variables in
 `MvPolynomial (Fin n) R` for the appropriate value of `n`.
 The notation introduced by this command is local.
 
@@ -35,16 +35,16 @@ Usage:
 ```lean
 variable (R : Type) [CommRing R]
 
-name_variables X, Y, Z over R
+name_poly_vars X, Y, Z over R
 
 #check Y -- Y : MvPolynomial (Fin 3) R
 ```
 -/
-syntax (name := nameVariablesOver) "name_variables " ident,+ " over " term : command
+syntax (name := namePolyVarsOver) "name_poly_vars " ident,+ " over " term : command
 
-@[command_elab nameVariablesOver, inherit_doc nameVariablesOver]
+@[command_elab namePolyVarsOver, inherit_doc namePolyVarsOver]
 def elabNameVariablesOver : CommandElab
-| `(command|name_variables $vars:ident,* over $R:term) => do
+| `(command|name_poly_vars $vars:ident,* over $R:term) => do
   let vars := vars.getElems
   let size := vars.size
   let sizeStx : TSyntax `term := quote size
