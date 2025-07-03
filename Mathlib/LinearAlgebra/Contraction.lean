@@ -18,8 +18,6 @@ some basic properties of these maps.
 contraction, dual module, tensor product
 -/
 
-suppress_compilation
-
 variable {ι : Type*} (R M N P Q : Type*)
 
 -- Porting note: we need high priority for this to fire first; not the case in ML3
