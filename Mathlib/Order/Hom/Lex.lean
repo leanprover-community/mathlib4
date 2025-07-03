@@ -48,7 +48,7 @@ variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements not greater than `x` and elements
 greater than `x`. -/
 def sumLexComplRight : Sum.Lex (Subrel r (¬ r x ·)) (Subrel r (r x ·)) ≃r r where
-  toEquiv := (Equiv.sumComm _ _).trans <| Equiv.sumCompl (r x ·)
+  toEquiv := (Equiv.sumComm _ _).trans <| .sumCompl (r x ·)
   map_rel_iff' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
     · simp
