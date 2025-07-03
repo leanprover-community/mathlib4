@@ -572,8 +572,7 @@ section contDiffOn_union
 lemma ContDiffOn.union_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hf' : ContDiffOn 𝕜 n f t)
     (hs : IsOpen s) (ht : IsOpen t) :
     ContDiffOn 𝕜 n f (s ∪ t) := by
-  intro x hx
-  obtain (hx | hx) := hx
+  rintro x (hx | hx)
   · exact (hf x hx).contDiffAt (hs.mem_nhds hx) |>.contDiffWithinAt
   · exact (hf' x hx).contDiffAt (ht.mem_nhds hx) |>.contDiffWithinAt
 
