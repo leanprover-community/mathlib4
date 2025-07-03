@@ -158,7 +158,7 @@ theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
     simp [fderiv_zero_of_not_differentiableAt h, fderiv_zero_of_not_differentiableAt this]
 
 /-- Special case of `fderiv_const_smul_of_invertible` over a field: any constant is allowed -/
-lemma fderiv_const_smul_of_field (c : 𝕜) : fderiv 𝕜 (c • f) = c • (fderiv 𝕜 f) := by
+lemma fderiv_const_smul_of_field (c : 𝕜) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
   obtain (rfl | ha) := eq_or_ne c 0
   · simp
   · have : Invertible c := invertibleOfNonzero ha
