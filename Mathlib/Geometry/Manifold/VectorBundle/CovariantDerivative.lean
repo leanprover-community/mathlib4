@@ -907,12 +907,8 @@ lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable 
   ext x
   simp [cov.leibniz Y X f x (hX x) (hf x)]
   rw [VectorField.mlieBracket_smul_left' (hf x) (hX x)]
-  have missing : (bar (f x)) ((mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)) • X x -
-      -(mfderiv I 𝓘(ℝ, ℝ) f x) (Y x) • X x = 0 := by
-    set A := mfderiv I 𝓘(ℝ, ℝ) f x (Y x)
-    set B := X x
-    sorry -- should be a lemma about `bar` now...
-  sorry -- should be missing and `module` now
+  simp [bar, smul_sub]
+  abel
 
 variable (X) in
 lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable I 𝓘(ℝ) f)
