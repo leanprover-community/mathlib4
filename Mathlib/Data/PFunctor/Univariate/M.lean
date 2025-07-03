@@ -90,7 +90,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · rfl
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
-    simp only [truncate, Function.comp_def, eq_self_iff_true, heq_iff_eq]
+    simp only [truncate, Function.comp_def]
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
@@ -202,7 +202,7 @@ def head (x : M F) :=
 
 /-- return all the subtrees of the root of a tree `x : M F` -/
 def children (x : M F) (i : F.B (head x)) : M F :=
-  let H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
+  have H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
   { approx := fun n => children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H]) i)
     consistent := by
       intro n
@@ -418,7 +418,7 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
     · subst x_a
-      simp only [dif_pos, eq_self_iff_true, casesOn_mk']
+      simp only [dif_pos, casesOn_mk']
       rw [ps_ih]
       intro h'
       apply h
@@ -445,7 +445,7 @@ theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Id
 @[simp]
 theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F)
     {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
-  simp only [isubtree, ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, M.casesOn_mk']; rfl
+  simp only [isubtree, dif_pos, isubtree, M.casesOn_mk']; rfl
 
 @[simp]
 theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
@@ -474,8 +474,8 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     induction y using PFunctor.M.casesOn'
     simp only [iselect_nil] at hrec
     subst hrec
-    simp only [approx_mk, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
-      heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
+    simp only [approx_mk, heq_iff_eq, CofixA.intro.injEq,
+      eq_iff_true_of_subsingleton, and_self]
   · cases hx
     cases hy
     induction x using PFunctor.M.casesOn'
@@ -483,7 +483,7 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     subst z
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
-    simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
+    simp only [approx_mk]
     have := mk_inj h₁
     cases this; clear h₁
     have := mk_inj h₂

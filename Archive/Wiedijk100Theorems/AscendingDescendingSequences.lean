@@ -136,7 +136,7 @@ theorem erdos_szekeres {r s : ℕ} {f : α → β} (hn : r * s < Fintype.card α
       exact ht₁.2.2
   by_contra! q
   have : Set.MapsTo (paired f) Finset.univ.toSet (Finset.Icc 1 r ×ˢ Finset.Icc 1 s).toSet := by
-    simp [paired, one_le_maxIncSequencesTo, one_le_maxDecSequencesTo, *]
+    simp [paired, one_le_maxIncSequencesTo, one_le_maxDecSequencesTo, Set.MapsTo, *]
   refine hn.not_ge ?_
   simpa using card_le_card_of_injOn (paired f) this (paired_injective hf).injOn
 
