@@ -20,10 +20,8 @@ universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [Mon_Class M] [Grp_Class G] [Grp_Class H]
 
-/-- Construct a morphism `G ⟶ H` of `Grp_ C` C from a map `f : G ⟶ H` and a `IsMon_Hom f`
-instance. -/
-@[simps]
-def Grp_.homMk (f : G ⟶ H) [IsMon_Hom f] : .mk G ⟶ Grp_.mk H := ⟨f⟩
+abbrev Grp_.ofHom (f : G ⟶ H) [IsMon_Hom f] : Grp_.mk G ⟶ Grp_.mk H :=
+  Grp_.homMk f
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
@@ -97,7 +95,7 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ Grp.{v}) (α : (F ⋙ forg
 @[simps]
 def yonedaGrp : Grp_ C ⥤ Cᵒᵖ ⥤ Grp.{v} where
   obj G := yonedaGrpObj G.X
-  map {G H} ψ := { app Y := Grp.ofHom ((yonedaMon.map ψ).app Y).hom }
+  map {G H} ψ := { app Y := Grp.ofHom ((yonedaMon.map ψ.hom).app Y).hom }
 
 @[reassoc]
 lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y) (g : Y ⟶ G) :
@@ -105,12 +103,16 @@ lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y
 
 /-- The yoneda embedding for `Grp_C` is fully faithful. -/
 def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
-  preimage {G H} α := yonedaMonFullyFaithful.preimage (whiskerRight α (forget₂ Grp MonCat))
+  preimage {G H} α :=
+    Grp_.homMk' (yonedaMonFullyFaithful.preimage ((whiskerRight α (forget₂ Grp MonCat))))
   map_preimage {G H} α := by
     ext X : 3
     exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon_) (Y := H.toMon_)
       (whiskerRight α (forget₂ Grp MonCat))).app X).hom)
-  preimage_map := yonedaMonFullyFaithful.preimage_map
+  preimage_map f := by
+    ext
+    congr
+    apply yonedaMonFullyFaithful.preimage_map
 
 instance : yonedaGrp (C := C).Full := yonedaGrpFullyFaithful.full
 instance : yonedaGrp (C := C).Faithful := yonedaGrpFullyFaithful.faithful
@@ -132,12 +134,12 @@ lemma Grp_Class.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ 
 @[reassoc]
 lemma Grp_Class.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMon_Hom h] :
     (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
-  ((yonedaGrp.map <| Grp_.homMk h).app <| op X).hom.map_div f g
+  ((yonedaGrp.map <| Grp_.ofHom h).app <| op X).hom.map_div f g
 
 @[reassoc]
 lemma Grp_Class.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMon_Hom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n :=
-  ((yonedaGrp.map <| Grp_.homMk g).app <| op X).hom.map_zpow f n
+  ((yonedaGrp.map <| Grp_.ofHom g).app <| op X).hom.map_zpow f n
 
 @[reassoc]
 lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=

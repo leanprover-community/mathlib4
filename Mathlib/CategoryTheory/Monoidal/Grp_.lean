@@ -99,16 +99,22 @@ theorem hom_ext {A B : Grp_ C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f =
 
 /-- Constructor for morphisms in `Grp_ C`. -/
 @[simps]
-def homMk {A B : Grp_ C} (f : A.toMon_ ⟶ B.toMon_) : A ⟶ B where
+def homMk' {A B : Grp_ C} (f : A.toMon_ ⟶ B.toMon_) : A ⟶ B where
   hom := f
+
+/-- Construct a morphism `A ⟶ B` of `Grp_ C` from a map `f : A.X ⟶ A.X` and a `IsMon_Hom f`
+instance. -/
+@[simps!]
+def homMk {A B : Grp_ C} (f : A.X ⟶ B.X) [IsMon_Hom f] : A ⟶ B :=
+  homMk' (.mk f)
 
 /-- Constructor for morphisms in `Grp_ C`. -/
 @[simps!]
-def homMk' {A B : Grp_ C} (f : A.X ⟶ B.X)
+def homMk'' {A B : Grp_ C} (f : A.X ⟶ B.X)
     (one_f : η ≫ f = η := by aesop_cat)
     (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by aesop_cat) : A ⟶ B :=
   haveI : IsMon_Hom f := ⟨one_f, mul_f⟩
-  homMk (.mk f)
+  homMk f
 
 @[simp]
 lemma id' (A : Grp_ C) :
@@ -372,7 +378,7 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
         right_inv := by
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
-  map f := Grp_.homMk (F.mapMon.map f.hom)
+  map f := Grp_.homMk' (F.mapMon.map f.hom)
 
 @[simp]
 theorem mapGrp_id_one (A : Grp_ C) :
@@ -409,7 +415,7 @@ noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]
 noncomputable def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
-  app X := Grp_.homMk ((mapMonNatTrans f).app _)
+  app X := Grp_.homMk' ((mapMonNatTrans f).app _)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[simps!]
@@ -421,7 +427,7 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   obj F := F.1.mapGrp
-  map {F G} α := { app A := Grp_.homMk' (α.hom.app A.X) }
+  map {F G} α := { app A := Grp_.homMk'' (α.hom.app A.X) }
 
 end Functor
 
