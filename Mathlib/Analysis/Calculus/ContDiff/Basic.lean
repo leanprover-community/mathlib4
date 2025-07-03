@@ -565,7 +565,7 @@ alias ContDiff.prod := ContDiff.prodMk
 
 end prod
 
-/-! ### Being `C^k` on a union of sets can be tested on each set -/
+/-! ### Being `C^k` on a union of open sets can be tested on each set -/
 section contDiffOn_union
 
 /-- If a function is `C^k` on two open sets, it is also `C^n` on their union. -/
@@ -597,13 +597,13 @@ lemma ContDiffOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
   exact (hf i).contDiffAt ((hs i).mem_nhds hxsi) |>.contDiffWithinAt
 
 /-- A function is `C^k` on a union of open sets `s i` iff it is `C^k` on each `s i`. -/
-lemma contDiffOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set E}
+lemma contDiffOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set E}
     (hs : ∀ i, IsOpen (s i)) :
     ContDiffOn 𝕜 n f (⋃ i, s i) ↔ ∀ i : ι, ContDiffOn 𝕜 n f (s i) :=
   ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
    fun h ↦ ContDiffOn.iUnion_of_isOpen h hs⟩
 
-lemma contDiff_of_contMDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
+lemma contDiff_of_contDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
     (hf : ∀ i : ι, ContDiffOn 𝕜 n f (s i)) (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
     ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ, ← hs']
