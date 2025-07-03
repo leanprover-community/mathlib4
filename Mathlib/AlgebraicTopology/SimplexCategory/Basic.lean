@@ -906,7 +906,7 @@ def isTerminalZero : IsTerminal (⦋0⦌ : SimplexCategory) :=
 instance : HasTerminal SimplexCategory :=
   IsTerminal.hasTerminal isTerminalZero
 
-/-- The isomorphism of the terminal objects in `SimplexCategory` and `⦋0⦌`. -/
+/-- The isomorphism between the terminal object in `SimplexCategory` and `⦋0⦌`. -/
 noncomputable def topIsoZero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
   terminalIsoIsTerminal isTerminalZero
 
