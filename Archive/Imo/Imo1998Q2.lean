@@ -106,7 +106,7 @@ theorem A_fibre_over_contestant (c : C) :
     (Finset.univ.filter fun p : JudgePair J => p.Agree r c ∧ p.Distinct) =
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).image Prod.snd := by
   ext p
-  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, exists_prop]
+  simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image]
   constructor
   · rintro ⟨_, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
   · intro h; aesop
@@ -231,7 +231,7 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
   -- We are now essentially done; we just need to bash `h` into exactly the right shape.
   have hl : k * ((2 * z + 1) * (2 * z + 1) - (2 * z + 1)) = k * (2 * (2 * z + 1)) * z := by
     have : 0 < 2 * z + 1 := by aesop
-    simp only [mul_comm, add_mul, one_mul, nonpos_iff_eq_zero, add_tsub_cancel_right]; ring
+    simp only [mul_comm, add_mul, one_mul, add_tsub_cancel_right]; ring
   have hr : 2 * z * z * a = 2 * z * a * z := by ring
   rw [hl, hr] at h
   rcases z with - | z

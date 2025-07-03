@@ -276,7 +276,7 @@ theorem IsMultiplyPreprimitive.of_bijective_map
       ⟨φ m, fun ⟨y, hy⟩ => by
         rw [← hs', Set.mem_image] at hy
         obtain ⟨x, hx, hx'⟩ := hy
-        simp only [Subtype.coe_mk]
+        simp only []
         rw [← hx', ← map_smulₛₗ]
         apply congr_arg
         rw [mem_fixingSubgroup_iff] at hm
@@ -333,7 +333,7 @@ theorem isMultiplyPreprimitive_congr
       obtain ⟨k, rfl⟩ := hφ k
       suffices k ∈ fixingSubgroup M s by
         use ⟨k, this⟩
-      simp only [mem_fixingSubgroup_iff, t, ψ] at hk ⊢
+      simp only [mem_fixingSubgroup_iff, t] at hk ⊢
       intro y hy
       apply hf.injective
       rw [map_smulₛₗ, hk]
@@ -347,7 +347,7 @@ theorem isMultiplyPreprimitive_congr
         obtain ⟨y, rfl⟩ := hf.surjective x
         suffices y ∈ ofFixingSubgroup M s by
           exact ⟨⟨y, this⟩, rfl⟩
-        simp only [mem_ofFixingSubgroup_iff, Set.mem_image, not_exists, not_and, t, ψ, g] at hx ⊢
+        simp only [mem_ofFixingSubgroup_iff, Set.mem_image, not_exists, not_and, t] at hx ⊢
         exact fun  hy ↦ hx y hy rfl
 
 end MulAction

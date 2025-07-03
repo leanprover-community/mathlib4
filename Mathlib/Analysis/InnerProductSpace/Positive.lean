@@ -115,6 +115,19 @@ theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPosi
   rw [reApplyInnerSelf, add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
+open ComplexOrder in
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+    (c • T).IsPositive := by
+  have hc' : starRingEnd 𝕜 c = c := by
+    simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
+  apply And.intro
+  · exact IsSelfAdjoint.smul hc' hT.left
+  · intro x
+    rw [reApplyInnerSelf, smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul,
+      sub_zero]
+    exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
+
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
     (S ∘L T ∘L S†).IsPositive := by
@@ -309,6 +322,18 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
+
+open ComplexOrder in
+@[aesop safe apply]
+theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
+    (c • T).IsPositive := by
+  have hc' : starRingEnd 𝕜 c = c := by
+    simp [conj_eq_iff_im, ← (le_iff_re_im.mp hc).right]
+  apply And.intro
+  · exact IsSelfAdjoint.smul hc' hT.left
+  · intro x
+    rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
+    exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
 
 @[aesop safe apply]
 theorem IsPositive.conj_adjoint {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : E →ₗ[𝕜] F) :

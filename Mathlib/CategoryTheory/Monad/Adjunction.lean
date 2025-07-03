@@ -27,7 +27,7 @@ Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflec
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 universe v₁ v₂ u₁ u₂
 

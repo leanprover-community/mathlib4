@@ -32,13 +32,9 @@ setup_remotes() {
   # Check if we have a remote for the main mathlib4 repository
   MAIN_REMOTE=$(find_remote "leanprover-community/mathlib4")
   if [ -z "$MAIN_REMOTE" ]; then
-    echo "Error: Could not find remote for leanprover-community/mathlib4"
-    echo "Available remotes:"
-    git remote -v
-    echo ""
-    echo "Please add a remote for the main repository:"
-    echo "  git remote add upstream https://github.com/leanprover-community/mathlib4.git"
-    exit 1
+    echo "Adding remote 'upstream' for leanprover-community/mathlib4"
+    git remote add upstream https://github.com/leanprover-community/mathlib4.git
+    MAIN_REMOTE="upstream"
   fi
 
   # Check if we have a remote for the nightly-testing fork

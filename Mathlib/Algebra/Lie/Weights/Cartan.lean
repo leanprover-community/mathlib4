@@ -26,8 +26,6 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 -/
 
-suppress_compilation
-
 open Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
