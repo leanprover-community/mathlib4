@@ -483,7 +483,7 @@ def naive {v : ι → MvPolynomial σ R}
     Presentation R (MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) σ ι where
   __ := Generators.naive s hs
   relation := v
-  span_range_relation_eq_ker := (Generators.naive_ker s hs).symm
+  span_range_relation_eq_ker := (Generators.ker_naive s hs).symm
 
 lemma naive_relation : (naive s hs).relation = v := rfl
 
