@@ -5,6 +5,8 @@ Authors: Kenny Lau
 -/
 
 import Mathlib.ModelTheory.Syntax
+set_option linter.style.header false
+set_option linter.directoryDependency false
 
 /-!
 # The Axioms of ZFC
@@ -25,8 +27,6 @@ the axioms of ZFC.
 
 * [Set Theory, Thomas Jech][Jech2003]
 -/
-
-set_option linter.directoryDependency false
 
 universe u
 
