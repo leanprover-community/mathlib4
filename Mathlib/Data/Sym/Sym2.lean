@@ -785,11 +785,28 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
   simp_all only [Pi.smul_apply', lift_mk]
 
 /--
-Multiplication as a function from `Sym2`.
+Lift a commutative operation on `α` to one on `Sym2 α`, taking commutativity from the typeclass
+system. See also `Sym2.lift`, which takes the commutativity argument explicitly, and `Sym2.fromRel`,
+which takes a symmetric relation instead.
 -/
-def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
+def liftComm (op : α → α → β) [IsSymmOp op] : Sym2 α → β :=
+  lift ⟨op, IsSymmOp.symm_op⟩
 
 @[simp]
+lemma liftComm_mk {op : α → α → β} [IsSymmOp op] (xy : α × α) :
+    liftComm op (Sym2.mk xy) = op xy.1 xy.2 := rfl
+
+lemma liftComm_eq_fromRel (r : α → α → Prop) [hr : IsSymmOp r] :
+    liftComm r = fromRel (fun x y ↦ (hr.symm_op x y).mp) := rfl
+
+/--
+Multiplication as a function from `Sym2`.
+-/
+@[deprecated liftComm (since := "2025-07-03")]
+def mul {M} [CommMagma M] : Sym2 M → M := liftComm (· * ·)
+
+set_option linter.deprecated false in
+@[deprecated liftComm_mk (since := "2025-07-03"), simp]
 lemma mul_mk {M} [CommMagma M] (xy : M × M) :
     mul (.mk xy) = xy.1 * xy.2 := rfl
 
