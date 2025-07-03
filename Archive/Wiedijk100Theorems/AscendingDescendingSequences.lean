@@ -71,11 +71,9 @@ private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
   rw [Nat.lt_iff_add_one_le]
   refine le_max' _ _ ?_
   have : maxIncSequencesTo f i ∈ incSequencesTo f i := max'_mem _ incSequencesTo_nonempty
-  simp only [incSequencesTo, mem_image, mem_filter, exists_prop, mem_univ, exists_and_right,
-    true_and, and_assoc] at this
+  simp only [incSequencesTo, mem_image, mem_filter, mem_univ, true_and, and_assoc] at this
   obtain ⟨t, hti, ht₁, ht₂⟩ := this
-  simp only [incSequencesTo, mem_image, mem_filter, mem_univ, true_and, exists_and_right,
-    and_assoc]
+  simp only [incSequencesTo, mem_image, mem_filter, mem_univ, true_and, and_assoc]
   have : ∀ x ∈ t, x < j := by
     intro x hx
     exact (hti.2 hx).trans_lt hij
@@ -85,7 +83,7 @@ private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     next => simp
     next => rw [max_eq_left hij.le]
   next =>
-    simp only [coe_insert, incSequencesTo, decSequencesTo]
+    simp only [coe_insert]
     rw [strictMonoOn_insert_iff_of_forall_le]
     · refine ⟨?_, ht₁⟩
       intro x hx hxj
