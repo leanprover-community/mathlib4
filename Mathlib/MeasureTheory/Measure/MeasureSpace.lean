@@ -805,7 +805,7 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 lemma support_add (μ ν : Measure X) :
   (μ + ν).support = μ.support ∪ ν.support := by
-  ext; simp
+  ext; simp [mem_support_iff]
 
 end Support
 
