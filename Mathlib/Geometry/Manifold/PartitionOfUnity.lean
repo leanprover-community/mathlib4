@@ -163,8 +163,6 @@ def toPartitionOfUnity : PartitionOfUnity ι M s :=
 theorem contMDiff_sum : ContMDiff I 𝓘(ℝ) ∞ fun x => ∑ᶠ i, f i x :=
   contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
 
-@[deprecated (since := "2024-11-21")] alias smooth_sum := contMDiff_sum
-
 theorem le_one (i : ι) (x : M) : f i x ≤ 1 :=
   f.toPartitionOfUnity.le_one i x
 
@@ -181,8 +179,6 @@ theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDi
     ((f i).contMDiff.contMDiffAt.of_le (mod_cast le_top)).smul <| hg x
       <| tsupport_smul_subset_left _ _ hx
 
-@[deprecated (since := "2024-11-21")] alias smooth_smul := contMDiff_smul
-
 /-- If `f` is a smooth partition of unity on a set `s : Set M` and `g : ι → M → F` is a family of
 functions such that `g i` is $C^n$ smooth at every point of the topological support of `f i`, then
 the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
@@ -191,8 +187,6 @@ theorem contMDiff_finsum_smul {g : ι → M → F}
     ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
   (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
     f.locallyFinite.subset fun _ => support_smul_subset_left _ _
-
-@[deprecated (since := "2024-11-21")] alias smooth_finsum_smul := contMDiff_finsum_smul
 
 theorem contMDiffAt_finsum {x₀ : M} {g : ι → M → F}
     (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContMDiffAt I 𝓘(ℝ, F) n (g i) x₀) :
@@ -289,9 +283,6 @@ theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubor
     ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
   f.contMDiff_finsum_smul fun i _ hx => (hg i).contMDiffAt <| (ho i).mem_nhds (hf i hx)
 
-@[deprecated (since := "2024-11-21")]
-alias IsSubordinate.smooth_finsum_smul := IsSubordinate.contMDiff_finsum_smul
-
 end IsSubordinate
 
 end SmoothPartitionOfUnity
@@ -304,11 +295,8 @@ theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [Norme
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
     (hf : ∀ i, ContMDiff I 𝓘(ℝ) ∞ (f i)) (i : ι) : ContMDiff I 𝓘(ℝ) ∞ (f.toPartitionOfUnity i) :=
   (hf i).mul <| (contMDiff_finprod_cond fun j _ => contMDiff_const.sub (hf j)) <| by
-    simp only [Pi.sub_def, mulSupport_one_sub]
+    simp only [mulSupport_one_sub]
     exact f.locallyFinite
-
-@[deprecated (since := "2024-11-21")]
-alias smooth_toPartitionOfUnity := contMDiff_toPartitionOfUnity
 
 variable {s : Set M}
 

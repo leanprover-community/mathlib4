@@ -150,7 +150,7 @@ theorem lintegral_iSup_directed_of_measurable [Countable β] {f : β → α → 
     ∫⁻ a, ⨆ b, f b a ∂μ = ⨆ b, ∫⁻ a, f b a ∂μ := by
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
-  · simp [iSup_of_empty]
+  · simp
   inhabit β
   have : ∀ a, ⨆ b, f b a = ⨆ n, f (h_directed.sequence f n) a := by
     intro a

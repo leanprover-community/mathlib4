@@ -204,7 +204,7 @@ lemma ext {F G : ComposableArrows C n} (h : ∀ i, F.obj i = G.obj i)
     (w : ∀ (i : ℕ) (hi : i < n), F.map' i (i + 1) =
       eqToHom (h _) ≫ G.map' i (i + 1) ≫ eqToHom (h _).symm) : F = G :=
   Functor.ext_of_iso
-    (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h (fun _ => rfl)
+    (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h
 
 /-- Constructor for morphisms in `ComposableArrows C 0`. -/
 @[simps!]
@@ -347,7 +347,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     · dsimp
       rw [id_comp]
     · obtain _ | _ | k := k
-      · simp [Nat.succ.injEq] at hjk
+      · simp at hjk
       · simp
       · rfl
     · obtain _ | _ | k := k
@@ -433,7 +433,7 @@ a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
 def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
     ComposableArrows C m ⥤ ComposableArrows C n where
   obj F := F.whiskerLeft Φ
-  map f := CategoryTheory.whiskerLeft Φ f
+  map f := Functor.whiskerLeft Φ f
 
 /-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.succ`. -/
 @[simps]

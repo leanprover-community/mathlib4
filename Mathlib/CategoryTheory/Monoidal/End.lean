@@ -29,11 +29,15 @@ variable (C : Type u) [Category.{v} C]
 /-- The category of endofunctors of any category is a monoidal category,
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
+
+Note: due to the fact that composition of functors in mathlib is reversed compared to the
+one usually found in the literature, this monoidal structure is in fact the monoidal
+opposite of the one usually considered in the literature.
 -/
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
-  whiskerLeft X _ _ F := whiskerLeft X F
-  whiskerRight F X := whiskerRight F X
+  whiskerLeft X _ _ F := Functor.whiskerLeft X F
+  whiskerRight F X := Functor.whiskerRight F X
   tensorHom α β := α ◫ β
   tensorUnit := 𝟭 C
   associator F G H := Functor.associator F G H
@@ -58,7 +62,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
-    (α ⊗ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
     {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
@@ -95,7 +99,7 @@ variable [MonoidalCategory C]
 instance : (tensoringRight C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := (rightUnitorNatIso C).symm
-      μIso := fun X Y => (isoWhiskerRight (curriedAssociatorNatIso C)
+      μIso := fun X Y => (Functor.isoWhiskerRight (curriedAssociatorNatIso C)
       ((evaluation C (C ⥤ C)).obj X ⋙ (evaluation C C).obj Y)) }
 
 @[simp] lemma tensoringRight_ε :
@@ -158,7 +162,7 @@ theorem δ_naturality {m n : M} {X Y : C} (f : X ⟶ Y) [F.OplaxMonoidal]:
 @[reassoc]
 theorem μ_naturality₂ {m n m' n' : M} (f : m ⟶ m') (g : n ⟶ n') (X : C) [F.LaxMonoidal] :
     (F.map g).app ((F.obj m).obj X) ≫ (F.obj n').map ((F.map f).app X) ≫ (μ F m' n').app X =
-      (μ F m n).app X ≫ (F.map (f ⊗ g)).app X := by
+      (μ F m n).app X ≫ (F.map (f ⊗ₘ g)).app X := by
   have := congr_app (μ_natural F f g) X
   dsimp at this
   simpa using this
