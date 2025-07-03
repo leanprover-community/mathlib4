@@ -192,7 +192,7 @@ def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
 @[simps!]
 def pi'CompEval {A : Type*} [Category A] (F : ∀ i, A ⥤ C i) (i : I) :
     pi' F ⋙ Pi.eval C i ≅ F i :=
-  Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 section EqToHom
 
@@ -251,7 +251,7 @@ def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
   app := fun X i => (τ i).app X
   naturality _ _ f := by
     ext i
-    exact (τ i).naturality f
+    simpa using (τ i).naturality f
 
 end NatTrans
 
@@ -300,14 +300,14 @@ def Pi.eqToEquivalence {i j : I} (h : i = j) : C i ≌ C j := by subst h; rfl
 def Pi.evalCompEqToEquivalenceFunctor {i j : I} (h : i = j) :
     Pi.eval C i ⋙ (Pi.eqToEquivalence C h).functor ≅
       Pi.eval C j :=
-  eqToIso (by subst h; rfl)
+  NatIso.ofComponents (fun _ => eqToIso (by subst h; rfl))
 
 /-- The equivalences given by `Pi.eqToEquivalence` are compatible with reindexing. -/
 @[simps!]
 def Pi.eqToEquivalenceFunctorIso (f : J → I) {i' j' : J} (h : i' = j') :
     (Pi.eqToEquivalence C (congr_arg f h)).functor ≅
       (Pi.eqToEquivalence (fun i' => C (f i')) h).functor :=
-  eqToIso (by subst h; rfl)
+  NatIso.ofComponents (fun _ => eqToIso (by subst h; rfl))
 
 attribute [local simp] eqToHom_map
 
