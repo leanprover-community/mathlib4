@@ -26,16 +26,18 @@ variable {C₁ C₂ : C} {D₁ D₂ : D} {E₁ E₂ : E}
 /-- Action of two-variable functors on objects. -/
 abbrev Functor.obj₂ (F : C ⥤ D ⥤ E) (A : C) (B : D) : E := (F.obj A).obj B
 
-/-- Action of two-variable functors on objects. -/
+/-- Action of two-variable functors on morphisms. -/
 @[simp]
 def Functor.map₂ (F : C ⥤ D ⥤ E) {A B : C} {X Y : D} (f : A ⟶ B) (g : X ⟶ Y) :
     F.obj₂ A X ⟶ F.obj₂ B Y :=
   (F.map f).app X ≫ (F.obj B).map g
 
+/-- Action of two-variable functors on a morphism in the left argument. -/
 abbrev Functor.mapₗ (F : C ⥤ D ⥤ E) {A B : C} (f : A ⟶ B) (X : D) :
     F.obj₂ A X ⟶ F.obj₂ B X :=
   (F.map f).app X
 
+/-- Action of two-variable functors on a morphism in the right argument. -/
 abbrev Functor.mapᵣ (F : C ⥤ D ⥤ E) (A : C) {X Y : D} (g : X ⟶ Y) :
     F.obj₂ A X ⟶ F.obj₂ A Y :=
   (F.obj A).map g
