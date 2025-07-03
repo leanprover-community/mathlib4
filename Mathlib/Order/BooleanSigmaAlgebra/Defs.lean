@@ -54,13 +54,13 @@ class SigmaCompleteLattice (α) extends Lattice α, SupSet α, InfSet α, Bounde
 /-- A complete lattice is a σ-complete lattice. -/
 instance (priority := 100) CompleteLattice.toSigmaCompleteLattice [CompleteLattice α] :
     SigmaCompleteLattice α where
-  isLUB_σsSup (s : Set α) _ := isLUB_sSup s
-  isGLB_σsInf (s : Set α) _ := isGLB_sInf s
+  isLUB_σsSup s _ := isLUB_sSup s
+  isGLB_σsInf s _ := isGLB_sInf s
 
-instance OrderDual.instSigmaCompleteLattice (α : Type*) [SigmaCompleteLattice α] :
+instance OrderDual.instSigmaCompleteLattice [SigmaCompleteLattice α] :
     SigmaCompleteLattice αᵒᵈ where
-  isLUB_σsSup s hs := (isGLB_σsInf hs).dual
-  isGLB_σsInf s hs := (isLUB_σsSup hs).dual
+  isLUB_σsSup (s : Set α) hs := (SigmaCompleteLattice.isGLB_σsInf s hs).dual
+  isGLB_σsInf (s : Set α) hs := (SigmaCompleteLattice.isLUB_σsSup s hs).dual
 
 /-- A Boolean σ-algebra is a `BooleanAlgebra` and a `SigmaCompleteLattice`.
 
