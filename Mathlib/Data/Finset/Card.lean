@@ -831,4 +831,17 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
     card_lt_card hxy
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
 
+/--
+To prove a proposition for an arbitrary `Finset α`,
+it suffices to prove that for any `S : Finset α`, the following is true:
+the property is true for S with any element `s` removed, then the property holds for `S`.
+
+This is a weaker version of `Finset.strongInduction`.
+But it can be more precise when the induction argument
+only requires removing single elements at a time.
+-/
+theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
+    (H : (S : Finset α) → ((∀ s ∈ S, p (S.erase s)) → (p S))) (S : Finset α) : p S :=
+  strongInduction (fun S ih ↦ H S fun s hs ↦ ih (S.erase s) (erase_ssubset hs)) S
+
 end Finset
