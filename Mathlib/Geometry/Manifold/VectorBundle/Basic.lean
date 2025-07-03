@@ -165,7 +165,7 @@ bundle at all, just that it is a fiber bundle over a charted base space.
 namespace Bundle
 
 /-- Characterization of `C^n` functions into a vector bundle. -/
-theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
+theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
@@ -190,7 +190,7 @@ theorem contMDiffAt_totalSpace {f : M → TotalSpace F E} {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
-  simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace f
+  simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace
 
 /-- Characterization of `C^n` sections within a set at a point of a vector bundle. -/
 theorem contMDiffWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
@@ -448,7 +448,7 @@ theorem Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) s x₀ :=
-  (contMDiffWithinAt_totalSpace _).trans <| and_congr_right fun h ↦
+  contMDiffWithinAt_totalSpace.trans <| and_congr_right fun h ↦
     Trivialization.contMDiffWithinAt_snd_comp_iff₂ h FiberBundle.mem_trivializationAt_proj_source he
 
 theorem Trivialization.contMDiffAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :

@@ -69,7 +69,7 @@ theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M
       ContMDiffWithinAt IM IB n (fun x ↦ (f x).1) s x₀ ∧
         ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
-  contMDiffWithinAt_totalSpace ..
+  contMDiffWithinAt_totalSpace
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
