@@ -804,17 +804,12 @@ open Sym2
 /--
 For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
 -/
-def sym2 (s : Set α) : Set (Sym2 α) := { z | (z : Set α) ⊆ s }
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) (fun _ _ => .symm)
 
-lemma mem_sym2 {s : Set α} {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := Iff.rfl
+@[simp] lemma mk_mem_sym2_iff {s : Set α} {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
 
-@[simp] lemma mk_mem_sym2_iff {s : Set α} {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := by
-  simp [mem_sym2, pair_subset_iff]
-
-lemma sym2_eq_fromRel {s : Set α} :
-    s.sym2 = fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) (fun _ _ => .symm) := by
-  ext z
+lemma mem_sym2_iff_subset {s : Set α} {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn
-  simp
+  simp [pair_subset_iff]
 
 end Set
