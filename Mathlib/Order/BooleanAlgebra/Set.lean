@@ -417,4 +417,3 @@ theorem ite_eq_of_subset_right (t : Set α) {s₁ s₂ : Set α} (h : s₂ ⊆ s
 
 end Set
 
-open Set
