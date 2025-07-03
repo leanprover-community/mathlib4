@@ -311,7 +311,7 @@ variable (F E) in
 theorem isSimpleOrder_of_finrank_prime (hp : Nat.Prime (Module.finrank F E)) :
     IsSimpleOrder (IntermediateField F E) := by
   refine { toNontrivial := ?_, eq_bot_or_eq_top := ?_ }
-  · refine ⟨⊥, ⊤, fun h ↦ Nat.prime_one_false (bot_eq_top_iff_finrank_eq_one.mp h ▸ hp)⟩
+  · exact ⟨⊥, ⊤, fun h ↦ Nat.prime_one_false (bot_eq_top_iff_finrank_eq_one.mp h ▸ hp)⟩
   · intro K
     simpa [← toSubalgebra_strictMono.apply_eq_bot_iff, ← toSubalgebra_strictMono.apply_eq_top_iff]
       using (Subalgebra.isSimpleOrder_of_finrank_prime _ _ hp).eq_bot_or_eq_top K.toSubalgebra
