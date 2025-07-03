@@ -227,4 +227,21 @@ theorem monic_of_monic_mapAlg [FaithfulSMul R S] {p : Polynomial R} (hp : (mapAl
 
 end Algebra
 
+section IsScalarTower
+
+variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C]
+  [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
+
+theorem mapAlg_comp (p : A[X]) : (mapAlg A C) p = (mapAlg B C) (mapAlg A B p) := by
+  simp [mapAlg_eq_map, map_map, IsScalarTower.algebraMap_eq A B C]
+
+theorem coeff_zero_of_isScalarTower (p : A[X]) :
+    (algebraMap B C) ((algebraMap A B) (p.coeff 0)) = (mapAlg A C p).coeff 0 := by
+  have h : algebraMap A C = (algebraMap B C).comp (algebraMap A B) := by
+    ext a
+    simp [Algebra.algebraMap_eq_smul_one, RingHom.coe_comp, Function.comp_apply]
+  rw [mapAlg_eq_map, coeff_map, h, RingHom.comp_apply]
+
+end IsScalarTower
+
 end Polynomial
