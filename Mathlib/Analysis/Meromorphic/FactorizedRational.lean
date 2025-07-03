@@ -245,7 +245,7 @@ Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute log of the n
 coefficient.  The convention that `log 0 = 0` gives a closed formula easier than the one in
 `meromorphicTrailingCoeffAt_factorizedRational`.
 -/
-theorem log_norm_leadCoefficient {d : 𝕜 → ℤ} {x : 𝕜} (h : d.support.Finite) :
+theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d.support.Finite) :
     log ‖meromorphicTrailingCoeffAt (∏ᶠ u, (· - u) ^ d u) x‖ = ∑ᶠ u, (d u) * log ‖x - u‖ := by
   classical
   rw [meromorphicTrailingCoeffAt_factorizedRational h,
@@ -401,7 +401,7 @@ theorem MeromorphicOn.meromorphicTrailingCoeffAt_extract_zeros_poles
 In the setting of `MeromorphicOn.extract_zeros_poles`, compute the log of the
 norm of the trailing coefficient of `f` in terms of `divisor f U` and `g x`.
 -/
-theorem MeromorphicOn.meromorphicTrailingCoeffAt_extract_zeros_poles_log
+theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt_extract_zeros_poles
     {x : 𝕜} {f g : 𝕜 → E} {D : 𝕜 → ℤ} (hD : D.support.Finite) (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U))
     (hf : MeromorphicAt f x) (h₁g : AnalyticAt 𝕜 g x) (h₂g : g x ≠ 0)
     (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) :
