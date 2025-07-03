@@ -542,7 +542,7 @@ lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· �
 
 lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
     a + ⨅ (i) (j), f i j = ⨅ (i) (j), a + f i j := by
-  simp only [iInf_subtype', add_iInf]
+  simp [add_iInf]
 
 lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
     (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
