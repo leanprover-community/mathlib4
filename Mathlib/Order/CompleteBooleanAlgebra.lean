@@ -641,9 +641,7 @@ We take iSup_iInf_eq as the definition here,
 and prove later on that this implies atomicity.
 -/
 -- We do not directly extend `CompletelyDistribLattice` to avoid having the `hnot` field
--- We do not directly extend `CompleteBooleanAlgebra` to avoid having the `inf_sSup_le_iSup_inf` and
--- `iInf_sup_le_sup_sInf` fields
-class CompleteAtomicBooleanAlgebra (α : Type u) extends CompleteLattice α, BooleanAlgebra α where
+class CompleteAtomicBooleanAlgebra (α : Type u) extends CompleteBooleanAlgebra α where
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
 
@@ -652,12 +650,6 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompletelyDistribLatti
     [CompleteAtomicBooleanAlgebra α] : CompletelyDistribLattice α where
   __ := ‹CompleteAtomicBooleanAlgebra α›
   __ := BooleanAlgebra.toBiheytingAlgebra
-
--- See note [lower instance priority]
-instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
-    [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
-  __ := CompletelyDistribLattice.toCompleteDistribLattice
-  __ := ‹CompleteAtomicBooleanAlgebra α›
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where

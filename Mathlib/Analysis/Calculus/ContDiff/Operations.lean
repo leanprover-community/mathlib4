@@ -282,7 +282,7 @@ theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) 
       _ = fderivWithin 𝕜 (-iteratedFDerivWithin 𝕜 i f s) s x (h 0) (Fin.tail h) := by
         rw [fderivWithin_congr' (@hi) hx]; rfl
       _ = -(fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i f s) s) x (h 0) (Fin.tail h) := by
-        rw [Pi.neg_def, fderivWithin_neg (hu x hx)]; rfl
+        rw [fderivWithin_neg (hu x hx)]; rfl
       _ = -(iteratedFDerivWithin 𝕜 (i + 1) f s) x h := rfl
 
 theorem iteratedFDeriv_neg_apply {i : ℕ} {f : E → F} :
@@ -352,7 +352,7 @@ theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Fi
     iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j ·) s x =
       ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
   induction u using Finset.cons_induction with
-  | empty => ext; simp [hs, hx]
+  | empty => ext; simp
   | cons a u ha IH =>
     simp only [Finset.mem_cons, forall_eq_or_imp] at h
     simp only [Finset.sum_cons]

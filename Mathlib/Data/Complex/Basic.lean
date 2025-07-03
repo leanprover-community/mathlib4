@@ -13,8 +13,8 @@ import Mathlib.Tactic.Ring
 # The complex numbers
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
-of characteristic zero. The result that the complex numbers are algebraically closed, see
-`FieldTheory.AlgebraicClosure`.
+of characteristic zero. For the result that the complex numbers are algebraically closed, see
+`Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
 
 assert_not_exists Multiset Algebra
@@ -334,17 +334,17 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
     natCast_zero := by
-      ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_zero]
+      ext <;> simp [Nat.cast]
     natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
     intCast := fun n => ⟨n, 0⟩
     intCast_ofNat := fun _ => by ext <;> rfl
     intCast_negSucc := fun n => by
       ext
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show -(1 : ℝ) + (-n) = -(↑(n + 1))
+      · simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, neg_re]
+        change -(1 : ℝ) + (-n) = -(↑(n + 1))
         simp [Nat.cast_add, add_comm]
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show im ⟨n, 0⟩ = 0
+      · simp only [neg_im, zero_eq_neg]
+        change im ⟨n, 0⟩ = 0
         rfl
     one := 1 }
 
@@ -453,7 +453,7 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
 
 @[simp]
 theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
-  Complex.ext_iff.2 <| by simp [star]
+  Complex.ext_iff.2 <| by simp
 
 @[simp]
 theorem conj_I : conj I = -I :=

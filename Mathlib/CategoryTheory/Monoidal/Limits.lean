@@ -42,7 +42,7 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
       limit.lift (F ⊗ G)
         { pt := limit F ⊗ limit G
           π :=
-            { app := fun j => limit.π F j ⊗ limit.π G j
+            { app := fun j => limit.π F j ⊗ₘ limit.π G j
               naturality := fun j j' f => by
                 dsimp
                 simp only [Category.id_comp, ← tensor_comp, limit.w] } })
@@ -91,7 +91,7 @@ lemma lim_ε_π (j : J) : ε (lim (J := J) (C := C)) ≫ limit.π _ j = 𝟙 _ :
   limit.lift_π _ _
 
 @[reassoc (attr := simp)]
-lemma lim_μ_π (F G : J ⥤ C) (j : J) : μ lim F G ≫ limit.π _ j = limit.π F j ⊗ limit.π G j :=
+lemma lim_μ_π (F G : J ⥤ C) (j : J) : μ lim F G ≫ limit.π _ j = limit.π F j ⊗ₘ limit.π G j :=
   limit.lift_π _ _
 
 end

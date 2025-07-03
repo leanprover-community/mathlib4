@@ -78,7 +78,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.prod.map f g :=
   rfl
 
 @[simp]
@@ -192,7 +192,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.coprod.map f g :=
   rfl
 
 @[simp]

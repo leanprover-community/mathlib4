@@ -39,7 +39,7 @@ unit and counit isomorphisms of `equivalence`.
 -/
 
 
-open CategoryTheory CategoryTheory.Category
+open CategoryTheory CategoryTheory.Category Functor
 
 namespace AlgebraicTopology
 
