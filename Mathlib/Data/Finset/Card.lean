@@ -843,6 +843,6 @@ only requires removing single elements at a time.
 -/
 theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
     (H : (S : Finset α) → ((∀ s ∈ S, p (S.erase s)) → (p S))) (S : Finset α) : p S :=
-  strongInduction (fun S ih ↦ H S fun s hs ↦ ih (S.erase s) (erase_ssubset hs)) S
+  S.strongInduction fun S ih => H S fun _ hs => ih _ (erase_ssubset hs)
 
 end Finset
