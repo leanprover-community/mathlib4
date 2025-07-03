@@ -746,4 +746,22 @@ lemma support_restrict_subset_closure' [OpensMeasurableSpace X] {s : Set X} :
     exact MeasureTheory.nonempty_of_measure_ne_zero
       (ne_of_gt (h_restr ▸ hx U ⟨hxU, hU⟩))
 
+lemma support_restrict_subset_support {s : Set X} : (μ.restrict s).support ⊆ μ.support := by
+   intro x hx
+   rw [mem_support_iff_forall] at *
+   intro U hU
+   exact lt_of_lt_of_le (hx U hU) <| restrict_apply_le _ _
+
+lemma support_restrict_subset_closure_inter_support {s : Set X} (hs : MeasurableSet s) :
+    (μ.restrict s).support ⊆ closure s ∩ μ.support := by
+  apply subset_inter
+  · exact support_restrict_subset_closure hs
+  · exact support_restrict_subset_support
+
+lemma support_restrict_subset_closure_inter_support' [OpensMeasurableSpace X] {s : Set X} :
+    (μ.restrict s).support ⊆ closure s ∩ μ.support := by
+  apply subset_inter
+  · exact support_restrict_subset_closure'
+  · exact support_restrict_subset_support
+
 end Support
