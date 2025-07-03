@@ -181,8 +181,8 @@ def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
 instance : (uliftFunctor R).Full :=
   (fullyFaithfulUliftFunctor R).full
 
-instance : (CommAlgCat.uliftFunctor R).Faithful :=
-  (CommAlgCat.fullyFaithfulUliftFunctor R).faithful
+instance : (uliftFunctor R).Faithful :=
+  (fullyFaithfulUliftFunctor R).faithful
 
 end CommAlgCat
 
