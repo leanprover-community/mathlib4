@@ -214,7 +214,7 @@ lemma cubic_roots_of_unity_of_sq_eq [NeZero (2 : K)] {s : K} (hs : s * s = -3) :
 lemma cubic_roots_of_unity_of_sq_ne (h : ∀ s : K, s^2 ≠ -3) : {z : K | z^3 = 1} = {1} := by
   have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
   ext1 z
-  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  simp only [Set.mem_setOf_eq, Set.mem_singleton_iff]
   rw [← sub_eq_zero, H, mul_eq_zero_iff_right (cubic_cyclotomic_polynomial_ne_zero_of_sq_ne h),
     sub_eq_zero]
 
