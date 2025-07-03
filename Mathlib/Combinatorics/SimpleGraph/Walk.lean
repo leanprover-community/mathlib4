@@ -1367,4 +1367,197 @@ theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
 
 end Walk
 
+/-! ## Subwalks -/
+
+namespace Walk
+
+variable {V : Type} {G : SimpleGraph V}
+
+/-- `p.IsSubwalk q` means that the walk `p` is a contiguous subwalk of the walk `q`. -/
+def IsSubwalk {u₁ v₁ u₂ v₂} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) : Prop :=
+  ∃ (ru : G.Walk u₂ u₁) (rv : G.Walk v₁ v₂), q = (ru.append p).append rv
+
+lemma isSubwalk_rfl {u v} (p : G.Walk u v) : p.IsSubwalk p := by
+  use nil, nil
+  rw [nil_append, append_nil]
+
+lemma isSubwalk_cons {u v w} (p : G.Walk u v) (h : G.Adj w u) : p.IsSubwalk (p.cons h) := by
+  use h.toWalk, nil
+  rw [cons_append, nil_append, append_nil]
+
+lemma take_zero {u v} (p : G.Walk u v) :
+    p.take 0 = (nil' u).copy rfl p.getVert_zero.symm := by
+  cases p <;> simp [take]
+
+private lemma exists_append_left {u v s t} {q : G.Walk u v} (ht : t ≠ []) (h : q.support = t ++ s) :
+    ∃ l : G.Walk u (q.getVert (t.length - 1)), q.support = l.support ++ s := by
+  suffices (q.take (t.length - 1)).support = t by
+    use q.take (t.length - 1)
+    rw [this, h]
+  have : (q.take (t.length - 1)).support.length = t.length := by
+    rw [length_support, take_length, min_eq_left, Nat.sub_add_cancel (List.length_pos_iff.mpr ht)]
+    apply congrArg List.length at h
+    rw [length_support, List.length_append] at h
+    omega
+  apply List.ext_getElem this
+  intro i hi₁ hi₂
+  rw [← getVert_eq_support_getElem _ <| by
+    have := ((q.take (t.length - 1)).length_support ▸ hi₁)
+    exact Nat.le_of_lt_succ this, take_getVert, min_eq_right (Nat.le_sub_one_of_lt hi₂),
+    List.getElem_append_left' hi₂ s]
+  simp_rw [← h]
+  rw [getVert_eq_support_getElem]
+  rw [length_support, take_length] at hi₁
+  omega
+
+private lemma exists_append_right {u v s t} {q : G.Walk u v} (ht : s ≠ [])
+    (h : q.support = t ++ s) :
+    ∃ r : G.Walk (q.getVert t.length) v, q.support = t ++ r.support := by
+  have : t.length ≤ q.length := by
+    have : 0 < s.length := List.length_pos_iff.mpr ht
+    apply congrArg List.length at h
+    rw [length_support, List.length_append] at h
+    omega
+  have : (q.drop t.length).support.length = s.length := by
+    rw [length_support, drop_length]
+    apply congrArg List.length at h
+    rw [length_support, List.length_append] at h
+    omega
+  have : (q.drop t.length).support = s := by
+    apply List.ext_getElem this
+    intro i hi₁ hi₂
+    rw [← getVert_eq_support_getElem _ <| by
+      have := ((q.drop t.length).length_support ▸ hi₁)
+      exact Nat.le_of_lt_succ this, drop_getVert, t.getElem_append_right' hi₂]
+    simp_rw [← h, add_comm]
+    rw [getVert_eq_support_getElem]
+    rw [length_support, drop_length] at hi₁
+    omega
+  use q.drop t.length
+  rw [this, h]
+
+theorem isSubwalk_iff_support_isInfix {u₁ v₁ u₂ v₂ : V} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) :
+    p.IsSubwalk q ↔ p.support <:+: q.support := by
+  dsimp only [List.IsInfix, IsSubwalk]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨ru, rv, rfl⟩ := h
+    use ru.support.dropLast, rv.support.tail
+    rw [support_append, support_append, ← List.dropLast_append_getLast (support_ne_nil ru),
+      getLast_support, List.dropLast_append_of_ne_nil ([].cons_ne_nil u₁), List.dropLast_singleton,
+      List.append_nil, List.append_cancel_right_eq, p.support_eq_cons]
+    simp
+  · obtain ⟨s, t, h⟩ := h
+    have hv₁ : q.getVert ((s ++ p.support).length - 1) = v₁ := by
+      rw [getVert_eq_support_getElem]
+      · simp_rw [← h]
+        have : p.length = p.support.length - 1 := by rw [length_support]; rfl
+        simp only [List.append_assoc, List.length_append, length_support, Nat.add_succ_sub_one,
+          Nat.le_add_right, List.getElem_append_right, Nat.add_sub_cancel_left, Nat.lt_add_one,
+          List.getElem_append_left]
+        simp_rw [this]
+        rw [← List.getLast_eq_getElem, getLast_support]
+      · rw [List.length_append, length_support, Nat.add_succ_sub_one]
+        apply congrArg List.length at h
+        rw [List.length_append, length_support, List.length_append, length_support] at h
+        omega
+    have hu (hs : s = []) : u₁ = u₂ := by
+      rw [hs, List.nil_append] at h
+      have : (p.support ++ t)[0] = q.support[0] := by simp_rw [h]
+      rw [List.getElem_append_left] at this
+      repeat rw [← getVert_eq_support_getElem _ (Nat.zero_le _), getVert_zero] at this
+      exact this
+    have hv (ht : t = []) : v₁ = v₂ := by
+      rw [ht, List.append_nil] at h
+      have : q.support.getLast (support_ne_nil q) = (s ++ p.support).getLast
+          (List.append_ne_nil_of_right_ne_nil s (support_ne_nil p)) := by
+        simp_rw [h]
+      rw [List.getLast_append_of_right_ne_nil, getLast_support, getLast_support] at this
+      exact this.symm
+    have hu₁ (hs : s ≠ []) : q.getVert s.length = u₁ := by
+      rw [getVert_eq_support_getElem]
+      · simp_rw [← h]
+        rw [List.getElem_append_left, List.getElem_append_right rfl.le]
+        · simp_rw [Nat.sub_self, ← getVert_eq_support_getElem _ (Nat.zero_le _), p.getVert_zero]
+        · rw [List.length_append, length_support]
+          omega
+      · apply congrArg List.length at h
+        rw [List.length_append, length_support, List.length_append, length_support] at h
+        omega
+    by_cases ht : t = [] <;> by_cases hs : s = []
+    · rw [ht, hs, List.nil_append, List.append_nil] at h
+      specialize hu hs
+      specialize hv ht
+      subst hu hv
+      use nil, nil
+      rw [nil_append, append_nil]
+      exact ext_support h.symm
+    · rw [ht, List.append_nil] at h
+      obtain ⟨l, hl⟩ := exists_append_left hs h.symm
+      have : G.Adj (q.getVert (s.length - 1)) u₁ := by
+        rw [← hu₁ hs]
+        nth_rw 2 [← Nat.sub_add_cancel (List.length_pos_iff.mpr hs)]
+        rw [Nat.succ_eq_add_one, zero_add]
+        apply adj_getVert_succ
+        apply congrArg List.length at h
+        rw [List.length_append, length_support, length_support] at h
+        have : 0 < s.length := List.length_pos_iff.mpr hs
+        omega
+      specialize hv ht
+      subst hv
+      use l.concat this, nil
+      rw [append_nil]
+      apply ext_support
+      rw [support_append, support_concat, hl, p.support_eq_cons]
+      simp
+    · rw [hs, List.nil_append] at h
+      obtain ⟨r, hr⟩ := exists_append_right ht h.symm
+      specialize hu hs
+      subst hu
+      rw [hs, List.nil_append, length_support, Nat.add_sub_cancel_right] at hv₁
+      have : G.Adj v₁ (q.getVert p.support.length) := by
+        simp_rw [length_support, ← hv₁]
+        apply adj_getVert_succ
+        apply congrArg List.length at hr
+        simp_rw [List.length_append, length_support] at hr
+        omega
+      use nil, cons this r
+      rw [nil_append]
+      apply ext_support
+      simp [hr, support_append]
+    obtain ⟨r, hr⟩ := exists_append_right ht h.symm
+    rw [List.append_assoc] at hr
+    obtain ⟨l, hl⟩ := exists_append_left hs hr
+    have h₁ : G.Adj (q.getVert (s.length - 1)) u₁ := by
+      rw [← hu₁ hs]
+      nth_rw 2 [← Nat.sub_add_cancel (List.length_pos_iff.mpr hs)]
+      rw [Nat.succ_eq_add_one, zero_add]
+      apply adj_getVert_succ
+      apply congrArg List.length at h
+      rw [List.length_append, length_support, List.length_append, length_support] at h
+      have : 0 < s.length := List.length_pos_iff.mpr hs
+      omega
+    have h₂ : G.Adj v₁ (q.getVert (s ++ p.support).length) := by
+      rw [List.length_append, length_support]
+      simp_rw [← hv₁]
+      rw [List.length_append, length_support, Nat.add_succ_sub_one]
+      apply adj_getVert_succ
+      apply congrArg List.length at hr
+      simp_rw [List.length_append, length_support] at hr
+      omega
+    use l.concat h₁, cons h₂ r
+    apply ext_support
+    rw [hl]
+    simp only [support_append, support_concat, List.concat_eq_append, List.append_assoc,
+      support_cons, List.tail_cons, List.append_cancel_left_eq]
+    rw [← List.append_assoc, List.append_cancel_right_eq, List.cons_append, List.nil_append]
+    exact p.support_eq_cons
+
+lemma IsSubwalk.trans {u₁ v₁ u₂ v₂ u₃ v₃} {p₁ : G.Walk u₁ v₁} {p₂ : G.Walk u₂ v₂}
+    {p₃ : G.Walk u₃ v₃} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₃) :
+    p₁.IsSubwalk p₃ := by
+  rw [isSubwalk_iff_support_isInfix] at ⊢ h₁ h₂
+  exact List.IsInfix.trans h₁ h₂
+
+end Walk
+
 end SimpleGraph
