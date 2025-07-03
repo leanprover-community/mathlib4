@@ -172,9 +172,13 @@ end IsBoundedAtImInfty
 
 section IsBoundedAt
 
+/-- We say `f` is bounded at `c` if, for all `g` with `g • ∞ = c`, the function `f ∣[k] g` is
+bounded at `∞`. -/
 def OnePoint.IsBoundedAt (c : OnePoint ℚ) (f : ℍ → ℂ) (k : ℤ) : Prop :=
     ∀ (g : GL (Fin 2) ℚ), g • ∞ = c → IsBoundedAtImInfty (f ∣[k] (g.map <| algebraMap ℚ ℝ))
 
+/-- We say `f` is zero at `c` if, for all `g` with `g • ∞ = c`, the function `f ∣[k] g` is
+zero at `∞`. -/
 def OnePoint.IsZeroAt (c : OnePoint ℚ) (f : ℍ → ℂ) (k : ℤ) : Prop :=
     ∀ (g : GL (Fin 2) ℚ), g • ∞ = c → IsZeroAtImInfty (f ∣[k] (g.map <| algebraMap ℚ ℝ))
 
