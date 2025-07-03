@@ -284,9 +284,7 @@ theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ 
 -- We use `as_aux_lemma` here to avoid creating large proof terms when using `simp`
 @[simp]
 theorem subtypeEquiv_symm {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) :
-    (e.subtypeEquiv h).symm =
-      e.symm.subtypeEquiv (by as_aux_lemma =>
-        grind) :=
+    (e.subtypeEquiv h).symm = e.symm.subtypeEquiv (by as_aux_lemma => grind) :=
   rfl
 
 @[simp]
