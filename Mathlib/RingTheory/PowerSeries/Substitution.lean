@@ -317,7 +317,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
   · rw [map_sub, coeff_subst']
     · simp +contextual [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
     · simp [substInvFun, HasSubst]
-  · simp only [map_sub, coeff_one_X]
+  · simp only [map_sub]
     rw [coeff_subst']
     · rw [finsum_eq_single (a := 1)]
       · simp [substInvFun]
@@ -337,8 +337,8 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
         · congr 1
           obtain (_|_|i) := i
           · simp
-          · simp [← sub_eq_add_neg, ← map_mul]
-          · simp only [add_assoc, Nat.reduceAdd, sub_zero]
+          · simp [← sub_eq_add_neg]
+          · simp only [add_assoc, Nat.reduceAdd]
             rw [add_comm B, add_pow, map_sum, Finset.sum_eq_single (a := 0)]
             · simp
             · rintro (_|_|j) hj hj'
@@ -380,8 +380,46 @@ lemma subst_substInv :
     obtain ⟨Q, hQ⟩ := this.trans (sub_dvd_pow_sub_pow _ _ m)
     simp [substInv, sub_eq_iff_eq_add.mp hQ, coeff_X_pow_mul']
   · simp [HasSubst, X, zero_pow_eq, C, substInvFun]
-  · show IsNilpotent (mk (substInvFun P) 0)
-    simp [HasSubst, mk, substInvFun]
+  · change IsNilpotent (mk (substInvFun P) 0)
+    simp [mk, substInvFun]
+
+@[simp]
+lemma constantCoeff_substInv : constantCoeff R P.substInv = 0 := by
+  simp [substInv, substInvFun]
+
+lemma hasSubst_substInv : HasSubst P.substInv := by simp [HasSubst, ← constantCoeff.eq_def]
+
+@[simp]
+lemma coeff_one_substInv : coeff R 1 P.substInv = ⅟ (coeff R 1 P) := by
+  simp [substInv, substInvFun]
+
+include hP in
+lemma substInv_subst : P.substInv.subst P = X := by
+  have hP' : HasSubst P := by simp [HasSubst, ← constantCoeff.eq_def, hP]
+  let Q : PowerSeries R := P.substInv.subst P
+  have : Invertible ((coeff R 1) Q) := by
+    refine IsUnit.invertible ?_
+    rw [PowerSeries.coeff_subst' (hb := hP'), finsum_eq_single (a := 1)]
+    · simp
+    · have (n : ℕ) : (coeff R 1) (P ^ (n + 1 + 1)) = 0 := by
+        obtain ⟨P, rfl⟩ := X_dvd_iff.mpr hP
+        simp [mul_pow, coeff_X_pow_mul']
+      rintro (_|_|n) hn <;> simp_all
+  have hQ : constantCoeff R Q = 0 := by
+    trans PowerSeries.coeff R 0 (P.substInv.subst P)
+    · simp [Q]
+    simp +contextual [PowerSeries.coeff_subst' hP', hP, zero_pow_eq, finsum_eq_single _ 0]
+  have hQ' : HasSubst Q := by simp [HasSubst, ← constantCoeff.eq_def, hQ]
+  have : Q.subst Q = Q := by
+    rw [subst_comp_subst_apply (ha := hP') (hb := hQ'), ← subst_comp_subst_apply
+      (ha := hasSubst_substInv _) (hb := hP'), PowerSeries.subst_substInv _ hP, subst_X hP']
+  convert congr(PowerSeries.subst Q.substInv $this) using 1
+  · rw [PowerSeries.subst_comp_subst_apply (ha := hQ') (hb := hasSubst_substInv _)]
+    refine (PowerSeries.map_algebraMap_eq_subst_X (S := R) Q).trans ?_
+    simp only [PowerSeries.subst]
+    congr! with ⟨⟩
+    exact (PowerSeries.subst_substInv Q hQ).symm
+  · exact (PowerSeries.subst_substInv Q hQ).symm
 
 end substInv
 
