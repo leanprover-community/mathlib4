@@ -394,16 +394,14 @@ lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ clo
   have : Nonempty (Icc tmin tmax) := ⟨t₀⟩ -- needed for `ciSup_const`
   rw [← MetricSpace.isometry_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
     |>.dist_eq, dist_eq_norm, ContinuousMap.norm_eq_iSup_norm]
-  simp_rw [ContinuousMap.sub_apply, toContinuousMap_apply_eq_apply, next_apply, picard_apply,
-    add_sub_add_right_eq_sub]
-  rw [ciSup_const, dist_eq_norm]
+  simp [add_sub_add_right_eq_sub, dist_eq_norm]
 
 lemma dist_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (α : FunSpace t₀ x₀ r L) (n : ℕ) :
     dist α ((next hf hx)^[n] α) ≤
       (∑ i ∈ Finset.range n, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !)
         * dist α (next hf hx α) := by
-  nth_rw 1 [← iterate_zero_apply (f := next hf hx) (x := α)]
+  nth_rw 1 [← iterate_zero_apply (next hf hx) α]
   rw [Finset.sum_mul]
   apply dist_le_range_sum_of_dist_le (f := fun i ↦ (next hf hx)^[i] α)
   intro i hi
@@ -416,14 +414,14 @@ lemma dist_iterate_iterate_next_le_of_lipschitzWith (hf : IsPicardLindelof f t�
     dist α ((next hf hx)^[m]^[n] α) ≤
       (∑ i ∈ Finset.range m, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !) *
         (∑ i ∈ Finset.range n, (C : ℝ) ^ i) * dist α (next hf hx α) := by
-  nth_rw 1 [← iterate_zero_apply (f := (next hf hx)^[m]) (x := α)]
+  nth_rw 1 [← iterate_zero_apply (next hf hx) α]
   rw [Finset.mul_sum, Finset.sum_mul]
   apply dist_le_range_sum_of_dist_le (f := fun i ↦ (next hf hx)^[m]^[i] α)
   intro i hi
   rw [iterate_succ_apply]
   apply le_trans <| hm.dist_iterate_succ_le_geometric α i
   rw [mul_assoc, mul_comm ((C : ℝ) ^ i), ← mul_assoc]
-  apply mul_le_mul_of_nonneg_right _ (pow_nonneg C.2 _)
+  gcongr
   exact dist_iterate_next_le hf hx α m
 
 /-- The pointwise distance between any two integral curves `α` and `β` over their domains is bounded
@@ -451,9 +449,7 @@ lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
     apply Filter.Tendsto.mul_const
     apply Filter.Tendsto.const_mul
     convert hasSum_geometric_of_lt_one C.2 (h y hy).1 |>.tendsto_sum_nat
-    rw [NNReal.coe_inv]
-    congr
-    rw [NNReal.coe_sub <| le_of_lt (h y hy).1, NNReal.coe_one, NNReal.val_eq_coe]
+    simp [NNReal.coe_sub <| le_of_lt (h y hy).1, NNReal.coe_one]
 
 end
 
