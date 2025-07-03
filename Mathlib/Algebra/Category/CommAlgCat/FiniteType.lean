@@ -27,7 +27,7 @@ abbrev FGAlgCat := ObjectProperty.FullSubcategory
 instance (A : FGAlgCat R) : Algebra.FiniteType R A.1 := A.2
 
 /-- (Implementation detail): A small skeleton of `FGAlgCat`. -/
-structure FGAlgCatSkeleton where
+structure FGAlgCatSkeleton : Type u where
   /-- The number of generators. -/
   n : ℕ
   /-- The defining ideal. -/

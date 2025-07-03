@@ -244,14 +244,14 @@ def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
 
 /-- Weakening the condition on the structure morphisms is fully faithful. -/
 def fullyFaithfulChangeProp :
-    (Comma.changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
+    (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
   preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
 
-instance : (Comma.changeProp L R hP hQ hW).Faithful where
+instance : (changeProp L R hP hQ hW).Faithful where
   map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
 
-instance : (Comma.changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
-  (Comma.fullyFaithfulChangeProp ..).full
+instance : (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
+  (fullyFaithfulChangeProp ..).full
 
 end
 
