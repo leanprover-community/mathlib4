@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 # Multicoequalizers that are pushouts
 
 In this file, we show that a multicoequalizer for
-for `I : MultispanIndex (.ofLinearOrder ι) C` is also
+`I : MultispanIndex (.ofLinearOrder ι) C` is also
 a pushout when `ι` has exactly two elements.
 
 -/
