@@ -1356,9 +1356,8 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
       rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]
     · push_neg at h₁
       rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
-  · apply sum_congr rfl; intro i hi; congr; ext j; congr 1; apply propext
-    simp_rw [imp_iff_not_or, not_or]; apply or_congr_left'
-    intro h; rw [and_iff_right]; rintro rfl; exact h (hk i hi)
+  · apply sum_congr rfl
+    grind
 
 /-- This calculates the differences between the values of a multilinear map at
 two arguments that differ on a finset `s` of `ι`. It requires a

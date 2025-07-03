@@ -773,11 +773,7 @@ theorem neg_graph (f : E →ₗ.[R] F) :
 theorem mem_graph_snd_inj (f : E →ₗ.[R] F) {x y : E} {x' y' : F} (hx : (x, x') ∈ f.graph)
     (hy : (y, y') ∈ f.graph) (hxy : x = y) : x' = y' := by
   rw [mem_graph_iff] at hx hy
-  rcases hx with ⟨x'', hx1, hx2⟩
-  rcases hy with ⟨y'', hy1, hy2⟩
-  simp only at hx1 hx2 hy1 hy2
-  rw [← hx1, ← hy1, SetLike.coe_eq_coe] at hxy
-  rw [← hx2, ← hy2, hxy]
+  grind
 
 theorem mem_graph_snd_inj' (f : E →ₗ.[R] F) {x y : E × F} (hx : x ∈ f.graph) (hy : y ∈ f.graph)
     (hxy : x.1 = y.1) : x.2 = y.2 := by
