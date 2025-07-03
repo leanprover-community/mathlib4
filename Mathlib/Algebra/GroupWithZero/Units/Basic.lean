@@ -438,6 +438,13 @@ lemma div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d �
   conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel₀ _ hc]
   rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
 
+lemma div_eq_div_of_div_eq_div (hc : c ≠ 0) (hd : d ≠ 0) (h : a / b = c / d) : a / c = b / d :=
+  have hb : b ≠ 0 := by
+    intro hb
+    rw [hb, div_zero] at h
+    exact div_ne_zero hc hd h.symm
+  (div_eq_div_iff_div_eq_div' hb hc).mp h
+
 @[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
 
 @[deprecated (since := "2024-11-25")] alias div_div_cancel' := div_div_cancel₀
