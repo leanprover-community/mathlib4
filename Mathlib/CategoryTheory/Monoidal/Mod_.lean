@@ -104,7 +104,7 @@ instance (f : M ⟶ N) (g : N ⟶ O) [IsMod_Hom A f] [IsMod_Hom A g] :
     IsMod_Hom A (f ≫ g) where
 
 instance (f : M ≅ N) [IsMod_Hom A f.hom] :
-   IsMod_Hom A f.inv where
+    IsMod_Hom A f.inv where
   smul_hom := by simp [Iso.comp_inv_eq]
 
 variable (D) in
@@ -123,13 +123,12 @@ variable {A : C} [Mon_Class A] (M : Mod_ D A)
 
 theorem assoc_flip : A ⊴ₗ γ ≫ γ = (αₗ A A M.X).inv ≫ μ ⊵ₗ M.X ≫ γ := by simp
 
-/-- A morphism of monoid objects. -/
+/-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ D A) where
   /-- The underlying morphism -/
   hom : M.X ⟶ N.X
   [isMod_Hom : IsMod_Hom A hom]
-
 
 attribute [instance] Hom.isMod_Hom
 
@@ -231,7 +230,6 @@ open MonoidalLeftAction in
 /-- If `g : M ⟶ N` is a `B`-linear morphisms of `B`-modules, then it induces an
 `A`-linear morphism when `M` and `N` have an `A`-module structure obtained
 by restricting scalars along a monoid morphism `A ⟶ B`. -/
-@[simps!]
 lemma scalarRestriction_hom
     (M N : D) [Mod_Class B M] [Mod_Class B N] (g : M ⟶ N) [IsMod_Hom B g] :
     letI := scalarRestriction f M
