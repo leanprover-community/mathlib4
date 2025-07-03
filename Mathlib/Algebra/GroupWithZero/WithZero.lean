@@ -383,7 +383,7 @@ def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicat
   · cases hab
   · rfl
 
-lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx(WithZero (Multiplicative G))ˣ) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
+lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
 lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
