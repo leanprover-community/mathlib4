@@ -259,7 +259,7 @@ alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
 alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
 
-/-! ### Being `C^k` on a set can be tested in its union -/
+/-! ### Being `C^k` on a union of open sets can be tested on each set -/
 section contMDiff_union
 
 variable {s t : Set M}
