@@ -81,7 +81,7 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
     exact ⟨(range g).toFinset, by simpa using hg⟩
 
 theorem fg_span_iff_fg_span_finset_subset (s : Set M) :
-  (span R s).FG ↔ ∃ (s' : Finset M), ↑s' ⊆ s ∧ span R s = span R s' := by
+    (span R s).FG ↔ ∃ s' : Finset M, ↑s' ⊆ s ∧ span R s = span R s' := by
   unfold FG
   constructor
   · intro ⟨s'', hs''⟩
