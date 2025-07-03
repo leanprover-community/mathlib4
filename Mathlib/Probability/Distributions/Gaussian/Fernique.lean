@@ -242,11 +242,9 @@ lemma integral_dual_conv_map_neg_eq_zero (L : Dual ℝ E) :
     rw [integral_map (by fun_prop) (by fun_prop)]
     simp [integral_neg]
 
-variable [CompleteSpace E]
-
 /-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
 `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/
-theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
+theorem IsGaussian.exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [IsGaussian μ] :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
   -- Since `μ ∗ μ.map (ContinuousLinearEquiv.neg ℝ)` is a centered Gaussian measure, it is invariant
   -- under rotation. We can thus apply a version of Fernique's theorem to it.
@@ -308,7 +306,7 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
 
 end Fernique
 
-section Mean
+section FiniteMoments
 
 variable [CompleteSpace E] [SecondCountableTopology E]
 
@@ -362,6 +360,6 @@ lemma IsGaussian.noAtoms (h : ∀ x, μ ≠ Measure.dirac x) : NoAtoms μ where
     refine measure_mono_null ?_ hL_zero
     exact fun ⦃a⦄ ↦ congrArg ⇑L
 
-end Mean
+end FiniteMoments
 
 end ProbabilityTheory
