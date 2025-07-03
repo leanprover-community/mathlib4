@@ -51,8 +51,7 @@ def elabNameVariablesOver : CommandElab
   for h : idx in [:size] do
     let var := vars[idx]
     let var := quote s!"{var.getId}"
-    let hidx : idx < size := Membership.get_elem_helper h rfl
-    let idx : TSyntax `term ← `(Fin.mk $(quote idx) (by decide))
+    let idx : TSyntax `term ← `(($(quote idx) : Fin $sizeStx))
     let cmd ← `(command|local notation3 $var:str =>
       MvPolynomial.X (R := $R) (σ := Fin $sizeStx) $idx)
     elabCommand cmd
