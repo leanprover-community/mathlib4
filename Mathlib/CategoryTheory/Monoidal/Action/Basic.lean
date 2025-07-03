@@ -27,7 +27,6 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 ## TODOs/Projects
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
-* Functors that respects left/right actions.
 * Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
 * Right actions as monoidal functors C ⥤ D ⥤ D.
 * Left actions of `C` as right `Cᴹᵒᵖ`-actions, and vice-versa.
