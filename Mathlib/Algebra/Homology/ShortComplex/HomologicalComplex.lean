@@ -469,7 +469,7 @@ noncomputable def homologyFunctorIso' [CategoryWithHomology C]
     (hi : c.prev j = i) (hk : c.next j = k) :
     homologyFunctor C c j ≅
       shortComplexFunctor' C c i j k ⋙ ShortComplex.homologyFunctor C :=
-  homologyFunctorIso C c j ≪≫ isoWhiskerRight (natIsoSc' C c i j k hi hk) _
+  homologyFunctorIso C c j ≪≫ Functor.isoWhiskerRight (natIsoSc' C c i j k hi hk) _
 
 instance [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
 instance [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where

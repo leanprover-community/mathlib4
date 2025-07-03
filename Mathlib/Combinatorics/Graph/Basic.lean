@@ -309,7 +309,7 @@ lemma mk_eq_self (G : Graph α β) {E : Set β} (hE : ∀ e, e ∈ E ↔ ∃ x y
     (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq h') hE
     (fun _ _ _ ↦ IsLink.left_mem) = G := by
   obtain rfl : E = E(G) := by simp [Set.ext_iff, hE, G.edge_mem_iff_exists_isLink]
-  cases G with | _ _ _ _ _ _ h _ => simp [← h]
+  cases G with | _ _ _ _ _ _ h _ => simp
 
 /-- Two graphs with the same vertex set and binary incidences are equal.
 (We use this as the default extensionality lemma rather than adding `@[ext]`

@@ -90,10 +90,10 @@ lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (func
     refine ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ ⟨i⟩ ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
-    simp only [functor_obj, functor_map, StructuredArrow.hom_eq_iff, StructuredArrow.mk_right,
-      StructuredArrow.comp_right, StructuredArrow.homMk_right]
+    simp only [StructuredArrow.hom_eq_iff,
+      StructuredArrow.comp_right]
     refine ⟨⟨i⟩, 𝟙 _, ?_⟩
-    simp only [CategoryTheory.Functor.map_id, Category.id_comp]
+    simp only [CategoryTheory.Functor.map_id]
     rw [w] at w'
     exact toProfinite.map_injective <| Epi.left_cancellation _ _ w'
 

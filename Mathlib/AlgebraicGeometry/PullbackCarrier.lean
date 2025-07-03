@@ -141,14 +141,14 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
 @[simp]
 lemma specTensorTo_base_fst (p : Spec T.tensor) :
     (pullback.fst f g).base (T.SpecTensorTo.base p) = T.x := by
-  simp only [SpecTensorTo, residueFieldCongr_inv]
+  simp only [SpecTensorTo]
   rw [← Scheme.comp_base_apply]
   simp
 
 @[simp]
 lemma specTensorTo_base_snd (p : Spec T.tensor) :
     (pullback.snd f g).base (T.SpecTensorTo.base p) = T.y := by
-  simp only [SpecTensorTo, residueFieldCongr_inv]
+  simp only [SpecTensorTo]
   rw [← Scheme.comp_base_apply]
   simp
 
