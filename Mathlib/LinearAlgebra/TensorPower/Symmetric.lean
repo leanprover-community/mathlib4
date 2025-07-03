@@ -111,6 +111,11 @@ variable {R M n} in
     (⨂ₛ[R] i, f (e i)) = ⨂ₛ[R] i, f i :=
   Eq.symm <| Quot.sound <| AddConGen.Rel.of _ _ <| Rel.perm e f
 
+variable {R M n} in
+@[simp] lemma domDomCongr_tprod (e : Perm (Fin n)) :
+    (tprod R (M := M) (n := n)).domDomCongr e = tprod R :=
+  MultilinearMap.ext <| tprod_equiv e
+
 theorem range_mk : LinearMap.range (mk R M n) = ⊤ :=
   LinearMap.range_eq_top_of_surjective _ AddCon.mk'_surjective
 
