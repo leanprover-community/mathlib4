@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
---import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
@@ -126,6 +125,8 @@ def Cusp (Γ : Subgroup SL(2, ℤ)) := MulAction.orbitRel.Quotient (Γ.map (mapG
 
 /-- Surjection from `SL(2, ℤ) / Γ` to cusps of `Γ`. Mostly useful for showing that `Cusp Γ` is
 finite for finite-index subgroups. -/
+-- XXX TODO: Why does this complain if not flagged as `noncomputable`? It looks pretty computable
+-- to me.
 noncomputable def cosetToCusp (Γ : Subgroup SL(2, ℤ)) : SL(2, ℤ) ⧸ Γ → Cusp Γ :=
   Quotient.lift fun g ↦ ⟦mapGL ℚ g⁻¹ • ∞⟧ (by
     intro a b hab
