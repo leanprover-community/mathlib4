@@ -117,17 +117,9 @@ lemma TensorProduct.sum_tmul_basis_left_eq_zero'
 instance TensorProduct.nontrivial
     (A B : Type v) [Ring A] [Algebra K A] [Ring B] [Algebra K B]
     [Nontrivial A] [Nontrivial B] :
-    Nontrivial (A ⊗[K] B) := by
-  refine ⟨0, 1, fun r => ?_⟩
-  let f : K ⊗[K] B →ₐ[K] A ⊗[K] B :=
-    Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)
-  have hf : Function.Injective f := Module.Flat.rTensor_preserves_injective_linearMap _
-    (algebraMap K A).injective
-  have r' : f 0 = f 1 := by convert r; simp [f]
-  specialize hf r'
-  apply_fun Algebra.TensorProduct.lid K B at hf
-  simp only [map_zero, map_one] at hf
-  exact zero_ne_one hf
+    Nontrivial (A ⊗[K] B) :=
+  nontrivial_of_linearMap_injective_of_flat_right K A B (Algebra.linearMap _ _)
+    (FaithfulSMul.algebraMap_injective _ _)
 
 lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
     {A B : Type v} [Ring A] [Algebra K A] [Ring B] [Algebra K B]
