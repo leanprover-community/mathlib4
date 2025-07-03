@@ -18,6 +18,8 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory
 
+open CategoryTheory.Functor
+
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]
 
@@ -25,13 +27,13 @@ variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `j₁ ↦ j₂ ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!]
 def externalProductBifunctorCurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
-  (Functor.postcompose₂.obj <| (evaluation _ _).obj <| curriedTensor C).obj <| whiskeringLeft₂ C
+  (postcompose₂.obj <| (evaluation _ _).obj <| curriedTensor C).obj <| whiskeringLeft₂ C
 
 /-- The external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!]
 def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ ⥤ C :=
-  uncurry.obj <| (Functor.postcompose₂.obj <| uncurry).obj <|
+  uncurry.obj <| (postcompose₂.obj <| uncurry).obj <|
     externalProductBifunctorCurried J₁ J₂ C
 
 variable {J₁ J₂ C}
@@ -72,13 +74,13 @@ def externalProductSwap [BraidedCategory C] :
     externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _) ≅
     Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
   NatIso.ofComponents
-    (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [tensorHom_def, whisker_exchange]))
-    (fun _ ↦ by ext; simp [tensorHom_def, whisker_exchange])
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [whisker_exchange]))
+    (fun _ ↦ by ext; simp [whisker_exchange])
 
 /-- A version of `externalProductSwap` phrased in terms of the curried functors. -/
 @[simps!]
 def externalProductFlip [BraidedCategory C] :
-    (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj
+    (postcompose₂.obj <| flipFunctor _ _ _).obj
       (externalProductBifunctorCurried J₁ J₂ C) ≅
     (externalProductBifunctorCurried J₂ J₁ C).flip :=
   NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <|

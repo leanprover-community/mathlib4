@@ -122,7 +122,7 @@ lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
     [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (f : C(X, Y)₀) :
     Continuous fun g : C(Y, Z)₀ ↦ g.comp f := by
   rw [continuous_induced_rng]
-  show Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
+  change Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
   fun_prop
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
@@ -197,6 +197,9 @@ lemma mkD_eq_mkD_of_map_zero [Zero X] (f : X → R) (g : C(X, R)₀) (f_zero : f
   · rw [mkD_of_continuous f_cont f_zero, ContinuousMap.mkD_of_continuous f_cont]
     rfl
   · rw [mkD_of_not_continuous f_cont, ContinuousMap.mkD_of_not_continuous f_cont]
+
+lemma mkD_eq_self [Zero X] {f g : C(X, R)₀} : mkD f g = f :=
+  mkD_of_continuous f.continuous (map_zero f)
 
 end mkD
 
