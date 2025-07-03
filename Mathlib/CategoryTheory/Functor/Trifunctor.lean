@@ -52,7 +52,7 @@ def bifunctorComp₁₂Obj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ �
     C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
     { obj := fun X₃ => G.obj₂ (F₁₂.obj₂ X₁ X₂) X₃
-      map := fun {_ _} φ => G.map₂ (𝟙 (F₁₂.obj₂ X₁ X₂)) φ }
+      map := fun {_ _} φ => (G.obj (F₁₂.obj₂ X₁ X₂)).map φ }
   map {X₂ Y₂} φ :=
     { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
 
