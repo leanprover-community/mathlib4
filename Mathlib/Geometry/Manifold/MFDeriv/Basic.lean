@@ -817,7 +817,7 @@ protected theorem MDifferentiableWithinAt.insert (h : MDifferentiableWithinAt I 
     MDifferentiableWithinAt I I' f (insert x s) x :=
   h.insert'
 
-/-! ### Being differentiable on a union of sets can be tested on each set -/
+/-! ### Being differentiable on a union of open sets can be tested on each set -/
 
 section mdifferentiableOn_union
 
@@ -852,7 +852,7 @@ lemma MDifferentiableOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
 
 /-- A function is differentiable on a union of open sets `s i`
 iff it is differentiable on each `s i`. -/
-lemma mdifferentiableOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set M}
+lemma mdifferentiableOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set M}
     (hs : ∀ i, IsOpen (s i)) :
     MDifferentiableOn I I' f (⋃ i, s i) ↔ ∀ i : ι, MDifferentiableOn I I' f (s i) :=
   ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
