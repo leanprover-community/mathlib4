@@ -691,6 +691,12 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
   apply _root_.contMDiff_section_of_smul_smoothBumpFunction _ ?_ t.open_baseSet hψ.1 le_rfl
   apply contMDiffOn_localExtensionOn _ hx
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+lemma mdifferentiable_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
+    [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
+    MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (extend I F σ₀ x)) :=
+  contMDiff_extend σ₀ |>.mdifferentiable (by simp)
+
 /-- The difference of two covariant derivatives, as a tensorial map -/
 noncomputable def difference
     [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I 1 M]
@@ -723,6 +729,15 @@ section classification
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
+theorem contDiff_extend {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E']
+    [NormedSpace ℝ E'] [FiniteDimensional ℝ E] [FiniteDimensional ℝ E'] (x : E) (y : E') :
+    ContDiff ℝ ∞ (extend 𝓘(ℝ, E) E' y (x := x)) := by
+  rw [contDiff_iff_contDiffAt]
+  intro x'
+  rw [← contMDiffAt_iff_contDiffAt]
+  simpa [contMDiffAt_section] using contMDiff_extend (V := Trivial E E') y x'
+
 @[simps]
 noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x X : E) : E' →ₗ[ℝ] E' where
@@ -730,13 +745,7 @@ noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDime
   map_add' y y' := by
     have A : fderiv ℝ ((extend 𝓘(ℝ, E) E' y  (x := x)) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
         fderiv ℝ (extend 𝓘(ℝ, E) E' y (x := x)) x + fderiv ℝ (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
-      rw [fderiv_add]
-      · sorry -- like the sorry below!
-      · apply Differentiable.differentiableAt
-        rw [← mdifferentiable_iff_differentiable]
-        apply ContMDiff.mdifferentiable (n := 1) (hn := by norm_num)
-        sorry -- is contMDiff_extend, except that now we care about
-        -- the outcome of post-composing with the projection from Trivial E E' to E'...
+      rw [fderiv_add] <;> exact (contDiff_extend x _).contDiffAt.differentiableAt (by simp)
     have B : cov (extend 𝓘(ℝ, E) E X (x := x))
         (extend 𝓘(ℝ, E) E' y (x := x) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
       cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y (x := x)) x +
