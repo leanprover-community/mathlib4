@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Products.Basic
 # Lemmas about functors out of product categories.
 -/
 
-
 open CategoryTheory Opposite
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -56,47 +55,3 @@ def flip (F : C × D ⥤ E) : D × C ⥤ E :=
   Prod.swap D C ⋙ F
 
 end CategoryTheory.Bifunctor
-
-namespace CategoryTheory.Functor
-
-/-- Opposite of a bifunctor. -/
-@[simps!]
-def biop (F : Cᵒᵖ ⥤ D ⥤ E) : C ⥤ Dᵒᵖ ⥤ Eᵒᵖ := F.rightOp ⋙ Functor.opHom _ _
-
-end CategoryTheory.Functor
-
-namespace CategoryTheory
-
-variable {C₁ C₂ : C} {D₁ D₂ : D} {E₁ E₂ : E}
-
-/-- Action of two-variable functors on objects. -/
-abbrev Functor.obj₂ (H : C ⥤ D ⥤ E) (A : C) (B : D) : E := (H.obj A).obj B
-
-/-- Action of three-variable functors on objects. -/
-abbrev Functor.obj₃ (H : C ⥤ D ⥤ E ⥤ F) (A : C) (B : D) (C : E) : F :=
-  ((H.obj A).obj B).obj C
-
-/-- Apply a natural transformation between bifunctors to two objects. -/
-abbrev NatTrans.app₂ {F G : C ⥤ D ⥤ E} (α : NatTrans F G) (X : C) (Y : D) :
-    F.obj₂ X Y ⟶ G.obj₂ X Y :=
-  (α.app X).app Y
-
-/-- Apply a natural transformation between bifunctors in three variables to three objects. -/
-abbrev NatTrans.app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) (X : C) (Y : D) (Z : E) :
-    H.obj₃ X Y Z ⟶ G.obj₃ X Y Z :=
-  ((α.app X).app Y).app Z
-
-/- Natural transformations between functors with many variables. -/
-namespace NatTrans
-
-@[reassoc, simp]
-lemma comp_app₂ {H G K : C ⥤ D ⥤ E} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D) :
-    (α ≫ β).app₂ X Y = α.app₂ X Y ≫ β.app₂ X Y := rfl
-
-@[reassoc, simp]
-lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D)
-    (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
-
-end NatTrans
-
-end CategoryTheory

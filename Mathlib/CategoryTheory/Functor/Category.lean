@@ -143,17 +143,14 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
 
-
-/-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
--/
+/-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`. -/
 @[simps]
 def leftUnitor (F : C ⥤ D) :
     𝟭 C ⋙ F ≅ F where
   hom := { app := fun X => 𝟙 (F.obj X) }
   inv := { app := fun X => 𝟙 (F.obj X) }
 
-/-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
--/
+/-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`. -/
 @[simps]
 def rightUnitor (F : C ⥤ D) :
     F ⋙ 𝟭 D ≅ F where

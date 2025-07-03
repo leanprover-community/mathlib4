@@ -2086,6 +2086,7 @@ import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.CategoryTheory.Functor.Bifunctor
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Functor.Currying
