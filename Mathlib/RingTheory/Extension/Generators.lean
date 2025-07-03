@@ -258,6 +258,35 @@ lemma reindex_val (P : Generators R S ι') (e : ι ≃ ι') :
     (P.reindex e).val = P.val ∘ e :=
   rfl
 
+lemma _root_.MvPolynomial.aeval_mk_X_eq_mk {σ : Type*} (I : Ideal (MvPolynomial σ R)) :
+    aeval (fun i ↦ Ideal.Quotient.mk I (X i)) = Ideal.Quotient.mkₐ _ I := by
+  rw [aeval_unique (Ideal.Quotient.mkₐ _ I)]
+  rfl
+
+section
+
+variable {σ ι : Type*} {v : ι → MvPolynomial σ R}
+  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
+
+/-- The naive generators for a `` -/
+@[simps val]
+noncomputable
+def naive {v : ι → MvPolynomial σ R}
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
+      Function.surjInv Ideal.Quotient.mk_surjective)
+    (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq) :
+    Generators R (MvPolynomial σ R ⧸ (Ideal.span <| Set.range v)) σ where
+  val i := Ideal.Quotient.mk _ (X i)
+  σ' := s
+  aeval_val_σ' x := by simpa [aeval_mk_X_eq_mk] using hs x
+  algebra := inferInstance
+  algebraMap_eq := by ext x <;> simp [IsScalarTower.algebraMap_apply R (MvPolynomial σ R)]
+
+@[simp] lemma naive_σ : (Generators.naive s hs).σ = s := rfl
+
+end
+
 end Construction
 
 variable {R' S' ι' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S' ι')
@@ -489,6 +518,12 @@ lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
 
 variable {P} in
 lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [← algebraMap_apply]
+
+lemma naive_ker {ι σ : Type*} {v : ι → MvPolynomial σ R}
+    (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+    (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x) :
+    (Generators.naive s hs).ker = Ideal.span (Set.range v) :=
+  (Ideal.span (Set.range v)).mk_ker
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
