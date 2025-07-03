@@ -420,7 +420,7 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   obtain ⟨y, hyu, hy⟩ := h u hxu hu
   exact hy u hyu hu
 
-/-- This theorem says that if U has positive measure then there has to be a point in U, all of
+/- This theorem says that if U has positive measure then there has to be a point in U, all of
     neighborhoods have positive measure. It's probably better to prove that union result
     below first and then use that theorem to prove this one under second countable
     hypothesis, etc. -/
