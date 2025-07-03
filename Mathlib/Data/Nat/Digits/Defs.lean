@@ -168,6 +168,33 @@ theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
   · rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
     ring
 
+@[simp]
+theorem ofDigits_append_zero {b : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ [0]) = ofDigits b l := by
+  rw [ofDigits_append, ofDigits_singleton, mul_zero, add_zero]
+
+@[simp]
+theorem ofDigits_replicate_zero {b k : ℕ} : ofDigits b (List.replicate k 0) = 0 := by
+  induction k with
+  | zero => rfl
+  | succ k ih => simp [List.replicate, ofDigits_cons, ih]
+
+@[simp]
+theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ List.replicate k 0) = ofDigits b l := by
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+  simp only [List.reverse_cons]
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_zero_cons {b : ℕ} (l : List ℕ) :
+    ofDigits b (0 :: l).reverse = ofDigits b l.reverse := by
+  simp only [List.reverse_cons, ofDigits_append_zero]
+
 @[norm_cast]
 theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
     ((ofDigits b L : ℕ) : α) = ofDigits (b : α) L := by
