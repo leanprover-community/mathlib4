@@ -26,7 +26,7 @@ is that when `C = Type`, filtered colimits commute with finite limits.
 
 universe v₁ v₂ v u₁ u₂ u
 
-open CategoryTheory
+open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 

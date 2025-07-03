@@ -136,7 +136,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
   induction xs generalizing s with
   | nil => simp [enum, eq_empty_iff_forall_notMem]
   | cons x xs ih =>
-      simp only [enum, List.bind_eq_flatMap, List.mem_flatMap, List.mem_cons, List.mem_singleton,
+      simp only [enum, List.bind_eq_flatMap, List.mem_flatMap, List.mem_cons,
         List.not_mem_nil, or_false, ih]
       refine ⟨by aesop, fun hs => ⟨s.erase x, ?_⟩⟩
       simp only [or_iff_not_imp_left] at hs
@@ -214,7 +214,7 @@ theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
 instance [IsEmpty α] : Unique (FinEnum α) where
   default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩
   uniq e := by
-    show FinEnum.mk e.1 e.2 = _
+    change FinEnum.mk e.1 e.2 = _
     congr 1
     · exact card_eq_zero
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
@@ -229,7 +229,7 @@ def ofIsEmpty [IsEmpty α] : FinEnum α := default
 instance [Unique α] : Unique (FinEnum α) where
   default := ⟨1, Equiv.ofUnique α (Fin 1)⟩
   uniq e := by
-    show FinEnum.mk e.1 e.2 = _
+    change FinEnum.mk e.1 e.2 = _
     congr 1
     · exact card_eq_one α
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
