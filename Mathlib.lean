@@ -3460,6 +3460,7 @@ import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.SubtypeNeLift
 import Mathlib.Data.Set.Sups
 import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.UnionLift
@@ -4096,7 +4097,9 @@ import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.LinearAlgebra.PerfectPairing.Matrix
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+import Mathlib.LinearAlgebra.PiTensorProduct.Finite
+import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Projectivization.Basic
