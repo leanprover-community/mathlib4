@@ -817,6 +817,56 @@ protected theorem MDifferentiableWithinAt.insert (h : MDifferentiableWithinAt I 
     MDifferentiableWithinAt I I' f (insert x s) x :=
   h.insert'
 
+/-! ### Being differentiable on a union of sets can be tested on each set -/
+
+section mdifferentiableOn_union
+
+/-- If a function is differentiable on two open sets, it is also differentiable on their union. -/
+lemma MDifferentiableOn.union_of_isOpen
+    (hf : MDifferentiableOn I I' f s) (hf' : MDifferentiableOn I I' f t)
+    (hs : IsOpen s) (ht : IsOpen t) :
+    MDifferentiableOn I I' f (s ∪ t) := by
+  intro x hx
+  obtain (hx | hx) := hx
+  · exact (hf x hx).mdifferentiableAt (hs.mem_nhds hx) |>.mdifferentiableWithinAt
+  · exact (hf' x hx).mdifferentiableAt (ht.mem_nhds hx) |>.mdifferentiableWithinAt
+
+/-- A function is differentiable on two open sets iff it is differentiable on their union. -/
+lemma mdifferentiableOn_union_iff_of_isOpen (hs : IsOpen s) (ht : IsOpen t) :
+    MDifferentiableOn I I' f (s ∪ t) ↔ MDifferentiableOn I I' f s ∧ MDifferentiableOn I I' f t :=
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩,
+    fun ⟨hfs, hft⟩ ↦ MDifferentiableOn.union_of_isOpen hfs hft hs ht⟩
+
+lemma mdifferentiable_of_mdifferentiableOn_union_of_isOpen (hf : MDifferentiableOn I I' f s)
+    (hf' : MDifferentiableOn I I' f t) (hst : s ∪ t = univ) (hs : IsOpen s) (ht : IsOpen t) :
+    MDifferentiable I I' f := by
+  rw [← mdifferentiableOn_univ, ← hst]
+  exact hf.union_of_isOpen hf' hs ht
+
+/-- If a function is differentiable on open sets `s i`, it is differentiable on their union. -/
+lemma MDifferentiableOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
+    (hf : ∀ i : ι, MDifferentiableOn I I' f (s i)) (hs : ∀ i, IsOpen (s i)) :
+    MDifferentiableOn I I' f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, rfl⟩, hxsi⟩
+  exact (hf i).mdifferentiableAt ((hs i).mem_nhds hxsi) |>.mdifferentiableWithinAt
+
+/-- A function is differentiable on a union of open sets `s i`
+iff it is differentiable on each `s i`. -/
+lemma mdifferentiableOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set M}
+    (hs : ∀ i, IsOpen (s i)) :
+    MDifferentiableOn I I' f (⋃ i, s i) ↔ ∀ i : ι, MDifferentiableOn I I' f (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
+   fun h ↦ MDifferentiableOn.iUnion_of_isOpen h hs⟩
+
+lemma mdifferentiable_of_mdifferentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
+    (hf : ∀ i : ι, MDifferentiableOn I I' f (s i))
+    (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
+    MDifferentiable I I' f := by
+  rw [← mdifferentiableOn_univ, ← hs']
+  exact MDifferentiableOn.iUnion_of_isOpen hf hs
+
+end mdifferentiableOn_union
+
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivWithinAt I I' f s x f') :
