@@ -5,9 +5,9 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Analysis.Calculus.FDeriv.Star
-import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.NumberTheory.ModularForms.Cusps
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 /-!
@@ -493,31 +493,80 @@ end GradedRing
 end ModularForm
 
 section translate
-open ModularForm
 
-variable {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*} [FunLike F ℍ ℂ] (f : F) (g : SL(2, ℤ))
+section OnePoint
 
-/-- Translating a `ModularForm` by `SL(2, ℤ)`, to obtain a new `ModularForm`.
+variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] (f : F)
 
-(TODO : Define this more generally for `GL(2, ℚ)`.) -/
-noncomputable def ModularForm.translate [ModularFormClass F Γ k] :
+lemma ModularFormClass.isBoundedAt [ModularFormClass F Γ k] (c : OnePoint ℚ) : c.IsBoundedAt f k :=
+  c.isBoundedAt_iff_forall_SL2Z.mpr fun γ _ ↦ bdd_at_infty f γ
+
+lemma CuspFormClass.isZeroAt [CuspFormClass F Γ k] (c : OnePoint ℚ) : c.IsZeroAt f k :=
+  c.isZeroAt_iff_forall_SL2Z.mpr fun γ _ ↦ zero_at_infty f γ
+
+end OnePoint
+
+open ModularForm OnePoint
+
+variable {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*} [FunLike F ℍ ℂ] (f : F)
+
+/-- Translating a `ModularForm` by `SL(2, ℤ)`, to obtain a new `ModularForm`. -/
+noncomputable def ModularForm.translate [ModularFormClass F Γ k] (g : SL(2, ℤ)) :
     ModularForm (Γ.map <| MulAut.conj g⁻¹) k where
   __ := SlashInvariantForm.translate f g
   bdd_at_infty' h := by simpa [SlashAction.slash_mul] using ModularFormClass.bdd_at_infty f (g * h)
   holo' := (ModularFormClass.holo f).slash k g
 
 @[simp]
-lemma ModularForm.coe_translate [ModularFormClass F Γ k] : translate f g = ⇑f ∣[k] g := rfl
+lemma ModularForm.coe_translate [ModularFormClass F Γ k] (g : SL(2, ℤ)) :
+    translate f g = ⇑f ∣[k] g :=
+  rfl
 
-/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`.
+/-- Translating a `ModularForm` by `GL(2, ℚ)`, to obtain a new `ModularForm`. -/
+noncomputable def ModularForm.translateGL [ModularFormClass F Γ k] (g : GL (Fin 2) ℚ) :
+    ModularForm (CongruenceSubgroup.conjGL Γ (g.map (algebraMap ℚ ℝ))) k where
+  toSlashInvariantForm := SlashInvariantForm.translateGL f _
+  holo' := (ModularFormClass.holo f).slash k _
+  bdd_at_infty' h := by
+    rw [SlashInvariantForm.coe_translateGL, SL_slash, ← SlashAction.slash_mul]
+    convert (OnePoint.isBoundedAt_iff_forall_GL2Q _ f k).mp (ModularFormClass.isBoundedAt _ _)
+      (g * (h.mapGL ℚ)) rfl using 2
+    -- annoyance : need to reconcile coercions SL2Z -> SL2R -> SL2Z and SL2Z -> GL2Q -> GL2R
+    ext
+    simp
 
-(TODO : Define this more generally for `GL(2, ℚ)`.) -/
-noncomputable def CuspForm.translate [CuspFormClass F Γ k] :
+@[simp]
+lemma ModularForm.coe_translateGL [ModularFormClass F Γ k] (g : GL (Fin 2) ℚ) :
+    translateGL f g = ⇑f ∣[k] (g.map (algebraMap ℚ ℝ)) :=
+  rfl
+
+/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`. -/
+noncomputable def CuspForm.translate [CuspFormClass F Γ k] (g : SL(2, ℤ)) :
     CuspForm (Γ.map <| MulAut.conj g⁻¹) k where
   __ := ModularForm.translate f g
   zero_at_infty' h := by simpa [SlashAction.slash_mul] using CuspFormClass.zero_at_infty f (g * h)
 
 @[simp]
-lemma CuspForm.coe_translate [CuspFormClass F Γ k] : translate f g = ⇑f ∣[k] g := rfl
+lemma CuspForm.coe_translate [CuspFormClass F Γ k] (g : SL(2, ℤ)) :
+    translate f g = ⇑f ∣[k] g :=
+  rfl
+
+/-- Translating a `CuspForm` by `GL(2, ℚ)`, to obtain a new `CuspForm`. -/
+noncomputable def CuspForm.translateGL [CuspFormClass F Γ k] (g : GL (Fin 2) ℚ) :
+    CuspForm (CongruenceSubgroup.conjGL Γ (g.map (algebraMap ℚ ℝ))) k where
+  toSlashInvariantForm := SlashInvariantForm.translateGL f _
+  holo' := (ModularForm.translateGL f _).holo'
+  zero_at_infty' h := by
+    rw [SlashInvariantForm.coe_translateGL, SL_slash, ← SlashAction.slash_mul]
+    convert (OnePoint.isZeroAt_iff_forall_GL2Q _ f k).mp (CuspFormClass.isZeroAt _ _)
+      (g * (h.mapGL ℚ)) rfl using 2
+    -- annoyance : need to reconcile coercions SL2Z -> SL2R -> GL2R and SL2Z -> GL2Q -> GL2R
+    ext
+    simp
+
+@[simp]
+lemma CuspForm.coe_translateGL [CuspFormClass F Γ k] (g : GL (Fin 2) ℚ) :
+    translateGL f g = ⇑f ∣[k] (g.map (algebraMap ℚ ℝ)) :=
+  rfl
 
 end translate
