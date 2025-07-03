@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fernando Chu
+Authors: Andrea Laretto, Fernando Chu
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Opposites
