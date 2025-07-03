@@ -1,4 +1,9 @@
-import Mathlib.Tactic.Linarith
+import Lean.Elab.Term
+import Lean.Elab.Tactic.Basic
+import Lean.Meta.Tactic.Assert
+import Lean.Meta.Tactic.Clear
+import Batteries.CodeAction -- to enable the hole code action
+import Lean.Meta.Tactic.Grind.Main
 
 open Lean Elab Term Command Linter
 
@@ -26,7 +31,7 @@ def filterTactics (stx : Syntax) (acc : Out) (tree : InfoTree) : CommandElabM Ou
         if let some r := stx.getRange? true then
           -- TODO: customizability for the line below.
           -- This only works for 1 tactic, not a sequence.
-          let trigger := kind == ``linarith
+          let trigger := kind == `linarith
           if trigger then
             if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
               let mctx := i.mctxBefore
