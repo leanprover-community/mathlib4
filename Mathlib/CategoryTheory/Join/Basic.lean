@@ -286,8 +286,10 @@ the data of natural transformations between each side that are compatible with t
 action on edge maps. -/
 def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
-    (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
+    (h : whiskerRight (edgeTransform C D) F ≫
+      (associator _ _ _).hom ≫ whiskerLeft (Prod.snd C D) αᵣ =
+      (associator _ _ _).hom ≫ whiskerLeft (Prod.fst C D) αₗ ≫ (associator _ _ _).inv ≫
+      whiskerRight (edgeTransform C D) F' ≫ (associator _ _ _).hom :=
       by aesop_cat) :
     F ⟶ F' where
   app x := match x with
@@ -297,7 +299,7 @@ def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     cases f with
     | @left x y f => simpa using αₗ.naturality f
     | @right x y f => simpa using αᵣ.naturality f
-    | @edge c d => exact funext_iff.mp (NatTrans.ext_iff.mp h) (c, d)
+    | @edge c d => simpa using funext_iff.mp (NatTrans.ext_iff.mp h) (c, d)
 
 section
 
