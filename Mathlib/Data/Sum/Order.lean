@@ -517,7 +517,7 @@ theorem sumComm_symm (α β : Type*) [LE α] [LE β] :
     (OrderIso.sumComm α β).symm = OrderIso.sumComm β α :=
   rfl
 
-/-- `Equiv.sumAssoc` promoted to an order isomorphism between disjoint sums. -/
+/-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ β) ⊕ γ ≃o α ⊕ (β ⊕ γ) :=
   { Equiv.sumAssoc α β γ with
     map_rel_iff' := fun {a b} => by
