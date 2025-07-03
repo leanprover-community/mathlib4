@@ -718,21 +718,7 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 variable {μ : Measure X}
 
-lemma support_restrict_subset_closure {s : Set X} (hs : MeasurableSet s) :
-  (μ.restrict s).support ⊆ closure s := by
-  have hcls : IsClosed ((μ.restrict s).support) := isClosed_support (μ.restrict s)
-  intro x hx
-  show x ∈ closure s
-  simp only [mem_closure_iff_nhds]
-  intro U hU
-  by_cases H : (s ∩ U).Nonempty
-  · exact Set.inter_nonempty_iff_exists_right.mpr H
-  · have h_restr : (μ.restrict s) U = μ (s ∩ U) := by
-      simp only [(Measure.restrict_apply' (μ := μ) (t := U) hs), Set.inter_comm]
-    rw [mem_support_iff_forall] at hx
-    simpa [h_restr, Set.not_nonempty_iff_eq_empty.mp H, measure_empty] using hx U hU
-
-lemma support_restrict_subset_closure' [OpensMeasurableSpace X] {s : Set X} :
+lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
   (μ.restrict s).support ⊆ closure s := by
   intro x hx
   simp only [mem_closure_iff_nhds]
@@ -752,16 +738,10 @@ lemma support_restrict_subset_support {s : Set X} : (μ.restrict s).support ⊆ 
    intro U hU
    exact lt_of_lt_of_le (hx U hU) <| restrict_apply_le _ _
 
-lemma support_restrict_subset_closure_inter_support {s : Set X} (hs : MeasurableSet s) :
+lemma support_restrict_subset_closure_inter_support [OpensMeasurableSpace X] {s : Set X} :
     (μ.restrict s).support ⊆ closure s ∩ μ.support := by
   apply subset_inter
-  · exact support_restrict_subset_closure hs
-  · exact support_restrict_subset_support
-
-lemma support_restrict_subset_closure_inter_support' [OpensMeasurableSpace X] {s : Set X} :
-    (μ.restrict s).support ⊆ closure s ∩ μ.support := by
-  apply subset_inter
-  · exact support_restrict_subset_closure'
+  · exact support_restrict_subset_closure
   · exact support_restrict_subset_support
 
 end Support
