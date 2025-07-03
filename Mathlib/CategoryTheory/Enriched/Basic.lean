@@ -395,6 +395,24 @@ structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
       (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ₘ app Y) ≫ eComp V _ _ _ =
         (app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _
 
+abbrev EnrichedNatTrans (F G : EnrichedFunctor V C D) := GradedNatTrans Center.tensorUnit F G
+
+namespace EnrichedNatTrans
+
+variable (F : EnrichedFunctor V C D)
+
+def id : EnrichedNatTrans F F where
+  app X := eId V (F.obj X)
+  naturality X Y := by { simp; sorry }
+
+variable {F} {G H : EnrichedFunctor V C D}
+
+def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTrans F H where
+  app X := (ρ_ (𝟙_ V)).inv ≫ (α.app X ⊗ₘ β.app X) ≫ eComp _ _ _ _
+  naturality X Y := sorry
+
+end EnrichedNatTrans
+
 variable [BraidedCategory V]
 
 open BraidedCategory
