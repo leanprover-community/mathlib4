@@ -370,6 +370,7 @@ end
 section Bifunctoriality
 
 namespace CatCommSqOver
+open Functor
 
 section transform
 
