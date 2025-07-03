@@ -375,13 +375,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   · qify [hd₁, hd₂]
     field_simp [hm₀]
     norm_cast
-    conv_rhs =>
-      rw [sq]
-      congr
-      · rw [← h₁]
-      · rw [← h₂]
-    push_cast
-    ring
+    grind
   · qify [hd₂]
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)

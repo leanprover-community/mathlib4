@@ -40,8 +40,6 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf_ (M
 
 -/
 
-suppress_compilation
-
 universe u v w
 
 /-- Isolates the antipode of a Hopf algebra, to allow API to be constructed before proving the
