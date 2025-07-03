@@ -5933,6 +5933,7 @@ import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.Compare
 import Mathlib.Tactic.Ring.PNat
 import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.Ring.VariableName
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
