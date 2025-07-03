@@ -123,7 +123,7 @@ lemma lieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : Differentiab
   abel
 
 lemma lieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
-    (hW₁ : DifferentiableWithinAt 𝕜 W₁ s x) (hs :  UniqueDiffWithinAt 𝕜 s x) :
+    (hW₁ : DifferentiableWithinAt 𝕜 W₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (W + W₁) s x =
       lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V W₁ s x := by
   simp only [lieBracketWithin, Pi.add_apply, map_add]
