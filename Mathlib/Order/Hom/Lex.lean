@@ -11,7 +11,7 @@ import Mathlib.Order.RelIso.Set
 # Lexicographic order and order isomorphisms
 
 The main result in this file is the following: if `α` is a linear order and `x : α`, then `α` is
-order isomorphic to either of `Iio x ⊕ₗ Ici x` or `Iic x ⊕ₗ Ioi x`.
+order isomorphic to both `Iio x ⊕ₗ Ici x` and `Iic x ⊕ₗ Ioi x`.
 -/
 
 open Set
