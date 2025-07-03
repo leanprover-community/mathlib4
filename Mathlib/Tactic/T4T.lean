@@ -17,11 +17,15 @@ namespace T4T
 /-- Output for the tactic transformer. -/
 abbrev Out := Std.HashMap String.Range Syntax
 
-def filterTactics (stx : Syntax) (acc : Out) (tree : InfoTree) : CommandElabM Out := do
+def filterTactics (_stx : Syntax) (acc : Out) (tree : InfoTree) : CommandElabM Out := do
+  -- Turn the CommandElabM into a surrounding context for traversing the tree.
+  let ctx ← read
+  let state ← get
+  let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
   -- TODO: is an accumulator a good idea here? Or should we merge the maps?
-  let f ← tree.visitM
+  let f ← tree.visitM (ctx? := some ctxInfo)
     (fun _ _ _ => pure true) -- TODO: skip if it doesn't match the range of `stx`.
-    (fun ctx i c cs => do
+    (fun ctx i _c cs => do
       -- Accumulate intermediate results.
       let fAcc : Out → Out := cs.foldl (init := id) (fun acc f => f.getD id ∘ acc)
       -- Should we addd the current piece of syntax?
@@ -44,7 +48,7 @@ def filterTactics (stx : Syntax) (acc : Out) (tree : InfoTree) : CommandElabM Ou
                   -- Call grind
                   let params ← Meta.Grind.mkParams {}
                   let result ← Meta.Grind.main goal.mvarId! params (pure ())
-                  let msg ← result.toMessageData
+                  logInfoAt stx (← result.toMessageData)
                   pure !result.hasFailed
                 let msgs ← Core.getMessageLog
                 return (test, msgs)
