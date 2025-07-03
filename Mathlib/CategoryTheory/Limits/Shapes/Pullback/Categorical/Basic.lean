@@ -728,10 +728,6 @@ end compatibility
 
 end CatCommSqOver
 
-namespace CategoricalPullback
-
-end CategoricalPullback
-
 end Bifunctoriality
 
 end CategoricalPullback
