@@ -32,6 +32,14 @@ def Functor.map₂ (F : C ⥤ D ⥤ E) {A B : C} {X Y : D} (f : A ⟶ B) (g : X 
     F.obj₂ A X ⟶ F.obj₂ B Y :=
   (F.map f).app X ≫ (F.obj B).map g
 
+abbrev Functor.mapₗ (F : C ⥤ D ⥤ E) {A B : C} {X : D} (f : A ⟶ B) :
+    F.obj₂ A X ⟶ F.obj₂ B X :=
+  (F.map f).app X
+
+abbrev Functor.mapᵣ (F : C ⥤ D ⥤ E) {A : C} {X Y : D} (g : X ⟶ Y) :
+    F.obj₂ A X ⟶ F.obj₂ A Y :=
+  (F.obj A).map g
+
 /-- Apply a natural transformation between bifunctors to two objects. -/
 abbrev NatTrans.app₂ {F G : C ⥤ D ⥤ E} (α : F ⟶ G) (X : C) (Y : D) :
     F.obj₂ X Y ⟶ G.obj₂ X Y :=
