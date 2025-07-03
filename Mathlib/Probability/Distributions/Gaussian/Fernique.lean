@@ -217,11 +217,8 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
   · exact (IsGaussian.memLp_dual _ _ _ (by simp)).sub (IsGaussian.memLp_dual _ _ _ (by simp))
   simp only [ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', covariance_smul_right,
     covariance_smul_left]
-  -- todo: `have h := Real.cos_sq_add_sin_sq θ; grind` works here.
-  -- Use it when `grind` becomes production ready.
-  ring_nf
-  rw [add_assoc, add_add_add_comm, mul_comm _ (Real.sin θ ^ 2), ← add_mul, ← add_mul,
-    Real.cos_sq_add_sin_sq, one_mul, one_mul]
+  have h := Real.cos_sq_add_sin_sq θ
+  grind
 
 end Rotation
 
