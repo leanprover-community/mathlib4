@@ -53,7 +53,7 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
       rw [← Subtype.coe_inj]
       exact (hP.2 x).unique (hP.2 x).exists.choose_spec ⟨t.prop, hxt⟩
     · intro t
-      simp only [Set.Finite.mem_toFinset, implies_true]
+      simp only [implies_true]
   let f : Function.support (fun (t : P) ↦ (s ∩ (t : Set α)).ncard) → s := fun ⟨t, ht⟩ ↦
     ⟨(Set.nonempty_of_ncard_ne_zero ht).choose, (Set.nonempty_of_ncard_ne_zero ht).choose_spec.1⟩
   have hf (t : Function.support (fun (t : P) ↦ (s ∩ (t : Set α)).ncard)) :
