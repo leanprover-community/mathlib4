@@ -152,16 +152,8 @@ def unitsFstOne_mulEquiv_quasiregular : unitsFstOne R A ≃* (PreQuasiregular A)
     { val :=
       { val := 1 + equiv.symm x.val
         inv := 1 + equiv.symm x⁻¹.val
-        val_inv := by
-          convert congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
-            abel
-          · simp only [inr_zero, add_zero]
-        inv_val := by
-          convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
-            abel
-          · simp only [inr_zero, add_zero] }
+        val_inv := by aesop
+        inv_val := by aesop }
       property := by simp }
   left_inv x := Subtype.ext <| Units.ext <| by simpa using x.val.val.inl_fst_add_inr_snd_eq
   right_inv x := Units.ext <| by simp [-equiv_symm_apply]

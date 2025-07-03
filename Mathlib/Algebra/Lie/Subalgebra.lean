@@ -315,9 +315,7 @@ theorem rangeRestrict_apply (x : L) : f.rangeRestrict x = ⟨f x, f.mem_range_se
 
 theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
-  rw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
-  use x
-  simp only [rangeRestrict_apply]
+  aesop
 
 /-- A Lie algebra is equivalent to its range under an injective Lie algebra morphism. -/
 noncomputable def equivRangeOfInjective (h : Function.Injective f) : L ≃ₗ⁅R⁆ f.range :=
@@ -530,9 +528,7 @@ theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
 
 instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
-  simp only [mem_bot, mem_top, iff_true]
-  rfl
+  aesop
 
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
   show Subsingleton ((⊥ : LieSubalgebra R L) : Set L) by simp

@@ -551,11 +551,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 @[simp high]
 theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
     x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p := by
-  rw [Submodule.mem_map]; constructor
-  · rintro ⟨y, hy, hx⟩
-    simp [← hx, hy]
-  · intro hx
-    exact ⟨e.symm x, hx, by simp⟩
+  aesop
 
 theorem map_equiv_eq_comap_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R M) :
     K.map (e : M →ₛₗ[τ₁₂] M₂) = K.comap (e.symm : M₂ →ₛₗ[τ₂₁] M) :=
@@ -704,12 +700,7 @@ def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M �
         simp only [LinearMap.domRestrict_apply, and_true, SetLike.coe_mem,
           SetLike.mem_coe]⟩ with
     invFun := fun y =>
-      ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by
-        rcases y with ⟨y', hy⟩
-        rw [Submodule.mem_map] at hy
-        rcases hy with ⟨x, hx, hxy⟩
-        subst hxy
-        simp only [symm_apply_apply, coe_coe, hx]⟩
+      ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by aesop⟩
     left_inv := fun x => by
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]

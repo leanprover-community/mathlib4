@@ -428,13 +428,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
       rw [mem_set_smul_def, Submodule.mem_sInf]
       rintro p hp
       exact hp (hc hr) (c r).2
-    · ext x : 1
-      simp only [Set.mem_iInter, SetLike.mem_coe]
-      fconstructor
-      · refine fun h ↦ h fun r n hr hn ↦ ?_
-        rw [mem_set_smul_def, mem_sInf]
-        exact fun p hp ↦ hp hr hn
-      · aesop
+    · aesop
 
 lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by

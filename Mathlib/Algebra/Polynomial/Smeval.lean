@@ -160,10 +160,7 @@ theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] 
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
   rw [smeval_eq_sum, smeval_eq_sum]
   simp only [Polynomial.smul_pow, sum_def, Int.cast_sum]
-  refine Finset.sum_congr rfl ?_
-  intro k _
-  rw [show -(n : S) = (-n : ℤ) by simp only [Int.cast_neg, Int.cast_natCast], nsmul_eq_mul,
-    ← AddGroupWithOne.intCast_ofNat, ← Int.cast_npow, ← Int.cast_mul, ← nsmul_eq_mul]
+  aesop
 
 end Neg
 
@@ -296,11 +293,7 @@ theorem smeval_commute_left (hc : Commute x y) : Commute (p.smeval x) y := by
     refine Commute.smul_left ?_ a
     induction n with
     | zero => simp only [npow_zero, Commute.one_left]
-    | succ n ih =>
-      refine (commute_iff_eq (x ^ (n + 1)) y).mpr ?_
-      rw [commute_iff_eq (x ^ n) y] at ih
-      rw [pow_succ, ← mul_assoc, ← ih]
-      exact Commute.right_comm hc (x ^ n)
+    | succ n ih => aesop
 
 theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) := by
   induction p using Polynomial.induction_on' with

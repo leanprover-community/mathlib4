@@ -650,11 +650,7 @@ def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f (i + 1) ≫ d_Y i 
     of X d_X sq_X ⟶ of Y d_Y sq_Y :=
   { f
     comm' := fun n m => by
-      by_cases h : n = m + 1
-      · subst h
-        simpa using comm m
-      · rw [of_d_ne X _ _ h, of_d_ne Y _ _ h]
-        simp }
+      aesop }
 
 end OfHom
 
@@ -833,11 +829,7 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
       rw [dif_neg]
       exact w
     d_comp_d' := fun i j k => by
-      dsimp
-      split_ifs with h h' h'
-      · substs h h'
-        simp [sq]
-      all_goals simp }
+      aesop }
 
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
 
@@ -871,11 +863,7 @@ def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f i ≫ d_Y i = d_X 
     of X d_X sq_X ⟶ of Y d_Y sq_Y :=
   { f
     comm' := fun n m => by
-      by_cases h : n + 1 = m
-      · subst h
-        simpa using comm n
-      · rw [of_d_ne X _ _ h, of_d_ne Y _ _ h]
-        simp }
+      aesop }
 
 end OfHom
 
