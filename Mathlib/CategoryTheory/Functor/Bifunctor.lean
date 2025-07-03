@@ -3,7 +3,6 @@ Copyright (c) 2025 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrea Laretto, Fernando Chu
 -/
-import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Opposites
 
 /-!
@@ -37,12 +36,33 @@ abbrev Functor.mapₗ (F : C ⥤ D ⥤ E) {A B : C} (f : A ⟶ B) (X : D) :
     F.obj₂ A X ⟶ F.obj₂ B X :=
   (F.map f).app X
 
+@[simp, reassoc]
+lemma Functor.mapₗ_comp (F : C ⥤ D ⥤ E) {A B T : C} (f : A ⟶ B) (g : B ⟶ T) (X : D) :
+    F.mapₗ (f ≫ g) X = F.mapₗ f X ≫ F.mapₗ g X := by
+  simp [Functor.mapₗ]
+
+@[simp, reassoc]
+lemma Functor.mapₗ_id (F : C ⥤ D ⥤ E) {A : C} (X : D) :
+    F.mapₗ (𝟙 A) X = 𝟙 (F.obj₂ A X) := by
+  simp [Functor.mapₗ]
+
 /-- Action of two-variable functors on a morphism in the right argument. -/
 abbrev Functor.mapᵣ (F : C ⥤ D ⥤ E) (A : C) {X Y : D} (g : X ⟶ Y) :
     F.obj₂ A X ⟶ F.obj₂ A Y :=
   (F.obj A).map g
 
+@[simp, reassoc]
+lemma Functor.mapᵣ_comp (F : C ⥤ D ⥤ E) (A : C) {X Y Z : D} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    F.mapᵣ A (f ≫ g) = F.mapᵣ A f ≫ F.mapᵣ A g := by
+  simp [Functor.mapᵣ]
+
+@[simp, reassoc]
+lemma Functor.mapᵣ_id (F : C ⥤ D ⥤ E) (A : C) {X : D} :
+    F.mapᵣ A (𝟙 X) = 𝟙 (F.obj₂ A X) := by
+  simp [Functor.mapᵣ]
+
 /-- Apply a natural transformation between bifunctors to two objects. -/
+@[simp]
 abbrev NatTrans.app₂ {F G : C ⥤ D ⥤ E} (α : F ⟶ G) (X : C) (Y : D) :
     F.obj₂ X Y ⟶ G.obj₂ X Y :=
   (α.app X).app Y
