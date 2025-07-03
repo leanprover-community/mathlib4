@@ -199,6 +199,12 @@ theorem σsSup_pair (a b : α) : sSup {a, b} = a ⊔ b :=
 theorem σsInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
   σsSup_pair (α := αᵒᵈ) a b
 
+theorem σiSup_const [Nonempty ι] : ⨆ (_ : ι), a = a := by
+  rw [iSup, Set.range_const, σsSup_singleton]
+
+theorem σiInf_const [Nonempty ι] : ⨅ (_ : ι), a = a :=
+  σiSup_const (α := αᵒᵈ)
+
 /-- If a set is countable, and non-empty, its infimum is less than or equal to its supremum. -/
 theorem σsInf_le_σsSup (hs : s.Countable) (ne : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_σsInf hs) (isLUB_σsSup hs) ne
@@ -258,6 +264,20 @@ theorem σsSup_empty : sSup ∅ = (⊥ : α) :=
 @[simp]
 theorem σsInf_empty : sInf ∅ = (⊤ : α) :=
   σsSup_empty (α := αᵒᵈ)
+
+theorem σiSup_empty [IsEmpty ι] : ⨆ i, f i = ⊥ := by
+  simp [iSup, Set.range_eq_empty]
+
+theorem σiInf_empty [IsEmpty ι] : ⨅ i, f i = ⊤ :=
+  σiSup_empty (α := αᵒᵈ)
+
+theorem σiSup_const_mem : ⨆ (_ : ι), a ∈ ({⊥, a} : Set α) := by
+  cases isEmpty_or_nonempty ι with
+  | inl h_empty => simp [σiSup_empty]
+  | inr h_non_empty => simp [σiSup_const]
+
+theorem σiInf_const_mem : ⨅ (_ : ι), a ∈ ({⊤, a} : Set α) :=
+  σiSup_const_mem (α := αᵒᵈ)
 
 theorem σsSup_le_σsSup_of_subset_insert_bot (ht : t.Countable) (h : s ⊆ insert ⊥ t) :
     sSup s ≤ sSup t :=
