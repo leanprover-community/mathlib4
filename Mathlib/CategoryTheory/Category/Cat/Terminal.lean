@@ -34,7 +34,7 @@ def isDiscreteUnique.isTerminal {T : Type u} [Category.{v} T] [Unique T] [IsDisc
     (fun _ _ ↦ Functor.ext (by simp [eq_iff_true_of_subsingleton]))
 
 /-- Any `T : Cat.{u, u}` with a unique object and discrete homs is isomorphic to `⊤_ Cat.{u, u}.` -/
-noncomputable def terminalDiscreteUniqueIso
+noncomputable def terminalIsoOfUniqueOfIsDiscrete
     {T : Type u} [Category.{u} T] [Unique T] [IsDiscrete T] : ⊤_ Cat.{u, u} ≅ Cat.of T :=
   terminalIsoIsTerminal isDiscreteUnique.isTerminal
 
