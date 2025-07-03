@@ -130,15 +130,13 @@ variable (S : Subgroup G) [DecidableRel (QuotientGroup.rightRel S)] [S.FiniteInd
 variable (A : Rep k S)
 
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a finite index
-subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism
+subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
 `(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
 noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     ((Action.res _ S.subtype).mapProjectiveResolution P).complex.coinvariantsTensorObj A ≅
       P.complex.coinvariantsTensorObj (ind S.subtype A) :=
   (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
-
-variable [DecidableEq G]
 
 /-- Shapiro's lemma: given a finite index subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
