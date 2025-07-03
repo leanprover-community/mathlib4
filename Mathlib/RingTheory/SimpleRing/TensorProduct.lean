@@ -11,9 +11,12 @@ import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 /-!
 # Tensor product of simple algebras
 
-In this file, we show that the tensor product between a simple algebra and a central simple algebra
-is simple. This a pre-requist for proving the group law of the Brauer group, in particular it helps
-show that tensor product of two central simple algebras is central simple.
+# Tensor product of simple algebras over a field
+
+In this file, we show that the tensor product of a simple algebra and a central simple algebra is
+simple, which in particular implies that the tensor product of two central simple algebras is
+another central simple algebra. This is a prerequisite for defining the group law of the Brauer
+group.
 
 ## Main Results
 
