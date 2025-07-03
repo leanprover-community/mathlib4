@@ -8,9 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
-import Mathlib.Util.AssertExists
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
