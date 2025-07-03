@@ -126,7 +126,7 @@ noncomputable def laplacianWithin : E → F :=
   fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
 
 @[inherit_doc]
-scoped[InnerProductSpace] notation "Δ[" s "]" f => laplacianWithin f s
+scoped[InnerProductSpace] notation "Δ[" s "]" f:60 => laplacianWithin f s
 
 variable (f) in
 /--
@@ -143,7 +143,7 @@ scoped[InnerProductSpace] notation "Δ" => laplacian
 The Laplacian equals the Laplacian with respect to `Set.univ`.
 -/
 @[simp]
-theorem laplacian_eq_laplacianWithin_univ :
+theorem laplacianWithin_univ :
     (Δ[(Set.univ: Set E)] f) = Δ f := by
   ext x
   simp [laplacian, tensorIteratedFDerivTwo, bilinearIteratedFDerivTwo,
@@ -249,12 +249,12 @@ theorem _root_.ContDiffWithinAt.laplacianWithin_add (h₁ : ContDiffWithinAt ℝ
 
 /-- The Laplacian commutes with addition. -/
 theorem _root_.ContDiffAt.laplacian_add (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
-    Δ (f₁ + f₂) x = (Δ f₁) x + (Δ f₂) x := by
+    Δ (f₁ + f₂) x = Δ f₁ x + Δ f₂ x := by
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis,
     ← Finset.sum_add_distrib, iteratedFDeriv_add_apply h₁ h₂]
 
 /-- The Laplacian commutes with addition. -/
-theorem _root_.ContDiffAt.laplacianWithin_add_nhdWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
+theorem _root_.ContDiffAt.laplacianWithin_add_nhdsWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
     (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
     (Δ[s] (f₁ + f₂)) =ᶠ[𝓝[s] x] (Δ[s] f₁) + (Δ[s] f₂):= by
   nth_rw 1 [← s.insert_eq_of_mem hx]
@@ -264,7 +264,7 @@ theorem _root_.ContDiffAt.laplacianWithin_add_nhdWithin (h₁ : ContDiffWithinAt
   simp [h₁y.laplacianWithin_add h₂y hs h₃y]
 
 /-- The Laplacian commutes with addition. -/
-theorem _root_.ContDiffAt.laplacian_add_nhd (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
+theorem _root_.ContDiffAt.laplacian_add_nhds (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
     Δ (f₁ + f₂) =ᶠ[𝓝 x] (Δ f₁) + (Δ f₂) := by
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp)] with x h₁x h₂x
   exact h₁x.laplacian_add h₂x
