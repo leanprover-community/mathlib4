@@ -23,6 +23,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.strongDownwardInductionOn`
 * `Finset.case_strong_induction_on`
 * `Finset.Nonempty.strong_induction`
+* `Finset.eraseInduction`
 -/
 
 assert_not_exists Monoid
