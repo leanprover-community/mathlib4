@@ -96,7 +96,7 @@ class IsMod_Hom {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N) where
 
 attribute [reassoc (attr := simp)] IsMod_Hom.smul_hom
 
-variable {M N O: D} [Mod_Class A M] [Mod_Class A N] [Mod_Class A O]
+variable {M N O : D} [Mod_Class A M] [Mod_Class A N] [Mod_Class A O]
 
 instance : IsMod_Hom A (𝟙 M) where
 
