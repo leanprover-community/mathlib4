@@ -602,22 +602,6 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
 
 open Classical in
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
-existence of a local flow. -/
-theorem exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt
-    (hf : IsPicardLindelof f t₀ x₀ a r L K) :
-    ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
-      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt (α x) (f t (α x t)) (Icc tmin tmax) t := by
-  have (x) (hx : x ∈ closedBall x₀ r) := exists_eq_forall_mem_Icc_hasDerivWithinAt hf hx
-  choose α hα using this
-  set α' := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then α x hx else 0 with hα'
-  refine ⟨α', fun x hx ↦ ?_⟩
-  have ⟨h1, h2⟩ := hα x hx
-  refine ⟨?_, fun t ht ↦ ?_⟩
-  · simp_rw [hα', dif_pos hx, h1]
-  · simp_rw [hα', dif_pos hx, h2 t ht]
-
-open Classical in
-/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
 existence of a local flow and that it is Lipschitz continuous in the intial point.
 
 TODO: derive the previous theorem from this. add docstring at beginning of file -/
@@ -665,6 +649,15 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_continuousOn
   apply continuousOn_prod_of_continuousOn_lipschitzOnWith _ L' _ hα2
   intro x hx t ht
   exact (hα1 x hx).2 t ht |>.continuousWithinAt
+
+/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
+existence of a local flow. -/
+theorem exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt
+    (hf : IsPicardLindelof f t₀ x₀ a r L K) :
+    ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
+      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt (α x) (f t (α x t)) (Icc tmin tmax) t :=
+  have ⟨α, hα⟩ := exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith hf
+  ⟨α, hα.1⟩
 
 end IsPicardLindelof
 
