@@ -135,10 +135,8 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         I.comap (Algebra.TensorProduct.includeLeft : A →ₐ[K] A ⊗[K] B)) := by
   classical
   refine le_antisymm ?_ ?_
-  · if I_ne_bot : I = ⊥
-    then subst I_ne_bot; exact bot_le
+  · if I_ne_bot : I = ⊥ then subst I_ne_bot; exact bot_le
     else
-
     let f : A →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeLeft
     change I ≤ TwoSidedIdeal.span (Set.image f <| I.comap f)
     let 𝒜 := Basis.ofVectorSpace K A
@@ -180,8 +178,7 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         rw [show 𝒜 i₀ ⊗ₜ[K] b i₀ = ∑ i ∈ {i₀}, 𝒜 i ⊗ₜ[K] b i by rw [Finset.sum_singleton],
           ← Finset.sum_disjUnion]
         pick_goal 2
-        · rw [← Finset.disjoint_erase_comm]
-          simp only [Finset.erase_singleton, Finset.image_empty, Finset.disjoint_empty_left]
+        · simp
         refine Finset.sum_congr ?_ fun _ _ => rfl
         ext x
         simp only [Finset.disjUnion_eq_union, Finset.mem_union, Finset.mem_singleton,
