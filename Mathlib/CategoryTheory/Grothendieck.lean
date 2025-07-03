@@ -52,6 +52,8 @@ universe w u v u₁ v₁ u₂ v₂
 
 namespace CategoryTheory
 
+open Functor
+
 variable {C : Type u} [Category.{v} C]
 variable {D : Type u₁} [Category.{v₁} D]
 variable (F : C ⥤ Cat.{v₂, u₂})
