@@ -616,10 +616,10 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
     α x hx |>.compProj else 0 with hα'
   refine ⟨α', fun x hx ↦ ⟨?_, fun t ht ↦ ?_⟩, ?_⟩
   · rw [hα']
-    dsimp only
+    beta_reduce
     rw [dif_pos hx, FunSpace.compProj_val, ← hα, FunSpace.next_apply₀]
   · rw [hα']
-    dsimp only
+    beta_reduce
     rw [dif_pos hx, FunSpace.compProj_apply]
     apply hasDerivWithinAt_picard_Icc t₀.2 hf.continuousOn_uncurry
       (α x hx |>.continuous_compProj.continuousOn)
