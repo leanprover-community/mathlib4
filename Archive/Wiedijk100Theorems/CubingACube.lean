@@ -37,8 +37,8 @@ theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (
     ∃ w, w ∈ Ico x₁ x₂ ∧ w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂ := by
   simp only [not_and, not_lt, mem_Ico] at hw
   refine ⟨max x₁ (min w y₂), ?_, ?_, ?_⟩
-  · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
-  · simp +contextual [hw, lt_irrefl, not_le_of_gt h₁]
+  · simp [lt_trans h₁ (lt_trans hy h₂), h₂]
+  · simp +contextual [hw, not_le_of_gt h₁]
   · simp [hw.2.1, hw.2.2, hz₁, lt_of_lt_of_le h₁ hz₂]
 
 /-- A (hyper)-cube (in standard orientation) is a vector `b` consisting of the bottom-left point
@@ -281,7 +281,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
-    · simp only [p, bottom, if_neg hj]
+    · simp only [p, if_neg hj]
     intro j'; simp only [tail, side_tail]
     by_cases hj' : j'.succ = j
     · simp [p, if_pos, side, hj', hw', w_lt_w h v h2i]
@@ -369,7 +369,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
   refine le_trans ?_ (t_le_t hi'' j); gcongr; apply h3i' i'' ⟨hi'', _⟩
-  simp [i, mem_singleton, h2i'']
+  simp [i, h2i'']
 
 variable (h v)
 
@@ -403,7 +403,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
     by_cases hj₂ : j₂ = j'; · simp [hj₂]; apply tail_sub h2i'; apply hx'.1
-    simp only [if_congr, if_false, hj₂]; apply tail_sub hi; apply b_mem_side
+    simp only [if_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩
   have i'_i'' : i' ≠ i'' := by

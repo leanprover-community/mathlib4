@@ -378,7 +378,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
         (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr
       (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) • (U.symm x : E) +
         (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v.val := by
-  simp [real_inner_comm, stereographic, stereographic', ← Submodule.coe_norm]
+  simp [stereographic, stereographic', ← Submodule.coe_norm]
 
 /-! ### Analytic manifold structure on the sphere -/
 
@@ -407,7 +407,7 @@ instance EuclideanSpace.instIsManifoldSphere
       simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
         PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
         stereographic'_source]
-      simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.preimage_id,
+      simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
       simp only [id, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
         innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
@@ -461,7 +461,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
     exact norm_eq_of_mem_sphere (-v)
   -- Porting note: unfold more
   dsimp [chartAt, Set.codRestrict, ChartedSpace.chartAt]
-  simp [not_iff_not, Subtype.ext_iff, hfxv, real_inner_comm]
+  simp [Subtype.ext_iff, hfxv, real_inner_comm]
 
 /-- The antipodal map is analytic. -/
 theorem contMDiff_neg_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
@@ -489,9 +489,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     TangentSpace (𝓡 n) v →L[ℝ] E) = (ℝ ∙ (v : E))ᗮ := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   dsimp [chartAt]
-  simp only [chartAt, stereographic_neg_apply, fderivWithin_univ,
-    LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
-    LinearIsometryEquiv.map_zero, mfld_simps]
+  simp only [fderivWithin_univ, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n
     (ne_zero_of_mem_unit_sphere (-v))).repr
   -- Porting note: this `suffices` was a `change`
@@ -525,9 +523,7 @@ linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
-  simp only [chartAt, stereographic', stereographic_neg_apply, fderivWithin_univ,
-    LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
-    LinearIsometryEquiv.map_zero, mfld_simps]
+  simp only [chartAt, fderivWithin_univ, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton
       (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) by

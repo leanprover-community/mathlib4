@@ -326,7 +326,7 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
         -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
         -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
         simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
-          mul_div_assoc', add_div', div_mul_cancel₀, div_div, eq_div_iff]
+          mul_div_assoc', add_div', div_div, eq_div_iff]
         ring
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
         rw [hm]
@@ -345,7 +345,7 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
       simp [pow_two, law_cos a' b' c']
     _ = r ^ 2 * (dist a b ^ 2 + dist c b ^ 2 - 2 * dist a b * dist c b * Real.cos (∠ a b c)) := by
       rw [h, hab, hcb]; ring
-    _ = (r * dist a c) ^ 2 := by simp [pow_two, ← law_cos a b c, mul_pow]; ring
+    _ = (r * dist a c) ^ 2 := by simp [pow_two, ← law_cos a b c]; ring
   by_cases hab₁ : a = b
   · have hab'₁ : a' = b' := by
       rw [← dist_eq_zero, hab, dist_eq_zero.mpr hab₁, mul_zero r]

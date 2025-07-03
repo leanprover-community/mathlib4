@@ -344,6 +344,22 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.X₃.X i) (hx₃ : x₃ ≫ S.X₃.d i j = 0
         HomologicalComplex.liftCycles_i, assoc, assoc, opcyclesToCycles_iCycles,
         HomologicalComplex.p_fromOpcycles, hx₁])
 
+theorem mono_δ (hi : IsZero (S.X₂.homology i)) : Mono (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).mono_δ hi
+
+theorem epi_δ (hj : IsZero (S.X₂.homology j)) : Epi (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).epi_δ hj
+
+theorem isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    IsIso (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).isIso_δ hi hj
+
+/-- If `c.Rel i j` and `Hᵢ(X₂), Hⱼ(X₂)` are trivial, `δ` defines an isomorphism
+`Hᵢ(X₃) ≅ Hⱼ(X₁)`. -/
+noncomputable def δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    S.X₃.homology i ≅ S.X₁.homology j :=
+  @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
+
 end ShortExact
 
 end ShortComplex
