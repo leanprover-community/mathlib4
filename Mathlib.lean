@@ -92,6 +92,7 @@ import Mathlib.Algebra.Category.CoalgCat.Basic
 import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
 import Mathlib.Algebra.Category.CommAlgCat.Basic
+import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
