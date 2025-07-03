@@ -253,7 +253,7 @@ attribute [local instance] endofunctorMonoidalCategory
 /-- The monoidal structure on the category of endofunctors is left distributive. -/
 instance isMonoidalLeftDistrib.of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) where
   preservesBinaryCoproducts_tensorLeft F :=
-    inferInstanceAs (PreservesColimitsOfShape _ ((whiskeringLeft C C C).obj F))
+    inferInstanceAs (PreservesColimitsOfShape _ ((Functor.whiskeringLeft C C C).obj F))
 
 end Endofunctors
 

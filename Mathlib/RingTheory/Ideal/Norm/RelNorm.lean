@@ -135,10 +135,10 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     obtain ⟨⟨a, ha⟩, ⟨_, ⟨s, hs, rfl⟩⟩, has⟩ := ha'
     refine ⟨⟨Algebra.intNorm R S a, intNorm_mem_spanNorm _ ha⟩,
       ⟨s ^ Module.finrank K L, pow_mem hs _⟩, ?_⟩
-    simp only [Submodule.coe_mk, Subtype.coe_mk, map_pow] at has ⊢
+    simp only [map_pow] at has ⊢
     apply_fun algebraMap _ L at has
     apply_fun Algebra.norm K at has
-    simp only [map_mul, IsScalarTower.algebraMap_apply R Rₘ Sₘ] at has
+    simp only [map_mul] at has
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R K L,
@@ -184,7 +184,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   nontriviality R
   cases subsingleton_or_nontrivial S
   · have : ∀ I : Ideal S, I = ⊤ := fun I ↦ Subsingleton.elim I ⊤
-    simp [this I, this J, this (I * J)]
+    simp [this I, this J]
   refine eq_of_localization_maximal (fun P hP ↦ ?_)
   by_cases hP0 : P = ⊥
   · subst hP0

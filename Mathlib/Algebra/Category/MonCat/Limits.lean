@@ -41,7 +41,7 @@ def sectionsSubmonoid : Submonoid (∀ j, F.obj j) where
   carrier := (F ⋙ forget MonCat).sections
   one_mem' {j} {j'} f := by simp
   mul_mem' {a} {b} ah bh {j} {j'} f := by
-    simp only [Functor.comp_map, MonoidHom.map_mul, Pi.mul_apply]
+    simp only [Functor.comp_map, Pi.mul_apply]
     dsimp [Functor.sections] at ah bh
     rw [← ah f, ← bh f, forget_map, map_mul]
 
@@ -171,7 +171,7 @@ noncomputable instance forget_createsLimit :
         map_one' := by simp; rfl, map_mul' := ?_ }
     · intro x y
       simp only [Types.Small.limitConeIsLimit_lift, Functor.comp_obj, Functor.mapCone_pt,
-          Functor.mapCone_π_app, forget_map, map_mul, mul_of]
+          Functor.mapCone_π_app, forget_map, map_mul]
       congr
       simp only [Functor.comp_obj, Equiv.symm_apply_apply]
       rfl
