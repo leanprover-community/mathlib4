@@ -796,8 +796,8 @@ def liftComm (op : α → α → β) [IsSymmOp op] : Sym2 α → β :=
 lemma liftComm_mk {op : α → α → β} [IsSymmOp op] (xy : α × α) :
     liftComm op (Sym2.mk xy) = op xy.1 xy.2 := rfl
 
-lemma liftComm_eq_fromRel (r : α → α → Prop) [hr : IsSymmOp r] :
-    liftComm r = setOf (fromRel (fun x y ↦ (hr.symm_op x y).mp)) := rfl
+lemma setOf_liftComm_eq_fromRel (r : α → α → Prop) [hr : IsSymmOp r] :
+    setOf (liftComm r) = fromRel (fun x y ↦ (hr.symm_op x y).mp) := rfl
 
 /--
 Multiplication as a function from `Sym2`.
