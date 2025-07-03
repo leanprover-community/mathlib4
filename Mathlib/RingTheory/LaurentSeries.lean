@@ -718,14 +718,14 @@ variable {K : Type*} [Field K]
 
 section Complete
 
-open Filter Multiplicative
+open Filter WithZero
 
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
 uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     UniformContinuous fun f : K⸨X⸩ ↦ f.coeff d := by
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
-  let γ : ℤᵐ⁰ˣ := Units.mk0 (↑(Multiplicative.ofAdd (-(d + 1)))) WithZero.coe_ne_zero
+  let γ : (ℤᵐ⁰)ˣ := Units.mk0 (↑(Multiplicative.ofAdd (-(d + 1)))) WithZero.coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
   refine ⟨(Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
