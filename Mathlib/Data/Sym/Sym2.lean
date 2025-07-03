@@ -342,6 +342,8 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧
   · exact h.1
   · exact h.2
 
+@[simp] lemma coe_mk {x y : α} : (s(x, y) : Set α) = {x, y} := by ext z; simp
+
 /-- Given an element of the unordered pair, give the other element using `Classical.choose`.
 See also `Mem.other'` for the computable version.
 -/
@@ -794,3 +796,25 @@ lemma mul_mk {M} [CommMagma M] (xy : M × M) :
     mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2
+
+namespace Set
+
+open Sym2
+
+/--
+For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
+-/
+def sym2 (s : Set α) : Set (Sym2 α) := { z | (z : Set α) ⊆ s }
+
+lemma mem_sym2 {s : Set α} {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := Iff.rfl
+
+@[simp] lemma mk_mem_sym2_iff {s : Set α} {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := by
+  simp [mem_sym2, pair_subset_iff]
+
+lemma sym2_eq_fromRel {s : Set α} :
+    s.sym2 = fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) (fun _ _ => .symm) := by
+  ext z
+  induction z using Sym2.inductionOn
+  simp
+
+end Set
