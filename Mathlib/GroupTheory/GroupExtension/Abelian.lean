@@ -53,7 +53,7 @@ namespace Splitting
 
 /-- The 1-cocycle corresponding to a splitting. -/
 @[simps!]
-def toOneCocycle (s : (SemidirectProduct.toGroupExtension φ).Splitting) :
+def toCocycles₁ (s : (SemidirectProduct.toGroupExtension φ).Splitting) :
     groupCohomology.cocycles₁ (SemidirectProduct.toRep φ) :=
   @groupCohomology.cocyclesOfIsMulCocycle₁ G N _ _ (MulDistribMulAction.compHom N φ)
     (fun g ↦ (s g).left)
@@ -61,12 +61,12 @@ def toOneCocycle (s : (SemidirectProduct.toGroupExtension φ).Splitting) :
       simp only [map_mul, SemidirectProduct.mul_left, SemidirectProduct.right_splitting]
       rw [mul_comm, MulAction.compHom_smul_def, MulAut.smul_def]
 
-theorem toOneCocycle_apply (s : (SemidirectProduct.toGroupExtension φ).Splitting) (g : G) :
-    s.toOneCocycle g = Additive.ofMul (s g).left := toOneCocycle_coe s g
+theorem toCocycles₁_apply (s : (SemidirectProduct.toGroupExtension φ).Splitting) (g : G) :
+    s.toCocycles₁ g = Additive.ofMul (s g).left := toCocycles₁_coe s g
 
 /-- The splitting corresponding to a 1-cocycle. -/
 @[simps!]
-noncomputable def ofOneCocycle (f : groupCohomology.cocycles₁ (SemidirectProduct.toRep φ)) :
+noncomputable def ofCocycles₁ (f : groupCohomology.cocycles₁ (SemidirectProduct.toRep φ)) :
     (SemidirectProduct.toGroupExtension φ).Splitting where
   toFun g := ⟨Additive.toMul (f g), g⟩
   map_one' := by
@@ -85,25 +85,25 @@ noncomputable def ofOneCocycle (f : groupCohomology.cocycles₁ (SemidirectProdu
 /-- The bijection between the splittings of the group extension associated to a semidirect product
   and the 1-cocycles -/
 @[simps!]
-noncomputable def equivOneCocycles : (SemidirectProduct.toGroupExtension φ).Splitting ≃
+noncomputable def equivCocycles₁ : (SemidirectProduct.toGroupExtension φ).Splitting ≃
     groupCohomology.cocycles₁ (SemidirectProduct.toRep φ) where
-  toFun := toOneCocycle
-  invFun := ofOneCocycle
+  toFun := toCocycles₁
+  invFun := ofCocycles₁
   left_inv s := by
     ext g
-    · rw [ofOneCocycle_apply_left, toOneCocycle_apply, toMul_ofMul]
-    · rw [ofOneCocycle_apply_right, ← SemidirectProduct.rightHom_eq_right,
+    · rw [ofCocycles₁_apply_left, toCocycles₁_apply, toMul_ofMul]
+    · rw [ofCocycles₁_apply_right, ← SemidirectProduct.rightHom_eq_right,
       ← SemidirectProduct.toGroupExtension_rightHom, rightHom_splitting]
   right_inv f := by
     ext g
-    simp only [toOneCocycle_apply, ofOneCocycle_apply_left, ofMul_toMul]
+    simp only [toCocycles₁_apply, ofCocycles₁_apply_left, ofMul_toMul]
 
 end Splitting
 
 /-- The bijection between the `N`-conjugacy classes of splittings and the first cohomology group -/
 noncomputable def conjClassesEquivH1 : (SemidirectProduct.toGroupExtension φ).ConjClasses ≃
     (groupCohomology.shortComplexH1 (SemidirectProduct.toRep φ)).moduleCatLeftHomologyData.H :=
-  Quotient.congr Splitting.equivOneCocycles (by
+  Quotient.congr Splitting.equivCocycles₁ (by
     intro s₁ s₂
     rw [Submodule.quotientRel_def, sub_mem_comm_iff]
     simp only [groupCohomology.shortComplexH1, groupCohomology.d₀₁, groupCohomology.d₁₂,
@@ -113,7 +113,7 @@ noncomputable def conjClassesEquivH1 : (SemidirectProduct.toGroupExtension φ).C
       SemidirectProduct.toRep_ρ_apply_apply]
     change (SemidirectProduct.toGroupExtension φ).IsConj s₁ s₂ ↔
       ∃ y, (fun g ↦ Additive.ofMul ((φ g) (Additive.toMul y)) - y) =
-        Splitting.equivOneCocycles s₂ - Splitting.equivOneCocycles s₁
+        Splitting.equivCocycles₁ s₂ - Splitting.equivCocycles₁ s₁
     apply Additive.ofMul.exists_congr
     intro n
     simp only [funext_iff]
@@ -124,7 +124,7 @@ noncomputable def conjClassesEquivH1 : (SemidirectProduct.toGroupExtension φ).C
       MulAut.one_apply, SemidirectProduct.mul_right, one_mul, SemidirectProduct.inv_left, inv_one,
       map_inv, SemidirectProduct.inv_right, mul_one, toMul_ofMul,
       ← groupCohomology.cocycles₁.val_eq_coe, AddSubgroupClass.coe_sub, Pi.sub_apply,
-      Splitting.equivOneCocycles_apply_coe, SemidirectProduct.right_splitting, and_true]
+      Splitting.equivCocycles₁_apply_coe, SemidirectProduct.right_splitting, and_true]
     rw [eq_mul_inv_iff_mul_eq, eq_sub_iff_add_eq', ← add_sub_assoc, sub_eq_iff_eq_add',
       ← Additive.ofMul.apply_eq_iff_eq]
     simp only [ofMul_mul]
