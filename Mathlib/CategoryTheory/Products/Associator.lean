@@ -39,8 +39,8 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E where
 def associativity : (C × D) × E ≌ C × D × E where
   functor := associator C D E
   inverse := inverseAssociator C D E
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
+  unitIso := NatIso.ofComponents fun _ => Iso.refl _
+  counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).functor.IsEquivalence)
@@ -59,7 +59,7 @@ def prodFunctorToFunctorProdAssociator :
       (prodFunctorToFunctorProd A C (D × E))) ≅
         (prodFunctorToFunctorProd A C D).prod (𝟭 _) ⋙ (prodFunctorToFunctorProd A (C × D) E) ⋙
           (associativity C D E).congrRight.functor :=
-  Iso.refl _
+  NatIso.ofComponents (fun _ => NatIso.ofComponents fun _ => Iso.refl _)
 
 /-- The associator isomorphism is compatible with `functorProdToProdFunctor`. -/
 @[simps!]
@@ -68,6 +68,8 @@ def functorProdToProdFunctorAssociator :
       (𝟭 _).prod (functorProdToProdFunctor A D E) ≅
         functorProdToProdFunctor A (C × D) E ⋙ (functorProdToProdFunctor A C D).prod (𝟭 _) ⋙
           (associativity _ _ _).functor :=
-  Iso.refl _
+  NatIso.ofComponents (fun F => Iso.prod
+    (NatIso.ofComponents fun _ => Iso.refl _)
+    (Iso.prod (NatIso.ofComponents fun _ => Iso.refl _) (NatIso.ofComponents fun _ => Iso.refl _)))
 
 end CategoryTheory.prod

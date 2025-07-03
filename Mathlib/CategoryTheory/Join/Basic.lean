@@ -251,11 +251,13 @@ lemma mkFunctor_map_inclLeft {c c' : C} (f : c ⟶ c') :
 
 /-- Precomposing `mkFunctor F G α` with the left inclusion gives back `F`. -/
 @[simps!]
-def mkFunctorLeft : inclLeft C D ⋙ mkFunctor F G α ≅ F := Iso.refl _
+def mkFunctorLeft : inclLeft C D ⋙ mkFunctor F G α ≅ F :=
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- Precomposing `mkFunctor F G α` with the right inclusion gives back `G`. -/
 @[simps!]
-def mkFunctorRight : inclRight C D ⋙ mkFunctor F G α ≅ G := Iso.refl _
+def mkFunctorRight : inclRight C D ⋙ mkFunctor F G α ≅ G :=
+  NatIso.ofComponents fun _ => Iso.refl _
 
 @[simp]
 lemma mkFunctor_map_inclRight {d d' : D} (f : d ⟶ d') :
@@ -265,7 +267,10 @@ lemma mkFunctor_map_inclRight {d d' : D} (f : d ⟶ d') :
 /-- Whiskering `mkFunctor F G α` with the universal transformation gives back `α`. -/
 @[simp]
 lemma mkFunctor_edgeTransform :
-    whiskerRight (edgeTransform C D) (mkFunctor F G α) = α := by
+    whiskerRight (edgeTransform C D) (mkFunctor F G α) =
+      (associator _ _ _).hom ≫ whiskerLeft _ (mkFunctorLeft _ _ _).hom ≫
+      α ≫
+      whiskerLeft _ (mkFunctorRight _ _ _).inv ≫ (associator _ _ _).inv := by
   ext x
   simp [mkFunctor]
 

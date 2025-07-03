@@ -30,7 +30,7 @@ namespace CategoryTheory
 open Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 section
 
@@ -174,8 +174,8 @@ def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D) where
 def braiding : C × D ≌ D × C where
   functor := swap C D
   inverse := swap D C
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
+  unitIso := NatIso.ofComponents Iso.refl
+  counitIso := NatIso.ofComponents Iso.refl
 
 instance swapIsEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (braiding C D).functor.IsEquivalence)
@@ -256,6 +256,20 @@ def prod'CompFst (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod
 def prod'CompSnd (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod.snd B C ≅ G :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+variable (A B) in
+@[simps!]
+def idProdId : (𝟭 A).prod (𝟭 B) ≅ 𝟭 (A × B) :=
+  NatIso.ofComponents fun _ => Iso.refl _
+
+@[simps!]
+def compProdComp
+    {A₁ : Type u₁} [Category.{v₁} A₁] {B₁ : Type u₂} [Category.{v₂} B₁]
+    {C₁ : Type u₃} [Category.{v₃} C₁] {A₂ : Type u₄} [Category.{v₄} A₂]
+    {B₂ : Type u₅} [Category.{v₅} B₂] {C₂ : Type u₆} [Category.{v₆} C₂]
+    (F₁ : A₁ ⥤ B₁) (G₁ : B₁ ⥤ C₁) (F₂ : A₂ ⥤ B₂) (G₂ : B₂ ⥤ C₂) :
+    (F₁ ⋙ G₁).prod (F₂ ⋙ G₂) ≅ F₁.prod F₂ ⋙ G₁.prod G₂ :=
+  NatIso.ofComponents fun _ => Iso.refl _
+
 section
 
 variable (C)
@@ -311,8 +325,8 @@ namespace Equivalence
 def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where
   functor := E₁.functor.prod E₂.functor
   inverse := E₁.inverse.prod E₂.inverse
-  unitIso := NatIso.prod E₁.unitIso E₂.unitIso
-  counitIso := NatIso.prod E₁.counitIso E₂.counitIso
+  unitIso := (idProdId _ _).symm ≪≫ NatIso.prod E₁.unitIso E₂.unitIso ≪≫ compProdComp _ _ _ _
+  counitIso := (compProdComp _ _ _ _).symm ≪≫ NatIso.prod E₁.counitIso E₂.counitIso ≪≫ idProdId _ _
 
 end Equivalence
 
@@ -321,42 +335,52 @@ end Equivalence
 def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=
   NatIso.ofComponents fun b => Iso.refl _
 
-theorem flip_comp_evaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a = F.obj a :=
-  rfl
+-- theorem flip_comp_evaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=
+--   rfl
+
+@[deprecated  (since := "2025-07-03")] alias flip_comp_evaluation := flipCompEvaluation
 
 /-- `F` composed with evaluation is the same as evaluating `F.flip`. -/
 @[simps!]
 def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.flip.obj b :=
   NatIso.ofComponents fun a => Iso.refl _
 
-theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
-  rfl
+-- theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
+--   rfl
+
+@[deprecated  (since := "2025-07-03")] alias comp_evaluation := compEvaluation
 
 /-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
 @[simps!]
 def whiskeringLeftCompEvaluation (F : A ⥤ B) (a : A) :
     (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a ≅ (evaluation B C).obj (F.obj a) :=
-  Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
-/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
-@[simp]
-theorem whiskeringLeft_comp_evaluation (F : A ⥤ B) (a : A) :
-    (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a = (evaluation B C).obj (F.obj a) :=
-  rfl
+-- /-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
+-- @[simp]
+-- theorem whiskeringLeft_comp_evaluation (F : A ⥤ B) (a : A) :
+--     (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a = (evaluation B C).obj (F.obj a) :=
+--   rfl
+
+@[deprecated  (since := "2025-07-03")]
+alias whiskeringLeft_comp_evaluation := whiskeringLeftCompEvaluation
 
 /-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
 applying `F`. -/
 @[simps!]
 def whiskeringRightCompEvaluation (F : B ⥤ C) (a : A) :
     (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a ≅ (evaluation _ _).obj a ⋙ F :=
-  Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
-/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
-applying `F`. -/
-@[simp]
-theorem whiskeringRight_comp_evaluation (F : B ⥤ C) (a : A) :
-    (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a = (evaluation _ _).obj a ⋙ F :=
-  rfl
+-- /-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
+-- applying `F`. -/
+-- @[simp]
+-- theorem whiskeringRight_comp_evaluation (F : B ⥤ C) (a : A) :
+--     (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a = (evaluation _ _).obj a ⋙ F :=
+--   rfl
+
+@[deprecated  (since := "2025-07-03")]
+alias whiskeringRight_comp_evaluation := whiskeringRightCompEvaluation
 
 variable (A B C)
 
@@ -407,8 +431,8 @@ def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   inverse :=
     { obj := fun ⟨X,Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
       map := fun ⟨f,g⟩ ↦ op ⟨f.unop, g.unop⟩ }
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
+  unitIso := NatIso.ofComponents fun X => Iso.refl _
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
 
 end Opposite
 

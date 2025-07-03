@@ -211,14 +211,14 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
   · rintro _ _ f
     dsimp [lift, Functor]
     refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
-    simp only [heq_eq_eq]
+    simp only [Functor.comp_map, heq_eq_eq]
     congr
 
 lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = functor r ⋙ F₂) :
     F₁ = F₂ := by
   rw [lift_unique r (functor r ⋙ F₂) _ F₂ rfl]; swap
   · rintro X Y f g h
-    dsimp
+    simp only [comp_obj, Functor.comp_map]
     rw [Quotient.sound r h]
   apply lift_unique
   rw [h]
@@ -259,7 +259,7 @@ def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quo
   app := fun ⟨X⟩ => τ.app X
   naturality := fun ⟨X⟩ ⟨Y⟩ => by
     rintro ⟨f⟩
-    exact τ.naturality f
+    simpa using τ.naturality f
 
 @[simp]
 lemma natTransLift_app (F G : Quotient r ⥤ D)
