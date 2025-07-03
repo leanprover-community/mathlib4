@@ -127,6 +127,12 @@ theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensiona
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
       else IsAlgebraic.isIntegral ⟨f, hf, (mem_rootSet'.mp hy).2⟩⟩
 
+theorem IsScalarTower.isAlgebraic [Algebra F K] [Algebra F L] [Algebra.IsAlgebraic F K]
+    [IsScalarTower F K L] (x : K) [IsSplittingField K L (mapAlg F K (minpoly F x))] :
+    Algebra.IsAlgebraic F L := by
+  let _ : FiniteDimensional K L := IsSplittingField.finiteDimensional _ (mapAlg F K (minpoly F x))
+  exact Algebra.IsAlgebraic.trans F K L
+
 theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
     IsSplittingField K L p := by
   constructor
