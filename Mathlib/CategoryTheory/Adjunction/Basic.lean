@@ -250,22 +250,26 @@ theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
     homEquiv_naturality_right_square adj f g h k⟩
 
 @[simp]
-theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
+theorem left_triangle :
+    whiskerRight adj.unit F ≫ (associator _ _ _).hom ≫ whiskerLeft F adj.counit =
+      (leftUnitor _).hom ≫ (rightUnitor _).inv := by
   ext; simp
 
 @[simp]
-theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
+theorem right_triangle :
+    whiskerLeft G adj.unit ≫ (associator _ _ _).inv ≫ whiskerRight adj.counit G =
+      (rightUnitor _).hom ≫ (leftUnitor _).inv := by
   ext; simp
 
 @[reassoc (attr := simp)]
 theorem counit_naturality {X Y : D} (f : X ⟶ Y) :
-    F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
-  adj.counit.naturality f
+    F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f := by
+  simpa using adj.counit.naturality f
 
 @[reassoc (attr := simp)]
 theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
-    adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
-  (adj.unit.naturality f).symm
+    adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y := by
+  simpa using (adj.unit.naturality f).symm
 
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
@@ -366,13 +370,13 @@ structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
   left_triangle :
     whiskerRight unit F ≫ (associator F G F).hom ≫ whiskerLeft F counit =
-      NatTrans.id (𝟭 C ⋙ F) := by
+      (leftUnitor _).hom ≫ (rightUnitor _).inv := by
     aesop_cat
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
   right_triangle :
     whiskerLeft G unit ≫ (associator G F G).inv ≫ whiskerRight counit G =
-      NatTrans.id (G ⋙ 𝟭 C) := by
+      (rightUnitor _).hom ≫ (leftUnitor _).inv := by
     aesop_cat
 
 namespace CoreUnitCounit
@@ -447,8 +451,8 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G where
 
 /-- The adjunction between the identity functor on a category and itself. -/
 def id : 𝟭 C ⊣ 𝟭 C where
-  unit := 𝟙 _
-  counit := 𝟙 _
+  unit := (rightUnitor _).inv
+  counit := (rightUnitor _).hom
 
 -- Satisfy the inhabited linter.
 instance : Inhabited (Adjunction (𝟭 C) (𝟭 C)) :=

@@ -158,7 +158,8 @@ theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V �
   · rw [← Functor.toPrefunctor_comp]
     exact hΦ
   · rintro X Y f
-    simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map]
+    simp only [Prefunctor.comp_obj, Paths.of_obj, Functor.comp_obj, Quiver.symmetrify_reverse,
+      Prefunctor.comp_map, Paths.of_map, Functor.comp_map, reverse_eq_inv]
     change Φ.map (inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
@@ -183,6 +184,12 @@ theorem freeGroupoidFunctor_comp (φ : V ⥤q V') (φ' : V' ⥤q V'') :
     freeGroupoidFunctor (φ ⋙q φ') = freeGroupoidFunctor φ ⋙ freeGroupoidFunctor φ' := by
   dsimp only [freeGroupoidFunctor]; symm
   apply lift_unique; rfl
+  apply lift_unique
+  refine Prefunctor.ext (congrFun rfl) ?_
+  intro X Y f
+  simp only [Prefunctor.comp_obj, Functor.comp_obj, Prefunctor.comp_map, Functor.comp_map]
+  simp only [← Prefunctor.comp_map]
+  rfl
 
 end Functoriality
 

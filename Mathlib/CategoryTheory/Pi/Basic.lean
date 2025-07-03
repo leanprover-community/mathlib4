@@ -173,6 +173,7 @@ namespace Functor
 
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [Category.{v₃} A]
+variable {E : I → Type u₃} [∀ i, Category.{v₃} (E i)]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
@@ -180,6 +181,16 @@ variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [C
 def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i where
   obj f i := (F i).obj (f i)
   map α i := (F i).map (α i)
+
+variable (C) in
+@[simps!]
+def piId : pi (fun i => 𝟭 (C i)) ≅ 𝟭 (∀ i, C i) :=
+  NatIso.ofComponents fun _ => Iso.refl _
+
+@[simps!]
+def piComp (F : ∀ i, C i ⥤ D i) (G : ∀ i, D i ⥤ E i) :
+    pi (fun i ↦ F i ⋙ G i) ≅ pi (fun i ↦ F i) ⋙ pi (fun i ↦ G i) :=
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- Similar to `pi`, but all functors come from the same category `A`
 -/
@@ -318,12 +329,20 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
   functor := pi' (fun i => Pi.eval _ (e.symm i) ⋙
     (Pi.eqToEquivalence C (by simp)).functor)
   inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
-  unitIso := NatIso.pi' (fun i' => leftUnitor _ ≪≫
-    (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
-    isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
-    (pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (pi'CompEval _ _).symm ≪≫
-    (associator _ _ _).symm)
-  counitIso := NatIso.pi' (fun i => (associator _ _ _).symm ≪≫
+  unitIso := NatIso.pi' (fun i' =>
+    let f : (i : I) → ((j : J) → C (e j)) ⥤ C i :=
+      (fun i : I ↦ eval (fun j : J ↦ C (e j)) (e.symm i) ⋙
+        (eqToEquivalence C (e.apply_symm_apply i)).functor)
+    let f' : (i : J) → ((i : I) → C i) ⥤ C (e i) := fun i' ↦ eval C (e i')
+    leftUnitor _ ≪≫
+      (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
+      isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
+      (pi'CompEval f (e i')).symm ≪≫
+      isoWhiskerLeft _ (pi'CompEval f' i').symm ≪≫
+      (associator _ _ _).symm)
+  counitIso := NatIso.pi' (fun i => associator _ _ _ ≪≫
+    isoWhiskerLeft _ (pi'CompEval _ _) ≪≫
+    (associator _ _ _).symm ≪≫
     isoWhiskerRight (pi'CompEval _ _) _ ≪≫
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
     (leftUnitor _).symm)
@@ -338,9 +357,9 @@ def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (
     | none => Prod.fst _ _
     | some i => Prod.snd _ _ ⋙ (Pi.eval _ i))
   unitIso := NatIso.pi' (fun i => match i with
-    | none => Iso.refl _
-    | some _ => Iso.refl _)
-  counitIso := by exact Iso.refl _
+    | none => NatIso.ofComponents fun _ => Iso.refl _
+    | some _ => NatIso.ofComponents fun _ => Iso.refl _)
+  counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 namespace Equivalence
 
@@ -353,8 +372,16 @@ into a single equivalence. -/
 def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
   functor := Functor.pi (fun i => (E i).functor)
   inverse := Functor.pi (fun i => (E i).inverse)
-  unitIso := NatIso.pi (fun i => (E i).unitIso)
-  counitIso := NatIso.pi (fun i => (E i).counitIso)
+  unitIso :=
+    calc 𝟭 ((i : I) → C i)
+        ≅ (Functor.pi fun i ↦ 𝟭 (C i)) := (piId _).symm
+      _ ≅ (Functor.pi fun i ↦ (E i).functor ⋙ (E i).inverse) := NatIso.pi fun i ↦ (E i).unitIso
+      _ ≅ (Functor.pi fun i ↦ (E i).functor) ⋙ Functor.pi fun i ↦ (E i).inverse :=  piComp _ _
+  counitIso :=
+    calc ((Functor.pi fun i ↦ (E i).inverse) ⋙ Functor.pi fun i ↦ (E i).functor)
+        ≅ (Functor.pi fun i ↦ (E i).inverse ⋙ (E i).functor) := (piComp _ _).symm
+      _ ≅ (Functor.pi fun i ↦ 𝟭 (D i)) := NatIso.pi fun i ↦ (E i).counitIso
+      _ ≅ 𝟭 ((i : I) → D i) := piId _
 
 instance (F : ∀ i, C i ⥤ D i) [∀ i, (F i).IsEquivalence] :
     (Functor.pi F).IsEquivalence :=
