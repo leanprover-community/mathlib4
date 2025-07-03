@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Bifunctor
 
 /-!
@@ -51,8 +52,8 @@ section bifunctorComp₁₂Functor
 def bifunctorComp₁₂Obj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄) (X₁ : C₁) :
     C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
-    { obj := fun X₃ => G.obj₂ (F₁₂.obj₂ X₁ X₂) X₃
-      map := fun {_ _} φ => (G.obj (F₁₂.obj₂ X₁ X₂)).map φ }
+    { obj := fun X₃ => (G.obj ((F₁₂.obj X₁).obj X₂)).obj X₃
+      map := fun {_ _} φ => (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
   map {X₂ Y₂} φ :=
     { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
 

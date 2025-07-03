@@ -49,27 +49,15 @@ def Functor.biop (F : Cᵒᵖ ⥤ D ⥤ E) : C ⥤ Dᵒᵖ ⥤ Eᵒᵖ := F.righ
 abbrev Functor.diop (F : Cᵒᵖ ⥤ C ⥤ D) : Cᵒᵖ ⥤ C ⥤ Dᵒᵖ := F.biop.flip
 
 @[simp]
-theorem map_id' (F : C ⥤ D ⥤ E) (X : C) (Y : D) :
+theorem Functor.map₂_id (F : C ⥤ D ⥤ E) (X : C) (Y : D) :
     F.map₂ (𝟙 X) (𝟙 Y) = 𝟙 (F.obj₂ X Y) := by simp
 
 @[simp]
-theorem map_id (F : C ⥤ D ⥤ E) (X : C) (Y : D) :
-    F.map₂ (𝟙 X) (𝟙 Y) = 𝟙 (F.obj₂ X Y) := by simp
-
-@[simp]
-theorem map_id_comp (F : C ⥤ D ⥤ E) (W : C) {X Y Z : D} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem Functor.map₂_id_comp (F : C ⥤ D ⥤ E) (W : C) {X Y Z : D} (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.map₂ (𝟙 W) (f ≫ g) = F.map₂ (𝟙 W) f ≫ F.map₂ (𝟙 W) g := by simp
 
 @[simp]
-theorem map_comp_id (F : C ⥤ D ⥤ E) (X Y Z : C) (W : D) (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem Functor.map₂_comp_id (F : C ⥤ D ⥤ E) (X Y Z : C) (W : D) (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.map₂ (f ≫ g) (𝟙 W) = F.map₂ f (𝟙 W) ≫ F.map₂ g (𝟙 W) := by simp
-
-@[simp]
-theorem diagonal (F : C ⥤ D ⥤ E) (X X' : C) (f : X ⟶ X') (Y Y' : D) (g : Y ⟶ Y') :
-    F.map₂ (𝟙 X) g ≫ F.map₂ f (𝟙 Y') = F.map₂ f g := by simp
-
-@[simp]
-theorem diagonal' (F : C ⥤ D ⥤ E) (X X' : C) (f : X ⟶ X') (Y Y' : D) (g : Y ⟶ Y') :
-    F.map₂ f (𝟙 Y) ≫ F.map₂ (𝟙 X') g = F.map₂ f g := by simp
 
 end CategoryTheory

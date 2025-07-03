@@ -38,9 +38,9 @@ structure DinatTrans (F G : Cᵒᵖ ⥤ C ⥤ D) : Type max u₁ v₂ where
   app (X : C) : F.obj₂ (op X) X ⟶ G.obj₂ (op X) X
   /-- The commutativity square for a given morphism. -/
   dinaturality {X Y : C} (f : X ⟶ Y) :
-      (F.map f.op).app X ≫ app X ≫ (G.obj (op X)).map f =
-      (F.obj (op Y)).map f ≫ app Y ≫ (G.map f.op).app Y := by
-        aesop_cat
+    (F.map f.op).app X ≫ app X ≫ (G.obj (op X)).map f =
+    (F.obj (op Y)).map f ≫ app Y ≫ (G.map f.op).app Y := by
+      aesop_cat
 
 attribute [reassoc (attr := simp)] DinatTrans.dinaturality
 
