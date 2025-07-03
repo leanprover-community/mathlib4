@@ -183,7 +183,6 @@ theorem freeGroupoidFunctor_id :
 theorem freeGroupoidFunctor_comp (φ : V ⥤q V') (φ' : V' ⥤q V'') :
     freeGroupoidFunctor (φ ⋙q φ') = freeGroupoidFunctor φ ⋙ freeGroupoidFunctor φ' := by
   dsimp only [freeGroupoidFunctor]; symm
-  apply lift_unique; rfl
   apply lift_unique
   refine Prefunctor.ext (congrFun rfl) ?_
   intro X Y f
