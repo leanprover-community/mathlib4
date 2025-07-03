@@ -197,3 +197,39 @@ protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
   s.mdifferentiable x
 
 end ContMDiffSection
+
+section
+
+variable {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  -- `F` model fiber
+  (n : WithTop ℕ∞)
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+  [∀ x : M, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
+  [∀ x, ContinuousSMul ℝ (V x)]
+  [FiberBundle F V] [VectorBundle ℝ F V]
+  -- `V` vector bundle
+
+/-- If `ψ: M → ℝ` a smooth bump function and `s` is a section of a smooth vector bundle `V → M`,
+the scalar product `ψ s` is `C^n` if `s` is `C^n` on an open set containing `tsupport ψ`.
+This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
+but we only consider sections of the form `ψ s`. -/
+lemma contMDiff_section_of_smul_smoothBumpFunction [T2Space M] [IsManifold I ∞ M]
+    {s : Π (x : M), V x} {ψ : SmoothBumpFunction I x} {t : Set M}
+    (hs : ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) t)
+    (ht : IsOpen t) (ht' : tsupport ψ ⊆ t) (hn : n ≤ ∞) :
+    ContMDiff I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  apply contMDiff_of_contMDiffOn_union_of_isOpen
+      (contMDiffOn_smul_section (ψ.contMDiff.of_le hn).contMDiffOn hs) ?_ ?_ ht
+      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
+  · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
+    intro y hy
+    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
+
+end
