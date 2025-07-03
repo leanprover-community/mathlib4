@@ -401,7 +401,7 @@ lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
   apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙHom_eq_restrict _
     isUniformEmbedding_subtype_val
 
-lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
+lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
   apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict _

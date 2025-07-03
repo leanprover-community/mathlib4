@@ -449,7 +449,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
 
 /-- This is Lemma 2.5 (b) from [Geck](Geck2017). -/
 lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
-    (hkj : α k ≠ - α i) (hk' : α k - α j ∈ Φ) :
+    (hkj : α k ≠ -α i) (hk' : α k - α j ∈ Φ) :
     α k + α i ∈ Φ := by
   let _i := P.indexNeg
   replace hk : α (-k) + α j - α i ∈ Φ := by
