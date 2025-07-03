@@ -131,8 +131,8 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
     (I.comap f).map f = I := by
   classical
   refine (le_antisymm ?_ ?_).symm
-  · if I_ne_bot : I = ⊥ then subst I_ne_bot; exact bot_le
-    else
+  · obtain rfl | I_ne_bot := eq_or_ne I ⊥
+    · exact bot_le
     let f : A →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeLeft
     change I ≤ TwoSidedIdeal.span (Set.image f <| I.comap f)
     let 𝒜 := Basis.ofVectorSpace K A
@@ -156,163 +156,154 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         exact ⟨i, h1⟩
       omega
 
-    if s_ne_empty : s = ∅
-    then
-      subst s_ne_empty
-      simp only [Finset.card_empty, Finset.sum_empty, ne_eq, not_true_eq_false] at *
-    else
-      obtain ⟨i₀, hi₀⟩ := Finset.nonempty_iff_ne_empty.mpr s_ne_empty
+    obtain rfl | ⟨i₀, hi₀⟩ := s.eq_empty_or_nonempty
+    · simp only [Finset.card_empty, Finset.sum_empty, ne_eq, not_true_eq_false] at *
 
-      have ineq1 : 0 < n := by
-        rw [← card_s, Finset.card_pos]
-        exact ⟨i₀, hi₀⟩
+    have ineq1 : 0 < n := by
+      rw [← card_s, Finset.card_pos]
+      exact ⟨i₀, hi₀⟩
 
-      have x_eq' :
-          ∑ i ∈ s, 𝒜 i ⊗ₜ[K] b i =
-          𝒜 i₀ ⊗ₜ[K] b i₀ +
-          ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K] b i := by
-        rw [show 𝒜 i₀ ⊗ₜ[K] b i₀ = ∑ i ∈ {i₀}, 𝒜 i ⊗ₜ[K] b i by rw [Finset.sum_singleton],
-          ← Finset.sum_disjUnion]
-        pick_goal 2
-        · simp
-        refine Finset.sum_congr ?_ fun _ _ => rfl
-        ext x
-        simp only [Finset.disjUnion_eq_union, Finset.mem_union, Finset.mem_singleton,
-          Finset.mem_erase, ne_eq]
-        constructor
-        · intro hx
-          if hx' : x = i₀ then left; exact hx'
-          else right; exact ⟨hx', hx⟩
-        · rintro (rfl|⟨_, hx2⟩) <;> assumption
+    have x_eq' :
+        ∑ i ∈ s, 𝒜 i ⊗ₜ[K] b i =
+        𝒜 i₀ ⊗ₜ[K] b i₀ +
+        ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K] b i := by
+      rw [show 𝒜 i₀ ⊗ₜ[K] b i₀ = ∑ i ∈ {i₀}, 𝒜 i ⊗ₜ[K] b i by rw [Finset.sum_singleton],
+        ← Finset.sum_disjUnion]
+      pick_goal 2
+      · simp
+      refine Finset.sum_congr ?_ fun _ _ => rfl
+      ext x
+      simp only [Finset.disjUnion_eq_union, Finset.mem_union, Finset.mem_singleton,
+        Finset.mem_erase, ne_eq, or_and_left, em, true_and, iff_or_self]
+      simp +contextual [hi₀]
 
+    have span_bi₀ : TwoSidedIdeal.span {b i₀} = ⊤ := isSimple_B.1.2 _ |>.resolve_left fun r => by
+      have mem : b i₀ ∈ (⊥ : TwoSidedIdeal B) := by
+        rw [← r]
+        apply TwoSidedIdeal.subset_span
+        simp only [Set.mem_singleton_iff]
+      exact b_ne_zero i₀ hi₀ mem
 
-      have span_bi₀ : TwoSidedIdeal.span {b i₀} = ⊤ := isSimple_B.1.2 _ |>.resolve_left fun r => by
-        have mem : b i₀ ∈ (⊥ : TwoSidedIdeal B) := by
-          rw [← r]
-          apply TwoSidedIdeal.subset_span
-          simp only [Set.mem_singleton_iff]
-        exact b_ne_zero i₀ hi₀ mem
+    have one_mem : (1 : B) ∈ TwoSidedIdeal.span {b i₀} := by rw [span_bi₀]; trivial
+    rw [TwoSidedIdeal.mem_span_iff_exists_fin] at one_mem
+    obtain ⟨ℐ, inst1, xL, xR, y, one_eq⟩ := one_mem
 
-      have one_mem : (1 : B) ∈ TwoSidedIdeal.span {b i₀} := by rw [span_bi₀]; trivial
-      rw [TwoSidedIdeal.mem_span_iff_exists_fin] at one_mem
-      obtain ⟨ℐ, inst1, xL, xR, y, one_eq⟩ := one_mem
+    replace one_eq : 1 = ∑ i : ℐ, xL i * b i₀ * xR i := by
+      rw [one_eq]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      congr
+      simpa only [Set.mem_singleton_iff] using (y i).2
 
-      replace one_eq : 1 = ∑ i : ℐ, xL i * b i₀ * xR i := by
-        rw [one_eq]
-        refine Finset.sum_congr rfl fun i _ => ?_
-        congr
-        simpa only [Set.mem_singleton_iff] using (y i).2
+    let ω := ∑ i ∈ s, 𝒜 i ⊗ₜ[K] b i
+    let Ω := ∑ i : ℐ, (1 ⊗ₜ[K] xL i) * ω * (1 ⊗ₜ[K] xR i)
+    have Ω_in_I : Ω ∈ I := TwoSidedIdeal.finsetSum_mem _ _ _ fun i _ => I.mul_mem_right _ _ <|
+      I.mul_mem_left _ _ x_mem
 
-      let ω := ∑ i ∈ s, 𝒜 i ⊗ₜ[K] b i
-      let Ω := ∑ i : ℐ, (1 ⊗ₜ[K] xL i) * ω * (1 ⊗ₜ[K] xR i)
-      have Ω_in_I : Ω ∈ I := TwoSidedIdeal.finsetSum_mem _ _ _ fun i _ => I.mul_mem_right _ _ <|
-        I.mul_mem_left _ _ x_mem
+    have Ω_eq :
+        Ω =
+        𝒜 i₀ ⊗ₜ[K] (∑ i : ℐ, xL i * b i₀ * xR i) +
+        ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K] (∑ j : ℐ, xL j * b i * xR j) := by
+      dsimp only [Ω, ω]
+      simp only [x_eq', mul_add, Algebra.TensorProduct.tmul_mul_tmul, one_mul, Finset.mul_sum,
+        add_mul, mul_one, Finset.sum_mul, Finset.sum_add_distrib, TensorProduct.tmul_sum,
+        add_right_inj]
+      rw [Finset.sum_comm]
+    rw [← one_eq] at Ω_eq
 
-      have Ω_eq :
-          Ω =
-          𝒜 i₀ ⊗ₜ[K] (∑ i : ℐ, xL i * b i₀ * xR i) +
-          ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K] (∑ j : ℐ, xL j * b i * xR j) := by
-        dsimp only [Ω, ω]
-        simp only [x_eq', mul_add, Algebra.TensorProduct.tmul_mul_tmul, one_mul, Finset.mul_sum,
-          add_mul, mul_one, Finset.sum_mul, Finset.sum_add_distrib, TensorProduct.tmul_sum,
-          add_right_inj]
-        rw [Finset.sum_comm]
-      rw [← one_eq] at Ω_eq
+    have Ω_prop_1 (b : B) : (1 ⊗ₜ b) * Ω - Ω * (1 ⊗ₜ b) ∈ I :=
+      I.sub_mem (I.mul_mem_left _ _ Ω_in_I) (I.mul_mem_right _ _ Ω_in_I)
 
-      have Ω_prop_1 (b : B) : (1 ⊗ₜ b) * Ω - Ω * (1 ⊗ₜ b) ∈ I :=
-        I.sub_mem (I.mul_mem_left _ _ Ω_in_I) (I.mul_mem_right _ _ Ω_in_I)
+    have Ω_prop_2 (x : B) : ((1 : A) ⊗ₜ[K] x) * Ω - Ω * ((1 : A) ⊗ₜ[K] x) =
+        ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K]
+          (∑ j : ℐ, (x * (xL j * b i * xR j) - (xL j * b i * xR j) * x)) := by
+      rw [Ω_eq]
+      simp only [TensorProduct.tmul_sum, mul_add, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
+        mul_one, Finset.mul_sum, add_mul, Finset.sum_mul, add_sub_add_left_eq_sub,
+        Finset.sum_sub_distrib, TensorProduct.tmul_sub]
 
-      have Ω_prop_2 (x : B) : ((1 : A) ⊗ₜ[K] x) * Ω - Ω * ((1 : A) ⊗ₜ[K] x) =
-          ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K]
-            (∑ j : ℐ, (x * (xL j * b i * xR j) - (xL j * b i * xR j) * x)) := by
-        rw [Ω_eq]
-        simp only [TensorProduct.tmul_sum, mul_add, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
-          mul_one, Finset.mul_sum, add_mul, Finset.sum_mul, add_sub_add_left_eq_sub,
-          Finset.sum_sub_distrib, TensorProduct.tmul_sub]
+    have Ω_prop_3 (x : B) : ((1 : A) ⊗ₜ[K] x) * Ω - Ω * ((1 : A) ⊗ₜ[K] x) = 0 := by
+      by_contra rid
+      specialize H (n - 1) (((1 : A) ⊗ₜ[K] x) * Ω - Ω * ((1 : A) ⊗ₜ[K] x))
+        ⟨Ω_prop_1 x, rid, ⟨s.erase i₀, by rw [Finset.card_erase_of_mem, card_s]; exact hi₀, _,
+          Ω_prop_2 x⟩⟩
+      omega
 
-      have Ω_prop_3 (x : B) : ((1 : A) ⊗ₜ[K] x) * Ω - Ω * ((1 : A) ⊗ₜ[K] x) = 0 := by
-        by_contra rid
-        specialize H (n - 1) (((1 : A) ⊗ₜ[K] x) * Ω - Ω * ((1 : A) ⊗ₜ[K] x))
-          ⟨Ω_prop_1 x, rid, ⟨s.erase i₀, by rw [Finset.card_erase_of_mem, card_s]; exact hi₀, _,
-            Ω_prop_2 x⟩⟩
-        omega
+    simp_rw [Ω_prop_2] at Ω_prop_3
+    have Ω_prop_4 : ∀ i ∈ s.erase i₀,
+        ∑ j : ℐ, (xL j * b i * xR j) ∈ Subalgebra.center K B := by
+      intro i hi
+      rw [Subalgebra.mem_center_iff]
+      intro x
+      specialize Ω_prop_3 x
+      simp only [Finset.mul_sum, Finset.sum_mul, ← sub_eq_zero, sub_zero]
+      rw [← Finset.sum_sub_distrib, sub_zero]
+      simpa using TensorProduct.sum_tmul_basis_left_eq_zero' _ _ _ 𝒜 (s.erase i₀) _ Ω_prop_3 i hi
 
-      simp_rw [Ω_prop_2] at Ω_prop_3
-      have Ω_prop_4 : ∀ i ∈ s.erase i₀,
-          ∑ j : ℐ, (xL j * b i * xR j) ∈ Subalgebra.center K B := by
-        intro i hi
-        rw [Subalgebra.mem_center_iff]
-        intro x
-        specialize Ω_prop_3 x
-        simp only [Finset.mul_sum, Finset.sum_mul, ← sub_eq_zero, sub_zero]
-        rw [← Finset.sum_sub_distrib, sub_zero]
-        simpa using TensorProduct.sum_tmul_basis_left_eq_zero' _ _ _ 𝒜 (s.erase i₀) _ Ω_prop_3 i hi
-
-      simp_rw [Algebra.IsCentral.center_eq_bot, Algebra.mem_bot, Set.mem_range] at Ω_prop_4
-      choose k hk using Ω_prop_4
-      have Ω_eq2 := calc Ω
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K] ∑ j : ℐ, xL j * b i * xR j := Ω_eq
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] ∑ j : ℐ, xL j * b i * xR j := by
-            congr 1
-            exact Finset.sum_attach _ _ |>.symm
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] algebraMap _ _ (k i.1 i.2) := by
-            congr 1
-            refine Finset.sum_congr rfl fun i _ => ?_
-            rw [hk i.1 i.2]
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 +  ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] (k i.1 i.2 • (1 : B) : B) := by
-            congr 1
-            refine Finset.sum_congr rfl fun i _ => ?_
-            rw [Algebra.algebraMap_eq_smul_one]
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i) ⊗ₜ[K] (1 : B) := by
-            congr 1
-            refine Finset.sum_congr rfl fun i _ => ?_
-            rw [TensorProduct.smul_tmul]
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i)) ⊗ₜ[K] (1 : B) := by
-            rw [TensorProduct.sum_tmul]
-        _ = (𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i))) ⊗ₜ[K] 1 := by
-            rw [TensorProduct.add_tmul]
-
-      rw [Ω_eq2] at Ω_in_I
-      have hI : I.comap f = ⊤ := isSimple_A.2 _ |>.resolve_left fun r => by
-        have mem : 𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i)) ∈ I.comap f := by
-          rw [TwoSidedIdeal.mem_comap]
-          exact Ω_in_I
-        rw [r] at mem
-        change _ = 0 at mem
-        rw [mem, TensorProduct.zero_tmul] at Ω_eq2
-        have LI := 𝒜.linearIndependent
-        rw [linearIndependent_iff'] at LI
-        specialize LI s (fun i =>
-          if i = i₀ then 1
-          else if h : i ∈ s.erase i₀ then k i h else 0) (by
-          dsimp only
-          simp_rw [ite_smul, one_smul, dite_smul, zero_smul]
-          rw [Finset.sum_ite,
-            show ∑ x ∈ Finset.filter (fun x ↦ x = i₀) s, 𝒜 x = ∑ x ∈ {i₀}, 𝒜 x by
-            refine Finset.sum_congr ?_ fun _ _ => rfl
-            ext
-            simp only [Finset.mem_filter, Finset.mem_singleton, and_iff_right_iff_imp]
-            rintro rfl
-            exact hi₀, Finset.sum_singleton,
-            show Finset.filter (fun x ↦ ¬x = i₀) s = s.erase i₀ by
-            ext
-            simp only [Finset.mem_filter, Finset.mem_erase, ne_eq]
-            rw [and_comm], ← Finset.sum_attach]
-          conv_rhs => rw [← mem]
+    simp_rw [Algebra.IsCentral.center_eq_bot, Algebra.mem_bot, Set.mem_range] at Ω_prop_4
+    choose k hk using Ω_prop_4
+    have Ω_eq2 := calc Ω
+      _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ s.erase i₀, 𝒜 i ⊗ₜ[K] ∑ j : ℐ, xL j * b i * xR j := Ω_eq
+      _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] ∑ j : ℐ, xL j * b i * xR j := by
+          congr 1
+          exact Finset.sum_attach _ _ |>.symm
+      _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] algebraMap _ _ (k i.1 i.2) := by
           congr 1
           refine Finset.sum_congr rfl fun i _ => ?_
-          rw [dif_pos i.2]) i₀ hi₀
-        rw [if_pos rfl] at LI
-        exact zero_ne_one LI.symm
-      rw [hI, TwoSidedIdeal.coe_top, TwoSidedIdeal.le_iff]
-      rintro x -
-      rw [SetLike.mem_coe]
-      induction x using TensorProduct.induction_on with
-      | zero => simp [TwoSidedIdeal.zero_mem]
-      | tmul a b =>
-        rw [show a ⊗ₜ[K] b = (a ⊗ₜ 1) * (1 ⊗ₜ b) by simp]
-        exact TwoSidedIdeal.mul_mem_right _ _ _ <| TwoSidedIdeal.subset_span ⟨a, ⟨⟩, rfl⟩
-      | add x y hx hy => exact TwoSidedIdeal.add_mem _ hx hy
+          rw [hk i.1 i.2]
+      _ = 𝒜 i₀ ⊗ₜ[K] 1 +  ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] (k i.1 i.2 • (1 : B) : B) := by
+          congr 1
+          refine Finset.sum_congr rfl fun i _ => ?_
+          rw [Algebra.algebraMap_eq_smul_one]
+      _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i) ⊗ₜ[K] (1 : B) := by
+          congr 1
+          refine Finset.sum_congr rfl fun i _ => ?_
+          rw [TensorProduct.smul_tmul]
+      _ = 𝒜 i₀ ⊗ₜ[K] 1 + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i)) ⊗ₜ[K] (1 : B) := by
+          rw [TensorProduct.sum_tmul]
+      _ = (𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i))) ⊗ₜ[K] 1 := by
+          rw [TensorProduct.add_tmul]
+
+    rw [Ω_eq2] at Ω_in_I
+    have hI : I.comap f = ⊤ := isSimple_A.2 _ |>.resolve_left fun r => by
+      have mem : 𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i)) ∈ I.comap f := by
+        rw [TwoSidedIdeal.mem_comap]
+        exact Ω_in_I
+      rw [r] at mem
+      change _ = 0 at mem
+      rw [mem, TensorProduct.zero_tmul] at Ω_eq2
+      have LI := 𝒜.linearIndependent
+      rw [linearIndependent_iff'] at LI
+      specialize LI s (fun i =>
+        if i = i₀ then 1
+        else if h : i ∈ s.erase i₀ then k i h else 0) (by
+        dsimp only
+        simp_rw [ite_smul, one_smul, dite_smul, zero_smul]
+        rw [Finset.sum_ite,
+          show ∑ x ∈ Finset.filter (fun x ↦ x = i₀) s, 𝒜 x = ∑ x ∈ {i₀}, 𝒜 x by
+          refine Finset.sum_congr ?_ fun _ _ => rfl
+          ext
+          simp only [Finset.mem_filter, Finset.mem_singleton, and_iff_right_iff_imp]
+          rintro rfl
+          exact hi₀, Finset.sum_singleton,
+          show Finset.filter (fun x ↦ ¬x = i₀) s = s.erase i₀ by
+          ext
+          simp only [Finset.mem_filter, Finset.mem_erase, ne_eq]
+          rw [and_comm], ← Finset.sum_attach]
+        conv_rhs => rw [← mem]
+        congr 1
+        refine Finset.sum_congr rfl fun i _ => ?_
+        rw [dif_pos i.2]) i₀ hi₀
+      rw [if_pos rfl] at LI
+      exact zero_ne_one LI.symm
+    rw [hI, TwoSidedIdeal.coe_top, TwoSidedIdeal.le_iff]
+    rintro x -
+    rw [SetLike.mem_coe]
+    induction x using TensorProduct.induction_on with
+    | zero => simp [TwoSidedIdeal.zero_mem]
+    | tmul a b =>
+      rw [show a ⊗ₜ[K] b = (a ⊗ₜ 1) * (1 ⊗ₜ b) by simp]
+      exact TwoSidedIdeal.mul_mem_right _ _ _ <| TwoSidedIdeal.subset_span ⟨a, ⟨⟩, rfl⟩
+    | add x y hx hy => exact TwoSidedIdeal.add_mem _ hx hy
 
   · rw [TwoSidedIdeal.map, TwoSidedIdeal.span_le]
     rintro _ ⟨x, hx, rfl⟩
