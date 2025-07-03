@@ -174,7 +174,7 @@ def uliftFunctor : CommAlgCat.{v} R ⥤ CommAlgCat.{max v w} R where
     ULift.algEquiv.symm.toAlgHom.comp <| f.hom.comp ULift.algEquiv.toAlgHom
 
 /-- The universe lift functor for commutative algebras is fully faithful. -/
-def fullyFaithfulUliftFunctor : (CommAlgCat.uliftFunctor R).FullyFaithful where
+def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage {A B} f :=
     CommAlgCat.ofHom <| ULift.algEquiv.toAlgHom.comp <| f.hom.comp ULift.algEquiv.symm.toAlgHom
 
