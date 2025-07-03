@@ -1729,6 +1729,7 @@ import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+import Mathlib.Analysis.Normed.ValuativeRel
 import Mathlib.Analysis.NormedSpace.Alternating.Basic
 import Mathlib.Analysis.NormedSpace.Alternating.Curry
 import Mathlib.Analysis.NormedSpace.BallAction
