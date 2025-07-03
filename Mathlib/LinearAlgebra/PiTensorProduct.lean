@@ -60,8 +60,6 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 multilinear, tensor, tensor product
 -/
 
-suppress_compilation
-
 open Function
 
 section Semiring
@@ -103,7 +101,6 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
-unsuppress_compilation in
 /-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
 given an indexed family of types `s : ι → Type*`. -/
 scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
@@ -281,7 +278,6 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   map_update_smul' {_ f} i r x := by
     rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
-unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 

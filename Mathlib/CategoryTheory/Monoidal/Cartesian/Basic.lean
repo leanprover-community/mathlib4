@@ -611,8 +611,9 @@ def prodComparisonNatTrans (A : C) :
       prodComparison_snd, prodComparison_snd_assoc, whiskerLeft_snd, ← F.map_comp]
 
 theorem prodComparisonNatTrans_comp :
-    prodComparisonNatTrans (F ⋙ G) A = whiskerRight (prodComparisonNatTrans F A) G ≫
-      whiskerLeft F (prodComparisonNatTrans G (F.obj A)) := by ext; simp [prodComparison_comp]
+    prodComparisonNatTrans (F ⋙ G) A = Functor.whiskerRight (prodComparisonNatTrans F A) G ≫
+      Functor.whiskerLeft F (prodComparisonNatTrans G (F.obj A)) := by
+  ext; simp [prodComparison_comp]
 
 @[simp]
 lemma prodComparisonNatTrans_id :
@@ -622,8 +623,8 @@ lemma prodComparisonNatTrans_id :
 `prodComparison`. -/
 @[simps]
 def prodComparisonBifunctorNatTrans :
-    curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ⟶
-      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F where
+    curriedTensor C ⋙ (Functor.whiskeringRight _ _ _).obj F ⟶
+      F ⋙ curriedTensor D ⋙ (Functor.whiskeringLeft _ _ _).obj F where
   app A := prodComparisonNatTrans F A
   naturality x y f := by
     ext z
@@ -632,9 +633,11 @@ def prodComparisonBifunctorNatTrans :
 variable {E : Type u₂} [Category.{v₂} E] [CartesianMonoidalCategory E] (G : D ⥤ E)
 
 theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (F ⋙ G) =
-      whiskerRight (prodComparisonBifunctorNatTrans F) ((whiskeringRight _ _ _).obj G) ≫
-        whiskerLeft F (whiskerRight (prodComparisonBifunctorNatTrans G)
-          ((whiskeringLeft _ _ _).obj F)) := by ext; simp [prodComparison_comp]
+    Functor.whiskerRight
+      (prodComparisonBifunctorNatTrans F) ((Functor.whiskeringRight _ _ _).obj G) ≫
+        Functor.whiskerLeft F (Functor.whiskerRight (prodComparisonBifunctorNatTrans G)
+          ((Functor.whiskeringLeft _ _ _).obj F)) := by
+  ext; simp [prodComparison_comp]
 
 instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
   letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
@@ -700,8 +703,8 @@ noncomputable def prodComparisonNatIso (A : C) [∀ B, PreservesLimit (pair A B)
 `prodComparison F A B` is an isomorphism. -/
 @[simps! hom inv]
 noncomputable def prodComparisonBifunctorNatIso [∀ A B, PreservesLimit (pair A B) F] :
-    curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ≅
-      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F :=
+    curriedTensor C ⋙ (Functor.whiskeringRight _ _ _).obj F ≅
+      F ⋙ curriedTensor D ⋙ (Functor.whiskeringLeft _ _ _).obj F :=
   asIso (prodComparisonBifunctorNatTrans F)
 
 end PreservesLimitPairs
