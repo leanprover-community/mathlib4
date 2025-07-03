@@ -249,7 +249,10 @@ variable {S}
 @[to_additive (attr := simp)]
 theorem coe_mk (σ : G → E) (hσ : Function.RightInverse σ S.rightHom) : (mk σ hσ : G → E) = σ := rfl
 
-variable (σ : S.Section)
+variable (σ σ' : S.Section)
+
+@[to_additive (attr := ext)]
+theorem ext (h : ∀ g : G, σ g = σ' g) : σ = σ' := DFunLike.ext σ σ' h
 
 @[to_additive (attr := simp)]
 theorem rightHom_section (g : G) : S.rightHom (σ g) = g := σ.rightInverse_rightHom g
@@ -290,7 +293,10 @@ theorem coe_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) : (mk s 
 theorem coe_monoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
     (mk s hs : G →* E) = s := rfl
 
-variable (s : S.Splitting)
+variable (s s' : S.Splitting)
+
+@[to_additive (attr := ext)]
+theorem ext (h : ∀ g : G, s g = s' g) : s = s' := DFunLike.ext s s' h
 
 @[to_additive (attr := simp)]
 theorem rightHom_splitting (g : G) : S.rightHom (s g) = g := s.rightInverse_rightHom g
