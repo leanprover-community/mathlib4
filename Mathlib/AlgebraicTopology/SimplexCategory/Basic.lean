@@ -402,8 +402,8 @@ def factor_δ {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2)) : ⦋m
   f ≫ σ (Fin.predAbove 0 j)
 
 open Fin in
-lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
-    (hj : ∀ (k : Fin (m+1)), f.toOrderHom k ≠ j) :
+lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2))
+    (hj : ∀ (k : Fin (m + 1)), f.toOrderHom k ≠ j) :
     factor_δ f j ≫ δ j = f := by
   ext k : 3
   specialize hj k

@@ -112,7 +112,7 @@ lemma IsMonicOfDegree.of_mul_left {p q : R[X]} {m n : ℕ} (hp : IsMonicOfDegree
   rw [natDegree_mul' h, hp.natDegree_eq] at this
   exact (Nat.add_left_cancel this.symm).symm
 
-lemma IsMonicOfDegree.of_mul_right  {p q : R[X]} {m n : ℕ} (hq : IsMonicOfDegree q n)
+lemma IsMonicOfDegree.of_mul_right {p q : R[X]} {m n : ℕ} (hq : IsMonicOfDegree q n)
     (hpq : IsMonicOfDegree (p * q) (m + n)) :
     IsMonicOfDegree p m := by
   rcases subsingleton_or_nontrivial R with H | H
@@ -163,7 +163,7 @@ variable (R) in
 lemma isMonicOfDegree_X : IsMonicOfDegree (X : R[X]) 1 :=
   (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_le, coeff_X_one⟩
 
-variable (R)  in
+variable (R) in
 lemma isMonicOfDegree_X_pow (n : ℕ) : IsMonicOfDegree ((X : R[X]) ^ n) n :=
   (isMonicOfDegree_iff ..).mpr ⟨natDegree_X_pow_le n, coeff_X_pow_self n⟩
 
