@@ -33,9 +33,11 @@ Noncommutative algebra, tensor product, simple algebra, central simple algebra
 
 -/
 
-variable (K : Type*) [Field K]
+universe u v v₁ v₂ v₃
 
-universe u v
+variable (K : Type u) [Field K]
+  {A : Type v₁} {B : Type v₂} {C : Type v₃} [Ring A] [Ring B] [Ring C]
+  [Algebra K A] [Algebra K B] [Algebra K C]
 
 open scoped TensorProduct
 
