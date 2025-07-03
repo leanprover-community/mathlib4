@@ -42,7 +42,7 @@ function field, ring of integers
 
 noncomputable section
 
-open scoped nonZeroDivisors Polynomial Multiplicative
+open scoped nonZeroDivisors Polynomial WithZero
 
 variable (Fq F : Type*) [Field Fq] [Field F]
 

@@ -492,9 +492,10 @@ instance : IsScalarTower F[X] (RatFunc F) F⸨X⸩ :=
     simp⟩
 
 end RatFunc
+
 section AdicValuation
 
-open scoped Multiplicative
+open scoped WithZero
 
 variable (K : Type*) [Field K]
 namespace PowerSeries
