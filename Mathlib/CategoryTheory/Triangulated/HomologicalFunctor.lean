@@ -197,7 +197,7 @@ lemma homologySequenceδ_comp :
   rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
 
 @[reassoc]
-lemma homologySequence_comp  :
+lemma homologySequence_comp :
     (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
   rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero]
 

@@ -115,7 +115,7 @@ noncomputable def inlX (i j : ι) (hij : c.Rel j i) : F.X i ⟶ X φ j :=
   biprod.inl ≫ (XIsoBiprod φ j i hij).inv
 
 @[reassoc (attr := simp)]
-lemma inlX_fstX (i j : ι ) (hij : c.Rel j i) :
+lemma inlX_fstX (i j : ι) (hij : c.Rel j i) :
     inlX φ i j hij ≫ fstX φ j i hij = 𝟙 _ := by
   simp [inlX, fstX]
 
