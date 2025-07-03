@@ -1405,7 +1405,7 @@ lemma continuousOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set α}
 lemma continuous_of_continuousOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set α}
     (hf : ∀ i : ι, ContinuousOn f (s i)) (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
     Continuous f := by
-  rw [continuous_iff_continuousOn_univ, ← hs'] -- diffgeo would expect ← continuousOn_univ!
+  rw [continuous_iff_continuousOn_univ, ← hs']
   exact ContinuousOn.iUnion_of_isOpen hf hs
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
