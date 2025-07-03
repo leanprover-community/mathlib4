@@ -32,11 +32,11 @@ def Functor.map₂ (F : C ⥤ D ⥤ E) {A B : C} {X Y : D} (f : A ⟶ B) (g : X 
     F.obj₂ A X ⟶ F.obj₂ B Y :=
   (F.map f).app X ≫ (F.obj B).map g
 
-abbrev Functor.mapₗ (F : C ⥤ D ⥤ E) {A B : C} {X : D} (f : A ⟶ B) :
+abbrev Functor.mapₗ (F : C ⥤ D ⥤ E) {A B : C} (f : A ⟶ B) (X : D) :
     F.obj₂ A X ⟶ F.obj₂ B X :=
   (F.map f).app X
 
-abbrev Functor.mapᵣ (F : C ⥤ D ⥤ E) {A : C} {X Y : D} (g : X ⟶ Y) :
+abbrev Functor.mapᵣ (F : C ⥤ D ⥤ E) (A : C) {X Y : D} (g : X ⟶ Y) :
     F.obj₂ A X ⟶ F.obj₂ A Y :=
   (F.obj A).map g
 
