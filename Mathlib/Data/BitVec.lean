@@ -40,9 +40,9 @@ open Fin.NatCast
 
 instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-lemma toFin_nsmul (n : ℕ) (x : BitVec w)  : toFin (n • x) = n • x.toFin := rfl
-lemma toFin_zsmul (z : ℤ) (x : BitVec w)  : toFin (z • x) = z • x.toFin := rfl
-lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := by
+lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
+lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
+lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
   | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
