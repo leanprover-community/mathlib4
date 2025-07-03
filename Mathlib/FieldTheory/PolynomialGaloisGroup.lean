@@ -50,8 +50,8 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020):
--- deriving Group, Fintype
+-- The `Group, Fintype` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace Gal
 
@@ -172,7 +172,7 @@ theorem smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p 
 instance galAction [Fact (p.Splits (algebraMap F E))] : MulAction p.Gal (rootSet p E) where
   one_smul _ := by simp only [smul_def, Equiv.apply_symm_apply, one_smul]
   mul_smul _ _ _ := by
-    simp only [smul_def, Equiv.apply_symm_apply, Equiv.symm_apply_apply, mul_smul]
+    simp only [smul_def, Equiv.symm_apply_apply, mul_smul]
 
 lemma galAction_isPretransitive [Fact (p.Splits (algebraMap F E))] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by

@@ -20,7 +20,7 @@ has both calculus of left and right fractions.
 
 * obtain (pre)triangulated instances on the localized category with respect to `S.W`
 * define the type `S.category` as `Fullsubcategory S.set` and show that it
-is a pretriangulated category.
+  is a pretriangulated category.
 
 ## Implementation notes
 
@@ -85,7 +85,7 @@ def isoClosure : Subcategory C where
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by simp) (by simp) (by
           dsimp
-          simp only [assoc, Iso.cancel_iso_inv_left, ← Functor.map_comp, e₁.hom_inv_id,
+          simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id,
             Functor.map_id, comp_id]))) h₁ h₃)
 
 instance : S.isoClosure.P.IsClosedUnderIsomorphisms := by

@@ -3,9 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ULift
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Tactic.Ring
 
 /-!
 # The characteristic predicate of tensor product
@@ -23,7 +21,7 @@ import Mathlib.Tactic.Ring
     ↓     ↓
     R' →  S'
   ```
-    asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
+  asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 
 ## Main results
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
@@ -102,19 +100,21 @@ theorem IsTensorProduct.map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g)
   delta IsTensorProduct.map
   simp
 
-theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m : M) (h0 : C 0)
-    (htmul : ∀ x y, C (f x y)) (hadd : ∀ x y, C x → C y → C (x + y)) : C m := by
+@[elab_as_elim]
+theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
+    (zero : motive 0) (tmul : ∀ x y, motive (f x y))
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
   rw [← h.equiv.right_inv m]
   generalize h.equiv.invFun m = y
-  change C (TensorProduct.lift f y)
+  change motive (TensorProduct.lift f y)
   induction y with
   | zero => rwa [map_zero]
   | tmul _ _ =>
     rw [TensorProduct.lift.tmul]
-    apply htmul
+    apply tmul
   | add _ _ _ _ =>
     rw [map_add]
-    apply hadd <;> assumption
+    apply add <;> assumption
 
 lemma IsTensorProduct.of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
     IsTensorProduct f := by
@@ -158,13 +158,12 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
       let F := ((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
-      apply h.inductionOn x
-      · rw [smul_zero, map_zero, smul_zero]
-      · intro s m
+      induction x using h.inductionOn with
+      | zero => rw [smul_zero, map_zero, smul_zero]
+      | tmul s m =>
         change h.lift F (r • s • f m) = r • h.lift F (s • f m)
         rw [← mul_smul, hF, hF, mul_smul]
-      · intro x₁ x₂ e₁ e₂
-        rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
+      | add x₁ x₂ e₁ e₂ => rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
 
 nonrec theorem IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
   have hF : ∀ (s : S) (m : M), h.lift g (s • f m) = s • g m := h.lift_eq _
@@ -179,9 +178,10 @@ section
 include h
 
 @[elab_as_elim]
-nonrec theorem IsBaseChange.inductionOn (x : N) (P : N → Prop) (h₁ : P 0) (h₂ : ∀ m : M, P (f m))
-    (h₃ : ∀ (s : S) (n), P n → P (s • n)) (h₄ : ∀ n₁ n₂, P n₁ → P n₂ → P (n₁ + n₂)) : P x :=
-  h.inductionOn x h₁ (fun _ _ => h₃ _ _ (h₂ _)) h₄
+nonrec theorem IsBaseChange.inductionOn (x : N) (motive : N → Prop) (zero : motive 0)
+    (tmul : ∀ m : M, motive (f m)) (smul : ∀ (s : S) (n), motive n → motive (s • n))
+    (add : ∀ n₁ n₂, motive n₁ → motive n₂ → motive (n₁ + n₂)) : motive x :=
+  h.inductionOn x zero (fun _ _ => smul _ _ (tmul _)) add
 
 theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
@@ -221,14 +221,14 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
-        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, LinearMap.mul_apply,
+        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, Module.End.mul_apply,
           LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
-          smul_tmul', eq_self_iff_true, LinearMap.coe_restrictScalars, LinearMap.flip_apply]
+          smul_tmul', LinearMap.coe_restrictScalars, LinearMap.flip_apply]
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 
 theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f m :=
-  TensorProduct.lift.tmul s m
+  rfl
 
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
@@ -254,10 +254,10 @@ lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f)
   let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
     (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
   refine IsBaseChange.of_equiv e (fun x ↦ ?_)
-  induction' x with m p _ _ h1 h2
-  · simp
-  · simp [e, IsBaseChange.equiv_tmul]
-  · simp [tmul_add, h1, h2]
+  induction x with
+  | zero => simp
+  | tmul => simp [e, IsBaseChange.equiv_tmul]
+  | add _ _ h1 h2 => simp [tmul_add, h1, h2]
 
 end
 
@@ -311,7 +311,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
   intro Q I₁ I₂ I₃ I₄ g
   have : I₂ = I₃ := by
     ext r q
-    show (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
+    change (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
     dsimp
     rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul]
   cases this
@@ -379,72 +379,33 @@ lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
     IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f) ↔ IsBaseChange T h :=
   ⟨fun hc ↦ IsBaseChange.of_comp hf hc, fun hh ↦ IsBaseChange.comp hf hh⟩
 
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `M` be an `R`-module, `P` be an `S`
+  module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
+  as `S`-modules. -/
+noncomputable def IsBaseChange.tensorEquiv {f : M →ₗ[R] N} (hf : IsBaseChange S f) (P : Type*)
+    [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
+  LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
+
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
-open IsScalarTower (toAlgHom)
-open IsScalarTower (algebraMap_apply)
+open IsScalarTower (toAlgHom algebraMap_apply)
 
 variable (R S R' S')
 
 /-- A type-class stating that the following diagram of scalar towers
+```
 R  →  S
 ↓     ↓
 R' →  S'
+```
 is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 -/
 @[mk_iff]
 class Algebra.IsPushout : Prop where
   out : IsBaseChange S (toAlgHom R R' S').toLinearMap
 
-variable {R S R' S'}
-
-@[symm]
-theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
-  let _ := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
-  let e : R' ⊗[R] S ≃ₗ[R'] S' := by
-    refine { (_root_.TensorProduct.comm R R' S).trans <|
-      h.1.equiv.restrictScalars R with map_smul' := ?_ }
-    intro r x
-    change
-      h.1.equiv (TensorProduct.comm R R' S (r • x)) = r • h.1.equiv (TensorProduct.comm R R' S x)
-    refine TensorProduct.induction_on x ?_ ?_ ?_
-    · simp only [smul_zero, map_zero]
-    · intro x y
-      simp only [smul_tmul', smul_eq_mul, TensorProduct.comm_tmul, smul_def,
-        TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.tmul_mul_tmul,
-        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, map_mul, IsScalarTower.coe_toAlgHom']
-      ring
-    · intro x y hx hy
-      rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]
-  have :
-    (toAlgHom R S S').toLinearMap =
-      (e.toLinearMap.restrictScalars R).comp (TensorProduct.mk R R' S 1) := by
-    ext
-    simp [e, h.1.equiv_tmul, Algebra.smul_def]
-  constructor
-  rw [this]
-  exact (TensorProduct.isBaseChange R S R').comp (IsBaseChange.ofEquiv e)
-
-variable (R S R' S')
-
-theorem Algebra.IsPushout.comm : Algebra.IsPushout R S R' S' ↔ Algebra.IsPushout R R' S S' :=
-  ⟨Algebra.IsPushout.symm, Algebra.IsPushout.symm⟩
-
-variable {R S R'}
-
-attribute [local instance] Algebra.TensorProduct.rightAlgebra
-
-instance TensorProduct.isPushout {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] : Algebra.IsPushout R S T (TensorProduct R S T) :=
-  ⟨TensorProduct.isBaseChange R T S⟩
-
-instance TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (TensorProduct R S T) :=
-  Algebra.IsPushout.symm inferInstance
-
-variable (R S R') in
 /-- The isomorphism `S' ≃ S ⊗[R] R` given `Algebra.IsPushout R S R' S'`. -/
 noncomputable
 def Algebra.IsPushout.equiv [h : Algebra.IsPushout R S R' S'] : S ⊗[R] R' ≃ₐ[S] S' where
@@ -473,10 +434,42 @@ lemma Algebra.IsPushout.equiv_symm_algebraMap_right [Algebra.IsPushout R S R' S'
     (equiv R S R' S').symm (algebraMap R' S' a) = 1 ⊗ₜ a := by
   rw [(equiv R S R' S').symm_apply_eq, equiv_tmul, map_one, one_mul]
 
+variable {R S R' S'}
+
+@[symm]
+theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' where
+  out := .of_equiv
+    { __ := (TensorProduct.comm R ..).toAddEquiv.trans (equiv R S R' S').toAddEquiv,
+      map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by
+        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp+contextual) }
+    fun _ ↦ by simp [equiv_tmul]
+
+variable (R S R' S')
+
+theorem Algebra.IsPushout.comm : Algebra.IsPushout R S R' S' ↔ Algebra.IsPushout R R' S S' :=
+  ⟨Algebra.IsPushout.symm, Algebra.IsPushout.symm⟩
+
+instance : Algebra.IsPushout R R S S where
+  out := .of_equiv (TensorProduct.lid R S) fun _ ↦ by simp
+
+instance : Algebra.IsPushout R S R S := .symm inferInstance
+
+variable {R S R'}
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra
+
+instance TensorProduct.isPushout {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+    [Algebra R S] [Algebra R T] : Algebra.IsPushout R S T (S ⊗[R] T) :=
+  ⟨TensorProduct.isBaseChange R T S⟩
+
+instance TensorProduct.isPushout' {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+    [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (S ⊗[R] T) :=
+  Algebra.IsPushout.symm inferInstance
+
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
 such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomorphism `S' → A`.
 -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x) :
     S' →ₐ[R] A :=
@@ -520,6 +513,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
 
+variable (R S R')
 /--
 Let the following be a commutative diagram of rings
 ```
@@ -533,14 +527,14 @@ where the left-hand square is a pushout. Then the following are equivalent:
 
 Note that this is essentially the isomorphism `T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'`.
 -/
-lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommRing T'] [Algebra R T']
+lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
     [IsScalarTower R T T'] [IsScalarTower S T T'] [IsScalarTower S S' T']
     [IsScalarTower R R' T'] [IsScalarTower R S' T'] [IsScalarTower R' S' T']
     [Algebra.IsPushout R S R' S'] :
     Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
   let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
-  haveI : IsScalarTower R S T' := IsScalarTower.of_algebraMap_eq <| fun x ↦ by
+  haveI : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
     rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
   have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
       (toAlgHom R R' T').toLinearMap := by

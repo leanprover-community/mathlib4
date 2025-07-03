@@ -101,7 +101,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
-  map_comp := by intros; dsimp; rw [F.map_comp, G.map_comp]
+  map_comp := by intros; rw [F.map_comp, G.map_comp]
 
 /-- Notation for composition of functors. -/
 scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp

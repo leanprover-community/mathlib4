@@ -44,7 +44,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
 
 @[simp] lemma take_eq_left_iff {x y : List α} {n : ℕ} :
     (x ++ y).take n = x.take n ↔ y = [] ∨ n ≤ x.length := by
-  simp [take_append_eq_append_take, Nat.sub_eq_zero_iff_le, Or.comm]
+  simp [take_append, Nat.sub_eq_zero_iff_le, Or.comm]
 
 @[simp] lemma left_eq_take_iff {x y : List α} {n : ℕ} :
     x.take n = (x ++ y).take n ↔ y = [] ∨ n ≤ x.length := by
@@ -98,15 +98,14 @@ theorem takeI_eq_take : ∀ {n} {l : List α}, n ≤ length l → takeI n l = ta
 
 @[simp]
 theorem takeI_left (l₁ l₂ : List α) : takeI (length l₁) (l₁ ++ l₂) = l₁ :=
-  (takeI_eq_take (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
+  (takeI_eq_take (by simp only [length_append, Nat.le_add_right])).trans take_left
 
 theorem takeI_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : takeI n (l₁ ++ l₂) = l₁ := by
   rw [← h]; apply takeI_left
 
 end TakeI
 
-/- Porting note: in mathlib3 we just had `take` and `take'`. Now we have `take`, `takeI`, and
-  `takeD`. The following section replicates the theorems above but for `takeD`. -/
+/- The following section replicates the theorems above but for `takeD`. -/
 section TakeD
 
 @[simp]
@@ -122,7 +121,7 @@ theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a 
 
 @[simp]
 theorem takeD_left (l₁ l₂ : List α) (a : α) : takeD (length l₁) (l₁ ++ l₂) a = l₁ :=
-  (takeD_eq_take a (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
+  (takeD_eq_take a (by simp only [length_append, Nat.le_add_right])).trans take_left
 
 theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ := by
   rw [← h]; apply takeD_left
@@ -167,7 +166,7 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
     cases i <;> simp only [List.dropSlice]
     · cases j with
       | zero => simp
-      | succ n => simp_all [xs_ih]; omega
+      | succ n => simp_all; omega
     · simp [xs_ih]; omega
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :

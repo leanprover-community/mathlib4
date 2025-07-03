@@ -3,7 +3,6 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Star.Basic
 

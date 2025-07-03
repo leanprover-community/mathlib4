@@ -27,7 +27,7 @@ import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 universe v u w v' u' w'
 
-open Opposite CategoryTheory CategoryTheory.GrothendieckTopology
+open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.Functor
 
 namespace CategoryTheory
 
@@ -40,7 +40,7 @@ namespace Presheaf
 
 /-- Given `f : F ⟶ G`, a morphism between presieves, and `s : G.obj (op U)`, this is the sieve
 of `U` consisting of the `i : V ⟶ U` such that `s` restricted along `i` is in the image of `f`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (op U))) : Sieve U where
   arrows V i := ∃ t : ToType (F.obj (op V)), f.app _ t = G.map i.op s
   downward_closed := by
@@ -299,8 +299,7 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩
-    simpa using x.2 (Cover.Relation.mk { hf := hf }
-        { hf := S.1.downward_closed hf g } { g₁ := g, g₂ := 𝟙 Z })
+    simpa using x.2 { fst.hf := hf, snd.hf := S.1.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :

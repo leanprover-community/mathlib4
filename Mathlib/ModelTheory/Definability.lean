@@ -215,7 +215,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
                 (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sumInl_fin
           _)
-    simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
+    simp only [mem_image, exists_exists_and_eq_and]
     refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => ?_)
     simp
 
@@ -240,7 +240,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
-    simp only [Equiv.coe_trans, mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
+    simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
       mem_setOf_eq]
     constructor
     · rintro ⟨⟨y, ys, hy⟩, hx⟩
@@ -322,8 +322,10 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
   mem_univ x
 
 @[simp]
-theorem not_mem_bot {x : α → M} : ¬x ∈ (⊥ : L.DefinableSet A α) :=
-  not_mem_empty x
+theorem notMem_bot {x : α → M} : x ∉ (⊥ : L.DefinableSet A α) :=
+  notMem_empty x
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup : x ∈ s ⊔ t ↔ x ∈ s ∨ x ∈ t :=
@@ -334,11 +336,11 @@ theorem mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t :=
   Iff.rfl
 
 @[simp]
-theorem mem_compl : x ∈ sᶜ ↔ ¬x ∈ s :=
+theorem mem_compl : x ∈ sᶜ ↔ x ∉ s :=
   Iff.rfl
 
 @[simp]
-theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ ¬x ∈ t :=
+theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :=
   Iff.rfl
 
 @[simp, norm_cast]

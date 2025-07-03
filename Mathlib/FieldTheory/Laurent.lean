@@ -86,7 +86,7 @@ theorem laurent_algebraMap : laurent r (algebraMap _ _ p) = algebraMap _ _ (tayl
 
 @[simp]
 theorem laurent_X : laurent r X = X + C r := by
-  rw [← algebraMap_X, laurent_algebraMap, taylor_X, _root_.map_add, algebraMap_C]
+  rw [← algebraMap_X, laurent_algebraMap, taylor_X, map_add, algebraMap_C]
 
 @[simp]
 theorem laurent_C (x : R) : laurent r (C x) = C x := by

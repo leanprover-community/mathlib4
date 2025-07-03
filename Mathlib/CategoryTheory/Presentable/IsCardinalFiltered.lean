@@ -3,7 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Comma.CardinalArrow
@@ -195,6 +194,6 @@ instance isCardinalFiltered_under
               ext
               have := c.w f
               dsimp at this ⊢
-              simp only [reassoc_of% this, Category.assoc, Category.comp_id] } }⟩
+              simp only [reassoc_of% this, Category.comp_id] } }⟩
 
 end CategoryTheory

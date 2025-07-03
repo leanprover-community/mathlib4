@@ -35,7 +35,7 @@ variable
 /-- The cartesian product of two bounded linear maps, as a bounded linear map. -/
 protected def prod (f₁ : M₁ →L[R] M₂) (f₂ : M₁ →L[R] M₃) :
     M₁ →L[R] M₂ × M₃ :=
-  ⟨(f₁ : M₁ →ₗ[R] M₂).prod f₂, f₁.2.prod_mk f₂.2⟩
+  ⟨(f₁ : M₁ →ₗ[R] M₂).prod f₂, f₁.2.prodMk f₂.2⟩
 
 @[simp, norm_cast]
 theorem coe_prod (f₁ : M₁ →L[R] M₂) (f₂ : M₁ →L[R] M₃) :
@@ -76,6 +76,9 @@ theorem coe_inl : (inl R M₁ M₂ : M₁ →ₗ[R] M₁ × M₂) = LinearMap.in
 @[simp, norm_cast]
 theorem coe_inr : (inr R M₁ M₂ : M₂ →ₗ[R] M₁ × M₂) = LinearMap.inr R M₁ M₂ :=
   rfl
+
+lemma comp_inl_add_comp_inr (L : M₁ × M₂ →L[R] M₃) (v : M₁ × M₂) :
+    L.comp (.inl R M₁ M₂) v.1 + L.comp (.inr R M₁ M₂) v.2 = L v := by simp [← map_add]
 
 @[simp]
 theorem ker_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
@@ -188,6 +191,10 @@ theorem proj_apply (i : ι) (b : ∀ i, φ i) : (proj i : (∀ i, φ i) →L[R] 
 theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
 
 @[simp]
+theorem coe_proj (i : ι) : (proj i).toLinearMap = (LinearMap.proj i : ((i : ι) → φ i) →ₗ[R] _) :=
+  rfl
+
+@[simp]
 theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl
 
 @[simp]
@@ -208,6 +215,12 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
+
+/-- `Pi.single` as a bundled continuous linear map. -/
+@[simps! -fullyApplied]
+def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
+  toLinearMap := .single R φ i
+  cont := continuous_single _
 
 end Pi
 
@@ -241,8 +254,6 @@ variable
 def prodEquiv : (M →L[R] M₂) × (M →L[R] M₃) ≃ (M →L[R] M₂ × M₃) where
   toFun f := f.1.prod f.2
   invFun f := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 theorem prod_ext_iff {f g : M × M₂ →L[R] M₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by
@@ -323,7 +334,7 @@ def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S
   map_add' a b := coprod_add ..
   map_smul' r a := by
     dsimp
-    ext <;> simp [smul_add, smul_apply, Prod.smul_snd, Prod.smul_fst, coprod_apply]
+    ext <;> simp [smul_apply]
 
 end AddCommMonoid
 

@@ -87,7 +87,7 @@ theorem exists_iff_exists_finsupp (P : R[X] → Prop) :
   ⟨fun ⟨⟨p⟩, hp⟩ => ⟨p, hp⟩, fun ⟨q, hq⟩ => ⟨⟨q⟩, hq⟩⟩
 
 @[simp]
-theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by cases f; rfl
+theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by constructor
 
 /-! ### Conversions to and from `AddMonoidAlgebra`
 
@@ -233,7 +233,7 @@ theorem toFinsupp_pow (a : R[X]) (n : ℕ) : (a ^ n).toFinsupp = a.toFinsupp ^ n
   cases a
   rw [← ofFinsupp_pow]
 
-theorem _root_.IsSMulRegular.polynomial {S : Type*} [Monoid S] [DistribMulAction S R] {a : S}
+theorem _root_.IsSMulRegular.polynomial {S : Type*} [SMulZeroClass S R] {a : S}
     (ha : IsSMulRegular R a) : IsSMulRegular R[X] a
   | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (Polynomial.ofFinsupp.inj h)
 
@@ -340,8 +340,6 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIso : R[X] ≃+* R[ℕ] where
   toFun := toFinsupp
   invFun := ofFinsupp
-  left_inv := fun ⟨_p⟩ => rfl
-  right_inv _p := rfl
   map_mul' := toFinsupp_mul
   map_add' := toFinsupp_add
 
@@ -500,7 +498,7 @@ theorem monomial_one_one_eq_X : monomial 1 (1 : R) = X :=
 
 theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
   induction n with
-  | zero => simp [monomial_zero_one]
+  | zero => simp
   | succ n ih => rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
 
 @[simp]
@@ -514,9 +512,9 @@ theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
 /-- `X` commutes with everything, even when the coefficients are noncommutative. -/
 theorem X_mul : X * p = p * X := by
   rcases p with ⟨⟩
-  simp only [X, ← ofFinsupp_single, ← ofFinsupp_mul, LinearMap.coe_mk, ofFinsupp.injEq]
+  simp only [X, ← ofFinsupp_single, ← ofFinsupp_mul, ofFinsupp.injEq]
   ext
-  simp [AddMonoidAlgebra.mul_apply, AddMonoidAlgebra.sum_single_index, add_comm]
+  simp [AddMonoidAlgebra.mul_apply, add_comm]
 
 theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
   induction n with
@@ -635,7 +633,9 @@ theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
   simp
 
-theorem not_mem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
+theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   convert coeff_monomial (a := a) (m := n) (n := 0) using 2
@@ -725,14 +725,14 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
-theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 
 @[ext high]
-theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
   addHom_ext fun n => DFunLike.congr_fun (h n)
 
@@ -906,21 +906,22 @@ theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a => C a * X ^ n) = p := by
   simp_rw [C_mul_X_pow_eq_monomial, sum_monomial_eq]
 
 @[elab_as_elim]
-protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C a))
-    (h_add : ∀ p q, M p → M q → M (p + q))
-    (h_monomial : ∀ (n : ℕ) (a : R), M (C a * X ^ n) → M (C a * X ^ (n + 1))) : M p := by
-  have A : ∀ {n : ℕ} {a}, M (C a * X ^ n) := by
+protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, motive (C a))
+    (add : ∀ p q, motive p → motive q → motive (p + q))
+    (monomial : ∀ (n : ℕ) (a : R),
+      motive (Polynomial.C a * X ^ n) → motive (Polynomial.C a * X ^ (n + 1))) : motive p := by
+  have A : ∀ {n : ℕ} {a}, motive (Polynomial.C a * X ^ n) := by
     intro n a
     induction n with
-    | zero => rw [pow_zero, mul_one]; exact h_C a
-    | succ n ih => exact h_monomial _ _ ih
-  have B : ∀ s : Finset ℕ, M (s.sum fun n : ℕ => C (p.coeff n) * X ^ n) := by
+    | zero => rw [pow_zero, mul_one]; exact C a
+    | succ n ih => exact monomial _ _ ih
+  have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ => Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
-    · convert h_C 0
+    · convert C 0
       exact C_0.symm
     · intro n s ns ih
       rw [sum_insert ns]
-      exact h_add _ _ A ih
+      exact add _ _ A ih
   rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]
   exact B (support p)
 
@@ -929,10 +930,11 @@ it suffices to show the condition is closed under taking sums,
 and it holds for monomials.
 -/
 @[elab_as_elim]
-protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (h_add : ∀ p q, M p → M q → M (p + q))
-    (h_monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
-  Polynomial.induction_on p (h_monomial 0) h_add fun n a _h =>
-    by rw [C_mul_X_pow_eq_monomial]; exact h_monomial _ _
+protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
+    (add : ∀ p q, motive p → motive q → motive (p + q))
+    (monomial : ∀ (n : ℕ) (a : R), motive (monomial n a)) : motive p :=
+  Polynomial.induction_on p (monomial 0) add fun n a _h =>
+    by rw [C_mul_X_pow_eq_monomial]; exact monomial _ _
 
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
 irreducible_def erase (n : ℕ) : R[X] → R[X]
@@ -1045,8 +1047,19 @@ theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
 
 theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
-  simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
+  simp only [coeffs, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
+
+@[simp]
+theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
+  refine ⟨?_, fun h ↦ by simp [h]⟩
+  contrapose!
+  intro h
+  rw [← support_nonempty] at h
+  obtain ⟨n, hn⟩ := h
+  rw [mem_support_iff] at hn
+  rw [← nonempty_iff_ne_empty]
+  exact ⟨p.coeff n, coeff_mem_coeffs p n hn⟩
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]

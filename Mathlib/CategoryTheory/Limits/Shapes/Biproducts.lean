@@ -32,7 +32,7 @@ a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 Prior to https://github.com/leanprover-community/mathlib3/pull/14046,
 `HasFiniteBiproducts` required a `DecidableEq` instance on the indexing type.
 As this had no pay-off (everything about limits is non-constructive in mathlib),
- and occasional cost
+and occasional cost
 (constructing decidability instances appropriate for constructions involving the indexing type),
 we made everything classical.
 -/
@@ -433,29 +433,24 @@ theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J
 
 @[reassoc] -- Porting note: both versions proven by simp
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
-    biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp [biproduct.ι_π]
+    biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp
+
+@[reassoc]
+theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
+    biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [h]
 
 @[reassoc (attr := simp)]
-theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
-    biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [biproduct.ι_π, h]
-
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
   cases w
   simp
 
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+-- TODO?: simp can prove this using `eqToHom_naturality`
+-- but `eqToHom_naturality` applies less easily than this lemma
+@[reassoc]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
-  cases w
-  simp
+  simp [*]
 
 /-- Given a collection of maps into the summands, we obtain a map into the biproduct. -/
 abbrev biproduct.lift {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ⨁ f :=
@@ -537,7 +532,7 @@ def HasBiproductsOfShape.colimIsoLim [HasBiproductsOfShape J C] :
     fun η => colimit.hom_ext fun ⟨i⟩ => limit.hom_ext fun ⟨j⟩ => by
       classical
       by_cases h : i = j <;>
-       simp_all [h, Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
+       simp_all [Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
 
 theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     biproduct.map p = biproduct.map' p := by
@@ -545,8 +540,7 @@ theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] 
   ext
   dsimp
   simp only [Discrete.natTrans_app, Limits.IsColimit.ι_map_assoc, Limits.IsLimit.map_π,
-    Category.assoc, ← Bicone.toCone_π_app_mk, ← biproduct.bicone_π, ← Bicone.toCocone_ι_app_mk,
-    ← biproduct.bicone_ι]
+    ← Bicone.toCone_π_app_mk, ← Bicone.toCocone_ι_app_mk]
   dsimp
   rw [biproduct.ι_π_assoc, biproduct.ι_π]
   split_ifs with h
@@ -639,7 +633,7 @@ lemma biproduct.whiskerEquiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
   by_cases h : k = e j
   · subst h
     simp
-  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+  · simp only [ι_desc_assoc, Category.assoc, lift_π]
     rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
     · simp
     · rintro rfl
@@ -657,7 +651,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
     simp only [ι_desc_assoc, ← eqToHom_iso_hom_naturality_assoc w (e.symm_apply_apply j).symm,
       Equiv.symm_apply_apply, eqToHom_comp_ι, Category.assoc, bicone_ι_π_self, Category.comp_id,
       lift_π, bicone_ι_π_self_assoc]
-  · simp only [ι_desc_assoc, Category.assoc, ne_eq, lift_π]
+  · simp only [ι_desc_assoc, Category.assoc, lift_π]
     rw [biproduct.ι_π_ne, biproduct.ι_π_ne_assoc]
     · simp
     · exact h

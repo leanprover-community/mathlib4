@@ -25,7 +25,7 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 -/
 
-open CategoryTheory Category ZeroObject Limits
+open CategoryTheory Category ZeroObject Limits Functor
 
 variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
   (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
@@ -158,7 +158,6 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
   inv :=
     { hom := fun a => (iso a).inv
       comm := fun n a a' ha' => by
-        dsimp only
         rw [← cancel_mono (iso a).hom, assoc, assoc, Iso.inv_hom_id, comp_id, comm,
           ← whiskerRight_comp_assoc, Iso.inv_hom_id, whiskerRight_id', id_comp] }
 
@@ -249,7 +248,6 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
     F.postcomp G ≅ F.postcomp G' :=
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
-    dsimp
     simp [NatTrans.shift_app e.hom n])
 
 end SingleFunctors

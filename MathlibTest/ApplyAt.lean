@@ -96,7 +96,7 @@ example {A B : Prop} (h : A ↔ B) : A → B := by
   apply h.mp at hA
   assumption
 
-example (a : ℝ) (h3: a + 1 = 0) : a = -1 := by
+example (a : ℝ) (h3 : a + 1 = 0) : a = -1 := by
   apply (congrArg (fun x => x - 1)) at h3
   simp at h3
   assumption

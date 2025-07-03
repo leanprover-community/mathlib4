@@ -179,7 +179,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
 
 theorem map_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (x : AdicCompletion I M) :
     map I g (map I f x) = map I (g ∘ₗ f) x := by
-  show (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
+  change (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
   rw [map_comp]
 
 @[simp]
@@ -303,9 +303,9 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
     Submodule.mkQ_apply]
   rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
   simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum_apply, mk_apply_coe,
-    AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
-  simp only [← Submodule.mkQ_apply, ← map_sum]
-  erw [DirectSum.sum_univ_of]
+    AdicCauchySequence.map_apply_coe]
+  simp only [← Submodule.mkQ_apply, ← map_sum, ← apply_eq_component, lof_eq_of,
+    DirectSum.sum_univ_of]
 
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
 def sumEquivOfFintype :

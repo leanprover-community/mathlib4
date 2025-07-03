@@ -3,9 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Closure
 
 /-!
 # `Gδ` sets
@@ -33,8 +32,8 @@ its complement is open and dense
 union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
-See `Mathlib.Topology.GDelta.UniformSpace` for the proof that
-continuity set of a function from a topological space to a uniform space is a Gδ set.
+See `Mathlib/Topology/GDelta/MetrizableSpace.lean` for the proof that
+continuity set of a function from a topological space to a metrizable space is a Gδ set.
 
 ## Tags
 

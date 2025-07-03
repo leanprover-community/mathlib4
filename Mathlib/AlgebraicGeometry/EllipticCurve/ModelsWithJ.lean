@@ -14,18 +14,18 @@ It is a modification of [silverman2009], Chapter III, Proposition 1.4 (c).
 
 ## Main definitions
 
- * `WeierstrassCurve.ofJ0`: an elliptic curve whose j-invariant is 0.
- * `WeierstrassCurve.ofJ1728`: an elliptic curve whose j-invariant is 1728.
- * `WeierstrassCurve.ofJNe0Or1728`: an elliptic curve whose j-invariant is neither 0 nor 1728.
- * `WeierstrassCurve.ofJ`: an elliptic curve whose j-invariant equal to j.
+* `WeierstrassCurve.ofJ0`: an elliptic curve whose j-invariant is 0.
+* `WeierstrassCurve.ofJ1728`: an elliptic curve whose j-invariant is 1728.
+* `WeierstrassCurve.ofJNe0Or1728`: an elliptic curve whose j-invariant is neither 0 nor 1728.
+* `WeierstrassCurve.ofJ`: an elliptic curve whose j-invariant equal to j.
 
 ## Main statements
 
- * `WeierstrassCurve.ofJ_j`: the j-invariant of `WeierstrassCurve.ofJ` is equal to j.
+* `WeierstrassCurve.ofJ_j`: the j-invariant of `WeierstrassCurve.ofJ` is equal to j.
 
 ## References
 
- * [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
 
 ## Tags
 

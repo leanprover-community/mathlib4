@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
@@ -25,8 +25,8 @@ open Simplicial CategoryTheory MonoidalCategory
 
 namespace SSet
 
-noncomputable instance : ChosenFiniteProducts SSet.{u} :=
-  (inferInstance : ChosenFiniteProducts (SimplexCategoryᵒᵖ ⥤ Type u))
+instance : CartesianMonoidalCategory SSet.{u} :=
+  (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
@@ -47,7 +47,7 @@ lemma rightUnitor_inv_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x :
 @[simp]
 lemma tensorHom_app_apply {K K' L L' : SSet.{u}} (f : K ⟶ K') (g : L ⟶ L')
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (f ⊗ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
+    (f ⊗ₘ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
 
 @[simp]
 lemma whiskerLeft_app_apply (K : SSet.{u}) {L L' : SSet.{u}} (g : L ⟶ L')

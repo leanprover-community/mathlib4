@@ -3,10 +3,9 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Adjacency Matrices
@@ -38,7 +37,7 @@ properties to computational properties of the matrix.
 
 open Matrix
 
-open Finset Matrix SimpleGraph
+open Finset SimpleGraph
 
 variable {V α : Type*}
 
@@ -129,8 +128,6 @@ end Compl
 
 end Matrix
 
-open Matrix
-
 namespace SimpleGraph
 
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -174,7 +171,7 @@ variable {α}
 
 /-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
 theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
-    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
+    [AddMonoidWithOne α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
   ext i j
   unfold Matrix.compl
   rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
@@ -186,13 +183,13 @@ variable [Fintype V]
 
 @[simp]
 theorem adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :
-    dotProduct (G.adjMatrix α v) vec = ∑ u ∈ G.neighborFinset v, vec u := by
+    G.adjMatrix α v ⬝ᵥ vec = ∑ u ∈ G.neighborFinset v, vec u := by
   simp [neighborFinset_eq_filter, dotProduct, sum_filter]
 
 @[simp]
 theorem dotProduct_adjMatrix [NonAssocSemiring α] (v : V) (vec : V → α) :
-    dotProduct vec (G.adjMatrix α v) = ∑ u ∈ G.neighborFinset v, vec u := by
-  simp [neighborFinset_eq_filter, dotProduct, sum_filter, Finset.sum_apply]
+    vec ⬝ᵥ G.adjMatrix α v = ∑ u ∈ G.neighborFinset v, vec u := by
+  simp [neighborFinset_eq_filter, dotProduct, sum_filter]
 
 @[simp]
 theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
@@ -246,15 +243,15 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       apply Finset.sum_toFinset_eq_subtype
     -- Disjointness for card_bUnion
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
-      rw [disjoint_iff_inf_le]
+      rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
-      simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk, exists_prop] at hp
+      simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy
 
 theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
-    x ⬝ᵥ (G.adjMatrix α).mulVec y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by
+    x ⬝ᵥ G.adjMatrix α *ᵥ y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by
   simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
     mul_zero]
 
