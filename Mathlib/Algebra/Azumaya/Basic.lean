@@ -39,7 +39,7 @@ lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
 
 /-- The "canonical" isomorphism between `R ⊗ Rᵒᵖ` and `End R R` which is equal
   to `AlgHom.mulLeftRight R R`. -/
-noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
+abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
   Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <| .moduleEndSelf R
 
 lemma coe_tensorEquivEnd : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
@@ -70,7 +70,7 @@ lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B) :
   induction a using TensorProduct.induction_on with
   | zero => simp
   | tmul a a' =>
-    ext; simp [AlgHom.mulLeftRight_apply, LinearEquiv.algConj, LinearEquiv.conj]
+    ext; simp [AlgHom.mulLeftRight_apply, LinearEquiv.algConj]
   | add _ _ _ _ => simp_all [map_add]
 
 theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=

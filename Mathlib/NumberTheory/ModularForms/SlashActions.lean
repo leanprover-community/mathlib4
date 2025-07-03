@@ -165,7 +165,7 @@ theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : 
     (f ∣[k] γ) z = f z ↔ f (γ • z) = ((γ 1 0 : ℂ) * z + (γ 1 1 : ℂ)) ^ k * f z := by
   simp only [SL_slash_apply]
   convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
-  · simp only [mul_comm (f _), denom, zpow_neg, ofReal_one, one_zpow, mul_one]
+  · simp only [mul_comm (f _), denom, zpow_neg]
     rfl
   · exact zpow_ne_zero k (denom_ne_zero γ z)
 

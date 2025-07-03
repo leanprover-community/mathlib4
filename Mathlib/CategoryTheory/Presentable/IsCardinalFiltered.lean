@@ -194,6 +194,6 @@ instance isCardinalFiltered_under
               ext
               have := c.w f
               dsimp at this ⊢
-              simp only [reassoc_of% this, Category.assoc, Category.comp_id] } }⟩
+              simp only [reassoc_of% this, Category.comp_id] } }⟩
 
 end CategoryTheory
