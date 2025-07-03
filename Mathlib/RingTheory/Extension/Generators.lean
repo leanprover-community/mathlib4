@@ -518,7 +518,7 @@ lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
 variable {P} in
 lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [← algebraMap_apply]
 
-lemma naive_ker {σ : Type*} {I : Ideal (MvPolynomial σ R)}
+lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R) (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x) :
     (Generators.naive s hs).ker = I :=
   I.mk_ker

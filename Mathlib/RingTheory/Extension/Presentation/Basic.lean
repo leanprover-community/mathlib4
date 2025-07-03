@@ -487,7 +487,7 @@ def naive {v : ι → MvPolynomial σ R}
 
 lemma naive_relation : (naive s hs).relation = v := rfl
 
-@[simp] lemma naive_relation_apply (i) : (naive s hs).relation i = v i := rfl
+@[simp] lemma naive_relation_apply (i : ι) : (naive s hs).relation i = v i := rfl
 
 end
 
