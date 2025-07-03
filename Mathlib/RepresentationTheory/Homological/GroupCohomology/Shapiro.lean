@@ -41,7 +41,7 @@ variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G}
   [DecidableRel (QuotientGroup.rightRel S)] [S.FiniteIndex] (A : Rep k S)
 
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a finite index
-subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism
+subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
 `Hom(Res(S)(P), A) ≅ Hom(P, Coind_S^G(A)).` -/
 noncomputable def linearYonedaObjResProjectiveResolutionIso
     (P : ProjectiveResolution (trivial k G k)) (A : Rep k S) :
