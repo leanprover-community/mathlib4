@@ -613,7 +613,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
   induction x using FreeMonoid.inductionOn' with
   | one => simp
   | mul_of x xs ihx =>
-    simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]
+    simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
 @[to_additive]
