@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Order.Field.Power -- this *is* needed, contra `#min_imports`
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+--import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
@@ -127,7 +126,7 @@ def Cusp (Γ : Subgroup SL(2, ℤ)) := MulAction.orbitRel.Quotient (Γ.map (mapG
 
 /-- Surjection from `SL(2, ℤ) / Γ` to cusps of `Γ`. Mostly useful for showing that `Cusp Γ` is
 finite for finite-index subgroups. -/
-def cosetToCusp (Γ : Subgroup SL(2, ℤ)) : SL(2, ℤ) ⧸ Γ → Cusp Γ :=
+noncomputable def cosetToCusp (Γ : Subgroup SL(2, ℤ)) : SL(2, ℤ) ⧸ Γ → Cusp Γ :=
   Quotient.lift fun g ↦ ⟦mapGL ℚ g⁻¹ • ∞⟧ (by
     intro a b hab
     rw [Quotient.eq, MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
