@@ -710,13 +710,29 @@ end BorelSpace
 
 section Support
 
+open Measure
+
 open scoped Topology
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 variable {μ : Measure X}
 
-lemma support_restrict_subset_closure [OpensMeasurableSpace X] {s : Set X} :
+lemma support_restrict_subset_closure {s : Set X} (hs : MeasurableSet s) :
+  (μ.restrict s).support ⊆ closure s := by
+  have hcls : IsClosed ((μ.restrict s).support) := isClosed_support (μ.restrict s)
+  intro x hx
+  show x ∈ closure s
+  simp only [mem_closure_iff_nhds]
+  intro U hU
+  by_cases H : (s ∩ U).Nonempty
+  · exact Set.inter_nonempty_iff_exists_right.mpr H
+  · have h_restr : (μ.restrict s) U = μ (s ∩ U) := by
+      simp only [(Measure.restrict_apply' (μ := μ) (t := U) hs), Set.inter_comm]
+    simp [mem_support_iff] at hx
+    simpa [h_restr, Set.not_nonempty_iff_eq_empty.mp H, measure_empty] using hx U hU
+
+lemma support_restrict_subset_closure' [OpensMeasurableSpace X] {s : Set X} :
   (μ.restrict s).support ⊆ closure s := by
   intro x hx
   simp only [mem_closure_iff_nhds]

@@ -395,10 +395,10 @@ lemma mem_support_iff_forall (x : X) : x ∈ μ.support ↔ ∀ U ∈ 𝓝 x, 0 
     exact ⟨U, Subset.refl U, h U hU⟩
 
 lemma notMem_support_iff {x : X} : x ∉ μ.support ↔ ∀ᶠ u in (𝓝 x).smallSets, μ u = 0 := by
-  simp only [mem_support_iff, not_frequently, not_lt, nonpos_iff_eq_zero]
+  simp [mem_support_iff]
 
 lemma notMem_support_iff_exists (x : X) : x ∉ μ.support ↔ ∃ U ∈ 𝓝 x, μ U = 0 := by
-  simp only [mem_support_iff_forall, not_forall, not_lt, nonpos_iff_eq_zero, bex_def]
+  simp [mem_support_iff_forall]
 
 lemma _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
     {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
@@ -424,8 +424,8 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
     neighborhoods have positive measure. It's probably better to prove that union result
     below first and then use that theorem to prove this one under second countable
     hypothesis, etc. -/
-lemma exists_mem_support_of_open_pos {U : Set X} (hU : IsOpen U) (hμ : 0 < μ U) :
-  (U ∩ μ.support).Nonempty := by sorry
+--lemma exists_mem_support_of_open_pos {U : Set X} (hU : IsOpen U) (hμ : 0 < μ U) :
+--  (U ∩ μ.support).Nonempty := by sorry
 
 --lemma support_subset_closure_of_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
 --  support μ ⊆ closure U := by sorry
