@@ -54,16 +54,11 @@ def bar (a : 𝕜) : TangentSpace 𝓘(𝕜) a ≃L[𝕜] 𝕜 where
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
--- TODO: cleanup
 @[simp]
 theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
     MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ x)) e ↔
     DifferentiableAt 𝕜 σ e := by
-  rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace,
-      mdifferentiableWithinAt_univ,  mdifferentiableWithinAt_univ]
-  change MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E) id e ∧ MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') σ e ↔
-    DifferentiableAt 𝕜 σ e
-  simp [mdifferentiableAt_id, mdifferentiableAt_iff_differentiableAt]
+  simp [mdifferentiableAt_totalSpace, mdifferentiableAt_iff_differentiableAt]
 
 attribute [simp] mdifferentiableAt_iff_differentiableAt
 
