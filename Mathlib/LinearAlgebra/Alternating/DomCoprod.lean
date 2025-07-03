@@ -17,8 +17,6 @@ to be the exterior product of two alternating maps,
 taking values in the tensor product of the codomains of the original maps.
 -/
 
-suppress_compilation
-
 open TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]
