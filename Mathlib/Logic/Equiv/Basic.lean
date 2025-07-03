@@ -7,7 +7,6 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Sum
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.CC
 import Mathlib.Tactic.Lift
 
 /-!
@@ -90,9 +89,9 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
   ext x
   by_cases h : p x
   · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, symm_apply_eq, this]
   · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, symm_apply_eq, this]
 
 @[simp]
 theorem Perm.subtypeCongr.trans :
@@ -101,9 +100,9 @@ theorem Perm.subtypeCongr.trans :
   ext x
   by_cases h : p x
   · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, this]
+    simp [h, this]
   · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, this]
 
 end subtypeCongr
 
@@ -636,10 +635,10 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
   split_ifs <;> simp [*]
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 /-- `swap a b` is the permutation that swaps `a` and `b` and
   leaves other values as is. -/
