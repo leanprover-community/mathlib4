@@ -487,7 +487,13 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
   Sublist.cons₂ _ s
 
 lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l₂ ∨ a = b ∧ l₁ <+ l₂ := by
-  grind
+  constructor
+  · rintro (_ | _)
+    · exact Or.inl ‹_›
+    · exact Or.inr ⟨rfl, ‹_›⟩
+  · rintro (h | ⟨rfl, h⟩)
+    · exact h.cons _
+    · rwa [cons_sublist_cons]
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
@@ -525,7 +531,14 @@ theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = 
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
   induction l with
   | nil => exact iff_of_true rfl not_mem_nil
-  | cons b l ih => grind
+  | cons b l ih =>
+    simp only [length, mem_cons, idxOf_cons]
+    rw [cond_eq_if]
+    split_ifs with h <;> simp at h
+    · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
+    · simp only [Ne.symm h, false_or]
+      rw [← ih]
+      exact succ_inj
 
 @[simp]
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
@@ -1044,7 +1057,16 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
     (h : ∀ a, p a → q a) : l.filter p <+ l.filter q := by
   induction l with
   | nil => rfl
-  | cons hd tl IH => grind
+  | cons hd tl IH =>
+    by_cases hp : p hd
+    · rw [filter_cons_of_pos hp, filter_cons_of_pos (h _ hp)]
+      exact IH.cons_cons hd
+    · rw [filter_cons_of_neg hp]
+      by_cases hq : q hd
+      · rw [filter_cons_of_pos hq]
+        exact sublist_cons_of_sublist hd IH
+      · rw [filter_cons_of_neg hq]
+        exact IH
 
 lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
