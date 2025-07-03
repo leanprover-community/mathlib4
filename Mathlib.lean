@@ -1906,10 +1906,7 @@ import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.Abelian.RightDerived
 import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Abelian.SerreClass.Bousfield
-=======
->>>>>>> origin/master
 import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.Transfer
