@@ -127,11 +127,10 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
     [isCentral_B : Algebra.IsCentral K B]
     [isSimple_B : IsSimpleRing B]
     (I : TwoSidedIdeal (A ⊗[K] B)) :
-    I = TwoSidedIdeal.span
-      (Set.image (Algebra.TensorProduct.includeLeft : A →ₐ[K] A ⊗[K] B) <|
-        I.comap (Algebra.TensorProduct.includeLeft : A →ₐ[K] A ⊗[K] B)) := by
+    letI f : A →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeLeft
+    (I.comap f).map f = I := by
   classical
-  refine le_antisymm ?_ ?_
+  refine (le_antisymm ?_ ?_).symm
   · if I_ne_bot : I = ⊥ then subst I_ne_bot; exact bot_le
     else
     let f : A →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeLeft
@@ -315,7 +314,7 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         exact TwoSidedIdeal.mul_mem_right _ _ _ <| TwoSidedIdeal.subset_span ⟨a, ⟨⟩, rfl⟩
       | add x y hx hy => exact TwoSidedIdeal.add_mem _ hx hy
 
-  · rw [TwoSidedIdeal.span_le]
+  · rw [TwoSidedIdeal.map, TwoSidedIdeal.span_le]
     rintro _ ⟨x, hx, rfl⟩
     rw [SetLike.mem_coe, TwoSidedIdeal.mem_comap] at hx
     exact hx
@@ -348,4 +347,4 @@ instance TensorProduct.simple
     · right
       rw [← TwoSidedIdeal.one_mem_iff, eq1, h]
       exact TwoSidedIdeal.subset_span ⟨1, by simp⟩
-  exact TensorProduct.map_comap_eq_of_isSimple_isCentralSimple K
+  exact (TensorProduct.map_comap_eq_of_isSimple_isCentralSimple K · |>.symm)
