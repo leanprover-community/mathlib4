@@ -50,7 +50,7 @@ lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
     · exact ⟨s, Finset.Subset.rfl, hs, H⟩
     push_neg at H
     obtain ⟨J, hJ, hJ'⟩ := H
-    refine (IH _ (hJ) ?_).imp
+    refine (IH _ hJ ?_).imp
       fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
     rw [← Finset.insert_erase hJ] at hs
     simp [← hs, hJ']

@@ -456,7 +456,7 @@ theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset �
   · exact h0
   · have H : s.max' hne ∈ s := max'_mem s hne
     rw [← insert_erase H]
-    exact step _ _ (fun x ↦ lt_max'_of_mem_erase_max' s hne) (ih (s.max' hne) H)
+    exact step _ _ (fun x ↦ s.lt_max'_of_mem_erase_max' hne) (ih _ H)
 
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
@@ -492,7 +492,7 @@ theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι �
     simp only [mem_image] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
-    apply step _ _ (notMem_erase a s) (fun x hx => ?_) (ihs a has)
+    refine step _ _ (notMem_erase a s) (fun x hx => ?_) (ihs a has)
     rw [hfa]
     exact le_max' _ _ (mem_image_of_mem _ <| mem_of_mem_erase hx)
 
