@@ -202,11 +202,9 @@ open Measure
 
 lemma AbsolutelyContinuous.support_mono {μ ν : Measure X} (hμν : μ ≪ ν) :
      μ.support ≤ ν.support := by
-  dsimp only [Set.le_eq_subset, support_def] at *
   intro x
-  dsimp only [AbsolutelyContinuous, Set.mem_setOf_eq] at *
   contrapose
-  simp only [support_def, Filter.not_frequently, not_lt, nonpos_iff_eq_zero] at *
+  simp only [mem_support_iff, Filter.not_frequently, not_lt, nonpos_iff_eq_zero] at *
   exact fun a ↦ Filter.Eventually.mono a hμν
 
 end Support
