@@ -79,7 +79,7 @@ Note that if one of the transformations is an iso, it does not imply the other i
 def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
   toFun α := .mk _ _ _ _ <|
     (rightUnitor _).inv ≫
-    (whiskerLeft (R₁ ⋙ G) adj₂.unit) ≫
+    whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
     (associator _ _ _).hom ≫ whiskerLeft _ (associator _ _ _).inv ≫
     whiskerLeft R₁ (whiskerRight α.natTrans R₂) ≫
     whiskerLeft _ (associator _ _ _).hom ≫ (associator _ _ _).inv ≫
