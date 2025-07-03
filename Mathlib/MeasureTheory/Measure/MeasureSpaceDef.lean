@@ -414,11 +414,9 @@ lemma measure_pos_of_mem_support {x : X} (h : x ∈ μ.support) :
   ∀ U ∈ 𝓝 x, 0 < μ U := by rwa [mem_support_iff_forall] at h
 
 lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
-  simp only [support_eq_forall_isOpen, isClosed_iff_frequently, Set.mem_setOf_eq,
-    (nhds_basis_opens _).frequently_iff, and_imp]
-  intro x h u hxu hu
-  obtain ⟨y, hyu, hy⟩ := h u hxu hu
-  exact hy u hyu hu
+  simp_rw [isClosed_iff_frequently, (nhds_basis_opens _).mem_measureSupport,
+    (nhds_basis_opens _).frequently_iff]
+  grind
 
 /- This theorem says that if U has positive measure then there has to be a point in U, all of
     neighborhoods have positive measure. It's probably better to prove that union result

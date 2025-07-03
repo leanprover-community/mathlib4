@@ -710,7 +710,7 @@ end BorelSpace
 
 section Support
 
-open Measure
+open MeasureTheory Measure
 
 open scoped Topology
 
@@ -729,7 +729,7 @@ lemma support_restrict_subset_closure {s : Set X} (hs : MeasurableSet s) :
   · exact Set.inter_nonempty_iff_exists_right.mpr H
   · have h_restr : (μ.restrict s) U = μ (s ∩ U) := by
       simp only [(Measure.restrict_apply' (μ := μ) (t := U) hs), Set.inter_comm]
-    simp [mem_support_iff] at hx
+    rw [mem_support_iff_forall] at hx
     simpa [h_restr, Set.not_nonempty_iff_eq_empty.mp H, measure_empty] using hx U hU
 
 lemma support_restrict_subset_closure' [OpensMeasurableSpace X] {s : Set X} :
