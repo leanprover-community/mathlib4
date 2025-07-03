@@ -144,7 +144,7 @@ The Laplacian equals the Laplacian with respect to `Set.univ`.
 -/
 @[simp]
 theorem laplacianWithin_univ :
-    (Δ[(Set.univ: Set E)] f) = Δ f := by
+    Δ[(Set.univ: Set E)] f = Δ f := by
   ext x
   simp [laplacian, tensorIteratedFDerivTwo, bilinearIteratedFDerivTwo,
     laplacianWithin, tensorIteratedFDerivWithinTwo, bilinearIteratedFDerivWithinTwo]
@@ -223,7 +223,7 @@ theorem laplacian_eq_iteratedFDeriv_complexPlane (f : ℂ → F) :
 If two functions agree in a neighborhood of a point, then so do their Laplacians.
 -/
 theorem laplacianWithin_congr_nhdsWithin (h : f₁ =ᶠ[𝓝[s] x] f₂) (hs : UniqueDiffOn ℝ s) :
-    (Δ[s] f₁) =ᶠ[𝓝[s] x] Δ[s] f₂ := by
+    Δ[s] f₁ =ᶠ[𝓝[s] x] Δ[s] f₂ := by
   filter_upwards [EventuallyEq.iteratedFDerivWithin (𝕜 := ℝ) h 2,
     eventually_mem_nhdsWithin] with x h₁x h₂x
   simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs h₂x, h₁x]
@@ -256,7 +256,7 @@ theorem _root_.ContDiffAt.laplacian_add (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ :
 /-- The Laplacian commutes with addition. -/
 theorem _root_.ContDiffAt.laplacianWithin_add_nhdsWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
     (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
-    (Δ[s] (f₁ + f₂)) =ᶠ[𝓝[s] x] (Δ[s] f₁) + (Δ[s] f₂):= by
+    Δ[s] (f₁ + f₂) =ᶠ[𝓝[s] x] Δ[s] f₁ + Δ[s] f₂:= by
   nth_rw 1 [← s.insert_eq_of_mem hx]
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp),
     eventually_mem_nhdsWithin] with y h₁y h₂y h₃y
