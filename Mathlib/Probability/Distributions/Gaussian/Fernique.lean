@@ -102,8 +102,7 @@ lemma variance_dual_prod (L : Dual ℝ (E × F)) :
     variance_def' (IsGaussian.memLp_dual _ _ _ (by simp))]
   let L₁ := L.comp (.inl ℝ E F)
   let L₂ := L.comp (.inr ℝ E F)
-  simp only [Pi.pow_apply, Function.comp_apply, ContinuousLinearMap.inl_apply,
-    ContinuousLinearMap.inr_apply]
+  simp only [Pi.pow_apply]
   suffices h_sq : ∫ v, L v ^ 2 ∂(μ.prod ν)
       = ∫ x, L₁ x ^ 2 ∂μ + ∫ x, L₂ x ^ 2 ∂ν + 2 * μ[L₁] * ν[L₂] by rw [h_sq]; ring
   calc ∫ v, L v ^ 2 ∂μ.prod ν
@@ -174,16 +173,14 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
   rw [← add_div, ← add_div, ← neg_add, ← neg_add]
   congr 3
   norm_cast
-  show Var[(L.comp (.rotation θ)).comp (.inl ℝ E E); μ]
+  change Var[(L.comp (.rotation θ)).comp (.inl ℝ E E); μ]
         + Var[(L.comp (.rotation θ)).comp (.inr ℝ E E); μ]
       = Var[L.comp (.inl ℝ E E); μ] + Var[L.comp (.inr ℝ E E); μ]
   have h1 : (L.comp (.rotation θ)).comp (.inl ℝ E E)
       = Real.cos θ • L.comp (.inl ℝ E E) - Real.sin θ • L.comp (.inr ℝ E E) := by
     ext x
     simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inl_apply,
-      ContinuousLinearMap.rotation_apply, smul_zero, add_zero,
-      ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul,
-      ContinuousLinearMap.inr_apply]
+      ContinuousLinearMap.rotation_apply, smul_zero, add_zero]
     rw [← L.comp_inl_add_comp_inr]
     simp [- neg_smul, sub_eq_add_neg]
   have h2 : (L.comp (.rotation θ)).comp (.inr ℝ E E)
@@ -194,8 +191,8 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
       ContinuousLinearMap.coe_smul', Pi.smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
     rw [← L.comp_inl_add_comp_inr]
     simp
-  rw [h1, h2, ← covariance_same (by fun_prop), ← covariance_same (by fun_prop),
-    ← covariance_same (by fun_prop), ← covariance_same (by fun_prop)]
+  rw [h1, h2, ← covariance_self (by fun_prop), ← covariance_self (by fun_prop),
+    ← covariance_self (by fun_prop), ← covariance_self (by fun_prop)]
   simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_add']
   rw [covariance_sub_left, covariance_sub_right, covariance_sub_right,
     covariance_add_left, covariance_add_right, covariance_add_right]
@@ -240,7 +237,7 @@ lemma integral_dual_conv_map_neg_eq_zero (L : Dual ℝ E) :
   _ = ∫ x, L x + ∫ y, L y ∂μ.map (ContinuousLinearEquiv.neg ℝ) ∂μ := by
     congr with x
     rw [integral_add (by fun_prop) (by fun_prop)]
-    simp [- ContinuousLinearEquiv.coe_neg, integral_const, smul_eq_mul, add_left_inj]
+    simp [- ContinuousLinearEquiv.coe_neg, integral_const, smul_eq_mul]
   _ = ∫ x, L x ∂μ + ∫ y, L y ∂μ.map (ContinuousLinearEquiv.neg ℝ) := by
     rw [integral_add (by fun_prop) (by fun_prop)]
     simp
@@ -266,7 +263,7 @@ theorem IsGaussian.exists_integrable_exp_sq (μ : Measure E) [IsGaussian μ] :
   have h_int : ∀ᵐ y ∂μ, Integrable (fun x ↦ rexp (C * ‖x - y‖^2)) μ := by
     rw [integrable_conv_iff (by fun_prop)] at hC
     replace hC := hC.1
-    simp only [Function.comp_apply, ContinuousLinearEquiv.coe_neg] at hC
+    simp only [ContinuousLinearEquiv.coe_neg] at hC
     filter_upwards [hC] with y hy
     rw [integrable_map_measure (by fun_prop) (by fun_prop)] at hy
     convert hy with x

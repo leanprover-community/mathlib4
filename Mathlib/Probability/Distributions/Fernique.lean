@@ -265,7 +265,7 @@ private lemma normSeq_tendsto_atTop (ha_pos : 0 < a) : Tendsto (normSeq a) atTop
 
 private lemma normSeq_eq (n : ℕ) : normSeq a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
   rw [arithmeticGeometric_eq normSeq_add_one (by simp), pow_succ]
-  simp only [normSeq_zero, normSeq_add_one]
+  simp only [normSeq_zero]
   have : 1 - √2 ≠ 0 := sub_ne_zero_of_ne (Ne.symm (by simp))
   field_simp
   ring_nf
@@ -524,14 +524,14 @@ lemma lintegral_exp_mul_sq_norm_le [IsProbabilityMeasure μ]
     exact someFun_mono hc'_gt ha_lt hc'
   gcongr _ * ENNReal.ofReal (rexp ?_)
   simp only [ENNReal.toReal_div, neg_mul, neg_le_neg_iff, Nat.ofNat_pos, pow_pos, mul_le_mul_right,
-    inv_pos, mul_le_mul_left, C]
+    inv_pos, mul_le_mul_left]
   gcongr
   · refine div_pos ?_ ?_
     all_goals rw [ENNReal.toReal_pos_iff]
     · exact ⟨lt_trans (by norm_num) hc'_gt, by finiteness⟩
-    · simp only [tsub_pos_iff_lt, hc'_lt, true_and, C]
+    · simp only [tsub_pos_iff_lt, hc'_lt, true_and]
       finiteness
-  · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, C]
+  · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt]
     exact ⟨ha_lt, by finiteness⟩
   · finiteness
   · finiteness
@@ -595,8 +595,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
   · refine Real.log_pos ?_
     change 1 < (c / (1 - c)).toReal
     simp only [ENNReal.toReal_div, one_lt_div_iff, ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hc_lt,
-      hc_one_sub_lt_top, and_self, ne_eq, ENNReal.sub_eq_top_iff, ENNReal.one_ne_top, false_and,
-      not_false_eq_true, true_and]
+      hc_one_sub_lt_top, and_self, true_and]
     rw [ENNReal.toReal_lt_toReal hc_one_sub_lt_top.ne hc_lt_top.ne]
     exact .inl h_one_sub_lt_self
 
@@ -670,7 +669,7 @@ theorem exists_integrable_exp_sq_of_map_rotation_eq_self [IsFiniteMeasure μ]
     exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure (μ := μ') h_rot
   refine ⟨C, hC_pos, ?_⟩
   rwa [hμ'_eq, integrable_smul_measure] at hC
-  · simp [hμ_zero]
+  · simp
   · simp [hμ_zero]
 
 end Fernique
