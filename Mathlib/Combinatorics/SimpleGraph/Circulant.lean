@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
 import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Definition of circulant graphs
@@ -114,7 +114,7 @@ theorem cycleGraph_degree_two_le {n : ℕ} {v : Fin (n + 2)} :
 theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
     (cycleGraph (n + 3)).degree v = 2 := by
   rw [cycleGraph_degree_two_le, Finset.card_pair]
-  simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, self_eq_add_right]
+  simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
 
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by

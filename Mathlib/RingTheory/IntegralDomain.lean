@@ -22,7 +22,7 @@ Assorted theorems about integral domains.
 ## Notes
 
 Wedderburn's little theorem, which shows that all finite division rings are actually fields,
-is in `Mathlib.RingTheory.LittleWedderburn`.
+is in `Mathlib/RingTheory/LittleWedderburn.lean`.
 
 ## Tags
 
@@ -51,9 +51,9 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     ‹CancelMonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp only [Inv.inv, dif_neg ha]
+      simp only [dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
-    inv_zero := by simp [Inv.inv, dif_pos rfl] }
+    inv_zero := by simp }
 
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
@@ -72,12 +72,12 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiri
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
-    rw [← insert_erase hi, prod_insert (not_mem_erase i s)] at hprod
+    rw [← insert_erase hi, prod_insert (notMem_erase i s)] at hprod
     refine
       exists_eq_pow_of_mul_eq_pow_of_coprime
         (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => ?_) hprod
     rw [hij] at hj
-    exact (s.not_mem_erase _) hj
+    exact (s.notMem_erase _) hj
 
 end CancelMonoidWithZero
 
@@ -88,7 +88,7 @@ section Ring
 variable [Ring R] [IsDomain R] [Fintype R]
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
-`Mathlib.RingTheory.LittleWedderburn`. -/
+`Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
@@ -99,7 +99,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   qsmul_def := fun _ _ => rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
-can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
+can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 
@@ -221,10 +221,9 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
                by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
-            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
+            (by simp only [imp_true_iff, Subgroup.coe_pow,
                 Units.val_pow_eq_pow_val])
       _ = 0 := ?_
-
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
     norm_cast
     simp [pow_orderOf_eq_one]
@@ -235,7 +234,7 @@ unless the homomorphism is trivial, in which case the sum is equal to the cardin
 theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
-  · simp [h, card_univ]
+  · simp [h]
   · rw [cast_zero] -- Porting note: added
     exact sum_hom_units_eq_zero f h
 

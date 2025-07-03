@@ -85,7 +85,6 @@ instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
--- Porting note: moved this declaration up so we could get a `FunLike` instance sooner.
 instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
@@ -292,16 +291,6 @@ instance add : Add (NormedAddGroupHom V₁ V₂) :=
 theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   mkNormedAddGroupHom_norm_le _ (add_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
 
--- Porting note: this library note doesn't seem to apply anymore
-/-
-library_note "addition on function coercions"/--
-Terms containing `@has_add.add (has_coe_to_fun.F ...) pi.has_add`
-seem to cause leanchecker to [crash due to an out-of-memory
-condition](https://github.com/leanprover-community/lean/issues/543).
-As a workaround, we add a type annotation: `(f + g : V₁ → V₂)`
--/
--/
-
 @[simp]
 theorem coe_add (f g : NormedAddGroupHom V₁ V₂) : ⇑(f + g) = f + g :=
   rfl
@@ -414,7 +403,7 @@ instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
-        simp only [AddMonoidHom.sub_apply, AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
+        simp only [AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
         exact (f + -g).bound' }⟩
 
 @[simp]
@@ -576,7 +565,7 @@ protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁
 
 theorem norm_comp_le (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     ‖g.comp f‖ ≤ ‖g‖ * ‖f‖ :=
-  mkNormedAddGroupHom_norm_le _ (mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
+  mkNormedAddGroupHom_norm_le _ (by positivity) _
 
 theorem norm_comp_le_of_le {g : NormedAddGroupHom V₂ V₃} {C₁ C₂ : ℝ} (hg : ‖g‖ ≤ C₂)
     (hf : ‖f‖ ≤ C₁) : ‖g.comp f‖ ≤ C₂ * C₁ :=
@@ -599,7 +588,7 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
     (by
       intros
       ext
-      simp only [comp_apply, Pi.add_apply, Function.comp_apply, AddMonoidHom.add_apply,
+      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
         AddMonoidHom.mk'_apply, coe_add])
 
 @[simp]
@@ -652,7 +641,7 @@ def ker : AddSubgroup V₁ :=
   f.toAddMonoidHom.ker
 
 theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
-  erw [f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
+  rw [ker, f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
 
 /-- Given a normed group hom `f : V₁ → V₂` satisfying `g.comp f = 0` for some `g : V₂ → V₃`,
     the corestriction of `f` to the kernel of `g`. -/
@@ -700,7 +689,8 @@ theorem mem_range_self (v : V₁) : f v ∈ f.range :=
   ⟨v, rfl⟩
 
 theorem comp_range : (g.comp f).range = AddSubgroup.map g.toAddMonoidHom f.range := by
-  erw [AddMonoidHom.map_range]
+  unfold range
+  rw [AddMonoidHom.map_range]
   rfl
 
 theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
@@ -793,7 +783,7 @@ def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
         rw [NormedAddGroupHom.sub_apply, sub_eq_zero, ← comp_apply, h, comp_apply]⟩
   map_add' v₁ v₂ := by
     ext
-    simp only [map_add, AddSubgroup.coe_add, Subtype.coe_mk]
+    simp only [map_add, AddSubgroup.coe_add]
   bound' := by
     obtain ⟨C, _C_pos, hC⟩ := φ.bound
     exact ⟨C, hC⟩
@@ -812,9 +802,6 @@ def liftEquiv :
   toFun φ := lift φ φ.prop
   invFun ψ := ⟨(ι f g).comp ψ, by rw [← comp_assoc, ← comp_assoc, comp_ι_eq]⟩
   left_inv φ := by simp
-  right_inv ψ := by
-    ext
-    rfl
 
 /-- Given `φ : NormedAddGroupHom V₁ V₂` and `ψ : NormedAddGroupHom W₁ W₂` such that
 `ψ.comp f₁ = f₂.comp φ` and `ψ.comp g₁ = g₂.comp φ`, the induced morphism

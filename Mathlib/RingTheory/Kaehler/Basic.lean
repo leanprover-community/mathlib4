@@ -91,7 +91,7 @@ theorem Derivation.tensorProductTo_mul (D : Derivation R S M) (x y : S ⊗[R] S)
     rw [mul_add, map_add, map_add, map_add, add_smul, smul_add, h₁, h₂, add_add_add_comm]
   intro x y
   simp only [TensorProduct.tmul_mul_tmul, Derivation.tensorProductTo,
-    TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul',
+    TensorProduct.AlgebraTensorModule.lift_apply,
     TensorProduct.lmul'_apply_tmul]
   dsimp
   rw [D.leibniz]
@@ -204,12 +204,12 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
     leibniz' := fun a b => by
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply]
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
-        ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]
+      rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
+        ← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
+        ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
       convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
-      simp only [AddSubgroupClass.coe_sub, Submodule.coe_add, Submodule.coe_mk,
+      simp only [Submodule.coe_add,
         TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
         smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
       ring_nf }
@@ -448,7 +448,7 @@ theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
     rintro _ ⟨x, rfl⟩
     let I : Ideal (S ⊗[R] S) := Ideal.span
       ((EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)))
-    show _ - _ ∈ I
+    change _ - _ ∈ I
     have : (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeRight =
         (IsScalarTower.toAlgHom R (S ⊗[R] S) (S ⊗[R] S ⧸ I)).comp TensorProduct.includeLeft := by
       apply EssFiniteType.algHom_ext
@@ -573,7 +573,7 @@ theorem KaehlerDifferential.kerTotal_eq :
     rw [← KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination]
     exact LinearMap.ker_le_ker_comp _ _
   · rw [KaehlerDifferential.kerTotal, Submodule.span_le]
-    rintro _ ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩) <;> dsimp <;> simp [LinearMap.mem_ker]
+    rintro _ ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩) <;> simp [LinearMap.mem_ker]
 
 theorem KaehlerDifferential.linearCombination_surjective :
     Function.Surjective (Finsupp.linearCombination S (KaehlerDifferential.D R S)) := by
@@ -716,7 +716,7 @@ theorem KaehlerDifferential.ker_map :
   simp only [linearCombination_apply, Function.comp_apply, LinearMap.coe_comp, lmapDomain_apply,
     Finsupp.mapRange.linearMap_apply]
   rw [Finsupp.sum_mapRange_index, Finsupp.sum_mapDomain_index]
-  · simp [ofId]
+  · simp
   · simp
   · simp [add_smul]
   · simp
@@ -844,32 +844,30 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       Algebra.linearMap_apply, map_one]
     rw [← Finsupp.sum_single x, Finsupp.sum, ← Finset.sum_fiberwise_of_maps_to
       (fun _ ↦ Finset.mem_image_of_mem (algebraMap A B))]
-    simp only [Function.comp_apply, map_sum (s := x.support.image (algebraMap A B)),
+    simp only [map_sum (s := x.support.image (algebraMap A B)),
       TensorProduct.tmul_sum]
     apply sum_mem
     intro c _
-    simp only [Finset.filter_congr_decidable, TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      AlgHom.toLinearMap_apply, map_one, LinearMap.mem_range]
+    simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
-    have : (x.support.filter (algebraMap A B · = c)).sum x ∈ RingHom.ker (algebraMap A B) := by
+    have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,
         Finsupp.single_apply, ← Finset.sum_filter] using DFunLike.congr_fun hx c
     obtain ⟨a, ha⟩ := h c
-    use (x.support.filter (algebraMap A B · = c)).attach.sum
-        fun i ↦ x i • Ideal.toCotangent _ ⟨i - a, ?_⟩; swap
-    · have : x i ≠ 0 ∧ algebraMap A B i = c := by
-        convert i.prop
-        simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
-      simp [RingHom.mem_ker, ha, this.2]
+    use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]
       simp_rw [← TensorProduct.tmul_smul]
-      -- was `simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]` and very slow
+      -- TODO: was `simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]` and very slow
       -- (https://github.com/leanprover-community/mathlib4/issues/19751)
       simp only [smul_sub, TensorProduct.tmul_sub, Finset.sum_sub_distrib, ← TensorProduct.tmul_sum,
         ← Finset.sum_smul, Finset.sum_attach, sub_eq_self,
         Finset.sum_attach (f := fun i ↦ x i • KaehlerDifferential.D R A i)]
       rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, RingHom.mem_ker.mp this,
         TensorProduct.zero_tmul]
+    · have : x i ≠ 0 ∧ algebraMap A B i = c := by
+        convert i.prop
+        simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
+      simp [RingHom.mem_ker, ha, this.2]
 
 theorem KaehlerDifferential.exact_kerCotangentToTensor_mapBaseChange
     (h : Function.Surjective (algebraMap A B)) :

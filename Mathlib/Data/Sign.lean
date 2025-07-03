@@ -107,8 +107,8 @@ instance : LinearOrder SignType where
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm
   le_trans := le_trans
-  decidableLE := LE.decidableRel
-  decidableEq := SignType.decidableEq
+  toDecidableLE := LE.decidableRel
+  toDecidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1
@@ -144,6 +144,28 @@ def fin3Equiv : SignType ≃* Fin 3 where
     | ⟨2, _⟩ => by simp
   map_mul' a b := by
     cases a <;> cases b <;> rfl
+
+theorem pow_odd (s : SignType) {n : ℕ} (hn : Odd n) : s ^ n = s := by
+  obtain ⟨k, rfl⟩ := hn
+  rw [pow_add, pow_one, pow_mul, sq]
+  cases s <;> simp
+
+theorem zpow_odd (s : SignType) {z : ℤ} (hz : Odd z) : s ^ z = s := by
+  obtain rfl | hs := eq_or_ne s 0
+  · rw [zero_zpow]
+    rintro rfl
+    simp at hz
+  obtain ⟨k, rfl⟩ := hz
+  rw [zpow_add₀ hs, zpow_one, zpow_mul, zpow_two]
+  cases s <;> simp
+
+lemma pow_even (s : SignType) {n : ℕ} (hn : Even n) (hs : s ≠ 0) :
+    s ^ n = 1 := by
+  cases s <;> simp_all
+
+lemma zpow_even (s : SignType) {z : ℤ} (hz : Even z) (hs : s ≠ 0) :
+    s ^ z = 1 := by
+  cases s <;> simp_all [Even.neg_one_zpow]
 
 section CaseBashing
 
@@ -205,16 +227,19 @@ section cast
 
 variable {α : Type*} [Zero α] [One α] [Neg α]
 
-/-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance, but note it is
-only a `CoeTC` instance: see note [use has_coe_t]. -/
+/-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance. -/
 @[coe]
 def cast : SignType → α
   | zero => 0
   | pos => 1
   | neg => -1
 
--- Porting note: Translated has_coe_t to CoeTC
-instance : CoeTC SignType α :=
+/-- This is a `CoeTail` since the type on the right (trivially) determines the type on the left.
+
+`outParam`-wise it could be a `Coe`, but we don't want to try applying this instance for a
+coercion to any `α`.
+-/
+instance : CoeTail SignType α :=
   ⟨cast⟩
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
@@ -291,7 +316,7 @@ open SignType
 
 section Preorder
 
-variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)] {a : α}
+variable [Zero α] [Preorder α] [DecidableLT α] {a : α}
 
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
@@ -333,7 +358,7 @@ section LinearOrder
 variable [Zero α] [LinearOrder α] {a : α}
 
 /-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
-lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel ((· < ·) : β → β → _)]
+lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableLT β]
     [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a : α) :
     sign (f a) = sign a := by
   simp only [sign_apply, ← map_zero f, hf.lt_iff_lt]
@@ -344,7 +369,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases h
-  exact (le_of_not_lt h_1).eq_of_not_lt h_2
+  exact (le_of_not_gt h_1).eq_of_not_lt h_2
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
   sign_eq_zero_iff.not
@@ -354,12 +379,12 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.le]
   · simp [← h]
-  · simp [h, h.not_le]
+  · simp [h, h.not_ge]
 
 @[simp]
 theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | h | h)
-  · simp [h, h.not_le]
+  · simp [h, h.not_ge]
   · simp [← h]
   · simp [h, h.le]
 
@@ -367,7 +392,7 @@ end LinearOrder
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α] [DecidableLT α] [Nontrivial α]
 
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
@@ -377,8 +402,8 @@ end OrderedSemiring
 section OrderedRing
 
 @[simp]
-lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α]
-    [DecidableRel ((· < ·) : α → α → Prop)] (n : ℤ) :
+lemma sign_intCast {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
+    [Nontrivial α] [DecidableLT α] (n : ℤ) :
     sign (n : α) = sign n := by
   simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
 
@@ -386,7 +411,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -423,7 +448,7 @@ end LinearOrderedRing
 
 section AddGroup
 
-variable [AddGroup α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
+variable [AddGroup α] [Preorder α] [DecidableLT α]
 
 theorem Left.sign_neg [AddLeftStrictMono α] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]
@@ -446,12 +471,7 @@ end AddGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
-
-/- I'm not sure why this is necessary, see
-https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.20vs.20decidable_rel
--/
-attribute [local instance] LinearOrderedAddCommGroup.decidableLT
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 
 theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i ∈ s, f i) = t := by
@@ -468,7 +488,7 @@ end LinearOrderedAddCommGroup
 namespace Int
 
 theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
-  obtain (n | _) | _ := n <;> simp [sign, Int.sign_neg, negSucc_lt_zero]
+  obtain (n | _) | _ := n <;> simp [sign, negSucc_lt_zero]
 
 end Int
 

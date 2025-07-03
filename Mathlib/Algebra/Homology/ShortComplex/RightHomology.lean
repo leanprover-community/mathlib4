@@ -482,6 +482,9 @@ variable [S.HasRightHomology]
 given by the `H` field of a chosen right homology data. -/
 noncomputable def rightHomology : C := S.rightHomologyData.H
 
+-- `S.rightHomology` is the simp normal form.
+@[simp] lemma rightHomologyData_H : S.rightHomologyData.H = S.rightHomology := rfl
+
 /-- The "opcycles" of a short complex, given by the `Q` field of a chosen right homology data.
 This is the dual notion to cycles. -/
 noncomputable def opcycles : C := S.rightHomologyData.Q
@@ -590,7 +593,7 @@ lemma p_opcyclesMap' : h₁.p ≫ opcyclesMap' φ h₁ h₂ = φ.τ₂ ≫ h₂.
 
 @[reassoc (attr := simp)]
 lemma opcyclesMap'_g' : opcyclesMap' φ h₁ h₂ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by
-  simp only [← cancel_epi h₁.p, assoc, φ.comm₂₃, p_opcyclesMap'_assoc,
+  simp only [← cancel_epi h₁.p, φ.comm₂₃, p_opcyclesMap'_assoc,
     RightHomologyData.p_g'_assoc, RightHomologyData.p_g']
 
 @[reassoc (attr := simp)]
@@ -1141,7 +1144,7 @@ namespace RightHomologyMapData
 /-- This right homology map data expresses compatibilities of the right homology data
 constructed by `RightHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     RightHomologyMapData φ h (RightHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φQ := 𝟙 _

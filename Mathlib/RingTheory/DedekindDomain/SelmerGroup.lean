@@ -30,17 +30,17 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 
 ## Main definitions
 
- * `IsDedekindDomain.selmerGroup`: the Selmer group.
- * TODO: maps in the sequence.
+* `IsDedekindDomain.selmerGroup`: the Selmer group.
+* TODO: maps in the sequence.
 
 ## Main statements
 
- * TODO: proofs of exactness of the sequence.
- * TODO: proofs of finiteness for global fields.
+* TODO: proofs of exactness of the sequence.
+* TODO: proofs of finiteness for global fields.
 
 ## Notations
 
- * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
+* `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
 ## Implementation notes
 
@@ -96,7 +96,7 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
-    if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero,
+    if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
     if_neg (nonZeroDivisors.coe_ne_zero _),
     valuationOfNeZeroToFun, ofAdd_sub, ofAdd_neg, div_inv_eq_mul, WithZero.coe_mul,
     WithZero.coe_inv, inv_inv]
@@ -132,6 +132,8 @@ theorem valuation_of_unit_eq (x : Rˣ) :
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
+  -- TODO: this definition does a lot of defeq abuse between `Multiplicative` and `Additive`,
+  -- so we need `erw` below.
   (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
     QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
       (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))
@@ -184,7 +186,7 @@ theorem valuation_ker_eq :
     by_cases hv : v ∈ S
     · exact congr_fun hx' ⟨v, hv⟩
     · exact hx v hv
-  · exact fun hx' => funext fun v => hx' v <| Set.not_mem_empty v
+  · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 
 /-- The natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ where

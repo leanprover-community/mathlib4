@@ -464,27 +464,27 @@ theorem cos_eq_sqrt_one_sub_sin_sq {x : ℝ} (hl : -(π / 2) ≤ x) (hu : x ≤ 
     cos x = √(1 - sin x ^ 2) := by
   rw [← abs_cos_eq_sqrt_one_sub_sin_sq, abs_of_nonneg (cos_nonneg_of_mem_Icc ⟨hl, hu⟩)]
 
-lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = sqrt ((1 + cos x) / 2) := by
+lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = √((1 + cos x) / 2) := by
   have : 0 ≤ cos (x / 2) := cos_nonneg_of_mem_Icc <| by constructor <;> linarith
   rw [← sqrt_sq this, cos_sq, add_div, two_mul, add_halves]
 
-lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = sqrt ((1 - cos x) / 2) := by
+lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = √((1 - cos x) / 2) := by
   rw [← sqrt_sq_eq_abs, sin_sq_eq_half_sub, two_mul, add_halves, sub_div]
 
 lemma sin_half_eq_sqrt {x : ℝ} (hl : 0 ≤ x) (hr : x ≤ 2 * π) :
-    sin (x / 2) = sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = √((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonneg]
   apply sin_nonneg_of_nonneg_of_le_pi <;> linarith
 
 lemma sin_half_eq_neg_sqrt {x : ℝ} (hl : -(2 * π) ≤ x) (hr : x ≤ 0) :
-    sin (x / 2) = -sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = -√((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonpos, neg_neg]
   apply sin_nonpos_of_nonnpos_of_neg_pi_le <;> linarith
 
 theorem sin_eq_zero_iff_of_lt_of_lt {x : ℝ} (hx₁ : -π < x) (hx₂ : x < π) : sin x = 0 ↔ x = 0 :=
   ⟨fun h => by
     contrapose! h
-    cases h.lt_or_lt with
+    cases h.lt_or_gt with
     | inl h0 => exact (sin_neg_of_neg_of_neg_pi_lt h0 hx₁).ne
     | inr h0 => exact (sin_pos_of_pos_of_lt_pi h0 hx₂).ne',
   fun h => by simp [h]⟩
@@ -857,12 +857,12 @@ theorem tan_pi_div_four : tan (π / 4) = 1 := by
 theorem tan_pi_div_two : tan (π / 2) = 0 := by simp [tan_eq_sin_div_cos]
 
 @[simp]
-theorem tan_pi_div_six : tan (π / 6) = 1 / sqrt 3 := by
+theorem tan_pi_div_six : tan (π / 6) = 1 / √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_six, cos_pi_div_six]
   ring
 
 @[simp]
-theorem tan_pi_div_three : tan (π / 3) = sqrt 3 := by
+theorem tan_pi_div_three : tan (π / 3) = √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_three, cos_pi_div_three]
   ring
 
@@ -958,7 +958,7 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul zero_lt_one
+  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
     tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
@@ -1188,6 +1188,15 @@ theorem exp_pi_mul_I : exp (π * I) = -1 :=
 @[simp]
 theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
+
+@[simp]
+lemma exp_pi_div_two_mul_I : exp (π / 2 * I) = I := by
+  rw [← cos_add_sin_I, cos_pi_div_two, sin_pi_div_two, one_mul, zero_add]
+
+@[simp]
+lemma exp_neg_pi_div_two_mul_I : exp (-π / 2 * I) = -I := by
+  rw [← cos_add_sin_I, neg_div, cos_neg, cos_pi_div_two, sin_neg, sin_pi_div_two, zero_add, neg_mul,
+    one_mul]
 
 @[simp]
 theorem exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=

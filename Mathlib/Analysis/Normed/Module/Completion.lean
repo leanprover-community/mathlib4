@@ -71,13 +71,10 @@ variable (A : Type*)
 instance [SeminormedRing A] : NormedRing (Completion A) where
   __ : NormedAddCommGroup (Completion A) := inferInstance
   __ : Ring (Completion A) := inferInstance
-  norm_mul x y := by
+  norm_mul_le x y := by
     induction x, y using induction_on₂ with
-    | hp =>
-      apply isClosed_le <;> fun_prop
-    | ih x y =>
-      simp only [← coe_mul, norm_coe]
-      exact norm_mul_le x y
+    | hp => apply isClosed_le <;> fun_prop
+    | ih x y => simpa only [← coe_mul, norm_coe] using norm_mul_le x y
 
 instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
   __ : CommRing (Completion A) := inferInstance
@@ -91,7 +88,7 @@ instance [NormedField A] [CompletableTopField A] :
     NormedField (UniformSpace.Completion A) where
   __ : NormedCommRing (Completion A) := inferInstance
   __ : Field (Completion A) := inferInstance
-  norm_mul' x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
+  norm_mul x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
 
 end Algebra
 

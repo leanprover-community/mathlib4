@@ -6,7 +6,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
-import Mathlib.Tactic.Cases
 
 /-! ### List.scanl and List.scanr -/
 
@@ -28,26 +27,28 @@ theorem scanl_nil (b : β) : scanl f b nil = [b] :=
 
 @[simp]
 theorem scanl_cons : scanl f b (a :: l) = [b] ++ scanl f (f b a) l := by
-  simp only [scanl, eq_self_iff_true, singleton_append, and_self_iff]
+  simp only [scanl, singleton_append]
 
 @[simp]
 theorem getElem?_scanl_zero : (scanl f b l)[0]? = some b := by
   cases l
-  · simp [scanl_nil]
-  · simp [scanl_cons, singleton_append]
+  · simp
+  · simp
 
 @[simp]
 theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b := by
   cases l
-  · simp [scanl_nil]
-  · simp [scanl_cons, singleton_append]
+  · simp
+  · simp
 
 theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     (scanl f b l)[i]?.bind fun x => l[i]?.map fun y => f x y := by
-  induction' l with hd tl hl generalizing b i
-  · symm
-    simp only [scanl, getElem?_nil, Option.map_none', Option.bind_none, getElem?_cons_succ]
-  · simp only [scanl_cons, singleton_append]
+  induction l generalizing b i with
+  | nil =>
+    symm
+    simp only [scanl, getElem?_nil, Option.map_none, Option.bind_fun_none, getElem?_cons_succ]
+  | cons hd tl hl =>
+    simp only [scanl_cons, singleton_append]
     cases i
     · simp
     · simp only [hl, getElem?_cons_succ]
@@ -62,7 +63,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [scanl, length, zero_eq, lt_self_iff_false] at h
+    · simp only [scanl, length, lt_self_iff_false] at h
     · simp
   | succ i hi =>
     cases l

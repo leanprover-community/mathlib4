@@ -15,19 +15,20 @@ finite product of completions over its infinite places and the adele ring of a n
 direct product of the infinite adele ring and the finite adele ring.
 
 ## Main definitions
- - `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
-   the completions of `K` over its infinite places.
- - `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
-   the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
- - `NumberField.AdeleRing K` is the adele ring of a number field `K`.
- - `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
+
+- `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
+  the completions of `K` over its infinite places.
+- `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
+  the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
+- `NumberField.AdeleRing K` is the adele ring of a number field `K`.
+- `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
 
 ## Main results
- - `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
-   locally compact space.
+- `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
+  locally compact space.
 
 ## References
- * [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
 infinite adele ring, adele ring, number field
@@ -37,7 +38,7 @@ noncomputable section
 
 namespace NumberField
 
-open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDomain IsDedekindDomain
+open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
 
 /-! ## The infinite adele ring
 
@@ -102,8 +103,8 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
   ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    ringEquivRealOfIsReal, ringEquivComplexOfIsComplex, extensionEmbedding,
-    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
+    extensionEmbedding,
+    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]

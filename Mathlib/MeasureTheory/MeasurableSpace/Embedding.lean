@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.Tactic.FunProp
 
 /-!
@@ -487,7 +487,6 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a where
   __ := Equiv.piCongrLeft π f
   measurable_toFun := measurable_piCongrLeft f
   measurable_invFun := by
-    simp only [invFun_as_coe, coe_fn_symm_mk]
     rw [measurable_pi_iff]
     exact fun i => measurable_pi_apply (f i)
 
@@ -719,12 +718,12 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
   let X : ℕ → Set α := fun n => F^[n] univ
   refine ⟨iInter X, ?_, ?_⟩
-  · apply MeasurableSet.iInter
-    intro n
-    induction' n with n ih
-    · exact MeasurableSet.univ
-    rw [Function.iterate_succ', Function.comp_apply]
-    exact (hg.measurableSet_image' (hf.measurableSet_image' ih).compl).compl
+  · refine MeasurableSet.iInter fun n ↦ ?_
+    induction n with
+    | zero => exact MeasurableSet.univ
+    | succ n ih =>
+      rw [Function.iterate_succ', Function.comp_apply]
+      exact (hg.measurableSet_image' (hf.measurableSet_image' ih).compl).compl
   apply subset_antisymm
   · apply subset_iInter
     intro n

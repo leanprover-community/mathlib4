@@ -58,10 +58,10 @@ protected theorem div [Div β] [ContinuousDiv β] (hu : Adapted f u) (hv : Adapt
     Adapted f (u / v) := fun i => (hu i).div (hv i)
 
 @[to_additive]
-protected theorem inv [Group β] [IsTopologicalGroup β] (hu : Adapted f u) :
+protected theorem inv [Group β] [ContinuousInv β] (hu : Adapted f u) :
     Adapted f u⁻¹ := fun i => (hu i).inv
 
-protected theorem smul [SMul ℝ β] [ContinuousSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
+protected theorem smul [SMul ℝ β] [ContinuousConstSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
     Adapted f (c • u) := fun i => (hu i).const_smul c
 
 protected theorem stronglyMeasurable {i : ι} (hf : Adapted f u) : StronglyMeasurable[m] (u i) :=
@@ -111,7 +111,7 @@ protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
   rw [this]
   exact (h i).comp_measurable measurable_prodMk_left
 
-protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace ι] [MetrizableSpace ι]
+protected theorem comp {t : ι → Ω → ι} [TopologicalSpace ι] [BorelSpace ι] [PseudoMetrizableSpace ι]
     (h : ProgMeasurable f u) (ht : ProgMeasurable f t) (ht_le : ∀ i ω, t i ω ≤ i) :
     ProgMeasurable f fun i ω => u (t i ω) ω := by
   intro i
@@ -141,11 +141,11 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
   convert ProgMeasurable.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
 
 @[to_additive]
-protected theorem inv [Group β] [IsTopologicalGroup β] (hu : ProgMeasurable f u) :
+protected theorem inv [Group β] [ContinuousInv β] (hu : ProgMeasurable f u) :
     ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
 
 @[to_additive]
-protected theorem div [Group β] [IsTopologicalGroup β] (hu : ProgMeasurable f u)
+protected theorem div [Group β] [ContinuousDiv β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω / v i ω := fun i =>
   (hu i).div (hv i)
 

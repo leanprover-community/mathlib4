@@ -469,7 +469,7 @@ noncomputable def homologyFunctorIso' [CategoryWithHomology C]
     (hi : c.prev j = i) (hk : c.next j = k) :
     homologyFunctor C c j ≅
       shortComplexFunctor' C c i j k ⋙ ShortComplex.homologyFunctor C :=
-  homologyFunctorIso C c j ≪≫ isoWhiskerRight (natIsoSc' C c i j k hi hk) _
+  homologyFunctorIso C c j ≪≫ Functor.isoWhiskerRight (natIsoSc' C c i j k hi hk) _
 
 instance [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
 instance [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where
@@ -816,7 +816,7 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
 lemma opcyclesIsoSc'_inv_fromOpcycles :
     (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =
       (K.sc' i j k).fromOpcycles := by
-  simp only [← cancel_epi (K.sc' i j k).pOpcycles,  pOpcycles_opcyclesIsoSc'_inv_assoc,
+  simp only [← cancel_epi (K.sc' i j k).pOpcycles, pOpcycles_opcyclesIsoSc'_inv_assoc,
     p_fromOpcycles, ShortComplex.p_fromOpcycles, shortComplexFunctor'_obj_g]
 
 /-- The opcycles of a homological complex in degree `j` can be computed

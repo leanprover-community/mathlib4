@@ -3,14 +3,12 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Monoid actions continuous in the second variable
@@ -43,6 +41,8 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
+
+assert_not_exists IsOrderedRing
 
 open Topology Pointwise Filter Set TopologicalSpace
 
@@ -126,7 +126,7 @@ instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
 @[to_additive]
 instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
     ContinuousConstSMul M (α × β) :=
-  ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
+  ⟨fun _ => (continuous_fst.const_smul _).prodMk (continuous_snd.const_smul _)⟩
 
 @[to_additive]
 instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
@@ -372,8 +372,6 @@ theorem HasCompactSupport.comp_smul {β : Type*} [Zero β] {f : α → β} (h : 
     {c : G₀} (hc : c ≠ 0) : HasCompactSupport fun x => f (c • x) :=
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 
-attribute [to_additive existing HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
-
 end GroupWithZero
 
 namespace IsUnit
@@ -474,7 +472,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   let f : T → Q := Quotient.mk'
   have f_op : IsOpenMap f := isOpenMap_quotient_mk'_mul
   rintro ⟨x₀⟩ ⟨y₀⟩ (hxy : f x₀ ≠ f y₀)
-  show ∃ U ∈ 𝓝 (f x₀), ∃ V ∈ 𝓝 (f y₀), _
+  change ∃ U ∈ 𝓝 (f x₀), ∃ V ∈ 𝓝 (f y₀), _
   have hγx₀y₀ : ∀ γ : Γ, γ • x₀ ≠ y₀ := not_exists.mp (mt Quotient.sound hxy.symm :)
   obtain ⟨K₀, hK₀, K₀_in⟩ := exists_compact_mem_nhds x₀
   obtain ⟨L₀, hL₀, L₀_in⟩ := exists_compact_mem_nhds y₀
@@ -496,7 +494,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
     simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne] at H
-    exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
+    exact eq_empty_iff_forall_notMem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 
 /-- The quotient of a second countable space by a group action is second countable. -/
 @[to_additive "The quotient of a second countable space by an additive group action is second

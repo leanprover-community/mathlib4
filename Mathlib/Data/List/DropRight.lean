@@ -53,8 +53,8 @@ theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · simp [take_append]
-    · simp [take_append_eq_append_take, IH]
+    · simp [take_length_add_append]
+    · simp [take_append, IH]
 
 @[simp]
 theorem rdrop_concat_succ (x : α) : rdrop (l ++ [x]) (n + 1) = rdrop l n := by
@@ -75,8 +75,8 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · exact drop_length _
-    · simp [drop_append_eq_append_drop, IH]
+    · exact drop_length
+    · simp [drop_append, IH]
 
 @[simp]
 theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x] := by
@@ -88,7 +88,7 @@ def rdropWhile : List α :=
   reverse (l.reverse.dropWhile p)
 
 @[simp]
-theorem rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile, dropWhile]
+theorem rdropWhile_nil : rdropWhile p ([] : List α) = [] := by simp [rdropWhile]
 
 theorem rdropWhile_concat (x : α) :
     rdropWhile p (l ++ [x]) = if p x then rdropWhile p l else l ++ [x] := by
@@ -159,7 +159,7 @@ def rtakeWhile : List α :=
   reverse (l.reverse.takeWhile p)
 
 @[simp]
-theorem rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile, takeWhile]
+theorem rtakeWhile_nil : rtakeWhile p ([] : List α) = [] := by simp [rtakeWhile]
 
 theorem rtakeWhile_concat (x : α) :
     rtakeWhile p (l ++ [x]) = if p x then rtakeWhile p l ++ [x] else [] := by
@@ -202,7 +202,7 @@ lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :
     List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁ := by
-  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
+  rw [rdrop_eq_reverse_drop_reverse, ← length_reverse,
       reverse_append, drop_left, reverse_reverse]
 
 lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :

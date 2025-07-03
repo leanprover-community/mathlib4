@@ -299,6 +299,14 @@ theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).sy
   rfl
 
 @[simp]
+theorem symm_toAddEquiv : (e.symm : A₂ ≃+ A₁) = (e : A₁ ≃+ A₂).symm :=
+  rfl
+
+@[simp]
+theorem symm_toMulEquiv : (e.symm : A₂ ≃* A₁) = (e : A₁ ≃* A₂).symm :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (e : A₁ ≃ₐ[R] A₂) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 
@@ -487,8 +495,14 @@ theorem toLinearEquiv_refl : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).toLinearEquiv
   rfl
 
 @[simp]
-theorem toLinearEquiv_symm (e : A₁ ≃ₐ[R] A₂) : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
+theorem toLinearEquiv_symm (e : A₁ ≃ₐ[R] A₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : ⇑e.toLinearEquiv = e := rfl
+
+@[simp]
+theorem coe_symm_toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : ⇑e.toLinearEquiv.symm = e.symm := rfl
 
 @[simp]
 theorem toLinearEquiv_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
@@ -597,6 +611,9 @@ theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x
 
 lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
 
+@[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
+  n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups.
 
 This is a more bundled version of `AlgEquiv.equivCongr`. -/
@@ -660,6 +677,10 @@ theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
     f • x = Units.map f x := rfl
 
 @[simp]
+lemma _root_.MulSemiringAction.toRingEquiv_algEquiv (σ : A₁ ≃ₐ[R] A₁) :
+    MulSemiringAction.toRingEquiv _ A₁ σ = σ := rfl
+
+@[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
     algebraMap R A₂ y = e x ↔ algebraMap R A₁ y = x :=
   ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
@@ -692,8 +713,6 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
       left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl)
       right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl) }
   invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
   map_mul' := fun _ _ ↦ rfl
 
 /-- See also `Finite.algHom` -/
@@ -739,3 +758,10 @@ def toAlgAut : G →* A ≃ₐ[R] A where
 end
 
 end MulSemiringAction
+
+/-- The algebra equivalence between `ULift A` and `A`. -/
+@[simps! -isSimp apply]
+def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
+    ULift.{w} A ≃ₐ[R] A where
+  __ := ULift.ringEquiv
+  commutes' _ := rfl

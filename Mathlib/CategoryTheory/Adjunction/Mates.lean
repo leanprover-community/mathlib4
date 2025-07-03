@@ -56,18 +56,22 @@ variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 /-- Suppose we have a square of functors (where the top and bottom are adjunctions `L₁ ⊣ R₁`
 and `L₂ ⊣ R₂` respectively).
 
+```
       C ↔ D
     G ↓   ↓ H
       E ↔ F
+```
 
 Then we have a bijection between natural transformations `G ⋙ L₂ ⟶ L₁ ⋙ H` and
 `R₁ ⋙ G ⟶ H ⋙ R₂`. This can be seen as a bijection of the 2-cells:
 
+```
          L₁                  R₁
       C --→ D             C ←-- D
     G ↓  ↗  ↓ H         G ↓  ↘  ↓ H
       E --→ F             E ←-- F
          L₂                  R₂
+```
 
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
@@ -145,9 +149,10 @@ theorem mateEquiv_vcomp (α : TwoSquare G₁ L₁ L₂ H₁) (β : TwoSquare G�
     (mateEquiv adj₁ adj₃) (α ≫ₕ β) = (mateEquiv adj₁ adj₂ α) ≫ᵥ (mateEquiv adj₂ adj₃ β) := by
   unfold hComp vComp mateEquiv
   ext b
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
-    assoc, comp_app, whiskerLeft_app, whiskerRight_app, associator_hom_app, map_id,
-    associator_inv_app, id_obj, Functor.comp_map, id_comp, whiskerRight_twice, comp_id]
+  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, assoc,
+    whiskerRight_comp, comp_app, Functor.whiskerLeft_app, Functor.whiskerRight_app,
+    associator_hom_app, map_id, associator_inv_app, id_obj, Functor.comp_map, id_comp,
+    whiskerRight_twice, comp_id]
   slice_rhs 1 4 => rw [← assoc, ← assoc, ← unit_naturality (adj₃)]
   rw [L₃.map_comp, R₃.map_comp]
   slice_rhs 2 4 =>
@@ -412,11 +417,13 @@ variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U�
 
 /-- When all four functors in a sequare are left adjoints, the mates operation can be iterated:
 
+```
          L₁                  R₁                  R₁
       C --→ D             C ←-- D             C ←-- D
    F₁ ↓  ↗  ↓  F₂      F₁ ↓  ↘  ↓ F₂       U₁ ↑  ↙  ↑ U₂
       E --→ F             E ←-- F             E ←-- F
          L₂                  R₂                  R₂
+```
 
 In this case the iterated mate equals the conjugate of the original transformation and is thus an
 isomorphism if and only if the original transformation is. This explains why some Beck-Chevalley
@@ -452,9 +459,10 @@ theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerLeft_comp, assoc, mateEquiv_apply, whiskerLeft_twice,
-    whiskerRight_comp, comp_app, whiskerLeft_app, whiskerRight_app, associator_hom_app, map_id,
-    leftUnitor_hom_app, rightUnitor_inv_app, associator_inv_app, Functor.id_map, Functor.comp_map,
-    id_comp, whiskerRight_twice, comp_id] at vcompb
+    Iso.hom_inv_id_assoc, whiskerRight_comp, comp_app, Functor.whiskerLeft_app,
+    Functor.whiskerRight_app, associator_hom_app, map_id, associator_inv_app, leftUnitor_hom_app,
+    rightUnitor_inv_app, Functor.id_map, Functor.comp_map, id_comp, whiskerRight_twice,
+    comp_id] at vcompb
   simpa [mateEquiv]
 
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
@@ -469,9 +477,10 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerRight_comp, assoc, mateEquiv_apply, whiskerLeft_comp,
-    whiskerLeft_twice, comp_app, whiskerLeft_app, whiskerRight_app, associator_hom_app, map_id,
-    associator_inv_app, leftUnitor_hom_app, rightUnitor_inv_app, Functor.comp_map, Functor.id_map,
-    id_comp, whiskerRight_twice, comp_id] at vcompb
+    whiskerLeft_twice, comp_app, Functor.whiskerLeft_app, Functor.whiskerRight_app,
+    associator_hom_app, map_id, associator_inv_app, leftUnitor_hom_app, rightUnitor_inv_app,
+    Functor.comp_map, Functor.id_map, id_comp, whiskerRight_twice, Iso.inv_hom_id_assoc,
+    comp_id] at vcompb
   simpa [mateEquiv]
 
 end CategoryTheory

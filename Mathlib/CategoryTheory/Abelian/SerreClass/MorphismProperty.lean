@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-!
-# The classes of isomorphisms modulo a Serre class
+# The class of isomorphisms modulo a Serre class
 
 Let `C` be an abelian category and `P : ObjectProperty C` a Serre class.
 We define `P.isoModSerre : MorphismProperty C`, which is the class of
@@ -40,14 +40,14 @@ variable (P : ObjectProperty C)
 
 /-- The class of monomorphisms modulo a Serre class: given a
 Serre class `P : ObjectProperty C`, this is the class of morphisms `f`
-such that `kernel f` satisfy `P`. -/
+such that `kernel f` satisfies `P`. -/
 @[nolint unusedArguments]
 def monoModSerre [P.IsSerreClass] : MorphismProperty C :=
   fun _ _ f ↦ P (kernel f)
 
 /-- The class of epimorphisms modulo a Serre class: given a
 Serre class `P : ObjectProperty C`, this is the class of morphisms `f`
-such that `cokernel f` satisfy `P`. -/
+such that `cokernel f` satisfies `P`. -/
 @[nolint unusedArguments]
 def epiModSerre [P.IsSerreClass] : MorphismProperty C :=
   fun _ _ f ↦ P (cokernel f)
@@ -65,7 +65,7 @@ lemma monoModSerre_iff {X Y : C} (f : X ⟶ Y) :
     P.monoModSerre f ↔ P (kernel f) := Iff.rfl
 
 lemma monomorphisms_le_monoModSerre : monomorphisms C ≤ P.monoModSerre :=
-    fun _ _ f (_ : Mono f) ↦ P.prop_of_isZero (isZero_kernel_of_mono f)
+  fun _ _ f (_ : Mono f) ↦ P.prop_of_isZero (isZero_kernel_of_mono f)
 
 lemma monoModSerre_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] :
     P.monoModSerre f :=
@@ -75,7 +75,7 @@ lemma epiModSerre_iff {X Y : C} (f : X ⟶ Y) :
     P.epiModSerre f ↔ P (cokernel f) := Iff.rfl
 
 lemma epimorphisms_le_epiModSerre : epimorphisms C ≤ P.epiModSerre :=
-    fun _ _ f (_ : Epi f) ↦ P.prop_of_isZero (isZero_cokernel_of_epi f)
+  fun _ _ f (_ : Epi f) ↦ P.prop_of_isZero (isZero_cokernel_of_epi f)
 
 lemma epiModSerre_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] :
     P.epiModSerre f :=

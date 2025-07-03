@@ -66,7 +66,7 @@ is the canonical morphism (which is an homotopy equivalence) from `mappingCone g
 the mapping cone of the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def hom :
     mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
-  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
+  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by simp))
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_cancel 1)) (by
       ext p _ rfl
       dsimp [mappingConeCompTriangle, map]
@@ -87,6 +87,8 @@ lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
   simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
+set_option linter.style.maxHeartbeats false in
+-- no reason was present for this heartbeat bump at the time of the creation of the linter
 set_option maxHeartbeats 400000 in
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes,
 this is the `homotopyInvHomId` field of the homotopy equivalence

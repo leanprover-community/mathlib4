@@ -3,14 +3,16 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Bases and dimensionality of tensor products of modules
 
-These can not go into `LinearAlgebra.TensorProduct` since they depend on
-`LinearAlgebra.FinsuppVectorSpace` which in turn imports `LinearAlgebra.TensorProduct`.
+This file defines various bases on the tensor product of modules,
+and shows that the tensor product of free modules is again free.
 -/
 
 
@@ -47,7 +49,7 @@ theorem Basis.tensorProduct_apply' (b : Basis ι S M) (c : Basis κ R N) (i : ι
 theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m : M) (n : N)
     (i : ι) (j : κ) :
     (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
-  simp [Basis.tensorProduct, mul_comm]
+  simp [Basis.tensorProduct]
 
 variable (S : Type*) [Semiring S] [Algebra R S]
 
@@ -171,6 +173,14 @@ lemma TensorProduct.sum_tmul_basis_left_eq_zero
   (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.injective (a₂ := 0) <| by simpa
 
 end
+
+variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
+  [Module S M] [IsScalarTower R S M] [Module.Free S M]
+  [AddCommMonoid N] [Module R N] [Module.Free R N]
+instance Module.Free.tensor : Module.Free S (M ⊗[R] N) :=
+  let ⟨bM⟩ := exists_basis (R := S) (M := M)
+  let ⟨bN⟩ := exists_basis (R := R) (M := N)
+  of_basis (bM.2.tensorProduct bN.2)
 
 end CommSemiring
 

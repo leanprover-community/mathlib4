@@ -46,8 +46,7 @@ lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;> use k
   · simpa only [← two_mul, Xor', true_and, eq_self_iff_true, not_true, or_false,
       and_false] using (succ_ne_self (2 * k)).symm
-  · simp only [Xor', add_right_eq_self, false_or, eq_self_iff_true, not_true, not_false_iff,
-      one_ne_zero, and_self_iff]
+  · simp only [Xor', add_eq_left, false_or, not_true, not_false_iff, one_ne_zero, and_self_iff]
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd
 
@@ -94,7 +93,7 @@ lemma even_mul_pred_self (n : ℤ) : Even (n * (n - 1)) := by
   rw [← not_even_iff_odd, ← Nat.not_even_iff_odd, even_coe_nat]
 
 @[simp] lemma natAbs_even : Even n.natAbs ↔ Even n := by
-  simp [even_iff_two_dvd, dvd_natAbs, natCast_dvd.symm]
+  simp [even_iff_two_dvd, natCast_dvd.symm]
 
 @[simp]
 lemma natAbs_odd : Odd n.natAbs ↔ Odd n := by
@@ -128,6 +127,20 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
 
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
+
+@[simp]
+theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
+  induction z using wlog_sign with
+  | inv => simp
+  | w n =>
+    cases n
+    · simp
+    · norm_cast
+      simp
+
+@[simp]
+theorem odd_sign_iff {z : ℤ} : Odd z.sign ↔ z ≠ 0 := by
+  rw [← not_even_iff_odd, even_sign_iff]
 
 @[norm_cast, simp]
 theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
