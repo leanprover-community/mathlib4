@@ -954,6 +954,7 @@ import Mathlib.Algebra.Polynomial.CoeffMem
 import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Degree.Monomial
 import Mathlib.Algebra.Polynomial.Degree.Operations
