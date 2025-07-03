@@ -18,7 +18,7 @@ variable {R T S : Type*}
 
 lemma quadratic_ne_zero [Semiring R] {a b c : R} (ha : a ≠ 0) : C a * X ^ 2 + C b * X + C c ≠ 0 :=
   fun hx ↦ ha (by rw [show a = (C a * X ^ 2 + C b * X + C c).coeff 2 by
-    simp [coeff_X], hx, coeff_zero])
+    simp, hx, coeff_zero])
 
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
