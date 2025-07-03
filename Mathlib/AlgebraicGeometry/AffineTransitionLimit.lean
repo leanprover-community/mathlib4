@@ -170,10 +170,11 @@ lemma exists_mem_of_isClosed_of_nonempty'
 
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
 and another scheme `X` of finite type over `S`.
-Then the canonical map `lim Homₛ(Dᵢ, X) ⟶ Homₛ(colim Dᵢ, X)` is injective.
+Then the canonical map `colim Homₛ(Dᵢ, X) ⟶ Homₛ(lim Dᵢ, X)` is injective.
 In other words, for each pair of `a : Homₛ(Dᵢ, X)` and `b : Homₛ(Dⱼ, X)` that give rise to the
 same map `Homₛ(lim Dᵢ, X)`, there exists a `k` with `fᵢ : k ⟶ i` and `fⱼ : k ⟶ j` such that
 `D(fᵢ) ≫ a = D(fⱼ) ≫ b`.
+This results is formalized in `Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`.
 
 We first reduce to the case `i = j`, and the goal is to reduce to the case where `X` and `S`
 are affine, where the result follows from commutative algebra.
