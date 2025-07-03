@@ -326,6 +326,9 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
 
 variable {M G : Type*}
 
+/-- `Mᵐ⁰` is notation for `WithZero (Multiplicative M)`.
+
+This naturally shows up as the codomain of valuations in valuation theory. -/
 scoped notation:1024 M:1024 "ᵐ⁰" => WithZero <| Multiplicative M
 
 section AddMonoid
