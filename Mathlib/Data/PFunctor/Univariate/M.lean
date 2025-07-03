@@ -503,9 +503,7 @@ theorem ext [Inhabited (M F)] [DecidableEq F.A] (x y : M F)
     x = y := by
   apply ext'; intro i
   induction' i with i i_ih
-  · cases x.approx 0
-    cases y.approx 0
-    constructor
+  · subsingleton
   · apply ext_aux x y x
     · rw [← agree_iff_agree']
       apply x.consistent
