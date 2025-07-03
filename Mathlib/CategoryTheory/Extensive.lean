@@ -360,7 +360,7 @@ theorem finitaryExtensive_of_reflective
   constructor
   intros X Y c hc
   apply (IsVanKampenColimit.precompose_isIso_iff
-    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp
+    (Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp
   have : ∀ (Z : C) (i : Discrete WalkingPair) (f : Z ⟶ (colimit.cocone (pair X Y ⋙ Gr)).pt),
         PreservesLimit (cospan f ((colimit.cocone (pair X Y ⋙ Gr)).ι.app i)) Gl := by
     have : pair X Y ⋙ Gr = pair (Gr.obj X) (Gr.obj Y) := by

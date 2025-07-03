@@ -60,8 +60,8 @@ def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
-  simp only [logTaylor, Finset.range_zero, ← Nat.not_even_iff_odd, Int.cast_pow, Int.cast_neg,
-    Int.cast_one, Finset.sum_empty]
+  simp only [logTaylor, Finset.range_zero,
+    Finset.sum_empty]
 
 lemma logTaylor_succ (n : ℕ) :
     logTaylor (n + 1) = logTaylor n + (fun z : ℂ ↦ (-1) ^ (n + 1) * z ^ n / n) := by
@@ -79,10 +79,10 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>
     rw [logTaylor_succ]
-    simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, ← Nat.not_even_iff_odd,
-      Finset.sum_range_succ, (show (-1) ^ (n + 1 + 1) = (-1) ^ n by ring)]
+    simp only [Nat.cast_add, Nat.cast_one,
+      Finset.sum_range_succ]
     refine HasDerivAt.add ih ?_
-    simp only [← Nat.not_even_iff_odd, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]
+    simp only [mul_div_assoc]
     have : HasDerivAt (fun x : ℂ ↦ (x ^ (n + 1) / (n + 1))) (z ^ n) z := by
       simp_rw [div_eq_mul_inv]
       convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
@@ -142,13 +142,13 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     exact hasDerivAt_log_sub_logTaylor n <|
       StarConvex.add_smul_mem starConvex_one_slitPlane (mem_slitPlane_of_norm_lt_one hz) ht.1 ht.2
   have hcont : ContinuousOn (fun t : ℝ ↦ f' (0 + t * z)) (Set.Icc 0 1) := by
-    simp only [zero_add, zero_le_one, not_true_eq_false]
+    simp only [zero_add]
     exact (Continuous.continuousOn (by fun_prop)).mul <|
       continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
-    · simp only [f', add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add,
+    · simp only [f', real_smul, zero_add,
         smul_eq_mul]
   unfold f at H
   simp only [H, norm_mul]

@@ -160,7 +160,7 @@ protected lemma Preconnected.mono  {G G' : SimpleGraph V} (h : G ≤ G') (hG : G
 lemma bot_preconnected_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
   contrapose h
-  simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot, h]
+  simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot]
 
 lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
   bot_preconnected_iff_subsingleton.mpr ‹_›
@@ -260,7 +260,7 @@ theorem Connected.exists_isPath {G : SimpleGraph V} (h : G.Connected) (u v : V) 
   (h u v).exists_isPath
 
 lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
-  simp [bot_not_preconnected, connected_iff, ‹_›]
+  simp [bot_not_preconnected, connected_iff]
 
 lemma top_connected [Nonempty V] : (⊤ : SimpleGraph V).Connected where
   preconnected := top_preconnected
@@ -681,7 +681,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       rw [Sym2.eq_swap]
       intro h
       cases hp (Walk.edges_toPath_subset p h)
-    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or]
+    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, true_or]
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
     by_contra! hb
