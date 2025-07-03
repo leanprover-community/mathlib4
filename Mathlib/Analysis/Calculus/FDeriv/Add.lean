@@ -137,29 +137,33 @@ theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
 
+/-- If `c` is invertible, `c • f` is differentiable at `x` if and only if `f` is. -/
+lemma differentiableAt_smul_iff (c : R) [Invertible c] :
+    DifferentiableAt 𝕜 (c • f) x ↔ DifferentiableAt 𝕜 f x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.const_smul c⟩
+  apply (h.const_smul ⅟ c).congr_of_eventuallyEq
+  filter_upwards with x using by simp
+
 /-- A version of `fderiv_const_smul` without differentiability hypothesis: in return, the constant
 `c` must be invertible, i.e. if `R` is a field. -/
-theorem fderiv_const_smul'' (c : R) [Invertible c] :
+theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
   by_cases h : DifferentiableAt 𝕜 f x
   · exact (h.hasFDerivAt.const_smul c).fderiv
   · obtain (rfl | hc) := eq_or_ne c 0
     · simp [fderiv_zero]
-    -- make a separate lemma: f is differentiable at x iff c • f is?
     have : ¬DifferentiableAt 𝕜 (c • f) x := by
       contrapose! h
-      apply (h.const_smul ⅟ c).congr_of_eventuallyEq
-      filter_upwards with x
-      simp
+      exact (differentiableAt_smul_iff c).mp h
     simp [fderiv_zero_of_not_differentiableAt h, fderiv_zero_of_not_differentiableAt this]
 
-/-- Special case of `fderiv_const_smul''` over a field: any constant is allowed -/
-lemma fderiv_const_smul''' (c : 𝕜) : fderiv 𝕜 (c • f) = c • (fderiv 𝕜 f) := by
+/-- Special case of `fderiv_const_smul_of_invertible` over a field: any constant is allowed -/
+lemma fderiv_const_smul_of_field (c : 𝕜) : fderiv 𝕜 (c • f) = c • (fderiv 𝕜 f) := by
   obtain (rfl | ha) := eq_or_ne c 0
   · simp
   · have : Invertible c := invertibleOfNonzero ha
     ext x x'
-    simp [fderiv_const_smul'' c (f := f)]
+    simp [fderiv_const_smul_of_invertible c (f := f)]
 
 @[deprecated (since := "2025-06-14")] alias fderiv_const_smul' := fderiv_const_smul
 
