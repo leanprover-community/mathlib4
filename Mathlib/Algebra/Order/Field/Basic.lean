@@ -281,6 +281,13 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
+theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+  if h : n = 0 then by simpa [h] using ha
+  else div_le_self ha (n.one_le_cast_iff_ne_zero.mpr h)
+
+theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
+  div_lt_self ha (n.one_lt_cast.mpr hn)
+
 /-! ### Results about `IsGLB` -/
 
 
