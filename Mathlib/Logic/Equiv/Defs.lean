@@ -166,8 +166,8 @@ instance : Trans Equiv Equiv Equiv where
 /-- `Equiv.symm` defines an equivalence between `α ≃ β` and `β ≃ α`. -/
 @[simps!]
 def symmEquiv (α β : Sort*) : (α ≃ β) ≃ (β ≃ α) where
-  toFun := Equiv.symm
-  invFun := Equiv.symm
+  toFun := .symm
+  invFun := .symm
 
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 

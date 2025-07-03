@@ -441,8 +441,8 @@ end trans
 @[to_additive (attr := simps!)
 "`AddEquiv.symm` defines an equivalence between `α ≃+ β` and `β ≃+ α`"]
 def symmEquiv (P Q : Type*) [Mul P] [Mul Q] : (P ≃* Q) ≃ (Q ≃* P) where
-  toFun := MulEquiv.symm
-  invFun := MulEquiv.symm
+  toFun := .symm
+  invFun := .symm
 
 end Mul
 
