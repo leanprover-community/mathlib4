@@ -71,7 +71,7 @@ theorem equiv_punit_iff_unique :
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
       intro z
-      simp [congrArg (· ≫ h.unitInv.app y) (h.unit.naturality z)]
+      simp
     apply Subsingleton.intro
     intro a b
     rw [this a, this b]
