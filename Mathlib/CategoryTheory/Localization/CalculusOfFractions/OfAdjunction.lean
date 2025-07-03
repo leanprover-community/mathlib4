@@ -69,7 +69,7 @@ lemma isLocalization_leftAdjoint
     G.IsLocalization W := by
   let Φ : W.Localization ⥤ C₂ := Localization.lift _ hW W.Q
   let e : W.Q ⋙ Φ ≅ G := by apply Localization.fac
-  have : IsIso (whiskerRight adj.unit W.Q) := by
+  have : IsIso (Functor.whiskerRight adj.unit W.Q) := by
     rw [NatTrans.isIso_iff_isIso_app]
     intro X
     exact Localization.inverts W.Q W _ (hW' X)
@@ -78,7 +78,8 @@ lemma isLocalization_leftAdjoint
   exact Functor.IsLocalization.of_equivalence_target W.Q W _
     (Equivalence.mk Φ (F ⋙ W.Q)
       (Localization.liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _
-        (W.Q.leftUnitor.symm ≪≫ asIso (whiskerRight adj.unit W.Q) ≪≫ Functor.associator _ _ _))
+        (W.Q.leftUnitor.symm ≪≫ asIso (Functor.whiskerRight adj.unit W.Q) ≪≫
+        Functor.associator _ _ _))
       (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫ asIso adj.counit)) e
 
 lemma isLocalization_rightAdjoint
