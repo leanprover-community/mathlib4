@@ -47,8 +47,8 @@ theorem sumLexComplLeft_symm_apply (a) : sumLexComplLeft r x a = Equiv.sumCompl 
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements not greater than `x` and elements
 greater than `x`. -/
-def sumLexComplRight : Sum.Lex (Subrel r (¬ r x ·)) (Subrel r (r x ·)) ≃r r where
-  toEquiv := (Equiv.sumComm _ _).trans <| Equiv.sumCompl (r x ·)
+def sumLexComplRight : Sum.Lex (Subrel r (¬ r x ·)) (Subrel r (r x)) ≃r r where
+  toEquiv := (Equiv.sumComm _ _).trans <| Equiv.sumCompl (r x)
   map_rel_iff' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
     · simp
@@ -57,11 +57,11 @@ def sumLexComplRight : Sum.Lex (Subrel r (¬ r x ·)) (Subrel r (r x ·)) ≃r r
     · simp
 
 @[simp]
-theorem sumLexComplRight_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x ·) a.swap :=
+theorem sumLexComplRight_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x) a.swap :=
   rfl
 
 @[simp]
-theorem sumLexComplRight_symm_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x ·) a.swap :=
+theorem sumLexComplRight_symm_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x) a.swap :=
   rfl
 
 end RelIso
