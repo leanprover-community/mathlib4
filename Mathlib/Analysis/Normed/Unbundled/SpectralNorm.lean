@@ -681,7 +681,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
     f = spectralAlgNorm K L := by
   apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
   intro x
-  set E : Type v := id K⟮x⟯ with hEdef
+  set E : Type v := id K⟮x⟯
   letI hE : Field E := inferInstanceAs (Field K⟮x⟯)
   letI : Algebra K E := inferInstanceAs (Algebra K K⟮x⟯)
   let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
