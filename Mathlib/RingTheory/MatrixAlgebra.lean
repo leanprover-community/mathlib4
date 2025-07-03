@@ -136,19 +136,23 @@ theorem tensorMatrixLinearEquiv_symm_single_tmul (i : m) (j : n) (a : A) (b : M)
     (tensorMatrixLinearEquiv m n R A M).symm (.single i j (a ⊗ₜ b)) = a ⊗ₜ .single i j b := by
   simp [tensorMatrixLinearEquiv]
 
-
 end Module
 
-section Algebra
-variable (m n R S A B)
+section Semiring
+variable [CommSemiring R] [Semiring A] [Algebra R A]
 
-section
-
-variable [CommSemiring R] [CommSemiring S] [Semiring A]
-variable [Algebra R A] [Algebra S A] [Semiring B] [Algebra R B] [SMulCommClass R S A]
+variable (n R A M) in
+@[simp]
+theorem toTensorMatrixLin_one [DecidableEq n]
+    [AddCommMonoidWithOne M] [Module R M] :
+    toTensorMatrixLin n n R A M 1 = 1 := by
+  simp [Algebra.TensorProduct.one_def]
 
 attribute [local ext] Matrix.ext_linearMap in
-theorem toTensorMatrixLin_mul [Fintype n] (x y : A ⊗[R] Matrix n n B) :
+@[simp]
+theorem toTensorMatrixLin_mul [Fintype n] [NonUnitalSemiring B] [Module R B]
+    [SMulCommClass R B B] [IsScalarTower R B B]
+    (x y : A ⊗[R] Matrix n n B) :
     toTensorMatrixLin n n R A B (x * y) =
       toTensorMatrixLin n n R A B x * toTensorMatrixLin n n R A B y := by
   classical
@@ -162,11 +166,16 @@ theorem toTensorMatrixLin_mul [Fintype n] (x y : A ⊗[R] Matrix n n B) :
   · simp only [single_mul_single_of_ne _ _ _ _ hj, ← mk_apply, map_single]
     simp
 
-@[simp]
-theorem toTensorMatrixLin_one [DecidableEq n] : toTensorMatrixLin n n R A B 1 = 1 := by
-  simp [Algebra.TensorProduct.one_def]
+end Semiring
+
+section Algebra
+variable (m n R S A B)
+
+section tensorMatrixAlgEquiv
 
 variable [Fintype n] [DecidableEq n]
+variable [CommSemiring R] [CommSemiring S] [Semiring A]
+variable [Algebra R A] [Algebra S A] [Semiring B] [Algebra R B] [SMulCommClass R S A]
 
 /-- `toTensorMatrixLin` as an `AlgHom`. -/
 @[simps!]
@@ -174,7 +183,7 @@ def toTensorMatrix : A ⊗[R] Matrix n n B →ₐ[S] Matrix n n (A ⊗[R] B) :=
   AlgHom.ofLinearMap
     (toTensorMatrixLin n n R A B |>.restrictScalars S)
     (toTensorMatrixLin_one _ _ _ _)
-    (toTensorMatrixLin_mul _ _ _ _)
+    toTensorMatrixLin_mul
 
 /-- The base change of matrices over algebras.
 
@@ -191,8 +200,9 @@ lemma tensorMatrixAlgEquiv_apply (M : A ⊗[R] Matrix n n B) :
 lemma tensorMatrixAlgEquiv_symm_apply (M : Matrix n n (A ⊗[R] B)) :
     (tensorMatrixAlgEquiv n R S A B).symm M = (tensorMatrixLinearEquiv n n R A B).symm M := rfl
 
-end
+end tensorMatrixAlgEquiv
 
+section matrixEquivTensor
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [Fintype n] [DecidableEq n]
 
@@ -221,11 +231,14 @@ theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
   ext i j
   simp [matrixEquivTensor, TensorProduct.smul_tmul', Algebra.smul_def, Algebra.commutes (M i j) a]
 
+end matrixEquivTensor
+
 namespace Matrix
 open scoped Kronecker
 
-variable [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
-variable [Fintype m] [DecidableEq m]
+variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 
 /-- `Matrix.kroneckerTMul` as an algebra equivalence, when the two arguments are tensored. -/
 def kroneckerTMulAlgEquiv :
