@@ -600,7 +600,7 @@ theorem MDifferentiableAt.add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
 
 theorem MDifferentiableOn.add {s : Set M} (hf : MDifferentiableOn I 𝓘(𝕜, E') f s)
     (hg : MDifferentiableOn I 𝓘(𝕜, E') g s) : MDifferentiableOn I 𝓘(𝕜, E') (f + g) s :=
-  fun x hx => (hf x hx).add (hg x hx)
+  fun x hx ↦ (hf x hx).add (hg x hx)
 
 theorem MDifferentiable.add (hf : MDifferentiable I 𝓘(𝕜, E') f)
     (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f + g) := fun x =>
