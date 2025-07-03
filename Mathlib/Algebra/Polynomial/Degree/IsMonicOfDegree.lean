@@ -31,7 +31,7 @@ structure IsMonicOfDegree (p : R[X]) (n : ℕ) : Prop where
   monic : p.Monic
 
 @[simp]
-lemma isMonicOfDegree_zero {p : R[X]} : IsMonicOfDegree p 0 ↔ p = 1 := by
+lemma isMonicOfDegree_zero_iff {p : R[X]} : IsMonicOfDegree p 0 ↔ p = 1 := by
   simp only [isMonicOfDegree_iff']
   refine ⟨fun ⟨H₁, H₂⟩ ↦ eq_one_of_monic_natDegree_zero H₂ H₁, fun H ↦ ?_⟩
   subst H
@@ -47,7 +47,7 @@ lemma isMonicOfDegree_iff_of_subsingleton [Subsingleton R] {p : R[X]} {n : ℕ} 
   rw [Subsingleton.eq_one p]
   refine ⟨fun ⟨H, _⟩ ↦ ?_, fun H ↦ ?_⟩
   · rwa [natDegree_one, eq_comm] at H
-  · rw [H, isMonicOfDegree_zero]
+  · rw [H, isMonicOfDegree_zero_iff]
 
 lemma isMonicOfDegree_iff [Nontrivial R] (p : R[X]) (n : ℕ) :
     IsMonicOfDegree p n ↔ p.natDegree ≤ n ∧ p.coeff n = 1 := by
