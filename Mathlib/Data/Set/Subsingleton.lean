@@ -16,7 +16,7 @@ elements.
 
 -/
 
-assert_not_exists RelIso
+assert_not_exists HeytingAlgebra RelIso
 
 open Function
 
