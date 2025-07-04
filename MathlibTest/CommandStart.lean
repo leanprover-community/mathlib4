@@ -1,6 +1,5 @@
 import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
-import Mathlib.adomaniLeanUtils.inspect_syntax
 
 set_option linter.style.commandStart true
 
