@@ -47,25 +47,6 @@ section
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
-@[reassoc (attr := simp)]
-lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
-
-@[reassoc]
-lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
-  SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
-
-@[reassoc (attr := simp)]
-lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
-
-@[reassoc (attr := simp)]
-lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ' (by decide)
-
-@[reassoc]
-lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
-  SimplexCategory.δ_comp_σ_of_gt' (by decide)
-
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
 @[ext]
