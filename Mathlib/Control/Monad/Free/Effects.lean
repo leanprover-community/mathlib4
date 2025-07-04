@@ -70,9 +70,9 @@ lemma set_def (s : σ) : (set s : FreeState σ PUnit) = .lift (.set s) := rfl
 instance : MonadState σ (FreeState σ) := inferInstance
 
 /-- Interpret `StateF` operations into `StateM`. -/
-def stateInterp : {α : Type u} → StateF σ α → StateM σ α
-  | _, .get => MonadStateOf.get
-  | _, .set s => MonadStateOf.set s
+def stateInterp {α : Type u} : StateF σ α → StateM σ α
+  | .get => MonadStateOf.get
+  | .set s => MonadStateOf.set s
 
 /-- Convert a `FreeState` computation into a `StateM` computation. This is the canonical
 interpreter derived from `liftM`. -/
@@ -95,8 +95,9 @@ The canonical interpreter `toStateM` derived from `liftM` agrees with the hand-w
 recursive interpreter `run` for `FreeState`.
 -/
 @[simp]
-theorem toStateM_eq_run {α : Type u} (comp : FreeState σ α) (s₀ : σ) :
-    toStateM comp s₀ = run comp s₀ := by
+theorem run_toStateM {α : Type u} (comp : FreeState σ α) :
+    (toStateM comp).run = run comp := by
+  ext s₀ : 1
   induction comp generalizing s₀ with
   | pure a => rfl
   | liftBind op cont ih =>
@@ -217,11 +218,12 @@ The canonical interpreter `toWriterT` derived from `liftM` agrees with the hand-
 recursive interpreter `run` for `FreeWriter`.
 -/
 @[simp]
-theorem toWriterT_eq_run {α: Type u} [Monoid ω] : ∀ comp : FreeWriter ω α, toWriterT comp = run comp
-  | .pure _ => by simp only [toWriterT, liftM_pure, run_pure, pure]
+theorem run_toWriterT {α: Type u} [Monoid ω] :
+    ∀ comp : FreeWriter ω α, (toWriterT comp).run = run comp
+  | .pure _ => by simp only [toWriterT, liftM_pure, run_pure, pure, WriterT.run]
   | liftBind (.tell w) cont => by
     simp only [toWriterT, liftM_liftBind, run_liftBind_tell] at *
-    rw [← toWriterT_eq_run]
+    rw [← run_toWriterT]
     congr
 
 /--
@@ -321,14 +323,15 @@ The canonical interpreter `toContT` derived from `liftM` agrees with the hand-wr
 recursive interpreter `run` for `FreeCont`.
 -/
 @[simp]
-theorem toContT_eq_run {α : Type u} (comp : FreeCont r α) (k : α → r) :
-    toContT comp k = run comp k := by
+theorem run_toContT {α : Type u} (comp : FreeCont r α) :
+    (toContT comp).run = run comp := by
+  ext k
   induction comp with
   | pure a => rfl
   | liftBind op cont ih =>
     simp only [toContT, FreeM.liftM]
     cases op
-    simp only [run, bind]
+    simp only [run, bind, ContT.run, id]
     congr with x
     apply ih
 
