@@ -21,7 +21,7 @@ out of this typeclass.
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 variable {J₁ J₂ : Type*} [Category J₁] [Category J₂]
   {C₁ C₂ C : Type*} [Category C₁] [Category C₂] [Category C]

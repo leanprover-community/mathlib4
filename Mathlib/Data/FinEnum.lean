@@ -234,9 +234,7 @@ instance [Unique α] : Unique (FinEnum α) where
     · exact card_eq_one α
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
       exact congrArg (α ≃ Fin ·) <| card_eq_one α
-    · funext x y
-      cases decEq x y <;> cases decidableEq_of_subsingleton x y <;>
-      first | rfl | contradiction
+    · subsingleton
 
 /-- A type with unique inhabitant has a trivial enumeration. Not registered as an instance, to make
 sure that there aren't two definitionally differing instances around. -/
