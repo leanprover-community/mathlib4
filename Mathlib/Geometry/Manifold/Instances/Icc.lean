@@ -11,14 +11,23 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 /-! # Manifold structure on real intervals
 
 The manifold structure on real intervals is defined in `Mathlib.Geometry.Manifold.Instances.Real`.
-We relate it to the manifold structure on the real line, by showing that the inclusion and
-projection are smooth, and showing that a function defined on the interval is smooth iff
-its composition with the projection is smooth on the interval in `ℝ`.
+We relate it to the manifold structure on the real line, by showing that the inclusion
+(`contMDiff_subtype_coe_Icc`) and projection (`contMDiffOn_projIcc`) are smooth, and showing that
+a function defined on the interval is smooth iff its composition with the projection is smooth on
+the interval in `ℝ` (see `contMDiffOn_comp_projIcc_iff` and friends).
 
 We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
 
-TODO: several results in this file are particular cases of general results on submersions
-or immersions. Refactor using the general results once they are available.
+## TODO
+
+This file can be thoroughly rewritten once mathlib has a good theory of smooth immersions and
+embeddings. Once this is done,
+- the inclusion `Icc x y → ℝ` is a smooth embedding, and in particular smooth
+- deduce the dual result: a function `f : M → Icc x y` is smooth iff
+  its composition with the inclusion into `ℝ` is smooth
+- prove the projection `ℝ → Icc x y` is a smooth submersion, hence smooth
+- use this to simplify the proof that `f : Icc x y → M` is smooth iff the composition `ℝ → M`
+  with the projection `ℝ → Icc x y` is
 -/
 
 open Set
@@ -176,7 +185,7 @@ lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
   change _ = oneTangentSpaceIcc (Set.projIcc x y h.out.le z)
   simp only [oneTangentSpaceIcc]
   congr
-  simp only [projIcc_of_mem h.out.le hz]
+  simp [projIcc_of_mem h.out.le hz]
 
 lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc x y) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
@@ -185,14 +194,12 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     · rfl
     · rwa [mdifferentiableWithinAt_comp_projIcc_iff]
   rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
-  · convert hw
-    simp
-  · apply (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
-  · apply (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
+  · simp [hw]
+  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
+  · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
-  have I : projIcc x y h.out.le (w : ℝ) = w := by rw [projIcc_of_mem]
-  have J : w = projIcc x y h.out.le (w : ℝ) := by rw [I]
-  rw [I]
+  have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
+  rw [projIcc_of_mem]
   congr 1
   convert mfderivWithin_projIcc_one w.2
 
