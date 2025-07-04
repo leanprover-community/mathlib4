@@ -132,7 +132,7 @@ theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm
         else aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ f)
       else 0 := by
   rw [condExp, dif_pos hm]
-  simp only [hμm, Ne, true_and]
+  simp only [hμm, true_and]
   by_cases hf : Integrable f μ
   · rw [dif_pos hf, if_pos hf]
   · rw [dif_neg hf, if_neg hf]
