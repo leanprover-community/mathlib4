@@ -462,7 +462,7 @@ lemma not_isIntegralHom [Nonempty S] [Nonempty n] : ¬ IsIntegralHom (𝔸(n; S)
   simp [isIntegralHom_over_iff_isEmpty]
 
 /--
-One should bare this equality in mind when breaking the `Spec R/ PrimeSpectrum R` abstraction
+One should bear this equality in mind when breaking the `Spec R/ PrimeSpectrum R` abstraction
 boundary.
 -/
 lemma preorder_instance_eq_spec (R : CommRingCat) :
