@@ -29,3 +29,13 @@ lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
   by
     rw [h1, sup_of_le_right le_sup_left, ← h1]
     exact le_antisymm (sup_le_sup_left le_sup_right _) (by simp [← sup_assoc])⟩
+
+lemma theorem4_i_ii (a : α) (h1 : IsNeutral a) : IsDistrib a := by
+  intro x y
+  have e1 (h : a ≤ x) : a ⊔ (x ⊓ y) = x ⊓ (a ⊔ y) :=
+    calc
+      a ⊔ (x ⊓ y) = (a ⊓ x) ⊔ (x ⊓ y) ⊔ (y ⊓ a) := by
+        aesop
+        rw [inf_comm]
+        apply inf_le_inf_right
+      _ = x ⊓ (a ⊔ y) := sorry
