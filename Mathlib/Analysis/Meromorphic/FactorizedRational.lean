@@ -255,7 +255,7 @@ theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d
     by_cases h : x = y
     · rw [h]
       simp_all
-    · simp_all [update_of_ne (by tauto), zpow_ne_zero, sub_ne_zero]
+    · simp_all [zpow_ne_zero, sub_ne_zero]
   rw [norm_prod, log_prod _ _ this]
   have : (fun u ↦ (d u) * log ‖x - u‖).support ⊆ h.toFinset := by
     intro u
