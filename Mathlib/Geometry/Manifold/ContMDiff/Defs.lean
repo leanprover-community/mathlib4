@@ -542,7 +542,7 @@ theorem contMDiff_iff_target :
 /-- zero-smoothness is equivalent to continuity. -/
 theorem contMDiff_zero_iff :
     ContMDiff I I' 0 f ↔ Continuous f := by
-  rw [← contMDiffOn_univ, continuousOn_univ, contMDiffOn_zero_iff]
+  rw [← contMDiffOn_univ, ← continuousOn_univ, contMDiffOn_zero_iff]
 
 end IsManifold
 
