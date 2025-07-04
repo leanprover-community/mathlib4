@@ -299,13 +299,8 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     exact ⟨bot_le, hd⟩
 
 theorem degree_eq_zero_iff {f : MvPolynomial σ R} :
-    m.degree f = 0 ↔ f = C (m.leadingCoeff f) := by
-  constructor
-  · intro h
-    apply MonomialOrder.eq_C_of_degree_eq_zero h
-  · intro h
-    rw [h]
-    simp
+    m.degree f = 0 ↔ f = C (m.leadingCoeff f) :=
+  ⟨MonomialOrder.eq_C_of_degree_eq_zero, fun h => by rw [h, MonomialOrder.degree_C]⟩
 
 theorem degree_add_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f + g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
