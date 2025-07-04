@@ -1074,7 +1074,7 @@ theorem continuousOn_iff_continuousOn_comp_left {f : Z → X} {s : Set Z} (h : s
 on the left is continuous and its image is contained in the source. -/
 theorem continuous_iff_continuous_comp_left {f : Z → X} (h : f ⁻¹' e.source = univ) :
     Continuous f ↔ Continuous (e ∘ f) := by
-  simp only [continuousOn_univ]
+  simp only [← continuousOn_univ]
   exact e.continuousOn_iff_continuousOn_comp_left (Eq.symm h).subset
 
 end Continuity
