@@ -85,7 +85,7 @@ theorem continuous_of_locally_uniform_approx_of_continuousAt
 /-- A function which can be uniformly approximated by continuous functions is continuous. -/
 theorem continuous_of_uniform_approx_of_continuous
     (L : ∀ u ∈ 𝓤 β, ∃ F, Continuous F ∧ ∀ y, (f y, F y) ∈ u) : Continuous f :=
-  continuousOn_univ.mpr <|
+  continuousOn_univ.mp <|
     continuousOn_of_uniform_approx_of_continuousOn <| by
       simpa [continuousOn_univ] using L
 
@@ -115,7 +115,7 @@ protected theorem TendstoUniformlyOn.continuousOn (h : TendstoUniformlyOn F f p 
 /-- A locally uniform limit of continuous functions is continuous. -/
 protected theorem TendstoLocallyUniformly.continuous (h : TendstoLocallyUniformly F f p)
     (hc : ∀ᶠ n in p, Continuous (F n)) [NeBot p] : Continuous f :=
-  continuousOn_univ.mpr <|
+  continuousOn_univ.mp <|
     h.tendstoLocallyUniformlyOn.continuousOn <| hc.mono fun _n hn => hn.continuousOn
 
 /-- A uniform limit of continuous functions is continuous. -/
