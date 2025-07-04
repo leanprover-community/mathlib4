@@ -278,6 +278,20 @@ lemma dist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).dist u v = 1 := by
 lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
+lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h₁ : p₁.length = G.dist u v) (h₂ : p₂.IsSubwalk p₁) : p₂.length = G.dist u' v' := by
+  by_contra hh
+  rcases show p₂.length < G.dist u' v'  ∨ p₂.length > G.dist u' v' by omega
+  · have := SimpleGraph.dist_le p₂
+    omega
+  · obtain ⟨ru, rv, h⟩ := h₂
+    obtain ⟨s, _⟩ := p₂.reachable.exists_path_of_dist
+    let r := ru.append s |>.append rv
+    have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
+    have : r.length = ru.length + s.length + rv.length := by simp [r]
+    have := SimpleGraph.dist_le r
+    omega
+
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
 protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
