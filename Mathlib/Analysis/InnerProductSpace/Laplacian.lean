@@ -316,13 +316,10 @@ theorem _root_.ContDiffAt.laplacian_CLM_comp_left {l : F →L[ℝ] G} (h : ContD
 
 /-- The Laplacian commutes with left composition by continuous linear maps. -/
 theorem _root_.ContDiffWithinAt.laplacianWithin_CLM_comp_left_nhds {l : F →L[ℝ] G}
-    (h : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    (h : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) :
     Δ[s] (l ∘ f) =ᶠ[𝓝[s] x] l ∘ Δ[s] f := by
-  nth_rw 1 [← s.insert_eq_of_mem hx]
-  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl),
-    eventually_mem_nhdsWithin] with a h₁a h₂a
-  rw [s.insert_eq_of_mem hx] at h₂a
-  simp [h₁a.laplacianWithin_CLM_comp_left hs h₂a]
+  filter_upwards [(h.eventually (by simp)).filter_mono (nhdsWithin_mono _ (Set.subset_insert ..)),
+    eventually_mem_nhdsWithin] with a h₁a using h₁a.laplacianWithin_CLM_comp_left hs
 
 /-- The Laplacian commutes with left composition by continuous linear maps. -/
 theorem _root_.ContDiffAt.laplacian_CLM_comp_left_nhds {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
