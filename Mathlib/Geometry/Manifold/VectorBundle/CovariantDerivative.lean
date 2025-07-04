@@ -128,21 +128,6 @@ structure CovariantDerivative where
   smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜),
     toFun X (a • σ) = a • toFun X σ
 
-variable {I F V}
-/--
-A covariant derivative ∇ is called of class `C^k` iff,
-whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
-This is a class so typeclass inference can deduce this automatically.
--/
-class IsCkConnection (cov : CovariantDerivative I F V) (k : ℕ∞) where
-  regularity : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x),
-    ContMDiff I (I.prod 𝓘(𝕜, F)) (k + 1) (T% σ) →
-    -- TODO: this condition does not typecheck!
-    -- ContMDiff I I.tangent k (fun x ↦ (X x : TangentBundle I M)) →
-    ContMDiff I (I.prod 𝓘(𝕜, F)) k (T% (cov.toFun X σ))
-
--- future: if g is a C^k metric, the LC connection is of class C^k ?
-
 namespace CovariantDerivative
 
 attribute [coe] toFun
@@ -151,6 +136,20 @@ attribute [coe] toFun
 instance : CoeFun (CovariantDerivative I F V)
     fun _ ↦ (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
   ⟨fun e ↦ e.toFun⟩
+
+variable {I F V}
+/--
+A covariant derivative ∇ is called of class `C^k` iff,
+whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
+This is a class so typeclass inference can deduce this automatically.
+-/
+class _root_.IsCkConnection (cov : CovariantDerivative I F V) (k : ℕ∞) [IsManifold I 1 M] where
+  regularity : ∀ {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x},
+    ContMDiff I (I.prod 𝓘(𝕜, F)) (k + 1) (T% σ) → ContMDiff I (I.prod 𝓘(𝕜, E)) k (T% X) →
+    ContMDiff I (I.prod 𝓘(𝕜, F)) k (T% (cov X σ))
+
+-- future: if g is a C^k metric on a manifold M, the corresponding Levi-Civita connection
+-- is of class C^k (up to off-by-one errors)
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [VectorBundle 𝕜 F V] in
@@ -250,30 +249,30 @@ def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
 omit [IsManifold I 0 M]
   [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 /-- A convex combination of two `C^k` connections is a `C^k` connection. -/
-lemma convexCombination_isRegular (cov cov' : CovariantDerivative I F V) {f : M → 𝕜} {n : ℕ∞}
-    (hf : ContMDiff I 𝓘(𝕜) n f)
+lemma convexCombination_isRegular [IsManifold I 1 M] (cov cov' : CovariantDerivative I F V)
+    {f : M → 𝕜} {n : ℕ∞} (hf : ContMDiff I 𝓘(𝕜) n f)
     (hcov : IsCkConnection cov n) (hcov' : IsCkConnection cov' n) :
     IsCkConnection (convexCombination cov cov' f) n where
-  regularity X σ hX /-hσ-/ := by
+  regularity {X σ} hX hσ := by
     apply contMDiff_add_section
-    · exact contMDiff_smul_section hf <| hcov.regularity X σ hX
-    · exact contMDiff_smul_section (contMDiff_const.sub hf) <| hcov'.regularity X σ hX
+    · exact contMDiff_smul_section hf <| hcov.regularity hX hσ
+    · exact contMDiff_smul_section (contMDiff_const.sub hf) <| hcov'.regularity hX hσ
 
 omit [IsManifold I 0 M]
   [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 /-- A convex combination of finitely many `C^k` connections is a `C^k` connection. -/
-lemma convexCombination'_isRegular {ι : Type*} {s : Finset ι} [Nonempty s]
+lemma convexCombination'_isRegular [IsManifold I 1 M] {ι : Type*} {s : Finset ι} [Nonempty s]
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞}
     (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
     (hcov : ∀ i ∈ s, IsCkConnection (cov i) n) :
     IsCkConnection (convexCombination' cov hf) n where
-  regularity X σ hX /-hσ-/ := by
+  regularity {X σ} hX hσ := by
     unfold convexCombination'
     dsimp
     have ms (i) (hi : i ∈ s) : ContMDiff I (I.prod 𝓘(𝕜, F)) n
         (T% (f i • (cov i) X σ)) := by
       apply contMDiff_smul_section (hf' i hi)
-      exact IsCkConnection.regularity X σ hX (self := hcov i hi)
+      exact IsCkConnection.regularity hX hσ (self := hcov i hi)
     simp only [Finset.sum_apply, Pi.smul_apply']
     exact contMDiff_finsum_section (t := fun i ↦ f i • (cov i) X σ) ms
 
@@ -306,7 +305,7 @@ noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
 
 /-- The trivial connection on the trivial bundle is smooth -/
 lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial E E') (⊤ : ℕ∞) where
-  regularity X σ hX /-hσ-/ := by
+  regularity {X σ} hX hσ := by
     -- except for local trivialisations, contDiff_infty_iff_fderiv covers this well
     simp only [trivial]
     -- use a local trivialisation
