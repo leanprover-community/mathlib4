@@ -163,6 +163,8 @@ theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
 
 section associator
 
+open Functor
+
 variable (H : C ⥤ V)
     [DayConvolution G H]
     [DayConvolution F (G ⊛ H)]
@@ -176,12 +178,12 @@ open MonoidalCategory.ExternalProduct
 
 instance : (F ⊠ G ⊛ H).IsLeftKanExtension <|
     extensionUnitRight (G ⊛ H) (unit G H) F :=
-  (pointwiseLeftKanExtensionRight _ _ _ <|
+  (isPointwiseLeftKanExtensionExtensionUnitRight _ _ _ <|
     isPointwiseLeftKanExtensionUnit G H).isLeftKanExtension
 
 instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
     extensionUnitLeft (F ⊛ G) (unit F G) H :=
-  (pointwiseLeftKanExtensionLeft _ _ _ <|
+  (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
 /-- The `CorepresentableBy` structure on `F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -`. -/
@@ -282,7 +284,7 @@ lemma associator_inv_unit_unit (x y z : C) :
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
-  simp only [Category.assoc, this]
+  simp only [this]
   simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
 
 variable {F G H} in
@@ -297,8 +299,7 @@ theorem associator_naturality {F' G' H' : C ⥤ V}
   dsimp
   ext
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, Functor.prod_obj, tensor_obj,
-    Functor.id_obj, corepresentableBy₂', whiskeringLeft_obj_obj, coyoneda_obj_obj,
-    Equiv.trans_apply, Functor.homEquivOfIsLeftKanExtension_apply_app,
+    Functor.id_obj, Functor.homEquivOfIsLeftKanExtension_apply_app,
     externalProductBifunctor_map_app, Functor.leftUnitor_inv_app, whiskerLeft_id, Category.comp_id,
     corepresentableBy_homEquiv_apply_app, NatTrans.comp_app, unit_app_map_app_assoc]
   rw [associator_hom_unit_unit_assoc]
@@ -331,8 +332,8 @@ lemma pentagon (H K : C ⥤ V)
   letI : (((F ⊛ G) ⊠ H) ⊠ K).IsLeftKanExtension
     (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K) :=
-    pointwiseLeftKanExtensionLeft _ _ _
-      (pointwiseLeftKanExtensionLeft _ _ _
+    isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
+      (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
         (isPointwiseLeftKanExtensionUnit F G))|>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K)
