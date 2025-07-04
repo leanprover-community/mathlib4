@@ -90,7 +90,7 @@ def P_functor : ℰᵒᵖ ⥤ ℰ := {
 /--
 Given a morphism `g : A ⟶ P C` and a morphism `h : B ⟶ C`, the characteristic map
 of the composite `Ph ∘ g : A ⟶ P B` is equal to the pullback of the characteristic
-map `hat C g` along the morphism `h × 𝟙 : B × A ⟶ C × A`.
+map `g^` along the morphism `h × 𝟙 : B × A ⟶ C × A`.
 
 This expresses the dinaturality of the `hat` construction, or equivalently,
 that the transpose of `Ph ∘ g` is the pullback of the transpose of `g`
