@@ -170,7 +170,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← getLCtx
   ctx.forM fun decl => do
     if decl.isImplementationDetail then return
-    let (nm, args) := decl.type.getAppFnArgs
+    let (nm, args) := (← instantiateMVars decl.type).getAppFnArgs
     -- Check if the type of the current hypothesis has been tagged with the `algebraize` attribute
     match Attr.algebraizeAttr.getParam? (← getEnv) nm with
     -- If it has, `p` will either be the name of the corresponding `Algebra` property, or a
