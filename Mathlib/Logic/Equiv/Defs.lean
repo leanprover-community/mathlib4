@@ -163,6 +163,12 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 
+/-- `Equiv.symm` defines an equivalence between `α ≃ β` and `β ≃ α`. -/
+@[simps!]
+def symmEquiv (α β : Sort*) : (α ≃ β) ≃ (β ≃ α) where
+  toFun := .symm
+  invFun := .symm
+
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 
 @[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
