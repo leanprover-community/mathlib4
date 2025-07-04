@@ -97,7 +97,7 @@ lemma ι_tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) 
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
     ιTensorObj X₁ Y₁ i₁ i₂ i₁₂ h ≫ tensorHom f g i₁₂ =
       (f i₁ ⊗ₘ g i₂) ≫ ιTensorObj X₂ Y₂ i₁ i₂ i₁₂ h := by
-  rw [MonoidalCategory.tensorHom_def, assoc]
+  rw [tensorHom_def, assoc]
   apply ι_mapBifunctorMapMap
 
 /-- The morphism `tensorObj X Y₁ ⟶ tensorObj X Y₂` induced by a morphism of graded objects

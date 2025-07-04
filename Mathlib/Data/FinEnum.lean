@@ -214,7 +214,7 @@ theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
 instance [IsEmpty α] : Unique (FinEnum α) where
   default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩
   uniq e := by
-    show FinEnum.mk e.1 e.2 = _
+    change FinEnum.mk e.1 e.2 = _
     congr 1
     · exact card_eq_zero
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
@@ -229,14 +229,12 @@ def ofIsEmpty [IsEmpty α] : FinEnum α := default
 instance [Unique α] : Unique (FinEnum α) where
   default := ⟨1, Equiv.ofUnique α (Fin 1)⟩
   uniq e := by
-    show FinEnum.mk e.1 e.2 = _
+    change FinEnum.mk e.1 e.2 = _
     congr 1
     · exact card_eq_one α
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
       exact congrArg (α ≃ Fin ·) <| card_eq_one α
-    · funext x y
-      cases decEq x y <;> cases decidableEq_of_subsingleton x y <;>
-      first | rfl | contradiction
+    · subsingleton
 
 /-- A type with unique inhabitant has a trivial enumeration. Not registered as an instance, to make
 sure that there aren't two definitionally differing instances around. -/

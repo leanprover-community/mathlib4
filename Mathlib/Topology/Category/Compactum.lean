@@ -469,9 +469,9 @@ monadicity.
 noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by
   let e : forget CompHaus ≅ compactumToCompHaus.inv ⋙ Compactum.forget :=
     (((forget CompHaus).leftUnitor.symm ≪≫
-    isoWhiskerRight compactumToCompHaus.asEquivalence.symm.unitIso (forget CompHaus)) ≪≫
+    Functor.isoWhiskerRight compactumToCompHaus.asEquivalence.symm.unitIso (forget CompHaus)) ≪≫
     compactumToCompHaus.inv.associator compactumToCompHaus (forget CompHaus)) ≪≫
-    isoWhiskerLeft _ compactumToCompHausCompForget
+    Functor.isoWhiskerLeft _ compactumToCompHausCompForget
   exact createsLimitsOfNatIso e.symm
 
 noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := by
