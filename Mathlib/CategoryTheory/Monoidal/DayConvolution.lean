@@ -25,7 +25,6 @@ a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan ex
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 
 ## TODOs (@robin-carlier)
-- Define associators and unitors, prove the pentagon and triangle identities.
 - Braided/symmetric case.
 - Case where `V` is closed.
 - Define a typeclass `DayConvolutionMonoidalCategory` extending `MonoidalCategory`
