@@ -400,6 +400,8 @@ structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
 
 attribute [reassoc] GradedNatTrans.naturality
 
+/-- A (non-graded) natural transformation between to enriched functors is a natural
+transformation on graded on `𝟙_ V`. -/
 abbrev EnrichedNatTrans (F G : EnrichedFunctor V C D) := GradedNatTrans Center.tensorUnit F G
 
 namespace EnrichedNatTrans
@@ -408,6 +410,7 @@ open EnrichedCategory
 
 variable (F : EnrichedFunctor V C D)
 
+/-- The identity natural transformation on an enriched functor. -/
 @[simps]
 def id : EnrichedNatTrans F F where
   app X := eId V (F.obj X)
@@ -427,6 +430,7 @@ theorem naturality (α : EnrichedNatTrans F G) (X Y : C) :
     Category.assoc] at this
   rwa [Iso.eq_inv_comp]
 
+/-- The composition of enriched natural transformations. -/
 @[simps]
 def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTrans F H where
   app X := (ρ_ (𝟙_ V)).inv ≫ (α.app X ⊗ₘ β.app X) ≫ eComp _ _ _ _
