@@ -21,7 +21,7 @@ def Complex.integerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
 
 namespace Complex
 
-local notation "ℂ_ℤ " => integerComplement
+local notation "ℂ_ℤ" => integerComplement
 
 lemma integerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rfl
 
