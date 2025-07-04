@@ -48,7 +48,7 @@ inductive StateF (σ : Type u) : Type u → Type u where
 abbrev FreeState (σ : Type u) := FreeM (StateF σ)
 
 namespace FreeState
-variable {σ : Type u}
+variable {σ : Type u} {α : Type v}
 
 instance : Monad (FreeState σ) := inferInstance
 instance : LawfulMonad (FreeState σ) := inferInstance
@@ -65,8 +65,7 @@ instance : MonadStateOf σ (FreeState σ) where
 lemma get_def : (get : FreeState σ σ) = .lift .get := rfl
 
 @[simp]
-lemma set_def (s : σ) :
-  (set s : FreeState σ PUnit) = .liftBind (.set s) (fun _ => .pure PUnit.unit) := rfl
+lemma set_def (s : σ) : (set s : FreeState σ PUnit) = .lift (.set s) := rfl
 
 instance : MonadState σ (FreeState σ) := inferInstance
 
@@ -77,15 +76,15 @@ def stateInterp : {α : Type u} → StateF σ α → StateM σ α
 
 /-- Convert a `FreeState` computation into a `StateM` computation. This is the canonical
 interpreter derived from `liftM`. -/
-def toStateM {σ α : Type u} (comp : FreeState σ α) : StateM σ α :=
+def toStateM {α : Type u} (comp : FreeState σ α) : StateM σ α :=
   comp.liftM stateInterp
 
 /-- `toStateM` is the unique interpreter extending `stateInterp`. -/
-theorem toStateM_unique {σ α : Type u} (g : FreeState σ α → StateM σ α)
+theorem toStateM_unique {α : Type u} (g : FreeState σ α → StateM σ α)
     (h : ExtendsHandler stateInterp g) : g = toStateM := h.eq
 
 /-- Run a state computation, returning both the result and final state. -/
-def run {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
+def run (comp : FreeState σ α) (s₀ : σ) : α × σ :=
   match comp with
   | .pure a => (a, s₀)
   | .liftBind StateF.get k => run (k s₀) s₀
@@ -96,7 +95,7 @@ The canonical interpreter `toStateM` derived from `liftM` agrees with the hand-w
 recursive interpreter `run` for `FreeState`.
 -/
 @[simp]
-theorem toStateM_eq_run {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
+theorem toStateM_eq_run {α : Type u} (comp : FreeState σ α) (s₀ : σ) :
     toStateM comp s₀ = run comp s₀ := by
   induction comp generalizing s₀ with
   | pure a => rfl
@@ -104,47 +103,47 @@ theorem toStateM_eq_run {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
     cases op <;> apply ih
 
 @[simp]
-lemma run_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
+lemma run_pure (a : α) (s₀ : σ) :
     run (.pure a : FreeState σ α) s₀ = (a, s₀) := rfl
 
 @[simp]
-lemma run_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s₀ : σ) :
+lemma run_get (k : σ → FreeState σ α) (s₀ : σ) :
     run (liftBind .get k) s₀ = run (k s₀) s₀ := rfl
 
 @[simp]
-lemma run_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
+lemma run_set (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
     run (liftBind (.set s') k) s₀ = run (k .unit) s' := rfl
 
 /-- Run a state computation, returning only the result. -/
-def evalState {σ : Type u} {α : Type v} (c : FreeState σ α) (s₀ : σ) : α :=
+def evalState (c : FreeState σ α) (s₀ : σ) : α :=
   (run c s₀).1
 
 @[simp]
-lemma evalState_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
+lemma evalState_pure (a : α) (s₀ : σ) :
     evalState (.pure a : FreeState σ α) s₀ = a := rfl
 
 @[simp]
-lemma evalState_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s₀ : σ) :
+lemma evalState_get (k : σ → FreeState σ α) (s₀ : σ) :
     evalState (liftBind .get k) s₀ = evalState (k s₀) s₀ := rfl
 
 @[simp]
-lemma evalState_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
+lemma evalState_set (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
     evalState (liftBind (.set s') k) s₀ = evalState (k .unit) s' := rfl
 
 /-- Run a state computation, returning only the final state. -/
-def runState {σ : Type u} {α : Type v} (c : FreeState σ α) (s₀ : σ) : σ :=
+def runState (c : FreeState σ α) (s₀ : σ) : σ :=
   (run c s₀).2
 
 @[simp]
-lemma runState_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
+lemma runState_pure (a : α) (s₀ : σ) :
     runState (.pure a : FreeState σ α) s₀ = s₀ := rfl
 
 @[simp]
-lemma runState_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s₀ : σ) :
+lemma runState_get (k : σ → FreeState σ α) (s₀ : σ) :
     runState (liftBind .get k) s₀ = runState (k s₀) s₀ := rfl
 
 @[simp]
-lemma runState_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
+lemma runState_set (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
     runState (liftBind (.set s') k) s₀ = runState (k .unit) s' := rfl
 
 
