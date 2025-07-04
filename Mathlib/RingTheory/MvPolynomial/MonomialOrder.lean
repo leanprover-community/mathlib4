@@ -344,7 +344,7 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
     simp only [degree_zero, map_zero]
     apply bot_le
 
-theorem degree_add_eq_right_of_degree_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
     m.degree (f + g) = m.degree g := by
   rw [add_comm]
   exact degree_add_of_lt h
