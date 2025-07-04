@@ -130,8 +130,8 @@ theorem degree_zero : m.degree (0 : MvPolynomial σ R) = 0 := by
   simp [degree]
 
 theorem ne_zero_of_degree_ne_zero {f : MvPolynomial σ R} (h : m.degree f ≠ 0) : f ≠ 0 := by
-  by_contra h'
-  exact h (h'.symm ▸ m.degree_zero)
+  rintro rfl
+  exact h m.degree_zero
 
 @[simp, nontriviality]
 theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
