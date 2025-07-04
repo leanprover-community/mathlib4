@@ -182,33 +182,33 @@ instance : LawfulMonad (FreeM F) := LawfulMonad.mk'
   (pure_bind := pure_bind)
   (bind_assoc := FreeM.bind_assoc)
 
+section liftM
+variable {m : Type u → Type w} [Monad m] {α β : Type u}
+
 /--
 Interpret a `FreeM f` computation into any monad `m` by providing an interpretation
 function for the effect signature `f`.
 
 This function defines the *canonical interpreter* from the free monad `FreeM f` into the target
 monad `m`. It is the unique monad morphism that extends the effect handler
-`interp : ∀ {β}, F β → M β` via the universal property of `FreeM`.
+`interp : ∀ {β}, F β → m β` via the universal property of `FreeM`.
 -/
-protected def liftM {M : Type u → Type w} [Monad M] {α : Type u}
-    (interp : {β : Type u} → F β → M β) : FreeM F α → M α
+protected def liftM (interp : {ι : Type u} → F ι → m ι) : FreeM F α → m α
   | .pure a => pure a
   | .liftBind op cont => interp op >>= fun result => (cont result).liftM interp
 
 @[simp]
-lemma liftM_pure {M : Type u → Type w} [Monad M] {α : Type u}
-    (interp : {β : Type u} → F β → M β) (a : α) :
+lemma liftM_pure (interp : {ι : Type u} → F ι → m ι) (a : α) :
     (.pure a : FreeM F α).liftM interp = pure a := rfl
 
 @[simp]
-lemma liftM_liftBind {M : Type u → Type w} [Monad M] {α β : Type u}
-    (interp : {γ : Type u} → F γ → M γ) (op : F β) (cont : β → FreeM F α) :
+lemma liftM_liftBind (interp : {ι : Type u} → F ι → m ι) (op : F β) (cont : β → FreeM F α) :
     (liftBind op cont).liftM interp = (do let b ← interp op; (cont b).liftM interp) := by
   rfl
 
 @[simp]
-lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type u}
-    (interp : {β : Type u} → F β → M β) (x : FreeM F α) (f : α → FreeM F β) :
+lemma liftM_bind [LawfulMonad m]
+    (interp : {ι : Type u} → F ι → m ι) (x : FreeM F α) (f : α → FreeM F β) :
     (x.bind f : FreeM F β).liftM interp = (do let a ← x.liftM interp; (f a).liftM interp) := by
   induction x generalizing f with
   | pure a => simp only [pure_bind, liftM_pure, LawfulMonad.pure_bind]
@@ -216,28 +216,25 @@ lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type
     rw [FreeM.bind, liftM_liftBind, liftM_liftBind, bind_assoc]
     simp_rw [ih]
 
-section ExtendsHandler
-variable {M : Type u → Type w} [Monad M] {α : Type u}
-
 /--
-A predicate stating that `g : FreeM F α → M α` is an interpreter for the effect
-handler `f : ∀ {α}, F α → M α`.
+A predicate stating that `g : FreeM F α → m α` is an interpreter for the effect
+handler `f : ∀ {α}, F α → m α`.
 
 This means that `g` is a monad morphism from the free monad `FreeM F` to the
-monad `M`, and that it extends the interpretation of individual operations
+monad `m`, and that it extends the interpretation of individual operations
 given by `f`.
 
 Formally, `g` satisfies the two equations:
 - `g (pure a) = pure a`
 - `g (liftBind op k) = f op >>= fun x => g (k x)`
 -/
-structure ExtendsHandler (f : {ι : Type u} → F ι → M ι) (g : FreeM F α → M α) : Prop where
+structure ExtendsHandler (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) : Prop where
   apply_pure (a : α) : g (pure a) = pure a
   apply_liftBind {ι : Type u} (op : F ι) (cont : ι → FreeM F α) :
     g (liftBind op cont) = f op >>= fun x => g (cont x)
 
 theorem ExtendsHandler.eq
-    {f : {ι : Type u} → F ι → M ι} {g : FreeM F α → M α} (h : ExtendsHandler f g) :
+    {f : {ι : Type u} → F ι → m ι} {g : FreeM F α → m α} (h : ExtendsHandler f g) :
     g = (·.liftM @f) := by
   ext x
   induction x with
@@ -246,19 +243,19 @@ theorem ExtendsHandler.eq
     rw [liftM_liftBind, h.apply_liftBind]
     simp [ih]
 
-theorem extendsHandler_liftM (f : {ι : Type u} → F ι → M ι) :
+theorem extendsHandler_liftM (f : {ι : Type u} → F ι → m ι) :
     ExtendsHandler f (·.liftM f : FreeM F α → _) where
   apply_pure _ := rfl
   apply_liftBind _ _ := rfl
 
 /--
 The universal property of the free monad `FreeM`. That is, `liftM f` is the unique interpreter that
-extends the effect handler `f` to interpret `FreeM F` computations in monad `M`.
+extends the effect handler `f` to interpret `FreeM F` computations in monad `m`.
 -/
-theorem extendsHandler_iff (f : {ι : Type u} → F ι → M ι) (g : FreeM F α → M α) :
+theorem extendsHandler_iff (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) :
     ExtendsHandler f g ↔ g = (·.liftM f) :=
   ⟨(·.eq), fun h => h ▸ extendsHandler_liftM _⟩
 
-end ExtendsHandler
+end liftM
 
 end FreeM
