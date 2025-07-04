@@ -148,6 +148,36 @@ theorem isTree_iff_existsUnique_path :
 lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
   (isTree_iff_existsUnique_path.1 hG).2
 
+theorem IsAcyclic.isPath_iff_chain' [DecidableEq V] (hG : G.IsAcyclic) {v w : V}
+    (p : G.Walk v w) : p.IsPath ↔ List.Chain' (fun x y => x ≠ y) p.edges := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact List.Pairwise.chain' <| edges_nodup_of_support_nodup <| p.isPath_def |>.mp h
+  · induction p with
+    | nil => simp
+    | @cons u' v' w' head tail ih =>
+      rw [edges_cons] at h
+      have hcc := List.chain'_cons'.mp h
+      refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
+      rcases show tail.length = 0 ∨ 0 < tail.length by omega with h' | h'
+      · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
+      · by_contra hh
+        apply hG <| cons head <| tail.takeUntil u' hh
+        simp only [isCycle_def, isTrail_def, edges_cons, List.nodup_cons]
+        have : cons head (tail.takeUntil u' hh) |>.support.tail.Nodup := by
+          refine tail.isPath_def.mp (ih hcc.2) |>.sublist <| List.IsInfix.sublist ?_
+          exact ⟨[], (tail.dropUntil u' hh).support.tail, by simp [← support_append]⟩
+        refine ⟨⟨?_, edges_nodup_of_support_nodup this⟩, ⟨by simp, this⟩⟩
+        by_contra hhh
+        refine hcc.1 s(u', v') ?_ rfl
+        rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
+        have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
+        rw [snd_takeUntil head.ne] at this
+        simp [this]
+
+theorem IsAcyclic.isPath_of_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} {p : G.Walk v w}
+    (h : p.IsTrail) : p.IsPath :=
+  hG.isPath_iff_chain' p |>.mpr <| List.Pairwise.chain' <| p.isTrail_def |>.mp h
+
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
   have := hG.isConnected.nonempty
