@@ -39,6 +39,9 @@ repeated applications of the right hand side of this equation.
   solutions to time-dependent ODEs
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt`: the existence
   theorem for local flows to time-dependent vector fields
+* `IsPicardLindelof.exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith`: there exists
+  a local flow to time-dependent vector fields, and it is Lipschitz-continuous with respect to the
+  starting point.
 
 ## Implementation notes
 
@@ -598,9 +601,7 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
 
 open Classical in
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
-existence of a local flow and that it is Lipschitz continuous in the intial point.
-
-TODO: derive the previous theorem from this. add docstring at beginning of file -/
+existence of a local flow and that it is Lipschitz continuous in the intial point. -/
 theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
     (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ∃ α : E → ℝ → E, (∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
