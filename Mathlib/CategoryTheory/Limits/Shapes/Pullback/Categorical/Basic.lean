@@ -41,9 +41,6 @@ equivalent to `CatCommSqOver F G X`.
   example 5.3.9, although we take a slightly different (equivalent) model of the object.
 
 ## TODOs:
-* 2-functoriality of the construction with respect to "transformation of categorical
-  cospans".
-* Full equivalence-invariance of the notion (follows from suitable 2-functoriality).
 * Define a `CatPullbackSquare` typeclass extending `CatCommSq`that encodes the
   fact that a given `CatCommSq` defines an equivalence between the top left
   corner and the categorical pullback of its legs.
@@ -820,7 +817,7 @@ instance whiskeringLeftToCatCommSqOverSquare
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
     (U : X ⥤ Y) :
     CatCommSq
-      ((Functor.whiskeringLeft X Y (F ⊡ G)).obj U)
+      (Functor.whiskeringLeft X Y (F ⊡ G)|>.obj U)
       (toCatCommSqOver F G Y)
       (toCatCommSqOver F G X)
       (precompose F G U) where
@@ -1020,6 +1017,56 @@ lemma cube_coherence (ψ : CatCospanTransform F G F' G') :
       ((functorOfTransformSndSquare ψ).flip.hComp' (catCommSq F' G')).iso := by
   ext x
   simp [CatCommSq.flip]
+
+/-- An adjunction of categorical cospans induce an adjunction between the
+functors induced on the categorical pullbacks -/
+@[simps!]
+def adjunctionOfCatCospanAdjunction (𝔄 : CatCospanAdjunction F G F' G') :
+    functorOfTransform 𝔄.leftAdjoint ⊣ functorOfTransform 𝔄.rightAdjoint where
+  unit :=
+    (functorOfTransformId _ _).inv ≫
+      functorOfTransform₂ 𝔄.unit ≫
+      (functorOfTransformComp _ _).hom
+  counit :=
+    (functorOfTransformComp _ _).inv ≫
+      functorOfTransform₂ 𝔄.counit ≫
+      (functorOfTransformId _ _).hom
+  left_triangle_components x := by
+    ext
+    · haveI := 𝔄.leftAdjunction.left_triangle_components
+      simpa using (this x.fst)
+    · haveI := 𝔄.rightAdjunction.left_triangle_components
+      simpa using (this x.snd)
+  right_triangle_components x := by
+    ext
+    · haveI := 𝔄.leftAdjunction.right_triangle_components
+      simpa using (this x.fst)
+    · haveI := 𝔄.rightAdjunction.right_triangle_components
+      simpa using (this x.snd)
+
+/-- A `CatCospanEquivalence` induces an equivalence between the categorical
+pullbacks. This fully realizes the fact that the categorical pullback respects
+equivalences of categories in all of its arguments.
+Note that the corresponding fact is *not* true for the strict pullback of
+categories (i.e the pullback in the `1`-category `Cat`), and is the principal
+motivation behind using the categorical pullback as a replacement for the strict
+pullback. -/
+@[simps!]
+def equivalenceOfCatCospanEquivalence (E : CatCospanEquivalence F G F' G') :
+    F ⊡ G ≌ F' ⊡ G' where
+  functor := functorOfTransform E.transform
+  inverse := functorOfTransform E.inverse
+  unitIso :=
+    (functorOfTransformId _ _).symm ≪≫
+      functorOfTransform₂Iso E.unitIso ≪≫
+      (functorOfTransformComp _ _)
+  counitIso :=
+    (functorOfTransformComp _ _).symm ≪≫
+      functorOfTransform₂Iso E.counitIso ≪≫
+      (functorOfTransformId _ _)
+  functor_unitIso_comp :=
+    (adjunctionOfCatCospanAdjunction
+      E.toCatCospanAdjunction).left_triangle_components
 
 end Pseudofunctoriality
 
