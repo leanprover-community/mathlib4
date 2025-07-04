@@ -531,8 +531,7 @@ noncomputable def ModularForm.translateGL [ModularFormClass F Γ k] (g : GL (Fin
   holo' := (ModularFormClass.holo f).slash k _
   bdd_at_infty' h := by
     rw [SlashInvariantForm.coe_translateGL, SL_slash, ← SlashAction.slash_mul]
-    convert OnePoint.isBoundedAt_iff_forall_GL2Q.mp (ModularFormClass.isBoundedAt Γ f _)
-      (g * (h.mapGL ℚ)) rfl using 2
+    convert ModularFormClass.isBoundedAt Γ f _ (g * (h.mapGL ℚ)) rfl using 2
     -- annoyance : need to reconcile coercions SL2Z -> SL2R -> SL2Z and SL2Z -> GL2Q -> GL2R
     ext
     simp
@@ -560,8 +559,7 @@ noncomputable def CuspForm.translateGL [CuspFormClass F Γ k] (g : GL (Fin 2) �
   holo' := (ModularForm.translateGL f _).holo'
   zero_at_infty' h := by
     rw [SlashInvariantForm.coe_translateGL, SL_slash, ← SlashAction.slash_mul]
-    convert OnePoint.isZeroAt_iff_forall_GL2Q.mp (CuspFormClass.isZeroAt Γ f _)
-      (g * (h.mapGL ℚ)) rfl using 2
+    convert CuspFormClass.isZeroAt Γ f _ (g * (h.mapGL ℚ)) rfl using 2
     -- annoyance : need to reconcile coercions SL2Z -> SL2R -> GL2R and SL2Z -> GL2Q -> GL2R
     ext
     simp
