@@ -62,9 +62,8 @@ and helper functions.
 
 ## References
 
-* [Kiselyov2015] Oleg Kiselyov, Hiromi Ishii. *Freer Monads, More Extensible Effects*.
-  Haskell Symposium 2015.
-* [MilewskiDao] Bartosz Milewski. *The Dao of Functional Programming*. 2025.
+* [Oleg Kiselyov, Hiromi Ishii. *Freer Monads, More Extensible Effects*][Kiselyov2015]
+* [Bartosz Milewski. *The Dao of Functional Programming*][MilewskiDao]
 
 ## Tags
 
