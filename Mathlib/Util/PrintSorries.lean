@@ -9,14 +9,12 @@ import Mathlib.Lean.Expr.Basic
 /-!
 # Tracking uses of `sorry`
 
-This file provides a `#track_sorry` command to help find out why a given declaration is not
-sorry-free. `#track_sorry foo` returns a non-sorry-free declaration `bar` which `foo` depends on,
+This file provides a `#print sorries` command to help find out why a given declaration is not
+sorry-free. `#print sorries foo` returns a non-sorry-free declaration `bar` which `foo` depends on,
 if such `bar` exists.
 
 ## TODO
 
-* Better handle the case where `foo` itself uses `sorry`: Currently, `#track_sorry foo` would return
-  "`foo` depends on `foo` which isn't sorry-free".
 * Generalise to other axioms/constants. This is easy, except for the fact that we need to find a
   nice syntax/name for the command.
 * Move to ImportGraph?
