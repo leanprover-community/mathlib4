@@ -124,7 +124,7 @@ Product rule for Lie Brackets: given two vector fields `V W : E → E` and a fun
 we have `[V, f • W] = (df V) • W + f • [V, W]`
 -/
 lemma lieBracketWithin_smul_right {f : E → 𝕜} (hf : DifferentiableWithinAt 𝕜 f s x)
-    (hW : DifferentiableWithinAt 𝕜 W s x) (hs: UniqueDiffWithinAt 𝕜 s x) :
+    (hW : DifferentiableWithinAt 𝕜 W s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (fun y ↦ f y • W y) s x =
       (fderivWithin 𝕜 f s x) (V x) • (W x) + (f x) • lieBracketWithin 𝕜 V W s x := by
   simp [lieBracketWithin, fderivWithin_fun_smul hs hf hW, map_smul, add_comm, smul_sub,
@@ -146,7 +146,7 @@ Product rule for Lie Brackets: given two vector fields `V W : E → E` and a fun
 we have `[f • V, W] = - (df W) • V + f • [V, W]`
 -/
 lemma lieBracketWithin_smul_left {f : E → 𝕜} (hf : DifferentiableWithinAt 𝕜 f s x)
-    (hV : DifferentiableWithinAt 𝕜 V s x) (hs: UniqueDiffWithinAt 𝕜 s x) :
+    (hV : DifferentiableWithinAt 𝕜 V s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (fun y ↦ f y • V y) W s x =
       - (fderivWithin 𝕜 f s x) (W x) • (V x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
   rw [lieBracketWithin_swap, Pi.neg_apply, lieBracketWithin_smul_right hf hV hs,
