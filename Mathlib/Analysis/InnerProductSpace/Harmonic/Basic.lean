@@ -8,8 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Laplacian
 /-!
 # Harmonic Functions
 
-This file defines harmonic functions on real, finite-dimensional, inner product
-spaces `E`.
+This file defines harmonic functions on real, finite-dimensional, inner product spaces `E`.
 -/
 
 variable
@@ -27,17 +26,16 @@ open InnerProductSpace Topology
 
 variable (f x) in
 /--
-Let `E` be a real, finite-dimensional, inner product space and `x` be a point of
-`E`. A function `f` on `E` is harmonic at `x` if it is two times continuously
-`ℝ`-differentiable and if its Laplacian vanishes in a neighborhood of `x`.
+Let `E` be a real, finite-dimensional, inner product space and `x` be a point of `E`. A function `f`
+on `E` is harmonic at `x` if it is two times continuously `ℝ`-differentiable and if its Laplacian
+vanishes in a neighborhood of `x`.
 -/
 def HarmonicAt := (ContDiffAt ℝ 2 f x) ∧ (Δ f =ᶠ[𝓝 x] 0)
 
 variable (f s) in
 /--
-Let `E` be a real, finite-dimensional, inner product space and `s` be a subset
-of `E`. A function `f` on `E` is harmonic in a neighborhood of `s` if it is
-harmonic at every point of `s`.
+Let `E` be a real, finite-dimensional, inner product space and `s` be a subset of `E`. A function
+`f` on `E` is harmonic in a neighborhood of `s` if it is harmonic at every point of `s`.
 -/
 def HarmonicOnNhd := ∀ x ∈ s, HarmonicAt f x
 
@@ -46,8 +44,7 @@ def HarmonicOnNhd := ∀ x ∈ s, HarmonicAt f x
 -/
 
 /--
-If two functions agree in a neighborhood of `x`, then one is harmonic at `x` iff
-so is the other.
+If two functions agree in a neighborhood of `x`, then one is harmonic at `x` iff so is the other.
 -/
 theorem harmonicAt_congr_nhds {f₁ f₂ : E → F} {x : E} (h : f₁ =ᶠ[𝓝 x] f₂) :
     HarmonicAt f₁ x ↔ HarmonicAt f₂ x := by
@@ -71,8 +68,7 @@ theorem harmonicAt_isOpen : IsOpen { x : E | HarmonicAt f x } :=
   isOpen_iff_mem_nhds.2 (fun _ hx ↦ hx.eventually)
 
 /--
-If `f` is harmonic in a neighborhood of `s`, it is harmonic in a neighborhood of
-every subset.
+If `f` is harmonic in a neighborhood of `s`, it is harmonic in a neighborhood of every subset.
 -/
 lemma HarmonicOnNhd.mono (h : HarmonicOnNhd f s) (hst : t ⊆ s) :
     HarmonicOnNhd f t := fun x hx ↦ h x (hst hx)
@@ -134,8 +130,7 @@ theorem HarmonicOnNhd.comp_CLM (h : HarmonicOnNhd f s) (l : F →L[ℝ] G) :
     HarmonicOnNhd (l ∘ f) s := fun x hx ↦ (h x hx).comp_CLM l
 
 /--
-Functions are harmonic iff their compositions with continuous linear
-equivalences are harmonic.
+Functions are harmonic iff their compositions with continuous linear equivalences are harmonic.
 -/
 theorem harmonicAt_iff_harmonicAt_comp_CLE (l : F ≃L[ℝ] G) :
     HarmonicAt (l ∘ f) x ↔ HarmonicAt f x := by
@@ -144,8 +139,7 @@ theorem harmonicAt_iff_harmonicAt_comp_CLE (l : F ≃L[ℝ] G) :
   · exact h.comp_CLM l.toContinuousLinearMap
 
 /--
-Functions are harmonic iff their compositions with continuous linear
-equivalences are harmonic.
+Functions are harmonic iff their compositions with continuous linear equivalences are harmonic.
 -/
 theorem harmonicOnNhd_iff_harmonicOnNhd_comp_CLE (l : F ≃L[ℝ] G) :
     HarmonicOnNhd (l ∘ f) s ↔ HarmonicOnNhd f s :=
