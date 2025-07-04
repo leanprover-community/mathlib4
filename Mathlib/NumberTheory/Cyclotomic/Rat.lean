@@ -181,7 +181,7 @@ lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toIn
 /-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
 lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) :
-    have : NeZero k := NeZero.of_gt hk
+    haveI : NeZero k := NeZero.of_gt hk
     Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
   refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h

@@ -566,7 +566,7 @@ theorem Mon_tensor_mul_one (M N : C) [Mon_Class M] [Mon_Class N] :
     (M ⊗ N) ◁ ((λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ₘ η[N])) ≫
         tensorμ M N M N ≫ (μ[M] ⊗ₘ μ[N]) =
       (ρ_ (M ⊗ N)).hom := by
-  simp only [MonoidalCategory.whiskerLeft_comp_assoc]
+  simp only [whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_right]
   slice_lhs 3 4 => rw [← tensor_comp, mul_one, mul_one]
   symm
@@ -578,7 +578,7 @@ theorem Mon_tensor_mul_assoc (M N : C) [Mon_Class M] [Mon_Class N] :
       (α_ (M ⊗ N : C) (M ⊗ N) (M ⊗ N)).hom ≫
         ((M ⊗ N : C) ◁ (tensorμ M N M N ≫ (μ ⊗ₘ μ))) ≫
           tensorμ M N M N ≫ (μ ⊗ₘ μ) := by
-  simp only [comp_whiskerRight_assoc, MonoidalCategory.whiskerLeft_comp_assoc]
+  simp only [comp_whiskerRight_assoc, whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_left]
   slice_lhs 3 4 => rw [← tensor_comp, mul_assoc, mul_assoc, tensor_comp, tensor_comp]
   slice_lhs 1 3 => rw [tensor_associativity]
@@ -789,13 +789,13 @@ theorem mul_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] :
   dsimp [tensorObj.mul_def]
   simp only [tensorμ, Category.assoc, BraidedCategory.braiding_naturality,
     BraidedCategory.braiding_tensor_right_hom, BraidedCategory.braiding_tensor_left_hom,
-    comp_whiskerRight, whisker_assoc, MonoidalCategory.whiskerLeft_comp, pentagon_assoc,
+    comp_whiskerRight, whisker_assoc, whiskerLeft_comp, pentagon_assoc,
     pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc, whiskerLeft_hom_inv_assoc]
   slice_lhs 3 4 =>
     -- We use symmetry here:
-    rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight, SymmetricCategory.symmetry]
-  simp only [id_whiskerRight, MonoidalCategory.whiskerLeft_id, Category.id_comp, Category.assoc,
-    pentagon_inv_assoc, Iso.hom_inv_id_assoc]
+    rw [← whiskerLeft_comp, ← comp_whiskerRight, SymmetricCategory.symmetry]
+  simp only [id_whiskerRight, whiskerLeft_id, Category.id_comp, Category.assoc, pentagon_inv_assoc,
+    Iso.hom_inv_id_assoc]
   slice_lhs 1 2 =>
     rw [← associator_inv_naturality_left]
   slice_lhs 2 3 =>

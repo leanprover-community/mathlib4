@@ -68,8 +68,7 @@ instance linearOrder : LinearOrder ℤ[ε] :=
 instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] := by
   refine (toLex.injective.comp coeff_injective).isOrderedAddMonoid _ ?_ ?_ ?_ <;>
   (first | rfl | intros) <;> funext <;>
-  (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
-    ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
+  (simp only [comp_apply, Pi.toLex_apply, coeff_add]; rfl)
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]

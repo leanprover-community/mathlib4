@@ -304,7 +304,7 @@ theorem Quotient.lift_surjective_iff {α β : Sort*} {s : Setoid α} (f : α →
   Quot.surjective_lift h
 
 theorem Quotient.lift_surjective {α β : Sort*} {s : Setoid α} (f : α → β)
-    (h : ∀ (a b : α), a ≈ b → f a = f b) (hf : Function.Surjective f):
+    (h : ∀ (a b : α), a ≈ b → f a = f b) (hf : Function.Surjective f) :
     Function.Surjective (Quotient.lift f h : Quotient s → β) :=
   (Quot.surjective_lift h).mpr hf
 
@@ -726,7 +726,7 @@ protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).li
 @[simp]
 protected theorem liftOn₂'_mk {t : Setoid β} (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
-  Quotient.liftOn₂'_mk'' _ _ _ _
+  rfl
 
 theorem map'_mk {t : Setoid β} (f : α → β) (h) (x : α) :
     (Quotient.mk s x).map' f h = (Quotient.mk t (f x)) :=

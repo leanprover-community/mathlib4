@@ -21,7 +21,7 @@ def Complex.integerComplement := (Set.range ((↑) : ℤ → ℂ))ᶜ
 
 namespace Complex
 
-local notation "ℂ_ℤ " => integerComplement
+local notation "ℂ_ℤ" => integerComplement
 
 lemma integerComplement_eq : ℂ_ℤ = {z : ℂ | ¬ ∃ (n : ℤ), n = z} := rfl
 
@@ -41,7 +41,7 @@ lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
 lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ) ≠ 0 :=
   integerComplement.ne_zero ((integerComplement.add_coe_int_mem a).mpr hx)
 
-lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ): x ≠ 1 :=
+lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 1 :=
   fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
 
 lemma integerComplement_pow_two_ne_pow_two {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℤ) : x ^ 2 ≠ n ^ 2 := by
