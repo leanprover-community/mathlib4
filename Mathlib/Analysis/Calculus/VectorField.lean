@@ -143,22 +143,6 @@ lemma lieBracketWithin_swap : lieBracketWithin 𝕜 V W s = - lieBracketWithin �
 lemma lieBracket_swap : lieBracket 𝕜 V W x = - lieBracket 𝕜 W V x := by
   simp [lieBracket]
 
--- TODO: prove within version of this?
-
-/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
-if `W` is not differentiable. -/
-@[simp]
-lemma lieBracket_zero_left : lieBracket 𝕜 0 W x = 0 := by
-  by_cases hW : DifferentiableAt 𝕜 W x
-  · have := lieBracket_add_left (W := W) (differentiableAt_zero x) hW
-    simp_all
-  · simp [lieBracket]
-
-/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
-if `W` is not differentiable. -/
-@[simp]
-lemma lieBracket_zero_right : lieBracket 𝕜 W 0 x = 0 := by simp [lieBracket]
-
 @[simp] lemma lieBracketWithin_self : lieBracketWithin 𝕜 V V s = 0 := by
   ext x; simp [lieBracketWithin]
 
