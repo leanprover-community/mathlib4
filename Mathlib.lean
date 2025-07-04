@@ -4865,6 +4865,7 @@ import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.Lex
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.Hom.WithTopBot
