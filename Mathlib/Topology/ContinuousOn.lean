@@ -1396,7 +1396,7 @@ lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}
   exact (hf i).continuousAt ((hs i).mem_nhds hxsi) |>.continuousWithinAt
 
 /-- A function is continuous on a union of open sets `s i` iff it is continuous on each `s i`. -/
-lemma continuousOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set α}
+lemma continuousOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set α}
     (hs : ∀ i, IsOpen (s i)) :
     ContinuousOn f (⋃ i, s i) ↔ ∀ i : ι, ContinuousOn f (s i) :=
   ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
