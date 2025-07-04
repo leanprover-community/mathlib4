@@ -50,12 +50,12 @@ theorem ContDiffWithinAt.restrictScalars_iteratedFDerivWithin_eventuallyEq
     simp [iteratedFDeriv_zero_apply m]
   | succ n hn =>
     have t₀ := h.of_le (Nat.cast_le.mpr (n.le_add_right 1))
-    have t₁ := eventually_eventually_nhdsWithin.2 (hn t₀)
-    have t₃ := eventually_mem_nhdsWithin (a := x) (s := s)
+    have t₀ := h.of_le (Nat.cast_le.mpr (n.le_add_right 1))
     have t₄ : ∀ᶠ (y : E) in 𝓝[s] x, ContDiffWithinAt 𝕜' (↑(n + 1)) f s y := by
       nth_rw 2 [← s.insert_eq_of_mem hx]
       apply h.eventually (by simp)
-    filter_upwards [t₁, t₄, t₃] with a h₁a h₃a h₄a
+    filter_upwards [eventually_eventually_nhdsWithin.2 (hn t₀), t₄, 
+      eventually_mem_nhdsWithin (a := x) (s := s)] with a h₁a h₃a h₄a
     rw [← Filter.EventuallyEq] at h₁a
     ext m
     simp only [restrictScalarsLinear_apply, Function.comp_apply, coe_restrictScalars,
