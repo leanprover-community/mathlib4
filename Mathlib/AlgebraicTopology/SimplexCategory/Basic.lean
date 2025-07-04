@@ -580,9 +580,9 @@ instance : skeletalFunctor.EssSurj where
             hom_inv_id := by ext; apply f.symm_apply_apply
             inv_hom_id := by ext; apply f.apply_symm_apply }
         intro i j h
-        show f.symm i ≤ f.symm j
+        change f.symm i ≤ f.symm j
         rw [← hf.le_iff_le]
-        show f (f.symm i) ≤ f (f.symm j)
+        change f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
 noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence where
@@ -774,10 +774,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine ⟨y, x, ⟨h₁.symm, ?_⟩⟩
-      rcases lt_or_eq_of_le (not_lt.mp h) with h' | h'
-      · exact h'
-      · exfalso
-        exact h₂ h'.symm
+      omega
   rcases hθ₂ with ⟨x, y, ⟨h₁, h₂⟩⟩
   use x.castPred ((Fin.le_last _).trans_lt' h₂).ne
   apply eq_σ_comp_of_not_injective'
