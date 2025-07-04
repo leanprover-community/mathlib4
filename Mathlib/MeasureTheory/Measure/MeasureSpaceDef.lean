@@ -428,14 +428,23 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
 --lemma support_subset_closure_of_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
 --  support μ ⊆ closure U := by sorry
 
---open Set in
---lemma support_eq_compl_Union_open_null :
---  support μ = X \ ⋃₀ {U : Set X | IsOpen U ∧ μ U = 0} := sorry
-
---The above need fixing, but maybe are worth proving.
-
-
-
+open Set in
+lemma support_eq_compl_Union_open_null :
+  μ.support = (⋃₀ {U : Set X | IsOpen U ∧ μ U = 0})ᶜ  := by
+    ext x
+    constructor
+    · intro hx
+      simp only [mem_compl_iff, mem_sUnion, mem_setOf_eq, not_exists, not_and, and_imp]
+      intro U hU hμU
+      rw [mem_support_iff_forall] at hx
+      intro hxx
+      apply (ne_of_lt <| hx U <| IsOpen.mem_nhds hU hxx).symm hμU
+    · intro hx
+      rw [mem_support_iff_forall]
+      simp only [mem_compl_iff, mem_sUnion, mem_setOf_eq, not_exists, not_and, and_imp] at hx
+      intros U hU_nhds
+      rcases (mem_nhds_iff.mp hU_nhds) with ⟨V, hV_sub, hV_open, hVₓ⟩
+      exact measure_pos_of_superset hV_sub <| fun a ↦ hx V hV_open a hVₓ
 
 end Measure
 
