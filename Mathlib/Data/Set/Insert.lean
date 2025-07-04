@@ -336,7 +336,7 @@ theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty)
 
 /-! ### Disjointness -/
 
-@[simp default+1]
+@[simp default + 1]
 lemma disjoint_singleton_left : Disjoint {a} s ↔ a ∉ s := by simp [Set.disjoint_iff, subset_def]
 
 @[simp]

@@ -681,7 +681,7 @@ instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A
   rw [← prodComparisonIso_hom]
   infer_instance
 
-@[simp] lemma prodComparisonIso_id  : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
+@[simp] lemma prodComparisonIso_id : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
 
 @[simp]
 lemma prodComparisonIso_comp [PreservesLimit (pair A B) (F ⋙ G)]
