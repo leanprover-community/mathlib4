@@ -75,7 +75,7 @@ with respect to `𝕜` equals scalar restriction of the `n`th iterated Fréchet 
 to `𝕜'`.
 -/
 theorem ContDiffAt.iteratedFDeriv_restrictScalars_eventuallyEq (h : ContDiffAt 𝕜' n f x) :
-    (restrictScalarsLinear 𝕜) ∘ (iteratedFDeriv 𝕜' n f) =ᶠ[𝓝 x] (iteratedFDeriv 𝕜 n f) := by
+    (restrictScalars 𝕜) ∘ (iteratedFDeriv 𝕜' n f) =ᶠ[𝓝 x] (iteratedFDeriv 𝕜 n f) := by
   have h' : ContDiffWithinAt 𝕜' n f Set.univ x := h
   convert (h'.restrictScalars_iteratedFDerivWithin_eventuallyEq _ trivial)
   <;> simp [iteratedFDerivWithin_univ.symm, uniqueDiffOn_univ]
