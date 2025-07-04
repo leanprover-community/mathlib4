@@ -233,7 +233,6 @@ theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι →
   classical
   induction s using Finset.induction with
   | empty =>
-    simp only [Finset.univ_eq_empty, Finset.prod_empty, forall_const]
     apply meromorphicTrailingCoeffAt_const
   | insert σ s₁ hσ hind =>
     rw [Finset.prod_insert hσ, Finset.prod_insert hσ, (h σ).meromorphicTrailingCoeffAt_mul
