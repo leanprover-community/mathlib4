@@ -4,16 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Topology.IsLocalHomeomorph
-import Mathlib.Topology.Sheaves.Sheafify
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
-# The category of étale spaces and the étale space of a presheaf
+# Étale spaces of local predicates and presheaves
 
-This file defines the category of étale spaces over a base space (namely, the local homeomorphisms
-with a fixed target), the functor taking a presheaf to its étale space, and the sections
-functor taking an étale space to its sheaf of sections; the composition of these two
-functors is naturally isomorphic to sheafification.
+This file establishes the connection between `TopCat.LocalPredicate` on a family of types
+over a base space `B` (think of a set of sections over `B`) and local homeomorphisms to `B`
+(i.e., étale spaces over `B`).
+
+In the file `Mathlib.Topology.Sheaves.Sheafify`, the connection between `TopCat.LocalPredicate`
+and (pre)sheaves has been established. It combines with this file to establish the connection
+between sheaves and étale spaces.
 
 ## Main definitions
 
@@ -22,7 +24,164 @@ functors is naturally isomorphic to sheafification.
 
 open CategoryTheory TopologicalSpace Opposite Set
 
+universe u v
+
 namespace TopCat
+
+variable {B : TopCat.{u}} {F : B → Type v}
+
+set_option linter.unusedVariables false in
+/-- The underlying type of the étale space associated to a predicate on sections of a type family
+is simply the sigma type. -/
+def EtaleSpace (pred : Π ⦃U : Opens B⦄, ((Π b : U, F b) → Prop)) : Type _ := Σ b, F b
+
+namespace EtaleSpace
+
+variable {pred : Π ⦃U : Opens B⦄, ((Π b : U, F b) → Prop)}
+
+/-- Constructor for points in the étale space. -/
+@[simps] def mk {b : B} (x : F b) : EtaleSpace pred := ⟨b, x⟩
+
+/-- The étale space is endowed with the strongest topology making every section continuous. -/
+instance : TopologicalSpace (EtaleSpace pred) :=
+  ⨆ (U : Opens B) (s : Π b : U, F b) (_ : pred s), coinduced (mk <| s ·) inferInstance
+
+lemma isOpen_iff {V : Set (EtaleSpace pred)} :
+    IsOpen V ↔
+    ∀ (U : Opens B) (s : Π b : U, F b), pred s → IsOpen ((mk <| s ·) ⁻¹' V) := by
+  simp_rw [isOpen_iSup_iff, isOpen_coinduced]
+
+lemma continuous_dom_iff {X} [TopologicalSpace X] {f : EtaleSpace pred → X} :
+    Continuous f ↔
+    ∀ (U : Opens B) (s : Π b : U, F b), pred s → Continuous (f <| mk <| s ·) := by
+  simp_rw [continuous_def, isOpen_iff, preimage_preimage,
+    ← forall_comm (α := Set X), ← forall_comm (α := IsOpen _)]
+
+variable (pred) in
+/-- The projection from the étale space down to the base is continuous. -/
+def proj : C(EtaleSpace pred, B) where
+  toFun := Sigma.fst
+  continuous_toFun := continuous_dom_iff.mpr fun _ _ _ ↦ continuous_subtype_val
+
+section Section
+
+variable {U : Opens B} {s : Π b : U, F b} (hs : pred s)
+include hs
+
+lemma continuous_section : Continuous fun b ↦ (mk (s b) : EtaleSpace pred) :=
+  continuous_iff_coinduced_le.mpr (le_iSup₂_of_le U s <| le_iSup_of_le hs le_rfl)
+
+/-- The domain of any section is homeomorphic to its range. -/
+def homeomorphRangeSection : U ≃ₜ range fun b ↦ (mk (s b) : EtaleSpace pred) where
+  toFun b := ⟨_, b, rfl⟩
+  invFun x := ⟨proj pred x, by obtain ⟨_, b, rfl⟩ := x; exact b.2⟩
+  left_inv _ := rfl
+  right_inv := by rintro ⟨_, _, rfl⟩; rfl
+  continuous_toFun := (continuous_section hs).subtype_mk _
+  continuous_invFun := ((proj pred).continuous.comp continuous_subtype_val).subtype_mk <| by
+    rintro ⟨_, b, rfl⟩; exact b.2
+
+theorem isOpen_range_section (inj : ∀ b, IsStalkInj pred b) :
+    IsOpen (range fun b ↦ (mk (s b) : EtaleSpace pred)) :=
+  isOpen_iff.mpr fun V t ht ↦ isOpen_iff_mem_nhds.mpr fun ⟨v, hv⟩ ⟨⟨u, hu⟩, he⟩ ↦ by
+    cases congr($he.1)
+    have ⟨W, iU, iV, eq⟩ := inj v ⟨U, hu⟩ ⟨V, hv⟩ _ _ hs ht congr($he.2)
+    exact Filter.mem_of_superset ((W.1.2.preimage continuous_subtype_val).mem_nhds W.2)
+      fun v hv ↦ ⟨⟨v, iU.le hv⟩, congr(mk $(eq ⟨v, hv⟩))⟩
+
+open Topology
+
+theorem isOpenEmbedding_section (inj : ∀ b, IsStalkInj pred b) :
+    IsOpenEmbedding fun b ↦ (mk (s b) : EtaleSpace pred) := by
+  rw [isOpenEmbedding_iff, isEmbedding_iff, and_assoc]
+  exact ⟨.of_comp (continuous_section hs) (proj pred).continuous .subtypeVal,
+    fun _ _ eq ↦ Subtype.ext congr(proj pred $eq), isOpen_range_section hs inj⟩
+
+theorem isOpenEmbedding_restrict_proj :
+    IsOpenEmbedding ((range (mk <| s ·)).restrict (proj pred)) :=
+  U.2.isOpenEmbedding_subtypeVal.comp (homeomorphRangeSection hs).symm.isOpenEmbedding
+
+omit hs
+
+theorem isTopologicalBasis {P : PrelocalPredicate F}
+    (inj : ∀ b, IsStalkInj P.pred b) (surj : ∀ b, IsStalkSurj P.pred b) :
+    IsTopologicalBasis {V : Set (EtaleSpace P.pred) |
+      ∃ (U : Opens B) (s : Π b : U, F b), P.pred s ∧ V = range (mk <| s ·)} :=
+  isTopologicalBasis_of_isOpen_of_nhds
+      (by rintro _ ⟨U, s, hs, rfl⟩; exact isOpen_range_section hs inj) fun ⟨b, x⟩ V hx hV ↦ by
+    have ⟨U, s, hs, eq⟩ := surj _ x
+    let W : Opens B := ⟨_, U.1.2.isOpenMap_subtype_val _ (isOpen_iff.mp hV _ s hs)⟩
+    refine ⟨_, ⟨W, _, P.res image_val_subset.hom s hs, rfl⟩,
+      ⟨⟨b, ⟨b, U.2⟩, by rwa [mem_preimage, eq], rfl⟩, congr(mk $eq)⟩, ?_⟩
+    rintro _ ⟨⟨_, b, hb, rfl⟩, rfl⟩
+    exact hb
+
+theorem continuous_cod_iff (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsStalkSurj pred b)
+    {X} [TopologicalSpace X] {f : X → EtaleSpace pred} :
+    Continuous f ↔ Continuous (proj pred ∘ f) ∧ ∀ x, ∃ (U : OpenNhds (f x).1) (s : Π b : U.1, F b),
+      pred s ∧ ∃ V ∈ 𝓝 x, ∀ x' (h' : (f x').1 ∈ U.1), x' ∈ V → s ⟨_, h'⟩ = (f x').2 := by
+  refine ⟨fun h ↦ ⟨(proj pred).continuous.comp h, fun x ↦ ?_⟩,
+    fun ⟨cont, eq⟩ ↦ continuous_iff_continuousAt.mpr fun x ↦ ?_⟩
+  · have ⟨U, s, hs, eq⟩ := surj _ (f x).2
+    refine ⟨U, s, hs, _, ((isOpen_range_section hs inj).preimage h).mem_nhds <|
+      by exact ⟨_, congr(mk $eq)⟩, fun x hx ⟨b, eq⟩ ↦ ?_⟩
+    set y := f x with hy; clear_value y
+    have : s ⟨y.1, hx⟩ = y.2 := by cases eq; rfl
+    cases hy; exact this
+  · have ⟨U, s, hs, V, hV, eq⟩ := eq x
+    exact (continuousOn_iff_continuous_restrict.mpr <| ((continuous_section hs).comp
+      (f := (⟨_, ·.2.1⟩)) <| (cont.comp continuous_subtype_val).subtype_mk _).congr
+        fun x ↦ by exact congr(mk $(eq x x.2.1 x.2.2))).continuousAt
+      (Filter.inter_mem (cont.continuousAt.preimage_mem_nhds (U.1.2.mem_nhds U.2)) hV)
+
+theorem continuous_section_iff {P : PrelocalPredicate F}
+    (inj : ∀ b, IsStalkInj P.pred b) (surj : ∀ b, IsStalkSurj P.pred b) :
+    Continuous (fun b ↦ (mk (s b) : EtaleSpace P.pred)) ↔ P.sheafify.pred s := by
+  rw [continuous_cod_iff inj surj, and_iff_right (by exact continuous_subtype_val)]
+  constructor <;> intro h x
+  · have ⟨W, t, ht, V, hV, eq⟩ := h x
+    have ⟨V', hV', hV, hxV⟩ := mem_nhds_iff.mp hV
+    refine ⟨W.1 ⊓ ⟨_, U.2.isOpenMap_subtype_val _ hV⟩,
+      ⟨W.2, _, hxV, rfl⟩, Opens.infLERight .. ≫ image_val_subset.hom, ?_⟩
+    convert ← P.res (Opens.infLELeft ..) _ ht with ⟨_, hW, x, hxV, rfl⟩
+    exact eq _ _ (hV' hxV)
+  · have ⟨V, hV, i, hs⟩ := h x
+    exact ⟨⟨V, hV⟩, _, hs, _, (V.2.preimage continuous_subtype_val).mem_nhds hV, fun _ _ _ ↦ rfl⟩
+
+end Section
+
+theorem isLocalHomeomorph_proj (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsStalkSurj pred b) :
+    IsLocalHomeomorph (proj pred) :=
+  isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun x ↦
+    have ⟨_U, _s, hs, eq⟩ := surj _ x.2
+    ⟨_, (isOpen_range_section hs inj).mem_nhds ⟨_, congr(mk $eq)⟩, isOpenEmbedding_restrict_proj hs⟩
+
+
+
+-- a presheaf is a sheaf iff its prelocal predicate is local ..
+
+variable (F)
+
+
+variable (X : Type*) [TopologicalSpace X] (p : C(X, B))
+
+def adjunction : {f : C(F.EtaleSpace, X) // p.comp f = proj F} ≃
+    {f : (Π U, F.obj U → (sheafOfSections p).1.obj U) //
+      ∀ U V (i : U ⟶ V), (sheafOfSections p).1.map i ∘ f U = f V ∘ F.map i} where
+  toFun := _
+  invFun := _
+  left_inv := _
+  right_inv := _
+
+-- the opens in the etale space of a local predicate are exactly images of germMap .. no, only if proj is injective on the open
+
+-- many functors!
+-- Presheaf B -EtaleSpace→ LocalHomeo/B -sections→ Sheaf B : composition NatIso to sheafification ..
+-- Presheaf -sheafification→ Sheaf -forget→ Presheaf .. adjunction such that one composition is iso to identity ..
+
+
+
+
 
 variable {X : Type*} [TopologicalSpace X] {B : TopCat}
 
@@ -45,110 +204,12 @@ def stalkSectionsEquivFiber (p : X → B) (b : B) :
 
 -- Right adjoint is fully faithful iff the counit is an isomorphism  ...
 -- "reflection", coreflection -- reflective
+-- idempotent adjunction: reflective, coreflective
 -- monadic adjunction
 
 -- sections can be considered to be morphisms between certain objects of Top/B .. Yoneda?
 -- use open set in B as "test objects"
 
--- separated maps <-> "identity theorem" (e.g. analytic functions)
--- covering maps <-> locally constant sheaves
-
 
 def EtaleSpaceOver (B : TopCat) : Type _ :=
-  FullSubcategory fun f : Over B ↦ IsLocalHomeomorph f.hom
-
-namespace Presheaf
-
-universe u v
-
-variable {B : TopCat.{u}} (F : Presheaf (Type v) B)
-
-/-- The étale space of a presheaf `F` of types over a topological space `B`
-  is the disjoint union of stalks. -/
-def EtaleSpace : Type max u v := Σ b : B, stalk (F ⋙ uliftFunctor.{u}) b
-
-namespace EtaleSpace
-
-variable {F}
-
-/-- Every section of a presheaf `F` on an open set `U` defines a function from `U`
-  to the étale space of `F` by taking germs. -/
-noncomputable def germMap {U : Opens B} (s : F.obj (op U)) : U → F.EtaleSpace :=
-  fun x ↦ ⟨x, germ (F ⋙ uliftFunctor) U x x.2 ⟨s⟩⟩
-
-/-- The étale space is endowed with the strongest topology making every germMap continuous. -/
-instance : TopologicalSpace F.EtaleSpace :=
-  ⨆ (U : Opens B) (s : F.obj (op U)), coinduced (germMap s) inferInstance
-
-lemma isOpen_iff {V : Set F.EtaleSpace} :
-    IsOpen V ↔ ∀ (U : Opens B) (s : F.obj (op U)), IsOpen (germMap s ⁻¹' V) := by
-  simp_rw [isOpen_iSup_iff, isOpen_coinduced]
-
-lemma continuous_iff {X} [TopologicalSpace X] {f : F.EtaleSpace → X} :
-    Continuous f ↔ ∀ (U : Opens B) (s : F.obj (op U)), Continuous (f ∘ germMap s) := by
-  simp_rw [continuous_def, isOpen_iff, preimage_preimage]; exact forall₂_swap
-
-lemma isOpen_range_germMap {U : Opens B} (s : F.obj (op U)) : IsOpen (range (germMap s)) :=
-  isOpen_iff.mpr fun V t ↦ isOpen_iff_mem_nhds.mpr fun ⟨v, hv⟩ ⟨⟨u, hu⟩, he⟩ ↦ by
-    simp_rw [germMap] at he; cases (Sigma.mk.inj_iff.mp he).1
-
-
-
-
-    --isOpen_induced_eq.mpr <| by
-
-    --⟨U ∩ V, U.isOpen.inter V.isOpen, _⟩
-
--- IsSheaf iff every continuous partial section is realized by a section of the presheaf
-
--- idempotent adjunction: reflective, coreflective
-
-variable (F)
-
-/-- The projection from the étale space down to the base is continuous. -/
-def proj : C(F.EtaleSpace, B) where
-  toFun := Sigma.fst
-  continuous_toFun := continuous_iff.mpr fun _ _ ↦ continuous_subtype_val
-
-lemma proj_isLocalHomeomorph : IsLocalHomeomorph (proj F) := sorry
-
-
-lemma isTopologicalBasis : IsTopologicalBasis
-    {V | ∃ (U : Opens B) (s : F.obj (op U)), Set.range (germMap s) = V} :=
-  isTopologicalBasis_of_isOpen_of_nhds (fun V hV ↦ _) _
-
-variable (X : Type*) [TopologicalSpace X] (p : C(X, B))
-
-def adjunction : {f : C(F.EtaleSpace, X) // p.comp f = proj F} ≃
-    {f : (Π U, F.obj U → (sheafOfSections p).1.obj U) //
-      ∀ U V (i : U ⟶ V), (sheafOfSections p).1.map i ∘ f U = f V ∘ F.map i} where
-  toFun := _
-  invFun := _
-  left_inv := _
-  right_inv := _
-
--- if it's a sheaf, the opens are exactly images of germMap ..
--- sheaf has same stalks .. so
--- many functors!
--- Presheaf B -EtaleSpace→ LocalHomeo/B -sections-> Sheaf B : composition NatIso to sheafification ..
--- Presheaf -sheafification→ Sheaf -forget→ Presheaf .. adjunction such that one composition is iso to identity ..
-
--- image of these actually forms a basis? for any presheaf or only for sheaves?
-
--- characterization of continuous maps into EtaleSpace of a sheaf ..
--- isOpen_iff
-
-end EtaleSpace
-
-variable (F : Presheaf (Type u) B)
-/- TODO: generalize `TopCat.Presheaf.Sheafify.isGerm` using `F ⋙ uliftFunctor` to allow an
-  arbitrary universe instead of u (the universe of X) -/
-
-/-- -/
-def sheafOfSectionsEtaleSpaceIsoSheafify : sheafOfSections (EtaleSpace.proj F) ≅ F.sheafify where
-  hom := _
-  inv := _
-  hom_inv_id := _
-  inv_hom_id := _
-
-end TopCat.Presheaf
+  ObjectProperty.FullSubcategory fun f : Over B ↦ IsLocalHomeomorph f.hom

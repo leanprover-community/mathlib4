@@ -39,6 +39,11 @@ the source of some `e : PartialHomeomorph X Y` with `f = e`. -/
 def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
+/-- A `PartialHomeomorph` is a local homeomorphism on its source. -/
+lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
+    IsLocalHomeomorphOn e e.source :=
+  fun _ hx ↦ ⟨e, hx, rfl⟩
+
 theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
@@ -96,10 +101,8 @@ theorem mk (h : ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ S
         continuousOn_toFun := (continuousOn_congr he).mpr e.continuousOn_toFun },
       hx, rfl⟩
 
-/-- A `PartialHomeomorph` is a local homeomorphism on its source. -/
-lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
-    IsLocalHomeomorphOn e e.source :=
-  fun _ hx ↦ ⟨e, hx, rfl⟩
+@[deprecated (since := "2025-07-04")]
+alias PartialHomeomorph.isLocalHomeomorphOn := _root_.PartialHomeomorph.isLocalHomeomorphOn
 
 variable {g t}
 
@@ -152,6 +155,7 @@ end IsLocalHomeomorphOn
 def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
+/-- A homeomorphism is a local homeomorphism. -/
 theorem Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
   fun _ ↦ ⟨f.toPartialHomeomorph, trivial, rfl⟩
 
@@ -201,9 +205,8 @@ theorem mk (h : ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ Set
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
     (IsLocalHomeomorphOn.mk f Set.univ fun x _hx ↦ h x)
 
-/-- A homeomorphism is a local homeomorphism. -/
-lemma Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
-  fun _ ↦ ⟨h.toPartialHomeomorph, trivial, rfl⟩
+@[deprecated (since := "2025-07-04")]
+alias Homeomorph.isLocalHomeomorph := _root_.Homeomorph.isLocalHomeomorph
 
 variable {g f}
 
@@ -236,6 +239,11 @@ protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
 theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
     IsOpenEmbedding f :=
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
+
+theorem isOpenEmbedding_restrict (hf : IsLocalHomeomorph f) (hs : IsOpen s) (hsf : s.InjOn f) :
+    IsOpenEmbedding (s.restrict f) :=
+  isOpenEmbedding_iff_continuous_injective_isOpenMap.mpr ⟨hf.continuous.comp continuous_subtype_val,
+    hsf.injective, hf.isOpenMap.comp hs.isOpenMap_subtype_val⟩
 
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
