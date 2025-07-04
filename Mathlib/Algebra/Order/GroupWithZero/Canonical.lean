@@ -427,6 +427,9 @@ lemma le_log_iff_exp_le (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
 lemma lt_log_iff_exp_lt (hx : x ≠ 0) : a < log x ↔ exp a < x := by
   lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
 
+lemma le_exp_of_log_le (hxa : log x ≤ a) : x ≤ exp a := by
+  obtain rfl | hx := eq_or_ne x 0 <;> simp [← log_le_iff_le_exp, *]
+
 lemma lt_exp_of_log_lt (hxa : log x < a) : x < exp a := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [← log_lt_iff_lt_exp, *]
 
