@@ -907,22 +907,6 @@ lemma torsion_add_right [CompleteSpace E]
     torsion cov Y (X + X') = torsion cov Y X + torsion cov Y X' := by
   rw [torsion_antisymm, torsion_add_left _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
 
--- TODO: prove (for sections in any vector bundle); follow-up to 24932
-lemma _root_.VectorField.mlieBracket_fun_smul_left' {f : M → ℝ} (hf : MDifferentiableAt% f x)
-    {V W : Π x : M, TangentSpace I x}
-    (hV : MDifferentiableAt% (T% V) x) :
-    VectorField.mlieBracket I (fun y ↦ f y • V y) W x =
-      - (mfderiv I 𝓘(ℝ) f x) (W x) • (V x)  + (f x) • VectorField.mlieBracket I V W x := by
-  sorry
-
--- TODO: prove (for sections in any vector bundle); follow-up to 24932
-lemma _root_.VectorField.mlieBracket_smul_left' {f : M → ℝ} (hf : MDifferentiableAt% f x)
-    {V W : Π x : M, TangentSpace I x}
-    (hV : MDifferentiableAt% (T% V) x) :
-    VectorField.mlieBracket I (f • V) W x =
-      - (mfderiv I 𝓘(ℝ) f x) (W x) • (V x)  + (f x) • VectorField.mlieBracket I V W x := by
-  sorry
-
 variable (Y) in
 lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
     (hX : MDifferentiable% (T% X)) :
@@ -930,7 +914,7 @@ lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable%
   simp only [torsion, cov.smulX]
   ext x
   simp [cov.leibniz Y X f x (hX x) (hf x)]
-  rw [VectorField.mlieBracket_smul_left' (hf x) (hX x)]
+  rw [VectorField.mlieBracket_smul_left (hf x) (hX x)]
   simp [bar, smul_sub]
   abel
 
