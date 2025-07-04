@@ -294,13 +294,12 @@ theorem _root_.ContDiffWithinAt.laplacianWithin_CLM_comp_left {l : F →L[ℝ] G
     (h : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
     (Δ[s] (l ∘ f)) x = (l ∘ (Δ[s] f)) x := by
   simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx,
-    l.iteratedFDerivWithin_comp_left h hs hx, (by rfl : (2 : ℕ∞) = (2 : ℕ))]
+    l.iteratedFDerivWithin_comp_left h hs hx]
 
 /-- The Laplacian commutes with left composition by continuous linear maps. -/
 theorem _root_.ContDiffAt.laplacian_CLM_comp_left {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
     Δ (l ∘ f) x = (l ∘ (Δ f)) x := by
-  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis,
-    l.iteratedFDeriv_comp_left h, (by rfl : (2 : ℕ∞) = (2 : ℕ))]
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, l.iteratedFDeriv_comp_left h]
 
 /-- The Laplacian commutes with left composition by continuous linear equivalences. -/
 theorem laplacianWithin_CLE_comp_left {l : F ≃L[ℝ] G} (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
