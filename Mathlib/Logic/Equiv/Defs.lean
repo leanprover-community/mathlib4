@@ -96,12 +96,10 @@ instance : EquivLike (α ≃ β) α β where
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
-/-- Helper instance when inference gets stuck on following the normal chain
-`EquivLike → FunLike`.
-
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
--/
-instance : FunLike (α ≃ β) α β where
+/-- Deprecated helper instance for when inference gets stuck on following the normal chain
+`EquivLike → FunLike`. -/
+@[deprecated EquivLike.toFunLike (since := "2025-06-20")]
+def instFunLike : FunLike (α ≃ β) α β where
   coe := Equiv.toFun
   coe_injective' := DFunLike.coe_injective
 
@@ -162,6 +160,12 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 @[simps]
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
+
+/-- `Equiv.symm` defines an equivalence between `α ≃ β` and `β ≃ α`. -/
+@[simps!]
+def symmEquiv (α β : Sort*) : (α ≃ β) ≃ (β ≃ α) where
+  toFun := .symm
+  invFun := .symm
 
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 

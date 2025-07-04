@@ -232,7 +232,7 @@ lemma div_le_div_iff_of_dvd_of_pos_of_neg (hb : 0 < b) (hd : d < 0) (hba : b ∣
     a / b ≤ c / d ↔ c * b ≤ d * a :=
   ediv_le_ediv_iff_of_dvd_of_pos_of_neg hb hd hba hdc
 
-lemma div_le_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a)  (hdc : d ∣ c) :
+lemma div_le_div_iff_of_dvd_of_neg_of_pos (hb : b < 0) (hd : 0 < d) (hba : b ∣ a) (hdc : d ∣ c) :
     a / b ≤ c / d ↔ c * b ≤ d * a :=
   ediv_le_ediv_iff_of_dvd_of_neg_of_pos hb hd hba hdc
 

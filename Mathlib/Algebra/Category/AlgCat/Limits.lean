@@ -109,20 +109,20 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     simp only [Functor.mapCone_π_app, forget_map, map_one, Pi.one_apply]
   · intro x y
     ext j
-    simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
+    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
       Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      Types.Small.limitCone_pt, equivShrink_symm_mul]
+      Types.Small.limitCone_pt, equivShrink_symm_mul, EquivLike.coe_apply]
     apply map_mul
   · ext j
-    simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
+    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
       Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      equivShrink_symm_zero]
+      equivShrink_symm_zero, EquivLike.coe_apply]
     apply map_zero
   · intro x y
     ext j
-    simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
+    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
       Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      Types.Small.limitCone_pt, equivShrink_symm_add]
+      Types.Small.limitCone_pt, equivShrink_symm_add, EquivLike.coe_apply]
     apply map_add
   · intro r
     simp only [Equiv.algebraMap_def, Equiv.symm_symm]
