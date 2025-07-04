@@ -24,6 +24,22 @@ In a general manifold with a Riemannian metric, we define the associated extende
 manifold, and show that it defines the same topology as the pre-existing one. Therefore, one
 may endow the manifold with an emetric space structure, see `EmetricSpace.ofRiemannianMetric`.
 By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
+
+The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
+```
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold ∞ I M]
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+  [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
+  [IsRiemannianManifold I M]
+```
+To register a `C^n` manifold for a general `n`, one should replace `[IsManifold ∞ I M]` with
+`[IsManifold n I M] [IsManifold 1 I M]`, where the second one is needed to ensure that the
+tangent bundle is well behaved, and require whatever regularity one wants in the
+`IsContMDiffRiemannianBundle` instance above. If continuity is enough, one may weaken it to
+`[IsContinuousRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]`.
 -/
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
