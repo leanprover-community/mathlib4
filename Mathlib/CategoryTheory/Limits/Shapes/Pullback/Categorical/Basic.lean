@@ -886,6 +886,16 @@ instance toFunctorToCategoricalPullbackTransformSquare
   CatCommSq.hInv (functorEquiv F G X) _ _ (functorEquiv F' G' X)
     (toCatCommSqOverWhiskeringFunctorOfTransformSquare X _)
 
+@[simps!]
+instance functorOfTransformFstSquare (ψ : CatCospanTransform F G F' G') :
+    CatCommSq (π₁ F G) (functorOfTransform ψ) ψ.left (π₁ F' G') where
+  iso := .refl _
+
+@[simps!]
+instance functorOfTransformSndSquare (ψ : CatCospanTransform F G F' G') :
+    CatCommSq (π₂ F G) (functorOfTransform ψ) ψ.right (π₂ F' G') where
+  iso := .refl _
+
 /-- A morphism of `CatCospanTransform` induces a natural transformations of
 the functor between the categorical pullbacks induced by its source and target. -/
 @[simps!]
@@ -894,6 +904,30 @@ def functorOfTransform₂
     functorOfTransform ψ ⟶ functorOfTransform ψ' :=
   functorEquiv F' G' F ⊡ G|>.inverse.map <|
     (transform₂ _ α).app default
+
+section functorOfTransform₂
+
+@[simp]
+lemma functorOfTransform₂_id (ψ : CatCospanTransform F G F' G') :
+    functorOfTransform₂ (𝟙 ψ) = 𝟙 _ := by
+  aesop_cat
+
+@[simp]
+lemma functorOfTransform₂_comp {ψ ψ' ψ'' : CatCospanTransform F G F' G'}
+    (α : ψ ⟶ ψ') (β : ψ' ⟶ ψ'') :
+    functorOfTransform₂ (α ≫ β) =
+    functorOfTransform₂ α ≫ functorOfTransform₂ β := by
+  aesop_cat
+
+@[simps]
+def functorOfTransform₂Iso {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ≅ ψ') :
+    functorOfTransform ψ ≅ functorOfTransform ψ' where
+  hom := functorOfTransform₂ α.hom
+  inv := functorOfTransform₂ α.inv
+  hom_inv_id := by simp [← functorOfTransform₂_comp]
+  inv_hom_id := by simp [← functorOfTransform₂_comp]
+
+end functorOfTransform₂
 
 variable (F G) in
 /-- `functorOfTransform` repects identities up to isomorphism. -/
@@ -970,6 +1004,22 @@ lemma functorOfTransform₂_rightUnitor
   aesop_cat
 
 end
+
+open Functor in
+
+/-- Picturing the data of `ψ : CatCospanTransform F G F' G'` and
+`functorOfTransform ψ` as a "categorical cube" from
+`CategoricalPullback.catCommSq F G` to `CategoricalPullback.catCommSq F' G'`,
+this is asserting that the cube is fully coherent, i.e that pasting the
+front and right face of the cube is, up to the isomorphisms of the top and bottom
+faces, the same as pasting the left and back faces. -/
+lemma cube_coherence (ψ : CatCospanTransform F G F' G') :
+    (catCommSq F G|>.hComp' ψ.squareLeft.flip).iso ≪≫
+      isoWhiskerLeft _ ψ.squareRight.iso =
+    isoWhiskerRight (functorOfTransformFstSquare ψ).iso _ ≪≫
+      ((functorOfTransformSndSquare ψ).flip.hComp' (catCommSq F' G')).iso := by
+  ext x
+  simp [CatCommSq.flip]
 
 end Pseudofunctoriality
 
