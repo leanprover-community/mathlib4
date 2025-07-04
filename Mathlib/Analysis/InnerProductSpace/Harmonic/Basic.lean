@@ -120,7 +120,7 @@ theorem HarmonicOnNhd.const_smul (h : HarmonicOnNhd f s) :
 /--
 Compositions of continuous `ℝ`-linear maps with harmonic functions are harmonic.
 -/
-theorem HarmonicAt.comp_CLM {l : F →L[ℝ] G} (h : HarmonicAt f x) :
+theorem HarmonicAt.comp_CLM (h : HarmonicAt f x) (l : F →L[ℝ] G) :
     HarmonicAt (l ∘ f) x := by
   constructor
   · exact h.1.continuousLinearMap_comp l
@@ -130,28 +130,28 @@ theorem HarmonicAt.comp_CLM {l : F →L[ℝ] G} (h : HarmonicAt f x) :
 /--
 Compositions of continuous linear maps with harmonic functions are harmonic.
 -/
-theorem HarmonicOnNhd.comp_CLM {l : F →L[ℝ] G} (h : HarmonicOnNhd f s) :
-    HarmonicOnNhd (l ∘ f) s := fun x hx ↦ (h x hx).comp_CLM
+theorem HarmonicOnNhd.comp_CLM (h : HarmonicOnNhd f s) (l : F →L[ℝ] G) :
+    HarmonicOnNhd (l ∘ f) s := fun x hx ↦ (h x hx).comp_CLM l
 
 /--
 Functions are harmonic iff their compositions with continuous linear
 equivalences are harmonic.
 -/
-theorem harmonicAt_iff_harmonicAt_comp_CLE {l : F ≃L[ℝ] G} :
+theorem harmonicAt_iff_harmonicAt_comp_CLE (l : F ≃L[ℝ] G) :
     HarmonicAt f x ↔ HarmonicAt (l ∘ f) x := by
   constructor
-  · exact fun h ↦ h.comp_CLM (l := l.toContinuousLinearMap)
+  · exact fun h ↦ h.comp_CLM l.toContinuousLinearMap
   · have : f = l.symm.toContinuousLinearMap ∘ l ∘ f := by
       unfold Function.comp
       simp
     nth_rewrite 2 [this]
-    exact fun h ↦ h.comp_CLM
+    exact fun h ↦ h.comp_CLM l.symm.toContinuousLinearMap
 
 /--
 Functions are harmonic iff their compositions with continuous linear
 equivalences are harmonic.
 -/
-theorem harmonicOnNhd_iff_harmonicOnNhd_comp_CLE {l : F ≃L[ℝ] G} :
+theorem harmonicOnNhd_iff_harmonicOnNhd_comp_CLE (l : F ≃L[ℝ] G) :
     HarmonicOnNhd f s ↔ HarmonicOnNhd (l ∘ f) s := by
   constructor
   <;> exact fun h x hx ↦ by simpa [← harmonicAt_iff_harmonicAt_comp_CLE] using h x hx
