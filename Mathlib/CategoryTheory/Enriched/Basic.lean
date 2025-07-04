@@ -6,6 +6,9 @@ Authors: Kim Morrison, Jakob von Raumer
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Widget.StringDiagram
+import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!
 # Enriched categories
@@ -395,21 +398,67 @@ structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
       (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ₘ app Y) ≫ eComp V _ _ _ =
         (app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _
 
+attribute [reassoc] GradedNatTrans.naturality
+
 abbrev EnrichedNatTrans (F G : EnrichedFunctor V C D) := GradedNatTrans Center.tensorUnit F G
 
 namespace EnrichedNatTrans
 
+open EnrichedCategory
+
 variable (F : EnrichedFunctor V C D)
 
+@[simps]
 def id : EnrichedNatTrans F F where
   app X := eId V (F.obj X)
-  naturality X Y := by { simp; sorry }
+  naturality X Y := by
+    rw [tensorHom_def, tensorHom_def']
+    simp
 
 variable {F} {G H : EnrichedFunctor V C D}
 
+/-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
+of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
+theorem naturality (α : EnrichedNatTrans F G) (X Y : C) :
+    (ρ_ _).inv ≫ (F.map X Y ⊗ₘ α.app Y) ≫ eComp V _ _ _ =
+    (λ_ _).inv ≫ (α.app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _ := by
+  have := GradedNatTrans.naturality α X Y
+  simp only [Center.tensorUnit_fst, Center.tensorUnit_snd_β, Iso.trans_hom, Iso.symm_hom,
+    Category.assoc] at this
+  rwa [Iso.eq_inv_comp]
+
+@[simps]
 def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTrans F H where
   app X := (ρ_ (𝟙_ V)).inv ≫ (α.app X ⊗ₘ β.app X) ≫ eComp _ _ _ _
-  naturality X Y := sorry
+  naturality X Y := by
+    rw [tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, tensorHom_def, whiskerLeft_comp, Category.assoc,
+      associator_inv_naturality_right_assoc, associator_inv_naturality_middle_assoc,
+      whisker_exchange_assoc _ (β.app Y)]
+    simp only [Center.tensorUnit_fst]
+    rw [whiskerLeft_rightUnitor_inv, Category.assoc, Iso.hom_inv_id_assoc,
+      ← rightUnitor_inv_naturality_assoc (X := Hom (F.obj X) (F.obj Y) ⊗ 𝟙_ V),
+      ← rightUnitor_inv_naturality_assoc (X := Hom (F.obj X) (F.obj Y) ⊗ Hom (F.obj Y) (G.obj Y)),
+      ← tensorHom_def_assoc, α.naturality_assoc]
+    simp only [Center.tensorUnit_fst]
+    rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
+      rightUnitor_tensor_inv, tensorHom_def', Category.assoc, comp_whiskerRight, Category.assoc,
+      ← associator_inv_naturality_middle_assoc, ← associator_inv_naturality_left_assoc,
+      ← whisker_exchange_assoc, ← associator_inv_naturality_right_assoc,
+      ← whisker_exchange_assoc, e_assoc, ← whisker_exchange_assoc,
+      ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, Category.assoc,
+      Category.assoc, ← tensorHom_def_assoc, β.naturality, ← tensorHom_def'_assoc,
+      tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, ← whisker_exchange_assoc, ← tensorHom_def_assoc]
+    monoidal
+
+instance category : Category (EnrichedFunctor V C D) where
+  Hom F G := EnrichedNatTrans F G
+  id F := id F
+  comp α β := comp α β
+  comp_id α := by ext X; simp; sorry
+  id_comp := sorry
+  assoc := sorry
 
 end EnrichedNatTrans
 
