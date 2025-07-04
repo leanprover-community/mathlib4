@@ -60,7 +60,7 @@ If `f` is harmonic at `x`, then it is harmonic at all points in a neighborhood o
 -/
 theorem HarmonicAt.eventually {f : E → F} {x : E} (h : HarmonicAt f x) :
     ∀ᶠ y in 𝓝 x, HarmonicAt f y := by
-  filter_upwards [h.1.eventually (not_eq_of_beq_eq_false rfl), h.2.eventually_nhds] with a h₁a h₂a
+  filter_upwards [h.1.eventually (by aesop), h.2.eventually_nhds] with a h₁a h₂a
   exact ⟨h₁a, h₂a⟩
 
 variable (f) in
