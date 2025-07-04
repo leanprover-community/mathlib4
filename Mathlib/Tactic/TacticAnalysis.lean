@@ -7,12 +7,12 @@ import Lean.Meta.Tactic.Grind.Main
 
 open Lean Elab Term Command Linter
 
-register_option linter.t4t : Bool := {
+register_option linter.tactic_analysis : Bool := {
   defValue := true
   descr := "enable transformations for tactics"
 }
 
-namespace T4T
+namespace TacticAnalysis
 
 /-- Output for the tactic transformer. -/
 abbrev Out := Std.HashMap String.Range Syntax
@@ -62,7 +62,7 @@ def filterTacticsList (stx : Syntax)
     (trees : PersistentArray InfoTree) (acc : Out) : CommandElabM Out :=
   trees.foldlM (filterTactics stx) acc
 
-/-- T4T (Transformations for Tactics) is the working title for a tactic analysis framework.
+/-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
 which will be tested against a whole project,
 to report proposed changes.
@@ -76,7 +76,7 @@ The overall design will have three user-supplied components:
 It hooks into the linting system to move through the infotree,
 collecting tactic syntax and state to pass to the three Ts.
 -/
-def t4t : Linter where run := withSetOptionIn fun stx => do
+def tactic_analysis : Linter where run := withSetOptionIn fun stx => do
   if (← get).messages.hasErrors then
     return
   let env ← getEnv
@@ -95,9 +95,9 @@ def t4t : Linter where run := withSetOptionIn fun stx => do
   let mut last : String.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.t4t stx m!"'{stx}' can be replaced with 'grind'"
+    Linter.logLint linter.tactic_analysis stx m!"'{stx}' can be replaced with 'grind'"
     last := r
 
-initialize addLinter t4t
+initialize addLinter tactic_analysis
 
-end T4T
+end TacticAnalysis
