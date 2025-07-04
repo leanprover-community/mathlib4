@@ -975,7 +975,7 @@ def range (n : ℕ) : LTSeries ℕ where
 
 @[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl
 
-@[simp] lemma range_apply (n : ℕ) (i : Fin (n+1)) : (range n) i = i := rfl
+@[simp] lemma range_apply (n : ℕ) (i : Fin (n + 1)) : (range n) i = i := rfl
 
 @[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
 
