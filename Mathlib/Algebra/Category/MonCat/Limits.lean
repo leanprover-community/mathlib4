@@ -17,6 +17,7 @@ the underlying types are just the limits in the category of types.
 
 -/
 
+assert_not_exists MonoidWithZero
 
 noncomputable section
 
