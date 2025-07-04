@@ -6,7 +6,6 @@ Authors: David Kurniadi Angdinata
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 
-
 /-!
 # Nonsingular points and the group law in projective coordinates
 
