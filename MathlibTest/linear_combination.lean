@@ -319,9 +319,9 @@ error: Application type mismatch: In the application
 the argument
   0
 has type
-  ℝ
+  ℝ : Type
 but is expected to have type
-  ℤ
+  ℤ : Type
 -/
 #guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
