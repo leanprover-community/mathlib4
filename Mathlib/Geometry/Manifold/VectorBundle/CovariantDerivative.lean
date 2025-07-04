@@ -892,14 +892,29 @@ variable (X) in
 lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_zero]; simp
 
 variable (Y) in
+lemma torsion_add_left_apply [CompleteSpace E] {x : M}
+    (hX : MDifferentiableAt% (T% X) x)
+    (hX' : MDifferentiableAt% (T% X') x) :
+    torsion cov (X + X') Y x = torsion cov X Y x + torsion cov X' Y x := by
+  simp [torsion, cov.addX]
+  rw [cov.addσ _ X X' _ hX hX', VectorField.mlieBracket_add_left hX hX']
+  module
+
+variable (Y) in
 lemma torsion_add_left [CompleteSpace E]
     (hX : MDifferentiable% (T% X))
     (hX' : MDifferentiable% (T% X')) :
     torsion cov (X + X') Y = torsion cov X Y + torsion cov X' Y := by
   ext x
-  simp [torsion, cov.addX]
-  rw [cov.addσ _ X X' _ (hX x) (hX' x), VectorField.mlieBracket_add_left (hX x) (hX' x)]
-  module
+  exact cov.torsion_add_left_apply _ (hX x) (hX' x)
+
+lemma torsion_add_right_apply [CompleteSpace E] {x : M}
+    (hX : MDifferentiableAt% (T% X) x)
+    (hX' : MDifferentiableAt% (T% X') x) :
+    torsion cov Y (X + X') x = torsion cov Y X x + torsion cov Y X' x := by
+  rw [torsion_antisymm]
+  sorry -- rw [cov.torsion_add_left_apply Y hX hX']
+  --, torsion_add_left_apply _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
 
 lemma torsion_add_right [CompleteSpace E]
     (hX : MDifferentiable% (T% X))
@@ -908,15 +923,21 @@ lemma torsion_add_right [CompleteSpace E]
   rw [torsion_antisymm, torsion_add_left _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
 
 variable (Y) in
+lemma torsion_smul_left_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDifferentiableAt% f x)
+    (hX : MDifferentiableAt% (T% X) x) :
+    torsion cov (f • X) Y x = f x • torsion cov X Y x := by
+  simp only [torsion, cov.smulX]
+  sorry /- rw [cov.leibniz Y X f x hX hf]
+  rw [VectorField.mlieBracket_smul_left hf hX]
+  simp [bar, smul_sub]
+  abel -/
+
+variable (Y) in
 lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
     (hX : MDifferentiable% (T% X)) :
     torsion cov (f • X) Y = f • torsion cov X Y := by
-  simp only [torsion, cov.smulX]
   ext x
-  simp [cov.leibniz Y X f x (hX x) (hf x)]
-  rw [VectorField.mlieBracket_smul_left (hf x) (hX x)]
-  simp [bar, smul_sub]
-  abel
+  exact cov.torsion_smul_left_apply _ (hf x) (hX x)
 
 variable (X) in
 lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
@@ -924,7 +945,31 @@ lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable
     torsion cov X (f • Y) = f • torsion cov X Y := by
   rw [torsion_antisymm, torsion_smul_left X hf hY, torsion_antisymm X]; module
 
--- finally, conclude that torsion is tensorial
+variable (X) in
+lemma torsion_smul_right_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDifferentiableAt% f x)
+    (hX : MDifferentiableAt% (T% Y) x) :
+    torsion cov X (f • Y) x = f x • torsion cov X Y x := by
+  sorry
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
+/-- The torsion of a covariant derivative is tensorial:
+the value of `torsion cov X Y` at `x₀` depends only on `X x₀` and `Y x₀`. -/
+def torsion_tensorial [T2Space M] [IsManifold I ∞ M]
+    [FiniteDimensional ℝ F] [ContMDiffVectorBundle 1 F V I]
+    {X X' Y Y' : Π x : M, TangentSpace I x} {x₀ : M}
+    (hX : MDifferentiableAt% (T% X) x₀) (hX' : MDifferentiableAt% (T% X') x₀)
+    (hY : MDifferentiableAt% (T% Y) x₀) (hY' : MDifferentiableAt% (T% Y') x₀)
+    (hXX' : X x₀ = X' x₀) (hYY' : Y x₀ = Y' x₀) :
+    (torsion cov X Y) x₀ = (torsion cov X' Y') x₀ := by
+  apply tensoriality_criterion₂ I E (TangentSpace I) E (TangentSpace I) hX hX' hY hY' hXX' hYY'
+  · intro f σ τ hf hσ
+    exact cov.torsion_smul_left_apply _ hf hσ
+  · intro σ σ' τ hσ hσ'
+    exact cov.torsion_add_left_apply _ hσ hσ'
+  · intros f σ σ' hf hσ'
+    exact cov.torsion_smul_right_apply _ hf hσ'
+  · intro σ τ τ' hτ hτ'
+    exact cov.torsion_add_right_apply hτ hτ'
 
 variable (cov) in
 /-- A covariant derivation is called **torsion-free** iff its torsion tensor vanishes. -/
