@@ -1109,7 +1109,7 @@ theorem ContDiff.contDiffOn (h : ContDiff 𝕜 n f) : ContDiffOn 𝕜 n f s :=
 
 @[simp]
 theorem contDiff_zero : ContDiff 𝕜 0 f ↔ Continuous f := by
-  rw [← contDiffOn_univ, continuousOn_univ]
+  rw [← contDiffOn_univ, ← continuousOn_univ]
   exact contDiffOn_zero
 
 theorem contDiffAt_zero : ContDiffAt 𝕜 0 f x ↔ ∃ u ∈ 𝓝 x, ContinuousOn f u := by
