@@ -456,9 +456,27 @@ instance category : Category (EnrichedFunctor V C D) where
   Hom F G := EnrichedNatTrans F G
   id F := id F
   comp α β := comp α β
-  comp_id α := by ext X; simp; sorry
-  id_comp := sorry
-  assoc := sorry
+  comp_id α := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, id_app]
+    rw [tensorHom_def, Category.assoc, ← rightUnitor_inv_naturality_assoc]
+    simp
+  id_comp α := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, id_app]
+    rw [tensorHom_def', Category.assoc]
+    simp only [id_whiskerLeft, Category.assoc, e_id_comp, Category.comp_id]
+    monoidal
+  assoc α β γ := by
+    ext X
+    with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]
+    simp only [Center.tensorUnit_fst, comp_app, Iso.cancel_iso_inv_left]
+    rw [tensorHom_def', tensorHom_def', comp_whiskerRight, comp_whiskerRight,
+      Category.assoc, Category.assoc, Category.assoc, ← e_assoc', comp_whiskerRight,
+      Category.assoc, associator_naturality_left_assoc, associator_naturality_middle_assoc,
+      whisker_exchange_assoc, associator_naturality_right_assoc, ← whiskerLeft_comp_assoc,
+      ← tensorHom_def', whisker_exchange_assoc, ← whiskerLeft_comp_assoc, ← tensorHom_def_assoc]
+    monoidal
 
 end EnrichedNatTrans
 
