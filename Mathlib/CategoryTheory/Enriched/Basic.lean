@@ -6,9 +6,6 @@ Authors: Kim Morrison, Jakob von Raumer
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Widget.StringDiagram
-import Mathlib.Tactic.CategoryTheory.Coherence
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!
 # Enriched categories
@@ -473,7 +470,6 @@ instance category : Category (EnrichedFunctor V C D) where
     monoidal
   assoc α β γ := by
     ext X
-    with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]
     simp only [Center.tensorUnit_fst, comp_app, Iso.cancel_iso_inv_left]
     rw [tensorHom_def', tensorHom_def', comp_whiskerRight, comp_whiskerRight,
       Category.assoc, Category.assoc, Category.assoc, ← e_assoc', comp_whiskerRight,
