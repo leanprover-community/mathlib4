@@ -833,7 +833,7 @@ instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩
 
 instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 end Uncurry
 

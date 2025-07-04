@@ -294,20 +294,20 @@ alias TendstoUniformly.prod := TendstoUniformly.prodMk
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
 `p ×ˢ p'`. -/
 theorem tendsto_prod_filter_iff {c : β} :
-    Tendsto (↿F) (p ×ˢ p') (𝓝 c) ↔ TendstoUniformlyOnFilter F (fun _ => c) p p' := by
+    Tendsto ↿F (p ×ˢ p') (𝓝 c) ↔ TendstoUniformlyOnFilter F (fun _ => c) p p' := by
   simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff]
   rfl
 
 /-- Uniform convergence on a set `s` to a constant function is equivalent to convergence in
 `p ×ˢ 𝓟 s`. -/
 theorem tendsto_prod_principal_iff {c : β} :
-    Tendsto (↿F) (p ×ˢ 𝓟 s) (𝓝 c) ↔ TendstoUniformlyOn F (fun _ => c) p s := by
+    Tendsto ↿F (p ×ˢ 𝓟 s) (𝓝 c) ↔ TendstoUniformlyOn F (fun _ => c) p s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter]
   exact tendsto_prod_filter_iff
 
 /-- Uniform convergence to a constant function is equivalent to convergence in `p ×ˢ ⊤`. -/
 theorem tendsto_prod_top_iff {c : β} :
-    Tendsto (↿F) (p ×ˢ ⊤) (𝓝 c) ↔ TendstoUniformly F (fun _ => c) p := by
+    Tendsto ↿F (p ×ˢ ⊤) (𝓝 c) ↔ TendstoUniformly F (fun _ => c) p := by
   rw [tendstoUniformly_iff_tendstoUniformlyOnFilter]
   exact tendsto_prod_filter_iff
 
@@ -334,11 +334,11 @@ theorem Filter.Tendsto.tendstoUniformlyOn_const {g : ι → β} {b : β} (hg : T
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr (hg.tendstoUniformlyOnFilter_const (𝓟 s))
 
 theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace γ] {U : Set α}
-    {V : Set β} {F : α → β → γ} (hF : UniformContinuousOn (↿F) (U ×ˢ V)) (hU : x ∈ U) :
+    {V : Set β} {F : α → β → γ} (hF : UniformContinuousOn ↿F (U ×ˢ V)) (hU : x ∈ U) :
     TendstoUniformlyOn F (F x) (𝓝[U] x) V := by
   set φ := fun q : α × β => ((x, q.2), q)
   rw [tendstoUniformlyOn_iff_tendsto]
-  change Tendsto (Prod.map (↿F) ↿F ∘ φ) (𝓝[U] x ×ˢ 𝓟 V) (𝓤 γ)
+  change Tendsto (Prod.map ↿F ↿F ∘ φ) (𝓝[U] x ×ˢ 𝓟 V) (𝓤 γ)
   simp only [nhdsWithin, Filter.prod_eq_inf, comap_inf, inf_assoc, comap_principal, inf_principal]
   refine hF.comp (Tendsto.inf ?_ <| tendsto_principal_principal.2 fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
   simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff,
@@ -346,7 +346,7 @@ theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace �
   exact tendsto_comap.prodMk (tendsto_diag_uniformity _ _)
 
 theorem UniformContinuousOn.tendstoUniformly [UniformSpace α] [UniformSpace γ] {U : Set α}
-    (hU : U ∈ 𝓝 x) {F : α → β → γ} (hF : UniformContinuousOn (↿F) (U ×ˢ (univ : Set β))) :
+    (hU : U ∈ 𝓝 x) {F : α → β → γ} (hF : UniformContinuousOn ↿F (U ×ˢ (univ : Set β))) :
     TendstoUniformly F (F x) (𝓝 x) := by
   simpa only [tendstoUniformlyOn_univ, nhdsWithin_eq_nhds.2 hU]
     using hF.tendstoUniformlyOn (mem_of_mem_nhds hU)
