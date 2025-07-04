@@ -107,9 +107,12 @@ namespace NNRat
 instance : MetricSpace ℚ≥0 :=
   Subtype.metricSpace
 
-@[simp← , push_cast]
+set_option linter.style.commandStart false in
+@[simp ←, push_cast]
 lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
-@[simp← , push_cast]
+
+set_option linter.style.commandStart false in
+@[simp ←, push_cast]
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 
 instance : IsTopologicalSemiring ℚ≥0 where
