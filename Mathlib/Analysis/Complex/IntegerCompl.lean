@@ -48,7 +48,7 @@ lemma integerComplement_pow_two_ne_pow_two {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : �
   intro h
   have := (not_exists.mp hx n)
   have := not_exists.mp hx (-n)
-  simp only [one_mul, neg_neg, sq_eq_sq_iff_eq_or_eq_neg] at *
+  simp only [sq_eq_sq_iff_eq_or_eq_neg] at *
   aesop
 
 end Complex

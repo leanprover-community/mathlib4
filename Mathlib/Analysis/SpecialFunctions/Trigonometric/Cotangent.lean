@@ -140,7 +140,7 @@ theorem tendsto_logDeriv_euler_sin_div (hx : x ∈ ℂ_ℤ ) :
   refine logDeriv_tendsto (isOpen_compl_range_intCast) ⟨x, hx⟩
       HasProdLocallyUniformlyOn_euler_sin_prod.tendstoLocallyUniformlyOn_finsetRange ?_ ?_
   · filter_upwards with n using by fun_prop
-  · simp only [Set.mem_setOf_eq, ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
+  · simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
     exact ⟨sin_pi_z_ne_zero hx, Real.pi_ne_zero , integerComplement.ne_zero hx⟩
 
 theorem logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ ) :
@@ -153,7 +153,7 @@ theorem logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ ) :
     deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
   · field_simp [mul_comm]
   · simpa using Real.pi_ne_zero
-  · simp only [Set.mem_setOf_eq, ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
+  · simp only [ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
     exact ⟨Real.pi_ne_zero, integerComplement.ne_zero hz⟩
 
 /-- The term in the infinite sum expansion of cot. -/
@@ -169,9 +169,8 @@ theorem logDeriv_sineTerm_eq_cotTerm (hx : x ∈ ℂ_ℤ ) (i : ℕ) :
       rw [← sub_eq_add_neg, sub_ne_zero]
       aesop
   simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sineTerm, logDeriv_apply,
-    differentiableAt_const, deriv_const_add', deriv_div_const, deriv.fun_neg',
-    differentiableAt_fun_id, deriv_fun_pow'', Nat.cast_ofNat, Nat.add_one_sub_one, pow_one,
-    deriv_id'', mul_one, cotTerm, one_div] at *
+    deriv_const_add', deriv_div_const, deriv.fun_neg', differentiableAt_fun_id, deriv_fun_pow'',
+    Nat.cast_ofNat, Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, cotTerm, one_div] at *
   field_simp [Nat.cast_add_one_ne_zero i]
   ring
 
