@@ -509,14 +509,7 @@ theorem coe_lcs_range_toEnd_eq (k : ℕ) :
   | succ k ih =>
     simp only [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
       (lowerCentralSeries R (toEnd R L M).range M k).mem_toSubmodule, ih]
-    congr
-    ext m
-    constructor
-    · rintro ⟨⟨-, ⟨y, rfl⟩⟩, -, n, hn, rfl⟩
-      exact ⟨y, LieSubmodule.mem_top _, n, hn, rfl⟩
-    · rintro ⟨x, -, n, hn, rfl⟩
-      exact
-        ⟨⟨toEnd R L M x, LieHom.mem_range_self _ x⟩, LieSubmodule.mem_top _, n, hn, rfl⟩
+    simp
 
 @[simp]
 theorem isNilpotent_range_toEnd_iff :
@@ -916,13 +909,7 @@ theorem coe_lcs_eq [LieModule R L M] :
     simp_rw [lowerCentralSeries_succ, lcs_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
       (I.lcs M k).mem_toSubmodule, ih, LieSubmodule.mem_toSubmodule, LieSubmodule.mem_top,
       true_and, (I : LieSubalgebra R L).coe_bracket_of_module]
-    congr
-    ext m
-    constructor
-    · rintro ⟨x, hx, m, hm, rfl⟩
-      exact ⟨⟨x, hx⟩, m, hm, rfl⟩
-    · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
-      exact ⟨x, hx, m, hm, rfl⟩
+    simp
 
 instance [IsNilpotent L I] : LieRing.IsNilpotent I := by
   let f : I →ₗ⁅R⁆ L := I.incl

@@ -416,10 +416,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
         all_goals omega }
   map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
-    dsimp
-    rw [← Ext.mk₀_comp_mk₀]
-    apply Ext.comp_assoc
-    all_goals omega
+    simp
 
 section biproduct
 
