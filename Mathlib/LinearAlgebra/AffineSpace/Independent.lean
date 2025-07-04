@@ -870,15 +870,7 @@ lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k 
     (i : Fin (n + 1)) (j : Fin (n - 1 + 1)) :
     (s.faceOpposite i).points j =
       s.points (Fin.succAbove i (Fin.cast (Nat.sub_one_add_one (NeZero.ne _)) j)) := by
-  simp_rw [faceOpposite, face, comp_apply]
-  convert rfl
-  rw [eq_comm]
-  change Finset.orderEmbOfFin _ _ j =
-    (Fin.succAbove i ∘ Fin.cast (Nat.sub_one_add_one (NeZero.ne _))) j
-  convert rfl
-  convert Finset.orderEmbOfFin_unique _ (fun x ↦ ?_)
-    ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
-  simp
+  simp_rw [faceOpposite, face, comp_apply, Finset.orderEmbOfFin_compl_singleton_apply]
 
 lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1) :
     (s.faceOpposite i).points n = s.points i.rev := by
