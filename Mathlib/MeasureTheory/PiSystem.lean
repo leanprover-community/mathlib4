@@ -667,9 +667,9 @@ instance : SetLike (DynkinSystem α) (Set α) :=
   If `s ⊆ d`, then every set that is measurable with respect to the
   σ-algebra `generateFrom s` also belongs to `d`.
 -/
-lemma pi_lambda {s : Set (Set α)} (hs : IsPiSystem s) (hsD : s ⊆ d) :
+lemma pi_lambda {s : Set (Set α)} (hs : IsPiSystem s) (h_sub : s ⊆ d) :
     ∀ {t}, MeasurableSet[generateFrom s] t → t ∈ d :=
-  fun {t} ht => (generate_le d (fun u hu => hsD hu)) t (by simpa [generateFrom_eq hs] using ht)
+  fun {t} ht => (generate_le d (fun u hu => h_sub hu)) t (by simpa [generateFrom_eq hs] using ht)
 
 end DynkinSystem
 
