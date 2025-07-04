@@ -41,7 +41,7 @@ lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
 lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ) ≠ 0 :=
   integerComplement.ne_zero ((integerComplement.add_coe_int_mem a).mpr hx)
 
-theorem integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 1 :=
+lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 1 :=
   fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
 
 end Complex
