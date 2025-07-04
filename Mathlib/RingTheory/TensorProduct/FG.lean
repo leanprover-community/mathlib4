@@ -11,10 +11,9 @@ import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Ideal.Quotient.Operations
-
 import Mathlib.Algebra.DirectSum.Internal
 
-/- # Tensor products and finitely generated submodules
+/-! # Tensor products and finitely generated submodules
 
 * `Submodule.FG.directedSystem`, the directed system of finitely generated submodules of a module.
 
