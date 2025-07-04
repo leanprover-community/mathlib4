@@ -107,13 +107,13 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
       assoc := by
         -- oh, for homotopy.io in a widget!
         slice_rhs 2 3 => rw [whisker_exchange]
-        simp only [whiskerRight_tensor, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+        simp only [whiskerRight_tensor, whiskerLeft_comp, Category.assoc,
           Iso.hom_inv_id_assoc]
         slice_rhs 4 5 => rw [Mod_.assoc_flip]
         slice_rhs 3 4 => rw [associator_inv_naturality_middle]
         slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def',
+        slice_rhs 1 2 => rw [← comp_whiskerRight, ← whisker_exchange]
+        slice_rhs 1 2 => rw [← comp_whiskerRight, ← tensorHom_def',
           ← IsMon_Hom.mul_hom]
         rw [comp_whiskerRight, Category.assoc] }
   map g :=

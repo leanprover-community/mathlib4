@@ -483,7 +483,7 @@ def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b :
 
 @[simp]
 lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
-    (s: {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
+    (s : {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
     sigmaSigmaSubtypeEq a b s = cast (congrArg₂ γ s.2.1 s.2.2) s.1.2.2 := by
   simp [sigmaSigmaSubtypeEq]
 
