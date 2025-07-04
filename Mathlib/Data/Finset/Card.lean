@@ -23,6 +23,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.strongDownwardInductionOn`
 * `Finset.case_strong_induction_on`
 * `Finset.Nonempty.strong_induction`
+* `Finset.eraseInduction`
 -/
 
 assert_not_exists Monoid
@@ -658,7 +659,7 @@ theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
-  simp only [exists_prop, exists_and_left]
+  simp only [exists_and_left]
 
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
@@ -830,5 +831,18 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
+
+/--
+To prove a proposition for an arbitrary `Finset α`,
+it suffices to prove that for any `S : Finset α`, the following is true:
+the property is true for S with any element `s` removed, then the property holds for `S`.
+
+This is a weaker version of `Finset.strongInduction`.
+But it can be more precise when the induction argument
+only requires removing single elements at a time.
+-/
+theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
+    (H : (S : Finset α) → (∀ s ∈ S, p (S.erase s)) → p S) (S : Finset α) : p S :=
+  S.strongInduction fun S ih => H S fun _ hs => ih _ (erase_ssubset hs)
 
 end Finset

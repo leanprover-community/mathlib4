@@ -134,11 +134,10 @@ lemma Odd.natCast {R : Type*} [Semiring R] {n : ℕ} (hn : Odd n) : Odd (n : R) 
   rw [mul_add, add_mul, mul_one, ← add_assoc, one_mul, mul_assoc, ← mul_add, ← mul_add, ← mul_assoc,
     ← Nat.cast_two, ← Nat.cast_comm]
 
-lemma Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
-  | 0 => by
-    rw [pow_zero]
-    exact odd_one
-  | n + 1 => by rw [pow_succ]; exact ha.pow.mul ha
+lemma Odd.pow {n : ℕ} (ha : Odd a) : Odd (a ^ n) := by
+  induction n with
+  | zero => simp [pow_zero]
+  | succ n hrec => rw [pow_succ]; exact hrec.mul ha
 
 lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
@@ -279,6 +278,11 @@ lemma Odd.of_mul_left (h : Odd (m * n)) : Odd m :=
 lemma Odd.of_mul_right (h : Odd (m * n)) : Odd n :=
   (odd_mul.mp h).2
 
+lemma odd_pow_iff {e : ℕ} (he : e ≠ 0) : Odd (n ^ e) ↔ Odd n := by
+  refine ⟨?_, Odd.pow⟩
+  simp only [← Nat.not_even_iff_odd, not_imp_not, even_pow]
+  exact fun h ↦ ⟨h, he⟩
+
 lemma even_div : Even (m / n) ↔ m % (2 * n) / n = 0 := by
   rw [even_iff_two_dvd, dvd_iff_mod_eq_zero, ← Nat.mod_mul_right_div_self, mul_comm]
 
@@ -312,7 +316,7 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp [*, two_ne_zero, parity_simps]
+  simp [*, parity_simps]
 
 example : ¬Even 25394535 := by decide
 

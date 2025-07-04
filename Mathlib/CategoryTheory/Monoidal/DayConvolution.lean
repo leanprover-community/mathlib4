@@ -61,6 +61,8 @@ class DayConvolution (F G : C ⥤ V) where
 
 namespace DayConvolution
 
+open scoped Prod
+
 section
 
 /-- A notation for the Day convolution of two functors. -/
@@ -81,12 +83,12 @@ def uniqueUpToIso (h : DayConvolution F G) (h' : DayConvolution F G) :
 
 @[reassoc (attr := simp)]
 lemma unit_uniqueUpToIso_hom (h : DayConvolution F G) (h' : DayConvolution F G) :
-    h.unit ≫ CategoryTheory.whiskerLeft (tensor C) (h.uniqueUpToIso h').hom = h'.unit := by
+    h.unit ≫ Functor.whiskerLeft (tensor C) (h.uniqueUpToIso h').hom = h'.unit := by
   simp [uniqueUpToIso]
 
 @[reassoc (attr := simp)]
 lemma unit_uniqueUpToIso_inv (h : DayConvolution F G) (h' : DayConvolution F G) :
-    h'.unit ≫ CategoryTheory.whiskerLeft (tensor C) (h.uniqueUpToIso h').inv = h.unit := by
+    h'.unit ≫ Functor.whiskerLeft (tensor C) (h.uniqueUpToIso h').inv = h.unit := by
   simp [uniqueUpToIso]
 
 variable (F G) [DayConvolution F G]
@@ -99,21 +101,21 @@ variable {x x' y y' : C}
 lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
     (F.map f ⊗ₘ G.map g) ≫ (unit F G).app (x', y') =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ₘ g) := by
-  simpa [tensorHom_def] using (unit F G).naturality ((f, g) : (x, y) ⟶ (x', y'))
+  simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ g)
 
 variable (y) in
 @[reassoc (attr := simp)]
 lemma whiskerRight_comp_unit_app (f : x ⟶ x') :
     F.map f ▷ G.obj y ≫ (unit F G).app (x', y) =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ▷ y) := by
-  simpa [tensorHom_def] using (unit F G).naturality ((f, 𝟙 _) : (x, y) ⟶ (x', y))
+  simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ 𝟙 _)
 
 variable (x) in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_comp_unit_app (g : y ⟶ y') :
     F.obj x ◁ G.map g ≫ (unit F G).app (x, y') =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (x ◁ g) := by
-  simpa [tensorHom_def] using (unit F G).naturality ((𝟙 _, g) : (x, y) ⟶ (x, y'))
+  simpa [tensorHom_def] using (unit F G).naturality (𝟙 _ ×ₘ g)
 
 end unit
 
@@ -136,7 +138,7 @@ lemma unit_app_map_app :
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
   simpa [tensorHom_def] using
     (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|
-      (externalProductBifunctor C C V).map ((f, g) : (F, G) ⟶ (F', G')) ≫ unit F' G') (x, y)
+      (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G') (x, y)
 
 end map
 
@@ -146,7 +148,7 @@ variable (F G)
 corepresented by `F ⊛ G`. -/
 @[simps!]
 def corepresentableBy :
-    (whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G)|>.CorepresentableBy
+    (Functor.whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G)|>.CorepresentableBy
       (F ⊛ G) where
   homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
   homEquiv_comp := by aesop
@@ -161,6 +163,8 @@ theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
 
 section associator
 
+open Functor
+
 variable (H : C ⥤ V)
     [DayConvolution G H]
     [DayConvolution F (G ⊛ H)]
@@ -174,16 +178,16 @@ open MonoidalCategory.ExternalProduct
 
 instance : (F ⊠ G ⊛ H).IsLeftKanExtension <|
     extensionUnitRight (G ⊛ H) (unit G H) F :=
-  (pointwiseLeftKanExtensionRight _ _ _ <|
+  (isPointwiseLeftKanExtensionExtensionUnitRight _ _ _ <|
     isPointwiseLeftKanExtensionUnit G H).isLeftKanExtension
 
 instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
     extensionUnitLeft (F ⊛ G) (unit F G) H :=
-  (pointwiseLeftKanExtensionLeft _ _ _ <|
+  (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
 /-- The `CorepresentableBy` structure on `F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -`. -/
-@[simps!]
+@[simps]
 def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C)) ⋙
@@ -194,7 +198,7 @@ def corepresentableBy₂ :
   homEquiv_comp := by aesop
 
 /-- The `CorepresentableBy` structure on `(F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -`. -/
-@[simps!]
+@[simps]
 def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
@@ -280,7 +284,7 @@ lemma associator_inv_unit_unit (x y z : C) :
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
   simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
-  simp only [Category.assoc, this]
+  simp only [this]
   simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
 
 variable {F G H} in
@@ -295,8 +299,7 @@ theorem associator_naturality {F' G' H' : C ⥤ V}
   dsimp
   ext
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, Functor.prod_obj, tensor_obj,
-    Functor.id_obj, corepresentableBy₂', whiskeringLeft_obj_obj, coyoneda_obj_obj,
-    Equiv.trans_apply, Functor.homEquivOfIsLeftKanExtension_apply_app,
+    Functor.id_obj, Functor.homEquivOfIsLeftKanExtension_apply_app,
     externalProductBifunctor_map_app, Functor.leftUnitor_inv_app, whiskerLeft_id, Category.comp_id,
     corepresentableBy_homEquiv_apply_app, NatTrans.comp_app, unit_app_map_app_assoc]
   rw [associator_hom_unit_unit_assoc]
@@ -329,8 +332,8 @@ lemma pentagon (H K : C ⥤ V)
   letI : (((F ⊛ G) ⊠ H) ⊠ K).IsLeftKanExtension
     (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K) :=
-    pointwiseLeftKanExtensionLeft _ _ _
-      (pointwiseLeftKanExtensionLeft _ _ _
+    isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
+      (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
         (isPointwiseLeftKanExtensionUnit F G))|>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K)

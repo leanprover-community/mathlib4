@@ -10,20 +10,21 @@ import Mathlib.CategoryTheory.Limits.Final
 /-!
 # Preservation of pointwise left Kan extensions by external products
 
-We prove that if a functor `H' : D' ⥤ V` is pointwise left Kan extended from
+We prove that if a functor `H' : D' ⥤ V` is a pointwise left Kan extension of
 `H : D ⥤ V` along `L : D ⥤ D'`, and if `K : E ⥤ V` is any functor such that
 for any `e : E`, the functor `tensorRight (K.obj e)` commutes with colimits of
-shape `CostructuredArrow L d`, then the functor `H' ⊠ K` is pointwise left kan extended
-from `H ⊠ K` along `L.prod (𝟭 E)`.
+shape `CostructuredArrow L d`, then the functor `H' ⊠ K` is a pointwise left kan extension
+of `H ⊠ K` along `L.prod (𝟭 E)`.
 
-We also prove a similar criterion to establish that `K ⊠ H'` is pointwise left Kan
-extended from `K ⊠ H` along `(𝟭 E).prod L`.
+We also prove a similar criterion to establish that `K ⊠ H'` is a pointwise left Kan
+extendsion of `K ⊠ H` along `(𝟭 E).prod L`.
 -/
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory.ExternalProduct
 
 noncomputable section
+open scoped Prod
 
 variable {V : Type u₁} [Category.{v₁} V] [MonoidalCategory V]
   {D : Type u₂} {D' : Type u₃} {E : Type u₄}
@@ -33,23 +34,22 @@ variable {V : Type u₁} [Category.{v₁} V] [MonoidalCategory V]
 /-- Given an extension `α : H ⟶ L ⋙ H'`, this is the canonical extension
 `H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K` it induces through bifunctoriality of the external product. -/
 abbrev extensionUnitLeft : H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K :=
-    (externalProductBifunctor D E V).map ((α, K.leftUnitor.inv) : (H, K) ⟶ (L ⋙ H', 𝟭 E ⋙ K))
+    (externalProductBifunctor D E V).map (α ×ₘ K.leftUnitor.inv)
 
 /-- Given an extension `α : H ⟶ L ⋙ H'`, this is the canonical extension
 `K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H'` it induces through bifunctoriality of the external product. -/
 abbrev extensionUnitRight : K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H' :=
-    (externalProductBifunctor E D V).map ((K.leftUnitor.inv, α) : (K, H) ⟶ (𝟭 E ⋙ K, L ⋙ H'))
+    (externalProductBifunctor E D V).map (K.leftUnitor.inv ×ₘ α)
 
-/-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'` at `(d : D')`,
-and if tensoring right with an object preserves colimis in `V`
-then `H' ⊠ K : D' × E ⥤ V` is pointwise left Kan extended along `L × (𝟭 E)` at `(d, e)`
+/-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` at `(d : D')`
+and if tensoring right with an object preserves colimits in `V`,
+then `H' ⊠ K : D' × E ⥤ V` is a pointwise left Kan extension along `L × (𝟭 E)` at `(d, e)`
 for every `e : E`. -/
-def pointwiseLeftKanExtensionAtLeft
+def isPointwiseLeftKanExtensionAtExtensionUnitLeft
     (d : D') (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtensionAt d) (e : E)
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorRight <| K.obj e)] :
     Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K)|>.IsPointwiseLeftKanExtensionAt
       (d, e) := by
-  dsimp [Functor.LeftExtension.IsPointwiseLeftKanExtensionAt]
   set cone := Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K)|>.coconeAt (d, e)
   let equiv := CostructuredArrow.prodEquivalence L (𝟭 E) d e|>.symm
   apply Limits.IsColimit.ofWhiskerEquivalence equiv
@@ -60,15 +60,13 @@ def pointwiseLeftKanExtensionAtLeft
   letI : I.Final := by
     letI : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e)|>.Final :=
       Functor.final_fromPUnit_of_isTerminal <| CostructuredArrow.mkIdTerminal (S := 𝟭 E) (Y := e)
-    haveI := Functor.final_iff_final_comp
+    apply Iff.mp <| Functor.final_iff_final_comp
       (F := (prod.rightUnitorEquivalence <| CostructuredArrow L d).inverse)
       (G := (𝟭 _).prod <| Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e))
-    dsimp [I] at this ⊢
-    rw [← this]
     infer_instance
   apply Functor.Final.isColimitWhiskerEquiv I (Limits.Cocone.whisker equiv.functor cone)|>.toFun
   -- through all the equivalences above, the new cocone we consider is in fact
-  -- `(tensorRight (H.obj y)).mapCocone (dayConvolutionExtension G H).coconeAt y`
+  -- `tensorRight (K.obj e)|>.mapCocone <| (Functor.LeftExtension.mk H' α).coconeAt d`
   let diag_iso :
       (CostructuredArrow.proj L d ⋙ H) ⋙ tensorRight (K.obj e) ≅
       I ⋙ equiv.functor ⋙ CostructuredArrow.proj (L.prod <| 𝟭 E) (d, e) ⋙ H ⊠ K :=
@@ -79,26 +77,25 @@ def pointwiseLeftKanExtensionAtLeft
     (Limits.Cocones.ext <| .refl _)|>.toFun
   exact Limits.PreservesColimit.preserves (F := tensorRight <| K.obj e) P|>.some
 
-/-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'`,
-and if tensoring right with an object preserves colimis in `V`
-then `H' ⊠ K : D' × E ⥤ V` is pointwise left Kan extended along `L × (𝟭 E)`. -/
-def pointwiseLeftKanExtensionLeft
+/-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'`,
+and if tensoring right with an object preserves colimits in `V`
+then `H' ⊠ K : D' × E ⥤ V` is a pointwise left Kan extension along `L × (𝟭 E)`. -/
+def isPointwiseLeftKanExtensionExtensionUnitLeft
     [∀ d : D', ∀ e : E,
       Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorRight <| K.obj e)]
     (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtension) :
     Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K)|>.IsPointwiseLeftKanExtension :=
-  fun ⟨d, e⟩ ↦ pointwiseLeftKanExtensionAtLeft H' α K d (P d) e
+  fun ⟨d, e⟩ ↦ isPointwiseLeftKanExtensionAtExtensionUnitLeft H' α K d (P d) e
 
-/-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'` at `d : D'` and
-if tensoring left with an object preserves colimis in `V`,
-then `K ⊠ H' : D' × E ⥤ V` is pointwise left Kan extended along `(𝟭 E) × L` at `(e, d)` for
+/-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` at `d : D'` and
+if tensoring left with an object preserves colimits in `V`,
+then `K ⊠ H' : D' × E ⥤ V` is a pointwise left Kan extension along `(𝟭 E) × L` at `(e, d)` for
 every `e`. -/
-def pointwiseLeftKanExtensionAtRight
+def isPointwiseLeftKanExtensionAtExtensionUnitRight
     (d : D') (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtensionAt d) (e : E)
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorLeft <| K.obj e)] :
     (Functor.LeftExtension.mk (K ⊠ H')
       (extensionUnitRight H' α K)).IsPointwiseLeftKanExtensionAt (e, d) := by
-  dsimp [Functor.LeftExtension.IsPointwiseLeftKanExtensionAt]
   set cone := Functor.LeftExtension.mk (K ⊠ H')
     (extensionUnitRight H' α K)|>.coconeAt (e, d)
   let equiv := CostructuredArrow.prodEquivalence (𝟭 E) L e d|>.symm
@@ -108,17 +105,15 @@ def pointwiseLeftKanExtensionAtRight
     (prod.leftUnitorEquivalence <| CostructuredArrow L d).inverse ⋙
       (Functor.fromPUnit.{0} <| .mk <| 𝟙 _).prod (𝟭 _)
   letI : I.Final := by
-    letI : Functor.fromPUnit.{0} (.mk (𝟙 e) : (CostructuredArrow (𝟭 E) e))|>.Final :=
+    letI : Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e)|>.Final :=
       Functor.final_fromPUnit_of_isTerminal <| CostructuredArrow.mkIdTerminal (S := 𝟭 E) (Y := e)
-    haveI := Functor.final_iff_final_comp
+    apply Iff.mp <| Functor.final_iff_final_comp
       (F := (prod.leftUnitorEquivalence <| CostructuredArrow L d).inverse)
       (G := Functor.fromPUnit.{0} (.mk (𝟙 e) : CostructuredArrow (𝟭 E) e)|>.prod <| 𝟭 _)
-    dsimp [I] at this ⊢
-    rw [← this]
     infer_instance
   apply Functor.Final.isColimitWhiskerEquiv I (Limits.Cocone.whisker equiv.functor cone)|>.toFun
   -- through all the equivalences above, the new cocone we consider is in fact
-  -- `(tensorRight (H.obj y)).mapCocone (dayConvolutionExtension G H).coconeAt y`
+  -- `(tensorLeft <| K.obj e).mapCocone <| (Functor.LeftExtension.mk H' α).coconeAt d`
   let diag_iso :
       (CostructuredArrow.proj L d ⋙ H) ⋙ tensorLeft (K.obj e) ≅
       I ⋙ equiv.functor ⋙ CostructuredArrow.proj (𝟭 E|>.prod L) (e, d) ⋙ K ⊠ H :=
@@ -129,15 +124,15 @@ def pointwiseLeftKanExtensionAtRight
     (Limits.Cocones.ext <| .refl _)|>.toFun
   exact Limits.PreservesColimit.preserves (F := tensorLeft <| K.obj e) P|>.some
 
-/-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'` and
-if tensoring left with an object preserves colimis in `V`,
-then `K ⊠ H' : D' × E ⥤ V` is pointwise left Kan extended along `(𝟭 E) × L`. -/
-def pointwiseLeftKanExtensionRight
+/-- If `H' : D' ⥤ V` is a pointwise left Kan extension along `L : D ⥤ D'` and
+if tensoring left with an object preserves colimits in `V`,
+then `K ⊠ H' : D' × E ⥤ V` is a pointwise left Kan extension along `(𝟭 E) × L`. -/
+def isPointwiseLeftKanExtensionExtensionUnitRight
     [∀ d : D', ∀ e : E,
       Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorLeft <| K.obj e)]
     (P : Functor.LeftExtension.mk H' α|>.IsPointwiseLeftKanExtension) :
     Functor.LeftExtension.mk (K ⊠ H') (extensionUnitRight H' α K)|>.IsPointwiseLeftKanExtension :=
-  fun ⟨e, d⟩ ↦ pointwiseLeftKanExtensionAtRight H' α K d (P d) e
+  fun ⟨e, d⟩ ↦ isPointwiseLeftKanExtensionAtExtensionUnitRight H' α K d (P d) e
 
 end
 
