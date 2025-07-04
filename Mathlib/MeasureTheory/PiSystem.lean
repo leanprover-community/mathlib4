@@ -663,14 +663,13 @@ instance : SetLike (DynkinSystem α) (Set α) :=
   ⟨ Has, fun _ _ h => ext (fun s => Iff.of_eq (congrFun h s)) ⟩
 
 /-- **Dynkin’s π-λ theorem** in its common form.
-Let `s : Set (Set α)` be a π-system and `d : DynkinSystem α` a Dynkin system.
-If `s ⊆ d`, then every set that is measurable with respect to the
-σ-algebra `generateFrom s` also belongs to `d`. -/
-lemma pi_lambda {s : Set (Set α)}
-    (hs  : IsPiSystem s)
-    (hsD : s ⊆ d) :
-    ∀ {t : Set α}, MeasurableSet[generateFrom s] t → t ∈ d := by
-  sorry
+  Let `s : Set (Set α)` be a π-system and `d : DynkinSystem α` a Dynkin system.
+  If `s ⊆ d`, then every set that is measurable with respect to the
+  σ-algebra `generateFrom s` also belongs to `d`.
+-/
+lemma pi_lambda {s : Set (Set α)} (hs : IsPiSystem s) (hsD : s ⊆ d) :
+    ∀ {t}, MeasurableSet[generateFrom s] t → t ∈ d :=
+  fun {t} ht => (generate_le d (fun u hu => hsD hu)) t (by simpa [generateFrom_eq hs] using ht)
 
 end DynkinSystem
 
