@@ -61,6 +61,10 @@ instance [h : Nonempty ι] : Inhabited (OpensLeCover U) :=
 
 namespace OpensLeCover
 
+variable {U} in
+@[simp]
+lemma le_iff {V W : OpensLeCover U} : V ≤ W ↔ V.val ≤ W.val := Iff.rfl
+
 /-- The inclusion functor `OpensLeCover U ⥤ Opens X`. -/
 def incl : OpensLeCover U ⥤ Opens X :=
   Monotone.functor (Subtype.mono_coe _)
