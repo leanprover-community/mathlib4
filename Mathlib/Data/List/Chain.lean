@@ -332,9 +332,9 @@ theorem chain'_of_not (h : ¬List.Chain' R l) :
         have := h (n + 1) (by rw [length_cons]; omega)
         simpa using this
 
-theorem chain'_iff_forall_getElem {R} {l : List α} :
+theorem chain'_iff_forall_getElem :
     Chain' R l ↔ ∀ (n : ℕ) (h : n + 1 < l.length), R l[n] l[n + 1] := by
-  refine ⟨chain'_getElem, fun h => ?_⟩
+  refine ⟨chain'_getElem, fun h ↦ ?_⟩
   contrapose! h
   exact chain'_of_not h
 
