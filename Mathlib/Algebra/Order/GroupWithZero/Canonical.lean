@@ -433,7 +433,7 @@ lemma lt_exp_of_log_lt (hxa : log x < a) : x < exp a := by
 lemma le_log_of_exp_le (hax : exp a ≤ x) : a ≤ log x :=
   (le_log_iff_exp_le (exp_pos.trans_le hax).ne').2 hax
 
-lemma lt_log_of_exp_lt (hax : exp a < x) : a < log x := 
+lemma lt_log_of_exp_lt (hax : exp a < x) : a < log x :=
   (lt_log_iff_exp_lt (exp_pos.trans hax).ne').2 hax
 
 /-- The exponential map as an order isomorphism between `G` and `Gᵐ⁰ˣ`. -/
