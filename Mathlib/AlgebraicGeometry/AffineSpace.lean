@@ -461,13 +461,16 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
 lemma not_isIntegralHom [Nonempty S] [Nonempty n] : ¬ IsIntegralHom (𝔸(n; S) ↘ S) := by
   simp [isIntegralHom_over_iff_isEmpty]
 
+lemma spec_le_iff (R : CommRingCat) (p q : Spec R) :
+   p ≤ q ↔ q.asIdeal ≤ p.asIdeal := by aesop (add simp PrimeSpectrum.le_iff_specializes)
+
 /--
 One should bare this equality in mind when breaking the `Spec R/ PrimeSpectrum R` abstraction
 boundary.
 -/
 lemma preorder_instance_eq_spec (R : CommRingCat) :
-  inferInstance (i := PartialOrder (Spec R)) =
-  inferInstance (i := PartialOrder (PrimeSpectrum R)) := by rfl
+  inferInstance (α := Preorder (Spec R)) =
+  inferInstance (α := Preorder (PrimeSpectrum R)ᵒᵈ) := by aesop (add simp spec_le_iff)
 
 end instances
 
