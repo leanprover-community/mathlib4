@@ -283,14 +283,11 @@ theorem laplacian_smul (v : ℝ) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = 
     Finset.smul_sum]
 
 /-- The Laplacian commutes with scalar multiplication. -/
-theorem laplacianWithin_smul_nhds (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s)
-    (hx : x ∈ s) :
+theorem laplacianWithin_smul_nhds
+    (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) :
     Δ[s] (v • f) =ᶠ[𝓝[s] x] v • (Δ[s] f) := by
-  nth_rw 1 [← s.insert_eq_of_mem hx]
-  filter_upwards [hf.eventually (not_eq_of_beq_eq_false rfl),
-    eventually_mem_nhdsWithin] with a h₁a h₂a
-  rw [s.insert_eq_of_mem hx] at h₂a
-  simp [laplacianWithin_smul v h₁a hs h₂a]
+  filter_upwards [(hf.eventually (by simp)).filter_mono (nhdsWithin_mono _ (Set.subset_insert ..)),
+    eventually_mem_nhdsWithin] with a h₁a using laplacianWithin_smul v h₁a hs
 
 /-- The Laplacian commutes with scalar multiplication. -/
 theorem laplacian_smul_nhds {x : E} {f : E → F} (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
