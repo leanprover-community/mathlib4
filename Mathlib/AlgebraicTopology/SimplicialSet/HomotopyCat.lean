@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -46,14 +47,6 @@ section
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
-/-- Abbreviations for face maps in the 2-truncated simplex category. -/
-abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n + 1⦌, hn'⟩ := SimplexCategory.δ i
-
-/-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
-abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
-
 @[reassoc (attr := simp)]
 lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
     δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
@@ -88,7 +81,7 @@ structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S)
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
   Hom X Y := SSet.OneTruncation₂.Hom X Y
   id X :=
-    { edge := S.map (SSet.σ₂ (n := 0) 0).op X
+    { edge := S.map (σ₂ (n := 0) 0).op X
       src_eq := by
         simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero,
           op_id, FunctorToTypes.map_id_apply]
@@ -98,7 +91,7 @@ instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
 
 @[simp]
 lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
-    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (SSet.σ₂ 0).op X := rfl
+    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (σ₂ 0).op X := rfl
 
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
 @[simps]
