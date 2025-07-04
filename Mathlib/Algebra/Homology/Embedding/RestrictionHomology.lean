@@ -107,7 +107,7 @@ lemma pOpcycles_restrictionOpcyclesIso_inv :
       (K.restrictionXIso e hj').inv ≫ (K.restriction e).pOpcycles j := by
   simp [restrictionOpcyclesIso]
 
-/-- The isomorphism `(K.restriction e).opcycles j ≅ K.opcycles j'` when `e.f j = j'`,
+/-- The isomorphism `(K.restriction e).homology j ≅ K.homology j'` when `e.f j = j'`,
 the predecessors `i` and `i'` of `j` and `j'` satisfy `e.f i = i'`,
 and the successors `k` and `k'` of `j` and `j'` satisfy `e.f k = k'` -/
 noncomputable def restrictionHomologyIso :
