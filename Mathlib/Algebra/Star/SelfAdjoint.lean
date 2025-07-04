@@ -225,6 +225,13 @@ variable [Ring R] [StarRing R]
 protected theorem intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
   star_intCast _
 
+theorem IsStarNormal.one_sub_self {a : R} (ha : IsStarNormal a) :
+    IsStarNormal (1 - a) := by
+  simp only [isStarNormal_iff,  commute_iff_eq, star_sub, star_one,
+    mul_sub, sub_mul, mul_one, one_mul]
+  simp only [sub_eq_add_neg, add_assoc, neg_add, neg_neg]
+  rw [(isStarNormal_iff _).mp ha, ← add_assoc, add_add_add_comm, add_assoc]
+
 end Ring
 
 section Group
