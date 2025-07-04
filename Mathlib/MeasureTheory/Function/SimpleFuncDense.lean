@@ -83,16 +83,19 @@ theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
   simp
 
 theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x ≤ N := by
-  induction' N with N ihN; · simp
-  simp only [nearestPtInd_succ]
-  split_ifs
-  exacts [le_rfl, ihN.trans N.le_succ]
+  induction N with
+  | zero => simp
+  | succ N ihN =>
+    simp only [nearestPtInd_succ]
+    split_ifs
+    exacts [le_rfl, ihN.trans N.le_succ]
 
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
-  induction' N with N ihN generalizing k
-  · simp [nonpos_iff_eq_zero.1 hk, le_refl]
-  · simp only [nearestPt, nearestPtInd_succ, map_apply]
+  induction N generalizing k with
+  | zero => simp [nonpos_iff_eq_zero.1 hk, le_refl]
+  | succ N ihN =>
+    simp only [nearestPt, nearestPtInd_succ, map_apply]
     split_ifs with h
     · rcases hk.eq_or_lt with (rfl | hk)
       exacts [le_rfl, (h k (Nat.lt_succ_iff.1 hk)).le]

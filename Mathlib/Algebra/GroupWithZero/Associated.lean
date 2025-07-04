@@ -299,7 +299,6 @@ protected theorem Associated.irreducible [Monoid M] {p q : M} (h : p ~ᵤ q) (hp
       calc
         p = p * u * (u⁻¹ : Mˣ) := by simp
         _ = _ := by rw [hu]; simp [hab, mul_assoc]
-
     (hp.isUnit_or_isUnit hpab).elim Or.inl fun ⟨v, hv⟩ => Or.inr ⟨v * u, by simp [hv]⟩⟩
 
 protected theorem Associated.irreducible_iff [Monoid M] {p q : M} (h : p ~ᵤ q) :
@@ -669,7 +668,7 @@ theorem mk_dvdNotUnit_mk_iff {a b : M} :
 theorem dvdNotUnit_of_lt {a b : Associates M} (hlt : a < b) : DvdNotUnit a b := by
   constructor
   · rintro rfl
-    apply not_lt_of_le _ hlt
+    apply not_lt_of_ge _ hlt
     apply dvd_zero
   rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
   refine ⟨x, ?_, rfl⟩

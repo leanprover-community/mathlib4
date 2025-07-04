@@ -208,7 +208,12 @@ def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
 
 @[to_additive]
-theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil
+theorem notMem_one : m ∉ (1 : FreeMonoid α) := List.not_mem_nil
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.FreeAddMonoid.not_mem_zero := FreeAddMonoid.notMem_zero
+
+@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_one := notMem_one
 
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
@@ -302,8 +307,6 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
     map_one' := rfl
     map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
-  left_inv _ := rfl
-  right_inv _ := hom_eq fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=

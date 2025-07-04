@@ -14,7 +14,7 @@ Files in this folder define the field `RatFunc K` of rational functions over a f
 is the field of fractions of `K[X]` and provide the main results concerning it. This file contains
 the basic definition.
 
-For connections with Laurent Series, see `Mathlib.RingTheory.LaurentSeries`.
+For connections with Laurent Series, see `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main definitions
 We provide a set of recursion and induction principles:

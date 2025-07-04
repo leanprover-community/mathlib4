@@ -116,7 +116,7 @@ lemma exact_of_comp_of_mem_range
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
+`Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
     {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
@@ -478,7 +478,7 @@ namespace LinearMap
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
+`Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
     {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]

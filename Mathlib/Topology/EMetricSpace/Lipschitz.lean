@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Algebra.Group.End
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -149,7 +150,7 @@ theorem mapsTo_emetric_ball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r :
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
-  (hf x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top h.lt_top
+  (hf x y).trans_lt (by finiteness)
 
 theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * edist (f x) (f y) ≤ edist x y := by

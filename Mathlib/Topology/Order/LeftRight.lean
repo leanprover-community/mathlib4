@@ -73,7 +73,7 @@ theorem nhdsGT_le_nhdsNE (a : α) : 𝓝[>] a ≤ 𝓝[≠] a := nhdsWithin_mono
 
 lemma IsAntichain.interior_eq_empty [∀ x : α, (𝓝[<] x).NeBot] {s : Set α}
     (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := by
-  refine eq_empty_of_forall_not_mem fun x hx ↦ ?_
+  refine eq_empty_of_forall_notMem fun x hx ↦ ?_
   have : ∀ᶠ y in 𝓝 x, y ∈ s := mem_interior_iff_mem_nhds.1 hx
   rcases this.exists_lt with ⟨y, hyx, hys⟩
   exact hs hys (interior_subset hx) hyx.ne hyx.le

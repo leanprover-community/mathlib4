@@ -694,9 +694,7 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
   invFun Z := Subobject.mk (ofLE _ _ Z.2)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by aesop_cat)
-  right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by
-          dsimp
-          simp [← Iso.eq_inv_comp]))
+  right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by
     dsimp
     constructor

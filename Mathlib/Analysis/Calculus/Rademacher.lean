@@ -148,11 +148,11 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
       _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg t_pos.le]; ring
       _ = K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖) x := by rw [indicator_of_mem hx]
     · have A : f x = 0 := by
-        rw [← Function.nmem_support]
+        rw [← Function.notMem_support]
         contrapose! hx
         exact self_subset_cthickening _ (subset_tsupport _ hx)
       have B : f (x + t • v) = 0 := by
-        rw [← Function.nmem_support]
+        rw [← Function.notMem_support]
         contrapose! hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
         simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,

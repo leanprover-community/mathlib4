@@ -118,7 +118,7 @@ protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id
 
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
-  simp only [Equiv.traverse, traverse_eq_map_id, Id.map_eq, Id.pure_eq]; rfl
+  simp only [Equiv.traverse, traverse_eq_map_id, Id.run_map, Id.run_pure]; rfl
 
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =

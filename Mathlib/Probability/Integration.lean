@@ -139,7 +139,7 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
     apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
     · exact (x_mea j).aemeasurable
     · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
-    · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX x_mea hj).symm
+    · exact (iIndepFun.indepFun_finset_prod_of_notMem hX x_mea hj).symm
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}

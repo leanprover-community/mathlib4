@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.Data.Int.Interval
 
 /-!
 # Chains of roots and weights
@@ -172,8 +173,8 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
     {x : H} (hx : x ∈ corootSpace α) :
     LinearMap.trace R _ (toEnd R H (genWeightSpaceChain M α χ p q) x) = 0 := by
   rw [LieAlgebra.mem_corootSpace'] at hx
-  induction hx using Submodule.span_induction
-  · next u hu =>
+  induction hx using Submodule.span_induction with
+  | mem u hu =>
     obtain ⟨y, hy, z, hz, hyz⟩ := hu
     let f : Module.End R (genWeightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(y : L), m⁆,
@@ -191,9 +192,9 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
       simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
       AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
-  · simp
-  · simp_all
-  · simp_all
+  | zero => simp
+  | add => simp_all
+  | smul => simp_all
 
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
@@ -214,7 +215,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
-  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
+  refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
   have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
     rw [LieSubmodule.iSupIndep_toSubmodule]

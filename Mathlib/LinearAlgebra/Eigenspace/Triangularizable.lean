@@ -149,7 +149,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
   by_cases hμ : μ ∈ m.support; swap
-  · simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
+  · simp only [Finsupp.notMem_support_iff.mp hμ, p.zero_mem]
   have hm₂_aux := hm₂
   simp_rw [Module.End.mem_genEigenspace] at hm₂_aux
   choose l hlk hl using hm₂_aux

@@ -609,8 +609,6 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
 
 section Reduced
 
-open NormalWord
-
 variable (φ) in
 /-- A word in `CoprodI` is reduced if none of its letters are in the base group. -/
 def Reduced (w : Word G) : Prop :=

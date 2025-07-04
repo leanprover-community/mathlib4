@@ -83,8 +83,8 @@ theorem bell_mul_eq (m : Multiset ℕ) :
         rw [← Finset.prod_erase_mul _ _ hm]
         simp only [factorial_zero, one_pow, mul_one, zero_mul]
         exact this
-      · nth_rewrite 1 [← Finset.erase_eq_of_not_mem hm]
-        nth_rewrite 3 [← Finset.erase_eq_of_not_mem hm]
+      · nth_rewrite 1 [← Finset.erase_eq_of_notMem hm]
+        nth_rewrite 3 [← Finset.erase_eq_of_notMem hm]
         exact this
     rw [← Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl

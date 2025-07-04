@@ -95,7 +95,7 @@ lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
 theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
     f (x + y) = max (f x) (f y) := by
-  rcases hne.lt_or_lt with h_lt | h_lt
+  rcases hne.lt_or_gt with h_lt | h_lt
   · rw [add_eq_right_of_lt hna h_lt]
     exact (max_eq_right_of_lt h_lt).symm
   · rw [add_eq_left_of_lt hna h_lt]

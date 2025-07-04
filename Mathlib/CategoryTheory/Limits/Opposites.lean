@@ -558,7 +558,7 @@ variable [HasCoproduct Z]
 instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
 
 instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
-  hasLimitEquivalenceComp (Discrete.opposite α).symm
+  hasLimit_equivalence_comp (Discrete.opposite α).symm
 
 instance : HasProduct (op <| Z ·) := hasLimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :

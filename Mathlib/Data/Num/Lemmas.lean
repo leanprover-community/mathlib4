@@ -366,7 +366,7 @@ instance commSemiring : CommSemiring Num where
   right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
 
 instance partialOrder : PartialOrder Num where
-  lt_iff_le_not_le a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
+  lt_iff_le_not_ge a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_ge]
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm
@@ -541,10 +541,10 @@ instance distrib : Distrib PosNum where
 
 instance linearOrder : LinearOrder PosNum where
   lt := (· < ·)
-  lt_iff_le_not_le := by
+  lt_iff_le_not_ge := by
     intro a b
     transfer_rw
-    apply lt_iff_le_not_le
+    apply lt_iff_le_not_ge
   le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by

@@ -223,7 +223,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           · exact terminalIsTerminal
           · #adaptation_note /-- 2024-03-24
             Previously the universe annotation was not needed here. -/
-            exact Set.not_mem_empty PUnit.unit.{u+1})))
+            exact Set.notMem_empty PUnit.unit.{u+1})))
 
 /--
 The skyscraper presheaf supported at `p₀` with value `A` is the sheaf that assigns `A` to all opens

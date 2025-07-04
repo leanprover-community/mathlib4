@@ -130,7 +130,7 @@ instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
   simp [indiscrete, filter_eq_self, hn]
 
 @[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=
-  eq_zero_of_forall_not_mem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
+  eq_zero_of_forall_notMem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
 
 instance UniquePartitionZero : Unique (Partition 0) where
   uniq _ := Partition.ext <| by simp
@@ -149,7 +149,7 @@ instance UniquePartitionOne : Unique (Partition 1) where
 
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.
-(For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_not_mem` gives that
+(For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_notMem` gives that
 this is `0` instead.)
 -/
 theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i : ℕ} (hi : i ≠ 0) :

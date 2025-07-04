@@ -78,14 +78,18 @@ theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
 theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
   le_sup as
 
-theorem not_mem_of_max_lt_coe {a : α} {s : Finset α} (h : s.max < a) : a ∉ s :=
-  mt le_max h.not_le
+theorem notMem_of_max_lt_coe {a : α} {s : Finset α} (h : s.max < a) : a ∉ s :=
+  mt le_max h.not_ge
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_max_lt_coe := notMem_of_max_lt_coe
 
 theorem le_max_of_eq {s : Finset α} {a b : α} (h₁ : a ∈ s) (h₂ : s.max = b) : a ≤ b :=
   WithBot.coe_le_coe.mp <| (le_max h₁).trans h₂.le
 
-theorem not_mem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.max = ↑b) : a ∉ s :=
-  Finset.not_mem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
+theorem notMem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.max = ↑b) : a ∉ s :=
+  Finset.notMem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_max_lt := notMem_of_max_lt
 
 theorem max_union {s t : Finset α} : (s ∪ t).max = s.max ⊔ t.max := sup_union
 
@@ -137,7 +141,7 @@ theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a
 
 @[simp]
 theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ := by
-  simp [Finset.min, eq_empty_iff_forall_not_mem]
+  simp [Finset.min, eq_empty_iff_forall_notMem]
 
 theorem mem_of_min {s : Finset α} : ∀ {a : α}, s.min = a → a ∈ s :=
   @mem_of_max αᵒᵈ _ s
@@ -145,14 +149,18 @@ theorem mem_of_min {s : Finset α} : ∀ {a : α}, s.min = a → a ∈ s :=
 theorem min_le {a : α} {s : Finset α} (as : a ∈ s) : s.min ≤ a :=
   inf_le as
 
-theorem not_mem_of_coe_lt_min {a : α} {s : Finset α} (h : ↑a < s.min) : a ∉ s :=
-  mt min_le h.not_le
+theorem notMem_of_coe_lt_min {a : α} {s : Finset α} (h : ↑a < s.min) : a ∉ s :=
+  mt min_le h.not_ge
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_coe_lt_min := notMem_of_coe_lt_min
 
 theorem min_le_of_eq {s : Finset α} {a b : α} (h₁ : b ∈ s) (h₂ : s.min = a) : a ≤ b :=
   WithTop.coe_le_coe.mp <| h₂.ge.trans (min_le h₁)
 
-theorem not_mem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.min = ↑b) : a ∉ s :=
-  Finset.not_mem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
+theorem notMem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.min = ↑b) : a ∉ s :=
+  Finset.notMem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_min := notMem_of_lt_min
 
 theorem min_union {s t : Finset α} : (s ∪ t).min = s.min ⊓ t.min := inf_union
 
@@ -237,6 +245,8 @@ theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 @[simp]
 theorem max'_singleton (a : α) : ({a} : Finset α).max' (singleton_nonempty _) = a := by simp [max']
 
+theorem min'_le_max' (hs : s.Nonempty) : s.min' hs ≤ s.max' hs := min'_le _ _ (max'_mem _ _)
+
 theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
     s.min' ⟨i, H1⟩ < s.max' ⟨i, H1⟩ :=
   isGLB_lt_isLUB_of_ne (s.isLeast_min' _).isGLB (s.isGreatest_max' _).isLUB H1 H2 H3
@@ -313,7 +323,7 @@ theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
 
 theorem lt_max'_of_mem_erase_max' [DecidableEq α] {a : α} (ha : a ∈ s.erase (s.max' H)) :
     a < s.max' H :=
-  lt_of_le_of_ne (le_max' _ _ (mem_of_mem_erase ha)) <| ne_of_mem_of_not_mem ha <| not_mem_erase _ _
+  lt_of_le_of_ne (le_max' _ _ (mem_of_mem_erase ha)) <| ne_of_mem_of_not_mem ha <| notMem_erase _ _
 
 theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase (s.min' H)) :
     s.min' H < a :=
@@ -403,7 +413,7 @@ theorem card_le_of_interleaved {s t : Finset α}
   replace h : ∀ᵉ (x ∈ s) (y ∈ s), x < y → ∃ z ∈ t, x < z ∧ z < y := by
     intro x hx y hy hxy
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
-    rcases h x hx a has hxa fun z hzs hz => hz.2.not_le <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
+    rcases h x hx a has hxa fun z hzs hz => hz.2.not_ge <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
     exact ⟨b, hbt, hxb, hba.trans_le <| ha _ hy hxy⟩
   set f : α → WithTop α := fun x => (t.filter fun y => x < y).min
   have f_mono : StrictMonoOn f s := by
@@ -414,7 +424,6 @@ theorem card_le_of_interleaved {s t : Finset α}
       _ < f y :=
         (Finset.lt_inf_iff <| WithTop.coe_lt_top a).2 fun b hb =>
           WithTop.coe_lt_coe.2 <| hay.trans (by simpa using (mem_filter.1 hb).2)
-
   calc
     s.card = (s.image f).card := (card_image_of_injOn f_mono.injOn).symm
     _ ≤ (insert ⊤ (t.image (↑)) : Finset (WithTop α)).card :=
@@ -483,7 +492,7 @@ theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι �
     simp only [mem_image, exists_prop] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
-    refine step _ _ (not_mem_erase a s) (fun x hx => ?_) (ihs _ <| erase_ssubset has)
+    refine step _ _ (notMem_erase a s) (fun x hx => ?_) (ihs _ <| erase_ssubset has)
     rw [hfa]
     exact le_max' _ _ (mem_image_of_mem _ <| mem_of_mem_erase hx)
 

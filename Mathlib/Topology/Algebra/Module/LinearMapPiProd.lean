@@ -254,8 +254,6 @@ variable
 def prodEquiv : (M →L[R] M₂) × (M →L[R] M₃) ≃ (M →L[R] M₂ × M₃) where
   toFun f := f.1.prod f.2
   invFun f := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 theorem prod_ext_iff {f g : M × M₂ →L[R] M₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by

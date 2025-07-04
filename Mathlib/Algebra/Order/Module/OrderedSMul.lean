@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Ordered scalar product

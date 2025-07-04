@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.HomCongr
 Basic properties of reflective functors, especially those relating to their essential image.
 
 Note properties of reflective functors relating to limits and colimits are included in
-`Mathlib.CategoryTheory.Monad.Limits`.
+`Mathlib/CategoryTheory/Monad/Limits.lean`.
 -/
 
 

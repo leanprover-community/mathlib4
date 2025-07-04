@@ -268,8 +268,6 @@ def submoduleOf (p q : Submodule R M) : Submodule R q :=
 def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
   toFun m := ⟨m.1, m.2⟩
   invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := Subtype.ext rfl
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -329,7 +327,7 @@ theorem le_map_of_comap_le_of_surjective (h : q.comap f ≤ p) : q ≤ p.map f :
   map_comap_eq_of_surjective hf q ▸ map_mono h
 
 theorem lt_map_of_comap_lt_of_surjective (h : q.comap f < p) : q < p.map f := by
-  rw [lt_iff_le_not_le] at h ⊢; rw [map_le_iff_le_comap]
+  rw [lt_iff_le_not_ge] at h ⊢; rw [map_le_iff_le_comap]
   exact h.imp_left (le_map_of_comap_le_of_surjective hf)
 
 end GaloisInsertion

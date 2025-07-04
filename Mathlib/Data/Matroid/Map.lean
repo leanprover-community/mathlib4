@@ -122,12 +122,10 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
     indep_aug := by
       rintro I B ⟨hI, hIinj⟩ hImax hBmax
       obtain ⟨I', hII', hI', hI'inj⟩ := (not_maximal_subset_iff ⟨hI, hIinj⟩).1 hImax
-
       have h₁ : ¬(N ↾ range f).IsBase (f '' I) := by
         refine fun hB ↦ hII'.ne ?_
         have h_im := hB.eq_of_subset_indep (by simpa) (image_subset _ hII'.subset)
         rwa [hI'inj.image_eq_image_iff hII'.subset Subset.rfl] at h_im
-
       have h₂ : (N ↾ range f).IsBase (f '' B) := by
         refine Indep.isBase_of_forall_insert (by simpa using hBmax.1.1) ?_
         rintro _ ⟨⟨e, heB, rfl⟩, hfe⟩ hi
@@ -137,7 +135,6 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
           exact ⟨hBmax.1.2, hfe⟩
         refine hBmax.not_prop_of_ssuperset (t := insert e B) (ssubset_insert ?_) ⟨hi.1, hinj⟩
         exact fun heB ↦ hfe <| mem_image_of_mem f heB
-
       obtain ⟨_, ⟨⟨e, he, rfl⟩, he'⟩, hei⟩ := Indep.exists_insert_of_not_isBase (by simpa) h₁ h₂
       have heI : e ∉ I := fun heI ↦ he' (mem_image_of_mem f heI)
       rw [← image_insert_eq, restrict_indep_iff] at hei
@@ -147,10 +144,8 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       rintro X - I ⟨hI, hIinj⟩ hIX
       obtain ⟨J, hJ⟩ := (N ↾ range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
         (f '' I) (by simpa) (image_subset _ hIX)
-
       simp only [restrict_indep_iff, image_subset_iff, maximal_subset_iff, mem_setOf_eq, and_imp,
         and_assoc] at hJ ⊢
-
       obtain ⟨hIJ, hJ, hJf, hJX, hJmax⟩ := hJ
       obtain ⟨J₀, hIJ₀, hJ₀X, hbj⟩ := hIinj.bijOn_image.exists_extend_of_subset hIX
         (image_subset f hIJ) (image_subset_iff.2 <| preimage_mono hJX)

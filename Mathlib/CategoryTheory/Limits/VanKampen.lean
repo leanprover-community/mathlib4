@@ -461,7 +461,7 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
         obtain ⟨l, h₁, h₂⟩ := Limits.BinaryCofan.IsColimit.desc' this (f ≫ initial.to A) (𝟙 A)
         rcases(Category.id_comp _).symm.trans h₂ with rfl
         exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
-      refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
+      refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> simp)
         (mapPair_equifibered _) ?_).some
       rintro ⟨⟨⟩⟩ <;> dsimp <;>
         exact IsPullback.of_horiz_isIso ⟨(Category.id_comp _).trans (Category.comp_id _).symm⟩)
@@ -560,7 +560,7 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
   refine PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit ?_)
   refine (h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
       (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.right⟩
-  · ext ⟨⟨⟩⟩ <;> dsimp; simp
+  · ext ⟨⟨⟩⟩ <;> simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
       infer_instance)).some
@@ -569,7 +569,7 @@ theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : Bin
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
   refine ((h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
       (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.left⟩).flip
-  · ext ⟨⟨⟩⟩ <;> dsimp; simp
+  · ext ⟨⟨⟩⟩ <;> simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
       infer_instance)).some

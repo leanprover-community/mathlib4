@@ -281,7 +281,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
     intro x hx
     have (j) (hj : j ≠ i) : x ∉ v j := by
       rw [hsi] at hx
-      apply Set.not_mem_of_mem_compl
+      apply Set.notMem_of_mem_compl
       have hsi' : x ∈ (⋂ i_1, ⋂ (_ : ¬i_1 = i), (v.toFun i_1)ᶜ) := Set.mem_of_mem_inter_right hx
       rw [ne_eq] at hj
       rw [Set.mem_iInter₂] at hsi'

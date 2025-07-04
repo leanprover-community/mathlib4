@@ -139,7 +139,7 @@ theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F �
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 @[positivity DFunLike.coe _ _]

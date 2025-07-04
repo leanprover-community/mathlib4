@@ -118,7 +118,6 @@ noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
       eqToHom (by rw [hk₁]) ≫ (doubleXIso₁ f hi₀₁ h).hom ≫ φ₁ ≫ eqToHom (by rw [hk₁])
     else 0
   comm' k₀ k₁ hk := by
-    dsimp
     by_cases h₀ : k₀ = i₀
     · subst h₀
       rw [dif_pos rfl]

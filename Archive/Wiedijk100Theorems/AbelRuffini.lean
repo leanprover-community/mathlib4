@@ -140,7 +140,7 @@ theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootS
     simp [Set.insert_subset, mem_rootSet_of_ne q_ne_zero, hx, hy]
   convert Fintype.card_le_of_embedding (Set.embeddingOfSubset _ _ key)
   simp only [Finset.coe_sort_coe, Fintype.card_coe, Finset.card_singleton,
-    Finset.card_insert_of_not_mem (mt Finset.mem_singleton.mp hxy)]
+    Finset.card_insert_of_notMem (mt Finset.mem_singleton.mp hxy)]
 
 theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a b).rootSet ℂ) = 5 :=
   (card_rootSet_eq_natDegree h (IsAlgClosed.splits_codomain _)).trans (natDegree_Phi a b)

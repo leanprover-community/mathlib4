@@ -23,7 +23,7 @@ import Mathlib.Tactic.Ring
     ↓     ↓
     R' →  S'
   ```
-    asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
+  asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 
 ## Main results
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
@@ -390,9 +390,11 @@ open IsScalarTower (toAlgHom algebraMap_apply)
 variable (R S R' S')
 
 /-- A type-class stating that the following diagram of scalar towers
+```
 R  →  S
 ↓     ↓
 R' →  S'
+```
 is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 -/
 @[mk_iff]

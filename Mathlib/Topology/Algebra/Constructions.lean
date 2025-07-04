@@ -138,7 +138,7 @@ lemma embedding_val_mk {M : Type*} [DivisionMonoid M] [TopologicalSpace M]
 theorem continuous_embedProduct : Continuous (embedProduct M) :=
   continuous_induced_dom
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem continuous_val : Continuous ((↑) : Mˣ → M) :=
   (@continuous_embedProduct M _ _).fst
 
@@ -149,7 +149,7 @@ protected theorem continuous_iff {f : X → Mˣ} :
     continuous_prodMk, opHomeomorph.symm.isInducing.continuous_iff, opHomeomorph_symm_apply,
     unop_op]
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
   (Units.continuous_iff.1 continuous_id).2
 

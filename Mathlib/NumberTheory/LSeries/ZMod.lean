@@ -19,7 +19,7 @@ is either even or odd.
 
 The most familiar case is when `Φ` is a Dirichlet character, but the results here are valid
 for general functions; for the specific case of Dirichlet characters see
-`Mathlib.NumberTheory.LSeries.DirichletContinuation`.
+`Mathlib/NumberTheory/LSeries/DirichletContinuation.lean`.
 
 ## Main definitions
 

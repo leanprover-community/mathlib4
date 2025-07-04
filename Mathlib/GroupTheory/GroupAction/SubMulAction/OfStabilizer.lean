@@ -120,7 +120,7 @@ def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
   map_smul' := fun ⟨k, hk⟩ ↦ by
     simp [← SetLike.coe_eq_coe, subgroup_smul_def, stabilizerEquivStabilizer, ← smul_assoc]
 
-variable {g  h k: G} {a b c: α}
+variable {g h k : G} {a b c : α}
 variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
 
 @[to_additive]

@@ -671,7 +671,7 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
     (s.sup fun μ ↦ f.genEigenspace μ k) by
     simp_rw [iSupIndep_iff_supIndep_of_injOn (injOn_genEigenspace f k),
       Finset.supIndep_iff_disjoint_erase]
-    exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
+    exact fun s μ _ ↦ this _ _ (s.notMem_erase μ)
   intro μ₁ s
   induction s using Finset.induction_on with
   | empty => simp

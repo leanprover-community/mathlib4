@@ -162,7 +162,7 @@ is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
   refine le_antisymm ?_ (min_order_le_order_add _ _)
-  rcases h.lt_or_lt with (φ_lt_ψ | ψ_lt_φ)
+  rcases h.lt_or_gt with (φ_lt_ψ | ψ_lt_φ)
   · apply order_add_of_order_eq.aux _ _ φ_lt_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_eq.aux _ _ ψ_lt_φ
 

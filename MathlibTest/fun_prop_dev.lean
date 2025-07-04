@@ -536,7 +536,7 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-info: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+trace: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
   [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
     [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
     [Meta.Tactic.fun_prop] removing argument to later use this : Con f

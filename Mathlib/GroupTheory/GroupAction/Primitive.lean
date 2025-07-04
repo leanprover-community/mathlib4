@@ -60,7 +60,7 @@ import Mathlib.GroupTheory.GroupAction.Transitive
   Given an equivariant map from a preprimitive action,
   if the image is at least twice the codomain, then the codomain is preprimitive.
 
-- `MulAction.IsPreprimitive.exists_mem_smul_and_not_mem_smul` : **Theorem of Rudio**.
+- `MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul` : **Theorem of Rudio**.
   For a preprimitive action, a subset which is neither empty nor full has a translate
   which contains a given point and avoids another one.
 
@@ -150,7 +150,7 @@ theorem IsPreprimitive.of_isTrivialBlock_base [IsPretransitive G X] (a : X)
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
   (pretransitivity is automatic) (based condition)"]
-theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
+theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a ∉ fixedPoints G X)
     (H : ∀ ⦃B : Set X⦄, a ∈ B → IsBlock G B → IsTrivialBlock B) :
     IsPreprimitive G X :=
   have : IsPretransitive G X := by
@@ -170,6 +170,14 @@ theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a 
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
+  AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
+  IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
@@ -178,9 +186,9 @@ theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a 
 theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
     (H : ∀ {B : Set X} (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
-  simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at Hnt
+  simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_notMem] at Hnt
   obtain ⟨_, ha⟩ := Hnt
-  exact .of_isTrivialBlock_of_not_mem_fixedPoints ha fun {B} _ ↦ H
+  exact .of_isTrivialBlock_of_notMem_fixedPoints ha fun {B} _ ↦ H
 
 @[deprecated (since := "2025-03-03")] alias _root_.AddAction.mk' := AddAction.IsPreprimitive.mk'
 @[to_additive existing, deprecated (since := "2025-03-03")] alias mk' := IsPreprimitive.mk'
@@ -278,7 +286,7 @@ variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M α] :
     IsQuasiPreprimitive M α where
   isPretransitive_of_normal {N} _ hNX := by
-    rw [Set.ne_univ_iff_exists_not_mem] at hNX
+    rw [Set.ne_univ_iff_exists_notMem] at hNX
     obtain ⟨a, ha⟩ := hNX
     rw [isPretransitive_iff_orbit_eq_univ a]
     apply Or.resolve_left (isTrivialBlock_of_isBlock (IsBlock.orbit_of_normal a))
@@ -360,7 +368,7 @@ which contains a given point and avoids another one. -/
 
 For a preprimitive additive action, a subset which is neither empty nor full has a translate
 which contains a given point and avoids another one."]
-theorem exists_mem_smul_and_not_mem_smul [IsPreprimitive G X]
+theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     {A : Set X} (hfA : A.Finite) (hA : A.Nonempty) (hA' : A ≠ .univ) {a b : X} (h : a ≠ b) :
     ∃ g : G, a ∈ g • A ∧ b ∉ g • A := by
   let B := ⋂ (g : G) (_ : a ∈ g • A), g • A
@@ -373,18 +381,25 @@ theorem exists_mem_smul_and_not_mem_smul [IsPreprimitive G X]
   · -- B.subsingleton
     apply Set.Subsingleton.eq_singleton_of_mem hyp
     rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
-  · -- B = ⊤ : contradiction
-    change B = ⊤ at hyp
+  · -- B = Set.univ: contradiction
+    change B = Set.univ at hyp
     exfalso; apply hA'
     suffices ∃ g : G, a ∈ g • A by
       obtain ⟨g, hg⟩ := this
-      have : B ≤ g • A := Set.biInter_subset_of_mem hg
-      rw [hyp, top_le_iff, ← eq_inv_smul_iff] at this
-      rw [this, Set.top_eq_univ, Set.smul_set_univ]
+      have : B ⊆ g • A := Set.biInter_subset_of_mem hg
+      rw [hyp, Set.univ_subset_iff, ← eq_inv_smul_iff] at this
+      rw [this, Set.smul_set_univ]
     -- ∃ (g : M), a ∈ g • A
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
     use g, x
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
+  AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul
 
 end IsPreprimitive
 

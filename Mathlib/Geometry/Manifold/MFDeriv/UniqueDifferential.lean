@@ -194,7 +194,7 @@ theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiffOn I s) :
 @[deprecated (since := "2024-12-02")]
 alias UniqueMDiffOn.smooth_bundle_preimage := UniqueMDiffOn.bundle_preimage
 
-/- TODO: move me to `Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable` once #19636 is in. -/
+-- TODO: move me to `Mathlib/Geometry/Manifold/VectorBundle/MDifferentiable.lean`
 variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
 
 theorem Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]

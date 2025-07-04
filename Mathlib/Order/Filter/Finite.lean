@@ -237,9 +237,9 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
 theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
   classical
-  induction' s using Finset.induction_on with i s _ hs
-  · simp
-  · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s _ hs => rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
 
 theorem iInf_principal {ι : Sort w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) := by
   cases nonempty_fintype (PLift ι)

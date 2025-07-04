@@ -396,7 +396,6 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
   simp only [← Category.assoc, Iso.comp_inv_eq,
     Limits.colimitObjIsoColimitCompEvaluation_ι_app_hom,
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
-  dsimp
   simp
 
 end

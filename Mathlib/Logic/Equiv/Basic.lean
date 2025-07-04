@@ -42,7 +42,6 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
   toFun f := (f none, fun a => f (some a))
   invFun x a := Option.casesOn a x.fst x.snd
   left_inv f := funext fun a => by cases a <;> rfl
-  right_inv x := by simp
 
 section subtypeCongr
 
@@ -150,6 +149,10 @@ section
 def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
   ⟨Pi.map fun a ↦ F a, Pi.map fun a ↦ (F a).symm, fun H => funext <| by simp,
     fun H => funext <| by simp⟩
+
+@[simp]
+lemma piCongrRight_refl {β : α → Sort*} : piCongrRight (fun a ↦ .refl (β a)) = .refl (∀ a, β a) :=
+  rfl
 
 /-- Given `φ : α → β → Sort*`, we have an equivalence between `∀ a b, φ a b` and `∀ b a, φ a b`.
 This is `Function.swap` as an `Equiv`. -/
@@ -410,7 +413,6 @@ def piEquivSubtypeSigma (ι) (π : ι → Type*) :
     (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
   toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
   invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
-  left_inv := fun _ => funext fun _ => rfl
   right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
       Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
@@ -719,10 +721,8 @@ theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) 
     v (swap i j k) = v k := by
   by_cases hi : k = i
   · rw [hi, swap_apply_left, hv]
-
   by_cases hj : k = j
   · rw [hj, swap_apply_right, hv]
-
   rw [swap_apply_of_ne_of_ne hi hj]
 
 theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := by
@@ -731,13 +731,10 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   by_cases hab : a = b
   · simp [hab]
-
   by_cases hax : x = a
   · simp [hax, eq_comm]
-
   by_cases hbx : x = b
   · simp [hbx]
-
   simp [hab, hax, hbx, swap_apply_of_ne_of_ne]
 
 namespace Perm
@@ -758,7 +755,6 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   ext x
   cases x
   · simp [Sum.map, swap_apply_of_ne_of_ne]
-
   · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inr, comp_apply,
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
@@ -847,6 +843,9 @@ lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ 
   rw [piCongrLeft'_symm_apply, ← heq_iff_eq, rec_heq_iff_heq]
   exact congr_arg_heq _ (e.apply_symm_apply _)
 
+@[simp]
+lemma piCongrLeft'_refl (P : α → Sort*) : piCongrLeft' P (.refl α) = .refl (∀ a, P a) := rfl
+
 end
 
 section
@@ -862,7 +861,6 @@ def piCongrLeft : (∀ a, P (e a)) ≃ ∀ b, P b :=
 /-- Note: the "obvious" statement `(piCongrLeft P e) f b = f (e.symm b)` doesn't typecheck: the
 LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`. For that reason,
 we have to explicitly substitute along `e (e.symm b) = b` in the statement of this lemma. -/
-@[simp]
 lemma piCongrLeft_apply (f : ∀ a, P (e a)) (b : β) :
     (piCongrLeft P e) f b = e.apply_symm_apply b ▸ f (e.symm b) :=
   rfl
@@ -872,10 +870,15 @@ lemma piCongrLeft_symm_apply (g : ∀ b, P b) (a : α) :
     (piCongrLeft P e).symm g a = g (e a) :=
   piCongrLeft'_apply P e.symm g a
 
+@[simp]
+lemma piCongrLeft_refl (P : α → Sort*) : piCongrLeft P (.refl α) = .refl (∀ a, P a) :=
+  rfl
+
 /-- Note: the "obvious" statement `(piCongrLeft P e) f b = f (e.symm b)` doesn't typecheck: the
 LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`. This lemma is a way
 around it in the case where `b` is of the form `e a`, so we can use `f a` instead of
 `f (e.symm (e a))`. -/
+@[simp]
 lemma piCongrLeft_apply_apply (f : ∀ a, P (e a)) (a : α) :
     (piCongrLeft P e) f (e a) = f a :=
   piCongrLeft'_symm_apply_apply P e.symm f a
@@ -920,6 +923,7 @@ theorem coe_piCongr_symm : ((h₁.piCongr h₂).symm :
     (∀ b, Z b) → ∀ a, W a) = fun f a => (h₂ a).symm (f (h₁ a)) :=
   rfl
 
+@[simp]
 theorem piCongr_symm_apply (f : ∀ b, Z b) :
     (h₁.piCongr h₂).symm f = fun a => (h₂ a).symm (f (h₁ a)) :=
   rfl
@@ -961,8 +965,6 @@ end
     (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
   toFun f i := f ⟨i, h ▸ i.2⟩
   invFun f i := f ⟨i, h.symm ▸ i.2⟩
-  left_inv f := rfl
-  right_inv f := rfl
 
 lemma eq_conj {α α' β β' : Sort*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
     (f : α → β) (f' : α' → β') : ε₂.symm ∘ f ∘ ε₁.symm = f' ↔ f = ε₂ ∘ f' ∘ ε₁ := by
@@ -999,10 +1001,8 @@ theorem Function.Injective.swap_apply
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) := by
   by_cases hx : z = x
   · simp [hx]
-
   by_cases hy : z = y
   · simp [hy]
-
   rw [Equiv.swap_apply_of_ne_of_ne hx hy, Equiv.swap_apply_of_ne_of_ne (hf.ne hx) (hf.ne hy)]
 
 theorem Function.Injective.swap_comp

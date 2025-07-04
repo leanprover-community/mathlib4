@@ -13,20 +13,20 @@ as the greatest fixpoint of a polynomial functor.
 -/
 
 
-universe u v w
+universe u uA uB v w
 
 open Nat Function
 
 open List
 
-variable (F : PFunctor.{u})
+variable (F : PFunctor.{uA, uB})
 
 namespace PFunctor
 
 namespace Approx
 
 /-- `CofixA F n` is an `n` level approximation of an M-type -/
-inductive CofixA : ℕ → Type u
+inductive CofixA : ℕ → Type (max uA uB)
   | continue : CofixA 0
   | intro {n} : ∀ a, (F.B a → CofixA n) → CofixA (succ n)
 
@@ -96,7 +96,6 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
     suffices (fun x => truncate (y x)) = f
       by simp [this]
     funext y
-
     apply n_ih
     apply h₁
 
@@ -118,13 +117,11 @@ theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) :
   apply n_ih
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
-def Path (F : PFunctor.{u}) :=
+def Path (F : PFunctor.{uA, uB}) :=
   List F.Idx
 
 instance Path.inhabited : Inhabited (Path F) :=
   ⟨[]⟩
-
-open List Nat
 
 instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
@@ -487,12 +484,10 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
     simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
-
     have := mk_inj h₁
     cases this; clear h₁
     have := mk_inj h₂
     cases this; clear h₂
-
     congr
     ext i
     apply n_ih
@@ -502,8 +497,6 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     specialize hrec (⟨_, i⟩ :: ps) (congr_arg _ h)
     simp only [iselect_cons] at hrec
     exact hrec
-
-open PFunctor.Approx
 
 theorem ext [Inhabited (M F)] [DecidableEq F.A] (x y : M F)
     (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
@@ -585,7 +578,7 @@ universe u' v'
 def corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
   M.corec f x₀
 
-variable {P : PFunctor.{u}} {α : Type*}
+variable {P : PFunctor.{uA, uB}} {α : Type*}
 
 theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
   rw [corec_def, dest_mk]
@@ -650,10 +643,10 @@ def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P X) : α → M P :
 
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
-def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → M P ⊕ P X) (x : α) : M P :=
+def corec' {α : Type u} (F : ∀ {X : Type (max u uA uB)}, (α → X) → α → M P ⊕ P X) (x : α) : M P :=
   corec₁
     (fun _ rec (a : M P ⊕ α) =>
-      let y := a >>= F (rec ∘ Sum.inr)
+      let y := Sum.bind a (F (rec ∘ Sum.inr))
       match y with
       | Sum.inr y => y
       | Sum.inl y => P.map (rec ∘ Sum.inl) (M.dest y))

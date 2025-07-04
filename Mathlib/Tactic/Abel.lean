@@ -397,8 +397,6 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
       evalAtom e
   | _ => evalAtom e
 
-open Lean Elab Meta Tactic
-
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let tm := if tk.isSome then .default else .reducible
@@ -498,7 +496,7 @@ partial def abelNFCore
     evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
 
-open Elab.Tactic Parser.Tactic
+open Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal

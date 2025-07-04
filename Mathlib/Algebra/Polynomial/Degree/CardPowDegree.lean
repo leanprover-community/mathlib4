@@ -97,7 +97,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
       · simp only [hp, hq, lt_self_iff_false]
       · simp only [hp, hq, degree_zero, Ne, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
           not_false_iff]
-      · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
+      · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_gt]
       · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff_right₀]
         exact mod_cast @Fintype.one_lt_card Fq _ _ }
 

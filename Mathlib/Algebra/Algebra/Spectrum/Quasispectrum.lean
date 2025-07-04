@@ -77,8 +77,6 @@ variable {R : Type*} [NonUnitalSemiring R]
 def equiv : R ≃ PreQuasiregular R where
   toFun := .mk
   invFun := PreQuasiregular.val
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance instOne : One (PreQuasiregular R) where
   one := equiv 0

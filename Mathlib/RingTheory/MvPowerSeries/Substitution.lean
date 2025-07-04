@@ -37,7 +37,7 @@ for commutative *semirings*.
 ## Implementation note
 
 Evaluation of a power series at adequate elements has been defined
-in `Mathlib.RingTheory.MvPowerSeries.Evaluation`.
+in `Mathlib/RingTheory/MvPowerSeries/Evaluation.lean`.
 The goal here is to check the relevant hypotheses:
 * The ring of coefficients is endowed the discrete topology.
 * The main condition rewrites as having nilpotent constant coefficient

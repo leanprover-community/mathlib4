@@ -170,7 +170,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n ((f : E → F) + (g : E → F)) x‖ ≤
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
-  refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+  gcongr _ * ?_
   rw [iteratedFDeriv_add_apply (f.smooth _).contDiffAt (g.smooth _).contDiffAt]
   exact norm_add_le _ _
 
@@ -219,15 +219,13 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' := fun k n => by
-        refine ⟨f.seminormAux k n * (‖c‖ + 1), fun x => ?_⟩
-        have hc : 0 ≤ ‖c‖ := by positivity
-        refine le_trans ?_ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans ?_)
-        · apply Eq.le
+      decay' k n := .intro (f.seminormAux k n * ‖c‖) fun x ↦ calc
+        ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • ⇑f) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ * ‖c‖ := by
           rw [mul_comm _ ‖c‖, ← mul_assoc]
           exact decay_smul_aux k n f c x
-        · apply mul_le_mul_of_nonneg_left _ (f.seminormAux_nonneg k n)
-          linarith }⟩
+        _ ≤ SchwartzMap.seminormAux k n f * ‖c‖ := by
+          gcongr
+          apply f.le_seminormAux }⟩
 
 @[simp]
 theorem smul_apply {f : 𝓢(E, F)} {c : 𝕜} {x : E} : (c • f) x = c • f x :=
@@ -241,9 +239,8 @@ instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 �
 
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
-  refine
-    (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
-      fun x => (decay_smul_aux k n f c x).le.trans ?_
+  refine (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
+      fun x => (decay_smul_aux k n f c x).trans_le ?_
   rw [mul_assoc]
   exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
 
@@ -686,7 +683,7 @@ theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
         rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
-        exact Real.enorm_rpow_of_nonneg (Real.rpow_nonneg (h_one_add x).le _) NNReal.zero_le_coe
+        exact Real.enorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
       refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
       rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
       gcongr

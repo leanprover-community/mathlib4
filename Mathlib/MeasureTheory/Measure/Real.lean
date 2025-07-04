@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Measures as real-valued functions

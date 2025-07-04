@@ -436,8 +436,6 @@ instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· /
 
 end Div
 
-open Pointwise
-
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
 Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
@@ -586,8 +584,6 @@ end Monoid
 protected def commMonoid [CommMonoid α] : CommMonoid (Filter α) :=
   { Filter.mulOneClass, Filter.commSemigroup with }
 
-open Pointwise
-
 section DivisionMonoid
 
 variable [DivisionMonoid α] {f g : Filter α}
@@ -732,8 +728,6 @@ protected theorem Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g�
   (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
 
 end Group
-
-open Pointwise
 
 section GroupWithZero
 
@@ -984,8 +978,6 @@ instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· �
   ⟨fun _ => @map_mono β β _⟩
 
 end SMul
-
-open Pointwise
 
 @[to_additive]
 instance smulCommClass_filter [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :

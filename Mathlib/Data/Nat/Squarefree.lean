@@ -151,7 +151,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
   · refine squarefree_iff_prime_squarefree.2 fun p pp d => ?_
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
-    exact not_le_of_lt h (le_trans this (le_of_dvd n0 d))
+    exact not_le_of_gt h (le_trans this (le_of_dvd n0 d))
   have k2 : 2 ≤ k := by omega
   have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
   have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
@@ -488,7 +488,7 @@ theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 
     (ih p pp (dvd_trans hp md)).trans
       (le_trans (Nat.le_of_dvd (lt_of_lt_of_le (by decide) m2) hp) hm)
   rw [Nat.le_sqrt] at this
-  exact not_le_of_lt hd this
+  exact not_le_of_gt hd this
 
 theorem not_squarefree_mul (a aa b n : ℕ) (ha : a * a = aa) (hb : aa * b = n) (h₁ : 1 < a) :
     ¬Squarefree n := by

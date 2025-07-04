@@ -117,13 +117,13 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
     List.cons_ne_nil _ _
 
-@[simp] theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
-  intro n
-  induction' n with m hm m hm <;> unfold encodePosNum decodePosNum
-  · rfl
-  · rw [hm]
+@[simp] theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := fun n ↦ by
+  induction n with unfold encodePosNum decodePosNum
+  | one => rfl
+  | bit1 m hm =>
+    rw [hm]
     exact if_neg (encodePosNum_nonempty m)
-  · exact congr_arg PosNum.bit0 hm
+  | bit0 m hm => exact congr_arg PosNum.bit0 hm
 
 @[simp] theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   intro n

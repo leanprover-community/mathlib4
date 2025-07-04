@@ -69,7 +69,6 @@ theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
           (pushforwardEq (congr_arg Hom.base (F.map_comp f g).symm) _).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_comp f g)]
 
--- See note [dsimp, simp]
 /-- Given a diagram of `PresheafedSpace C`s, its colimit is computed by pushing the sheaves onto
 the colimit of the underlying spaces, and taking componentwise limit.
 This is the componentwise diagram for an open set `U` of the colimit of the underlying spaces.
@@ -81,7 +80,6 @@ def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
   map {j k} f := (F.map f.unop).c.app _ ≫
     (F.obj (unop k)).presheaf.map (eqToHom (by rw [← colimit.w F f.unop, comp_base]; rfl))
   map_comp {i j k} f g := by
-    dsimp
     simp only [assoc, CategoryTheory.NatTrans.naturality_assoc]
     simp
 

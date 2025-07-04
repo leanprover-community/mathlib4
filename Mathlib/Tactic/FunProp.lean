@@ -47,7 +47,7 @@ Fails with the error:
 Issues:
   No theorems found for `Real.sin` in order to prove `Continuous fun x => x.sin`
 ```
-This can be easily fixed by importing `Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic`
+This can be easily fixed by importing `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
 where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
 
 When the issue is not simply a few missing theorems, you can turn on the option:

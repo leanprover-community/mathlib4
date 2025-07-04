@@ -151,7 +151,7 @@ instance linearOrder : LinearOrder Bool where
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
   toDecidableLT := inferInstance
-  lt_iff_le_not_le := by decide
+  lt_iff_le_not_ge := by decide
   max_def := by decide
   min_def := by decide
 

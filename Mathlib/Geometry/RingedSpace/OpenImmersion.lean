@@ -261,16 +261,12 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
     convert H.c_iso (Opens.map f.base |>.obj <| unop U)
-
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
-
   apply (config := { allowSynthFailures := true }) isIso_of_components
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
       invFun := fun x =>
-        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
-      left_inv := fun ⟨_, _⟩ => rfl
-      right_inv := fun _ => rfl }
+        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩ }
   exact (TopCat.isoOfHomeo t).isIso_hom
 
 instance stalk_iso [HasColimits C] (x : X) : IsIso (f.stalkMap x) := by
@@ -365,7 +361,6 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                 let s' : PullbackCone f.base g.base := PullbackCone.mk s.fst.base s.snd.base
                   -- Porting note: in mathlib3, this is just an underscore
                   (congr_arg Hom.base s.condition)
-
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   rw [← this]

@@ -1229,13 +1229,13 @@ noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over 
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
       naturality := fun f g k => by
         ext
-        dsimp; simp }
+        simp }
   map_id X := by
     ext
-    dsimp; simp
+    simp
   map_comp f g := by
     ext
-    dsimp; simp
+    simp
 
 end CategoryTheory
 

@@ -139,8 +139,6 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     { toFun := g
       map_add' := by simp
       map_smul' := g.hom.map_smul }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 section

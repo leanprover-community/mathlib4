@@ -137,7 +137,7 @@ theorem multiplicity_le_emultiplicity :
   · simp [hf.emultiplicity_eq_multiplicity]
   · simp [hf, emultiplicity_eq_top.2]
 
-@[simp]
+-- Cannot be @[simp] because `β`, `c`, and `d` can not be inferred by `simp`.
 theorem multiplicity_eq_of_emultiplicity_eq {c d : β}
     (h : emultiplicity a b = emultiplicity c d) : multiplicity a b = multiplicity c d := by
   unfold multiplicity

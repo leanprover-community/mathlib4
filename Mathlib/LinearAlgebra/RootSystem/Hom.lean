@@ -602,7 +602,7 @@ lemma indexEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
 def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
   weightMap := P.reflection i
   coweightMap := P.coreflection i
-  indexEquiv := P.reflection_perm i
+  indexEquiv := P.reflectionPerm i
   weight_coweight_transpose := by
     ext f x
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply,
@@ -633,7 +633,7 @@ lemma reflection_coweightEquiv (P : RootPairing ι R M N) (i : ι) :
 
 @[simp]
 lemma reflection_indexEquiv (P : RootPairing ι R M N) (i : ι) :
-    (reflection P i).indexEquiv = P.reflection_perm i :=
+    (reflection P i).indexEquiv = P.reflectionPerm i :=
   rfl
 
 @[simp]

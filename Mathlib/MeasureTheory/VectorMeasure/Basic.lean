@@ -45,7 +45,7 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open NNReal ENNReal MeasureTheory
+open NNReal ENNReal
 
 open scoped Function -- required for scoped `on` notation
 namespace MeasureTheory
@@ -70,7 +70,7 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
 abbrev SignedMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℝ
 
-open Set MeasureTheory
+open Set
 
 namespace VectorMeasure
 
@@ -341,8 +341,8 @@ theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] 
     (hi : MeasurableSet i) : μ.toSignedMeasure i = μ.real i :=
   if_pos hi
 
--- Without this lemma, `singularPart_neg` in `Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue`
--- is extremely slow
+-- Without this lemma, `singularPart_neg` in
+-- `Mathlib/MeasureTheory/Measure/Decomposition/Lebesgue.lean` is extremely slow
 theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
   congr

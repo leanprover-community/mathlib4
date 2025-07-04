@@ -78,10 +78,10 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
   rw [← or_and_left, and_or_left] at hx
   simp only [false_or, and_not_self, mul_comm (_ - _)] at hx
   obtain ⟨-, hxY, hsu⟩ := hx
-  have hY : #t * ε ≤ #{y ∈ t | G.Adj x y} :=
-    (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hxY
-  have hZ : #u * ε ≤ #{y ∈ u | G.Adj x y} :=
-    (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hsu
+  have hY : #t * ε ≤ #{y ∈ t | G.Adj x y} := by
+    refine le_trans ?_ hxY; gcongr; linarith
+  have hZ : #u * ε ≤ #{y ∈ u | G.Adj x y} := by
+    refine le_trans ?_ hsu; gcongr; linarith
   rw [card_image_of_injective _ (Prod.mk_right_injective _)]
   have := utu (filter_subset (G.Adj x) _) (filter_subset (G.Adj x) _) hY hZ
   have : ε ≤ G.edgeDensity {y ∈ t | G.Adj x y} {y ∈ u | G.Adj x y} := by
@@ -122,7 +122,7 @@ lemma triangle_counting'
       mul_assoc, mul_comm ε, two_mul]
     refine (Nat.cast_le.2 <| card_union_le _ _).trans ?_
     rw [Nat.cast_add]
-    exact add_le_add h₁ h₂
+    gcongr
   rintro a _ b _ t
   rw [Function.onFun, disjoint_left]
   simp only [Prod.forall, mem_image, not_exists, exists_prop, mem_filter, Prod.mk_inj,

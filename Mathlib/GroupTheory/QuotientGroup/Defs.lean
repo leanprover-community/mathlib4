@@ -102,6 +102,9 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
   refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 
+@[to_additive (attr := simp)]
+lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
+
 /- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
   modified version of some `range_mk`. -/
 set_option linter.docPrime false in
@@ -118,7 +121,6 @@ theorem ker_le_range_iff {I : Type w} [MulOneClass I] (f : G →* H) [f.range.No
 @[to_additive (attr := simp)]
 theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
   Subgroup.ext eq_one_iff
--- Porting note: I think this is misnamed without the prime
 
 @[to_additive]
 theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :

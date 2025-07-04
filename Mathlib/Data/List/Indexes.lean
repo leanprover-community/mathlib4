@@ -218,7 +218,7 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       congr
       conv => { lhs; intro x; rw [ih _ _ h]; }
       funext x
-      simp only [Array.push_toList, append_assoc, singleton_append, Array.size_push,
+      simp only [Array.toList_push, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]
 
 set_option linter.deprecated false in

@@ -124,7 +124,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
   obtain hB | hB := hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
-    simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
+    simp only [Set.image_univ, Set.range_eq_univ, hf]
 
 @[to_additive]
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
@@ -132,7 +132,7 @@ theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
     IsTrivialBlock (f ⁻¹' B) := by
   obtain hB | hB := hB
   · apply Or.intro_left; exact Set.Subsingleton.preimage hB hf
-  · apply Or.intro_right; simp only [hB, Set.top_eq_univ]; apply Set.preimage_univ
+  · apply Or.intro_right; simp only [hB]; apply Set.preimage_univ
 
 end monoid
 
@@ -626,10 +626,10 @@ namespace BlockMem
 @[to_additive
 "The type of blocks for an additive group action containing a given element is a bounded order"]
 instance (a : X) : BoundedOrder (BlockMem G a) where
-  top := ⟨⊤, Set.mem_univ a, .univ⟩
+  top := ⟨Set.univ, Set.mem_univ a, .univ⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
-    simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
+    simp only [Subtype.mk_le_mk, le_eq_subset, subset_univ]
   bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
   bot_le := by
     rintro ⟨B, ha, hB⟩
@@ -638,7 +638,7 @@ instance (a : X) : BoundedOrder (BlockMem G a) where
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_top (a : X) :
-    ((⊤ : BlockMem G a) : Set X) = ⊤ :=
+    ((⊤ : BlockMem G a) : Set X) = Set.univ :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -655,7 +655,7 @@ instance [Nontrivial X] (a : X) : Nontrivial (BlockMem G a) := by
   simp only [coe_top, coe_bot] at h
   obtain ⟨b, hb⟩ := exists_ne a
   apply hb
-  rw [← Set.mem_singleton_iff, h, Set.top_eq_univ]
+  rw [← Set.mem_singleton_iff, h]
   apply Set.mem_univ
 
 end BlockMem

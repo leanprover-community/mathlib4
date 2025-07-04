@@ -1014,7 +1014,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- bound from above the increase of `g u - g a` on the right of `t`, using the derivative at `t`
     have I2 : ∀ᶠ u in 𝓝[>] t, g u - g t ≤ (u - t) * y := by
       have g'_lt_y : g' t < y := EReal.coe_lt_coe_iff.1 g'_lt_y'
-      filter_upwards [(hderiv t ⟨ht.2.1, ht.2.2⟩).limsup_slope_le' (not_mem_Ioi.2 le_rfl) g'_lt_y,
+      filter_upwards [(hderiv t ⟨ht.2.1, ht.2.2⟩).limsup_slope_le' (notMem_Ioi.2 le_rfl) g'_lt_y,
         self_mem_nhdsWithin] with u hu t_lt_u
       have := mul_le_mul_of_nonneg_left hu.le (sub_pos.2 t_lt_u.out).le
       rwa [← smul_eq_mul, sub_smul_slope] at this

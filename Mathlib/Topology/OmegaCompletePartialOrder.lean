@@ -106,8 +106,6 @@ end notBelow
 
 open Scott hiding IsOpen IsOpen.isUpperSet
 
-open OmegaCompletePartialOrder
-
 theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
   constructor
   · apply le_ωSup
@@ -131,10 +129,6 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
   tauto
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
-    [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : ωScottContinuous f) : Continuous f := by
-  rw [continuous_def]
-  intro s hs
-  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
-  simp_rw [mem_preimage, mem_def, ← Function.comp_def]
-  apply ωScottContinuous.comp hs hf
+    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : ωScottContinuous f) :
+    Continuous f := by
+  rw [continuous_def]; exact fun s hs ↦ hs.comp hf

@@ -128,7 +128,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     refine le_trans ?_ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     rw [h]
     apply zero_le
 
@@ -231,7 +231,7 @@ theorem le_degree {R : Type*}
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
   · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     simp only [h, zero_le]
 
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :

@@ -17,10 +17,10 @@ Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an 
 This is expressed here by writing `I = J.comap f`.
 -/
 
--- for going-up results about integral extensions, see `Mathlib.RingTheory.Ideal.GoingUp`
+-- for going-up results about integral extensions, see `Mathlib/RingTheory/Ideal/GoingUp.lean`
 assert_not_exists Algebra.IsIntegral
 
--- for results about finiteness, see `Mathlib.RingTheory.Finiteness.Quotient`
+-- for results about finiteness, see `Mathlib/RingTheory/Finiteness/Quotient.lean`
 assert_not_exists Module.Finite
 
 variable {R : Type*} [CommRing R]

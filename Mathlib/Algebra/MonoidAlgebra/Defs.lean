@@ -534,7 +534,6 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
       (f * single x r) z
       _ = sum f fun a b => ite (a * x = z) (b * r) 0 :=
         (mul_apply _ _ _).trans <| Finsupp.sum_congr fun _ _ => sum_single_index (by simp)
-
       _ = f.sum fun a b => ite (a = y) (b * r) 0 := Finsupp.sum_congr fun x hx => by
         simp only [H _ hx]
       _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _

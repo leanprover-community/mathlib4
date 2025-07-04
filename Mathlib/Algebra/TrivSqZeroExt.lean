@@ -6,6 +6,7 @@ Authors: Kenny Lau, Eric Wieser
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Trivial Square-Zero Extension
@@ -999,6 +1000,26 @@ theorem lift_inlAlgHom_inrHom :
     AlgHom.id S (tsze R M) :=
   algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
 
+
+@[simp]
+theorem range_inlAlgHom_sup_adjoin_range_inr :
+    (inlAlgHom S R M).range ⊔ Algebra.adjoin S (Set.range inr) = (⊤ : Subalgebra S (tsze R M)) := by
+  refine top_unique fun x hx => ?_; clear hx
+  rw [← x.inl_fst_add_inr_snd_eq]
+  refine add_mem ?_ ?_
+  · exact le_sup_left (α := Subalgebra S _) <| Set.mem_range_self x.fst
+  · exact le_sup_right (α := Subalgebra S _) <| Algebra.subset_adjoin <| Set.mem_range_self x.snd
+
+@[simp]
+theorem range_liftAux (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r •> x) = f r * g x)
+    (hgf : ∀ r x, g (x <• r) = g x * f r) :
+    (lift f g hg hfg hgf).range = f.range ⊔ Algebra.adjoin S (Set.range g) := by
+  simp_rw [← Algebra.map_top, ← range_inlAlgHom_sup_adjoin_range_inr, Algebra.map_sup,
+    AlgHom.map_adjoin, ← AlgHom.range_comp, lift_comp_inlHom, ← Set.range_comp, Function.comp_def,
+    lift_apply_inr, Algebra.map_top]
+
 /-- A universal property of the trivial square-zero extension, providing a unique
 `TrivSqZeroExt R M →ₐ[R] A` for every pair of maps `f : R →ₐ[S] A` and `g : M →ₗ[S] A`,
 where the range of `g` has no non-zero products, and scaling the input to `g` on the left or right
@@ -1030,11 +1051,7 @@ def liftEquivOfComm :
     toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
-    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩
-    left_inv := fun f => rfl
-    right_inv := fun fg => Subtype.ext <|
-      Prod.ext (AlgHom.toLinearMap_injective <| LinearMap.ext_ring <| by simp)
-      rfl }
+    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩ }
 
 section map
 

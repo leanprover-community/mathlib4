@@ -272,7 +272,7 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
   refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
-  simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
+  simp only [Multiset.notMem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/

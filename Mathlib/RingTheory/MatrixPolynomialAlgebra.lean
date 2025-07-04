@@ -128,7 +128,7 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by
   intro k
   contrapose
-  simp only [not_mem_support_iff]
+  simp only [notMem_support_iff]
   intro hk
   rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
 

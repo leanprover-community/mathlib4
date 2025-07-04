@@ -38,7 +38,7 @@ variable {ι R M N : Type*}
 
 namespace RootPairing
 
-section reflection_perm
+section reflectionPerm
 
 variable (p : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N) (i j : ι)
   (h : ∀ i, MapsTo (preReflection (root i) (p.toLinearMap.flip (coroot i)))
@@ -69,7 +69,7 @@ protected def equiv_of_mapsTo :
   left_inv j := choose_choose_eq_of_mapsTo p root coroot i j h hp
   right_inv j := choose_choose_eq_of_mapsTo p root coroot i j h hp
 
-end reflection_perm
+end reflectionPerm
 
 variable (P : RootPairing ι R M N) [Finite ι]
 
@@ -95,11 +95,11 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     (hr : P₁.root = P₂.root)
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
-  have hp (hc' : P₁.coroot = P₂.coroot) : P₁.reflection_perm = P₂.reflection_perm := by
+  have hp (hc' : P₁.coroot = P₂.coroot) : P₁.reflectionPerm = P₂.reflectionPerm := by
     ext i j
     refine P₁.root.injective ?_
     conv_rhs => rw [hr]
-    simp only [root_reflection_perm, reflection_apply, coroot']
+    simp only [root_reflectionPerm, reflection_apply, coroot']
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
     obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; cases p₁; cases p₂; congr; exact hp this
@@ -168,11 +168,11 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
   root := root
   coroot := coroot
   root_coroot_two := hp
-  reflection_perm i := RootPairing.equiv_of_mapsTo p root coroot i hr hp
-  reflection_perm_root i j := by
+  reflectionPerm i := RootPairing.equiv_of_mapsTo p root coroot i hr hp
+  reflectionPerm_root i j := by
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec,
       preReflection_apply, PerfectPairing.flip_apply_apply]
-  reflection_perm_coroot i j := by
+  reflectionPerm_coroot i j := by
     refine (coroot_eq_coreflection_of_root_eq' p root coroot hp hr hc ?_).symm
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec]
 

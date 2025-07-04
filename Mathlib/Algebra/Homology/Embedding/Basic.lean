@@ -216,7 +216,7 @@ instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_i
 instance : (embeddingUpIntLE p).IsTruncLE where
   mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
 
-lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
+lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
   constructor
   · intro h
@@ -226,7 +226,10 @@ lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
     dsimp
     omega
 
-lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
+@[deprecated (since := "2025-05-23")]
+alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
+
+lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
   constructor
   · intro h
@@ -235,5 +238,8 @@ lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
   · intros
     dsimp
     omega
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff
 
 end ComplexShape

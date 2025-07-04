@@ -8,7 +8,6 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Data.Real.Star
-import Mathlib.Data.ZMod.Defs
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -295,6 +294,16 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
 
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 
+@[simp]
+theorem adjoin_I : Algebra.adjoin ℝ {I} = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  rw [← x.re_add_im, ← smul_eq_mul, ← Complex.coe_algebraMap]
+  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _)
+
+@[simp]
+theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = Algebra.adjoin ℝ {I'} := by
+  simp_rw [← Algebra.map_top, ← adjoin_I, AlgHom.map_adjoin, Set.image_singleton, liftAux_apply_I]
+
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
 of `A` which squares to `-1`.
 
@@ -466,7 +475,6 @@ def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
   toFun := fun z ↦ (z : ℂ).re
   invFun := fun x ↦ ⟨x, conj_ofReal x⟩
   left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
-  right_inv := fun _ ↦ rfl
   map_add' := by simp
   map_smul' := by simp
 

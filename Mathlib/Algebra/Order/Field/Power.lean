@@ -108,7 +108,7 @@ theorem Nat.cast_le_pow_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ a ^ n / (a 
 end LinearOrderedField
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/

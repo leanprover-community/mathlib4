@@ -190,11 +190,11 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
       ((constantSheafAdj J B hT).counit.app ((sheafCompose J U).obj F)) =
         ((sheafCompose J U).map ((constantSheafAdj J D hT).counit.app F)) := by
   apply Sheaf.hom_ext
-  rw [instCategorySheaf_comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
+  rw [comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
   ext
   simp? says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, id_obj,
-      constantSheafAdj_counit_app, instCategorySheaf_comp_val,
+      constantSheafAdj_counit_app, comp_val,
       sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
       toSheafify_sheafifyLift, NatTrans.comp_app, constComp_hom_app,
       constantPresheafAdj_counit_app_app, Functor.comp_map, id_comp, flip_obj_obj,
