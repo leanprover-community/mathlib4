@@ -44,20 +44,13 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
     [FiniteDimensional ℝ F] [FiberBundle F' V'] [VectorBundle ℝ F' V'] [T2Space M]
     [IsManifold I ∞ M]
     {φ : (Π x : M, V x) → (Π x, V' x)} {x}
-    {σ σ' : Π x : M, V x}
-    (hσ : MDifferentiableAt% (T% σ) x)
-    (hσ' : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (T% σ') x)
+    {σ σ' : Π x : M, V x} (hσ : MDifferentiableAt% (T% σ) x) (hσ' : MDifferentiableAt% (T% σ') x)
     (hσσ' : σ x = σ' x)
-    (φ_smul : ∀ f : M → ℝ, ∀ σ, MDifferentiableAt% f x →
-          MDifferentiableAt%  (fun x ↦ TotalSpace.mk' F x (σ x)) x →
-          φ (f • σ) x = f x • φ σ x)
-    (φ_add : ∀ σ σ',
-          MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ x)) x →
-          MDifferentiableAt%  (fun x ↦ TotalSpace.mk' F x (σ' x)) x →
-          φ (σ + σ') x = φ σ x + φ σ' x) : φ σ x = φ σ' x := by
-  have locality {σ σ'}
-      (hσ : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ x)) x)
-      (hσ' : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ' x)) x)
+    (φ_smul : ∀ f : M → ℝ, ∀ σ, MDifferentiableAt% f x → MDifferentiableAt% (T% σ) x →
+      φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ σ σ', MDifferentiableAt% (T% σ) x → MDifferentiableAt% (T% σ') x →
+      φ (σ + σ') x = φ σ x + φ σ' x) : φ σ x = φ σ' x := by
+  have locality {σ σ'} (hσ : MDifferentiableAt% (T% σ) x) (hσ' : MDifferentiableAt% (T% σ') x)
       (hσσ' : ∀ᶠ x' in 𝓝 x, σ x' = σ' x') : φ σ x = φ σ' x := by
     obtain ⟨ψ, _, hψ⟩ := (SmoothBumpFunction.nhds_basis_support (I := I) hσσ').mem_iff.1 hσσ'
     have (x : M) : ((ψ : M → ℝ) • σ) x = ((ψ : M → ℝ) • σ') x := by
@@ -78,7 +71,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
     induction s using Finset.induction_on with
     | empty =>
        simp only [Finset.sum_empty]
-       have h₁ : MDifferentiableAt I 𝓘(ℝ) (fun x' : M ↦ (0 : ℝ)) x := by
+       have h₁ : MDifferentiableAt% (fun x' : M ↦ (0 : ℝ)) x := by
          exact contMDiffAt_const.mdifferentiableAt le_rfl
        rw [show (fun x' : M ↦ (0 : V x')) = (0 : M → ℝ) • fun x' ↦ 0 by simp;rfl]
        rw [φ_smul]
@@ -94,14 +87,13 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
   let c := Basis.localFrame_repr t b
-  have hs (i) : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (s i x)) x:=
-      (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
-  have hc {σ : (x : M) → V x}
-      (hσ : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ x)) x) (i) :
-        MDifferentiableAt I 𝓘(ℝ, ℝ) ((c i) σ) x :=
+  have hs (i) : MDifferentiableAt% (T% s i) x:=
+    (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
+  have hc {σ : (x : M) → V x} (hσ : MDifferentiableAt% (T% σ) x) (i) :
+      MDifferentiableAt% ((c i) σ) x :=
     mdifferentiableAt_localFrame_repr x_mem b hσ i
   have hφ {σ : (x : M) → V x}
-          (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x) :
+          (hσ : MDifferentiableAt% (T% σ) x) :
       φ σ x = φ (fun x' ↦ ∑ i, (c i) σ x' • s i x') x := by
     exact
       locality hσ
@@ -192,25 +184,17 @@ lemma tensoriality_criterion₂ [ContMDiffVectorBundle 1 F V I] [IsManifold I �
     [FiberBundle F' V'] [VectorBundle ℝ F' V']
     {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
     {σ σ' τ τ' : Π x : M, V x}
-    (hσ : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ x)) x)
-    (hσ' : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ' x)) x)
-    (hτ : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (τ x)) x)
-    (hτ' : MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (τ' x)) x)
+    (hσ : MDifferentiableAt% (T% σ) x) (hσ' : MDifferentiableAt% (T% σ') x)
+    (hτ : MDifferentiableAt% (T% τ) x) (hτ' : MDifferentiableAt% (T% τ') x)
     (hσσ' : σ x = σ' x)
     (hττ' : τ x = τ' x)
-    (φ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDifferentiableAt I 𝓘(ℝ) f x →
-        MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ x)) x →
+    (φ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDifferentiableAt% f x → MDifferentiableAt% (T% σ) x →
       φ (f • σ) τ x = f x • φ σ τ x)
-    (φ_add : ∀ {σ σ' τ},
-      MDifferentiableAt%  (fun x ↦ TotalSpace.mk' F x (σ x)) x →
-      MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (σ' x)) x →
+    (φ_add : ∀ {σ σ' τ}, MDifferentiableAt% (T% σ) x → MDifferentiableAt% (T% σ') x →
       φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
-    (τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDifferentiableAt I 𝓘(ℝ) f x →
-        MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (τ x)) x →
+    (τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDifferentiableAt% f x → MDifferentiableAt% (T% τ) x →
         φ σ (f • τ) x = f x • φ σ τ x)
-    (τ_add : ∀ {σ τ τ'},
-        MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (τ x)) x →
-        MDifferentiableAt% (fun x ↦ TotalSpace.mk' F x (τ' x)) x →
+    (τ_add : ∀ {σ τ τ'}, MDifferentiableAt% (T% τ) x → MDifferentiableAt% (T% τ') x →
         φ σ (τ + τ') x = φ σ τ x + φ σ τ' x) : φ σ τ x = φ σ' τ' x := by
   trans φ σ' τ x
   · let φ1 : (Π x : M, V x) → (Π x, V' x) := fun X ↦ φ X τ
