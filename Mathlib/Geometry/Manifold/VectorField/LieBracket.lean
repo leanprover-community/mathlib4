@@ -292,21 +292,50 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     mlieBracketWithin I V (f • W) s x =
       (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin]
-  -- simp only [mlieBracketWithin, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
-  --   ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-  --   PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
-  --   ModelWithCorners.toPartialEquiv_coe_symm]
   rw [mpullbackWithin_smul]
   set V' := (mpullbackWithin 𝓘(𝕜, E) I (↑(extChartAt I x).symm) V (range I))
   set W' := (mpullbackWithin 𝓘(𝕜, E) I (↑(extChartAt I x).symm) W (range I))
-  -- idea: rewrite by lieBracketWithin_smul_right
-  -- recognise the terms on the rhs, done
-  let aux := lieBracketWithin_smul_right (V := V') (W := W')
-  --simp [mfderivWithin_eq_fderivWithin]
-  --rw [lieBracketWithin_smul_right]
-  sorry
+  set f' := (f ∘ (extChartAt I x).symm)
+  set s' := ((extChartAt I x).symm ⁻¹' s ∩ range I)
+  set x' := (extChartAt I x) x
+  change mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' (fun y ↦ f' y • W' y) s') x =
+    (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x +
+    f x • mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x
+  -- Step 1: rewrite using lieBracketWithin_smul_right
+  let aux := lieBracketWithin_smul_right (V := V') (W := W') (s := s') (f := f') (x := x')
+  have hf' : DifferentiableWithinAt 𝕜 f' s' x' := sorry
+  have hW' : DifferentiableWithinAt 𝕜 W' s' x' := sorry
+  have hs' : UniqueDiffWithinAt 𝕜 s' x' := sorry
+  let aux' := aux hf' hW' hs'
 
-#exit
+  trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun x₀ ↦ (lieBracketWithin 𝕜 V' (f' • W') s') x₀) x
+  · rfl
+  -- issue: silent defeq abuse, a map E → E vs a map tangent space -> tangent space
+  let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
+  let B (x₀) := f' x₀ • lieBracketWithin 𝕜 V' W' s' x₀
+  -- thus, this does not typecheck...
+  -- trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun y ↦ A y + B y) x
+  -- · sorry
+
+  -- first part to get the claim
+  have : mpullback I 𝓘(𝕜, E) (extChartAt I x) A x
+      = (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x := by
+    unfold A
+    simp [mfderivWithin, hf]
+    simp [mpullback]
+    congr
+    · simp [V']
+      sorry
+    · sorry
+  have : mpullback I 𝓘(𝕜, E) (extChartAt I x) B x
+      = f x • mpullback I 𝓘(𝕜, E) (↑(extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x := by
+    simp only [B]
+    trans mpullback I 𝓘(𝕜, E) (↑(extChartAt I x)) (f' • lieBracketWithin 𝕜 V' W' s') x
+    · rfl
+    rw [mpullback_smul (V := lieBracketWithin 𝕜 V' W' s')]
+    simp [f']
+  -- adding these identities should prove the claim
+  sorry
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
