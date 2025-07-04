@@ -291,6 +291,9 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (f • W) s x =
       (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
+  simp [mlieBracketWithin]
+  simp [mfderivWithin_eq_fderivWithin]
+  rw [lieBracketWithin_smul_right]
   sorry
 
 /--
