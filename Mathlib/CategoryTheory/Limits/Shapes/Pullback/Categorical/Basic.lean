@@ -919,6 +919,8 @@ lemma functorOfTransform₂_comp {ψ ψ' ψ'' : CatCospanTransform F G F' G'}
     functorOfTransform₂ α ≫ functorOfTransform₂ β := by
   aesop_cat
 
+/-- An isomorphism of `CatCospanTransform` induces an isomorphism of the
+corresponding `functorOfTransform`. -/
 @[simps]
 def functorOfTransform₂Iso {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ≅ ψ') :
     functorOfTransform ψ ≅ functorOfTransform ψ' where
