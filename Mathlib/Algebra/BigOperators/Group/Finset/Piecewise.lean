@@ -118,10 +118,7 @@ theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, 
       exact h.symm
     · simp [h]
   · rw [Finset.prod_eq_one]
-    intros
-    rw [dif_neg]
-    rintro rfl
-    contradiction
+    grind
 
 @[to_additive (attr := simp)]
 theorem prod_dite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, x = a → β) :
@@ -133,10 +130,7 @@ theorem prod_dite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α,
       exact h
     · simp [h]
   · rw [Finset.prod_eq_one]
-    intros
-    rw [dif_neg]
-    rintro rfl
-    contradiction
+    grind
 
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
