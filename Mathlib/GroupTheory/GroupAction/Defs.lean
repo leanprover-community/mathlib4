@@ -532,7 +532,7 @@ lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass 
     rw [inv_smul_smul]
 
 @[to_additive (attr := simp)]
-lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
+lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α) :
     stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ <| mul_left_injective _
 
 @[to_additive (attr := simp)]
