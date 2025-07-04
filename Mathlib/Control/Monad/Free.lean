@@ -3,9 +3,8 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve, Eric Wieser
 -/
-import Mathlib.Control.Monad.Cont
-import Mathlib.Control.Monad.Writer
-import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Free Monad
