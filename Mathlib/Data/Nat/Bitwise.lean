@@ -132,6 +132,14 @@ theorem bit_false : bit false = (2 * ·) :=
 theorem bit_true : bit true = (2 * · + 1) :=
   rfl
 
+@[simp]
+theorem bit_false_apply (n) : bit false n = (2 * n) :=
+  rfl
+
+@[simp]
+theorem bit_true_apply (n) : bit true n = (2 * n + 1) :=
+  rfl
+
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
   simp
 
