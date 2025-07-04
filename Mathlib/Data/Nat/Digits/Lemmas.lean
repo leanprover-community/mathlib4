@@ -292,7 +292,7 @@ theorem digits_getD (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
     repeat rw [n0l]
     simp
   | inr n0r =>
-    have ne0 : n ≠ 0 := by exact Nat.ne_zero_of_lt n0r
+    have ne0 : n ≠ 0 := Nat.ne_zero_of_lt n0r
     have split : n < b ^ i ∨ b ^ i ≤ n := Nat.lt_or_ge n (b ^ i)
     cases split with
     | inl hl =>
@@ -322,11 +322,11 @@ theorem digits_getD (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
         apply Nat.lt_one_add_iff.mpr
         exact (Nat.pow_le_iff_le_log h ne0 ).mp hr
       have h₁ := Nat.self_div_pow_eq_ofDigits_drop i n h
-      have bne1 : b ≠ 1 := by exact Ne.symm (Nat.ne_of_lt h)
+      have bne1 : b ≠ 1 := Ne.symm (Nat.ne_of_lt h)
       have h₂ := Nat.head!_digits (n := n / b ^ i) bne1
       rw [← h₂]
       have h₃ := congrArg (Nat.digits b) h₁
-      have mne0 : n ≠ 0 := by exact Nat.ne_zero_of_lt n0r
+      have mne0 : n ≠ 0 := Nat.ne_zero_of_lt n0r
       have h₄ : ∀ l ∈ List.drop i (b.digits n), l < b := by
         have hi : ∀ x ∈ b.digits n, x < b := by
           intro y hy
