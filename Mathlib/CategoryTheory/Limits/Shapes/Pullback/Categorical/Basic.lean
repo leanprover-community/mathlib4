@@ -425,6 +425,31 @@ def transform₂ (X : Type u₇) [Category.{v₇} X]
         simp only [Iso.inv_hom_id_app_assoc] at this
         simp [this] }
 
+section transform₂
+
+variable (X : Type u₇) [Category.{v₇} X]
+
+@[simp]
+lemma transform₂_id (ψ : CatCospanTransform F G F' G') :
+    transform₂ X (𝟙 ψ) = 𝟙 _ := by aesop_cat
+
+@[reassoc, simp]
+lemma transform₂_comp {ψ ψ' ψ'' : CatCospanTransform F G F' G'}
+    (α : ψ ⟶ ψ') (β : ψ' ⟶ ψ'') :
+    transform₂ X (α ≫ β) = transform₂ X α ≫ transform₂ X β := by
+  aesop_cat
+
+/-- Extend `transform₂` to isomorphisms. -/
+@[simps]
+def transform₂Iso {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ≅ ψ') :
+    transform X ψ ≅ transform X ψ' where
+  hom := transform₂ X α.hom
+  inv := transform₂ X α.inv
+  hom_inv_id := by simp [← transform₂_comp]
+  inv_hom_id := by simp [← transform₂_comp]
+
+end transform₂
+
 variable {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
   [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
   {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
@@ -554,6 +579,23 @@ def precompose₂ {U V : X ⥤ Y} (α : U ⟶ V) :
   app x :=
     { fst := whiskerRight α x.fst
       snd := whiskerRight α x.snd }
+
+@[simp]
+lemma precompose₂_id (U : X ⥤ Y) : precompose₂ F G (𝟙 U) = 𝟙 _ := by aesop_cat
+
+@[simp]
+lemma precompose₂_comp {U V W: X ⥤ Y} (α : U ⟶ V) (β : V ⟶ W) :
+    precompose₂ F G (α ≫ β) = precompose₂ F G α ≫ precompose₂ F G β := by
+  aesop_cat
+
+/-- Extend `precompose₂` to isomorphisms. -/
+@[simps]
+def precompose₂Iso {U V : X ⥤ Y} (α : U ≅ V) :
+    precompose F G U ≅ precompose F G V where
+  hom := precompose₂ F G α.hom
+  inv := precompose₂ F G α.inv
+  hom_inv_id := by simp [← precompose₂_comp]
+  inv_hom_id := by simp [← precompose₂_comp]
 
 lemma precompose₂_whiskerLeft (U : X ⥤ Y) {V W : Y ⥤ Z} (α : V ⟶ W) :
     precompose₂ F G (whiskerLeft U α) =
