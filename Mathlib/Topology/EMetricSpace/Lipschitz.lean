@@ -364,7 +364,7 @@ protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continu
   exact (hK.continuousOn).continuousAt ht
 
 /-- The composition of locally Lipschitz functions is locally Lipschitz. -/
-protected lemma comp  {f : β → γ} {g : α → β}
+protected lemma comp {f : β → γ} {g : α → β}
     (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
   intro x
   -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
