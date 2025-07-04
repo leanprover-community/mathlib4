@@ -163,6 +163,64 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
   apply b.localFrame_repr_congr
   assumption
 
+include I in
+omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in
+lemma tensoriality_criterion₂' [FiberBundle F V] [VectorBundle ℝ F V]
+    [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [T2Space M]
+    [FiberBundle F' V'] [VectorBundle ℝ F' V']
+    {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
+    {σ σ' τ τ' : Π x : M, V x}
+    (hσσ' : σ x = σ' x)
+    (hττ' : τ x = τ' x)
+    (φ_smul : ∀ f : M → ℝ, ∀ σ τ, φ (f • σ) τ x = f x • φ σ τ x)
+    (φ_add : ∀ σ σ' τ, φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (τ_smul : ∀ f : M → ℝ, ∀ σ τ, φ σ (f • τ) x = f x • φ σ τ x)
+    (τ_add : ∀ σ τ τ', φ σ (τ + τ') x = φ σ τ x + φ σ τ' x) : φ σ τ x = φ σ' τ' x := by
+  trans φ σ' τ x
+  · let φ1 : (Π x : M, V x) → (Π x, V' x) := fun X ↦ φ X τ
+    change φ1 σ x = φ1 σ' x
+    exact tensoriality_criterion' I F V F' V' hσσ' (by simp [φ_smul, φ1]) (by simp [φ_add, φ1])
+  · let φ1 : (Π x : M, V x) → (Π x, V' x) := fun X ↦ φ σ' X
+    change φ1 τ x = φ1 τ' x
+    exact tensoriality_criterion' I F V F' V' hττ' (by simp [τ_smul, φ1]) (by simp [τ_add, φ1])
+
+include I in
+omit [IsManifold I 1 M] in
+lemma tensoriality_criterion₂ [ContMDiffVectorBundle 1 F V I] [IsManifold I ∞ M]
+    [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [T2Space M]
+    [FiberBundle F' V'] [VectorBundle ℝ F' V']
+    {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
+    {σ σ' τ τ' : Π x : M, V x}
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (hσ' : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x)
+    (hτ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (τ x)) x)
+    (hτ' : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (τ' x)) x)
+    (hσσ' : σ x = σ' x)
+    (hττ' : τ x = τ' x)
+    (φ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDifferentiableAt I 𝓘(ℝ) f x →
+        MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x →
+      φ (f • σ) τ x = f x • φ σ τ x)
+    (φ_add : ∀ {σ σ' τ},
+      MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x →
+      MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x →
+      φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDifferentiableAt I 𝓘(ℝ) f x →
+        MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (τ x)) x →
+        φ σ (f • τ) x = f x • φ σ τ x)
+    (τ_add : ∀ {σ τ τ'},
+        MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (τ x)) x →
+        MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (τ' x)) x →
+        φ σ (τ + τ') x = φ σ τ x + φ σ τ' x) : φ σ τ x = φ σ' τ' x := by
+  trans φ σ' τ x
+  · let φ1 : (Π x : M, V x) → (Π x, V' x) := fun X ↦ φ X τ
+    change φ1 σ x = φ1 σ' x
+    apply tensoriality_criterion I F V F' V' hσ hσ' hσσ'
+    exacts [fun f σ hf hσ ↦ φ_smul hf hσ, fun σ σ' hσ hσ' ↦ φ_add hσ hσ']
+  · let φ1 : (Π x : M, V x) → (Π x, V' x) := fun X ↦ φ σ' X
+    change φ1 τ x = φ1 τ' x
+    apply tensoriality_criterion I F V F' V' hτ hτ' hττ'
+    exacts [fun f τ hf hτ ↦ τ_smul hf hτ, fun τ τ' hτ hτ' ↦ τ_add hτ hτ']
+
 /- include I in
 lemma tensoriality_criterion'' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDimensional ℝ E]
     [FiniteDimensional ℝ F] [FiberBundle F' V'] [VectorBundle ℝ F' V'] [T2Space M]
