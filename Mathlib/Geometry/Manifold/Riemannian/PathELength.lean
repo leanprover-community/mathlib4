@@ -213,7 +213,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
   rw [E, ha, hb]
   apply pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn
   · simpa [← ha, ← hb] using hγ.mdifferentiableOn le_rfl
-  · apply (AffineMap.lineMap_monotone hab).monotoneOn
+  · apply (AffineMap.lineMap_mono hab).monotoneOn
 
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
