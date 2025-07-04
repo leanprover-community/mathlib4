@@ -307,7 +307,7 @@ noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
 /-- The trivial connection on the trivial bundle is smooth -/
 lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial E E') (⊤ : ℕ∞) where
   regularity X σ hX /-hσ-/ := by
-    -- except for locla trivialisations, contDiff_infty_iff_fderiv covers this well
+    -- except for local trivialisations, contDiff_infty_iff_fderiv covers this well
     simp only [trivial]
     -- use a local trivialisation
     intro x
@@ -854,9 +854,9 @@ lemma torsion_add_right_apply [CompleteSpace E] {x : M}
     (hX : MDifferentiableAt% (T% X) x)
     (hX' : MDifferentiableAt% (T% X') x) :
     torsion cov Y (X + X') x = torsion cov Y X x + torsion cov Y X' x := by
-  rw [torsion_antisymm]
-  sorry -- rw [cov.torsion_add_left_apply Y hX hX']
-  --, torsion_add_left_apply _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
+  rw [torsion_antisymm, Pi.neg_apply,
+    cov.torsion_add_left_apply _ hX hX', torsion_antisymm Y, torsion_antisymm Y]
+  simp; abel
 
 lemma torsion_add_right [CompleteSpace E]
     (hX : MDifferentiable% (T% X))
@@ -868,11 +868,10 @@ variable (Y) in
 lemma torsion_smul_left_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDifferentiableAt% f x)
     (hX : MDifferentiableAt% (T% X) x) :
     torsion cov (f • X) Y x = f x • torsion cov X Y x := by
-  simp only [torsion, cov.smulX]
-  sorry /- rw [cov.leibniz Y X f x hX hf]
-  rw [VectorField.mlieBracket_smul_left hf hX]
+  simp only [torsion, cov.smulX, Pi.sub_apply, Pi.smul_apply']
+  rw [cov.leibniz Y X f x hX hf, VectorField.mlieBracket_smul_left hf hX]
   simp [bar, smul_sub]
-  abel -/
+  abel
 
 variable (Y) in
 lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
@@ -882,16 +881,18 @@ lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable%
   exact cov.torsion_smul_left_apply _ (hf x) (hX x)
 
 variable (X) in
-lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
-    (hY : MDifferentiable% (T% Y)) :
-    torsion cov X (f • Y) = f • torsion cov X Y := by
-  rw [torsion_antisymm, torsion_smul_left X hf hY, torsion_antisymm X]; module
-
-variable (X) in
 lemma torsion_smul_right_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDifferentiableAt% f x)
     (hX : MDifferentiableAt% (T% Y) x) :
     torsion cov X (f • Y) x = f x • torsion cov X Y x := by
-  sorry
+  rw [torsion_antisymm, Pi.neg_apply, torsion_smul_left_apply X hf hX, torsion_antisymm X]
+  simp
+
+variable (X) in
+lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
+    (hY : MDifferentiable% (T% Y)) :
+    torsion cov X (f • Y) = f • torsion cov X Y := by
+  ext x
+  apply cov.torsion_smul_right_apply _ (hf x) (hY x)
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 /-- The torsion of a covariant derivative is tensorial:
@@ -919,17 +920,17 @@ def IsTorsionFree : Prop := torsion cov = 0
 
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
 
--- lemma: the trivial connection is torsion free
+-- lemma the trivial connection on a normed space is torsion-free
+-- lemma trivial.isTorsionFree : IsTorsionFree (TangentBundle 𝓘(ℝ, E) E) := sorry
 
--- API for the trivial bundle (does some of this exist already?)
--- there is a single trivialisation, whose baseSet is univ
+-- lemma: tangent bundle of E is trivial -> there exists a single trivialisation with baseSet univ
 -- make a new abbrev Bundle.Trivial.globalFrame --- which is localFrame for the std basis of F,
 --    w.r.t. to this trivialisation
 -- add lemmas: globalFrame is contMDiff globally
 
 -- proof of above lemma: write sections s and t in the global frame above
 -- by linearity (proven above), suffices to consider s = s^i and t = s^j (two sections in the frame)
--- compute: their Lie bracket is zero (intuitively, as their flows commute)
+-- compute: their Lie bracket is zero
 -- compute: the other two terms cancel, done
 
 end torsion
