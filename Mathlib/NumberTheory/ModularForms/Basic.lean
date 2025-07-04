@@ -496,12 +496,14 @@ section translate
 
 section OnePoint
 
-variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] (f : F)
+variable (Γ : Subgroup SL(2, ℤ)) {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] (f : F)
 
-lemma ModularFormClass.isBoundedAt [ModularFormClass F Γ k] (c : OnePoint ℚ) : c.IsBoundedAt f k :=
+lemma ModularFormClass.isBoundedAt [ModularFormClass F Γ k] (c : OnePoint ℚ) :
+    c.IsBoundedAt f k :=
   c.isBoundedAt_iff_forall_SL2Z.mpr fun γ _ ↦ bdd_at_infty f γ
 
-lemma CuspFormClass.isZeroAt [CuspFormClass F Γ k] (c : OnePoint ℚ) : c.IsZeroAt f k :=
+lemma CuspFormClass.isZeroAt [CuspFormClass F Γ k] (c : OnePoint ℚ) :
+    c.IsZeroAt f k :=
   c.isZeroAt_iff_forall_SL2Z.mpr fun γ _ ↦ zero_at_infty f γ
 
 end OnePoint
@@ -529,7 +531,7 @@ noncomputable def ModularForm.translateGL [ModularFormClass F Γ k] (g : GL (Fin
   holo' := (ModularFormClass.holo f).slash k _
   bdd_at_infty' h := by
     rw [SlashInvariantForm.coe_translateGL, SL_slash, ← SlashAction.slash_mul]
-    convert (OnePoint.isBoundedAt_iff_forall_GL2Q _ f k).mp (ModularFormClass.isBoundedAt _ _)
+    convert OnePoint.isBoundedAt_iff_forall_GL2Q.mp (ModularFormClass.isBoundedAt Γ f _)
       (g * (h.mapGL ℚ)) rfl using 2
     -- annoyance : need to reconcile coercions SL2Z -> SL2R -> SL2Z and SL2Z -> GL2Q -> GL2R
     ext
@@ -558,7 +560,7 @@ noncomputable def CuspForm.translateGL [CuspFormClass F Γ k] (g : GL (Fin 2) �
   holo' := (ModularForm.translateGL f _).holo'
   zero_at_infty' h := by
     rw [SlashInvariantForm.coe_translateGL, SL_slash, ← SlashAction.slash_mul]
-    convert (OnePoint.isZeroAt_iff_forall_GL2Q _ f k).mp (CuspFormClass.isZeroAt _ _)
+    convert OnePoint.isZeroAt_iff_forall_GL2Q.mp (CuspFormClass.isZeroAt Γ f _)
       (g * (h.mapGL ℚ)) rfl using 2
     -- annoyance : need to reconcile coercions SL2Z -> SL2R -> GL2R and SL2Z -> GL2Q -> GL2R
     ext
