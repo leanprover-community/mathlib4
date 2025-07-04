@@ -290,7 +290,7 @@ theorem laplacianWithin_smul_nhds
     eventually_mem_nhdsWithin] with a h₁a using laplacianWithin_smul v h₁a hs
 
 /-- The Laplacian commutes with scalar multiplication. -/
-theorem laplacian_smul_nhds {x : E} {f : E → F} (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
+theorem laplacian_smul_nhds (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
     Δ (v • f) =ᶠ[𝓝 x] v • (Δ f) := by
   filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl)] with a ha
   simp [laplacian_smul v ha]
