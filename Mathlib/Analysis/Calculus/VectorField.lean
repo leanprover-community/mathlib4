@@ -119,12 +119,6 @@ lemma lieBracket_const_smul_right {c : 𝕜} (hW : DifferentiableAt 𝕜 W x) :
   simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hW ⊢
   exact lieBracketWithin_const_smul_right hW uniqueDiffWithinAt_univ
 
-@[deprecated (since := "2025-05-17")]
-alias lieBracketWithin_smul_right := lieBracketWithin_const_smul_right
-
-@[deprecated (since := "2025-05-17")]
-alias lieBracket_smul_right := lieBracket_const_smul_right
-
 /--
 Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
 we have `[V, f • W] = (df V) • W + f • [V, W]`
@@ -133,7 +127,8 @@ lemma lieBracketWithin_smul_right {f : E → 𝕜} (hf : DifferentiableWithinAt 
     (hW : DifferentiableWithinAt 𝕜 W s x) (hs: UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (fun y ↦ f y • W y) s x =
       (fderivWithin 𝕜 f s x) (V x) • (W x) + (f x) • lieBracketWithin 𝕜 V W s x := by
-  simp [lieBracketWithin, fderivWithin_smul hs hf hW, map_smul, add_comm, smul_sub, add_sub_assoc]
+  simp [lieBracketWithin, fderivWithin_fun_smul hs hf hW, map_smul, add_comm, smul_sub,
+    add_sub_assoc]
 
 /--
 Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
