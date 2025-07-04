@@ -169,7 +169,7 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
 
 variable (M) [Monoid M] in
 /-- Transfer `MulAction` across an `Equiv` -/
-@[to_additive]
+@[to_additive "Transfer `AddAction` across an `Equiv`"]
 protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
   __ := e.smul M
   one_smul := by simp [smul_def]
