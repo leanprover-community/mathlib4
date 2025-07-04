@@ -35,7 +35,8 @@ class ElementaryTopos (ℰ : Type u) [Category.{v} ℰ] [HasFiniteLimits ℰ] wh
   /-- A fixed choice of subobject classifier in `ℰ`, supplying mainly
   `Ω`, `true : ⊤_ C ⟶ Ω`, and `χ` to build the characteristic map. -/
   hc : Classifier ℰ
-  /-- The power object functor `P : ℰᵒᵖ ⥤ ℰ`, defined objectwise. -/
+  /-- Power objects, will become a functor `P : ℰᵒᵖ ⥤ ℰ` later . -/
+
   P (B : ℰ) : ℰ
   /-- The element relation. -/
   ε_ (B : ℰ) : B ⨯ (P B) ⟶ hc.Ω
@@ -110,13 +111,11 @@ theorem pullback_of_char {A B C U : ℰ} (g : A ⟶ P C) (h : B ⟶ C) (m : U �
     (isChar : hat C g = hc.χ m) :
     hat B (g ≫ P_morph h) = hc.χ (pullback.snd m (h ⨯𝟙)) :=
   let pb_right := IsPullback.flip (hc.isPullback m)
-  let m' := pullback.snd m (h ⨯𝟙)
   let pb_left := IsPullback.of_hasPullback m (h ⨯𝟙)
   let pb_outer := IsPullback.paste_horiz pb_left pb_right
   let eq₀ : (𝟙⨯ g) ≫ (h ⨯𝟙) = (h ⨯𝟙) ≫ (𝟙⨯ g) := by simp
   let eq₁ : (h ⨯𝟙) ≫ (hat _ g) = hc.χ (pullback.snd m (h ⨯𝟙)) :=
-    have :  _ ≫ terminal.from U = terminal.from _ := by simp
-    hc.uniq m' _ (this ▸ isChar ▸ IsPullback.flip pb_outer)
+    hc.uniq (pullback.snd m (h ⨯𝟙)) _ (IsPullback.flip (by simpa [isChar] using pb_outer))
   by rw [hat, prod.map_id_comp, assoc, ← ε_dinaturality, ← assoc, eq₀, assoc, ← hat, eq₁]
 
 end
