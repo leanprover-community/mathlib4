@@ -238,6 +238,19 @@ abbrev e :
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
   NatIso.ofComponents (fun S ↦ S.iso)
 
+/-- There is a canonical inhabitant of
+`CatCommSqOver F G (CategoricalPullback F G)` corresponding to the
+canonical square `catCommSq` -/
+@[simps]
+instance : Inhabited (CatCommSqOver F G <| F ⊡ G) where
+  default :=
+    { fst := CategoricalPullback.π₁ F G
+      snd := CategoricalPullback.π₂ F G
+      iso := (catCommSq F G).iso }
+
+-- this is a non-diamond
+example : (default : CatCommSqOver F G <| F ⊡ G).asSquare = catCommSq F G := rfl
+
 end CatCommSqOver
 
 section functorEquiv
@@ -247,7 +260,7 @@ variable (F G)
 -- We need to split up the definition of `functorEquiv` to avoid timeouts.
 
 /-- Interpret a functor to the categorical pullback as a `CatCommSqOver`. -/
-@[simps!]
+@[simps]
 def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
   obj J :=
     { fst := J ⋙ π₁ F G
@@ -261,7 +274,7 @@ def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
       snd := whiskerRight F (π₂ _ _) }
 
 /-- Interpret a `CatCommSqOver` as a functor to the categorical pullback. -/
-@[simps!]
+@[simps]
 def CatCommSqOver.toFunctorToCategoricalPullback :
     (CatCommSqOver F G X) ⥤ X ⥤ F ⊡ G where
   obj S :=
@@ -292,6 +305,29 @@ def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
     NatIso.ofComponents
       (fun _ ↦ CategoricalPullback.mkIso
         (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
+
+/-- The default `CatCommSqOver F G (CategoricalPullback F G)` corresponds to
+the identity functor through `functorEquiv`. -/
+@[simps!]
+def functorEquivFunctorIdIsoDefault :
+    (functorEquiv F G <| F ⊡ G).functor.obj (𝟭 _) ≅ default :=
+  CategoricalPullback.mkIso (Functor.leftUnitor _) (Functor.leftUnitor _)
+
+/-- The default `CatCommSqOver F G (CategoricalPullback F G)` corresponds to
+the identity functor through `functorEquiv`. -/
+@[simps!]
+def functorEquivInverseDefaultIso :
+    (functorEquiv F G <| F ⊡ G).inverse.obj (default) ≅ 𝟭 (F ⊡ G) :=
+  .refl _
+
+/-- The isomorphisms `functorEquivInverseDefaultIso` is the one induced
+by `functorEquivFunctorIdIsoDefault` through the equivalence `functorEquiv`. -/
+lemma functorEquivInverseDefaultIso_eq :
+    (functorEquivInverseDefaultIso F G) =
+    (functorEquiv F G <| F ⊡ G).inverse.mapIso
+      (functorEquivFunctorIdIsoDefault F G).symm ≪≫
+      (functorEquiv F G F ⊡ G).unitIso.symm.app _ := by
+  aesop_cat
 
 variable {F G X}
 
@@ -367,7 +403,7 @@ end functorEquiv
 
 end
 
-section Bifunctoriality
+section Pseudofunctoriality
 
 namespace CatCommSqOver
 open Functor
@@ -770,7 +806,172 @@ end compatibility
 
 end CatCommSqOver
 
-end Bifunctoriality
+open CatCommSqOver
+
+-- Note that as `functorEquiv` has @[simps], it’s better in terms of confluence
+-- to state the CatCommSq below in terms of `toCatCommSqOver` and
+-- `toFunctorToCategoricalPullback` rather than in terms of
+-- `functorEquiv _ _ _|>.functor` and `functorEquiv _ _ _|>.inverse`
+
+/-- The equivalence `functorEquiv` identifies the functoriality
+on `X` of `X ⥤ F ⊡ G` and `CatCommSqOver F G X`. -/
+@[simps!]
+instance whiskeringLeftToCatCommSqOverSquare
+    {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
+    (U : X ⥤ Y) :
+    CatCommSq
+      ((Functor.whiskeringLeft X Y (F ⊡ G)).obj U)
+      (toCatCommSqOver F G Y)
+      (toCatCommSqOver F G X)
+      (precompose F G U) where
+  iso :=
+    NatIso.ofComponents fun _ =>
+      CategoricalPullback.mkIso
+        (Functor.associator _ _ _)
+        (Functor.associator _ _ _)
+
+/-- The equivalence `functorEquiv` identifies the functoriality
+on `X` of `X ⥤ F ⊡ G` and `CatCommSqOver F G X` (inverse direction). -/
+@[simps!]
+instance precomposeToFunctorToCategoricalPullbackSquare
+    {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
+    (U : X ⥤ Y) :
+    CatCommSq
+      (precompose F G U)
+      (toFunctorToCategoricalPullback F G Y)
+      (toFunctorToCategoricalPullback F G X)
+      (Functor.whiskeringLeft X Y (F ⊡ G)|>.obj U) :=
+  CatCommSq.vInv _ (functorEquiv F G _) (functorEquiv F G _) _
+    (whiskeringLeftToCatCommSqOverSquare _)
+
+variable {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
+  [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
+  {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+  {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
+  [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
+  {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
+
+/-- A `CatCospanTransform` induces a functor between the categorical pullbacks. -/
+@[simps!]
+def functorOfTransform (ψ : CatCospanTransform F G F' G') : F ⊡ G ⥤ F' ⊡ G' :=
+  functorEquiv F' G' F ⊡ G|>.inverse.obj <|
+    (CatCommSqOver.transform _ ψ).obj default
+
+/-- The canonical square that expresses that `toCatCommSqOver` maps
+(postcomposition by) `functorOfTransform` to `CatCommSqOver.transform`. -/
+@[simps!]
+instance toCatCommSqOverWhiskeringFunctorOfTransformSquare
+    (X : Type u₁₀) [Category.{v₁₀} X]
+    (ψ : CatCospanTransform F G F' G') :
+    CatCommSq
+      (toCatCommSqOver F G X)
+      (Functor.whiskeringRight X _ _|>.obj <| functorOfTransform ψ)
+      (transform _ ψ)
+      (toCatCommSqOver F' G' X) where
+  iso := NatIso.ofComponents fun _ =>
+    CategoricalPullback.mkIso
+      (NatIso.ofComponents fun _ ↦ .refl _)
+      (NatIso.ofComponents fun _ ↦ .refl _)
+
+/-- The horizontal inverse of `toCatCommSqOverWhiskeringFunctorOfTransformSquare` -/
+@[simps!]
+instance toFunctorToCategoricalPullbackTransformSquare
+    (X : Type u₁₀) [Category.{v₁₀} X]
+    (ψ : CatCospanTransform F G F' G') :
+    CatCommSq
+      (toFunctorToCategoricalPullback F G X)
+      (transform _ ψ)
+      ((Functor.whiskeringRight X _ _).obj (functorOfTransform ψ))
+      (toFunctorToCategoricalPullback F' G' X) :=
+  CatCommSq.hInv (functorEquiv F G X) _ _ (functorEquiv F' G' X)
+    (toCatCommSqOverWhiskeringFunctorOfTransformSquare X _)
+
+/-- A morphism of `CatCospanTransform` induces a natural transformations of
+the functor between the categorical pullbacks induced by its source and target. -/
+@[simps!]
+def functorOfTransform₂
+    {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ⟶ ψ') :
+    functorOfTransform ψ ⟶ functorOfTransform ψ' :=
+  functorEquiv F' G' F ⊡ G|>.inverse.map <|
+    (transform₂ _ α).app default
+
+variable (F G) in
+/-- `functorOfTransform` repects identities up to isomorphism. -/
+@[simps!]
+def functorOfTransformId :
+    functorOfTransform (.id F G) ≅ 𝟭 (F ⊡ G) :=
+  (functorEquiv F G F ⊡ G|>.inverse.mapIso <|
+    (transformId _ F G).app default) ≪≫
+    (functorEquivInverseDefaultIso F G)
+
+/-- `functorOfTransform` repects compositions up to isomorphism. -/
+@[simps!]
+def functorOfTransformComp
+    (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
+    functorOfTransform (ψ.comp ψ') ≅
+    functorOfTransform ψ ⋙ functorOfTransform ψ' :=
+  (functorEquiv F'' G'' F ⊡ G|>.inverse.mapIso <|
+    (transformComp _ ψ ψ').app default) ≪≫
+    (toFunctorToCategoricalPullbackTransformSquare _ ψ').iso.symm.app
+      (transform (F ⊡ G) ψ|>.obj default)
+
+section
+
+open scoped CatCospanTransform
+open Functor
+
+lemma functorOfTransform₂_whiskerLeft
+    (ψ : CatCospanTransform F G F' G')
+    {φ φ' : CatCospanTransform F' G' F'' G''} (α : φ ⟶ φ') :
+    functorOfTransform₂ (ψ ◁ α) =
+    (functorOfTransformComp ψ φ).hom ≫
+      whiskerLeft (functorOfTransform ψ) (functorOfTransform₂ α) ≫
+      (functorOfTransformComp ψ φ').inv := by
+  aesop_cat
+
+lemma functorOfTransform₂_whiskerRight
+    {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ⟶ ψ')
+    (φ : CatCospanTransform F' G' F'' G'') :
+    functorOfTransform₂ (α ▷ φ) =
+    (functorOfTransformComp ψ φ).hom ≫
+      whiskerRight (functorOfTransform₂ α) (functorOfTransform φ) ≫
+      (functorOfTransformComp ψ' φ).inv := by
+  aesop_cat
+
+lemma functorOfTransform₂_associator
+    {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
+    [Category.{v₁₀} A'''] [Category.{v₁₁} B'''] [Category.{v₁₂} C''']
+    {F''' : A''' ⥤ B'''} {G''' : C''' ⥤ B'''}
+    (ψ : CatCospanTransform F G F' G') (φ : CatCospanTransform F' G' F'' G'')
+    (τ : CatCospanTransform F'' G'' F''' G''') :
+    functorOfTransform₂ (α_ ψ φ τ).hom =
+    (functorOfTransformComp (ψ.comp φ) τ).hom ≫
+      whiskerRight (functorOfTransformComp ψ φ).hom (functorOfTransform τ) ≫
+      ((functorOfTransform ψ).associator
+        (functorOfTransform φ) (functorOfTransform τ)).hom ≫
+      whiskerLeft (functorOfTransform ψ) (functorOfTransformComp φ τ).inv ≫
+      (functorOfTransformComp ψ (φ.comp τ)).inv := by
+  aesop_cat
+
+lemma functorOfTransform₂_leftUnitor
+    (ψ : CatCospanTransform F G F' G') :
+    functorOfTransform₂ (λ_ ψ).hom =
+    (functorOfTransformComp (.id F G) ψ).hom ≫
+      whiskerRight (functorOfTransformId F G).hom (functorOfTransform ψ) ≫
+      (functorOfTransform ψ).leftUnitor.hom := by
+  aesop_cat
+
+lemma functorOfTransform₂_rightUnitor
+    (ψ : CatCospanTransform F G F' G') :
+    functorOfTransform₂ (ρ_ ψ).hom =
+    (functorOfTransformComp ψ (.id F' G')).hom ≫
+      whiskerLeft  (functorOfTransform ψ) (functorOfTransformId F' G').hom ≫
+      (functorOfTransform ψ).rightUnitor.hom := by
+  aesop_cat
+
+end
+
+end Pseudofunctoriality
 
 end CategoricalPullback
 
