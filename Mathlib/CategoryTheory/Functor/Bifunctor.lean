@@ -51,16 +51,6 @@ abbrev Functor.mapᵣ (F : C ⥤ D ⥤ E) (A : C) {X Y : D} (g : X ⟶ Y) :
     F.obj₂ A X ⟶ F.obj₂ A Y :=
   (F.obj A).map g
 
-@[simp, reassoc]
-lemma Functor.mapᵣ_comp (F : C ⥤ D ⥤ E) (A : C) {X Y Z : D} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    F.mapᵣ A (f ≫ g) = F.mapᵣ A f ≫ F.mapᵣ A g := by
-  simp [Functor.mapᵣ]
-
-@[simp, reassoc]
-lemma Functor.mapᵣ_id (F : C ⥤ D ⥤ E) (A : C) {X : D} :
-    F.mapᵣ A (𝟙 X) = 𝟙 (F.obj₂ A X) := by
-  simp [Functor.mapᵣ]
-
 /-- Apply a natural transformation between bifunctors to two objects. -/
 @[simp]
 abbrev NatTrans.app₂ {F G : C ⥤ D ⥤ E} (α : F ⟶ G) (X : C) (Y : D) :
