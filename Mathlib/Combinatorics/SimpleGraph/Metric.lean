@@ -281,7 +281,7 @@ lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then
 lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h₁ : p₁.length = G.dist u v) (h₂ : p₂.IsSubwalk p₁) : p₂.length = G.dist u' v' := by
   by_contra hh
-  rcases show p₂.length < G.dist u' v'  ∨ p₂.length > G.dist u' v' by omega
+  rcases show p₂.length < G.dist u' v' ∨ p₂.length > G.dist u' v' by omega
   · have := SimpleGraph.dist_le p₂
     omega
   · obtain ⟨ru, rv, h⟩ := h₂
