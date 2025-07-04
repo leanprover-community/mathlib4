@@ -41,8 +41,8 @@ derivative within `s` with respect to `𝕜'`.
 -/
 theorem ContDiffWithinAt.iteratedFDeriv_restrictScalars_eventuallyEq
     (h : ContDiffWithinAt 𝕜' n f s x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    (restrictScalarsLinear 𝕜) ∘ (iteratedFDerivWithin 𝕜' n f s)
-      =ᶠ[𝓝[s] x] (iteratedFDerivWithin 𝕜 n f s) := by
+    (restrictScalars 𝕜) ∘ (iteratedFDerivWithin 𝕜' n f s)
+      =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f s := by
   induction n with
   | zero =>
     filter_upwards with a
@@ -60,7 +60,7 @@ theorem ContDiffWithinAt.iteratedFDeriv_restrictScalars_eventuallyEq
     ext m
     simp only [restrictScalarsLinear_apply, Function.comp_apply, coe_restrictScalars,
       iteratedFDerivWithin_succ_apply_left]
-    rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a, restrictScalarsLinear_apply,
+    rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a,
       fderivWithin_restrictScalars_comp]
     · simp
     · apply h₃a.differentiableWithinAt_iteratedFDerivWithin
