@@ -260,7 +260,7 @@ theorem continuousLinearMapAt_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ 
       (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b := by
   simp [hb]
 
-@[deprecated (since := "2025-06-29")]
+@[deprecated (since := "2025-07-03")]
 alias trivializationAt_continuousLinearMapAt := continuousLinearMapAt_trivializationAt_eq_core
 
 /-- The inverse trivialization of the tangent space can be expressed in terms of the tangent bundle
@@ -273,7 +273,7 @@ theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀)
       (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b := by
   simp [hb]
 
-@[deprecated (since := "2025-06-29")]
+@[deprecated (since := "2025-07-03")]
 alias trivializationAt_symmL  := symmL_trivializationAt_eq_core
 
 -- Porting note: `simp` simplifies LHS to `.id _ _`
@@ -463,7 +463,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact ContMDiffWithinAt.contDiffWithinAt <|
       (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ h
-  · apply (Bundle.contMDiffWithinAt_totalSpace _).2
+  · apply Bundle.contMDiffWithinAt_totalSpace.2
     refine ⟨contMDiffWithinAt_id, ?_⟩
     convert h.contMDiffWithinAt with y
     simp

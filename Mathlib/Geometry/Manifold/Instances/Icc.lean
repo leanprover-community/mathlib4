@@ -11,11 +11,23 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 /-! # Manifold structure on real intervals
 
 The manifold structure on real intervals is defined in `Mathlib.Geometry.Manifold.Instances.Real`.
-We relate it to the manifold structure on the real line, by showing that the inclusion and
-projection are smooth, and showing that a function defined on the interval is smooth iff
-its composition with the projection is smooth on the interval in `ℝ`.
+We relate it to the manifold structure on the real line, by showing that the inclusion
+(`contMDiff_subtype_coe_Icc`) and projection (`contMDiffOn_projIcc`) are smooth, and showing that
+a function defined on the interval is smooth iff its composition with the projection is smooth on
+the interval in `ℝ` (see `contMDiffOn_comp_projIcc_iff` and friends).
 
 We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
+
+## TODO
+
+This file can be thoroughly rewritten once mathlib has a good theory of smooth immersions and
+embeddings. Once this is done,
+- the inclusion `Icc x y → ℝ` is a smooth embedding, and in particular smooth
+- deduce the dual result: a function `f : M → Icc x y` is smooth iff
+  its composition with the inclusion into `ℝ` is smooth
+- prove the projection `ℝ → Icc x y` is a smooth submersion, hence smooth
+- use this to simplify the proof that `f : Icc x y → M` is smooth iff the composition `ℝ → M`
+  with the projection `ℝ → Icc x y` is
 -/
 
 open Set
@@ -33,7 +45,7 @@ instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
 
 /-- Unit vector in the tangent space to a segment, as the image of the unit vector in the real line
 under the canonical projection. It is also mapped to the unit vector in the real line through
-the canonical injection, see `mfderiv_subtypeVal_Icc_one`.
+the canonical injection, see `mfderiv_subtype_coe_Icc_one`.
 
 Note that one can not abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
@@ -48,11 +60,14 @@ instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡�
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
-lemma contMDiff_subtypeVal_Icc  :
+lemma contMDiff_subtype_coe_Icc  :
     ContMDiff (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   rw [contMDiffAt_iff]
   refine ⟨by fun_prop, ?_⟩
+  -- We come back to the definition: we should check that, in each chart, the map is smooth.
+  -- There are two charts, and we check things separately in each of them using the
+  -- explicit formulas.
   simp? says
     simp only [extChartAt, PartialHomeomorph.extend, PartialHomeomorph.refl_partialEquiv,
       PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
@@ -97,6 +112,9 @@ lemma contMDiffOn_projIcc :
   intro z hz
   rw [contMDiffWithinAt_iff]
   refine ⟨by apply ContinuousAt.continuousWithinAt; fun_prop, ?_⟩
+  -- We come back to the definition: we should check that, in each chart, the map is smooth
+  -- There are two charts, and we check things separately in each of them using the
+  -- explicit formulas.
   simp? says
     simp only [extChartAt, PartialHomeomorph.extend, Icc_chartedSpaceChartAt,
       PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
@@ -135,7 +153,7 @@ lemma contMDiffOn_projIcc :
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
     ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
-  convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
+  convert hf.comp_contMDiff (contMDiff_subtype_coe_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
@@ -144,7 +162,7 @@ lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
       ContMDiffAt (𝓡∂ 1) I n f w := by
   refine ⟨fun hf ↦ ?_,
     fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
-  have A := contMDiff_subtypeVal_Icc (x := x) (y := y) (n := n) w
+  have A := contMDiff_subtype_coe_Icc (x := x) (y := y) (n := n) w
   rw [← contMDiffWithinAt_univ] at A ⊢
   convert hf.comp _ A (fun z hz ↦ z.2)
   ext z
@@ -154,7 +172,7 @@ lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y}
     MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
       MDifferentiableAt (𝓡∂ 1) I f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · have A := (contMDiff_subtypeVal_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
+  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
     rw [← mdifferentiableWithinAt_univ] at A ⊢
     convert hf.comp _ A (fun z hz ↦ z.2)
     ext z
@@ -167,7 +185,7 @@ lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
   change _ = oneTangentSpaceIcc (Set.projIcc x y h.out.le z)
   simp only [oneTangentSpaceIcc]
   congr
-  simp only [projIcc_of_mem h.out.le hz]
+  simp [projIcc_of_mem h.out.le hz]
 
 lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc x y) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
@@ -176,14 +194,12 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     · rfl
     · rwa [mdifferentiableWithinAt_comp_projIcc_iff]
   rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
-  · convert hw
-    simp
-  · apply (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
-  · apply (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
+  · simp [hw]
+  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
+  · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
-  have I : projIcc x y h.out.le (w : ℝ) = w := by rw [projIcc_of_mem]
-  have J : w = projIcc x y h.out.le (w : ℝ) := by rw [I]
-  rw [I]
+  have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
+  rw [projIcc_of_mem]
   congr 1
   convert mfderivWithin_projIcc_one w.2
 

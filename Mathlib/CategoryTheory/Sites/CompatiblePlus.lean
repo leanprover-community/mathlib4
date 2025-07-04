@@ -20,7 +20,7 @@ noncomputable section
 
 namespace CategoryTheory.GrothendieckTopology
 
-open CategoryTheory Limits Opposite
+open CategoryTheory Limits Opposite Functor
 
 universe w₁ w₂ v u
 
