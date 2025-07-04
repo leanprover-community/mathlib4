@@ -176,13 +176,13 @@ noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
   bot_le x := by
     simp only [le_iff, ofDegLex_toDegLex, toLex_zero, degree_zero]
     rcases eq_zero_or_pos (ofDegLex x).degree with (h | h)
-    · simp only [h, lt_self_iff_false, true_and, false_or, ge_iff_le]
+    · simp only [h, lt_self_iff_false, true_and, false_or]
       exact bot_le
     · simp [h]
 
 instance wellFoundedLT [WellFoundedGT α] :
     WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
 
 end DegLex
 

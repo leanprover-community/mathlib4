@@ -44,7 +44,7 @@ instance [Ring R] [IsDomain R] : IsDomain R⟦X⟧ :=
 variable [CommRing R] [IsDomain R]
 
 /-- The ideal spanned by the variable in the power series ring
- over an integral domain is a prime ideal. -/
+over an integral domain is a prime ideal. -/
 theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
   suffices Ideal.span ({X} : Set R⟦X⟧) = RingHom.ker (constantCoeff R) by
     rw [this]

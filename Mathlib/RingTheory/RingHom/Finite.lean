@@ -41,7 +41,7 @@ theorem finite_respectsIso : RespectsIso @Finite := by
 lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
 
 theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
-  refine IsStableUnderBaseChange.mk _ finite_respectsIso ?_
+  refine IsStableUnderBaseChange.mk finite_respectsIso ?_
   classical
   introv h
   replace h : Module.Finite R T := by
@@ -56,8 +56,8 @@ open scoped Pointwise
 
 universe u
 
-variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
-variable (R' S' : Type u) [CommRing R'] [CommRing S']
+variable {R S : Type*} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
+variable (R' S' : Type*) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
 
 lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommSemiring S]
@@ -111,7 +111,9 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
   have : Module.Finite R S := hf
   apply Module.Finite_of_isLocalization R S R' S' M
 
-theorem RingHom.localization_away_map_finite (r : R) [IsLocalization.Away r R']
+theorem RingHom.localization_away_map_finite (R S R' S' : Type u) [CommRing R] [CommRing S]
+    [CommRing R'] [CommRing S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
+    (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
   finite_localizationPreserves.away f r _ _ hf
 
@@ -169,10 +171,10 @@ theorem multiple_mem_span_of_mem_localization_span
   rsuffices ⟨t, ht⟩ : ∃ t : M, t • x ∈ Submodule.span R (s' : Set N)
   · exact ⟨t, Submodule.span_mono hss' ht⟩
   clear hx hss' s
-  induction s' using Finset.induction_on generalizing x
-  · use 1; simpa using hs'
-  rename_i a s _ hs
-  simp only [Finset.coe_insert, Finset.image_insert, Finset.coe_image, Subtype.coe_mk,
+  induction s' using Finset.induction_on generalizing x with
+  | empty => use 1; simpa using hs'
+  | insert a s _ hs =>
+  simp only [Finset.coe_insert,
     Submodule.mem_span_insert] at hs' ⊢
   rcases hs' with ⟨y, z, hz, rfl⟩
   rcases IsLocalization.surj M y with ⟨⟨y', s'⟩, e⟩
@@ -181,8 +183,7 @@ theorem multiple_mem_span_of_mem_localization_span
   rcases hs _ hz with ⟨t, ht⟩
   refine ⟨t * s', t * y', _, (Submodule.span R (s : Set N)).smul_mem s' ht, ?_⟩
   rw [smul_add, ← smul_smul, mul_comm, ← smul_smul, ← smul_smul, ← e, mul_comm, ← Algebra.smul_def]
-  simp
-  rfl
+  simp [Submonoid.smul_def]
 
 /-- If `S` is an `R' = M⁻¹R` algebra, and `x ∈ adjoin R' s`,
 then `t • x ∈ adjoin R s` for some `t : M`. -/

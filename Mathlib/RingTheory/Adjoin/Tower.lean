@@ -10,10 +10,10 @@ import Mathlib.RingTheory.Adjoin.FG
 
 ## Main results
 
- * `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
-   then `A` is finitely generated as `R`-algebra
- * `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
-   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
+* `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
+  then `A` is finitely generated as `R`-algebra
+* `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
+  C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
 
 

@@ -14,7 +14,7 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 ## Notation
 
- - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
+- `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
 open Module Polynomial
@@ -147,12 +147,12 @@ theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :
     (sInf S).toSubalgebra = sInf (toSubalgebra '' S) :=
-  SetLike.coe_injective <| by simp [Set.sUnion_image]
+  SetLike.coe_injective <| by simp
 
 @[simp]
 theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
     (sInf S).toSubfield = sInf (toSubfield '' S) :=
-  SetLike.coe_injective <| by simp [Set.sUnion_image]
+  SetLike.coe_injective <| by simp
 
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :

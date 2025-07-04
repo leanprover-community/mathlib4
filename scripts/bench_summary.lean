@@ -54,7 +54,7 @@ def formatPercent (reldiff : Float) : String :=
   let reldiff := reldiff * 10 ^ 4
   let sgn : Int := if reldiff < 0 then -1 else 1
   let reldiff := (.ofInt sgn) * reldiff
-  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
+  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.toFin) 0 2
   -- the `if ... then ... else ...` makes sure that the output includes leading `0`s
   s!"({sgn}{intDigs}.{if decDigs < 10 then "0" else ""}{decDigs}%)"
 
@@ -87,7 +87,7 @@ def summary (bc : Bench) : String :=
 /--
 `toTable bcs` formats an array of `Bench`es into a markdown table whose columns are
 the file name, the absolute change in instruction counts and the relative change as a percentage.
-A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``.
+A typical entry may look like ``|`Mathlib/Analysis/Seminorm.lean`|+2.509⬝10⁹|(+1.41%)|``.
 -/
 def toTable (bcs : Array Bench) : String :=
   let header := "|File|Instructions|%|\n|-|-:|:-:|"

@@ -15,9 +15,9 @@ import Mathlib.Topology.Compactness.SigmaCompact
 We define the following properties for sets in a topological space:
 
 * `IsLindelof s`: Two definitions are possible here. The more standard definition is that
-every open cover that contains `s` contains a countable subcover. We choose for the equivalent
-definition where we require that every nontrivial filter on `s` with the countable intersection
-property has a clusterpoint. Equivalence is established in `isLindelof_iff_countable_subcover`.
+  every open cover that contains `s` contains a countable subcover. We choose for the equivalent
+  definition where we require that every nontrivial filter on `s` with the countable intersection
+  property has a clusterpoint. Equivalence is established in `isLindelof_iff_countable_subcover`.
 * `LindelofSpace X`: `X` is Lindelöf if it is Lindelöf as a set.
 * `NonLindelofSpace`: a space that is not a Lindëlof space, e.g. the Long Line.
 
@@ -52,7 +52,7 @@ def IsLindelof (s : Set X) :=
 theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableInterFilter f]
     (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
   contrapose! hf
-  simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
+  simp only [notMem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
   exact hs inf_le_right
 
 /-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection
@@ -266,7 +266,7 @@ theorem isLindelof_of_countable_subcover
   have uinf := f.sets_of_superset (le_principal_iff.1 fsub) h
   have uninf : ⋂ i ∈ t, (U i)ᶜ ∈ f := (countable_bInter_mem ht).mpr (fun _ _ ↦ hUf _)
   rw [← compl_iUnion₂] at uninf
-  have uninf := compl_not_mem uninf
+  have uninf := compl_notMem uninf
   simp only [compl_compl] at uninf
   contradiction
 

@@ -133,4 +133,7 @@ theorem coe_injective : Function.Injective (DFunLike.coe : C(X, Y) → (X → Y)
 theorem coe_mk (f : X → Y) (h : Continuous f) : ⇑(⟨f, h⟩ : C(X, Y)) = f :=
   rfl
 
+instance [Subsingleton Y] : Subsingleton C(X, Y) := DFunLike.subsingleton_cod
+instance [IsEmpty X] : Subsingleton C(X, Y) := DFunLike.subsingleton_dom
+
 end ContinuousMap

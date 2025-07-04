@@ -516,12 +516,12 @@ end SimplicialObject
 def CosimplicialObject :=
   SimplexCategory ⥤ C
 
+namespace CosimplicialObject
+
 @[simps!]
 instance : Category (CosimplicialObject C) := by
   dsimp only [CosimplicialObject]
   infer_instance
-
-namespace CosimplicialObject
 
 /-- `X ^⦋n⦌` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
@@ -585,14 +585,14 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
       X.δ (j.pred fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_δ' H]
 
 @[reassoc]
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     X.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ X.δ j.succ =
       X.δ j ≫ X.δ i := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ'' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_δ'' H]
 
 /-- The special case of the first cosimplicial identity -/
 @[reassoc]
@@ -652,7 +652,7 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
         X.δ (i.pred <|
           fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
 /-- The fifth cosimplicial identity -/
 @[reassoc]
@@ -829,7 +829,7 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
             ext n
             dsimp
             rw [Category.id_comp, Category.id_comp, η.naturality] }
-      naturality := fun _ _ f => by ext <;> dsimp <;> simp }
+      naturality := fun _ _ f => by ext <;> simp }
 
 variable {C}
 

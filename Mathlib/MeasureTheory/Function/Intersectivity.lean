@@ -59,7 +59,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   let f (n : ℕ) : α → ℝ≥0∞ := (↑(n + 1) : ℝ≥0∞)⁻¹ • ∑ k ∈ Finset.range (n + 1), (s k).indicator 1
   -- We gather a few simple properties of `f`.
   have hfapp : ∀ n a, f n a = (↑(n + 1))⁻¹ * ∑ k ∈ Finset.range (n + 1), (s k).indicator 1 a := by
-    simp only [f, Pi.natCast_def, Pi.smul_apply, Pi.inv_apply, Finset.sum_apply, eq_self_iff_true,
+    simp only [f, Pi.smul_apply, Finset.sum_apply,
     forall_const, imp_true_iff, smul_eq_mul]
   have hf n : Measurable (f n) := by fun_prop (disch := exact hs _)
   have hf₁ n : f n ≤ 1 := by
@@ -84,7 +84,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     exact lintegral_mono fun a ↦ limsup_le_of_le ⟨0, fun R _ ↦ bot_le⟩ <|
       Eventually.of_forall fun n ↦ hf₁ _ _
   -- By the first moment method, there exists some `x ∉ N` such that `limsup f n x` is at least `r`.
-  obtain ⟨x, hxN, hx⟩ := exists_not_mem_null_laverage_le hμ
+  obtain ⟨x, hxN, hx⟩ := exists_notMem_null_laverage_le hμ
     (ne_top_of_le_ne_top (measure_ne_top μ univ) this) hN₀
   replace hx : r / μ univ ≤ limsup (f · x) atTop :=
     calc

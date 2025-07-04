@@ -33,20 +33,20 @@ and composition with linear maps `f`, `Q.comp f x = Q (f x)`.
 
 ## Main definitions
 
- * `QuadraticMap.ofPolar`: a more familiar constructor that works on rings
- * `QuadraticMap.associated`: associated bilinear map
- * `QuadraticMap.PosDef`: positive definite quadratic maps
- * `QuadraticMap.Anisotropic`: anisotropic quadratic maps
- * `QuadraticMap.discr`: discriminant of a quadratic map
- * `QuadraticMap.IsOrtho`: orthogonality of vectors with respect to a quadratic map.
+* `QuadraticMap.ofPolar`: a more familiar constructor that works on rings
+* `QuadraticMap.associated`: associated bilinear map
+* `QuadraticMap.PosDef`: positive definite quadratic maps
+* `QuadraticMap.Anisotropic`: anisotropic quadratic maps
+* `QuadraticMap.discr`: discriminant of a quadratic map
+* `QuadraticMap.IsOrtho`: orthogonality of vectors with respect to a quadratic map.
 
 ## Main statements
 
- * `QuadraticMap.associated_left_inverse`,
- * `QuadraticMap.associated_rightInverse`: in a commutative ring where 2 has
+* `QuadraticMap.associated_left_inverse`,
+* `QuadraticMap.associated_rightInverse`: in a commutative ring where 2 has
   an inverse, there is a correspondence between quadratic maps and symmetric
   bilinear forms
- * `LinearMap.BilinForm.exists_orthogonal_basis`: There exists an orthogonal basis with
+* `LinearMap.BilinForm.exists_orthogonal_basis`: There exists an orthogonal basis with
   respect to any nondegenerate, symmetric bilinear map `B`.
 
 ## Notation
@@ -67,8 +67,8 @@ has some further discussion.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Quadratic_form
- * https://en.wikipedia.org/wiki/Discriminant#Quadratic_forms
+* https://en.wikipedia.org/wiki/Quadratic_form
+* https://en.wikipedia.org/wiki/Discriminant#Quadratic_forms
 
 ## Tags
 
@@ -126,7 +126,7 @@ theorem polar_add_left_iff {f : M → N} {x x' y : M} :
 theorem polar_comp {F : Type*} [AddCommGroup S] [FunLike F N S] [AddMonoidHomClass F N S]
     (f : M → N) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
-  simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
+  simp only [polar, Function.comp_apply, map_sub]
 
 /-- `QuadraticMap.polar` as a function from `Sym2`. -/
 def polarSym2 (f : M → N) : Sym2 M → N :=
@@ -1006,7 +1006,7 @@ theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
   ext
   simp only [associated_apply, linMulLin_apply, map_add, smul_add, LinearMap.add_apply,
     LinearMap.smul_apply, compl₁₂_apply, mul_apply', smul_eq_mul, invOf_smul_eq_iff]
-  simp only [smul_add, Module.End.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
+  simp only [Module.End.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
     mul_invOf_cancel_left']
   ring_nf
 

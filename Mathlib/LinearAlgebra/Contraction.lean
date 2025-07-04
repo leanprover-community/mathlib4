@@ -18,8 +18,6 @@ some basic properties of these maps.
 contraction, dual module, tensor product
 -/
 
-suppress_compilation
-
 variable {ι : Type*} (R M N P Q : Type*)
 
 -- Porting note: we need high priority for this to fire first; not the case in ML3
@@ -105,14 +103,14 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
   ext m
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
-    RingHom.id_apply, LinearMap.smul_apply]
+    LinearMap.smul_apply]
   rw [smul_comm]
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
-    toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
+    toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = single i j 1 := by
   ext i' j'
   by_cases hij : i = i' ∧ j = j' <;>
     simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
@@ -230,7 +228,7 @@ theorem rTensorHomEquivHomRTensor_toLinearMap :
   refine (cancel_right h).1 ?_
   ext f p q m
   simp only [e, rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
-    LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply,
     dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul,
     dualTensorHomEquivOfBasis_symm_cancel_left, LinearEquiv.refl_apply, assoc_tmul,
     dualTensorHom_apply, rTensorHomToHomRTensor_apply, smul_tmul']

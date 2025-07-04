@@ -216,7 +216,7 @@ theorem dvd_prod_of_mem (f : α → β) {a : α} {s : Finset α} (ha : a ∈ s) 
     exact dvd_mul_right _ _
 
 @[to_additive]
-theorem prod_update_of_not_mem [DecidableEq α] {s : Finset α} {i : α} (h : i ∉ s) (f : α → β)
+theorem prod_update_of_notMem [DecidableEq α] {s : Finset α} {i : α} (h : i ∉ s) (f : α → β)
     (b : β) : ∏ x ∈ s, Function.update f i b x = ∏ x ∈ s, f x := by
   apply prod_congr rfl
   intros j hj
@@ -224,6 +224,11 @@ theorem prod_update_of_not_mem [DecidableEq α] {s : Finset α} {i : α} (h : i 
     rintro rfl
     exact h hj
   simp [this]
+
+@[deprecated (since := "2025-05-23")] alias sum_update_of_not_mem := sum_update_of_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias prod_update_of_not_mem := prod_update_of_notMem
 
 @[to_additive]
 theorem prod_update_of_mem [DecidableEq α] {s : Finset α} {i : α} (h : i ∈ s) (f : α → β) (b : β) :

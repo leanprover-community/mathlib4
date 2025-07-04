@@ -72,7 +72,6 @@ lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpac
   ext g
   simp [addInvariantVectorField]
 
-@[to_additive existing addInvariantVectorField_smul]
 lemma mulInvariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
     mulInvariantVectorField (c • v) = c • mulInvariantVectorField v := by
   ext g
@@ -253,7 +252,6 @@ noncomputable instance instLieAlgebraAddGroupLieAlgebra
 
 /-- The tangent space at the identity of a Lie group is a Lie algebra, for the bracket
 given by the Lie bracket of invariant vector fields. -/
-@[to_additive existing]
 noncomputable instance instLieAlgebraGroupLieAlgebra : LieAlgebra 𝕜 (GroupLieAlgebra I G) where
   lie_smul c v w := by
     simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_smul]

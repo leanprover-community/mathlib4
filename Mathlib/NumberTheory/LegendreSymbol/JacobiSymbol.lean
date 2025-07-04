@@ -338,10 +338,7 @@ theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     jacobiSym.at_two (Nat.odd_iff.mpr hb2), ZMod.χ₈_nat_eq_if_mod_eight,
     if_neg (Nat.mod_two_ne_zero.mpr hb2)]
-  have := Nat.mod_lt b (by decide : 0 < 8)
-  interval_cases h : b % 8 <;> simp_all <;>
-  · have := hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)
-    simp_all
+  grind
 
 end jacobiSym
 
@@ -487,7 +484,7 @@ section FastJacobi
 
 /-!
 ### Fast computation of the Jacobi symbol
-We follow the implementation as in `Mathlib.Tactic.NormNum.LegendreSymbol`.
+We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
 
