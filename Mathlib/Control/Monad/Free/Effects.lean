@@ -116,37 +116,26 @@ lemma run_set (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
     run (liftBind (.set s') k) s₀ = run (k .unit) s' := rfl
 
 /-- Run a state computation, returning only the result. -/
-def evalState (c : FreeState σ α) (s₀ : σ) : α :=
-  (run c s₀).1
+def run' (c : FreeState σ α) (s₀ : σ) : α := (run c s₀).1
 
 @[simp]
-lemma evalState_pure (a : α) (s₀ : σ) :
-    evalState (.pure a : FreeState σ α) s₀ = a := rfl
+theorem run'_toStateM {α : Type u} (comp : FreeState σ α) :
+    (toStateM comp).run' = run' comp := by
+  ext s₀ : 1
+  rw [run', ← run_toStateM]
+  rfl
 
 @[simp]
-lemma evalState_get (k : σ → FreeState σ α) (s₀ : σ) :
-    evalState (liftBind .get k) s₀ = evalState (k s₀) s₀ := rfl
+lemma run'_pure (a : α) (s₀ : σ) :
+    run' (.pure a : FreeState σ α) s₀ = a := rfl
 
 @[simp]
-lemma evalState_set (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
-    evalState (liftBind (.set s') k) s₀ = evalState (k .unit) s' := rfl
-
-/-- Run a state computation, returning only the final state. -/
-def runState (c : FreeState σ α) (s₀ : σ) : σ :=
-  (run c s₀).2
+lemma run'_get (k : σ → FreeState σ α) (s₀ : σ) :
+    run' (liftBind .get k) s₀ = run' (k s₀) s₀ := rfl
 
 @[simp]
-lemma runState_pure (a : α) (s₀ : σ) :
-    runState (.pure a : FreeState σ α) s₀ = s₀ := rfl
-
-@[simp]
-lemma runState_get (k : σ → FreeState σ α) (s₀ : σ) :
-    runState (liftBind .get k) s₀ = runState (k s₀) s₀ := rfl
-
-@[simp]
-lemma runState_set (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
-    runState (liftBind (.set s') k) s₀ = runState (k .unit) s' := rfl
-
+lemma run'_set (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
+    run' (liftBind (.set s') k) s₀ = run' (k .unit) s' := rfl
 
 end FreeState
 
@@ -267,16 +256,6 @@ instance [Monoid ω] : MonadWriter ω (FreeWriter ω) where
   tell := tell
   listen := listen
   pass := pass
-
-/--
-Evaluate a writer computation, returning the final result and discarding the log.
--/
-def eval [Monoid ω] (comp : FreeWriter ω α) : α := (run comp).1
-
-/--
-Execute a writer computation, returning only the accumulated log and discarding the result.
--/
-def exec [Monoid ω] (comp : FreeWriter ω α) : ω := (run comp).2
 
 end FreeWriter
 

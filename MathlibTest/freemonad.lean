@@ -5,17 +5,10 @@ open FreeM
 
 -- Example FreeState computations
 
-example : FreeState.evalState (do
+example : FreeState.run' (do
   let s ← get
   set (s + 1)
   return s : FreeState Nat Nat) 5 = 5 := by simp
-
-
-example : FreeState.runState (do
-  let s ← get
-  set (s + 1)
-  return s : FreeState Nat Nat) 5 = 6 := by simp
-
 
 example : FreeState.run (do
   let s ← get
