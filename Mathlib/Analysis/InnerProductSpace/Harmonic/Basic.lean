@@ -138,14 +138,10 @@ Functions are harmonic iff their compositions with continuous linear
 equivalences are harmonic.
 -/
 theorem harmonicAt_iff_harmonicAt_comp_CLE (l : F ≃L[ℝ] G) :
-    HarmonicAt f x ↔ HarmonicAt (l ∘ f) x := by
-  constructor
-  · exact fun h ↦ h.comp_CLM l.toContinuousLinearMap
-  · have : f = l.symm.toContinuousLinearMap ∘ l ∘ f := by
-      unfold Function.comp
-      simp
-    nth_rewrite 2 [this]
-    exact fun h ↦ h.comp_CLM l.symm.toContinuousLinearMap
+    HarmonicAt (l ∘ f) x ↔ HarmonicAt f x := by
+  constructor <;> intro h
+  · simpa [Function.comp_def] using h.comp_CLM l.symm.toContinuousLinearMap
+  · exact h.comp_CLM l.toContinuousLinearMap
 
 /--
 Functions are harmonic iff their compositions with continuous linear
