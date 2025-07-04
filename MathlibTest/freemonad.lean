@@ -1,4 +1,4 @@
-import Mathlib.Control.Monad.Free
+import Mathlib.Control.Monad.Free.Effects
 import Mathlib.Data.String.Defs
 
 open FreeM
