@@ -965,7 +965,7 @@ lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTo
 end torsion
 
 end real
-#where
+
 end CovariantDerivative
 
 end
