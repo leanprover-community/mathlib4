@@ -283,4 +283,68 @@ theorem ofDigits_neg_one :
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
 
+/-- Explicit computation of the `i`-th digit. -/
+theorem digits_getD (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n / b ^ i % b := by
+  simp only [List.getD_eq_getElem?_getD]
+  have split : n = 0 ∨ 0 < n := Nat.eq_zero_or_pos n
+  cases split with
+  | inl n0l =>
+    repeat rw [n0l]
+    simp
+  | inr n0r =>
+    have ne0 : n ≠ 0 := by exact Nat.ne_zero_of_lt n0r
+    have split : n < b ^ i ∨ b ^ i ≤ n := Nat.lt_or_ge n (b ^ i)
+    cases split with
+    | inl hl =>
+      have split := Nat.eq_zero_or_pos i
+      cases split with
+      | inl hll =>
+        repeat rw [hll]
+        simp only [pow_zero, Nat.div_one]
+        have digCons := Nat.digits_of_two_le_of_pos h n0r
+        rw [digCons]
+        simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
+          getElem?_pos, List.getElem_cons_zero, Option.getD_some]
+      | inr _ =>
+        have h₁ : (b.digits n).length ≤ i := by
+          have dl := Nat.digits_len b n h ne0
+          rw [dl]
+          have log_lt_i := (@Nat.log_lt_of_lt_pow b i n ne0) hl
+          exact Nat.add_one_le_iff.mp log_lt_i
+        simp only [not_lt, h₁, getElem?_neg, Option.getD_none]
+        have eq0 : 0 = n / b ^ i := Eq.symm (Nat.div_eq_of_lt hl)
+        rw [← eq0]
+        rfl
+    | inr hr =>
+      have iLtDig : i < (b.digits n).length := by
+        have lenEq := Nat.digits_len b n h ne0
+        rw [lenEq, add_comm]
+        apply Nat.lt_one_add_iff.mpr
+        exact (Nat.pow_le_iff_le_log h ne0 ).mp hr
+      have h₁ := Nat.self_div_pow_eq_ofDigits_drop i n h
+      have bne1 : b ≠ 1 := by exact Ne.symm (Nat.ne_of_lt h)
+      have h₂ := Nat.head!_digits (n := n / b ^ i) bne1
+      rw [← h₂]
+      have h₃ := congrArg (Nat.digits b) h₁
+      have mne0 : n ≠ 0 := by exact Nat.ne_zero_of_lt n0r
+      have h₄ : ∀ l ∈ List.drop i (b.digits n), l < b := by
+        have hi : ∀ x ∈ b.digits n, x < b := by
+          intro y hy
+          exact Nat.digits_lt_base h hy
+        intro y hy
+        exact hi y (List.mem_of_mem_drop hy)
+      have h₅: ∀ (h : List.drop i (b.digits n) ≠ []), (List.drop i (b.digits n)).getLast h ≠ 0 := by
+        intro hi
+        have hi₁ := List.getLast_drop hi
+        rw [hi₁]
+        exact Nat.getLast_digit_ne_zero b mne0
+      have h₆ : b.digits (Nat.ofDigits b (List.drop i (b.digits n))) = (List.drop i (b.digits n)) :=
+       Nat.digits_ofDigits b h (List.drop i (b.digits n)) h₄ h₅
+      rw [h₆] at h₃
+      symm
+      have h₇ := List.cons_getElem_drop_succ (l:=(b.digits n)) (n := i) (h := iLtDig)
+      have h₈ := List.getElem?_eq_getElem (l := (b.digits n)) iLtDig
+      rw [h₃, ← h₇,List.head!_cons, h₈]
+      simp
+
 end Nat
