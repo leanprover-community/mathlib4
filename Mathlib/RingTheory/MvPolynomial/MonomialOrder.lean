@@ -318,7 +318,6 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
 
 theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
     (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x => (m.toSyn <| m.degree <| f x) := by
-  classical
   induction s using Finset.cons_induction_on with
   | empty => simp
   | cons a s haA h =>
