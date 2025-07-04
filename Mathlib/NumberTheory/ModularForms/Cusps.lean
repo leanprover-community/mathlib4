@@ -33,27 +33,25 @@ lemma OnePoint.exists_mem_SL2 {K : Type*} (A : Type*) [CommRing A] [IsDomain A] 
     have : mapGL K g 1 0 ≠ 0 := by simp [hg1]
     simp [hg0, hg1]
 
-section IsBoundedAtImInfty
+namespace UpperHalfPlane
 
-lemma UpperHalfPlane.IsZeroAtImInfty.slash {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) {f : ℍ → ℂ}
-    (hf : IsZeroAtImInfty f) (k : ℤ) : IsZeroAtImInfty (f ∣[k] g) := by
-  simp only [IsZeroAtImInfty, ZeroAtFilter] at hf ⊢
-  rw [tendsto_zero_iff_norm_tendsto_zero] at hf ⊢
-  have (z : ℂ) : ‖σ g z‖ = ‖z‖ := by simp only [σ]; split_ifs <;> simp
-  simpa [this, ModularForm.slash_def, denom, hg, mul_assoc]
+variable {g : GL (Fin 2) ℝ} {f : ℍ → ℂ} (k : ℤ)
+
+lemma IsZeroAtImInfty.slash (hg : g 1 0 = 0) (hf : IsZeroAtImInfty f) :
+    IsZeroAtImInfty (f ∣[k] g) := by
+  rw [IsZeroAtImInfty, ZeroAtFilter, tendsto_zero_iff_norm_tendsto_zero] at hf ⊢
+  simpa [ModularForm.slash_def, denom, hg, mul_assoc]
     using (hf.comp <| tendsto_smul_atImInfty hg).mul_const _
 
-lemma UpperHalfPlane.IsBoundedAtImInfty.slash {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) {f : ℍ → ℂ}
-    (hf : IsBoundedAtImInfty f) (k : ℤ) : IsBoundedAtImInfty (f ∣[k] g) := by
-  simp only [IsBoundedAtImInfty, BoundedAtFilter] at hf ⊢
-  rw [← Asymptotics.isBigO_norm_left] at hf ⊢
-  have (z : ℂ) : ‖σ g z‖ = ‖z‖ := by simp only [σ]; split_ifs <;> simp
-  simp only [this, ModularForm.slash_def, denom, hg, Complex.ofReal_zero, zero_mul, zero_add,
+lemma IsBoundedAtImInfty.slash (hg : g 1 0 = 0) (hf : IsBoundedAtImInfty f) :
+    IsBoundedAtImInfty (f ∣[k] g) := by
+  rw [IsBoundedAtImInfty, BoundedAtFilter, ← Asymptotics.isBigO_norm_left] at hf ⊢
+  simp only [norm_σ, ModularForm.slash_def, denom, hg, Complex.ofReal_zero, zero_mul, zero_add,
     norm_mul, mul_assoc]
   simpa only [mul_comm (‖f _‖)] using
     (hf.comp_tendsto (tendsto_smul_atImInfty hg)).const_mul_left _
 
-end IsBoundedAtImInfty
+end UpperHalfPlane
 
 section IsBoundedAt
 
@@ -71,15 +69,17 @@ def OnePoint.IsZeroAt : Prop :=
 
 variable {c f k} {γ : SL(2, ℤ)} {g : GL (Fin 2) ℚ}
 
-lemma OnePoint.isBoundedAt_iff_forall_GL2Q :
-    IsBoundedAt c f k ↔ ∀ (g : GL (Fin 2) ℚ), g • ∞ = c
-      → IsBoundedAtImInfty (f ∣[k] (g.map <| algebraMap ℚ ℝ)) :=
-  Iff.rfl
+lemma OnePoint.IsBoundedAt.slash :
+    IsBoundedAt c (f ∣[k] (g.map <| algebraMap ℚ ℝ)) k ↔ IsBoundedAt (g • c) f k := by
+  simp only [IsBoundedAt]
+  rw [(Equiv.mulLeft g).forall_congr_left]
+  simp [-smul_infty_eq_ite, MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
 
-lemma OnePoint.isZeroAt_iff_forall_GL2Q :
-    IsZeroAt c f k ↔ ∀ (g : GL (Fin 2) ℚ), g • ∞ = c
-      → IsZeroAtImInfty (f ∣[k] (g.map <| algebraMap ℚ ℝ)) :=
-  Iff.rfl
+lemma OnePoint.IsZeroAt.slash :
+    IsZeroAt c (f ∣[k] (g.map <| algebraMap ℚ ℝ)) k ↔ IsZeroAt (g • c) f k := by
+  simp only [IsZeroAt]
+  rw [(Equiv.mulLeft g).forall_congr_left]
+  simp [-smul_infty_eq_ite, MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
 
 /-- Tedious lemma: if `γ ∈ SL(2, ℤ)` and `g ∈ GL(2, ℝ)` both map . -/
 private lemma OnePoint.SL2Z_trans_eq_GL2Z_trans
@@ -97,7 +97,7 @@ lemma OnePoint.isBoundedAt_iff_exists_SL2Z :
   rintro ⟨γ, hγ, hf⟩ g hg
   replace hf : IsBoundedAtImInfty (f ∣[k] (mapGL ℝ γ)) := by
     simpa only [ModularForm.SL_slash] using hf
-  simpa [← SlashAction.slash_mul] using hf.slash (c.SL2Z_trans_eq_GL2Z_trans hγ hg) k
+  simpa [← SlashAction.slash_mul] using hf.slash k (c.SL2Z_trans_eq_GL2Z_trans hγ hg)
 
 lemma OnePoint.isZeroAt_iff_exists_SL2Z :
     IsZeroAt c f k ↔ ∃ γ : SL(2, ℤ), mapGL ℚ γ • ∞ = c ∧ IsZeroAtImInfty (f ∣[k] γ) := by
@@ -105,7 +105,7 @@ lemma OnePoint.isZeroAt_iff_exists_SL2Z :
   rintro ⟨γ, hγ, hf⟩ g hg
   replace hf : IsZeroAtImInfty (f ∣[k] (mapGL ℝ γ)) := by
     simpa only [ModularForm.SL_slash] using hf
-  simpa [← SlashAction.slash_mul] using hf.slash (c.SL2Z_trans_eq_GL2Z_trans hγ hg) k
+  simpa [← SlashAction.slash_mul] using hf.slash k (c.SL2Z_trans_eq_GL2Z_trans hγ hg)
 
 lemma OnePoint.isBoundedAt_iff_forall_SL2Z :
     IsBoundedAt c f k ↔ ∀ γ : SL(2, ℤ), (mapGL ℚ γ) • ∞ = c → IsBoundedAtImInfty (f ∣[k] γ) :=
@@ -117,18 +117,6 @@ lemma OnePoint.isZeroAt_iff_forall_SL2Z :
   ⟨fun hc _ hγ ↦ by simpa using hc _ hγ, fun hc ↦ match c.exists_mem_SL2 ℤ with
     | ⟨γ, hγ⟩ => c.isZeroAt_iff_exists_SL2Z.mpr ⟨γ, hγ, hc _ hγ⟩⟩
 
-lemma OnePoint.IsBoundedAt.slash :
-    IsBoundedAt c (f ∣[k] (g.map <| algebraMap ℚ ℝ)) k ↔ IsBoundedAt (g • c) f k := by
-  simp only [isBoundedAt_iff_forall_GL2Q]
-  rw [(Equiv.mulLeft g).forall_congr_left]
-  simp [-smul_infty_eq_ite, MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
-
-lemma OnePoint.IsZeroAt.slash :
-    IsZeroAt c (f ∣[k] (g.map <| algebraMap ℚ ℝ)) k ↔ IsZeroAt (g • c) f k := by
-  simp only [isZeroAt_iff_forall_GL2Q]
-  rw [(Equiv.mulLeft g).forall_congr_left]
-  simp [-smul_infty_eq_ite, MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
-
 end IsBoundedAt
 
 section Cusps
@@ -138,9 +126,7 @@ def Cusp (Γ : Subgroup SL(2, ℤ)) := MulAction.orbitRel.Quotient (Γ.map (mapG
 
 /-- Surjection from `SL(2, ℤ) / Γ` to cusps of `Γ`. Mostly useful for showing that `Cusp Γ` is
 finite for finite-index subgroups. -/
--- XXX TODO: Why does this complain if not flagged as `noncomputable`? It looks pretty computable
--- to me.
-noncomputable def cosetToCusp (Γ : Subgroup SL(2, ℤ)) : SL(2, ℤ) ⧸ Γ → Cusp Γ :=
+def cosetToCusp (Γ : Subgroup SL(2, ℤ)) : SL(2, ℤ) ⧸ Γ → Cusp Γ :=
   Quotient.lift fun g ↦ ⟦mapGL ℚ g⁻¹ • ∞⟧ (by
     intro a b hab
     rw [Quotient.eq, MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
