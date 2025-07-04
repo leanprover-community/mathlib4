@@ -79,7 +79,7 @@ Note that if one of the transformations is an iso, it does not imply the other i
 def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
   toFun α := .mk _ _ _ _ <|
     (rightUnitor _).inv ≫
-    (whiskerLeft (R₁ ⋙ G) adj₂.unit) ≫
+    whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
     (associator _ _ _).hom ≫ whiskerLeft _ (associator _ _ _).inv ≫
     whiskerLeft R₁ (whiskerRight α.natTrans R₂) ≫
     whiskerLeft _ (associator _ _ _).hom ≫ (associator _ _ _).inv ≫
@@ -343,9 +343,10 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv)
     (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   have vcompd := congr_app vcomp d
-  dsimp [mateEquiv, vComp, vComp] at vcompd
-  simp only [hComp_app, id_obj, comp_app, comp_obj, leftUnitor_hom_app, rightUnitor_inv_app,
-    comp_id, id_comp, Functor.id_map, map_comp, Functor.comp_map, assoc] at vcompd ⊢
+  simp only [comp_obj, id_obj, mateEquiv_apply, comp_app, rightUnitor_inv_app,
+    Functor.whiskerLeft_app, associator_hom_app, associator_inv_app, Functor.whiskerRight_app,
+    hComp_app, leftUnitor_hom_app, comp_id, id_comp, Functor.id_map, map_comp, Functor.comp_map,
+    assoc, whiskerRight_comp, whiskerLeft_comp, vComp_app, map_id] at vcompd ⊢
   rw [vcompd]
 
 @[simp]

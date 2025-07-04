@@ -149,7 +149,7 @@ theorem lowerCentralSeries_map_eq_lcs : (lowerCentralSeries R L N k).map N.incl 
   rw [lowerCentralSeries_eq_lcs_comap, LieSubmodule.map_comap_incl, inf_eq_right]
   apply lcs_le_self
 
-theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot:
+theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot :
     lowerCentralSeries R L N k = ⊥ ↔ lcs k N = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← N.lowerCentralSeries_map_eq_lcs, ← LieModuleHom.le_ker_iff_map]
