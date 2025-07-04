@@ -32,7 +32,7 @@ lemma fderivWithin_restrictScalars_comp
   simp only [← restrictScalarsLinear_apply]
   rw [fderiv_comp_fderivWithin _ (by fun_prop) (h.restrictScalars 𝕜) hs, ContinuousLinearMap.fderiv]
   ext a b
-  simp [h.fderivWithin_restrictScalars 𝕜 hs]
+  simp [h.restrictScalars_fderivWithin 𝕜 hs]
 
 /--
 If `f` is `n` times continuously differentiable at `x` within `s`, then the `n`th iterated Fréchet
