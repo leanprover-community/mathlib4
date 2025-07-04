@@ -269,7 +269,7 @@ theorem obj_zero_map_μ_app {m : M} {X Y : C} (f : X ⟶ (F.obj m).obj Y) [F.Mon
   simp
 
 @[simp]
-theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) [F.Monoidal]:
+theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) [F.Monoidal] :
     (μ F (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫ (μ F m₁ (𝟙_ M ⊗ m₂)).app X ≫
     (F.map (α_ m₁ (𝟙_ M) m₂).inv).app X ≫ (δ F (m₁ ⊗ 𝟙_ M) m₂).app X =
     (μ F (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
