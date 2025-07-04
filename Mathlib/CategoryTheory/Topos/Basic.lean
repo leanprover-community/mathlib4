@@ -69,10 +69,8 @@ def ε_dinaturality {B C : ℰ} (h : B ⟶ C) :
     for `h` and `h'` respectively stacked atop of each other on the right. -/
 lemma P_compose {B C D : ℰ} (h : B ⟶ C) (h' : C ⟶ D) :
     P_morph (h ≫ h') = P_morph h' ≫ P_morph h :=
-  let comm_left : (h ⨯𝟙) ≫ (𝟙⨯ (P_morph h')) =
-      (𝟙⨯ (P_morph h')) ≫ (h ⨯𝟙) := by simp
-  let comm_outer : (h ⨯𝟙) ≫ (h' ⨯𝟙) ≫ ε_ D =
-      (𝟙⨯ (P_morph h')) ≫ (𝟙⨯ (P_morph h)) ≫ ε_ B :=
+  let comm_left : (h ⨯𝟙) ≫ (𝟙⨯ (P_morph h')) = (𝟙⨯ (P_morph h')) ≫ (h ⨯𝟙) := by simp
+  let comm_outer : (h ⨯𝟙) ≫ (h' ⨯𝟙) ≫ ε_ D = (𝟙⨯ (P_morph h')) ≫ (𝟙⨯ (P_morph h)) ≫ ε_ B :=
     by rw [ε_dinaturality h', ← assoc, comm_left, assoc, ε_dinaturality h]
   let eq : (𝟙⨯ (P_morph h')) ≫ (𝟙⨯ (P_morph h)) ≫ ε_ B =
       (𝟙⨯ P_morph h' ≫ P_morph h) ≫ ε_ B := by rw [← assoc, prod.map_id_comp]
