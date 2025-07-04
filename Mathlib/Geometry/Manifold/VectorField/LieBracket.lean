@@ -291,10 +291,22 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (f • W) s x =
       (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
-  simp [mlieBracketWithin]
-  simp [mfderivWithin_eq_fderivWithin]
-  rw [lieBracketWithin_smul_right]
+  simp only [mlieBracketWithin]
+  -- simp only [mlieBracketWithin, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+  --   ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+  --   PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+  --   ModelWithCorners.toPartialEquiv_coe_symm]
+  rw [mpullbackWithin_smul]
+  set V' := (mpullbackWithin 𝓘(𝕜, E) I (↑(extChartAt I x).symm) V (range I))
+  set W' := (mpullbackWithin 𝓘(𝕜, E) I (↑(extChartAt I x).symm) W (range I))
+  -- idea: rewrite by lieBracketWithin_smul_right
+  -- recognise the terms on the rhs, done
+  let aux := lieBracketWithin_smul_right (V := V') (W := W')
+  --simp [mfderivWithin_eq_fderivWithin]
+  --rw [lieBracketWithin_smul_right]
   sorry
+
+#exit
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
