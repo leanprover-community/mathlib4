@@ -258,7 +258,7 @@ lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
-  simp [fst_def, ← MonoidalCategory.whiskerLeft_comp_assoc]
+  simp [fst_def, ← whiskerLeft_comp_assoc]
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_snd (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ snd _ _ = snd _ _ ≫ f := by
@@ -270,7 +270,7 @@ lemma whiskerRight_fst {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ fst _ _ = f
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_snd {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ snd _ _ = snd _ _ := by
-  simp [snd_def, ← MonoidalCategory.comp_whiskerRight_assoc]
+  simp [snd_def, ← comp_whiskerRight_assoc]
 
 @[reassoc (attr := simp)]
 lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
@@ -302,7 +302,7 @@ lemma lift_whiskerLeft {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Z ⟶ W) :
 lemma associator_hom_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ fst _ _ = fst _ _ ≫ fst _ _ := by
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
-    ← MonoidalCategory.whiskerLeft_comp_assoc]
+    ← whiskerLeft_comp_assoc]
 
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_fst (X Y Z : C) :
@@ -313,13 +313,13 @@ lemma associator_hom_snd_fst (X Y Z : C) :
 lemma associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ snd _ _ = snd _ _ := by
   simp [snd_def, ← leftUnitor_whiskerRight_assoc, -leftUnitor_whiskerRight,
-    ← MonoidalCategory.comp_whiskerRight_assoc]
+    ← comp_whiskerRight_assoc]
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ fst _ _ = fst _ _ := by
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
-    ← MonoidalCategory.whiskerLeft_comp_assoc]
+    ← whiskerLeft_comp_assoc]
 
 @[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
 @[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
@@ -333,7 +333,7 @@ lemma associator_inv_fst_snd (X Y Z : C) :
 lemma associator_inv_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ snd _ _ = snd _ _ ≫ snd _ _ := by
   simp [snd_def, ← leftUnitor_whiskerRight_assoc, -leftUnitor_whiskerRight,
-    ← MonoidalCategory.comp_whiskerRight_assoc]
+    ← comp_whiskerRight_assoc]
 
 @[reassoc (attr := simp)]
 lemma lift_lift_associator_hom {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :

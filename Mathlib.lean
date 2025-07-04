@@ -1585,6 +1585,7 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.JointEigenspace
+import Mathlib.Analysis.InnerProductSpace.Laplacian
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearMap
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
@@ -2280,6 +2281,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
@@ -4747,6 +4749,7 @@ import Mathlib.Order.Category.Preord
 import Mathlib.Order.Category.Semilat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
+import Mathlib.Order.Circular.ZMod
 import Mathlib.Order.Closure
 import Mathlib.Order.Cofinal
 import Mathlib.Order.CompactlyGenerated.Basic
