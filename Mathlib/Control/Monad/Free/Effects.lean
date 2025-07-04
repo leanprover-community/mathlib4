@@ -34,7 +34,6 @@ Free monad, state monad, writer monad, continuation monad
 
 namespace FreeM
 universe u v w w' w''
-variable {F : Type u → Type v} {ι : Type u} {α : Type w} {β : Type w'} {γ : Type w''}
 
 /-! ### State Monad via `FreeM` -/
 
@@ -49,11 +48,12 @@ inductive StateF (σ : Type u) : Type u → Type u where
 abbrev FreeState (σ : Type u) := FreeM (StateF σ)
 
 namespace FreeState
+variable {σ : Type u}
 
-instance {σ : Type u} : Monad (FreeState σ) := inferInstance
-instance {σ : Type u} : LawfulMonad (FreeState σ) := inferInstance
+instance : Monad (FreeState σ) := inferInstance
+instance : LawfulMonad (FreeState σ) := inferInstance
 
-instance {σ : Type u} : MonadStateOf σ (FreeState σ) where
+instance : MonadStateOf σ (FreeState σ) where
   get := .lift .get
   set newState := .liftBind (.set newState) (fun _ => .pure PUnit.unit)
   modifyGet f :=
@@ -62,32 +62,16 @@ instance {σ : Type u} : MonadStateOf σ (FreeState σ) where
       .liftBind (.set s') (fun _ => .pure a))
 
 @[simp]
-lemma get_def {σ : Type u} : (get : FreeState σ σ) = .lift .get := rfl
+lemma get_def : (get : FreeState σ σ) = .lift .get := rfl
 
 @[simp]
-lemma set_def {σ : Type u} (s : σ) :
+lemma set_def (s : σ) :
   (set s : FreeState σ PUnit) = .liftBind (.set s) (fun _ => .pure PUnit.unit) := rfl
 
-instance {σ : Type u} : MonadState σ (FreeState σ) := inferInstance
-
-@[simp]
-lemma bind_pure {α β : Type u} (a : α) (f : α → FreeM F β) :
-    .pure a >>= f = f a := rfl
-
-@[simp] lemma map_pure {α β : Type u} (f : α → β) (a : α) :
-    f <$> (.pure a : FreeM F α) = .pure (f a) := rfl
-
-@[simp]
-lemma bind_liftBind {α β γ : Type u} (op : F α) (cont : α → FreeM F β)
-  (f : β → FreeM F γ) :
-    liftBind op cont >>= f = liftBind op (fun x => cont x >>= f) := rfl
-
-@[simp]
-lemma map_liftBind {α β γ : Type u} (f : β → γ) (op : F α) (cont : α → FreeM F β) :
-    f <$> liftBind op cont = liftBind op fun x => f <$> cont x := rfl
+instance : MonadState σ (FreeState σ) := inferInstance
 
 /-- Interpret `StateF` operations into `StateM`. -/
-def stateInterp {σ : Type u} : {α : Type u} → StateF σ α → StateM σ α
+def stateInterp : {α : Type u} → StateF σ α → StateM σ α
   | _, .get => MonadStateOf.get
   | _, .set s => MonadStateOf.set s
 
@@ -170,9 +154,10 @@ end FreeState
 
 /--
 Type constructor for writer operations. Writer has a single effect, so the definition has just one
-constructor, `tell`, which writes a value to the log.
+constructor.
 -/
-inductive WriterF (ω : Type u) : Type u → Type u
+inductive WriterF (ω : Type u) : Type v → Type u
+  /-- Write a value to the log. -/
   | tell : ω → WriterF ω PUnit
 
 /-- Writer monad implemented via the `FreeM` monad construction. This provides a more efficient
@@ -182,71 +167,69 @@ abbrev FreeWriter (ω : Type u) := FreeM (WriterF ω)
 namespace FreeWriter
 
 open WriterF
+variable {ω : Type u} {α : Type v}
 
-instance {ω : Type u} : Monad (FreeWriter ω) := inferInstance
-instance {ω : Type u} : LawfulMonad (FreeWriter ω) := inferInstance
+instance : Monad (FreeWriter ω) := inferInstance
+instance : LawfulMonad (FreeWriter ω) := inferInstance
 
 /-- Interpret `WriterF` operations into `WriterT`. -/
-def writerInterp {ω : Type u} : {α : Type u} → WriterF ω α → WriterT ω Id α
-  | _, .tell w => MonadWriter.tell w
+def writerInterp {α : Type u} : WriterF ω α → WriterT ω Id α
+  | .tell w => MonadWriter.tell w
 
 /-- Convert a `FreeWriter` computation into a `WriterT` computation. This is the canonical
 interpreter derived from `liftM`. -/
-def toWriterT {ω α : Type u} [Monoid ω] (comp : FreeWriter ω α) : WriterT ω Id α :=
+def toWriterT {α : Type u} [Monoid ω] (comp : FreeWriter ω α) : WriterT ω Id α :=
   comp.liftM writerInterp
 
 /-- `toWriterT` is the unique interpreter extending `writerInterp`. -/
-theorem toWriterT_unique {ω α : Type u} [Monoid ω] (g : FreeWriter ω α → WriterT ω Id α)
+theorem toWriterT_unique {α : Type u} [Monoid ω] (g : FreeWriter ω α → WriterT ω Id α)
     (h : ExtendsHandler writerInterp g) : g = toWriterT := h.eq
 
 /--
 Writes a log entry. This creates an effectful node in the computation tree.
 -/
-def tell {ω : Type u} (w : ω) : FreeWriter ω PUnit :=
+abbrev tell (w : ω) : FreeWriter ω PUnit :=
   lift (.tell w)
 
 @[simp]
-lemma tell_def {ω : Type u} (w : ω) :
+lemma tell_def (w : ω) :
     tell w = .lift (.tell w) := rfl
 
 /--
 Interprets a `FreeWriter` computation by recursively traversing the tree, accumulating
 log entries with the monoid operation, and returns the final value paired with the accumulated log.
 -/
-def run {ω : Type u} [Monoid ω] {α} : FreeWriter ω α → α × ω
+def run [Monoid ω] : FreeWriter ω α → α × ω
   | .pure a => (a, 1)
   | .liftBind (.tell w) k =>
       let (a, w') := run (k .unit)
       (a, w * w')
+
+@[simp]
+lemma run_pure [Monoid ω] (a : α) :
+    run (.pure a : FreeWriter ω α) = (a, 1) := rfl
+
+@[simp]
+lemma run_liftBind_tell [Monoid ω] (w : ω) (k : PUnit → FreeWriter ω α) :
+    run (liftBind (.tell w) k) = (let (a, w') := run (k .unit); (a, w * w')) := rfl
 
 /--
 The canonical interpreter `toWriterT` derived from `liftM` agrees with the hand-written
 recursive interpreter `run` for `FreeWriter`.
 -/
 @[simp]
-theorem toWriterT_eq_run {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
-    toWriterT comp = run comp := by
-  induction' comp with a b op cont ih
-  · simp only [toWriterT, FreeM.liftM, pure, run, WriterT.run]
-  · simp only [toWriterT, FreeM.liftM] at *
-    rcases op
-    simp only [run] at *
-    rw [←ih PUnit.unit]
+theorem toWriterT_eq_run {α: Type u} [Monoid ω] : ∀ comp : FreeWriter ω α, toWriterT comp = run comp
+  | .pure _ => by simp only [toWriterT, liftM_pure, run_pure, pure]
+  | liftBind (.tell w) cont => by
+    simp only [toWriterT, liftM_liftBind, run_liftBind_tell] at *
+    rw [← toWriterT_eq_run]
     congr
-
-@[simp]
-lemma run_pure {ω : Type u} [Monoid ω] {α} (a : α) :
-    run (.pure a : FreeWriter ω α) = (a, 1) := rfl
-
-@[simp]
-lemma run_liftBind_tell {ω : Type u} [Monoid ω] {α} (w : ω) (k : PUnit → FreeWriter ω α) :
-    run (liftBind (.tell w) k) = (let (a, w') := run (k .unit); (a, w * w')) := rfl
 
 /--
 `listen` captures the log produced by a subcomputation incrementally. It traverses the computation,
 emitting log entries as encountered, and returns the accumulated log as a result.
 -/
-def listen {ω : Type u} [Monoid ω] {α : Type v} : FreeWriter ω α → FreeWriter ω (α × ω)
+def listen [Monoid ω] : FreeWriter ω α → FreeWriter ω (α × ω)
   | .pure a => .pure (a, 1)
   | .liftBind (.tell w) k =>
       liftBind (.tell w) fun _ =>
@@ -254,11 +237,11 @@ def listen {ω : Type u} [Monoid ω] {α : Type v} : FreeWriter ω α → FreeWr
           pure (a, w * w')
 
 @[simp]
-lemma listen_pure {ω : Type u} [Monoid ω] {α} (a : α) :
+lemma listen_pure [Monoid ω] (a : α) :
     listen (.pure a : FreeWriter ω α) = .pure (a, 1) := rfl
 
 @[simp]
-lemma listen_liftBind_tell {ω : Type u} [Monoid ω] {α} (w : ω)
+lemma listen_liftBind_tell [Monoid ω] (w : ω)
     (k : PUnit → FreeWriter ω α) :
     listen (liftBind (.tell w) k) =
       liftBind (.tell w) (fun _ =>
@@ -271,15 +254,15 @@ lemma listen_liftBind_tell {ω : Type u} [Monoid ω] {α} (w : ω)
 accumulating its log, the resulting function is applied to rewrite the accumulated log
 before re-emission.
 -/
-def pass {ω : Type u} [Monoid ω] {α} (m : FreeWriter ω (α × (ω → ω))) : FreeWriter ω α :=
+def pass [Monoid ω] (m : FreeWriter ω (α × (ω → ω))) : FreeWriter ω α :=
   let ((a, f), w) := run m
   liftBind (.tell (f w)) (fun _ => .pure a)
 
 @[simp]
-lemma pass_def {ω : Type u} [Monoid ω] {α} (m : FreeWriter ω (α × (ω → ω))) :
+lemma pass_def [Monoid ω] (m : FreeWriter ω (α × (ω → ω))) :
     pass m = let ((a, f), w) := run m; liftBind (.tell (f w)) fun _ => .pure a := rfl
 
-instance {ω : Type u} [Monoid ω] : MonadWriter ω (FreeWriter ω) where
+instance [Monoid ω] : MonadWriter ω (FreeWriter ω) where
   tell := tell
   listen := listen
   pass := pass
@@ -287,14 +270,12 @@ instance {ω : Type u} [Monoid ω] : MonadWriter ω (FreeWriter ω) where
 /--
 Evaluate a writer computation, returning the final result and discarding the log.
 -/
-def eval {ω : Type u} [Monoid ω] {α : Type v} (comp : FreeWriter ω α) : α :=
-  (run comp).1
+def eval [Monoid ω] (comp : FreeWriter ω α) : α := (run comp).1
 
 /--
 Execute a writer computation, returning only the accumulated log and discarding the result.
 -/
-def exec {ω : Type u} {α : Type v} [Monoid ω] (comp : FreeWriter ω α) : ω :=
-  (run comp).2
+def exec [Monoid ω] (comp : FreeWriter ω α) : ω := (run comp).2
 
 end FreeWriter
 
@@ -313,25 +294,26 @@ instance {r : Type u} : Functor (ContF r) where
 abbrev FreeCont (r : Type u) := FreeM (ContF r)
 
 namespace FreeCont
+variable {r : Type u} {α : Type v} {β : Type w}
 
-instance {r : Type u} : Monad (FreeCont r) := inferInstance
-instance {r : Type u} : LawfulMonad (FreeCont r) := inferInstance
+instance : Monad (FreeCont r) := inferInstance
+instance : LawfulMonad (FreeCont r) := inferInstance
 
 /-- Interpret `ContF r` operations into `ContT r Id`. -/
-def contInterp {r : Type u} {α : Type v} : ContF r α → ContT r Id α
+def contInterp : ContF r α → ContT r Id α
   | .callCC g, k => pure (g fun a => (k a).run)
 
 /-- Convert a `FreeCont` computation into a `ContT` computation. This is the canonical
 interpreter derived from `liftM`. -/
-def toContT {r α : Type u} (comp : FreeCont r α) : ContT r Id α :=
+def toContT {α : Type u} (comp : FreeCont r α) : ContT r Id α :=
   comp.liftM contInterp
 
 /-- `toContT` is the unique interpreter extending `contInterp`. -/
-theorem toContT_unique {r α : Type u} (g : FreeCont r α → ContT r Id α)
+theorem toContT_unique {α : Type u} (g : FreeCont r α → ContT r Id α)
     (h : ExtendsHandler contInterp g) : g = toContT := h.eq
 
 /-- Run a continuation computation with the given continuation. -/
-def run {r : Type u} {α : Type v} : FreeCont r α → (α → r) → r
+def run : FreeCont r α → (α → r) → r
   | .pure a, k => k a
   | .liftBind (.callCC g) cont, k => g (fun a => run (cont a) k)
 
@@ -340,7 +322,7 @@ The canonical interpreter `toContT` derived from `liftM` agrees with the hand-wr
 recursive interpreter `run` for `FreeCont`.
 -/
 @[simp]
-theorem toContT_eq_run {r α : Type u} (comp : FreeCont r α) (k : α → r) :
+theorem toContT_eq_run {α : Type u} (comp : FreeCont r α) (k : α → r) :
     toContT comp k = run comp k := by
   induction comp with
   | pure a => rfl
@@ -352,32 +334,31 @@ theorem toContT_eq_run {r α : Type u} (comp : FreeCont r α) (k : α → r) :
     apply ih
 
 @[simp]
-lemma run_pure {r : Type u} {α : Type v} (a : α) (k : α → r) :
+lemma run_pure (a : α) (k : α → r) :
     run (.pure a : FreeCont r α) k = k a := rfl
 
 @[simp]
-lemma run_liftBind_callCC {r : Type u} {α β : Type v} (g : (α → r) → r)
+lemma run_liftBind_callCC (g : (α → r) → r)
     (cont : α → FreeCont r β) (k : β → r) :
     run (liftBind (.callCC g) cont) k = g (fun a => run (cont a) k) := rfl
 
 /-- Call with current continuation for the Free continuation monad. -/
-def callCC {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
+def callCC (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
     FreeCont r α :=
   liftBind (.callCC fun k => run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k) pure
 
 @[simp]
-lemma callCC_def {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
+lemma callCC_def (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
     callCC f =
-    liftBind (.callCC fun k => run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k) pure :=
+      liftBind (.callCC fun k => run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k) pure :=
   rfl
 
-instance {r : Type u} : MonadCont (FreeCont r) where
+instance : MonadCont (FreeCont r) where
   callCC := .callCC
 
 /-- `run` of a `callCC` node simplifies to running the handler with the current continuation. -/
 @[simp]
-lemma run_callCC {r : Type u} {α β : Type v}
-    (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) (k : α → r) :
+lemma run_callCC (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) (k : α → r) :
   run (callCC f) k = run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k := by
   simp [callCC, run_liftBind_callCC]
 
