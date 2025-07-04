@@ -555,7 +555,10 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
     rw [ae_all_iff]
     exact fun n => (hf n).ae_eq_mk
   filter_upwards [hfg, h_ae_forall_eq, hg.1.ae_eq_mk] with x hx_tendsto hxf_eq hxg_eq
-  grind
+  rw [← hxg_eq]
+  convert hx_tendsto using 1
+  ext1 n
+  exact (hxf_eq n).symm
 
 variable {f : ℕ → α → β} {g : α → β}
 
