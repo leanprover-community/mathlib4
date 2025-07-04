@@ -1161,7 +1161,7 @@ def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
 noncomputable alias isoH0 := H0Iso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H0Iso_hom  :
+lemma π_comp_H0Iso_hom :
     π A 0 ≫ (H0Iso A).hom = (cocyclesIso₀ A).hom := by
   simp [H0Iso]
 
@@ -1254,7 +1254,7 @@ def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
 noncomputable alias isoH1 := H1Iso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H1Iso_hom  :
+lemma π_comp_H1Iso_hom :
     π A 1 ≫ (H1Iso A).hom = (isoCocycles₁ A).hom ≫
       (shortComplexH1 A).moduleCatLeftHomologyData.π := by
   simp [H1Iso, isoCocycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
@@ -1348,7 +1348,7 @@ def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
 noncomputable alias isoH2 := H2Iso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H2Iso_hom  :
+lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCocycles₂ A).hom ≫
       (shortComplexH2 A).moduleCatLeftHomologyData.π := by
   simp [H2Iso, isoCocycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]

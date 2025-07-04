@@ -196,7 +196,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
   neg_mem' {f} hf := by
     simp_all
 
-protected lemma memAddSubgroup  [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+protected lemma memAddSubgroup [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
     (D : X → Y) ∈ locallyFinsuppWithin.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 

@@ -426,7 +426,7 @@ variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
 /-- The canonical equivalence between the tangent bundle of a product and the product of
 tangent bundles is smooth. -/
-lemma contMDiff_equivTangentBundleProd  :
+lemma contMDiff_equivTangentBundleProd :
     ContMDiff (I.prod I').tangent (I.tangent.prod I'.tangent) n
       (equivTangentBundleProd I M I' M') := by
   rw [equivTangentBundleProd_eq_tangentMap_prod_tangentMap]
