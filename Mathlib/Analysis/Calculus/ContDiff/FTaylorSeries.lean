@@ -698,7 +698,7 @@ theorem hasFTaylorSeriesUpToOn_univ_iff :
       rw [← hasFDerivWithinAt_univ]
       exact H.fderivWithin m hm x (mem_univ x)
     · intro m hm
-      rw [continuousOn_univ]
+      rw [← continuousOn_univ]
       exact H.cont m hm
   · intro H
     constructor
@@ -707,7 +707,7 @@ theorem hasFTaylorSeriesUpToOn_univ_iff :
       rw [hasFDerivWithinAt_univ]
       exact H.fderiv m hm x
     · intro m hm
-      rw [← continuousOn_univ]
+      rw [continuousOn_univ]
       exact H.cont m hm
 
 theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n f p) (s : Set E) :
@@ -723,7 +723,7 @@ alias HasFTaylorSeriesUpTo.ofLe := HasFTaylorSeriesUpTo.of_le
 
 theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
-  rw [continuousOn_univ]
+  rw [← continuousOn_univ]
   exact h.continuousOn
 
 theorem hasFTaylorSeriesUpTo_zero_iff :
