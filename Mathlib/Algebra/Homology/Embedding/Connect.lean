@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-!
 # Connecting a chain complex and a cochain complex
@@ -109,6 +109,63 @@ def cochainComplex : CochainComplex C ℤ where
   X := X K L
   d := h.d
   shape := h.shape
+
+open HomologicalComplex
+
+/-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `L` in degrees `≥ 0`. -/
+@[simps!]
+def restrictionGEIso :
+    h.cochainComplex.restriction (ComplexShape.embeddingUpIntGE 0) ≅ L :=
+  Hom.isoOfComponents
+    (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntGE 0)
+      (i := n) (i' := n) (by simp)) (by
+    rintro n _ rfl
+    dsimp only
+    rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntGE 0)) _ (i' := n)
+      (j' := (n + 1 : ℕ)) (by simp) (by simp), cochainComplex_d, h.d_ofNat]
+    simp)
+
+/-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `K` in degrees `≤ -1`. -/
+@[simps!]
+def restrictionLEIso :
+    h.cochainComplex.restriction (ComplexShape.embeddingUpIntLE (-1)) ≅ K :=
+  Hom.isoOfComponents
+    (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntLE (-1))
+        (i := n) (i' := .negSucc n) (by dsimp; omega)) (by
+    rintro _ n rfl
+    dsimp only
+    rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntLE (-1))) _
+      (i' := Int.negSucc (n + 1)) (j' := Int.negSucc n) (by dsimp; omega) (by dsimp; omega),
+      cochainComplex_d, d_negSucc]
+    simp)
+
+/-- Given `h : ConnectData K L` and `n : ℕ`, the homology
+of `h.cochainComplex` in degree `n + 1` identifies to the homology of `L` in degree `n + 1`. -/
+noncomputable def homologyIsoPos (n : ℕ) (m : ℤ)
+    [h.cochainComplex.HasHomology m] [L.HasHomology (n + 1)]
+    (hm : m = (n + 1 : ℕ)) :
+    h.cochainComplex.homology m ≅ L.homology (n + 1) :=
+  have := hasHomology_of_iso h.restrictionGEIso.symm (n + 1)
+  (h.cochainComplex.restrictionHomologyIso
+    (ComplexShape.embeddingUpIntGE 0) n (n + 1) (n + 2) (by simp) (by simp)
+      (i' := m - 1) (j' := m) (k' := m + 1) (by simp; omega) (by simp; omega)
+      (by simp; omega) (by simp) (by simp)).symm ≪≫
+    HomologicalComplex.homologyMapIso h.restrictionGEIso (n + 1)
+
+/-- Given `h : ConnectData K L` and `n : ℕ`, the homology
+of `h.cochainComplex` in degree `-(n + 2)` identifies to the homology of `K` in degree `n + 1`. -/
+noncomputable def homologyIsoNeg (n : ℕ) (m : ℤ)
+    [h.cochainComplex.HasHomology m] [K.HasHomology (n + 1)]
+    (hm : m = -(n + 2 : ℕ)) :
+    h.cochainComplex.homology m ≅ K.homology (n + 1) :=
+  have := hasHomology_of_iso h.restrictionLEIso.symm (n + 1)
+  (h.cochainComplex.restrictionHomologyIso
+    (ComplexShape.embeddingUpIntLE (-1)) (n + 2) (n + 1) n (by simp) (by simp)
+      (i' := m - 1) (j' := m) (k' := m + 1)
+      (by simp; omega) (by simp; omega) (by simp; omega) (by simp) (by simp)).symm ≪≫
+    HomologicalComplex.homologyMapIso h.restrictionLEIso (n + 1)
+
+-- TODO: Study `h.cochainComplex.homology k` when `k = 0` or `k = -1`.
 
 end ConnectData
 
