@@ -85,6 +85,8 @@ lemma Int.univ_addEquiv :
     (Finset.univ : Finset (ℤ ≃+ ℤ)) = .cons (.neg ℤ) {.refl ℤ} (by simp [AddEquiv.ext_int_iff]) :=
   rfl
 
+@[simp] lemma Int.card_fintype_addEquiv : Fintype.card (ℤ ≃+ ℤ) = 2 := by simp [Fintype.card]
+
 instance : Unique (ℤ ≃+o ℤ) where
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <|
     Int.addEquiv_eq_refl_or_neg e |>.resolve_right fun H => by
