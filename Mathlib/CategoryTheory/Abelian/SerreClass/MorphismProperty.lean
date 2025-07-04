@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.MorphismProperty.Retract
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # The class of isomorphisms modulo a Serre class
