@@ -291,16 +291,57 @@ lemma mlieBracketWithin_const_smul_left
   · exact hV.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-@[deprecated (since := "2025-07-04")]
-alias mlieBracketWithin_smul_left := mlieBracketWithin_const_smul_left
+/--
+Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
+`f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`. Version within a set.
+-/
+lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x)
+    (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
+    (hs : UniqueMDiffWithinAt I s x) :
+    mlieBracketWithin I V (f • W) s x =
+      (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
+  sorry
+
+/--
+Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
+`f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
+-/
+lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
+    (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
+    mlieBracket I V (f • W) x =
+      (mfderiv I 𝓘(𝕜) f x) (V x) • (W x) + (f x) • mlieBracket I V W x := by
+  rw [← mdifferentiableWithinAt_univ] at hf hV
+  rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
+  exact mlieBracketWithin_smul_right hf hV (uniqueMDiffWithinAt_univ I)
+
+/--
+Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
+`f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`. Version within a set.
+-/
+lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x)
+    (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
+    (hs : UniqueMDiffWithinAt I s x) :
+    mlieBracketWithin I (f • V) W s x =
+      -(mfderivWithin I 𝓘(𝕜) f s x) (W x) • (V x) + (f x) • mlieBracketWithin I V W s x := by
+  sorry
+
+/--
+Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
+`f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`.
+-/
+lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
+    (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
+    mlieBracket I (f • V) W x =
+      -(mfderiv I 𝓘(𝕜) f x) (W x) • (V x) + (f x) • mlieBracket I V W x := by
+  rw [← mdifferentiableWithinAt_univ] at hf hV
+  rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
+  exact mlieBracketWithin_smul_left hf hV (uniqueMDiffWithinAt_univ I)
 
 lemma mlieBracket_const_smul_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (c • V) W x = c • mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ] at hV ⊢
   exact mlieBracketWithin_const_smul_left hV (uniqueMDiffWithinAt_univ _)
-
-@[deprecated (since := "2025-07-04")] alias mlieBracket_smul_left := mlieBracket_const_smul_left
 
 lemma mlieBracketWithin_const_smul_right
     (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
@@ -311,16 +352,13 @@ lemma mlieBracketWithin_const_smul_right
   · exact hW.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-@[deprecated (since := "2025-07-04")]
-alias mlieBracketWithin_smul_right := mlieBracketWithin_const_smul_right
-
 lemma mlieBracket_const_smul_right
     (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :
     mlieBracket I V (c • W) x = c • mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ] at hW ⊢
   exact mlieBracketWithin_const_smul_right hW (uniqueMDiffWithinAt_univ _)
 
-@[deprecated (since := "2025-07-04")] alias mlieBracket_smul_right := mlieBracket_const_smul_right
+#exit
 
 lemma mlieBracketWithin_add_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
