@@ -1279,7 +1279,7 @@ def H1IsoOfIsTrivial :
 noncomputable alias H1LequivOfIsTrivial := H1IsoOfIsTrivial
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem H1π_comp_H1IsoOfIsTrivial_hom:
+theorem H1π_comp_H1IsoOfIsTrivial_hom :
     H1π A ≫ (H1IsoOfIsTrivial A).hom = (cocycles₁IsoOfIsTrivial A).hom := by
   simp [H1IsoOfIsTrivial, H1π]
 
