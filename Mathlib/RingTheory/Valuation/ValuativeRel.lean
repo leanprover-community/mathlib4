@@ -500,8 +500,10 @@ def ofValuation
 lemma _root_.Valuation.Compatible.ofValuation
     {S Γ : Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero Γ]
-    (v : Valuation S Γ) : @Valuation.Compatible _ _ _ _ v (.ofValuation v) := by
-  letI := ValuativeRel.ofValuation v
+    (v : Valuation S Γ) :
+    letI := ValuativeRel.ofValuation v  -- letI so that instance is inlined directly in declaration
+    Valuation.Compatible v := by
+  let := ValuativeRel.ofValuation v
   exact ⟨fun _ _ ↦ Iff.rfl⟩
 
 lemma isEquiv {Γ₁ Γ₂ : Type*}
