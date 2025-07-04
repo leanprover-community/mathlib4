@@ -292,12 +292,6 @@ theorem Subalgebra.val_comp_inclusion {R : Type*} [CommSemiring R] {S : Type*} [
     [Algebra R S] {A B : Subalgebra R S} (h : A ≤ B) :
   (Subalgebra.val B).comp (Subalgebra.inclusion h) = Subalgebra.val A := rfl
 
-def Algebra.toAlgHom (R : Type*) [CommSemiring R]
-    (S : Type*) [Semiring S] [Algebra R S] :
-    R →ₐ[R] S where
-  toRingHom := algebraMap R S
-  commutes' := fun _ ↦ rfl
-
 theorem AlgEquiv.self_trans_symm_eq_refl
   {R S S' : Type*} [CommSemiring R] [Semiring S] [Semiring S']
   [Algebra R S] [Algebra R S'] (e : S ≃ₐ[R] S') :
@@ -626,7 +620,7 @@ variable {R : Type u} [CommSemiring R]
 theorem isCompat_apply'_ground {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   simp only [ground]
-  convert f.isCompat_apply' (Algebra.toAlgHom R S) (1 ⊗ₜ[R] x)
+  convert f.isCompat_apply' (Algebra.ofId R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
     congr
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
@@ -634,7 +628,7 @@ theorem isCompat_apply'_ground {S : Type u} [CommSemiring S] [Algebra R S] (x : 
 theorem isCompat_apply_ground (S : Type*) [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun S) (1 ⊗ₜ x) := by
   simp only [ground, ← toFun_eq_toFun']
-  convert f.isCompat_apply (Algebra.toAlgHom R S) (1 ⊗ₜ[R] x)
+  convert f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
     congr
   · rw [rTensor_tmul, toLinearMap_apply, _root_.map_one]
