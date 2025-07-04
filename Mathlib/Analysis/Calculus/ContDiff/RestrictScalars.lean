@@ -23,11 +23,13 @@ variable
 
 open ContinuousMultilinearMap Topology
 
-private lemma fderivWithin_restrictScalarsLinear_comp
+/-- Derviation rule for compositions of scalar restriction with continuous multilinear maps. -/
+lemma fderivWithin_restrictScalars_comp
     {φ : E → (ContinuousMultilinearMap 𝕜' (fun _ : Fin n ↦ E) F)}
     (h : DifferentiableWithinAt 𝕜' φ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 ((restrictScalarsLinear 𝕜) ∘ φ) s x
+    fderivWithin 𝕜 ((restrictScalars 𝕜) ∘ φ) s x
       = (restrictScalars 𝕜) ∘ ((fderivWithin 𝕜' φ s x).restrictScalars 𝕜) := by
+  simp only [← restrictScalarsLinear_apply]
   rw [fderiv_comp_fderivWithin _ (by fun_prop) (h.restrictScalars 𝕜) hs, ContinuousLinearMap.fderiv]
   ext a b
   simp [h.fderivWithin_restrictScalars 𝕜 hs]
@@ -58,8 +60,8 @@ theorem ContDiffWithinAt.iteratedFDeriv_restrictScalars_eventuallyEq
     ext m
     simp only [restrictScalarsLinear_apply, Function.comp_apply, coe_restrictScalars,
       iteratedFDerivWithin_succ_apply_left]
-    rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a,
-      fderivWithin_restrictScalarsLinear_comp]
+    rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a, restrictScalarsLinear_apply,
+      fderivWithin_restrictScalars_comp]
     · simp
     · apply h₃a.differentiableWithinAt_iteratedFDerivWithin
       · rw [Nat.cast_lt]
