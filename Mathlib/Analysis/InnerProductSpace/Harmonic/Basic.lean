@@ -88,7 +88,7 @@ theorem HarmonicAt.add (h₁ : HarmonicAt f₁ x) (h₂ : HarmonicAt f₂ x) :
     HarmonicAt (f₁ + f₂) x := by
   constructor
   · exact h₁.1.add h₂.1
-  · filter_upwards [h₁.1.laplacian_add_nhds h₂.1, h₁.2, h₂.2] with a h₁a h₂a h₃a
+  · filter_upwards [h₁.1.laplacian_add_nhds h₂.1, h₁.2, h₂.2]
     simp_all
 
 /--
@@ -104,7 +104,7 @@ theorem HarmonicAt.const_smul (h : HarmonicAt f x) :
     HarmonicAt (c • f) x := by
   constructor
   · exact h.1.const_smul c
-  · filter_upwards [laplacian_smul_nhds c h.1, h.2] with a h₁a h₂a
+  · filter_upwards [laplacian_smul_nhds c h.1, h.2]
     simp_all
 
 /--
