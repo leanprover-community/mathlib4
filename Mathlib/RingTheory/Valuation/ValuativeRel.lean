@@ -502,9 +502,9 @@ lemma _root_.Valuation.Compatible.ofValuation
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) :
     letI := ValuativeRel.ofValuation v  -- letI so that instance is inlined directly in declaration
-    Valuation.Compatible v := by
-  let := ValuativeRel.ofValuation v
-  exact ⟨fun _ _ ↦ Iff.rfl⟩
+    Valuation.Compatible v :=
+  letI := ValuativeRel.ofValuation v
+  ⟨fun _ _ ↦ Iff.rfl⟩
 
 lemma isEquiv {Γ₁ Γ₂ : Type*}
     [LinearOrderedCommMonoidWithZero Γ₁]
