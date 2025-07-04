@@ -44,7 +44,7 @@ open scoped NNReal
 variable (p : ℕ) [hp : Fact (Nat.Prime p)]
 
 /-- `PadicAlg p` is the algebraic closure of `ℚ_[p]`. -/
-@[reducible] def PadicAlg := AlgebraicClosure ℚ_[p]
+abbrev PadicAlg := AlgebraicClosure ℚ_[p]
 
 namespace PadicAlg
 
@@ -74,7 +74,7 @@ instance : IsUltrametricDist (PadicAlg p) :=
   IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm (PadicAlg.isNonarchimedean p)
 
 /-- `PadicAlg p` is a valued field, with the valuation corresponding to the `p`-adic norm. -/
-instance valuedField : Valued (PadicAlg p) ℝ≥0 := NormedField.toValued
+instance valued : Valued (PadicAlg p) ℝ≥0 := NormedField.toValued
 
 /-- The valuation of `x : PadicAlg p` agrees with its `ℝ≥0`-valued norm. -/
 theorem valuation_def (x : PadicAlg p) : Valued.v x = ‖x‖₊ := rfl
@@ -90,45 +90,56 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlg p) = 1 / (
   rw [valuation_coe, spectralNorm_extends, padicNormE.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+/-- The valuation on `PadicAlg p` has rank one. -/
+instance : RankOne (PadicAlg.valued p).v where
+  hom         := MonoidWithZeroHom.id ℝ≥0
+  strictMono' := strictMono_id
+  nontrivial' := by
+    use p
+    haveI hp : Nat.Prime p := hp.1
+    simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
+      Nat.cast_eq_one]
+    exact ⟨hp.ne_zero, hp.ne_one⟩
+
+instance : UniformContinuousConstSMul ℚ_[p] (PadicAlg p) :=
+  uniformContinuousConstSMul_of_continuousConstSMul ℚ_[p] (PadicAlg p)
+
 end PadicAlg
 
 /-- `ℂ_[p]` is the field of `p`-adic complex numbers, that is, the completion of `PadicAlg p` with
 respect to the `p`-adic norm. -/
-def PadicComplex := UniformSpace.Completion (PadicAlg p)
+abbrev PadicComplex := UniformSpace.Completion (PadicAlg p)
 
 /-- `ℂ_[p]` is the field of `p`-adic complex numbers. -/
 notation "ℂ_[" p "]" => PadicComplex p
 
 namespace PadicComplex
-
-/-- The `p`-adic complex numbers have a field structure. -/
-instance : Field ℂ_[p] := UniformSpace.Completion.instField
-
-/-- The `p`-adic complex numbers are inhabited. -/
-instance : Inhabited ℂ_[p] := ⟨0⟩
-
 /-- `ℂ_[p]` is a valued field, where the valuation is the one extending that on `PadicAlg p`. -/
-instance valued : Valued ℂ_[p] ℝ≥0 := Valued.valuedCompletion
-
-/-- `ℂ_[p]` is a complete space. -/
-instance completeSpace : CompleteSpace ℂ_[p] := UniformSpace.Completion.completeSpace _
-
-instance : Coe (PadicAlg p) ℂ_[p] := ⟨UniformSpace.Completion.coe'⟩
+instance valued : Valued ℂ_[p] ℝ≥0 := inferInstance
 
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlg p`. -/
 theorem valuation_extends (x : PadicAlg p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
   Valued.extension_extends _
-
-/-- `ℂ_[p]` is an algebra over `PadicAlg p`. -/
-instance : Algebra (PadicAlg p) ℂ_[p] := UniformSpace.Completion.algebra' _
 
 theorem coe_eq (x : PadicAlg p) : (x : ℂ_[p]) = algebraMap (PadicAlg p) ℂ_[p] x := rfl
 
 theorem coe_zero : ((0 : PadicAlg p) : ℂ_[p]) = 0 := rfl
 
 /-- `ℂ_[p]` is an algebra over `ℚ_[p]`. -/
-instance : Algebra ℚ_[p] ℂ_[p] :=
-  ((algebraMap (PadicAlg p) ℂ_[p]).comp (algebraMap ℚ_[p] (PadicAlg p))).toAlgebra
+instance : Algebra ℚ_[p] ℂ_[p] where
+  smul := (UniformSpace.Completion.instSMul ℚ_[p] (PadicAlg p)).smul
+  algebraMap :=
+    RingHom.comp (UniformSpace.Completion.coeRingHom) (algebraMap ℚ_[p] (PadicAlg p))
+  commutes' r x := by rw [mul_comm]
+  smul_def' r x := by
+    apply UniformSpace.Completion.ext' (continuous_const_smul r) (continuous_mul_left _)
+    intro a
+    have : UniformSpace.Completion.coeRingHom ((algebraMap ℚ_[p] (PadicAlg p)) r) * ↑a =
+       UniformSpace.Completion.coeRingHom ((algebraMap ℚ_[p] (PadicAlg p)) r) *
+       UniformSpace.Completion.coeRingHom a := rfl
+    rw [← UniformSpace.Completion.coe_smul, RingHom.coe_comp, Function.comp_apply,
+      this, ← map_mul, Algebra.smul_def]
+    rfl
 
 instance : IsScalarTower ℚ_[p] (PadicAlg p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
@@ -153,20 +164,19 @@ instance : RankOne (PadicComplex.valued p).v where
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
+lemma rankOne_hom_eq :
+    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlg.valued p).v := rfl
+
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation. -/
-instance C_p.NormedField : NormedField ℂ_[p] :=  Valued.toNormedField _ _
-
-instance : NormedField (UniformSpace.Completion (PadicAlg p)) := C_p.NormedField p
+instance : NormedField ℂ_[p] :=  Valued.toNormedField _ _
 
 theorem norm_def : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
 
 /-- The norm on `ℂ_[p]` extends the norm on `PadicAlg p`. -/
 theorem norm_extends (x : PadicAlg p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
-  by_cases hx : x = 0
-  · rw [hx, coe_zero, norm_zero, norm_zero]
-  · rw [norm_def, Valued.norm, ← coe_nnnorm, ← PadicAlg.valuation_def, ← valuation_extends p x]
-    rfl
+  rw [norm_def, Valued.norm, ← coe_nnnorm, valuation_extends p x, coe_nnnorm]
+  rfl
 
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends that on `PadicAlg p`. -/
 theorem nnnorm_extends (x : PadicAlg p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by ext; exact norm_extends p x
