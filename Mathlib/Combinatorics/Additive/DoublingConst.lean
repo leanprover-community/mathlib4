@@ -103,6 +103,37 @@ lemma mulConst_inv_right (A B : Finset G) : σₘ[A, B⁻¹] = δₘ[A, B] := by
 lemma divConst_inv_right (A B : Finset G) : δₘ[A, B⁻¹] = σₘ[A, B] := by
   rw [mulConst, divConst, div_inv_eq_mul]
 
+@[to_additive]
+lemma one_le_mulConst (hA : A.Nonempty) (hB : B.Nonempty) : 1 ≤ σₘ[A, B] := by
+  rw [mulConst, one_le_div₀]
+  · exact mod_cast card_le_card_mul_right hB
+  · simpa
+
+@[to_additive]
+lemma one_le_mulConst_self (hA : A.Nonempty) : 1 ≤ σₘ[A] := one_le_mulConst hA hA
+
+@[to_additive]
+lemma one_le_divConst (hA : A.Nonempty) (hB : B.Nonempty) : 1 ≤ δₘ[A, B] := by
+  rw [← mulConst_inv_right]
+  apply one_le_mulConst hA (by simpa)
+
+@[to_additive]
+lemma one_le_divConst_self (hA : A.Nonempty) : 1 ≤ δₘ[A] := one_le_divConst hA hA
+
+@[to_additive]
+lemma mulConst_le_card : σₘ[A, B] ≤ #B := by
+  obtain rfl | hA' := A.eq_empty_or_nonempty
+  · simp
+  rw [mulConst, div_le_iff₀' (by positivity)]
+  exact mod_cast card_mul_le
+
+@[to_additive]
+lemma divConst_le_card : δₘ[A, B] ≤ #B := by
+  obtain rfl | hA' := A.eq_empty_or_nonempty
+  · simp
+  rw [divConst, div_le_iff₀' (by positivity)]
+  exact mod_cast card_div_le
+
 section Fintype
 variable [Fintype G]
 
@@ -159,6 +190,22 @@ lemma card_mul_cast_mulConst (A B : Finset G) : (#A * σₘ[A, B] : 𝕜) = #(A 
 lemma card_mul_cast_divConst (A B : Finset G) : (#A * δₘ[A, B] : 𝕜) = #(A / B) := by
   norm_cast; exact card_mul_divConst _ _
 
+/-- If `A` has small doubling, then it has small difference, with the constant squared.
+
+This is a consequence of the Ruzsa triangle inequality. -/
+@[to_additive
+"If `A` has small doubling, then it has small difference, with the constant squared.
+
+This is a consequence of the Ruzsa triangle inequality."]
+lemma divConst_le_mulConst_sq : δₘ[A] ≤ σₘ[A] ^ 2 := by
+  obtain rfl | hA' := A.eq_empty_or_nonempty
+  · simp
+  refine le_of_mul_le_mul_right ?_ (by positivity : (0 : ℚ≥0) < #A * #A)
+  calc
+    _ = #(A / A) * (#A : ℚ≥0) := by rw [← mul_assoc, divConst_mul_card]
+    _ ≤ #(A * A) * #(A * A) := by norm_cast; exact ruzsa_triangle_inequality_div_mul_mul ..
+    _ = _ := by rw [← mulConst_mul_card]; ring
+
 end Group
 
 open scoped Combinatorics.Additive
@@ -189,22 +236,6 @@ lemma mulConst_le_divConst_sq : σₘ[A] ≤ δₘ[A] ^ 2 := by
     _ = #(A * A) * (#A : ℚ≥0) := by rw [← mul_assoc, mulConst_mul_card]
     _ ≤ #(A / A) * #(A / A) := by norm_cast; exact ruzsa_triangle_inequality_mul_div_div ..
     _ = _ := by rw [← divConst_mul_card]; ring
-
-/-- If `A` has small doubling, then it has small difference, with the constant squared.
-
-This is a consequence of the Ruzsa triangle inequality. -/
-@[to_additive
-"If `A` has small doubling, then it has small difference, with the constant squared.
-
-This is a consequence of the Ruzsa triangle inequality."]
-lemma divConst_le_mulConst_sq : δₘ[A] ≤ σₘ[A] ^ 2 := by
-  obtain rfl | hA' := A.eq_empty_or_nonempty
-  · simp
-  refine le_of_mul_le_mul_right ?_ (by positivity : (0 : ℚ≥0) < #A * #A)
-  calc
-    _ = #(A / A) * (#A : ℚ≥0) := by rw [← mul_assoc, divConst_mul_card]
-    _ ≤ #(A * A) * #(A * A) := by norm_cast; exact ruzsa_triangle_inequality_div_mul_mul ..
-    _ = _ := by rw [← mulConst_mul_card]; ring
 
 end CommGroup
 end Finset

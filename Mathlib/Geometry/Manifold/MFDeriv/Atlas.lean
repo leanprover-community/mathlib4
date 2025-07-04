@@ -275,7 +275,7 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
   · exact mdifferentiableWithinAt_extChartAt_symm hy
   · exact U
   rw [← mfderivWithin_id U]
-  apply Filter.EventuallyEq.mfderivWithin_eq U
+  apply Filter.EventuallyEq.mfderivWithin_eq
   · filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem hy] with z hz
     simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hz, id_eq]
   · simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
@@ -318,7 +318,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
   · exact U'
   · exact PartialEquiv.right_inv (extChartAt I x) hy
   rw [← mfderivWithin_id U']
-  apply Filter.EventuallyEq.mfderivWithin_eq U'
+  apply Filter.EventuallyEq.mfderivWithin_eq
   · filter_upwards [extChartAt_source_mem_nhdsWithin' h'y] with z hz
     simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I x) hz, id_eq]
   · simp only [Function.comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
