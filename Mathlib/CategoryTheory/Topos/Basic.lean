@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Klaus Gy. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Klaus Gy
+-/
 import Mathlib.CategoryTheory.Topos.Classifier
 import Mathlib.CategoryTheory.Opposites
 
@@ -21,7 +26,7 @@ open Category Limits Functor
 local notation "𝟙⨯ " f => prod.map (𝟙 _) f
 local notation f " ⨯𝟙" => prod.map f (𝟙 _)
 
-/-! A category `ℰ` is an elementary topos if it has finite limits
+/-- A category `ℰ` is an elementary topos if it has finite limits
 and satisfies a power object condition relative to a fixed subobject classifier `Ω`.
 
 See MM92, Chapter IV, Section 1. -/
