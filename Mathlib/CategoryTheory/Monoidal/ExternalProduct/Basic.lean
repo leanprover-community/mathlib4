@@ -17,6 +17,7 @@ The notation `- ⊠ -` is scoped to `MonoidalCategory.ExternalProduct`.
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory
+open Functor
 
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]
@@ -72,8 +73,8 @@ def externalProductSwap [BraidedCategory C] :
     externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _) ≅
     Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
   NatIso.ofComponents
-    (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [tensorHom_def, whisker_exchange]))
-    (fun _ ↦ by ext; simp [tensorHom_def, whisker_exchange])
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [whisker_exchange]))
+    (fun _ ↦ by ext; simp [whisker_exchange])
 
 /-- A version of `externalProductSwap` phrased in terms of the curried functors. -/
 @[simps!]

@@ -665,7 +665,7 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
   nontriviality (R ⊗[k] K)
   obtain (hq|hq) := expChar_is_prime_or_one k q
   induction x with
-  | zero => exact ⟨0, 0, by simp [zero_pow_eq, hq.ne_zero]⟩
+  | zero => exact ⟨0, 0, by simp⟩
   | add x y h h' =>
     have : ExpChar (R ⊗[k] K) q := expChar_of_injective_ringHom (algebraMap k _).injective q
     simp_rw [RingHom.mem_range, ← RingHom.mem_rangeS, ← Subalgebra.mem_perfectClosure_iff] at h h' ⊢
