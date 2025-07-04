@@ -282,6 +282,22 @@ theorem laplacian_smul (v : ℝ) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = 
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_smul_apply hf,
     Finset.smul_sum]
 
+/-- The Laplacian commutes with scalar multiplication. -/
+theorem laplacianWithin_smul_nhds (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s)
+    (hx : x ∈ s) :
+    Δ[s] (v • f) =ᶠ[𝓝[s] x] v • (Δ[s] f) := by
+  nth_rw 1 [← s.insert_eq_of_mem hx]
+  filter_upwards [hf.eventually (not_eq_of_beq_eq_false rfl),
+    eventually_mem_nhdsWithin] with a h₁a h₂a
+  rw [s.insert_eq_of_mem hx] at h₂a
+  simp [laplacianWithin_smul v h₁a hs h₂a]
+
+/-- The Laplacian commutes with scalar multiplication. -/
+theorem laplacian_smul_nhds {x : E} {f : E → F} (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
+    Δ (v • f) =ᶠ[𝓝 x] v • (Δ f) := by
+  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl)] with a ha
+  simp [laplacian_smul v ha]
+
 /-!
 ## Commutativity of Δ with Linear Operators
 
@@ -300,6 +316,22 @@ theorem _root_.ContDiffWithinAt.laplacianWithin_CLM_comp_left {l : F →L[ℝ] G
 theorem _root_.ContDiffAt.laplacian_CLM_comp_left {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
     Δ (l ∘ f) x = (l ∘ (Δ f)) x := by
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, l.iteratedFDeriv_comp_left h]
+
+/-- The Laplacian commutes with left composition by continuous linear maps. -/
+theorem _root_.ContDiffWithinAt.laplacianWithin_CLM_comp_left_nhds {l : F →L[ℝ] G}
+    (h : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    Δ[s] (l ∘ f) =ᶠ[𝓝[s] x] l ∘ Δ[s] f := by
+  nth_rw 1 [← s.insert_eq_of_mem hx]
+  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl),
+    eventually_mem_nhdsWithin] with a h₁a h₂a
+  rw [s.insert_eq_of_mem hx] at h₂a
+  simp [h₁a.laplacianWithin_CLM_comp_left hs h₂a]
+
+/-- The Laplacian commutes with left composition by continuous linear maps. -/
+theorem _root_.ContDiffAt.laplacian_CLM_comp_left_nhds {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
+    Δ (l ∘ f) =ᶠ[𝓝 x] l ∘ (Δ f) := by
+  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl)] with a ha
+  rw [ha.laplacian_CLM_comp_left]
 
 /-- The Laplacian commutes with left composition by continuous linear equivalences. -/
 theorem laplacianWithin_CLE_comp_left {l : F ≃L[ℝ] G} (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
