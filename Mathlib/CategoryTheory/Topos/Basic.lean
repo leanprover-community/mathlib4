@@ -18,14 +18,13 @@ namespace CategoryTheory
 
 open Category Limits Functor
 
-/-- A category `ℰ` is an elementary topos if it has finite limits
-and satisfies a power object condition relative to a fixed subobject classifier `Ω`.
-
-See MM92, Chapter IV, Section 1. -/
-
 local notation "𝟙⨯ " f => prod.map (𝟙 _) f
 local notation f " ⨯𝟙" => prod.map f (𝟙 _)
 
+/-! A category `ℰ` is an elementary topos if it has finite limits
+and satisfies a power object condition relative to a fixed subobject classifier `Ω`.
+
+See MM92, Chapter IV, Section 1. -/
 class ElementaryTopos (ℰ : Type u) [Category.{v} ℰ] [HasFiniteLimits ℰ] where
 
   /-- A fixed choice of subobject classifier in `ℰ`, supplying mainly
@@ -61,7 +60,7 @@ def P_morph {B C : ℰ} (h : B ⟶ C) : P C ⟶ P B := unhat ((h ⨯𝟙) ≫ ε
 
 /-- Naturality (dinaturality) of `ε`. This corresponds to the naturality square of ε
     in MM92 diagram (5). -/
-def ε_dinaturality {B C : ℰ} (h : B ⟶ C) :
+lemma ε_dinaturality {B C : ℰ} (h : B ⟶ C) :
   (h ⨯𝟙) ≫ ε_ C = (𝟙⨯ (P_morph h)) ≫ ε_ B := comm _
 
 /-- Functoriality of `P`: divide the dinaturality square of `h ∘ h'` into three squares,
