@@ -155,7 +155,8 @@ def mkIso : M ≅ N :=
 end
 
 instance uniqueHomFromTrivial (A : CommGrp_ C) : Unique (trivial C ⟶ A) :=
-  Mon_.uniqueHomFromTrivial A.toMon_
+  Equiv.unique (show _ ≃ (Grp_.trivial C ⟶ A.toGrp_) from
+    InducedCategory.homEquiv)
 
 instance : HasInitial (CommGrp_ C) :=
   hasInitial_of_unique (trivial C)
@@ -183,8 +184,7 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
         { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
-  map f := F.mapMon.map f
-  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by aesop_cat
+  map f := InducedCategory.homMk (F.mapGrp.map f.hom)
 
 @[simp]
 theorem mapCommGrp_id_one (A : CommGrp_ C) :
@@ -221,7 +221,7 @@ noncomputable def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ 
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
-  app X := .mk' (f.app _)
+  app X := InducedCategory.homMk ((mapGrpNatTrans f).app X.toGrp_)
 
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
@@ -233,7 +233,7 @@ attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp_ C ⥤ CommGrp_ D where
   obj F := F.1.mapCommGrp
-  map {F G} α := { app A := .mk' (α.app A.X) }
+  map α := mapCommGrpNatTrans α.hom
 
 end Functor
 
