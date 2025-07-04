@@ -96,8 +96,7 @@ instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   simp only [contMDiffAt_section]
   convert contMDiffAt_const (c := innerSL ℝ)
   ext v w
-  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply,
-    Trivial.trivialization_symm_apply B F₁]
+  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply]
 
 end Trivial
 
