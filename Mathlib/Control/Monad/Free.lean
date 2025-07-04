@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tanner Duve
+Authors: Tanner Duve, Eric Wieser
 -/
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
@@ -30,7 +30,7 @@ acts as the canonical **fold** for free monads.
 ## Main Definitions
 
 - `FreeM`: The free monad construction
-- `liftM`: The canonical fold/interpreter satisfying the universal property
+- `FreeM.liftM`: The canonical fold/interpreter satisfying the universal property
 - `liftM_unique`: Proof of the universal property
 
 See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library for the
@@ -130,7 +130,7 @@ theorem comp_map (h : β → γ) (g : α → β) : ∀ x : FreeM F α, map (h �
   | .pure a => rfl
   | .liftBind op cont => by simp_all [map, comp_map]
 
-instance: Functor (FreeM F) where
+instance : Functor (FreeM F) where
   map := .map
 
 @[simp]
@@ -209,19 +209,12 @@ lemma liftM_liftBind {M : Type u → Type w} [Monad M] {α β : Type u}
 @[simp]
 lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type u}
     (interp : {β : Type u} → F β → M β) (x : FreeM F α) (f : α → FreeM F β) :
-    (x >>= f : FreeM F β).liftM interp = (do let a ← x.liftM interp; (f a).liftM interp) := by
+    (x.bind f : FreeM F β).liftM interp = (do let a ← x.liftM interp; (f a).liftM interp) := by
   induction x generalizing f with
-  | pure a => simp only [bind_eq_bind, pure_bind, liftM_pure, LawfulMonad.pure_bind]
+  | pure a => simp only [pure_bind, liftM_pure, LawfulMonad.pure_bind]
   | liftBind op cont ih =>
-    simp_rw [bind_eq_bind] at *
     rw [FreeM.bind, liftM_liftBind, liftM_liftBind, bind_assoc]
     simp_rw [ih]
-
-@[simp]
-lemma liftM_liftBind_pure {M : Type u → Type w} [Monad M] [LawfulMonad M] {α : Type u}
-    (interp : {β : Type u} → F β → M β) (op : F α) :
-    (FreeM.liftBind op .pure).liftM interp = interp op := by
-  simp_rw [liftM_liftBind, liftM_pure, _root_.bind_pure]
 
 /--
 A predicate stating that `g : FreeM F α → M α` is an interpreter for the effect
@@ -238,9 +231,9 @@ Formally, `g` satisfies the two equations:
 structure ExtendsHandler {M : Type u → Type w} [Monad M] {α : Type u}
     (f : {ι : Type u} → F ι → M ι)
     (g : FreeM F α → M α) : Prop where
-  apply_pure : ∀ a, g (pure a) = pure a
-  apply_liftBind : ∀ {ι} (op : F ι) (k : ι → FreeM F α),
-    g (liftBind op k) = f op >>= fun x => g (k x)
+  apply_pure (a : α) : g (pure a) = pure a
+  apply_liftBind {ι : Type u} (op : F ι) (cont : ι → FreeM F α) :
+    g (liftBind op cont) = f op >>= fun x => g (cont x)
 
 /--
 The universal property of the free monad `FreeM`. That is, `liftM f` is the unique interpreter that
