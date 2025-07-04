@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Disjoint
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Lemmas about insertion, singleton, and pairs
@@ -29,7 +30,7 @@ variable {α : Type u} {s t : Set α} {a b : α}
 /-!
 ### Lemmas about `insert`
 
-`insert α s` is the set `{α} ∪ s`.
+`insert a s` is the set `{a} ∪ s`.
 -/
 
 theorem insert_def (x : α) (s : Set α) : insert x s = { y | y = x ∨ y ∈ s } :=

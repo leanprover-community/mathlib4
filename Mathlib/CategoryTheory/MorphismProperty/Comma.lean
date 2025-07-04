@@ -230,6 +230,31 @@ lemma eqToHom_right {X Y : P.Comma L R Q W} (h : X = Y) :
 
 end
 
+section
+
+variable {P P' : MorphismProperty T} {Q Q' : MorphismProperty A} {W W' : MorphismProperty B}
+  (hP : P ≤ P') (hQ : Q ≤ Q') (hW : W ≤ W')
+
+variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsMultiplicative]
+
+/-- Weaken the conditions on all components. -/
+def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
+  obj X := ⟨X.toComma, hP _ X.2⟩
+  map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
+
+/-- Weakening the condition on the structure morphisms is fully faithful. -/
+def fullyFaithfulChangeProp :
+    (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
+  preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
+
+instance : (changeProp L R hP hQ hW).Faithful where
+  map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
+
+instance : (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
+  (fullyFaithfulChangeProp ..).full
+
+end
+
 section Functoriality
 
 variable {L R P Q W}

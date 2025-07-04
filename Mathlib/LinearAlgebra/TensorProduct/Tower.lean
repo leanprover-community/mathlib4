@@ -44,8 +44,6 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
-suppress_compilation
-
 namespace TensorProduct
 
 namespace AlgebraTensorModule
@@ -664,6 +662,12 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
     (f ^ n).baseChange A = f.baseChange A ^ n :=
   map_pow (Module.End.baseChangeHom _ _ _) f n
 
+variable {R A M N} in
+theorem rTensor_comp_baseChange_comm_apply (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
+    (φ.toLinearMap.rTensor N) (f.baseChange A t)  =
+      (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
+  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
+
 end Semiring
 
 section Ring
@@ -730,3 +734,4 @@ lemma baseChange_span (s : Set M) :
   rw [baseChange_eq_span, map_span, span_span_of_tower]
 
 end Submodule
+
