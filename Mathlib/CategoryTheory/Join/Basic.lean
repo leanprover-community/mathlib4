@@ -505,7 +505,7 @@ lemma mapWhiskerLeft_comp {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} {Hᵣ : D ⥤ E'}
   aesop_cat
 
 @[simp]
-lemma mapWhiskerLeft_id  (H : C ⥤ E) (Fᵣ : D ⥤ E') :
+lemma mapWhiskerLeft_id (H : C ⥤ E) (Fᵣ : D ⥤ E') :
     mapWhiskerLeft H (𝟙 Fᵣ) = 𝟙 _ := by
   aesop_cat
 
