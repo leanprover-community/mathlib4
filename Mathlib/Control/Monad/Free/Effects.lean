@@ -98,8 +98,7 @@ def toStateM {σ α : Type u} (comp : FreeState σ α) : StateM σ α :=
 
 /-- `toStateM` is the unique interpreter extending `stateInterp`. -/
 theorem toStateM_unique {σ α : Type u} (g : FreeState σ α → StateM σ α)
-    (h : ExtendsHandler stateInterp g) : g = toStateM :=
-    (extendsHandler_iff stateInterp g).mp h
+    (h : ExtendsHandler stateInterp g) : g = toStateM := h.eq
 
 /-- Run a state computation, returning both the result and final state. -/
 def run {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
@@ -198,7 +197,7 @@ def toWriterT {ω α : Type u} [Monoid ω] (comp : FreeWriter ω α) : WriterT �
 
 /-- `toWriterT` is the unique interpreter extending `writerInterp`. -/
 theorem toWriterT_unique {ω α : Type u} [Monoid ω] (g : FreeWriter ω α → WriterT ω Id α)
-    (h : ExtendsHandler writerInterp g) : g = toWriterT := (extendsHandler_iff writerInterp g).mp h
+    (h : ExtendsHandler writerInterp g) : g = toWriterT := h.eq
 
 /--
 Writes a log entry. This creates an effectful node in the computation tree.
@@ -329,7 +328,7 @@ def toContT {r α : Type u} (comp : FreeCont r α) : ContT r Id α :=
 
 /-- `toContT` is the unique interpreter extending `contInterp`. -/
 theorem toContT_unique {r α : Type u} (g : FreeCont r α → ContT r Id α)
-    (h : ExtendsHandler contInterp g) : g = toContT := (extendsHandler_iff contInterp g).mp h
+    (h : ExtendsHandler contInterp g) : g = toContT := h.eq
 
 /-- Run a continuation computation with the given continuation. -/
 def run {r : Type u} {α : Type v} : FreeCont r α → (α → r) → r

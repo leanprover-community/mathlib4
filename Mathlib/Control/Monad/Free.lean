@@ -216,6 +216,9 @@ lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type
     rw [FreeM.bind, liftM_liftBind, liftM_liftBind, bind_assoc]
     simp_rw [ih]
 
+section ExtendsHandler
+variable {M : Type u → Type w} [Monad M] {α : Type u}
+
 /--
 A predicate stating that `g : FreeM F α → M α` is an interpreter for the effect
 handler `f : ∀ {α}, F α → M α`.
@@ -228,27 +231,34 @@ Formally, `g` satisfies the two equations:
 - `g (pure a) = pure a`
 - `g (liftBind op k) = f op >>= fun x => g (k x)`
 -/
-structure ExtendsHandler {M : Type u → Type w} [Monad M] {α : Type u}
-    (f : {ι : Type u} → F ι → M ι)
-    (g : FreeM F α → M α) : Prop where
+structure ExtendsHandler (f : {ι : Type u} → F ι → M ι) (g : FreeM F α → M α) : Prop where
   apply_pure (a : α) : g (pure a) = pure a
   apply_liftBind {ι : Type u} (op : F ι) (cont : ι → FreeM F α) :
     g (liftBind op cont) = f op >>= fun x => g (cont x)
+
+theorem ExtendsHandler.eq
+    {f : {ι : Type u} → F ι → M ι} {g : FreeM F α → M α} (h : ExtendsHandler f g) :
+    g = (·.liftM @f) := by
+  ext x
+  induction x with
+  | pure a => exact h.apply_pure a
+  | liftBind op cont ih =>
+    rw [liftM_liftBind, h.apply_liftBind]
+    simp [ih]
+
+theorem extendsHandler_liftM (f : {ι : Type u} → F ι → M ι) :
+    ExtendsHandler f (·.liftM f : FreeM F α → _) where
+  apply_pure _ := rfl
+  apply_liftBind _ _ := rfl
 
 /--
 The universal property of the free monad `FreeM`. That is, `liftM f` is the unique interpreter that
 extends the effect handler `f` to interpret `FreeM F` computations in monad `M`.
 -/
-theorem extendsHandler_iff {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
-    (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) :
-    ExtendsHandler @f g ↔ g = (·.liftM @f) := by
-  refine ⟨fun h => funext fun x => ?_, fun h => ?_⟩
-  · induction x with
-    | pure a => exact h.apply_pure a
-    | liftBind op cont ih =>
-      rw [liftM_liftBind, h.apply_liftBind]
-      simp [ih]
-  · subst h
-    exact ⟨fun _ => rfl, fun _ _ => rfl⟩
+theorem extendsHandler_iff (f : {ι : Type u} → F ι → M ι) (g : FreeM F α → M α) :
+    ExtendsHandler f g ↔ g = (·.liftM f) :=
+  ⟨(·.eq), fun h => h ▸ extendsHandler_liftM _⟩
+
+end ExtendsHandler
 
 end FreeM
