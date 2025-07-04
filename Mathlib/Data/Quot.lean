@@ -304,7 +304,7 @@ theorem Quotient.lift_surjective_iff {α β : Sort*} {s : Setoid α} (f : α →
   Quot.surjective_lift h
 
 theorem Quotient.lift_surjective {α β : Sort*} {s : Setoid α} (f : α → β)
-    (h : ∀ (a b : α), a ≈ b → f a = f b) (hf : Function.Surjective f):
+    (h : ∀ (a b : α), a ≈ b → f a = f b) (hf : Function.Surjective f) :
     Function.Surjective (Quotient.lift f h : Quotient s → β) :=
   (Quot.surjective_lift h).mpr hf
 
