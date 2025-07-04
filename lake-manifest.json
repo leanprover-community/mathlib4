@@ -65,7 +65,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "783499cc8a485c2d951dd5a8a60cc0923696bfcf",
+   "rev": "2a0a2f90def4f7bc4be00c8c3af1865fb3a7abb3",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "deprecate-cmp",
