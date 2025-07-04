@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 # Multicoequalizers that are pushouts
 
 In this file, we show that a multicoequalizer for
-for `I : MultispanIndex (.ofLinearOrder ι) C` is also
+`I : MultispanIndex (.ofLinearOrder ι) C` is also
 a pushout when `ι` has exactly two elements.
 
 -/
@@ -28,7 +28,7 @@ variable (s : PushoutCocone (I.fst default) (I.snd default))
 open Classical in
 /-- Given a multispan shape `J` which is essentially `.ofLinearOrder ι`
 (where `ι` has exactly two elements), this is the multicofork
-deduded from a pushout cocone. -/
+deduced from a pushout cocone. -/
 noncomputable def multicofork : Multicofork I :=
   Multicofork.ofπ _ s.pt
     (fun k ↦
