@@ -12,8 +12,6 @@ This ongoing work formalizes the elementary definition of a topos and the direct
 -/
 
 
-noncomputable section
-
 universe u v u₀ v₀
 
 namespace CategoryTheory
@@ -50,6 +48,8 @@ class ElementaryTopos (ℰ : Type u) [Category.{v} ℰ] [HasFiniteLimits ℰ] wh
 variable {ℰ : Type u} [Category.{v} ℰ] [HasFiniteLimits ℰ] [ElementaryTopos ℰ]
 
 open ElementaryTopos
+
+noncomputable section
 
 /-- The morphism `ε_B ∘ (𝟙 × g)` associated to a map `g : A ⟶ P B`.
     This is the inverse direction of the transpose isomorphism. -/
@@ -115,4 +115,5 @@ theorem pullback_of_char {A B C U : ℰ} (g : A ⟶ P C) (h : B ⟶ C) (m : U �
     hc.uniq m' _ (this ▸ isChar ▸ IsPullback.flip pb_outer)
   by rw [hat, prod.map_id_comp, assoc, ← ε_dinaturality, ← assoc, eq₀, assoc, ← hat, eq₁]
 
+end
 end CategoryTheory
