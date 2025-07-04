@@ -68,10 +68,7 @@ theorem hasseDeriv_coeff (n : ℕ) :
     rw [coeff_monomial]
     by_cases hik : i < k
     · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
-    · push_neg at hik
-      rw [if_neg]
-      contrapose! hink
-      exact (tsub_eq_iff_eq_add_of_le hik).mp hink
+    · grind
   · intro h
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
@@ -182,10 +179,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
         tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx
-      have hxn : n ≤ x := by
-        contrapose! hx'
-        simp [Nat.choose_eq_zero_of_lt hx']
-      rwa [tsub_add_cancel_of_le (hxn.trans hxp)]
+      grind
     · simp
 
 theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff := by
