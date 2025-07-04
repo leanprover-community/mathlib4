@@ -359,7 +359,7 @@ protected def induce (G : Graph α β) (X : Set α) : Graph α β where
   left_mem_of_isLink := by simp +contextual
 
 /-- `G[X]` is the subgraph of `G` induced by the set `X` of vertices. -/
-notation:max G:1000 "[" S "]" => Graph.induce G S
+scoped notation:max G:1000 "[" S "]" => Graph.induce G S
 
 lemma induce_le (hX : X ⊆ V(G)) : G[X] ≤ G :=
   ⟨hX, fun _ _ _ h ↦ h.1⟩
@@ -439,7 +439,7 @@ lemma le_induce_iff (hX : X ⊆ V(G)) : H ≤ G[X] ↔ H ≤ G ∧ V(H) ⊆ X :=
 protected def vertexDelete (G : Graph α β) (X : Set α) : Graph α β := G [V(G) \ X]
 
 /-- `G - X` is the graph obtained from `G` by deleting the set `X` of vertices. -/
-notation:max G:1000 " - " S:1000 => Graph.vertexDelete G S
+scoped notation:max G:1000 " - " S:1000 => Graph.vertexDelete G S
 
 -- instance instHSub : HSub (Graph α β) (Set α) (Graph α β) where
 --   hSub := Graph.vertexDelete
