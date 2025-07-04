@@ -100,6 +100,15 @@ theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
   exact tendsto_bdd_div_atTop_nhds_zero h0
     (.of_forall (fun n ↦  cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
 
+/-- If `a ≠ 0`, `(a * x + c)⁻¹` tends to `0` as `x` tends to `∞`. -/
+theorem tendsto_mul_add_inv_atTop_nhds_zero (a c : ℝ) (ha : a ≠ 0) :
+    Tendsto (fun x => (a * x + c)⁻¹) atTop (𝓝 0) := by
+  obtain ha' | ha' := lt_or_gt_of_ne ha
+  · exact tendsto_inv_atBot_zero.comp
+      (tendsto_atBot_add_const_right _ c (tendsto_id.const_mul_atTop_of_neg ha'))
+  · exact tendsto_inv_atTop_zero.comp
+      (tendsto_atTop_add_const_right _ c (tendsto_id.const_mul_atTop ha'))
+
 theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g : α → G}
     {l : Filter α} (hg : Tendsto g l (𝓟 {0}ᶜ)) : (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x := by
   filter_upwards [hg.le_comap <| preimage_mem_comap (m := g) (mem_principal_self {0}ᶜ)] with x hx
@@ -167,7 +176,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   h₁.eq_or_lt.elim
     (fun hr ↦ (tendsto_add_atTop_iff_nat 1).mp <| by
-      simp [_root_.pow_succ, ← hr, tendsto_const_nhds])
+      simp [_root_.pow_succ, ← hr])
     (fun hr ↦
       have := (one_lt_inv₀ hr).2 h₂ |> tendsto_pow_atTop_atTop_of_one_lt
       (tendsto_inv_atTop_zero.comp this).congr fun n ↦ by simp)
@@ -183,9 +192,9 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
       simp only [hr.symm, one_pow] at h
       exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
     · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
-      · refine (pow_right_strictMono₀ <| lt_of_le_of_ne (le_of_not_lt hr_le)
+      · refine (pow_right_strictMono₀ <| lt_of_le_of_ne (le_of_not_gt hr_le)
           hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
-        obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
+        obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_gt hr_le) hr))
         exact ⟨n, le_of_lt hn⟩
       · simpa only [← abs_pow]
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
@@ -372,7 +381,7 @@ theorem tsum_geometric_nnreal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n =
 and for `1 ≤ r` the RHS equals `∞`. -/
 @[simp]
 theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
-  rcases lt_or_le r 1 with hr | hr
+  rcases lt_or_ge r 1 with hr | hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
     convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
@@ -440,7 +449,7 @@ include hC hu in
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
   refine cauchySeq_of_edist_le_geometric 2⁻¹ C ?_ hC hu
-  simp [ENNReal.one_lt_two]
+  simp
 
 include hu ha in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
@@ -638,7 +647,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       rw [← prod_range_add_one_eq_factorial, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
         prod_natCast, Nat.cast_succ, ← Finset.prod_inv_distrib, ← prod_mul_distrib,
         Finset.prod_range_succ']
-      simp only [prod_range_succ', one_mul, Nat.cast_add, zero_add, Nat.cast_one]
+      simp only [one_mul, Nat.cast_add, zero_add, Nat.cast_one]
       refine
             mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one ?_ ?_) <;>
           intro x hx <;>

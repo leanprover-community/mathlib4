@@ -85,7 +85,7 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
   | Int.ofNat m => by
     simp [pow_eq_neg_pow_iff, hb]
   | Int.negSucc m => by
-    simp only [← neg_ofNat_succ, zpow_neg, inv_pow, ← inv_neg, pow_eq_neg_pow_iff hb, inv_inj,
+    simp only [← neg_ofNat_succ, zpow_neg, ← inv_neg, pow_eq_neg_pow_iff hb, inv_inj,
       zpow_natCast]
     simp [parity_simps]
 
@@ -108,7 +108,7 @@ theorem Nat.cast_le_pow_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ a ^ n / (a 
 end LinearOrderedField
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/

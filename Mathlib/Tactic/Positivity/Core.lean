@@ -425,7 +425,7 @@ end Meta.Positivity
 
 namespace Tactic.Positivity
 
-open Lean Elab Tactic
+open Tactic
 
 /-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`.  The tactic works recursively
 according to the syntax of the expression `x`, if the atoms composing the expression all have
@@ -447,6 +447,12 @@ elab (name := positivity) "positivity" : tactic => do
 end Positivity
 
 end Mathlib.Tactic
+
+/-!
+We set up `positivity` as a first-pass discharger for `gcongr` side goals.
+-/
+
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
 
 /-!
 We register `positivity` with the `hint` tactic.

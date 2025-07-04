@@ -83,7 +83,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
     have : 0 ≤ P.coxeterWeightIn ℤ i j := by
       simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm ℤ) i j
     obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
-    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
+    exact ⟨n, by simp [hn]⟩
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢
@@ -197,10 +197,10 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
       rcases this with h₁ | h₁
       · replace h₁ : P.pairing i j = 1 := by simpa [← P.algebraMap_pairingIn ℤ]
-        exact ⟨P.reflection_perm j i, by simpa [h₁] using P.reflection_apply_root j i⟩
+        exact ⟨P.reflectionPerm j i, by simpa [h₁] using P.reflection_apply_root j i⟩
       · replace h₁ : P.pairing j i = 1 := by simpa [← P.algebraMap_pairingIn ℤ]
         rw [← neg_mem_range_root_iff, neg_sub]
-        exact ⟨P.reflection_perm i j, by simpa [h₁] using P.reflection_apply_root i j⟩
+        exact ⟨P.reflectionPerm i j, by simpa [h₁] using P.reflection_apply_root i j⟩
     have : P.coxeterWeightIn ℤ i j ∈ ({1, 2, 3} : Set _) := by
       have aux₁ := P.coxeterWeightIn_mem_set_of_isCrystallographic i j
       have aux₂ := (linearIndependent_iff_coxeterWeightIn_ne_four P ℤ).mp hli
@@ -402,7 +402,7 @@ lemma pairingIn_le_zero_of_ne :
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
     α k - α j ∈ Φ := by
-  rcases lt_or_le 0 (P.pairingIn ℤ j k) with hm | hm
+  rcases lt_or_ge 0 (P.pairingIn ℤ j k) with hm | hm
   · rw [← neg_mem_range_root_iff, neg_sub]
     exact P.root_sub_root_mem_of_pairingIn_pos hm hkj.symm
   obtain ⟨l, hl⟩ := hk
@@ -441,8 +441,8 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     apply algebraMap_injective ℤ R
     simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
     convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
-    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add, LinearMap.sub_apply,
-      LinearMap.add_apply, root_coroot_eq_pairing, hki, pairing_same]
+    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add,
+      root_coroot_eq_pairing, hki, pairing_same]
     ring
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
@@ -455,12 +455,12 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   replace hk : α (-k) + α j - α i ∈ Φ := by
     rw [← neg_mem_range_root_iff]
     convert hk using 1
-    simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+    simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
   convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose! hkj; aesop)
     (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
-  simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+  simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
 end Base

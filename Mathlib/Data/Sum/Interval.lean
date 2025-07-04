@@ -196,7 +196,7 @@ lemma sumLexLift_nonempty :
 end SumLexLift
 end Finset
 
-open Finset Function
+open Finset
 
 namespace Sum
 

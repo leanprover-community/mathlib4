@@ -209,7 +209,7 @@ lemma homologySequence_exact₂ :
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
     (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
-    (by dsimp; simp) (by dsimp; simp)
+    (by simp) (by simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by

@@ -248,12 +248,12 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
-    map_smul' := fun r x ↦ by rw [map_smulₛₗ] }
+    map_smul' r x := by rw [map_smulₛₗ] }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type*} { M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    {M : Type*} {M₂ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
 
@@ -270,9 +270,14 @@ initialize_simps_projections LinearEquiv (toFun → apply, invFun → symm_apply
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
+theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm := rfl
+
 @[simp]
-theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
+theorem toEquiv_symm : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm := rfl
 
 variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {module_M₄ : Module R₄ M₄} {module_N₁ : Module R₁ N₁} {module_N₂ : Module R₁ N₂}
@@ -312,7 +317,6 @@ notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
 
 variable {e₁₂} {e₂₃}
 
-@[simp]
 theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 
@@ -342,6 +346,14 @@ theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
 @[simp]
 theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
+
+@[simp]
+theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
+  LinearMap.ext e.apply_symm_apply
+
+@[simp]
+theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap= LinearMap.id :=
+  LinearMap.ext e.symm_apply_apply
 
 @[simp]
 theorem trans_symm : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃).symm = e₂₃.symm.trans e₁₂.symm :=
@@ -385,26 +397,26 @@ variable [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃] [RingHomCompTriple σ₃
 theorem eq_comp_toLinearMap_symm (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₃] M₃) :
     f = g.comp e₁₂.symm.toLinearMap ↔ f.comp e₁₂.toLinearMap = g := by
   constructor <;> intro H <;> ext
-  · simp [H, e₁₂.toEquiv.eq_comp_symm f g]
-  · simp [← H, ← e₁₂.toEquiv.eq_comp_symm f g]
+  · simp [H]
+  · simp [← H]
 
 theorem comp_toLinearMap_symm_eq (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₃] M₃) :
     g.comp e₁₂.symm.toLinearMap = f ↔ g = f.comp e₁₂.toLinearMap := by
   constructor <;> intro H <;> ext
-  · simp [← H, ← e₁₂.toEquiv.comp_symm_eq f g]
-  · simp [H, e₁₂.toEquiv.comp_symm_eq f g]
+  · simp [← H]
+  · simp [H]
 
 theorem eq_toLinearMap_symm_comp (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ →ₛₗ[σ₃₂] M₂) :
     f = e₁₂.symm.toLinearMap.comp g ↔ e₁₂.toLinearMap.comp f = g := by
   constructor <;> intro H <;> ext
-  · simp [H, e₁₂.toEquiv.eq_symm_comp f g]
-  · simp [← H, ← e₁₂.toEquiv.eq_symm_comp f g]
+  · simp [H]
+  · simp [← H]
 
 theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ →ₛₗ[σ₃₂] M₂) :
     e₁₂.symm.toLinearMap.comp g = f ↔ g = e₁₂.toLinearMap.comp f := by
   constructor <;> intro H <;> ext
-  · simp [← H, ← e₁₂.toEquiv.symm_comp_eq f g]
-  · simp [H, e₁₂.toEquiv.symm_comp_eq f g]
+  · simp [← H]
+  · simp [H]
 
 @[simp]
 theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :

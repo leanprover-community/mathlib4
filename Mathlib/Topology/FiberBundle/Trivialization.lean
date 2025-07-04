@@ -161,7 +161,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 theorem preimage_symm_proj_baseSet :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
   refine inter_eq_right.mpr fun x hx => ?_
-  simp only [mem_preimage, PartialEquiv.invFun_as_coe, e.proj_symm_apply hx]
+  simp only [mem_preimage, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 
 @[simp, mfld_simps]
@@ -201,9 +201,9 @@ variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[simp, mfld_simps]
-theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
-  e'.coe_fst (e'.mem_source.2 hb)
+@[mfld_simps]
+theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
+  simp [hb]
 
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
@@ -297,6 +297,15 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
+
+/-- See Note [custom simps projection] -/
+noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
+  e.toPartialHomeomorph.symm
+
+initialize_simps_projections Trivialization (toFun → apply, invFun → symm_apply)
 
 theorem toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
@@ -650,7 +659,7 @@ theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h
   rfl
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
-    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]
+    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [hx]
 
 /-- Restrict a `Trivialization` to an open set in the base. -/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :

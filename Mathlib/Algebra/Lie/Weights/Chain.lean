@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.Data.Int.Interval
 
 /-!
 # Chains of roots and weights
@@ -116,7 +117,7 @@ lemma genWeightSpaceChain_neg :
     genWeightSpaceChain M (-χ₁) χ₂ (-q) (-p) = genWeightSpaceChain M χ₁ χ₂ p q := by
   let e : ℤ ≃ ℤ := neg_involutive.toPerm
   simp_rw [genWeightSpaceChain, ← e.biSup_comp (Ioo p q)]
-  simp [e, -mem_Ioo, neg_mem_Ioo_iff]
+  simp [e, -mem_Ioo]
 
 lemma genWeightSpace_le_genWeightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
     genWeightSpace M (k • χ₁ + χ₂) ≤ genWeightSpaceChain M χ₁ χ₂ p q :=
@@ -214,7 +215,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
-  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
+  refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
   have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
     rw [LieSubmodule.iSupIndep_toSubmodule]

@@ -83,6 +83,64 @@ warning: declaration uses 'sorry'
 #guard_msgs in
 example : False := by admit
 
+set_option linter.style.nativeDecide true
+
+/--
+warning: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler
+(not just the Lean kernel), it could quite possibly be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by native_decide
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+theorem foo : 1 + 1 = 2 := by decide -native +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native +native +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native +kernel +native -kernel +native -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+note: this linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide (config := { native := true })
+example : 1 + 1 = 2 := by decide (config := { native := false })
+-- Not handled yet: since mathlib hardly uses the old config syntax and this linter is purely
+-- for user information (and not hard guarantees), we deem this acceptable.
+example : 1 + 1 = 2 := by decide (config := { native := true, kernel := false })
+
+set_option linter.style.nativeDecide false
+
 set_option linter.style.maxHeartbeats true
 /--
 warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in

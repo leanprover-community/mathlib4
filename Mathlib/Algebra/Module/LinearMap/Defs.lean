@@ -580,9 +580,9 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
     induction c with
-    | hz => simp
-    | hp n ih => simp [add_smul, ih]
-    | hn n ih => simp [sub_smul, ih]⟩
+    | zero => simp
+    | succ n ih => simp [add_smul]
+    | pred n ih => simp [sub_smul]⟩
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
@@ -855,7 +855,7 @@ instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
-      map_smul' := fun r x ↦ by simp [Pi.sub_apply, map_smul, smul_sub] }⟩
+      map_smul' := fun r x ↦ by simp [Pi.sub_apply, smul_sub] }⟩
 
 @[simp]
 theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=

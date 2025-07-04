@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Small.Defs
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -709,7 +710,7 @@ lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A �
   letI := e.toAddEquiv.module A
   constructor
   intro x y z
-  simp only [Equiv.smul_def, AddEquiv.toEquiv_eq_coe, smul_assoc]
+  simp only [Equiv.smul_def, smul_assoc]
   apply e.symm.map_smul
 
 end

@@ -319,13 +319,11 @@ lemma Indep.closure_eq_setOf_isBasis_insert (hI : M.Indep I) :
     M.closure I = {x | M.IsBasis I (insert x I)} := by
   set F := {x | M.IsBasis I (insert x I)}
   have hIF : M.IsBasis I F := hI.isBasis_setOf_insert_isBasis
-
   have hF : M.IsFlat F := by
     refine ⟨fun J X hJF hJX e heX ↦ show M.IsBasis _ _ from ?_, hIF.subset_ground⟩
     exact (hIF.isBasis_of_isBasis_of_subset_of_subset (hJX.isBasis_union hJF) hJF.subset
       (hIF.subset.trans subset_union_right)).isBasis_subset (subset_insert _ _)
       (insert_subset (Or.inl heX) (hIF.subset.trans subset_union_right))
-
   rw [subset_antisymm_iff, closure_def, subset_sInter_iff, and_iff_right (sInter_subset_of_mem _)]
   · rintro F' ⟨hF', hIF'⟩ e (he : M.IsBasis I (insert e I))
     rw [inter_eq_left.mpr (hIF.subset.trans hIF.subset_ground)] at hIF'
@@ -487,21 +485,16 @@ lemma Indep.closure_sInter_eq_biInter_closure_of_forall_subset {Js : Set (Set α
     refine mem_closure_of_mem _ (fun X hX' ↦ ?_) hiI.subset_ground
     rw [← hI.closure_inter_eq_self_of_subset (hIs X hX')]
     exact ⟨he X hX', heI⟩
-
   rw [hiI.notMem_closure_iff_of_notMem (notMem_subset hiX heEI.2)] at he'
   obtain ⟨J, hJI, heJ⟩ := he'.subset_isBasis_of_subset (insert_subset_insert hiX)
     (insert_subset heEI.1 hI.subset_ground)
-
   have hIb : M.IsBasis I (insert e I) := by
     rw [hI.insert_isBasis_iff_mem_closure]
     exact (M.closure_subset_closure (hIs _ hne.some_mem)) (he _ hne.some_mem)
-
   obtain ⟨f, hfIJ, hfb⟩ :=  hJI.exchange hIb ⟨heJ (mem_insert e _), heEI.2⟩
   obtain rfl := hI.eq_of_isBasis (hfb.isBasis_subset (insert_subset hfIJ.1
     (by (rw [diff_subset_iff, singleton_union]; exact hJI.subset))) (subset_insert _ _))
-
   refine hfIJ.2 (heJ (mem_insert_of_mem _ fun X hX' ↦ by_contra fun hfX ↦ ?_))
-
   obtain (hd | heX) := ((hI.subset (hIs X hX')).mem_closure_iff).mp (he _ hX')
   · refine (hJI.indep.subset (insert_subset (heJ (mem_insert _ _)) ?_)).not_dep hd
     specialize hIs _ hX'
@@ -719,7 +712,6 @@ lemma mem_closure_insert (he : e ∉ M.closure X) (hef : e ∈ M.closure (insert
     by_contra! hfE; rw [insert_inter_of_notMem hfE] at hef; exact he hef
   have heE : e ∈ M.E := (M.closure_subset_ground _) hef
   rw [insert_inter_of_mem hfE] at hef; rw [insert_inter_of_mem heE]
-
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)
   rw [← hI.closure_eq_closure, hI.indep.notMem_closure_iff] at he
   rw [← closure_insert_closure_eq_closure_insert, ← hI.closure_eq_closure,

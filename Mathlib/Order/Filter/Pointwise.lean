@@ -436,8 +436,6 @@ instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· /
 
 end Div
 
-open Pointwise
-
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
 Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
@@ -554,14 +552,14 @@ theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
   refine top_le_iff.1 fun s => ?_
-  simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
+  simp only [mem_mul, mem_top, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [mul_univ_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
 
 @[to_additive]
 theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
   refine top_le_iff.1 fun s => ?_
-  simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
+  simp only [mem_mul, mem_top, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [univ_mul_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
 
@@ -585,8 +583,6 @@ end Monoid
 @[to_additive "`Filter α` is an `AddCommMonoid` under pointwise operations if `α` is."]
 protected def commMonoid [CommMonoid α] : CommMonoid (Filter α) :=
   { Filter.mulOneClass, Filter.commSemigroup with }
-
-open Pointwise
 
 section DivisionMonoid
 
@@ -732,8 +728,6 @@ protected theorem Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g�
   (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
 
 end Group
-
-open Pointwise
 
 section GroupWithZero
 
@@ -984,8 +978,6 @@ instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· �
   ⟨fun _ => @map_mono β β _⟩
 
 end SMul
-
-open Pointwise
 
 @[to_additive]
 instance smulCommClass_filter [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :

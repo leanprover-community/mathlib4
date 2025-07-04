@@ -160,7 +160,7 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l :
     (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
       c n • (f (x + d n) - f x) := by
     ext n
-    simp [smul_add, smul_sub]
+    simp [smul_sub]
   rwa [this, zero_add] at L3
 
 /-- If `f'` and `f₁'` are two derivatives of `f` within `s` at `x`, then they are equal on the
@@ -620,7 +620,7 @@ theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilte
     exact tendsto_id.sub tendsto_const_nhds
   have := this.add (tendsto_const_nhds (x := f x))
   rw [zero_add (f x)] at this
-  exact this.congr (by simp only [sub_add_cancel, eq_self_iff_true, forall_const])
+  exact this.congr (by simp only [sub_add_cancel, forall_const])
 
 theorem HasFDerivWithinAt.continuousWithinAt (h : HasFDerivWithinAt f f' s x) :
     ContinuousWithinAt f s x :=
@@ -692,9 +692,11 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
 /-- Variant with `fun x => x` rather than `id` -/
-@[simp]
-theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
+@[simp, fun_prop]
+theorem differentiableAt_fun_id : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
+
+@[deprecated (since := "2025-06-25")] alias differentiableAt_id' := differentiableAt_fun_id
 
 @[fun_prop]
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
@@ -709,8 +711,10 @@ theorem differentiableWithinAt_id' : DifferentiableWithinAt 𝕜 (fun x => x) s 
 theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => differentiableAt_id
 
 /-- Variant with `fun x => x` rather than `id` -/
-@[simp]
-theorem differentiable_id' : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
+@[simp, fun_prop]
+theorem differentiable_fun_id : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
+
+@[deprecated (since := "2025-06-25")] alias differentiable_id' := differentiable_fun_id
 
 @[fun_prop]
 theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
@@ -796,3 +800,29 @@ theorem norm_fderiv_le_of_lipschitz {f : E → F} {x₀ : E}
 end MeanValue
 
 end
+
+section Semilinear
+/-!
+## Results involving semilinear maps
+-/
+variable {𝕜 V V' W W' : Type*} [NontriviallyNormedField 𝕜] {σ σ' : RingHom 𝕜 𝕜}
+  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [NormedAddCommGroup V'] [NormedSpace 𝕜 V']
+  [NormedAddCommGroup W] [NormedSpace 𝕜 W] [NormedAddCommGroup W'] [NormedSpace 𝕜 W']
+  [RingHomIsometric σ] [RingHomInvPair σ σ'] (L : W →SL[σ] W') (R : V' →SL[σ'] V)
+
+/-- If `L` and `R` are semilinear maps whose composite is linear, and `f` has Fréchet derivative
+`f'` at `R z`, then `L ∘ f ∘ R` has Fréchet derivative `L ∘ f' ∘ R` at `z`. -/
+lemma HasFDerivAt.comp_semilinear {f : V → W} {z : V'} {f' : V →L[𝕜] W}
+    (hf : HasFDerivAt f f' (R z)) : HasFDerivAt (L ∘ f ∘ R) (L.comp (f'.comp R)) z := by
+  have : RingHomIsometric σ' := .inv σ
+  rw [hasFDerivAt_iff_isLittleO_nhds_zero] at ⊢ hf
+  have := hf.comp_tendsto (R.map_zero ▸ R.continuous.continuousAt.tendsto)
+  simpa using ((L.isBigO_comp _ _).trans_isLittleO this).trans_isBigO (R.isBigO_id _)
+
+/-- If `L` and `R` are semilinear maps whose composite is linear, and `f` is differentiable at
+`R z`, then `L ∘ f ∘ R` is differentiable at `z`. -/
+lemma DifferentiableAt.comp_semilinear₂ {f : V → W} {z : V'} (hf : DifferentiableAt 𝕜 f (R z)) :
+    DifferentiableAt 𝕜 (L ∘ f ∘ R) z := by
+  simpa using (hf.hasFDerivAt.comp_semilinear L R).differentiableAt
+
+end Semilinear

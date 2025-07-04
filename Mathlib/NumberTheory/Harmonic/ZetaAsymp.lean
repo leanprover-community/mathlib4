@@ -255,12 +255,12 @@ lemma continuousOn_term (n : ℕ) :
   · intro s (hs : 1 ≤ s)
     rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
-    have : 0 < x := lt_trans (by positivity) hx.1
+    have : 1 < x := lt_of_le_of_lt (by simp) hx.1
     rw [norm_of_nonneg (div_nonneg (sub_nonneg.mpr hx.1.le) (by positivity)), Nat.cast_add_one]
-    apply div_le_div_of_nonneg_left
+    gcongr
     · exact_mod_cast sub_nonneg.mpr hx.1.le
-    · positivity
-    · exact rpow_le_rpow_of_exponent_le (le_trans (by simp) hx.1.le) (by linarith)
+    · exact this.le
+    · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
     exact_mod_cast term_welldef (by omega : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
@@ -278,12 +278,11 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc (fun x hx ↦ ?_)
     · exact (term_welldef n.succ_pos (zero_lt_one.trans_le hs)).1
     · exact (term_welldef n.succ_pos zero_lt_one).1
-    · rw [div_le_div_iff_of_pos_left] -- leave side-goals to end and kill them all together
-      · apply rpow_le_rpow_of_exponent_le
-        · exact (lt_of_le_of_lt (by simp) hx.1).le
-        · linarith [mem_Ici.mp hs]
-      · linarith [hx.1]
-      all_goals apply rpow_pos_of_pos ((Nat.cast_nonneg _).trans_lt hx.1)
+    · have : 1 ≤ x := le_trans (by simp) hx.1.le
+      gcongr
+      · exact sub_nonneg.mpr hx.1.le
+      · assumption
+      · exact hs
   · rw [intervalIntegral.integral_of_le (by linarith)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]

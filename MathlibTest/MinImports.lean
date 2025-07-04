@@ -80,7 +80,7 @@ info: import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.Lemma
 import Mathlib.Data.Nat.Notation
 ---
-info: theorem extracted_1 (n : ℕ) : n = n := sorry
+info: theorem hi.extracted_1_1 (n : ℕ) : n = n := sorry
 -/
 #guard_msgs in
 #min_imports in

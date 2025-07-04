@@ -11,7 +11,7 @@ import Mathlib.Tactic.Convert
 # Combinatorial pregames
 
 This is the first in a series of files developing the basic theory of combinatorial games,
-following Conway's book `On Numbers and Games`:
+following Conway's book "On Numbers and Games":
 
 * this file defines _pregames_ and elementary operations on them (relabelling, option insertion)
 * `Mathlib/SetTheory/PGame/Order.lean` defines an ordering on pregames
@@ -60,7 +60,7 @@ The material here is all drawn from
 
 An interested reader may like to formalise some of the material from
 * [Andreas Blass, *A game semantics for linear logic*][MR1167694]
-* [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
+* [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1977]
 -/
 
 namespace SetTheory
@@ -72,7 +72,7 @@ open Function Relation
 universe u
 
 /-- The type of pre-games, before we have quotiented
-  by equivalence (`PGame.Setoid`). In ZFC, a combinatorial game is constructed from
+  by equivalence (`PGame.setoid`). In ZFC, a combinatorial game is constructed from
   two sets of combinatorial games that have been constructed at an earlier
   stage. To do this in type theory, we say that a pre-game is built
   inductively from two families of pre-games indexed over any type

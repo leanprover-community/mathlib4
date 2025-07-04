@@ -84,8 +84,6 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
   toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
   invFun u :=
     ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := Units.ext rfl
   map_mul' _ _ := rfl
 
 /-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
@@ -180,6 +178,14 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 @[simp]
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
+
+/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
+def permCongrHom (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
+  toFun x := e.symm.trans (x.trans e)
+  invFun y := e.trans (y.trans e.symm)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+  map_mul' _ _ := by ext; simp
 
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
@@ -334,8 +340,8 @@ variable {p : α → Prop} {f : Perm α}
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
   toFun := fun x => ⟨f x, (h _).2 x.2⟩
   invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
-  left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta, Subtype.coe_mk]
-  right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta, Subtype.coe_mk]
+  left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta]
+  right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta]
 
 @[simp]
 theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p (f x) ↔ p x) (x : { x // p x }) :
@@ -488,7 +494,7 @@ theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap 
   Equiv.ext fun z => by
     simp only [Perm.mul_apply, swap_apply_def]
     split_ifs <;>
-      simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, eq_self_iff_true, not_true]
+      simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, not_true]
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
   rw [swap_mul_eq_mul_swap, Perm.inv_apply_self, Perm.inv_apply_self]
@@ -741,6 +747,8 @@ instance group : Group (AddAut A) where
   one_mul _ := rfl
   mul_one _ := rfl
   inv_mul_cancel := AddEquiv.self_trans_symm
+
+attribute [to_additive AddAut.instGroup] MulAut.instGroup
 
 instance : Inhabited (AddAut A) :=
   ⟨1⟩

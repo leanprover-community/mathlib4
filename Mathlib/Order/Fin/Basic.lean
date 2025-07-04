@@ -3,6 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
+import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Rev
 import Mathlib.Order.Hom.Basic
 
@@ -50,7 +51,7 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
   le_top i := Nat.le_pred_of_lt i.is_lt
   bot := 0
-  bot_le := Fin.zero_le'
+  bot_le := Fin.zero_le
 
 instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
   LinearOrder.toBiheytingAlgebra
@@ -276,7 +277,7 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
   · rfl
   · exact pred_le _
   · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
-    exact absurd H this.not_le
+    exact absurd H this.not_ge
   · rfl
 
 @[gcongr]

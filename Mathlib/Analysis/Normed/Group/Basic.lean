@@ -621,7 +621,7 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
 
 @[to_additive] -- `simp` can prove this
-theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp [dist_eq_norm_div]
+theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp
 
 @[to_additive (attr := simp) norm_eq_of_mem_sphere]
 theorem norm_eq_of_mem_sphere' (x : sphere (1 : E) r) : ‖(x : E)‖ = r :=
@@ -929,7 +929,7 @@ lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := EN
 
 @[to_additive (attr := simp) enorm_eq_zero]
 lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [enorm, ENormedMonoid.enorm_eq_zero]
+  simp [ENormedMonoid.enorm_eq_zero]
 
 @[to_additive enorm_ne_zero]
 lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
@@ -1097,6 +1097,7 @@ end NNReal
 section SeminormedCommGroup
 
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable {ε : Type*} [TopologicalSpace ε] [ENormedCommMonoid ε]
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
@@ -1114,9 +1115,21 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
   · exact norm_mul_le' x y
 
 @[bound]
-theorem norm_sum_le {ι E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
+theorem enorm_sum_le {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] (s : Finset ι) (f : ι → ε) :
+    ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
+  s.le_sum_of_subadditive enorm enorm_zero enorm_add_le f
+
+@[bound]
+theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.le_sum_of_subadditive norm norm_zero norm_add_le f
+
+@[to_additive existing]
+theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ := by
+  rw [← Multiplicative.ofAdd_le, ofAdd_sum]
+  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ enorm) ?_ (fun x y => ?_) _ _
+  · simp
+  · exact enorm_mul_le' x y
 
 @[to_additive existing]
 theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ := by
@@ -1124,6 +1137,11 @@ theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤
   refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _ _
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
+
+@[to_additive]
+theorem enorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
+    ‖∏ b ∈ s, f b‖ₑ ≤ ∑ b ∈ s, n b :=
+  (enorm_prod_le s f).trans <| Finset.sum_le_sum h
 
 @[to_additive]
 theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : ∀ b ∈ s, ‖f b‖ ≤ n b) :
