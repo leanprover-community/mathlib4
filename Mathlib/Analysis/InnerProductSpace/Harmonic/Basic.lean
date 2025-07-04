@@ -148,6 +148,6 @@ Functions are harmonic iff their compositions with continuous linear
 equivalences are harmonic.
 -/
 theorem harmonicOnNhd_iff_harmonicOnNhd_comp_CLE (l : F ≃L[ℝ] G) :
-    HarmonicOnNhd f s ↔ HarmonicOnNhd (l ∘ f) s := by
+    HarmonicOnNhd (l ∘ f) s ↔ HarmonicOnNhd f s := by
   constructor
   <;> exact fun h x hx ↦ by simpa [← harmonicAt_iff_harmonicAt_comp_CLE] using h x hx
