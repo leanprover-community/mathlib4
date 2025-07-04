@@ -66,8 +66,8 @@ def mapBifunctorHomologicalComplexObj (K₁ : HomologicalComplex C₁ c₁) :
           dsimp
           intros
           simp only [← Functor.map_comp, φ.comm])
-  map_id K₂ := by aesop
-  map_comp f g := by aesop
+  map_id K₂ := by dsimp; ext; dsimp; rw [Functor.map_id]
+  map_comp f g := by dsimp; ext; dsimp; rw [Functor.map_comp]
 
 /-- Given a functor `F : C₁ ⥤ C₂ ⥤ D`, this is the bifunctor which sends
 `K₁ : HomologicalComplex C₁ c₁` and `K₂ : HomologicalComplex C₂ c₂` to the bicomplex

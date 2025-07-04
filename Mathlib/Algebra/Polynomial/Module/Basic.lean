@@ -162,7 +162,11 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j => (monomial f_n f_a).coeff i • g j,
       monomial_smul_apply]
     simp_rw [Polynomial.coeff_monomial, ← Finset.mem_range_succ_iff]
-    aesop
+    rw [← Finset.sum_ite_eq (Finset.range (Nat.succ n)) f_n (fun x => f_a • g (n - x))]
+    congr
+    ext x
+    split_ifs
+    exacts [rfl, (zero_smul R _).symm]
 
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
@@ -180,7 +184,15 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
         split_ifs with hn
         · rw [Finset.sum_eq_single (i - n, n)]
           · simp only [ite_true]
-          · aesop
+          · rintro ⟨p, q⟩ hpq1 hpq2
+            rw [Finset.mem_antidiagonal] at hpq1
+            split_ifs with H
+            · dsimp at H
+              exfalso
+              apply hpq2
+              rw [← hpq1, H]
+              simp only [add_tsub_cancel_right]
+            · rfl
           · intro H
             exfalso
             apply H

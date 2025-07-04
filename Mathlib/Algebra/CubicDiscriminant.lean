@@ -85,7 +85,11 @@ section Coeff
 private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 = P.a ∧
     P.toPoly.coeff 2 = P.b ∧ P.toPoly.coeff 1 = P.c ∧ P.toPoly.coeff 0 = P.d := by
   simp only [toPoly, coeff_add, coeff_C, coeff_C_mul_X, coeff_C_mul_X_pow]
-  aesop
+  norm_num
+  intro n hn
+  repeat' rw [if_neg]
+  any_goals omega
+  repeat' rw [zero_add]
 
 @[simp]
 theorem coeff_eq_zero {n : ℕ} (hn : 3 < n) : P.toPoly.coeff n = 0 :=
@@ -473,7 +477,10 @@ theorem disc_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, 
 theorem disc_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     P.disc ≠ 0 ↔ (map φ P).roots.Nodup := by
   rw [disc_ne_zero_iff_roots_ne ha h3, h3]
-  aesop
+  change _ ↔ (x ::ₘ y ::ₘ {z}).Nodup
+  rw [nodup_cons, nodup_cons, mem_cons, mem_singleton, mem_singleton]
+  simp only [nodup_singleton]
+  tauto
 
 theorem card_roots_of_disc_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z})
     (hd : P.disc ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
