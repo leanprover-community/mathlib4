@@ -8,6 +8,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Tactic.Ring.NamePolyVars
 
+
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates
 
