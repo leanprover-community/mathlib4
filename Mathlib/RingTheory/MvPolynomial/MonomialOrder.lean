@@ -319,10 +319,11 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
 theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
     (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x => (m.toSyn <| m.degree <| f x) := by
   classical
-  induction' s using Finset.induction_on with a A haA h
-  · simp
-  · rw [Finset.sum_insert haA, Finset.sup_insert]
-    exact le_trans m.degree_add_le (max_le_max (le_refl _) h)
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s haA h =>
+    rw [Finset.sum_cons, Finset.sup_cons]
+    exact le_trans m.degree_add_le (max_le_max le_rfl h)
 
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.degree (f + g) = m.degree f := by
