@@ -44,6 +44,17 @@ instance [Monoid α] : Monoid (Shrink.{v} α) := (equivShrink α).symm.monoid
 instance [CommMonoid α] : CommMonoid (Shrink.{v} α) := (equivShrink α).symm.commMonoid
 
 @[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isLeftCancelMul
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isRightCancelMul
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Shrink.{v} α) := (equivShrink α).symm.isCancelMul
+
+@[to_additive]
 instance [Group α] : Group (Shrink.{v} α) := (equivShrink α).symm.group
 
 @[to_additive]
