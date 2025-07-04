@@ -324,7 +324,7 @@ theorem _root_.ContDiffWithinAt.laplacianWithin_CLM_comp_left_nhds {l : F →L[�
 /-- The Laplacian commutes with left composition by continuous linear maps. -/
 theorem _root_.ContDiffAt.laplacian_CLM_comp_left_nhds {l : F →L[ℝ] G} (h : ContDiffAt ℝ 2 f x) :
     Δ (l ∘ f) =ᶠ[𝓝 x] l ∘ (Δ f) := by
-  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl)] with a ha
+  filter_upwards [h.eventually (by simp)] with a ha
   rw [ha.laplacian_CLM_comp_left]
 
 /-- The Laplacian commutes with left composition by continuous linear equivalences. -/
