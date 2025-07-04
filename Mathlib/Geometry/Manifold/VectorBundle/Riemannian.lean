@@ -19,7 +19,21 @@ If the fibers of a bundle `E` have a preexisting topology (like the tangent bund
 assume additionally `[∀ b, InnerProductSpace ℝ (E b)]` as this would create diamonds. Instead,
 use `[RiemannianBundle E]`, which endows the fibers with a scalar product while ensuring that
 there is no diamond. We provide a constructor for `[RiemannianBundle E]` from a smooth family
-of metrics, which registers automatically `[IsContMDiffRiemannianBundle IB n F E]`
+of metrics, which registers automatically `[IsContMDiffRiemannianBundle IB n F E]`.
+
+The following code block is the standard way to say "Let `E` be a smooth vector bundle equipped with
+a `C^n` Riemannian structure over a `C^n` manifold `B`":
+```
+variable
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
+  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
+  [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsContMDiffRiemannianBundle IB n F E]
+```
 -/
 
 open Manifold Bundle ContinuousLinearMap ENat Bornology
@@ -103,14 +117,14 @@ lemma ContMDiffWithinAt.inner_bundle
     (hw : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s x) :
     ContMDiffWithinAt IM 𝓘(ℝ) n (fun m ↦ ⟪v m, w m⟫) s x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
-  have hf : ContMDiffWithinAt IM IB n b s x := by
+  have hb : ContMDiffWithinAt IM IB n b s x := by
     simp only [contMDiffWithinAt_totalSpace] at hv
     exact hv.1
   simp only [hg]
   have : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ)) n
       (fun m ↦ TotalSpace.mk' ℝ (E := Bundle.Trivial B ℝ) (b m) (g (b m) (v m) (w m))) s x := by
     apply ContMDiffWithinAt.clm_bundle_apply₂ (F₁ := F) (F₂ := F)
-    · exact ContMDiffAt.comp_contMDiffWithinAt x g_smooth.contMDiffAt hf
+    · exact ContMDiffAt.comp_contMDiffWithinAt x g_smooth.contMDiffAt hb
     · exact hv
     · exact hw
   simp only [contMDiffWithinAt_totalSpace] at this
@@ -176,13 +190,8 @@ structure ContMDiffRiemannianMetric where
 
 /-- A smooth Riemannian metric defines in particular a continuous Riemannian metric. -/
 def ContMDiffRiemannianMetric.toContinuousRiemannianMetric
-    (g : ContMDiffRiemannianMetric IB n F E) :
-    ContinuousRiemannianMetric F E where
-  inner := g.inner
-  symm := g.symm
-  pos := g.pos
-  isVonNBounded := g.isVonNBounded
-  continuous := g.contMDiff.continuous
+    (g : ContMDiffRiemannianMetric IB n F E) : ContinuousRiemannianMetric F E :=
+  { g with continuous := g.contMDiff.continuous }
 
 /-- A smooth Riemannian metric defines in particular a Riemannian metric. -/
 def ContMDiffRiemannianMetric.toRiemannianMetric
@@ -190,10 +199,10 @@ def ContMDiffRiemannianMetric.toRiemannianMetric
   g.toContinuousRiemannianMetric.toRiemannianMetric
 
 instance (g : ContMDiffRiemannianMetric IB n F E) :
-    letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
-    IsContMDiffRiemannianBundle IB n F E := by
+    letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
+    IsContMDiffRiemannianBundle IB n F E :=
   letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
-  exact ⟨g.inner, g.contMDiff, fun b v w ↦ rfl⟩
+  ⟨g.inner, g.contMDiff, fun _ _ _ ↦ rfl⟩
 
 end Construction
 
