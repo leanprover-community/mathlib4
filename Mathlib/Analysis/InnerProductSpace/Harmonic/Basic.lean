@@ -124,7 +124,7 @@ theorem HarmonicAt.comp_CLM (h : HarmonicAt f x) (l : F →L[ℝ] G) :
     HarmonicAt (l ∘ f) x := by
   constructor
   · exact h.1.continuousLinearMap_comp l
-  · filter_upwards [h.1.laplacian_CLM_comp_left_nhds (l := l), h.2] with a h₁a h₂a
+  · filter_upwards [h.1.laplacian_CLM_comp_left_nhds (l := l), h.2]
     simp_all
 
 /--
