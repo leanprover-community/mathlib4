@@ -3,6 +3,8 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
+
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
@@ -108,23 +110,23 @@ theorem hammingDist_lt_one {x y : ∀ i, β i} : hammingDist x y < 1 ↔ x = y :
 theorem hammingDist_le_card_fintype {x y : ∀ i, β i} : hammingDist x y ≤ Fintype.card ι :=
   card_le_univ _
 
-theorem hammingDist_comp_le_hammingDist (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} :
-    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) ≤ hammingDist x y :=
+theorem hammingDist_map_map_le_hammingDist (f : ∀ i, β i → γ i) {x y : ∀ i, β i} :
+    (hammingDist (Pi.map f x) (Pi.map f y)) ≤ hammingDist x y :=
   card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| congr_arg (f i) H2)
 
-theorem hammingDist_comp (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} (hf : ∀ i, Injective (f i)) :
-    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) = hammingDist x y :=
-  le_antisymm (hammingDist_comp_le_hammingDist _) <|
+theorem hammingDist_map_map_of_injective (f : ∀ i, β i → γ i) {x y : ∀ i, β i}
+    (hf : ∀ i, Injective (f i)) : (hammingDist (Pi.map f x) (Pi.map f y)) = hammingDist x y :=
+  le_antisymm (hammingDist_map_map_le_hammingDist _) <|
     card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| hf i H2)
 
 theorem hammingDist_smul_le_hammingDist [∀ i, SMul α (β i)] {k : α} {x y : ∀ i, β i} :
     hammingDist (k • x) (k • y) ≤ hammingDist x y :=
-  hammingDist_comp_le_hammingDist fun i => (k • · : β i → β i)
+  hammingDist_map_map_le_hammingDist fun i => (k • · : β i → β i)
 
 /-- Corresponds to `dist_smul` with the discrete norm on `α`. -/
 theorem hammingDist_smul [∀ i, SMul α (β i)] {k : α} {x y : ∀ i, β i}
     (hk : ∀ i, IsSMulRegular (β i) k) : hammingDist (k • x) (k • y) = hammingDist x y :=
-  hammingDist_comp (fun i => (k • · : β i → β i)) hk
+  hammingDist_map_map_of_injective (fun i => (k • · : β i → β i)) hk
 
 section Zero
 
@@ -172,21 +174,28 @@ theorem hammingNorm_lt_one {x : ∀ i, β i} : hammingNorm x < 1 ↔ x = 0 :=
 theorem hammingNorm_le_card_fintype {x : ∀ i, β i} : hammingNorm x ≤ Fintype.card ι :=
   hammingDist_le_card_fintype
 
-theorem hammingNorm_comp_le_hammingNorm (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf : ∀ i, f i 0 = 0) :
-    (hammingNorm fun i => f i (x i)) ≤ hammingNorm x := by
-  simpa only [← hammingDist_zero_right, hf] using hammingDist_comp_le_hammingDist f (y := fun _ ↦ 0)
+theorem hammingNorm_map_le_hammingNorm (f : ∀ i, β i → γ i) {x : ∀ i, β i}
+    (hf : ∀ i, f i 0 = 0) : (hammingNorm (Pi.map f x)) ≤ hammingNorm x := by
+  simp_rw [← hammingDist_zero_right]
+  convert hammingDist_map_map_le_hammingDist f (x := x) (y := 0)
+  ext
+  simp only [Pi.zero_apply, Pi.map_apply, hf]
 
-theorem hammingNorm_comp (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf₁ : ∀ i, Injective (f i))
-    (hf₂ : ∀ i, f i 0 = 0) : (hammingNorm fun i => f i (x i)) = hammingNorm x := by
-  simpa only [← hammingDist_zero_right, hf₂] using hammingDist_comp f hf₁ (y := fun _ ↦ 0)
+theorem hammingNorm_map_of_injective (f : ∀ i, β i → γ i) {x : ∀ i, β i}
+    (hf₁ : ∀ i, Injective (f i)) (hf₂ : ∀ i, f i 0 = 0) :
+    (hammingNorm (Pi.map f x)) = hammingNorm x := by
+  simp_rw [← hammingDist_zero_right]
+  convert hammingDist_map_map_of_injective f (x := x) (y := 0) hf₁
+  ext
+  simp only [Pi.zero_apply, Pi.map_apply, hf₂]
 
 theorem hammingNorm_smul_le_hammingNorm [Zero α] [∀ i, SMulWithZero α (β i)] {k : α}
     {x : ∀ i, β i} : hammingNorm (k • x) ≤ hammingNorm x :=
-  hammingNorm_comp_le_hammingNorm (fun i (c : β i) => k • c) fun i => by simp_rw [smul_zero]
+  hammingNorm_map_le_hammingNorm (fun i (c : β i) => k • c) fun i => by simp_rw [smul_zero]
 
 theorem hammingNorm_smul [Zero α] [∀ i, SMulWithZero α (β i)] {k : α}
-    (hk : ∀ i, IsSMulRegular (β i) k) (x : ∀ i, β i) : hammingNorm (k • x) = hammingNorm x :=
-  hammingNorm_comp (fun i (c : β i) => k • c) hk fun i => by simp_rw [smul_zero]
+    (hk : ∀ i, IsSMulRegular (β i) k) {x : ∀ i, β i} : hammingNorm (k • x) = hammingNorm x :=
+  hammingNorm_map_of_injective (fun i (c : β i) => k • c) hk fun i => by simp_rw [smul_zero]
 
 end Zero
 
@@ -199,214 +208,189 @@ end HammingDistNorm
 
 /-! ### The `Hamming` type synonym -/
 
-
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
-def Hamming {ι : Type*} (β : ι → Type*) : Type _ :=
-  ∀ i, β i
+structure Hamming {ι : Type*} (β : ι → Type*) where
+  /-- The `i`-th coordinate of the Hamming type. -/
+  of (i : ι) : β i
 
 namespace Hamming
 
-variable {α ι : Type*} {β : ι → Type*}
+variable {α ι : Type*} {β γ : ι → Type*}
+
+/-- `Hamming.ofEquiv` is the equivalence between `Hamming` and the corresponding Pi type. -/
+@[simps]
+def ofEquiv : Hamming β ≃ ∀ i, β i where
+  toFun := of
+  invFun := mk
+
+@[simp] theorem of_inj {a b : Hamming β} : a.of = b.of ↔ a = b := ofEquiv.injective.eq_iff
+
+@[ext] protected theorem ext {a b : Hamming β} (h : a.of = b.of) : a = b := ofEquiv.injective h
+
+/-- The coordinate-wise map between Hamming types. -/
+@[simps]
+def map (f : ∀ i, γ i → β i) (x : Hamming γ) : Hamming β where
+  of := Pi.map f x.of
 
 /-! Instances inherited from normal Pi types. -/
 
-instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
-  ⟨fun _ => default⟩
+instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) := ofEquiv.inhabited
 
 instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
-  Pi.instFintype
+  Fintype.ofEquiv _ ofEquiv.symm
 
 instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
-  Pi.nontrivial
+  ofEquiv.nontrivial
 
-instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) :=
-  Fintype.decidablePiFintype
+instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) := ofEquiv.decidableEq
 
-instance [∀ i, Zero (β i)] : Zero (Hamming β) :=
-  Pi.instZero
+instance [∀ i, Zero (β i)] : Zero (Hamming β) := ofEquiv.zero
 
-instance [∀ i, Neg (β i)] : Neg (Hamming β) :=
-  Pi.instNeg
+instance [∀ i, Neg (β i)] : Neg (Hamming β) := ofEquiv.Neg
 
-instance [∀ i, Add (β i)] : Add (Hamming β) :=
-  Pi.instAdd
+instance [∀ i, Add (β i)] : Add (Hamming β) := ofEquiv.add
 
-instance [∀ i, Sub (β i)] : Sub (Hamming β) :=
-  Pi.instSub
+instance [∀ i, Sub (β i)] : Sub (Hamming β) := ofEquiv.sub
 
-instance [∀ i, SMul α (β i)] : SMul α (Hamming β) :=
-  Pi.instSMul
+instance [∀ i, SMul α (β i)] : SMul α (Hamming β) := ofEquiv.smul _
 
-instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) :=
-  Pi.smulWithZero _
+instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) where
+  smul_zero _ := Hamming.ext <| funext <| fun _ => smul_zero _
+  zero_smul _ := Hamming.ext <| funext <| fun _ => zero_smul _ _
 
-instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) :=
-  Pi.addMonoid
+instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) := ofEquiv.addMonoid
 
-instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) := Pi.addGroup
+instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) := ofEquiv.addGroup
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
-  Pi.addCommMonoid
+instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) := ofEquiv.addCommMonoid
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
-  Pi.addCommGroup
+instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) := ofEquiv.addCommGroup
 
-instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
-    Module α (Hamming β) :=
-  Pi.module _ _ _
+instance [Semiring α] [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
+    Module α (Hamming β) := ofEquiv.module α
 
-/-! API to/from the type synonym. -/
+/-- `Hamming.ofEquiv` as an `AddEquiv`. -/
+def ofAddEquiv [∀ i, Add (β i)] : Hamming β ≃+ ∀ i, β i := ofEquiv.addEquiv
 
-
-/-- `Hamming.toHamming` is the identity function to the `Hamming` of a type. -/
-@[match_pattern]
-def toHamming : (∀ i, β i) ≃ Hamming β :=
-  Equiv.refl _
-
-/-- `Hamming.ofHamming` is the identity function from the `Hamming` of a type. -/
-@[match_pattern]
-def ofHamming : Hamming β ≃ ∀ i, β i :=
-  Equiv.refl _
-
-@[simp]
-theorem toHamming_symm_eq : (@toHamming _ β).symm = ofHamming :=
-  rfl
-
-@[simp]
-theorem ofHamming_symm_eq : (@ofHamming _ β).symm = toHamming :=
-  rfl
-
-@[simp]
-theorem toHamming_ofHamming (x : Hamming β) : toHamming (ofHamming x) = x :=
-  rfl
-
-@[simp]
-theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
-  rfl
-
-theorem toHamming_inj {x y : ∀ i, β i} : toHamming x = toHamming y ↔ x = y :=
-  Iff.rfl
-
-theorem ofHamming_inj {x y : Hamming β} : ofHamming x = ofHamming y ↔ x = y :=
-  Iff.rfl
-
-@[simp]
-theorem toHamming_zero [∀ i, Zero (β i)] : toHamming (0 : ∀ i, β i) = 0 :=
-  rfl
-
-@[simp]
-theorem ofHamming_zero [∀ i, Zero (β i)] : ofHamming (0 : Hamming β) = 0 :=
-  rfl
-
-@[simp]
-theorem toHamming_neg [∀ i, Neg (β i)] {x : ∀ i, β i} : toHamming (-x) = -toHamming x :=
-  rfl
-
-@[simp]
-theorem ofHamming_neg [∀ i, Neg (β i)] {x : Hamming β} : ofHamming (-x) = -ofHamming x :=
-  rfl
-
-@[simp]
-theorem toHamming_add [∀ i, Add (β i)] {x y : ∀ i, β i} :
-    toHamming (x + y) = toHamming x + toHamming y :=
-  rfl
-
-@[simp]
-theorem ofHamming_add [∀ i, Add (β i)] {x y : Hamming β} :
-    ofHamming (x + y) = ofHamming x + ofHamming y :=
-  rfl
-
-@[simp]
-theorem toHamming_sub [∀ i, Sub (β i)] {x y : ∀ i, β i} :
-    toHamming (x - y) = toHamming x - toHamming y :=
-  rfl
-
-@[simp]
-theorem ofHamming_sub [∀ i, Sub (β i)] {x y : Hamming β} :
-    ofHamming (x - y) = ofHamming x - ofHamming y :=
-  rfl
-
-@[simp]
-theorem toHamming_smul [∀ i, SMul α (β i)] {r : α} {x : ∀ i, β i} :
-    toHamming (r • x) = r • toHamming x :=
-  rfl
-
-@[simp]
-theorem ofHamming_smul [∀ i, SMul α (β i)] {r : α} {x : Hamming β} :
-    ofHamming (r • x) = r • ofHamming x :=
-  rfl
+/-- `Hamming.ofEquiv` as a `LinearEquiv`. -/
+def ofLinearEquiv (α) [Semiring α] [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
+  Hamming β ≃ₗ[α] ∀ i, β i := ofEquiv.linearEquiv α
 
 section
 
 /-! Instances equipping `Hamming` with `hammingNorm` and `hammingDist`. -/
 
-variable [Fintype ι] [∀ i, DecidableEq (β i)]
+variable [Fintype ι] [∀ i, DecidableEq (β i)] [∀ i, DecidableEq (γ i)] {x y : Hamming β}
+    (f : ∀ i, β i → γ i)
 
 instance : Dist (Hamming β) :=
-  ⟨fun x y => hammingDist (ofHamming x) (ofHamming y)⟩
+  ⟨fun x y => hammingDist x.of y.of⟩
 
-@[simp, push_cast]
-theorem dist_eq_hammingDist (x y : Hamming β) :
-    dist x y = hammingDist (ofHamming x) (ofHamming y) :=
-  rfl
+@[push_cast]
+theorem dist_eq_hammingDist :
+    dist x y = hammingDist x.of y.of := rfl
+
+theorem dist_lt_one : dist x y < 1 ↔ x = y := by
+  rw [Hamming.ext_iff]
+  push_cast
+  exact mod_cast hammingDist_lt_one
+
+theorem dist_le_card : dist x y ≤ Fintype.card ι := by
+  push_cast
+  exact mod_cast hammingDist_le_card_fintype
+
+theorem dist_map_map_le_dist : dist (x.map f) (y.map f) ≤ dist x y := by
+  push_cast
+  exact mod_cast hammingDist_map_map_le_hammingDist f
+
+theorem dist_map_map_of_injective (hf : ∀ i, Function.Injective (f i)) :
+    dist (x.map f) (y.map f) = dist x y := by
+  push_cast
+  exact mod_cast hammingDist_map_map_of_injective f hf
+
+theorem dist_smul_le_dist [∀ i, SMul α (β i)] {k : α} : dist (k • x) (k • y) ≤ dist x y := by
+  push_cast
+  exact mod_cast hammingDist_smul_le_hammingDist
+
+theorem dist_smul [∀ i, SMul α (β i)] {k : α} (hk : ∀ i, IsSMulRegular (β i) k) :
+    dist (k • x) (k • y) = dist x y := by
+  push_cast
+  exact mod_cast hammingDist_smul hk
 
 instance : PseudoMetricSpace (Hamming β) where
-  dist_self := by
+  dist_self _ := by
     push_cast
-    exact mod_cast hammingDist_self
-  dist_comm := by
+    exact mod_cast hammingDist_self _
+  dist_comm _ _ := by
     push_cast
-    exact mod_cast hammingDist_comm
-  dist_triangle := by
+    exact mod_cast hammingDist_comm _ _
+  dist_triangle _ _ _ := by
     push_cast
-    exact mod_cast hammingDist_triangle
+    exact mod_cast hammingDist_triangle _ _ _
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
-    push_cast
     constructor
-    · refine fun hs => ⟨1, zero_lt_one, fun hab => ?_⟩
-      rw_mod_cast [hammingDist_lt_one] at hab
-      rw [ofHamming_inj, ← mem_idRel] at hab
-      exact hs hab
+    · exact fun hs => ⟨1, zero_lt_one, fun hab => hs (dist_lt_one.mp hab)⟩
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
-      rw [mem_idRel] at hab
-      rw [hab]
-      refine hs (lt_of_eq_of_lt ?_ hε)
-      exact mod_cast hammingDist_self _
+      refine hs (hε.trans_eq' ?_)
+      push_cast; exact mod_cast hammingDist_eq_zero.mpr <| of_inj.mpr hab
   toBornology := ⟨⊥, bot_le⟩
-  cobounded_sets := by
-    ext
-    push_cast
-    refine iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => ?_⟩
-    exact mod_cast hammingDist_le_card_fintype
+  cobounded_sets := Set.ext <| fun _ =>
+    iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => dist_le_card⟩
 
-@[simp, push_cast]
-theorem nndist_eq_hammingDist (x y : Hamming β) :
-    nndist x y = hammingDist (ofHamming x) (ofHamming y) :=
+@[push_cast]
+theorem nndist_eq_hammingDist :
+    nndist x y = hammingDist x.of y.of :=
   rfl
 
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
 
-instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
-  ⟨fun x => hammingNorm (ofHamming x)⟩
+section
 
-@[simp, push_cast]
-theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=
-  rfl
+variable [∀ i, Zero (β i)] [∀ i, Zero (γ i)]
+
+instance : Norm (Hamming β) := ⟨fun x => hammingNorm x.of⟩
+
+theorem norm_lt_one {x : Hamming β} : ‖x‖ < 1 ↔ x = 0 := dist_lt_one (y := 0)
+
+theorem norm_le_card {x : Hamming β} : ‖x‖ ≤ Fintype.card ι := dist_le_card (y := 0)
+
+@[push_cast] theorem norm_eq_hammingNorm : ‖x‖ = hammingNorm x.of := rfl
+
+theorem norm_map_le_norm (hf : ∀ i, f i 0 = 0) : ‖x.map f‖ ≤ ‖x‖ := by
+  push_cast
+  exact mod_cast hammingNorm_map_le_hammingNorm f hf
+
+theorem norm_map_of_injective (hf₁ : ∀ i, Function.Injective (f i)) (hf₂ : ∀ i, f i 0 = 0) :
+    ‖x.map f‖ = ‖x‖ := by
+  push_cast
+  exact mod_cast hammingNorm_map_of_injective f hf₁ hf₂
+
+theorem norm_smul_le_norm [Zero α] [∀ i, SMulWithZero α (β i)] {k : α} : ‖k • x‖ ≤ ‖x‖ := by
+  push_cast
+  exact mod_cast hammingNorm_smul_le_hammingNorm
+
+theorem norm_smul [Zero α] [∀ i, SMulWithZero α (β i)] {k : α} (hk : ∀ i, IsSMulRegular (β i) k) :
+    ‖k • x‖ = ‖x‖ := by
+  push_cast
+  exact mod_cast hammingNorm_smul hk
+
+end
 
 instance [∀ i, AddGroup (β i)] : NormedAddGroup (Hamming β) where
-  dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
+  dist_eq _ _ := by push_cast; exact mod_cast hammingDist_eq_hammingNorm _ _
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := fun x y => NormedAddGroup.dist_eq x y
 
-@[simp, push_cast]
-theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
-    ‖x‖₊ = hammingNorm (ofHamming x) := rfl
+@[push_cast]
+theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] :
+    ‖x‖₊ = hammingNorm x.of := rfl
 
 end
 
 end Hamming
+
