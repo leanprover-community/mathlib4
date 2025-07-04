@@ -3,7 +3,7 @@ import Mathlib
 --import Mathlib.Order.Lattice
 
 
-variable {α : Type*}
+variable {α β : Type*}
 
 def IsDistrib [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), a ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y)
@@ -14,10 +14,19 @@ def IsStandard [Lattice α] (a : α) : Prop :=
 def IsNeutral [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), (a ⊓ x) ⊔ (a ⊓ y) ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y) ⊓ (x ⊔ y)
 
-variable [Lattice α]
+variable [Lattice α] [Lattice β]
 
 def Set.neutral : Set α :=
   { z | IsNeutral z }
+
+structure IsLatticeHom (f : α → β) : Prop where
+  map_inf (a b : α) : f (a ⊓ b) = f a ⊓ f b
+  map_sup (a b : α) : f (a ⊔ b) = f a ⊔ f b
+
+lemma theorem2_i_ii (a : α) : IsDistrib a → IsLatticeHom (fun x => a ⊔ x) := fun h => {
+  map_inf := h
+  map_sup := sup_sup_distrib_left _
+}
 
 lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
     (h2 : ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := fun x y => h2 _  _
