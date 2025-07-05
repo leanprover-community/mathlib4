@@ -161,7 +161,7 @@ theorem eq_iInf_principal (B : FilterBasis α) : B.filter = ⨅ s : B.sets, 𝓟
     rintro ⟨U, U_in⟩ ⟨V, V_in⟩
     rcases B.inter_sets U_in V_in with ⟨W, W_in, W_sub⟩
     use ⟨W, W_in⟩
-    simp only [le_principal_iff, mem_principal, Subtype.coe_mk]
+    simp only [le_principal_iff, mem_principal]
     exact subset_inter_iff.mp W_sub
   ext U
   simp [mem_filter_iff, mem_iInf_of_directed this]
@@ -226,7 +226,7 @@ protected theorem HasBasis.nonempty (h : l.HasBasis p s) : Nonempty ι :=
   h.ex_mem.nonempty
 
 protected theorem IsBasis.hasBasis (h : IsBasis p s) : HasBasis h.filter p s :=
-  ⟨fun t => by simp only [h.mem_filter_iff, exists_prop]⟩
+  ⟨fun t => by simp only [h.mem_filter_iff]⟩
 
 protected theorem HasBasis.mem_of_superset (hl : l.HasBasis p s) (hi : p i) (ht : s i ⊆ t) :
     t ∈ l :=
@@ -465,13 +465,13 @@ theorem hasBasis_iSup {ι : Sort*} {ι' : ι → Type*} {l : ι → Filter α} {
     {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
     (⨆ i, l i).HasBasis (fun f : ∀ i, ι' i => ∀ i, p i (f i)) fun f : ∀ i, ι' i => ⋃ i, s i (f i) :=
   hasBasis_iff.mpr fun t => by
-    simp only [hasBasis_iff, (hl _).mem_iff, Classical.skolem, forall_and, iUnion_subset_iff,
+    simp only [(hl _).mem_iff, Classical.skolem, forall_and, iUnion_subset_iff,
       mem_iSup]
 
 theorem HasBasis.sup_principal (hl : l.HasBasis p s) (t : Set α) :
     (l ⊔ 𝓟 t).HasBasis p fun i => s i ∪ t :=
   ⟨fun u => by
-    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true,
+    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, and_true,
       Unique.exists_iff]⟩
 
 theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :
@@ -567,7 +567,7 @@ theorem inf_neBot_iff_frequently_right {f g : Filter α} :
   exact inf_neBot_iff_frequently_left
 
 theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_ : p i), 𝓟 (s i) :=
-  eq_biInf_of_mem_iff_exists_mem fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
+  eq_biInf_of_mem_iff_exists_mem fun {_} => by simp only [h.mem_iff, mem_principal]
 
 theorem HasBasis.eq_iInf (h : l.HasBasis (fun _ => True) s) : l = ⨅ i, 𝓟 (s i) := by
   simpa only [iInf_true] using h.eq_biInf

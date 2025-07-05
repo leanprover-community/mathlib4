@@ -5,4 +5,4 @@ Authors: Robin Carlier
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Basic
 
-deprecated_module (since := "2025-06-16")
+deprecated_module (since := "2025-07-05")

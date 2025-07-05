@@ -128,14 +128,14 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     dsimp [approx]
     rfl
   · apply ωSup_le _ _ _
-    simp only [Fix.approxChain, OrderHom.coe_mk]
+    simp only [Fix.approxChain]
     intro y x
     apply approx_le_fix f
 
 theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
-  simp only [Fix.approxChain, OrderHom.coe_mk]
+  simp only [Fix.approxChain]
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
