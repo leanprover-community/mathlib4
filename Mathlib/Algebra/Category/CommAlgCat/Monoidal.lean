@@ -97,8 +97,8 @@ instance : CartesianMonoidalCategory (CommAlgCat.{u} R)ᵒᵖ where
   fst := _
   snd := _
   tensorProductIsBinaryProduct S T := BinaryCofan.IsColimit.op <| binaryCofanIsColimit S.unop T.unop
-  fst_def S T := by ext x; show x ⊗ₜ 1 = x ⊗ₜ algebraMap R T.unop 1; simp
-  snd_def S T := by ext x; show 1 ⊗ₜ x = algebraMap R S.unop 1 ⊗ₜ x; simp
+  fst_def S T := by ext x; change x ⊗ₜ 1 = x ⊗ₜ algebraMap R T.unop 1; simp
+  snd_def S T := by ext x; change 1 ⊗ₜ x = algebraMap R S.unop 1 ⊗ₜ x; simp
 
 variable {A B C D : (CommAlgCat.{u} R)ᵒᵖ}
 
