@@ -306,7 +306,7 @@ end IsSelfAdjoint
 namespace ContinuousLinearMap
 variable [CompleteSpace E]
 
-/-- An operator is normal iff `‖T v‖ = ‖(adjoint T) v‖` for all `v`. -/
+/-- An operator `T` is normal iff `‖T v‖ = ‖(adjoint T) v‖` for all `v`. -/
 theorem isStarNormal_iff_norm_eq_adjoint (A : E →L[𝕜] E) :
     IsStarNormal A ↔ ∀ v : E, ‖A v‖ = ‖adjoint A v‖ := by
   rw [isStarNormal_iff, Commute, SemiconjBy, ← sub_eq_zero]
