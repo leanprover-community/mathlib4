@@ -438,7 +438,7 @@ noncomputable def ofFixingSubgroup.append
     {n : ℕ} [Finite s] (x : Fin n ↪ ofFixingSubgroup M s) :
     Fin (s.ncard + n) ↪ α := by
   have : Nonempty (Fin (s.ncard) ≃ s) :=
-    Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+    Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
   let y := (Classical.choice this).toEmbedding
   apply Fin.Embedding.append (x := y.trans (subtype _)) (y := x.trans (subtype _))
   rw [Set.disjoint_iff_forall_ne]
@@ -451,7 +451,7 @@ noncomputable def ofFixingSubgroup.append
 theorem ofFixingSubgroup.append_left {n : ℕ} [Finite s]
     (x : Fin n ↪ ofFixingSubgroup M s) (i : Fin s.ncard) :
     let Hs : Nonempty (Fin (s.ncard) ≃ s) :=
-      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+      Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
     ofFixingSubgroup.append x (Fin.castAdd n i) = (Classical.choice Hs) i := by
   simp [ofFixingSubgroup.append]
 
