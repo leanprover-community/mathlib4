@@ -365,33 +365,6 @@ lemma mlieBracket_add_left
   simp only [← mlieBracketWithin_univ] at hV hV₁ ⊢
   exact mlieBracketWithin_add_left hV hV₁ (uniqueMDiffWithinAt_univ _)
 
-omit [IsManifold I 2 M] [CompleteSpace E] in
-/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
-if `W` is not differentiable. Version within a set. -/
-@[simp]
-lemma mlieBracketWithin_zero_left : mlieBracketWithin I 0 W s = 0 := by
-  ext x
-  simp [mlieBracketWithin]
-
-omit [IsManifold I 2 M] [CompleteSpace E] in
-/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
-if `W` is not differentiable. Version within a set. -/
-@[simp]
-lemma mlieBracketWithin_zero_right : mlieBracketWithin I W 0 s = 0 := by
-  rw [mlieBracketWithin_swap]; simp
-
-omit [IsManifold I 2 M] [CompleteSpace E] in
-/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
-if `W` is not differentiable. -/
-@[simp]
-lemma mlieBracket_zero_left : mlieBracket I 0 W = 0 := by simp [← mlieBracketWithin_univ]
-
-omit [IsManifold I 2 M] [CompleteSpace E] in
-/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
-if `W` is not differentiable. -/
-@[simp]
-lemma mlieBracket_zero_right : mlieBracket I W 0 = 0 := by simp [← mlieBracketWithin_univ]
-
 lemma mlieBracketWithin_add_right
     (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
     (hW₁ : MDifferentiableWithinAt I I.tangent (fun x ↦ (W₁ x : TangentBundle I M)) s x)
