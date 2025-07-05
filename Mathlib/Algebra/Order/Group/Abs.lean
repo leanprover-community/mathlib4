@@ -72,9 +72,7 @@ theorem le_of_mabs_le (h : |a|ₘ ≤ b) : a ≤ b :=
 
 /-- The **triangle inequality** in `LinearOrderedCommGroup`s. -/
 @[to_additive "The **triangle inequality** in `LinearOrderedAddCommGroup`s."]
-theorem mabs_mul (a b : G) : |a * b|ₘ ≤ |a|ₘ * |b|ₘ := by
-  rw [mabs_le, mul_inv]
-  constructor <;> gcongr <;> apply_rules [inv_mabs_le, le_mabs_self]
+theorem mabs_mul (a b : G) : |a * b|ₘ ≤ |a|ₘ * |b|ₘ := mabs_mul_le a b
 
 @[to_additive]
 theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul b⁻¹ (b * a)

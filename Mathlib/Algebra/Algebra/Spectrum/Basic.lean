@@ -225,10 +225,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   have x_eq : x = r • r⁻¹ • x := by simp
   nth_rw 1 [x_eq]
   rw [smul_mem_smul_iff]
-  constructor
-  · exact fun h => ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
-  · rintro ⟨w, _, (x'_eq : r • w = x)⟩
-    simpa [← x'_eq ]
+  exact Iff.symm mem_smul_set_iff_inv_smul_mem
 
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
