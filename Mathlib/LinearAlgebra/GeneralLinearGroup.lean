@@ -40,12 +40,18 @@ def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
     left_inv := fun m ↦ show (f.inv * f.val) m = m by rw [f.inv_val]; simp
     right_inv := fun m ↦ show (f.val * f.inv) m = m by rw [f.val_inv]; simp }
 
+@[simp] lemma toLinearEquiv_toFun (f : GeneralLinearGroup R M) :
+    f.toLinearEquiv = (f : M → M) := rfl
+
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
 def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where
   val := f
   inv := (f.symm : M →ₗ[R] M)
   val_inv := LinearMap.ext fun _ ↦ f.apply_symm_apply _
   inv_val := LinearMap.ext fun _ ↦ f.symm_apply_apply _
+
+@[simp] lemma ofLinearEquiv_toFun (f : M ≃ₗ[R] M) :
+    ofLinearEquiv f = (f : M → M) := rfl
 
 variable (R M) in
 /-- The general linear group on `R` and `M` is multiplicatively equivalent to the type of linear
@@ -70,12 +76,13 @@ variable {S N : Type*} [Semiring S] [AddCommGroup N] [Module S N]
 
 /-- A semilinear equivalence from `V` to `W` determines an isomorphism of general linear
 groups. -/
+@[simps apply]
 def compLinearEquiv (e : M ≃ₛₗ[σ] N) : GeneralLinearGroup R M ≃* GeneralLinearGroup S N where
   toFun g := ofLinearEquiv (e.symm.trans <| g.toLinearEquiv.trans e)
   invFun h := ofLinearEquiv (e.trans <| h.toLinearEquiv.trans e.symm)
-  map_mul' g g' := Units.ext <| LinearMap.ext <| by simp [ofLinearEquiv, toLinearEquiv]
-  left_inv g := Units.ext <| LinearMap.ext <| by simp [ofLinearEquiv, toLinearEquiv]
-  right_inv h := Units.ext <| LinearMap.ext <| by simp [ofLinearEquiv, toLinearEquiv]
+  map_mul' g g' := Units.ext <| LinearMap.ext <| by simp
+  left_inv g := Units.ext <| LinearMap.ext <| by simp
+  right_inv h := Units.ext <| LinearMap.ext <| by simp
 
 end Functoriality
 

@@ -85,10 +85,8 @@ instance instGLAction : MulAction (GL (Fin 2) K) (OnePoint K) :=
 lemma smul_infty_def (g : GL (Fin 2) K) :
     g • ∞ = (equivProjectivization K).symm (.mk K (g 0 0, g 1 0) (fun h ↦ by
       simpa [det_fin_two, Prod.mk_eq_zero.mp h] using g.det_ne_zero)) := by
-  by_cases h : g 1 0 = 0 <;>
-  simp [h, Equiv.smul_def, MulAction.compHom_smul_def, Projectivization.smul_mk,
-    LinearMap.GeneralLinearGroup.compLinearEquiv, mulVec_eq_sum,
-    LinearMap.GeneralLinearGroup.toLinearEquiv, LinearMap.GeneralLinearGroup.ofLinearEquiv]
+  simp [Equiv.smul_def, MulAction.compHom_smul_def, Projectivization.smul_mk, mulVec_eq_sum,
+    Units.smul_def]
 
 @[simp]
 lemma smul_infty_eq_ite (g : GL (Fin 2) K) :
@@ -99,6 +97,12 @@ lemma smul_infty_eq_ite (g : GL (Fin 2) K) :
 lemma smul_infty_eq_iff (g : GL (Fin 2) K) :
     g • (∞ : OnePoint K) = ∞ ↔ g 1 0 = 0 := by
   simp
+
+lemma smul_some_eq_ite (g : GL (Fin 2) K) (k : K) :
+    g • (k : OnePoint K) =
+      if g 1 0 * k + g 1 1 = 0 then ∞ else (g 0 0 * k + g 0 1) / (g 1 0 * k + g 1 1) := by
+  simp [Equiv.smul_def, MulAction.compHom_smul_def, Projectivization.smul_mk, mulVec_eq_sum,
+    div_eq_inv_mul, mul_comm, Units.smul_def]
 
 end Field
 

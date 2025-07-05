@@ -46,11 +46,11 @@ variable {K n : Type*} [Field K] [Fintype n] [DecidableEq n]
 
 /-- For a field `K`, the group `GL n K` acts on `ℙ K (n → K)`. -/
 instance instGLFinAction : MulAction (GL n K) (ℙ K (n → K)) :=
-  .compHom _ <| Matrix.GeneralLinearGroup.toLin.toMonoidHom
+  .compHom _ Matrix.GeneralLinearGroup.toLin.toMonoidHom
 
 /-- For a field `K`, the group `GL (Fin 2) K` acts on `ℙ K (K × K)`. -/
 instance instGLFinTwoAction : MulAction (GL (Fin 2) K) (ℙ K (K × K)) :=
-  .compHom _ <| (Matrix.GeneralLinearGroup.toLin.trans
+  .compHom _ (Matrix.GeneralLinearGroup.toLin.trans
     <| LinearMap.GeneralLinearGroup.compLinearEquiv <| LinearEquiv.finTwoArrow K K).toMonoidHom
 
 end Field
