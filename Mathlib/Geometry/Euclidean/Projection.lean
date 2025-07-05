@@ -586,9 +586,7 @@ lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
     s.orthogonalProjectionSpan p = s.points 0 := by
   rw [orthogonalProjectionSpan]
   convert orthogonalProjection_affineSpan_singleton _ _
-  rw [← Set.image_singleton, ← Set.image_univ]
-  convert rfl
-  exact Set.toFinset_eq_univ.mp rfl
+  simp [Fin.fin_one_eq_zero]
 
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2)
     (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
