@@ -177,6 +177,27 @@ instance IsLocalizedEquivalence.isLocalization [Φ.IsLocalizedEquivalence] :
     (Φ.functor ⋙ L₂).IsLocalization W₁ :=
   Functor.IsLocalization.of_iso _ ((Φ.catCommSq W₁.Q L₂).iso).symm
 
+lemma isLocalizedEquivalence_of_unit_of_unit (Ψ : LocalizerMorphism W₂ W₁)
+    (ε₁ : 𝟭 C₁ ⟶ Φ.functor ⋙ Ψ.functor) (ε₂ : 𝟭 C₂ ⟶ Ψ.functor ⋙ Φ.functor)
+    (hε₁ : ∀ X₁, W₁ (ε₁.app X₁)) (hε₂ : ∀ X₂, W₂ (ε₂.app X₂)) :
+    Φ.IsLocalizedEquivalence where
+  isEquivalence := by
+    have : IsIso (whiskerRight ε₁ W₁.Q) := by
+      rw [NatTrans.isIso_iff_isIso_app]
+      exact fun _ ↦ Localization.inverts W₁.Q W₁ _ (hε₁ _)
+    have : IsIso (whiskerRight ε₂ W₂.Q) := by
+      rw [NatTrans.isIso_iff_isIso_app]
+      exact fun _ ↦ Localization.inverts W₂.Q W₂ _ (hε₂ _)
+    refine (Localization.equivalence W₁.Q W₁ W₂.Q W₂ (Φ.functor ⋙ W₂.Q)
+      (Φ.localizedFunctor W₁.Q W₂.Q)
+      (Ψ.functor ⋙ W₁.Q) (Ψ.localizedFunctor W₂.Q W₁.Q) ?_ ?_).isEquivalence_functor
+    · exact Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft _ (CatCommSq.iso Ψ.functor W₂.Q W₁.Q _).symm ≪≫
+        (asIso (whiskerRight ε₁ W₁.Q)).symm ≪≫ Functor.leftUnitor _
+    · exact Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft _ (CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm ≪≫
+        (asIso (whiskerRight ε₂ W₂.Q)).symm ≪≫ Functor.leftUnitor _
+
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
 @[simps]
