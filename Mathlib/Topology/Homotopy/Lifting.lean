@@ -436,7 +436,7 @@ theorem existsUnique_continuousMap_lifts_of_range_le
     (cov.eq_liftPath_iff' <| by simp [γ'_0, he]).mpr ⟨Γ'_lifts, Γ'_0⟩]
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
   let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
-  show (cov.monodromy ⟦pγ.map f.continuous⟧ ⟨e₀, he⟩).1 =
+  change (cov.monodromy ⟦pγ.map f.continuous⟧ ⟨e₀, he⟩).1 =
     (cov.monodromy ⟦pγ'.map f.continuous⟧ ⟨e₀, he⟩).1
   rw [← Subtype.ext_iff]
   apply (cov.monodromy_bijective ⟦(pγ'.map f.continuous).symm⟧).1
