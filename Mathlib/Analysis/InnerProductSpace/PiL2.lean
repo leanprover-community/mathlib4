@@ -139,9 +139,17 @@ theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
   simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
 
+theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x : EuclideanSpace 𝕜 n) : ‖x‖ ^ 2 = ∑ i, ‖x i‖ ^ 2 :=
+  PiLp.norm_sq_eq_of_L2 _ x
+
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : dist x y = √(∑ i, dist (x i) (y i) ^ 2) :=
   PiLp.dist_eq_of_L2 x y
+
+theorem EuclideanSpace.dist_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x y : EuclideanSpace 𝕜 n) : dist x y ^ 2 = ∑ i, dist (x i) (y i) ^ 2 :=
+  PiLp.dist_sq_eq_of_L2 x y
 
 theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=

@@ -24,7 +24,7 @@ and the presheaf of modules.
 
 universe w v v₁ u₁ u
 
-open CategoryTheory
+open CategoryTheory Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
 
@@ -246,8 +246,8 @@ protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r
   rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
     map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
-      (by rw [map_add, map_add, hm₀, hm₀']),
-    smul_add, map_add]
+      (by rw [_root_.map_add, _root_.map_add, hm₀, hm₀']),
+    smul_add, _root_.map_add]
 
 protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r' m := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
@@ -259,8 +259,8 @@ protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r
     ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.val.map f.op) r')⟩⟩, ⟨m₀, hm₀⟩⟩
   rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀,
-    map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [map_add, map_add, hr₀, hr₀'])
-      m₀ hm₀, add_smul, map_add]
+    map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [_root_.map_add, _root_.map_add, hr₀, hr₀'])
+      m₀ hm₀, add_smul, _root_.map_add]
 
 protected lemma mul_smul : smul α φ (r * r') m = smul α φ r (smul α φ r' m) := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
