@@ -49,9 +49,8 @@ theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) := by
   rw [← insert_empty_eq]
   exact max_insert
 
-theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
-  obtain ⟨b, h, _⟩ := le_sup (α := WithBot α) h _ rfl
-  exact ⟨b, h⟩
+theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b :=
+  let ⟨b, h, _⟩ := WithBot.le_def.1 (le_sup (α := WithBot α) h) _ rfl; ⟨b, h⟩
 
 theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a :=
   let ⟨_, h⟩ := h
@@ -131,9 +130,8 @@ theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) := by
   rw [← insert_empty_eq]
   exact min_insert
 
-theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
-  obtain ⟨b, h, _⟩ := inf_le (α := WithTop α) h _ rfl
-  exact ⟨b, h⟩
+theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b :=
+  let ⟨b, h, _⟩ := WithTop.le_def.1 (inf_le (α := WithTop α) h) _ rfl; ⟨b, h⟩
 
 theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a :=
   let ⟨_, h⟩ := h
