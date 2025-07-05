@@ -38,7 +38,7 @@ lemma geom_sum_succ' {x : R} {n : ℕ} :
 lemma geom_sum_zero (x : R) : ∑ i ∈ range 0, x ^ i = 0 :=
   rfl
 
-lemma geom_sum_one (x : R) : ∑ i ∈ range 1, x ^ i = 1 := by simp [geom_sum_succ']
+lemma geom_sum_one (x : R) : ∑ i ∈ range 1, x ^ i = 1 := by simp
 
 @[simp]
 lemma geom_sum_two {x : R} : ∑ i ∈ range 2, x ^ i = x + 1 := by simp [geom_sum_succ']
@@ -112,7 +112,7 @@ lemma geom_sum_mul_add (x : R) (n : ℕ) : (∑ i ∈ range n, (x + 1) ^ i) * x 
 protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = ∑ i ∈ range n, y ^ i * x ^ (n - 1 - i) := by
   cases n; · simp
-  simp only [Nat.succ_eq_add_one, Nat.add_sub_cancel]
+  simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
   simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
@@ -186,7 +186,7 @@ protected lemma Commute.geom_sum₂_mul (h : Commute x y) (n : ℕ) :
 lemma Commute.mul_neg_geom_sum₂ (h : Commute x y) (n : ℕ) :
     ((y - x) * ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) = y ^ n - x ^ n := by
   apply op_injective
-  simp only [op_mul, op_sub, op_geom_sum₂, op_pow]
+  simp only [op_mul, op_sub, op_pow]
   simp [(Commute.op h.symm).geom_sum₂_mul n]
 
 lemma Commute.mul_geom_sum₂ (h : Commute x y) (n : ℕ) :
