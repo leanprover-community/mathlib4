@@ -187,17 +187,17 @@ lemma lieBracketWithin_zero_left : lieBracketWithin 𝕜 0 W s = 0 := by ext; si
 /-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
 if `W` is not differentiable. Version within a set. -/
 @[simp]
-lemma lieBracketWithin_zero_right : lieBracketWithin 𝕜 W 0 s x = 0 := by simp [lieBracketWithin]
+lemma lieBracketWithin_zero_right : lieBracketWithin 𝕜 W 0 s = 0 := by ext; simp [lieBracketWithin]
 
 /-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
 if `W` is not differentiable. -/
 @[simp]
-lemma lieBracket_zero_left : lieBracket 𝕜 0 W x = 0 := by simp [lieBracket]
+lemma lieBracket_zero_left : lieBracket 𝕜 0 W = 0 := by simp [← lieBracketWithin_univ]
 
 /-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
 if `W` is not differentiable. -/
 @[simp]
-lemma lieBracket_zero_right : lieBracket 𝕜 W 0 x = 0 := by simp [lieBracket]
+lemma lieBracket_zero_right : lieBracket 𝕜 W 0 = 0 := by simp [← lieBracketWithin_univ]
 
 lemma lieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
     (hW₁ : DifferentiableWithinAt 𝕜 W₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
