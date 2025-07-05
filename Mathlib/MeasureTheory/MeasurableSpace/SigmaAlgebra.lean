@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi-Jing Tseng
 -/
 
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 
 /-!
