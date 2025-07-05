@@ -507,6 +507,15 @@ attribute [local instance] TensorProduct.rightAlgebra
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 
+lemma right_algebraMap_apply (b : B) : algebraMap B (A ⊗[R] B) b = 1 ⊗ₜ b := rfl
+
+instance : SMulCommClass A B (A ⊗[R] B) where
+  smul_comm a b x := x.induction_on (by simp)
+    (fun _ _ ↦ by simp [Algebra.smul_def, right_algebraMap_apply, smul_tmul'])
+    fun _ _ h₁ h₂ ↦ by simpa using congr($h₁ + $h₂)
+
+instance : SMulCommClass B A (A ⊗[R] B) := .symm ..
+
 end RightAlgebra
 
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
