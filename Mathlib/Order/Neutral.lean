@@ -38,8 +38,7 @@ structure IsLatticeHom (f : α → β) : Prop where
   map_inf (a b : α) : f (a ⊓ b) = f a ⊓ f b
   map_sup (a b : α) : f (a ⊔ b) = f a ⊔ f b
 
-lemma kercong (f : α → β) : IsLatticeHom f ↔ IsLatticeCon (ker f) where
-  mp := fun h => {
+lemma kercong (f : α → β) (h : IsLatticeHom f) :  IsLatticeCon (ker f) := {
       equiv_ker f with
       inf := fun h1 h2 => by
         unfold ker
@@ -48,13 +47,6 @@ lemma kercong (f : α → β) : IsLatticeHom f ↔ IsLatticeCon (ker f) where
         unfold ker
         rw [h.map_sup, h.map_sup, h1, h2]
   }
-  mpr := fun h => {
-    map_inf := by
-      intro a b
-      
-    map_sup := sorry
-  }
-
 
 
 
