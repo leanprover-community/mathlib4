@@ -890,4 +890,10 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
 
+theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
+
+/-- The object `⦋0⦌` is terminal in `SimplexCategory`. -/
+def isTerminalZero : IsTerminal (⦋0⦌ : SimplexCategory) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ const _ ⦋0⦌ 0) (fun _ _ => eq_const_to_zero _)
+
 end SimplexCategory
