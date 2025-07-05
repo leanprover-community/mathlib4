@@ -72,8 +72,8 @@ class BooleanSigmaAlgebra (α) extends BooleanAlgebra α, SigmaCompleteLattice �
 /-- A complete Boolean algebra is a Boolean σ-algebra. -/
 instance (priority := 100) CompleteBooleanAlgebra.toBooleanSigmaAlgebra [CompleteBooleanAlgebra α] :
     BooleanSigmaAlgebra α where
-  isLUB_σsSup (s : Set α) _ := isLUB_sSup s
-  isGLB_σsInf (s : Set α) _ := isGLB_sInf s
+  __ := ‹CompleteBooleanAlgebra α›
+  __ := CompleteLattice.toSigmaCompleteLattice
 
 instance OrderDual.instBooleanSigmaAlgebra (α : Type*) [BooleanSigmaAlgebra α] :
     BooleanSigmaAlgebra αᵒᵈ where
