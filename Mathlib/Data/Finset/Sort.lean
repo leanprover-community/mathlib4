@@ -276,8 +276,10 @@ theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
     Function.comp_apply]
 
 lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
-    (h : ({i}ᶜ : Finset _).card = k) : ({i}ᶜ : Finset _).orderEmbOfFin h =
-      Fin.succAbove i ∘ Fin.cast (h.symm.trans (by simp [Finset.card_compl])) := by
+    (h : ({i}ᶜ : Finset _).card = k) :
+    ({i}ᶜ : Finset _).orderEmbOfFin h =
+      (Fin.castOrderIso <| by simp_all [Finset.card_compl]).toOrderEmbedding.trans (Fin.succAboveOrderEmb i) := by
+  apply DFunLike.coe_injective
   rw [eq_comm]
   convert Finset.orderEmbOfFin_unique _ (fun x ↦ ?_)
     ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
