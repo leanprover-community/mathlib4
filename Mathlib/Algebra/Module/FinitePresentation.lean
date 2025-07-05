@@ -187,9 +187,8 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
-  obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
-    choose f hf using show _ from hl
-    exact ⟨Finsupp.linearCombination R (fun i ↦ f i), by ext; simp [hf]⟩
+  obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) :=
+    projective_lifting_property l (linearCombination R Subtype.val) hl
   have : (LinearMap.ker l).map (LinearMap.range f).mkQ = ⊤ := by
     rw [← top_le_iff]
     rintro x -

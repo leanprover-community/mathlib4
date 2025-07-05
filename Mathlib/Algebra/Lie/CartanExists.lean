@@ -103,11 +103,7 @@ lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finr
   rw [← mul_one j, lieCharpoly, coeff_map]
   apply MvPolynomial.aeval_natDegree_le
   · apply (polyCharpoly_coeff_isHomogeneous φ (chooseBasis R L) _ _ hij).totalDegree_le
-  intro k
-  apply Polynomial.natDegree_add_le_of_degree_le
-  · apply (Polynomial.natDegree_C_mul_le _ _).trans
-    simp only [natDegree_X, le_rfl]
-  · simp only [natDegree_C, zero_le]
+  exact fun _ ↦ natDegree_linear_le
 
 end engel_isBot_of_isMin
 
