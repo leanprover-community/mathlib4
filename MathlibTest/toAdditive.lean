@@ -437,7 +437,8 @@ run_cmd do
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
 The preferred method is to use something like `@[to_additive (attr := simp, reduce_mod_char)]`
 to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
-note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
+
+Note: This linter can be disabled with `set_option linter.existingAttributeWarning false`
 -/
 #guard_msgs in
 @[simp, reduce_mod_char, to_additive]

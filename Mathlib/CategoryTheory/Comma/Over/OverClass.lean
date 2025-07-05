@@ -72,10 +72,12 @@ instance : OverClass X X := ⟨𝟙 _⟩
 
 instance : IsIso (S ↘ S) := inferInstanceAs (IsIso (𝟙 S))
 
+namespace CanonicallyOverClass
 -- This cannot be a simp lemma be cause it loops with `comp_over`.
 @[simps -isSimp]
 instance (priority := 900) [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S :=
   ⟨X ↘ Y ≫ Y ↘ S⟩
+end CanonicallyOverClass
 
 /-- Given `OverClass X S` and `OverClass Y S` and `f : X ⟶ Y`,
 `HomIsOver f S` is the typeclass asserting `f` commutes with the structure morphisms. -/

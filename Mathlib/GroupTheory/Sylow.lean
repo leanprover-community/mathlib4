@@ -169,7 +169,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
 namespace Sylow
 
 instance nonempty : Nonempty (Sylow p G) :=
-  nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
+  IsPGroup.of_bot.exists_le_sylow.nonempty
 
 noncomputable instance inhabited : Inhabited (Sylow p G) :=
   Classical.inhabited_of_nonempty nonempty
@@ -621,7 +621,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     exact Nat.card_congr
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
-    simp only [exists_prop, Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
+    simp only [Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
@@ -736,7 +736,7 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   haveI := unique_of_normal P h
   rw [characteristic_iff_map_eq]
   intro Φ
-  show (Φ • P).toSubgroup = P.toSubgroup
+  change (Φ • P).toSubgroup = P.toSubgroup
   congr
   simp [eq_iff_true_of_subsingleton]
 

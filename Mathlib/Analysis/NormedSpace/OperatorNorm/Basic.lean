@@ -151,18 +151,12 @@ theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
       simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
 
 
-theorem opNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) : ‖f‖ ≤ K :=
-  f.opNorm_le_bound K.2 fun x => by
-    simpa only [dist_zero_right, f.map_zero] using hf.dist_le_mul x 0
-
-
 theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
     (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖) (h_below : ∀ N ≥ 0, (∀ x, ‖φ x‖ ≤ N * ‖x‖) → M ≤ N) :
     ‖φ‖ = M :=
   le_antisymm (φ.opNorm_le_bound M_nonneg h_above)
     ((le_csInf_iff ContinuousLinearMap.bounds_bddBelow ⟨M, M_nonneg, h_above⟩).mpr
       fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
-
 
 theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, neg_apply, norm_neg]
 
@@ -278,8 +272,15 @@ theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
     rw [smul_apply, norm_smul, mul_assoc]
-    exact mul_le_mul_of_nonneg_left (le_opNorm _ _) (norm_nonneg _)
+    gcongr
+    apply le_opNorm
 
+theorem opNorm_le_iff_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
+    ‖f‖ ≤ K ↔ LipschitzWith K f :=
+  ⟨fun h ↦ by simpa using AddMonoidHomClass.lipschitz_of_bound f K <| le_of_opNorm_le f h,
+    fun hf ↦ f.opNorm_le_bound K.2 <| hf.norm_le_mul (map_zero f)⟩
+
+alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitz⟩ := opNorm_le_iff_lipschitz
 
 /-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
 
@@ -322,10 +323,9 @@ instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
 
 /-- The operator norm is submultiplicative. -/
 theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
-  csInf_le bounds_bddBelow
-    ⟨mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _), fun x => by
-      rw [mul_assoc]
-      exact h.le_opNorm_of_le (f.le_opNorm x)⟩
+  csInf_le bounds_bddBelow ⟨by positivity, fun x => by
+    rw [mul_assoc]
+    exact h.le_opNorm_of_le (f.le_opNorm x)⟩
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
 instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
@@ -411,8 +411,8 @@ theorem mkContinuous_norm_le (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (hC : 0 ≤
 then its norm is bounded by the bound or zero if bound is negative. -/
 theorem mkContinuous_norm_le' (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     ‖f.mkContinuous C h‖ ≤ max C 0 :=
-  ContinuousLinearMap.opNorm_le_bound _ (le_max_right _ _) fun x =>
-    (h x).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg x)
+  ContinuousLinearMap.opNorm_le_bound _ (le_max_right _ _) fun x => (h x).trans <| by
+    gcongr; apply le_max_left
 
 end LinearMap
 

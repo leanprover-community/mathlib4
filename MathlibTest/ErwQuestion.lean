@@ -72,7 +72,11 @@ and
   f a
 are not defeq.
 
-❌️ at reducible transparency, b and a are not defeq.
+❌️ at reducible transparency,
+  b
+and
+  a
+are not defeq.
 -/
 #guard_msgs in
 example : f b = 38 := by erw? [f_a]

@@ -155,7 +155,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
           sub_eq_zero.mp (Eq.symm h₃)
         have h₄ :=
           calc
-            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left, conj_conj]
+            ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
             _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
             _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
             _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]

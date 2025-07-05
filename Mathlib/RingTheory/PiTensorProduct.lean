@@ -156,7 +156,7 @@ instance instAlgebra : Algebra R' (⨂[R] i, A i) where
       rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
         mul_smul]
       congr
-      show (1 : ⨂[R] i, A i) = 1 * 1
+      change (1 : ⨂[R] i, A i) = 1 * 1
       rw [mul_one]
     map_zero' := by simp
     map_add' := by simp [add_smul] }
@@ -256,8 +256,6 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
 
 section
 
-open Function
-
 variable [Fintype ι]
 
 variable (R ι)
@@ -280,7 +278,7 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
           Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
         ext
-        show toFun (tprod R _ * tprod R _) = toFun (tprod R _) * toFun (tprod R _)
+        change toFun (tprod R _ * tprod R _) = toFun (tprod R _) * toFun (tprod R _)
         simp_rw [tprod_mul_tprod, toFun, lift.tprod, MultilinearMap.mkPiAlgebra_apply,
           Pi.mul_apply, Finset.prod_mul_distrib]))
     (Algebra.ofId _ _)

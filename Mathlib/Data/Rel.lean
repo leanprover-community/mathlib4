@@ -184,7 +184,7 @@ theorem image_empty : r.image ∅ = ∅ := by
 
 @[simp]
 theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro x h
   simp [mem_image, Bot.bot] at h
 
