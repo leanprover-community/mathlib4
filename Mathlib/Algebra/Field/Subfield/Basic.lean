@@ -243,12 +243,7 @@ instance : InfSet (Subfield K) :=
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
   show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
-    ext x
-    rw [Subring.coe_sInf, Set.mem_iInter, Set.mem_iInter]
-    exact
-      ⟨fun h s s' ⟨s_mem, s'_eq⟩ => h s.toSubring _ ⟨⟨s, s_mem, rfl⟩, s'_eq⟩,
-        fun h s s' ⟨⟨s'', s''_mem, s_eq⟩, (s'_eq : ↑s = s')⟩ =>
-        h s'' _ ⟨s''_mem, by simp [← s_eq, ← s'_eq]⟩⟩
+    simp
 
 theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Subring.mem_sInf.trans
