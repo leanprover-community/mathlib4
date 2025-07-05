@@ -27,7 +27,7 @@ variable {α β : Type*} {ι ι' : Sort*} {κ κ' : ι → Sort*}
 section SigmaCompleteLattice
 
 variable [SigmaCompleteLattice α] {s t : Set α} {a b : α}
-  {f g : ι → α} [Countable (Set.range f)] [Countable (Set.range g)] {i : ι}
+variable {f g : ι → α} [Countable (Set.range f)] [Countable (Set.range g)] {i : ι}
 
 lemma isLUB_σiSup : IsLUB (Set.range f) (iSup f) := isLUB_σsSup ‹_›
 lemma isGLB_σiSup : IsGLB (Set.range f) (iInf f) := isLUB_σiSup (α := αᵒᵈ)
@@ -46,7 +46,10 @@ lemma le_σiInf (h : ∀ i, a ≤ f i) : a ≤ ⨅ i, f i := le_σsInf ‹_› (
 
 theorem σiSup₂_le {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
     (hf₂ : {iSup (f i) | i}.Countable) (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
-  σiSup_le hf₂ fun i => σiSup_le (hf₁ i) <| h i
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ j, f i j) := hf₂
+  haveI : ∀ i, Countable ↑(Set.range (f i)) := hf₁
+  σiSup_le fun i =>
+    σiSup_le <| h i
 
 theorem le_σiInf₂ {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
     (hf₂ : {iInf (f i) | i}.Countable) (h : ∀ i j, a ≤ f i j) : a ≤ ⨅ (i) (j), f i j :=
@@ -64,19 +67,25 @@ theorem le_σiSup_of_le (i : ι) (h : a ≤ f i) : a ≤ iSup f :=
 theorem σiInf_le_of_le (h : f i ≤ a) : iInf f ≤ a :=
   le_σiSup_of_le (α := αᵒᵈ) i h
 
-theorem le_σiSup₂ {f : ∀ i, κ i → α} (i : ι) (j : κ i) : f i j ≤ ⨆ (i) (j), f i j :=
+theorem le_σiSup₂ {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iSup (f i) | i}.Countable) (i : ι) (j : κ i) : f i j ≤ ⨆ (i) (j), f i j :=
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ j, f i j) := hf₂
+  haveI : ∀ i, Countable ↑(Set.range (f i)) := hf₁
   le_σiSup_of_le i <| le_σiSup j
 
-theorem σiInf₂_le {f : ∀ i, κ i → α} (i : ι) (j : κ i) : ⨅ (i) (j), f i j ≤ f i j :=
-  le_σiSup₂ (α := αᵒᵈ) i j
+theorem σiInf₂_le {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iInf (f i) | i}.Countable) (i : ι) (j : κ i) : ⨅ (i) (j), f i j ≤ f i j :=
+  le_σiSup₂ (α := αᵒᵈ) hf₁ hf₂ i j
 
-theorem le_σiSup₂_of_le {f : ∀ i, κ i → α} (i : ι) (j : κ i) (h : a ≤ f i j) :
+theorem le_σiSup₂_of_le {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iSup (f i) | i}.Countable) (i : ι) (j : κ i) (h : a ≤ f i j) :
     a ≤ ⨆ (i) (j), f i j :=
-  h.trans <| le_σiSup₂ i j
+  h.trans <| le_σiSup₂ hf₁ hf₂ i j
 
-theorem σiInf₂_le_of_le {f : ∀ i, κ i → α} (i : ι) (j : κ i) (h : f i j ≤ a) :
+theorem σiInf₂_le_of_le {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iInf (f i) | i}.Countable) (i : ι) (j : κ i) (h : f i j ≤ a) :
     ⨅ (i) (j), f i j ≤ a :=
-  le_σiSup₂_of_le (α := αᵒᵈ) i j h
+  le_σiSup₂_of_le (α := αᵒᵈ) hf₁ hf₂ i j h
 
 theorem σsSup_le_σsSup (ht : t.Countable) (h : s ⊆ t) : sSup s ≤ sSup t :=
   σsSup_le (ht.mono h) fun _ ha => le_σsSup ht (h ha)
@@ -125,11 +134,15 @@ theorem σiSup_le_iff : iSup f ≤ a ↔ ∀ i, f i ≤ a :=
 theorem le_σiInf_iff : a ≤ iInf f ↔ ∀ i, a ≤ f i :=
   σiSup_le_iff (α := αᵒᵈ)
 
-theorem σiSup₂_le_iff {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
+theorem σiSup₂_le_iff {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iSup (f i) | i}.Countable) : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
+  haveI : Countable ↑(Set.range fun i ↦ ⨆ j, f i j) := hf₂
+  haveI : ∀ i, Countable ↑(Set.range (f i)) := hf₁
   simp_rw [σiSup_le_iff]
 
-theorem le_σiInf₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j :=
-  σiSup₂_le_iff (α := αᵒᵈ)
+theorem le_σiInf₂_iff {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
+    (hf₂ : {iInf (f i) | i}.Countable)  : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j :=
+  σiSup₂_le_iff (α := αᵒᵈ) hf₁ hf₂
 
 theorem notMem_of_lt_σsInf (h : a < sInf s) (hs : s.Countable) : a ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (σsInf_le hs hx))
