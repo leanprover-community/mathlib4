@@ -3,10 +3,11 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.AlgebraicTopology.TopologicalSimplex
-import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Limits.PresheafULift
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
 # The singular simplicial set of a topological space and geometric realization of a simplicial set
@@ -35,6 +36,8 @@ It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embeddi
 
 -/
 
+universe u
+
 open CategoryTheory
 
 /-- The functor associating the *singular simplicial set* to a topological space.
@@ -44,27 +47,31 @@ Then the singular simplicial set of `X`
 has as `n`-simplices the continuous maps `⦋n⦌.toTop → X`.
 Here, `⦋n⦌.toTop` is the standard topological `n`-simplex,
 defined as `{ f : Fin (n+1) → ℝ≥0 // ∑ i, f i = 1 }` with its subspace topology. -/
-noncomputable def TopCat.toSSet : TopCat ⥤ SSet :=
-  Presheaf.restrictedYoneda SimplexCategory.toTop
+noncomputable def TopCat.toSSet : TopCat.{u} ⥤ SSet.{u} :=
+  Presheaf.restrictedULiftYoneda (SimplexCategory.toTop ⋙ TopCat.uliftFunctor)
 
 /-- The *geometric realization functor* is
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
 It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
-noncomputable def SSet.toTop : SSet ⥤ TopCat :=
-  yoneda.leftKanExtension SimplexCategory.toTop
+noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
+  stdSimplex.{u}.leftKanExtension
+    (SimplexCategory.toTop ⋙ TopCat.uliftFunctor)
 
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
-noncomputable def sSetTopAdj : SSet.toTop ⊣ TopCat.toSSet :=
-  Presheaf.yonedaAdjunction (yoneda.leftKanExtension SimplexCategory.toTop)
-    (yoneda.leftKanExtensionUnit SimplexCategory.toTop)
+noncomputable def sSetTopAdj : SSet.toTop.{u} ⊣ TopCat.toSSet.{u} :=
+  Presheaf.uliftYonedaAdjunction (SSet.stdSimplex.{u}.leftKanExtension
+    (SimplexCategory.toTop ⋙ TopCat.uliftFunctor))
+    (SSet.stdSimplex.{u}.leftKanExtensionUnit
+      (SimplexCategory.toTop ⋙ TopCat.uliftFunctor))
 
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :
-    (yoneda : SimplexCategory ⥤ _) ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
-  Presheaf.isExtensionAlongYoneda _
+    SSet.stdSimplex.{u} ⋙ SSet.toTop ≅ SimplexCategory.toTop ⋙ TopCat.uliftFunctor :=
+  Presheaf.isExtensionAlongULiftYoneda _
 
+/-
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable
 def TopCat.toSSetIsoConst (X : TopCat) [TotallyDisconnectedSpace X] :
@@ -75,4 +82,4 @@ def TopCat.toSSetIsoConst (X : TopCat) [TotallyDisconnectedSpace X] :
       hom x := TopCat.ofHom ⟨fun _ ↦ x, continuous_const⟩
       inv_hom_id := types_ext _ _ fun f ↦ TopCat.hom_ext (ContinuousMap.ext
         fun j ↦ TotallyDisconnectedSpace.eq_of_continuous (α := i.unop.toTopObj) _ f.1.2 _ _)
-      hom_inv_id := rfl }) (by intros; ext; rfl)
+      hom_inv_id := rfl }) (by intros; ext; rfl)-/
