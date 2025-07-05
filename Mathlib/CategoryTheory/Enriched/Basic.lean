@@ -26,6 +26,11 @@ between a pair of `V`-functors (this requires limits in `V`),
 but we do provide a presheaf isomorphic to the Yoneda embedding of this object.
 
 We verify that when `V = Type v`, all these notion reduce to the usual ones.
+
+## References
+
+* [Scott Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
+  [morrison-penney-enriched]
 -/
 
 
@@ -436,8 +441,8 @@ def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTr
       whisker_exchange_assoc _ (β.app Y)]
     simp only [Center.tensorUnit_fst]
     rw [whiskerLeft_rightUnitor_inv, Category.assoc, Iso.hom_inv_id_assoc,
-      ← rightUnitor_inv_naturality_assoc (X := Hom (F.obj X) (F.obj Y) ⊗ 𝟙_ V),
-      ← rightUnitor_inv_naturality_assoc (X := Hom (F.obj X) (F.obj Y) ⊗ Hom (F.obj Y) (G.obj Y)),
+      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ 𝟙_ V),
+      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ (F.obj Y ⟶[V] G.obj Y)),
       ← tensorHom_def_assoc, α.naturality_assoc]
     simp only [Center.tensorUnit_fst]
     rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
