@@ -303,7 +303,7 @@ def polarBilin : BilinMap R M N :=
   (polar_smul_right Q)
 
 lemma polarSym2_map_smul {ι} (Q : QuadraticMap R M N) (g : ι → M) (l : ι → R) (p : Sym2 ι) :
-    polarSym2 Q (p.map (l • g)) = (p.map l).mul • polarSym2 Q (p.map g) := by
+    polarSym2 Q (p.map (l • g)) = (p.map l).liftComm (· * ·) • polarSym2 Q (p.map g) := by
   obtain ⟨_, _⟩ := p; simp [← smul_assoc, mul_comm]
 
 variable [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] [Module S N]
