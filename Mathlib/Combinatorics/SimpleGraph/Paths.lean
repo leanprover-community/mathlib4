@@ -338,6 +338,19 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
         from by rwa [getVert_cons _ _ (by omega : n + 1 ≠ 0), getVert_zero])
     omega
 
+theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
+    (hmem : s(u, w) ∈ p.edges) : w = p.snd := by
+  rw [← cons_tail_eq _ hnil, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff'] at hmem
+  rcases hmem with h | h
+  · rcases h <;> simp_all
+  · have : u ∉ p.tail.support := by induction p <;> simp_all
+    simp [fst_mem_support_of_mem_edges _ h] at this
+
+theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
+    (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
+  have := (isPath_reverse_iff p).mpr hp |>.eq_snd_of_mem_edges (w := w)
+  simp_all
+
 /-! ### About cycles -/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
