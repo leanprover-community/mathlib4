@@ -398,7 +398,7 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
       (inl φ).comp (Cochain.ofHom f₂) (add_zero (-1)))
     (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :
     Homotopy f₁ f₂ :=
-  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by norm_num), by
+  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by simp), by
     simp only [Cochain.ofHom_comp] at h₂
     simp [ext_cochain_from_iff _ _ _ (neg_add_cancel 1),
       δ_descCochain _ _ _ _ _ (neg_add_cancel 1), h₁, h₂]⟩

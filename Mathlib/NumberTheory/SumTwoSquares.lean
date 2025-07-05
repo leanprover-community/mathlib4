@@ -121,11 +121,11 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   refine ⟨?_, fun H q _ => H⟩
   intro H
   refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
-  · exact fun _ => by norm_num
-  · exact fun _ => by norm_num
+  · exact fun _ => by simp
+  · exact fun _ => by simp
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by simp, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 

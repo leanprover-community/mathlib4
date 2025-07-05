@@ -185,8 +185,8 @@ numbers in this range, and thus provide the maximum of `specifiedSet`.
 -/
 theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   have := fun h => @solution_greatest 1981 16 h 3524578
-  norm_num at this
+  simp at this
   apply this
   · decide
   · decide
-  · norm_num [problemPredicate_iff]; decide
+  · simp +decide [problemPredicate_iff]

@@ -566,9 +566,9 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
   refine AnalyticOnNhd.eq_of_frequently_eq h1 h2 (h3.frequently ?_)
   refine ((Eventually.filter_mono nhdsWithin_le_nhds) ?_).frequently
   refine (eventually_gt_nhds zero_lt_one).mp (Eventually.of_forall fun t ht => ?_)
-  rw [← mul_inv, Gamma_ofReal, (by norm_num : (t : ℂ) + 1 / 2 = ↑(t + 1 / 2)), Gamma_ofReal, ←
+  rw [← mul_inv, Gamma_ofReal, (by simp : (t : ℂ) + 1 / 2 = ↑(t + 1 / 2)), Gamma_ofReal, ←
     ofReal_mul, Gamma_mul_Gamma_add_half_of_pos ht, ofReal_mul, ofReal_mul, ← Gamma_ofReal,
-    mul_inv, mul_inv, (by norm_num : 2 * (t : ℂ) = ↑(2 * t)), Gamma_ofReal,
+    mul_inv, mul_inv, (by simp : 2 * (t : ℂ) = ↑(2 * t)), Gamma_ofReal,
     ofReal_cpow zero_le_two, show (2 : ℝ) = (2 : ℂ) by norm_cast, ← cpow_neg, ofReal_sub,
     ofReal_one, neg_sub, ← div_eq_mul_inv]
 

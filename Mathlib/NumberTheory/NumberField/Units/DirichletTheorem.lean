@@ -210,7 +210,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
       |Algebra.norm ℚ (y : K)| ≤ B := by
   have hx' := RingOfIntegers.coe_ne_zero_iff.mpr hx
   let f : InfinitePlace K → ℝ≥0 :=
-    fun w ↦ ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
+    fun w ↦ ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by simp)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
@@ -224,18 +224,18 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
         _ ≤ (B : ℝ) := by
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
-    · refine div_lt_self ?_ (by norm_num)
+    · refine div_lt_self ?_ (by simp)
       exact pos_iff.mpr hx'
   intro _ _
   rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or]
-  exact ⟨hx', by norm_num⟩
+  exact ⟨hx', by simp⟩
 
 /-- An infinite sequence of nonzero algebraic integers of `K` satisfying the following properties:
 • `seq n` is nonzero;
 • for `w : InfinitePlace K`, `w ≠ w₁ → w (seq n+1) < w (seq n)`;
 • `∣norm (seq n)∣ ≤ B`. -/
 def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
-  | 0 => ⟨1, by norm_num⟩
+  | 0 => ⟨1, by simp⟩
   | n + 1 =>
     ⟨(seq_next K w₁ hB (seq n).prop).choose, (seq_next K w₁ hB (seq n).prop).choose_spec.1⟩
 
@@ -346,7 +346,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   classical
   refine discreteTopology_of_isOpen_singleton_zero ?_
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
-  · exact Metric.closedBall_mem_nhds _ (by norm_num)
+  · exact Metric.closedBall_mem_nhds _ (by simp)
   · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
     convert unitLattice_inter_ball_finite K 1
     ext x

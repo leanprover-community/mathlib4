@@ -90,7 +90,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     · exact (mem_Ioi.mp hε₀).le
     · refine ht.trans ?_
       rw [← Real.rpow_natCast, ← Real.logb_le_iff_le_rpow]
-      exacts [Nat.le_ceil _, by norm_num, by linarith]
+      exacts [Nat.le_ceil _, by simp, by linarith]
 
 /-- A variant of `IsUnifLocDoublingMeasure.doublingConstant` which allows for scaling the
 radius by values other than `2`. -/

@@ -197,7 +197,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have hδ' : 0 ≤ 2 * δ - δ ^ 2 := by
     rw [sub_nonneg, sq]
     gcongr
-    exact hδ₁.le.trans (by norm_num)
+    exact hδ₁.le.trans (by simp)
   rw [← sub_pos] at hδ₁
   obtain rfl | hs₂' := s₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at hs₂

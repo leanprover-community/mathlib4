@@ -54,7 +54,7 @@ private lemma exp_lt_aux {t : ℝ} (ht : 0 < t) : rexp (-π * t) < 1 := by
 
 private lemma isBigO_one_aux :
     IsBigO atTop (fun t : ℝ ↦ (1 - rexp (-π * t))⁻¹) (fun _ ↦ (1 : ℝ)) := by
-  refine ((Tendsto.const_sub _ ?_).inv₀ (by norm_num)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
+  refine ((Tendsto.const_sub _ ?_).inv₀ (by simp)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
   simpa only [neg_mul, tendsto_exp_comp_nhds_zero, tendsto_neg_atBot_iff]
     using tendsto_id.const_mul_atTop pi_pos
 

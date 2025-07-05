@@ -100,7 +100,7 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
     norm_num
   rw [h1, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add', lt_log_iff_exp_lt (by positivity)]
   norm_num
-  have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by norm_num : (0 : ℝ) < 107 / 60)
+  have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by simp : (0 : ℝ) < 107 / 60)
   rw [exp_one_rpow] at this
   refine lt_trans this ?_
   rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,

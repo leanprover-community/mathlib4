@@ -72,7 +72,7 @@ lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   have h := hf.rel m n
   rcases h with ( hl | hr )
   · rw [hl]
-  · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; gcongr; norm_num
+  · rw [hr]; omega
 
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   induction n with
@@ -115,7 +115,7 @@ lemma imo1982_q1 {f : ℕ+ → ℕ} (hf : IsGood f) : f 1982 = 660 := by
   rw [f_1980, hf.f₂, add_zero] at h
   apply h.resolve_right
   intro hr
-  suffices h : 3334 ≤ 3333 by norm_num at h
+  suffices h : 3334 ≤ 3333 by simp at h
   calc
     3334 = 5 * f 1982 + 29 * f 3 + f 2 := by rw [hf.f₃, hf.f₂, hr, add_zero, mul_one]
     (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 :=
