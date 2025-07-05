@@ -139,16 +139,16 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   apply congr_arg
   ext B
   unfold mateEquiv
-  simp only [Functor.comp_obj, curriedTensor_obj_obj, Equiv.coe_fn_mk, Functor.whiskerLeft_comp,
-    Functor.whiskerLeft_twice, Functor.whiskerRight_comp, assoc, NatTrans.comp_app,
-    Functor.whiskerLeft_app, Functor.whiskerRight_app, prodComparisonNatTrans_app,
-    curriedTensor_map_app, Functor.id_obj, Functor.comp_map, curriedTensor_obj_map,
-    prodComparisonNatIso_inv, NatIso.isIso_inv_app]
+  simp only [Functor.comp_obj, curriedTensor_obj_obj, Equiv.coe_fn_mk, Functor.whiskerRight_comp,
+    Functor.whiskerLeft_comp, assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
+    Functor.whiskerLeft_app, Functor.associator_hom_app, Functor.associator_inv_app,
+    Functor.whiskerRight_app, prodComparisonNatTrans_app, curriedTensor_map_app, Functor.comp_map,
+    curriedTensor_obj_map, Functor.leftUnitor_hom_app, comp_id, id_comp, prodComparisonNatIso_inv,
+    NatIso.isIso_inv_app]
   rw [← F.map_comp, ← F.map_comp]
   simp only [Functor.map_comp]
   apply IsIso.eq_inv_of_inv_hom_id
-  simp only [assoc, Functor.associator_inv_app, Functor.associator_hom_app, Functor.comp_obj,
-    curriedTensor_obj_obj, curriedTensor_obj_obj, Functor.map_id, id_comp]
+  simp only [assoc]
   rw [prodComparison_natural_whiskerLeft, prodComparison_natural_whiskerRight_assoc]
   slice_lhs 2 3 => rw [← prodComparison_comp]
   simp only [assoc]
