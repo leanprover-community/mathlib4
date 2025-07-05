@@ -77,8 +77,5 @@ instance (priority := 100) CompleteBooleanAlgebra.toBooleanSigmaAlgebra [Complet
 
 instance OrderDual.instBooleanSigmaAlgebra (α : Type*) [BooleanSigmaAlgebra α] :
     BooleanSigmaAlgebra αᵒᵈ where
-  toBooleanAlgebra := inferInstance
-  toSupSet := inferInstance
-  toInfSet := inferInstance
-  isLUB_σsSup (s : Set α) (hs : s.Countable) := IsGLB.dual (BooleanSigmaAlgebra.isGLB_σsInf s hs)
-  isGLB_σsInf (s : Set α) (hs : s.Countable) := IsLUB.dual (BooleanSigmaAlgebra.isLUB_σsSup s hs)
+  __ := instBooleanAlgebra
+  __ := instSigmaCompleteLattice
