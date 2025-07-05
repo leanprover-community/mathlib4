@@ -524,3 +524,10 @@ theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 
 end Vec2AndVec3
 
 end Matrix
+
+@[simp]
+lemma injective_pair_iff_ne {α : Type*} {x y : α} :
+    Function.Injective ![x, y] ↔ x ≠ y := by
+  refine ⟨fun h ↦ ?_, fun h a b h' ↦ ?_⟩
+  · simpa using h.ne Fin.zero_ne_one
+  · fin_cases a <;> fin_cases b <;> aesop
