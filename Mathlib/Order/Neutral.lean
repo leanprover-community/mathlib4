@@ -18,6 +18,62 @@ structure IsLatticeCon [Lattice α] (r : α → α → Prop) : Prop extends Equi
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
+lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : IsLatticeCon r ↔
+    (∀ x y : α, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
+    (∀ x y z : α, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
+    (∀ x y t : α, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) := by
+  constructor
+  · intro hlc
+    constructor
+    · intro x y
+      constructor
+      · intro h
+        apply hlc.trans (y := y) (by
+          conv_rhs => rw [← inf_idem y]
+          exact hlc.inf h (hlc.refl y)) (by
+          conv_lhs => rw [← sup_idem y]
+          exact hlc.sup (hlc.symm h) (hlc.refl y))
+      · intro h
+        have e1 : r (x ⊓ y) x  := by
+          conv_rhs => rw [← inf_sup_self (a := x) (b := y)]
+          conv_lhs => rw [← inf_idem x, inf_assoc]
+          exact hlc.inf (hlc.refl x) h
+        have e2 : r (x ⊓ y) y  := by
+          conv_rhs => rw [← inf_sup_self (a := y) (b := x)]
+          conv_lhs => rw [← inf_idem y, inf_comm, inf_assoc]
+          apply hlc.inf (hlc.refl y)
+          rw [inf_comm, sup_comm]
+          exact h
+        exact hlc.trans (hlc.symm e1) e2
+    · constructor
+      · intro x y z h1 h2 h3 h4
+        exact hlc.trans h3 h4
+      · intro x y t h1 h2
+        constructor
+        · apply hlc.inf h2 (hlc.refl t)
+        · apply hlc.sup h2 (hlc.refl t)
+  · intro ⟨h1,h2,h3⟩
+    have e1 (a b c d : α) (hb : b ∈ Set.Icc a d) (hc : c ∈ Set.Icc a d) (h : r a d) : r b c := by
+      rw [h1]
+      calc
+        r (b ⊓ c) ((b ⊓ c) ⊓ (b ⊔ c)) := sorry
+        r _ (b ⊔ c) := sorry
+
+        --(b ⊔ c) := sorry
+
+    /-
+    constructor
+    · constructor
+      · intro x
+        exact h.refl _
+      · sorry
+      · intro x y z h1 h2
+      -/
+
+
+
+
+
 def ker (f : α → β) : α → α → Prop := fun a b => f a = f b
 
 lemma equiv_ker (f : α → β) : Equivalence (ker f) where
@@ -68,6 +124,14 @@ lemma theorem2_iii_i (a : α) (h : IsLatticeCon (ker (fun x => a ⊔ x))) : IsDi
       simp
   rw [e1]
   simp
+
+lemma theorem3_i_ii (a : α) (h : IsStandard a) :
+    IsLatticeCon (fun x y => ∃ a₁, a₁ ≤ a ∧ (x ⊓ y) ⊔ a₁ = x ⊔ y) where
+  refl := sorry
+  symm := sorry
+  trans := sorry
+  inf := sorry
+  sup := sorry
 
 lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
     (h2 : ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := fun x y => h2 _  _
