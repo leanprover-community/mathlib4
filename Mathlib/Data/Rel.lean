@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Tactic.MinImports
 
 /-!
 # Relations as sets of pairs
@@ -26,8 +25,10 @@ relations.
   convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] z`.
 * `Rel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
   such that `a ~[R] b`.
-* `Rel.preimage`: Image of a set under a relation. `a ∈ image R t` iff there exists `b ∈ t`
+  If `R` is the graph of `f` (`a ~[R] b ↔ f a = b`), then `R.image = Set.image f`.
+* `Rel.preimage`: Preimage of a set under a relation. `a ∈ preimage R t` iff there exists `b ∈ t`
   such that `a ~[R] b`.
+  If `R` is the graph of `f` (`a ~[R] b ↔ f a = b`), then `R.preimage = Set.preimage f`.
 * `Rel.core`: Core of a set. For `t : Set β`, `a ∈ R.core t` iff all `b` related to `a` are in `t`.
 * `Rel.restrictDomain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
