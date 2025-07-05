@@ -441,3 +441,125 @@ theorem X_pow_sub_X_sub_one_gal :
   -- ramified means there exists σ(x) = x (mod p)
 
 end Polynomial
+
+
+
+
+
+
+-- Lean's Type Theory
+
+-- Or: What's up with all those colons?
+
+
+
+
+
+
+
+
+
+
+
+
+-- In type theory, everything is a term of exactly one type
+-- This is denoted as `term : type`
+
+#check 37
+#check (37 : ℝ)
+
+#check ℕ
+
+#check Type
+
+theorem Nat.add_cyc.foo : ∀ a b c : ℕ, a + b + c = c + a + b := by
+  sorry
+
+#check Nat.add_cyc.foo
+#check (4 : ℕ).add_cyc
+
+theorem Nat.add_cyc' : ∀ a b c' : ℕ, a + b + c' = c' + a + b := by
+  sorry
+
+example : Nat.add_cyc = (1 + 1 = 2) := rfl
+
+theorem temp : (1 + 1 = 2) = (1 = 2 - 1) := by
+  simp
+
+theorem temp2 : ((1 : ℝ) + (1 : ℝ) = (2 : ℝ)) =
+    ((1 : ℝ) = (2 : ℝ) - (1 : ℝ)) := by
+
+
+example : (1 : ℝ) + (1 : ℝ) = (2 : ℝ) := by
+  have h : (2 : ℝ) = (1 : ℝ) + (1 : ℝ) := by norm_num
+  exact h
+
+#check Nat.add_cyc
+
+#check ∀ a b c : ℕ, a + b + c = c + a + b
+
+-- Function types
+
+def f : ℕ → ℕ := fun n ↦ n + 1
+
+#check Real.instAddGroup
+
+theorem foo {G : Type*} [AddGroup G] (g : G) : 0 + g = g := sorry
+
+#check foo (3 : ℝ)
+
+theorem g {P : Prop} (hP : P) : (¬ ¬ P) := by
+  tauto
+
+#check f
+
+#check f 37
+
+#check g
+
+#check g Nat.prime_two
+
+-- Product types
+
+#check And
+
+example {P Q : Prop} (hP : P) (hQ : Q) : P ∧ Q := by
+  let x : ℕ × ℕ := ⟨1, 2⟩
+  let y : P ∧ Q := ⟨hP, hQ⟩
+  rcases y with ⟨y1, y2⟩
+  rcases x with ⟨x1, x2⟩
+  constructor
+  · exact hP
+  · exact hQ
+
+-- Disjoint union types
+
+example : ℕ ⊕ ℕ := Sum.inl 1
+
+example {P Q : Prop} (hP : P) : P ∨ Q := by
+  let x : ℕ ⊕ ℕ := Sum.inl 1
+  let y : P ∨ Q := Or.inl hP
+  rcases x with x1 | x2
+  rcases y with y1 | y2
+  left
+  exact hP
+
+-- negation and False
+
+example {P : Prop} : P → (¬ ¬ P) := by
+  intro hP
+  intro hnP
+  apply hnP
+  exact hP
+
+example {P : Prop} : P → ((P → False) → False) := by
+  intro hP
+  intro hnP
+  apply hnP
+  exact hP
+
+example {P Q : Type} : P → ((P → Q) → Q) := by
+  intro hP
+  intro hnP
+  apply hnP
+  exact hP
