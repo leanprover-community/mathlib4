@@ -30,8 +30,7 @@ def SigmaAlgebra : Set (Set α) := m.MeasurableSet'
 lemma mem_SigmaAlgebra {s : Set α} : s ∈ m.SigmaAlgebra ↔ (MeasurableSet s) :=
   Iff.rfl
 
-/-- Boolean algebra on `m.SigmaAlgebra`, inherited from
-`MeasurableSet.Subtype.instBooleanAlgebra`. -/
+/-- Boolean algebra on `m.SigmaAlgebra`, inherited from `Subtype.instBooleanAlgebra`. -/
 instance instBooleanAlgebra : BooleanAlgebra m.SigmaAlgebra :=
   MeasurableSet.Subtype.instBooleanAlgebra
 
@@ -48,6 +47,15 @@ lemma IsSigmaAlgebra_of_measurableSpace :
     IsSigmaAlgebra m.SigmaAlgebra :=
   congrArg (fun t : MeasurableSpace α => t.SigmaAlgebra) generateFrom_sigmaAlgebra_eq
 
+/-- Any bundled measurable set is, by definition, a member of `m.SigmaAlgebra`. -/
+@[simp]
+lemma Subtype.mem_sigma (A : {s : Set α // MeasurableSet[m] s}) :
+    (A : Set α) ∈ m.SigmaAlgebra :=
+  (mem_SigmaAlgebra (m := m)).2 A.property
 
+/-- Wrap a membership proof into the *predicate* subtype. -/
+def Set.toMeasurableSubtype {s : Set α} (h : s ∈ m.SigmaAlgebra) :
+    {t : Set α // MeasurableSet[m] t} :=
+  ⟨s, (mem_SigmaAlgebra (m := m)).1 h⟩
 
 end MeasurableSpace
