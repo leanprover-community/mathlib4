@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.Algebra.Category.Grp.Biproducts
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Ring.PUnit
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!

@@ -93,6 +93,9 @@ instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
 theorem small_type : Small.{max (u + 1) v} (Type u) :=
   small_max.{max (u + 1) v} _
 
+instance {α : Type u} [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
+  (equivShrink α).symm.nontrivial
+
 section
 
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
