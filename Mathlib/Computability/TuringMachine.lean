@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.PFun
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 import Mathlib.Computability.PostTuringMachine
 
 /-!
@@ -70,7 +71,6 @@ open Function (update iterate_succ iterate_succ_apply iterate_succ' iterate_succ
   iterate_zero_apply)
 
 namespace Turing
-
 
 /-!
 ## The TM2 model
