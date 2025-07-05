@@ -61,10 +61,7 @@ lemma exact_iff_degreewise_exact :
 lemma shortExact_iff_degreewise_shortExact :
     S.ShortExact ↔ ∀ (i : ι), (S.map (eval C c i)).ShortExact := by
   constructor
-  · intro hS i
-    have := hS.mono_f
-    have := hS.epi_g
-    exact hS.map (eval C c i)
+  · exact fun a i ↦ ShortComplex.ShortExact.map_of_exact a (eval C c i)
   · exact shortExact_of_degreewise_shortExact S
 
 end HomologicalComplex
