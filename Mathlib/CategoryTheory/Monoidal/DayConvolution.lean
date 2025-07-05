@@ -425,7 +425,7 @@ instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is left Kan extended from `(fromPUnit 𝟙_ V) ⊠ F`. -/
-@[simps!]
+@[simps]
 def corepresentableByLeft [DayConvolution U F] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
@@ -437,7 +437,7 @@ def corepresentableByLeft [DayConvolution U F] :
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `F ⊛ U` by
 leveraging the fact that `F ⊠ U` is left Kan extended from `F ⊠ (fromPUnit 𝟙_ V)`. -/
-@[simps!]
+@[simps]
 def corepresentableByRight [DayConvolution F U] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
