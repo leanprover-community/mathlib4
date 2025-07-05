@@ -454,6 +454,6 @@ lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x �
   obtain rfl | hx := eq_or_ne x 0
   · simp
   lift x to Multiplicative ℤ using hx
-  rw [← log_le_log, ← log_lt_log] <;>simp [log_mul, Int.lt_add_one_iff]
+  rw [← log_le_log, ← log_lt_log] <;> simp [log_mul, Int.lt_add_one_iff]
 
 end WithZero
