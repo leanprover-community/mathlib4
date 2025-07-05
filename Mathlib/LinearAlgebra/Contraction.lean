@@ -19,8 +19,6 @@ some basic properties of these maps.
 contraction, dual module, tensor product
 -/
 
-suppress_compilation
-
 variable {ι : Type*} (R M N P Q : Type*)
 
 -- Porting note: we need high priority for this to fire first; not the case in ML3
@@ -114,7 +112,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
   ext m
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
-    RingHom.id_apply, LinearMap.smul_apply]
+    LinearMap.smul_apply]
   rw [smul_comm]
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a

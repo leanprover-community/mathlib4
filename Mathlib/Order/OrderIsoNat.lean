@@ -260,15 +260,21 @@ partially-ordered type. -/
 noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
   a (monotonicSequenceLimitIndex a)
 
--- TODO: generalize to a conditionally complete lattice
-theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
-    [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a := by
-  refine (iSup_le fun m => ?_).antisymm (le_iSup a _)
-  rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
+theorem le_monotonicSequenceLimit [PartialOrder α] [WellFoundedGT α] (a : ℕ →o α) (m : ℕ) :
+    a m ≤ monotonicSequenceLimit a := by
+  rcases le_or_gt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
-  · obtain ⟨n, hn⟩ := WellFoundedGT.monotone_chain_condition' a
-    have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
-    exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
+  · obtain h := WellFoundedGT.monotone_chain_condition a
+    exact (Nat.sInf_mem (s := {n | ∀ m, n ≤ m → a n = a m}) h m hm.le).ge
+
+theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
+    [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a :=
+  (iSup_le (le_monotonicSequenceLimit a)).antisymm (le_iSup a _)
+
+theorem WellFoundedGT.ciSup_eq_monotonicSequenceLimit [ConditionallyCompleteLattice α]
+    [WellFoundedGT α] (a : ℕ →o α) (ha : BddAbove (Set.range a)) :
+    iSup a = monotonicSequenceLimit a :=
+  (ciSup_le (le_monotonicSequenceLimit a)).antisymm (le_ciSup ha _)
 
 @[deprecated WellFoundedGT.iSup_eq_monotonicSequenceLimit (since := "2025-01-15")]
 theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]

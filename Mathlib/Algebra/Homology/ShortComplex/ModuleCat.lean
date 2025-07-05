@@ -89,16 +89,13 @@ lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
   simpa only [moduleCat_exact_iff_range_eq_ker] using hfg
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
-@[simps]
-def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom where
-  toFun x := ⟨S.f x, S.moduleCat_zero_apply x⟩
-  map_add' x y := by aesop
-  map_smul' a x := by aesop
+abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
+  S.f.hom.codRestrict _ <| S.moduleCat_zero_apply
 
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
 not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
-@[simps! i_hom π_hom, simps! -isSimp K H]
+@[simps! K H i_hom π_hom]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
   K := ModuleCat.of R (LinearMap.ker S.g.hom)
   H := ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)

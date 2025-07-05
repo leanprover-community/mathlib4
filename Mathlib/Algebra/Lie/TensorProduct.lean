@@ -16,8 +16,6 @@ Tensor products of Lie modules carry natural Lie module structures.
 lie module, tensor product, universal property
 -/
 
-suppress_compilation
-
 universe u v w w₁ w₂ w₃
 
 variable {R : Type u} [CommRing R]
@@ -174,7 +172,7 @@ def toModuleHom : L ⊗[R] M →ₗ⁅R,L⁆ M :=
 @[simp]
 theorem toModuleHom_apply (x : L) (m : M) : toModuleHom R L M (x ⊗ₜ m) = ⁅x, m⁆ := by
   simp only [toModuleHom, TensorProduct.LieModule.liftLie_apply, LieModuleHom.coe_mk,
-    LinearMap.coe_mk, LinearMap.coe_toAddHom, LieHom.coe_toLinearMap, toEnd_apply_apply]
+    LieHom.coe_toLinearMap, toEnd_apply_apply]
 
 end LieModule
 

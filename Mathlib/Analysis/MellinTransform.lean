@@ -171,7 +171,7 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
 theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
     HasMellin (fun t => c • f t) s  (c • mellin f s) :=
-  ⟨hf.const_smul c, by simp [HasMellin, mellin, smul_comm, hf.integral_smul]⟩
+  ⟨hf.const_smul c, by simp [mellin, smul_comm, hf.integral_smul]⟩
 
 end Defs
 
@@ -236,7 +236,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
       measurableSet_Ioo
     exact continuousAt_rpow_const _ _ (Or.inl ht.1.ne')
   · apply HasFiniteIntegral.mono'
-    · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
+    · change HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
       refine (Integrable.hasFiniteIntegral ?_).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
@@ -350,7 +350,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc]
     gcongr
     rw [norm_cpow_eq_rpow_re_of_pos ht]
-    rcases le_or_lt 1 t with h | h
+    rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
         (rpow_nonneg (zero_le_one.trans h) _)
       rw [sub_re, one_re, sub_le_sub_iff_right]
