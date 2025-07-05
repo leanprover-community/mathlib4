@@ -544,12 +544,7 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
 
 @[deprecated (since := "2025-07-05")] alias ncard_coe_Finset := ncard_coe_finset
 
-theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
-  rcases finite_or_infinite α with h | h
-  · have hft := Fintype.ofFinite α
-    rw [ncard_eq_toFinset_card, Finite.toFinset_univ, Finset.card_univ, Nat.card_eq_fintype_card]
-  rw [Nat.card_eq_zero_of_infinite, Infinite.ncard]
-  exact infinite_univ
+@[simp] theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := Nat.card_univ
 
 @[simp] theorem ncard_empty (α : Type*) : (∅ : Set α).ncard = 0 := by
   rw [ncard_eq_zero]
@@ -940,9 +935,7 @@ theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
 
 lemma even_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
     Even sᶜ.ncard ↔ Even s.ncard := by
-  simp [compl_eq_univ_diff, ncard_diff (subset_univ _ : s ⊆ Set.univ),
-    Nat.even_sub (ncard_le_ncard (subset_univ _ : s ⊆ Set.univ)),
-    (ncard_univ _).symm ▸ heven]
+  rwa [iff_comm, ← Nat.even_add, ncard_add_ncard_compl]
 
 lemma odd_ncard_compl_iff [Finite α] (heven : Even (Nat.card α)) (s : Set α) :
     Odd sᶜ.ncard ↔ Odd s.ncard := by

@@ -108,7 +108,7 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   classical
   cases nonempty_fintype α
-  simp only [← Set.Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
+  simp only [← Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
   exact stabilizer_card f
 
 variable [DecidableEq α] [DecidableEq ι]
