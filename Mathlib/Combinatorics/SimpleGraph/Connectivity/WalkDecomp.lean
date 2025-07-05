@@ -314,4 +314,66 @@ decreasing_by
 · simp_wf
   rw [Nat.lt_iff_add_one_le, length_tail_add_one hnp]
 
+variable {V : Type} {G : SimpleGraph V}
+
+lemma nil_isSubwalk_iff_mem_support {u' u v} (q : G.Walk u v) :
+    (Walk.nil : G.Walk u' u').IsSubwalk q ↔ u' ∈ q.support := by
+  rw [nil_isSubwalk_iff_exists, mem_support_iff_exists_append]
+
+lemma nil_isSubwalk_cons_iff {u' u v w} (h : G.Adj u v) (q : G.Walk v w) :
+    (Walk.nil : G.Walk u' u').IsSubwalk (Walk.cons h q) ↔
+      u' = u ∨ (Walk.nil : G.Walk u' u').IsSubwalk q := by
+  simp [nil_isSubwalk_iff_mem_support]
+
+lemma length_le_of_isSubwalk {u₁ v₁ u₂ v₂} {q : G.Walk u₁ v₁} {p : G.Walk u₂ v₂}
+    (h : p.IsSubwalk q) :
+    p.length ≤ q.length := by
+  obtain ⟨ru, rv, h⟩ := h
+  rw [h, length_append, length_append, add_comm _ p.length, add_assoc]
+  exact Nat.le_add_right _ _
+
+theorem isSubwalk_iff_support_isInfix {u₁ v₁ u₂ v₂ : V} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) :
+    p.IsSubwalk q ↔ p.support <:+: q.support := by
+  induction q with
+  | nil =>
+    cases p with
+    | nil => simp [isSubwalk_nil_iff, eq_comm]
+    | cons h p =>
+      suffices ∀ (w) (hu : w = u₁) (hv : w = v₁), ¬cons h p = nil.copy hu hv by
+        simp [isSubwalk_nil_iff, List.infix_singleton_iff, this]
+      rintro _ rfl rfl
+      simp
+  | cons h q ih =>
+    cases p with
+    | nil =>
+      simp only [support_nil, List.singleton_infix_iff] at ih
+      simp [List.singleton_infix_iff, ← ih, nil_isSubwalk_cons_iff]
+    | cons h p =>
+      refine ⟨fun hp ↦ ?_, fun hp ↦ ?_⟩
+      · obtain ⟨ru, rv, hp⟩ := hp
+        use ru.support.dropLast, rv.support.tail
+        rw [hp, support_append, support_append, ← List.dropLast_append_getLast (support_ne_nil ru),
+          getLast_support, List.dropLast_append_of_ne_nil ([].cons_ne_nil u₁),
+          List.dropLast_singleton, List.append_nil, List.append_cancel_right_eq,
+          (cons h p).support_eq_cons, support_cons, List.tail_cons, List.append_assoc,
+          List.cons_append, List.nil_append, List.tail_cons]
+      · rw [support_cons, support_cons] at hp
+        cases List.infix_cons_iff.mp hp with
+        | inl hp =>
+          obtain ⟨rfl, hp⟩ := List.cons_prefix_cons.mp hp
+          have : q.getVert p.length = v₁ := by
+            rw [getVert_eq_support_getElem]
+            · obtain ⟨-, _, hp⟩ := List.cons_prefix_cons.mp hp
+              simp [← hp, ← getVert_eq_support_getElem _ rfl.le, getVert_length p]
+            · rw [← Nat.add_le_add_iff_right (n := 1), ← length_support, ← length_support]
+              exact List.IsPrefix.length_le ‹_›
+          use nil, (q.drop p.length).copy this rfl
+          apply ext_support
+          simp only [List.cons_prefix_cons, true_and] at hp
+          rw [support_append, support_cons, support_copy, List.prefix_append_drop hp]
+          simp [drop_support_tail]
+        | inr hp =>
+          rw [← support_cons, ← ih] at hp
+          exact hp.cons _
+
 end SimpleGraph.Walk
