@@ -493,19 +493,4 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[R] M} (hq : IsIdempoten
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
-/-- If `p,q` are idempotent operators and `p ∘ q = p = q ∘ p`,
-  then `q - p` is an idempotent operator. -/
-theorem isIdempotentElem_sub {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
-    (hq : IsIdempotentElem q) (hpq : p.comp q = p) (hqp : q.comp p = p) :
-    IsIdempotentElem (q - p) := hp.sub hq hpq hqp
-
-/-- If `p,q` are idempotent operators and `q - p` is also an idempotent
-  operator, then `p ∘ q = p = q ∘ p`. -/
-theorem commutes_of_isIdempotentElem_sub [NoZeroSMulDivisors ℕ E] {p q : E →ₗ[R] E}
-    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
-    p.comp q = p ∧ q.comp p = p :=
-  letI : IsAddTorsionFree (E →ₗ[R] E) :=
-    noZeroSMulDivisors_nat_iff_isAddTorsionFree.mp instNoZeroSMulDivisors
-  hp.commutes_of_isIdempotentElem_sub hq hqp
-
 end LinearMap
