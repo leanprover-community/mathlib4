@@ -212,17 +212,10 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     simp? at s says simp only [ComplexShape.up_Rel] at s
     rcases j with (_ | _ | j) <;> cases i <;> try simp
     · contradiction
-    · rw [C.shape]
-      simp only [ComplexShape.up_Rel]
-      contrapose! s
-      rw [← s]
+    · aesop
   d_comp_d' i j k hij hjk := by
     rcases k with (_ | _ | k) <;> rcases j with (_ | _ | j) <;> cases i <;> try simp
-    cases k
-    · exact w
-    · rw [C.shape, comp_zero]
-      simp only [ComplexShape.up_Rel, zero_add]
-      exact (Nat.one_lt_succ_succ _).ne
+    aesop
 
 @[simp]
 theorem augment_X_zero (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :

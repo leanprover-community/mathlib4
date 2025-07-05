@@ -900,10 +900,7 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
   rw [LocalizedModule.lift_unique S g h (l.comp (iso S f).toLinearMap), LinearMap.comp_assoc,
     LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
     LinearMap.comp_id]
-  rw [LinearMap.comp_assoc, ← hl]
-  congr 1
-  ext x
-  simp
+  aesop
 
 /-- Universal property from localized module:
 If `(M', f : M ⟶ M')` is a localized module then it satisfies the following universal property:

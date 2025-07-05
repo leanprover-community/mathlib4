@@ -459,9 +459,7 @@ theorem lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r
 
 theorem eq_lift_comp_mkRingHom {r : R → R → Prop} (f : RingQuot r →+* T) :
     f = lift ⟨f.comp (mkRingHom r), fun _ _ h ↦ congr_arg f (mkRingHom_rel h)⟩ := by
-  conv_lhs => rw [← lift.apply_symm_apply f]
-  rw [lift_def]
-  rfl
+  aesop
 
 section CommRing
 
@@ -510,18 +508,8 @@ theorem idealQuotientToRingQuot_apply (r : B → B → Prop) (x : B) :
 -/
 def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ Ideal.ofRel r :=
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
-    (by
-      ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change mkRingHom r x = _
-      rw [mkRingHom_def]
-      rfl)
-    (by
-      ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
-      rw [mkRingHom_def]
-      rfl)
+    (by aesop)
+    (by aesop)
 
 end CommRing
 
@@ -614,9 +602,7 @@ theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ �
 
 theorem eq_liftAlgHom_comp_mkAlgHom {s : A → A → Prop} (f : RingQuot s →ₐ[S] B) :
     f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ := by
-  conv_lhs => rw [← (liftAlgHom S).apply_symm_apply f]
-  rw [liftAlgHom]
-  rfl
+  aesop
 
 end Algebra
 

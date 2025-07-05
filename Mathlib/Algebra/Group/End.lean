@@ -821,9 +821,7 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
     change g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
     simp only [add_assoc, neg_add_rev]
   map_zero' := by
-    apply Additive.toMul.injective; ext
-    simp only [zero_add, neg_zero, add_zero, toMul_ofMul, toMul_zero, one_apply]
-    rfl
+    aesop
 
 @[simp]
 theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g :=

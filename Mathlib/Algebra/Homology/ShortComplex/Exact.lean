@@ -520,20 +520,14 @@ lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
   have eq := s.id
   rw [← s'.id, h, add_right_inj, cancel_epi S.g] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  aesop
 
 lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
   have := s.mono_f
   have eq := s.id
   rw [← s'.id, h, add_left_inj, cancel_mono S.f] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  aesop
 
 /-- The left homology data on a short complex equipped with a splitting. -/
 @[simps]
@@ -545,11 +539,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
       sub_eq_self, reassoc_of% hx, zero_comp])
     (fun x _ b hb => by simp only [← hb, assoc, f_r, comp_id])
   let f' := hi.lift (KernelFork.ofι S.f S.zero)
-  have hf' : f' = 𝟙 _ := by
-    apply Fork.IsLimit.hom_ext hi
-    dsimp
-    erw [Fork.IsLimit.lift_ι hi]
-    simp only [Fork.ι_ofι, id_comp]
+  have hf' : f' = 𝟙 _ := by aesop
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
   have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
       (by rw [hf']; infer_instance) (isZero_zero _)
@@ -572,11 +562,7 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     (fun x hx => by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
     (fun x _ b hb => by simp only [← hb, s.s_g_assoc])
   let g' := hp.desc (CokernelCofork.ofπ S.g S.zero)
-  have hg' : g' = 𝟙 _ := by
-    apply Cofork.IsColimit.hom_ext hp
-    dsimp
-    erw [Cofork.IsColimit.π_desc hp]
-    simp only [Cofork.π_ofπ, comp_id]
+  have hg' : g' = 𝟙 _ := by aesop
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
   have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
       (by rw [hg']; dsimp; infer_instance) (isZero_zero _)

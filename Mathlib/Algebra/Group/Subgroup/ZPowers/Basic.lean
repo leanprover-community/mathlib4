@@ -93,15 +93,7 @@ lemma Int.zmultiples_one : AddSubgroup.zmultiples (1 : ℤ) = ⊤ := by
 
 theorem ofMul_image_zpowers_eq_zmultiples_ofMul {x : G} :
     Additive.ofMul '' (Subgroup.zpowers x : Set G) = AddSubgroup.zmultiples (Additive.ofMul x) := by
-  ext y
-  constructor
-  · rintro ⟨z, ⟨m, hm⟩, hz2⟩
-    use m
-    simp only at *
-    rwa [← ofMul_zpow, hm]
-  · rintro ⟨n, hn⟩
-    refine ⟨x ^ n, ⟨n, rfl⟩, ?_⟩
-    rwa [ofMul_zpow]
+  aesop
 
 theorem ofAdd_image_zmultiples_eq_zpowers_ofAdd {x : A} :
     Multiplicative.ofAdd '' (AddSubgroup.zmultiples x : Set A) =

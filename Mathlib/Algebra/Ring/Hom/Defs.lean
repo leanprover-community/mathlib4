@@ -102,10 +102,7 @@ instance : FunLike (α →ₙ+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
-    cases g
-    congr
-    apply DFunLike.coe_injective'
-    exact h
+    aesop
 
 instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   map_add := NonUnitalRingHom.map_add'
@@ -356,10 +353,7 @@ instance instFunLike : FunLike (α →+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
-    cases g
-    congr
-    apply DFunLike.coe_injective'
-    exact h
+    aesop
 
 instance instRingHomClass : RingHomClass (α →+* β) α β where
   map_add := RingHom.map_add'

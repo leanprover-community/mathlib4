@@ -76,10 +76,7 @@ instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
-    cases g
-    congr
-    apply DFunLike.coe_injective'
-    exact h
+    aesop
 
 instance : LinearMapClass (E₁ →ₚ[R] E₂) R E₁ E₂ where
   map_add f := map_add f.toLinearMap

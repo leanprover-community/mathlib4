@@ -310,12 +310,7 @@ theorem coe_genWeightSpace_of_top (χ : L → R) :
 @[simp]
 theorem zero_genWeightSpace_eq_top_of_nilpotent [IsNilpotent L M] :
     genWeightSpace M (0 : (⊤ : LieSubalgebra R L) → R) = ⊤ := by
-  ext m
-  simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero, Subtype.forall,
-    forall_true_left, LieSubalgebra.toEnd_mk, LieSubalgebra.mem_top, LieSubmodule.mem_top, iff_true]
-  intro x
-  obtain ⟨k, hk⟩ := exists_forall_pow_toEnd_eq_zero R L M
-  exact ⟨k, by simp [hk x]⟩
+  aesop
 
 theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
@@ -555,10 +550,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
   suffices posFittingComp R L M₂ = ((posFittingComp R L M₂).map (e.symm : M₂ →ₗ⁅R,L⁆ M)).map e by
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
-  rw [← LieSubmodule.map_comp]
-  convert LieSubmodule.map_id
-  ext
-  simp
+  aesop
 
 lemma posFittingComp_map_incl_sup_of_codisjoint [IsNoetherian R M] [IsArtinian R M]
     {N₁ N₂ : LieSubmodule R L M} (h : Codisjoint N₁ N₂) :
