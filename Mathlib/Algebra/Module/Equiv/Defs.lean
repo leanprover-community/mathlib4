@@ -315,6 +315,12 @@ notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
     RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids
     RingHomInvPair.ids e₁ e₂
 
+/-- `LinearEquiv.symm` defines an equivalence between `α ≃ₛₗ[σ] β` and `β ≃ₛₗ[σ] α`. -/
+@[simps!]
+def symmEquiv : (M ≃ₛₗ[σ] M₂) ≃ (M₂ ≃ₛₗ[σ'] M) where
+  toFun := .symm
+  invFun := .symm
+
 variable {e₁₂} {e₂₃}
 
 theorem coe_toAddEquiv : e.toAddEquiv = e :=
