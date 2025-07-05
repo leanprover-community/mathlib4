@@ -41,7 +41,7 @@ variable
 
 namespace Manifold
 
-variable [∀ (x : M), ENorm (TangentSpace I x)] {a b a' b' : ℝ} {γ γ' : ℝ → M}
+variable [∀ (x : M), ENorm (TangentSpace I x)] {a b c a' b' : ℝ} {γ γ' : ℝ → M}
 
 variable (I) in
 /-- The length on `Icc a b` of a path into a manifold, where the path is defined on the whole real
@@ -91,8 +91,9 @@ lemma pathELength_mono (h : a' ≤ a) (h' : b ≤ b') :
   simp only [pathELength_eq_lintegral_mfderiv_Icc]
   exact lintegral_mono_set (Icc_subset_Icc h h')
 
-lemma pathELength_eq_add {γ : ℝ → M} {a b c : ℝ} (h : a ≤ b) (h' : b ≤ c) :
-    pathELength I γ a c = pathELength I γ a b + pathELength I γ b c := by
+lemma pathELength_add (h : a ≤ b) (h' : b ≤ c) :
+    pathELength I γ a b + pathELength I γ b c = pathELength I γ a c := by
+  symm
   have : Icc a c = Icc a b ∪ Ioc b c := (Icc_union_Ioc_eq_Icc h h').symm
   rw [pathELength, this, lintegral_union measurableSet_Ioc]; swap
   · exact disjoint_iff_forall_ne.mpr (fun a ha b hb ↦ (ha.2.trans_lt hb.1).ne)
@@ -210,15 +211,14 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
     rw [← contMDiffOn_comp_projIcc_iff]
     apply hη.congr (fun t ht ↦ ?_)
     simp only [Function.comp_apply, f, projIcc_of_mem, ht]
-  let g : C(unitInterval, M) := ⟨f, hf.continuous⟩
-  let g' : Path x y := by
-    refine ⟨g, ?_, ?_⟩ <;>
-    simp [g, f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
-  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g' x 1‖ₑ := by
+  let g : Path x y := by
+    refine ⟨⟨f, hf.continuous⟩, ?_, ?_⟩ <;>
+    simp [f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
+  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g x 1‖ₑ := by
     rw [riemannianEDist]; exact biInf_le _ hf
   apply A.trans_eq
   rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
-  have E : pathELength I (g' ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by
+  have E : pathELength I (g ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by
     apply pathELength_congr (fun t ht ↦ ?_)
     simp only [Function.comp_apply, ht, projIcc_of_mem]
     rfl
@@ -349,7 +349,7 @@ lemma riemannianEDist_triangle :
     · simp [γ, hγ₂2]
     · exact zero_le_two
   apply this.trans_lt (lt_trans ?_ huv)
-  rw [pathELength_eq_add zero_le_one one_le_two]
+  rw [← pathELength_add zero_le_one one_le_two]
   gcongr
   · convert hγ₁ using 1
     apply pathELength_congr
