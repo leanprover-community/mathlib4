@@ -663,10 +663,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
   | cons _ _ ih =>
     rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
     rw [Walk.cons_isPath_iff]
-    obtain ⟨hp1, hp2⟩ := hp
-    refine ⟨ih hp1, ?_⟩
-    contrapose! hp2
-    exact List.mem_map_of_mem hp2
+    grind
 
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩

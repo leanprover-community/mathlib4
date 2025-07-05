@@ -69,14 +69,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
           not_false_iff, exists_prop, and_true, Classical.not_not, true_and, iff_and_self]
         rintro rfl
         exact huv.ne
-    · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and, add_zero, Ne] at ih ⊢
-      rw [ih]
-      constructor <;>
-        · rintro h' h'' rfl
-          simp only [imp_false, not_true, Classical.not_not] at h'
-          cases h'
-          simp only [not_true, and_false, false_and] at h
+    · grind
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
 `p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
