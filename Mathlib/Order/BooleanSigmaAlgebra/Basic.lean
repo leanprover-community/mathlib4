@@ -154,7 +154,7 @@ theorem le_σiInf_iff : a ≤ iInf f ↔ ∀ i, a ≤ f i :=
 theorem σiSup₂_le_iff {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [σiSup_le_iff]
 
-theorem σle_iInf₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j :=
+theorem le_σiInf₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j :=
   σiSup₂_le_iff (α := αᵒᵈ)
 
 theorem notMem_of_lt_σsInf (h : a < sInf s) (hs : s.Countable) : a ∉ s :=
