@@ -49,13 +49,13 @@ lemma IsSigmaAlgebra_of_measurableSpace :
 
 /-- Any bundled measurable set is, by definition, a member of `m.SigmaAlgebra`. -/
 @[simp]
-lemma Subtype.mem_sigma (A : {s : Set α // MeasurableSet[m] s}) :
+lemma Subtype.mem_sigma (A : {s : Set α // MeasurableSet s}) :
     (A : Set α) ∈ m.SigmaAlgebra :=
-  (mem_SigmaAlgebra (m := m)).2 A.property
+  mem_SigmaAlgebra.2 A.property
 
 /-- Wrap a membership proof into the *predicate* subtype. -/
 def Set.toMeasurableSubtype {s : Set α} (h : s ∈ m.SigmaAlgebra) :
-    {t : Set α // MeasurableSet[m] t} :=
-  ⟨s, (mem_SigmaAlgebra (m := m)).1 h⟩
+    {t : Set α // MeasurableSet t} :=
+  ⟨s, mem_SigmaAlgebra.1 h⟩
 
 end MeasurableSpace
