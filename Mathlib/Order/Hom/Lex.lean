@@ -158,7 +158,7 @@ variable {α β} in
 theorem prodUnique_apply [PartialOrder α] [Preorder β] [Unique β] (x : α ×ₗ β) :
     prodUnique α β x = (ofLex x).1 := rfl
 
-/-- Lexicographical product type with `Unique` type on the left is `OrderIso` to the right. -/
+/-- Lexicographic product type with `Unique` type on the left is `OrderIso` to the right. -/
 def uniqueProd [Preorder α] [Unique α] [LE β] : α ×ₗ β ≃o β where
   toFun x := (ofLex x).2
   invFun x := toLex (default, x)
