@@ -28,7 +28,7 @@ open CategoryTheory Limits Functor
 namespace CategoryTheory.Cat
 
 /-- A discrete category with a unique object is terminal. -/
-def isDiscreteUnique.isTerminal {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T] :
+def isTerminalOfUniqueOfIsDiscrete {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T] :
     IsTerminal (Cat.of T) :=
   IsTerminal.ofUniqueHom (fun X ↦ (const X).obj (default : T))
     (fun _ _ ↦ Functor.ext (by simp [eq_iff_true_of_subsingleton]))
