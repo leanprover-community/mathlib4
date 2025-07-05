@@ -55,8 +55,6 @@ def codRestrict (α : Type*) {β : Type*} (bs : Set β) :
       (α ↪ bs) where
   toFun f := (f : α ↪ β).codRestrict bs f.prop
   invFun f := ⟨f.trans (Function.Embedding.subtype _), fun a => (f a).prop⟩
-  left_inv x := by ext; rfl
-  right_inv x := by ext; rfl
 
 /-- Pairs of embeddings with disjoint ranges are equivalent to a dependent sum of embeddings,
 in which the second embedding cannot take values in the range of the first. -/

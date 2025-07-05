@@ -57,9 +57,9 @@ def nonneg : RingCone T where
 @[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-instance nonneg.isMaxCone {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] :
+instance nonneg.isMaxCone {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
     IsMaxCone (nonneg T) where
-  mem_or_neg_mem := mem_or_neg_mem (C := AddGroupCone.nonneg T)
+  mem_or_neg_mem' := mem_or_neg_mem (AddGroupCone.nonneg T)
 
 end RingCone
 

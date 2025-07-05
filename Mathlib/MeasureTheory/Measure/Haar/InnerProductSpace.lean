@@ -40,7 +40,9 @@ def toMeasurableEquiv : E ≃ᵐ F where
 
 @[deprecated (since := "2025-03-22")] alias coe_toMeasureEquiv := coe_toMeasurableEquiv
 
-theorem toMeasurableEquiv_symm : f.toMeasurableEquiv.symm = f.symm.toMeasurableEquiv := rfl
+@[simp] theorem toMeasurableEquiv_symm : f.symm.toMeasurableEquiv = f.toMeasurableEquiv.symm := rfl
+
+@[simp] lemma coe_symm_toMeasurableEquiv : ⇑f.toMeasurableEquiv.symm = f.symm := rfl
 
 @[deprecated (since := "2025-03-22")] alias toMeasureEquiv_symm := toMeasurableEquiv_symm
 

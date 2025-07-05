@@ -622,7 +622,7 @@ theorem _root_.IsOpen.exists_eq_add_of_fderiv_eq (hs : IsOpen s) (hs' : IsPrecon
     (hf' : s.EqOn (fderiv 𝕜 f) (fderiv 𝕜 g)) : ∃ a, s.EqOn f (g · + a) := by
   simp_rw [Set.EqOn, ← sub_eq_iff_eq_add']
   refine hs.exists_is_const_of_fderiv_eq_zero hs' (hf.sub hg) fun x hx ↦ ?_
-  rw [fderiv_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
+  rw [fderiv_fun_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
     hf' hx, sub_self, Pi.zero_apply]
 
 /-- If two functions have equal Fréchet derivatives at every point of a connected open set,

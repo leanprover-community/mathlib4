@@ -197,7 +197,7 @@ theorem dist_triangle_right (x y z : α) : dist x y ≤ dist x z + dist y z := b
 theorem dist_triangle4 (x y z w : α) : dist x w ≤ dist x y + dist y z + dist z w :=
   calc
     dist x w ≤ dist x z + dist z w := dist_triangle x z w
-    _ ≤ dist x y + dist y z + dist z w := add_le_add_right (dist_triangle x y z) _
+    _ ≤ dist x y + dist y z + dist z w := by gcongr; apply dist_triangle x y z
 
 theorem dist_triangle4_left (x₁ y₁ x₂ y₂ : α) :
     dist x₂ y₂ ≤ dist x₁ y₁ + (dist x₁ x₂ + dist y₁ y₂) := by
@@ -212,9 +212,9 @@ theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
 theorem dist_triangle8 (a b c d e f g h : α) : dist a h ≤ dist a b + dist b c + dist c d
     + dist d e + dist e f + dist f g + dist g h := by
   apply le_trans (dist_triangle4 a f g h)
-  apply add_le_add_right (add_le_add_right _ (dist f g)) (dist g h)
+  gcongr
   apply le_trans (dist_triangle4 a d e f)
-  apply add_le_add_right (add_le_add_right _ (dist d e)) (dist e f)
+  gcongr
   exact dist_triangle4 a b c d
 
 theorem swap_dist : Function.swap (@dist α _) = dist := by funext x y; exact dist_comm _ _

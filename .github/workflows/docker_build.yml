@@ -2,13 +2,14 @@ name: docker
 on:
   schedule:
     - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
-  workflow_dispatch:  
+  workflow_dispatch:
 env:
   # Possibly change this to `hub.docker.com` in the future
   REGISTRY: ghcr.io
   REPO_NAME: ${{ github.repository }}
 jobs:
   build-and-push-docker-images:
+    if: github.repository == 'leanprover-community/mathlib4'
     strategy:
       fail-fast: false
       matrix:

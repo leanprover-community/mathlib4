@@ -191,7 +191,7 @@ theorem cocycle (i j k : 𝒰.J) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t
       · simp_rw [Category.assoc, cocycle_snd_fst_snd 𝒰 f g i j k]
     · simp_rw [Category.assoc, cocycle_snd_snd 𝒰 f g i j k]
 
-/-- Given `Uᵢ ×[Z] Y`, this is the glued fibered product `X ×[Z] Y`. -/
+/-- Given `Uᵢ ×[Z] Y`, this is the glued fibred product `X ×[Z] Y`. -/
 @[simps U V f t t', simps -isSimp J]
 def gluing : Scheme.GlueData.{u} where
   J := 𝒰.J
@@ -619,7 +619,7 @@ variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [
 
 open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
-/-- The isomorphism between the fiber product of two schemes `Spec S` and `Spec T`
+/-- The isomorphism between the fibred product of two schemes `Spec S` and `Spec T`
 over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 noncomputable
 def pullbackSpecIso :
@@ -630,7 +630,7 @@ def pullbackSpecIso :
   limit.isoLimitCone ⟨_, isLimitPullbackConeMapOfIsLimit Scheme.Spec _ H⟩
 
 /--
-The composition of the inverse of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+The composition of the inverse of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the first projection is
 the morphism `Spec (S ⊗[R] T) ⟶ Spec S` obtained by applying `Spec.map` to the ring morphism
 `s ↦ s ⊗ₜ[R] 1`.
@@ -641,7 +641,7 @@ lemma pullbackSpecIso_inv_fst :
   limit.isoLimitCone_inv_π _ _
 
 /--
-The composition of the inverse of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+The composition of the inverse of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the second projection is
 the morphism `Spec (S ⊗[R] T) ⟶ Spec T` obtained by applying `Spec.map` to the ring morphism
 `t ↦ 1 ⊗ₜ[R] t`.
@@ -653,7 +653,7 @@ lemma pullbackSpecIso_inv_snd :
   limit.isoLimitCone_inv_π _ _
 
 /--
-The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+The composition of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
 `Spec (S ⊗[R] T) ⟶ Spec S` obtained by applying `Spec.map` to the ring morphism `s ↦ s ⊗ₜ[R] 1`
 is the first projection.
@@ -664,7 +664,7 @@ lemma pullbackSpecIso_hom_fst :
   rw [← pullbackSpecIso_inv_fst, Iso.hom_inv_id_assoc]
 
 /--
-The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of
+The composition of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
 `Spec (S ⊗[R] T) ⟶ Spec T` obtained by applying `Spec.map` to the ring morphism `t ↦ 1 ⊗ₜ[R] t`
 is the second projection.

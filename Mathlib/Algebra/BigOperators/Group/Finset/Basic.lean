@@ -178,15 +178,21 @@ theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x
   prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem prod_disj_sum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
+theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
 
+@[deprecated (since := "2025-06-11")]
+alias sum_disj_sum := sum_disjSum
+
+@[to_additive existing, deprecated (since := "2025-06-11")]
+alias prod_disj_sum := prod_disjSum
+
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
     ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
-  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disj_sum, Finset.toLeft_disjSum,
+  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disjSum, Finset.toLeft_disjSum,
     Finset.toRight_disjSum]
 
 @[to_additive]

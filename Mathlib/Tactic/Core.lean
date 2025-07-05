@@ -72,11 +72,12 @@ def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
 
 /-- Introduce variables, giving them names from a specified list. -/
 def MVarId.introsWithBinderIdents
-    (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
+    (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
   let type ← g.getType
   let type ← instantiateMVars type
   let n := getIntrosSize type
+  let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
   if n == 0 then
     return (ids, #[], g)
   let mut ids := ids

@@ -212,8 +212,6 @@ each term. This is a version of `Equiv.piCurry` for continuous maps.
 def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
   toFun := sigma
   invFun f i := f.comp (sigmaMk i)
-  left_inv := by intro; ext; simp
-  right_inv := by intro; ext; simp
 
 end Sigma
 
@@ -244,8 +242,6 @@ each term
 def piEquiv : (∀ i, C(A, X i)) ≃ C(A, ∀ i, X i) where
   toFun := pi
   invFun f i := (eval i).comp f
-  left_inv := by intro; ext; simp [pi]
-  right_inv := by intro; ext; simp [pi]
 
 /-- Combine a collection of bundled continuous maps `C(X i, Y i)` into a bundled continuous map
 `C(∀ i, X i, ∀ i, Y i)`. -/
@@ -292,6 +288,51 @@ def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
     (map_continuousAt f _).restrictPreimage⟩
 
 end Restrict
+
+section mkD
+
+/--
+Interpret `f : α → β` as an element of `C(α, β)`, falling back to the default value
+`default : C(α, β)` if `f` is not continuous.
+This is mainly intended to be used for `C(α, β)`-valued integration. For example, if a family of
+functions `f : ι → α → β` satisfies that `f i` is continuous for almost every `i`, you can write
+the `C(α, β)`-valued integral "`∫ i, f i`" as `∫ i, ContinuousMap.mkD (f i) 0`.
+-/
+noncomputable def mkD (f : α → β) (default : C(α, β)) : C(α, β) :=
+  open scoped Classical in
+  if h : Continuous f then ⟨_, h⟩ else default
+
+lemma mkD_of_continuous {f : α → β} {g : C(α, β)} (hf : Continuous f) :
+    mkD f g = ⟨f, hf⟩ := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous f) :
+    mkD f g = g := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
+    mkD f g x = f x := by
+  rw [mkD_of_continuous hf]
+  rfl
+
+lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g = ⟨s.restrict f, hf.restrict⟩ :=
+  mkD_of_continuous hf.restrict
+
+lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ¬ ContinuousOn f s) :
+    mkD (s.restrict f) g = g := by
+  rw [continuousOn_iff_continuous_restrict] at hf
+  exact mkD_of_not_continuous hf
+
+lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf]
+  rfl
+
+end mkD
 
 section Gluing
 

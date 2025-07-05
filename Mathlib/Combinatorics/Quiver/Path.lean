@@ -193,6 +193,75 @@ theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List 
 theorem toList_inj {p q : Path a b} : p.toList = q.toList ↔ p = q :=
   (toList_injective _ _).eq_iff
 
+
+section BoundedPath
+
+variable {V : Type*} [Quiver V]
+
+/-- A bounded path is a path with a uniform bound on its length. -/
+def BoundedPaths (v w : V) (n : ℕ) : Sort _ :=
+  { p : Path v w // p.length ≤ n }
+
+/-- Bounded paths of length zero between two vertices form a subsingleton. -/
+instance instSubsingletonBddPaths (v w : V) : Subsingleton (BoundedPaths v w 0) where
+  allEq := fun ⟨p, hp⟩ ⟨q, hq⟩ =>
+   match v, w, p, q with
+   | _, _, .nil, .nil => rfl
+   | _, _, .cons _ _, _ => by simp [Quiver.Path.length] at hp
+   | _, _, _, .cons _ _ => by simp [Quiver.Path.length] at hq
+
+/-- Bounded paths of length zero between two vertices have decidable equality. -/
+def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
+  fun _ _ => isTrue <| Subsingleton.elim _ _
+
+/-- Given decidable equality on paths of length up to `n`, we can construct
+decidable equality on paths of length up to `n + 1`. -/
+def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
+    (h₂ : ∀ (v w : V), DecidableEq (v ⟶ w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
+    (v w : V) : DecidableEq (BoundedPaths v w (n + 1)) :=
+  fun ⟨p, hp⟩ ⟨q, hq⟩ =>
+    match v, w, p, q with
+    | _, _, .nil, .nil => isTrue rfl
+    | _, _, .nil, .cons _ _ => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .cons _ _, .nil => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .cons (b := v') p' α, .cons (b := v'') q' β =>
+      match v', v'', h₁ v' v'' with
+      | _, _, isTrue (Eq.refl _) =>
+        if h : α = β then
+          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; omega
+          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; omega
+          if h'' : (⟨p', hp'⟩ : BoundedPaths _ _ n) = ⟨q', hq'⟩ then
+            isTrue <| by
+              apply Subtype.ext
+              dsimp
+              rw [h, show p' = q' from Subtype.mk.inj h'']
+          else
+            isFalse fun h =>
+              h'' <| Subtype.ext <| eq_of_heq <| (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
+        else
+          isFalse fun h' =>
+            h <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h').2.2
+      | _, _, isFalse h => isFalse fun h' =>
+        h (Quiver.Path.cons.inj <| Subtype.mk.inj h').1
+
+/-- Equality is decidable on all uniformly bounded paths given decidable
+equality on the vertices and the arrows. -/
+instance decidableEqBoundedPaths [DecidableEq V] [∀ (v w : V), DecidableEq (v ⟶ w)]
+    (n : ℕ) : (v w : V) → DecidableEq (BoundedPaths v w n) :=
+  n.rec decidableEqBddPathsZero
+    fun n decEq => decidableEqBddPathsOfDecidableEq n inferInstance inferInstance decEq
+
+/-- Equality is decidable on paths in a quiver given decidable equality on the vertices and
+arrows. -/
+instance instDecidableEq [DecidableEq V] [∀ (v w : V), DecidableEq (v ⟶ w)] :
+    (v w : V) → DecidableEq (Path v w) := fun v w p q =>
+  let m := max p.length q.length
+  let p' : BoundedPaths v w m := ⟨p, Nat.le_max_left ..⟩
+  let q' : BoundedPaths v w m := ⟨q, Nat.le_max_right ..⟩
+  decidable_of_iff (p' = q') Subtype.ext_iff
+
+end BoundedPath
+
 end Path
 
 end Quiver

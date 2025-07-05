@@ -281,7 +281,6 @@ variable {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
 noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
   toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.2
   invFun u := ⟨u, u.isUnit.mem_nonZeroDivisors⟩
-  left_inv u := rfl
   right_inv u := by simp
   map_mul' u v := by simp
 
@@ -325,8 +324,6 @@ def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
   __ := Units.map M₀⁰.subtype
   invFun u := ⟨⟨u, u.isUnit.mem_nonZeroDivisors⟩, ⟨(u⁻¹ : M₀ˣ), u⁻¹.isUnit.mem_nonZeroDivisors⟩,
     by simp, by simp⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
   unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans <| by simp [Associated]; norm_cast

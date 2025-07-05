@@ -321,7 +321,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     -- The first part can be bounded by `C` using `h₄`.
     _ ≤ (s - 1) * s * C + s * ((s - 1) * ∫ t in Set.Ioi T, ‖S t - l * t‖ * t ^ (-s - 1)) := by
       rw [mul_add, ← mul_assoc, mul_comm s]
-      exact add_le_add_right (mul_le_mul_of_nonneg_left h₄ hs') _
+      gcongr
     -- The second part is bounded using `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂`
     -- since `‖S t - l t‖ ≤ ε * t` for all `t ≥ T`.
     _ ≤ (s - 1) * s * C + s * ε := by

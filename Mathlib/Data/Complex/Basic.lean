@@ -13,8 +13,8 @@ import Mathlib.Tactic.Ring
 # The complex numbers
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
-of characteristic zero. The result that the complex numbers are algebraically closed, see
-`FieldTheory.AlgebraicClosure`.
+of characteristic zero. For the result that the complex numbers are algebraically closed, see
+`Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
 
 assert_not_exists Multiset Algebra
@@ -45,8 +45,6 @@ noncomputable instance : DecidableEq ℂ :=
 def equivRealProd : ℂ ≃ ℝ × ℝ where
   toFun z := ⟨z.re, z.im⟩
   invFun p := ⟨p.1, p.2⟩
-  left_inv := fun ⟨_, _⟩ => rfl
-  right_inv := fun ⟨_, _⟩ => rfl
 
 @[simp]
 theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z

@@ -187,8 +187,7 @@ def preordToPartOrdForgetAdjunction :
           invFun f := PartOrd.ofHom
             ⟨fun a => Quotient.liftOn' a f (fun _ _ h => (AntisymmRel.image h f.hom.mono).eq),
               fun a b => Quotient.inductionOn₂' a b fun _ _ h => f.hom.mono h⟩
-          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl
-          right_inv _ := Preord.ext fun _ => rfl }
+          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
       homEquiv_naturality_left_symm _ _ :=
         PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
 

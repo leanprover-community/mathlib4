@@ -244,8 +244,8 @@ theorem IsReduced.drop {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduce
 
 theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬cs.IsReduced (alternatingWord i i' m) := by
-  induction' hm with m _ ih
-  · -- Base case; m = M i i' + 1
+  induction hm with
+  | refl => -- Base case; m = M i i' + 1
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
       unfold IsReduced
       rw [Nat.succ_eq_add_one, length_alternatingWord]
@@ -260,7 +260,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       _ = M i i' - 1                                  := length_alternatingWord _ _ _
       _ ≤ M i i'                                      := Nat.sub_le _ _
       _ < M i i' + 1                                  := Nat.lt_succ_self _
-  · -- Inductive step
+  | step m ih => -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
     apply IsReduced.drop (j := 1) at ih

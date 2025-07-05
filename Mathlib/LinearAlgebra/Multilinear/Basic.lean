@@ -273,7 +273,6 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
         simpa [update_eq_const_of_subsingleton] using f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
         simpa [update_eq_const_of_subsingleton] using f.map_update_smul 0 i c x }
-  left_inv _ := rfl
   right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
@@ -982,7 +981,6 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[S] MultilinearMap R M�
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0
-  left_inv _ := rfl
   right_inv f := ext fun _ => MultilinearMap.congr_arg f <| Subsingleton.elim _ _
 
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/

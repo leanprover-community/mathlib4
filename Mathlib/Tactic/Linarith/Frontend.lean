@@ -131,10 +131,10 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 -/
 
 open Lean Elab Parser Tactic Meta
-open Batteries Mathlib
+open Batteries
 
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-! ### Config objects
 
@@ -487,3 +487,5 @@ elab_rules : tactic
 --   category   := doc_category.tactic,
 --   decl_names := [`tactic.interactive.nlinarith],
 --   tags       := ["arithmetic", "decision procedure", "finishing"] }
+
+end Mathlib.Tactic

@@ -20,9 +20,9 @@ open TensorProduct
 
 namespace Algebra.TensorProduct
 
-variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring A]
+variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [Semiring A]
   [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable {ι : Type*} (B : ι → Type*) [∀ i, CommSemiring (B i)] [∀ i, Algebra R (B i)]
+variable {ι : Type*} (B : ι → Type*) [∀ i, Semiring (B i)] [∀ i, Algebra R (B i)]
 
 @[simp]
 lemma piRightHom_one : piRightHom R S A B 1 = 1 := rfl

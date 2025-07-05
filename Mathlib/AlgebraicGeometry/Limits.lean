@@ -151,83 +151,11 @@ section Coproduct
 
 variable {ι : Type u} (f : ι → Scheme.{u})
 
-/-- (Implementation Detail) The glue data associated to a disjoint union. -/
-@[simps]
-noncomputable
-def disjointGlueData' : GlueData' Scheme where
-  J := ι
-  U := f
-  V _ _ _ := ∅
-  f _ _ _ := Scheme.emptyTo _
-  t _ _ _ := 𝟙 _
-  t' _ _ _ _ _ _ := Limits.pullback.fst _ _ ≫ Scheme.emptyTo _
-  t_fac _ _ _ _ _ _ := emptyIsInitial.strict_hom_ext _ _
-  t_inv _ _ _ := Category.comp_id _
-  cocycle _ _ _ _ _ _ := (emptyIsInitial.ofStrict (pullback.fst _ _)).hom_ext _ _
-  f_mono _ _ := inferInstance
-
-/-- (Implementation Detail) The glue data associated to a disjoint union. -/
-@[simps! J V U f t]
-noncomputable
-def disjointGlueData : Scheme.GlueData where
-  __ := GlueData.ofGlueData' (disjointGlueData' f)
-  f_open i j := by
-    dsimp only [GlueData.ofGlueData', GlueData'.f', disjointGlueData']
-    split <;> infer_instance
-
-/-- (Implementation Detail) The cofan in `LocallyRingedSpace` associated to a disjoint union. -/
-noncomputable
-def toLocallyRingedSpaceCoproductCofan : Cofan (Scheme.toLocallyRingedSpace ∘ f) :=
-  Cofan.mk (disjointGlueData f).toLocallyRingedSpaceGlueData.glued
-    (disjointGlueData f).toLocallyRingedSpaceGlueData.ι
-
-/-- (Implementation Detail)
-The cofan in `LocallyRingedSpace` associated to a disjoint union is a colimit. -/
-noncomputable
-def toLocallyRingedSpaceCoproductCofanIsColimit :
-    IsColimit (toLocallyRingedSpaceCoproductCofan f) := by
-  fapply mkCofanColimit
-  · refine fun t ↦ Multicoequalizer.desc _ _ t.inj ?_
-    rintro ⟨i, j⟩
-    simp only [GlueData.diagram, disjointGlueData_J, disjointGlueData_V, disjointGlueData_U,
-      disjointGlueData_f, disjointGlueData_t, Category.comp_id, Category.assoc,
-      GlueData.mapGlueData_J, disjointGlueData_J, GlueData.mapGlueData_V,
-      disjointGlueData_V, Scheme.forgetToLocallyRingedSpace_obj, GlueData.mapGlueData_U,
-      disjointGlueData_U, GlueData.mapGlueData_f, disjointGlueData_f, Category.comp_id,
-      Scheme.forgetToLocallyRingedSpace_map, GlueData.mapGlueData_t, disjointGlueData_t]
-    split_ifs with h
-    · subst h
-      simp only [eqToHom_refl, ↓reduceDIte, ← Category.assoc, GlueData'.f']
-      congr
-    · apply Limits.IsInitial.hom_ext
-      rw [if_neg h]
-      exact LocallyRingedSpace.emptyIsInitial
-  · exact fun _ _ ↦ Multicoequalizer.π_desc _ _ _ _ _
-  · intro i m h
-    apply Multicoequalizer.hom_ext _ _ _ fun j ↦ ?_
-    rw [Multicoequalizer.π_desc]
-    exact h j
-
-noncomputable
-instance : CreatesColimit (Discrete.functor f) Scheme.forgetToLocallyRingedSpace :=
-  createsColimitOfFullyFaithfulOfIso (disjointGlueData f).gluedScheme <|
-    let F : Discrete.functor f ⋙ Scheme.forgetToLocallyRingedSpace ≅
-      Discrete.functor (Scheme.toLocallyRingedSpace ∘ f) := Discrete.natIsoFunctor
-    have := (IsColimit.precomposeHomEquiv F _).symm (toLocallyRingedSpaceCoproductCofanIsColimit f)
-    (colimit.isoColimitCocone ⟨_, this⟩).symm
-
 variable {σ : Type v} (g : σ → Scheme.{u})
 
 noncomputable
 instance [Small.{u} σ] :
-    CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} := by
-  choose σ' eq using Small.equiv_small.{u} (α := σ)
-  let e : Discrete σ ≌ Discrete σ' := Discrete.equivalence eq.some
-  let _ : CreatesColimitsOfShape (Discrete σ') Scheme.forgetToLocallyRingedSpace := by
-    constructor
-    intro K
-    exact createsColimitOfIsoDiagram _ (Discrete.natIsoFunctor (F := K)).symm
-  apply CategoryTheory.createsColimitsOfShapeOfEquiv e.symm
+  CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
 
 instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
   inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
@@ -236,59 +164,15 @@ instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetTo
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
-instance [UnivLE.{v, u}] : HasCoproducts.{v} Scheme.{u} :=
-  fun _ ↦ ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
-
-/-- (Implementation Detail) Coproduct of schemes is isomorphic to the disjoint union. -/
-noncomputable
-def sigmaIsoGlued : ∐ f ≅ (disjointGlueData f).glued :=
-  Scheme.fullyFaithfulForgetToLocallyRingedSpace.preimageIso
-    (PreservesCoproduct.iso _ _ ≪≫
-      colimit.isoColimitCocone ⟨_, toLocallyRingedSpaceCoproductCofanIsColimit f⟩ ≪≫
-        (disjointGlueData f).isoLocallyRingedSpace.symm)
-
-@[reassoc (attr := simp)]
-lemma ι_sigmaIsoGlued_inv (i) : (disjointGlueData f).ι i ≫ (sigmaIsoGlued f).inv = Sigma.ι f i := by
-  apply Scheme.forgetToLocallyRingedSpace.map_injective
-  dsimp [sigmaIsoGlued]
-  simp only [Category.assoc]
-  refine ((disjointGlueData f).ι_gluedIso_hom_assoc Scheme.forgetToLocallyRingedSpace i _).trans ?_
-  refine (colimit.isoColimitCocone_ι_inv_assoc
-    ⟨_, toLocallyRingedSpaceCoproductCofanIsColimit f⟩ ⟨i⟩ _).trans ?_
-  exact ι_comp_sigmaComparison Scheme.forgetToLocallyRingedSpace _ _
-
-@[reassoc (attr := simp)]
-lemma ι_sigmaIsoGlued_hom (i) :
-    Sigma.ι f i ≫ (sigmaIsoGlued f).hom = (disjointGlueData f).ι i := by
-  rw [← ι_sigmaIsoGlued_inv, Category.assoc, Iso.inv_hom_id, Category.comp_id]
-
-instance (i) : IsOpenImmersion (Sigma.ι f i) := by
-  rw [← ι_sigmaIsoGlued_inv]
-  infer_instance
-
-instance [Small.{u} σ] (i) : IsOpenImmersion (Sigma.ι g i) := by
-  obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
-  obtain ⟨i, rfl⟩ := e.symm.surjective i
-  rw [← Sigma.ι_reindex_hom e.symm g i]
-  infer_instance
-
 lemma sigmaι_eq_iff (i j : ι) (x y) :
     (Sigma.ι f i).base x = (Sigma.ι f j).base y ↔
       (Sigma.mk i x : Σ i, f i) = Sigma.mk j y := by
-  constructor
-  · intro H
-    rw [← ι_sigmaIsoGlued_inv, ← ι_sigmaIsoGlued_inv] at H
-    erw [(TopCat.homeoOfIso
-      (Scheme.forgetToTop.mapIso (sigmaIsoGlued f))).symm.injective.eq_iff] at H
-    by_cases h : i = j
-    · subst h
-      simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and]
-      exact ((disjointGlueData f).ι i).isOpenEmbedding.injective H
-    · obtain ⟨z, _⟩ := (Scheme.GlueData.ι_eq_iff _ _ _ _ _).mp H
-      · simp only [disjointGlueData_J, disjointGlueData_V, h, ↓reduceIte] at z
-        cases z
-  · rintro ⟨rfl⟩
-    rfl
+  refine (Scheme.IsLocallyDirected.ι_eq_ι_iff _).trans ⟨?_, ?_⟩
+  · rintro ⟨k, ⟨⟨⟨⟩⟩⟩, ⟨⟨⟨⟩⟩⟩, x, rfl, rfl⟩; simp
+  · simp only [Discrete.functor_obj_eq_as, Sigma.mk.injEq]
+    rintro ⟨rfl, e⟩
+    obtain rfl := (heq_eq_eq x y).mp e
+    exact ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
 
 /-- The images of each component in the coproduct is disjoint. -/
 lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
@@ -299,28 +183,9 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
 
-lemma exists_sigmaι_eq [Small.{u} σ] (x : (∐ g :)) : ∃ i y, (Sigma.ι g i).base y = x := by
-  obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
-  let x' : (∐ g ∘ e.symm :) := (Sigma.reindex e.symm g).inv.base x
-  obtain ⟨i, y, h⟩ := (disjointGlueData <| g ∘ e.symm).ι_jointly_surjective
-    ((sigmaIsoGlued <| g ∘ e.symm).hom.base <| x')
-  refine ⟨e.symm i, y, (Sigma.reindex e.symm g).inv.isOpenEmbedding.injective ?_⟩
-  apply (sigmaIsoGlued _).hom.isOpenEmbedding.injective
-  rwa [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply,
-    Sigma.ι_reindex_inv_assoc, ι_sigmaIsoGlued_hom]
-
-lemma iSup_opensRange_sigmaι : ⨆ i, (Sigma.ι f i).opensRange = ⊤ :=
-  eq_top_iff.mpr fun x ↦ by simpa using exists_sigmaι_eq f x
-
 /-- The open cover of the coproduct. -/
-@[simps obj map]
-noncomputable
-def sigmaOpenCover [Small.{u} σ] : (∐ g).OpenCover where
-  J := σ
-  obj := g
-  map := Sigma.ι g
-  f x := (exists_sigmaι_eq g x).choose
-  covers x := (exists_sigmaι_eq g x).choose_spec
+@[deprecated (since := "2025-06-02")]
+noncomputable alias sigmaOpenCover := Scheme.IsLocallyDirected.openCover
 
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable
@@ -360,12 +225,13 @@ private lemma isOpenImmersion_sigmaDesc_aux
       intro i
       simpa [← Scheme.comp_base_apply] using (α i).isOpenEmbedding.isOpenMap
   · intro x
-    have ⟨y, hy⟩ := (sigmaOpenCover f).covers x
+    have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
-    refine IsIso.of_isIso_fac_right (g := ((sigmaOpenCover f).map _).stalkMap y)
+    refine IsIso.of_isIso_fac_right
+      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).map _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.comp_base_apply]
-    · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (Sigma.ι_desc _ _)]
+    · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
 
 open scoped Function in
 lemma isOpenImmersion_sigmaDesc [Small.{u} σ]

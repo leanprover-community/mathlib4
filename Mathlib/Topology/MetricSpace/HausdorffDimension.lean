@@ -523,3 +523,13 @@ in `F`. -/
 theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
+
+/--
+The Hausdorff dimension of the orthogonal projection of a set `s` onto a subspace `K`
+is less than or equal to the Hausdorff dimension of `s`.
+-/
+theorem dimH_orthogonalProjection_le {𝕜 E : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
+    dimH (K.orthogonalProjection '' s) ≤ dimH s :=
+  K.lipschitzWith_orthogonalProjection.dimH_image_le s

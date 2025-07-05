@@ -93,7 +93,7 @@ open Hollom
 /-- `toHollom` and `ofHollom` as an equivalence. -/
 @[simps]
 def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
-  toFun := toHollom; invFun := ofHollom; left_inv _ := rfl; right_inv _ := rfl
+  toFun := toHollom; invFun := ofHollom
 
 namespace Hollom
 
@@ -828,7 +828,6 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   -- If `(C ∩ level n)` is empty, trivially we are done.
   obtain h | hne := (C ∩ level n).eq_empty_or_nonempty
   · simp [h]
-
   -- Otherwise take a maximal pair `(a, b)` so that any `(c, d, n)` in `C` satisfies
   -- `(c, d, n) ≤ (a, b, n)`.
   obtain ⟨a, b, hab⟩ : ∃ a b, ∀ c d, h(c, d, n) ∈ C → c ≤ a ∧ d ≤ b := by
@@ -836,7 +835,6 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
     use a, b
     intro c d hcd
     simpa using hab ⟨h(_, _, _), ⟨hcd, by simp⟩, rfl⟩
-
   -- With this pair, we can use the "base" of the square as `max a b + 1`.
   rw [eventually_atTop]
   refine ⟨max a b + 1, ?_⟩
@@ -846,7 +844,6 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
     Set.mem_setOf_eq, forall_exists_index, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq,
     toHollom_le_toHollom_iff_fixed_right, Set.mem_diff, and_true, ← max_add_add_right,
     Hollom.ext_iff]
-
   -- After simplifying, direct calculations show the subset relation as required.
   rintro k hak hbk _ _ _ f g hkf hkg rfl rfl rfl
   constructor
@@ -947,7 +944,6 @@ We will later show the same assuming `C ∩ level (n + 1)` is infinite.
 lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) := by
   rw [S, if_pos h']
-
   -- Take a maximal pair `(b, c)` so that any `(d, e, n)` in `C` satisfies
   -- `(d, e, n) ≤ (b, c, n)`.
   obtain ⟨b, c, hab⟩ : ∃ b c, ∀ d e, h(d, e, n + 1) ∈ C → (d, e) ≤ (b, c) := by
@@ -955,7 +951,6 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     use b, c
     intro d e hde
     simpa using hbc ⟨h(_, _, _), ⟨hde, by simp⟩, rfl⟩
-
   -- Using `a ≥ max b c`, we have that all elements of `{(x, y, n) | x ≥ a ∧ y ≥ a}` are comparable
   -- to all elements of `C ∩ level (n + 1)`.
   have : ∀ᶠ a in atTop, embed n '' .Ici (a, a) ⊆ {x | ∀ y ∈ C ∩ level (n + 1), x ≤ y ∨ y ≤ x} := by
@@ -971,7 +966,6 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     have := hab _ _ hgh
     simp only [Prod.mk_le_mk] at this ⊢
     omega
-
   -- Combined with the fact that sufficiently large `a` have
   -- `{(x, y, n) | x ≥ a ∧ y ≥ a} ⊆ R \ (C ∩ level n)`, we can easily finish.
   filter_upwards [square_subset_R h, this] with a h₁ h₂
@@ -1041,7 +1035,6 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
     simp only [level_eq, Set.mem_setOf_eq] at this
     intro h
     simp [level_eq, h, this] at hy
-
   -- So suppose it is infinite
   case inr h =>
     -- Write `(x, y, n)` for our given point, and set `(a, b, n + 1) := f(x, y, n)`

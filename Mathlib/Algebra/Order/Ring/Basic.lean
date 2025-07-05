@@ -70,8 +70,8 @@ theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n 
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
-  exact add_le_add (pow_le_pow_left₀ ha (le_add_of_nonneg_right hb) _)
-    (pow_le_pow_left₀ hb (le_add_of_nonneg_left ha) _)
+  gcongr <;> try assumption
+  exacts [le_add_of_nonneg_right hb, le_add_of_nonneg_left ha]
 
 end OrderedSemiring
 

@@ -125,6 +125,13 @@ theorem ContMDiffAt.comp_contMDiffWithinAt {g : M' → M''} (x : M)
 @[deprecated (since := "2024-11-20")]
 alias SmoothAt.comp_smoothWithinAt := ContMDiffAt.comp_contMDiffWithinAt
 
+/-- `g ∘ f` is `C^n` within `s` at `x` if `g` is `C^n` at `f x` and
+`f` is `C^n` within `s` at `x`. -/
+theorem ContMDiffAt.comp_contMDiffWithinAt_of_eq {g : M' → M''} {x : M} {y : M'}
+    (hg : ContMDiffAt I' I'' n g y) (hf : ContMDiffWithinAt I I' n f s x) (hx : f x = y) :
+    ContMDiffWithinAt I I'' n (g ∘ f) s x := by
+  subst hx; exact hg.comp_contMDiffWithinAt x hf
+
 /-- The composition of `C^n` functions at points is `C^n`. -/
 nonrec theorem ContMDiffAt.comp {g : M' → M''} (x : M) (hg : ContMDiffAt I' I'' n g (f x))
     (hf : ContMDiffAt I I' n f x) : ContMDiffAt I I'' n (g ∘ f) x :=

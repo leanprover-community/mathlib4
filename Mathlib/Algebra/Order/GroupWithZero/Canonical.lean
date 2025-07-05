@@ -26,7 +26,7 @@ whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
@@ -250,14 +250,16 @@ instance [LinearOrderedAddCommGroupWithTop α] :
 
 namespace WithZero
 section Preorder
-variable [Preorder α] {a b : α}
+variable [Preorder α] [Preorder β] {x : WithZero α} {a b : α}
 
 instance instPreorder : Preorder (WithZero α) := WithBot.preorder
 instance instOrderBot : OrderBot (WithZero α) := WithBot.orderBot
 
-lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le
+@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le
 
-lemma zero_lt_coe (a : α) : (0 : WithZero α) < a := WithBot.bot_lt_coe a
+@[simp] lemma zero_lt_coe (a : α) : (0 : WithZero α) < a := WithBot.bot_lt_coe a
+@[simp] lemma not_coe_le_zero : ¬ a ≤ (0 : WithZero α) := WithBot.not_coe_le_bot a
+@[simp] lemma not_lt_zero : ¬ x < (0 : WithZero α) := WithBot.not_lt_bot _
 
 lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
@@ -317,6 +319,12 @@ instance instExistsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
+
+lemma map'_mono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : Monotone f) :
+    Monotone (map' f) := by simpa [Monotone, WithZero.forall]
+
+lemma map'_strictMono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : StrictMono f) :
+    StrictMono (map' f) := by simpa [StrictMono, WithZero.forall]
 
 end Preorder
 

@@ -16,12 +16,12 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq Mathlib
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-- A shorthand for getting the types of a list of proofs terms, to trace. -/
 def linarithGetProofsMessage (l : List Expr) : MetaM MessageData := do
@@ -305,4 +305,4 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
 
-end Linarith
+end Mathlib.Tactic.Linarith

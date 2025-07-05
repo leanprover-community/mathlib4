@@ -97,16 +97,15 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y*k) ?_ hs ?_
       · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
-        refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_),
-          Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_), (fun t ht =>
-          subset_closure (hs t ht))⟩⟩)
+        refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure ?_,
+          Multiset.forall_mem_cons.2 ⟨subset_closure ?_, fun t ht => subset_closure (hs t ht)⟩⟩)
         · left; exact isUnit_of_mul_eq_one_right _ _ hk
         · left; exact ha₁
       · rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
         left; exact hprod
     · rcases ha₂.dvd_mul.1 (Dvd.intro _ hprod) with ⟨c, hc⟩ | ⟨c, hc⟩
       · rw [hc]; rw [hc, mul_assoc] at hprod
-        refine Submonoid.mul_mem _ (subset_closure (Set.mem_def.2 ?_))
+        refine Submonoid.mul_mem _ (subset_closure ?_)
           (hind _ _ ?_ hs (mul_left_cancel₀ ha₂.ne_zero hprod))
         · right; exact ha₂
         rw [← mul_left_cancel₀ ha₂.ne_zero hprod]

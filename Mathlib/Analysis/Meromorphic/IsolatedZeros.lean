@@ -6,13 +6,13 @@ Authors: Stefan Kebekus
 import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
-# Principles of Isolated Zeros and Identitiy Principles for Meromorphic Functions
+# Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
 
 In line with results in `Mathlib.Analysis.Analytic.IsolatedZeros` and
 `Mathlib.Analysis.Analytic.Uniqueness`, this file establishes principles of isolated zeros and
 identity principles for meromorphic functions.
 
-Compared to the results for analytic functions, the principles established here are a litte more
+Compared to the results for analytic functions, the principles established here are a little more
 complicated to state. This is because meromorphic functions can be modified at will along discrete
 subsets and still remain meromorphic.
 -/

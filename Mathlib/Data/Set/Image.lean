@@ -679,6 +679,16 @@ theorem range_eq_empty_iff {f : ι → α} : range f = ∅ ↔ IsEmpty ι := by
 theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
   range_eq_empty_iff.2 ‹_›
 
+@[simp]
+theorem range_eq_singleton_iff [Nonempty ι] {y} :
+    Set.range f = {y} ↔ ∀ (x : ι), f x = y := by
+  simp_rw [Set.ext_iff, Set.mem_range, Set.mem_singleton_iff]
+  exact ⟨fun h _ => by simp_rw [← h, exists_apply_eq_apply],
+      fun h _ => by simp_rw [h, exists_const, eq_comm]⟩
+
+theorem range_eq_singleton [Nonempty ι] {y} (hy : ∀ (x : ι), f x = y) :
+    Set.range f = {y} := range_eq_singleton_iff.mpr hy
+
 instance instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
   (range_nonempty f).to_subtype
 
@@ -876,10 +886,8 @@ theorem range_const_subset {c : α} : (range fun _ : ι => c) ⊆ {c} :=
   range_subset_iff.2 fun _ => rfl
 
 @[simp]
-theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
-  | ⟨x⟩, _ =>
-    (Subset.antisymm range_const_subset) fun _ hy =>
-      (mem_singleton_iff.1 hy).symm ▸ mem_range_self x
+theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c} :=
+  range_eq_singleton (fun _ => rfl)
 
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
     range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by

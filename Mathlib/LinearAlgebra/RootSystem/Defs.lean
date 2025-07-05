@@ -142,8 +142,6 @@ variable (ι R M N) in
 @[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If we interchange the roles of `M` and `N`, we still have a root system. -/
 protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
@@ -161,8 +159,6 @@ variable (ι R M N) in
 @[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i

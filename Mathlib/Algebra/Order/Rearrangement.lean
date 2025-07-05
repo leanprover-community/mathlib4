@@ -5,12 +5,11 @@ Authors: Mantas Bakšys
 -/
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Set.Image
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
-import Mathlib.Tactic.Abel
 
 /-!
 # Rearrangement inequality

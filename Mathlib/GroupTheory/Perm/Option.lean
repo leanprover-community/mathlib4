@@ -33,7 +33,7 @@ theorem Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : P
   induction e using Perm.swap_induction_on with
   | one => simp [Perm.one_def]
   | swap_mul f x y hne h =>
-    simp [h, hne, Perm.mul_def, ← Equiv.optionCongr_trans]
+    simp [h, hne, Perm.mul_def]
 
 @[simp]
 theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α)) :

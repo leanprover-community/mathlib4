@@ -163,7 +163,7 @@ a normal form of characteristic ≠ 2, provided that 2 is invertible in the ring
 def toCharNeTwoNF : VariableChange R := ⟨1, 0, ⅟2 * -W.a₁, ⅟2 * -W.a₃⟩
 
 instance toCharNeTwoNF_spec : (W.toCharNeTwoNF • W).IsCharNeTwoNF := by
-  constructor <;> simp
+  constructor <;> simp [variableChange_a₁, variableChange_a₃]
 
 theorem exists_variableChange_isCharNeTwoNF : ∃ C : VariableChange R, (C • W).IsCharNeTwoNF :=
   ⟨_, W.toCharNeTwoNF_spec⟩
@@ -265,7 +265,7 @@ def toShortNF : VariableChange R :=
 
 instance toShortNF_spec : (W.toShortNF • W).IsShortNF := by
   rw [toShortNF, mul_smul]
-  constructor <;> simp
+  constructor <;> simp [variableChange_a₁, variableChange_a₂, variableChange_a₃]
 
 theorem exists_variableChange_isShortNF : ∃ C : VariableChange R, (C • W).IsShortNF :=
   ⟨_, W.toShortNF_spec⟩
@@ -420,10 +420,10 @@ theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W.b₂ ≠ 0) :
   set W' := W.toShortNFOfCharThree • W
   haveI : W'.IsCharNeTwoNF := W.toCharNeTwoNF_spec
   constructor
-  · simp
-  · simp
+  · simp [variableChange_a₁]
+  · simp [variableChange_a₃]
   · have ha₂ : W'.a₂ ≠ 0 := W.toShortNFOfCharThree_a₂ ▸ hb₂
-    field_simp [ha₂]
+    field_simp [ha₂, variableChange_a₄]
     linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero F 3
 
 theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) : (W.toCharThreeNF • W).IsShortNF := by
@@ -651,7 +651,7 @@ def toCharTwoJEqZeroNF : VariableChange R := ⟨1, W.a₂, 0, 0⟩
 theorem toCharTwoJEqZeroNF_spec (ha₁ : W.a₁ = 0) :
     (W.toCharTwoJEqZeroNF • W).IsCharTwoJEqZeroNF := by
   constructor
-  · simp [toCharTwoJEqZeroNF, ha₁]
+  · simp [toCharTwoJEqZeroNF, ha₁, variableChange_a₁]
   · simp_rw [toCharTwoJEqZeroNF, variableChange_a₂, inv_one, Units.val_one]
     linear_combination 2 * W.a₂ * CharP.cast_eq_zero R 2
 
@@ -666,10 +666,10 @@ def toCharTwoJNeZeroNF (W : WeierstrassCurve F) (ha₁ : W.a₁ ≠ 0) : Variabl
 theorem toCharTwoJNeZeroNF_spec (ha₁ : W.a₁ ≠ 0) :
     (W.toCharTwoJNeZeroNF ha₁ • W).IsCharTwoJNeZeroNF := by
   constructor
-  · simp [toCharTwoJNeZeroNF, ha₁]
-  · field_simp [toCharTwoJNeZeroNF]
+  · simp [toCharTwoJNeZeroNF, ha₁, variableChange_a₁]
+  · field_simp [toCharTwoJNeZeroNF, variableChange_a₃]
     linear_combination (W.a₃ * W.a₁ ^ 3 + W.a₁ ^ 2 * W.a₄ + W.a₃ ^ 2) * CharP.cast_eq_zero F 2
-  · field_simp [toCharTwoJNeZeroNF]
+  · field_simp [toCharTwoJNeZeroNF, variableChange_a₄]
     linear_combination (W.a₁ ^ 4 * W.a₃ ^ 2 + W.a₁ ^ 5 * W.a₃ * W.a₂) * CharP.cast_eq_zero F 2
 
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,

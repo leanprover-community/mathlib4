@@ -326,8 +326,7 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
       invFun := fun ⟨⟨i₁, i₂⟩, hi⟩ => ⟨⟨i₁, i₂, i₃⟩, by aesop_cat⟩
       left_inv := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => by
         obtain rfl : i₃ = i₃' := by aesop_cat
-        rfl
-      right_inv := fun _ => rfl }
+        rfl }
   let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
     fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
       refine (Cocones.precompose (Iso.hom ?_)).obj ((Cocones.whiskeringEquivalence
@@ -505,8 +504,7 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
       invFun := fun ⟨⟨i₂, i₃⟩, hi⟩  => ⟨⟨i₁, i₂, i₃⟩, by aesop_cat⟩
       left_inv := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => by
         obtain rfl : i₁ = i₁' := by aesop_cat
-        rfl
-      right_inv := fun _ => rfl }
+        rfl }
   let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
     fun ⟨⟨i₁, i₂₃⟩, hi⟩ => by
       refine (Cocones.precompose (Iso.hom ?_)).obj ((Cocones.whiskeringEquivalence

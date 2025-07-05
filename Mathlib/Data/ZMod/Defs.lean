@@ -92,7 +92,7 @@ Commutative ring structure on `Fin n`.
 This is not a global instance, but can introduced locally using `open Fin.CommRing in ...`.
 
 This is not an instance because the `binop%` elaborator assumes that
-htere are no non-trivial coercion loops,
+there are no non-trivial coercion loops,
 but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
 Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
 

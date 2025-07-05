@@ -120,8 +120,6 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
     { toFun := f
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
@@ -647,38 +645,107 @@ continuous `ℝ≥0`-valued function. -/
 noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
   toFun := Real.toNNReal.comp f.toFun
   continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous
-  hasCompactSupport' := by
-    apply HasCompactSupport.comp_left f.hasCompactSupport' Real.toNNReal_zero
+  hasCompactSupport' := HasCompactSupport.comp_left f.hasCompactSupport' Real.toNNReal_zero
 
 @[simp]
 lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
     f.nnrealPart x = Real.toNNReal (f x) := rfl
+
+lemma nnrealPart_neg_eq_zero_of_nonneg {f : C_c(α, ℝ)} (hf : 0 ≤ f) : (-f).nnrealPart = 0 := by
+  ext x
+  simpa using hf x
+
+lemma nnrealPart_smul_pos (f : C_c(α, ℝ)) {a : ℝ} (ha : 0 ≤ a) :
+    (a • f).nnrealPart = a.toNNReal • f.nnrealPart := by
+  ext x
+  simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, Real.coe_toNNReal', smul_eq_mul,
+    NNReal.coe_mul, ha, sup_of_le_left]
+  rcases le_total 0 (f x) with hfx | hfx
+  · simp [ha, hfx, mul_nonneg]
+  · simp [mul_nonpos_iff, ha, hfx]
+
+lemma nnrealPart_smul_neg (f : C_c(α, ℝ)) {a : ℝ} (ha : a ≤ 0) :
+    (a • f).nnrealPart = (-a).toNNReal • (-f).nnrealPart := by
+  ext x
+  simp only [nnrealPart_apply, coe_smul, Pi.smul_apply, smul_eq_mul, Real.coe_toNNReal', coe_neg,
+    Pi.neg_apply, NNReal.coe_mul]
+  rcases le_total 0 (f x) with hfx | hfx
+  · simp [mul_nonpos_iff, ha, hfx]
+  · simp [ha, hfx, mul_nonneg_of_nonpos_of_nonpos]
+
+lemma nnrealPart_add_le_add_nnrealPart (f g : C_c(α, ℝ)) :
+    (f + g).nnrealPart ≤ f.nnrealPart + g.nnrealPart := by
+  intro x
+  simpa using Real.toNNReal_add_le
+
+lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ≥0)),
+    (f + g).nnrealPart + h = f.nnrealPart + g.nnrealPart ∧
+    (-f + -g).nnrealPart + h = (-f).nnrealPart + (-g).nnrealPart := by
+  obtain ⟨h, hh⟩ := CompactlySupportedContinuousMap.exists_add_of_le
+    (nnrealPart_add_le_add_nnrealPart f g)
+  use h
+  refine ⟨hh, ?_⟩
+  ext x
+  simp only [coe_add, Pi.add_apply, nnrealPart_apply, coe_neg, Pi.neg_apply, NNReal.coe_add,
+    Real.coe_toNNReal', ← neg_add]
+  have hhx : (f x + g x) ⊔ 0 + ↑(h x) = f x ⊔ 0 + g x ⊔ 0 := by
+    rw [← Real.coe_toNNReal', ← Real.coe_toNNReal', ← Real.coe_toNNReal', ← NNReal.coe_add,
+      ← NNReal.coe_add]
+    have hhx' : ((f + g).nnrealPart + h) x = (f.nnrealPart + g.nnrealPart) x := by congr
+    simp only [coe_add, Pi.add_apply, nnrealPart_apply, Real.coe_toNNReal'] at hhx'
+    exact congrArg toReal hhx'
+  rcases le_total 0 (f x) with hfx | hfx
+  · rcases le_total 0 (g x) with hgx | hgx
+    · simp only [hfx, hgx, add_nonneg, sup_of_le_left, add_eq_left, coe_eq_zero] at hhx
+      simp [hhx, hfx, hgx, add_nonpos]
+    · rcases le_total 0 (f x + g x) with hfgx | hfgx
+      · simp only [hfgx, sup_of_le_left, add_assoc, hfx, hgx, sup_of_le_right, add_zero,
+        add_eq_left] at hhx
+        rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
+          sup_of_le_right (neg_nonpos.mpr hfgx)]
+        linarith
+      · simp only [hfgx, sup_of_le_right, zero_add, hfx, sup_of_le_left, hgx, add_zero] at hhx
+        rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
+          sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
+        ring
+  · rcases le_total 0 (g x) with hgx | hgx
+    · rcases le_total 0 (f x + g x) with hfgx | hfgx
+      · simp only [hfgx, sup_of_le_left, add_comm, hfx, sup_of_le_right, hgx, zero_add] at hhx
+        rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
+          sup_of_le_right (neg_nonpos.mpr hfgx), zero_add, add_zero]
+        linarith
+      · simp only [hfgx, sup_of_le_right, zero_add, hfx, hgx, sup_of_le_left] at hhx
+        rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
+          sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
+        ring
+    · simp only [(add_nonpos hfx hgx), sup_of_le_right, zero_add, hfx, hgx, add_zero,
+        coe_eq_zero] at hhx
+      rw [sup_of_le_left (neg_nonneg.mpr hfx),
+        sup_of_le_left (neg_nonneg.mpr hgx),
+        sup_of_le_left (neg_nonneg.mpr (add_nonpos hfx hgx)), hhx, neg_add_rev, NNReal.coe_zero,
+        add_zero]
+      ring
 
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
 noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
   f.compLeft ContinuousMap.coeNNRealReal
 
-@[simp]
-lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) : f.toReal x = f x := compLeft_apply rfl _ _
-
+@[simp] lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) : f.toReal x = f x := compLeft_apply rfl _ _
 @[simp] lemma toReal_nonneg {f : C_c(α, ℝ≥0)} : 0 ≤ f.toReal := fun _ ↦ by simp
-
 @[simp] lemma toReal_add (f g : C_c(α, ℝ≥0)) : (f + g).toReal = f.toReal + g.toReal := by ext; simp
 @[simp] lemma toReal_smul (r : ℝ≥0) (f : C_c(α, ℝ≥0)) : (r • f).toReal = r • f.toReal := by
   ext; simp [NNReal.smul_def]
 
+@[simp]
 lemma nnrealPart_sub_nnrealPart_neg (f : C_c(α, ℝ)) :
-    (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by
-  ext x
-  simp
+    (nnrealPart f).toReal - (nnrealPart (-f)).toReal = f := by ext x; simp
 
-/-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
-function. -/
+/-- The map `toReal` defined as a `ℝ≥0`-linear map. -/
 noncomputable def toRealLinearMap : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
   toFun := toReal
   map_add' f g := by ext x; simp
-  map_smul' a f := by ext x; simp [NNReal.smul_def]
+  map_smul' a f := by ext x; simp
 
 @[simp, norm_cast]
 lemma coe_toRealLinearMap : (toRealLinearMap : C_c(α, ℝ≥0) → C_c(α, ℝ)) = toReal := rfl
@@ -687,6 +754,14 @@ lemma toRealLinearMap_apply (f : C_c(α, ℝ≥0)) : toRealLinearMap f = f.toRea
 
 lemma toRealLinearMap_apply_apply (f : C_c(α, ℝ≥0)) (x : α) :
     toRealLinearMap f x = (f x).toReal := by simp
+
+@[simp]
+lemma nnrealPart_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (toReal f) = f := by ext x; simp
+
+@[simp]
+lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (- toReal f) = 0 := by ext x; simp
+
+section toNNRealLinear
 
 /-- For a positive linear functional `Λ : C_c(α, ℝ) → ℝ`, define a `ℝ≥0`-linear map. -/
 noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) :
@@ -699,12 +774,58 @@ noncomputable def toNNRealLinear (Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ 
 lemma toNNRealLinear_apply (Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ) (f : C_c(α, ℝ≥0)) :
     toNNRealLinear Λ hΛ f = Λ (toReal f) := rfl
 
-@[simp] lemma toNNRealLinear_inj (Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ₁ hΛ₂) :
+@[simp]
+lemma toNNRealLinear_inj (Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ) (hΛ₁ hΛ₂) :
     toNNRealLinear Λ₁ hΛ₁ = toNNRealLinear Λ₂ hΛ₂ ↔ Λ₁ = Λ₂ := by
   simp only [LinearMap.ext_iff, NNReal.eq_iff, toNNRealLinear_apply]
   refine ⟨fun h f ↦ ?_, fun h f ↦ by rw [LinearMap.ext h]⟩
   rw [← nnrealPart_sub_nnrealPart_neg f]
   simp_rw [map_sub, h]
+
+end toNNRealLinear
+
+section toRealLinear
+
+/-- For a positive linear functional `Λ : C_c(α, ℝ≥0) → ℝ≥0`, define a `ℝ`-linear map. -/
+noncomputable def toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : C_c(α, ℝ) →ₗ[ℝ] ℝ where
+  toFun := fun f => Λ (nnrealPart f) - Λ (nnrealPart (- f))
+  map_add' f g := by
+    simp only [neg_add_rev]
+    obtain ⟨h, hh⟩ := exists_add_nnrealPart_add_eq f g
+    rw [← add_zero ((Λ (f + g).nnrealPart).toReal - (Λ (-g + -f).nnrealPart).toReal),
+      ← sub_self (Λ h).toReal, sub_add_sub_comm, ← NNReal.coe_add, ← NNReal.coe_add,
+      ← LinearMap.map_add, ← LinearMap.map_add, hh.1, add_comm (-g) (-f), hh.2]
+    simp only [map_add, NNReal.coe_add]
+    ring
+  map_smul' a f := by
+    rcases le_total 0 a with ha | ha
+    · rw [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_pos f ha,
+        nnrealPart_smul_pos (-f) ha]
+      simp [sup_of_le_left ha, mul_sub]
+    · simp only [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f),
+        nnrealPart_smul_neg f ha, nnrealPart_smul_neg (-f) ha, map_smul,
+        NNReal.coe_mul, Real.coe_toNNReal', neg_neg, sup_of_le_left (neg_nonneg.mpr ha)]
+      ring
+
+lemma toRealLinear_apply {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ)) :
+    toRealLinear Λ f = Λ (nnrealPart f) - Λ (nnrealPart (-f)) := rfl
+
+lemma toRealLinear_nonneg (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (g : C_c(α, ℝ)) (hg : 0 ≤ g) :
+    0 ≤ toRealLinear Λ g := by
+  simp [toRealLinear_apply, nnrealPart_neg_eq_zero_of_nonneg hg]
+
+@[simp]
+lemma eq_toRealLinear_toReal (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (f : C_c(α, ℝ≥0)) :
+    toRealLinear Λ (toReal f) = Λ f:= by
+  simp [toRealLinear_apply]
+
+@[simp]
+lemma eq_toNNRealLinear_toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
+    toNNRealLinear (toRealLinear Λ) (toRealLinear_nonneg Λ) = Λ := by
+  ext f
+  simp
+
+end toRealLinear
 
 end CompactlySupportedContinuousMap
 

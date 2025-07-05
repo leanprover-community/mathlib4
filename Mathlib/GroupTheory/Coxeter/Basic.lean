@@ -370,9 +370,9 @@ theorem wordProd_concat (i : B) (ω : List B) : π (ω.concat i) = π ω * s i :
 theorem wordProd_append (ω ω' : List B) : π (ω ++ ω') = π ω * π ω' := by simp [wordProd]
 
 @[simp] theorem wordProd_reverse (ω : List B) : π (reverse ω) = (π ω)⁻¹ := by
-  induction' ω with x ω' ih
-  · simp
-  · simpa [wordProd_cons, wordProd_append] using ih
+  induction ω with
+  | nil => simp
+  | cons x ω' ih => simpa [wordProd_cons, wordProd_append] using ih
 
 theorem wordProd_surjective : Surjective cs.wordProd := by
   intro w
@@ -397,9 +397,10 @@ theorem alternatingWord_succ (i i' : B) (m : ℕ) :
 
 theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (if Even m then i' else i) :: alternatingWord i i' m := by
-  induction' m with m ih generalizing i i'
-  · simp [alternatingWord]
-  · rw [alternatingWord]
+  induction m generalizing i i' with
+  | zero => simp [alternatingWord]
+  | succ m ih =>
+    rw [alternatingWord]
     nth_rw 1 [ih i' i]
     rw [alternatingWord]
     simp [Nat.even_add_one, ← Nat.not_even_iff_odd]
@@ -407,9 +408,9 @@ theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
 @[simp]
 theorem length_alternatingWord (i i' : B) (m : ℕ) :
     List.length (alternatingWord i i' m) = m := by
-  induction' m with m ih generalizing i i'
-  · dsimp [alternatingWord]
-  · simpa [alternatingWord] using ih i' i
+  induction m generalizing i i' with
+  | zero => dsimp [alternatingWord]
+  | succ m ih => simpa [alternatingWord] using ih i' i
 
 lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
     (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
@@ -487,9 +488,10 @@ lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2
 
 theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
-  induction' m with m ih
-  · simp [alternatingWord]
-  · rw [alternatingWord_succ', wordProd_cons, ih]
+  induction m with
+  | zero => simp [alternatingWord]
+  | succ m ih =>
+    rw [alternatingWord_succ', wordProd_cons, ih]
     by_cases hm : Even m
     · have h₁ : ¬ Even (m + 1) := by simp [hm, parity_simps]
       have h₂ : (m + 1) / 2 = m / 2 := Nat.succ_div_of_not_dvd <| by rwa [← even_iff_two_dvd]

@@ -1038,31 +1038,44 @@ theorem MDifferentiableWithinAt.mfderivWithin_mono_of_mem_nhdsWithin
     mfderivWithin I I' f t x = mfderivWithin I I' f s x :=
   (HasMFDerivWithinAt.mono_of_mem_nhdsWithin h.hasMFDerivWithinAt h₁).mfderivWithin hxt
 
-theorem Filter.EventuallyEq.mfderivWithin_eq (hs : UniqueMDiffWithinAt I s x) (hL : f₁ =ᶠ[𝓝[s] x] f)
-    (hx : f₁ x = f x) : mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x := by
+theorem Filter.EventuallyEq.mfderivWithin_eq (hL : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
+    mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x := by
   by_cases h : MDifferentiableWithinAt I I' f s x
-  · exact (h.hasMFDerivWithinAt.congr_of_eventuallyEq hL hx).mfderivWithin hs
+  · unfold mfderivWithin
+    simp only [h, (hL.mdifferentiableWithinAt_iff hx).1 h, ↓reduceIte, writtenInExtChartAt]
+    apply Filter.EventuallyEq.fderivWithin_eq; swap
+    · simp [hx]
+    filter_upwards [extChartAt_preimage_mem_nhdsWithin (I := I) hL] with y hy
+    simp only [preimage_setOf_eq, mem_setOf_eq] at hy
+    simp [-extChartAt, hy, hx]
   · unfold mfderivWithin
     rw [if_neg h, if_neg]
     rwa [← hL.mdifferentiableWithinAt_iff hx]
 
-theorem mfderivWithin_congr (hs : UniqueMDiffWithinAt I s x) (hL : ∀ x ∈ s, f₁ x = f x)
-    (hx : f₁ x = f x) : mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x :=
-  Filter.EventuallyEq.mfderivWithin_eq hs (Filter.eventuallyEq_of_mem self_mem_nhdsWithin hL) hx
+theorem Filter.EventuallyEq.mfderivWithin_eq_of_mem (hL : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
+    mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x :=
+  hL.mfderivWithin_eq (mem_of_mem_nhdsWithin hx hL :)
 
-theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s)
-    (hs : UniqueMDiffWithinAt I s p.1) :
+theorem mfderivWithin_congr (hL : ∀ x ∈ s, f₁ x = f x) (hx : f₁ x = f x) :
+    mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x :=
+  Filter.EventuallyEq.mfderivWithin_eq (Filter.eventuallyEq_of_mem self_mem_nhdsWithin hL) hx
+
+theorem mfderivWithin_congr_of_mem (hL : ∀ x ∈ s, f₁ x = f x) (hx : x ∈ s) :
+    mfderivWithin I I' f₁ s x = mfderivWithin I I' f s x :=
+  Filter.EventuallyEq.mfderivWithin_eq_of_mem (Filter.eventuallyEq_of_mem self_mem_nhdsWithin hL) hx
+
+theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
   refine TotalSpace.ext (h p.1 hp) ?_
   -- This used to be `simp only`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr hs h (h _ hp)]
+  rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr h (h _ hp)]
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
     mfderiv I I' f₁ x = mfderiv I I' f x := by
   have A : f₁ x = f x := (mem_of_mem_nhds hL :)
   rw [← mfderivWithin_univ, ← mfderivWithin_univ]
   rw [← nhdsWithin_univ] at hL
-  exact hL.mfderivWithin_eq (uniqueMDiffWithinAt_univ I) A
+  exact hL.mfderivWithin_eq A
 
 /-- A congruence lemma for `mfderiv`, (ab)using the fact that `TangentSpace I' (f x)` is
 definitionally equal to `E'`. -/

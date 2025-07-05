@@ -283,7 +283,6 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
 @[simps apply] noncomputable def piLTLim : piLT X i ≃ limit (piLTProj (X := X)) i where
   toFun f := ⟨fun j ↦ piLTProj j.2.le f, fun _ _ _ ↦ rfl⟩
   invFun f l := let k := hi.mid l.2; f.1 ⟨k, k.2.2⟩ ⟨l, k.2.1⟩
-  left_inv f := rfl
   right_inv f := by
     ext j l
     set k := hi.mid (l.2.trans j.2)

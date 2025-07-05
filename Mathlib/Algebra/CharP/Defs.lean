@@ -15,8 +15,8 @@ import Mathlib.Order.Lattice
 * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
 * `ringChar`: the characteristic of a ring
 * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
-    exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
-    prime characteristic `p`)
+  exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
+  prime characteristic `p`)
 -/
 
 assert_not_exists Field Finset OrderHom

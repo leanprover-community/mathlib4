@@ -160,7 +160,7 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
   refine ⟨g, ?_, ?_⟩
   · rw [hg.2, coord_norm']
   · calc
-      g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [coe_mk]
+      g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [Submodule.coe_mk]
       _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [← hg.1]
       _ = ‖x‖ := by simp [-algebraMap_smul]
 

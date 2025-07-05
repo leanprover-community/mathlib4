@@ -31,7 +31,7 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
-assert_not_exists Finset Module Submonoid FloorRing Module
+assert_not_exists Finset Module Submonoid FloorRing
 
 variable {α β : Type*}
 
@@ -76,6 +76,7 @@ theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel₀ a0.ne', one_mul]
   refine h.trans_le ?_
   gcongr
+  exact mul_nonneg a0.le ε0.le
 
 end
 

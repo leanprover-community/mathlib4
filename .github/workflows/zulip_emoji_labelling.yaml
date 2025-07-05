@@ -1,6 +1,12 @@
 on:
-  pull_request:
+  pull_request_target:
     types: [labeled, unlabeled]
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read # minimum permissions for actions/checkout & actions/setup-python
+  # All other permissions are implicitly 'none'
+
 jobs:
   # When a PR is (un)labelled with awaiting-author or maintainer-merge,
   # add resp. remove the matching emoji reaction from zulip messages.
@@ -12,6 +18,7 @@ jobs:
     - name: Checkout mathlib repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
+          ref: master
           sparse-checkout: |
             scripts/zulip_emoji_reactions.py
 

@@ -25,15 +25,13 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-! ### Preprocessing -/
 
 open Lean
 open Elab Tactic Meta
 open Qq
-open Mathlib
-open Mathlib.Tactic (AtomM)
 open Std (TreeSet)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
@@ -95,7 +93,7 @@ end removeNegations
 
 section natToInt
 
-open Mathlib.Tactic.Zify
+open Zify
 
 /--
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
@@ -399,4 +397,4 @@ def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List E
       pps.foldlM (init := [(g, l)]) fun ls pp => do
         return (← ls.mapM fun (g, l) => do pp.process g l).flatten
 
-end Linarith
+end Mathlib.Tactic.Linarith

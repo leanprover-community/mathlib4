@@ -540,7 +540,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
     simp
   rw [this] at hnf hng hlt
   rw [eLpNorm_neg, ← ENNReal.add_thirds ε, ← sub_eq_add_neg]
-  exact add_le_add_three hnf hng hlt
+  gcongr
 
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)

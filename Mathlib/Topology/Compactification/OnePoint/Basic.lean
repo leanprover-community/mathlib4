@@ -435,7 +435,6 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
         ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
       exact Classical.choose_spec f'.property
     · simp
-  right_inv _ := rfl
 
 lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
@@ -458,9 +457,7 @@ noncomputable def continuousMapNatEquiv (Y : Type*) [TopologicalSpace Y] [T2Spac
     C(OnePoint ℕ, Y) ≃ { f : ℕ → Y // ∃ L, Tendsto (f ·) atTop (𝓝 L) } := by
   refine (continuousMapDiscreteEquiv ℕ Y).trans {
     toFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [← Nat.cofinite_eq_atTop]⟩
-    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩
-    left_inv := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl }
+    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩ }
 
 /-- If `X` is not a compact space, then the natural embedding `X → OnePoint X` has dense range.
 -/

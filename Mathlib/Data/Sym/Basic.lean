@@ -431,8 +431,6 @@ The simp-normal form is for the `cast` to be pushed outward. -/
 protected def cast {n m : ℕ} (h : n = m) : Sym α n ≃ Sym α m where
   toFun s := ⟨s.val, s.2.trans h⟩
   invFun s := ⟨s.val, s.2.trans h.symm⟩
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := Subtype.ext rfl
 
 @[simp]
 theorem cast_rfl : Sym.cast rfl s = s :=
@@ -485,7 +483,6 @@ def oneEquiv : α ≃ Sym α 1 where
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
       exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
-  left_inv a := by rfl
   right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.

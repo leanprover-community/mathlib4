@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.SetTheory.Cardinal.Embedding
 
 /-! # Multiple transitivity
@@ -346,3 +346,52 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
 end SubMulAction.ofStabilizer
 
 end Stabilizer
+
+section FixingSubgroup
+
+variable {G α : Type*} [Group G] [MulAction G α]
+
+namespace SubMulAction.ofFixingSubgroup
+
+/-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
+acts `(n-d)` transitively on the complement. -/
+@[to_additive
+"The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
+acts `(n-d)` transitively on the complement."]
+theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
+    IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m where
+  exists_smul_eq x y := by
+      have : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
+      have Hs : Nonempty (Fin (s.ncard) ≃ s) :=
+        Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+      set x' := ofFixingSubgroup.append x with hx
+      set y' := ofFixingSubgroup.append y with hy
+      obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
+      suffices g ∈ fixingSubgroup G s by
+        use ⟨g, this⟩
+        ext i
+        rw [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
+        simp [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
+      intro a
+      set i := (Classical.choice Hs).symm a
+      have ha : (Classical.choice Hs) i = a := by simp [i]
+      rw [← ha]
+      nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
+      rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx]
+
+/-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
+acts `m` transitively on the complement if `d + m ≤ n`. -/
+@[to_additive
+"The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
+acts `m` transitively on the complement if `d + m ≤ n`."]
+theorem isMultiplyPretransitive'
+    {m n : ℕ} [IsMultiplyPretransitive G α n]
+    (s : Set α) [Finite s] (hmn : s.ncard + m ≤ n) (hn : (n : ENat) ≤ ENat.card α) :
+    IsMultiplyPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s) m :=
+  have : IsMultiplyPretransitive G α (s.ncard + m) := isMultiplyPretransitive_of_le' hmn hn
+  isMultiplyPretransitive s rfl
+
+end SubMulAction.ofFixingSubgroup
+
+end FixingSubgroup

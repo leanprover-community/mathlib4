@@ -483,6 +483,14 @@ theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
   rw [insert_eq, closure_union]
   simp [one_mem]
 
+@[to_additive]
+theorem closure_union_one (s : Set G) : closure (s ∪ {1}) = closure s := by
+  rw [union_singleton, closure_insert_one]
+
+@[to_additive (attr := simp)]
+theorem closure_diff_one (s : Set G) : closure (s \ {1}) = closure s := by
+  rw [← closure_union_one (s \ {1}), diff_union_self, closure_union_one]
+
 theorem toAddSubgroup_closure (S : Set G) :
     (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
   le_antisymm (toAddSubgroup.le_symm_apply.mp <|

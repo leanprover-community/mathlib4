@@ -19,7 +19,7 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-open Lean Elab Tactic Meta Mathlib
+open Lean Elab Tactic Meta
 
 namespace Qq
 
@@ -38,7 +38,7 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
 
 end Qq
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 open Ineq
 open Qq
@@ -239,4 +239,4 @@ where
   detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=
     withTraceNode `linarith.detail (return m!"{exceptEmoji ·} {s}") f
 
-end Linarith
+end Mathlib.Tactic.Linarith

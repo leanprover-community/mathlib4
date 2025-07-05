@@ -42,11 +42,11 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 ## Main statements
 
 * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the affine coordinate ring
-    of a Weierstrass curve is an integral domain.
+  of a Weierstrass curve is an integral domain.
 * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the affine coordinate ring in terms of its power basis.
+  element in the affine coordinate ring in terms of its power basis.
 * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
-    coordinates forms an abelian group under addition.
+  coordinates forms an abelian group under addition.
 
 ## Notations
 

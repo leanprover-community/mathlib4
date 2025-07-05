@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.NNRat.Defs
@@ -18,7 +19,7 @@ import Qq
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
@@ -536,6 +537,14 @@ def evalNegPart : PositivityExt where eval {u α} _ _ e := do
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"
+
+/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
+@[positivity DFunLike.coe _ _]
+def evalMap : PositivityExt where eval {_ β} _ _ e := do
+  let .app (.app _ f) a ← whnfR e
+    | throwError "not ↑f · where f is of NonnegHomClass"
+  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
+  pure (.nonnegative pa)
 
 end Positivity
 

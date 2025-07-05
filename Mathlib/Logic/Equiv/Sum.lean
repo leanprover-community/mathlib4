@@ -200,7 +200,6 @@ def sumEmpty (α β) [IsEmpty β] : α ⊕ β ≃ α where
     rcases s with (_ | x)
     · rfl
     · exact isEmptyElim x
-  right_inv _ := rfl
 
 @[simp]
 theorem sumEmpty_apply_inl {α β} [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = a :=

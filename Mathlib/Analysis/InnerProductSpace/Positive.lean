@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Analysis.InnerProductSpace.Spectrum
 
 /-!
 # Positive operators
@@ -330,6 +331,13 @@ theorem IsPositive.adjoint_conj {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (S : 
     (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
   convert hT.conj_adjoint S.adjoint
   rw [adjoint_adjoint]
+
+theorem IsPositive.nonneg_eigenvalues {T : E →ₗ[𝕜] E} {n : ℕ} (hT : T.IsPositive)
+    (hn : Module.finrank 𝕜 E = n) (i : Fin n) : 0 ≤ hT.isSymmetric.eigenvalues hn i := by
+  have h := hT.right (hT.isSymmetric.eigenvectorBasis hn i)
+  rw [hT.isSymmetric.apply_eigenvectorBasis, inner_smul_real_left, RCLike.smul_re,
+    inner_self_eq_norm_sq, OrthonormalBasis.norm_eq_one, one_pow, mul_one] at h
+  exact h
 
 section PartialOrder
 

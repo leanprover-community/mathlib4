@@ -313,11 +313,26 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     simp
   · exact hb'
 
+lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {U : Opens α}
+    (hU : IsCompact U.1) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
+  classical
+  obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.2) (by simp [hsup])
+  refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
+  exact le_antisymm (subset_trans ht (by simp)) (le_trans (sSup_le_sSup (by simp)) hsup.ge)
+
 lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
     {Us : Set (Opens α)} (hUs : @IsBasis α t₂ Us) :
     t₁ ≤ t₂ ↔ ∀ U ∈ Us, IsOpen[t₁] U := by
   conv_lhs => rw [hUs.eq_generateFrom]
   simp [Set.subset_def, le_generateFrom_iff_subset_isOpen]
+
+lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
+    {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
+    IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
+  convert TopologicalSpace.IsTopologicalBasis.sigma hB
+  simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
+  aesop
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by

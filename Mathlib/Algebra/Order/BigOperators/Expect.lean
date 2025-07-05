@@ -6,7 +6,9 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Order.Module.Rat
+import Mathlib.Tactic.GCongr
 
 /-!
 # Order properties of the average over a finset

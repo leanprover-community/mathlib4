@@ -96,8 +96,6 @@ protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : 
 def topEquiv : (⊤ : Subsemiring R) ≃+* R where
   toFun r := r
   invFun r := ⟨r, Subsemiring.mem_top r⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' := (⊤ : Subsemiring R).coe_mul
   map_add' := (⊤ : Subsemiring R).coe_add
 

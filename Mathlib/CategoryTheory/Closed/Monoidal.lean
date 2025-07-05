@@ -496,7 +496,7 @@ lemma curry'_ihom_map {X Y Z : C} [Closed X] (f : X ⟶ Y) (g : Y ⟶ Z) :
   simp only [curry', ← curry_natural_right, Category.assoc]
 
 lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) :
-    curry' (f ≫ g) = (λ_ (𝟙_ C)).inv ≫ (curry' f ⊗ curry' g) ≫ comp X Y Z := by
+    curry' (f ≫ g) = (λ_ (𝟙_ C)).inv ≫ (curry' f ⊗ₘ curry' g) ≫ comp X Y Z := by
   rw [tensorHom_def_assoc, whiskerLeft_curry'_comp, MonoidalCategory.whiskerRight_id,
     Category.assoc, Category.assoc, Iso.inv_hom_id_assoc, ← unitors_equal,
     Iso.inv_hom_id_assoc, curry'_ihom_map]

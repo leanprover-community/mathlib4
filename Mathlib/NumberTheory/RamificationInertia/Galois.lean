@@ -38,7 +38,7 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 
 -/
 
-open Algebra
+open Algebra Pointwise
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -64,19 +64,20 @@ noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
 section MulAction
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-instance : MulAction (B ≃ₐ[A] B) (primesOver p B) where
-  smul σ Q := primesOver.mk p (map σ Q.1)
-  one_smul Q := Subtype.val_inj.mp (map_id Q.1)
-  mul_smul σ τ Q := Subtype.val_inj.mp (Q.1.map_map τ.toRingHom σ.toRingHom).symm
+instance : MulAction G (primesOver p B) where
+  smul σ Q := primesOver.mk p (σ • Q.1)
+  one_smul Q := Subtype.ext (one_smul G Q.1)
+  mul_smul σ τ Q := Subtype.ext (mul_smul σ τ Q.1)
 
 @[simp]
-theorem coe_smul_primesOver (σ : B ≃ₐ[A] B) (P : primesOver p B): (σ • P).1 = map σ P :=
+theorem coe_smul_primesOver (σ : G) (P : primesOver p B) : (σ • P).1 = σ • P.1 :=
   rfl
 
 @[simp]
-theorem coe_smul_primesOver_mk (σ : B ≃ₐ[A] B) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-    (σ • primesOver.mk p P).1 = map σ P :=
+theorem coe_smul_primesOver_mk (σ : G) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+    (σ • primesOver.mk p P).1 = σ • P :=
   rfl
 
 variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]

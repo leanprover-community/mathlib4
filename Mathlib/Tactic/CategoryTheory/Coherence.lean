@@ -90,8 +90,8 @@ instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [L
   lift := LiftHom.lift f ▷ LiftObj.lift Z
 
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
-    (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
-  lift := LiftHom.lift f ⊗ LiftHom.lift g
+    (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ₘ g) where
+  lift := LiftHom.lift f ⊗ₘ LiftHom.lift g
 
 end lifting
 

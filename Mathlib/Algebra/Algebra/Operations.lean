@@ -565,6 +565,10 @@ instance idemSemiring : IdemSemiring (Submodule R A) where
   mul_one := Submodule.mul_one
   bot_le _ := bot_le
 
+instance : IsOrderedRing (Submodule R A) where
+  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
+  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
+
 variable (M)
 
 theorem span_pow (s : Set A) : ∀ n : ℕ, span R s ^ n = span R (s ^ n)

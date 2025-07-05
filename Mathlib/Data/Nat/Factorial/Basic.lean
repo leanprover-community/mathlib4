@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Monotonicity.Attr
 

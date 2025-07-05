@@ -337,10 +337,12 @@ theorem AnalyticAt.map_nhdsNE {x : 𝕜} {f : 𝕜 → E} (hfx : AnalyticAt 𝕜
     (h₂f : ¬EventuallyConst f (𝓝 x)) :
     (𝓝[≠] x).map f ≤ (𝓝[≠] f x) := fun _ hs ↦ mem_map.1 (preimage_of_nhdsNE hfx h₂f hs)
 
-/-- Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and not locally
-constant, then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
+/--
+Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and not locally constant,
+then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
 
-Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+See `AnalyticOnNhd.preimage_zero_codiscreteWithin` for the special case that `s` is the complement
+of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
 -/
 theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))

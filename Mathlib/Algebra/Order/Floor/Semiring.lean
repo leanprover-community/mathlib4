@@ -428,7 +428,7 @@ variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K] {a 
 
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
   calc
-    b * a < b * (⌊a⌋₊ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    b * a < b * (⌊a⌋₊ + 1) := by gcongr; apply lt_floor_add_one
     _ ≤ ⌊a⌋₊ := by
       rw [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
         ← ceil_le]
@@ -443,7 +443,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉�
     calc
       ⌈a⌉₊ < a + 1 := ceil_lt_add_one <| hba.trans' <| by positivity
       _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
-      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ ≤ a + (b - 1) * a := by gcongr
       _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
 lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by

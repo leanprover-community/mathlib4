@@ -175,11 +175,11 @@ variable {ι : Type*} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 
 theorem HasDerivAtFilter.sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i) x L) :
     HasDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x L := by
-  simpa [ContinuousLinearMap.sum_apply] using (HasFDerivAtFilter.sum h).hasDerivAtFilter
+  simpa [ContinuousLinearMap.sum_apply] using (HasFDerivAtFilter.fun_sum h).hasDerivAtFilter
 
 theorem HasStrictDerivAt.sum (h : ∀ i ∈ u, HasStrictDerivAt (A i) (A' i) x) :
     HasStrictDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
-  simpa [ContinuousLinearMap.sum_apply] using (HasStrictFDerivAt.sum h).hasStrictDerivAt
+  simpa [ContinuousLinearMap.sum_apply] using (HasStrictFDerivAt.fun_sum h).hasStrictDerivAt
 
 theorem HasDerivWithinAt.sum (h : ∀ i ∈ u, HasDerivWithinAt (A i) (A' i) s x) :
     HasDerivWithinAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) s x :=
@@ -221,11 +221,11 @@ nonrec theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) :
 
 theorem derivWithin.neg : derivWithin (fun y => -f y) s x = -derivWithin f s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
-  · simp only [derivWithin, fderivWithin_neg hsx, ContinuousLinearMap.neg_apply]
+  · simp only [derivWithin, fderivWithin_fun_neg hsx, ContinuousLinearMap.neg_apply]
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
-  simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
+  simp only [deriv, fderiv_fun_neg, ContinuousLinearMap.neg_apply]
 
 @[simp]
 theorem deriv.neg' : (deriv fun y => -f y) = fun x => -deriv f x :=
@@ -310,7 +310,7 @@ theorem HasStrictDerivAt.sub (hf : HasStrictDerivAt f f' x) (hg : HasStrictDeriv
 theorem derivWithin_sub (hf : DifferentiableWithinAt 𝕜 f s x)
     (hg : DifferentiableWithinAt 𝕜 g s x) :
     derivWithin (fun y => f y - g y) s x = derivWithin f s x - derivWithin g s x := by
-  simp only [sub_eq_add_neg, derivWithin_add hf hg.neg, derivWithin.neg]
+  simp only [sub_eq_add_neg, derivWithin_add hf hg.fun_neg, derivWithin.neg]
 
 @[simp]
 theorem deriv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
