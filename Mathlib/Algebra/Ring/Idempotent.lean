@@ -85,6 +85,30 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
 
 end CommRing
 
+/-- `b - a` is idempotent when `a * b = a` and `b * a = a`. -/
+lemma sub [NonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
+    (hb : IsIdempotentElem b) (hab : a * b = a) (hba : b * a = a) : IsIdempotentElem (b - a) := by
+  simp_rw [IsIdempotentElem, sub_mul, mul_sub, hab, hba, ha.eq, hb.eq, sub_self, sub_zero]
+
+lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
+    p * q = p ∧ q * p = p := by
+  simp_rw [IsIdempotentElem, mul_sub, sub_mul,
+    hp.eq, hq.eq, ← sub_add_eq_sub_sub, sub_right_inj, add_sub] at hqp
+  have hpq : p * q = q * p := by
+    have h1 := congr_arg (q * ·) hqp
+    have h2 := congr_arg (· * q) hqp
+    simp_rw [mul_sub, mul_add, ← mul_assoc, hq.eq, add_sub_cancel_right] at h1
+    simp_rw [sub_mul, add_mul, mul_assoc, hq.eq, add_sub_cancel_left, ← mul_assoc] at h2
+    exact h2.symm.trans h1
+  rw [hpq, sub_eq_iff_eq_add, ← two_nsmul, ← two_nsmul, nsmul_right_inj (by simp)] at hqp
+  rw [hpq, hqp, and_self]
+
+theorem sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p :=
+  ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩
+
 /-- `a + b` is idempotent when `a` and `b` anti-commute. -/
 theorem add [NonUnitalNonAssocSemiring R]
     {a b : R} (ha : IsIdempotentElem a) (hb : IsIdempotentElem b)
