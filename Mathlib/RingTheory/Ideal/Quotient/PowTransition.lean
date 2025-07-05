@@ -70,6 +70,10 @@ section
 theorem mapQ_eq_factor (h : I ≤ J) (x : R ⧸ I) :
     mapQ I J LinearMap.id h x = factor h x := rfl
 
+@[simp]
+theorem factor_eq_factor [I.IsTwoSided] [J.IsTwoSided] (h : I ≤ J) (x : R ⧸ I) :
+    Submodule.factor h x = Ideal.Quotient.factor h x := rfl
+
 end
 
 variable (I M)
