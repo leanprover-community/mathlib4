@@ -8,6 +8,7 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
+import Mathlib.Tactic.Choose
 import Mathlib.Util.CompileInductive
 
 /-!
@@ -281,6 +282,26 @@ abbrev RightInvOn (g : β → α) (f : α → β) (t : Set β) : Prop := LeftInv
 /-- `g` is an inverse to `f` viewed as a map from `s` to `t` -/
 def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
   LeftInvOn g f s ∧ RightInvOn g f t
+
+section Section
+
+variable {α β : Type*} {p : β → Prop} {f : α → β} {s s' : Subtype p → α}
+
+theorem injOn_range_subtype_section (hs : f ∘ s = Subtype.val) : (Set.range s).InjOn f := by
+  rintro _ ⟨b, rfl⟩ _ ⟨b', rfl⟩ eq
+  cases (hs ▸ Subtype.val_injective) eq
+  rfl
+
+theorem subtype_section_ext  (hs : f ∘ s = Subtype.val) (hs' : f ∘ s' = Subtype.val)
+    (eq : Set.range s = Set.range s') : s = s' := by
+  ext a
+  obtain ⟨b, eq⟩ := eq.symm ▸ Set.mem_range_self a
+  have := congr_arg f eq
+  rw [← f.comp_apply, ← f.comp_apply, hs, hs'] at this
+  cases Subtype.ext this
+  exact eq
+
+end Section
 
 section image2
 

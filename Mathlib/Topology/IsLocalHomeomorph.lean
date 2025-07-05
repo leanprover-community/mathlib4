@@ -240,11 +240,6 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
     IsOpenEmbedding f :=
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
-theorem isOpenEmbedding_restrict (hf : IsLocalHomeomorph f) (hs : IsOpen s) (hsf : s.InjOn f) :
-    IsOpenEmbedding (s.restrict f) :=
-  isOpenEmbedding_iff_continuous_injective_isOpenMap.mpr ⟨hf.continuous.comp continuous_subtype_val,
-    hsf.injective, hf.isOpenMap.comp hs.isOpenMap_subtype_val⟩
-
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
@@ -255,6 +250,46 @@ theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbeddin
     (cont : Continuous f) : IsOpenEmbedding f :=
   (hgf.isLocalHomeomorph.of_comp hf cont).isOpenEmbedding_of_injective hgf.injective.of_comp
 
+variable {t} in
+theorem isOpenEmbedding_section (hf : IsLocalHomeomorph f) (ht : IsOpen t) {sec : t → X}
+    (hsec : f ∘ sec = (↑)) (cont : Continuous sec) : IsOpenEmbedding sec :=
+  hf.isOpenEmbedding_of_comp (hsec ▸ ht.isOpenEmbedding_subtypeVal) cont
+
+variable (s) in
+theorem isOpen_injOn_tfae (hf : IsLocalHomeomorph f) : List.TFAE
+    [IsOpen s ∧ s.InjOn f,
+      IsOpenEmbedding (s.restrict f),
+      IsOpen (f '' s) ∧ ∃ h : s.InjOn f, Continuous (Equiv.ofInjective _ h.injective).symm,
+      IsOpen (f '' s) ∧ ∃ sec : C(f '' s, X), f ∘ sec = (↑) ∧ Set.range sec = s,
+      ∃ U : Set Y, IsOpen U ∧ ∃ sec : C(U, X), f ∘ sec = (↑) ∧ Set.range sec = s] := by
+  tfae_have 1 → 2 := fun h ↦ isOpenEmbedding_iff_continuous_injective_isOpenMap.mpr ⟨hf.continuous
+    |>.comp continuous_subtype_val, h.2.injective, hf.isOpenMap.comp h.1.isOpenMap_subtype_val⟩
+  tfae_have 2 → 3 := fun h ↦ ⟨Set.range_restrict .. ▸ h.isOpen_range,
+    Set.injOn_iff_injective.mpr h.injective, h.toHomeomorph.symm.continuous⟩
+  tfae_have 3 → 4 := fun h ↦ ⟨h.1, by
+    refine Set.range_restrict .. ▸ ⟨⟨_, continuous_subtype_val.comp h.2.2⟩, ?_⟩
+    simp_rw [ContinuousMap.coe_mk, ← Function.comp_assoc]
+    exact ⟨(Equiv.comp_symm_eq ..).mpr rfl, by simp⟩⟩
+  tfae_have 4 → 5 := fun h ↦ ⟨_, h⟩
+  tfae_have 5 → 1 := by
+    rintro ⟨U, hU, sec, hsec, rfl⟩
+    exact ⟨(hf.isOpenEmbedding_section hU hsec sec.continuous).isOpen_range,
+      Set.injOn_range_subtype_section hsec⟩
+  tfae_finish
+
+theorem isOpen_range_section_iff (hf : IsLocalHomeomorph f) {sec : t → X} (hsec : f ∘ sec = (↑)) :
+    IsOpen (Set.range sec) ↔ IsOpen t ∧ Continuous sec := by
+  have : f '' Set.range sec = t := by rw [← Set.range_comp, hsec, Subtype.range_val]
+  convert ← (hf.isOpen_injOn_tfae (Set.range sec)).out 0 3
+  · exact and_iff_left (Set.injOn_range_subtype_section hsec)
+  refine this.symm ▸ ⟨fun ⟨⟨s, _⟩, hfs, eq⟩ ↦ ?_, fun h ↦ ⟨⟨_, h⟩, hsec, rfl⟩⟩
+  rwa [← Set.subtype_section_ext hfs hsec eq]
+
+theorem isOpenEmbedding_restrict (hf : IsLocalHomeomorph f) (hs : IsOpen s) (hsf : s.InjOn f) :
+    IsOpenEmbedding (s.restrict f) :=
+  isOpenEmbedding_iff_continuous_injective_isOpenMap.mpr ⟨hf.continuous.comp continuous_subtype_val,
+    hsf.injective, hf.isOpenMap.comp hs.isOpenMap_subtype_val⟩
+
 open TopologicalSpace in
 /-- Ranges of continuous local sections of a local homeomorphism
 form a basis of the source space. -/
@@ -262,16 +297,10 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
   · rintro _ ⟨U, hU, s, hs, rfl⟩
-    refine (isOpenEmbedding_of_comp hf (hs ▸ ⟨IsEmbedding.subtypeVal, ?_⟩)
-      s.continuous).isOpen_range
-    rwa [Subtype.range_val]
-  · obtain ⟨f, hxf, rfl⟩ := hf x
-    refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,
-      ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
-      ?_, (Set.range_restrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
-    · ext y; exact f.right_inv y.2.1
-    · apply (f.symm_image_target_inter_eq _).trans
-      rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left
-        f.source_preimage_target, f.source_inter_preimage_inv_preimage]
+    exact (hf.isOpenEmbedding_section hU hs s.continuous).isOpen_range
+  · have ⟨V, hV, hfV⟩ := isLocalHomeomorph_iff_isOpenEmbedding_restrict.mp hf x
+    have := ((hf.isOpen_injOn_tfae (V ∩ U)).out 1 3).mp <| hfV.comp
+      (.inclusion Set.inter_subset_left <| by simpa using hU.preimage continuous_subtype_val)
+    exact ⟨_, this, ⟨mem_of_mem_nhds hV, hx⟩, Set.inter_subset_right⟩
 
 end IsLocalHomeomorph
