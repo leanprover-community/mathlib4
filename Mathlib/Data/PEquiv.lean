@@ -198,13 +198,7 @@ theorem mem_ofSet_self_iff {s : Set α} [DecidablePred (· ∈ s)] {a : α} : a 
 theorem mem_ofSet_iff {s : Set α} [DecidablePred (· ∈ s)] {a b : α} :
     a ∈ ofSet s b ↔ a = b ∧ a ∈ s := by
   dsimp [ofSet]
-  split_ifs with h
-  · simp only [mem_def, eq_comm, some.injEq, iff_self_and]
-    rintro rfl
-    exact h
-  · simp only [mem_def, false_iff, not_and, reduceCtorEq]
-    rintro rfl
-    exact h
+  grind
 
 @[simp]
 theorem ofSet_eq_some_iff {s : Set α} {_ : DecidablePred (· ∈ s)} {a b : α} :
@@ -292,13 +286,7 @@ def single (a : α) (b : β) :
   toFun x := if x = a then some b else none
   invFun x := if x = b then some a else none
   inv x y := by
-    split_ifs with h1 h2
-    · simp [*]
-    · simp only [some.injEq, iff_false] at *
-      exact Ne.symm h2
-    · simp only [some.injEq, false_iff] at *
-      exact Ne.symm h1
-    · simp
+    grind
 
 theorem mem_single (a : α) (b : β) : b ∈ single a b a :=
   if_pos rfl

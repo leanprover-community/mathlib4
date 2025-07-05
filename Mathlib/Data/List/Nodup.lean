@@ -270,14 +270,7 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
   | cons a l IH =>
     cases i with
     | zero => simp
-    | succ i =>
-      rw [nodup_cons] at hl
-      rw [erase_cons_tail]
-      · simp [IH hl.2]
-      · rw [beq_iff_eq]
-        simp only [getElem_cons_succ]
-        simp only [length_cons, Nat.add_lt_add_iff_right] at h
-        exact mt (· ▸ getElem_mem h) hl.1
+    | succ i => grind
 
 theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
     l.erase (l.get i) = l.eraseIdx ↑i := by
@@ -372,13 +365,7 @@ theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α �
 
 theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl : l.Nodup)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  rw [pairwise_iff_forall_sublist]
-  intro a b hab
-  if heq : a = b then
-    cases heq; have := nodup_iff_sublist.mp hl _ hab; contradiction
-  else
-    apply h <;> try (apply hab.subset; simp)
-    exact heq
+  grind
 
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem
