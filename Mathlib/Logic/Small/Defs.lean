@@ -46,6 +46,11 @@ def Shrink (α : Type v) [Small.{w} α] : Type w :=
 noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 
+/-- Extract the underlying element of a `Shrink` object using projection notation. -/
+@[simp]
+noncomputable def Shrink.out {α : Type v} [Small.{w} α] (x : Shrink α) : α :=
+  (equivShrink α).symm x
+
 @[ext]
 theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
     (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
