@@ -68,7 +68,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse,Function.LeftInverse]
-    intro u; ext
+    subsingleton
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
     (as an instance). -/

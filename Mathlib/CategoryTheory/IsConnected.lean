@@ -46,7 +46,7 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 open Opposite
 

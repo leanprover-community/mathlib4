@@ -81,13 +81,13 @@ variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
 functorial wrt `F`. -/
 @[simps!]
-def preservesLimitNatIso : lim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ lim :=
+def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
   NatIso.ofComponents (fun F => preservesLimitIso G F)
     (by
       intro _ _ f
       apply limit.hom_ext; intro j
       dsimp
-      simp only [preservesLimitIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
+      simp only [preservesLimitIso_hom_π, Functor.whiskerRight_app, limMap_π, Category.assoc,
         preservesLimitIso_hom_π_assoc, ← G.map_comp])
 
 end
@@ -157,7 +157,7 @@ variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfS
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
 is functorial wrt `F`. -/
 @[simps!]
-def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ colim :=
+def preservesColimitNatIso : colim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ colim :=
   NatIso.ofComponents (fun F => preservesColimitIso G F)
     (by
       intro _ _ f
@@ -165,7 +165,7 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
       apply colimit.hom_ext; intro j
       dsimp
       rw [ι_colimMap_assoc]
-      simp only [ι_preservesColimitIso_inv, whiskerRight_app,
+      simp only [ι_preservesColimitIso_inv, Functor.whiskerRight_app,
         ι_preservesColimitIso_inv_assoc, ← G.map_comp]
       rw [ι_colimMap])
 
