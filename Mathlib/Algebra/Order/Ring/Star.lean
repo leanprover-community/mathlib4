@@ -28,8 +28,8 @@ it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
     (hy : 0 ≤ y) : x * y = y * x := by
-  rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
-    IsSelfAdjoint.of_nonneg hy]
+  rw [← (IsSelfAdjoint.of_nonneg (mul_nonneg hy hx)).star_eq, star_mul,
+    (IsSelfAdjoint.of_nonneg hx).star_eq, (IsSelfAdjoint.of_nonneg hy).star_eq]
 
 /- This will be implied by the instance below, we only prove it to avoid duplicating the
 argument in the instance below for `mul_le_mul_of_nonneg_right`. -/
