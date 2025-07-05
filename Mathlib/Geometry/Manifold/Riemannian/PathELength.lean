@@ -189,7 +189,7 @@ variable {x y z : M} {r : ℝ≥0∞} {a b : ℝ}
 
 variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
-have an inner product, defined as the infimum of the lengths of `C^1` paths between the points. -/
+have an extended norm, defined as the infimum of the lengths of `C^1` paths between the points. -/
 noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
@@ -251,7 +251,7 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
     (hr : riemannianEDist I x y < r) (hab : a < b) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
     pathELength I γ a b < r ∧ γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) := by
-  /- We start from a path from `x` to `y` defined on `[0, 1]` with short length. Then, we
+  /- We start from a path from `x` to `y` defined on `[0, 1]` with length `< r`. Then, we
   reparameterize it using a smooth monotone map `η` from `[a, b]` to `[0, 1]` which is moreover
   locally constant around `a` and `b`.
   Such a map is easy to build with `Real.smoothTransition`. -/
