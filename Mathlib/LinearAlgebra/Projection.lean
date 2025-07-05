@@ -387,7 +387,7 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
 @[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
 theorem IsIdempotentElem.range_isProj {f : M →ₗ[S] M} (hf : IsIdempotentElem f) :
-    LinearMap.IsProj (LinearMap.range f) f :=
+    IsProj (range f) f :=
   ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩
 
 namespace IsProj
