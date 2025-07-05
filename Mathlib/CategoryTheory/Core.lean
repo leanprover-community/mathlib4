@@ -105,12 +105,14 @@ def core (F : C ⥤ D) : Core C ⥤ Core D := Core.functorToCore (Core.inclusion
 variable (C) in
 /-- The core of the identity functor is the identity functor on the cores. -/
 @[simps!]
-def coreId : (𝟭 C).core ≅ 𝟭 (Core C) := Iso.refl _
+def coreId : (𝟭 C).core ≅ 𝟭 (Core C) :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- The core of the composition of F and G is the composition of the cores. -/
 @[simps!]
 def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
-  (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
+    (F ⋙ G).core ≅ F.core ⋙ G.core :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 end Functor
 
@@ -170,8 +172,8 @@ variable {D} in
 def core (E : C ≌ D) : Core C ≌ Core D where
   functor := E.functor.core
   inverse := E.inverse.core
-  unitIso := E.unitIso.core
-  counitIso := E.counitIso.core
+  unitIso := (coreId _).symm ≪≫ E.unitIso.core ≪≫ coreComp _ _
+  counitIso := (coreComp _ _).symm ≪≫ E.counitIso.core ≪≫ coreId _
 
 end Equivalence
 

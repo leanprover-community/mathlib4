@@ -136,10 +136,12 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
   map {_ _} r := .ofRel r.unop.rel.inv
 
 @[simp] theorem opFunctor_comp_unopFunctor_eq :
-    Functor.comp opFunctor unopFunctor = Functor.id _ := rfl
+    Functor.comp opFunctor unopFunctor = Functor.id _ :=
+  Functor.ext _
 
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
-    Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
+    Functor.comp unopFunctor opFunctor = Functor.id _ :=
+  Functor.ext _
 
 /-- `RelCat` is self-dual: The map that swaps the argument order of a
     relation induces an equivalence between `RelCat` and its opposite. -/
@@ -147,8 +149,8 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 def opEquivalence : RelCat ≌ RelCatᵒᵖ where
   functor := opFunctor
   inverse := unopFunctor
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
+  unitIso := eqToIso opFunctor_comp_unopFunctor_eq.symm
+  counitIso := eqToIso unopFunctor_comp_opFunctor_eq
 
 instance : opFunctor.IsEquivalence := by
   change opEquivalence.functor.IsEquivalence

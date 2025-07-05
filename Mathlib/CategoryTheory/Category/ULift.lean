@@ -62,8 +62,8 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
   functor := ULift.upFunctor
   inverse := ULift.downFunctor
   unitIso :=
-    { hom := 𝟙 _
-      inv := 𝟙 _ }
+    { hom := { app := fun _ => 𝟙 _ }
+      inv := { app := fun _ => 𝟙 _ } }
   counitIso :=
     { hom := { app := fun _ => 𝟙 _ }
       inv := { app := fun _ => 𝟙 _ } }

@@ -64,11 +64,12 @@ def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
 variable {T L R B}
 
 /-- The opposite of a `2`-square. -/
-def op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op := NatTrans.op α
+def op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op :=
+  (L.opComp B).inv ≫ NatTrans.op α ≫ (T.opComp R).hom
 
 @[simp]
 lemma natTrans_op (α : TwoSquare T L R B) :
-    α.op.natTrans = NatTrans.op α.natTrans := rfl
+    α.op.natTrans = (L.opComp B).inv ≫ NatTrans.op α.natTrans ≫ (T.opComp R).hom := rfl
 
 @[ext]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.natTrans.app X) :
@@ -78,7 +79,7 @@ lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.
 /-- The hoizontal identity 2-square. -/
 @[simps!]
 def hId (L : C₁ ⥤ C₃) : TwoSquare (𝟭 _) L L (𝟭 _) :=
-  𝟙 _
+  (leftUnitor L).hom ≫ 𝟙 L ≫ (rightUnitor L).inv
 
 /-- Notation for the horizontal identity 2-square. -/
 scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
@@ -86,7 +87,7 @@ scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
 /-- The vertical identity 2-square. -/
 @[simps!]
 def vId (T : C₁ ⥤ C₂) : TwoSquare T (𝟭 _) (𝟭 _) T :=
-  𝟙 _
+  (rightUnitor T).hom ≫ 𝟙 T ≫ (leftUnitor T).inv
 
 /-- Notation for the vertical identity 2-square. -/
 scoped notation "𝟙ᵥ" => vId  -- type as \b1\_v

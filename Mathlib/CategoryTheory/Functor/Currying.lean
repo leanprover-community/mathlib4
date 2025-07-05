@@ -157,14 +157,16 @@ lemma flip_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : F₁.flip = F₂.flip) :
 lemma uncurry_obj_curry_obj_flip_flip (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
     uncurry.obj (F₂ ⋙ (F₁ ⋙ curry.obj G).flip).flip = (F₁.prod F₂) ⋙ G :=
   Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
-    dsimp
-    simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+    simp only [uncurry_obj_obj, flip_obj_obj, comp_obj, curry_obj_obj_obj, uncurry_obj_map,
+      flip_map_app, flip_obj_map, comp_map, curry_obj_map_app, curry_obj_obj_map, ← G.map_comp,
+      prod_comp, Category.comp_id, Category.id_comp, prod_obj, eqToHom_refl, prod_map])
 
 lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
     uncurry.obj (F₁ ⋙ (F₂ ⋙ (curry.obj G).flip).flip) = (F₁.prod F₂) ⋙ G :=
   Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
-    dsimp
-    simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+    simp only [uncurry_obj_obj, comp_obj, flip_obj_obj, curry_obj_obj_obj, uncurry_obj_map,
+      comp_map, flip_map_app, flip_obj_map, curry_obj_map_app, curry_obj_obj_map, ← G.map_comp,
+      prod_comp, Category.comp_id, Category.id_comp, prod_obj, eqToHom_refl, prod_map])
 
 end Functor
 

@@ -286,7 +286,7 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
   inverse :=
     { obj := fun F j => F.obj ⟨j⟩
       map := fun f j => f.app ⟨j⟩ }
-  unitIso := Iso.refl _
+  unitIso := NatIso.ofComponents fun _ => Iso.refl _
   counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun _ => Iso.refl _)
     (by
       rintro ⟨x⟩ ⟨y⟩ f

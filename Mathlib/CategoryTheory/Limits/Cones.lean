@@ -206,7 +206,7 @@ def extend (c : Cone F) {X : C} (f : X ⟶ c.pt) : Cone F :=
 @[simps]
 def whisker (E : K ⥤ J) (c : Cone F) : Cone (E ⋙ F) where
   pt := c.pt
-  π := whiskerLeft E c.π
+  π := (compConstObj _ _ _).inv ≫ whiskerLeft E c.π
 
 end Cone
 
@@ -244,7 +244,7 @@ version.
 @[simps]
 def whisker (E : K ⥤ J) (c : Cocone F) : Cocone (E ⋙ F) where
   pt := c.pt
-  ι := whiskerLeft E c.ι
+  ι := whiskerLeft E c.ι ≫ (compConstObj _ _ _).hom
 
 end Cocone
 
@@ -419,15 +419,16 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
     { pt := G.obj A.pt
       π :=
         { app := fun j => G.map (A.π.app j)
-          naturality := by intros; erw [← G.map_comp]; simp } }
+          naturality := by intros; simp [← G.map_comp] } }
   map f :=
     { hom := G.map f.hom
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
-    functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
+    functoriality F G ⋙ functoriality (F ⋙ G) H ≅
+      functoriality F (G ⋙ H) ⋙ postcompose ((associator F G H).inv) :=
+  NatIso.ofComponents (fun x ↦ Cones.ext (Iso.refl _))
 
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
@@ -602,7 +603,7 @@ def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F) 
     whiskering e.inverse ⋙
       precompose
         ((Functor.leftUnitor F).inv ≫
-          whiskerRight e.counitIso.inv F ≫ (Functor.associator _ _ _).inv)
+          whiskerRight e.counitIso.inv F ≫ (Functor.associator _ _ _).hom)
   unitIso := NatIso.ofComponents fun s => Cocones.ext (Iso.refl _)
   counitIso := NatIso.ofComponents fun s =>
     Cocones.ext (Iso.refl _) fun k => by simpa [e.counitInv_app_functor k] using s.w (e.unit.app k)
@@ -634,15 +635,16 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
     { pt := G.obj A.pt
       ι :=
         { app := fun j => G.map (A.ι.app j)
-          naturality := by intros; erw [← G.map_comp]; simp } }
+          naturality := by intros; simp [← G.map_comp] } }
   map f :=
     { hom := G.map f.hom
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
-    functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
+    functoriality F G ⋙ functoriality (F ⋙ G) H ≅
+      functoriality F (G ⋙ H) ⋙ precompose (associator F G H).hom :=
+  NatIso.ofComponents (fun _ ↦ Cocones.ext (Iso.refl _))
 
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
@@ -697,7 +699,9 @@ def mapCone (c : Cone F) : Cone (F ⋙ H) :=
 /-- The construction `mapCone` respects functor composition. -/
 @[simps!]
 noncomputable def mapConeMapCone {F : J ⥤ C} {H : C ⥤ D} {H' : D ⥤ E} (c : Cone F) :
-    H'.mapCone (H.mapCone c) ≅ (H ⋙ H').mapCone c := Cones.ext (Iso.refl _)
+    H'.mapCone (H.mapCone c) ≅
+      (Cones.postcompose (associator _ _ _).inv).obj ((H ⋙ H').mapCone c) :=
+  Cones.ext (Iso.refl _)
 
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/
 @[simps!]
@@ -707,7 +711,9 @@ def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
 /-- The construction `mapCocone` respects functor composition. -/
 @[simps!]
 noncomputable def mapCoconeMapCocone {F : J ⥤ C} {H : C ⥤ D} {H' : D ⥤ E} (c : Cocone F) :
-    H'.mapCocone (H.mapCocone c) ≅ (H ⋙ H').mapCocone c := Cocones.ext (Iso.refl _)
+    H'.mapCocone (H.mapCocone c) ≅
+      (Cocones.precompose (associator _ _ _).hom).obj ((H ⋙ H').mapCocone c) :=
+  Cocones.ext (Iso.refl _)
 
 /-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially. -/
 def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : H.mapCone c ⟶ H.mapCone c' :=
@@ -822,14 +828,17 @@ def mapCoconePrecomposeEquivalenceFunctor {α : F ≅ G} {c} :
 /-- `mapCone` commutes with `whisker`
 -/
 @[simps!]
-def mapConeWhisker {E : K ⥤ J} {c : Cone F} : mapCone H (c.whisker E) ≅ (mapCone H c).whisker E :=
+def mapConeWhisker {E : K ⥤ J} {c : Cone F} :
+    mapCone H (c.whisker E) ≅
+      (Cones.postcompose (associator _ _ _).inv).obj ((mapCone H c).whisker E) :=
   Cones.ext (Iso.refl _)
 
 /-- `mapCocone` commutes with `whisker`
 -/
 @[simps!]
 def mapCoconeWhisker {E : K ⥤ J} {c : Cocone F} :
-    mapCocone H (c.whisker E) ≅ (mapCocone H c).whisker E :=
+    mapCocone H (c.whisker E) ≅
+      (Cocones.precompose (associator _ _ _).hom).obj ((mapCocone H c).whisker E) :=
   Cocones.ext (Iso.refl _)
 
 end Functor
@@ -1019,12 +1028,14 @@ variable (G : C ⥤ D)
 
 /-- The opposite cocone of the image of a cone is the image of the opposite cocone. -/
 @[simps!]
-def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
+def mapConeOp (t : Cone F) :
+    (mapCone G t).op ≅ (Cocones.precompose ((F.opComp G).hom)).obj (mapCocone G.op t.op) :=
   Cocones.ext (Iso.refl _)
 
 /-- The opposite cone of the image of a cocone is the image of the opposite cone. -/
 @[simps!]
-def mapCoconeOp {t : Cocone F} : (mapCocone G t).op ≅ mapCone G.op t.op :=
+def mapCoconeOp {t : Cocone F} :
+    (mapCocone G t).op ≅ (Cones.postcompose ((F.opComp G).inv)).obj (mapCone G.op t.op) :=
   Cones.ext (Iso.refl _)
 
 end
