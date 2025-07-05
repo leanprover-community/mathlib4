@@ -280,8 +280,8 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
   · rcases eq_or_ne k i with rfl | hki
     · have hx (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ P.root i = P.root x - P.root i) := by
         rintro ⟨-, contra⟩
-        refine P.two_smul_notMem_range_root (i := i) ⟨x, ?_⟩
-        rwa [eq_sub_iff_add_eq, ← two_smul R, eq_comm] at contra
+        refine P.nsmul_notMem_range_root (n := 2) (i := i) ⟨x, ?_⟩
+        rwa [eq_sub_iff_add_eq, ← two_smul ℕ, eq_comm] at contra
       simp only [e, f, h, P.ne_zero, P.ne_neg, Ring.lie_def, Fintype.sum_sum_type, Matrix.sub_apply,
         Matrix.mul_apply, Matrix.fromBlocks_apply₂₁, Matrix.of_apply, Matrix.fromBlocks_apply₂₂,
         left_eq_add, zero_mul, mul_zero, ite_mul, mul_ite, ← ite_and]
@@ -290,7 +290,7 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
     rcases eq_or_ne k (-i) with rfl | hki'
     · have hx (x : ι) : ¬ (P.root x = P.root l - P.root i ∧ P.root (-i) = P.root i + P.root x) := by
         rintro ⟨-, contra⟩
-        refine P.two_smul_notMem_range_root (i := -i) ⟨x, ?_⟩
+        refine P.nsmul_notMem_range_root (n := 2) (i := -i) ⟨x, ?_⟩
         replace contra : P.root x = -(P.root i + P.root i) := by
           simpa [neg_eq_iff_add_eq_zero, ← add_assoc, add_eq_zero_iff_eq_neg'] using contra
         simp [contra, two_smul]
