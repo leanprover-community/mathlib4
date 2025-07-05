@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Image
 import Mathlib.Order.BooleanAlgebra.Basic
 
 /-!
@@ -181,6 +181,58 @@ lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
 
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff
+
+lemma image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
+  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ← image_inter H]
+
+lemma subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f '' s)ᶜ ⊆ f '' sᶜ :=
+  compl_subset_iff_union.2 <| by
+    rw [← image_union]
+    simp [image_univ_of_surjective H]
+
+lemma image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' sᶜ = (f '' s)ᶜ :=
+  Subset.antisymm (image_compl_subset H.1) (subset_image_compl H.2)
+
+@[simp] lemma preimage_compl {s : Set β} {f : α → β} : f ⁻¹' sᶜ = (f ⁻¹' s)ᶜ := rfl
+
+lemma preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
+    HasCompl.compl ⁻¹' s = HasCompl.compl '' s :=
+  Set.ext fun x =>
+    ⟨fun h => ⟨xᶜ, h, compl_compl x⟩, fun h =>
+      Exists.elim h fun _ hy => (compl_eq_comm.mp hy.2).symm.subst hy.1⟩
+
+lemma mem_compl_image [BooleanAlgebra α] (t : α) (s : Set α) :
+    t ∈ HasCompl.compl '' s ↔ tᶜ ∈ s := by
+  simp [← preimage_compl_eq_image_compl]
+
+lemma compl_compl_image [BooleanAlgebra α] (s : Set α) :
+    HasCompl.compl '' (HasCompl.compl '' s) = s := by
+  rw [← image_comp, compl_comp_compl, image_id]
+
+lemma compl_image : image (compl : Set α → Set α) = preimage compl :=
+  image_eq_preimage_of_inverse compl_compl compl_compl
+
+lemma compl_image_set_of {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
+  congr_fun compl_image p
+
+@[simp]
+lemma image_union_image_compl_eq_range (f : α → β) : f '' s ∪ f '' sᶜ = range f := by
+  rw [← image_union, ← image_univ, ← union_compl_self]
+
+lemma insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f '' {x}ᶜ) = range f := by
+  rw [← image_insert_eq, insert_eq, union_compl_self, image_univ]
+
+@[simp]
+lemma compl_range_inl : (range (Sum.inl : α → α ⊕ β))ᶜ = range (Sum.inr : β → α ⊕ β) :=
+  isCompl_range_inl_range_inr.compl_eq
+
+@[simp]
+lemma compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.inl : α → α ⊕ β) :=
+  isCompl_range_inl_range_inr.symm.compl_eq
+
+@[simp]
+lemma compl_range_some (α : Type*) : (range (some : α → Option α))ᶜ = {none} :=
+  (isCompl_range_some_none α).compl_eq
 
 /-! ### Lemmas about set difference -/
 
@@ -462,6 +514,29 @@ lemma pair_diff_left (hab : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
 lemma pair_diff_right (hab : a ≠ b) : ({a, b} : Set α) \ {b} = {a} := by
   rw [pair_comm, pair_diff_left hab.symm]
 
+lemma subset_image_diff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
+  rw [diff_subset_iff, ← image_union, union_diff_self]
+  exact image_subset f subset_union_right
+
+lemma image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
+  Subset.antisymm
+    (Subset.trans (image_inter_subset _ _ _) <| inter_subset_inter_right _ <| image_compl_subset hf)
+    (subset_image_diff f s t)
+
+@[simp] lemma preimage_diff (f : α → β) (s t : Set β) : f ⁻¹' (s \ t) = f ⁻¹' s \ f ⁻¹' t := rfl
+
+lemma image_diff_preimage {f : α → β} {s : Set α} {t : Set β} :
+    f '' (s \ f ⁻¹' t) = f '' s \ t := by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
+
+lemma image_compl_eq_range_diff_image {f : α → β} (hf : Injective f) (s : Set α) :
+    f '' sᶜ = range f \ f '' s := by rw [← image_univ, ← image_diff hf, compl_eq_univ_diff]
+
+/-- Alias of `Set.image_compl_eq_range_sdiff_image`. -/
+lemma range_diff_image {f : α → β} (hf : Injective f) (s : Set α) : range f \ f '' s = f '' sᶜ := by
+  rw [image_compl_eq_range_diff_image hf]
+
+lemma image_compl_preimage {f : α → β} {s : Set β} : f '' (f ⁻¹' s)ᶜ = range f \ s := by
+  rw [compl_eq_univ_diff, image_diff_preimage, image_univ]
 /-! ### If-then-else for sets -/
 
 /-- `ite` for sets: `Set.ite t s s' ∩ t = s ∩ t`, `Set.ite t s s' ∩ tᶜ = s' ∩ tᶜ`.
@@ -544,4 +619,42 @@ theorem ite_eq_of_subset_right (t : Set α) {s₁ s₂ : Set α} (h : s₂ ⊆ s
   ext x
   by_cases hx : x ∈ t <;> simp [*, Set.ite, or_iff_left_of_imp (@h x)]
 
+@[simp]
+lemma preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
+    f ⁻¹' s.ite t₁ t₂ = (f ⁻¹' s).ite (f ⁻¹' t₁) (f ⁻¹' t₂) := rfl
+
+/-! ### Lemmas about the powerset and image -/
+
+/-- The powerset of `{a} ∪ s` is `𝒫 s` together with `{a} ∪ t` for each `t ∈ 𝒫 s`. -/
+lemma powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ insert a '' 𝒫 s := by
+  ext t
+  simp_rw [mem_union, mem_image, mem_powerset_iff]
+  constructor
+  · intro h
+    by_cases hs : a ∈ t
+    · right
+      refine ⟨t \ {a}, ?_, ?_⟩
+      · rw [diff_singleton_subset_iff]
+        assumption
+      · rw [insert_diff_singleton, insert_eq_of_mem hs]
+    · left
+      exact (subset_insert_iff_of_notMem hs).mp h
+  · rintro (h | ⟨s', h₁, rfl⟩)
+    · exact subset_trans h (subset_insert a s)
+    · exact insert_subset_insert h₁
+
 end Set
+
+open Set
+
+namespace Subtype
+variable {α : Type*}
+
+-- Not `@[simp]` since `simp` can prove this.
+lemma preimage_coe_compl (s : Set α) : ((↑) : s → α) ⁻¹' sᶜ = ∅ :=
+  preimage_coe_eq_empty.2 (inter_compl_self s)
+
+@[simp] lemma preimage_coe_compl' (s : Set α) : (fun x : (sᶜ : Set α) ↦ (x : α)) ⁻¹' s = ∅ :=
+  preimage_coe_eq_empty.2 (compl_inter_self s)
+
+end Subtype
