@@ -57,6 +57,18 @@ fields, etc.
   vector bundle.
 -/
 
+-- Kyle’s #check' command. This has nothing to do here but will be convenient for us
+open Lean Elab Command PrettyPrinter Delaborator in
+elab tk:"#check' " name:ident : command => runTermElabM fun _ => do
+  for c in (← realizeGlobalConstWithInfos name) do
+    addCompletionInfo <| .id name name.getId (danglingDot := false) {} none
+    let info ← getConstInfo c
+    let delab : Delab := do
+      delabForallParamsWithSignature fun binders type => do
+        let binders := binders.filter fun binder => binder.raw.isOfKind ``Parser.Term.explicitBinder
+        return ⟨← `(declSigWithId| $(mkIdent c) $binders* : $type)⟩
+    logInfoAt tk <| .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) info.type)
+
 assert_not_exists mfderiv
 
 open Bundle Set PartialHomeomorph
@@ -203,6 +215,7 @@ theorem contMDiffAt_section {s : ∀ x, E x} (x₀ : B) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
+
 
 variable (E)
 
@@ -495,6 +508,54 @@ theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTriv
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
 
+/-- Smoothness of a `C^n` section at `x₀` within a set `a` can be determined
+using any trivialisation whose `baseSet` contains `x₀`. -/
+theorem Trivialization.contMDiffWithinAt_section (s : ∀ x, E x) (a : Set B) {x₀ : B}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
+      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a x₀ := by
+  rw [e.contMDiffWithinAt_iff]
+  · change ContMDiffWithinAt IB IB n id a x₀ ∧ _ ↔ _
+    simp [contMDiffWithinAt_id]
+  · rwa [mem_source]
+
+/-- Smoothness of a `C^n` section at `x₀` can be determined
+using any trivialisation whose `baseSet` contains `x₀`. -/
+theorem contMDiffAt_section_of_mem_baseSet {s : ∀ x, E x} {x₀ : B}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
+      ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
+  simp_rw [← contMDiffWithinAt_univ]
+  exact e.contMDiffWithinAt_section  s univ hx₀
+
+/-- Smoothness of a `C^n` section on `s` can be determined
+using any trivialisation whose `baseSet` contains `s`. -/
+theorem contMDiffOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
+      ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a := by
+  -- golfing useful?
+  constructor
+  · intro h x hx
+    have : ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x :=
+      (h x hx).contMDiffAt <| ha.mem_nhds hx
+    exact ((contMDiffAt_section_of_mem_baseSet (ha' hx)).mp this).contMDiffWithinAt
+  · intro h x hx
+    have : ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e { proj := x, snd := s x }).2) x :=
+      (h x hx).contMDiffAt <| ha.mem_nhds hx
+    exact ((contMDiffAt_section_of_mem_baseSet (ha' hx)).mpr this).contMDiffWithinAt
+
+/-- For any trivialization `e`, the smoothness of a `C^n` section on `e.baseSet`
+can be determined using `e`. -/
+theorem contMDiffOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
+      ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
+  contMDiffOn_section_of_mem_baseSet e.open_baseSet (subset_refl _)
 end
 
 /-! ### Core construction for `C^n` vector bundles -/
