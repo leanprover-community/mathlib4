@@ -471,19 +471,19 @@ end CommRing
 
 namespace LinearMap
 
-variable {S E M : Type*} [Semiring S] [AddCommMonoid M] [Module S M]
+variable {S M : Type*} [Semiring S] [AddCommMonoid M] [Module S M]
 
 open Submodule LinearMap
 
 /-- Given an idempotent linear operator `p`, we have
-  `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
+`x ∈ range p` if and only if `p(x) = x` for all `x`. -/
 theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
     x ∈ range p ↔ p x = x := by
   refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
   rw [← hy, ← Module.End.mul_apply, hp.eq]
 
 /-- Given an idempotent linear operator `q`,
-  we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
+we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
 theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempotentElem q)
     {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
     q.comp p = p ↔ range p ≤ range q := by
