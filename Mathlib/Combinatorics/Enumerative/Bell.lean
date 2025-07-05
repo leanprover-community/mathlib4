@@ -29,7 +29,8 @@ The definition presents it as a natural number.
 
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
 
-* `Nat.standardBell n`: the `n`th standard Bell number, which counts the number of partitions of a set of cardinality `n`
+* `Nat.standardBell n`: the `n`th standard Bell number,
+    which counts the number of partitions of a set of cardinality `n`
 
 * `Nat.standardBell_succ n` shows that
     `standardBell (n + 1) = ∑ k ∈ Finset.range (n + 1),
@@ -89,8 +90,8 @@ theorem bell_mul_eq (m : Multiset ℕ) :
         rw [← Finset.prod_erase_mul _ _ hm]
         simp only [factorial_zero, one_pow, mul_one, zero_mul]
         exact this
-      · nth_rewrite 1 [← Finset.erase_eq_of_notMem hm]
-        nth_rewrite 3 [← Finset.erase_eq_of_notMem hm]
+      · nth_rewrite 1 [← Finset.erase_eq_of_not_mem hm]
+        nth_rewrite 3 [← Finset.erase_eq_of_not_mem hm]
         exact this
     rw [← Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl
@@ -188,7 +189,8 @@ theorem standardBell_zero : standardBell 0 = 1 := by
 @[simp]
 theorem standardBell_one : standardBell 1 = 1 := by
   unfold standardBell
-  simp only [zero_add, Finset.range_one, zero_tsub, Finset.sum_singleton, choose_self, one_mul, standardBell_zero]
+  simp only [zero_add, Finset.range_one, zero_tsub, Finset.sum_singleton,
+    choose_self, one_mul, standardBell_zero]
 
 @[simp]
 theorem standardBell_two : standardBell 2 = 2 := by
