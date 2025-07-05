@@ -105,14 +105,22 @@ def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
 lemma mpullbackWithin_apply :
     mpullbackWithin I I' f V s x = (mfderivWithin I I' f s x).inverse (V (f x)) := rfl
 
-lemma mpullbackWithin_smul_apply :
+lemma mpullbackWithin_const_smul_apply :
     mpullbackWithin I I' f (c • V) s x = c • mpullbackWithin I I' f V s x := by
   simp [mpullbackWithin_apply]
 
-lemma mpullbackWithin_smul :
+lemma mpullbackWithin_smul_apply {g : M' → 𝕜} :
+    mpullbackWithin I I' f (g • V) s x = g (f x) • mpullbackWithin I I' f V s x := by
+  simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_const_smul :
     mpullbackWithin I I' f (c • V) s = c • mpullbackWithin I I' f V s := by
   ext x
   simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_smul {g : M' → 𝕜} :
+    mpullbackWithin I I' f (g • V) s = (g ∘ f) • mpullbackWithin I I' f V s := by
+  ext; simp [mpullbackWithin_apply]
 
 lemma mpullbackWithin_add_apply :
     mpullbackWithin I I' f (V + V₁) s x =
@@ -141,12 +149,21 @@ lemma mpullbackWithin_id {V : Π (x : M), TangentSpace I x} (h : UniqueMDiffWith
 lemma mpullback_apply :
     mpullback I I' f V x = (mfderiv I I' f x).inverse (V (f x)) := rfl
 
-lemma mpullback_smul_apply :
+lemma mpullback_const_smul_apply :
     mpullback I I' f (c • V) x = c • mpullback I I' f V x := by
   simp [mpullback]
 
-lemma mpullback_smul :
+lemma mpullback_const_smul :
     mpullback I I' f (c • V) = c • mpullback I I' f V := by
+  ext x
+  simp [mpullback_apply]
+
+lemma mpullback_smul_apply {g : M' → 𝕜} :
+    mpullback I I' f (g • V) x = g (f x) • mpullback I I' f V x := by
+  simp [mpullback]
+
+lemma mpullback_smul {g : M' → 𝕜} :
+    mpullback I I' f (g • V) = (g ∘ f) • mpullback I I' f V := by
   ext x
   simp [mpullback_apply]
 
