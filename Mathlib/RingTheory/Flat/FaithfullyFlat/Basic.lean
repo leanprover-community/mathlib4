@@ -560,6 +560,26 @@ instance (S : Type*) [CommRing S] [Algebra R S] [Module.FaithfullyFlat R M] :
   have := (AlgebraTensorModule.cancelBaseChange R S S N M).symm.subsingleton
   exact FaithfullyFlat.rTensor_reflects_triviality R M N
 
+section IsBaseChange
+
+variable {S N : Type*} [CommRing S] [Algebra R S] [FaithfullyFlat R S]
+  [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N] {f : M →ₗ[R] N}
+
+theorem smul_top_ne_top_of_isBaseChange (hf : IsBaseChange S f) {I : Ideal R}
+    (h : I • (⊤ : Submodule R M) ≠ ⊤) : I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ := by
+  intro eq
+  have : Subsingleton (N ⧸ Ideal.map (algebraMap R S) I • ⊤) :=
+    Submodule.subsingleton_quotient_iff_eq_top.mpr eq
+  have : Subsingleton (S ⊗[R] (M ⧸ I • ⊤)) :=
+    (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
+      hf.tensorEquiv  _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (.refl R M) ≪≫ₗ
+        AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
+          (tensorQuotEquivQuotSMul M I).baseChange R S _ _ |>.symm.subsingleton
+  have : Subsingleton (M ⧸ (I • (⊤ : Submodule R M))) := lTensor_reflects_triviality R S _
+  exact not_nontrivial _ (Submodule.Quotient.nontrivial_of_lt_top (I • ⊤) h.lt_top)
+
+end IsBaseChange
+
 end FaithfullyFlat
 
 /-- Flat descends along faithfully flat ring maps. -/
