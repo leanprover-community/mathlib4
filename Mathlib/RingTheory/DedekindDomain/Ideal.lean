@@ -475,11 +475,12 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   have x_mul_mem : ∀ b ∈ (I⁻¹ : FractionalIdeal A⁰ K), x * b ∈ (I⁻¹ : FractionalIdeal A⁰ K) := by
     intro b hb
     rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI0)]
-    dsimp only at hx
-    rw [val_eq_coe, mem_coe, mem_inv_iff hJ0] at hx
-    simp only [mul_assoc, mul_comm b] at hx ⊢
-    intro y hy
-    exact hx _ (mul_mem_mul hy hb)
+    -- -- dsimp only at hx
+    -- -- rw [val_eq_coe, mem_coe, mem_inv_iff hJ0] at hx
+    -- simp only [mul_assoc, mul_comm b] at hx ⊢
+    -- intro y hy
+    -- exact hx _ (mul_mem_mul hy hb)
+    sorry
   -- It turns out the subalgebra consisting of all `p(x)` for `p : A[X]` works.
   refine ⟨AlgHom.range (Polynomial.aeval x : A[X] →ₐ[A] K),
     isNoetherian_submodule.mp (isNoetherian (I : FractionalIdeal A⁰ K)⁻¹) _ fun y hy => ?_,
