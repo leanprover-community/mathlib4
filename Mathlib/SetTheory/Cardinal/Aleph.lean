@@ -324,17 +324,18 @@ theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
   rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
 
-theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
+theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
   ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
-    rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, limit_le l]
+    rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, l.le_iff_forall_le]
     intro x h'
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
     exact h _ h'⟩
 
-theorem preAleph_limit {o : Ordinal} (ho : o.IsLimit) : preAleph o = ⨆ a : Iio o, preAleph a := by
+theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
+    preAleph o = ⨆ a : Iio o, preAleph a := by
   refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
-  rw [preAleph_le_of_isLimit ho]
+  rw [preAleph_le_of_isSuccPrelimit ho]
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
 theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f) (o : Ordinal) :
@@ -394,12 +395,12 @@ theorem _root_.Ordinal.lift_omega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (ω_ o) = ω_ (Ordinal.lift.{v} o) := by
   simp [omega_eq_preOmega]
 
-theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
-  rw [aleph_eq_preAleph, preAleph_limit (isLimit_add ω ho)]
+theorem aleph_limit {o : Ordinal} (ho : IsSuccLimit o) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
+  rw [aleph_eq_preAleph, preAleph_limit (isSuccLimit_add ω ho).isSuccPrelimit]
   apply le_antisymm <;>
     apply ciSup_mono' (bddAbove_of_small _) <;>
     intro i
-  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.pos⟩, ?_⟩
+  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.bot_lt⟩, ?_⟩
     simpa [aleph_eq_preAleph] using le_add_sub _ _
   · exact ⟨⟨_, add_lt_add_left i.2 ω⟩, le_rfl⟩
 
@@ -418,9 +419,9 @@ theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
 theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
   (toENat_eq_top.2 (aleph0_le_aleph o))
 
-theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
+theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
-  exact isLimit_ord (aleph0_le_aleph _)
+  exact isSuccLimit_ord (aleph0_le_aleph _)
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by

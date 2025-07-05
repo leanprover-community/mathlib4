@@ -313,7 +313,7 @@ theorem add_le_nadd : a + b ≤ a ♯ b := by
   | zero => simp
   | succ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
-  | isLimit c hc H =>
+  | limit c hc H =>
     rw [(isNormal_add_right a).apply_of_isLimit hc, Ordinal.iSup_le_iff]
     rintro ⟨i, hi⟩
     exact (H i hi).trans (nadd_le_nadd_left hi.le a)
