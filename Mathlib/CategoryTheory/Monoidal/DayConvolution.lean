@@ -128,7 +128,7 @@ variable {F' G' : C ⥤ V} [DayConvolution F' G']
 /-- The morphism between day convolutions (provided they exist) induced by a pair of morphisms. -/
 def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
   Functor.descOfIsLeftKanExtension (F ⊛ G) (unit F G) (F' ⊛ G') <|
-    (externalProductBifunctor C C V).map ((f, g) : (F, G) ⟶ (F', G')) ≫ unit F' G'
+    (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G'
 
 variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
@@ -165,10 +165,7 @@ section associator
 
 open Functor
 
-variable (H : C ⥤ V)
-    [DayConvolution G H]
-    [DayConvolution F (G ⊛ H)]
-    [DayConvolution (F ⊛ G) H]
+variable (H : C ⥤ V) [DayConvolution G H] [DayConvolution F (G ⊛ H)] [DayConvolution (F ⊛ G) H]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -186,7 +183,9 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
   (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
-/-- The `CorepresentableBy` structure on `F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -`. -/
+/-- The `CorepresentableBy` structure asserting that the Type-valued functor
+`Y ↦ (F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ Y)` is corepresented by
+`F ⊛ G ⊛ H`. -/
 @[simps]
 def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
@@ -197,7 +196,9 @@ def corepresentableBy₂ :
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
   homEquiv_comp := by aesop
 
-/-- The `CorepresentableBy` structure on `(F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -`. -/
+/-- The `CorepresentableBy` structure asserting that the Type-valued functor
+`Y ↦ ((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ Y)` is corepresented by
+`(F ⊛ G) ⊛ H`. -/
 @[simps]
 def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
@@ -210,8 +211,8 @@ def corepresentableBy₂' :
 
 /-- The isomorphism of functors between
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
-`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that copresents the associator isomorphism
-for Day convolution. -/
+`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that coresponsds to the associator
+isomorphism for Day convolution through `corepresentableBy₂` and `corepresentableBy₂`. -/
 @[simps!]
 def associatorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
@@ -240,7 +241,7 @@ def associatorCorepresentingIso :
       isoWhiskerLeft _ <|
         coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _|>.symm)
 
-/-- The asociator morphism for Day convolution -/
+/-- The asociator isomorphism for Day convolution -/
 def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
   corepresentableBy₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso <|
     corepresentableBy₂ F G H
@@ -267,7 +268,8 @@ lemma associator_hom_unit_unit (x y z : C) :
   simp only [Category.assoc, this]
   simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
 
-/-- Characterizing associator_inv with respect to the unit transformations -/
+/-- Characterizing the inverse direction of the associator
+with respect to the unit transformations -/
 @[reassoc (attr := simp)]
 lemma associator_inv_unit_unit (x y z : C) :
     F.obj x ◁ (unit G H).app (y, z) ≫
@@ -289,12 +291,12 @@ lemma associator_inv_unit_unit (x y z : C) :
 
 variable {F G H} in
 theorem associator_naturality {F' G' H' : C ⥤ V}
-  [DayConvolution F' G'] [DayConvolution G' H']
-  [DayConvolution F' (G' ⊛ H')] [DayConvolution (F' ⊛ G') H']
-  (f : F ⟶ F') (g : G ⟶ G') (h : H ⟶ H') :
-    map (map f g) h ≫
-      (associator F' G' H').hom =
-    (associator F G H).hom ≫ map f (map g h) := by
+    [DayConvolution F' G'] [DayConvolution G' H']
+    [DayConvolution F' (G' ⊛ H')] [DayConvolution (F' ⊛ G') H']
+    (f : F ⟶ F') (g : G ⟶ G') (h : H ⟶ H') :
+      map (map f g) h ≫
+        (associator F' G' H').hom =
+      (associator F G H).hom ≫ map f (map g h) := by
   apply (corepresentableBy₂' F G H)|>.homEquiv.injective
   dsimp
   ext
@@ -325,7 +327,7 @@ lemma pentagon (H K : C ⥤ V)
     map (associator F G H).hom (𝟙 K) ≫
         (associator F (G ⊛ H) K).hom ≫ map (𝟙 F) (associator G H K).hom =
       (associator (F ⊛ G) H K).hom ≫ (associator F G (H ⊛ K)).hom := by
-  -- We repeatedly apply the fact that the functors are left Kan extended
+  -- We repeatedly apply the fact that the functors are left Kan extensions
   apply Functor.hom_ext_of_isLeftKanExtension (α := unit ((F ⊛ G) ⊛ H) K)
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft ((F ⊛ G) ⊛ H) (unit (F ⊛ G) H) K)
