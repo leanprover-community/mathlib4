@@ -326,6 +326,17 @@ theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
   rw [orthocenter_eq_mongePoint, mongePoint_eq_smul_vsub_vadd_circumcenter]
   norm_num
 
+/-- **Sylvester's theorem** : The vector from the circumcenter to the orthocenter of a triangle
+is equal to the sum of the vectors from the circumcenter to each point. -/
+theorem orthocenter_vsub_circumcenter_eq_sum_vsub (t : Triangle ℝ P) :
+    t.orthocenter -ᵥ t.circumcenter = ∑ i ∈ Finset.univ, (t.points i -ᵥ t.circumcenter) := by
+  rw [orthocenter_eq_smul_vsub_vadd_circumcenter, vadd_vsub, smul_eq_iff_eq_invOf_smul, smul_sum,
+    ← Finset.weightedVSubOfPoint_apply (Finset.univ) (fun x: Fin 3 => (⅟ 3:ℝ)) t.points
+      t.circumcenter]
+  unfold Finset.centroid
+  rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
+  rfl
+
 /-- The orthocenter lies in the affine span. -/
 theorem orthocenter_mem_affineSpan (t : Triangle ℝ P) :
     t.orthocenter ∈ affineSpan ℝ (Set.range t.points) :=
@@ -399,6 +410,23 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
       t.circumradius := by
   simp only [coe_insert, coe_singleton]
   exact dist_orthocenter_reflection_circumcenter _ h
+
+/-- The distance from the circumcenter to the reflection of the orthocenter in a side equals the
+circumradius. -/
+theorem dist_circumcenter_reflection_orthocenter (t : Triangle ℝ P) {i₁ i₂ : Fin 3} (h : i₁ ≠ i₂) :
+    dist t.circumcenter (reflection (affineSpan ℝ (t.points '' {i₁, i₂})) t.orthocenter) =
+      t.circumradius := by
+  rw [EuclideanGeometry.dist_reflection, dist_comm, dist_orthocenter_reflection_circumcenter t h]
+
+/-- The distance from the circumcenter to the reflection of the orthocenter in a side equals the
+circumradius, variant using a `Finset`. -/
+theorem dist_circumcenter_reflection_orthocenter_finset (t : Triangle ℝ P) {i₁ i₂ : Fin 3}
+  (h : i₁ ≠ i₂) :
+    dist t.circumcenter
+      (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.orthocenter) =
+      t.circumradius := by
+  simp only [coe_insert, coe_singleton]
+  exact dist_circumcenter_reflection_orthocenter _ h
 
 /-- The affine span of the orthocenter and a vertex is contained in
 the altitude. -/
