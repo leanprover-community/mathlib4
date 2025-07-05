@@ -55,6 +55,20 @@ lemma theorem2_i_ii (a : α) : IsDistrib a → IsLatticeHom (fun x => a ⊔ x) :
   map_sup := sup_sup_distrib_left _
 }
 
+lemma theorem2_ii_iii (a : α) (h : IsLatticeHom (fun x => a ⊔ x)) :
+    IsLatticeCon (ker (fun x => a ⊔ x)) := kercong _ h
+
+lemma theorem2_iii_i (a : α) (h : IsLatticeCon (ker (fun x => a ⊔ x))) : IsDistrib a := by
+  intro x y
+  have e1 : a ⊔ x ⊓ y = a ⊔ ((a ⊔ x) ⊓ (a ⊔ y)) := by
+    apply h.inf
+    · unfold ker
+      simp
+    · unfold ker
+      simp
+  rw [e1]
+  simp
+
 lemma theorem3_iii_i (a : α) (h1 : IsDistrib a)
     (h2 : ∀ x y : α, a ⊓ x = a ⊓ y ∧ a ⊔ x = a ⊔ y → x = y) : IsStandard a := fun x y => h2 _  _
   ⟨le_antisymm (by
