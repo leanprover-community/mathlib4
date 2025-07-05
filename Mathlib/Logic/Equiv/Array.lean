@@ -14,8 +14,14 @@ import Mathlib.Logic.Equiv.List
 namespace Equiv
 
 /-- The natural equivalence between arrays and lists. -/
+@[simps! apply symm_apply]
 def arrayEquivList (α : Type*) : Array α ≃ List α :=
-  ⟨Array.toList, Array.mk, fun _ => rfl, fun _ => rfl⟩
+  ⟨Array.toList, List.toArray, fun _ => rfl, fun _ => rfl⟩
+
+/-- `List.Vector.toVector` and `List.Vector.ofVector` together form an equivalence. -/
+@[simps! apply symm_apply]
+def vectorEquivListVector (α : Type*) (n : ℕ) : Vector α n ≃ List.Vector α n :=
+  ⟨List.Vector.ofVector, List.Vector.toVector, fun _ => rfl, fun _ => rfl⟩
 
 end Equiv
 
