@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Perm.DomAct
 import Mathlib.GroupTheory.Rank
 
 /-!
@@ -463,7 +463,7 @@ theorem nat_card_range_toPermHom :
   set sc := fun (c : g.cycleFactorsFinset) ↦ #c.val.support with hsc
   suffices Fintype.card (toPermHom g).range =
     Fintype.card { k : Perm g.cycleFactorsFinset | sc ∘ k = sc } by
-    simp only [Nat.card_eq_fintype_card, this, Set.coe_setOf, DomMulAct.stabilizer_card', hsc,
+    simp only [Nat.card_eq_fintype_card, this, Set.coe_setOf, DomAct.stabilizer_card', hsc,
       Finset.univ_eq_attach]
     simp_rw [← CycleType.count_def]
     apply Finset.prod_congr _ (fun _ _ => rfl)
