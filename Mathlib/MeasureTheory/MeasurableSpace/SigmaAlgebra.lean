@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi-Jing Tseng
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
+import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 
 /-!
 Some doc
@@ -28,5 +29,7 @@ lemma mem_SigmaAlgebra {s : Set α} :
     s ∈ m.SigmaAlgebra ↔ (MeasurableSet s) :=
   Iff.rfl
 
+instance instBooleanAlgebra : BooleanAlgebra m.SigmaAlgebra :=
+  MeasurableSet.Subtype.instBooleanAlgebra
 
 end MeasurableSpace
