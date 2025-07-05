@@ -274,7 +274,7 @@ theorem σiInf_empty [IsEmpty ι] : ⨅ i, f i = ⊤ :=
 theorem σiSup_const_mem : ⨆ (_ : ι), a ∈ ({⊥, a} : Set α) := by
   cases isEmpty_or_nonempty ι with
   | inl h_empty => simp [σiSup_empty]
-  | inr h_non_empty => simp [σiSup_const]
+  | inr h_non_empty => simp
 
 theorem σiInf_const_mem : ⨅ (_ : ι), a ∈ ({⊤, a} : Set α) :=
   σiSup_const_mem (α := αᵒᵈ)
