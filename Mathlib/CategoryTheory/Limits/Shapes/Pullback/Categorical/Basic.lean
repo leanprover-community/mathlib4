@@ -189,6 +189,8 @@ end
 
 section
 
+open Functor
+
 variable (X : Type u₄) [Category.{v₄} X]
 
 variable (F G) in
@@ -249,9 +251,9 @@ def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
     { fst := J ⋙ π₁ F G
       snd := J ⋙ π₂ F G
       iso :=
-        Functor.associator _ _ _ ≪≫
+        associator _ _ _ ≪≫
           isoWhiskerLeft J (catCommSq F G).iso ≪≫
-          (Functor.associator _ _ _).symm }
+          (associator _ _ _).symm }
   map {J J'} F :=
     { fst := whiskerRight F (π₁ _ _)
       snd := whiskerRight F (π₂ _ _) }
@@ -298,12 +300,12 @@ the projections, and compatible with the canonical 2-commutative square . -/
 def mkNatIso {J K : X ⥤ F ⊡ G}
     (e₁ : J ⋙ π₁ F G ≅ K ⋙ π₁ F G) (e₂ : J ⋙ π₂ F G ≅ K ⋙ π₂ F G)
     (coh :
-      whiskerRight e₁.hom F ≫ (Functor.associator _ _ _).hom ≫
+      whiskerRight e₁.hom F ≫ (associator _ _ _).hom ≫
         whiskerLeft K (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
-        (Functor.associator _ _ _).inv =
-      (Functor.associator _ _ _).hom ≫
+        (associator _ _ _).inv =
+      (associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
-        (Functor.associator _ _ _).inv ≫
+        (associator _ _ _).inv ≫
         whiskerRight e₂.hom G := by aesop_cat) :
     J ≅ K :=
   NatIso.ofComponents
@@ -331,12 +333,12 @@ section
 variable {J K : X ⥤ F ⊡ G}
     (e₁ : J ⋙ π₁ F G ≅ K ⋙ π₁ F G) (e₂ : J ⋙ π₂ F G ≅ K ⋙ π₂ F G)
     (coh :
-      whiskerRight e₁.hom F ≫ (Functor.associator _ _ _).hom ≫
+      whiskerRight e₁.hom F ≫ (associator _ _ _).hom ≫
         whiskerLeft K (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
-        (Functor.associator _ _ _).inv =
-      (Functor.associator _ _ _).hom ≫
+        (associator _ _ _).inv =
+      (associator _ _ _).hom ≫
         whiskerLeft J (CatCommSq.iso (π₁ F G) (π₂ F G) F G).hom ≫
-        (Functor.associator _ _ _).inv ≫
+        (associator _ _ _).inv ≫
         whiskerRight e₂.hom G := by aesop_cat)
 
 @[simp]

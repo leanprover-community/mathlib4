@@ -279,8 +279,8 @@ end
 
 theorem isSheaf_of_iso_iff {P P' : Cᵒᵖ ⥤ A} (e : P ≅ P') : IsSheaf J P ↔ IsSheaf J P' :=
   forall_congr' fun _ =>
-    ⟨Presieve.isSheaf_iso J (isoWhiskerRight e _),
-      Presieve.isSheaf_iso J (isoWhiskerRight e.symm _)⟩
+    ⟨Presieve.isSheaf_iso J (Functor.isoWhiskerRight e _),
+      Presieve.isSheaf_iso J (Functor.isoWhiskerRight e.symm _)⟩
 
 variable (J)
 
@@ -379,7 +379,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
   constructor
   · intro hP
     refine Presieve.isSheaf_iso J ?_ (hP PUnit)
-    exact isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
+    exact Functor.isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
     refine ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) ?_, ?_, ?_⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h

@@ -85,7 +85,7 @@ instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
 
 lemma isInvertedBy₂ :
     MorphismProperty.IsInvertedBy₂ W W
-      (curriedTensor C ⋙ (whiskeringRight C C D).obj L') := by
+      (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L') := by
   rintro ⟨X₁, Y₁⟩ ⟨X₂, Y₂⟩ ⟨f₁, f₂⟩ ⟨hf₁, hf₂⟩
   have := Localization.inverts L' W _ (W.whiskerRight_mem f₁ hf₁ Y₁)
   have := Localization.inverts L' W _ (W.whiskerLeft_mem X₂ f₂ hf₂)
@@ -97,17 +97,17 @@ noncomputable def tensorBifunctor :
     LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
   Localization.lift₂ _ (isInvertedBy₂ L W ε) L L
 
-noncomputable instance : Lifting₂ L' L' W W (curriedTensor C ⋙ (whiskeringRight C C
+noncomputable instance : Lifting₂ L' L' W W (curriedTensor C ⋙ (Functor.whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε) :=
-  inferInstanceAs (Lifting₂ L L W W (curriedTensor C ⋙ (whiskeringRight C C D).obj L')
+  inferInstanceAs (Lifting₂ L L W W (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L')
     (Localization.lift₂ _ (isInvertedBy₂ L W ε) L L))
 
 /-- The bifunctor `tensorBifunctor` on `LocalizedMonoidal L W ε` is induced by
 `curriedTensor C`. -/
 noncomputable abbrev tensorBifunctorIso :
-    (((whiskeringLeft₂ D).obj L').obj L').obj (tensorBifunctor L W ε) ≅
+    (((Functor.whiskeringLeft₂ D).obj L').obj L').obj (tensorBifunctor L W ε) ≅
       (Functor.postcompose₂.obj L').obj (curriedTensor C) :=
-  Lifting₂.iso L' L' W W (curriedTensor C ⋙ (whiskeringRight C C
+  Lifting₂.iso L' L' W W (curriedTensor C ⋙ (Functor.whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε)
 
 noncomputable instance (X : C) :
@@ -123,14 +123,14 @@ noncomputable def leftUnitor : (tensorBifunctor L W ε).obj unit ≅ 𝟭 _ :=
   (tensorBifunctor L W ε).mapIso ε.symm ≪≫
     Localization.liftNatIso L' W (tensorLeft (𝟙_ C) ⋙ L') L'
       ((tensorBifunctor L W ε).obj ((L').obj (𝟙_ _))) _
-        (isoWhiskerRight (leftUnitorNatIso C) _ ≪≫ L.leftUnitor)
+        (Functor.isoWhiskerRight (leftUnitorNatIso C) _ ≪≫ L.leftUnitor)
 
 /-- The right unitor in the localized monoidal category `LocalizedMonoidal L W ε`. -/
 noncomputable def rightUnitor : (tensorBifunctor L W ε).flip.obj unit ≅ 𝟭 _ :=
   (tensorBifunctor L W ε).flip.mapIso ε.symm ≪≫
     Localization.liftNatIso L' W (tensorRight (𝟙_ C) ⋙ L') L'
       ((tensorBifunctor L W ε).flip.obj ((L').obj (𝟙_ _))) _
-        (isoWhiskerRight (rightUnitorNatIso C) _ ≪≫ L.leftUnitor)
+        (Functor.isoWhiskerRight (rightUnitorNatIso C) _ ≪≫ L.leftUnitor)
 
 /-- The associator in the localized monoidal category `LocalizedMonoidal L W ε`. -/
 noncomputable def associator :
