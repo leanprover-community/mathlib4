@@ -235,7 +235,7 @@ lemma mapGL_inj [FaithfulSMul R S] (g g' : SpecialLinearGroup n R) :
   apply SpecialLinearGroup.ext
   simpa [mapGL, toGL_inj, ext_iff, (FaithfulSMul.algebraMap_injective R S).eq_iff] using h
 
-lemma mapGL_injective [FaithfulSMul R S]  :
+lemma mapGL_injective [FaithfulSMul R S] :
     Function.Injective (mapGL (R := R) (n := n) S) :=
   fun a b ↦ by simp
 
