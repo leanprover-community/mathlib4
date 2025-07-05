@@ -498,8 +498,7 @@ theorem exists_sum_relIso {β : Type u} {s : β → β → Prop} [IsWellOrder β
     ∃ (γ : Type u) (t : γ → γ → Prop), Nonempty (Sum.Lex r t ≃r s) := by
   classical
   obtain f | f := f.principalSumRelIso
-  · exact ⟨_, _, ⟨(RelIso.sumLexCongr f.subrelIso.symm (RelIso.refl _)).trans
-      (sumLexLtLE _ f.top).symm⟩⟩
+  · exact ⟨_, _, ⟨(RelIso.sumLexCongr f.subrelIso.symm (.refl _)).trans <| .sumLexComplLeft ..⟩⟩
   · exact ⟨PEmpty, nofun, ⟨(RelIso.sumLexEmpty r _).trans f⟩⟩
 
 end InitialSeg
