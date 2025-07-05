@@ -877,6 +877,14 @@ lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1
   have h : i.rev = Fin.succAbove i n := by decide +revert
   simp [h, faceOpposite_point_eq_point_succAbove]
 
+@[simp] lemma faceOpposite_point_eq_point_one (s : Simplex k P 1) (n : Fin 1) :
+    (s.faceOpposite 0).points n = s.points 1 :=
+  s.faceOpposite_point_eq_point_rev _ _
+
+@[simp] lemma faceOpposite_point_eq_point_zero (s : Simplex k P 1) (n : Fin 1) :
+    (s.faceOpposite 1).points n = s.points 0 :=
+  s.faceOpposite_point_eq_point_rev _ _
+
 /-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
 instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
   (Set.nonempty_compl_of_nontrivial i).to_subtype
