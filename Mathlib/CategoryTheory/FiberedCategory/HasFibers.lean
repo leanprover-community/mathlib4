@@ -55,7 +55,7 @@ open CategoryTheory Functor Category IsCartesian IsHomLift Fiber
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
 /-- HasFibers is an extrinsic notion of fibers on a functor `p : 𝒳 ⥤ 𝒮`. It is given by a
-collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equiped with a
+collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equipped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
 `Fib S ⥤ Fiber p S` is an equivalence. -/
 @[nolint checkUnivs]
@@ -69,7 +69,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The composition with the functor `p` is *equal* to the constant functor mapping to `S`. -/
   comp_const (S : 𝒮) : ι S ⋙ p = (const (Fib S)).obj S
   /-- The induced functor from `Fib S` to the fiber of `𝒳 ⥤ 𝒮` over `S` is an equivalence. -/
-  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S))
+  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S)) := by infer_instance
 
 namespace HasFibers
 

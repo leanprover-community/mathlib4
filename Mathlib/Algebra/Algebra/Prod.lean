@@ -103,8 +103,6 @@ their codomains. -/
 def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 /-- `Prod.map` of two algebra homomorphisms. -/
 def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C →ₐ[R] D) :

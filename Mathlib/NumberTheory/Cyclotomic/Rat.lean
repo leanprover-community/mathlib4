@@ -181,7 +181,7 @@ lemma coe_toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : hζ.toIn
 /-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
 lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) :
-    have : NeZero k := NeZero.of_gt hk
+    haveI : NeZero k := NeZero.of_gt hk
     Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
   refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h
@@ -416,7 +416,7 @@ lemma prime_norm_toInteger_sub_one_of_prime_ne_two [hcycl : IsCyclotomicExtensio
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hodd : p ≠ 2) :
     Prime (Algebra.norm ℤ (hζ.toInteger - 1)) := by
   have := hζ.norm_toInteger_sub_one_of_prime_ne_two hodd
-  simp only [pow_zero, pow_one] at this
+  simp only at this
   rw [this]
   exact Nat.prime_iff_prime_int.1 hp.out
 
@@ -443,7 +443,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   replace hdim : 1 < pB.dim := by
     rw [Nat.one_lt_iff_ne_zero_and_ne_one, hdim]
     refine ⟨by simp only [ne_eq, mul_eq_zero, NeZero.ne _, Nat.sub_eq_zero_iff_le, false_or,
-      not_le, Nat.Prime.one_lt hp.out, pB], ne_of_gt ?_⟩
+      not_le, Nat.Prime.one_lt hp.out], ne_of_gt ?_⟩
     by_cases hk : k = 0
     · simp only [hk, zero_add, pow_one, pow_zero, one_mul, Nat.lt_sub_iff_add_lt,
         Nat.reduceAdd] at htwo ⊢
@@ -492,7 +492,7 @@ theorem finite_quotient_span_sub_one [hcycl : IsCyclotomicExtension {p ^ (k + 1)
     Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
   have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
-  simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
+  simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h
   exact hζ.ne_one (one_lt_pow₀ hp.1.one_lt (Nat.zero_ne_add_one k).symm)
     (RingOfIntegers.ext_iff.1 h)
 

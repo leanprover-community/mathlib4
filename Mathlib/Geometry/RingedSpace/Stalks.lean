@@ -112,7 +112,7 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
   rw [← map_comp]
   convert (stalkFunctor C x).map_id X.presheaf
   ext
-  simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]
+  simp only [id_c, id_comp, Pushforward.id_hom_app]
   rfl
 
 @[simp]
@@ -181,8 +181,7 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
--- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
-@[reassoc, elementwise, simp, nolint simpNF]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
     Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
@@ -195,7 +194,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   induction j with | op j => ?_
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,
-    whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc,
+    whiskerRight_app, NatTrans.id_app, colimit.ι_pre, assoc,
     colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
     Cocone.whisker_ι, NatTrans.comp_app]
   erw [X.presheaf.map_id, id_comp]

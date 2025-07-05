@@ -80,7 +80,7 @@ lemma complexMGF_id_map (hX : AEMeasurable X μ) : complexMGF id (μ.map X) = co
   · fun_prop
 
 lemma complexMGF_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
-    {Y : Ω' → ℝ}  (h : IdentDistrib X Y μ μ') :
+    {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
     complexMGF X μ = complexMGF Y μ' := by
   rw [← complexMGF_id_map h.aemeasurable_fst, ← complexMGF_id_map h.aemeasurable_snd, h.map_eq]
 

@@ -70,7 +70,7 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
       -- Put everything in the same shape, sorting the terms using `simp`
       have hu1' := congr_arg ((u2 * s3) • ·) hu1.symm
       have hu2' := congr_arg ((u1 * s1) • ·) hu2.symm
-      simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
+      simp only [← mul_smul, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨_, _⟩ ⟨_, _⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
 
@@ -1077,7 +1077,7 @@ instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
     intros x₁ x₂ e
     obtain ⟨x₁, s₁, rfl⟩ := mk'_surjective S₁ f₁ x₁
     obtain ⟨x₂, s₂, rfl⟩ := mk'_surjective S₁ f₁ x₂
-    simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff, Submonoid.mk_smul,
+    simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff,
       Submonoid.smul_def, ← mk'_smul] at e ⊢
     obtain ⟨c, e⟩ := e
     exact ⟨c, 1, by simpa [← smul_comm c.1]⟩
@@ -1118,8 +1118,7 @@ def map : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[R] N') where
     simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
   map_smul' r h := by
     apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
-    simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add, LinearMap.smul_comp,
-      LinearMap.comp_smul, RingHom.id_apply]
+    simp only [lift_comp, LinearMap.smul_comp, LinearMap.comp_smul, RingHom.id_apply]
 
 lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
   lift_comp S f (g ∘ₗ h) (IsLocalizedModule.map_units g)

@@ -520,8 +520,6 @@ noncomputable def algEquivEquivAlgHom [NoZeroSMulDivisors K L] [Algebra.IsAlgebr
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (algHom_bijective ϕ)
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' _ _ := rfl
 
 end Algebra.IsAlgebraic
@@ -628,8 +626,7 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
   -- Porting note: this was a long sequence of `rw`.
   rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def]
-  simp only [aeval_coe, Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, coe_toSubsemiring,
-    coe_algebraMap]
+  simp only [aeval_coe]
   rw [map_inv₀, map_neg, inv_neg, neg_mul]
 
 theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : L)) :

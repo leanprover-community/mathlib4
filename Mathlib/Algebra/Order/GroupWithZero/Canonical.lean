@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
@@ -26,7 +26,7 @@ whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
@@ -250,14 +250,16 @@ instance [LinearOrderedAddCommGroupWithTop α] :
 
 namespace WithZero
 section Preorder
-variable [Preorder α] {a b : α}
+variable [Preorder α] [Preorder β] {x : WithZero α} {a b : α}
 
 instance instPreorder : Preorder (WithZero α) := WithBot.preorder
 instance instOrderBot : OrderBot (WithZero α) := WithBot.orderBot
 
-lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le
+@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le
 
-lemma zero_lt_coe (a : α) : (0 : WithZero α) < a := WithBot.bot_lt_coe a
+@[simp] lemma zero_lt_coe (a : α) : (0 : WithZero α) < a := WithBot.bot_lt_coe a
+@[simp] lemma not_coe_le_zero : ¬ a ≤ (0 : WithZero α) := WithBot.not_coe_le_bot a
+@[simp] lemma not_lt_zero : ¬ x < (0 : WithZero α) := WithBot.not_lt_bot _
 
 lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
@@ -317,6 +319,12 @@ instance instExistsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
+
+lemma map'_mono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : Monotone f) :
+    Monotone (map' f) := by simpa [Monotone, WithZero.forall]
+
+lemma map'_strictMono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : StrictMono f) :
+    StrictMono (map' f) := by simpa [StrictMono, WithZero.forall]
 
 end Preorder
 
@@ -389,14 +397,37 @@ instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [I
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
 
+/-! ### Exponential and logarithm -/
+
+variable {G : Type*} [Preorder G] {a b : G}
+
+@[simp] lemma exp_le_exp : exp a ≤ exp b ↔ a ≤ b := by simp [exp]
+
+variable [AddGroup G]
+
+@[simp] lemma log_le_log {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
+  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; simp [log]
+
+lemma log_le_iff_le_exp {x : Gᵐ⁰} (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+lemma log_lt_iff_lt_exp {x : Gᵐ⁰} (hx : x ≠ 0) : log x < a ↔ x < exp a := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+lemma le_log_iff_exp_le {x : Gᵐ⁰} (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+lemma lt_log_iff_exp_lt {x : Gᵐ⁰} (hx : x ≠ 0) : a < log x ↔ exp a < x := by
+  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+
+/-- The exponential map as an order isomorphism between `G` and `Gᵐ⁰ˣ`. -/
+@[simps!] def expOrderIso : G ≃o Gᵐ⁰ˣ where
+  __ := expEquiv
+  map_rel_iff' := by simp [← Units.val_le_val]
+
+/-- The logarithm as an order isomorphism between `Gᵐ⁰ˣ` and `G`. -/
+@[simps!] def logOrderIso : Gᵐ⁰ˣ ≃o G where
+  __ := logEquiv
+  map_rel_iff' := by simp
+
 end WithZero
-
-section MultiplicativeNotation
-
-/-- Notation for `WithZero (Multiplicative ℕ)` -/
-scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)` -/
-scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end MultiplicativeNotation

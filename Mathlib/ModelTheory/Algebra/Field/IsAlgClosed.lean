@@ -62,10 +62,7 @@ theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n 
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
       (v (Fin.last _)) := by
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, monicEquivDegreeLT,
-    degreeLTEquiv, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm, EquivLike.coe_coe,
-    LinearEquiv.coe_symm_mk, Function.comp_apply, Equiv.coe_fn_symm_mk, eval_add, eval_pow, eval_X,
-    eval_finset_sum, eval_monomial]
+  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finset_sum]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -90,8 +87,8 @@ instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
 instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
-  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
-    exists_prop, forall_exists_index, and_imp]
+  simp only [Theory.model_iff, Set.mem_image,
+    forall_exists_index, and_imp]
   rintro _ n hn0 rfl
   simp only [realize_genericMonicPolyHasRoot]
   rintro ⟨p, _, rfl⟩
@@ -119,8 +116,8 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
   intro p hpm hpi
   have h : K ⊨ genericMonicPolyHasRoot '' {n | 0 < n} :=
     Theory.Model.mono h (by simp [Theory.ACF])
-  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
-    exists_prop, forall_exists_index, and_imp] at h
+  simp only [Theory.model_iff, Set.mem_image,
+    forall_exists_index, and_imp] at h
   have := h _ p.natDegree (natDegree_pos_iff_degree_pos.2
     (degree_pos_of_irreducible hpi)) rfl
   rw [realize_genericMonicPolyHasRoot] at this

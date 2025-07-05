@@ -45,7 +45,7 @@ ways to move between tuples of length `n` and of length `n + 1` by adding/removi
   functions, in which case `f : ∀ i : Fin n, α i.castSucc` and `a : α (last n)`. This is a
   special case of `Fin.lastCases`.
 * `Fin.init`: Turn a tuple `f : Fin (n + 1) → α` into a tuple `Fin.init f : Fin n → α` by forgetting
-  the start. In general, tuples can be dependent functions,
+  the end. In general, tuples can be dependent functions,
   in which case `Fin.init f : ∀ i : Fin n, α i.castSucc`.
 
 ### Adding in the middle
@@ -448,7 +448,7 @@ theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m�
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine Fin.addCases (fun l => ?_) fun r => ?_
-  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
+  · simp [modNat]
   · simp [modNat, Nat.add_mod]
 
 theorem repeat_rev (a : Fin n → α) (k : Fin (m * n)) :
@@ -517,7 +517,7 @@ lemma snoc_zero {α : Sort*} (p : Fin 0 → α) (x : α) :
   simp only [Subsingleton.elim y (Fin.last 0), snoc_last]
 
 @[simp]
-theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
+theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
       snoc (f ∘ natAdd m) a := by
   ext i
@@ -527,15 +527,21 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a :
   · simp only [comp_apply, snoc_castSucc]
     rw [natAdd_castSucc, snoc_castSucc]
 
+@[deprecated (since := "2025-07-04")] alias snoc_comp_nat_add := snoc_comp_natAdd
+
 @[simp]
-theorem snoc_cast_add {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
+theorem snoc_castAdd {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 
+@[deprecated (since := "2025-07-04")] alias snoc_cast_add := snoc_castAdd
+
 @[simp]
-theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
+theorem snoc_comp_castAdd {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
-  funext (snoc_cast_add _ _)
+  funext (snoc_castAdd _ _)
+
+@[deprecated (since := "2025-07-04")] alias snoc_comp_cast_add := snoc_comp_castAdd
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]
@@ -598,7 +604,7 @@ would involve a cast to convince Lean that the two types are equal, making it ha
 theorem tail_init_eq_init_tail {β : Sort*} (q : Fin (n + 2) → β) :
     tail (init q) = init (tail q) := by
   ext i
-  simp [tail, init, castSucc_fin_succ]
+  simp [tail, init]
 
 /-- `cons` and `snoc` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
@@ -654,7 +660,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
   funext i
   rcases i with ⟨i, -⟩
-  simp only [append, addCases, cons, castLT, cast, comp_apply]
+  simp only [append, addCases, cons, castLT, comp_apply]
   rcases i with - | i
   · simp
   · split_ifs with h
@@ -668,7 +674,7 @@ theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α
   funext i
   rcases i with ⟨i, isLt⟩
   simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, snoc.eq_1,
-    cast_eq, eq_rec_constant, Nat.add_eq, Nat.add_zero, castLT_mk]
+    eq_rec_constant, Nat.add_eq, castLT_mk]
   split_ifs with lt_n lt_add sub_lt nlt_add lt_add <;> (try rfl)
   · have := Nat.lt_add_right m lt_n
     contradiction
@@ -978,7 +984,7 @@ lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAb
     (f : ∀ j, α j) :
     removeNth p (update f (p.succAbove i) x) = update (removeNth p f) i x := by
   ext j
-  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, succAbove_right_inj, *]
+  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, *]
 
 @[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
     insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
@@ -1215,4 +1221,3 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
   toFun f := (f 0, f 1)
   invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
   left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
-  right_inv := fun _ => rfl
