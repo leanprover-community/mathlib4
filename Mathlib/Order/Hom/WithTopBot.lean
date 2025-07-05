@@ -166,6 +166,10 @@ def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β :=
     toEquiv := e.toEquiv.optionCongr }
 
 @[simp]
+theorem withTopCongr_apply (e : α ≃o β) (a : WithTop α) :
+    withTopCongr e a = WithTop.map e a := rfl
+
+@[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
   RelIso.toEquiv_injective Equiv.optionCongr_refl
 
@@ -178,13 +182,13 @@ theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
-@[simp]
-theorem withTopCongr_apply_coe (e : α ≃o β) (a : α) :
-    withTopCongr e (a : WithTop α) = (e a : WithTop β) := rfl
-
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β :=
   { e.toOrderEmbedding.withBotMap with toEquiv := e.toEquiv.optionCongr }
+
+@[simp]
+theorem withBotCongr_apply (e : α ≃o β) (a : WithBot α) :
+    withBotCongr e a = WithBot.map e a := rfl
 
 @[simp]
 theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=
@@ -198,10 +202,6 @@ theorem withBotCongr_symm (e : α ≃o β) : e.symm.withBotCongr = e.withBotCong
 theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
-
-@[simp]
-theorem withBotCongr_apply_coe (e : α ≃o β) (a : α) :
-    withBotCongr e (a : WithBot α) = (e a : WithBot β) := rfl
 
 end OrderIso
 
