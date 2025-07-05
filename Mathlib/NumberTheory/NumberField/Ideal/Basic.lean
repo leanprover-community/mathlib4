@@ -65,13 +65,13 @@ theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
   obtain ⟨t, ht₀, ht, hζ⟩ := isPrimitiveRoot_of_mem_rootsOfUnity hζ
   by_cases ht' : 2 ≤ t
   · exfalso
-    let μ := (ζ.val : K)
+    let μ : K := ζ.val
     have hμ : IsPrimitiveRoot μ t :=
       (IsPrimitiveRoot.coe_units_iff.mpr hζ).map_of_injective RingOfIntegers.coe_injective
     rw [Units.ext_iff, torsionMapQuot_apply, Units.val_one] at h
     refine hμ.not_coprime_norm_of_mk_eq_one hI₁ ht' h ?_
     exact Nat.dvd_one.mp (hI₂ ▸ Nat.gcd_dvd_gcd_of_dvd_right (absNorm I) ht)
-  · have : t = 1 := le_antisymm (Nat.le_of_lt_succ (not_le.mp ht')) (Nat.pos_of_ne_zero ht₀)
+  · have : t = 1 := by grind
     simpa [this] using hζ
 
 /--

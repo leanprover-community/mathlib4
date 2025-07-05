@@ -360,7 +360,7 @@ theorem subOneIntegralPowerBasis'_gen_prime [IsCyclotomicExtension {p} ℚ K]
 
 /--
 The norm, relative to `ℤ`, of `ζ` in a `n`-th cyclotomic extension of `ℚ` where `n` is not a
-power of a primer number is `1`.
+power of a prime number is `1`.
 -/
 theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) (h₁ : 2 < n) (h₂ : ∀ {p : ℕ}, Nat.Prime p → ∀ (k : ℕ), p ^ k ≠ n) :
@@ -628,17 +628,17 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
       · rw [IsPrimitiveRoot.norm_toInteger_sub_one_eq_one hμ hn, one_pow,
           Int.natCast_dvd_ofNat, Nat.dvd_one] at hp
         · exact (Nat.Prime.ne_one hF.out hp).elim
-        · simp [ne_eq, not_forall, _root_.not_imp, not_not] at h
+        · simp at h
           exact fun {p} a k ↦ h p a k
     · rw [← hn] at hμ hC ⊢
       refine ⟨2, Nat.prime_two, 1, Module.finrank ℚ⟮ζ⟯ K, one_ne_zero, by rw [pow_one], ?_⟩
       rwa [hμ.norm_toInteger_sub_one_of_eq_two, neg_eq_neg_one_mul, mul_pow, IsUnit.dvd_mul_left
         ((isUnit_pow_iff Module.finrank_pos.ne').mpr isUnit_neg_one)] at hp
-  · have : p = q := by
-      rw [← Int.natCast_pow, Int.natCast_dvd_natCast] at hs
-      exact (Nat.prime_dvd_prime_iff_eq hF.out hq).mp (hF.out.dvd_of_dvd_pow hs)
-    rw [ht₂, this]
-    exact dvd_pow_self _ ht₁
+  have : p = q := by
+    rw [← Int.natCast_pow, Int.natCast_dvd_natCast] at hs
+    exact (Nat.prime_dvd_prime_iff_eq hF.out hq).mp (hF.out.dvd_of_dvd_pow hs)
+  rw [ht₂, this]
+  exact dvd_pow_self _ ht₁
 
 end IsPrimitiveRoot
 
