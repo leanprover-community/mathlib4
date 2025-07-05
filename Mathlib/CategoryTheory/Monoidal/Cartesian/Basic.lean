@@ -89,8 +89,8 @@ abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X�
 lemma tensor_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
-lemma tensor_comp (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ :=
+lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
 lemma pentagon (W X Y Z : C) :
@@ -155,7 +155,7 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   {
   toMonoidalCategory := .ofTensorHom
     (tensor_id := tensor_id ℬ)
-    (tensor_comp := tensor_comp ℬ)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom ℬ)
     (pentagon := pentagon ℬ)
     (triangle := triangle 𝒯 ℬ)
     (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
