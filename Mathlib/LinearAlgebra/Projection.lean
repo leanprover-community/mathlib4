@@ -390,6 +390,9 @@ namespace IsProj
 
 variable {p m}
 
+theorem isIdempotentElem {f : M →ₗ[S] M} (h : IsProj m f) : IsIdempotentElem f :=
+  f.isProj_iff_isIdempotentElem.mp ⟨m, h⟩
+
 /-- Restriction of the codomain of a projection of onto a subspace `p` to `p` instead of the whole
 space.
 -/
@@ -423,6 +426,28 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
       coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 
+protected theorem range {f : M →ₗ[S] M} (h : IsProj m f) : range f = m := by
+  ext x
+  exact ⟨fun ⟨y, hy⟩ => hy ▸ h.map_mem y, fun hx => ⟨x, h.map_id x hx⟩⟩
+
+variable (S M) in
+protected theorem bot : IsProj (⊥ : Submodule S M) (0 : M →ₗ[S] M) :=
+  ⟨congrFun rfl, by simp only [mem_bot, zero_apply, forall_eq]⟩
+
+variable (S M) in
+protected theorem top : IsProj (⊤ : Submodule S M) (id (R := S)) :=
+  ⟨fun _ ↦ trivial, fun _ ↦ congrFun rfl⟩
+
+theorem subtype_comp_codRestrict {U : Submodule S M} {f : M →ₗ[S] M} (hf : IsProj U f) :
+    (Submodule.subtype U).comp hf.codRestrict = f := rfl
+
+theorem submodule_eq_top_iff {f : M →ₗ[S] M} (hf : IsProj m f) :
+    m = (⊤ : Submodule S M) ↔ f = LinearMap.id := by
+  constructor <;> rintro rfl
+  · ext
+    simp only [id_coe, id_eq, hf.2 _ mem_top]
+  · rw [← hf.range, range_id]
+
 end IsProj
 
 end LinearMap
@@ -443,3 +468,26 @@ theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
 end LinearMap
 
 end CommRing
+
+namespace LinearMap
+
+variable {S E M : Type*} [Semiring S] [AddCommMonoid M] [Module S M]
+
+open Submodule LinearMap
+
+/-- Given an idempotent linear operator `p`, we have
+  `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
+theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
+    x ∈ range p ↔ p x = x := by
+  refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
+  rw [← hy, ← Module.End.mul_apply, hp.eq]
+
+/-- Given an idempotent linear operator `q`,
+  we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
+theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempotentElem q)
+    {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
+    q.comp p = p ↔ range p ≤ range q := by
+  simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
+    SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+
+end LinearMap
