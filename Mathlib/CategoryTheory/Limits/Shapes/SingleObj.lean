@@ -81,7 +81,7 @@ lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
   have h (g : G) : y = g • x ↔ g • x = y := ⟨symm, symm⟩
   conv => rhs; rw [Setoid.comm']
   change (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
-  conv => lhs; simp only [h]
+  grind
 
 /-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
 equivalent to the quotient of `J.obj (SingleObj.star G)` by the induced action. -/
