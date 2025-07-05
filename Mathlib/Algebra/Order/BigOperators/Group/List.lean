@@ -157,9 +157,7 @@ lemma one_lt_prod_of_one_lt [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] 
     rw [List.prod_cons]
     apply one_lt_mul_of_lt_of_le' hl₁.1
     apply le_of_lt ((b :: l).one_lt_prod_of_one_lt _ (l.cons_ne_nil b))
-    intro x hx; cases hx
-    · exact hl₁.2.1
-    · exact hl₁.2.2 _ ‹_›
+    aesop
 
 /-- See also `List.le_prod_of_mem`. -/
 @[to_additive "See also `List.le_sum_of_mem`."]

@@ -110,13 +110,7 @@ series. -/
 @[simps]
 def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
-  isPWO_support' := by
-    refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
-    simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
-    intro g' hg' hAB
-    apply hg'
-    simp_rw [hAB]
-    simp_all only [map_zero, not_true_eq_false]
+  isPWO_support' := Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') (by aesop)
 
 @[simp]
 theorem compHahnSeries_add (u v : U) :

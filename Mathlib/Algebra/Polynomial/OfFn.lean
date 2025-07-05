@@ -39,16 +39,8 @@ variable {R : Type*} [Semiring R] [DecidableEq R]
 /-- `ofFn n v` is the polynomial whose coefficients are the entries of the vector `v`. -/
 def ofFn (n : ℕ) : (Fin n → R) →ₗ[R] R[X] where
   toFun v := ⟨(List.ofFn v).toFinsupp⟩
-  map_add' x y := by
-    ext i
-    by_cases h : i < n
-    · simp [h]
-    · simp [h]
-  map_smul' x p := by
-    ext i
-    by_cases h : i < n
-    · simp [h]
-    · simp [h]
+  map_add' x y := by aesop
+  map_smul' x p := by aesop
 
 theorem ofFn_zero (n : ℕ) : ofFn n (0 : Fin n → R) = 0 := by simp
 

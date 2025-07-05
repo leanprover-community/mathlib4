@@ -64,11 +64,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
       rw [Nat.cast_zero, mul_zero, zero_mul]
     · intro _ H
       rw [Nat.add_one_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
-  · rw [if_pos (add_tsub_cancel_right n 1).symm, mul_one, Nat.cast_add, Nat.cast_one,
-      mem_support_iff]
-    intro h
-    push_neg at h
-    simp [h]
+  · aesop
 
 @[simp]
 theorem derivative_zero : derivative (0 : R[X]) = 0 :=
@@ -312,10 +308,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     apply le_natDegree_of_mem_supp _ hn
   · refine le_sup ?_
     rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
-    · rw [coeff_natDegree, Ne, leadingCoeff_eq_zero]
-      intro h
-      rw [h, natDegree_zero] at hp
-      exact hp.false
+    · aesop
     exact hp
 
 theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
