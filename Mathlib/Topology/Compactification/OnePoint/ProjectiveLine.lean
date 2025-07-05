@@ -3,7 +3,7 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Projectivization.Basic
+import Mathlib.LinearAlgebra.Projectivization.GLAction
 import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
@@ -26,9 +26,13 @@ one-point extension, projectivization
 -/
 
 open scoped LinearAlgebra.Projectivization OnePoint
-open Projectivization
+
+open Projectivization Matrix
 
 namespace OnePoint
+
+section DivisionRing
+
 variable (K : Type*) [DivisionRing K] [DecidableEq K]
 
 /-- The one-point compactification of a division ring `K` is equivalent to
@@ -67,5 +71,35 @@ lemma equivProjectivization_apply_coe (t : K) :
 lemma equivProjectivization_symm_apply_mk (x y : K) (h : (x, y) ≠ 0) :
     (equivProjectivization K).symm (mk K ⟨x, y⟩ h) = if y = 0 then ∞ else y⁻¹ * x := by
   simp [equivProjectivization]
+
+end DivisionRing
+
+section Field
+
+variable {K : Type*} [Field K] [DecidableEq K]
+
+/-- For a field `K`, the group `GL(2, K)` acts on `OnePoint K`. -/
+instance instGLAction : MulAction (GL (Fin 2) K) (OnePoint K) :=
+  (equivProjectivization K).mulAction (GL (Fin 2) K)
+
+lemma smul_infty_def (g : GL (Fin 2) K) :
+    g • ∞ = (equivProjectivization K).symm (.mk K (g 0 0, g 1 0) (fun h ↦ by
+      simpa [det_fin_two, Prod.mk_eq_zero.mp h] using g.det_ne_zero)) := by
+  by_cases h : g 1 0 = 0 <;>
+  simp [h, Equiv.smul_def, MulAction.compHom_smul_def, Projectivization.smul_mk,
+    LinearMap.GeneralLinearGroup.compLinearEquiv, mulVec_eq_sum,
+    LinearMap.GeneralLinearGroup.toLinearEquiv, LinearMap.GeneralLinearGroup.ofLinearEquiv]
+
+@[simp]
+lemma smul_infty_eq_ite (g : GL (Fin 2) K) :
+    (g • ∞ : OnePoint K) = if g 1 0 = 0 then ∞ else g 0 0 / g 1 0 := by
+  by_cases h : g 1 0 = 0 <;>
+  simp [h, div_eq_inv_mul, smul_infty_def]
+
+lemma smul_infty_eq_iff (g : GL (Fin 2) K) :
+    g • (∞ : OnePoint K) = ∞ ↔ g 1 0 = 0 := by
+  simp
+
+end Field
 
 end OnePoint
