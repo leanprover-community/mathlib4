@@ -141,6 +141,8 @@ theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = Sum.
 
 end OrderIso
 
+/-! ### Degenerate products -/
+
 namespace Prod.Lex
 variable (α β : Type*)
 
