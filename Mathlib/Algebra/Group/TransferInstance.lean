@@ -11,10 +11,8 @@ import Mathlib.Data.Fintype.Basic
 /-!
 # Transfer algebraic structures across `Equiv`s
 
-In this file we prove lemmas of the following form: if `β` has a
-group structure and `α ≃ β` then `α` has a group structure, and
-similarly for monoids, semigroups, rings, integral domains, fields and
-so on.
+In this file we prove lemmas of the following form: if `β` has a group structure and `α ≃ β`
+then `α` has a group structure, and similarly for monoids, semigroups and so on.
 
 ### Implementation details
 
@@ -69,7 +67,7 @@ lemma inv_def [Inv β] (x : α) :
 variable (M) in
 /-- Transfer `SMul` across an `Equiv` -/
 @[to_additive "Transfer `VAdd` across an `Equiv`"]
-protected abbrev smul [SMul M β] : SMul M α := ⟨fun r x => e.symm (r • e x)⟩
+protected abbrev smul [SMul M β] : SMul M α where smul r x := e.symm (r • e x)
 
 @[to_additive]
 lemma smul_def [SMul M β] (r : M) (x : α) :
