@@ -143,6 +143,13 @@ protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   let pow := e.pow ℕ
   apply e.injective.commMonoid _ <;> intros <;> exact e.apply_symm_apply _
 
+/-- Transfer `IsCancelMul` across an `Equiv` -/
+@[to_additive "Transfer `IsCancelAdd` across an `Equiv`"]
+protected abbrev isCancelMul [Mul β] [IsCancelMul β] :
+    letI := e.mul
+    IsCancelMul α := by
+  letI := e.mul; exact e.injective.isCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+
 /-- Transfer `Group` across an `Equiv` -/
 @[to_additive "Transfer `AddGroup` across an `Equiv`"]
 protected abbrev group [Group β] : Group α := by
