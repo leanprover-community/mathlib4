@@ -28,7 +28,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
     · intro x y
       constructor
       · intro h
-        apply hlc.trans (y := y) (by
+        exact hlc.trans (y := y) (by
           conv_rhs => rw [← inf_idem y]
           exact hlc.inf h (hlc.refl y)) (by
           conv_lhs => rw [← sup_idem y]
@@ -45,13 +45,8 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
           rw [inf_comm, sup_comm]
           exact h
         exact hlc.trans (hlc.symm e1) e2
-    · constructor
-      · intro x y z h1 h2 h3 h4
-        exact hlc.trans h3 h4
-      · intro x y t h1 h2
-        constructor
-        · apply hlc.inf h2 (hlc.refl t)
-        · apply hlc.sup h2 (hlc.refl t)
+    · exact ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
+        ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩
   · intro ⟨h1,h2,h3⟩
     have e1 (a b c d : α) (hb : b ∈ Set.Icc a d) (hc : c ∈ Set.Icc a d) (h : r a d) : r b c := by
       rw [h1]
