@@ -22,7 +22,7 @@ code.
 * `hammingDist x y`: the Hamming distance between `x` and `y`, the number of entries which differ.
 * `hammingNorm x`: the Hamming norm of `x`, the number of non-zero entries.
 * `Hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.
-* `Hamming.toHamming`, `Hamming.ofHamming`: functions for casting between `Hamming β` and
+* `Hamming.toHamming`, `Hamming.toPiHamming`: functions for casting between `Hamming β` and
 `Π i, β i`.
 * the Hamming norm forms a normed group on `Hamming β`.
 -/
@@ -211,71 +211,73 @@ end HammingDistNorm
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
 structure Hamming {ι : Type*} (β : ι → Type*) where
-  /-- The `i`-th coordinate of the Hamming type. -/
-  of (i : ι) : β i
+  /-- Interpret a Pi type as a Hamming type. -/
+  ofPi ::
+  /-- The `i`-th coordinate of `x : Hamming β` is given by `x.toPi i`. -/
+  toPi i : β i
 
 namespace Hamming
 
 variable {α ι : Type*} {β γ : ι → Type*}
 
-/-- `Hamming.ofEquiv` is the equivalence between `Hamming` and the corresponding Pi type. -/
+/-- `Hamming.toPiEquiv` is the equivalence between `Hamming` and the corresponding Pi type. -/
 @[simps]
-def ofEquiv : Hamming β ≃ ∀ i, β i where
-  toFun := of
-  invFun := mk
+def toPiEquiv : Hamming β ≃ ∀ i, β i where
+  toFun := toPi
+  invFun := ofPi
 
-@[simp] theorem of_inj {a b : Hamming β} : a.of = b.of ↔ a = b := ofEquiv.injective.eq_iff
+@[simp] theorem of_inj {a b : Hamming β} : a.toPi = b.toPi ↔ a = b := toPiEquiv.injective.eq_iff
 
-@[ext] protected theorem ext {a b : Hamming β} (h : a.of = b.of) : a = b := ofEquiv.injective h
+@[ext] protected theorem ext {a b : Hamming β} (h : a.toPi = b.toPi) : a = b :=
+  toPiEquiv.injective h
 
 /-- The coordinate-wise map between Hamming types. -/
 @[simps]
-def map (f : ∀ i, γ i → β i) (x : Hamming γ) : Hamming β where
-  of := Pi.map f x.of
+def map (f : ∀ i, γ i → β i) (x : Hamming γ) : Hamming β := ofPi <| Pi.map f x.toPi
 
 /-! Instances inherited from normal Pi types. -/
 
-instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) := ofEquiv.inhabited
+instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) := toPiEquiv.inhabited
 
 instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
-  Fintype.ofEquiv _ ofEquiv.symm
+  Fintype.ofEquiv _ toPiEquiv.symm
 
 instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
-  ofEquiv.nontrivial
+  toPiEquiv.nontrivial
 
-instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) := ofEquiv.decidableEq
+instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) := toPiEquiv.decidableEq
 
-instance [∀ i, Zero (β i)] : Zero (Hamming β) := ofEquiv.zero
+instance [∀ i, Zero (β i)] : Zero (Hamming β) := toPiEquiv.zero
 
-instance [∀ i, Neg (β i)] : Neg (Hamming β) := ofEquiv.Neg
+instance [∀ i, Neg (β i)] : Neg (Hamming β) := toPiEquiv.Neg
 
-instance [∀ i, Add (β i)] : Add (Hamming β) := ofEquiv.add
+instance [∀ i, Add (β i)] : Add (Hamming β) := toPiEquiv.add
 
-instance [∀ i, Sub (β i)] : Sub (Hamming β) := ofEquiv.sub
+instance [∀ i, Sub (β i)] : Sub (Hamming β) := toPiEquiv.sub
 
-instance [∀ i, SMul α (β i)] : SMul α (Hamming β) := ofEquiv.smul _
+instance [∀ i, SMul α (β i)] : SMul α (Hamming β) := toPiEquiv.smul _
 
 instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) where
   smul_zero _ := Hamming.ext <| funext <| fun _ => smul_zero _
   zero_smul _ := Hamming.ext <| funext <| fun _ => zero_smul _ _
 
-instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) := ofEquiv.addMonoid
+instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) := toPiEquiv.addMonoid
 
-instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) := ofEquiv.addGroup
+instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) := toPiEquiv.addGroup
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) := ofEquiv.addCommMonoid
+instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) := toPiEquiv.addCommMonoid
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) := ofEquiv.addCommGroup
+instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) := toPiEquiv.addCommGroup
 
 instance [Semiring α] [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
-    Module α (Hamming β) := ofEquiv.module α
+    Module α (Hamming β) := toPiEquiv.module α
 
-/-- `Hamming.ofEquiv` as an `AddEquiv`. -/
-def ofAddEquiv [∀ i, Add (β i)] : Hamming β ≃+ ∀ i, β i := ofEquiv.addEquiv
+/-- `Hamming.toPiEquiv` as an `AddEquiv`. -/
+def ofAddEquiv [∀ i, Add (β i)] : Hamming β ≃+ ∀ i, β i := toPiEquiv.addEquiv
 
-/-- `Hamming.ofEquiv` as a `LinearEquiv`. -/
+/-- `Hamming.toPiEquiv` as a `LinearEquiv`. -/
 def ofLinearEquiv (α) [Semiring α] [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
-  Hamming β ≃ₗ[α] ∀ i, β i := ofEquiv.linearEquiv α
+  Hamming β ≃ₗ[α] ∀ i, β i := toPiEquiv.linearEquiv α
 
 section
 
@@ -285,11 +287,11 @@ variable [Fintype ι] [∀ i, DecidableEq (β i)] [∀ i, DecidableEq (γ i)] {x
     (f : ∀ i, β i → γ i)
 
 instance : Dist (Hamming β) :=
-  ⟨fun x y => hammingDist x.of y.of⟩
+  ⟨fun x y => hammingDist x.toPi y.toPi⟩
 
 @[push_cast]
 theorem dist_eq_hammingDist :
-    dist x y = hammingDist x.of y.of := rfl
+    dist x y = hammingDist x.toPi y.toPi := rfl
 
 theorem dist_lt_one : dist x y < 1 ↔ x = y := by
   rw [Hamming.ext_iff]
@@ -341,7 +343,7 @@ instance : PseudoMetricSpace (Hamming β) where
 
 @[push_cast]
 theorem nndist_eq_hammingDist :
-    nndist x y = hammingDist x.of y.of :=
+    nndist x y = hammingDist x.toPi y.toPi :=
   rfl
 
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
@@ -352,13 +354,13 @@ section
 
 variable [∀ i, Zero (β i)] [∀ i, Zero (γ i)]
 
-instance : Norm (Hamming β) := ⟨fun x => hammingNorm x.of⟩
+instance : Norm (Hamming β) := ⟨fun x => hammingNorm x.toPi⟩
 
 theorem norm_lt_one {x : Hamming β} : ‖x‖ < 1 ↔ x = 0 := dist_lt_one (y := 0)
 
 theorem norm_le_card {x : Hamming β} : ‖x‖ ≤ Fintype.card ι := dist_le_card (y := 0)
 
-@[push_cast] theorem norm_eq_hammingNorm : ‖x‖ = hammingNorm x.of := rfl
+@[push_cast] theorem norm_eq_hammingNorm : ‖x‖ = hammingNorm x.toPi := rfl
 
 theorem norm_map_le_norm (hf : ∀ i, f i 0 = 0) : ‖x.map f‖ ≤ ‖x‖ := by
   push_cast
@@ -388,9 +390,8 @@ instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
 
 @[push_cast]
 theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] :
-    ‖x‖₊ = hammingNorm x.of := rfl
+    ‖x‖₊ = hammingNorm x.toPi := rfl
 
 end
 
 end Hamming
-
