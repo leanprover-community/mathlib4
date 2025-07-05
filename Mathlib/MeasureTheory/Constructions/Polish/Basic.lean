@@ -726,10 +726,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have C2 : ∀ n, (s n).1.Nonempty := by
       intro n
       rw [nonempty_iff_ne_empty]
-      intro hn
-      have := (s n).2
-      rw [hn] at this
-      exact b_nonempty this
+      grind
     -- choose a point `y n ∈ s n`.
     choose y hy using C2
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
