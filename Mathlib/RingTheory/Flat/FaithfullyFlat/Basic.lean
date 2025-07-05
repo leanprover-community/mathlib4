@@ -444,7 +444,7 @@ section arbitrary_universe
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if `f = 0`. -/
-lemma zero_iff_lTensor_zero [h: FaithfullyFlat R M]
+lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.lTensor M f = 0 :=
