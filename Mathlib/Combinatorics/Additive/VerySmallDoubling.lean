@@ -200,8 +200,8 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     rw [Nat.cast_le]
     refine card_le_card_of_injOn (fun t => (a⁻¹ * t, b⁻¹ * t)) ?_ (by simp [Set.InjOn])
     simp only [mem_inter, mem_product, and_imp, mem_filter, mul_inv_rev, inv_inv,
-      forall_exists_index, smul_eq_mul,
-      forall_apply_eq_imp_iff₂, inv_mul_cancel_left, mem_smul_finset]
+      forall_exists_index, smul_eq_mul, Set.MapsTo, mem_coe, forall_apply_eq_imp_iff₂,
+      inv_mul_cancel_left, mem_smul_finset]
     rintro c hc d hd h
     rw [mul_assoc, mul_inv_cancel_left, ← h, inv_mul_cancel_left]
     simp [hd, hc]

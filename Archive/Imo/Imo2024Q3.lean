@@ -876,7 +876,7 @@ lemma p_le_two_mul_k {n : ℕ} (hn : N' a N + 2 < n) (hs : Small a (a n)) : p a 
     convert Finset.exists_ne_map_eq_of_card_lt_of_maps_to (t := Finset.Icc 1 (k a)) ?_ ?_
     · simp
     · rintro i -
-      simp [Finset.mem_Icc]
+      simp
       rw [← Small, hc.small_apply_add_two_mul_iff_small i (by omega)]
       simp [hs, hc.one_le_apply]
   have hs' : Small a (a (n + 2 * x)) := by rwa [hc.small_apply_add_two_mul_iff_small x (by omega)]
