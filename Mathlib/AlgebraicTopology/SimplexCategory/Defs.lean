@@ -202,10 +202,17 @@ abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
   ObjectProperty.homMk f
 
+@[reassoc]
 lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
     (hc : c.len ≤ n := by trunc) :
     tr (f ≫ g) = tr f ≫ tr g :=
+  rfl
+
+@[reassoc]
+lemma Hom.tr_comp' {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) {hb : b.len ≤ n}
+    {hc : c.len ≤ n} (g : (⟨b, hb⟩ : Truncated n) ⟶ ⟨c, hc⟩) (ha : a.len ≤ n := by trunc) :
+    tr (f ≫ g.hom) = tr f ≫ g :=
   rfl
 
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/

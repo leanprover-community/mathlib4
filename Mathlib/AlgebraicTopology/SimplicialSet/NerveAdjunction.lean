@@ -180,12 +180,14 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
       have := δ_comp_δ (n := 0) (i := 0) (j := 1) (by decide)
       dsimp at this
-      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
+      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op
+        (InducedCategory.hom_ext this.symm))) x
     · unfold ev2₂ ι2₂ δ₂
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
       have := δ_comp_δ (n := 0) (i := 0) (j := 0) (by decide)
       dsimp at this
-      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
+      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op
+        (InducedCategory.hom_ext this.symm))) x
     · aesop
   · simp only [Fin.mk_one]
     show _ = (nerve C).δ 1 _
@@ -205,7 +207,8 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
       have := δ_comp_δ (n := 0) (i := 1) (j := 1) (by decide)
       dsimp at this
-      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this)) x
+      exact congrFun (congrArg X.map (congrArg Quiver.Hom.op
+        (InducedCategory.hom_ext this))) x
     · unfold ev1₂ ι1₂ δ₂
       simp [← FunctorToTypes.map_comp_apply, ← op_comp]
     · aesop
@@ -305,11 +308,11 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
   | 1 => apply eq₁
   | 2 =>
     apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
-    · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
+    · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := Hom.tr (SimplexCategory.const _ ⦋2⦌ i)
       refine congr(($(congr_fun (F.naturality pt.op) x)).obj 0).symm.trans ?_
       refine .trans ?_ congr(($(congr_fun (G.naturality pt.op) x)).obj 0)
       exact congr($(eq₀ _).obj 0)
-    · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
+    · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := Hom.tr (mkOfLe _ _ k.le)
       have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (F.naturality (op ar)) x)
       have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (G.naturality (op ar)) x)
       exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
