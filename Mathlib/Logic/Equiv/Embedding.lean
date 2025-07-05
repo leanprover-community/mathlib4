@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Logic.Embedding.Set
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Equivalences on embeddings
