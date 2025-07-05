@@ -478,6 +478,9 @@ instance : Algebra (𝒜 0) (HomogeneousLocalization 𝒜 x) :=
 
 lemma algebraMap_eq : algebraMap (𝒜 0) (HomogeneousLocalization 𝒜 x) = fromZeroRingHom 𝒜 x := rfl
 
+instance : IsScalarTower (𝒜 0) (HomogeneousLocalization 𝒜 x) (Localization x) :=
+  .of_algebraMap_eq' rfl
+
 end HomogeneousLocalization
 
 namespace HomogeneousLocalization
