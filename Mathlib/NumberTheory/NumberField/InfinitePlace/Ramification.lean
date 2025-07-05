@@ -116,14 +116,8 @@ lemma isComplex_smul_iff : IsComplex (σ • w) ↔ IsComplex w := by
 
 lemma ComplexEmbedding.exists_comp_symm_eq_of_comp_eq [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
-    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ := by
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
-  have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ (RingHom.congr_fun h r).symm }
-  use (AlgHom.restrictNormal' ψ' K).symm
-  ext1 x
-  exact AlgHom.restrictNormal_commutes ψ' K x
+    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ :=
+  NumberField.ComplexEmbedding.exists_comp_symm_eq_of_comp_eq φ ψ h
 
 lemma exists_smul_eq_of_comap_eq [IsGalois k K] {w w' : InfinitePlace K}
     (h : w.comap (algebraMap k K) = w'.comap (algebraMap k K)) : ∃ σ : K ≃ₐ[k] K, σ • w = w' := by
