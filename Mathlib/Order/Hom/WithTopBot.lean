@@ -161,7 +161,6 @@ namespace OrderIso
 variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
-@[simps! apply]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β :=
   { e.toOrderEmbedding.withTopMap with
     toEquiv := e.toEquiv.optionCongr }
@@ -179,11 +178,11 @@ theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
+@[simp]
 theorem withTopCongr_apply_coe (e : α ≃o β) (a : α) :
     withTopCongr e (a : WithTop α) = (e a : WithTop β) := rfl
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
-@[simps! apply]
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β :=
   { e.toOrderEmbedding.withBotMap with toEquiv := e.toEquiv.optionCongr }
 
@@ -200,6 +199,7 @@ theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
+@[simp]
 theorem withBotCongr_apply_coe (e : α ≃o β) (a : α) :
     withBotCongr e (a : WithBot α) = (e a : WithBot β) := rfl
 
