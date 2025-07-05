@@ -30,15 +30,9 @@ All definitions are mere *re‑exposures* of the standard `MeasurableSet` API; n
 new mathematical theory is introduced.
 -/
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*} {m : MeasurableSpace α}
 
 namespace MeasurableSpace
-
-variable {m : MeasurableSpace α}
-
-open MeasureTheory
 
 /-- The set of all `m`‑measurable subsets of `α`. -/
 def SigmaAlgebra : Set (Set α) := m.MeasurableSet'
