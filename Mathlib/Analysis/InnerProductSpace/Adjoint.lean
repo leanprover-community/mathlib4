@@ -303,6 +303,51 @@ theorem conj_orthogonalProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (U
 
 end IsSelfAdjoint
 
+namespace ContinuousLinearMap
+variable [CompleteSpace E]
+
+/-- An operator is normal iff `‖T v‖ = ‖(adjoint T) v‖` for all `v`. -/
+theorem isStarNormal_iff_norm_eq_adjoint (A : E →L[𝕜] E) :
+    IsStarNormal A ↔ ∀ v : E, ‖A v‖ = ‖adjoint A v‖ := by
+  rw [isStarNormal_iff, Commute, SemiconjBy, ← sub_eq_zero]
+  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, coe_sub, ← LinearMap.ext_iff, coe_zero]
+  have : LinearMap.IsSymmetric
+      (((adjoint A).comp A : E →ₗ[𝕜] E) - (A.comp (adjoint A) : E →ₗ[𝕜] E)) := by
+    rw [← coe_sub]
+    exact ((IsSelfAdjoint.star_mul_self A).sub (IsSelfAdjoint.mul_star_self A)).isSymmetric
+  simp_rw [← mul_def] at this
+  rw [star_eq_adjoint, ← LinearMap.IsSymmetric.inner_map_self_eq_zero this]
+  simp_rw [LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply, adjoint_inner_left,
+    inner_self_eq_norm_sq_to_K, ← adjoint_inner_right A, inner_self_eq_norm_sq_to_K,
+    sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
+  norm_cast
+
+/-- An idempotent operator is self-adjoint iff it is normal. -/
+theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal
+    {A : E →L[𝕜] E} (hA : IsIdempotentElem A) :
+    IsSelfAdjoint A ↔ IsStarNormal A := by
+  refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
+  suffices A = star A * A from this ▸ IsSelfAdjoint.star_mul_self _
+  rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
+  simp_rw [zero_apply, ← norm_eq_zero (E := E)]
+  have :=
+    calc (∀ x : E, ‖(A - star A * A) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - A)) (A x)‖ = 0 := by
+          simp only [← star_eq_adjoint, star_sub, star_one, sub_apply, mul_apply]; rfl
+      _ ↔ ∀ x, ‖(1 - A) (A x)‖ = 0 := by
+          simp only [(isStarNormal_iff_norm_eq_adjoint _).mp h.one_sub]
+      _ ↔ ∀ x, ‖(A - A * A) x‖ = 0 := by simp
+      _ ↔ A - A * A = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
+      _ ↔ IsIdempotentElem A := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
+  exact this.mpr hA
+
+/-- A continuous linear map is a star projection iff it is idempotent and normal. -/
+theorem isStarProjection_iff' {A : E →L[𝕜] E} :
+    IsStarProjection A ↔ IsIdempotentElem A ∧ IsStarNormal A := by
+  rw [isStarProjection_iff, and_congr_right_iff]
+  exact fun h => IsIdempotentElem.isSelfAdjoint_iff_isStarNormal h
+
+end ContinuousLinearMap
+
 namespace LinearMap
 
 variable [CompleteSpace E]
