@@ -1443,6 +1443,14 @@ lemma length_le_of_isSubwalk {u₁ v₁ u₂ v₂} {q : G.Walk u₁ v₁} {p : G
   rw [h, length_append, length_append, add_comm _ p.length, add_assoc]
   exact Nat.le_add_right _ _
 
+lemma isSubwalk_of_append_left {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w u} {p₃ : G.Walk v u}
+    (h : p₃ = p₁.append p₂) : p₁.IsSubwalk p₃ :=
+  ⟨nil, p₂, h⟩
+
+lemma isSubwalk_of_append_right {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w u} {p₃ : G.Walk v u}
+    (h : p₃ = p₁.append p₂) : p₂.IsSubwalk p₃ :=
+  ⟨p₁, nil, append_nil _ ▸ h⟩
+
 end Walk
 
 end SimpleGraph
