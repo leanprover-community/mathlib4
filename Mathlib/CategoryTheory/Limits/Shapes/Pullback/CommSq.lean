@@ -340,13 +340,19 @@ theorem of_iso_pullback (h : CommSq fst snd f g) [HasPullback f g] (i : P ≅ pu
     (Limits.IsLimit.ofIsoLimit (limit.isLimit _)
       (@PullbackCone.ext _ _ _ _ _ _ _ (PullbackCone.mk _ _ _) _ i w₁.symm w₂.symm).symm)
 
-theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) : IsPullback fst snd f g :=
+theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
+    IsPullback fst snd f g :=
   of_isLimit' sq
     (by
       refine
         PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by simp)
           (fun s => ?_) (by aesop_cat)
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
+
+theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) :
+    IsPullback fst snd f g :=
+  of_horiz_isIso_mono sq
+
 
 lemma of_iso (h : IsPullback fst snd f g)
     {P' X' Y' Z' : C} {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
@@ -877,8 +883,13 @@ theorem unop {P X Y Z : Cᵒᵖ} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {
       (Limits.PullbackCone.isLimitEquivIsColimitUnop h.flip.cone h.flip.isLimit)
       h.toCommSq.flip.coneUnop)
 
-theorem of_vert_isIso [IsIso snd] [IsIso f] (sq : CommSq fst snd f g) : IsPullback fst snd f g :=
-  IsPullback.flip (of_horiz_isIso sq.flip)
+theorem of_vert_isIso_mono [IsIso snd] [Mono f] (sq : CommSq fst snd f g)
+    : IsPullback fst snd f g :=
+  IsPullback.flip (of_horiz_isIso_mono sq.flip)
+
+theorem of_vert_isIso [IsIso snd] [IsIso f] (sq : CommSq fst snd f g)
+    : IsPullback fst snd f g :=
+  of_vert_isIso_mono sq
 
 lemma of_id_fst : IsPullback (𝟙 _) f f (𝟙 _) := IsPullback.of_horiz_isIso ⟨by simp⟩
 
