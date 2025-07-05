@@ -85,9 +85,10 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
 
 end CommRing
 
-lemma sub_of_mul_eq [NonAssocRing R] {p q : R} (hp : IsIdempotentElem p)
-    (hq : IsIdempotentElem q) (hpq : p * q = p) (hqp : q * p = p) : IsIdempotentElem (q - p) := by
-  simp_rw [IsIdempotentElem, sub_mul, mul_sub, hpq, hqp, hp.eq, hq.eq, sub_self, sub_zero]
+/-- `b - a` is idempotent when `a * b = a` and `b * a = a` -/
+lemma sub [NonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
+    (hb : IsIdempotentElem b) (hab : a * b = a) (hba : b * a = a) : IsIdempotentElem (b - a) := by
+  simp_rw [IsIdempotentElem, sub_mul, mul_sub, hab, hba, ha.eq, hb.eq, sub_self, sub_zero]
 
 lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
@@ -106,7 +107,7 @@ lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
 theorem sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p :=
-  ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub_of_mul_eq hq h1 h2⟩
+  ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩
 
 /-- `a + b` is idempotent when `a` and `b` anti-commute. -/
 theorem add [NonUnitalNonAssocSemiring R]

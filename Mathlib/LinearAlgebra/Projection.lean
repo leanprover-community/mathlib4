@@ -495,9 +495,9 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[R] M} (hq : IsIdempoten
 
 /-- If `p,q` are idempotent operators and `p ∘ q = p = q ∘ p`,
   then `q - p` is an idempotent operator. -/
-theorem isIdempotentElem_sub_of {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
+theorem isIdempotentElem_sub {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
     (hq : IsIdempotentElem q) (hpq : p.comp q = p) (hqp : q.comp p = p) :
-    IsIdempotentElem (q - p) := hp.sub_of_mul_eq hq hpq hqp
+    IsIdempotentElem (q - p) := hp.sub hq hpq hqp
 
 /-- If `p,q` are idempotent operators and `q - p` is also an idempotent
   operator, then `p ∘ q = p = q ∘ p`. -/
