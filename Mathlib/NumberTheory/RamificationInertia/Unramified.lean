@@ -79,6 +79,7 @@ lemma Algebra.IsUnramifiedAt.of_liesOver
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
+set_option synthInstance.maxHeartbeats 25000 in -- infer_instance timeout
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramifed iff `e(p) = 1`. -/
 lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
