@@ -6564,6 +6564,7 @@ import Mathlib.Util.AssertExists
 import Mathlib.Util.AssertExistsExt
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
+import Mathlib.Util.CommandElabHook
 import Mathlib.Util.CompileInductive
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
@@ -6580,6 +6581,7 @@ import Mathlib.Util.Qq
 import Mathlib.Util.Simp
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
+import Mathlib.Util.SuppressSorry
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.TermReduce
