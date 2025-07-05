@@ -130,7 +130,7 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
     obtain ⟨δ, hδ₀, hy, hδ₁⟩ := (this.and <| eventually_lt_nhds zero_lt_one).exists_gt
     set y := (1 - δ)⁻¹ • x - (δ / (1 - δ)) • x₀
     refine ⟨max r (f y), ?_⟩
-    simp only [Filter.eventually_map, Pi.abs_apply] at hr ⊢
+    simp only [Filter.eventually_map] at hr ⊢
     obtain ⟨ε, hε, hr⟩ := Metric.eventually_nhds_iff.1 <| hr.and (hC.eventually_mem hx₀)
     refine Metric.eventually_nhds_iff.2 ⟨ε * δ, by positivity, fun z hz ↦ ?_⟩
     have hx₀' : δ⁻¹ • (x - y) + y = x₀ := MulAction.injective₀ (sub_ne_zero.2 hδ₁.ne') <| by

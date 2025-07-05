@@ -100,7 +100,7 @@ lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘
 
 lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     mlieBracketWithin I V W s x = 0 := by
-  simp only [mlieBracketWithin, mpullback_apply, comp_apply]
+  simp only [mlieBracketWithin, mpullback_apply]
   rw [lieBracketWithin_eq_zero_of_eq_zero]
   · simp
   · simp only [mpullbackWithin_apply]
@@ -282,35 +282,45 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     le_rfl).comp_mdifferentiableWithinAt _ this
 
-lemma mlieBracketWithin_smul_left
+lemma mlieBracketWithin_const_smul_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin_apply]
-  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_left]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_const_smul_left]
   · exact hV.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-lemma mlieBracket_smul_left
+@[deprecated (since := "2025-07-04")]
+alias mlieBracketWithin_smul_left := mlieBracketWithin_const_smul_left
+
+lemma mlieBracket_const_smul_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (c • V) W x = c • mlieBracket I V W x := by
-  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV ⊢
-  exact mlieBracketWithin_smul_left hV (uniqueMDiffWithinAt_univ _)
+  simp only [← mlieBracketWithin_univ] at hV ⊢
+  exact mlieBracketWithin_const_smul_left hV (uniqueMDiffWithinAt_univ _)
 
-lemma mlieBracketWithin_smul_right
+@[deprecated (since := "2025-07-04")] alias mlieBracket_smul_left := mlieBracket_const_smul_left
+
+lemma mlieBracketWithin_const_smul_right
     (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin_apply]
-  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_right]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_const_smul_right]
   · exact hW.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-lemma mlieBracket_smul_right
+@[deprecated (since := "2025-07-04")]
+alias mlieBracketWithin_smul_right := mlieBracketWithin_const_smul_right
+
+lemma mlieBracket_const_smul_right
     (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :
     mlieBracket I V (c • W) x = c • mlieBracket I V W x := by
-  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hW ⊢
-  exact mlieBracketWithin_smul_right hW (uniqueMDiffWithinAt_univ _)
+  simp only [← mlieBracketWithin_univ] at hW ⊢
+  exact mlieBracketWithin_const_smul_right hW (uniqueMDiffWithinAt_univ _)
+
+@[deprecated (since := "2025-07-04")] alias mlieBracket_smul_right := mlieBracket_const_smul_right
 
 lemma mlieBracketWithin_add_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -329,7 +339,7 @@ lemma mlieBracket_add_left
     (hV₁ : MDifferentiableAt I I.tangent (fun x ↦ (V₁ x : TangentBundle I M)) x) :
     mlieBracket I (V + V₁) W x =
       mlieBracket I V W x + mlieBracket I V₁ W x := by
-  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV hV₁ ⊢
+  simp only [← mlieBracketWithin_univ] at hV hV₁ ⊢
   exact mlieBracketWithin_add_left hV hV₁ (uniqueMDiffWithinAt_univ _)
 
 lemma mlieBracketWithin_add_right
@@ -347,7 +357,7 @@ lemma mlieBracket_add_right
     (hW₁ : MDifferentiableAt I I.tangent (fun x ↦ (W₁ x : TangentBundle I M)) x) :
     mlieBracket I V (W + W₁) x =
       mlieBracket I V W x + mlieBracket I V W₁ x := by
-  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hW hW₁ ⊢
+  simp only [← mlieBracketWithin_univ] at hW hW₁ ⊢
   exact mlieBracketWithin_add_right hW hW₁ (uniqueMDiffWithinAt_univ _)
 
 theorem mlieBracketWithin_of_mem_nhdsWithin
@@ -469,7 +479,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
       rw [inter_comm]
       apply hu.uniqueDiffWithinAt_range_inter
       exact ⟨h'''y, hy.1⟩
-    simp only [mpullbackWithin_apply, hF, comp_apply, ← mfderivWithin_eq_fderivWithin]
+    simp only [mpullbackWithin_apply, hF, comp_apply]
     rw [mfderivWithin_comp (I' := I) (u := s)]; rotate_left
     · apply (mdifferentiableAt_extChartAt h''y).comp_mdifferentiableWithinAt (I' := I')
       exact (hf _ hy.1).mdifferentiableWithinAt one_le_two
@@ -808,7 +818,7 @@ lemma _root_.ContDiff.mlieBracket_vectorField {m n : ℕ∞}
     (hV : ContMDiff I I.tangent n (fun x ↦ (V x : TangentBundle I M)))
     (hmn : minSmoothness 𝕜 (m + 1) ≤ n) :
     ContMDiff I I.tangent m (fun x ↦ (mlieBracket I U V x : TangentBundle I M)) := by
-  simp only [← contMDiffOn_univ, mlieBracketWithin_univ] at hU hV ⊢
+  simp only [← contMDiffOn_univ] at hU hV ⊢
   exact hU.mlieBracketWithin_vectorField hV uniqueMDiffOn_univ hmn
 
 end Invariance

@@ -21,13 +21,16 @@ objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent
 objects, and we provide a translation of the main constrcutions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
+## TODOs
+* Define a monoidal structure on `AugmentedSimplexCategory`.
 -/
 
 open CategoryTheory
 
 /-- The `AugmentedSimplexCategory` is the category obtained from `SimplexCategory` by adjoining an
 initial object. -/
-abbrev AugmentedSimplexCategory := WithInitial SimplexCategory
+def AugmentedSimplexCategory := WithInitial SimplexCategory
+  deriving SmallCategory
 
 namespace AugmentedSimplexCategory
 
@@ -56,7 +59,7 @@ dropping the augmentation corresponds to precomposition with
 @[simps!]
 def equivAugmentedCosimplicialObjectFunctorCompDropIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.drop ≅
-    (whiskeringLeft _ _ C).obj inclusion :=
+    (Functor.whiskeringLeft _ _ C).obj inclusion :=
   .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
@@ -90,7 +93,7 @@ dropping the augmentation corresponds to precomposition with
 @[simps!]
 def equivAugmentedSimplicialObjectFunctorCompDropIso :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.drop ≅
-    (whiskeringLeft _ _ C).obj inclusion.op :=
+    (Functor.whiskeringLeft _ _ C).obj inclusion.op :=
   .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,

@@ -183,7 +183,7 @@ theorem subset_tangentConeAt_prod_left {t : Set F} {y : F} (ht : y ∈ closure t
     exact ⟨z - y, by simpa using hzt, by simpa using hz⟩
   choose d' hd' using this
   refine ⟨c, fun n => (d n, d' n), ?_, hc, ?_⟩
-  · show ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
+  · change ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
   · apply Tendsto.prodMk_nhds hy _
@@ -205,7 +205,7 @@ theorem subset_tangentConeAt_prod_right {t : Set F} {y : F} (hs : x ∈ closure 
     exact ⟨z - x, by simpa using hzs, by simpa using hz⟩
   choose d' hd' using this
   refine ⟨c, fun n => (d' n, d n), ?_, hc, ?_⟩
-  · show ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
+  · change ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
     filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
   · apply Tendsto.prodMk_nhds _ hy
@@ -336,8 +336,7 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
   have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
     suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
     apply tendsto_inv_nhdsGT_zero.comp
-    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
-      eventually_atTop, ge_iff_le]
+    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, eventually_atTop, ge_iff_le]
     have B (n : ℕ) : ‖c n‖⁻¹ ≤ 1⁻¹ * ‖r‖ * u n := by
       apply (hc n).trans
       gcongr

@@ -29,7 +29,7 @@ example : Encodable (T Nat) := inferInstance
 error: failed to synthesize
   Encodable (ℕ → Bool)
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in example : Encodable (Nat → Bool) := inferInstance
 

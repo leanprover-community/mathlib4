@@ -257,7 +257,7 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
 /-! ### Properties about the cast from `ℕ` -/
 
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
-  simp [Pow.pow]
+  simp
 
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
@@ -835,7 +835,7 @@ lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := 
 
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by
-  simp only [le_aleph0_iff_subtype_countable, mem_union, setOf_mem_eq, Set.union_def,
+  simp only [le_aleph0_iff_subtype_countable, setOf_mem_eq, Set.union_def,
     ← countable_union]
 
 theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.1 } :=

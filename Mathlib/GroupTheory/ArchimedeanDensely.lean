@@ -22,7 +22,8 @@ They are placed here in a separate file (rather than incorporated as a continuat
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
 
-open Multiplicative Set
+open Set
+open scoped WithZero
 
 -- no earlier file imports the necessary requirements for the next two
 
@@ -67,6 +68,46 @@ lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] 
   rw [zpow_right_inj hx1, Int.mul_eq_one_iff_eq_one_or_neg_one] at hl
   refine hl.imp ?_ ?_ <;>
   simp +contextual
+
+lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
+  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
+  rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
+  simpa [e.surjective, eq_comm] using (e : ℤ →+ ℤ).map_zmultiples 1
+
+instance : Fintype (ℤ ≃+ ℤ) where
+  elems := .cons (.neg _) ({.refl _}) (by simp [AddEquiv.ext_int_iff])
+  complete x := by
+    obtain rfl | rfl := Int.addEquiv_eq_refl_or_neg x <;>
+    simp
+
+@[simp]
+lemma Int.univ_addEquiv :
+    (Finset.univ : Finset (ℤ ≃+ ℤ)) = .cons (.neg ℤ) {.refl ℤ} (by simp [AddEquiv.ext_int_iff]) :=
+  rfl
+
+@[simp] lemma Int.card_fintype_addEquiv : Fintype.card (ℤ ≃+ ℤ) = 2 := rfl
+
+instance : Unique (ℤ ≃+o ℤ) where
+  uniq e := OrderAddMonoidIso.toAddEquiv_injective <|
+    Int.addEquiv_eq_refl_or_neg e |>.resolve_right fun H => by
+      replace H : e 1 = -1 := congr($H 1)
+      have h1 : 0 < e 1 := by
+        rw [← map_zero e, map_lt_map_iff]
+        simp
+      simp [H] at h1
+
+open OrderDual in
+instance : Unique (ℤ ≃+o ℤᵒᵈ) where
+  default := ⟨AddEquiv.neg ℤ |>.trans ⟨toDual, toDual_add⟩, by simp⟩
+  uniq e := OrderAddMonoidIso.toAddEquiv_injective <| by
+    simp only [OrderAddMonoidIso.toAddEquiv_eq_coe]
+    refine Int.addEquiv_eq_refl_or_neg ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨toDual, toDual_add⟩)
+        |>.resolve_left fun H => by
+      replace H : e 1 = 1 := congr($H 1)
+      have h1 : 0 < e 1 := by
+        rw [← map_zero e, map_lt_map_iff]
+        simp
+      simp [H, ← ofDual_lt_ofDual] at h1
 
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
@@ -121,13 +162,12 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
           ← zpow_right_inj xpos, (A ⟨_, D a⟩).choose_spec]
     · intro a b
       generalize_proofs A B C D E F
-      simp only [Submonoid.coe_mul, coe_toSubmonoid, Submonoid.mk_mul_mk, Subtype.mk.injEq,
-                 coe_mul, MulMemClass.mk_mul_mk, Subtype.ext_iff]
+      simp only [coe_mul, MulMemClass.mk_mul_mk, Subtype.ext_iff]
       rw [← zpow_add, zpow_right_inj ypos, ← zpow_right_inj xpos, zpow_add,
           (A a).choose_spec, (A b).choose_spec, (A (a * b)).choose_spec]
       simp
     · intro a b
-      simp only [MulEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk]
+      simp only [Subtype.mk_le_mk]
       generalize_proofs A B C D
       simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
         B.choose_spec]
@@ -144,7 +184,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rw [mem_closure_singleton] at ha
     obtain ⟨n, rfl⟩ := ha
     have := h.left
-    simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
+    simp only [mem_closure_singleton, mem_setOf_eq] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
       rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
@@ -361,10 +401,10 @@ def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α
     simp
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
-either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
+either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
-    Nonempty (G ≃*o ℤₘ₀) ∨ DenselyOrdered G := by
+    Nonempty (G ≃*o ℤᵐ⁰) ∨ DenselyOrdered G := by
   classical
   rw [← denselyOrdered_units_iff]
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
@@ -373,10 +413,10 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
 
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
-either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered, exclusively -/
+either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered, exclusively -/
 lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
-    Nonempty (G ≃*o ℤₘ₀) ↔ ¬ DenselyOrdered G := by
+    Nonempty (G ≃*o ℤᵐ⁰) ↔ ¬ DenselyOrdered G := by
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
@@ -390,7 +430,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
   · refine ⟨withZeroUnitsEquiv.symm.trans (MulEquiv.withZero f), ?_⟩
     intros
     simp only [withZeroUnitsEquiv, MulEquiv.symm_mk, MulEquiv.withZero,
-      MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+      MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
       MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk]
     split_ifs <;>
     simp_all [← Units.val_le_val]
@@ -464,7 +504,7 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
 
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
-    Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
+    Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
   suffices Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔
     Set.WellFoundedOn {x : G₀ˣ | Units.mk0 g hg ≤ x} (· < ·) by
     rw [this, LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete]
@@ -472,10 +512,10 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
     · exact WithZero.withZeroUnitsEquiv.symm.trans f.withZero
     · intro a b
       rcases eq_or_ne a 0 with rfl|ha
-      · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
+      · simp [WithZero.withZeroUnitsEquiv]
       rcases eq_or_ne b 0 with rfl|hb
-      · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
-      simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero, ha, hb, ← Units.val_le_val]
+      · simp [WithZero.withZeroUnitsEquiv]
+      simp [WithZero.withZeroUnitsEquiv, ha, hb, ← Units.val_le_val]
     · exact MulEquiv.withZero.symm (WithZero.withZeroUnitsEquiv.trans f)
     · intros
       rw [← WithZero.coe_le_coe]
@@ -494,7 +534,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
 
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
-    Set.WellFoundedOn {x : G₀ | x ≤ g} (· > ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
+    Set.WellFoundedOn {x : G₀ | x ≤ g} (· > ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
   have hg' : g⁻¹ ≠ 0 := by simp [hg]
   rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero hg',
     ← Set.wellFoundedOn_sdiff_singleton (a := 0)]

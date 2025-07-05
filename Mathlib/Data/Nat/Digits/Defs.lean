@@ -168,6 +168,33 @@ theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
   · rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
     ring
 
+@[simp]
+theorem ofDigits_append_zero {b : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ [0]) = ofDigits b l := by
+  rw [ofDigits_append, ofDigits_singleton, mul_zero, add_zero]
+
+@[simp]
+theorem ofDigits_replicate_zero {b k : ℕ} : ofDigits b (List.replicate k 0) = 0 := by
+  induction k with
+  | zero => rfl
+  | succ k ih => simp [List.replicate, ofDigits_cons, ih]
+
+@[simp]
+theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ List.replicate k 0) = ofDigits b l := by
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+  simp only [List.reverse_cons]
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_zero_cons {b : ℕ} (l : List ℕ) :
+    ofDigits b (0 :: l).reverse = ofDigits b l.reverse := by
+  simp only [List.reverse_cons, ofDigits_append_zero]
+
 @[norm_cast]
 theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
     ((ofDigits b L : ℕ) : α) = ofDigits (b : α) L := by
@@ -227,7 +254,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
       cases n
       · rw [digits_zero]
         rfl
-      · simp only [Nat.succ_eq_add_one, digits_add_two_add_one]
+      · simp only [digits_add_two_add_one]
         dsimp [ofDigits]
         rw [h _ (Nat.div_lt_self' _ b)]
         rw [Nat.mod_add_div]
@@ -263,7 +290,7 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
   · norm_num at h
   rcases n with (_ | n)
   · norm_num at w
-  · simp only [digits_add_two_add_one, ne_eq]
+  · simp only [digits_add_two_add_one]
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
@@ -315,8 +342,8 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
     induction l2 generalizing tl₁ with
     | nil => simp_all
     | cons hd₂ tl₂ ih₂ =>
-      simp_all only [List.length_cons, succ_eq_add_one, ofDigits_cons, add_left_inj,
-        eq_comm, List.zipWith_cons_cons, add_eq]
+      simp_all only [List.length_cons, ofDigits_cons, add_left_inj,
+        eq_comm, List.zipWith_cons_cons]
       rw [← ih₁ h.symm, mul_add]
       ac_rfl
 
@@ -368,18 +395,18 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 
+theorem digits_base_mul {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    b.digits (b * m) = 0 :: b.digits m := by
+  rw [digits_def' hb (by positivity)]
+  simp [mul_div_right m (by positivity)]
+
 theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     digits b (b ^ k * m) = List.replicate k 0 ++ digits b m := by
   induction k generalizing m with
   | zero => simp
   | succ k ih =>
-    have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
-    let h1 := digits_def' hb hmb
-    have h2 : m = m * b / b :=
-      Nat.eq_div_of_mul_eq_left (ne_zero_of_lt hb) rfl
-    simp only [mul_mod_left, ← h2] at h1
-    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
-    ring_nf
+    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm]
+    rfl
 
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
@@ -439,7 +466,7 @@ lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
 lemma toDigitsCore_lens_eq_aux (b f : Nat) :
     ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
     (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
-  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
+  induction f with (simp only [Nat.toDigitsCore]; intro n l1 l2 hlen)
   | zero => assumption
   | succ f ih =>
     if hx : n / b = 0 then
@@ -454,17 +481,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
   induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
   | succ f ih =>
-    if hnb : (n / b) = 0 then
-      simp only [hnb, if_true, List.length]
-    else
-      generalize hx : Nat.digitChar (n % b) = x
-      simp only [hx, hnb, if_false] at ih
-      simp only [hnb, if_false]
-      specialize ih (n / b) c (x :: tl)
-      rw [← ih]
-      have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
-      apply toDigitsCore_lens_eq_aux
-      exact lens_eq
+    grind
 
 lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
