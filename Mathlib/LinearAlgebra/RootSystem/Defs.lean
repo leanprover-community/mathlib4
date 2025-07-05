@@ -119,12 +119,12 @@ namespace RootPairing
 variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
-@[simp]
-lemma toLinearMap_eq_toLinearMap (x : M) (y : N) :
+@[deprecated "Now a syntactic equality" (since := "2025-07-05")]
+lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
     P.toLinearMap x y = P.toLinearMap x y := rfl
 
 @[deprecated (since := "2025-04-20")]
-alias toLin_toLinearMap := toLinearMap_eq_toLinearMap
+alias toLin_toPerfectPairing := toLinearMap_eq_toPerfectPairing
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 protected def flip : RootPairing ι R N M where
@@ -415,8 +415,7 @@ lemma toPerfPair_flip_conj_coreflection :
 lemma pairing_reflectionPerm_self_left (P : RootPairing ι R M N) (i j : ι) :
     P.pairing (P.reflectionPerm i i) j = - P.pairing i j := by
   rw [pairing, root', ← reflectionPerm_root, root'_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLinearMap_eq_toLinearMap, LinearMap.map_neg₂,
-    toLinearMap_eq_toLinearMap, root'_coroot_eq_pairing]
+    sub_add_cancel_left, LinearMap.map_neg₂, root'_coroot_eq_pairing]
 
 @[deprecated (since := "2025-05-28")]
 alias pairing_reflection_perm_self_left := pairing_reflectionPerm_self_left
@@ -425,8 +424,7 @@ alias pairing_reflection_perm_self_left := pairing_reflectionPerm_self_left
 lemma pairing_reflectionPerm_self_right (i j : ι) :
     P.pairing i (P.reflectionPerm j j) = - P.pairing i j := by
   rw [pairing, ← reflectionPerm_coroot, root_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLinearMap_eq_toLinearMap, map_neg,
-    toLinearMap_eq_toLinearMap, root_coroot_eq_pairing]
+    sub_add_cancel_left, map_neg, root_coroot_eq_pairing]
 
 @[deprecated (since := "2025-05-28")]
 alias pairing_reflection_perm_self_right := pairing_reflectionPerm_self_right

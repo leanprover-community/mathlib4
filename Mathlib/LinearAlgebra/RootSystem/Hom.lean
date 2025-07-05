@@ -603,7 +603,8 @@ def reflection (P : RootPairing ι R M N) (i : ι) : Aut P where
   weightMap := P.reflection i
   coweightMap := P.coreflection i
   indexEquiv := P.reflectionPerm i
-  weight_coweight_transpose := by ext f x; simp [reflection_apply, coreflection_apply, mul_comm]
+  weight_coweight_transpose := by
+    ext f x; simpa [reflection_apply, coreflection_apply] using mul_comm ..
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
   bijective_weightMap := by
