@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Tactic.Spread
 
 /-!
 # Multiplicative and additive equivs
@@ -21,7 +22,7 @@ assert_not_exists Fintype
 
 open Function
 
-variable {F α β M N P G H : Type*}
+variable {F α β M M₁ M₂ N N₁ N₂ P Q G H : Type*}
 
 namespace EmbeddingLike
 variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
@@ -80,10 +81,61 @@ def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
   right_inv k := by ext; simp
   map_mul' h k := by ext; simp
 
+section monoidHomCongrEquiv
+variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [Monoid N] [Monoid N₁] [Monoid N₂]
+
+/-- The equivalence `(M₁ →* N) ≃ (M₂ →* N)` obtained by postcomposition with
+a multiplicative equivalence `e : M₁ ≃* M₂`. -/
+@[to_additive (attr := simps)
+"The equivalence `(M₁ →+ N) ≃ (M₂ →+ N)` obtained by postcomposition with
+an additive equivalence `e : M₁ ≃+ M₂`."]
+def monoidHomCongrLeftEquiv (e : M₁ ≃* M₂) : (M₁ →* N) ≃ (M₂ →* N) where
+  toFun f := f.comp e.symm.toMonoidHom
+  invFun f := f.comp e.toMonoidHom
+  left_inv f := by ext; simp
+  right_inv f := by ext; simp
+
+/-- The equivalence `(M →* N₁) ≃ (M →* N₂)` obtained by postcomposition with
+a multiplicative equivalence `e : N₁ ≃* N₂`. -/
+@[to_additive (attr := simps)
+"The equivalence `(M →+ N₁) ≃ (M →+ N₂)` obtained by postcomposition with
+an additive equivalence `e : N₁ ≃+ N₂`."]
+def monoidHomCongrRightEquiv (e : N₁ ≃* N₂) : (M →* N₁) ≃ (M →* N₂) where
+  toFun := e.toMonoidHom.comp
+  invFun := e.symm.toMonoidHom.comp
+  left_inv f := by ext; simp
+  right_inv f := by ext; simp
+
+end monoidHomCongrEquiv
+
+section monoidHomCongr
+variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [CommMonoid N] [CommMonoid N₁]
+  [CommMonoid N₂]
+
+/-- The isomorphism `(M₁ →* N) ≃* (M₂ →* N)` obtained by postcomposition with
+a multiplicative equivalence `e : M₁ ≃* M₂`. -/
+@[to_additive (attr := simps! apply)
+"The isomorphism `(M₁ →+ N) ≃+ (M₂ →+ N)` obtained by postcomposition with
+an additive equivalence `e : M₁ ≃+ M₂`."]
+def monoidHomCongrLeft (e : M₁ ≃* M₂) : (M₁ →* N) ≃* (M₂ →* N) where
+  __ := e.monoidHomCongrLeftEquiv
+  map_mul' f g := by ext; simp
+
+/-- The isomorphism `(M →* N₁) ≃* (M →* N₂)` obtained by postcomposition with
+a multiplicative equivalence `e : N₁ ≃* N₂`. -/
+@[to_additive (attr := simps! apply)
+"The isomorphism `(M →+ N₁) ≃+ (M →+ N₂)` obtained by postcomposition with
+an additive equivalence `e : N₁ ≃+ N₂`."]
+def monoidHomCongrRight (e : N₁ ≃* N₂) : (M →* N₁) ≃* (M →* N₂) where
+  __ := e.monoidHomCongrRightEquiv
+  map_mul' f g := by ext; simp
+
+end monoidHomCongr
+
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 for multiplicative maps from a monoid to a commutative monoid.
 -/
-@[to_additive (attr := simps apply)
+@[to_additive (attr := deprecated MulEquiv.monoidHomCongrLeft (since := "2025-05-26"))
   "An additive analogue of `Equiv.arrowCongr`,
   for additive maps from an additive monoid to a commutative additive monoid."]
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
@@ -138,10 +190,12 @@ def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
 end MulEquiv
 
 namespace MonoidHom
+variable {M N₁ N₂ : Type*} [Monoid M] [CommMonoid N₁] [CommMonoid N₂]
 
 /-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
 a multiplicative equivalence `e : α ≃* β`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps -isSimp,
+deprecated MulEquiv.monoidHomCongrLeftEquiv (since := "2025-05-26"))
 "The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
 an additive equivalence `e : α ≃+ β`."]
 def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
@@ -153,7 +207,8 @@ def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : 
 
 /-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
 a multiplicative equivalence `e : α ≃* β`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps -isSimp,
+deprecated MulEquiv.monoidHomCongrRightEquiv (since := "2025-05-26"))
 "The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
 an additive equivalence `e : α ≃+ β`."]
 def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :

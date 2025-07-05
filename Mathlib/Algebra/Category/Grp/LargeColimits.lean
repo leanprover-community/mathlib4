@@ -36,12 +36,11 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
   change Function.Bijective (Quot.desc F c).toIntLinearMap
   rw [← CharacterModule.dual_bijective_iff_bijective]
   refine ⟨fun χ ψ eq ↦ ?_, fun χ ↦ ?_⟩
-  · apply (AddMonoidHom.postcompEquiv (@AddEquiv.ulift (AddCircle (1 : ℚ)) _).symm _).injective
+  · apply AddEquiv.ulift.symm.addMonoidHomCongrRightEquiv.injective
     apply ofHom_injective
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
     rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
-    simp only [hom_ofHom, AddMonoidHom.postcompEquiv_apply, AddMonoidHom.comp_apply]
     exact DFunLike.congr_fun eq (Quot.ι F j x)
   · set c' : Cocone F :=
       { pt := AddCommGrp.of (ULift (AddCircle (1 : ℚ)))

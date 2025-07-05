@@ -33,13 +33,13 @@ shouldn't be useful outside of category theory.
 /-- Monoid homomorphisms from `ULift ℕ` are defined by the image of `1`. -/
 @[simps!]
 def uliftMultiplesHom (M : Type u) [AddMonoid M] : M ≃ (ULift.{u} ℕ →+ M) :=
-  (multiplesHom _).trans <| AddMonoidHom.precompEquiv .ulift _
+  (multiplesHom _).trans AddEquiv.ulift.symm.addMonoidHomCongrLeftEquiv
 
 /-- Monoid homomorphisms from `ULift (Multiplicative ℕ)` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 @[simps!]
 def uliftPowersHom (M : Type u) [Monoid M] : M ≃ (ULift.{u} (Multiplicative ℕ) →* M) :=
-  (powersHom _).trans <| MonoidHom.precompEquiv .ulift _
+  (powersHom _).trans MulEquiv.ulift.symm.monoidHomCongrLeftEquiv
 
 namespace MonoidHom
 
