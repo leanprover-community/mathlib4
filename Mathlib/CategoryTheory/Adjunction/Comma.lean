@@ -89,7 +89,7 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left) where
   toFun g := CommaMorphism.left (terminal.from (CostructuredArrow.mk g))
   invFun g := G.map g ≫ (⊤_ CostructuredArrow G A).hom
-  left_inv := by aesop_cat
+  left_inv _ := by aesop_cat
   right_inv g := by
     let B' : CostructuredArrow G A :=
       CostructuredArrow.mk (G.map g ≫ (⊤_ CostructuredArrow G A).hom)
