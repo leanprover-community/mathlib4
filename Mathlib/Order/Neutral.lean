@@ -49,11 +49,24 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩
   · intro ⟨h1,h2,h3⟩
     have e1 (a b c d : α) (hb : b ∈ Set.Icc a d) (hc : c ∈ Set.Icc a d) (h : r a d) : r b c := by
+      rw [Set.mem_Icc] at hb
+      have e2 : b ⊓ c ≤ d := inf_le_of_left_le hb.2
+      have e4 : r (a ⊔ (b ⊓ c)) (d ⊔ (b ⊓ c)) := (h3 _ _ _ (le_trans hb.1 hb.2) h).2
+      --have e3 : r (b ⊓ c) (a ⊔ (b ⊓ c)) := by
+
+
+
+        --rw [inf_le_iff]
+
       rw [h1]
+      sorry
+    sorry
+
+/-
       calc
         r (b ⊓ c) ((b ⊓ c) ⊓ (b ⊔ c)) := sorry
         r _ (b ⊔ c) := sorry
-
+-/
         --(b ⊔ c) := sorry
 
     /-
