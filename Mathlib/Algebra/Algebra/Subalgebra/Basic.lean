@@ -759,6 +759,7 @@ variable {α β : Type*}
 instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
   inferInstanceAs (SMul S.toSubsemiring α)
 
+@[simp]
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
 
 instance smulCommClass_left [SMul A β] [SMul α β] [SMulCommClass A α β] (S : Subalgebra R A) :
