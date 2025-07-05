@@ -248,7 +248,7 @@ lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
   rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   congr! 2
   ext c
-  simp_rw [Set.toFinset_setOf, mem_filter, ← Set.ncard_coe_Finset, coe_filter,
+  simp_rw [Set.toFinset_setOf, mem_filter, ← Set.ncard_coe_finset, coe_filter,
     mem_supp_iff, mem_univ, true_and, supp, and_comm]
 
 lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Nat.card V) := by
@@ -260,7 +260,7 @@ lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Na
   rw [Finset.card_biUnion
     (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
   simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card, ← Finset.coe_filter_univ,
-    Set.ncard_coe_Finset, Set.Nat.card_coe_set_eq]
+    Set.ncard_coe_finset, Set.Nat.card_coe_set_eq]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard)).symm
 
 lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :

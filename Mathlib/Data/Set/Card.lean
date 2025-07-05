@@ -503,16 +503,18 @@ theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
 
 lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
 
-@[simp] theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
+@[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
+
+@[deprecated (since := "2025-07-05")] alias Nat.card_coe_set_eq := _root_.Nat.card_coe_set_eq
 
 theorem ncard_eq_toFinset_card (s : Set α) (hs : s.Finite := by toFinite_tac) :
     s.ncard = hs.toFinset.card := by
-  rw [← Nat.card_coe_set_eq, @Nat.card_eq_fintype_card _ hs.fintype,
+  rw [← _root_.Nat.card_coe_set_eq, @Nat.card_eq_fintype_card _ hs.fintype,
     @Finite.card_toFinset _ _ hs.fintype hs]
 
 theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
     s.ncard = s.toFinset.card := by
-  simp [← Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
+  simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
 
 lemma cast_ncard {s : Set α} (hs : s.Finite) :
     (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
@@ -523,7 +525,7 @@ theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finit
     fun h ↦ ⟨s.ncard, by rw [hfin.cast_ncard_eq], h⟩⟩
 
 theorem Infinite.ncard (hs : s.Infinite) : s.ncard = 0 := by
-  rw [← Nat.card_coe_set_eq, @Nat.card_eq_zero_of_infinite _ hs.to_subtype]
+  rw [← _root_.Nat.card_coe_set_eq, @Nat.card_eq_zero_of_infinite _ hs.to_subtype]
 
 @[gcongr]
 theorem ncard_le_ncard (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
@@ -537,8 +539,10 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
     s.ncard = 0 ↔ s = ∅ := by
   rw [← Nat.cast_inj (R := ℕ∞), hs.cast_ncard_eq, Nat.cast_zero, encard_eq_zero]
 
-@[simp, norm_cast] theorem ncard_coe_Finset (s : Finset α) : (s : Set α).ncard = s.card := by
+@[simp, norm_cast] theorem ncard_coe_finset (s : Finset α) : (s : Set α).ncard = s.card := by
   rw [ncard_eq_toFinset_card _, Finset.finite_toSet_toFinset]
+
+@[deprecated (since := "2025-07-05")] alias ncard_coe_Finset := ncard_coe_finset
 
 theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
   rcases finite_or_infinite α with h | h
@@ -765,7 +769,7 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
     obtain ⟨a, ha, rfl⟩ := h₃ y hy
     simp only [Subtype.exists]
     exact ⟨_, ha, rfl⟩
-  simp_rw [← Nat.card_coe_set_eq]
+  simp_rw [← _root_.Nat.card_coe_set_eq]
   exact Nat.card_congr (Equiv.ofBijective f' hbij)
 
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
