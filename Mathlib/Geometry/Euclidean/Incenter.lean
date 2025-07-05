@@ -527,7 +527,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
     obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by omega)
     have hu : Set.range s.points =
         Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
-      simp only [range_faceOpposite_points, ← Set.image_union, ← Set.compl_inter, hne]
+      simp only [range_faceOpposite_points, ← Set.image_union, ← Set.compl_inter]
       convert Set.image_univ.symm
       simp [Ne.symm hne]
     rw [hu, range_faceOpposite_points, range_faceOpposite_points,
