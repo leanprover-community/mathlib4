@@ -699,20 +699,20 @@ class LawfulDayConvolutionMonoidalCategoryStruct
         Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D))|>.IsPointwiseLeftKanExtension
   /-- The field `ι` interprets an element of `D` as a functor `C ⥤ V`. -/
   faithful_ι : ι.Faithful := by infer_instance
-  convolutionExtensionUnit_map_app (C) (V) {d₁ d₂ d₁' d₂' : D}
+  convolutionExtensionUnit_comp_ι_map_tensorHom_app (C) (V) {d₁ d₂ d₁' d₂' : D}
     (f₁ : d₁ ⟶ d₁') (f₂ : d₂ ⟶ d₂') (x y : C) :
     (convolutionExtensionUnit d₁ d₂).app (x, y) ≫
       (ι.map (f₁ ⊗ₘ f₂)).app (x ⊗ y) =
     ((ι.map f₁).app x ⊗ₘ (ι.map f₂).app y) ≫
       (convolutionExtensionUnit d₁' d₂').app (x, y)
-  convolutionExtensionUnit_map_app_left (V)
+  convolutionExtensionUnit_comp_ι_map_whiskerLeft_app (V)
     (d₁ : D) {d₂ d₂' : D}
     (f₂ : d₂ ⟶ d₂') (x y : C) :
     (convolutionExtensionUnit d₁ d₂).app (x, y) ≫
       (ι.map (d₁ ◁ f₂)).app (x ⊗ y) =
     ((ι.obj d₁).obj x ◁ (ι.map f₂).app y) ≫
       (convolutionExtensionUnit d₁ d₂').app (x, y)
-  convolutionExtensionUnit_map_app_right (C) (V)
+  convolutionExtensionUnit_comp_ι_map_whiskerRight_app (C) (V)
     {d₁ d₁': D} (f₁ : d₁ ⟶ d₁') (d₂ : D) (x y : C) :
     (convolutionExtensionUnit d₁ d₂).app (x, y) ≫
       (ι.map (f₁ ▷ d₂)).app (x ⊗ y) =
@@ -726,13 +726,13 @@ class LawfulDayConvolutionMonoidalCategoryStruct
       ((ι.obj d).obj x ◁ (convolutionExtensionUnit d' d'').app (y, z)) ≫
       (convolutionExtensionUnit d (d' ⊗ d'')).app (x, y ⊗ z) ≫
       (ι.obj (d ⊗ d' ⊗ d'')).map (α_ _ _ _).inv
-  unitUnit_comp_extensionUnit_comp_leftUnitor_hom_app (V) (d : D) (y : C) :
+  leftUnitor_hom_unit_app (V) (d : D) (y : C) :
     unitUnit ▷ (ι.obj d).obj y ≫
       (convolutionExtensionUnit (𝟙_ D) d).app
         (𝟙_ C, y) ≫
       (ι.mapIso (λ_ d)).hom.app (𝟙_ C ⊗ y) =
     (λ_ ((ι.obj d).obj y)).hom ≫ (ι.obj d).map (λ_ y).inv
-  unitUnit_comp_extensionUnit_comp_rightUnitor_hom_app (V) (d : D) (y : C) :
+  rightUnitor_hom_unit_app (V) (d : D) (y : C) :
     (ι.obj d).obj y ◁ unitUnit ≫
       (convolutionExtensionUnit d (𝟙_ D)).app (y, 𝟙_ C) ≫
       (ι.mapIso (ρ_ d)).hom.app (y ⊗ 𝟙_ C) =
@@ -786,7 +786,7 @@ lemma ι_map_tensorHom_hom_eq_tensorHom
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj,
     DayConvolution.corepresentableBy_homEquiv_apply_app,
     DayConvolution.unit_app_map_app]
-  exact convolutionExtensionUnit_map_app C V _ _ _ _
+  exact convolutionExtensionUnit_comp_ι_map_tensorHom_app C V _ _ _ _
 
 open DayConvolution in
 lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
@@ -828,8 +828,9 @@ lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
   dsimp
   ext ⟨_, x⟩
   dsimp [corepresentableByLeft]
-  simp only [whiskerLeft_id, Category.comp_id, leftUnitor_hom_unit_app]
-  exact unitUnit_comp_extensionUnit_comp_leftUnitor_hom_app V d x
+  simp only [whiskerLeft_id, Category.comp_id,
+    DayConvolutionUnit.leftUnitor_hom_unit_app]
+  exact leftUnitor_hom_unit_app V d x
 
 open DayConvolutionUnit in
 lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
@@ -843,8 +844,9 @@ lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
   dsimp
   ext ⟨x, _⟩
   dsimp [corepresentableByRight]
-  simp only [id_whiskerRight, Category.id_comp, rightUnitor_hom_unit_app]
-  exact unitUnit_comp_extensionUnit_comp_rightUnitor_hom_app V d x
+  simp only [id_whiskerRight, Category.id_comp,
+    DayConvolutionUnit.rightUnitor_hom_unit_app]
+  exact rightUnitor_hom_unit_app V d x
 
 end LawfulDayConvolutionMonoidalCategoryStruct
 
@@ -906,7 +908,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
       simp only [Functor.map_id, unit_app_map_app, Functor.comp_obj, tensor_obj,
         NatTrans.id_app, id_tensorHom]
       dsimp [unit]
-      rw [convolutionExtensionUnit_map_app_left])
+      rw [convolutionExtensionUnit_comp_ι_map_whiskerLeft_app])
     (tensorHom_id := fun x {y₁ y₂} f => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom]
@@ -917,7 +919,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
       simp only [Functor.map_id, DayConvolution.unit_app_map_app, Functor.comp_obj,
         tensor_obj, NatTrans.id_app, tensorHom_id]
       dsimp [DayConvolution.unit]
-      rw [convolutionExtensionUnit_map_app_right])
+      rw [convolutionExtensionUnit_comp_ι_map_whiskerRight_app])
     (associator_naturality := fun f₁ f₂ f₃ => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [Functor.map_comp, ι_map_associator_hom_eq_associator_hom,
