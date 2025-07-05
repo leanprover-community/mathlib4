@@ -127,7 +127,7 @@ variable {F' G' : C ⥤ V} [DayConvolution F' G']
 /-- The morphism between day convolutions (provided they exist) induced by a pair of morphisms. -/
 def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
   Functor.descOfIsLeftKanExtension (F ⊛ G) (unit F G) (F' ⊛ G') <|
-    (externalProductBifunctor C C V).map ((f, g) : (F, G) ⟶ (F', G')) ≫ unit F' G'
+    (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G'
 
 variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
@@ -174,6 +174,17 @@ def transportLeft (h : DayConvolution F G) {H : C ⥤ V} (e : F ≅ H) :
         (externalProductBifunctor _ _ _).mapIso (e.prod (Iso.refl _))) _ _ ?_
       (h.isPointwiseLeftKanExtensionUnit c)
     exact (Limits.Cocones.ext (.refl _) (by simp))
+
+/-- Transport a `DayConvolution` structure through an isomorphism of the chosen
+convolution object. -/
+@[simps -isSimp]
+def transportConvolution (h : DayConvolution F G) {H : C ⥤ V} (e : F ⊛ G ≅ H) :
+    DayConvolution F G where
+  convolution := H
+  unit := h.unit ≫ Functor.whiskerLeft (tensor C) e.hom
+  isPointwiseLeftKanExtensionUnit :=
+    Functor.LeftExtension.isPointwiseLeftKanExtensionEquivOfIso
+      (StructuredArrow.isoMk e) (h.isPointwiseLeftKanExtensionUnit)
 
 variable (F G)
 
@@ -689,6 +700,9 @@ end triangle
 
 section
 
+variable (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
+    [MonoidalCategory C] [MonoidalCategory V]
+
 /--
 The class `DayConvolutionMonoidalCategory C V D` bundles the necessary data to
 turn a monoidal category `D` into a monoidal full subcategory of a category of
@@ -700,16 +714,11 @@ day convolutions (e.g the lemmas that characterizes maps between day convolution
 
 The main constructor for this class should be `TODO`.
 -/
-class DayConvolutionMonoidalCategory
-    (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
-    [MonoidalCategory C] [MonoidalCategory V]
+class DayConvolutionMonoidalCategoryData
     (D : Type u₃) [Category.{v₃} D]
-    [MonoidalCategory D] where
+    [MonoidalCategoryStruct D] where
   /-- The field `ι` interprets an element of `D` as a functor `C ⥤ V`. -/
   ι : D ⥤ C ⥤ V
-  /-- `ι` is faithful, which allows us to think as `D` as a full
-  subcategory of `C ⥤ V`. -/
-  fullyFaithfulι : ι.FullyFaithful
   convolutionExtensionUnit (d d' : D) :
     ι.obj d ⊠ (ι.obj d') ⟶ tensor C ⋙ ι.obj (d ⊗ d')
   isPointwiseLeftKanExtensionConvolutionExtensionUnit (d d' : D) :
@@ -720,6 +729,12 @@ class DayConvolutionMonoidalCategory
     Functor.LeftExtension.mk _
       ({app _ := unitUnit} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
         Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D))|>.IsPointwiseLeftKanExtension
+
+class LawfulDayConvolutionMonoidalCategoryStruct
+    (D : Type u₃) [Category.{v₃} D]
+    [MonoidalCategoryStruct D] extends DayConvolutionMonoidalCategoryData C V D where
+  /-- The field `ι` interprets an element of `D` as a functor `C ⥤ V`. -/
+  faithful_ι : ι.Faithful
   convolutionExtensionUnit_map_app {d₁ d₂ d₁' d₂' : D}
     (f₁ : d₁ ⟶ d₁') (f₂ : d₂ ⟶ d₂') (x y : C) :
     (convolutionExtensionUnit d₁ d₂).app (x, y) ≫
@@ -734,12 +749,15 @@ class DayConvolutionMonoidalCategory
       ((ι.obj d).obj x ◁ (convolutionExtensionUnit d' d'').app (y, z)) ≫
       (convolutionExtensionUnit d (d' ⊗ d'')).app (x, y ⊗ z) ≫
       (ι.obj (d ⊗ d' ⊗ d'')).map (α_ _ _ _).inv
-  unitor_find_a_better_name (d : D) (y : C) :
+  unitUnit_comp_extensionUnit_comp_left_unitor_hom_app (d : D) (y : C) :
     unitUnit ▷ (ι.obj d).obj y ≫
       (convolutionExtensionUnit (𝟙_ D) d).app
         (𝟙_ C, y) ≫
       (ι.mapIso (λ_ d)).hom.app (𝟙_ C ⊗ y) =
     (λ_ ((ι.obj d).obj y)).hom ≫ (ι.obj d).map (λ_ y).inv
+
+class DayConvolutionMonoidalCategory (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
+  extends (LawfulDayConvolutionMonoidalCategoryStruct C V D), MonoidalCategory D
 
 
 namespace DayConvolutionMonoidalCategory
@@ -780,36 +798,30 @@ category whose tensor product has good colimit-preservations properties
 of functors in the essential image of `ι`, we can construct a
 `DayConvolutionMonoidalCategory` structure on `D`. -/
 def monoidalCategoryStructOfFullyFaithfulFunctorAndDayConvolutions :
-    MonoidalCategoryStruct D where
-  tensorObj d d' := tens_family d d'
-  tensorUnit := unit
-  tensorHom {d₁ d₂} {d₁' d₂'} f f' :=
-    letI := convo d₁ d₂
-    letI := convo d₁' d₂'
-    ffι.preimage <|
-      (isoConvo d₁ d₁').hom ≫
-        DayConvolution.map (ι.map f) (ι.map f') ≫
-        (isoConvo d₂ d₂').inv
-  whiskerLeft x {y z} f :=
-    letI := convo x y
-    letI := convo x z
-    ffι.preimage <|
-      (isoConvo x y).hom ≫
-        DayConvolution.map (ι.map <| 𝟙 _) (ι.map f) ≫
-        (isoConvo x z).inv
-  whiskerRight {x y} f z :=
-    letI := convo x z
-    letI := convo y z
-    ffι.preimage <|
-      (isoConvo x z).hom ≫
-        DayConvolution.map (ι.map f) (ι.map <| 𝟙 _) ≫
-        (isoConvo y z).inv
-  associator x y z := by
-    letI := convo x y
-    letI := convo x z
-    letI : DayConvolution (ι.obj x) (convo y z).convolution := sorry
-    letI : DayConvolution (convo x y).convolution (ι.obj z) := sorry
-    let a := DayConvolution.associator (ι.obj x) (ι.obj y) (ι.obj z)
+    MonoidalCategoryStruct D :=
+  -- We construct an alternative family of convolutions with better
+  -- defeq properties.
+  let convo' : ∀ (d d' : D), DayConvolution (ι.obj d) (ι.obj d') := fun d d' =>
+    (convo d d').transportConvolution (isoConvo d d').symm
+  let map : ∀ {d₁ d₂ : D} {d₁' d₂' : D} (f : d₁ ⟶ d₂) (f' : d₁' ⟶ d₂'),
+    tens_family d₁ d₁' ⟶ tens_family d₂ d₂' := fun {d₁ d₂} {d₁' d₂'} f f' =>
+      ffι.preimage <|
+        @DayConvolution.map _ _ _ _ _ _ _ _ (convo' d₁ d₁') _ _ (convo' d₂ d₂') (ι.map f) (ι.map f')
+  { tensorObj d d' := tens_family d d'
+    tensorUnit := unit
+    tensorHom := map
+    whiskerLeft x {y z} f := map (𝟙 _) f
+    whiskerRight {x y} f z := map f (𝟙 _)
+    associator x y z :=
+      letI := convo' x y
+      letI := convo' x z
+      letI : DayConvolution (ι.obj x) (convo' y z).convolution :=
+        .transportRight (convo' _ _) (.refl _)
+      letI : DayConvolution (convo' x y).convolution (ι.obj z) :=
+        .transportLeft (convo' _ _) (.refl _)
+      ffι.preimageIso <| DayConvolution.associator (ι.obj x) (ι.obj y) (ι.obj z)
+    leftUnitor := sorry
+    rightUnitor := sorry }
 
 end DayConvolutionMonoidalCategory
 
