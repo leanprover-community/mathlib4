@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 
