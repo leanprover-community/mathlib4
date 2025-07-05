@@ -374,7 +374,7 @@ theorem bσiInf_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
 theorem σiSup_lt_iff : iSup f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
   ⟨fun h => ⟨iSup f, h, le_σiSup f⟩, fun ⟨_, h, hb⟩ => (σiSup_le hb).trans_lt h⟩
 
-theorem σlt_iInf_iff : a < iInf f ↔ ∃ b, a < b ∧ ∀ i, b ≤ f i :=
+theorem lt_σiInf_iff : a < iInf f ↔ ∃ b, a < b ∧ ∀ i, b ≤ f i :=
   σiSup_lt_iff (α := αᵒᵈ)
 
 end SigmaCompleteLattice
