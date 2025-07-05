@@ -85,8 +85,7 @@ lemma innerDual_sUnion (S : Set (Set E)) : innerDual (⋃₀ S) = sInf (innerDua
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
 lemma innerDual_eq_iInter_innerDual_singleton :
-    innerDual s = ⋂ i : s, (innerDual {i.val} : Set E) := by
-  ext; simp [forall_swap (α := E)]
+    innerDual s = ⋂ i : s, (innerDual {i.val} : Set E) := by ext; simp
 
 lemma isClosed_innerDual : IsClosed (innerDual s : Set E) := by
   -- reduce the problem to showing that dual cone of a singleton `{x}` is closed
@@ -185,7 +184,7 @@ theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
     innerDual (innerDual (C : Set E)) = C := by
   ext x
   constructor
-  · simp only [SetLike.mem_coe, mem_innerDual, mem_setOf_eq]
+  · simp only [SetLike.mem_coe, mem_innerDual]
     contrapose!
     simpa [real_inner_comm x] using C.hyperplane_separation'
   · rintro hx y h
@@ -202,10 +201,10 @@ theorem relative_hyperplane_separation {C : ProperCone ℝ E} {f : E →L[ℝ] F
     -- suppose `b ∈ C.map f`
     simp only [map, ClosedSubmodule.map, Submodule.closure, Submodule.topologicalClosure,
       AddSubmonoid.topologicalClosure, Submodule.coe_toAddSubmonoid, Submodule.map_coe,
-      ContinuousLinearMap.coe_restrictScalars, ClosedSubmodule.coe_toSubmodule,
+      ContinuousLinearMap.coe_restrictScalars', ClosedSubmodule.coe_toSubmodule,
       ClosedSubmodule.mem_mk, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
-      mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_innerDual, forall_exists_index,
-      and_imp, Classical.skolem, forall_and, ContinuousLinearMap.adjoint_inner_right]
+      mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, Classical.skolem, forall_and,
+      mem_innerDual, ContinuousLinearMap.adjoint_inner_right, forall_exists_index, and_imp]
           -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
     rintro x seq hmem hx htends y hinner
     obtain rfl : f ∘ seq = x := funext hx
