@@ -3,7 +3,7 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.SmoothNumbers
@@ -44,7 +44,7 @@ Euler product, multiplicative function
 
 /-- If `f` is multiplicative and summable, then its values at natural numbers `> 1`
 have norm strictly less than `1`. -/
-lemma Summable.norm_lt_one {F : Type*} [NormedField F] [CompleteSpace F] {f : ℕ →* F}
+lemma Summable.norm_lt_one {F : Type*} [NormedDivisionRing F] [CompleteSpace F] {f : ℕ →* F}
     (hsum : Summable f) {p : ℕ} (hp : 1 < p) :
     ‖f p‖ < 1 := by
   refine summable_geometric_iff_norm_lt_one.mp ?_
@@ -82,11 +82,13 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
     Summable (fun m : factoredNumbers s ↦ ‖f m‖) ∧
       HasSum (fun m : factoredNumbers s ↦ f m)
         (∏ p ∈ s with p.Prime, ∑' n : ℕ, f (p ^ n)) := by
-  induction' s using Finset.induction with p s hp ih
-  · rw [factoredNumbers_empty]
-    simp only [not_mem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
+  induction s using Finset.induction with
+  | empty =>
+    rw [factoredNumbers_empty]
+    simp only [notMem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
     exact ⟨(Set.finite_singleton 1).summable (‖f ·‖), hf₁ ▸ hasSum_singleton 1 f⟩
-  · rw [filter_insert]
+  | insert p s hp ih =>
+    rw [filter_insert]
     split_ifs with hpp
     · constructor
       · simp only [← (equivProdNatFactoredNumbers hpp hp).summable_iff, Function.comp_def,
@@ -125,7 +127,7 @@ lemma norm_tsum_factoredNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0
   simp_rw [mem_ball_zero_iff] at hN
   refine ⟨N, fun s hs ↦ ?_⟩
   have := hN _ <| factoredNumbers_compl hs
-  rwa [← tsum_subtype_add_tsum_subtype_compl hsum (factoredNumbers s),
+  rwa [← hsum.tsum_subtype_add_tsum_subtype_compl (factoredNumbers s),
     add_sub_cancel_left, tsum_eq_tsum_diff_singleton (factoredNumbers s)ᶜ hf₀]
 
 -- Versions of the three lemmas above for `smoothNumbers N`

@@ -32,9 +32,8 @@ $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses 
 coercions. -/
 theorem radius_eq_liminf :
     p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
-  -- Porting note: added type ascription to make elaborated statement match Lean 3 version
   have :
-    ∀ (r : ℝ≥0) {n : ℕ},
+    ∀ (r : ℝ≥0) {n},
       0 < n → ((r : ℝ≥0∞) ≤ 1 / ↑(‖p n‖₊ ^ (1 / (n : ℝ))) ↔ ‖p n‖₊ * r ^ n ≤ 1) := by
     intro r n hn
     have : 0 < (n : ℝ) := Nat.cast_pos.2 hn

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.HomCongr
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
@@ -615,7 +615,7 @@ theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverC
 def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
     (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ≅
     yoneda.op ⋙ coyoneda ⋙
-      (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).functor :=
+      (Functor.whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).functor :=
   NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y =>
     (overEquivPresheafCostructuredArrow A).fullyFaithfulFunctor.homEquiv.toIso ≪≫
       (Iso.homCongr

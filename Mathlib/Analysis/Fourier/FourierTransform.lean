@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
@@ -39,7 +39,7 @@ multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped w
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
 `e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)` (for which we
-introduce the notation `𝐞` in the locale `FourierTransform`).
+introduced the notation `𝐞` in the locale `FourierTransform`).
 
 Another familiar case (which generalizes the previous one) is when `V = W` is an inner product space
 over `ℝ` and `L` is the scalar product. We introduce two notations `𝓕` for the Fourier transform in
@@ -115,7 +115,7 @@ section Continuous
    a topology); but it seems hard to imagine cases where this extra generality would be useful, and
    allowing it would complicate matters in the most important use cases.
 -/
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
@@ -125,8 +125,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   -- first prove one-way implication
   have aux {g : V → E} (hg : Integrable g μ) (x : W) :
       Integrable (fun v : V ↦ e (-L v x) • g v) μ := by
-    have c : Continuous fun v ↦ e (-L v x) :=
-      he.comp (hL.comp (continuous_prod_mk.mpr ⟨continuous_id, continuous_const⟩)).neg
+    have c : Continuous fun v ↦ e (-L v x) := he.comp (hL.comp (.prodMk_left _)).neg
     simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1), Circle.norm_smul]
     exact hg.norm
   -- then use it for both directions
@@ -155,13 +154,13 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (Circle.norm_smul _ _)
   · exact hf.norm
   · refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
-    exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
+    exact (hL.comp (.prodMk_right _)).neg
 
 end Continuous
 
 section Fubini
 
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
   {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
@@ -185,16 +184,16 @@ theorem integral_bilin_fourierIntegral_eq_flip
   _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ := by
     rw [integral_integral_swap]
     have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
-      (hg.norm.prod_mul hf.norm).const_mul _
+      (hg.norm.mul_prod hf.norm).const_mul _
     apply this.mono
     · -- This proof can be golfed but becomes very slow; breaking it up into steps
       -- speeds up compilation.
       change AEStronglyMeasurable (fun p : W × V ↦ (M (e (-(L p.2) p.1) • f p.2) (g p.1))) _
       have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
-        refine (Continuous.aestronglyMeasurable ?_).smul hf.1.snd
+        refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
         exact he.comp (hL.comp continuous_swap).neg
       have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
-        (Measure.prod ν μ) := hg.1.fst.prod_mk A
+        (Measure.prod ν μ) := hg.1.comp_fst.prodMk A
       have B : Continuous (fun q ↦ M q.2 q.1 : F × E → G) := M.flip.continuous₂
       apply B.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
     · filter_upwards with ⟨ξ, x⟩
@@ -220,6 +219,13 @@ theorem integral_fourierIntegral_smul_eq_flip
   integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.lsmul ℂ ℂ) he hL hf hg
 
 end Fubini
+
+lemma fourierIntegral_probChar {V W : Type*} {_ : MeasurableSpace V}
+    [AddCommGroup V] [Module ℝ V] [AddCommGroup W] [Module ℝ W]
+    (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ) (μ : Measure V) (f : V → E) (w : W) :
+    fourierIntegral Real.probChar μ L f w =
+      ∫ v : V, Complex.exp (- L v w * Complex.I) • f v ∂μ := by
+  simp_rw [fourierIntegral, Circle.smul_def, Real.probChar_apply, Complex.ofReal_neg]
 
 end VectorFourier
 
@@ -298,21 +304,7 @@ open scoped Real
 
 namespace Real
 
-/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
-def fourierChar : AddChar ℝ 𝕊 where
-  toFun z := .exp (2 * π * z)
-  map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
-  map_add_eq_mul' x y := by simp only; rw [mul_add, Circle.exp_add]
-
-@[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
-
 open FourierTransform
-
-theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) :=
-  rfl
-
-@[continuity]
-theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
@@ -372,12 +364,14 @@ open scoped RealInnerProductSpace
 variable [FiniteDimensional ℝ V]
 
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
-additive character `ω ↦ exp (2 i π ω)`. -/
+additive character `ω ↦ exp (2 i π ω)`.
+Denoted as `𝓕` within the `Real.FourierTransform` namespace. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
 
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign in the exponential. -/
+transform but with opposite sign in the exponential.
+Denoted as `𝓕⁻¹` within the `Real.FourierTransform` namespace. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
@@ -425,7 +419,8 @@ lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V →
   simp [fourierIntegralInv_eq_fourierIntegral_neg, fourierIntegral_comp_linearIsometry]
 
 theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
-    fourierIntegral f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v :=
+    fourierIntegral f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v := by
+  simp_rw [mul_comm _ w]
   rfl
 
 theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :

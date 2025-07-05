@@ -73,8 +73,6 @@ lemma isUnit_iff_natAbs_eq : IsUnit u ↔ u.natAbs = 1 := by simp [natAbs_eq_iff
 
 alias ⟨IsUnit.natAbs_eq, _⟩ := isUnit_iff_natAbs_eq
 
--- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,
--- presumably because `(n : ℤ)` is `Nat.cast` and not just `ofNat`
 @[norm_cast]
 lemma ofNat_isUnit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by simp [isUnit_iff_natAbs_eq]
 

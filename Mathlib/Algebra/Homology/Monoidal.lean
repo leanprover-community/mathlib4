@@ -230,7 +230,7 @@ lemma rightUnitor'_inv (i : I) :
   rw [GradedObject.Monoidal.rightUnitor_inv_apply, assoc, assoc, Iso.cancel_iso_inv_left,
     GradedObject.Monoidal.ι_tensorHom]
   dsimp
-  rw [id_tensorHom, ← MonoidalCategory.whiskerLeft_comp_assoc]
+  rw [id_tensorHom, ← whiskerLeft_comp_assoc]
   congr 2
   rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
   dsimp [tensorUnitIso]
@@ -246,8 +246,7 @@ lemma rightUnitor'_inv_comm (i j : I) :
       tensor_unit_d₂, comp_zero, add_zero]
     rw [mapBifunctor.d₁_eq _ _ _ _ hij _ _ (by simp)]
     dsimp
-    simp only [one_smul, whisker_exchange_assoc,
-      MonoidalCategory.whiskerRight_id, assoc, Iso.inv_hom_id_assoc]
+    simp only [one_smul, whisker_exchange_assoc, whiskerRight_id, assoc, Iso.inv_hom_id_assoc]
   · simp only [shape _ _ _ hij, comp_zero, zero_comp]
 
 /-- The right unitor for the tensor product of homological complexes. -/
@@ -288,21 +287,26 @@ noncomputable def Monoidal.inducingFunctorData :
   εIso := tensorUnitIso C c
   whiskerLeft_eq K₁ K₂ L₂ g := by
     dsimp [forget]
-    erw [comp_id, id_comp]
+    rw [comp_id]
+    erw [id_comp]
     rfl
   whiskerRight_eq {K₁ L₁} f K₂ := by
     dsimp [forget]
-    erw [comp_id, id_comp]
+    rw [comp_id]
+    erw [id_comp]
     rfl
   tensorHom_eq {K₁ L₁ K₂ L₂} f g := by
     dsimp [forget]
-    erw [comp_id, id_comp]
+    rw [comp_id]
+    erw [id_comp]
     rfl
   associator_eq K₁ K₂ K₃ := by
     dsimp [forget]
     simp only [tensorHom_id, whiskerRight_tensor, id_whiskerRight,
       id_comp, Iso.inv_hom_id, comp_id, assoc]
-    erw [id_whiskerRight, id_comp, id_comp]
+    erw [id_whiskerRight]
+    rw [id_comp]
+    erw [id_comp]
     rfl
   leftUnitor_eq K := by
     dsimp

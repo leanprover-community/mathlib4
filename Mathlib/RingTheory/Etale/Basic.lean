@@ -38,10 +38,8 @@ variable (R : Type u) [CommRing R]
 variable (A : Type u) [CommRing A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally étale if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`.
-
-See <https://stacks.math.columbia.edu/tag/00UQ> -/
-@[mk_iff]
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`. -/
+@[mk_iff, stacks 00UQ]
 class FormallyEtale : Prop where
   comp_bijective :
     ∀ ⦃B : Type u⦄ [CommRing B],
@@ -169,11 +167,9 @@ section
 variable (R : Type u) [CommRing R]
 variable (A : Type u) [CommRing A] [Algebra R A]
 
-/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation.
-
-Note that the definition <https://stacks.math.columbia.edu/tag/00U1> in the stacks project is
-different, but <https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent
-to the definition here. -/
+/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
+@[stacks 00U1 "Note that this is a different definition from this Stacks entry, but
+<https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent to the definition here."]
 class Etale : Prop where
   formallyEtale : FormallyEtale R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
@@ -214,3 +210,24 @@ theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A whe
 end Etale
 
 end Algebra
+
+namespace RingHom
+
+variable {R S : Type u} [CommRing R] [CommRing S]
+
+/--
+A ring homomorphism `R →+* A` is formally etale if it is formally unramified and formally smooth.
+See `Algebra.FormallyEtale`.
+-/
+@[algebraize Algebra.FormallyEtale]
+def FormallyEtale (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.FormallyEtale R S
+
+lemma formallyEtale_algebraMap [Algebra R S] :
+    (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
+  delta FormallyEtale
+  congr!
+  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+
+end RingHom

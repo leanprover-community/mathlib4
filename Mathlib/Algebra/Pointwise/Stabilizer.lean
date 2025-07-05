@@ -3,8 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
 import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Stabilizer of a set under a pointwise action
@@ -47,7 +48,7 @@ lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b 
 lemma map_stabilizer_le (f : G →* H) (s : Set G) :
     (stabilizer G s).map f ≤ stabilizer H (f '' s) := by
   rintro a
-  simp only [Subgroup.mem_map, mem_stabilizer_iff, exists_prop, forall_exists_index, and_imp]
+  simp only [Subgroup.mem_map, mem_stabilizer_iff, forall_exists_index, and_imp]
   rintro a ha rfl
   rw [← image_smul_distrib, ha]
 
@@ -96,7 +97,7 @@ lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s �
 
 @[to_additive]
 lemma stabilizer_union_eq_right (hdisj : Disjoint s t) (hstab : stabilizer G t ≤ stabilizer G s)
-    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G s)  :
+    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G s) :
     stabilizer G (s ∪ t) = stabilizer G t := by
   rw [union_comm, stabilizer_union_eq_left hdisj.symm hstab (union_comm .. ▸ hstab_union)]
 

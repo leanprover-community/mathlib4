@@ -85,21 +85,21 @@ instance instAddCommMonoid [ContinuousAdd F] : AddCommMonoid (E →WOT[𝕜] F) 
 ```
 would cause the following to fail :
 ```
-example [TopologicalAddGroup F] :
+example [IsTopologicalAddGroup F] :
   (instAddCommMonoid : AddCommMonoid (E →WOT[𝕜] F)) =
     instAddCommGroup.toAddCommMonoid := rfl
 ```
 -/
 
 unseal ContinuousLinearMapWOT in
-instance instAddCommGroup [TopologicalAddGroup F] : AddCommGroup (E →WOT[𝕜] F) :=
+instance instAddCommGroup [IsTopologicalAddGroup F] : AddCommGroup (E →WOT[𝕜] F) :=
   inferInstanceAs <| AddCommGroup (E →L[𝕜] F)
 
 unseal ContinuousLinearMapWOT in
-instance instModule [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] : Module 𝕜 (E →WOT[𝕜] F) :=
+instance instModule [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] : Module 𝕜 (E →WOT[𝕜] F) :=
   inferInstanceAs <| Module 𝕜 (E →L[𝕜] F)
 
-variable (𝕜) (E) (F) [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable (𝕜) (E) (F) [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 unseal ContinuousLinearMapWOT in
 /-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
@@ -165,7 +165,7 @@ of this topology. In particular, we show that it is a topological vector space.
 -/
 section Topology
 
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜) (E) (F) in
 /-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
@@ -226,18 +226,25 @@ instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := .induced (induc
 instance instContinuousNeg : ContinuousNeg (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 instance instContinuousSMul : ContinuousSMul 𝕜 (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 
-instance instTopologicalAddGroup : TopologicalAddGroup (E →WOT[𝕜] F) where
+#adaptation_note /-- 2025-03-29 lean4#7717 Needed to add these instances explicitly to avoid a
+limitation with parent instance inference. TODO(kmill): fix this. -/
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E →WOT[𝕜] F) where
+  toContinuousAdd := inferInstance
+  toContinuousNeg := inferInstance
 
 instance instUniformSpace : UniformSpace (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F) inferInstance
 
-instance instUniformAddGroup : UniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)
+instance instIsUniformAddGroup : IsUniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)
+
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  ContinuousLinearMapWOT.instIsUniformAddGroup
 
 end Topology
 
 /-! ### The WOT is induced by a family of seminorms -/
 section Seminorms
 
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 /-- The family of seminorms that induce the weak operator topology, namely `‖y (A x)‖` for
 all `x` and `y`. -/
@@ -272,7 +279,7 @@ end Seminorms
 
 section toWOT_continuous
 
-variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [ContinuousSMul 𝕜 E]
+variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [ContinuousSMul 𝕜 E]
 
 /-- The weak operator topology is coarser than the bounded convergence topology, i.e. the inclusion
 map is continuous. -/

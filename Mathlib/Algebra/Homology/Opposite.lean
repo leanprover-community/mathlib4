@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
@@ -74,7 +75,7 @@ variable [HasZeroMorphisms V]
 protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.symm where
   X i := op (X.X i)
   d i j := (X.d j i).op
-  shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
+  shape i j hij := by rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
@@ -82,7 +83,7 @@ protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.sym
 protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒᵖ c where
   X i := op (X.X i)
   d i j := (X.d j i).op
-  shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
+  shape i j hij := by rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
@@ -90,7 +91,7 @@ protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒ
 protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.symm where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
-  shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
+  shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
@@ -98,7 +99,7 @@ protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.s
 protected def unopSymm (X : HomologicalComplex Vᵒᵖ c.symm) : HomologicalComplex V c where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
-  shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
+  shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
 variable (V c)
@@ -197,8 +198,7 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
   counitIso := unopCounitIso V c
   functor_unitIso_comp X := by
     ext
-    simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
-      opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
+    simp only [comp_f]
     exact Category.comp_id _
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
@@ -220,6 +220,86 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
   infer_instance
 
 variable {V c}
+
+@[simp]
+lemma quasiIsoAt_opFunctor_map_iff
+    {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((opFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i := by
+  simp only [quasiIsoAt_iff]
+  exact ShortComplex.quasiIso_opMap_iff ((shortComplexFunctor V c i).map φ)
+
+@[simp]
+lemma quasiIsoAt_unopFunctor_map_iff
+    {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((unopFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i := by
+  rw [← quasiIsoAt_opFunctor_map_iff]
+  rfl
+
+instance {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt φ i] :
+    QuasiIsoAt ((opFunctor _ _).map φ.op) i := by
+  rw [quasiIsoAt_opFunctor_map_iff]
+  infer_instance
+
+instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt φ i] :
+    QuasiIsoAt ((unopFunctor _ _).map φ.op) i := by
+  rw [quasiIsoAt_unopFunctor_map_iff]
+  infer_instance
+
+@[simp]
+lemma quasiIso_opFunctor_map_iff
+    {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
+    QuasiIso ((opFunctor _ _).map φ.op) ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, quasiIsoAt_opFunctor_map_iff]
+
+@[simp]
+lemma quasiIso_unopFunctor_map_iff
+    {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
+    QuasiIso ((unopFunctor _ _).map φ.op) ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, quasiIsoAt_unopFunctor_map_iff]
+
+instance {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] [QuasiIso φ] :
+    QuasiIso ((opFunctor _ _).map φ.op) := by
+  rw [quasiIso_opFunctor_map_iff]
+  infer_instance
+
+instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] [QuasiIso φ] :
+    QuasiIso ((unopFunctor _ _).map φ.op) := by
+  rw [quasiIso_unopFunctor_map_iff]
+  infer_instance
+
+lemma ExactAt.op {K : HomologicalComplex V c} {i : ι} (h : K.ExactAt i) :
+    K.op.ExactAt i :=
+  ShortComplex.Exact.op h
+
+lemma ExactAt.unop {K : HomologicalComplex Vᵒᵖ c} {i : ι} (h : K.ExactAt i) :
+    K.unop.ExactAt i :=
+  ShortComplex.Exact.unop h
+
+@[simp]
+lemma exactAt_op_iff (K : HomologicalComplex V c) {i : ι} :
+    K.op.ExactAt i ↔ K.ExactAt i :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
+
+lemma Acyclic.op {K : HomologicalComplex V c} (h : K.Acyclic) :
+    K.op.Acyclic :=
+  fun i ↦ (h i).op
+
+lemma Acyclic.unop {K : HomologicalComplex Vᵒᵖ c} (h : K.Acyclic) :
+    K.unop.Acyclic :=
+  fun i ↦ (h i).unop
+
+@[simp]
+lemma acyclic_op_iff (K : HomologicalComplex V c) :
+    K.op.Acyclic ↔ K.Acyclic :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/

@@ -7,7 +7,7 @@ import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Category of types with an omega complete partial order
@@ -18,10 +18,10 @@ an `OmegaCompletePartialOrder`.
 
 ## Main definitions
 
- * `ωCPO`
-   * an instance of `Category` and `ConcreteCategory`
+* `ωCPO`
+  * an instance of `Category` and `ConcreteCategory`
 
- -/
+-/
 
 
 open CategoryTheory
@@ -30,39 +30,38 @@ universe u v
 
 
 /-- The category of types with an omega complete partial order. -/
-def ωCPO : Type (u + 1) :=
-  Bundled OmegaCompletePartialOrder
+structure ωCPO : Type (u + 1) where
+  /-- The underlying type. -/
+  carrier : Type u
+  [str : OmegaCompletePartialOrder carrier]
+
+attribute [instance] ωCPO.str
 
 namespace ωCPO
 
 open OmegaCompletePartialOrder
 
-instance : BundledHom @ContinuousHom where
-  toFun := @ContinuousHom.Simps.apply
-  id := @ContinuousHom.id
-  comp := @ContinuousHom.comp
-  hom_ext := @ContinuousHom.coe_inj
-
--- Porting note: `deriving instance ConcreteCategory` didn't work.
-deriving instance LargeCategory for ωCPO
-instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
-
 instance : CoeSort ωCPO Type* :=
-  Bundled.coeSort
+  ⟨carrier⟩
 
 /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
-def of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO :=
-  Bundled.of α
+abbrev of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO where
+  carrier := α
 
-@[simp]
 theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
 
+instance : LargeCategory.{u} ωCPO where
+  Hom X Y := ContinuousHom X Y
+  id X := ContinuousHom.id
+  comp f g := g.comp f
+
+instance : ConcreteCategory ωCPO (ContinuousHom · ·) where
+  hom f := f
+  ofHom f := f
+
 instance : Inhabited ωCPO :=
   ⟨of PUnit⟩
-
-instance (α : ωCPO) : OmegaCompletePartialOrder α :=
-  α.str
 
 section
 
@@ -77,12 +76,11 @@ def product {J : Type v} (f : J → ωCPO.{v}) : Fan f :=
 /-- The pi-type is a limit cone for the product. -/
 def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
   lift s :=
-    -- Porting note: Original proof didn't have `.toFun`
-    ⟨⟨fun t j => (s.π.app ⟨j⟩).toFun t, fun _ _ h j => (s.π.app ⟨j⟩).monotone h⟩,
+    ⟨⟨fun t j => (s.π.app ⟨j⟩) t, fun _ _ h j => (s.π.app ⟨j⟩).monotone h⟩,
       fun x => funext fun j => (s.π.app ⟨j⟩).continuous x⟩
   uniq s m w := by
     ext t; funext j -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext t j`
-    change m.toFun t j = (s.π.app ⟨j⟩).toFun t
+    change m t j = (s.π.app ⟨j⟩) t
     rw [← w ⟨j⟩]
     rfl
   fac _ _ := rfl
@@ -109,26 +107,24 @@ def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePar
   .mk (OrderHom.Subtype.val _) fun _ => rfl
 
 /-- A construction of the equalizer fork. -/
--- Porting note: Changed `{ a // f a = g a }` to `{ a // f.toFun a = g.toFun a }`
 def equalizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : Fork f g :=
-  Fork.ofι (P := ωCPO.of { a // f.toFun a = g.toFun a }) (equalizerι f g)
+  Fork.ofι (P := ωCPO.of { a // f a = g a }) (equalizerι f g)
     (ContinuousHom.ext _ _ fun x => x.2)
 
 /-- The equalizer fork is a limit. -/
 def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
   Fork.IsLimit.mk' _ fun s =>
-    -- Porting note: Changed `s.ι x` to `s.ι.toFun x`
-    ⟨{  toFun := fun x => ⟨s.ι.toFun x, by apply ContinuousHom.congr_fun s.condition⟩
+    ⟨{  toFun := fun x => ⟨s.ι x, by apply ContinuousHom.congr_fun s.condition⟩
         monotone' := fun _ _ h => s.ι.monotone h
         map_ωSup' := fun x => Subtype.ext (s.ι.continuous x)
       }, by ext; rfl, fun hm => by
-      apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
+      ext x : 2; apply Subtype.ext ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
       apply ContinuousHom.congr_fun hm⟩
 
 end HasEqualizers
 
 instance : HasProducts.{v} ωCPO.{v} :=
-  fun _ => { has_limit := fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm }
+  fun _ => { has_limit := fun _ => hasLimit_of_iso Discrete.natIsoFunctor.symm }
 
 instance {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   HasLimit.mk ⟨_, HasEqualizers.isEqualizer f g⟩

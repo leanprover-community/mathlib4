@@ -72,15 +72,7 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
       ∑ x_1 ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
   have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp only [Nat.cast_succ]
   rw [cast_succ, eval_monomial, eval_monomial, add_comm, add_pow]
-  -- Porting note: `apply_congr` hadn't been ported yet, so `congr` & `ext` is used.
-  conv_lhs =>
-    congr
-    · congr
-      · skip
-      · congr
-        · skip
-        · ext
-          rw [one_pow, mul_one, mul_comm]
+  simp only [one_pow, mul_one, mul_comm (y ^ _) (d.choose _)]
   rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
     mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
   refine sum_congr rfl fun y _hy => ?_
@@ -95,7 +87,6 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     coeff (p.comp q) (natDegree p * natDegree q) =
     leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [comp, eval₂_def, coeff_sum]
-  -- Porting note: `convert` → `refine`
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
   case h₂ =>
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]

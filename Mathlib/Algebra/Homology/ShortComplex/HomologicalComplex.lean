@@ -70,7 +70,9 @@ noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
 short complex `K.sc i` has. -/
 abbrev HasHomology := (K.sc i).HasHomology
 
-section variable [K.HasHomology i]
+section
+
+variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
@@ -232,6 +234,7 @@ noncomputable def fromOpcycles :
   K.opcycles i ⟶ K.X j  :=
   K.descOpcycles (K.d i j) (c.prev i) rfl (K.d_comp_d _ _ _)
 
+omit [K.HasHomology i] in
 @[reassoc (attr := simp)]
 lemma d_pOpcycles [K.HasHomology j] : K.d i j ≫ K.pOpcycles j = 0 := by
   by_cases hij : c.Rel i j
@@ -467,7 +470,7 @@ noncomputable def homologyFunctorIso' [CategoryWithHomology C]
     (hi : c.prev j = i) (hk : c.next j = k) :
     homologyFunctor C c j ≅
       shortComplexFunctor' C c i j k ⋙ ShortComplex.homologyFunctor C :=
-  homologyFunctorIso C c j ≪≫ isoWhiskerRight (natIsoSc' C c i j k hi hk) _
+  homologyFunctorIso C c j ≪≫ Functor.isoWhiskerRight (natIsoSc' C c i j k hi hk) _
 
 instance [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
 instance [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where
@@ -613,6 +616,24 @@ lemma exactAt_iff_isZero_homology [K.HasHomology i] :
     K.ExactAt i ↔ IsZero (K.homology i) := by
   dsimp [homology]
   rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
+
+variable {K i} in
+lemma ExactAt.isZero_homology [K.HasHomology i] (h : K.ExactAt i) :
+    IsZero (K.homology i) := by
+  rwa [← exactAt_iff_isZero_homology]
+
+/-- A homological complex `K` is acyclic if it is exact at `i` for any `i`. -/
+def Acyclic := ∀ i, K.ExactAt i
+
+lemma acyclic_iff :
+    K.Acyclic ↔ ∀ i, K.ExactAt i := by rfl
+
+lemma acyclic_of_isZero (hK : IsZero K) :
+    K.Acyclic := by
+  rw [acyclic_iff]
+  intro i
+  apply ShortComplex.exact_of_isZero_X₂
+  exact (eval _ _ i).map_isZero hK
 
 end HomologicalComplex
 
@@ -796,7 +817,7 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
 lemma opcyclesIsoSc'_inv_fromOpcycles :
     (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =
       (K.sc' i j k).fromOpcycles := by
-  simp only [← cancel_epi (K.sc' i j k).pOpcycles,  pOpcycles_opcyclesIsoSc'_inv_assoc,
+  simp only [← cancel_epi (K.sc' i j k).pOpcycles, pOpcycles_opcyclesIsoSc'_inv_assoc,
     p_fromOpcycles, ShortComplex.p_fromOpcycles, shortComplexFunctor'_obj_g]
 
 /-- The opcycles of a homological complex in degree `j` can be computed

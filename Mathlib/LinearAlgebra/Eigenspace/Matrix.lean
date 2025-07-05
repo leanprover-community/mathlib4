@@ -33,7 +33,7 @@ lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
     HasEigenvector (toLin b b (diagonal d)) (d i) (b i) :=
   ⟨mem_eigenspace_iff.mpr <| by simp [diagonal], Basis.ne_zero b i⟩
 
-/--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
+/-- Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i)  :=
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
@@ -54,8 +54,8 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisor
       apply Submodule.mem_iSup_of_mem ⟨i, rfl⟩
       rw [mem_eigenspace_iff]
       exact (hasEigenvector_toLin_diagonal d i b).apply_eq_smul
-    have hμ_not_mem : μ ∉ Set.range d := by simpa using fun i ↦ (hμ i)
-    have := eigenspaces_iSupIndep (toLin b b (diagonal d)) |>.disjoint_biSup hμ_not_mem
+    have hμ_notMem : μ ∉ Set.range d := by simpa using fun i ↦ (hμ i)
+    have := eigenspaces_iSupIndep (toLin b b (diagonal d)) |>.disjoint_biSup hμ_notMem
     rw [h_iSup, disjoint_top] at this
     exact h_eig this
   · rintro ⟨i, rfl⟩

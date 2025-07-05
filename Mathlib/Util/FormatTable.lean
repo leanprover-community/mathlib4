@@ -37,7 +37,7 @@ def formatTable (headers : Array String) (table : Array (Array String))
     (alignments : Option (Array Alignment) := none) :
     String := Id.run do
   -- If no alignments are provided, default to left alignment for all columns.
-  let alignments := alignments.getD (Array.mkArray headers.size Alignment.left)
+  let alignments := alignments.getD (Array.replicate headers.size Alignment.left)
   -- Escape all vertical bar characters inside a table cell,
   -- otherwise these could get interpreted as starting a new row or column.
   let escapedHeaders := headers.map (fun header => header.replace "|" "\\|")

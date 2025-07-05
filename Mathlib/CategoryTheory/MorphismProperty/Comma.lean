@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -94,6 +94,7 @@ initialize_simps_projections Comma.Hom (toCommaMorphism → hom)
 @[simps]
 def id [Q.ContainsIdentities] [W.ContainsIdentities] (X : P.Comma L R Q W) : Comma.Hom X X where
   left := 𝟙 X.left
+  right := 𝟙 X.right
   prop_hom_left := Q.id_mem X.toComma.left
   prop_hom_right := W.id_mem X.toComma.right
 
@@ -155,7 +156,7 @@ instance [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (i : X.toComma 
   constructor <;> ext : 1 <;> simp
 
 /-- Any isomorphism between objects of `P.Comma L R Q W` in `Comma L R` is also an isomorphism
-in `P.Comma L R Q W`.  -/
+in `P.Comma L R Q W`. -/
 @[simps]
 def isoFromComma [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W}
     (i : X.toComma ≅ Y.toComma) : X ≅ Y where
@@ -226,6 +227,31 @@ lemma eqToHom_right {X Y : P.Comma L R Q W} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
   subst h
   rfl
+
+end
+
+section
+
+variable {P P' : MorphismProperty T} {Q Q' : MorphismProperty A} {W W' : MorphismProperty B}
+  (hP : P ≤ P') (hQ : Q ≤ Q') (hW : W ≤ W')
+
+variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsMultiplicative]
+
+/-- Weaken the conditions on all components. -/
+def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
+  obj X := ⟨X.toComma, hP _ X.2⟩
+  map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
+
+/-- Weakening the condition on the structure morphisms is fully faithful. -/
+def fullyFaithfulChangeProp :
+    (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
+  preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
+
+instance : (changeProp L R hP hQ hW).Faithful where
+  map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
+
+instance : (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
+  (fullyFaithfulChangeProp ..).full
 
 end
 

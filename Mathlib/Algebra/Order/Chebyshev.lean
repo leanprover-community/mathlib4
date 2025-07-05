@@ -45,7 +45,8 @@ variable {ι α β : Type*}
 
 
 section SMul
-variable [LinearOrderedSemiring α] [ExistsAddOfLE α] [LinearOrderedCancelAddCommMonoid β]
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
   [Module α β] [OrderedSMul α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
@@ -92,7 +93,8 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 
 section Mul
-variable [LinearOrderedSemiring α] [ExistsAddOfLE α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
@@ -150,7 +152,8 @@ theorem Antivary.card_mul_sum_le_sum_mul_sum (hfg : Antivary f g) :
 
 end Mul
 
-variable [LinearOrderedSemifield α] [ExistsAddOfLE α] {s : Finset ι} {f : ι → α}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  {s : Finset ι} {f : ι → α}
 
 /-- Special case of **Jensen's inequality** for sums of powers. -/
 lemma pow_sum_div_card_le_sum_pow (hf : ∀ i ∈ s, 0 ≤ f i) (n : ℕ) :

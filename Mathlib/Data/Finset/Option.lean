@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 
 /-!
 # Finite sets in `Option α`
@@ -87,7 +88,7 @@ theorem mem_eraseNone {s : Finset (Option α)} {x : α} : x ∈ eraseNone s ↔ 
   simp [eraseNone]
 
 lemma forall_mem_eraseNone {s : Finset (Option α)} {p : Option α → Prop} :
-    (∀ a ∈ eraseNone s, p a) ↔ ∀ a : α, (a : Option α) ∈ s → p a := by simp [Option.forall]
+    (∀ a ∈ eraseNone s, p a) ↔ ∀ a : α, (a : Option α) ∈ s → p a := by simp
 
 theorem eraseNone_eq_biUnion [DecidableEq α] (s : Finset (Option α)) :
     eraseNone s = s.biUnion Option.toFinset := by

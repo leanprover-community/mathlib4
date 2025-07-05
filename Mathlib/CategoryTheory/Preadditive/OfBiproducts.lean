@@ -3,7 +3,7 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Tactic.CategoryTheory.Reassoc
 /-!
@@ -52,12 +52,12 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
     intro f
     ext
     · simp
-    · simp [biprod.lift_fst, Category.assoc, biprod.inr_fst, comp_zero]
+    · simp [Category.assoc]
   have hl : ∀ f : X ⟶ Y, biprod.lift f (0 : X ⟶ Y) = f ≫ biprod.inl := by
     intro f
     ext
     · simp
-    · simp [biprod.lift_snd, Category.assoc, biprod.inl_snd, comp_zero]
+    · simp [biprod.lift_snd, Category.assoc, comp_zero]
   exact {
     left_id := fun f => by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc],
     right_id := fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]

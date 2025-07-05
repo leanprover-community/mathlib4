@@ -54,9 +54,8 @@ open Finset
 theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x ∈ Icc 1 n, x ! = sf n
   | 0 => rfl
   | n + 1 => by
-    rw [← Ico_succ_right 1 n.succ, prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n,
-    Nat.factorial_succ, Ico_succ_right 1 n, prod_Icc_factorial n, superFactorial, factorial,
-    Nat.succ_eq_add_one, mul_comm]
+    rw [← Ico_add_one_right_eq_Icc 1, prod_Ico_succ_top le_add_self, Nat.factorial_succ,
+      Ico_add_one_right_eq_Icc 1 n, prod_Icc_factorial n, superFactorial, factorial, mul_comm]
 
 @[simp]
 theorem prod_range_factorial_succ (n : ℕ) : ∏ x ∈ range n, (x + 1)! = sf n :=
@@ -73,7 +72,7 @@ variable {R : Type*} [CommRing R]
 theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
     (Matrix.vandermonde (fun (i : Fin (n + 1)) ↦ (i : R))).det = Nat.superFactorial n := by
   induction' n with n hn
-  · simp [Matrix.det_vandermonde]
+  · simp
   · rw [Nat.superFactorial, Matrix.det_vandermonde, Fin.prod_univ_succAbove _ 0]
     push_cast
     congr

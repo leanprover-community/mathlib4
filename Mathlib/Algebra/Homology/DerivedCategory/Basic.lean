@@ -50,9 +50,6 @@ instance should be obtained at the beginning of the proof, using the term
 - construct the distinguished triangle associated to a short exact sequence
 of cochain complexes (done), and compare the associated connecting homomorphism
 with the one defined in `Algebra.Homology.HomologySequence`.
-- refactor the definition of Ext groups using morphisms in the derived category
-(which may be shrunk to the universe `v` at least when `C` has enough projectives
-or enough injectives).
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -72,10 +69,11 @@ namespace HomotopyCategory
 
 /-- The triangulated subcategory of `HomotopyCategory C (ComplexShape.up ℤ)` consisting
 of acyclic complexes. -/
-def subcategoryAcyclic : Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
+noncomputable def subcategoryAcyclic :
+    Triangulated.Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (homologyFunctor C (ComplexShape.up ℤ) 0).homologicalKernel
 
-instance : ClosedUnderIsomorphisms (subcategoryAcyclic C).P := by
+instance : (subcategoryAcyclic C).P.IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 
@@ -201,11 +199,11 @@ noncomputable instance : IsTriangulated (DerivedCategory C) :=
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).W
 
-instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
+instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Full :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Full
 
-instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
+instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
@@ -273,5 +271,9 @@ lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
   rw [SingleFunctors.id_hom, NatTrans.id_app]
   erw [Category.id_comp, Category.id_comp]
   rfl
+
+lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ QuasiIso φ := by
+  apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
 
 end DerivedCategory

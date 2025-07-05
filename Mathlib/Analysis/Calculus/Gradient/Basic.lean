@@ -37,7 +37,7 @@ This file contains the following parts of gradient.
 * the theorems about the continuity of a function admitting a gradient.
 -/
 
-open Topology InnerProductSpace Set
+open Topology InnerProductSpace Function Set
 
 noncomputable section
 
@@ -68,6 +68,7 @@ def gradientWithin (f : F → 𝕜) (s : Set F) (x : F) : F :=
   (toDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
 
 /-- Gradient of `f` at the point `x`, if it exists.  Zero otherwise.
+Denoted as `∇` within the Gradient namespace.
 
 If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
@@ -77,7 +78,7 @@ def gradient (f : F → 𝕜) (x : F) : F :=
 @[inherit_doc]
 scoped[Gradient] notation "∇" => gradient
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped Gradient
 
@@ -310,12 +311,16 @@ theorem hasGradientWithinAt_const : HasGradientWithinAt (fun _ => c) 0 s x :=
 theorem hasGradientAt_const : HasGradientAt (fun _ => c) 0 x :=
   hasGradientAtFilter_const _ _ _
 
-theorem gradient_const : ∇ (fun _ => c) x = 0 := by
-  rw [gradient, fderiv_const, Pi.zero_apply, map_zero]
+theorem gradient_fun_const : ∇ (fun _ => c) x = 0 := by simp [gradient]
+
+theorem gradient_const : ∇ (const F c) x = 0 := gradient_fun_const x c
 
 @[simp]
-theorem gradient_const' : (∇ fun _ : 𝕜 => c) = fun _ => 0 :=
+theorem gradient_fun_const' : (∇ fun _ : F => c) = fun _ => 0 :=
   funext fun x => gradient_const x c
+
+@[simp]
+theorem gradient_const' : ∇ (const F c) = 0 := gradient_fun_const' c
 
 end Const
 
