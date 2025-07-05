@@ -156,7 +156,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     rcases (zero_le r).eq_or_gt with rfl | hr₀
     · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0 := by simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d := by
-        simp only [← ZMod.natCast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero, and_self]
+        simp only [← ZMod.natCast_eq_zero_iff, ← hf_mod, hr, Int.cast_zero, and_self]
       have : m * m ∣ m * p := habcd ▸ ⟨a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2, by ring⟩
       rw [mul_dvd_mul_iff_left hm₀.ne'] at this
       exact (hp.eq_one_or_self_of_dvd _ this).elim hm₁.ne' hmp.ne

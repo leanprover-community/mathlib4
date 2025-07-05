@@ -555,7 +555,7 @@ theorem coprime_of_root_cyclotomic {n : ℕ} (hpos : 0 < n) {p : ℕ} [hprime : 
   apply Nat.Coprime.symm
   rw [hprime.1.coprime_iff_not_dvd]
   intro h
-  replace h := (ZMod.natCast_zmod_eq_zero_iff_dvd a p).2 h
+  replace h := (ZMod.natCast_eq_zero_iff a p).2 h
   rw [IsRoot.def, eq_natCast, h, ← coeff_zero_eq_eval_zero] at hroot
   by_cases hone : n = 1
   · simp only [hone, cyclotomic_one, zero_sub, coeff_one_zero, coeff_X_zero, neg_eq_zero,

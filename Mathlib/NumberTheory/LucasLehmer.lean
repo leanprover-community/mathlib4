@@ -398,7 +398,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
-  ext <;> simp [mersenne, q, ZMod.natCast_zmod_eq_zero_iff_dvd, -pow_pos]
+  ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, -pow_pos]
   apply Nat.minFac_dvd
 
 theorem ω_pow_eq_neg_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
