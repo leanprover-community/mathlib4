@@ -3,7 +3,7 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.ExternalProduct
+import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 
 /-!
@@ -83,12 +83,12 @@ def uniqueUpToIso (h : DayConvolution F G) (h' : DayConvolution F G) :
 
 @[reassoc (attr := simp)]
 lemma unit_uniqueUpToIso_hom (h : DayConvolution F G) (h' : DayConvolution F G) :
-    h.unit ≫ CategoryTheory.whiskerLeft (tensor C) (h.uniqueUpToIso h').hom = h'.unit := by
+    h.unit ≫ Functor.whiskerLeft (tensor C) (h.uniqueUpToIso h').hom = h'.unit := by
   simp [uniqueUpToIso]
 
 @[reassoc (attr := simp)]
 lemma unit_uniqueUpToIso_inv (h : DayConvolution F G) (h' : DayConvolution F G) :
-    h'.unit ≫ CategoryTheory.whiskerLeft (tensor C) (h.uniqueUpToIso h').inv = h.unit := by
+    h'.unit ≫ Functor.whiskerLeft (tensor C) (h.uniqueUpToIso h').inv = h.unit := by
   simp [uniqueUpToIso]
 
 variable (F G) [DayConvolution F G]
@@ -148,7 +148,7 @@ variable (F G)
 corepresented by `F ⊛ G`. -/
 @[simps!]
 def corepresentableBy :
-    (whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G)|>.CorepresentableBy
+    (Functor.whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G)|>.CorepresentableBy
       (F ⊛ G) where
   homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
   homEquiv_comp := by aesop

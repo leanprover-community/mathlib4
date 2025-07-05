@@ -153,7 +153,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   map₂_associator := fun f g h => by
     dsimp
     simp only [map₂_associator, ← PrelaxFunctor.map₂_comp_assoc, ← mapComp_naturality_right_assoc,
-      Bicategory.whiskerLeft_comp, assoc]
+      whiskerLeft_comp, assoc]
     simp only [map₂_associator, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
       comp_whiskerRight, assoc]
   map₂_leftUnitor := fun f => by
@@ -163,7 +163,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   map₂_rightUnitor := fun f => by
     dsimp
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
-      Bicategory.whiskerLeft_comp, assoc]
+      whiskerLeft_comp, assoc]
 
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 
