@@ -782,10 +782,12 @@ def relIsoOfIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty �
   ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
 
 /-- The lexicographic sum of `r` plus an empty relation is isomorphic to `r`. -/
+@[simps!]
 def sumLexEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty β] : Sum.Lex r s ≃r r :=
   ⟨Equiv.sumEmpty _ _, by simp⟩
 
 /-- The lexicographic sum of an empty relation plus `s` is isomorphic to `s`. -/
+@[simps!]
 def emptySumLex (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : Sum.Lex r s ≃r s :=
   ⟨Equiv.emptySum _ _, by simp⟩
 
