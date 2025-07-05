@@ -923,6 +923,18 @@ lemma drop_length_nil_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     (p.drop n).Nil := by
   simp [drop_length_of_le h]
 
+@[simp]
+lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
+  induction p generalizing n with
+  | nil => simp [drop]
+  | cons => cases n <;> simp_all [drop]
+
+@[simp]
+lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
+  induction p generalizing n with
+  | nil => simp [drop]
+  | cons => cases n <;> simp_all [drop, Nat.add_right_comm]
+
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
@@ -969,6 +981,18 @@ lemma take_support_sublist {u v n} (p : G.Walk u v) :
   · have : p.support = (p.take p.length).support := by simp [take_of_length_le le_rfl]
     exact this ▸ p.take_support_sublist_of_le ‹_›
   · simp [take_of_length_le (le_of_lt ‹_›)]
+
+@[simp]
+lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
+  induction p generalizing n with
+  | nil => simp [take]
+  | cons => cases n <;> simp_all [take]
+
+@[simp]
+lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVert (n ⊓ m) := by
+  induction p generalizing n m with
+  | nil => simp [take]
+  | cons => cases n <;> cases m <;> simp_all [take]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
