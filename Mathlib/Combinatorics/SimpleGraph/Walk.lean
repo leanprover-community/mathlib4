@@ -870,6 +870,10 @@ lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) : (
 lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
   cases p <;> simp
 
+@[simp] lemma nil_copy {x y x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
+    (p.copy hx hy).Nil = p.Nil := by
+  subst_vars; rfl
+
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
@@ -901,6 +905,24 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | p, 0 => p.copy (getVert_zero p).symm rfl
   | .cons _ q, (n + 1) => q.drop n
 
+lemma drop_zero {u v} (p : G.Walk u v) :
+    p.drop 0 = p.copy (getVert_zero p).symm rfl := by
+  cases p <;> simp [Walk.drop]
+
+lemma drop_length_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.drop n = Walk.nil.copy (p.getVert_of_length_le h).symm rfl := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [Walk.drop] at h ⊢
+  | succ n ih =>
+    cases p
+    · simp [Walk.drop]
+    rw [Walk.length_cons, Nat.add_le_add_iff_right] at h
+    simp [Walk.drop, ih h]
+
+lemma drop_length_nil_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    (p.drop n).Nil := by
+  simp [drop_length_of_le h]
+
 @[simp]
 lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
   induction p generalizing n with
@@ -929,6 +951,36 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   | .nil, _ => .nil
   | p, 0 => nil.copy rfl (getVert_zero p).symm
   | .cons h q, (n + 1) => .cons h (q.take n)
+
+lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [Walk.take] at h ⊢
+  | succ n ih =>
+    cases p
+    · simp [Walk.take]
+    rw [Walk.length_cons, Nat.add_le_add_iff_right] at h
+    simp [Walk.take, ih h]
+
+lemma take_support_sublist_succ {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.take n).support.Sublist (p.take (n + 1)).support := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [Walk.take]
+  | succ _ ih => cases p <;> simp [Walk.take, ih]
+
+lemma take_support_sublist_of_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.take n).support.Sublist (p.take k).support := by
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
+  induction t with
+  | zero => rfl
+  | succ t ih => exact (ih (n.le_add_right t)).trans <| take_support_sublist_succ p (n + t)
+
+lemma take_support_sublist {u v n} (p : G.Walk u v) :
+    (p.take n).support.Sublist p.support := by
+  cases le_or_gt n p.length
+  · have : p.support = (p.take p.length).support := by simp [take_of_length_le le_rfl]
+    exact this ▸ p.take_support_sublist_of_le ‹_›
+  · simp [take_of_length_le (le_of_lt ‹_›)]
 
 @[simp]
 lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
@@ -1071,10 +1123,6 @@ protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by cases 
 
 lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil := mt Nil.tail hp
 
-@[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
-    (p.copy hx hy).Nil = p.Nil := by
-  subst_vars; rfl
-
 @[simp] lemma support_tail (p : G.Walk v v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
@@ -1092,6 +1140,28 @@ lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
   | .nil => simp only [nil_nil, not_true_eq_false] at hnp
   | .cons h q =>
     simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
+
+lemma drop_support_sublist_succ {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.drop (n + 1)).support.Sublist (p.drop n).support := by
+  induction n generalizing p u with
+  | zero =>
+    rw [Walk.drop_zero, ← Walk.tail]
+    cases p <;> simp
+  | succ _ ih => cases p <;> simp [Walk.drop, ih]
+
+lemma drop_support_sublist_of_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.drop k).support.Sublist (p.drop n).support := by
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
+  induction t with
+  | zero => rfl
+  | succ t ih => exact (drop_support_sublist_succ p (n + t)).trans <| ih (n.le_add_right t)
+
+lemma drop_support_sublist {u v n} (p : G.Walk u v) :
+    (p.drop n).support.Sublist p.support := by
+  cases le_or_gt n p.length
+  · have : p.support = (p.drop 0).support := by cases p <;> simp [Walk.drop]
+    exact this ▸ p.drop_support_sublist_of_le n.zero_le
+  · simp [drop_length_of_le (le_of_lt ‹_›)]
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
