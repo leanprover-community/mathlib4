@@ -981,6 +981,16 @@ lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 
+lemma drop_zero {u v} (p : G.Walk u v) :
+    p.drop 0 = p.copy (getVert_zero p).symm rfl := by
+  cases p <;> simp [Walk.drop]
+
+lemma drop_support_tail {u v} {p : G.Walk u v} (n : ℕ) :
+    (p.drop n).support.tail = p.support.drop (n + 1) := by
+  induction n generalizing p u with
+  | zero => simp [drop_zero]
+  | succ _ ih => cases p <;> simp [drop, ih]
+
 /-- The walk obtained by removing the last dart of a walk. A nil walk stays nil. -/
 def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
 
@@ -1364,6 +1374,82 @@ theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
   intros e
   rw [edges_transfer]
   apply edges_subset_edgeSet p
+
+end Walk
+
+/-! ## Subwalks -/
+
+namespace Walk
+
+variable {V : Type*} {G : SimpleGraph V}
+
+/-- `p.IsSubwalk q` means that the walk `p` is a contiguous subwalk of the walk `q`. -/
+def IsSubwalk {u₁ v₁ u₂ v₂} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) : Prop :=
+  ∃ (ru : G.Walk u₂ u₁) (rv : G.Walk v₁ v₂), q = (ru.append p).append rv
+
+@[refl, simp]
+lemma isSubwalk_rfl {u v} (p : G.Walk u v) : p.IsSubwalk p := by
+  use nil, nil
+  rw [nil_append, append_nil]
+
+@[simp]
+lemma nil_isSubwalk {u v} (q : G.Walk u v) : (Walk.nil : G.Walk u u).IsSubwalk q := by
+  use nil, q
+  simp
+
+protected lemma IsSubwalk.cons {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hpq : p.IsSubwalk q) (h : G.Adj w u') : p.IsSubwalk (q.cons h) := by
+  obtain ⟨r1, r2, rfl⟩ := hpq
+  use r1.cons h, r2
+  simp
+
+@[simp]
+lemma isSubwalk_cons {u v w} (p : G.Walk u v) (h : G.Adj w u) : p.IsSubwalk (p.cons h) :=
+  (isSubwalk_rfl p).cons h
+
+lemma IsSubwalk.trans {u₁ v₁ u₂ v₂ u₃ v₃} {p₁ : G.Walk u₁ v₁} {p₂ : G.Walk u₂ v₂}
+    {p₃ : G.Walk u₃ v₃} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₃) :
+    p₁.IsSubwalk p₃ := by
+  obtain ⟨q₁, r₁, rfl⟩ := h₁
+  obtain ⟨q₂, r₂, rfl⟩ := h₂
+  use q₂.append q₁, r₁.append r₂
+  simp only [append_assoc]
+
+lemma isSubwalk_nil_iff {u v u'} (p : G.Walk u v) :
+    p.IsSubwalk (nil : G.Walk u' u') ↔ ∃ (hu : u' = u) (hv : u' = v), p = nil.copy hu hv := by
+  cases p with
+  | nil =>
+    constructor
+    · rintro ⟨_ | _, _, ⟨⟩⟩
+      simp
+    · rintro ⟨rfl, _, _⟩
+      simp
+  | cons h p =>
+    constructor
+    · rintro ⟨_ | _, _, h⟩ <;> simp at h
+    · rintro ⟨rfl, rfl, ⟨⟩⟩
+
+lemma nil_isSubwalk_iff_exists {u' u v} (q : G.Walk u v) :
+    (Walk.nil : G.Walk u' u').IsSubwalk q ↔
+      ∃ (ru : G.Walk u u') (rv : G.Walk u' v), q = ru.append rv := by
+  unfold IsSubwalk
+  congr!
+  simp
+
+lemma length_le_of_isSubwalk {u₁ v₁ u₂ v₂} {q : G.Walk u₁ v₁} {p : G.Walk u₂ v₂}
+    (h : p.IsSubwalk q) :
+    p.length ≤ q.length := by
+  obtain ⟨ru, rv, h⟩ := h
+  rw [h, length_append, length_append, add_comm _ p.length, add_assoc]
+  exact Nat.le_add_right _ _
+
+lemma isSubwalk_of_append_left {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w u} {p₃ : G.Walk v u}
+    (h : p₃ = p₁.append p₂) : p₁.IsSubwalk p₃ :=
+  ⟨nil, p₂, h⟩
+
+lemma isSubwalk_of_append_right {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w u} {p₃ : G.Walk v u}
+    (h : p₃ = p₁.append p₂) : p₂.IsSubwalk p₃ :=
+  ⟨p₁, nil, append_nil _ ▸ h⟩
 
 end Walk
 
