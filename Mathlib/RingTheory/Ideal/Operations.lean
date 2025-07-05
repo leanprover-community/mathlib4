@@ -491,7 +491,7 @@ theorem mul_top [I.IsTwoSided] : I * ⊤ = I :=
 
 theorem span_pair_mul_span_pair (w x y z : R) [(span {w, x}).IsTwoSided] :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
-  rw [span_mul_span']; congr; ext r; simp [Set.mem_mul, or_assoc, or_comm, eq_comm (a := r)]
+  rw [span_mul_span']; congr; ext r; simp [Set.mem_mul, or_assoc, eq_comm (a := r)]
 
 variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
