@@ -101,11 +101,8 @@ theorem sub_of_mul_eq_left [NonAssocRing R] [StarRing R]
 /-- `q - p` is a star projection if `q * p = p` -/
 theorem sub_of_mul_eq_right [NonAssocRing R] [StarRing R]
     (hp : IsStarProjection p) (hq : IsStarProjection q) (hqp : q * p = p) :
-    IsStarProjection (q - p) where
-  isSelfAdjoint := hq.isSelfAdjoint.sub hp.isSelfAdjoint
-  isIdempotentElem := hp.isIdempotentElem.sub
-    hq.isIdempotentElem
-    (by simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $(hqp))) hqp
+    IsStarProjection (q - p) := hp.sub_of_mul_eq_left hq
+  (by simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $(hqp)))
 
 theorem add_sub_mul_of_commute [Ring R] [StarRing R]
     (hpq : Commute p q) (hp : IsStarProjection p) (hq : IsStarProjection q) :
