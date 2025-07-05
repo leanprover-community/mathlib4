@@ -22,7 +22,7 @@ condition.
 ## Main definitions
 
 * `Lax.LaxTrans F G`: lax transformations between lax functors `F` and `G`. The naturality
-  condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
+  condition is given by a 2-morphism `app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism
   `f : a ⟶ b`.
 * `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`.
 
@@ -184,7 +184,7 @@ that is "natural up to 2-isomorphisms".
 
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
-* a 2-isomorphism `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
+* a 2-isomorphism `η.naturality f : app a ≫ G.map f ≅ F.map f ≫ app b` for each 1-morphism
 `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
