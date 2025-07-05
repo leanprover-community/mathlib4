@@ -57,10 +57,17 @@ instance (priority := 100) CompleteLattice.toSigmaCompleteLattice [CompleteLatti
   isLUB_σsSup s _ := isLUB_sSup s
   isGLB_σsInf s _ := isGLB_sInf s
 
-instance OrderDual.instSigmaCompleteLattice [SigmaCompleteLattice α] :
-    SigmaCompleteLattice αᵒᵈ where
-  isLUB_σsSup (s : Set α) hs := (SigmaCompleteLattice.isGLB_σsInf s hs).dual
-  isGLB_σsInf (s : Set α) hs := (SigmaCompleteLattice.isLUB_σsSup s hs).dual
+section SigmaCompleteLattice
+variable [SigmaCompleteLattice α] {s : Set α}
+
+lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) := SigmaCompleteLattice.isLUB_σsSup _ hs
+lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) := SigmaCompleteLattice.isGLB_σsInf _ hs
+
+instance OrderDual.instSigmaCompleteLattice : SigmaCompleteLattice αᵒᵈ where
+  isLUB_σsSup _s hs := (isGLB_σsInf (α := α) hs).dual
+  isGLB_σsInf _s hs := (isLUB_σsSup (α := α) hs).dual
+
+end SigmaCompleteLattice
 
 /-- A Boolean σ-algebra is a `BooleanAlgebra` and a `SigmaCompleteLattice`.
 
