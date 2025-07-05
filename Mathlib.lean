@@ -1771,6 +1771,7 @@ import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Analysis.Oscillation
+import Mathlib.Analysis.PDE.Quasilinear.Defs
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.PSeriesComplex
 import Mathlib.Analysis.Polynomial.Basic
