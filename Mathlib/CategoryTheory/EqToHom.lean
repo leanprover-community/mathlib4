@@ -79,7 +79,7 @@ theorem comp_eqToHom_iff {X Y Y' : C} (p : Y = Y') (f : X ⟶ Y) (g : X ⟶ Y') 
 theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) :
     eqToHom p ≫ g = f ↔ g = eqToHom p.symm ≫ f :=
   { mp := fun h => h ▸ by simp
-    mpr := fun h => h ▸ by simp [whisker_eq _ h] }
+    mpr := fun h => h ▸ by simp }
 
 theorem eqToHom_comp_heq {C} [Category C] {W X Y : C}
     (f : Y ⟶ X) (h : W = Y) : HEq (eqToHom h ≫ f) f := by
@@ -119,30 +119,21 @@ theorem heq_comp {C} [Category C] {X Y Z X' Y' Z' : C}
 variable {β : Sort*}
 
 /-- We can push `eqToHom` to the left through families of morphisms. -/
--- The simpNF linter incorrectly claims that this will never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
     z j ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ z j' := by
   cases w
   simp
 
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
--- The simpNF linter incorrectly claims that this will never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).hom ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').hom := by
   cases w
   simp
 
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
--- The simpNF linter incorrectly claims that this will never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).inv ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').inv := by
   cases w
@@ -250,7 +241,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     simpa using h_map X Y f
 
 lemma ext_of_iso {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
-    (happ : ∀ X, e.hom.app X = eqToHom (hobj X)) : F = G :=
+    (happ : ∀ X, e.hom.app X = eqToHom (hobj X) := by aesop_cat) : F = G :=
   Functor.ext hobj (fun X Y f => by
     rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, Category.assoc,
     Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id])
