@@ -334,7 +334,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal
     calc (∀ x : E, ‖(A - star A * A) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - A)) (A x)‖ = 0 := by
           simp only [← star_eq_adjoint, star_sub, star_one, sub_apply, mul_apply]; rfl
       _ ↔ ∀ x, ‖(1 - A) (A x)‖ = 0 := by
-          simp only [(isStarNormal_iff_norm_eq_adjoint _).mp h.one_sub_self]
+          simp only [(isStarNormal_iff_norm_eq_adjoint _).mp h.one_sub]
       _ ↔ ∀ x, ‖(A - A * A) x‖ = 0 := by simp
       _ ↔ A - A * A = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
       _ ↔ IsIdempotentElem A := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
