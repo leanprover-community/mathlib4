@@ -25,7 +25,7 @@ namespace DifferentiableOn
 derivatives at `c` are all nonnegative real has nonnegative real values on `c + [0,r)`. -/
 theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} {c : ℂ} {r : ℝ}
     (hf : DifferentiableOn ℂ f (Metric.ball c r)) (h : ∀ n, 0 ≤ iteratedDeriv n f c) ⦃z : ℂ⦄
-    (hz₁ : c ≤ z) (hz₂ : z ∈ Metric.ball c r):
+    (hz₁ : c ≤ z) (hz₂ : z ∈ Metric.ball c r) :
     0 ≤ f z := by
   have H := taylorSeries_eq_on_ball' hz₂ hf
   rw [← sub_nonneg] at hz₁
