@@ -65,7 +65,11 @@ jobs:
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
+          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
+            echo "ERROR: Initial cleanup failed, waiting 5 seconds and retrying..."
+            sleep 5
+            find . -mindepth 1 -exec rm -rf -- {} +
+          fi
           # Delete all but the 5 most recent toolchains.
           # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
           # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
@@ -83,7 +87,10 @@ jobs:
       - name: Checkout master branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: master
+          # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
+          # we don't maintain a `master` branch at all.
+          # For PRs and pushes to this repository, we will use `nightly-testing` instead.
+          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing' || 'master' }}
           path: master-branch
 
       # Checkout the PR branch into a subdirectory
@@ -290,26 +297,6 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
-      - name: check the cache
-        # We need network access to download dependencies
-        # We run this inside landrun, but restrict disk access as usual.
-        shell: landrun --unrestricted-network --rox /usr --rw /dev --rox /etc --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib -rw pr-branch/.lake/ --rw pr-branch/DownstreamTest/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-
-          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
-          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
-          if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            cd DownstreamTest
-            MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
-
-            lake env ../../master-branch/.lake/build/bin/cache get || (sleep 1; lake env ../../master-branch/.lake/build/bin/cache get)
-
-            # We need to run `lake build ProofWidgets` here to retrieve ProofWidgets via Reservoir.
-            lake build ProofWidgets
-            lake build --no-build Mathlib
-          fi
-
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
       # even when they are not touched.
@@ -342,8 +329,8 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../master-branch/.lake/build/bin/cache put Archive.lean
-          ../master-branch/.lake/build/bin/cache put Counterexamples.lean
+          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
+          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
@@ -454,9 +441,21 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
+      # TODO: this step should not be necessary, "Configure Lean" above should already achieve this.
+      - name: get cache for Mathlib
+        run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
+          lake exe cache get
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+
+
       - name: get cache for Archive and Counterexamples
         run: |
+          # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get Archive Counterexamples
+          # Run again with --repo, so ensure we actually get the oleans.
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         run: |
