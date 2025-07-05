@@ -50,16 +50,20 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
   · intro ⟨h1,h2,h3⟩
     have e1 (a b c d : α) (hb : b ∈ Set.Icc a d) (hc : c ∈ Set.Icc a d) (h : r a d) : r b c := by
       rw [Set.mem_Icc] at hb
+      rw [Set.mem_Icc] at hc
       have e2 : b ⊓ c ≤ d := inf_le_of_left_le hb.2
       have e4 : r (a ⊔ (b ⊓ c)) (d ⊔ (b ⊓ c)) := (h3 _ _ _ (le_trans hb.1 hb.2) h).2
-      --have e3 : r (b ⊓ c) (a ⊔ (b ⊓ c)) := by
-
-
-
-        --rw [inf_le_iff]
-
+      have e3 : a ⊔ (b ⊓ c) = b ⊓ c := sup_eq_right.mpr (le_inf hb.1 hc.1)
+      have e3' : d ⊔ (b ⊓ c) = d := sup_eq_left.mpr e2
+      rw [e3, e3'] at e4
+      have e5 : r ((b ⊓ c) ⊓ (b ⊔ c)) (d ⊓ (b ⊔ c)) := (h3 _ _ _ e2 e4).1
+      have e6 : (b ⊓ c) ⊓ (b ⊔ c) = (b ⊓ c) := inf_eq_left.mpr inf_le_sup
+      have e6' : d ⊓ (b ⊔ c) = b ⊔ c := inf_eq_right.mpr (sup_le hb.2 hc.2)
+      --rw [e6, e6'] at e5
       rw [h1]
-      sorry
+      conv_lhs => rw [← e6]
+      conv_rhs => rw [← e6']
+      exact e5
     sorry
 
 /-
