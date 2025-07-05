@@ -184,6 +184,13 @@ theorem IsSemisimpleModule.of_sSup_simples_eq_top
 
 namespace IsSemisimpleModule
 
+theorem eq_bot_or_exists_simple_le (N : Submodule R M) [IsSemisimpleModule R N] :
+    N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
+  rw [← N.subsingleton_iff_eq_bot, ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top]
+  refine (eq_bot_or_exists_atom_le _).imp .symm fun ⟨m, h, _⟩ ↦ ⟨_, N.map_subtype_le m, ?_⟩
+  rw [← isSimpleModule_iff_isAtom] at h
+  exact .congr (m.equivMapOfInjective _ N.subtype_injective).symm
+
 variable [IsSemisimpleModule R M]
 
 theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
@@ -191,9 +198,6 @@ theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
     ∃ h : M →ₗ[R] P, h ∘ₗ f = g :=
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
   ⟨g ∘ₗ LinearMap.linearProjOfIsCompl _ f hf compl, by ext; simp⟩
-
-theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
-  simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
 
 theorem sSup_simples_le (N : Submodule R M) :
     sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by
