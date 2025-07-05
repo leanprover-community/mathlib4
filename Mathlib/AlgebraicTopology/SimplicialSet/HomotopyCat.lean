@@ -6,6 +6,8 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+import Mathlib.CategoryTheory.Category.Cat.Terminal
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -349,5 +351,50 @@ def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFun
 end
 
 end
+section
+
+/-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
+`OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
+instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) :=
+  inferInstanceAs (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
+
+/-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique edge and thus the homs of
+`OneTruncation₂ ((truncation 2).obj Δ[0])` have unique inhabitants. -/
+instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) where
+  default := by
+    obtain rfl : x = default := Unique.uniq _ _
+    obtain rfl : y = default := Unique.uniq _ _
+    exact 𝟙rq instUniqueOneTruncation₂DeltaZero.default
+  uniq _ := by
+    letI : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
+      inferInstanceAs (Subsingleton (ULift.{_, 0} (⦋1⦌ ⟶ ⦋0⦌)))
+    ext
+    exact this.allEq _ _
+
+/-- The category `hoFunctor.obj (Δ[0])` is terminal. -/
+def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
+  letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory :=
+    inferInstanceAs (Unique <| CategoryTheory.Quotient Truncated.HoRel₂)
+  letI sub : Subsingleton ((truncation 2).obj Δ[0]).HomotopyCategory := by infer_instance
+  letI : IsDiscrete ((truncation 2).obj Δ[0]).HomotopyCategory :=
+    { subsingleton X Y :=
+        inferInstanceAs <| Subsingleton ((_ : CategoryTheory.Quotient Truncated.HoRel₂) ⟶ _)
+      eq_of_hom f := sub.allEq _ _ }
+  apply Cat.isTerminalOfUniqueOfIsDiscrete
+
+/-- The homotopy category functor preserves generic terminal objects. -/
+noncomputable def hoFunctor.terminalIso : (hoFunctor.obj (⊤_ SSet)) ≅ (⊤_ Cat) :=
+  hoFunctor.mapIso (terminalIsoIsTerminal stdSimplex.isTerminalObj₀) ≪≫
+    (terminalIsoIsTerminal hoFunctorDeltaZeroIsTerminal).symm
+
+instance hoFunctor.preservesTerminal : PreservesLimit (empty.{0} SSet) hoFunctor :=
+  preservesTerminal_of_iso hoFunctor hoFunctor.terminalIso
+
+instance hoFunctor.preservesTerminal' :
+    PreservesLimitsOfShape (Discrete PEmpty.{1}) hoFunctor :=
+  preservesLimitsOfShape_pempty_of_preservesTerminal _
+
+end
+
 
 end SSet
