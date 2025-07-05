@@ -99,6 +99,16 @@ instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
   smul_comp _ _ _ _ _ _ := by ext; apply smul_comp
   comp_smul _ _ _ _ _ _ := by ext; apply comp_smul
 
+variable {F} in
+/-- The linear equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a `R`-linear category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homLinearEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃ₗ[R] (F X ⟶ F Y) where
+  toAddEquiv := InducedCategory.homAddEquiv
+  map_smul' := by aesop_cat
+
 end InducedCategory
 
 instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcategory :=

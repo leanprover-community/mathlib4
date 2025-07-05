@@ -99,6 +99,16 @@ instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
+variable {F} in
+/-- The additive equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a preadditive category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homAddEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃+ (F X ⟶ F Y) where
+  toEquiv := InducedCategory.homEquiv
+  map_add' := by aesop_cat
+
 end InducedCategory
 
 instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=

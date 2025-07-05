@@ -63,7 +63,7 @@ theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f.hom :=
 lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
     InducedCategory.Hom.hom (𝟙 X) = 𝟙 X.obj := rfl
 
-@[simp]
+@[simp, reassoc]
 lemma FullSubcategory.comp_hom {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
