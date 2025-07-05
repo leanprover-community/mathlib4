@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.Order.Filter.Ring
+import Mathlib.Topology.Algebra.Module.Dual
 
 /-! # From equality of integrals to equality of functions
 
@@ -43,7 +44,7 @@ Generally useful lemmas which are not related to integrals:
 -/
 
 
-open MeasureTheory TopologicalSpace NormedSpace Filter
+open MeasureTheory ContinuousLinearMap TopologicalSpace NormedSpace Filter
 
 open scoped ENNReal NNReal MeasureTheory Topology
 
