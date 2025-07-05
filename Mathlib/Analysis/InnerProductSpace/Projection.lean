@@ -530,6 +530,9 @@ lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjectio
     orthogonalProjection_orthogonal]
   rfl
 
+lemma starProjection_orthogonal' (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    Uᗮ.starProjection = 1 - U.starProjection := starProjection_orthogonal U
+
 /-- The orthogonal projection of `y` on `U` minimizes the distance `‖y - x‖` for `x ∈ U`. -/
 theorem orthogonalProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (y : E) :
     ‖y - U.orthogonalProjection y‖ = ⨅ x : U, ‖y - x‖ := by
@@ -554,6 +557,22 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (K.orthogonalProjection v : E
     simp
   · simp
 
+@[simp]
+lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    LinearMap.range U.starProjection = U := by
+  ext x
+  simp only [LinearMap.mem_range, starProjection, ContinuousLinearMap.comp_apply,
+    subtypeL_apply]
+  refine ⟨fun ⟨y, hy⟩ ↦ hy ▸ coe_mem (U.orthogonalProjection y), fun h ↦ ?_⟩
+  use x
+  simp only [orthogonalProjection_eq_self_iff, h]
+
+@[simp]
+lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
+    U.starProjection x ∈ U := by
+  simp only [starProjection, ContinuousLinearMap.coe_comp', coe_subtypeL', coe_subtype,
+    Function.comp_apply, SetLike.coe_mem]
+
 lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
   ext
   exact orthogonalProjection_eq_self_iff.mpr trivial
@@ -571,6 +590,13 @@ theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 
 @[simp]
 theorem ker_orthogonalProjection : LinearMap.ker K.orthogonalProjection = Kᗮ := by
   ext; exact orthogonalProjection_eq_zero_iff
+
+@[simp]
+lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    LinearMap.ker U.starProjection = Uᗮ := by
+  ext x
+  simp only [starProjection, LinearMap.mem_ker, ContinuousLinearMap.coe_comp', coe_subtypeL',
+    coe_subtype, Function.comp_apply, ZeroMemClass.coe_eq_zero, orthogonalProjection_eq_zero_iff]
 
 theorem _root_.LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
@@ -601,6 +627,7 @@ theorem orthogonalProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
 @[simp]
 theorem orthogonalProjection_bot : (⊥ : Submodule 𝕜 E).orthogonalProjection = 0 := by ext
 
+@[simp]
 lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
   rw [starProjection, orthogonalProjection_bot, ContinuousLinearMap.comp_zero]
 
