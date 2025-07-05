@@ -9,15 +9,14 @@ import Mathlib.CategoryTheory.Products.Basic
 # Lemmas about functors out of product categories.
 -/
 
-
-open CategoryTheory
-
-namespace CategoryTheory.Bifunctor
+open CategoryTheory Opposite
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
 variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
+
+namespace CategoryTheory.Bifunctor
 
 open scoped Prod
 
@@ -45,5 +44,15 @@ theorem diagonal (F : C × D ⥤ E) (X X' : C) (f : X ⟶ X') (Y Y' : D) (g : Y 
 theorem diagonal' (F : C × D ⥤ E) (X X' : C) (f : X ⟶ X') (Y Y' : D) (g : Y ⟶ Y') :
     F.map (f ×ₘ 𝟙 Y) ≫ F.map (𝟙 X' ×ₘ g) = F.map (f ×ₘ g) := by
   rw [← Functor.map_comp, prod_comp, Category.id_comp, Category.comp_id]
+
+/-- Opposite of a bifunctor -/
+@[simps!]
+def biop (F : C × D ⥤ E) : Cᵒᵖ × Dᵒᵖ ⥤ Eᵒᵖ :=
+  (prodOpEquiv C).inverse ⋙ F.op
+
+/-- Flipping of arguments of a bifunctor -/
+@[simps!]
+def flip (F : C × D ⥤ E) : D × C ⥤ E :=
+  Prod.swap D C ⋙ F
 
 end CategoryTheory.Bifunctor

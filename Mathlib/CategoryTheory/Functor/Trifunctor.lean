@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Functor.Category
+
 /-!
 # Trifunctors obtained by composition of bifunctors
 
@@ -18,6 +19,27 @@ objects `X₁ : C₁`, `X₂ : C₂` and `X₃ : C₃` to `(F.obj X₁).obj ((G�
 -/
 
 namespace CategoryTheory
+
+section
+
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+variable {C : Type u₁} {D : Type u₂} {E : Type u₃} {F : Type u₄}
+variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] [Category.{v₄} F]
+
+/-- Action of three-variable functors on objects. -/
+abbrev Functor.obj₃ (H : C ⥤ D ⥤ E ⥤ F) (A : C) (B : D) (C : E) : F :=
+  ((H.obj A).obj B).obj C
+
+/-- Apply a natural transformation between bifunctors in three variables to three objects. -/
+abbrev NatTrans.app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (X : C) (Y : D) (Z : E) :
+    H.obj₃ X Y Z ⟶ G.obj₃ X Y Z :=
+  ((α.app X).app Y).app Z
+
+@[reassoc, simp]
+lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D)
+    (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
+
+end
 
 variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category C₄] [Category C₁₂] [Category C₂₃]
