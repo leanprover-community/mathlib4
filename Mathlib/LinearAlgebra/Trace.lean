@@ -189,7 +189,7 @@ theorem trace_prodMap :
   let e := (dualTensorHomEquiv R M M).prodCongr (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
-  ext <;> simp [dualTensorHomEquiv_eq_dualTensorHomEquivOfBasis (Module.Free.chooseBasis R M), e]
+  ext <;> simp [e]
 
 variable {R M N P}
 
