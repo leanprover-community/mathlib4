@@ -125,6 +125,12 @@ variable [AddCommGroup V]
 @[simp] lemma toLp_add (x y : V) : toLp p (x + y) = toLp p x + toLp p y := rfl
 @[simp] lemma ofLp_add (x y : WithLp p V) : ofLp (x + y) = ofLp x + ofLp y := rfl
 
+@[simp] lemma ofLp_sum {ι : Type*} [Fintype ι] (x : ι → WithLp p V) :
+    ofLp (∑ i, x i) = ∑ i, ofLp (x i) := rfl
+
+@[simp] lemma toLp_sum {ι : Type*} [Fintype ι] (x : ι → V) :
+    toLp p (∑ i, x i) = ∑ i, toLp p (x i) := rfl
+
 @[simp] lemma toLp_sub (x y : V) : toLp p (x - y) = toLp p x - toLp p y := rfl
 @[simp] lemma ofLp_sub (x y : WithLp p V) : ofLp (x - y) = ofLp x - ofLp y := rfl
 
