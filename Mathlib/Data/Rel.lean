@@ -32,6 +32,36 @@ relations.
 * `Rel.core`: Core of a set. For `t : Set β`, `a ∈ R.core t` iff all `b` related to `a` are in `t`.
 * `Rel.restrictDomain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
+
+## Implementation notes
+
+There is tension throughout the library between considering relations between `α` and `β` simply as
+`α → β → Prop`, or as a bundled object `Rel α β` with dedicated operations and API.
+
+The former approach is used almost everywhere as it is very lightweight and has arguably native
+support from core Lean features, but it cracks at the seams whenever one starts talking about
+operations on relations. For example:
+* composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
+  `Relation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
+* map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
+  `Relation.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
+
+The latter approach is embodied by `Rel α β`, with dedicated notation like `○` for composition.
+
+Previously, `Rel` suffered from the leakage of its definition as
+```
+def Rel (α β : Type*) := α → β → Prop
+```
+The fact that `Rel` wasn't an `abbrev` confuses automation. But simply making it an `abbrev` would
+have killed the point of having a separate less see-through type to perform relation operations on,
+so we instead redefined
+```
+def Rel (α β : Type*) := Set (α × β) → Prop
+```
+This extra level of indirection guides automation correctly and prevents (some kinds of) leakage.
+
+Simultaneously, uniform spaces need a theory of relations on a type `α` as elements of
+`Set (α × α)`, and the new definition of `Rel` fulfills this role quite well.
 -/
 
 variable {α β γ δ : Type*}
