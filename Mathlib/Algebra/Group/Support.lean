@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Data.Set.Image
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Support of a function
