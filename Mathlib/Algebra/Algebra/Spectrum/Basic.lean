@@ -225,10 +225,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   have x_eq : x = r • r⁻¹ • x := by simp
   nth_rw 1 [x_eq]
   rw [smul_mem_smul_iff]
-  constructor
-  · exact fun h => ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
-  · rintro ⟨w, _, (x'_eq : r • w = x)⟩
-    simpa [← x'_eq ]
+  exact Iff.symm mem_smul_set_iff_inv_smul_mem
 
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
@@ -383,10 +380,7 @@ theorem nonzero_mul_comm (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
   refine Set.eq_of_subset_of_subset (fun k hk => ?_) fun k hk => ?_
   · rw [Set.mem_inv] at hk
-    have : k ≠ 0 := by simpa only [inv_inv] using inv_ne_zero (ne_zero_of_mem_of_unit hk)
-    lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr this
-    rw [← Units.val_inv_eq_inv_val k] at hk
-    exact inv_mem_iff.mp hk
+    exact of_inv₀_mem hk
   · lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr (ne_zero_of_mem_of_unit hk)
     simpa only [Units.val_inv_eq_inv_val] using inv_mem_iff.mp hk
 
