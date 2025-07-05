@@ -118,10 +118,7 @@ theorem prod_dite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, 
       exact h.symm
     · simp [h]
   · rw [Finset.prod_eq_one]
-    intros
-    rw [dif_neg]
-    rintro rfl
-    contradiction
+    grind
 
 @[to_additive (attr := simp)]
 theorem prod_dite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, x = a → M) :
@@ -133,10 +130,7 @@ theorem prod_dite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι,
       exact h
     · simp [h]
   · rw [Finset.prod_eq_one]
-    intros
-    rw [dif_neg]
-    rintro rfl
-    contradiction
+    grind
 
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
