@@ -24,8 +24,6 @@ For now, we simplify by insisting both universe levels are the same.
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
 
-suppress_compilation
-
 open CategoryTheory
 open scoped MonoidalCategory
 
