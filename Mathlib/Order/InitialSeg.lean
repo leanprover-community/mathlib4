@@ -494,12 +494,15 @@ theorem transPrincipal_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g
   · rw [PrincipalSeg.trans_apply, f.eq_principalSeg]
   · rw [PrincipalSeg.relIsoTrans_apply, f.eq_relIso]
 
+/-- Given two well-orders `r` and `s` where `r` is an initial segment of `s`, there exists a third
+well-order `t` such that the lexicographic sum `Sum.Lex r t` is order-isomorphic to `s`. -/
 theorem exists_sum_relIso {β : Type u} {s : β → β → Prop} [IsWellOrder β s] (f : r ≼i s) :
-    ∃ (γ : Type u) (t : γ → γ → Prop), Nonempty (Sum.Lex r t ≃r s) := by
+    ∃ (γ : Type u) (t : γ → γ → Prop), IsWellOrder γ t ∧ Nonempty (Sum.Lex r t ≃r s) := by
   classical
   obtain f | f := f.principalSumRelIso
-  · exact ⟨_, _, ⟨(RelIso.sumLexCongr f.subrelIso.symm (.refl _)).trans <| .sumLexComplLeft ..⟩⟩
-  · exact ⟨PEmpty, nofun, ⟨(RelIso.sumLexEmpty r _).trans f⟩⟩
+  · exact ⟨_, _, inferInstance,
+      ⟨(RelIso.sumLexCongr f.subrelIso.symm (.refl _)).trans <| .sumLexComplLeft ..⟩⟩
+  · exact ⟨PEmpty, nofun, inferInstance, ⟨(RelIso.sumLexEmpty r _).trans f⟩⟩
 
 end InitialSeg
 
