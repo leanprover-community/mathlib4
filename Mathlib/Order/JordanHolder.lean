@@ -226,8 +226,7 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
-  have : s.length - 1 + 1 = s.length := by
-    conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
+  have : s.length - 1 + 1 = s.length := by grind
   rw [last_eraseLast, last]
   convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
 
