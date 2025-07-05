@@ -1591,6 +1591,7 @@ import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearMap
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
 import Mathlib.Analysis.InnerProductSpace.MeanErgodic
+import Mathlib.Analysis.InnerProductSpace.MulOpposite
 import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Analysis.InnerProductSpace.OfNorm
 import Mathlib.Analysis.InnerProductSpace.Orientation
@@ -3936,6 +3937,7 @@ import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Basis.Exact
 import Mathlib.LinearAlgebra.Basis.Fin
 import Mathlib.LinearAlgebra.Basis.Flag
+import Mathlib.LinearAlgebra.Basis.MulOpposite
 import Mathlib.LinearAlgebra.Basis.Prod
 import Mathlib.LinearAlgebra.Basis.SMul
 import Mathlib.LinearAlgebra.Basis.Submodule
