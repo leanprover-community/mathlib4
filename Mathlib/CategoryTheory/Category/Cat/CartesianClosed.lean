@@ -56,30 +56,6 @@ def curryingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (C × D ⥤ E) :=
 def flippingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (D ⥤ C ⥤ E) :=
   isoOfEquiv CategoryTheory.flipping Functor.flip_flip Functor.flip_flip
 
-/-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
-@[simps!]
-def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
-    uncurry.obj (F ⋙ G).flip ≅ (𝟭 C).prod F ⋙ uncurry.obj G.flip := .refl _
-
-lemma comp_flip_uncurry_eq (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
-    uncurry.obj (F ⋙ G).flip = (𝟭 C).prod F ⋙ uncurry.obj G.flip := rfl
-
-end
-
-section
-variable {B C D E : Type u} [Category.{u} B] [Category.{u} C]
-  [Category.{u} D] [Category.{u} E]
-
-/-- Natural isomorphism witnessing `comp_flip_curry_eq`. -/
-@[simps!]
-def curryObjCompIso (F : C × B ⥤ D) (G : D ⥤ E) :
-    (curry.obj (F ⋙ G)).flip ≅ (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom :=
-  .refl _
-
-lemma curry_obj_comp_flip (F : C × B ⥤ D) (G : D ⥤ E) :
-    (curry.obj (F ⋙ G)).flip =
-      (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom := rfl
-
 end
 
 namespace Cat

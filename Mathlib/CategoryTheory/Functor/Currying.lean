@@ -178,6 +178,23 @@ lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C 
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 
+/-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
+@[simps!]
+def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
+    uncurry.obj (F ⋙ G).flip ≅ (𝟭 C).prod F ⋙ uncurry.obj G.flip := .refl _
+
+lemma comp_flip_uncurry_eq (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
+    uncurry.obj (F ⋙ G).flip = (𝟭 C).prod F ⋙ uncurry.obj G.flip := rfl
+
+/-- Natural isomorphism witnessing `comp_flip_curry_eq`. -/
+@[simps!]
+def curryObjCompIso (F : C × B ⥤ D) (G : D ⥤ E) :
+    (curry.obj (F ⋙ G)).flip ≅ (curry.obj F).flip ⋙ (whiskeringRight _ _ _).obj G := .refl _
+
+lemma curry_obj_comp_flip (F : C × B ⥤ D) (G : D ⥤ E) :
+    (curry.obj (F ⋙ G)).flip =
+      (curry.obj F).flip ⋙ (whiskeringRight _ _ _).obj G := rfl
+
 /-- The equivalence of types of bifunctors giving by flipping the arguments. -/
 @[simps!]
 def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
