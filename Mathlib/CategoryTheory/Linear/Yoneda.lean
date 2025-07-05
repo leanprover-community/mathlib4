@@ -21,7 +21,7 @@ TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 
 universe w v u
 
-open Opposite
+open Opposite CategoryTheory.Functor
 
 namespace CategoryTheory
 
