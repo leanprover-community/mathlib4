@@ -80,7 +80,7 @@ class Coalgebra (R : Type u) (A : Type v)
 
 namespace Coalgebra
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A] {a : A}
 
 @[simp]
 theorem coassoc_apply (a : A) :
@@ -154,6 +154,23 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
   apply_fun TensorProduct.map (f : A →ₗ[R] B)
     (TensorProduct.map (g : A →ₗ[R] B) (h : A →ₗ[R] B)) at this
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
+
+lemma sum_counit_smul (𝓡 : Coalgebra.Repr R a) :
+    ∑ x ∈ 𝓡.index, counit (R := R) (𝓡.left x) • 𝓡.right x = a := by
+  have := sum_counit_tmul_eq (R := R) 𝓡
+  apply_fun TensorProduct.lift (LinearMap.lsmul R A) at this
+  simp_rw [map_sum] at this
+  convert this
+  simp
+
+lemma lift_lsmul_comp_counit_comp_comul :
+    TensorProduct.lift (.lsmul R A ∘ₗ counit) ∘ₗ comul = .id := by
+  have := Coalgebra.rTensor_counit_comp_comul (R := R) (A := A)
+  apply_fun (TensorProduct.lift (LinearMap.lsmul R A) ∘ₗ ·) at this
+  rw [LinearMap.rTensor, ← LinearMap.comp_assoc, TensorProduct.lift_comp_map, LinearMap.compl₂_id]
+    at this
+  ext
+  simp [this]
 
 variable (R A) in
 /-- A coalgebra `A` is cocommutative if its comultiplication `δ : A → A ⊗ A` commutes with the
