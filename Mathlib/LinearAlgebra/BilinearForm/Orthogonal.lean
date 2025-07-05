@@ -247,7 +247,7 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
     exact hO hij
   · intro hi
     convert zero_mul (M₀ := R) _ using 2
-    exact Finsupp.not_mem_support_iff.mp hi
+    exact Finsupp.notMem_support_iff.mp hi
 
 section
 

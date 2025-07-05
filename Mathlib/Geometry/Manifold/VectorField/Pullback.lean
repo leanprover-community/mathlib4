@@ -19,7 +19,8 @@ We define the pullback of a vector field under a map, as
 (together with the same notion within a set). Note that the pullback uses the junk-value pattern:
 if the derivative of the map is not invertible, then pullback is given the junk value zero.
 
-See `Mathlib.Geometry.Manifold.VectorField.LieBracket` for the Lie bracket of two vector fields.
+See `Mathlib/Geometry/Manifold/VectorField/LieBracket.lean` for the Lie bracket of two vector
+fields.
 
 These definitions are given in the `VectorField` namespace because pullbacks, Lie brackets,
 and so on, are notions that make sense in a variety of contexts.
@@ -191,7 +192,7 @@ lemma mpullbackWithin_comp_of_left
     (hu : UniqueMDiffWithinAt I s x₀) (hg' : (mfderivWithin I' I'' g t (f x₀)).IsInvertible) :
     mpullbackWithin I I'' (g ∘ f) V s x₀ =
       mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
-  simp only [mpullbackWithin, comp_apply]
+  simp only [mpullbackWithin]
   have hg : MDifferentiableWithinAt I' I'' g t (f x₀) :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hg'
   rw [mfderivWithin_comp _ hg hf h hu, Function.comp_apply,
@@ -203,7 +204,7 @@ lemma mpullbackWithin_comp_of_right
     (hu : UniqueMDiffWithinAt I s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible) :
     mpullbackWithin I I'' (g ∘ f) V s x₀ =
       mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
-  simp only [mpullbackWithin, comp_apply]
+  simp only [mpullbackWithin]
   have hf : MDifferentiableWithinAt I I' f s x₀ :=
     mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf'
   rw [mfderivWithin_comp _ hg hf h hu, IsInvertible.inverse_comp_apply_of_right hf',

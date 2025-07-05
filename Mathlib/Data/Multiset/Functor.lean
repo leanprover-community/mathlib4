@@ -80,7 +80,7 @@ instance : LawfulMonad Multiset := LawfulMonad.mk'
 
 open Functor
 
-open Traversable LawfulTraversable
+open Traversable
 
 @[simp]
 theorem map_comp_coe {α β} (h : α → β) :
@@ -105,7 +105,7 @@ theorem map_traverse {G : Type* → Type _} [Applicative G] [CommApplicative G] 
     Functor.map (Functor.map h) (traverse g x) = traverse (Functor.map h ∘ g) x := by
   refine Quotient.inductionOn x ?_
   intro
-  simp only [traverse, quot_mk_to_coe, lift_coe, Function.comp_apply, Functor.map_map, map_comp_coe]
+  simp only [traverse, quot_mk_to_coe, lift_coe, Function.comp_apply, Functor.map_map]
   rw [Traversable.map_traverse']
   simp only [fmap_def, Function.comp_apply, Functor.map_map, List.map_eq_map, map_coe]
 

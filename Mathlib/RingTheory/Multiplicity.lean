@@ -137,7 +137,7 @@ theorem multiplicity_le_emultiplicity :
   · simp [hf.emultiplicity_eq_multiplicity]
   · simp [hf, emultiplicity_eq_top.2]
 
-@[simp]
+-- Cannot be @[simp] because `β`, `c`, and `d` can not be inferred by `simp`.
 theorem multiplicity_eq_of_emultiplicity_eq {c d : β}
     (h : emultiplicity a b = emultiplicity c d) : multiplicity a b = multiplicity c d := by
   unfold multiplicity
@@ -227,7 +227,7 @@ theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n :
         rw [_root_.pow_zero]
         exact one_dvd _)
       (by simpa [FiniteMultiplicity] using h),
-    by simp [FiniteMultiplicity, multiplicity]; tauto⟩
+    by simp [FiniteMultiplicity]; tauto⟩
 
 @[deprecated (since := "2024-11-30")]
 alias multiplicity.Finite.not_iff_forall := FiniteMultiplicity.not_iff_forall
@@ -720,7 +720,7 @@ Pulled a b intro parameters since Lean parses that more easily -/
 theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
   | n, m => fun ha hb ⟨s, hs⟩ =>
-    have : p ∣ a * b := ⟨p ^ (n + m) * s, by simp [hs, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩
+    have : p ∣ a * b := ⟨p ^ (n + m) * s, by simp [hs, pow_add, mul_comm, mul_left_comm]⟩
     (hp.2.2 a b this).elim
       (fun ⟨x, hx⟩ =>
         have hn0 : 0 < n :=
@@ -728,12 +728,12 @@ theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
         have hpx : ¬p ^ (n - 1 + 1) ∣ x := fun ⟨y, hy⟩ =>
           ha (hx.symm ▸ ⟨y, mul_right_cancel₀ hp.1 <| by
             rw [tsub_add_cancel_of_le (succ_le_of_lt hn0)] at hy
-            simp [hy, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩)
+            simp [hy, pow_add, mul_comm, mul_left_comm]⟩)
         have : 1 ≤ n + m := le_trans hn0 (Nat.le_add_right n m)
         finiteMultiplicity_mul_aux hp hpx hb
           ⟨s, mul_right_cancel₀ hp.1 (by
                 rw [tsub_add_eq_add_tsub (succ_le_of_lt hn0), tsub_add_cancel_of_le this]
-                simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩)
+                simp_all [mul_comm, mul_left_comm, pow_add])⟩)
       fun ⟨x, hx⟩ =>
         have hm0 : 0 < m :=
           Nat.pos_of_ne_zero fun hm0 => by simp [hx, hm0] at hb
@@ -743,11 +743,11 @@ theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
               ⟨y,
                 mul_right_cancel₀ hp.1 <| by
                   rw [tsub_add_cancel_of_le (succ_le_of_lt hm0)] at hy
-                  simp [hy, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩)
+                  simp [hy, pow_add, mul_comm, mul_left_comm]⟩)
         finiteMultiplicity_mul_aux hp ha hpx
         ⟨s, mul_right_cancel₀ hp.1 (by
               rw [add_assoc, tsub_add_cancel_of_le (succ_le_of_lt hm0)]
-              simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩
+              simp_all [mul_comm, mul_left_comm, pow_add])⟩
 
 @[deprecated (since := "2024-11-30")]
 alias multiplicity.finite_mul_aux := finiteMultiplicity_mul_aux

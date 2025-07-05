@@ -307,7 +307,7 @@ abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
     (.proj w)
 
-theorem hasFDerivAt_expMap (x : realSpace K): HasFDerivAt expMap (fderiv_expMap x) x := by
+theorem hasFDerivAt_expMap (x : realSpace K) : HasFDerivAt expMap (fderiv_expMap x) x := by
   simpa [expMap, fderiv_expMap, hasFDerivAt_pi', PartialHomeomorph.pi_apply,
     ContinuousLinearMap.proj_pi] using
     fun w ↦ (hasDerivAt_expMap_single w _).hasFDerivAt.comp x (hasFDerivAt_apply w x)
@@ -435,7 +435,7 @@ theorem abs_det_completeBasis_equivFunL_symm :
       Module.finrank ℚ K * regulator K := by
   classical
   rw [ContinuousLinearMap.det, ← LinearMap.det_toMatrix (completeBasis K), ← Matrix.det_transpose,
-    finrank_mul_regulator_eq_det K w₀ equivFinRank.symm]
+    regulator_eq_regOfFamily_fundSystem, finrank_mul_regOfFamily_eq_det _ w₀ equivFinRank.symm]
   congr 2 with w i
   rw [Matrix.transpose_apply, LinearMap.toMatrix_apply, Matrix.of_apply, ← Basis.equivFunL_apply,
     ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_apply,

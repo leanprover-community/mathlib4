@@ -526,10 +526,6 @@ lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
 
-theorem Algebra.isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
-    Algebra.IsIntegral R A :=
-  ⟨(algebraMap R A).isIntegral_of_surjective h⟩
-
 /-- If `R → A → B` is an algebra tower with `A → B` injective,
 then if the entire tower is an integral extension so is `R → A` -/
 theorem IsIntegral.tower_bot (H : Function.Injective (algebraMap A B)) {x : A}
