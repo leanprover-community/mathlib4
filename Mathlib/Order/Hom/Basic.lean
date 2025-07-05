@@ -1009,6 +1009,20 @@ def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G 
         show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
       fun h => (f : α →o β).monotone h⟩
 
+@[simp]
+theorem ofHomInv_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
+    [OrderHomClass G β α] (f : F) (g : G)
+    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
+    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : α) :
+    ofHomInv f g h₁ h₂ a = f a := rfl
+
+@[simp]
+theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
+    [OrderHomClass G β α] (f : F) (g : G)
+    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
+    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : β) :
+    (ofHomInv f g h₁ h₂).symm a = g a := rfl
+
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]
 def funUnique (α β : Type*) [Unique α] [Preorder β] : (α → β) ≃o β where
