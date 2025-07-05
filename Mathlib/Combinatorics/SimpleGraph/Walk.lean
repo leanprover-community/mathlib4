@@ -1381,7 +1381,7 @@ end Walk
 
 namespace Walk
 
-variable {V : Type} {G : SimpleGraph V}
+variable {V : Type*} {G : SimpleGraph V}
 
 /-- `p.IsSubwalk q` means that the walk `p` is a contiguous subwalk of the walk `q`. -/
 def IsSubwalk {u₁ v₁ u₂ v₂} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) : Prop :=
@@ -1435,6 +1435,13 @@ lemma nil_isSubwalk_iff_exists {u' u v} (q : G.Walk u v) :
   unfold IsSubwalk
   congr!
   simp
+
+lemma length_le_of_isSubwalk {u₁ v₁ u₂ v₂} {q : G.Walk u₁ v₁} {p : G.Walk u₂ v₂}
+    (h : p.IsSubwalk q) :
+    p.length ≤ q.length := by
+  obtain ⟨ru, rv, h⟩ := h
+  rw [h, length_append, length_append, add_comm _ p.length, add_assoc]
+  exact Nat.le_add_right _ _
 
 end Walk
 

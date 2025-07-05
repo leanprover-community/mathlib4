@@ -314,8 +314,6 @@ decreasing_by
 · simp_wf
   rw [Nat.lt_iff_add_one_le, length_tail_add_one hnp]
 
-variable {V : Type} {G : SimpleGraph V}
-
 lemma nil_isSubwalk_iff_mem_support {u' u v} (q : G.Walk u v) :
     (Walk.nil : G.Walk u' u').IsSubwalk q ↔ u' ∈ q.support := by
   rw [nil_isSubwalk_iff_exists, mem_support_iff_exists_append]
@@ -324,13 +322,6 @@ lemma nil_isSubwalk_cons_iff {u' u v w} (h : G.Adj u v) (q : G.Walk v w) :
     (Walk.nil : G.Walk u' u').IsSubwalk (Walk.cons h q) ↔
       u' = u ∨ (Walk.nil : G.Walk u' u').IsSubwalk q := by
   simp [nil_isSubwalk_iff_mem_support]
-
-lemma length_le_of_isSubwalk {u₁ v₁ u₂ v₂} {q : G.Walk u₁ v₁} {p : G.Walk u₂ v₂}
-    (h : p.IsSubwalk q) :
-    p.length ≤ q.length := by
-  obtain ⟨ru, rv, h⟩ := h
-  rw [h, length_append, length_append, add_comm _ p.length, add_assoc]
-  exact Nat.le_add_right _ _
 
 theorem isSubwalk_iff_support_isInfix {u₁ v₁ u₂ v₂ : V} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) :
     p.IsSubwalk q ↔ p.support <:+: q.support := by

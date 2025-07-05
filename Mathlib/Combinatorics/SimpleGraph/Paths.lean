@@ -213,6 +213,18 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [reverse_append] at h
   apply h.of_append_left
 
+theorem isTrail_of_isSubwalk {v w v' w'} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+    (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsTrail) : p₁.IsTrail := by
+  obtain ⟨_, _, h⟩ := h
+  rw [h] at h₂
+  exact h₂.of_append_left.of_append_right
+
+theorem isPath_of_isSubwalk {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+    (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsPath) : p₁.IsPath := by
+  obtain ⟨_, _, h⟩ := h
+  rw [h] at h₂
+  exact h₂.of_append_left.of_append_right
+
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
