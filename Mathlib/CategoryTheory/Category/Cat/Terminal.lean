@@ -36,11 +36,11 @@ def isTerminalOfUniqueOfIsDiscrete {T : Type u} [Category.{v} T] [Unique T] [IsD
 /-- Any `T : Cat.{u, u}` with a unique object and discrete homs is isomorphic to `⊤_ Cat.{u, u}.` -/
 noncomputable def terminalIsoOfUniqueOfIsDiscrete
     {T : Type u} [Category.{u} T] [Unique T] [IsDiscrete T] : ⊤_ Cat.{u, u} ≅ Cat.of T :=
-  terminalIsoIsTerminal isDiscreteUnique.isTerminal
+  terminalIsoIsTerminal isTerminalOfUniqueOfIsDiscrete
 
 /-- The discrete category on `PUnit` is terminal. -/
 def isTerminalDiscretePUnit : IsTerminal (Cat.of (Discrete PUnit)) :=
-  isDiscreteUnique.isTerminal
+  isTerminalOfUniqueOfIsDiscrete
 
 /-- Any terminal object `T : Cat.{u, u}` is isomorphic to `Cat.of (Discrete PUnit)`. -/
 def isoDiscretePUnitOfIsTerminal {T : Type u} [Category.{u} T] (hT : IsTerminal (Cat.of T)) :

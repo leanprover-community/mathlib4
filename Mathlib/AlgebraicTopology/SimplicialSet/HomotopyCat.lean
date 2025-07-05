@@ -380,7 +380,7 @@ def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
     { subsingleton X Y :=
         inferInstanceAs <| Subsingleton ((_ : CategoryTheory.Quotient Truncated.HoRel₂) ⟶ _)
       eq_of_hom f := sub.allEq _ _ }
-  apply Cat.isDiscreteUnique.isTerminal
+  apply Cat.isTerminalOfUniqueOfIsDiscrete
 
 /-- The homotopy category functor preserves generic terminal objects. -/
 noncomputable def hoFunctor.terminalIso : (hoFunctor.obj (⊤_ SSet)) ≅ (⊤_ Cat) :=
