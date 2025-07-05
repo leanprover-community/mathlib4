@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.NatInt
 
 /-!
@@ -14,10 +13,7 @@ In this file, we define `Module.toAddMonoidEnd`, which is `(•)` as a monoid ho
 We use this to prove some results on scalar multiplication by integers.
 -/
 
-assert_not_exists Multiset
-assert_not_exists Set.indicator
-assert_not_exists Pi.single_smul₀
-assert_not_exists Field
+assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 
 open Function Set
 
@@ -41,13 +37,9 @@ This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
 @[simps! apply_apply]
 def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
-    -- Porting note: the two `show`s weren't needed in mathlib3.
-    -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
-    -- use in later fields.  See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
-    map_add' := fun x y =>
-      AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
+    map_zero' := AddMonoidHom.ext fun r => by simp
+    map_add' x y :=
+      AddMonoidHom.ext fun r => by simp [(AddMonoidHom.add_apply), add_smul] }
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/
@@ -98,12 +90,6 @@ lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
     apply AddMonoidHom.ext_int
     simp
   DFunLike.congr_fun this n
-
-@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_zsmul
-
-/-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated Int.cast_smul_eq_zsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_zsmul ..).symm
 
 end
 

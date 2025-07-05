@@ -3,8 +3,6 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Batteries.Data.RBMap.Alter
-import Mathlib.Logic.Basic
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
 import Mathlib.Tactic.Relation.Rfl
@@ -39,7 +37,7 @@ def getCache : CCM CCCongrTheoremCache := do
 
 /-- Look up an entry associated with the given expression. -/
 def getEntry (e : Expr) : CCM (Option Entry) := do
-  return (← get).entries.find? e
+  return (← get).entries[e]?
 
 /-- Use the normalizer to normalize `e`.
 
@@ -73,7 +71,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
     e₂.withApp fun f₂ args₂ => do
       if ha : args₁.size = args₂.size then
         for hi : i in [:args₁.size] do
-          if (← getRoot (args₁[i]'hi.2)) != (← getRoot (args₂[i]'(ha.symm ▸ hi.2))) then
+          if (← getRoot args₁[i]) != (← getRoot (args₂[i]'(ha.symm ▸ hi.2.1))) then
             return false
         if f₁ == f₂ then return true
         else if (← getRoot f₁) != (← getRoot f₂) then
@@ -143,7 +141,7 @@ def setFO (e : Expr) : CCM Unit :=
 /-- Update the modification time of the congruence class of `e`. -/
 partial def updateMT (e : Expr) : CCM Unit := do
   let r ← getRoot e
-  let some ps := (← get).parents.find? r | return
+  let some ps := (← get).parents[r]? | return
   for p in ps do
     let some it ← getEntry p.expr | failure
     let gmt := (← get).gmt
@@ -282,20 +280,20 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   guard (← isEqv lhsFn rhsFn <||> pureIsDefEq lhsFn rhsFn)
   guard (← pureIsDefEq (← inferType lhsFn) (← inferType rhsFn))
   /- Create `r`, a proof for
-        `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
+  `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
      where `n := lhsArgs.size` -/
   let some specLemma ← mkCCHCongrTheorem lhsFn lhsArgs.size | failure
   let mut kindsIt := specLemma.argKinds
   let mut lemmaArgs : Array Expr := #[]
   for hi : i in [:lhsArgs.size] do
     guard !kindsIt.isEmpty
-    lemmaArgs := lemmaArgs.push (lhsArgs[i]'hi.2) |>.push (rhsArgs[i]'(ha.symm ▸ hi.2))
+    lemmaArgs := lemmaArgs.push lhsArgs[i] |>.push (rhsArgs[i]'(ha.symm ▸ hi.2.1))
     if kindsIt[0]! matches CongrArgKind.heq then
-      let some p ← getHEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      let some p ← getHEqProof lhsArgs[i] (rhsArgs[i]'(ha.symm ▸ hi.2.1)) | failure
       lemmaArgs := lemmaArgs.push p
     else
       guard (kindsIt[0]! matches .eq)
-      let some p ← getEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      let some p ← getEqProof lhsArgs[i] (rhsArgs[i]'(ha.symm ▸ hi.2.1)) | failure
       lemmaArgs := lemmaArgs.push p
     kindsIt := kindsIt.eraseIdx! 0
   let mut r := mkAppN specLemma.proof lemmaArgs
@@ -320,8 +318,8 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
 /-- If `e₁ : R lhs₁ rhs₁`, `e₂ : R lhs₂ rhs₂` and `lhs₁ = rhs₂`, where `R` is a symmetric relation,
 prove `R lhs₁ rhs₁` is equivalent to `R lhs₂ rhs₂`.
 
- * if `lhs₁` is known to equal `lhs₂`, return `none`
- * if `lhs₁` is not known to equal `rhs₂`, fail. -/
+* if `lhs₁` is known to equal `lhs₂`, return `none`
+* if `lhs₁` is not known to equal `rhs₂`, fail. -/
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
   let some (R₁, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | return none
   let some (R₂, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | return none
@@ -381,10 +379,10 @@ partial def mkDelayedProof (H : DelayedExpr) : CCM Expr := do
   | .heqSymm h => mkHEqSymm (← mkDelayedProof h)
 
 /-- Use the format of `H` to try and construct a proof or `lhs = rhs`:
- * If `H = .congr`, then use congruence.
- * If `H = .eqTrue`, try to prove `lhs = True` or `rhs = True`,
-   if they have the format `R a b`, by proving `a = b`.
- * Otherwise, return the (delayed) proof encoded by `H` itself. -/
+* If `H = .congr`, then use congruence.
+* If `H = .eqTrue`, try to prove `lhs = True` or `rhs = True`,
+  if they have the format `R a b`, by proving `a = b`.
+* Otherwise, return the (delayed) proof encoded by `H` itself. -/
 partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Expr := do
   match H with
   | .congr => mkCongrProof lhs rhs heqProofs
@@ -434,7 +432,7 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
   -- 1. Retrieve "path" from `e₁` to `root`
   let mut path₁ : Array Expr := #[]
   let mut Hs₁ : Array EntryExpr := #[]
-  let mut visited : RBExprSet := ∅
+  let mut visited : ExprSet := ∅
   let mut it₁ := e₁
   repeat
     visited := visited.insert it₁
@@ -474,9 +472,9 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
   -- 4. Build transitivity proof
   let mut pr? : Option Expr := none
   let mut lhs := e₁
-  for i in [:path₁.size] do
-    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
-    lhs := path₁[i]!
+  for h : i in [:path₁.size] do
+    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i] Hs₁[i]! heqProofs) heqProofs
+    lhs := path₁[i]
   let mut i := Hs₂.size
   while i > 0 do
     i := i - 1
@@ -595,7 +593,7 @@ def simplifyACCore (e lhs rhs : ACApps) (H : DelayedExpr) :
     let r : ACApps := if newArgs.isEmpty then default else .mkApps op newArgs
     let newArgs := ACApps.append op rhs newArgs
     let newE := ACApps.mkApps op newArgs
-    let some true := (← get).opInfo.find? op | failure
+    let some true := (← get).opInfo[op]? | failure
     let newPr ← mkACSimpProof e lhs rhs r newE H
     return (newE, newPr)
 
@@ -606,8 +604,8 @@ expression. -/
 def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   if let .apps _ args := e then
     for h : i in [:args.size] do
-      if i == 0 || (args[i]'h.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2)) then
-        let some ae := (← get).acEntries.find? (args[i]'h.2) | failure
+      if i == 0 || args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2.1)) then
+        let some ae := (← get).acEntries[args[i]]? | failure
         let occs := ae.RLHSOccs
         let mut Rlhs? : Option ACApps := none
         for Rlhs in occs do
@@ -615,9 +613,9 @@ def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
             Rlhs? := some Rlhs
             break
         if let some Rlhs := Rlhs? then
-          let some (Rrhs, H) := (← get).acR.find? Rlhs | failure
+          let some (Rrhs, H) := (← get).acR[Rlhs]? | failure
           return (some <| ← simplifyACCore e Rlhs Rrhs H)
-  else if let some p := (← get).acR.find? e then
+  else if let some p := (← get).acR[e]? then
     return some p
   return none
 

@@ -82,8 +82,8 @@ theorem take_succ_eq_snoc (m : ℕ) (h : m < n) (v : (i : Fin n) → α i) :
     simp [take, snoc, castLE]
   | succ m _ =>
     induction i using reverseInduction with
-    | last => simp [take, snoc, castLT]; congr
-    | cast i _ => simp [snoc_cast_add]
+    | last => simp [take, snoc]; congr
+    | cast i _ => simp
 
 /-- `take` commutes with `update` for indices in the range of `take`. -/
 @[simp]
@@ -132,7 +132,7 @@ theorem take_addCases_right {n' : ℕ} {motive : Fin (n + n') → Sort*} (m : �
   by_cases h' : i < n
   · simp only [h', ↓reduceDIte]
     congr
-  · simp only [h', ↓reduceDIte, subNat, castLE, cast, eqRec_eq_cast]
+  · simp only [h', ↓reduceDIte, subNat, castLE, Fin.cast, eqRec_eq_cast]
 
 /-- Version of `take_addCases_right` that specializes `addCases` to `append`. -/
 theorem take_append_right {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n') (u : (i : Fin n) → α)

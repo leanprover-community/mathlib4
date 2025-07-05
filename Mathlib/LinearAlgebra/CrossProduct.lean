@@ -3,10 +3,11 @@ Copyright (c) 2021 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 -/
+import Mathlib.Algebra.Lie.Basic
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Cross products
@@ -55,7 +56,7 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
   · intros
     simp_rw [smul_vec3, Pi.smul_apply, smul_sub, mul_smul_comm]
 
-scoped[Matrix] infixl:74 " ×₃ " => crossProduct
+@[inherit_doc] scoped[Matrix] infixl:74 " ×₃ " => crossProduct
 
 theorem cross_apply (a b : Fin 3 → R) :
     a ×₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl
@@ -77,35 +78,35 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   simp [cross_apply, mul_comm]
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/
-@[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
+@[simp]
 theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
   rw [cross_apply, vec3_dotProduct]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 /-- The cross product of two vectors is perpendicular to the second vector. -/
-@[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
+@[simp]
 theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
   rw [← cross_anticomm, dotProduct_neg, dot_self_cross, neg_zero]
 
 /-- Cyclic permutations preserve the triple product. See also `triple_product_eq_det`. -/
 theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u := by
   simp_rw [cross_apply, vec3_dotProduct]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
     with those vectors as its rows. -/
 theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matrix.det ![u, v, w] := by
   rw [vec3_dotProduct, cross_apply, det_fin_three]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 /-- The scalar quadruple product identity, related to the Binet-Cauchy identity. -/
 theorem cross_dot_cross (u v w x : Fin 3 → R) :
     u ×₃ v ⬝ᵥ w ×₃ x = u ⬝ᵥ w * v ⬝ᵥ x - u ⬝ᵥ x * v ⬝ᵥ w := by
   simp_rw [cross_apply, vec3_dotProduct]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 end ProductsProperties
@@ -115,7 +116,7 @@ section LeibnizProperties
 /-- The cross product satisfies the Leibniz lie property. -/
 theorem leibniz_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) = u ×₃ v ×₃ w + v ×₃ (u ×₃ w) := by
   simp_rw [cross_apply, vec3_add]
-  apply vec3_eq <;> norm_num <;> ring
+  apply vec3_eq <;> dsimp <;> ring
 
 /-- The three-dimensional vectors together with the operations + and ×₃ form a Lie ring.
     Note we do not make this an instance as a conflicting one already exists
@@ -163,3 +164,23 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
   simp only [smul_eq_mul, mul_comm (w 0), mul_comm (w 1), mul_comm (w 2), h1] at h20 h21 h22
   rw [hv', cons_eq_zero_iff, cons_eq_zero_iff, cons_eq_zero_iff, zero_empty] at hv
   exact hv ⟨(h20 trivial).2, (h21 trivial).2, (h22 trivial).2, rfl⟩
+
+/-- The scalar triple product expansion of the vector triple product. -/
+theorem cross_cross_eq_smul_sub_smul (u v w : Fin 3 → R) :
+    u ×₃ v ×₃ w = (u ⬝ᵥ w) • v - (v ⬝ᵥ w) • u := by
+  simp_rw [cross_apply, vec3_dotProduct]
+  ext i
+  fin_cases i <;>
+  · simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.reduceFinMk, cons_val,
+      Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+    ring
+
+/-- Alternative form of the scalar triple product expansion of the vector triple product. -/
+theorem cross_cross_eq_smul_sub_smul' (u v w : Fin 3 → R) :
+    u ×₃ (v ×₃ w) = (u ⬝ᵥ w) • v - (v ⬝ᵥ u) • w := by
+  simp_rw [cross_apply, vec3_dotProduct]
+  ext i
+  fin_cases i <;>
+  · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, cons_val, cons_val_one,
+      cons_val_zero, Fin.reduceFinMk, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+    ring

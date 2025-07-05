@@ -3,7 +3,7 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Data.Nat.Digits
+import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
 # IMO 1962 Q1
@@ -37,7 +37,7 @@ abbrev ProblemPredicate' (c n : ℕ) : Prop :=
 
 lemma without_digits {n : ℕ} (hn : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n := by
   use n / 10
-  cases' n with n
+  rcases n with - | n
   · have hpp : ¬ProblemPredicate 0 := by norm_num [ProblemPredicate]
     contradiction
   · rw [ProblemPredicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,

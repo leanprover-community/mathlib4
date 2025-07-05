@@ -3,8 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Continuous
 import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
@@ -36,35 +35,29 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 
-infixr:25 " →Co " => ContinuousOrderHom
+@[inherit_doc] infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
--- Porting note: extending `ContinuousMapClass` instead of `OrderHomClass`
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
 class ContinuousOrderHomClass (F : Type*) (α β : outParam Type*) [Preorder α] [Preorder β]
-    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] extends
-    ContinuousMapClass F α β : Prop where
+    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] : Prop
+    extends ContinuousMapClass F α β where
   map_monotone (f : F) : Monotone f
 
--- Porting note: namespaced these results since there are more than 3 now
 namespace ContinuousOrderHomClass
 
 variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
   [FunLike F α β] [ContinuousOrderHomClass F α β]
 
 -- See note [lower instance priority]
-instance (priority := 100) toOrderHomClass  :
+instance (priority := 100) toOrderHomClass :
     OrderHomClass F α β :=
   { ‹ContinuousOrderHomClass F α β› with
     map_rel := ContinuousOrderHomClass.map_monotone }
 
--- Porting note: following `OrderHomClass.toOrderHom` design, introduced a wrapper
--- for the original coercion. The original one directly exposed
--- ContinuousOrderHom.mk which allowed simp to apply more eagerly than in all
--- the other results in `Topology.Order.Hom.Esakia`.
 /-- Turn an element of a type `F` satisfying `ContinuousOrderHomClass F α β` into an actual
 `ContinuousOrderHom`. This is declared as the default coercion from `F` to `α →Co β`. -/
 @[coe]
@@ -132,7 +125,7 @@ protected def id : α →Co α :=
 instance : Inhabited (α →Co α) :=
   ⟨ContinuousOrderHom.id _⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousOrderHom.id α) = id :=
   rfl
 

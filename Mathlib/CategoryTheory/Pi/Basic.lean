@@ -17,6 +17,8 @@ We define the pointwise category structure on indexed families of objects in a c
 
 namespace CategoryTheory
 
+open Functor
+
 universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
@@ -28,14 +30,6 @@ instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   Hom X Y := ∀ i, X i ⟶ Y i
   id X i := 𝟙 (X i)
   comp f g i := f i ≫ g i
-
-/-- This provides some assistance to typeclass search in a common situation,
-which otherwise fails. (Without this `CategoryTheory.Pi.has_limit_of_has_limit_comp_eval` fails.)
--/
-abbrev pi' {I : Type v₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] : Category.{v₁} (∀ i, C i) :=
-  CategoryTheory.pi C
-
-attribute [instance] pi'
 
 namespace Pi
 
@@ -109,7 +103,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; simp)
 
 end
 
@@ -230,7 +224,6 @@ theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' �
     have := congr_obj h X
     simpa
   · intro X Y g
-    dsimp
     funext i
     specialize h i
     have := congr_hom h g
@@ -322,18 +315,18 @@ attribute [local simp] eqToHom_map
 @[simps]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (∀ j, C (e j)) ≌ (∀ i, C i) where
-  functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
+  functor := pi' (fun i => Pi.eval _ (e.symm i) ⋙
     (Pi.eqToEquivalence C (by simp)).functor)
   inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
-  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
+  unitIso := NatIso.pi' (fun i' => leftUnitor _ ≪≫
     (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
     isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
-    (Functor.pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'CompEval _ _).symm ≪≫
-    (Functor.associator _ _ _).symm)
-  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (Functor.pi'CompEval _ _) _ ≪≫
+    (pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (pi'CompEval _ _).symm ≪≫
+    (associator _ _ _).symm)
+  counitIso := NatIso.pi' (fun i => (associator _ _ _).symm ≪≫
+    isoWhiskerRight (pi'CompEval _ _) _ ≪≫
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
-    (Functor.leftUnitor _).symm)
+    (leftUnitor _).symm)
 
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
 @[simps]

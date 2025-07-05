@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The filter of small sets
@@ -22,7 +22,7 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 
 open Filter
 
-open Filter Set
+open Set
 
 variable {α β : Type*} {ι : Sort*}
 
@@ -53,6 +53,21 @@ protected theorem HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : 
 theorem hasBasis_smallSets (l : Filter α) :
     HasBasis l.smallSets (fun t : Set α => t ∈ l) powerset :=
   l.basis_sets.smallSets
+
+theorem Eventually.exists_mem_basis_of_smallSets {p : ι → Prop} {s : ι → Set α} {P : Set α → Prop}
+    (h₁ : ∀ᶠ t in l.smallSets, P t) (h₂ : HasBasis l p s) : ∃ i, p i ∧ P (s i) :=
+  (h₂.smallSets.eventually_iff.mp h₁).imp fun _i ⟨hpi, hi⟩ ↦ ⟨hpi, hi Subset.rfl⟩
+
+theorem Frequently.smallSets_of_forall_mem_basis {p : ι → Prop} {s : ι → Set α} {P : Set α → Prop}
+    (h₁ : ∀ i, p i → P (s i)) (h₂ : HasBasis l p s) : ∃ᶠ t in l.smallSets, P t :=
+  h₂.smallSets.frequently_iff.mpr fun _ hi => ⟨_, Subset.rfl, h₁ _ hi⟩
+
+theorem Eventually.exists_mem_of_smallSets {p : Set α → Prop}
+    (h : ∀ᶠ t in l.smallSets, p t) : ∃ s ∈ l, p s :=
+  h.exists_mem_basis_of_smallSets l.basis_sets
+
+/-! No `Frequently.smallSets_of_forall_mem (h : ∀ s ∈ l, p s) : ∃ᶠ t in l.smallSets, p t` as
+`Filter.frequently_smallSets_mem : ∃ᶠ t in l.smallSets, t ∈ l` is preferred. -/
 
 /-- `g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`. -/
 theorem tendsto_smallSets_iff {f : α → Set β} :

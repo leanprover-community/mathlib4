@@ -7,7 +7,6 @@ import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.Order.PartialSups
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.OrzechProperty
-import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Noetherian rings have the Orzech property

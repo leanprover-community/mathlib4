@@ -14,30 +14,30 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 # Main definitions
 
 * `PullbackCone f g`: Given morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, a term `t : PullbackCone f g`
-provides the data of a cone pictured as follows
-```
-t.pt ---t.snd---> Y
-  |               |
- t.fst            g
-  |               |
-  v               v
-  X -----f------> Z
-```
-The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
-results about cones are also available for `PullbackCone f g`.
+  provides the data of a cone pictured as follows
+  ```
+  t.pt ---t.snd---> Y
+    |               |
+  t.fst            g
+    |               |
+    v               v
+    X -----f------> Z
+  ```
+  The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
+  results about cones are also available for `PullbackCone f g`.
 
 * `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
-provides the data of a cocone pictured as follows
-```
-  X -----f------> Y
-  |               |
-  g               t.inr
-  |               |
-  v               v
-  Z ---t.inl---> t.pt
-```
-Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
-`Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
+  provides the data of a cocone pictured as follows
+  ```
+    X -----f------> Y
+    |               |
+    g               t.inr
+    |               |
+    v               v
+    Z ---t.inl---> t.pt
+  ```
+  Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
+  `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for
@@ -109,7 +109,7 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
 def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) : PullbackCone f g where
   pt := W
   π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
-         naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> dsimp <;> simp [eq] }
+         naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> simp [eq] }
 
 @[simp]
 theorem mk_π_app_left {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) :
@@ -219,8 +219,8 @@ lemma IsLimit.lift_snd {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W �
     (w : h ≫ f = k ≫ g) : IsLimit.lift ht h k w ≫ snd t = k := ht.fac _ _
 
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
-    `h ≫ f = k ≫ g`, then we have `l : W ⟶ t.pt` satisfying `l ≫ fst t = h` and `l ≫ snd t = k`.
-    -/
+`h ≫ f = k ≫ g`, then we have `l : W ⟶ t.pt` satisfying `l ≫ fst t = h` and `l ≫ snd t = k`.
+-/
 def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : { l : W ⟶ t.pt // l ≫ fst t = h ∧ l ≫ snd t = k } :=
   ⟨IsLimit.lift ht h k w, by simp⟩
@@ -286,11 +286,9 @@ composing with `diagramIsoCospan`. -/
 def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
     (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
       PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
-        ((t.π.naturality inl).symm.trans (t.π.naturality inr : _)) :=
+        ((t.π.naturality inl).symm.trans (t.π.naturality inr :)) :=
   Cones.ext (Iso.refl _) <| by
-    rintro (_ | (_ | _)) <;>
-      · dsimp
-        simp
+    rintro (_ | (_ | _)) <;> simp
 
 /-- A pushout cocone is just a cocone on the span formed by two morphisms `f : X ⟶ Y` and
     `g : X ⟶ Z`. -/
@@ -408,7 +406,7 @@ theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k 
 -- Porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
     morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
-    `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`-/
+    `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`. -/
 def IsColimit.desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) : t.pt ⟶ W :=
   ht.desc (PushoutCocone.mk _ _ w)
@@ -508,8 +506,6 @@ def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
       PushoutCocone.mk (t.ι.app WalkingSpan.left) (t.ι.app WalkingSpan.right)
         ((t.ι.naturality fst).trans (t.ι.naturality snd).symm) :=
   Cocones.ext (Iso.refl _) <| by
-    rintro (_ | (_ | _)) <;>
-      · dsimp
-        simp
+    rintro (_ | (_ | _)) <;> simp
 
 end CategoryTheory.Limits

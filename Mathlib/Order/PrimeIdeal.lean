@@ -41,8 +41,6 @@ namespace Ideal
 
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P
@@ -59,8 +57,8 @@ theorem compl_F_eq_I : (IF.F : Set P)ᶜ = IF.I :=
   IF.isCompl_I_F.eq_compl.symm
 
 theorem I_isProper : IsProper IF.I := by
-  cases' IF.F.nonempty with w h
-  apply isProper_of_not_mem (_ : w ∉ IF.I)
+  obtain ⟨w, h⟩ := IF.F.nonempty
+  apply isProper_of_notMem (_ : w ∉ IF.I)
   rwa [← IF.compl_I_eq_F] at h
 
 protected theorem disjoint : Disjoint (IF.I : Set P) IF.F :=
@@ -77,7 +75,7 @@ end PrimePair
 /-- An ideal `I` is prime if its complement is a filter.
 -/
 @[mk_iff]
-class IsPrime [Preorder P] (I : Ideal P) extends IsProper I : Prop where
+class IsPrime [Preorder P] (I : Ideal P) : Prop extends IsProper I where
   compl_filter : IsPFilter (I : Set P)ᶜ
 
 section Preorder
@@ -106,7 +104,7 @@ variable [SemilatticeInf P] {I : Ideal P}
 theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
   contrapose!
   let F := hI.compl_filter.toPFilter
-  show x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
+  change x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
   exact fun h => inf_mem h.1 h.2
 
 theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :
@@ -136,7 +134,7 @@ instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   apply hynI
   let J := I ⊔ principal x
   have hJuniv : (J : Set P) = Set.univ :=
-    IsMaximal.maximal_proper (lt_sup_principal_of_not_mem ‹_›)
+    IsMaximal.maximal_proper (lt_sup_principal_of_notMem ‹_›)
   have hyJ : y ∈ (J : Set P) := Set.eq_univ_iff_forall.mp hJuniv y
   rw [coe_sup_eq] at hyJ
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
@@ -156,8 +154,11 @@ theorem IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I := by
   rw [inf_compl_eq_bot]
   exact I.bot_mem
 
-theorem IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
+theorem IsPrime.compl_mem_of_notMem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ ∈ I :=
   hI.mem_or_compl_mem.resolve_left hxnI
+
+@[deprecated (since := "2025-05-23")]
+alias IsPrime.mem_compl_of_not_mem := IsPrime.compl_mem_of_notMem
 
 theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I := by
   simp only [isPrime_iff_mem_or_mem, or_iff_not_imp_left]
@@ -176,7 +177,7 @@ instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
   exact
     sup_mem (J.lower inf_le_right hyJ)
-      (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_not_mem ‹_› hyI)
+      (hIJ.le <| I.lower inf_le_right <| IsPrime.compl_mem_of_notMem ‹_› hyI)
 
 end BooleanAlgebra
 

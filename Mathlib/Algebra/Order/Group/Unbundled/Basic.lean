@@ -70,8 +70,7 @@ theorem le_inv_mul_iff_le : 1 ≤ b⁻¹ * a ↔ b ≤ a := by
 
 @[to_additive]
 theorem inv_mul_le_one_iff : a⁻¹ * b ≤ 1 ↔ b ≤ a :=
-  -- Porting note: why is the `_root_` needed?
-  _root_.trans inv_mul_le_iff_le_mul <| by rw [mul_one]
+  inv_mul_le_iff_le_mul.trans <| by rw [mul_one]
 
 end MulLeftMono
 
@@ -353,7 +352,6 @@ variable [LE α] [MulLeftMono α] {a b c d : α}
 @[to_additive]
 theorem inv_mul_le_iff_le_mul' : c⁻¹ * a ≤ b ↔ a ≤ b * c := by rw [inv_mul_le_iff_le_mul, mul_comm]
 
--- Porting note: `simp` simplifies LHS to `a ≤ c * b`
 @[to_additive]
 theorem mul_inv_le_iff_le_mul' : a * b⁻¹ ≤ c ↔ a ≤ b * c := by
   rw [← inv_mul_le_iff_le_mul, mul_comm]
@@ -371,7 +369,6 @@ variable [LT α] [MulLeftStrictMono α] {a b c d : α}
 @[to_additive]
 theorem inv_mul_lt_iff_lt_mul' : c⁻¹ * a < b ↔ a < b * c := by rw [inv_mul_lt_iff_lt_mul, mul_comm]
 
--- Porting note: `simp` simplifies LHS to `a < c * b`
 @[to_additive]
 theorem mul_inv_lt_iff_le_mul' : a * b⁻¹ < c ↔ a < b * c := by
   rw [← inv_mul_lt_iff_lt_mul, mul_comm]
@@ -426,7 +423,6 @@ attribute [to_additive] le_inv_mul_of_mul_le
 
 alias ⟨_, inv_mul_le_of_le_mul⟩ := inv_mul_le_iff_le_mul
 
--- Porting note: was `inv_mul_le_iff_le_mul`
 attribute [to_additive] inv_mul_le_of_le_mul
 
 alias ⟨mul_lt_of_lt_inv_mul, _⟩ := lt_inv_mul_iff_mul_lt
@@ -723,7 +719,7 @@ variable {a b : α}
 
 @[to_additive]
 theorem le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=
-  le_of_not_lt fun h₁ => lt_irrefl a (by simpa using h _ (lt_inv_mul_iff_lt.mpr h₁))
+  le_of_not_gt fun h₁ => lt_irrefl a (by simpa using h _ (lt_inv_mul_iff_lt.mpr h₁))
 
 @[to_additive]
 theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=

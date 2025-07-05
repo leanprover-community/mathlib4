@@ -3,10 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
+import Mathlib.Algebra.Divisibility.Finite
 import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Units
+import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
@@ -38,21 +38,15 @@ namespace CounterexampleNotPrimeButHomogeneousPrime
 
 open DirectSum
 
--- attribute [local reducible] WithZero
-
 abbrev Two :=
   WithZero Unit
 
-instance Two.instLinearOrder : LinearOrder Two :=
-  inferInstance
+instance : Fintype Two :=
+  inferInstanceAs (Fintype (Option Unit))
 
-instance Two.instAddCommMonoid : AddCommMonoid Two :=
-  inferInstance
+instance : IsOrderedAddMonoid Two :=
+  { add_le_add_left := by decide }
 
-instance : LinearOrderedAddCommMonoid Two :=
-  { Two.instLinearOrder, Two.instAddCommMonoid with
-    add_le_add_left := by
-      delta Two WithZero; decide }
 section
 
 variable (R : Type*) [CommRing R]
@@ -64,15 +58,25 @@ def submoduleZ : Submodule R (R × R) where
   add_mem' := @fun _ _ ha hb => congr_arg₂ (· + ·) ha hb
   smul_mem' a _ hb := congr_arg (a * ·) hb
 
+instance [Fintype R] [DecidableEq R] : Fintype (submoduleZ R) :=
+  inferInstanceAs (Fintype {zz : R × R // zz.1 = zz.2})
+
 /-- The grade 1 part of `R²` is `{(0, b) | b ∈ R}`. -/
 def submoduleO : Submodule R (R × R) :=
   LinearMap.ker (LinearMap.fst R R R)
+
+instance [Fintype R] [DecidableEq R] : Fintype (submoduleO R) :=
+  inferInstanceAs (Fintype {zz : R × R // zz.1 = 0})
 
 /-- Given the above grading (see `submoduleZ` and `submoduleO`),
   we turn `R²` into a graded ring. -/
 def grading : Two → Submodule R (R × R)
   | 0 => submoduleZ R
   | 1 => submoduleO R
+
+instance [Fintype R] [DecidableEq R] : ∀ (i : Two), Fintype (grading R i)
+  | 0 => inferInstanceAs (Fintype (submoduleZ R))
+  | 1 => inferInstanceAs (Fintype (submoduleO R))
 
 theorem grading.one_mem : (1 : R × R) ∈ grading R 0 :=
   Eq.refl (1, 1).fst
@@ -95,53 +99,37 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
   toFun zz :=
     of (grading R ·) 0 ⟨(zz.1, zz.1), rfl⟩ +
     of (grading R ·) 1 ⟨(0, zz.2 - zz.1), rfl⟩
-  map_zero' := by
-    refine DFinsupp.ext (fun (i : Two) =>
-        Option.casesOn i ?_ (fun (i_1 : Unit) => PUnit.casesOn i_1 ?_)) <;> rfl
+  map_zero' := by decide
   map_add' := by
     rintro ⟨a1, b1⟩ ⟨a2, b2⟩
     rw [add_add_add_comm, ← map_add, ← map_add]
     dsimp only [Prod.mk_add_mk]
     simp_rw [add_sub_add_comm]
-    congr
+    rfl
 
-theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) grading.decompose :=
-  fun zz => by
-  induction' zz using DirectSum.induction_on with i zz d1 d2 ih1 ih2
-  · simp only [map_zero]
-  · rcases i with (_ | ⟨⟨⟩⟩) <;> rcases zz with ⟨⟨a, b⟩, hab : _ = _⟩ <;> dsimp at hab <;>
-      -- Porting note: proof was `decide` (without reverting any free variables).
-      cases hab <;> decide +revert
-  · simp only [map_add, ih1, ih2]
-
-theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) grading.decompose :=
-  fun zz => by
-  cases' zz with a b
-  unfold grading.decompose
-  simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, map_add, coeLinearMap_of, Prod.mk_add_mk,
-    add_zero, add_sub_cancel]
+theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) grading.decompose := by
+  intro zz
+  induction zz using DirectSum.induction_on with
+  | zero => decide
+  | of => decide +revert
+  | add d1 d2 ih1 ih2 => simp only [map_add, ih1, ih2]
 
 instance : GradedAlgebra (grading R) where
   one_mem := grading.one_mem R
   mul_mem := grading.mul_mem R
   decompose' := grading.decompose
-  left_inv := by convert grading.left_inv
-  right_inv := by convert grading.right_inv
-
+  left_inv := by decide
+  right_inv := grading.right_inv
 
 /-- The counterexample is the ideal `I = span {(2, 2)}`. -/
 def I : Ideal (R × R) :=
   Ideal.span {((2, 2) : R × R)}
 
 theorem I_not_prime : ¬I.IsPrime := by
-  rintro ⟨rid1, rid2⟩
-  apply rid1; clear rid1
-  -- Porting note: proof was:
-  -- `revert rid2; simp only [Ideal.mem_span_singleton, Ideal.eq_top_iff_one]; tauto`
-  specialize @rid2 (1,2) (2,1)
-  simpa only [I, Ideal.mem_span_singleton, Ideal.eq_top_iff_one, prod_dvd_iff, and_self, and_imp,
-    Prod.fst_mul, Prod.snd_mul, Prod.forall, Prod.fst_one, Prod.snd_one, one_mul, mul_one,
-    dvd_refl, and_true, true_and, or_self, forall_true_left] using rid2
+  rintro ⟨-, h⟩
+  simp only [I, Ideal.mem_span_singleton] at h
+  revert h
+  decide +revert +kernel
 
 theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Ideal.IsHomogeneous.iff_exists]
@@ -149,33 +137,16 @@ theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Set.image_singleton]
   rfl
 
-theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading R) x)
-    (hy : SetLike.Homogeneous (grading R) y) (hxy : x * y ∈ I) : x ∈ I ∨ y ∈ I := by
-  -- Porting note: added `h2` for later use; the proof is hideous
+
+theorem homogeneous_mem_or_mem : ∀ {x y : R × R},
+    SetLike.IsHomogeneousElem (grading R) x → SetLike.IsHomogeneousElem (grading R) y →
+    x * y ∈ I → x ∈ I ∨ y ∈ I := by
   have h2 : Prime (2:R) := by
     unfold Prime
-    refine ⟨by decide, by decide, ?_⟩
-    intro a b
-    have aux2 : (Fin.mk 2 _ : R) = 2 := rfl
-    have aux3 : (Fin.mk 3 _ : R) = -1 := rfl
-    fin_cases a <;>
-      simp +contextual only
-        [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
-          Fin.mk_one, one_mul, aux2, dvd_refl]
-    fin_cases b <;>
-      simp +contextual only
-        [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
-          Fin.mk_one, mul_one, aux2, dvd_refl, aux3, or_self, neg_one_mul, neg_neg, dvd_neg]
-  simp only [I, Ideal.mem_span_singleton] at hxy ⊢
-  cases' x; cases' y
-  obtain ⟨_ | ⟨⟨⟩⟩, hx : _ = _⟩ := hx <;> obtain ⟨_ | ⟨⟨⟩⟩, hy : _ = _⟩ := hy <;>
-    dsimp at hx hy <;>
-    cases hx <;>
-    cases hy <;>
-    -- Porting note: proof was `tauto`
-    simp only [prod_dvd_iff, dvd_zero, true_and, and_self,
-      Prod.mk_mul_mk, mul_zero, zero_mul] at hxy ⊢ <;>
-    apply h2.dvd_or_dvd hxy
+    decide +kernel
+  simp only [I, Ideal.mem_span_singleton]
+  rintro ⟨x1, x2⟩ ⟨y1, y2⟩ ⟨_ | ⟨⟨⟩⟩, rfl : x1 = _⟩ ⟨_ | ⟨⟨⟩⟩, rfl : y1 = _⟩ h <;>
+    decide +revert
 
 end CounterexampleNotPrimeButHomogeneousPrime
 

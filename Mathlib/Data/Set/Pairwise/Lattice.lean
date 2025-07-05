@@ -72,10 +72,9 @@ theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → 
   obtain ⟨d, hd, hb⟩ := hb
   obtain hcd | hcd := eq_or_ne (g c) (g d)
   · exact hg d hd (hcd ▸ ha) hb hab
-  -- Porting note: the elaborator couldn't figure out `f` here.
   · exact (hs hc hd <| ne_of_apply_ne _ hcd).mono
-      (le_iSup₂ (f := fun i (_ : i ∈ g c) => f i) a ha)
-      (le_iSup₂ (f := fun i (_ : i ∈ g d) => f i) b hb)
+      (le_iSup₂ (f := fun i _ => f i) a ha)
+      (le_iSup₂ (f := fun i _ => f i) b hb)
 
 /-- If the suprema of columns are pairwise disjoint and suprema of rows as well, then everything is
 pairwise disjoint. Not to be confused with `Set.PairwiseDisjoint.prod`. -/
@@ -86,7 +85,7 @@ theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
   rintro ⟨i, i'⟩ hi ⟨j, j'⟩ hj h
   rw [mem_prod] at hi hj
   obtain rfl | hij := eq_or_ne i j
-  · refine (ht hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 h).mono ?_ ?_
+  · refine (ht hi.2 hj.2 <| (Prod.mk_right_injective _).ne_iff.1 h).mono ?_ ?_
     · convert le_iSup₂ (α := α) i hi.1; rfl
     · convert le_iSup₂ (α := α) i hj.1; rfl
   · refine (hs hi.1 hj.1 hij).mono ?_ ?_
@@ -132,6 +131,18 @@ end Set
 section
 
 variable {f : ι → Set α} {s t : Set ι}
+
+lemma Set.pairwiseDisjoint_iff :
+    s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),
+    not_disjoint_iff_nonempty_inter]
+
+lemma Set.pairwiseDisjoint_pair_insert {s : Set α} {a : α} (ha : a ∉ s) :
+    s.powerset.PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Set α)) := by
+  rw [pairwiseDisjoint_iff]
+  rintro i hi j hj
+  have := insert_erase_invOn.2.injOn (notMem_subset hi ha) (notMem_subset hj ha)
+  aesop (add simp [Set.Nonempty, Set.subset_def])
 
 theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).PairwiseDisjoint f)
     (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by

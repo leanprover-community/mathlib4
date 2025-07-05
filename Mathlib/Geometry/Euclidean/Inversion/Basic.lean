@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -40,7 +40,6 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [inversion] -/
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl
@@ -185,7 +184,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   · rw [dist_self, zero_mul, zero_add]
   rcases eq_or_ne c a with (rfl | hc)
   · rw [dist_self, zero_mul]
-    apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
+    positivity
   rcases eq_or_ne d a with (rfl | hd)
   · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,

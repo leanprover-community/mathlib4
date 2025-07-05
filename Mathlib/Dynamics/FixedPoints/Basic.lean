@@ -3,9 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.End
 import Mathlib.Data.Set.Function
-import Mathlib.Logic.Function.Iterate
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Fixed points of a self-map
@@ -35,7 +34,11 @@ open Function (Commute)
 
 /-- Every point is a fixed point of `id`. -/
 theorem isFixedPt_id (x : α) : IsFixedPt id x :=
-  (rfl : _)
+  (rfl :)
+
+/-- A function fixes every point iff it is the identity. -/
+@[simp] theorem forall_isFixedPt_iff : (∀ x, IsFixedPt f x) ↔ f = id :=
+  ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
 
 namespace IsFixedPt
 
