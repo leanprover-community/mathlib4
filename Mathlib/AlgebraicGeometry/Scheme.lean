@@ -271,6 +271,19 @@ instance hasCoeToTopCat : CoeOut Scheme TopCat where
 unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
 
+/-- The forgetful functor from `Scheme` to `Type`. -/
+nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
+
+/-- forgetful functor to `Scheme` is the same as coercion -/
+-- Schemes are often coerced as types, and it would be useful to have definitionally equal types
+-- to be reducibly equal. The alternative is to make `forget` reducible but that option has
+-- poor performance consequences.
+unif_hint forget_obj_eq_coe (X : Scheme) where ⊢
+  forget.obj X ≟ (X : Type*)
+
+@[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = (f.base : X → Y) := rfl
+
 @[simp]
 theorem id.base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
   rfl
@@ -327,7 +340,7 @@ theorem comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V e) :
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.app U = g.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)).op := by
-  subst e; dsimp; simp
+  subst e; simp
 
 theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Y.Opens} (e : U = V) :
     f.app U =
@@ -436,7 +449,7 @@ instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
 @[simp]
 lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
     Spec.map (inv f) = inv (Spec.map f) := by
-  show Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
+  change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
 
 section
@@ -605,8 +618,7 @@ theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤))
 
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
-  simp only [preimage_basicOpen, Hom.appLE, CommRingCat.comp_apply, RingHom.coe_comp,
-    Function.comp_apply]
+  simp only [preimage_basicOpen, Hom.appLE, CommRingCat.comp_apply]
   rw [basicOpen_res]
 
 @[simp]
@@ -734,7 +746,7 @@ end Scheme
 theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
     (Spec R).basicOpen ((Scheme.ΓSpecIso R).inv f) = PrimeSpectrum.basicOpen f := by
   ext x
-  simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top, Opens.coe_top]
+  simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top]
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
   rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x).hom,
     StructureSheaf.stalkToFiberRingHom_toStalk]
@@ -750,7 +762,7 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
 theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U = V) (W) :
-    (Spec.map (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; dsimp; simp) := by
+    (Spec.map (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h
@@ -773,7 +785,7 @@ lemma Scheme.iso_hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
 @[simp]
 lemma Scheme.iso_hom_base_inv_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     (e.inv.base (e.hom.base x)) = x := by
-  show (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[reassoc (attr := simp)]
@@ -784,7 +796,7 @@ lemma Scheme.iso_inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
 @[simp]
 lemma Scheme.iso_inv_base_hom_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
     (e.hom.base (e.inv.base y)) = y := by
-  show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :

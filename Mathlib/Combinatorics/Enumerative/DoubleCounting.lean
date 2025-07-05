@@ -203,8 +203,6 @@ end Bipartite
 
 end Finset
 
-open Finset
-
 namespace Fintype
 
 variable [Fintype α] [Fintype β] {r : α → β → Prop}

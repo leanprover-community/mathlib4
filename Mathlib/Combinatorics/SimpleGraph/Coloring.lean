@@ -346,13 +346,13 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     let D : G.Coloring {a // a ≠ i} := ⟨fun v ↦ ⟨C v, hi v⟩, (C.valid · <| congr_arg Subtype.val ·)⟩
     classical
     exact Nat.notMem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
-      ⟨G.recolorOfEquiv (equivOfCardEq <| by simp [Nat.pred_eq_sub_one]) D⟩
-  · simp only [chromaticNumber, Set.mem_setOf_eq, le_iInf_iff, Nat.cast_le, exists_prop]
+      ⟨G.recolorOfEquiv (equivOfCardEq <| by simp) D⟩
+  · simp only [chromaticNumber, Set.mem_setOf_eq, le_iInf_iff, Nat.cast_le]
     rintro i ⟨C⟩
     contrapose! h
     refine ⟨G.recolorOfCardLE (by simpa using h.le) C, fun hC ↦ ?_⟩
     dsimp at hC
-    simpa [h.not_le] using Fintype.card_le_of_surjective _ hC.of_comp
+    simpa [h.not_ge] using Fintype.card_le_of_surjective _ hC.of_comp
 
 lemma le_chromaticNumber_iff_forall_surjective :
     n ≤ G.chromaticNumber ↔ ∀ C : G.Coloring (Fin n), Surjective C := by

@@ -77,7 +77,7 @@ abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [Functor.comp_obj, toCompHausLike_map, coe_of]
+  simp only [Functor.comp_obj, toCompHausLike_map]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact liftedLimitMapsToOriginal_inv_map_π hc _

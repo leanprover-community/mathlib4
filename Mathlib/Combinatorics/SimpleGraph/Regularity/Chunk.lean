@@ -95,7 +95,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     intro x hx
     rw [← biUnion_filter_atomise hX (G.nonuniformWitness_subset h₂), star, mem_sdiff,
       mem_biUnion] at hx
-    simp only [not_exists, mem_biUnion, and_imp, exists_prop, mem_filter,
+    simp only [not_exists, mem_biUnion, and_imp, mem_filter,
       not_and, mem_sdiff, id, mem_sdiff] at hx ⊢
     obtain ⟨⟨B, hB₁, hB₂⟩, hx⟩ := hx
     exact ⟨B, hB₁, hB₂, fun A hA AB => hx A hA <| AB.trans hB₁.2.1⟩
