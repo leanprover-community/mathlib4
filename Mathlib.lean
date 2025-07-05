@@ -3974,7 +3974,6 @@ import Mathlib.LinearAlgebra.FreeProduct.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Goursat
 import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.LinearAlgebra.InvariantSubmodule
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.JordanChevalley
 import Mathlib.LinearAlgebra.Lagrange
