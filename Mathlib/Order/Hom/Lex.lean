@@ -144,7 +144,7 @@ end OrderIso
 namespace Prod.Lex
 variable (α β : Type*)
 
-/-- Lexicographical product type with `Unique` type on the right is `OrderIso` to the left. -/
+/-- Lexicographic product type with `Unique` type on the right is `OrderIso` to the left. -/
 def prodUnique [PartialOrder α] [Preorder β] [Unique β] : α ×ₗ β ≃o α where
   toFun x := (ofLex x).1
   invFun x := toLex (x, default)
