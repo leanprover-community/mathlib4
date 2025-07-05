@@ -123,16 +123,16 @@ lemma lintegral_betaPDF_eq {α β : ℝ} : ∫⁻ x, betaPDF α β x
         (1 / beta α β * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
   have left_zero : ∫⁻ x in Iic 0, betaPDF α β x = 0 := by
     rw [setLIntegral_congr_fun measurableSet_Iic
-    (ae_of_all _ (fun x (hx : x ≤ 0) ↦ betaPDF_eq_zero_of_le_zero hx)),
+    fun x (hx : x ≤ 0) ↦ betaPDF_eq_zero_of_le_zero hx,
       lintegral_zero]
   have right_zero : ∫⁻ x in Ici 1, betaPDF α β x ∂volume.restrict (Ioi 0) = 0 := by
     rw [setLIntegral_congr_fun measurableSet_Ici
-    (ae_of_all _ (fun x (hx : 1 ≤ x) ↦ betaPDF_eq_zero_of_one_le hx)),
+    fun x (hx : 1 ≤ x) ↦ betaPDF_eq_zero_of_one_le hx,
       lintegral_zero]
   have middle : ∫⁻ x in Ioo 0 1, betaPDF α β x =
     ∫⁻ x in Ioo 0 1, ENNReal.ofReal ((1 / beta α β) * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
     rw [setLIntegral_congr_fun measurableSet_Ioo
-    (ae_of_all _ (fun x (hx : 0 < x ∧ x < 1) ↦ betaPDF_eq_of_ge_zero_le_one hx))]
+    fun x (hx : 0 < x ∧ x < 1) ↦ betaPDF_eq_of_ge_zero_le_one hx]
   have : ∫⁻ x, betaPDF α β x = ∫⁻ x in Ioo 0 1, betaPDF α β x := by
     rw [← lintegral_add_compl _ measurableSet_Iic, left_zero]
     simp only [compl_Iic, zero_add]
@@ -186,8 +186,7 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     ∫⁻ x, betaPDF α β x = 1 := by
   rw [lintegral_betaPDF_eq, <-ENNReal.toReal_eq_one_iff,
     <-integral_eq_lintegral_of_nonneg_ae]
-  · -- Move beta outside of the integral and simplify
-    conv => lhs
+  · conv => lhs
             congr
             rfl
             ext
@@ -195,7 +194,6 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     rw [integral_const_mul]
     field_simp
     rw [div_eq_one_iff_eq (ne_of_gt (beta_pos hα hβ))]
-    -- Use the relationship between beta and gamma to show that the integral equals beta
     rw [beta_eq_betaIntegralReal α β hα hβ]
     unfold Real.betaIntegralReal betaIntegral
     rw [intervalIntegral.integral_of_le (by norm_num), <-integral_Ioc_eq_integral_Ioo]
