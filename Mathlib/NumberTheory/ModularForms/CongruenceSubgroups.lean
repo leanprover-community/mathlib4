@@ -27,7 +27,7 @@ local notation "SLMOD(" N ")" =>
   @Matrix.SpecialLinearGroup.map (Fin 2) _ _ _ _ _ _ (Int.castRingHom (ZMod N))
 
 @[simp]
-theorem SL_reduction_mod_hom_val (γ : SL(2, ℤ)) (i j : Fin 2):
+theorem SL_reduction_mod_hom_val (γ : SL(2, ℤ)) (i j : Fin 2) :
     SLMOD(N) γ i j = (γ i j : ZMod N) :=
   rfl
 

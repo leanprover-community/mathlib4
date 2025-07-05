@@ -505,7 +505,7 @@ lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :
   simp [actionHom_def]
 
 @[simp]
-lemma id_actionHom  (d : D) {c c' : C} (f : c ⟶ c') :
+lemma id_actionHom (d : D) {c c' : C} (f : c ⟶ c') :
     (𝟙 d) ⊙ᵣₘ f = d ⊴ᵣ f := by
   simp [actionHom_def]
 
