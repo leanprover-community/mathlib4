@@ -522,6 +522,7 @@ lemma mateEquivLeftAdjointSquaresHom :
     TwoSquare.mk _ _ _ _ (𝔄.rightAdjoint.squareLeft.iso.inv) := by
   ext x
   dsimp [TwoSquare.mk, TwoSquare.natTrans]
+  simp only [Category.id_comp, Category.comp_id]
   -- Collecting some facts
   have h₁ := 𝔄.unit.left_coherence_app (𝔄.rightAdjoint.left.obj x) =≫
     (𝔄.rightAdjoint.squareLeft.iso).inv.app
@@ -546,6 +547,7 @@ lemma mateEquivRightAdjointSquaresHom :
     TwoSquare.mk _ _ _ _ (𝔄.rightAdjoint.squareRight.iso.inv) := by
   ext x
   dsimp [TwoSquare.mk, TwoSquare.natTrans]
+  simp only [Category.id_comp, Category.comp_id]
   -- Collecting some facts
   have h₁ := 𝔄.unit.right_coherence_app (𝔄.rightAdjoint.right.obj x) =≫
     (𝔄.rightAdjoint.squareRight.iso).inv.app
