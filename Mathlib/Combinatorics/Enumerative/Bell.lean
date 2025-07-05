@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
+Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Weijie Jiang
 -/
 
 import Mathlib.Data.Nat.Choose.Multinomial
@@ -28,6 +28,12 @@ The definition presents it as a natural number.
     `uniformBell m n * n ! ^ m * m ! = (m * n)!`
 
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
+
+* `Nat.standardBell n`: the `n`th standard Bell number, which counts the number of partitions of a set of cardinality `n`
+
+* `Nat.standardBell_succ n` shows that
+    `standardBell (n + 1) = ∑ k ∈ Finset.range (n + 1),
+      Nat.choose n k * standardBell (n - k)`
 
 ## TODO
 
@@ -83,8 +89,8 @@ theorem bell_mul_eq (m : Multiset ℕ) :
         rw [← Finset.prod_erase_mul _ _ hm]
         simp only [factorial_zero, one_pow, mul_one, zero_mul]
         exact this
-      · nth_rewrite 1 [← Finset.erase_eq_of_notMem hm]
-        nth_rewrite 3 [← Finset.erase_eq_of_notMem hm]
+      · nth_rewrite 1 [← Finset.erase_eq_of_not_mem hm]
+        nth_rewrite 3 [← Finset.erase_eq_of_not_mem hm]
         exact this
     rw [← Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl
@@ -167,5 +173,33 @@ theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   apply Nat.div_eq_of_eq_mul_left
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos
   · rw [← mul_assoc, ← uniformBell_mul_eq _ hn]
+
+/-- The `n`th standard Bell number,
+which counts the number of partitions of a set of cardinality `n`. -/
+def standardBell : ℕ → ℕ
+  | 0 => 1
+  | n + 1 => ∑ k ∈ Finset.range (n + 1), Nat.choose n k * standardBell (n - k)
+
+@[simp]
+theorem standardBell_zero : standardBell 0 = 1 := by
+  unfold standardBell
+  rfl
+
+@[simp]
+theorem standardBell_one : standardBell 1 = 1 := by
+  unfold standardBell
+  simp only [zero_add, Finset.range_one, zero_tsub, Finset.sum_singleton, choose_self, one_mul, standardBell_zero]
+
+@[simp]
+theorem standardBell_two : standardBell 2 = 2 := by
+  unfold standardBell
+  rw [Finset.range_succ]
+  simp only [Finset.range_one, Finset.mem_singleton, one_ne_zero, not_false_eq_true,
+    Finset.sum_insert, choose_self, tsub_self, one_mul, Finset.sum_singleton,
+    choose_succ_self_right, zero_add, tsub_zero, standardBell_zero, standardBell_one]
+
+theorem standardBell_succ (n : ℕ) :
+  standardBell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * standardBell (n - k) := by
+  rw [standardBell]
 
 end Nat
