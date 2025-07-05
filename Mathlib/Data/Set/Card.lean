@@ -503,13 +503,7 @@ theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
 
 lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
 
-theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := by
-  obtain (h | h) := s.finite_or_infinite
-  · have := h.fintype
-    rw [ncard, h.encard_eq_coe_toFinset_card, Nat.card_eq_fintype_card,
-      toFinite_toFinset, toFinset_card, ENat.toNat_coe]
-  have := infinite_coe_iff.2 h
-  rw [ncard, h.encard_eq, Nat.card_eq_zero_of_infinite, ENat.toNat_top]
+@[simp] theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
 
 theorem ncard_eq_toFinset_card (s : Set α) (hs : s.Finite := by toFinite_tac) :
     s.ncard = hs.toFinset.card := by
