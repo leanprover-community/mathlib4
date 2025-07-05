@@ -14,7 +14,22 @@ def IsStandard [Lattice α] (a : α) : Prop :=
 def IsNeutral [Lattice α] (a : α) : Prop :=
   ∀ (x y : α), (a ⊓ x) ⊔ (a ⊓ y) ⊔ (x ⊓ y) = (a ⊔ x) ⊓ (a ⊔ y) ⊓ (x ⊔ y)
 
+structure IsLatticeCon [Lattice α] (r : α → α → Prop) : Prop extends Equivalence r where
+  inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
+  sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
+
+def ker (f : α → β) : α → α → Prop := fun a b => f a = f b
+
+lemma equiv_ker (f : α → β) : Equivalence (ker f) where
+  refl _ := rfl
+  symm h := h.symm
+  trans h1 h2 := h1.trans h2
+
 variable [Lattice α] [Lattice β]
+
+
+
+
 
 def Set.neutral : Set α :=
   { z | IsNeutral z }
@@ -22,6 +37,26 @@ def Set.neutral : Set α :=
 structure IsLatticeHom (f : α → β) : Prop where
   map_inf (a b : α) : f (a ⊓ b) = f a ⊓ f b
   map_sup (a b : α) : f (a ⊔ b) = f a ⊔ f b
+
+lemma kercong (f : α → β) : IsLatticeHom f ↔ IsLatticeCon (ker f) where
+  mp := fun h => {
+      equiv_ker f with
+      inf := fun h1 h2 => by
+        unfold ker
+        rw [h.map_inf, h.map_inf, h1, h2]
+      sup := fun h1 h2 => by
+        unfold ker
+        rw [h.map_sup, h.map_sup, h1, h2]
+  }
+  mpr := fun h => {
+    map_inf := by
+      intro a b
+      
+    map_sup := sorry
+  }
+
+
+
 
 lemma theorem2_i_ii (a : α) : IsDistrib a → IsLatticeHom (fun x => a ⊔ x) := fun h => {
   map_inf := h
