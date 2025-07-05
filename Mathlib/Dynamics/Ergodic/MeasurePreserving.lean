@@ -214,6 +214,11 @@ theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ
 
 end MeasurePreserving
 
+lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
+    MeasurePreserving (Subtype.val : s → α) (μa.comap Subtype.val) (μa.restrict s) where
+  measurable := measurable_subtype_coe
+  map_eq := map_comap_subtype_coe hs _
+
 namespace MeasurableEquiv
 
 theorem measurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :

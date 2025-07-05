@@ -13,8 +13,8 @@ import Mathlib.MeasureTheory.Function.JacobianOneDim
 /-! # Lengths of paths in manifolds
 
 Consider a manifold in which the tangent spaces have an enormed structure. Then one defines
-`pathELength γ x y` as the length of the path `γ : ℝ → M` between `x` and `y`, i.e., the integral
-of the norm of its derivative.
+`pathELength γ a b` as the length of the path `γ : ℝ → M` between `a` and `b`, i.e., the integral
+of the norm of its derivative on `Icc a b`.
 
 We give several ways to write this quantity (as an integral over `Icc`, or `Ioo`, or the subtype
 `Icc`, using either `mfderiv` or `mfderivWithin`).
@@ -92,7 +92,7 @@ lemma pathELength_mono (h : a' ≤ a) (h' : b ≤ b') :
   exact lintegral_mono_set (Icc_subset_Icc h h')
 
 lemma pathELength_eq_add {γ : ℝ → M} {a b c : ℝ} (h : a ≤ b) (h' : b ≤ c) :
-    pathELength I γ a c = pathELength I γ a b + pathELength I γ b z := by
+    pathELength I γ a c = pathELength I γ a b + pathELength I γ b c := by
   have : Icc a c = Icc a b ∪ Ioc b c := (Icc_union_Ioc_eq_Icc h h').symm
   rw [pathELength, this, lintegral_union measurableSet_Ioc]; swap
   · exact disjoint_iff_forall_ne.mpr (fun a ha b hb ↦ (ha.2.trans_lt hb.1).ne)
@@ -123,7 +123,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
     pathELength I (γ ∘ f) a b = pathELength I γ (f a) (f b) := by
   rcases h.eq_or_lt with rfl | h
   · simp
-  have f_im : f '' (Icc a b) = Icc (f x) (f y) := h'f.continuousOn.image_Icc_of_monotoneOn h.le hf
+  have f_im : f '' (Icc a b) = Icc (f a) (f b) := h'f.continuousOn.image_Icc_of_monotoneOn h.le hf
   simp only [pathELength_eq_lintegral_mfderivWithin_Icc, ← f_im]
   have B (t) (ht : t ∈ Icc a b) : HasDerivWithinAt f (derivWithin f (Icc a b) t) (Icc a b) t :=
     (h'f t ht).hasDerivWithinAt
@@ -151,18 +151,18 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
 lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : AntitoneOn f (Icc a b))
-    (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f a) (f b))) :
-    pathELength I (γ ∘ f) a b = pathELength I γ (f a) (f b) := by
+    (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f b) (f a))) :
+    pathELength I (γ ∘ f) a b = pathELength I γ (f b) (f a) := by
   rcases h.eq_or_lt with rfl | h
   · simp
-  have f_im : f '' (Icc a b) = Icc (f a) (f b) := h'f.continuousOn.image_Icc_of_antitoneOn h.le hf
+  have f_im : f '' (Icc a b) = Icc (f b) (f a) := h'f.continuousOn.image_Icc_of_antitoneOn h.le hf
   simp only [pathELength_eq_lintegral_mfderivWithin_Icc, ← f_im]
   have B (t) (ht : t ∈ Icc a b) : HasDerivWithinAt f (derivWithin f (Icc a b) t) (Icc a b) t :=
     (h'f t ht).hasDerivWithinAt
   rw [lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn measurableSet_Icc B hf]
   apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
   have : (mfderivWithin 𝓘(ℝ, ℝ) I (γ ∘ f) (Icc a b) t)
-      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f y) (f x)) (f t))
+      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f b) (f a)) (f t))
           ∘L mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc a b) t := by
     rw [← f_im] at hγ ⊢
     apply mfderivWithin_comp
