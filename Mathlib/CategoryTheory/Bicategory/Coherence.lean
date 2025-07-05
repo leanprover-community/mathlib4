@@ -214,9 +214,9 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
         rfl))
 
 /-- The coherence theorem for bicategories. -/
-instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fun _ _ =>
+instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := ⟨fun _ _ =>
   ⟨fun _ _ =>
-    (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩
+    (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩⟩
 
 /-- Auxiliary definition for `inclusion`. -/
 def inclusionMapCompAux {a b : B} :
