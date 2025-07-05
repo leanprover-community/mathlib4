@@ -97,6 +97,9 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
 protected theorem mul_div_cancel' {a b : R} (hb : b ≠ 0) (hab : b ∣ a) : b * (a / b) = a := by
   rw [← mul_div_assoc _ hab, mul_div_cancel_left₀ _ hb]
 
+lemma div_mul_assoc {a b : R} (hba : b ∣ a) (c : R) : a / b * c = (a * c) / b := by
+  rw [mul_comm, ← mul_div_assoc _ hba, mul_comm]
+
 -- This generalizes `Int.div_one`, see note [simp-normal form]
 @[simp]
 theorem div_one (p : R) : p / 1 = p :=
@@ -397,6 +400,17 @@ theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t �
   obtain ⟨a, ha⟩ := h4
   use y * a
   rw [ha, mul_comm, mul_assoc, mul_comm y a]
+
+lemma div_div' {a b c : R} (hcb : c ∣ b) (hbca : b / c ∣ a) : a / (b / c) = a * c / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp
+  obtain ⟨d, rfl⟩ := hcb
+  rw [mul_div_cancel_left₀ _ hc] at *
+  obtain rfl | hd := eq_or_ne d 0
+  · simp
+  obtain ⟨e, rfl⟩ := hbca
+  rw [mul_div_cancel_left₀ _ hd, ← mul_rotate, mul_div_cancel_left₀]
+  rwa [mul_ne_zero_iff_right hd]
 
 end Div
 
