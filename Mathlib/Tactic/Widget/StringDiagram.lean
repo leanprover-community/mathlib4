@@ -63,9 +63,9 @@ namespace Mathlib.Tactic
 open Lean Meta Elab
 open CategoryTheory
 
-open BicategoryLike
-
 namespace Widget.StringDiagram
+
+open BicategoryLike
 
 initialize registerTraceClass `string_diagram
 
@@ -245,7 +245,7 @@ def Strand.toPenroseVar (s : Strand) : PenroseVar :=
 
 /-! ## Widget for general string diagrams -/
 
-open ProofWidgets Penrose DiagramBuilderM Lean.Server
+open BicategoryLike ProofWidgets Penrose DiagramBuilderM Lean.Server
 
 open scoped Jsx in
 /-- Add the variable `v` with the type `tp` to the substance program. -/

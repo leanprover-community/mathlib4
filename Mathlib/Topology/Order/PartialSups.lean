@@ -13,7 +13,6 @@ In this file we prove that `partialSups` of a sequence of continuous functions i
 as well as versions for `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
 -/
 
-open Filter
 open scoped Topology
 
 variable {L : Type*} [SemilatticeSup L] [TopologicalSpace L] [ContinuousSup L]
@@ -33,6 +32,8 @@ protected lemma partialSups_apply (hf : ∀ k ≤ n, Tendsto (f k) l (𝓝 (g k)
   simpa only [← Pi.partialSups_apply] using Tendsto.partialSups hf
 
 end Filter.Tendsto
+
+open Filter
 
 variable {X : Type*} [TopologicalSpace X] {f : ℕ → X → L} {n : ℕ} {s : Set X} {x : X}
 

@@ -23,7 +23,7 @@ We prove various results about covering profinite spaces by disjoint clopens, in
   `S`-approximated by a function factoring through `Fin n` for some `n`.
 -/
 
-open Set TopologicalSpace
+open Set
 
 open scoped Function Finset Topology
 
@@ -109,6 +109,8 @@ private lemma exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_
   exact match (hW₁ j).2 with | ⟨i, hi⟩ => hUS i ⟨hi hy, hi hz⟩
 
 end TopologicalSpace
+
+open TopologicalSpace
 
 namespace ContinuousMap
 
