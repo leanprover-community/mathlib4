@@ -145,7 +145,7 @@ lemma tensorHom_id {x₁ x₂ : AugmentedSimplexCategory} (y : AugmentedSimplexC
   rfl
 
 @[local simp]
-lemma whiskerLeft_id_star {x: AugmentedSimplexCategory} : x ◁ 𝟙 WithInitial.star = 𝟙 _ := by
+lemma whiskerLeft_id_star {x: AugmentedSimplexCategory} : x ◁ 𝟙 .star = 𝟙 _ := by
   cases x <;>
   rfl
 
@@ -216,11 +216,11 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₂
       simpa [← φ₂'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₂ j
   | .of x, .star, .of z, f, g => by
-      simp only [φ₁, φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
+      simp only [φ₁, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
         whiskerLeft_id_star] at h₁
       simpa [Category.id_comp f, Category.id_comp g] using h₁
   | .star, .of y, .of z, f, g => by
-      simp only [φ₁, φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
+      simp only [φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
         id_star_whiskerRight] at h₂
       simpa [Category.id_comp f, Category.id_comp g] using h₂
   | .star, .star, .of z, f, g => rfl
@@ -381,7 +381,16 @@ instance : MonoidalCategory AugmentedSimplexCategory :=
     (tensor_id := tensor_id)
     (tensor_comp := tensor_comp)
     (pentagon := fun w x y z ↦ by
-      ext <;>
-      simp [← id_tensorHom, ← tensorHom_id])
+      ext
+      -- These `simp only` could be all be `simp [← id_tensorHom, ← tensorHom_id]`
+      -- but linter complains.
+      · simp only [φ₁_comp_tensorHom_assoc, φ₁_comp_φ₁_comp_associator_assoc, φ₁_comp_tensorHom,
+        Category.id_comp, φ₁_comp_φ₁_comp_associator]
+      · simp only [φ₁_comp_tensorHom_assoc, φ₂_comp_φ₁_comp_associator_assoc, φ₂_comp_tensorHom,
+        φ₁_comp_φ₁_comp_associator_assoc, φ₂_comp_φ₁_comp_associator]
+      · simp only [φ₁_comp_tensorHom_assoc, φ₂_comp_associator_assoc,
+        φ₂_comp_φ₁_comp_associator_assoc, φ₂_comp_tensorHom, φ₂_comp_associator]
+      · simp only [φ₂_comp_tensorHom_assoc, φ₂_comp_associator_assoc, φ₂_comp_tensorHom,
+        Category.id_comp, φ₂_comp_associator])
 
 end AugmentedSimplexCategory
