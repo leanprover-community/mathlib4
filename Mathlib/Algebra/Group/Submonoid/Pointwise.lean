@@ -67,11 +67,7 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
   mul_subset (Subset.trans hs Submonoid.subset_closure) (Subset.trans ht Submonoid.subset_closure)
 
 @[to_additive]
-theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
-  ext x
-  refine ⟨?_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
-  rintro ⟨a, ha, b, hb, rfl⟩
-  exact s.mul_mem ha hb
+theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := coe_mul_coe s
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=

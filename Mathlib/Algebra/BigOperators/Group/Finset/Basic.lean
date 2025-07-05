@@ -495,8 +495,8 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
     refine (mem_filter.mp ha).elim ?_
     intros h₁ h₂
     refine (mem_filter.mpr ⟨hi a h₁ _, ?_⟩)
-    specialize h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
-    rwa [← h]
+    exact Ne.symm
+      (ne_of_ne_of_eq (id (Ne.symm h₂)) (h a (mem_filter.mp ha).left (id (mem_filter.mp ha).right)))
   · solve_by_elim
   · intros b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
