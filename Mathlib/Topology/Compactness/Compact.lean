@@ -1117,8 +1117,8 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
         · exact isOpen_sUnion fun _ h => (hc h).2.1
         · convert_to (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
           · ext
-            simp only [not_exists, exists_prop, not_and, Set.mem_iInter, Subtype.forall,
-              mem_setOf_eq, mem_compl_iff, mem_sUnion]
+            simp only [not_exists, not_and, Set.mem_iInter, Subtype.forall,
+              mem_compl_iff, mem_sUnion]
           apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
           · rintro ⟨U, hU⟩ ⟨U', hU'⟩
             obtain ⟨V, hVc, hVU, hVU'⟩ := hz.directedOn U hU U' hU'

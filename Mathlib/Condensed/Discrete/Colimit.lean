@@ -271,11 +271,11 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   simp only [← Category.assoc]
   congr
   ext f
-  simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
+  simp only [types_comp_apply, counitApp_app]
   apply presheaf_ext.{u, u + 1} (X := X) (Y := X) (f := f)
   intro x
   rw [incl_of_counitAppApp]
-  simp only [counitAppAppImage, CompHausLike.coe_of]
+  simp only [counitAppAppImage]
   letI : Fintype (fiber.{u, u + 1} f x) :=
     Fintype.ofInjective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
@@ -379,7 +379,7 @@ lemma lanPresheafExt_hom {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightP
   aesop
 
 @[simp]
-lemma lanPresheafExt_inv  {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
+lemma lanPresheafExt_inv {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toLightProfinite.op S) i.inv) := by
   simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
@@ -505,8 +505,8 @@ def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
     simp only [types_comp_apply, isoFinYonedaComponents_hom_apply, finYoneda_map, op_obj,
-      Function.comp_apply, Types.productLimitCone, const_obj_obj, fintypeCatAsCofan, Cofan.mk_pt,
-      cofan_mk_inj, Fan.mk_pt, Fan.mk_π_app, ← FunctorToTypes.map_comp_apply]
+      Function.comp_apply,
+      ← FunctorToTypes.map_comp_apply]
     rfl
 
 /--
@@ -545,11 +545,11 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   simp only [← Category.assoc]
   congr
   ext f
-  simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
+  simp only [types_comp_apply, counitApp_app]
   apply presheaf_ext.{u, u} (X := X) (Y := X) (f := f)
   intro x
   rw [incl_of_counitAppApp]
-  simp only [counitAppAppImage, CompHausLike.coe_of]
+  simp only [counitAppAppImage]
   letI : Fintype (fiber.{u, u} f x) :=
     Fintype.ofInjective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom

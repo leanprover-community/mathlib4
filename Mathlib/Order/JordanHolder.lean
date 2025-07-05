@@ -206,7 +206,7 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
   -- TODO: This can surely be improved: there is a double coercion hidden here:
   refine ⟨Fin.castSucc (n := s.length + 1) i, ?_⟩
-  simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
+  simp [Nat.mod_eq_of_lt hi]
 
 theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     x ∈ s.eraseLast ↔ x ≠ s.last ∧ x ∈ s := by
@@ -226,8 +226,7 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
-  have : s.length - 1 + 1 = s.length := by
-    conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
+  have : s.length - 1 + 1 = s.length := by grind
   rw [last_eraseLast, last]
   convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
 

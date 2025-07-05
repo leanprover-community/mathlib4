@@ -85,7 +85,7 @@ instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
 
 lemma isInvertedBy₂ :
     MorphismProperty.IsInvertedBy₂ W W
-      (curriedTensor C ⋙ (whiskeringRight C C D).obj L') := by
+      (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L') := by
   rintro ⟨X₁, Y₁⟩ ⟨X₂, Y₂⟩ ⟨f₁, f₂⟩ ⟨hf₁, hf₂⟩
   have := Localization.inverts L' W _ (W.whiskerRight_mem f₁ hf₁ Y₁)
   have := Localization.inverts L' W _ (W.whiskerLeft_mem X₂ f₂ hf₂)
@@ -97,17 +97,17 @@ noncomputable def tensorBifunctor :
     LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε ⥤ LocalizedMonoidal L W ε :=
   Localization.lift₂ _ (isInvertedBy₂ L W ε) L L
 
-noncomputable instance : Lifting₂ L' L' W W (curriedTensor C ⋙ (whiskeringRight C C
+noncomputable instance : Lifting₂ L' L' W W (curriedTensor C ⋙ (Functor.whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε) :=
-  inferInstanceAs (Lifting₂ L L W W (curriedTensor C ⋙ (whiskeringRight C C D).obj L')
+  inferInstanceAs (Lifting₂ L L W W (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L')
     (Localization.lift₂ _ (isInvertedBy₂ L W ε) L L))
 
 /-- The bifunctor `tensorBifunctor` on `LocalizedMonoidal L W ε` is induced by
 `curriedTensor C`. -/
 noncomputable abbrev tensorBifunctorIso :
-    (((whiskeringLeft₂ D).obj L').obj L').obj (tensorBifunctor L W ε) ≅
+    (((Functor.whiskeringLeft₂ D).obj L').obj L').obj (tensorBifunctor L W ε) ≅
       (Functor.postcompose₂.obj L').obj (curriedTensor C) :=
-  Lifting₂.iso L' L' W W (curriedTensor C ⋙ (whiskeringRight C C
+  Lifting₂.iso L' L' W W (curriedTensor C ⋙ (Functor.whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε)
 
 noncomputable instance (X : C) :
@@ -123,14 +123,14 @@ noncomputable def leftUnitor : (tensorBifunctor L W ε).obj unit ≅ 𝟭 _ :=
   (tensorBifunctor L W ε).mapIso ε.symm ≪≫
     Localization.liftNatIso L' W (tensorLeft (𝟙_ C) ⋙ L') L'
       ((tensorBifunctor L W ε).obj ((L').obj (𝟙_ _))) _
-        (isoWhiskerRight (leftUnitorNatIso C) _ ≪≫ L.leftUnitor)
+        (Functor.isoWhiskerRight (leftUnitorNatIso C) _ ≪≫ L.leftUnitor)
 
 /-- The right unitor in the localized monoidal category `LocalizedMonoidal L W ε`. -/
 noncomputable def rightUnitor : (tensorBifunctor L W ε).flip.obj unit ≅ 𝟭 _ :=
   (tensorBifunctor L W ε).flip.mapIso ε.symm ≪≫
     Localization.liftNatIso L' W (tensorRight (𝟙_ C) ⋙ L') L'
       ((tensorBifunctor L W ε).flip.obj ((L').obj (𝟙_ _))) _
-        (isoWhiskerRight (rightUnitorNatIso C) _ ≪≫ L.leftUnitor)
+        (Functor.isoWhiskerRight (rightUnitorNatIso C) _ ≪≫ L.leftUnitor)
 
 /-- The associator in the localized monoidal category `LocalizedMonoidal L W ε`. -/
 noncomputable def associator :
@@ -263,7 +263,7 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L
 @[reassoc]
 lemma associator_naturality₁ {X₁ X₂ X₃ Y₁ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁) :
     ((f₁ ▷ X₂) ▷ X₃) ≫ (α_ Y₁ X₂ X₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ▷ (X₂ ⊗ X₃)) := by
-  simp only [← tensorHom_id, associator_naturality, Iso.cancel_iso_hom_left, tensor_id]
+  simp only [← tensorHom_id, associator_naturality, tensor_id]
 
 @[reassoc]
 lemma associator_naturality₂ {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} (f₂ : X₂ ⟶ Y₂) :
@@ -352,7 +352,7 @@ lemma triangle_aux₁ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
   simp only [associator_naturality_assoc, ← tensor_comp, Iso.hom_inv_id, id_tensorHom,
     whiskerLeft_id, comp_id]
 
-lemma triangle_aux₂ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
+lemma triangle_aux₂ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
     (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) :
       e₁.hom ⊗ₘ (ε.hom ⊗ₘ e₂.hom) ≫ (λ_ Y).hom =
         (L').obj X' ◁ ((ε' L W ε).hom ▷ (L').obj Y' ≫
@@ -362,7 +362,7 @@ lemma triangle_aux₂ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
   congr 3
   exact (comp_id _).symm
 
-lemma triangle_aux₃ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
+lemma triangle_aux₃ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
     (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) : (ρ_ X).hom ▷ _ =
       ((e₁.inv ⊗ₘ ε.inv) ⊗ₘ e₂.inv) ≫ _ ◁ e₂.hom ≫ ((μ L W ε X' (𝟙_ C)).hom ≫
         (L').map (ρ_ X').hom) ▷ Y ≫ e₁.hom ▷ Y := by
