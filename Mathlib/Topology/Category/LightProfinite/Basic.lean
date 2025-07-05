@@ -88,14 +88,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_apply]
+@[simps! -isSimp map_hom_hom_apply]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
   map f := CompHausLike.ofHom _ ⟨f, by continuity⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
-  preimage f := (f : _ → _)
+  preimage f := InducedCategory.homMk (f.hom.hom.1)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
