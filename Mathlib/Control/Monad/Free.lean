@@ -227,13 +227,13 @@ Formally, `g` satisfies the two equations:
 - `g (pure a) = pure a`
 - `g (liftBind op k) = f op >>= fun x => g (k x)`
 -/
-structure ExtendsHandler (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) : Prop where
+structure Interprets (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) : Prop where
   apply_pure (a : α) : g (pure a) = pure a
   apply_liftBind {ι : Type u} (op : F ι) (cont : ι → FreeM F α) :
     g (liftBind op cont) = f op >>= fun x => g (cont x)
 
-theorem ExtendsHandler.eq
-    {f : {ι : Type u} → F ι → m ι} {g : FreeM F α → m α} (h : ExtendsHandler f g) :
+theorem Interprets.eq
+    {f : {ι : Type u} → F ι → m ι} {g : FreeM F α → m α} (h : Interprets f g) :
     g = (·.liftM @f) := by
   ext x
   induction x with
@@ -242,8 +242,8 @@ theorem ExtendsHandler.eq
     rw [liftM_liftBind, h.apply_liftBind]
     simp [ih]
 
-theorem extendsHandler_liftM (f : {ι : Type u} → F ι → m ι) :
-    ExtendsHandler f (·.liftM f : FreeM F α → _) where
+theorem interprets_liftM (f : {ι : Type u} → F ι → m ι) :
+    Interprets f (·.liftM f : FreeM F α → _) where
   apply_pure _ := rfl
   apply_liftBind _ _ := rfl
 
@@ -251,9 +251,9 @@ theorem extendsHandler_liftM (f : {ι : Type u} → F ι → m ι) :
 The universal property of the free monad `FreeM`. That is, `liftM f` is the unique interpreter that
 extends the effect handler `f` to interpret `FreeM F` computations in monad `m`.
 -/
-theorem extendsHandler_iff (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) :
-    ExtendsHandler f g ↔ g = (·.liftM f) :=
-  ⟨(·.eq), fun h => h ▸ extendsHandler_liftM _⟩
+theorem interprets_iff (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) :
+    Interprets f g ↔ g = (·.liftM f) :=
+  ⟨(·.eq), fun h => h ▸ interprets_liftM _⟩
 
 end liftM
 
