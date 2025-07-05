@@ -404,15 +404,26 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
-protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
-    [MulZeroOneClass G₀'] [Nontrivial G₀']
-    {f : G₀ →*₀ G₀'} {x : G₀}:
+variable {G₀' : Type*} [GroupWithZero G₀']
+
+/-- The map `withZeroUnitsEquiv` as a `MonoidWithZeroHom`. -/
+def withZeroUnitsHom [DecidablePred (fun a : G₀' ↦ a = 0)] :
+    WithZero G₀'ˣ →*₀ G₀' where
+  __ := WithZero.withZeroUnitsEquiv
+  map_zero' := rfl
+  map_one' := rfl
+
+lemma withZeroUnitsHom_inj [DecidablePred (fun a : G₀' ↦ a = 0)] :
+    Injective (withZeroUnitsHom (G₀' := G₀')) := MulEquiv.injective WithZero.withZeroUnitsEquiv
+
+protected lemma map_eq_zero_iff {G₀ : Type*} [MulZeroOneClass G₀] [Nontrivial G₀]
+    {f : G₀' →*₀ G₀} {x : G₀'}:
     f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!
   intro hx H
-  lift x to G₀ˣ using isUnit_iff_ne_zero.mpr hx
-  apply one_ne_zero (α := G₀')
+  lift x to G₀'ˣ using isUnit_iff_ne_zero.mpr hx
+  apply one_ne_zero (α := G₀)
   rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
 
 variable {M₀ N₀}
