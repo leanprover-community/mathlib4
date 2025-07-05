@@ -205,9 +205,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     · rw [← not_forall] at h
       simp [h, pow_eq_zero_iff']
     · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
-  have hd_symm : ∀ x y, d x y = d y x := by
-    intro x y
-    simp only [d, @IsSymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
+  have hd_symm x y : d x y = d y x := by simp only [d, (hU_symm _).mk_mem_comm]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
   letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 rfl) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
