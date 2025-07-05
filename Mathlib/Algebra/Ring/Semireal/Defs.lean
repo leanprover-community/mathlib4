@@ -36,7 +36,7 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
   one_add_ne_zero {s : R} (hs : IsSumSq s) : 1 + s ≠ 0
 
 /-- In a semireal ring, `-1` is not a sum of squares. -/
-theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal R]:
+theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal R] :
     ¬ IsSumSq (-1 : R) := (by simpa using one_add_ne_zero ·)
 
 /--

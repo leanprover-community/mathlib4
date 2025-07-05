@@ -49,10 +49,7 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 
 ## Notation
 
-In the `DiscreteValuation` locale:
-
-* `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
-* `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
+In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative M)`.
 
 ## TODO
 
@@ -278,6 +275,11 @@ theorem map_sub_lt {x y : R} {g : Γ₀} (hx : v x < g) (hy : v y < g) : v (x - 
 
 variable {x y : R}
 
+@[simp]
+lemma le_one_of_subsingleton [Subsingleton R] (v : Valuation R Γ₀) {x : R} :
+    v x ≤ 1 := by
+  rw [Subsingleton.elim x 1, Valuation.map_one]
+
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
   suffices ¬v (x + y) < max (v x) (v y) from
     or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
@@ -398,9 +400,18 @@ not equal to `0` or `1`. -/
 class IsNontrivial : Prop where
   exists_val_nontrivial : ∃ x : R, v x ≠ 0 ∧ v x ≠ 1
 
+lemma IsNontrivial.nontrivial_codomain [hv : IsNontrivial v] :
+    Nontrivial Γ₀ := by
+  obtain ⟨x, hx0, hx1⟩ := hv.exists_val_nontrivial
+  exact ⟨v x, 1, hx1⟩
+
+section Field
+
+variable {K : Type*} [Field K] {w : Valuation K Γ₀}
+
 /-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
 not equal to `1`. -/
-lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀} :
+lemma isNontrivial_iff_exists_unit :
     w.IsNontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
   ⟨fun ⟨x, hx0, hx1⟩ ↦
     have : Nontrivial Γ₀ := ⟨w x, 0, hx0⟩
@@ -408,6 +419,26 @@ lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀}
     fun ⟨x, hx⟩ ↦
     have : Nontrivial Γ₀ := ⟨w x, 1, hx⟩
     ⟨x, w.ne_zero_iff.mpr (Units.ne_zero x), hx⟩⟩
+
+lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
+    ∃ x : K, v x ≠ 0 ∧ v x < 1 := by
+  obtain ⟨x, hx⟩ := isNontrivial_iff_exists_unit.mp hv
+  rw [ne_iff_lt_or_gt] at hx
+  rcases hx with hx | hx
+  · use x
+    simp [hx]
+  · use x⁻¹
+    simp [- map_inv₀, ← one_lt_val_iff, hx]
+
+lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
+    ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
+  use x⁻¹
+  simp [one_lt_inv₀ (zero_lt_iff.mpr h0), h0, h1]
+
+end Field
 
 end IsNontrivial
 
@@ -939,8 +970,6 @@ def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ
   .trans (congr
     { toFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
       invFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
-      left_inv := fun _x ↦ rfl
-      right_inv := fun _x ↦ rfl
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }) (AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ))
 
@@ -950,8 +979,6 @@ def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀
   AddValuation.toValuation.trans <| congr <|
     { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
       invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
-      left_inv := fun _x ↦ rfl
-      right_inv := fun _x ↦ rfl
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }
 
