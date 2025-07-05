@@ -144,7 +144,7 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [Finset.sum_nonneg]; positivity)
+    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp; positivity)
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
@@ -158,5 +158,19 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 multiple summands. -/
 theorem posLog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
   convert posLog_sum Finset.univ ![a, b] using 1 <;> simp [add_assoc]
+
+/--
+Variant of `posLog_add` for norms of elements in normed additive commutative groups, using
+monotonicity of `log⁺` and the triangle inequality.
+-/
+lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (a b : E) :
+    log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
+  calc log⁺ ‖a + b‖
+  _ ≤ log⁺ (‖a‖ + ‖b‖) := by
+    apply monotoneOn_posLog _ _ (norm_add_le a b)
+    <;> simp [add_nonneg (norm_nonneg a) (norm_nonneg b)]
+  _ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
+    convert posLog_add using 1
+    ring
 
 end Real

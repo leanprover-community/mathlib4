@@ -154,7 +154,7 @@ instance instSemiring : Semiring (Language α) where
   mul_one l := by simp [mul_def, one_def]
   natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
-  natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
+  natCast_succ n := by cases n <;> simp [add_def, zero_def]
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
   nsmul := nsmulRec
@@ -198,7 +198,7 @@ theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
 
 theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
-  simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
+  simp only [mul_def, mem_image2] at hx ⊢
   tauto
 
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=

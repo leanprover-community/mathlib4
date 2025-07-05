@@ -98,7 +98,7 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
   parts := s.1.dedup.map s.1.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    show ∑ a ∈ s.1.toFinset, count a s.1 = n
+    change ∑ a ∈ s.1.toFinset, count a s.1 = n
     rw [toFinset_sum_count_eq]
     exact s.2
 
@@ -106,7 +106,7 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 
 @[simp] lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
     ofSym (s.map e) = ofSym s := by
-  simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
+  simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, mk.injEq]
   rw [Multiset.dedup_map_of_injective e.injective]
   simp only [map_map, Function.comp_apply]
   congr; funext i

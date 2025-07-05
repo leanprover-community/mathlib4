@@ -38,7 +38,7 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 namespace CategoryTheory
 

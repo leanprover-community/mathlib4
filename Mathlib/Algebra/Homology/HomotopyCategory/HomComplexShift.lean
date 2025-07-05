@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+import Mathlib.Algebra.Module.Equiv.Basic
 
 /-! Shifting cochains
 
@@ -457,7 +458,7 @@ lemma δ_shift (a m : ℤ) :
   by_cases hnm : n + 1 = m
   · ext p q hpq
     dsimp
-    simp only [shift_v', sub_add_cancel, shiftFunctor_obj_d',
+    simp only [shift_v', shiftFunctor_obj_d',
       δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
       δ_v n m hnm _ (p + a) (q + a) (by omega) (q - 1 + a) (p + 1 + a)
         (by omega) (by omega),
