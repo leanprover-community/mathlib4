@@ -21,13 +21,24 @@ required to make it a unit for the Day convolution monoidal structure: said data
 a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan extension of
 `fromPUnit (𝟙_ V)` along `fromPUnit (𝟙_ C)`.
 
+The main way to assert that a given monoidal category structure on a category `D`
+arises as a "Day convolution monoidal structure" is given by the typeclass
+`LawfulDayConvolutionMonoidalCategoryStruct C V D`, which bundles the data and
+equations needed to exhibit `D` as a monoidal full subcategory of `C ⥤ V` if
+the latter were to have the Day convolution monoidal structure. The definition
+`monoidalOfLawfulDayConvolutionMonoidalCategoryStruct` promotes (under suitable
+assumptions on `V`) a `LawfulDayConvolutionMonoidalCategoryStruct C V D` to
+a monoidal structure.
+
+
 ## References
 - [nLab page: Day convolution](https://ncatlab.org/nlab/show/Day+convolution)
 
 ## TODOs (@robin-carlier)
 - Braided/symmetric case.
 - Case where `V` is closed.
-- Define a typeclass `DayConvolutionMonoidalCategory` extending `MonoidalCategory`
+- Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
+- Better constructors for `LawfulDayConvolutionMonoidalCategoryStruct`.
 - Characterization of lax monoidal functors out of a day convolution monoidal category.
 - Case `V = Type u` and its universal property.
 
@@ -140,51 +151,6 @@ lemma unit_app_map_app :
       (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G') (x, y)
 
 end map
-
-/-- Transport a `DayConvolution` structure through an isomorphism of the right
-variable. This does not change the convolution of the functors, but rather
-changes the unit extension. This is an auxiliary definition supposed to help
-when constructing structures such as associators assuming binary convolutions
-exist. -/
-@[simps -isSimp]
-def transportRight (h : DayConvolution F G) {H : C ⥤ V} (e : G ≅ H) :
-    DayConvolution F H where
-  convolution := F ⊛ G
-  unit := (externalProductBifunctor _ _ _).map ((𝟙 F) ×ₘ e.inv) ≫ h.unit
-  isPointwiseLeftKanExtensionUnit := fun c ↦ by
-    refine Limits.IsColimit.equivOfNatIsoOfIso
-      (Functor.isoWhiskerLeft _ <|
-        (externalProductBifunctor _ _ _).mapIso ((Iso.refl _).prod e)) _ _ ?_
-      (h.isPointwiseLeftKanExtensionUnit c)
-    exact (Limits.Cocones.ext (.refl _) (by simp))
-
-/-- Transport a `DayConvolution` structure through an isomorphism of the left
-variable. This does not change the convolution of the functors, but rather
-changes the unit extension. This is an auxiliary definition supposed to help
-when constructing structures such as associators assuming binary convolutions
-exist. -/
-@[simps -isSimp]
-def transportLeft (h : DayConvolution F G) {H : C ⥤ V} (e : F ≅ H) :
-    DayConvolution H G where
-  convolution := F ⊛ G
-  unit := (externalProductBifunctor _ _ _).map (e.inv ×ₘ (𝟙 _)) ≫ h.unit
-  isPointwiseLeftKanExtensionUnit := fun c ↦ by
-    refine Limits.IsColimit.equivOfNatIsoOfIso
-      (Functor.isoWhiskerLeft _ <|
-        (externalProductBifunctor _ _ _).mapIso (e.prod (Iso.refl _))) _ _ ?_
-      (h.isPointwiseLeftKanExtensionUnit c)
-    exact (Limits.Cocones.ext (.refl _) (by simp))
-
-/-- Transport a `DayConvolution` structure through an isomorphism of the chosen
-convolution object. -/
-@[simps -isSimp]
-def transportConvolution (h : DayConvolution F G) {H : C ⥤ V} (e : F ⊛ G ≅ H) :
-    DayConvolution F G where
-  convolution := H
-  unit := h.unit ≫ Functor.whiskerLeft (tensor C) e.hom
-  isPointwiseLeftKanExtensionUnit :=
-    Functor.LeftExtension.isPointwiseLeftKanExtensionEquivOfIso
-      (StructuredArrow.isoMk e) (h.isPointwiseLeftKanExtensionUnit)
 
 variable (F G)
 
@@ -779,6 +745,8 @@ attribute [instance] faithful_ι
 variable (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D]
   [LawfulDayConvolutionMonoidalCategoryStruct C V D]
 
+open scoped DayConvolution
+
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (d ⊗ d')` is a
 Day convolution of `(ι C V).obj d` and `(ι C V).d'`. -/
 def convolution (d d' : D) :
@@ -794,14 +762,14 @@ attribute [local instance] convolution
 is a (triple) Day convolution of `(ι C V).obj d`, `(ι C V).obj d'` and
 `(ι C V).obj d''`. -/
 def convolution₂ (d d' d'' : D) :
-    DayConvolution ((ι C V D).obj d)
-      (DayConvolution.convolution (ι C V D|>.obj d') (ι C V D|>.obj d'')) :=
+    DayConvolution (ι C V D|>.obj d) ((ι C V D|>.obj d') ⊛ (ι C V D|>.obj d'')) :=
   convolution C V D _ _
 
+/-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj ((d ⊗ d') ⊗ d'')`
+is a (triple) Day convolution of `(ι C V).obj d`, `(ι C V).obj d'` and
+`(ι C V).obj d''`. -/
 def convolution₂' (d d' d'' : D) :
-    DayConvolution
-      (DayConvolution.convolution (ι C V D|>.obj d) (ι C V D|>.obj d'))
-      (ι C V D|>.obj d'') :=
+    DayConvolution ((ι C V D|>.obj d) ⊛ (ι C V D|>.obj d')) (ι C V D|>.obj d'') :=
   convolution C V D _ _
 
 attribute [local instance] convolution₂ convolution₂'
@@ -828,7 +796,7 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
       (CostructuredArrow (tensor C) d) (tensorRight v)] :
     (ι C V D).map (α_ d d' d'').hom =
     (DayConvolution.associator
-      ((ι C V D).obj d) ((ι C V D).obj d') ((ι C V D).obj d'')).hom := by
+      (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj d'')).hom := by
   apply corepresentableBy₂'
     (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj d'')|>.homEquiv.injective
   dsimp
@@ -840,7 +808,9 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
     DayConvolution.associator_hom_unit_unit]
   exact associator_hom_unit_unit V _ _ _ _ _ _
 
-def convolutionUnit : DayConvolutionUnit ((ι C V D).obj (𝟙_ D)) where
+/-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (𝟙_ D)`
+is a day convolution unit`. -/
+def convolutionUnit : DayConvolutionUnit (ι C V D|>.obj <| 𝟙_ D) where
   can := unitUnit _ _
   isPointwiseLeftKanExtensionCan := isPointwiseLeftKanExtensionUnitUnit
 
@@ -973,32 +943,24 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
         ι_map_associator_hom_eq_associator_hom]
       -- this is a bit painful...
       letI : DayConvolution
-            (DayConvolution.convolution
-              (DayConvolution.convolution ((ι C V D).obj a) ((ι C V D).obj b))
-              ((ι C V D).obj c))
-            ((ι C V D).obj d) :=
+          (((ι C V D|>.obj a) ⊛ (ι C V D|>.obj b)) ⊛ (ι C V D|>.obj c))
+          (ι C V D|>.obj d) :=
         convolution C V D _ _
       letI : DayConvolution
-          (DayConvolution.convolution ((ι C V D).obj a) ((ι C V D).obj b))
-          (DayConvolution.convolution ((ι C V D).obj c) ((ι C V D).obj d)) :=
+          ((ι C V D|>.obj a) ⊛ ((ι C V D).obj b))
+          ((ι C V D|>.obj c) ⊛ ((ι C V D).obj d)) :=
         convolution C V D _ _
       letI : DayConvolution
-          (DayConvolution.convolution
-            ((ι C V D).obj a)
-            (DayConvolution.convolution ((ι C V D).obj b) ((ι C V D).obj c)))
-          ((ι C V D).obj d) :=
+          ((ι C V D|>.obj a) ⊛ ((ι C V D|>.obj b) ⊛ (ι C V D|>.obj c)))
+          (ι C V D|>.obj d) :=
         convolution C V D _ _
       letI : DayConvolution
-          ((ι C V D).obj a)
-          (DayConvolution.convolution
-            ((ι C V D).obj b)
-            (DayConvolution.convolution ((ι C V D).obj c) ((ι C V D).obj d))) :=
+          (ι C V D|>.obj a)
+          ((ι C V D|>.obj b) ⊛ ((ι C V D|>.obj c) ⊛ (ι C V D|>.obj d))) :=
         convolution C V D _ _
       letI : DayConvolution
-          ((ι C V D).obj a)
-          (DayConvolution.convolution
-            (DayConvolution.convolution ((ι C V D).obj b) ((ι C V D).obj c))
-            ((ι C V D).obj d)) :=
+          (ι C V D|>.obj a)
+          (((ι C V D|>.obj b) ⊛ (ι C V D|>.obj c)) ⊛ (ι C V D|>.obj d)) :=
         convolution C V D _ _
       exact DayConvolution.pentagon
         (ι C V D|>.obj a) (ι C V D|>.obj b) (ι C V D|>.obj c) (ι C V D|>.obj d))
