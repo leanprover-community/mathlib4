@@ -21,7 +21,7 @@ section CommMonoid
 variable [CommMonoid M]
 
 @[to_additive]
-theorem prod_apply_dite {p : ι → Prop} {hp : DecidablePred p}
+theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
     [DecidablePred fun x => ¬p x] (f : ∀ x : ι, p x → γ) (g : ∀ x : ι, ¬p x → γ) (h : γ → M) :
     (∏ x ∈ s, h (if hx : p x then f x hx else g x hx)) =
       (∏ x : {x ∈ s | p x}, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
@@ -41,14 +41,14 @@ theorem prod_apply_dite {p : ι → Prop} {hp : DecidablePred p}
         (prod_congr rfl fun x _hx => congr_arg h (dif_neg <| by simpa using (mem_filter.mp x.2).2))
 
 @[to_additive]
-theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} {_hp : DecidablePred p} (f g : ι → γ)
+theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → γ)
     (h : γ → M) :
     (∏ x ∈ s, h (if p x then f x else g x)) =
       (∏ x ∈ s with p x, h (f x)) * ∏ x ∈ s with ¬p x, h (g x) :=
   (prod_apply_dite _ _ _).trans <| congr_arg₂ _ (prod_attach _ (h ∘ f)) (prod_attach _ (h ∘ g))
 
 @[to_additive]
-theorem prod_dite {s : Finset ι} {p : ι → Prop} {hp : DecidablePred p} (f : ∀ x : ι, p x → M)
+theorem prod_dite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f : ∀ x : ι, p x → M)
     (g : ∀ x : ι, ¬p x → M) :
     ∏ x ∈ s, (if hx : p x then f x hx else g x hx) =
       (∏ x : {x ∈ s | p x}, f x.1 (by simpa using (mem_filter.mp x.2).2)) *
@@ -56,40 +56,40 @@ theorem prod_dite {s : Finset ι} {p : ι → Prop} {hp : DecidablePred p} (f : 
   simp [prod_apply_dite _ _ fun x => x]
 
 @[to_additive]
-theorem prod_ite {s : Finset ι} {p : ι → Prop} {hp : DecidablePred p} (f g : ι → M) :
+theorem prod_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → M) :
     ∏ x ∈ s, (if p x then f x else g x) = (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, g x := by
   simp [prod_apply_ite _ _ fun x => x]
 
 @[to_additive]
-lemma prod_dite_of_false {p : ι → Prop} {_ : DecidablePred p} (h : ∀ i ∈ s, ¬ p i)
+lemma prod_dite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, ¬ p i)
     (f : ∀ i, p i → M) (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, g i.1 (h _ i.2) := by
   refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
 
 @[to_additive]
-lemma prod_ite_of_false {p : ι → Prop} {_ : DecidablePred p} (h : ∀ x ∈ s, ¬p x) (f g : ι → M) :
+lemma prod_ite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, ¬p x) (f g : ι → M) :
     ∏ x ∈ s, (if p x then f x else g x) = ∏ x ∈ s, g x :=
   (prod_dite_of_false h _ _).trans (prod_attach _ _)
 
 @[to_additive]
-lemma prod_dite_of_true {p : ι → Prop} {_ : DecidablePred p} (h : ∀ i ∈ s, p i) (f : ∀ i, p i → M)
+lemma prod_dite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, p i) (f : ∀ i, p i → M)
     (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, f i.1 (h _ i.2) := by
   refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
 
 @[to_additive]
-lemma prod_ite_of_true {p : ι → Prop} {_ : DecidablePred p} (h : ∀ x ∈ s, p x) (f g : ι → M) :
+lemma prod_ite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) (f g : ι → M) :
     ∏ x ∈ s, (if p x then f x else g x) = ∏ x ∈ s, f x :=
   (prod_dite_of_true h _ _).trans (prod_attach _ _)
 
 @[to_additive]
-theorem prod_apply_ite_of_false {p : ι → Prop} {hp : DecidablePred p} (f g : ι → γ) (k : γ → M)
+theorem prod_apply_ite_of_false {p : ι → Prop} [DecidablePred p] (f g : ι → γ) (k : γ → M)
     (h : ∀ x ∈ s, ¬p x) : (∏ x ∈ s, k (if p x then f x else g x)) = ∏ x ∈ s, k (g x) := by
   simp_rw [apply_ite k]
   exact prod_ite_of_false h _ _
 
 @[to_additive]
-theorem prod_apply_ite_of_true {p : ι → Prop} {hp : DecidablePred p} (f g : ι → γ) (k : γ → M)
+theorem prod_apply_ite_of_true {p : ι → Prop} [DecidablePred p] (f g : ι → γ) (k : γ → M)
     (h : ∀ x ∈ s, p x) : (∏ x ∈ s, k (if p x then f x else g x)) = ∏ x ∈ s, k (f x) := by
   simp_rw [apply_ite k]
   exact prod_ite_of_true h _ _
