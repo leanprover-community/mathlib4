@@ -205,8 +205,8 @@ theorem contDiffWithinAt_infty :
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
   have := h.of_le (zero_le _)
-  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero,
-    mem_pure, forall_eq, CharP.cast_eq_zero] at this
+  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero, forall_eq, CharP.cast_eq_zero]
+    at this
   rcases this with ⟨u, hu, p, H⟩
   rw [mem_nhdsWithin_insert] at hu
   exact (H.continuousOn.continuousWithinAt hu.1).mono_of_mem_nhdsWithin hu.2
@@ -242,7 +242,7 @@ theorem ContDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContDiffWithinAt 𝕜
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq h₁ <| h₁.self_of_nhdsWithin hx
 
-theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s):
+theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun H ↦ H.congr_of_eventuallyEq_of_mem h₁.symm hx, fun H ↦ H.congr_of_eventuallyEq_of_mem h₁ hx⟩
 
@@ -1009,7 +1009,7 @@ theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiffAt 𝕜 (n + 1) f x ↔ ∃ f' : E → E →L[𝕜] F,
       (∃ u ∈ 𝓝 x, ∀ x ∈ u, HasFDerivAt f (f' x) x) ∧ ContDiffAt 𝕜 n f' x := by
   rw [← contDiffWithinAt_univ, contDiffWithinAt_succ_iff_hasFDerivWithinAt (by simp)]
-  simp only [nhdsWithin_univ, exists_prop, mem_univ, insert_eq_of_mem]
+  simp only [nhdsWithin_univ, mem_univ, insert_eq_of_mem]
   constructor
   · rintro ⟨u, H, -, f', h_fderiv, h_cont_diff⟩
     rcases mem_nhds_iff.mp H with ⟨t, htu, ht, hxt⟩
