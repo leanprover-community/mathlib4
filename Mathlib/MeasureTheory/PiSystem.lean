@@ -663,6 +663,18 @@ theorem generateFrom_eq {s : Set (Set α)} (hs : IsPiSystem s) :
       rw [ofMeasurableSpace_toMeasurableSpace]
       exact generate_le _ fun t ht => measurableSet_generateFrom ht)
 
+instance : SetLike (DynkinSystem α) (Set α) :=
+  ⟨ Has, fun _ _ h => ext (fun s => Iff.of_eq (congrFun h s)) ⟩
+
+/-- **Dynkin’s π-λ theorem** in its common form.
+  Let `s : Set (Set α)` be a π-system and `d : DynkinSystem α` a Dynkin system.
+  If `s ⊆ d`, then every set that is measurable with respect to the
+  σ-algebra `generateFrom s` also belongs to `d`.
+-/
+lemma pi_lambda {s : Set (Set α)} (hs : IsPiSystem s) (h_sub : s ⊆ d) :
+    ∀ {t}, MeasurableSet[generateFrom s] t → t ∈ d :=
+  fun {t} ht => (generate_le d (fun u hu => h_sub hu)) t (by simpa [generateFrom_eq hs] using ht)
+
 end DynkinSystem
 
 /-- Induction principle for measurable sets.
