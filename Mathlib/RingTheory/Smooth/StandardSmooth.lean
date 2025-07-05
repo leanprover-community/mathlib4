@@ -110,7 +110,7 @@ variable {R S ι σ}
 variable (P : PreSubmersivePresentation R S ι σ)
 
 include P in
-lemma card_relations_le_card_vars_of_isFinite [Finite ι]  :
+lemma card_relations_le_card_vars_of_isFinite [Finite ι] :
     Nat.card σ ≤ Nat.card ι :=
   Nat.card_le_card_of_injective P.map P.map_inj
 
