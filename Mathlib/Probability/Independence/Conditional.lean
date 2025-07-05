@@ -221,10 +221,7 @@ lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableS
     refine ⟨fun h S ↦ h S (fun i _ ↦ rfl), fun h S f hf ↦ ?_⟩
     filter_upwards [h S] with a ha
     refine Eq.trans ?_ (ha.trans ?_)
-    · congr
-      apply congr_arg₂
-      · exact Set.iInter₂_congr hf
-      · rfl
+    · grind
     · simp_rw [Finset.prod_apply]
       refine Finset.prod_congr rfl (fun i hi ↦ ?_)
       rw [hf i hi]
