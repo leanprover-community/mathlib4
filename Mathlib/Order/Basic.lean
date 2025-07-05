@@ -975,8 +975,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
   split_ifs <;> try (first | rfl | contradiction)
   · have : ¬ f a = f b := by rename_i h; exact inj.ne h
     contradiction
-  · have : f a = f b := by rename_i h; exact congrArg f h
-    contradiction
+  · grind
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses

@@ -51,8 +51,11 @@ def contentIdeal := span p.coeffs.toSet
 theorem contentIdeal_def : p.contentIdeal = span p.coeffs.toSet := rfl
 
 @[simp]
-theorem contenIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
+theorem contentIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
   simp [contentIdeal_def]
+
+@[deprecated (since := "2025-07-01")]
+alias contenIdeal_zero := contentIdeal_zero
 
 @[simp]
 theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
@@ -176,7 +179,7 @@ theorem mul_contentIdeal_le_radical_contentIdeal_mul :
     contentIdeal_eq_bot_iff, mul_eq_zero] using hpq
 
 theorem contentIdeal_mul_eq_top_of_contentIdeal_eq_top (hp : p.contentIdeal = ⊤)
-    (hq : q.contentIdeal = ⊤)  : (p * q).contentIdeal = ⊤ := by
+    (hq : q.contentIdeal = ⊤) : (p * q).contentIdeal = ⊤ := by
   rw [← Ideal.radical_eq_top]
   apply le_antisymm le_top
   calc

@@ -298,7 +298,7 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
           ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
           ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
       simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
-        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
+        x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
 
 end Solution₁
@@ -375,13 +375,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   · qify [hd₁, hd₂]
     field_simp [hm₀]
     norm_cast
-    conv_rhs =>
-      rw [sq]
-      congr
-      · rw [← h₁]
-      · rw [← h₂]
-    push_cast
-    ring
+    grind
   · qify [hd₂]
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
