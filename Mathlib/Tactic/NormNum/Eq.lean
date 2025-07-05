@@ -19,6 +19,24 @@ theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' 
     IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simpa using Nat.ne_of_beq_eq_false h
 
+lemma CharP.cast_eq_cast_iff
+    (p : ℕ) [AddMonoidWithOne α] [CharP α p] [IsLeftCancelAdd α] (x y : ℕ) :
+    (x : α) = y ↔ ↑p ∣ (x - y : ℤ) := by
+  obtain (h|h) := Nat.le_total x y
+  · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+    rw [Nat.cast_add, Nat.cast_add, sub_add_cancel_left, Int.dvd_neg,
+      Int.natCast_dvd_natCast, ← CharP.cast_eq_zero_iff (R := α),
+      ← add_left_cancel_iff (a := (x : α)) (b := k), add_zero, eq_comm]
+  · obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+    rw [Nat.cast_add, add_comm, Nat.cast_add, add_sub_cancel_right,
+      Int.natCast_dvd_natCast, ← CharP.cast_eq_zero_iff (R := α),
+      ← add_left_cancel_iff (a := (y : α)) (b := k), add_zero, eq_comm]
+
+theorem isNat_eq_false_of_charP (p : ℕ) [AddMonoidWithOne α] [CharP α p] [IsLeftCancelAdd α] :
+    {a b : α} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → (a' - b' : ℤ) % p ≠ 0 → ¬a = b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simpa [CharP.cast_eq_cast_iff p, Int.dvd_iff_emod_eq_zero]
+
 theorem isInt_eq_false [Ring α] [CharZero α] : {a b : α} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → decide (a' = b') = false → ¬a = b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simpa using of_decide_eq_false h
@@ -34,6 +52,12 @@ theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} �
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [Rat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
+-- def evalEqOfCharP (p : ℕ) {u : Level} {α : Q(Type u)} {inst : Q(DivisionRing $α)}
+--     {a b : Q($α)} (ra : Result a) (rb : Result b) : NormNumM (Result q($a = $b)) := do
+--   let _ ← synthInstanceQ q(CharP $α $p)
+
+--   sorry
+
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -44,7 +68,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   have b : Q($α) := b
   haveI' : $e =Q ($a = $b) := ⟨⟩
   guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
-  let ra ← derive a; let rb ← derive b
+  let ra ← deriveCharP a; let rb ← deriveCharP b
   let rec intArm (rα : Q(Ring $α)) := do
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
     if za = zb then
@@ -91,6 +115,19 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isNat_eq_false $pa $pb $r)
     else
+      for p in (← readThe Config).char do
+        try
+          have pe : Q(ℕ) := mkNatLit p
+          let _ ← synthInstanceQ q(CharP $α $pe)
+          if (na.natLit! - nb.natLit! : ℤ) % p = 0 then
+            failure
+            -- a and b should be normalized already so `na.natLit! = nb.natLit!` should capture it.
+          else
+            let _ ← synthInstanceQ q(IsLeftCancelAdd $α)
+            let r ← mkDecideProofQ q(($na - $nb : ℤ) % $pe ≠ 0)
+            return .isFalse q(isNat_eq_false_of_charP $pe $pa $pb $r)
+        catch e =>
+          continue
       failure --TODO: nonzero characteristic ≠
 
 end Mathlib.Meta.NormNum
