@@ -83,10 +83,7 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
-  refine
-    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by simp) fun a _ b _ => ?_
-  simp only [Prod.mk_inj, and_self_iff, and_imp]
-  exact Prod.ext
+  exact card_le_card_of_injOn (fun x => ((x.1, x.1), x.2, x.2)) (by simp [Set.MapsTo]) (by simp)
 
 @[to_additive] lemma mulEnergy_pos (hs : s.Nonempty) (ht : t.Nonempty) : 0 < Eₘ[s, t] :=
   (mul_pos hs.card_pos ht.card_pos).trans_le le_mulEnergy
