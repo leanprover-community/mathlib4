@@ -186,7 +186,7 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
   exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
 lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
-    [Subsingleton (MonoidHom.mrange v)ˣ] :
+    [IsSharpMonoid (MonoidHom.mrange v)] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
   rcases eq_or_ne x 0 with rfl|hx

@@ -287,13 +287,6 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq _ := Units.val_eq_one.mp (by subsingleton)
 
-section Monoid
-variable [Monoid M]
-
-theorem units_eq_one [Subsingleton Mˣ] (u : Mˣ) : u = 1 := by subsingleton
-
-end Monoid
-
 namespace IsUnit
 
 section Monoid
