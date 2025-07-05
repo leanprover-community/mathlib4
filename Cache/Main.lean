@@ -42,6 +42,7 @@ Commands:
 Valid arguments are:
 
 * Module names like 'Mathlib.Init'
+* Pseudo-module-names like 'Mathlib.Data' (find all Lean files inside `Mathlib/Data/`)
 * File names like 'Mathlib/Init.lean'
 * Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
 * With bash's automatic glob expansion one can also write things like
