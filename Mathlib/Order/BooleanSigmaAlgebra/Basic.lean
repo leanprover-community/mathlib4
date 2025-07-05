@@ -29,44 +29,22 @@ section SigmaCompleteLattice
 variable [SigmaCompleteLattice α] {s t : Set α} {a b : α}
   [Countable ι] [Countable ι'] [∀ j, Countable (κ j)] [∀ j, Countable (κ' j)] {f g : ι → α} {i : ι}
 
-lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) :=
-  SigmaCompleteLattice.isLUB_σsSup s hs
+lemma isLUB_σiSup : IsLUB (Set.range f) (iSup f) := isLUB_σsSup (Set.countable_range f)
+lemma isGLB_σiInf : IsGLB (Set.range f) (iInf f) := isGLB_σsInf (Set.countable_range f)
 
-lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) :=
-  SigmaCompleteLattice.isGLB_σsInf s hs
+lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s := (isLUB_σsSup hs).left ha
+lemma σsInf_le (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a := (isGLB_σsInf hs).left ha
 
-lemma isLUB_σiSup : IsLUB (Set.range f) (iSup f) :=
-  isLUB_σsSup (Set.countable_range f)
+lemma le_σiSup (f : ι → α) (i : ι) : f i ≤ ⨆ j, f j := le_σsSup (Set.countable_range f) ⟨_, rfl⟩
+lemma σiInf_le (f : ι → α) (i : ι) : ⨅ j, f j ≤ f i := σsInf_le (Set.countable_range f) ⟨_, rfl⟩
 
-lemma isGLB_σiInf : IsGLB (Set.range f) (iInf f) :=
-  isLUB_σiSup (α := αᵒᵈ)
+lemma σsSup_le (hs : s.Countable) (ha : ∀ b ∈ s, b ≤ a) : sSup s ≤ a := (isLUB_σsSup hs).right ha
+lemma le_σsInf (hs : s.Countable) (ha : ∀ b ∈ s, a ≤ b) : a ≤ sInf s := σsSup_le (α := αᵒᵈ) hs ha
 
-lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s :=
-  (isLUB_σsSup hs).left ha
+lemma σiSup_le (h : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a := σsSup_le (Set.countable_range f) (by simpa)
+lemma le_σiInf (h : ∀ i, a ≤ f i) : a ≤ ⨅ i, f i := le_σsInf (Set.countable_range f) (by simpa)
 
-lemma σsInf_le (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a :=
-  le_σsSup (α := αᵒᵈ) hs ha
-
-theorem le_σiSup (f : ι → α) (i : ι) : f i ≤ ⨆ j : ι, f j := by
-  rw [iSup]
-  exact le_σsSup (Set.countable_range f) (Set.mem_range_self i)
-
-theorem σiInf_le (f : ι → α) (i : ι) : ⨅ j : ι, f j ≤ f i :=
-  le_σiSup (α := αᵒᵈ) f i
-
-lemma σsSup_le (hs : s.Countable) (ha : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
-  (isLUB_σsSup hs).right ha
-
-lemma le_σsInf (hs : s.Countable) (ha : ∀ b ∈ s, a ≤ b) : a ≤ sInf s :=
-  σsSup_le (α := αᵒᵈ) hs ha
-
-lemma σiSup_le (h : ∀ (i : ι), f i ≤ a) : iSup f ≤ a :=
-  σsSup_le (Set.countable_range f) fun _ ⟨i, Eq⟩ => Eq ▸ h i
-
-lemma le_σiInf  (h : ∀ (i : ι), a ≤ f i) : a ≤ iInf f :=
-  σiSup_le (α := αᵒᵈ) h
-
-theorem σiSup₂_le {f : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
+lemma σiSup₂_le {f : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
   σiSup_le fun i => σiSup_le <| h i
 
 theorem le_σiInf₂ {f : ∀ i, κ i → α} (h : ∀ i j, a ≤ f i j) : a ≤ ⨅ (i) (j), f i j :=
