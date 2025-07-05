@@ -274,8 +274,7 @@ protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t
 instance Subtype.instSDiff : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨x \ y, x.prop.diff y.prop⟩⟩
 
--- TODO: Why does it complain that `x ⇨ y` is noncomputable?
-noncomputable instance Subtype.instHImp : HImp (Subtype (MeasurableSet : Set α → Prop)) where
+instance Subtype.instHImp : HImp (Subtype (MeasurableSet : Set α → Prop)) where
   himp x y := ⟨x ⇨ y, x.prop.himp y.prop⟩
 
 @[simp]
@@ -298,7 +297,7 @@ instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=
 theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : Set α) :=
   rfl
 
-noncomputable instance Subtype.instBooleanAlgebra :
+instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
   Subtype.coe_injective.booleanAlgebra _ coe_union coe_inter coe_top coe_bot coe_compl coe_sdiff
     coe_himp
