@@ -83,12 +83,10 @@ theorem not_isRightRegular_zero [nR : Nontrivial R] : ¬IsRightRegular (0 : R) :
 theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRegular.ne_zero h rfl
 
 @[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
-  conv_lhs => rw [← mul_zero b]
-  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
+  aesop
 
 @[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
-  conv_lhs => rw [← zero_mul b]
-  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
+  aesop
 
 end MulZeroClass
 

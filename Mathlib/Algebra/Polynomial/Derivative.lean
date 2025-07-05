@@ -308,10 +308,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     apply le_natDegree_of_mem_supp _ hn
   · refine le_sup ?_
     rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
-    · rw [coeff_natDegree, Ne, leadingCoeff_eq_zero]
-      intro h
-      rw [h, natDegree_zero] at hp
-      exact hp.false
+    · aesop
     exact hp
 
 theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :

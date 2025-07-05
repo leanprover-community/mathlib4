@@ -158,10 +158,7 @@ lemma r_eq_none (i' : ι') (hi : ∀ i, e.f i ≠ i') :
 lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
     e.f i = i' := by
   by_cases h : ∃ (k : ι), e.f k = i'
-  · obtain ⟨k, rfl⟩ := h
-    rw [r_f] at hi
-    congr 1
-    simpa using hi.symm
+  · aesop
   · simp [e.r_eq_none i' (by simpa using h)] at hi
 
 end Embedding
