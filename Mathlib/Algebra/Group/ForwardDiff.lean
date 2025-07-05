@@ -219,13 +219,13 @@ The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.
 This is a building block for showing that the `(p+1)`-th difference of a polynomial of
 degree `p` is zero.
 -/
-theorem fwdDiff_iter_pow_lt  {x j n : ℕ} (h : j < n):
+theorem fwdDiff_iter_pow_lt {x j n : ℕ} (h : j < n):
   Δ_[1] ^[n] (fun x ↦ x ^ j : ℕ → R) x = (fun _ ↦  0) x := by
   revert j
   induction' n with n IH
-  . simp only [not_lt_zero', Function.iterate_zero, id_eq,
-      pow_eq_zero_iff', Nat.cast_eq_zero, ne_eq, IsEmpty.forall_iff, implies_true]
-  . intro j hj
+  · simp only [not_lt_zero', Function.iterate_zero, id_eq,
+      IsEmpty.forall_iff, implies_true]
+  · intro j hj
     rw [Function.iterate_succ, Function.comp_apply, fwdDiff_iter_eq_sum_shift]
     simp only [Int.reduceNeg, smul_eq_mul, mul_one, zsmul_eq_mul, Int.cast_mul,
       Int.cast_pow, Int.cast_neg, Int.cast_one, Int.cast_natCast]
@@ -249,8 +249,8 @@ theorem fwdDiff_iter_pow_lt  {x j n : ℕ} (h : j < n):
 theorem fwdDiff_iter_eq_factorial {n x : ℕ} :
    Δ_[1] ^[n] (fun x ↦ x ^ n : ℕ → R) x = (fun _ ↦  n.factorial) x := by
   induction' n with n IH
-  . simp only [pow_zero, Function.iterate_zero, id_eq, Nat.factorial_zero, Nat.cast_one]
-  . simp
+  · simp only [pow_zero, Function.iterate_zero, id_eq, Nat.factorial_zero, Nat.cast_one]
+  · simp only [iterate_succ, comp_apply]
     rw [fwdDiff_iter_eq_sum_shift]
     simp only [Int.reduceNeg, smul_eq_mul, mul_one, zsmul_eq_mul,
       Int.cast_mul, Int.cast_pow, Int.cast_neg, Int.cast_one, Int.cast_natCast]
@@ -267,7 +267,7 @@ theorem fwdDiff_iter_eq_factorial {n x : ℕ} :
     conv_lhs=> enter[2]; ext i; enter [2]; ext k; rw [← mul_assoc, ← mul_assoc]
     simp [← Finset.sum_mul]
     rw [Finset.sum_range_succ, IH]
-    simp only [Nat.choose_succ_self_right, Nat.cast_add, Nat.cast_one, zero_add]
+    simp only [Nat.choose_succ_self_right, Nat.cast_add, Nat.cast_one]
     conv_lhs => enter [2]; norm_cast
     nth_rw 6 [show n = n + 1 - 1 by rw [Nat.add_sub_cancel]]
     rw [mul_comm, Nat.mul_factorial_pred (by linarith)]
@@ -288,14 +288,14 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n x : ℕ} (a : ℕ → R):
     Δ_[1] ^[n + 1] (fun (x : ℕ) =>
       ∑ k ∈ Finset.range (n + 1), a k • (x ^ k) : ℕ → R) x  = (fun _ ↦ 0) x := by
   induction' n with n IH
-  . simp only [zero_add, Finset.range_one, smul_eq_mul,
+  · simp only [zero_add, Finset.range_one, smul_eq_mul,
       Finset.sum_singleton, pow_zero, mul_one, Function.iterate_one, fwdDiff_const]
-  . rw [Function.iterate_add_apply, Function.iterate_one]
+  · rw [Function.iterate_add_apply, Function.iterate_one]
     conv_lhs => enter [0]; unfold fwdDiff
-    simp only [smul_eq_mul, Function.comp_apply, fwdDiff_iter_eq_sum_shift]
+    simp only [smul_eq_mul, fwdDiff_iter_eq_sum_shift]
     simp only [smul_eq_mul, fwdDiff_iter_eq_sum_shift] at IH
     conv_lhs => enter [2]; ext k; enter [2]; unfold fwdDiff
-    simp_all only [Int.reduceNeg, smul_eq_mul, mul_one, Nat.cast_add, zsmul_eq_mul,
+    simp_all only [Int.reduceNeg, mul_one, Nat.cast_add, zsmul_eq_mul,
       Int.cast_mul, Int.cast_pow, Int.cast_neg, Int.cast_one, Int.cast_natCast, Nat.cast_one]
     conv_lhs => enter [2]; ext x; rw [mul_sub]
     rw [Finset.sum_sub_distrib]
@@ -322,7 +322,8 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n x : ℕ} (a : ℕ → R):
       nth_rw 1 [show (-1 : R) = (-1 : ℤ) by simp]
       have (k : ℕ): (((n + 1).choose k : ℤ).toNat : R) = ((n + 1).choose k : ℤ) := by simp
       conv_lhs => enter [2]; ext k; rw [add_right_comm ,
-          ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_pow, ← Int.toNat_natCast (n := (n + 1).choose k),
+          ← Nat.cast_add, ← Nat.cast_add,
+          ← Nat.cast_pow, ← Int.toNat_natCast (n := (n + 1).choose k),
           this k, ← Int.cast_pow, ← Int.cast_mul]
       rw [← h]
       rw [fwdDiff_iter_eq_factorial]
@@ -362,12 +363,14 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n x : ℕ} (a : ℕ → R):
       enter [2, 2]; ext k; rw [smul_eq_mul]; rw [zsmul_eq_mul, mul_one, ← Nat.cast_pow]
     conv_lhs => enter [1, 2]; ext k; rw [smul_eq_mul, ← Nat.cast_pow]
     rw [← h]
-    obtain h := fwdDiff_iter_eq_sum_shift (n := n + 1) (y := x)  (f := (fun x => x ^ k : ℕ → R)) (h := 1)
+    obtain h := fwdDiff_iter_eq_sum_shift
+      (n := n + 1) (y := x)  (f := (fun x => x ^ k : ℕ → R)) (h := 1)
     conv at h =>
       enter [2, 2]; ext k; rw [smul_eq_mul]; rw [zsmul_eq_mul, mul_one, ← Nat.cast_pow]
     nth_rw 1 [show (-1 : R) = (-1 : ℤ) by simp]
     conv_rhs => enter [1, 2]; ext k; rw [← Nat.cast_add, ← Nat.cast_pow,
-      ← Int.toNat_natCast (n := (n + 1).choose k), this k, ← Int.cast_pow, ← Int.cast_mul, smul_eq_mul]
+      ← Int.toNat_natCast (n := (n + 1).choose k),
+      this k, ← Int.cast_pow, ← Int.cast_mul, smul_eq_mul]
     rw [← h]
     rw [fwdDiff_iter_pow_lt (by linarith), fwdDiff_iter_pow_lt (by linarith)]
 
@@ -408,9 +411,11 @@ theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R[X]) :
     conv => enter [1, 2, x]; rw [fwdDiffTab_0th_diag_poly']; simp
     simp only [smul_eq_mul]
     have h₂ : ∑ x ∈ Finset.range (p + 1), ∑ x_1 ∈ Finset.range (x + 1),
-      ↑(x.choose x_1) * Δ_[1] ^[x_1] (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 =
+      ↑(x.choose x_1) * Δ_[1] ^[x_1]
+        (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 =
       ∑ x ∈ Finset.range (p + 1), ∑ x_1 ∈ Finset.range (p + 1),
-      ↑(x.choose x_1) * Δ_[1] ^[x_1] (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 := by
+      ↑(x.choose x_1) * Δ_[1] ^[x_1]
+        (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 := by
       apply Finset.sum_congr rfl
       intro x hx
       have h₁₁ : ∑ k ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose k) * Δ_[1] ^[k]
