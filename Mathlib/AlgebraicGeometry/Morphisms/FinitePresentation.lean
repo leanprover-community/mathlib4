@@ -103,7 +103,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X.Hom Y)
     apply Set.image_injective.mpr Subtype.val_injective
     rw [Set.image_preimage_eq_inter_range, ← Set.image_comp, ← Set.image_comp,
       Subtype.range_coe_subtype, Set.setOf_mem_eq]
-    show _ = (Y.affineCover.pullbackHom f i ≫
+    change _ = (Y.affineCover.pullbackHom f i ≫
       (Y.affineCover.map i).isoOpensRange.hom ≫ Opens.ι _).base.hom '' _
     rw [Scheme.Hom.isoOpensRange_hom_ι, Cover.pullbackHom_map, Scheme.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range]

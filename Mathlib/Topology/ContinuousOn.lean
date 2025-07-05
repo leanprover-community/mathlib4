@@ -409,7 +409,7 @@ theorem dense_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i
     pi_univ]
 
 theorem DenseRange.piMap {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
-    {f : (i : ι) → (X i) → (Y i)} (hf : ∀ i, DenseRange (f i)):
+    {f : (i : ι) → (X i) → (Y i)} (hf : ∀ i, DenseRange (f i)) :
     DenseRange (Pi.map f) := by
   rw [DenseRange, Set.range_piMap]
   exact dense_pi Set.univ (fun i _ => hf i)
@@ -1387,6 +1387,26 @@ theorem continouousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : 
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
+
+/-- If a function is continuous on open sets `s i`, it is continuous on their union -/
+lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}
+    (hf : ∀ i : ι, ContinuousOn f (s i)) (hs : ∀ i, IsOpen (s i)) :
+    ContinuousOn f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, rfl⟩, hxsi⟩
+  exact (hf i).continuousAt ((hs i).mem_nhds hxsi) |>.continuousWithinAt
+
+/-- A function is continuous on a union of open sets `s i` iff it is continuous on each `s i`. -/
+lemma continuousOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set α}
+    (hs : ∀ i, IsOpen (s i)) :
+    ContinuousOn f (⋃ i, s i) ↔ ∀ i : ι, ContinuousOn f (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
+   fun h ↦ ContinuousOn.iUnion_of_isOpen h hs⟩
+
+lemma continuous_of_continuousOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set α}
+    (hf : ∀ i : ι, ContinuousOn f (s i)) (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
+    Continuous f := by
+  rw [continuous_iff_continuousOn_univ, ← hs']
+  exact ContinuousOn.iUnion_of_isOpen hf hs
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
 the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/

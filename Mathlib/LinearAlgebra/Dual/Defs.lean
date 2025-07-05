@@ -471,7 +471,7 @@ lemma coe_dualAnnihilator_span (s : Set M) :
 lemma coe_dualCoannihilator_span (s : Set (Module.Dual R M)) :
     ((span R s).dualCoannihilator : Set M) = {x | ∀ f ∈ s, f x = 0} := by
   ext x
-  have (φ) : x ∈ LinearMap.ker φ ↔ φ ∈ LinearMap.ker (Module.Dual.eval R M x) := by simp
+  have (φ : _) : x ∈ LinearMap.ker φ ↔ φ ∈ LinearMap.ker (Module.Dual.eval R M x) := by simp
   simp only [SetLike.mem_coe, mem_dualCoannihilator, Set.mem_setOf_eq, ← LinearMap.mem_ker, this]
   exact span_le
 
