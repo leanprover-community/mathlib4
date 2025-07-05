@@ -5,6 +5,7 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Module.Shrink
 import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.Logic.Small.Basic
 import Mathlib.RingTheory.Ideal.Defs
 
 /-!
