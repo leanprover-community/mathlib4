@@ -393,7 +393,7 @@ namespace DayConvolutionUnit
 
 variable (U : C ⥤ V) [DayConvolutionUnit U]
 open scoped DayConvolution
-open ExternalProduct
+open ExternalProduct Functor
 
 /-- A shorthand for the natural transformation of functors out of PUnit defined by
 the canonical morphism `𝟙_ V ⟶ U.obj (𝟙_ C)` when `U` is a unit for Day convolution. -/
@@ -416,10 +416,12 @@ variable (F : C ⥤ V)
       (CostructuredArrow (Functor.fromPUnit (𝟙_ C)) d) (tensorRight v)]
 
 instance : (F ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) F :=
-  pointwiseLeftKanExtensionRight U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionExtensionUnitRight
+    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
 
 instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
-  pointwiseLeftKanExtensionLeft U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionExtensionUnitLeft
+    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is left Kan extended from `(fromPUnit 𝟙_ V) ⊠ F`. -/
@@ -634,8 +636,8 @@ lemma DayConvolution.triangle (F G U : C ⥤ V) [DayConvolutionUnit U]
     (α := extensionUnitLeft (F ⊛ U) (DayConvolution.unit F U) G)
   letI : (F ⊠ U) ⊠ G|>.IsLeftKanExtension
       (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G) :=
-    pointwiseLeftKanExtensionLeft (F ⊠ U) _ G
-      (pointwiseLeftKanExtensionRight U (DayConvolutionUnit.φ U) F <|
+    isPointwiseLeftKanExtensionExtensionUnitLeft (F ⊠ U) _ G
+      (isPointwiseLeftKanExtensionExtensionUnitRight U (DayConvolutionUnit.φ U) F <|
         DayConvolutionUnit.isPointwiseLeftKanExtensionCan (F := U))|>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G)
