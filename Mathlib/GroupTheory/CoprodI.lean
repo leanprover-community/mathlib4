@@ -372,13 +372,7 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
   simp only [rcons, cons, ne_eq]
-  by_cases hij : i = j
-  · subst i
-    by_cases hm : m = p.head
-    · subst m
-      split_ifs <;> simp_all
-    · split_ifs <;> simp_all
-  · split_ifs <;> simp_all [Ne.symm hij]
+  grind
 
 end
 
