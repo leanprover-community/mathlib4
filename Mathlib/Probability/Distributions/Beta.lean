@@ -54,10 +54,10 @@ theorem beta_eq_betaIntegralReal (α β : ℝ) (hα : 0 < α) (hβ : 0 < β) :
   let α' : ℂ := ↑α
   let β' : ℂ := ↑β
   have hα' : 0 < α'.re := by
-    simp only [ofReal_re, gt_iff_lt, α']
+    simp only [ofReal_re, α']
     exact hα
   have hβ' : 0 < β'.re := by
-    simp only [gt_iff_lt, β']
+    simp only [β']
     exact hβ
   rw [betaIntegral_eq α' β' hα' hβ']
 
