@@ -27,8 +27,6 @@ so as to make the operations (addition etc.) "computable".
 
 -/
 
-suppress_compilation
-
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
 open Submodule

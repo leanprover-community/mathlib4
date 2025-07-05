@@ -28,8 +28,6 @@ We also register continuous linear equiv versions of these correspondences, in
   `ContinuousMultilinearMap.curryMidEquiv`
 -/
 
-suppress_compilation
-
 noncomputable section
 
 open NNReal Finset Metric ContinuousMultilinearMap Fin Function

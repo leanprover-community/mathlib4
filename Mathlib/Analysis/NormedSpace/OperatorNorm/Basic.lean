@@ -26,8 +26,6 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 -/
 
-suppress_compilation
-
 open Bornology
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity

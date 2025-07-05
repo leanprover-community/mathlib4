@@ -28,8 +28,6 @@ use this as an interface and not need to interact much with the implementation d
 -/
 
 
-suppress_compilation
-
 universe v w x u
 
 open CategoryTheory

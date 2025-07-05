@@ -13,8 +13,6 @@ This file (split off from `OperatorNorm.lean`) contains results about the operat
 of multiplication and scalar-multiplication operations in normed algebras and normed modules.
 -/
 
-suppress_compilation
-
 open Metric
 open scoped NNReal Topology Uniformity
 

@@ -12,8 +12,6 @@ Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
 
 -/
 
-suppress_compilation
-
 open Bornology
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
