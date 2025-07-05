@@ -531,7 +531,7 @@ lemma betaIntegral_eq (u v : ℂ) (hu : 0 < u.re) (hv : 0 < v.re) :
   rw [ne_eq, Complex.ext_iff]
   rintro ⟨hre, -⟩
   rw [hre] at h_sum_re
-  simp only [neg_re, natCast_re, gt_iff_lt, Left.neg_pos_iff] at h_sum_re
+  simp only [neg_re, natCast_re, Left.neg_pos_iff] at h_sum_re
   norm_cast at h_sum_re
 
 end Complex
