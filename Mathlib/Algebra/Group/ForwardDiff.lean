@@ -89,9 +89,9 @@ def fwdDiffₗ : Module.End ℤ (M → G) where
   map_add' := fwdDiff_add h
   map_smul' := fwdDiff_const_smul h
 
-lemma coe_fwdDiffₗ : ↑(fwdDiffₗ M G h) = fwdDiff h := rfl
+lemma coe_fwdDiffₗ : (fwdDiffₗ M G h) = fwdDiff h := rfl
 
-lemma coe_fwdDiffₗ_pow (n : ℕ) : ↑(fwdDiffₗ M G h ^ n) = (fwdDiff h)^[n] := by
+lemma coe_fwdDiffₗ_pow (n : ℕ) : (fwdDiffₗ M G h ^ n) = (fwdDiff h)^[n] := by
   ext; rw [Module.End.pow_apply, coe_fwdDiffₗ]
 
 variable (M G) in
@@ -145,7 +145,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
   · rw [LinearMap.sum_apply, sum_apply]
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
-              = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
+              = ((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
     rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
       Pi.smul_apply, shiftₗ_pow_apply]
 
@@ -199,11 +199,16 @@ lemma fwdDiff_addChar_eq {M R : Type*} [AddCommMonoid M] [Ring R]
 /-
 We prove five key formulae about the forward difference operator
 
-* `fwdDiff_iter_pow_lt` : the `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`;
-* `fwdDiff_iter_eq_factorial` : the `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
-* `fwdDiff_iter_succ_sum_eq_zero` : The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
-* `fwdDiffTab_0th_diag_poly'` :  **Newton's series** for a polynomial function. This is another definition.
-* `sum_of_poly_sequence` : A generalization of **Faulhaber's formula**.
+* `fwdDiff_iter_pow_lt` :
+  The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`;
+* `fwdDiff_iter_eq_factorial` :
+  The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
+* `fwdDiff_iter_succ_sum_eq_zero` :
+  The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
+* `fwdDiffTab_0th_diag_poly'` :
+  **Newton's series** for a polynomial function. This is another definition.
+* `sum_of_poly_sequence` :
+  A generalization of **Faulhaber's formula**.
 -/
 
 open fwdDiff
@@ -232,13 +237,15 @@ theorem fwdDiff_iter_pow_lt  {x j n : ℕ} (h : j < n): Δ_[1] ^[n] (fun x ↦ x
       mul_assoc, ← Nat.cast_mul, Finset.mul_sum]
     norm_num
     simp [Finset.mul_sum, Finset.sum_comm, ← mul_assoc, ← mul_assoc, ← Finset.sum_mul]
-    refine' Finset.sum_eq_zero fun _ hk => _
+    apply Finset.sum_eq_zero
+    intro k hk
     simp only [Finset.mem_range] at hk
     rw [IH (by linarith)]
     simp
 
 /-- The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`. -/
-theorem fwdDiff_iter_eq_factorial {n x : ℕ} : Δ_[1] ^[n] (fun x ↦ x ^ n : ℕ → R) x = (fun _ ↦  n.factorial) x := by
+theorem fwdDiff_iter_eq_factorial {n x : ℕ} :
+  Δ_[1] ^[n] (fun x ↦ x ^ n : ℕ → R) x = (fun _ ↦  n.factorial) x := by
   induction' n with n IH
   . simp only [pow_zero, Function.iterate_zero, id_eq, Nat.factorial_zero, Nat.cast_one]
   . simp
@@ -263,7 +270,8 @@ theorem fwdDiff_iter_eq_factorial {n x : ℕ} : Δ_[1] ^[n] (fun x ↦ x ^ n : �
     nth_rw 6 [show n = n + 1 - 1 by rw [Nat.add_sub_cancel]]
     rw [mul_comm, Nat.mul_factorial_pred (by linarith)]
     simp only [add_eq_right]
-    refine' Finset.sum_eq_zero fun k hk => _
+    apply Finset.sum_eq_zero
+    intro k hk
     simp only [Finset.mem_range] at hk
     obtain h := fwdDiff_iter_eq_sum_shift (n := n) (y := x) (f := (fun x ↦ x ^ k : ℕ → R)) (h := 1)
     simp only [Int.reduceNeg, smul_eq_mul, mul_one, Nat.cast_add,
@@ -275,7 +283,8 @@ The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
 A polynomial `P(x) = ∑_{k=0..n} aₖ xᵏ` has `Δ^[n+1] P = 0`.
 -/
 theorem fwdDiff_iter_succ_sum_eq_zero {n x : ℕ} (a : ℕ → R):
-    Δ_[1] ^[n + 1] (fun (x : ℕ) => ∑ k ∈ Finset.range (n + 1), a k • (x ^ k) : ℕ → R) x  = (fun _ ↦ 0) x := by
+    Δ_[1] ^[n + 1] (fun (x : ℕ) => ∑ k ∈ Finset.range (n + 1), a k • (x ^ k) : ℕ → R) x
+      = (fun _ ↦ 0) x := by
   induction' n with n IH
   . simp only [zero_add, Finset.range_one, smul_eq_mul,
       Finset.sum_singleton, pow_zero, mul_one, Function.iterate_one, fwdDiff_const]
@@ -295,7 +304,7 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n x : ℕ} (a : ℕ → R):
     conv_rhs => enter [2]; ext k; rw [Finset.mul_sum]
     rw [Finset.sum_sub_distrib]
     rw [← add_left_inj (a := ∑ k ∈ Finset.range (n + 1 + 1), (-1) ^ (n + 1 - k) *
-      ↑((n + 1).choose k) * (a (n + 1) * (x + k) ^ (n + 1)))]
+      ((n + 1).choose k) * (a (n + 1) * (x + k) ^ (n + 1)))]
     rw [sub_add_cancel, ← Finset.sum_add_distrib]
     conv_rhs => enter [2]; ext k; rw [← Finset.sum_range_succ]
     rw [Finset.sum_comm, Finset.sum_range_succ]
@@ -315,7 +324,7 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n x : ℕ} (a : ℕ → R):
           this k, ← Int.cast_pow, ← Int.cast_mul]
       rw [← h]
       rw [fwdDiff_iter_eq_factorial]
-    have ih' : ∑ k ∈ Finset.range (n + 1 + 1), (-1 : R) ^ (n + 1 - k) * ↑((n + 1).choose k)
+    have ih' : ∑ k ∈ Finset.range (n + 1 + 1), (-1 : R) ^ (n + 1 - k) * ((n + 1).choose k)
       * ((x + k) ^ (n + 1)) = (n + 1).factorial := by
       obtain h := fwdDiff_iter_eq_sum_shift (n := n + 1) (y := x)
         (f := (fun x => x ^ (n + 1) : ℕ → R)) (h := 1)
@@ -330,7 +339,8 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n x : ℕ} (a : ℕ → R):
     conv_lhs => enter [2, 2]; ext k; rw [mul_comm (a := a (n + 1)), ← mul_assoc]
     conv_rhs => enter [2, 2]; ext k; rw [mul_comm (a := a (n + 1)), ← mul_assoc]
     rw [← Finset.sum_mul, ← Finset.sum_mul, ih', ih, add_left_inj]
-    refine' Finset.sum_congr rfl fun k hk => _
+    apply Finset.sum_congr rfl
+    intro k hk
     simp only [Finset.mem_range] at hk
     conv_lhs => enter [2]; ext i ; rw [← smul_eq_mul, mul_comm (a := a k), smul_eq_mul,← mul_assoc]
     rw [← Finset.sum_mul]
@@ -381,7 +391,8 @@ theorem fwdDiffTab_0th_diag_poly' {n x : ℕ} (a : ℕ → R[X]):
 
 /--
 A formula for the sum of a polynomial sequence, `∑_{i=0..p} P(i)`, expressed in
-terms of the forward differences of `P` at `0`. This is a generalization of **Faulhaber's formula**.
+terms of the forward differences of `P` at `0`.
+This is a generalization of **Faulhaber's formula**.
 -/
 theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R[X]) :
     ∑ i ∈ Finset.range (p + 1), (∑ k ∈ Finset.range (n + 1), a k • (i ^ k : R[X])) =
@@ -396,28 +407,32 @@ theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R[X]) :
     conv => enter [1, 2, x]; rw [fwdDiffTab_0th_diag_poly']; simp
     simp only [smul_eq_mul]
     have h₂ : ∑ x ∈ Finset.range (p + 1), ∑ x_1 ∈ Finset.range (x + 1),
-      ↑(x.choose x_1) * Δ_[1] ^[x_1] (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 =
+      (x.choose x_1) * Δ_[1] ^[x_1]
+      (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 =
       ∑ x ∈ Finset.range (p + 1), ∑ x_1 ∈ Finset.range (p + 1),
-      ↑(x.choose x_1) * Δ_[1] ^[x_1] (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 := by
-      refine' Finset.sum_congr rfl fun x hx => _
-      have h₁₁ : ∑ k ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose k) * Δ_[1] ^[k]
+      (x.choose x_1) * Δ_[1] ^[x_1]
+      (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 := by
+      apply Finset.sum_congr rfl
+      intro x hx
+      have h₁₁ : ∑ k ∈ Finset.Ico (x + 1) (p + 1), (x.choose k) * Δ_[1] ^[k]
         (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 = 0 := by
         rw [Finset.sum_Ico_eq_sum_range]
         simp
         simp at hx
         have : ∑ k ∈ Finset.range (p - x), 0 = (0 : R[X]) := by simp only [Finset.sum_const_zero]
         rw [← this]
-        refine' Finset.sum_congr rfl fun y hy => _
+        apply Finset.sum_congr rfl
+        intro y hy
         simp at hy
         have : x + 1 + y > x := by omega
         rw [Nat.choose_eq_zero_of_lt this]
         simp
       nth_rw 1 3 [Finset.range_eq_Ico]
-      have h₁₂ : ∑ x_1 ∈ Finset.Ico 0 (p + 1), ↑(x.choose x_1) * Δ_[1] ^[x_1]
+      have h₁₂ : ∑ x_1 ∈ Finset.Ico 0 (p + 1), (x.choose x_1) * Δ_[1] ^[x_1]
           (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 =
-        ∑ x_1 ∈ Finset.Ico 0 (x + 1), ↑(x.choose x_1) * Δ_[1] ^[x_1]
+        ∑ x_1 ∈ Finset.Ico 0 (x + 1), (x.choose x_1) * Δ_[1] ^[x_1]
           (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 +
-        ∑ x_1 ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose x_1) * Δ_[1] ^[x_1]
+        ∑ x_1 ∈ Finset.Ico (x + 1) (p + 1), (x.choose x_1) * Δ_[1] ^[x_1]
           (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 := by
         rw [← Finset.sum_Ico_consecutive]
         · linarith
@@ -426,7 +441,8 @@ theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R[X]) :
       rw [h₁₂, h₁₁, add_zero]
     rw [h₂, Finset.sum_comm]
     simp_rw [← Finset.sum_mul]
-    refine' Finset.sum_congr rfl fun k hk => _
+    apply Finset.sum_congr rfl
+    intro k hk
     simp at hk
     congr 1
     norm_cast
