@@ -15,9 +15,7 @@ This file defines the bundled category `CommAlgCat` of commutative algebras over
 ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
 
-namespace CategoryTheory
-
-open Limits
+open CategoryTheory Limits
 
 universe w v u
 
@@ -207,5 +205,3 @@ instance : HasColimits (CommAlgCat.{u} R) :=
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasLimits (CommAlgCat.{u} R) :=
   Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
-
-end CategoryTheory
