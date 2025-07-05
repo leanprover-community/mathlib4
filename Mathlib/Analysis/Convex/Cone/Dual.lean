@@ -99,8 +99,7 @@ lemma dual_sUnion (S : Set (Set M)) : dual p (⋃₀ S) = sInf (dual p '' S) := 
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
 lemma dual_eq_iInter_dual_singleton (s : Set M) :
-    dual p s = ⋂ i : s, (dual p {i.val} : Set N) := by
-  ext; simp [forall_swap (α := M)]
+    dual p s = ⋂ i : s, (dual p {i.val} : Set N) := by ext; simp
 
 /-- Any set is a subset of its double dual cone. -/
 lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
