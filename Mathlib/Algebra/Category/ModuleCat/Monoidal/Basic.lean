@@ -27,9 +27,6 @@ If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
 
-
-suppress_compilation
-
 universe v w x u
 
 open CategoryTheory
@@ -230,7 +227,7 @@ variable (f : M₁ → M₂ → M₃) (h₁ : ∀ m₁ m₂ n, f (m₁ + m₂) n
   (h₄ : ∀ (a : R) m n, f m (a • n) = a • f m n)
 
 /-- Construct for morphisms from the tensor product of two objects in `ModuleCat`. -/
-noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
+def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
   ofHom <| TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
 
 @[simp]

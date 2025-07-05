@@ -18,8 +18,6 @@ In this file we show:
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Symmetric.lean`.
 -/
 
-suppress_compilation
-
 open CategoryTheory
 
 universe v u
