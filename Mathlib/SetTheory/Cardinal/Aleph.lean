@@ -314,6 +314,13 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
 theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
   rw [← preAleph_omega0, preAleph_le_preAleph]
 
+theorem card_le_preAleph (o : Ordinal) : o.card ≤ preAleph o := by
+  rw [← card_preOmega]
+  exact Ordinal.card_le_card (le_preOmega_self o)
+
+theorem le_preAleph_ord (c : Cardinal) : c ≤ preAleph c.ord := by
+  simpa using card_le_preAleph c.ord
+
 @[simp]
 theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
   (preAleph.toInitialSeg.trans liftInitialSeg).eq
@@ -409,6 +416,12 @@ theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
 
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
+
+theorem card_le_aleph (o : Ordinal) : o.card ≤ ℵ_ o :=
+  (card_le_preAleph o).trans (preAleph_le_aleph o)
+
+theorem le_aleph_ord (c : Cardinal) : c ≤ ℵ_ c.ord := by
+  simpa using card_le_aleph c.ord
 
 @[simp]
 theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
@@ -548,6 +561,12 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
 
+theorem card_le_preBeth (o : Ordinal) : o.card ≤ preBeth o :=
+  (card_le_preAleph o).trans (preAleph_le_preBeth o)
+
+theorem le_preBeth_ord (c : Cardinal) : c ≤ preBeth c.ord := by
+  simpa using card_le_preBeth c.ord
+
 theorem isNormal_preBeth : IsNormal (ord ∘ preBeth) := by
   refine (isNormal_iff_strictMono_limit _).2
     ⟨ord_strictMono.comp preBeth_strictMono, fun o ho a ha ↦ ?_⟩
@@ -621,6 +640,12 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
+
+theorem card_le_beth (o : Ordinal) : o.card ≤ ℶ_ o :=
+  (card_le_aleph o).trans (aleph_le_beth o)
+
+theorem le_beth_ord (c : Cardinal) : c ≤ ℶ_ c.ord := by
+  simpa using card_le_beth c.ord
 
 theorem isNormal_beth : IsNormal (ord ∘ beth) :=
   isNormal_preBeth.trans (isNormal_add_right ω)
