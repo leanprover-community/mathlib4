@@ -133,7 +133,7 @@ theorem isCyclic_of_subgroup_isDomain [Finite G] (f : G →* R) (hf : Injective 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
 `Finite Rˣ` rather than deducing it from `Finite R`. -/
 instance [Finite Rˣ] : IsCyclic Rˣ :=
-  isCyclic_of_subgroup_isDomain (Units.coeHom R) <| Units.ext
+  isCyclic_of_subgroup_isDomain (Units.coeHom R) Units.val_injective
 
 section
 
@@ -144,7 +144,7 @@ instance subgroup_units_cyclic : IsCyclic S := by
   -- Porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
   · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
-  · exact Units.ext.comp Subtype.val_injective
+  · exact Units.val_injective.comp Subtype.val_injective
 
 end
 
