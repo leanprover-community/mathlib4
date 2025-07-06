@@ -706,6 +706,13 @@ theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).No
   rw [nonempty_iff_ne_bot]
   apply eq_or_ne
 
+lemma eq_bot_or_eq_top_of_subsingleton [Subsingleton P] (s : AffineSubspace k P) :
+    s = ⊥ ∨ s = ⊤ := by
+  rw [← coe_eq_bot_iff, ← coe_eq_univ_iff]
+  rcases (s : Set P).eq_empty_or_nonempty with h | h
+  · exact .inl h
+  · exact .inr h.eq_univ
+
 /-- A nonempty affine subspace is `⊤` if and only if its direction is `⊤`. -/
 @[simp]
 theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
@@ -857,6 +864,13 @@ theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
 theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
   rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
   exact (affineSpan_eq_bot _).not
+
+lemma affineSpan_eq_top_iff_nonempty_of_subsingleton [Subsingleton P] :
+    affineSpan k s = ⊤ ↔ s.Nonempty := by
+  rw [← affineSpan_nonempty k, nonempty_iff_ne_bot]
+  rcases (affineSpan k s).eq_bot_or_eq_top_of_subsingleton with h | h
+  · simp [h]
+  · simp [h]
 
 end
 
