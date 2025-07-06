@@ -78,14 +78,19 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         have e4 : (x ⊓ y) ⊔ (y ⊔ z) = (y ⊔ z) :=
           sup_eq_right.mpr (le_trans inf_le_right le_sup_left)
         rw [e3, e4] at e2
-        have e2' : r ((y ⊓ z) ⊓ (x ⊓ z)) ((y ⊔ z) ⊓ (x ⊓ z))  :=
-          (h3 _ _ _ inf_le_sup ((h1 y z).mp hyz)).1
-        have e3' : y ⊓ z ⊓ (x ⊓ z) = x ⊓ y ⊓ z := by
-          rw [← inf_inf_distrib_right, inf_comm y x]
-        have e4' : (y ⊔ z) ⊓ (x ⊓ z) = x ⊓ z :=
-          inf_eq_right.mpr (le_trans inf_le_right le_sup_right)
+        have e2' : r ((x ⊓ y) ⊓ (y ⊓ z)) ((x ⊔ y) ⊓ (y ⊓ z))  :=
+          (h3 _ _ _ inf_le_sup ((h1 x y).mp hxy)).1
+        have e3' : (x ⊓ y) ⊓ (y ⊓ z) = x ⊓ y ⊓ z := by
+          rw [inf_comm x y, ← inf_inf_distrib_left, inf_assoc]
+        --have e4' : (x ⊔ y) ⊓ (y ⊓ z) = x ⊓ z :=
+        --  inf_eq_right.mpr (le_trans inf_le_right le_sup_right)
+        have e4' : (x ⊔ y) ⊓ (y ⊓ z) = (y ⊓ z) :=
+          inf_eq_right.mpr (le_trans inf_le_left le_sup_right)
         rw [e3', e4'] at e2'
-        
+
+
+
+
 
 
 
