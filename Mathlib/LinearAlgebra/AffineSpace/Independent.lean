@@ -1085,6 +1085,17 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
     s.independent w' w hw' hw hww']
   exact hw'01
 
+lemma mem_affineSpan_of_mem_interior {n : ℕ} {s : Simplex k P n} {p : P} (h : p ∈ s.interior) :
+    p ∈ affineSpan k (Set.range s.points) := by
+  obtain ⟨w, hw, hi, rfl⟩ := h
+  exact affineCombination_mem_affineSpan_of_nonempty hw _
+
+lemma mem_affineSpan_of_mem_closedInterior {n : ℕ} {s : Simplex k P n} {p : P}
+    (h : p ∈ s.closedInterior) :
+    p ∈ affineSpan k (Set.range s.points) := by
+  obtain ⟨w, hw, hi, rfl⟩ := h
+  exact affineCombination_mem_affineSpan_of_nonempty hw _
+
 end Simplex
 
 end Affine
