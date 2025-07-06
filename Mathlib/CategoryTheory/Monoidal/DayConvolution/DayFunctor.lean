@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Monoidal.DayConvolution
 # Day functors
 
 In this file, given a monoidal category `C` and a monoidal category `V`,
-we define a basic type synonym `DayFunctor C V` (denoted `C ⊛⥤ V`)
+we define a basic type synonym `DayFunctor C V` (denoted `C ⊛⥤ D`)
 for the category `C ⥤ V` and endow it with the monoidal structure coming
 from Day convolution. Such a setup is necessary as by default,
 the `MonoidalCategory` instance on `C ⥤ V` is the "pointwise" one,
@@ -41,6 +41,7 @@ structure DayFunctor
 
 namespace DayFunctor
 
+/-- Notation for `DayFunctor`. -/
 scoped infixr:26 " ⊛⥤ " => DayFunctor
 
 variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
@@ -55,6 +56,7 @@ lemma functor_mk (F : C ⊛⥤ V) : mk (F.functor) = F := rfl
 /-- Morphisms of Day functors are natural transformations of the underlying
 functors. -/
 structure Hom (F G : C ⊛⥤ V) where
+  /- the underlying natural transformation -/
   natTrans : F.functor ⟶ G.functor
 
 @[simps id_natTrans comp_natTrans]
@@ -71,6 +73,7 @@ lemma hom_ext {F G : C ⊛⥤ V} {α β : F ⟶ G} (h : α.natTrans = β.natTran
   grind
 
 variable (C V) in
+/-- The tautological equivalence of categories between `C ⥤ V` and `C ⊛⥤ V`. -/
 @[simps! functor_obj functor_map inverse_obj_functor inverse_map_natTrans
   unitIso_hom_app unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def equiv : (C ⊛⥤ V) ≌ (C ⥤ V) where
@@ -120,10 +123,12 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
     (fun _ _ => ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
     (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
 
-abbrev η (F G : C ⊛⥤ V) (x y : C) :
-    (F.functor.obj x) ⊗ (G.functor.obj y) ⟶ (F ⊗ G).functor.obj (x ⊗ y) :=
+/-- A shorthand for the unit transformation exhibiting `(F ⊗ G).functor` as a
+left Kan extension of `F ⊠ G` along `tensor C`. -/
+abbrev η (F G : C ⊛⥤ V) :
+    F.functor ⊠ G.functor ⟶ (tensor C) ⋙ (F ⊗ G).functor :=
   LawfulDayConvolutionMonoidalCategoryStruct.convolutionExtensionUnit
-    C V F G|>.app (x, y)
+    C V F G
 
 open LawfulDayConvolutionMonoidalCategoryStruct in
 instance (F G : C ⊛⥤ V) : (F ⊗ G).functor.IsLeftKanExtension
@@ -133,8 +138,8 @@ instance (F G : C ⊛⥤ V) : (F ⊗ G).functor.IsLeftKanExtension
 open LawfulDayConvolutionMonoidalCategoryStruct in
 theorem hom_tensor_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
     (h : ∀ (x y : C),
-      (η F G x y) ≫ α.natTrans.app (x ⊗ y) =
-      (η F G x y) ≫ β.natTrans.app (x ⊗ y)) :
+      (η F G).app (x, y) ≫ α.natTrans.app (x ⊗ y) =
+      (η F G).app (x, y) ≫ β.natTrans.app (x ⊗ y)) :
     α = β := by
   ext : 1
   apply Functor.homEquivOfIsLeftKanExtension
@@ -156,7 +161,7 @@ def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
 
 @[simp]
 lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
-    (η F G x y) ≫ (isoPointwiseLeftKanExtension F G).hom.app (x ⊗ y) =
+    (η F G).app (x, y) ≫ (isoPointwiseLeftKanExtension F G).hom.app (x ⊗ y) =
     (tensor C|>.pointwiseLeftKanExtensionUnit <|
       F.functor ⊠ G.functor).app (x, y) := by
   simpa [η, isoPointwiseLeftKanExtension] using
@@ -172,7 +177,7 @@ lemma η_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
     (tensor C|>.pointwiseLeftKanExtensionUnit <|
     F.functor ⊠ G.functor).app (x, y) ≫
       (isoPointwiseLeftKanExtension F G).inv.app (x ⊗ y) =
-    (η F G x y) := by
+    (η F G).app (x, y) := by
   simp [η, isoPointwiseLeftKanExtension]
 
 end DayFunctor
