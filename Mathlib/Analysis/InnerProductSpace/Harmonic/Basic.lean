@@ -18,7 +18,9 @@ variable
   {f f₁ f₂ : E → F}
   {x : E} {s t : Set E} {c : ℝ}
 
-open InnerProductSpace Topology
+open Topology
+
+namespace InnerProductSpace
 
 /-!
 ## Definition
@@ -144,3 +146,5 @@ Functions are harmonic iff their compositions with continuous linear equivalence
 theorem harmonicOnNhd_iff_harmonicOnNhd_comp_CLE (l : F ≃L[ℝ] G) :
     HarmonicOnNhd (l ∘ f) s ↔ HarmonicOnNhd f s :=
   forall₂_congr fun _ _ ↦ harmonicAt_iff_harmonicAt_comp_CLE l
+
+end InnerProductSpace
