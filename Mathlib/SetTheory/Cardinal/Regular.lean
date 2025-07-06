@@ -245,6 +245,9 @@ theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃
 theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
   h.1
 
+theorem IsInaccessible.nat_lt {c : Cardinal} (h : IsInaccessible c) (n : ℕ) : n < c :=
+  (nat_lt_aleph0 n).trans h.1
+
 theorem IsInaccessible.pos {c : Cardinal} (h : IsInaccessible c) : 0 < c :=
   aleph0_pos.trans h.1
 
@@ -263,11 +266,8 @@ theorem isInaccesible_def {c : Cardinal} :
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
-theorem IsInaccessible.univ : IsInaccessible univ.{u, v} := by
-  refine ⟨by simpa using lift_lt_univ' ℵ₀, by simp, fun c h => ?_⟩
-  rcases lt_univ'.1 h with ⟨c, rfl⟩
-  rw [← lift_two_power]
-  apply lift_lt_univ'
+theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
+  ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
 
 @[deprecated IsInaccessible.univ (since := "2025-07-01")]
 alias univ_inaccessible := IsInaccessible.univ
