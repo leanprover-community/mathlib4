@@ -1234,6 +1234,60 @@ noncomputable def ofHasDayConvolutions
 
 end InducedLawfulDayConvolutionMonoidalCategoryStructCore
 
+section
+
+variable {C V}
+    {D : Type u₃} [Category.{v₃} D]
+    (ι : D ⥤ C ⥤ V)
+    (ffι : ι.FullyFaithful)
+    [hasDayConvolution : ∀ (d d' : D),
+      (tensor C).HasPointwiseLeftKanExtension (ι.obj d ⊠ ι.obj d')]
+    (essImageDayConvolution : ∀ (d d' : D),
+      ι.essImage <| (tensor C).pointwiseLeftKanExtension (ι.obj d ⊠ ι.obj d'))
+    [hasDayConvolutionUnit :
+      (Functor.fromPUnit.{0} <| 𝟙_ C).HasPointwiseLeftKanExtension
+        (Functor.fromPUnit.{0} <| 𝟙_ V)]
+    (essImageDayConvolutionUnit :
+      ι.essImage <|
+        (Functor.fromPUnit.{0} <| 𝟙_ C).pointwiseLeftKanExtension
+          (Functor.fromPUnit.{0} <| 𝟙_ V))
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (tensor C) d) (tensorRight v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]
+    [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]
+    [∀ (v : V) (d : C × C),
+      Limits.PreservesColimitsOfShape
+        (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
+        (tensorRight v)]
+    [∀ (v : V) (d : C × C),
+      Limits.PreservesColimitsOfShape
+        (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
+
+noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
+  letI induced : InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D :=
+    .ofHasDayConvolutions ι ffι essImageDayConvolution essImageDayConvolutionUnit
+  letI := induced.mkMonoidalCategoryStruct
+  letI : LawfulDayConvolutionMonoidalCategoryStruct C V D :=
+    induced.mkLawfulDayConvolutionMonoidalCategoryStruct
+  monoidalOfLawfulDayConvolutionMonoidalCategoryStruct C V D
+
+open InducedLawfulDayConvolutionMonoidalCategoryStructCore in
+noncomputable def lawfulDayConvolutionMonoidalCategoryStructOfHasDayConvolutions :
+    letI := monoidalOfHasDayConvolutions
+      ι ffι essImageDayConvolution essImageDayConvolutionUnit
+    LawfulDayConvolutionMonoidalCategoryStruct C V D :=
+  letI : InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D :=
+    .ofHasDayConvolutions ι ffι essImageDayConvolution essImageDayConvolutionUnit
+  letI := monoidalOfHasDayConvolutions
+    ι ffι essImageDayConvolution essImageDayConvolutionUnit
+  mkLawfulDayConvolutionMonoidalCategoryStruct C V D
+
+end
+
 end
 
 end
