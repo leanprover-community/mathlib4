@@ -202,7 +202,7 @@ end toNormedField
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
-def toNontriviallyNormedField: NontriviallyNormedField L := {
+def toNontriviallyNormedField : NontriviallyNormedField L := {
   val.toNormedField with
   non_trivial := by
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
