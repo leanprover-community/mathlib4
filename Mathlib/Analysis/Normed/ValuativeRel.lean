@@ -3,7 +3,7 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.Group.Ultra
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
@@ -93,29 +93,38 @@ lemma ofValueGroupWithZero_strictMono : StrictMono (ofValueGroupWithZero (R := R
 instance : ValuativeRel.IsRankLeOne R where
   nonempty := ⟨ofValueGroupWithZero, ofValueGroupWithZero_strictMono⟩
 
--- TODO:
--- instance : ValuativeTopology R where
---   mem_nhds_iff s := by
---     simp only [Metric.mem_nhds_iff, gt_iff_lt]
---     constructor
---     · rintro ⟨ε, ⟨hε, hs⟩⟩
---       by_cases h : ∃ γ : (ValuativeRel.ValueGroupWithZero R)ˣ, ofValueGroupWithZero γ.val ≤ ε
---       · refine h.imp ?_
---         intro γ hγ
---         refine hs.trans' ?_
---         intro
---         simp only [Metric.mem_ball, dist_zero_right, ← ofValueGroupWithZero_strictMono.lt_iff_lt,
---           mem_setOf_eq]
---         intro h
---         simpa [ofValueGroupWithZero] using hγ.trans_lt' h
---       · push_neg at h
---         sorry
---     · rintro ⟨γ, hs⟩
---       refine ⟨ofValueGroupWithZero γ.val, by simp [zero_lt_iff], hs.trans' ?_⟩
---       intro
---       simp only [Metric.mem_ball, dist_zero_right, ← ofValueGroupWithZero_strictMono.lt_iff_lt,
---         mem_setOf_eq]
---       apply lt_of_le_of_lt
---       simp [ofValueGroupWithZero]
+instance {K : Type*} [NormedField K] [IsUltrametricDist K] :
+    ValuativeTopology K := by
+  have he : valuation'.IsEquiv (ValuativeRel.valuation K) := ValuativeRel.isEquiv _ _
+  refine .of_hasBasis (Metric.nhds_basis_ball.to_hasBasis' ?_ ?_)
+  · intro ε hε
+    simp only [true_and]
+    rcases discreteTopology_or_nontriviallyNormedField K with _|⟨⟨⟨_, rfl⟩⟩⟩
+    · use 1
+      intro x
+      rcases eq_or_ne x 0 with rfl | hx
+      · simp [hε]
+      -- this is where we need DivisionRing as opposed to NormedCommRing with
+      --`‖x * y‖ = ‖x‖ * ‖y‖`, because we need to be able to have an element `x` of `‖x‖ < 1`
+      rw [← NormedDivisionRing.norm_eq_one_iff_ne_zero_of_discrete] at hx
+      simp [hx, ← he.lt_one_iff_lt_one, ← NNReal.coe_lt_one]
+    · obtain ⟨x, hx, hx'⟩ := exists_norm_lt K hε
+      refine ⟨Units.mk0 (ValuativeRel.valuation K x) ?_, ?_⟩
+      · rw [← he.ne_zero]
+        simpa using hx
+      · intro y
+        simp only [Units.val_mk0, ← he.lt_iff_lt, valuation'_apply, ← NNReal.coe_lt_coe,
+          coe_nnnorm, mem_setOf_eq, Metric.mem_ball, dist_zero_right]
+        order
+  · intro γ _
+    obtain ⟨r, s, hr⟩ := ValuativeRel.valuation_surjective γ.val
+    simp_rw [← hr, ← Valuation.map_div, ← he.lt_iff_lt]
+    simp only [valuation'_apply, map_div₀, ← NNReal.coe_lt_coe, coe_nnnorm, NNReal.coe_div]
+    simp_rw [← dist_zero_right]
+    refine Metric.ball_mem_nhds _ ?_
+    simp only [dist_zero_right, norm_pos_iff, ne_eq, coe_posSubmonoid_ne_zero, not_false_eq_true,
+      div_pos_iff_of_pos_right]
+    rintro rfl
+    simp [eq_comm] at hr
 
 end NormedField
