@@ -13,11 +13,12 @@ import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 Given a continuous bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`,
 we define `ProperCone.dual p C` to be the proper cone in `N` consisting of all points `y` such that
-for all `x ∈ s` we have `0 ≤ p x y`.
+`0 ≤ p x y` for all `x ∈ s`.
 
-When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
+When the pairing is perfect, this gives us the algebraic dual of a cone.
+See `Mathlib/Geometry/Convex/Cone/Dual.lean` for that case.
 When the pairing is continuous and perfect (as a continuous pairing), this gives us the topological
-dual instead. See `Mathlib.Analysis.Convex.Cone.Dual` for that case.
+dual instead. This is developed here.
 
 We prove Farkas' lemma, which says that a proper cone `C` in a locally convex topological real
 vector space `E` and a point `x₀` not in `C` can be separated by a hyperplane. This is a geometric
@@ -27,8 +28,6 @@ As a corollary, we prove that the double dual of a proper cone is itself.
 ## Main statements
 
 We prove the following theorems:
-* `ConvexCone.innerDual_of_innerDual_eq_self`:
-  The `innerDual` of the `innerDual` of a proper convex cone is itself.
 * `ProperCone.hyperplane_separation`, `ProperCone.hyperplane_separation_point`: Farkas lemma.
 * `ProperCone.dual_dual_flip`, `ProperCone.dual_flip_dual`: The double dual of a proper cone.
 
@@ -96,10 +95,6 @@ lemma dual_iUnion {ι : Sort*} (f : ι → Set M) : dual p (⋃ i, f i) = ⨅ i,
 
 lemma dual_sUnion (S : Set (Set M)) : dual p (⋃₀ S) = sInf (dual p '' S) := by
   ext; simp [forall_swap (α := M)]
-
-/-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
-lemma dual_eq_iInter_dual_singleton (s : Set M) :
-    dual p s = ⋂ i : s, (dual p {i.val} : Set N) := by ext; simp
 
 /-- Any set is a subset of its double dual cone. -/
 lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx

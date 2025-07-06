@@ -10,12 +10,12 @@ import Mathlib.Geometry.Convex.Cone.Pointed
 # The algebraic dual of a cone
 
 Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`PointedCone.dual p C` to be the pointed cone in `N` consisting of all points `y` such that for all
-`x ∈ s` we have `0 ≤ p x y`.
+`PointedCone.dual p C` to be the pointed cone in `N` consisting of all points `y` such that
+`0 ≤ p x y` for all `x ∈ s`.
 
 When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
 When the pairing is continuous and perfect (as a continuous pairing), this gives us the topological
-dual instead. See `Mathlib.Analysis.Convex.Cone.Dual` for that case.
+dual instead. See `Mathlib/Analysis/Convex/Cone/Dual.lean` for that case.
 -/
 
 assert_not_exists TopologicalSpace Real Cardinal
