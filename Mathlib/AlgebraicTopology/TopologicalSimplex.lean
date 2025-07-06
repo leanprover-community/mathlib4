@@ -46,7 +46,7 @@ lemma toTopObj_one_coe_add_coe_eq_one (f : ⦋1⦌.toTopObj) : (f 0 : ℝ) + f 1
   rw [toTopObj_one_add_eq_one]
 
 instance (x : SimplexCategory) : Nonempty x.toTopObj :=
-  ⟨⟨Pi.single (I := Fin _) 0 1, (show ∑ _, _ = _ by simp)⟩⟩
+  ⟨⟨Pi.single 0 1, (show ∑ _, _ = _ by simp)⟩⟩
 
 instance : Unique ⦋0⦌.toTopObj :=
   ⟨⟨1, show ∑ _, _ = _ by simp [toType_apply]⟩, fun f ↦ by ext i; fin_cases i; simp⟩
@@ -106,7 +106,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     classical
     intro Δ
     ext f
-    simp [Finset.sum_filter, CategoryTheory.id_apply]
+    simp [Finset.sum_filter]
   map_comp := fun f g => by
     classical
     ext h : 3

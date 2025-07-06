@@ -21,7 +21,7 @@ eventually to sifted `J` once that API is developed.
 
 namespace CategoryTheory
 
-open CategoryTheory Limits Sheaf GrothendieckTopology Opposite
+open Limits Sheaf GrothendieckTopology Opposite
 
 section
 

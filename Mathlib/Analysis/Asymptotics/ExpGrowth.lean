@@ -75,9 +75,8 @@ lemma expGrowthSup_monotone : Monotone expGrowthSup :=
 lemma expGrowthInf_le_expGrowthSup : expGrowthInf u ≤ expGrowthSup u := liminf_le_limsup
 
 lemma expGrowthInf_le_expGrowthSup_of_frequently_le (h : ∃ᶠ n in atTop, u n ≤ v n) :
-    expGrowthInf u ≤ expGrowthSup v := by
-  refine (liminf_le_limsup_of_frequently_le) (h.mono fun n u_v ↦ ?_)
-  exact div_le_div_right_of_nonneg n.cast_nonneg' (log_monotone u_v)
+    expGrowthInf u ≤ expGrowthSup v :=
+  liminf_le_limsup_of_frequently_le <| h.mono fun n u_v ↦ by gcongr
 
 lemma expGrowthInf_le_iff :
     expGrowthInf u ≤ a ↔ ∀ b > a, ∃ᶠ n : ℕ in atTop, u n ≤ exp (b * n) := by
@@ -130,22 +129,19 @@ lemma frequently_exp_le (h : a < expGrowthSup u) :
 lemma _root_.Frequently.expGrowthInf_le (h : ∃ᶠ n : ℕ in atTop, u n ≤ exp (a * n)) :
     expGrowthInf u ≤ a := by
   apply expGrowthInf_le_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans ?_
-  exact exp_monotone (mul_le_mul_of_nonneg_right c_u.le n.cast_nonneg')
+  gcongr
 
 lemma _root_.Eventually.le_expGrowthInf (h : ∀ᶠ n : ℕ in atTop, exp (a * n) ≤ u n) :
-    a ≤ expGrowthInf u := by
-  apply le_expGrowthInf_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans' ?_
-  exact exp_monotone (mul_le_mul_of_nonneg_right c_u.le n.cast_nonneg')
+    a ≤ expGrowthInf u :=
+  le_expGrowthInf_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans' <| by gcongr
 
 lemma _root_.Eventually.expGrowthSup_le (h : ∀ᶠ n : ℕ in atTop, u n ≤ exp (a * n)) :
-    expGrowthSup u ≤ a:= by
-  apply expGrowthSup_le_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans ?_
-  exact exp_monotone (mul_le_mul_of_nonneg_right c_u.le n.cast_nonneg')
+    expGrowthSup u ≤ a :=
+  expGrowthSup_le_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans <| by gcongr
 
 lemma _root_.Frequently.le_expGrowthSup (h : ∃ᶠ n : ℕ in atTop, exp (a * n) ≤ u n) :
-    a ≤ expGrowthSup u := by
-  apply le_expGrowthSup_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans' ?_
-  exact exp_monotone (mul_le_mul_of_nonneg_right c_u.le n.cast_nonneg')
+    a ≤ expGrowthSup u :=
+  le_expGrowthSup_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans' <| by gcongr
 
 /-! ### Special cases -/
 

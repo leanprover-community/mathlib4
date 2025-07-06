@@ -94,7 +94,7 @@ theorem charFn_eq_one [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x =
   Set.indicator_eq_one_iff_mem _
 
 theorem charFn_eq_zero [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x = (0 : Y) ↔ x ∉ U :=
-  Set.indicator_eq_zero_iff_not_mem _
+  Set.indicator_eq_zero_iff_notMem _
 
 theorem charFn_inj [Nontrivial Y] (hU : IsClopen U) (hV : IsClopen V)
     (h : charFn Y hU = charFn Y hV) : U = V :=

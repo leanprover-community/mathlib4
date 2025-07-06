@@ -218,9 +218,7 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
       let (a', l') := extractp p l
       (a', a :: l')
 
-/-- Notation for calculating the product of a `List`
--/
-
+/-- Notation for calculating the product of a `List` -/
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 

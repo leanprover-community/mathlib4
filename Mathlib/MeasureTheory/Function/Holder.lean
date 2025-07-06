@@ -126,7 +126,7 @@ def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ
 
 lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
     B.lpPairing μ p q f g = ∫ x, B (f x) (g x) ∂μ := by
-  show L1.integralCLM _ = _
+  change L1.integralCLM _ = _
   rw [← L1.integral_def, L1.integral_eq_integral]
   exact integral_congr_ae <| B.coeFn_holder _ _
 
@@ -170,11 +170,10 @@ lemma coeFn_lpSMul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
 
 protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     ‖f • g‖ ≤ ‖f‖ * ‖g‖ := by
-  simp only [Lp.norm_def, ← ENNReal.toReal_mul, coeFn_lpSMul]
-  refine ENNReal.toReal_mono ?_ ?_
-  · exact ENNReal.mul_ne_top (eLpNorm_ne_top f) (eLpNorm_ne_top g)
-  · rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
-    exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
+  simp only [Lp.norm_def, ← ENNReal.toReal_mul]
+  refine ENNReal.toReal_mono (by finiteness) ?_
+  rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
+  exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
 
 end MulActionWithZero
 
@@ -189,7 +188,7 @@ protected lemma smul_add (f₁ f₂ : Lp 𝕜 p μ) (g : Lp E q μ) :
   filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
   simp [hx, add_smul]
 
-protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂  : Lp E q μ) :
+protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂ : Lp E q μ) :
     f • (g₁ + g₂) = f • g₁ + f • g₂ := by
   simp only [smul_def, ← MemLp.toLp_add]
   apply MemLp.toLp_congr _ _ ?_
@@ -246,7 +245,7 @@ protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f, Lp.coeFn_smul c g] with x hfx hgx
-  simp [smul_comm, hfx, hgx]
+  simp [smul_comm, hgx]
 
 end Module
 
