@@ -218,57 +218,68 @@ theorem continuous_hessian {V : Type*}
 /-- Positive definiteness implies coercivity. -/
 lemma coercive_of_posdef'  {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V]
-    [FiniteDimensional ℝ V] [Nontrivial V]
+    [FiniteDimensional ℝ V]
     {f : V → ℝ} {x₀ : V}
     (hf' : (iteratedFDerivQuadraticMap f x₀).PosDef) :
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
-  have := sphere_min_of_pos_of_nonzero (iteratedFDerivQuadraticMap f x₀)
-    continuous_hessian hf'
-  rw [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
-  simp only [iteratedFDerivQuadraticMap, Subtype.forall, mem_sphere_iff_norm, sub_zero,
-    Subtype.exists, exists_prop] at this
-  obtain ⟨m,hm⟩ := this
-  have := hm.2
-  use (iteratedFDeriv ℝ 2 f x₀) ![m, m]
-  have := hf' m (by intro hc;subst hc;simp at hm)
-  rw [iteratedFDerivQuadraticMap] at this
-  constructor
-  · exact this
-  · intro u
-    by_cases hu : u = 0
-    · subst hu
-      simp only [norm_zero, mul_zero, MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe,
-        ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
-      rw [iteratedFDeriv_succ_apply_left]
-      simp
-    · have h₁ : ‖u‖ ≠ 0 := by exact norm_ne_zero_iff.mpr hu
-      have h₂ : 0 < ‖u‖⁻¹ := Right.inv_pos.mpr <| norm_pos_iff.mpr hu
-      have h₃ : ‖u‖ * ‖u‖⁻¹ = 1 := CommGroupWithZero.mul_inv_cancel ‖u‖ h₁
-      repeat (
-        refine le_of_mul_le_mul_right ?_ h₂
-        rw [mul_assoc, h₃]
-        simp only [mul_one, MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe,
-          ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
-      have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
-        = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
-        rw [mul_comm, iteratedFDeriv_succ_apply_left, iteratedFDeriv_succ_apply_left]
-        simp only [Fin.isValue, Matrix.cons_val_zero, Nat.reduceAdd, map_smul,
-          ContinuousMultilinearMap.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, inv_eq_zero,
-          norm_eq_zero]
-        left
-        congr
-      rw [this]
-      have h₄ : (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] * ‖u‖⁻¹
-        = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, ‖u‖⁻¹ • u] := by
-        rw [mul_comm]
-        have := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
-        repeat rw [update₁] at this
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
-          ContinuousMultilinearMap.coe_coe, smul_eq_mul] at this ⊢
+  by_cases H : Nontrivial V
+  · have := sphere_min_of_pos_of_nonzero (iteratedFDerivQuadraticMap f x₀)
+      continuous_hessian hf'
+    rw [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
+    simp only [iteratedFDerivQuadraticMap, Subtype.forall, mem_sphere_iff_norm, sub_zero,
+      Subtype.exists, exists_prop] at this
+    obtain ⟨m,hm⟩ := this
+    have := hm.2
+    use (iteratedFDeriv ℝ 2 f x₀) ![m, m]
+    have := hf' m (by intro hc;subst hc;simp at hm)
+    rw [iteratedFDerivQuadraticMap] at this
+    constructor
+    · exact this
+    · intro u
+      by_cases hu : u = 0
+      · subst hu
+        simp only [norm_zero, mul_zero, MultilinearMap.toFun_eq_coe,
+            ContinuousMultilinearMap.coe_coe,
+            ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
+        rw [iteratedFDeriv_succ_apply_left]
+        simp
+      · have h₁ : ‖u‖ ≠ 0 := by exact norm_ne_zero_iff.mpr hu
+        have h₂ : 0 < ‖u‖⁻¹ := Right.inv_pos.mpr <| norm_pos_iff.mpr hu
+        have h₃ : ‖u‖ * ‖u‖⁻¹ = 1 := CommGroupWithZero.mul_inv_cancel ‖u‖ h₁
+        repeat (
+          refine le_of_mul_le_mul_right ?_ h₂
+          rw [mul_assoc, h₃]
+          simp only [mul_one, MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe,
+            ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
+        have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
+          = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
+          rw [mul_comm, iteratedFDeriv_succ_apply_left, iteratedFDeriv_succ_apply_left]
+          simp only [Fin.isValue, Matrix.cons_val_zero, Nat.reduceAdd, map_smul,
+            ContinuousMultilinearMap.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, inv_eq_zero,
+            norm_eq_zero]
+          left
+          congr
         rw [this]
-      rw [h₄]
-      exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
+        have h₄ : (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] * ‖u‖⁻¹
+          = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, ‖u‖⁻¹ • u] := by
+          rw [mul_comm]
+          have := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
+          repeat rw [update₁] at this
+          simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
+            ContinuousMultilinearMap.coe_coe, smul_eq_mul] at this ⊢
+          rw [this]
+        rw [h₄]
+        exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
+  use 1
+  constructor
+  · simp
+  · intro u
+    simp
+    have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
+    have : u = 0 := Subsingleton.eq_zero u
+    subst this
+    simp
 
 /-- Higher Taylor coefficient. -/
 noncomputable def higher_taylor_coeff {V : Type*}
