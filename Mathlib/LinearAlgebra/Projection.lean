@@ -494,7 +494,7 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
-lemma LinearMap.IsIdempotentElem.ext {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+lemma IsIdempotentElem.ext {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p q : M →ₗ[R] M} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
     (hr : range p = range q) (hk : ker p = ker q) : p = q := by
   ext x
