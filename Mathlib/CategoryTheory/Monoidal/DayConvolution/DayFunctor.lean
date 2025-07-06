@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Monoidal.DayConvolution
 # Day functors
 
 In this file, given a monoidal category `C` and a monoidal category `V`,
-we define a basic type synonym `DayFunctor C V` (denoted `C ⊛⥤ D`)
+we define a basic type synonym `DayFunctor C V` (denoted `C ⊛⥤ V`)
 for the category `C ⥤ V` and endow it with the monoidal structure coming
 from Day convolution. Such a setup is necessary as by default,
 the `MonoidalCategory` instance on `C ⥤ V` is the "pointwise" one,
