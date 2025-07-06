@@ -246,7 +246,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain
     simpa only [Units.mul_inv_cancel_right] using I.mul_mem_right (↑u⁻¹) hxI
   constructor
   use p ^ Nat.find ex
-  show I = Ideal.span _
+  change I = Ideal.span _
   apply le_antisymm
   · intro r hr
     by_cases hr0 : r = 0
@@ -494,7 +494,7 @@ variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [C
     [Algebra O K] {v : Valuation K Γ₀} (hv : v.Integers O)
 include hv
 
-lemma _root_.Irreducible.maximalIdeal_eq_setOf_le_v_algebraMap :
+lemma maximalIdeal_eq_setOf_le_v_algebraMap :
     letI : IsDomain O := hv.hom_inj.isDomain
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ),
     (IsLocalRing.maximalIdeal O : Set O) =
@@ -503,7 +503,7 @@ lemma _root_.Irreducible.maximalIdeal_eq_setOf_le_v_algebraMap :
   intros _ _ h
   rw [← hv.coe_span_singleton_eq_setOf_le_v_algebraMap, ← h.maximalIdeal_eq]
 
-lemma _root_.Irreducible.maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
+lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
     letI : IsDomain O := hv.hom_inj.isDomain
     ∀ [IsDiscreteValuationRing O] {ϖ : O} (_h : Irreducible ϖ) (n : ℕ),
     ((IsLocalRing.maximalIdeal O ^ n : Ideal O) : Set O) =
@@ -516,20 +516,19 @@ lemma _root_.Irreducible.maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
 
 end Valuation.Integers
 
-namespace Valuation.integer
+section Valuation.integer
 
 variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
 
 lemma _root_.Irreducible.maximalIdeal_eq_setOf_le_v_coe
     [IsDiscreteValuationRing v.integer] {ϖ : v.integer} (h : Irreducible ϖ) :
     (IsLocalRing.maximalIdeal v.integer : Set v.integer) = {y : v.integer | v y ≤ v ϖ} :=
-  h.maximalIdeal_eq_setOf_le_v_algebraMap (Valuation.integer.integers v)
+  (Valuation.integer.integers v).maximalIdeal_eq_setOf_le_v_algebraMap h
 
 lemma _root_.Irreducible.maximalIdeal_pow_eq_setOf_le_v_coe_pow
     [IsDiscreteValuationRing v.integer] {ϖ : v.integer} (h : Irreducible ϖ) (n : ℕ) :
     ((IsLocalRing.maximalIdeal v.integer ^ n : Ideal v.integer) : Set v.integer) =
       {y : v.integer | v y ≤ v (ϖ : K) ^ n} :=
-  h.maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow
-    (Valuation.integer.integers v) n
+  (Valuation.integer.integers v).maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow h _
 
 end Valuation.integer
