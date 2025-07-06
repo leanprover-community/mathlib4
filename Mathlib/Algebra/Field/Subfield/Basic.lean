@@ -447,6 +447,18 @@ theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x
 theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (rangeRestrictField f) :=
   (Equiv.ofInjective f f.injective).bijective
 
+/--
+`RingHom.rangeRestrictField` as a `RingEquiv`.
+-/
+@[simps! apply_coe]
+noncomputable def rangeRestrictFieldEquiv (f : K →+* L) : K ≃+* f.fieldRange :=
+  RingEquiv.ofBijective f.rangeRestrictField f.rangeRestrictField_bijective
+
+@[simp]
+theorem rangeRestrictFieldEquiv_apply_symm_apply (f : K →+* L) (x : f.fieldRange) :
+    f (f.rangeRestrictFieldEquiv.symm x) = x := by
+  rw [← rangeRestrictFieldEquiv_apply_coe, RingEquiv.apply_symm_apply]
+
 section eqLocus
 
 variable {L : Type v} [Semiring L]
