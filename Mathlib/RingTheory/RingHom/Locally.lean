@@ -18,7 +18,8 @@ a subset `{ t }` of `S` generating the unit ideal, such that `P` holds for all c
 
 Assuming without further mention that `P` is stable under composition with isomorphisms,
 `Locally P` is local on the target by construction, i.e. it satisfies
-`OfLocalizationSpanTarget`. If `P` itself is local on the target, `Locally P` coincides with `P`.
+`RingHom.OfLocalizationSpanTarget`. If `P` itself is local on the target,
+`Locally P` coincides with `P`.
 
 The `Locally` construction preserves various properties of `P`, e.g. if `P` is stable under
 composition, base change, etc., so is `Locally P`.
