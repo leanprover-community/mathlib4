@@ -1252,7 +1252,7 @@ theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c
     exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ' _⟩
 
 theorem IsStrongLimit.univ : IsStrongLimit univ.{u, v} :=
-  ⟨univ_ne_zero, fun c h ↦ (lt_univ'.1 h).rec fun w h ↦ lt_univ'.2 ⟨2 ^ w, by simp [h]⟩⟩
+  ⟨univ_ne_zero, fun c h ↦ let ⟨w, h⟩ := lt_univ'.1 h; lt_univ'.2 ⟨2 ^ w, by simp [h]⟩⟩
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
     Small.{v} α ↔ Cardinal.lift.{v+1,_} #α < univ.{v, max u (v + 1)} := by
