@@ -40,7 +40,7 @@ lemma update₁ {α : Type*} (a b c : α) :
   fin_cases i <;> simp
 
 /-- The Hessian companion as a linear map. -/
-noncomputable def hessianLinearCompanion {V : Type*} [AddCommGroup V]
+noncomputable def hessianLinearCompanion {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
     V → V →ₗ[ℝ] ℝ := fun a => {
     toFun := fun b => iteratedFDeriv ℝ 2 f x₀ ![a,b]
@@ -62,8 +62,8 @@ noncomputable def hessianLinearCompanion {V : Type*} [AddCommGroup V]
   }
 
 /-- The Hessian companion as a bilinear map. -/
-noncomputable def hessianBilinearCompanion {V : Type*} [AddCommGroup V]
-    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+noncomputable def hessianBilinearCompanion {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
     LinearMap.BilinMap ℝ V ℝ := {
     toFun := hessianLinearCompanion f x₀
     map_add' := fun x y => by
@@ -212,7 +212,7 @@ lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ} {x₀ : EuclideanSp
     simp
 
 /-- The iterated Frechet derivative is continuous. -/
-theorem continuous_hessian' {k : ℕ} {V : Type*} [AddCommGroup V]
+theorem continuous_hessian' {k : ℕ} {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
     Continuous fun y ↦ (iteratedFDeriv ℝ k f x₀) fun _ => y :=
   Continuous.comp' (iteratedFDeriv ℝ k f x₀).coe_continuous
@@ -280,14 +280,14 @@ lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ} {x�
       exact this
 
 /-- Higher Taylor coefficient. -/
-noncomputable def higher_taylor_coeff {V : Type*} [AddCommGroup V]
+noncomputable def higher_taylor_coeff {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) (k : ℕ) :=
     fun x =>
     (1 / Nat.factorial k : ℝ) * (iteratedFDeriv ℝ k f x₀ fun _ => x - x₀)
 
 /-- Higher Taylor polynomial. -/
-noncomputable def higher_taylor {V : Type*} [AddCommGroup V]
-    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) (k : ℕ) :
+noncomputable def higher_taylor {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) (k : ℕ) :
     V → ℝ :=
   ∑ i ∈ Finset.range (k+1), higher_taylor_coeff f x₀ i
 
@@ -329,8 +329,8 @@ theorem isLocalMin_of_PosDef_of_Littleo {n : ℕ}
   linarith
 
 /-- `higher_taylor_coeff` expresses power series correctly. -/
-lemma eliminate_higher_taylor_coeff {V : Type*} [AddCommGroup V]
-    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V]
+lemma eliminate_higher_taylor_coeff {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
     [ContinuousConstSMul ℝ V]
     {f : V → ℝ} (x₀ x : V) {r : NNReal}
     (p : FormalMultilinearSeries ℝ V ℝ)
