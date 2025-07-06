@@ -869,8 +869,7 @@ theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
 @[simp]
 lemma affineSpan_eq_top_iff_nonempty_of_subsingleton [Subsingleton P] :
     affineSpan k s = ⊤ ↔ s.Nonempty := by
-  rw [← bot_lt_affineSpan k]
-  exact ⟨fun h ↦ h ▸ bot_lt_top, IsSimpleOrder.eq_top_of_lt⟩
+  rw [← bot_lt_affineSpan k, IsSimpleOrder.bot_lt_iff_eq_top]
 
 end
 
