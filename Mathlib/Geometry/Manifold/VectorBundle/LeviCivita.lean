@@ -77,21 +77,31 @@ noncomputable abbrev rhs3 : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product
 
 -- XXX: inlining even rhs1 makes things not typecheck any more!
 
--- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection.
 variable (X Y Z) in
-noncomputable def LC_uniqueness_aux : M → ℝ := 1 / 2 * (
+/-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
+If ∇ is a Levi-Civita connection on `TM`, then
+`⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
+noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
   rhs1 I X Y Z + rhs2 I X Y Z + rhs3 I X Y Z
   - product I Y (VectorField.mlieBracket I X Z)
   - product I Z (VectorField.mlieBracket I X Y)
   + product I X (VectorField.mlieBracket I Z Y)
   )
 
+lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) :
+    leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
+  sorry -- easy computation
+
+lemma leviCivita_rhs_smul (f : M → ℝ) (Z' : Π x : M, TangentSpace I x) :
+    leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
+  sorry -- easy computation
+
 -- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
 variable (X Y Z) in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
 lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
-    product I (cov X Y) Z = LC_uniqueness_aux I X Y Z := by
+    product I (cov X Y) Z = leviCivita_rhs I X Y Z := by
   sorry
 
 variable {I} in
@@ -115,9 +125,56 @@ theorem isLeviCivita_uniqueness {cov cov' : CovariantDerivative I E (TangentSpac
   ext X σ x
   apply congrFun
   apply congr_of_forall_product fun Z ↦ ?_
-  trans LC_uniqueness_aux I X σ Z
+  trans leviCivita_rhs I X σ Z
   · exact cov.isLeviCivitaConnection_uniqueness_aux I X σ Z hcov
   · exact (cov'.isLeviCivitaConnection_uniqueness_aux I X σ Z hcov').symm
+
+variable (X Y) in
+noncomputable def existence_candidate_aux [FiniteDimensional ℝ E]
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
+    (x : M) → TangentSpace I x := fun x ↦
+  -- Choose a trivialisation of TM near x.
+  letI b := Basis.ofVectorSpace ℝ E
+  --letI t := trivializationAt E (TangentSpace I : M → Type _) x
+  -- choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  -- TODO: this is only a local frame; not orthonormal yet! placeholder definition!
+  letI frame := b.localFrame e
+  -- The coefficient of the desired tangent vector ∇ X Y x w.r.t. s i
+  -- is given by leviCivita_rhs X Y s i.
+  ∑ i, ((leviCivita_rhs I X Y (frame i)) x) • (frame i x)
+
+variable (M) in
+-- TODO: make g part of the notation!
+/-- Given two vector fields X and Y on TM, compute
+the candidate definition for the Levi-Civita connection on `TM`. -/
+noncomputable def existence_candidate [FiniteDimensional ℝ E] :
+    (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
+  fun X Y x ↦
+  -- -- Choose a trivialisation of TM near x.
+  -- letI b := Basis.ofVectorSpace ℝ E
+  letI t := trivializationAt E (TangentSpace I : M → Type _) x
+  -- -- choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  -- -- TODO: this is only a local frame; not orthonormal yet! placeholder definition!
+  -- letI frame := b.localFrame t
+  -- -- The coefficient of the desired tangent vector ∇ X Y x w.r.t. s i
+  -- -- is given by leviCivita_rhs X Y s i.
+  -- ∑ i, ((leviCivita_rhs I X Y (frame i)) x) • (frame i x)
+  existence_candidate_aux I X Y t x
+
+variable (X Y) in
+-- The above definition behaves well: for each compatible trivialisation e,
+-- using e on e.baseSet yields the same result as above.
+lemma foo [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M))
+    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) :
+  existence_candidate I M X Y x = existence_candidate_aux I X Y e x := sorry
+
+-- The candidate definition is a covariant derivative on each local frame's domain.
+lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
+    (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M)) [MemTrivializationAtlas e] :
+    IsCovariantDerivativeOn I E (TangentSpace I) (existence_candidate I M) e.baseSet := by
+  sorry
+
+-- deduce: this defines a covariant derivative
 
 -- TODO: make g part of the notation!
 variable (M) in
@@ -127,8 +184,11 @@ If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnect
 def LeviCivitaConnection : CovariantDerivative I E (TangentSpace I : M → Type _) :=
   -- This is the existence part of the proof: take the formula derived above
   -- and prove it satisfies all the conditions.
+
+  -- use isCovariantDerivativeOn_existence_candidate plus (future) API lemmas about
+  -- IsCovariantDerivativeOn
   sorry
 
-lemma foo : (LeviCivitaConnection I M).IsLeviCivitaConnection  := sorry
+lemma bar : (LeviCivitaConnection I M).IsLeviCivitaConnection  := sorry
 
 end CovariantDerivative

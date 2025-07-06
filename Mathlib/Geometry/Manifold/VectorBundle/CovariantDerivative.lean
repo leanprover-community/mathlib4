@@ -118,15 +118,36 @@ structure CovariantDerivative where
   smulX : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → 𝕜),
     toFun (f • X) σ = f • toFun X σ
   addσ : ∀ (X : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x : M),
-    MDifferentiableAt% (T% σ) x
-    → MDifferentiableAt% (T% σ') x
+    MDifferentiableAt% (T% σ) x → MDifferentiableAt% (T% σ') x
     → toFun X (σ + σ') x = toFun X σ x + toFun X σ' x
   leibniz : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → 𝕜) (x : M),
-    MDifferentiableAt% (T% σ) x
-    → MDifferentiableAt% f x
+    MDifferentiableAt% (T% σ) x → MDifferentiableAt% f x
     → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) f x (X x)) • σ x
   smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜),
     toFun X (a • σ) = a • toFun X σ
+
+structure IsCovariantDerivativeOn
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)) (s : Set M) : Prop where
+  -- all the same axioms as CovariantDerivative, but restricted to the set U
+  addX : ∀ (X X' : Π x : M, TangentSpace I x) (σ : Π x : M, V x),
+    ∀ x ∈ s, f (X + X') σ x = f X σ x + f X' σ x
+  smulX : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (g : M → 𝕜),
+    ∀ x ∈ s, f (g • X) σ x = g x • f X σ x
+  addσ : ∀ (X : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x), ∀ x ∈ s,
+    MDifferentiableAt% (T% σ) x → MDifferentiableAt% (T% σ') x
+    → f X (σ + σ') x = f X σ x + f X σ' x
+  leibniz : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (g : M → 𝕜), ∀ x ∈ s,
+    MDifferentiableAt% (T% σ) x → MDifferentiableAt% g x
+    → f X (g • σ) x = (g • f X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) g x (X x)) • σ x
+  smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜), ∀ x ∈ s,
+    f X (a • σ) x = a • f X σ x
+
+-- generalise all the lemmas to IsCovariantDerivativeOn
+
+-- lemma: CovariantDerivative.isCovariantDerivateOn (for any open set)
+-- lemma: if f satisfies IsCovariantDerivativeOn univ, it defines a covariant derivative
+-- lemma: IsCovariantDerivativeOn.iUnion
+-- corollary: if f satisfies `IsCovariantDerivativeOn Ui` for an open cover Ui, it defines a covariant derivative
 
 namespace CovariantDerivative
 
