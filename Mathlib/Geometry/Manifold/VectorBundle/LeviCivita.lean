@@ -44,7 +44,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 The left hand side is the pushforward of the function `⟨Y, Z⟩` along the vector field `X`:
 the left hand side at `X` is `df(X x)`, where `f := ⟨Y, Z⟩`. -/
 
-variable {X Y Z W : Π x : M, TangentSpace I x}
+variable {X X' Y Y' Z Z' : Π x : M, TangentSpace I x}
 
 /-- The scalar product of two vector fields -/
 noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ := fun x ↦ ⟪X x, Y x⟫
@@ -75,6 +75,28 @@ noncomputable abbrev rhs2 : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product
 variable (X Y Z) in
 noncomputable abbrev rhs3 : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product I X Y) x (Z x))
 
+variable (X Y Y') in
+lemma product_add : product I X (Y + Y') = product I X Y + product I X Y' := sorry
+
+@[simp]
+lemma product_add_left_apply (x : M) : product I (X + X') Y x = product I X Y x + product I X' Y x := sorry
+
+@[simp]
+lemma product_add_right_apply (x : M) : product I X (Y + Y') x = product I X Y x + product I X Y' x := sorry
+
+variable (X Y Z Z') in
+lemma rhs1_add : rhs1 I X Y (Z + Z') = rhs1 I X Y Z + rhs1 I X Y Z' := by
+  ext x
+  simp only [rhs1]
+  -- only holds given enough smoothness!
+  sorry
+
+variable (X Y Z Z') in
+lemma rhs2_add : rhs2 I X Y (Z + Z') = rhs2 I X Y Z + rhs2 I X Y Z' := sorry
+
+variable (X Y Z Z') in
+lemma rhs3_add : rhs3 I X Y (Z + Z') = rhs3 I X Y Z + rhs3 I X Y Z' := sorry
+
 -- XXX: inlining even rhs1 makes things not typecheck any more!
 
 variable (X Y Z) in
@@ -88,9 +110,21 @@ noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
   + product I X (VectorField.mlieBracket I Z Y)
   )
 
-lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) :
+lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E] :
     leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
-  sorry -- easy computation
+  -- A bit too painful, and have missing differentiability assumptions.
+  simp only [leviCivita_rhs]
+  set A : M → ℝ := (1 : M → ℝ) / 2
+  rw [← left_distrib]
+  apply congrArg
+  simp only [rhs1_add, rhs2_add, rhs3_add]
+  ext x
+  have scifi1 : VectorField.mlieBracket I X (Z + Z') =
+    VectorField.mlieBracket I X Z + VectorField.mlieBracket I X Z' := sorry
+  have scifi2 : VectorField.mlieBracket I (Z + Z') Y =
+    VectorField.mlieBracket I Z Y + VectorField.mlieBracket I Z' Y := sorry
+  simp [scifi1, scifi2]
+  module
 
 lemma leviCivita_rhs_smul (f : M → ℝ) (Z' : Π x : M, TangentSpace I x) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
