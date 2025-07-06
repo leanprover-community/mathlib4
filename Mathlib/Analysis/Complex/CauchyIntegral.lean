@@ -674,6 +674,12 @@ theorem hasDerivAt_conj_comp_comp_conj' {f : ℂ → ℂ} {z f' : ℂ} (hf : Has
     HasDerivAt (conj ∘ f ∘ conj) (conj f') z :=
   conj_conj z ▸ hasDerivAt_conj_comp_comp_conj hf
 
+
+theorem differentiableAt_conj_comp_comp_conj_iff {f : ℂ → ℂ} {z : ℂ} :
+    DifferentiableAt ℂ (conj ∘ f ∘ conj) (conj z) ↔ DifferentiableAt ℂ f z :=
+  ⟨fun h ↦ (hasDerivAt_conj_comp_comp_conj_iff'.1 h.hasDerivAt).differentiableAt,
+  fun h ↦ h.hasDerivAt.conj_comp_comp_conj.differentiableAt⟩
+  
 /--
 Let $f : \mathbb{C} \to \mathbb{C}$ be a function. Then the derivative of the function
 $g(z) = \overline{f(\overline{z})}$ at $\overline{z}$ is $\overline{f'(z)}$.
