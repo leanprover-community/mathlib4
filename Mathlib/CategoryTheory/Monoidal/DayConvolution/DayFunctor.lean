@@ -162,8 +162,9 @@ def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
 @[simp]
 lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
     (η F G).app (x, y) ≫ (isoPointwiseLeftKanExtension F G).hom.app (x ⊗ y) =
-    (tensor C|>.pointwiseLeftKanExtensionUnit <|
-      F.functor ⊠ G.functor).app (x, y) := by
+    Limits.colimit.ι
+      ((CostructuredArrow.proj (tensor C) (x ⊗ y)) ⋙ F.functor ⊠ G.functor)
+        (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) := by
   simpa [η, isoPointwiseLeftKanExtension] using
     Functor.descOfIsLeftKanExtension_fac_app
       (F ⊗ G).functor
@@ -173,9 +174,10 @@ lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
       (x, y)
 
 @[simp]
-lemma η_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
-    (tensor C|>.pointwiseLeftKanExtensionUnit <|
-    F.functor ⊠ G.functor).app (x, y) ≫
+lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
+    Limits.colimit.ι
+      ((CostructuredArrow.proj (tensor C) (x ⊗ y)) ⋙ F.functor ⊠ G.functor)
+        (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) ≫
       (isoPointwiseLeftKanExtension F G).inv.app (x ⊗ y) =
     (η F G).app (x, y) := by
   simp [η, isoPointwiseLeftKanExtension]
