@@ -47,7 +47,7 @@ theorem ContDiffWithinAt.restrictScalars_iteratedFDerivWithin_eventuallyEq
   | zero =>
     filter_upwards with a
     ext m
-    simp [iteratedFDeriv_zero_apply m]
+    simp
   | succ n hn =>
     have t₀ := h.of_le (Nat.cast_le.mpr (n.le_add_right 1))
     have t₁ : ∀ᶠ (y : E) in 𝓝[s] x, ContDiffWithinAt 𝕜' (↑(n + 1)) f s y := by
@@ -57,8 +57,7 @@ theorem ContDiffWithinAt.restrictScalars_iteratedFDerivWithin_eventuallyEq
       eventually_mem_nhdsWithin (a := x) (s := s)] with a h₁a h₃a h₄a
     rw [← Filter.EventuallyEq] at h₁a
     ext m
-    simp only [restrictScalarsLinear_apply, Function.comp_apply, coe_restrictScalars,
-      iteratedFDerivWithin_succ_apply_left]
+    simp only [Function.comp_apply, coe_restrictScalars, iteratedFDerivWithin_succ_apply_left]
     rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a,
       fderivWithin_restrictScalars_comp]
     · simp
