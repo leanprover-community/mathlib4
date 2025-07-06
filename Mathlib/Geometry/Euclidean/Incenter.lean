@@ -627,7 +627,7 @@ lemma sign_of_affineCombination_eq_touchpoint_empty {i j : Fin (n + 1)} (hne : i
     SignType.sign (w j) = 1 := by
   rw [s.excenterExists_empty.sign_of_affineCombination_eq_touchpoint hne hw hc]
   simp
- 
+
 variable {s} in
 lemma eq_zero_of_affineCombination_eq_touchpoint {signs : Finset (Fin (n + 1))} (i : Fin (n + 1))
     {w : Fin (n + 1) → ℝ} (hw : ∑ i, w i = 1)
