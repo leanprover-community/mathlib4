@@ -12,7 +12,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Analytic
 # The Second Partial Derivatives Test
 
 We prove a version of the second partial derivative test from calculus for
-analytic functions `f : ℝⁿ → ℝ`.
+analytic functions `f : V → ℝ`, where `V` is a finite-dimensional vector space.
 
 ## Main results
 
@@ -49,7 +49,11 @@ noncomputable def hessianLinearCompanion {V : Type*}
       have h_add := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
       have h₀ := h_add ![b, a] 0 b c
       have h₁ := h_add ![a, b] 1 b c
-      repeat simp [update₁] at h₁; simp [update₀] at h₀
+      repeat (
+        simp only [Fin.isValue, update₁, Nat.succ_eq_add_one, Nat.reduceAdd,
+        MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe] at h₁;
+        simp only [Fin.isValue, update₀, Nat.succ_eq_add_one, Nat.reduceAdd,
+          MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe] at h₀)
       linarith
     map_smul' := by
       intro m x
@@ -57,7 +61,8 @@ noncomputable def hessianLinearCompanion {V : Type*}
       have h₀ := h_smul ![x,a] 0 m x
       have h₁ := h_smul ![a,x] 1 m x
       repeat rw [update₀] at h₀; rw [update₁] at h₁
-      simp at h₀ h₁ ⊢
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
+        ContinuousMultilinearMap.coe_coe, smul_eq_mul, RingHom.id_apply] at h₀ h₁ ⊢
       linarith
   }
 
@@ -73,7 +78,9 @@ noncomputable def hessianBilinearCompanion {V : Type*}
         have had₁ := had ![i,i] 1 x y
         repeat rw [update₀] at had₀
         repeat rw [update₁] at had₁
-        simp [hessianLinearCompanion] at had₀ had₁ ⊢
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
+          ContinuousMultilinearMap.coe_coe, hessianLinearCompanion, LinearMap.coe_mk, AddHom.coe_mk,
+          LinearMap.add_apply] at had₀ had₁ ⊢
         exact
           (Mathlib.Tactic.Ring.add_pf_add_overlap had₀.symm had₁.symm).symm
 
@@ -101,7 +108,9 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*}
       have had₁ := had ![x,x] 1 x y
       have had₂ := had ![y,x] 1 x y
       repeat rw [update₀] at had₀; rw [update₁] at had₁ had₂
-      simp [hessianLinearCompanion, hessianBilinearCompanion] at had₀ had₁ had₂ ⊢
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
+        ContinuousMultilinearMap.coe_coe, hessianBilinearCompanion, LinearMap.coe_mk, AddHom.coe_mk,
+        hessianLinearCompanion] at had₀ had₁ had₂ ⊢
       linarith
     toFun_smul := by
       have hsm := (iteratedFDeriv ℝ 2 f x₀).map_update_smul'
@@ -109,7 +118,11 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*}
       intro u v
       have hsm₀ := hsm ![v, v] 0 u v
       have hsm₁ := hsm ![u • v,v] 1 u v
-      repeat simp [update₀] at hsm₀; simp [update₁] at hsm₁
+      repeat (
+        simp only [Fin.isValue, update₀, Nat.succ_eq_add_one, Nat.reduceAdd,
+        MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe, smul_eq_mul] at hsm₀
+        simp only [Fin.isValue, update₁, Nat.succ_eq_add_one, Nat.reduceAdd,
+          MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe, smul_eq_mul] at hsm₁)
       rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]
   }
 
@@ -126,7 +139,7 @@ lemma sphere_min_of_pos_of_nonzero {V : Type*}
     have : @setOf ↑(Metric.sphere (0:V) (1:ℝ)) (fun x ↦ f x.1 ≠ 0)
       = Set.univ := by
       apply subset_antisymm
-      simp
+      simp only [ne_eq, Set.subset_univ]
       intro a ha
       suffices f a > 0 by
         aesop
@@ -136,7 +149,7 @@ lemma sphere_min_of_pos_of_nonzero {V : Type*}
       rw [hc] at this
       simp at this
     rw [this]
-    simp
+    simp only [isClosed_univ, IsClosed.closure_eq]
     exact CompactSpace.isCompact_univ
   have ⟨m,hm⟩ := @Continuous.exists_forall_le_of_hasCompactSupport ℝ
     (Metric.sphere (0:V) 1) _
@@ -212,19 +225,21 @@ lemma coercive_of_posdef'  {V : Type*}
         (iteratedFDeriv ℝ 2 f x₀)) := by
   have := sphere_min_of_pos_of_nonzero (iteratedFDerivQuadraticMap f x₀)
     continuous_hessian hf'
-  simp [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
-  simp [iteratedFDerivQuadraticMap] at this
+  rw [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
+  simp only [iteratedFDerivQuadraticMap, Subtype.forall, mem_sphere_iff_norm, sub_zero,
+    Subtype.exists, exists_prop] at this
   obtain ⟨m,hm⟩ := this
   have := hm.2
   use (iteratedFDeriv ℝ 2 f x₀) ![m, m]
   have := hf' m (by intro hc;subst hc;simp at hm)
-  simp [iteratedFDerivQuadraticMap] at this
+  rw [iteratedFDerivQuadraticMap] at this
   constructor
   · exact this
   · intro u
     by_cases hu : u = 0
     · subst hu
-      simp
+      simp only [norm_zero, mul_zero, MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe,
+        ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [iteratedFDeriv_succ_apply_left]
       simp
     · have h₁ : ‖u‖ ≠ 0 := by exact norm_ne_zero_iff.mpr hu
@@ -233,11 +248,14 @@ lemma coercive_of_posdef'  {V : Type*}
       repeat (
         refine le_of_mul_le_mul_right ?_ h₂
         rw [mul_assoc, h₃]
-        simp)
+        simp only [mul_one, MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe,
+          ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
       have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
         = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
         rw [mul_comm, iteratedFDeriv_succ_apply_left, iteratedFDeriv_succ_apply_left]
-        simp
+        simp only [Fin.isValue, Matrix.cons_val_zero, Nat.reduceAdd, map_smul,
+          ContinuousMultilinearMap.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, inv_eq_zero,
+          norm_eq_zero]
         left
         congr
       rw [this]
@@ -246,12 +264,11 @@ lemma coercive_of_posdef'  {V : Type*}
         rw [mul_comm]
         have := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
         repeat rw [update₁] at this
-        simp at this ⊢
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
+          ContinuousMultilinearMap.coe_coe, smul_eq_mul] at this ⊢
         rw [this]
       rw [h₄]
-      have := hm.2 (‖u‖⁻¹ • u) (by simp [norm_smul];field_simp)
-      simp at this ⊢
-      exact this
+      exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
 
 /-- Higher Taylor coefficient. -/
 noncomputable def higher_taylor_coeff {V : Type*}
@@ -277,26 +294,30 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*}
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) :
     IsLocalMin f x₀ := by
   have ⟨C,hC⟩ := coercive_of_posdef' hf
-  simp [Asymptotics.IsLittleO, Asymptotics.IsBigOWith] at h
+  simp only [Asymptotics.IsLittleO, Asymptotics.IsBigOWith] at h
   apply Filter.Eventually.mono <| h (half_pos hC.1)
   intro x
   have h₄ := hC.2 (x - x₀)
-  simp [continuousBilinearMap_of_continuousMultilinearMap] at h₄
+  simp only [continuousBilinearMap_of_continuousMultilinearMap, MultilinearMap.toFun_eq_coe,
+    ContinuousMultilinearMap.coe_coe, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
+    AddHom.coe_mk] at h₄
   have h₃ : ∑ x_1 ∈ Finset.range 3, higher_taylor_coeff f x₀ x_1 x
    = higher_taylor_coeff f x₀ 0 x + higher_taylor_coeff f x₀ 1 x +
      higher_taylor_coeff f x₀ 2 x := by
     repeat rw [Finset.range_succ]; simp
     linarith
-  simp [higher_taylor]
+  simp only [higher_taylor, Nat.reduceAdd, Finset.sum_apply, Real.norm_eq_abs, abs_abs, norm_pow]
   rw [h₃]
-  simp [higher_taylor_coeff]
+  simp only [higher_taylor_coeff, Nat.factorial_zero, Nat.cast_one, ne_eq, one_ne_zero,
+    not_false_eq_true, div_self, iteratedFDeriv_zero_apply, one_mul, Nat.factorial_one,
+    iteratedFDeriv_one_apply, map_sub, Nat.factorial_two, Nat.cast_ofNat, one_div, abs_norm]
   intro h₁
   have h₂ : inner ℝ (gradient f x₀) (x - x₀) = (fderiv ℝ f x₀) (x - x₀) := by
-    unfold gradient; simp
+    simp [gradient]
   rw [h₀] at h₂
-  simp at h₂
+  simp only [inner_zero_left, map_sub] at h₂
   rw [← h₂] at h₁
-  simp at h₁
+  simp only [add_zero] at h₁
   rw [mul_assoc,show ![x - x₀, x - x₀] = fun _ => x - x₀ by
     ext i; fin_cases i <;> simp] at h₄
   rw [(Lean.Grind.Semiring.pow_two ‖x - x₀‖).symm] at h₄
@@ -339,13 +360,14 @@ theorem littleO_of_powerseries.calculation {V : Type*}
   have h₂ := h₃ x (by
     have : x ∈ Metric.ball x₀ (↑(r / 2)) := by
         aesop
-    simp [Metric.ball] at this ⊢
+    simp only [Metric.ball, NNReal.coe_div, NNReal.coe_ofNat, Set.mem_setOf_eq, dist_zero_right,
+      gt_iff_lt] at this ⊢
     convert this using 1
     exact mem_sphere_iff_norm.mp rfl
   ) 3
-  simp at h₂
+  simp only [add_sub_cancel, Real.norm_eq_abs, NNReal.coe_div, NNReal.coe_ofNat] at h₂
   apply h₂.trans
-  simp at hx
+  simp only [Metric.mem_ball, lt_inf_iff] at hx
   by_cases H : ‖x-x₀‖ = 0
   · have : x - x₀ = 0 := norm_eq_zero.mp H
     have : x = x₀ := by grind only
@@ -367,15 +389,14 @@ theorem littleO_of_powerseries.calculation {V : Type*}
   nth_rewrite 3 [mul_assoc]
   have : (‖x - x₀‖ * ‖x - x₀‖⁻¹) = 1 := by field_simp
   rw [this]
-  simp
   have :  C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3 * ‖x - x₀‖⁻¹ * ‖x - x₀‖⁻¹
        =  C * (a * (1 / (↑r / 2))) ^ 3 * ‖x - x₀‖  := by
     field_simp
     ring_nf
   rw [this]
   have := hx.2
-  simp at this ⊢
-  let Q :=  (C * (a * (2 / ↑r)) ^ 3)
+  simp only [one_div, inv_div, mul_one, ge_iff_le] at this ⊢
+  let Q := C * (a * (2 / ↑r)) ^ 3
   conv at this =>
     right
     right
@@ -385,7 +406,7 @@ theorem littleO_of_powerseries.calculation {V : Type*}
         convert this using 1
         exact mem_sphere_iff_norm.mp rfl
     )
-    simp [Q]
+    simp only [Q]
     aesop
   convert this using 2
   field_simp
@@ -400,47 +421,51 @@ lemma littleO_of_powerseries {V : Type*}
         (fun x => |f x - p.partialSum 3 (x - x₀)|)
           =o[nhds x₀]
           fun x => ‖x - x₀‖ ^ 2 := by
-  simp [Asymptotics.IsLittleO, Asymptotics.IsBigOWith]
+  rw [Asymptotics.IsLittleO]
   intro D hD
   obtain ⟨a,ha⟩ := HasFPowerSeriesOnBall.uniform_geometric_approx' h₁ (by
       change ENNReal.ofNNReal ((r / 2)) < r
-      simp
+      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENNReal.coe_div, ENNReal.coe_ofNat]
       refine ENNReal.half_lt_self ?_ ?_
-      · simp
+      · simp only [ne_eq, ENNReal.coe_eq_zero]
         intro hc
         subst hc
         simp at hr
       · simp)
   obtain ⟨C,hC⟩ := ha.2
   have h₃ (x) := hC.2 (x - x₀)
+  rw [Asymptotics.IsBigOWith]
   refine eventually_nhds_iff.mpr ?_
+  simp -- problem?
   use Metric.ball x₀ (min (r/2) (D / (C * (a * (2/r))^3)))
   constructor
-  · simp at ha
-    apply littleO_of_powerseries.calculation <;> tauto
+  · exact @littleO_of_powerseries.calculation V _ _ f x₀ p r hr a ha.1.1 C hC.1 h₃ D
   · constructor
     · exact Metric.isOpen_ball
-    · simp
+    · simp only [Metric.mem_ball, dist_self, lt_inf_iff, Nat.ofNat_pos, div_pos_iff_of_pos_right,
+      NNReal.coe_pos]
       constructor
       · tauto
       · simp_all
 
 /-- Second partial derivative test. -/
-theorem second_derivative_test' {V : Type*}
+theorem second_derivative_test {V : Type*}
     [NormedAddCommGroup V]
     [InnerProductSpace ℝ V]
     [FiniteDimensional ℝ V]
-    [Nontrivial V]
     {f : V → ℝ}
     {x₀ : V}
     {p : FormalMultilinearSeries ℝ V ℝ}
     (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r)
     (h₁ : HasFPowerSeriesOnBall f p x₀ r)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
-  have : (fun x ↦ |f x - ∑ x_1 ∈ Finset.range (2 + 1), (p x_1) fun x_2 ↦ x - x₀|)
-     = (fun x ↦ |f x - ∑ x_1 ∈ Finset.range (2 + 1), higher_taylor_coeff f x₀ x_1 x|) := by
-    ext
-    congr
-    ext
-    rw [eliminate_higher_taylor_coeff x₀ _ p h₁]
-  exact isLocalMin_of_PosDef_of_Littleo (this ▸ littleO_of_powerseries hr h₁) h₀ hf
+  by_cases H : Nontrivial V
+  · have : (fun x ↦ |f x - ∑ x_1 ∈ Finset.range (2 + 1), (p x_1) fun x_2 ↦ x - x₀|)
+       = (fun x ↦ |f x - ∑ x_1 ∈ Finset.range (2 + 1), higher_taylor_coeff f x₀ x_1 x|) := by
+      ext
+      congr
+      ext
+      rw [eliminate_higher_taylor_coeff x₀ _ p h₁]
+    exact isLocalMin_of_PosDef_of_Littleo (this ▸ littleO_of_powerseries hr h₁) h₀ hf
+  · have : Subsingleton V := by exact not_nontrivial_iff_subsingleton.mp H
+    simp [IsLocalMin, IsMinFilter]
