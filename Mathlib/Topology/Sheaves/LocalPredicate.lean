@@ -392,13 +392,13 @@ def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
 
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections. -/
 def stalkToFiber (P : PrelocalPredicate T) (x : X) : (subpresheafToTypes P).stalk x → T x :=
-  colimit.desc _
-    { pt := T x
-      ι := { app := fun U f ↦ by exact f.1 ⟨x, (unop U).2⟩ } }
+  ULift.down ∘ colimit.desc _
+    { pt := ULift (T x)
+      ι := { app := fun U f ↦ ⟨by exact f.1 ⟨x, (unop U).2⟩⟩ } }
 
 theorem stalkToFiber_germ (P : PrelocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
     stalkToFiber P x ((subpresheafToTypes P).germ U x hx f) = f.1 ⟨x, hx⟩ := by
-  simp [Presheaf.germ, stalkToFiber]
+  simp [stalkToFiber, Presheaf.germ, Colimit.ι_desc_apply]
 
 /-- The `stalkToFiber` map is surjective at `x` if
 every point in the fiber `T x` has an allowed section passing through it. -/
@@ -425,7 +425,7 @@ theorem stalkToFiber_injective (P : PrelocalPredicate T) (x : X) (w : IsStalkInj
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective' tV
   -- Decompose everything into its constituent parts:
   dsimp
-  simp_rw [stalkToFiber, Colimit.ι_desc_apply] at h
+  simp_rw [stalkToFiber, Function.comp_apply, Colimit.ι_desc_apply] at h
   specialize w (unop U) (unop V) fU fV hU hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.

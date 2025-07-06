@@ -128,16 +128,19 @@ theorem isOpenEmbedding_restrict_proj :
 
 omit hs
 
-theorem isLocalHomeomorph_proj (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsStalkSurj pred b) :
-    IsLocalHomeomorph (proj pred) :=
+section InjSurj
+
+variable (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsStalkSurj pred b)
+include inj surj
+
+theorem isLocalHomeomorph_proj : IsLocalHomeomorph (proj pred) :=
   isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun x ↦
     have ⟨_U, _s, hs, eq⟩ := surj _ x.2
     ⟨_, (isOpen_range_section hs inj).mem_nhds ⟨_, congr(mk $eq)⟩, isOpenEmbedding_restrict_proj hs⟩
 
 /-- A function to the étale space is continuous if and only if it agrees with an admissible
 section around each point. -/
-theorem continuous_cod_iff (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsStalkSurj pred b)
-    {X} [TopologicalSpace X] {f : X → EtaleSpace pred} :
+theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace pred} :
     Continuous f ↔ Continuous (proj _ ∘ f) ∧ ∀ x, ∃ (U : OpenNhds (f x).1) (s : Π b : U.1, F b),
       pred s ∧ ∃ V ∈ 𝓝 x, ∀ x' (h' : (f x').1 ∈ U.1), x' ∈ V → s ⟨_, h'⟩ = (f x').2 := by
   refine ⟨fun h ↦ ⟨(proj _).continuous.comp h, fun x ↦ ?_⟩,
@@ -154,6 +157,27 @@ theorem continuous_cod_iff (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsSta
         fun x ↦ by exact congr(mk $(eq x x.2.1 x.2.2))).continuousAt
       (Filter.inter_mem (cont.continuousAt.preimage_mem_nhds (U.1.2.mem_nhds U.2)) hV)
 
+theorem isOpen_injOn_iff_exists_continuous_section {V : Set (EtaleSpace pred)} :
+    IsOpen V ∧ V.InjOn (proj _) ↔ letI U := proj _ '' V
+    IsOpen U ∧ ∃ s : Π b : U, F b, letI sec b : EtaleSpace pred := mk (s b)
+      Continuous sec ∧ range sec = V := by
+  rw [((isLocalHomeomorph_proj inj surj).isOpen_injOn_tfae V).out 0 3 rfl]
+  refine and_congr .rfl (.trans ?_ Sigma.subtypeSectionEquiv.exists_congr_right)
+  simp_rw [show mk = Sigma.mk _ from rfl, Sigma.mk_subtypeSectionEquiv]
+  exact ⟨fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s, hs⟩, s.continuous, hsV⟩, fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s.1, hs⟩, s.2, hsV⟩⟩
+
+theorem isOpen_range_section_iff_of_isOpen {U : Set B} {s : Π b : U, F b} :
+    letI sec b : EtaleSpace pred := mk (s b)
+    IsOpen (range sec) ↔ IsOpen U ∧ Continuous sec :=
+  (isLocalHomeomorph_proj inj surj).isOpen_range_section_iff U rfl
+
+theorem isOpen_range_section_iff :
+    letI sec b : EtaleSpace pred := mk (s b)
+    IsOpen (range sec) ↔ Continuous sec :=
+  (isOpen_range_section_iff_of_isOpen inj surj).trans <| and_iff_right U.2
+
+end InjSurj
+
 /-- A section of the étale space is continuous if and only if it is admissible according to
 the sheafified predicate. -/
 theorem continuous_section_iff {P : PrelocalPredicate F}
@@ -169,59 +193,6 @@ theorem continuous_section_iff {P : PrelocalPredicate F}
     exact eq _ _ (hV' hxV)
   · have ⟨V, hV, i, hs⟩ := h x
     exact ⟨⟨V, hV⟩, _, hs, _, (V.2.preimage continuous_subtype_val).mem_nhds hV, fun _ _ _ ↦ rfl⟩
-
-section Sigma
-
-variable {α : Type*} {β : α → Type*}
-
-/-- The sections of a sigma type are in bijection with the corresponding pi type. -/
-def Sigma.sectionEquiv : {f : α → Σ a, β a // Sigma.fst ∘ f = id} ≃ Π a : α, β a where
-  toFun f a := cast congr(β $(congr_fun f.2 a)) (f.1 a).2
-  invFun f := ⟨fun a ↦ .mk _ (f a), rfl⟩
-  left_inv f := Subtype.ext <| funext fun a ↦ Sigma.ext (congr_fun f.2 a).symm <| by simp
-  right_inv _ := rfl
-
-/-- The sections of a sigma type over a subtype are in bijection with the corresponding pi type. -/
-def Sigma.subtypeSectionEquiv {p : α → Prop} :
-    {f : Subtype p → Σ a, β a // Sigma.fst ∘ f = (↑)} ≃ Π a : Subtype p, β a :=
-  .trans
-  { toFun f := ⟨fun a ↦ ⟨⟨_, by simpa only [show (f.1 a).1 = a from congr_fun f.2 a] using a.2⟩,
-      (f.1 a).2⟩, funext fun a ↦ Subtype.ext <| congr_fun f.2 a⟩
-    invFun f := ⟨fun a ↦ ⟨_, (f.1 a).2⟩, funext fun a ↦ congr_arg Subtype.val (congr_fun f.2 a)⟩
-    left_inv _ := rfl
-    right_inv _ := rfl }
-  sectionEquiv
-
-lemma Sigma.mk_sectionEquiv {f : {f : α → Σ a, β a // Sigma.fst ∘ f = id}} {a : α} :
-    Sigma.mk _ (Sigma.sectionEquiv f a) = f.1 a :=
-  congr_fun (congr_arg Subtype.val (sectionEquiv.left_inv f)) a
-
-lemma Sigma.mk_subtypeSectionEquiv {p : α → Prop}
-    {f : {f : Subtype p → Σ a, β a // Sigma.fst ∘ f = (↑)}} {a : Subtype p} :
-    Sigma.mk _ (Sigma.subtypeSectionEquiv f a) = f.1 a :=
-  congr_fun (congr_arg Subtype.val (subtypeSectionEquiv.left_inv f)) a
-
-end Sigma
-
-theorem isOpen_injOn_iff_exists_continuous_section {V : Set (EtaleSpace pred)}
-    (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsStalkSurj pred b) :
-    IsOpen V ∧ V.InjOn (proj _) ↔ letI U := proj _ '' V
-    IsOpen U ∧ ∃ s : Π b : U, F b, letI sec b : EtaleSpace pred := mk (s b)
-      Continuous sec ∧ range sec = V := by
-  rw [((isLocalHomeomorph_proj inj surj).isOpen_injOn_tfae V).out 0 2 rfl]
-  refine and_congr .rfl (.trans ?_ Sigma.subtypeSectionEquiv.exists_congr_right)
-  simp_rw [show mk = Sigma.mk _ from rfl, Sigma.mk_subtypeSectionEquiv]
-  exact ⟨fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s, hs⟩, s.continuous, hsV⟩, fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s.1, hs⟩, s.2, hsV⟩⟩
-
-theorem isOpen_range_section_iff_of_isOpen {U : Set B} {s : Π b : U, F b} :
-    letI sec b : EtaleSpace pred := mk (s b)
-    IsOpen (range sec) ↔ IsOpen U ∧ Continuous sec := by
-  sorry
-
-theorem isOpen_range_section_iff :
-    letI sec b : EtaleSpace pred := mk (s b)
-    IsOpen (range sec) ↔ Continuous sec :=
-  isOpen_range_section_iff_of_isOpen.trans <| and_iff_right U.2
 
 theorem isTopologicalBasis {P : PrelocalPredicate F}
     (inj : ∀ b, IsStalkInj P.pred b) (surj : ∀ b, IsStalkSurj P.pred b) :

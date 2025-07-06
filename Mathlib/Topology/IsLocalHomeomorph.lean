@@ -299,7 +299,7 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
   · rintro _ ⟨U, hU, s, hs, rfl⟩
     exact (hf.isOpenEmbedding_section hU hs s.continuous).isOpen_range
   · have ⟨V, hV, hfV⟩ := isLocalHomeomorph_iff_isOpenEmbedding_restrict.mp hf x
-    have := ((hf.isOpen_injOn_tfae (V ∩ U)).out 1 3).mp <| hfV.comp
+    have := ((hf.isOpen_injOn_tfae (V ∩ U)).out 1 4).mp <| hfV.comp
       (.inclusion Set.inter_subset_left <| by simpa using hU.preimage continuous_subtype_val)
     exact ⟨_, this, ⟨mem_of_mem_nhds hV, hx⟩, Set.inter_subset_right⟩
 

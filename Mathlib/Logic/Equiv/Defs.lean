@@ -712,39 +712,6 @@ def pSigmaAssoc {α : Sort*} {β : α → Sort*} (γ : ∀ a : α, β a → Sort
 
 end
 
-namespace Sigma
-
-variable {α : Type*} {β : α → Type*}
-
-/-- The sections of a sigma type are in bijection with the corresponding pi type. -/
-def sectionEquiv : {f : α → Σ a, β a // Sigma.fst ∘ f = id} ≃ ∀ a : α, β a where
-  toFun f a := cast (congr_arg β (congr_fun f.2 a)) (f.1 a).2
-  invFun f := ⟨fun a ↦ .mk _ (f a), rfl⟩
-  left_inv f := Subtype.ext <| funext fun a ↦ Sigma.ext (congr_fun f.2 a).symm <| by simp
-  right_inv _ := rfl
-
-/-- The sections of a sigma type over a subtype are in bijection with the corresponding pi type. -/
-def subtypeSectionEquiv {p : α → Prop} :
-    {f : Subtype p → Σ a, β a // Sigma.fst ∘ f = Subtype.val} ≃ ∀ a : Subtype p, β a :=
-  .trans
-  { toFun f := ⟨fun a ↦ ⟨⟨_, by simpa only [show (f.1 a).1 = a from congr_fun f.2 a] using a.2⟩,
-      (f.1 a).2⟩, funext fun a ↦ Subtype.ext <| congr_fun f.2 a⟩
-    invFun f := ⟨fun a ↦ ⟨_, (f.1 a).2⟩, funext fun a ↦ congr_arg Subtype.val (congr_fun f.2 a)⟩
-    left_inv _ := rfl
-    right_inv _ := rfl }
-  sectionEquiv
-
-lemma mk_sectionEquiv {f : {f : α → Σ a, β a // Sigma.fst ∘ f = id}} {a : α} :
-    Sigma.mk _ (sectionEquiv f a) = f.1 a :=
-  congr_fun (congr_arg Subtype.val (sectionEquiv.left_inv f)) a
-
-lemma mk_subtypeSectionEquiv {p : α → Prop}
-    {f : {f : Subtype p → Σ a, β a // Sigma.fst ∘ f = Subtype.val}} {a : Subtype p} :
-    Sigma.mk _ (Sigma.subtypeSectionEquiv f a) = f.1 a :=
-  congr_fun (congr_arg Subtype.val (subtypeSectionEquiv.left_inv f)) a
-
-end Sigma
-
 variable {p : α → Prop} {q : β → Prop} (e : α ≃ β)
 
 protected lemma forall_congr_right : (∀ a, q (e a)) ↔ ∀ b, q b :=
@@ -830,6 +797,39 @@ lemma ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
   (ofBijective f hf).symm_apply_apply x
 
 end Equiv
+
+namespace Sigma
+
+variable {α : Type*} {β : α → Type*}
+
+/-- The sections of a sigma type are in bijection with the corresponding pi type. -/
+def sectionEquiv : {f : α → Σ a, β a // Sigma.fst ∘ f = id} ≃ ∀ a : α, β a where
+  toFun f a := cast (congr_arg β (congr_fun f.2 a)) (f.1 a).2
+  invFun f := ⟨fun a ↦ .mk _ (f a), rfl⟩
+  left_inv f := Subtype.ext <| funext fun a ↦ Sigma.ext (congr_fun f.2 a).symm <| by simp
+  right_inv _ := rfl
+
+/-- The sections of a sigma type over a subtype are in bijection with the corresponding pi type. -/
+def subtypeSectionEquiv {p : α → Prop} :
+    {f : Subtype p → Σ a, β a // Sigma.fst ∘ f = Subtype.val} ≃ ∀ a : Subtype p, β a :=
+  .trans
+  { toFun f := ⟨fun a ↦ ⟨⟨_, by simpa only [show (f.1 a).1 = a from congr_fun f.2 a] using a.2⟩,
+      (f.1 a).2⟩, funext fun a ↦ Subtype.ext <| congr_fun f.2 a⟩
+    invFun f := ⟨fun a ↦ ⟨_, (f.1 a).2⟩, funext fun a ↦ congr_arg Subtype.val (congr_fun f.2 a)⟩
+    left_inv _ := rfl
+    right_inv _ := rfl }
+  sectionEquiv
+
+lemma mk_sectionEquiv {f : {f : α → Σ a, β a // Sigma.fst ∘ f = id}} {a : α} :
+    Sigma.mk _ (sectionEquiv f a) = f.1 a :=
+  congr_fun (congr_arg Subtype.val (sectionEquiv.left_inv f)) a
+
+lemma mk_subtypeSectionEquiv {p : α → Prop}
+    {f : {f : Subtype p → Σ a, β a // Sigma.fst ∘ f = Subtype.val}} {a : Subtype p} :
+    Sigma.mk _ (Sigma.subtypeSectionEquiv f a) = f.1 a :=
+  congr_fun (congr_arg Subtype.val (subtypeSectionEquiv.left_inv f)) a
+
+end Sigma
 
 namespace Quot
 

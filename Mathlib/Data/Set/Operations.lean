@@ -292,7 +292,7 @@ theorem injOn_range_subtype_section (hs : f ∘ s = Subtype.val) : (Set.range s)
   cases (hs ▸ Subtype.val_injective) eq
   rfl
 
-theorem subtype_section_ext  (hs : f ∘ s = Subtype.val) (hs' : f ∘ s' = Subtype.val)
+theorem subtype_section_ext (hs : f ∘ s = Subtype.val) (hs' : f ∘ s' = Subtype.val)
     (eq : Set.range s = Set.range s') : s = s' := by
   ext a
   obtain ⟨b, eq⟩ := eq.symm ▸ Set.mem_range_self a
