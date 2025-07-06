@@ -703,9 +703,7 @@ If $f$ is not differentiable at $\overline{w}$, then both sides have the junk va
 -/
 @[simp]
 theorem deriv_conj_comp_comp_conj' (f : ℂ → ℂ) :
-    deriv (conj ∘ f ∘ conj) = conj ∘ (deriv f) ∘ conj := by
-  ext z
-  nth_rw 1 [← conj_conj z]
-  exact deriv_conj_comp_comp_conj ..
+    deriv (conj ∘ f ∘ conj) = conj ∘ (deriv f) ∘ conj :=
+  funext fun z ↦ by simp [← deriv_conj_comp_comp_conj]
 
 end Complex
