@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Analysis.Calculus.Gradient.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
