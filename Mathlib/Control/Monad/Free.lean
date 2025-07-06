@@ -37,16 +37,16 @@ Haskell implementation that inspired this approach.
 
 ## Implementation Notes
 
-The `FreeM` monad is defined using an inductive type with constructors `pure` and `liftBind`.
+The `FreeM` monad is defined using an inductive type with constructors `.pure` and `.liftBind`.
 We implement `Functor` and `Monad` instances, and prove the corresponding `LawfulFunctor`
 and `LawfulMonad` instances.
 
-The monads `FreeState`, `FreeWriter`, and `FreeCont` are built by supplying appropriate
-effect type constructors to the `FreeM` constructor. They are equipped with interpreters
-and helper functions.
-
 For now we choose to make the constructors the simp-normal form, as opposed to the standard
 monad notation.
+
+In a downstream file, the monads `FreeState`, `FreeWriter`, and `FreeCont` are built by supplying
+appropriate effect type constructors to the `FreeM` constructor.
+They are equipped with interpreters and helper functions.
 
 ## References
 
@@ -75,15 +75,6 @@ inductive FreeM.{u, v, w} (F : Type u → Type v) (α : Type w) where
   Note that Lean's inductive types prevent us splitting this into separate bind and lift
   constructors. -/
   | liftBind {ι : Type u} (op : F ι) (cont : ι → FreeM F α) : FreeM F α
-
-
--- /-
--- Disable simpNF lints for auto-generated constructor lemmas, as they don't follow simp normal
--- form patterns. The LHS of these lemmas use `FreeM.pure` which simplifies to `pure` via
--- `pure_eq_pure`.
--- -/
--- attribute [nolint simpNF] FreeM.pure.sizeOf_spec FreeM.pure.injEq
--- attribute [nolint simpNF] FreeM.liftBind.sizeOf_spec FreeM.liftBind.injEq
 
 universe u v w w' w''
 
@@ -135,19 +126,19 @@ instance : Functor (FreeM F) where
 @[simp]
 theorem map_eq_map {α β : Type w} : Functor.map = FreeM.map (F := F) (α := α) (β := β) := rfl
 
-/-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
+/-- Lift an operation from the effect signature `F` into the `FreeM F` monad. -/
 def lift (op : F ι) : FreeM F ι :=
   .liftBind op pure
 
-/-- Rewrite `lift` to the constructor form so that simplification stays in constructor
-normal form. -/
+/-- Rewrite `lift` to the constructor form so that simplification stays in constructor normal
+form. -/
 @[simp]
 lemma lift_def (op : F ι) :
-    (lift op : FreeM F ι) = liftBind op pure := rfl
+    (lift op : FreeM F ι) = liftBind op .pure := rfl
 
 @[simp]
 lemma map_lift (f : ι → α) (op : F ι) :
-    map f (lift op : FreeM F ι) = liftBind op (fun z => (pure (f z) : FreeM F α)) := rfl
+    map f (lift op : FreeM F ι) = liftBind op (fun z => (.pure (f z) : FreeM F α)) := rfl
 
 /-- `.pure a` followed by `bind` collapses immediately. -/
 @[simp]
@@ -185,10 +176,10 @@ section liftM
 variable {m : Type u → Type w} [Monad m] {α β : Type u}
 
 /--
-Interpret a `FreeM f` computation into any monad `m` by providing an interpretation
-function for the effect signature `f`.
+Interpret a `FreeM F` computation into any monad `m` by providing an interpretation
+function for the effect signature `F`.
 
-This function defines the *canonical interpreter* from the free monad `FreeM f` into the target
+This function defines the *canonical interpreter* from the free monad `FreeM F` into the target
 monad `m`. It is the unique monad morphism that extends the effect handler
 `interp : ∀ {β}, F β → m β` via the universal property of `FreeM`.
 -/
@@ -216,25 +207,25 @@ lemma liftM_bind [LawfulMonad m]
     simp_rw [ih]
 
 /--
-A predicate stating that `g : FreeM F α → m α` is an interpreter for the effect
-handler `f : ∀ {α}, F α → m α`.
+A predicate stating that `interp : FreeM F α → m α` is an interpreter for the effect
+handler `handler : ∀ {α}, F α → m α`.
 
-This means that `g` is a monad morphism from the free monad `FreeM F` to the
+This means that `interp` is a monad morphism from the free monad `FreeM F` to the
 monad `m`, and that it extends the interpretation of individual operations
 given by `f`.
 
-Formally, `g` satisfies the two equations:
-- `g (pure a) = pure a`
-- `g (liftBind op k) = f op >>= fun x => g (k x)`
+Formally, `interp` satisfies the two equations:
+- `interp (pure a) = pure a`
+- `interp (liftBind op k) = handler op >>= fun x => interp (k x)`
 -/
-structure Interprets (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) : Prop where
-  apply_pure (a : α) : g (pure a) = pure a
+structure Interprets (handler : {ι : Type u} → F ι → m ι) (interp : FreeM F α → m α) : Prop where
+  apply_pure (a : α) : interp (pure a) = pure a
   apply_liftBind {ι : Type u} (op : F ι) (cont : ι → FreeM F α) :
-    g (liftBind op cont) = f op >>= fun x => g (cont x)
+    interp (liftBind op cont) = handler op >>= fun x => interp (cont x)
 
-theorem Interprets.eq
-    {f : {ι : Type u} → F ι → m ι} {g : FreeM F α → m α} (h : Interprets f g) :
-    g = (·.liftM @f) := by
+theorem Interprets.eq {handler : {ι : Type u} → F ι → m ι} {interp : FreeM F α → m α}
+    (h : Interprets handler interp) :
+    interp = (·.liftM @handler) := by
   ext x
   induction x with
   | pure a => exact h.apply_pure a
@@ -242,17 +233,19 @@ theorem Interprets.eq
     rw [liftM_liftBind, h.apply_liftBind]
     simp [ih]
 
-theorem interprets_liftM (f : {ι : Type u} → F ι → m ι) :
-    Interprets f (·.liftM f : FreeM F α → _) where
+theorem interprets_liftM (handler : {ι : Type u} → F ι → m ι) :
+    Interprets handler (·.liftM handler : FreeM F α → _) where
   apply_pure _ := rfl
   apply_liftBind _ _ := rfl
 
 /--
-The universal property of the free monad `FreeM`. That is, `liftM f` is the unique interpreter that
-extends the effect handler `f` to interpret `FreeM F` computations in monad `m`.
+The universal property of the free monad `FreeM`.
+
+That is, `liftM handler` is the unique interpreter that extends the effect handler `handler` to
+interpret `FreeM F` computations in a monad `m`.
 -/
-theorem interprets_iff (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) :
-    Interprets f g ↔ g = (·.liftM f) :=
+theorem interprets_iff (handler : {ι : Type u} → F ι → m ι) (interp : FreeM F α → m α) :
+    Interprets handler interp ↔ interp = (·.liftM handler) :=
   ⟨(·.eq), fun h => h ▸ interprets_liftM _⟩
 
 end liftM
