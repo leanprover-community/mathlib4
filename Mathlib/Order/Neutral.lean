@@ -77,7 +77,10 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
           rw [sup_comm x y]
           rw [← sup_sup_distrib_left]
           rw [sup_assoc]
-        rw [e3] at e2
+        have e4 : (x ⊓ y) ⊔ (y ⊔ z) = (y ⊔ z) := by
+          rw [sup_eq_right]
+          exact le_trans inf_le_right le_sup_left
+        rw [e3, e4] at e2
 
 
 
