@@ -71,6 +71,51 @@ def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 variable (X Y Z) in
 noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product I Y Z) x (X x))
 
+-- XXX: inlining rhs_aux makes things not typecheck any more!
+
+variable (X Y Z) in
+/-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
+If ∇ is a Levi-Civita connection on `TM`, then
+`⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
+noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
+  rhs_aux I X Y Z + rhs_aux I Y Z X + rhs_aux I Z X Y
+  - product I Y (VectorField.mlieBracket I X Z)
+  - product I Z (VectorField.mlieBracket I X Y)
+  + product I X (VectorField.mlieBracket I Z Y)
+  )
+
+variable (X Y Z) in
+lemma aux (h : cov.IsLeviCivitaConnection) (x : M) : rhs_aux I X Y Z x =
+    ⟪cov X Y x, Z x⟫ + ⟪Y x, cov Z X x⟫ + product I Y (VectorField.mlieBracket I X Z) x := by
+  unfold rhs_aux
+  have : ⟪Y x, cov X Z x⟫ - ⟪Y x, cov Z X x⟫ = product I Y (VectorField.mlieBracket I X Z) x := by
+    have := h.2
+    rw [isTorsionFree_iff] at this
+    specialize this X Y
+    simp only [product]
+    trans ⟪Y x, cov X Z x - cov Z X x⟫
+    · sorry -- product is linear...
+    sorry -- congr_fun/congr_arg
+  have : ⟪Y x, cov X Z x⟫ = ⟪Y x, cov Z X x⟫ + product I Y (VectorField.mlieBracket I X Z) x := by
+    sorry
+  trans ⟪cov X Y x, Z x⟫ + ⟪Y x, cov X Z x⟫
+  · apply h.1 X Y Z
+  · simp [this, add_assoc]
+
+-- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
+variable (X Y Z) in
+/-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
+⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
+lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
+    product I (cov X Y) Z = leviCivita_rhs I X Y Z := by
+  have eq1 (x) := aux I X Y Z cov h x
+  have eq2 (x) := aux I Y Z X cov h x
+  have eq3 (x) := aux I Z X Y cov h x
+  -- add (I) + (II) and subtract (III)
+
+  -- solve for product I (cov X Y) Z
+  sorry
+
 variable (X Y Y') in
 lemma product_add : product I X (Y + Y') = product I X Y + product I X Y' := sorry
 
@@ -120,19 +165,6 @@ variable (X Y Z Z') in
 lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z := by
   sorry
 
--- XXX: inlining even rhs1 makes things not typecheck any more!
-
-variable (X Y Z) in
-/-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
-If ∇ is a Levi-Civita connection on `TM`, then
-`⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
-noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
-  rhs_aux I X Y Z + rhs_aux I Y Z X + rhs_aux I Z X Y
-  - product I Y (VectorField.mlieBracket I X Z)
-  - product I Z (VectorField.mlieBracket I X Y)
-  + product I X (VectorField.mlieBracket I Z Y)
-  )
-
 lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
     (hZ : MDifferentiable% (T% Z)) (hZ' : MDifferentiable% (T% Z')) :
     leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
@@ -153,8 +185,8 @@ lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
   simp [h1, h2, rhs_aux_addX, rhs_aux_addY, rhs_aux_addZ]
   module
 
-lemma leviCivita_rhs_smul [CompleteSpace E]
-    (f : M → ℝ) (Z' : Π x : M, TangentSpace I x) (hf : MDifferentiable% f) (hZ : MDifferentiable% (T% Z)) :
+lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, TangentSpace I x}
+    (hf : MDifferentiable% f) (hZ : MDifferentiable% (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
   simp only [leviCivita_rhs]
   simp [rhs_aux_smulX, rhs_aux_smulY, rhs_aux_smulZ]
@@ -173,14 +205,6 @@ lemma leviCivita_rhs_smul [CompleteSpace E]
   rw [product_smul_left, product_smul_right]
   simp; abel_nf
   sorry -- easy computation
-
--- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
-variable (X Y Z) in
-/-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
-⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
-lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
-    product I (cov X Y) Z = leviCivita_rhs I X Y Z := by
-  sorry
 
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
@@ -249,7 +273,7 @@ lemma foo [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: Tang
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    IsCovariantDerivativeOn I E (TangentSpace I) (existence_candidate I M) e.baseSet := by
+    IsCovariantDerivativeOn E (TangentSpace I) (existence_candidate I M) e.baseSet := by
   sorry
 
 -- deduce: this defines a covariant derivative

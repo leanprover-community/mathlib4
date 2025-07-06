@@ -1022,6 +1022,22 @@ def IsTorsionFree : Prop := torsion cov = 0
 
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
 
+-- This should be obvious, I'm doing something wrong.
+lemma isTorsionFree_iff : IsTorsionFree cov ↔
+    ∀ X Y, cov X Y - cov Y X = VectorField.mlieBracket I X Y := by
+  simp [IsTorsionFree]
+  constructor
+  · intro h
+    intro X Y
+    have : torsion cov X Y = 0 := sorry
+    rw [torsion] at this
+    sorry
+  · intro h
+    ext X Y x
+    specialize h X Y
+    apply congr_fun
+    simp_all [torsion]
+
 -- lemma the trivial connection on a normed space is torsion-free
 -- lemma trivial.isTorsionFree : IsTorsionFree (TangentBundle 𝓘(ℝ, E) E) := sorry
 
