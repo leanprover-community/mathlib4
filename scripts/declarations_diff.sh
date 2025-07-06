@@ -58,6 +58,7 @@ elif [ "${mode}" == "by-file" ]
 then
   short=1
   byfile=1
+  ## in "by-file" mode, we take an additional argument which is the html_url of the PR
   prUrl="${2:-}"
   shift
 else
