@@ -282,7 +282,7 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
     (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
   ext fun x => by substs h h2; rfl
 
-theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
+theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by
   subst h; simp
 
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=

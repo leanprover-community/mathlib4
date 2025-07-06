@@ -336,6 +336,8 @@ section AddMonoid
 /-- The exponential map as a function `M → Mᵐ⁰`. -/
 def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
+@[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
+
 variable [AddMonoid M]
 
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
