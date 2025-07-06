@@ -10,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.Adjoint
 # Inner dual cone of a set
 
 We define the inner dual cone of a set `s` in an inner product space to be the proper cone
-consisting of all points `y` such that for all `x ∈ s` we have `0 ≤ ⟪x, y⟫`.
+consisting of all points `y` such that `0 ≤ ⟪x, y⟫` for all `x ∈ s`.
 
 ## Main statements
 
@@ -19,11 +19,18 @@ We prove the following theorems:
 * `ProperCone.hyperplane_separation'`:
   This variant of the
   [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
-  states that given a nonempty, closed, convex cone `C` in a complete, real inner product space E``
+  states that given a nonempty, closed, convex cone `C` in a complete, real inner product space `E`
   and a point `b` disjoint from it, there is a vector `y` which separates `b` from `K` in the sense
   that for all points `x` in `K`, `0 ≤ ⟪x, y⟫_ℝ` and `⟪y, b⟫_ℝ < 0`. This is also a geometric
   interpretation of the
   [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
+
+## Implementation notes
+
+We do not provide `ConvexCone`- nor `PointedCone`-valued versions of `ProperCone.innerDual` since
+the inner dual cone of any set is always closed and contains `0`, ie is a proper cone.
+Furthermore, the strict version `{y | ∀ x ∈ s, 0 < ⟪x, y⟫}` is a candidate to the name
+`ConvexCone.innerDual`.
 -/
 
 open Set LinearMap Pointwise
