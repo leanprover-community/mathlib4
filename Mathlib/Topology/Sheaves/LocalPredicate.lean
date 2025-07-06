@@ -60,26 +60,27 @@ a `P : PrelocalPredicate T` consists of:
 structure PrelocalPredicate where
   /-- The underlying predicate of a prelocal predicate -/
   pred : ∀ ⦃U : Opens X⦄, (∀ x : U, T x) → Prop
+  -- TODO: change `pred` to `Pred` according to naming convention
   /-- The underlying predicate should be invariant under restriction -/
   res : ∀ {U V : Opens X} (i : U ⟶ V) (f : ∀ x : V, T x), pred f → pred fun x : U ↦ f (i x)
 
 section Sheafify
 
-variable {T} (pred : ∀ ⦃U : Opens X⦄, (∀ x : U, T x) → Prop)
+variable {T} (P : ∀ ⦃U : Opens X⦄, (∀ x : U, T x) → Prop)
 
 /-- The sheafification of a predicate. -/
 def Sheafify ⦃U : Opens X⦄ (f : ∀ x : U, T x) :=
-  ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U), pred (f <| i ·)
+  ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U), P (f <| i ·)
 
-lemma le_sheafify : pred ≤ Sheafify pred := fun U _f hf x ↦ ⟨U, x.2, 𝟙 U, hf⟩
+lemma le_sheafify : P ≤ Sheafify P := fun U _f hf x ↦ ⟨U, x.2, 𝟙 U, hf⟩
 
 /-- A predicate is local if sheafification doesn't make it more general. -/
-def IsLocal := Sheafify pred ≤ pred
+def IsLocal := Sheafify P ≤ P
 
-lemma sheafify_eq_iff : Sheafify pred = pred ↔ IsLocal pred := by
+lemma sheafify_eq_iff : Sheafify P = P ↔ IsLocal P := by
   simp_rw [IsLocal, le_antisymm_iff, le_sheafify, and_true]
 
-lemma isLocal_sheafify : IsLocal (Sheafify pred) := fun _U _f h x ↦
+lemma isLocal_sheafify : IsLocal (Sheafify P) := fun _U _f h x ↦
   have ⟨_V, m, i, p⟩ := h x
   have ⟨V, m', i', p'⟩ := p ⟨x, m⟩
   ⟨V, m', i' ≫ i, p'⟩
@@ -118,12 +119,12 @@ structure LocalPredicate extends PrelocalPredicate T where
 
 section Properties
 
-variable {B : TopCat} {F : B → Type*} (pred : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) (b : B)
+variable {B : TopCat} {F : B → Type*} (P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) (b : B)
 
 /-- The surjectivity criterion for a family of types `F` to behave like the stalks of a
 set of sections (represented as a predicate `pred`) says that every germ comes from a section. -/
 abbrev IsStalkSurj :=
-  ∀ x : F b, ∃ (U : OpenNhds b) (s : Π b : U.1, F b), pred s ∧ s ⟨b, U.2⟩ = x
+  ∀ x : F b, ∃ (U : OpenNhds b) (s : Π b : U.1, F b), P s ∧ s ⟨b, U.2⟩ = x
 
 open OpenNhds
 
@@ -131,15 +132,15 @@ open OpenNhds
 if two sections pass through the same germ, then they are equal on a neighborhood. -/
 abbrev IsStalkInj :=
   ∀ (U V : OpenNhds b) (s : Π b : U.1, F b) (t : Π b : V.1, F b),
-    pred s → pred t → s ⟨b, U.2⟩ = t ⟨b, V.2⟩ →
+    P s → P t → s ⟨b, U.2⟩ = t ⟨b, V.2⟩ →
     ∃ (W : OpenNhds b) (iU : W ⟶ U) (iV : W ⟶ V), ∀ w : W.1, s (iU w) = t (iV w)
 
 /-- The injectivity criterion suitable for a prelocal predicate. -/
 abbrev IsStalkInj' :=
-  ∀ (U : OpenNhds b) (s t : Π b : U.1, F b), pred s → pred t → s ⟨b, U.2⟩ = t ⟨b, U.2⟩ →
+  ∀ (U : OpenNhds b) (s t : Π b : U.1, F b), P s → P t → s ⟨b, U.2⟩ = t ⟨b, U.2⟩ →
     ∃ (V : OpenNhds b) (incl : V ⟶ U), ∀ b : V.1, s (incl b) = t (incl b)
 
-theorem IsStalkInj.isStalkInj' {b : B} (h : IsStalkInj pred b) : IsStalkInj' pred b :=
+theorem IsStalkInj.isStalkInj' {b : B} (h : IsStalkInj P b) : IsStalkInj' P b :=
   fun U s t hs ht eq ↦ have ⟨W, iU, _, h⟩ := h U U s t hs ht eq; ⟨W, iU, h⟩
 
 theorem PrelocalPredicate.isStalkInj_iff {P : PrelocalPredicate F} {b : B} :
@@ -152,53 +153,62 @@ theorem PrelocalPredicate.isStalkInj_iff {P : PrelocalPredicate F} {b : B} :
 are determined by any germ. `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq` shows that
 sheaves of analytic functions satisfies the identity principle on any connected open set. -/
 abbrev HasIdentityPrincipleOn (U : Opens B) :=
-  ∀ (s t : Π b : U.1, F b) b, pred s → pred t → s b = t b → s = t
+  ∀ (s t : Π b : U.1, F b) b, P s → P t → s b = t b → s = t
 
 /-- A set of sections satisfies the identity principle at a point `b` if every neighborhood of `b`
 contains a neighborhood on which the identity principle is satisfied.
 This definition is intended to be applied to a locally connected base space `B`. -/
 abbrev HasIdentityPrinciple :=
-  ∀ U : OpenNhds b, ∃ V ≤ U, HasIdentityPrincipleOn pred V.1
+  ∀ U : OpenNhds b, ∃ V ≤ U, HasIdentityPrincipleOn P V.1
 
 /-- A set of sections is separated at a point `b` if any two germs at `b` can be separated by
 disjoint sections. -/
 abbrev IsSeparated :=
-  ∀ x y : F b, x ≠ y → ∃ (U : OpenNhds b) (s t : Π b : U.1, F b), pred s ∧ pred t ∧
+  ∀ x y : F b, x ≠ y → ∃ (U : OpenNhds b) (s t : Π b : U.1, F b), P s ∧ P t ∧
     s ⟨b, U.2⟩ = x ∧ t ⟨b, U.2⟩ = y ∧ ∀ b' : U.1, s b' ≠ t b'
 
 /-- A set of sections is constant on a (connected) open set `U` if every germ on `U` can be
 extended to a section on `U` in exactly one way.
 This corresponds to the `IsEvenlyCovered` condition in the associated étale space. -/
 abbrev IsConstantOn (U : Opens B) : Prop :=
-  ∀ (b : U) (x : F b), ∃! s : Π b : U, F b, pred s ∧ s b = x
+  ∀ (b : U) (x : F b), ∃! s : Π b : U, F b, P s ∧ s b = x
+
+/-- A trivialization indexed by `ι` of a set of sections on a set `U` is a subset of sections
+indexed by `ι` which induces, for each point of `U`, a bijection between `ι` and the germs
+at that point. Together with `IsStalkInj`, this is enough to guarantee that `U` is evenly
+covered by the étale space associated to the set of sections. -/
+structure TrivializationOn (U : Opens B) (ι : Type*) : Type _ where
+  sec : ι → Π b : U, F b
+  pred i : P (sec i)
+  bijective b : Function.Bijective (sec · b)
 
 /-- A set of sections is weakly locally constant at a point `b` if `b` has a neighborhood on which
 every germ can be extended to a section in exactly one way. -/
-abbrev IsWeaklyLocallyConstant := ∃ U : OpenNhds b, IsConstantOn pred U.1
+abbrev IsWeaklyLocallyConstant := ∃ U : OpenNhds b, IsConstantOn P U.1
 
 /-- A set of sections is locally constant at a point `b` if every neighborhood of `b` contains
 a neighborhood on which every germ can be extended to a section in exactly one way.
 This definition is intended to be applied to a locally connected base space `B`. -/
-abbrev IsLocallyConstant := ∀ U : OpenNhds b, ∃ V ≤ U, IsConstantOn pred V.1
+abbrev IsLocallyConstant := ∀ U : OpenNhds b, ∃ V ≤ U, IsConstantOn P V.1
 
-variable {pred}
+variable {P}
 
-theorem isConstantOn_iff {U : Opens B} : IsConstantOn pred U ↔
-    HasIdentityPrincipleOn pred U ∧ ∀ (b : U) (x : F b), ∃ s : Π b : U, F b, pred s ∧ s b = x where
+theorem isConstantOn_iff {U : Opens B} : IsConstantOn P U ↔
+    HasIdentityPrincipleOn P U ∧ ∀ (b : U) (x : F b), ∃ s : Π b : U, F b, P s ∧ s b = x where
   mp h := ⟨fun _s t b hs ht eq ↦ (h b (t b)).unique ⟨hs, eq⟩ ⟨ht, rfl⟩,
     fun b x ↦ (h b x).exists⟩
   mpr := fun ⟨ip, surj⟩ b x ↦ existsUnique_of_exists_of_unique (surj b x)
     fun s t hs ht ↦ ip s t b hs.1 ht.1 (hs.2.trans ht.2.symm)
 
-theorem IsConstantOn.hasIdentityPrincipleOn {U : Opens B} (h : IsConstantOn pred U) :
-    HasIdentityPrincipleOn pred U := (isConstantOn_iff.mp h).1
+theorem IsConstantOn.hasIdentityPrincipleOn {U : Opens B} (h : IsConstantOn P U) :
+    HasIdentityPrincipleOn P U := (isConstantOn_iff.mp h).1
 
-theorem IsLocallyConstant.hasIdentityPrinciple (h : IsLocallyConstant pred b) :
-    HasIdentityPrinciple pred b :=
+theorem IsLocallyConstant.hasIdentityPrinciple (h : IsLocallyConstant P b) :
+    HasIdentityPrinciple P b :=
   fun U ↦ have ⟨V, le, hV⟩ := h U; ⟨V, le, hV.hasIdentityPrincipleOn⟩
 
-theorem IsLocallyConstant.isWeaklyLocallyConstant (h : IsLocallyConstant pred b) :
-    IsWeaklyLocallyConstant pred b :=
+theorem IsLocallyConstant.isWeaklyLocallyConstant (h : IsLocallyConstant P b) :
+    IsWeaklyLocallyConstant P b :=
   have ⟨U, _, hU⟩ := h ⊤; ⟨U, hU⟩
 
 theorem HasIdentityPrinciple.isSeparated {P : PrelocalPredicate F}
@@ -211,35 +221,76 @@ theorem HasIdentityPrinciple.isSeparated {P : PrelocalPredicate F}
     replace h₂ := P.res (le.hom ≫ infLERight ..) _ h₂
     exact ⟨U, _, _, h₁, h₂, rfl, rfl, fun x eq ↦ ne <| congr_fun (hU _ _ _ h₁ h₂ eq) ⟨b, U.2⟩⟩
 
-theorem IsWeaklyLocallyConstant.isStalkSurj (h : IsWeaklyLocallyConstant pred b) :
-    IsStalkSurj pred b :=
+theorem IsWeaklyLocallyConstant.isStalkSurj (h : IsWeaklyLocallyConstant P b) :
+    IsStalkSurj P b :=
   fun x ↦ have ⟨U, hU⟩ := h; have ⟨s, hs, _⟩ := hU ⟨b, U.2⟩ x; ⟨U, s, hs⟩
-
-/-- The section on `U` satisfying a predicate constant on `U` with given germ at `b : U`. -/
-def IsConstantOn.section {U : Opens B} (h : IsConstantOn pred U) {b : U} (x : F b) :
-    Π b : U, F b := (h b x).choose
 
 namespace IsConstantOn
 
-variable {U : Opens B} (h : IsConstantOn pred U) {b : U} (x : F b)
+variable {U : Opens B} (h : IsConstantOn P U) {b : U} (x : F b)
 
-lemma pred_section : pred (h.section x) := (h b x).choose_spec.1.1
+/-- The section on `U` with given germ at `b : U` within a set of sections constant on `U`. -/
+def sec : Π b : U, F b := (h b x).choose
 
-lemma section_apply : h.section x b = x := (h b x).choose_spec.1.2
+lemma pred_sec : P (h.sec x) := (h b x).choose_spec.1.1
 
-lemma section_eq_of_pred {s : Π b : U, F b} (hs : pred s) (b : U) : h.section (s b) = s :=
-  (isConstantOn_iff.mp h).1 _ _ b (h.pred_section _) hs (h.section_apply _)
+lemma sec_apply : h.sec x b = x := (h b x).choose_spec.1.2
 
-def equiv (b : U) : (Σ b : U, F b) ≃ U × F b where
-  toFun x := ⟨x.1, h.section x.2 b⟩
-  invFun x := ⟨x.1, h.section x.2 x.1⟩
-  left_inv _ := by simp_rw [h.section_eq_of_pred (h.pred_section _), h.section_apply]
-  right_inv _ := by simp_rw [h.section_eq_of_pred (h.pred_section _), h.section_apply]
+lemma sec_eq_of_pred {s : Π b : U, F b} (hs : P s) (b : U) : h.sec (s b) = s :=
+  (isConstantOn_iff.mp h).1 _ _ b (h.pred_sec _) hs (h.sec_apply _)
+
+/-- The monodromy induced by a set of sections constant on `U`. -/
+def monodromy (b b' : U) : F b ≃ F b' where
+  toFun x := h.sec x b'
+  invFun x := h.sec x b
+  left_inv _ := by simp_rw [h.sec_eq_of_pred (h.pred_sec _), h.sec_apply]
+  right_inv _ := by simp_rw [h.sec_eq_of_pred (h.pred_sec _), h.sec_apply]
+
+include h in
+/-- The trivialization associated -/
+def trivializationOn : TrivializationOn P U (F b) where
+  sec := h.sec
+  pred := h.pred_sec
+  bijective _ := (h.monodromy ..).bijective
 
 end IsConstantOn
 
-theorem IsWeaklyLocallyConstant.isSeparated (h : IsWeaklyLocallyConstant pred b) :
-    IsSeparated pred b :=
+namespace TrivializationOn
+
+variable {U : Opens B} {ι} (t : TrivializationOn P U ι)
+
+section -- TO REMOVE
+
+variable {ι : Type*} {π : ι → Type*} {p : ι → Prop}
+
+/-- The `Sigma` type indexed by a subtype can be canonically identified with a subtype of the
+`Sigma` type indexed by the whole type. -/
+def _root_.Equiv.sigmaSubtypeComm : (Σ i : Subtype p, π i) ≃ {f : Σ i, π i // p f.1} where
+  toFun f := ⟨⟨_, f.2⟩, f.1.2⟩
+  invFun f := ⟨⟨_, f.2⟩, f.1.2⟩
+
+end
+
+/-- A trivialization of a set of sections over a set `U` induces a trivialization of the `Sigma`
+type over `U`. -/
+def equiv : {f : Σ b, F b // f.1 ∈ U} ≃ U × ι :=
+  .trans (.symm (.trans (.sigmaCongrRight (.ofBijective _ <| t.bijective ·)) .sigmaSubtypeComm))
+    (.sigmaEquivProd ..)
+
+lemma preimage_snd_comp_equiv (i : ι) :
+    Prod.snd ∘ t.equiv ⁻¹' {i} = Subtype.val ⁻¹' Set.range (Sigma.mk _ <| t.sec i ·) :=
+  Set.ext fun f ↦ (Equiv.symm_apply_eq _).trans <| by
+    simp only [Equiv.sigmaSubtypeComm, Equiv.coe_fn_symm_mk,
+      Equiv.ofBijective_apply, Set.mem_preimage, Set.mem_range]
+    refine ⟨fun h ↦ ⟨⟨_, f.2⟩, congr(Sigma.mk _ $h).symm⟩, fun ⟨b, h⟩ ↦ ?_⟩
+    obtain ⟨⟨b', x⟩, hbx⟩ := f
+    cases congr($h.1)
+    exact congr($h.2).symm
+
+end TrivializationOn
+
+theorem IsWeaklyLocallyConstant.isSeparated (h : IsWeaklyLocallyConstant P b) :
+    IsSeparated P b :=
   fun x y ne ↦ by
     have ⟨U, hU⟩ := h
     have ⟨s, hs, hsu⟩ := hU ⟨b, U.2⟩ x
@@ -440,7 +491,7 @@ universe u
 the presheaf of functions satisfying `continuousPrelocal` is just the same thing as
 the presheaf of continuous functions.
 -/
-def subpresheafContinuousPrelocalIsoPresheafToTop (T : TopCat) :
+def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
     { hom := by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩

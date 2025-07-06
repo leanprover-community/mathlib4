@@ -9,41 +9,57 @@ import Mathlib.Topology.Sheaves.LocalPredicate
 /-!
 # Étale spaces of local predicates and presheaves
 
-Traditional theory of étale spaces directly constructs a local homeomorphism to
-the base space from a (pre)sheaf on the base space. We instead construct a local homeomorphism
-from an arbitrary type family (over a base space) with a predicate on sections (over open sets)
-specifying the "admissible"  sections, provided that the type family behaves like the family of
-stalks of the presheaf of admissible sections (i.e., satisfies the conditions `IsStalkInj`
-and `IsStalkSurj`). The passage between (pre)sheaves and (pre)local predicates was already
-established during the development of sheafification, and we obtain the étale space of a
-(pre)sheaf by combining both steps. But our theory can also be applied to situations where
-the type family is not (definitionally) the stalks of a presheaf: for example it can be a
-family of Hom types in the fundamental groupoid when constructing the universal cover, or
-a constant family when constructing the primitive of a holomorphic function and integrating
-it along a path.
+The traditional approach to étale spaces startsfrom a (pre)sheaf on a base space and
+directly constructs the associated étale space with a local homeomorphism to the base space.
+We instead construct a local homeomorphism from an arbitrary type family (over the base space)
+with a predicate on sections (over open sets of the base space) specifying the "admissible"
+sections, provided that the type family behaves like the family of stalks of the presheaf
+of admissible sections (i.e., satisfies the conditions `IsStalkInj` and `IsStalkSurj`).
+
+The passage between (pre)sheaves and (pre)local predicates was already established during
+the development of sheafification (see `TopCat.LocalPredicate` and the file
+``Mathlib.Topology.Sheaves.Sheafify`), and we obtain the étale space of a (pre)sheaf by
+combining both steps. But our theory can also be applied to situations where the type family
+is not (definitionally) the stalks of a presheaf: for example it can be a family of Hom types
+in the fundamental groupoid when constructing the universal cover, or a constant family
+when constructing the primitive of a holomorphic function and integrating it along a path.
 
 In this file we will adopt the sheaf-theoretic terminology and refer to the types in the type
 family as "stalks" and their elements as "germs".
 
-
--- germs of sections (of a (pre)sheaf of functions)
--- and they indeed agree with continuous sections of the étale space
-
-
-This file establishes the connection between `TopCat.LocalPredicate` on a family of types
-over a base space `B` (think of a set of sections over `B`) and local homeomorphisms to `B`
-(i.e., étale spaces over `B`).
-
-In the file `Mathlib.Topology.Sheaves.Sheafify`, the connection between `TopCat.LocalPredicate`
-and (pre)sheaves has been established. It combines with this file to establish the connection
-between sheaves and étale spaces.
-
 ## Main definitions
 
+* `EtaleSpace`: The étale space associated to a set of admissible sections given in the form of
+  a predicate. It is endowed with the strongest topology making every admissible section continuous.
+  `EtaleSpace.mk` is its constructor and `EtaleSpace.proj` is the continuous projection to the
+  base space.
 
 ## Main results
 
+Some results below requires the type family satisfies the injectivity and/or surjectivity criteria
+to behave like the family of stalks of the admissible sections.
 
+* `EtaleSpace.isOpenEmbedding_restrict_proj`: the projection from the étale space
+  to the base space is an open embedding on the range of every admissible section.
+
+* `EtaleSpace.isOpenEmbedding_section`: every admissible section is an open embedding
+  (requires injectivity criterion).
+
+* `EtaleSpace.isLocalHomeomorph_proj`: the projection from the étale space to the base space
+  is a local homeomorphism (requires both criteria).
+
+* `EtaleSpace.isOpen_range_section_iff_of_isOpen`: the range of a section is open if and only if
+  it is the range of a continuous section over an open set (requires both criteria).
+
+* `EtaleSpace.continuous_cod_iff`: a function to the étale space is continuous if and only if
+  it agrees with an admissible section around each point (requires both criteria).
+
+* `EtaleSpace.continuous_section_iff`: a section is continuous if and only if
+  it is admissible according to the sheafified predicate
+  (requires both criteria and that the predicate is pre-local).
+
+* `EtaleSpace.isTopologicalBasis`: the étale space has a basis consisting of
+  the ranges of admissible sections (with the same requirements as the above).
 -/
 
 open CategoryTheory Topology TopologicalSpace Opposite Set
@@ -57,16 +73,18 @@ variable {B : TopCat.{u}} {F : B → Type v}
 set_option linter.unusedVariables false in
 /-- The underlying type of the étale space associated to a predicate on sections of a type family
 is simply the sigma type. -/
-def EtaleSpace (pred : Π ⦃U : Opens B⦄, ((Π b : U, F b) → Prop)) : Type _ := Σ b, F b
+@[nolint unusedArguments]
+def EtaleSpace (pred : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) : Type _ := Σ b, F b
 
 namespace EtaleSpace
 
-variable {pred : Π ⦃U : Opens B⦄, ((Π b : U, F b) → Prop)}
+variable {pred : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop}
 
 /-- Constructor for points in the étale space. -/
 @[simps] def mk {b : B} (x : F b) : EtaleSpace pred := ⟨b, x⟩
 
-/-- The étale space is endowed with the strongest topology making every section continuous. -/
+/-- The étale space is endowed with the strongest topology
+making every admissible section continuous. -/
 instance : TopologicalSpace (EtaleSpace pred) :=
   ⨆ (U : Opens B) (s : Π b : U, F b) (_ : pred s), coinduced (mk <| s ·) inferInstance
 
@@ -105,6 +123,10 @@ def homeomorphRangeSection : U ≃ₜ range fun b ↦ (mk (s b) : EtaleSpace pre
   continuous_invFun := ((proj _).continuous.comp continuous_subtype_val).subtype_mk <| by
     rintro ⟨_, b, rfl⟩; exact b.2
 
+theorem isOpenEmbedding_restrict_proj :
+    IsOpenEmbedding ((range (mk <| s ·)).restrict (proj pred)) :=
+  U.2.isOpenEmbedding_subtypeVal.comp (homeomorphRangeSection hs).symm.isOpenEmbedding
+
 theorem isOpen_range_section (inj : ∀ b, IsStalkInj pred b) :
     IsOpen (range fun b ↦ (mk (s b) : EtaleSpace pred)) :=
   isOpen_iff.mpr fun V t ht ↦ isOpen_iff_mem_nhds.mpr fun ⟨v, hv⟩ ⟨⟨u, hu⟩, he⟩ ↦ by
@@ -119,10 +141,6 @@ theorem isOpenEmbedding_section (inj : ∀ b, IsStalkInj pred b) :
   exact ⟨.of_comp (continuous_section hs) (proj _).continuous .subtypeVal,
     fun _ _ eq ↦ Subtype.ext congr(proj _ $eq), isOpen_range_section hs inj⟩
 
-theorem isOpenEmbedding_restrict_proj :
-    IsOpenEmbedding ((range (mk <| s ·)).restrict (proj pred)) :=
-  U.2.isOpenEmbedding_subtypeVal.comp (homeomorphRangeSection hs).symm.isOpenEmbedding
-
 omit hs
 
 section InjSurj
@@ -135,8 +153,6 @@ theorem isLocalHomeomorph_proj : IsLocalHomeomorph (proj pred) :=
     have ⟨_U, _s, hs, eq⟩ := surj _ x.2
     ⟨_, (isOpen_range_section hs inj).mem_nhds ⟨_, congr(mk $eq)⟩, isOpenEmbedding_restrict_proj hs⟩
 
-/-- A function to the étale space is continuous if and only if it agrees with an admissible
-section around each point. -/
 theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace pred} :
     Continuous f ↔ Continuous (proj _ ∘ f) ∧ ∀ x, ∃ (U : OpenNhds (f x).1) (s : Π b : U.1, F b),
       pred s ∧ ∃ V ∈ 𝓝 x, ∀ x' (h' : (f x').1 ∈ U.1), x' ∈ V → s ⟨_, h'⟩ = (f x').2 := by
@@ -159,8 +175,8 @@ theorem isOpen_injOn_iff_exists_continuous_section {V : Set (EtaleSpace pred)} :
     IsOpen U ∧ ∃ s : Π b : U, F b, letI sec b : EtaleSpace pred := mk (s b)
       Continuous sec ∧ range sec = V := by
   rw [((isLocalHomeomorph_proj inj surj).isOpen_injOn_tfae V).out 0 3 rfl]
-  refine and_congr .rfl (.trans ?_ Sigma.subtypeSectionEquiv.exists_congr_right)
-  simp_rw [show mk = Sigma.mk _ from rfl, Sigma.mk_subtypeSectionEquiv]
+  refine and_congr .rfl (.trans ?_ Sigma.piSubtypeEquivSubtypeSigma.exists_congr_left.symm)
+  simp_rw [show mk = Sigma.mk _ from rfl, Sigma.mk_mk_piSubtypeEquivSubtypeSigma]
   exact ⟨fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s, hs⟩, s.continuous, hsV⟩, fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s.1, hs⟩, s.2, hsV⟩⟩
 
 theorem isOpen_range_section_iff_of_isOpen {U : Set B} {s : Π b : U, F b} :
@@ -175,8 +191,6 @@ theorem isOpen_range_section_iff :
 
 end InjSurj
 
-/-- A section of the étale space is continuous if and only if it is admissible according to
-the sheafified predicate. -/
 theorem continuous_section_iff {P : PrelocalPredicate F}
     (inj : ∀ b, IsStalkInj P.pred b) (surj : ∀ b, IsStalkSurj P.pred b) :
     Continuous (fun b ↦ (mk (s b) : EtaleSpace P.pred)) ↔ P.sheafify.pred s := by
