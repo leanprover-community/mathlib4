@@ -64,7 +64,7 @@ variable (f) in
 /--
 Harmonicity is an open property.
 -/
-theorem harmonicAt_isOpen : IsOpen { x : E | HarmonicAt f x } :=
+theorem isOpen_setOf_harmonicAt : IsOpen { x : E | HarmonicAt f x } :=
   isOpen_iff_mem_nhds.2 (fun _ hx ↦ hx.eventually)
 
 /--
@@ -132,7 +132,7 @@ theorem HarmonicOnNhd.comp_CLM (h : HarmonicOnNhd f s) (l : F →L[ℝ] G) :
 /--
 Functions are harmonic iff their compositions with continuous linear equivalences are harmonic.
 -/
-theorem harmonicAt_iff_harmonicAt_comp_CLE (l : F ≃L[ℝ] G) :
+theorem harmonicAt_comp_CLE_iff (l : F ≃L[ℝ] G) :
     HarmonicAt (l ∘ f) x ↔ HarmonicAt f x := by
   constructor <;> intro h
   · simpa [Function.comp_def] using h.comp_CLM l.symm.toContinuousLinearMap
@@ -141,6 +141,6 @@ theorem harmonicAt_iff_harmonicAt_comp_CLE (l : F ≃L[ℝ] G) :
 /--
 Functions are harmonic iff their compositions with continuous linear equivalences are harmonic.
 -/
-theorem harmonicOnNhd_iff_harmonicOnNhd_comp_CLE (l : F ≃L[ℝ] G) :
+theorem harmonicOnNhd_comp_CLE_iff (l : F ≃L[ℝ] G) :
     HarmonicOnNhd (l ∘ f) s ↔ HarmonicOnNhd f s :=
   forall₂_congr fun _ _ ↦ harmonicAt_iff_harmonicAt_comp_CLE l
