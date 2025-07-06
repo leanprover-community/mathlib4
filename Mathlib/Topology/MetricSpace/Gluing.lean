@@ -604,7 +604,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   funext x
   simp only [comp, toInductiveLimit]
   refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
-  show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
+  change inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
   exact le_succ _

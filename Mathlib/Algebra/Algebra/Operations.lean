@@ -437,7 +437,7 @@ theorem map_op_mul :
   · simp_rw [map_le_iff_le_comap]
     refine mul_le.2 fun m hm n hn => ?_
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
-    show op n * op m ∈ _
+    change op n * op m ∈ _
     exact mul_mem_mul hn hm
   · refine mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => ?_)
     rw [Submodule.mem_map_equiv] at hm hn ⊢

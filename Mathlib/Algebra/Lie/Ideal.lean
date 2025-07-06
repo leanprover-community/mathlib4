@@ -245,10 +245,7 @@ In other words, in general, ideals of `I`, regarded as a Lie algebra in its own 
 same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨x, hx⟩
-  rw [LieSubmodule.mem_bot] at hx
-  subst hx
-  simp only [LieSubmodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
+  subsingleton
 
 end LieIdeal
 

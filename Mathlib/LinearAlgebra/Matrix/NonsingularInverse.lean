@@ -490,9 +490,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
   · simp [eq_iff_true_of_subsingleton]
   rcases (Fintype.card n).zero_le.eq_or_lt with hc | hc
   · rw [eq_comm, Fintype.card_eq_zero_iff] at hc
-    haveI := hc
-    ext i
-    exact (IsEmpty.false i).elim
+    subsingleton
   · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
     refine nonsing_inv_apply_not_isUnit _ ?_
     simp
