@@ -244,7 +244,7 @@ lemma coercive_of_posdef'  {V : Type*}
             ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
         rw [iteratedFDeriv_succ_apply_left]
         simp
-      · have h₁ : ‖u‖ ≠ 0 := by exact norm_ne_zero_iff.mpr hu
+      · have h₁ : ‖u‖ ≠ 0 := norm_ne_zero_iff.mpr hu
         have h₂ : 0 < ‖u‖⁻¹ := Right.inv_pos.mpr <| norm_pos_iff.mpr hu
         have h₃ : ‖u‖ * ‖u‖⁻¹ = 1 := CommGroupWithZero.mul_inv_cancel ‖u‖ h₁
         repeat (
@@ -275,10 +275,8 @@ lemma coercive_of_posdef'  {V : Type*}
   constructor
   · simp
   · intro u
-    simp
     have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
-    have : u = 0 := Subsingleton.eq_zero u
-    subst this
+    rw [Subsingleton.eq_zero u]
     simp
 
 /-- Higher Taylor coefficient. -/
@@ -315,7 +313,10 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*}
   have h₃ : ∑ x_1 ∈ Finset.range 3, higher_taylor_coeff f x₀ x_1 x
    = higher_taylor_coeff f x₀ 0 x + higher_taylor_coeff f x₀ 1 x +
      higher_taylor_coeff f x₀ 2 x := by
-    repeat rw [Finset.range_succ]; simp
+    repeat rw [Finset.range_succ]
+    simp only [Finset.range_zero, insert_empty_eq, Finset.mem_insert, OfNat.ofNat_ne_one,
+      Finset.mem_singleton, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, Finset.sum_insert,
+      one_ne_zero, Finset.sum_singleton]
     linarith
   simp only [higher_taylor, Nat.reduceAdd, Finset.sum_apply, Real.norm_eq_abs, abs_abs, norm_pow]
   rw [h₃]
@@ -447,10 +448,12 @@ lemma littleO_of_powerseries {V : Type*}
   have h₃ (x) := hC.2 (x - x₀)
   rw [Asymptotics.IsBigOWith]
   refine eventually_nhds_iff.mpr ?_
-  simp -- problem?
+  simp only [Real.norm_eq_abs, abs_abs, norm_pow]
   use Metric.ball x₀ (min (r/2) (D / (C * (a * (2/r))^3)))
   constructor
-  · exact @littleO_of_powerseries.calculation V _ _ f x₀ p r hr a ha.1.1 C hC.1 h₃ D
+  · convert @littleO_of_powerseries.calculation V _ _ f x₀ p r hr a ha.1.1 C hC.1 h₃ D using 3
+    congr
+    apply abs_norm
   · constructor
     · exact Metric.isOpen_ball
     · simp only [Metric.mem_ball, dist_self, lt_inf_iff, Nat.ofNat_pos, div_pos_iff_of_pos_right,
@@ -478,5 +481,5 @@ theorem second_derivative_test {V : Type*}
       ext
       rw [eliminate_higher_taylor_coeff x₀ _ p h₁]
     exact isLocalMin_of_PosDef_of_Littleo (this ▸ littleO_of_powerseries hr h₁) h₀ hf
-  · have : Subsingleton V := by exact not_nontrivial_iff_subsingleton.mp H
+  · have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
     simp [IsLocalMin, IsMinFilter]
