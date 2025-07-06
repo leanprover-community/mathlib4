@@ -74,12 +74,9 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         have e2 : r ((x ⊓ y) ⊔ (y ⊔ z)) ((x ⊔ y) ⊔ (y ⊔ z)) :=
           (h3 _ _ _ inf_le_sup ((h1 x y).mp hxy)).2
         have e3 : (x ⊔ y) ⊔ (y ⊔ z) = x ⊔ y ⊔ z := by
-          rw [sup_comm x y]
-          rw [← sup_sup_distrib_left]
-          rw [sup_assoc]
-        have e4 : (x ⊓ y) ⊔ (y ⊔ z) = (y ⊔ z) := by
-          rw [sup_eq_right]
-          exact le_trans inf_le_right le_sup_left
+          rw [sup_comm x y, ← sup_sup_distrib_left, sup_assoc]
+        have e4 : (x ⊓ y) ⊔ (y ⊔ z) = (y ⊔ z) :=
+          sup_eq_right.mpr (le_trans inf_le_right le_sup_left)
         rw [e3, e4] at e2
 
 
