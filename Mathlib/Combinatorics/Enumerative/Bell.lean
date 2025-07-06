@@ -181,27 +181,21 @@ def standardBell : ℕ → ℕ
   | 0 => 1
   | n + 1 => ∑ k ∈ Finset.range (n + 1), Nat.choose n k * standardBell (n - k)
 
+theorem standardBell_succ (n : ℕ) :
+  standardBell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * standardBell (n - k) := by
+  simp [standardBell]
+
 @[simp]
 theorem standardBell_zero : standardBell 0 = 1 := by
-  unfold standardBell
-  rfl
+  simp [standardBell]
 
 @[simp]
 theorem standardBell_one : standardBell 1 = 1 := by
-  unfold standardBell
-  simp only [zero_add, Finset.range_one, zero_tsub, Finset.sum_singleton,
-    choose_self, one_mul, standardBell_zero]
+  simp [standardBell]
 
 @[simp]
 theorem standardBell_two : standardBell 2 = 2 := by
-  unfold standardBell
-  rw [Finset.range_succ]
-  simp only [Finset.range_one, Finset.mem_singleton, one_ne_zero, not_false_eq_true,
-    Finset.sum_insert, choose_self, tsub_self, one_mul, Finset.sum_singleton,
-    choose_succ_self_right, zero_add, tsub_zero, standardBell_zero, standardBell_one]
-
-theorem standardBell_succ (n : ℕ) :
-  standardBell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * standardBell (n - k) := by
-  rw [standardBell]
+  rw [standardBell_succ, Finset.sum_range_add]
+  simp
 
 end Nat
