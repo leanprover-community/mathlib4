@@ -660,6 +660,11 @@ theorem hasDerivAt_conj_comp_comp_conj {f : ℂ → ℂ} {z f' : ℂ} (hf : HasD
   convert hf.comp (conj_conj z ▸ continuous_conj.tendsto (conj z)) using 2 with w
   rw [← norm_conj, ← norm_conj (_ - _)]; simp
 
+theorem hasDerivAt_conj_comp_comp_conj_iff {f : ℂ → ℂ} {z f' : ℂ} :
+    HasDerivAt (conj ∘ f ∘ conj) (conj f') (conj z) ↔ HasDerivAt f f' z :=
+  ⟨fun hf ↦ by convert hf.conj_comp_comp_conj <;> simp [Function.comp_def],
+  fun hf ↦ hf.conj_comp_comp_conj⟩
+ 
 /--
 Let $f : \mathbb{C} \to \mathbb{C}$ be a complex differentiable function at $z \in \mathbb{C}$ with
 derivative $f'(z)$. Then the function $g(w) = \overline{f(\overline{w})}$ is complex differentiable
