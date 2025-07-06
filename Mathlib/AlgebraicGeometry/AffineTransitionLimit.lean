@@ -149,7 +149,7 @@ lemma exists_mem_of_isClosed_of_nonempty'
     (hZc : ∀ i hij, IsClosed (Z i hij))
     (hZne : ∀ i hij, (Z i hij).Nonempty)
     (hZcpt : ∀ i hij, IsCompact (Z i hij))
-    (hstab : ∀ (i i' : I) (hi'i : i' ⟶ i) (hij : i ⟶ j) ,
+    (hstab : ∀ (i i' : I) (hi'i : i' ⟶ i) (hij : i ⟶ j),
       Set.MapsTo (D.map hi'i).base (Z i' (hi'i ≫ hij)) (Z i hij)) :
     ∃ (s : c.pt), ∀ i hij, (c.π.app i).base s ∈ Z i hij := by
   have {i₁ i₂ : Over j} (f : i₁ ⟶ i₂) : IsAffineHom ((Over.forget j ⋙ D).map f) := by

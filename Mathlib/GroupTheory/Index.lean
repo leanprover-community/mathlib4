@@ -563,7 +563,7 @@ variable (H K) in
 @[to_additive] class IsFiniteRelIndex : Prop where
   protected relindex_ne_zero : H.relindex K ≠ 0
 
-@[to_additive] lemma relindex_ne_zero  [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
+@[to_additive] lemma relindex_ne_zero [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
   IsFiniteRelIndex.relindex_ne_zero
 
 @[to_additive]

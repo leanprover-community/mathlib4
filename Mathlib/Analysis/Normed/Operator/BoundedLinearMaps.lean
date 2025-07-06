@@ -490,7 +490,7 @@ theorem Continuous.continuousLinearMapCoprod
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x => (f x).coprod (g x)) := by
-  apply continuous_iff_continuousOn_univ.mpr
+  apply continuousOn_univ.mp
   exact hf.continuousOn.continuousLinearMapCoprod hg.continuousOn
 
 end

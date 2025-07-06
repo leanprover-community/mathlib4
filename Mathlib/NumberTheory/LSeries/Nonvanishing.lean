@@ -68,7 +68,7 @@ and takes nonnegative real values.
 
 /-- The complex-valued arithmetic function that is the convolution of the constant
 function `1` with `χ`. -/
-noncomputable def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
+def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
   .zeta * toArithmeticFunction (χ ·)
 
 /-- The arithmetic function `zetaMul χ` is multiplicative. -/
