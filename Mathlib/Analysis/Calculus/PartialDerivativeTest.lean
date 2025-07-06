@@ -40,9 +40,9 @@ lemma update₁ {α : Type*} (a b c : α) :
   fin_cases i <;> simp
 
 /-- The Hessian companion as a linear map. -/
-noncomputable def hessianLinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin n) → ℝ)
-    (x₀ : EuclideanSpace ℝ (Fin n)) :
-    EuclideanSpace ℝ (Fin n) → EuclideanSpace ℝ (Fin n) →ₗ[ℝ] ℝ := fun a => {
+noncomputable def hessianLinearCompanion {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+    V → V →ₗ[ℝ] ℝ := fun a => {
     toFun := fun b => iteratedFDeriv ℝ 2 f x₀ ![a,b]
                     + iteratedFDeriv ℝ 2 f x₀ ![b,a]
     map_add' := fun b c => by
@@ -62,8 +62,9 @@ noncomputable def hessianLinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin 
   }
 
 /-- The Hessian companion as a bilinear map. -/
-noncomputable def hessianBilinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin n) → ℝ)
-    (x₀ : EuclideanSpace ℝ (Fin n)) : LinearMap.BilinMap ℝ (EuclideanSpace ℝ (Fin n)) ℝ := {
+noncomputable def hessianBilinearCompanion {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+    LinearMap.BilinMap ℝ V ℝ := {
     toFun := hessianLinearCompanion f x₀
     map_add' := fun x y => by
         have had := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
@@ -86,9 +87,9 @@ noncomputable def hessianBilinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fi
 }
 
 /-- TODO: for a more familiar constructor when R is a ring, see QuadraticMap.ofPolar -/
-noncomputable def iteratedFDerivQuadraticMap {n : ℕ} (f : EuclideanSpace ℝ (Fin n) → ℝ)
-    (x₀ : EuclideanSpace ℝ (Fin n)) :
-  QuadraticMap ℝ (EuclideanSpace ℝ (Fin n)) ℝ :=
+noncomputable def iteratedFDerivQuadraticMap {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+  QuadraticMap ℝ V ℝ :=
   {
     toFun := fun y => iteratedFDeriv ℝ 2 f x₀ ![y,y]
     exists_companion' := by
@@ -211,8 +212,9 @@ lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ} {x₀ : EuclideanSp
     simp
 
 /-- The iterated Frechet derivative is continuous. -/
-theorem continuous_hessian' {k n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
-    {x₀ : EuclideanSpace ℝ (Fin n)} : Continuous fun y ↦ (iteratedFDeriv ℝ k f x₀) fun _ => y :=
+theorem continuous_hessian' {k : ℕ} {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+    Continuous fun y ↦ (iteratedFDeriv ℝ k f x₀) fun _ => y :=
   Continuous.comp' (iteratedFDeriv ℝ k f x₀).coe_continuous
     <| continuous_pi fun _ => continuous_id'
 
@@ -220,7 +222,7 @@ theorem continuous_hessian' {k n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
 theorem continuous_hessian {n : ℕ}
     {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)} :
     Continuous fun y ↦ (iteratedFDeriv ℝ 2 f x₀) ![y, y] := by
-  convert @continuous_hessian' (k := 2) n f x₀ using 3
+  convert continuous_hessian' (k := 2) f x₀ using 3
   ext i j
   fin_cases i <;> simp
 
@@ -278,15 +280,15 @@ lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ} {x�
       exact this
 
 /-- Higher Taylor coefficient. -/
-noncomputable def higher_taylor_coeff {n : ℕ}
-    (f : EuclideanSpace ℝ (Fin n) → ℝ) (x₀ : EuclideanSpace ℝ (Fin n)) (k : ℕ) :=
+noncomputable def higher_taylor_coeff {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) (k : ℕ) :=
     fun x =>
     (1 / Nat.factorial k : ℝ) * (iteratedFDeriv ℝ k f x₀ fun _ => x - x₀)
 
 /-- Higher Taylor polynomial. -/
-noncomputable def higher_taylor {n : ℕ}
-    (f : EuclideanSpace ℝ (Fin n) → ℝ) (x₀ : EuclideanSpace ℝ (Fin n)) (k : ℕ) :
-    EuclideanSpace ℝ (Fin n) → ℝ :=
+noncomputable def higher_taylor {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) (k : ℕ) :
+    V → ℝ :=
   ∑ i ∈ Finset.range (k+1), higher_taylor_coeff f x₀ i
 
 /-- Second partial derivative test in terms of `higher_taylor`. -/
