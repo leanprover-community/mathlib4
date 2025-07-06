@@ -5685,6 +5685,7 @@ import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.SetTheory.ZFC.Axioms
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Class
+import Mathlib.SetTheory.ZFC.Model
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.SetTheory.ZFC.PSet
 import Mathlib.SetTheory.ZFC.Rank
