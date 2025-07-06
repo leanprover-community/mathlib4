@@ -759,7 +759,7 @@ open scoped DayConvolution
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (d ⊗ d')` is a
 Day convolution of `(ι C V).obj d` and `(ι C V).d'`. -/
 def convolution (d d' : D) :
-    DayConvolution ((ι C V D).obj d) ((ι C V D).obj d') where
+    DayConvolution (ι C V D|>.obj d) (ι C V D|>.obj d') where
   convolution := (ι C V D).obj (d ⊗ d')
   unit := convolutionExtensionUnit C V d d'
   isPointwiseLeftKanExtensionUnit :=
@@ -787,7 +787,7 @@ lemma ι_map_tensorHom_hom_eq_tensorHom
     {d₁ d₂ : D} {d₁' d₂' : D}
     (f : d₁ ⟶ d₂) (f' : d₁' ⟶ d₂') :
     (ι C V D).map (f ⊗ₘ f') =
-    DayConvolution.map ((ι C V D).map f) ((ι C V D).map f') := by
+    DayConvolution.map (ι C V D|>.map f) (ι C V D|>.map f') := by
   apply DayConvolution.corepresentableBy
     (ι C V D|>.obj d₁) (ι C V D|>.obj d₁')|>.homEquiv.injective
   dsimp
@@ -903,14 +903,14 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
     (tensor_comp := fun _ _ _ _ => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_comp]
-      apply (corepresentableBy ((ι C V D).obj _) ((ι C V D).obj _)).homEquiv.injective
+      apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective
       dsimp
       ext ⟨_, _⟩
       simp)
     (id_tensorHom := fun x {y₁ y₂} f => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom]
-      apply (corepresentableBy ((ι C V D).obj _) ((ι C V D).obj _)).homEquiv.injective
+      apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective
       dsimp
       ext ⟨x, y⟩
       dsimp
@@ -958,8 +958,8 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
           (ι C V D|>.obj d) :=
         convolution C V D _ _
       letI : DayConvolution
-          ((ι C V D|>.obj a) ⊛ ((ι C V D).obj b))
-          ((ι C V D|>.obj c) ⊛ ((ι C V D).obj d)) :=
+          ((ι C V D|>.obj a) ⊛ (ι C V D|>.obj b))
+          ((ι C V D|>.obj c) ⊛ (ι C V D|>.obj d)) :=
         convolution C V D _ _
       letI : DayConvolution
           ((ι C V D|>.obj a) ⊛ ((ι C V D|>.obj b) ⊛ (ι C V D|>.obj c)))
