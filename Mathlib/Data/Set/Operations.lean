@@ -8,7 +8,6 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
-import Mathlib.Tactic.Choose
 import Mathlib.Util.CompileInductive
 
 /-!

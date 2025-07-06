@@ -46,7 +46,7 @@ attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
-def isGerm : PrelocalPredicate fun x ↦ stalk F x where
+def isGerm : PrelocalPredicate fun x ↦ F.stalk x where
   pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = germ F U x.1 x.2 g
   res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g,
     fun x ↦ (p (i x)).trans (germ_res_apply F i x x.2 g).symm⟩
@@ -54,7 +54,7 @@ def isGerm : PrelocalPredicate fun x ↦ stalk F x where
 /-- The local predicate on functions into the stalks,
 asserting that the function is locally equal to a germ.
 -/
-def isLocallyGerm : LocalPredicate fun x ↦ stalk F x :=
+def isLocallyGerm : LocalPredicate fun x ↦ F.stalk x :=
   (isGerm F).sheafify
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory
