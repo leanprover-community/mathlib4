@@ -657,17 +657,8 @@ at $\overline{z}$ with derivative $\overline{f'(\overline{z})}$.
 theorem hasDerivAt_conj_comp_comp_conj {f : ℂ → ℂ} {z f' : ℂ} (hf : HasDerivAt f f' z) :
     HasDerivAt (conj ∘ f ∘ conj) (conj f') (conj z) := by
   rw [hasDerivAt_iff_tendsto] at hf ⊢
-  have := continuous_conj.tendsto (conj z)
-  rw [conj_conj] at this
-  have := Filter.Tendsto.comp hf this
-  convert this with w
-  simp only [conj_conj, smul_eq_mul, Function.comp_apply]
-  congr 1
-  · congr 1
-    rw[← norm_conj]
-    simp
-  · rw[← norm_conj]
-    simp
+  convert hf.comp (conj_conj z ▸ continuous_conj.tendsto (conj z)) using 2 with w
+  rw [← norm_conj, ← norm_conj (_ - _)]; simp
 
 /--
 Let $f : \mathbb{C} \to \mathbb{C}$ be a complex differentiable function at $z \in \mathbb{C}$ with
