@@ -15,22 +15,22 @@ The `FreeM` monad generates a free monad from any type constructor `f : Type →
 requiring `f` to be a `Functor`. This implementation uses the "freer monad" approach as the
 traditional free monad is not safely definable in Lean due to termination checking.
 
-In this construction, computations are represented as **trees of effects**. Each node (`liftBind`)
-represents a request to perform an effect, accompanied by a continuation specifying how the
-computation proceeds after the effect. The leaves (`pure`) represent completed computations with
-final results.
+In this construction, computations are represented as **trees of effects**.
+Each node (`FreeM.liftBind`) represents a request to perform an effect, accompanied by a
+continuation specifying how the computation proceeds after the effect.
+The leaves (`FreeM.pure`) represent completed computations with final results.
 
 A key insight is that `FreeM F` satisfies the **universal property of free monads**: for any monad
 `M` and effect handler `f : F → M`, there exists a unique way to interpret `FreeM F` computations
-in `M` that respects the effect semantics given by `f`. This unique interpreter is `liftM f`, which
-acts as the canonical **fold** for free monads.
+in `M` that respects the effect semantics given by `f`.
+This unique interpreter is `FreeM.liftM f`, which acts as the canonical **fold** for free monads.
 
 
 ## Main Definitions
 
 - `FreeM`: The free monad construction
 - `FreeM.liftM`: The canonical fold/interpreter satisfying the universal property
-- `liftM_unique`: Proof of the universal property
+- `FreeM.liftM_unique`: Proof of the universal property
 
 See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library for the
 Haskell implementation that inspired this approach.
@@ -128,7 +128,7 @@ theorem map_eq_map {α β : Type w} : Functor.map = FreeM.map (F := F) (α := α
 
 /-- Lift an operation from the effect signature `F` into the `FreeM F` monad. -/
 def lift (op : F ι) : FreeM F ι :=
-  .liftBind op pure
+  .liftBind op .pure
 
 /-- Rewrite `lift` to the constructor form so that simplification stays in constructor normal
 form. -/
@@ -196,6 +196,10 @@ lemma liftM_liftBind (interp : {ι : Type u} → F ι → m ι) (op : F β) (con
     (liftBind op cont).liftM interp = (do let b ← interp op; (cont b).liftM interp) := by
   rfl
 
+lemma liftM_lift [LawfulMonad m] (interp : {ι : Type u} → F ι → m ι) (op : F β) :
+    (lift op).liftM interp = interp op := by
+  simp_rw [lift_def, liftM_liftBind, liftM_pure, _root_.bind_pure]
+
 @[simp]
 lemma liftM_bind [LawfulMonad m]
     (interp : {ι : Type u} → F ι → m ι) (x : FreeM F α) (f : α → FreeM F β) :
@@ -219,7 +223,7 @@ Formally, `interp` satisfies the two equations:
 - `interp (liftBind op k) = handler op >>= fun x => interp (k x)`
 -/
 structure Interprets (handler : {ι : Type u} → F ι → m ι) (interp : FreeM F α → m α) : Prop where
-  apply_pure (a : α) : interp (pure a) = pure a
+  apply_pure (a : α) : interp (.pure a) = pure a
   apply_liftBind {ι : Type u} (op : F ι) (cont : ι → FreeM F α) :
     interp (liftBind op cont) = handler op >>= fun x => interp (cont x)
 
