@@ -81,11 +81,9 @@ theorem isInitial_one : IsInitial 1 := by
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
 
-theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω := by
-  obtain h | h := lt_or_ge o ω
-  · obtain ⟨n, rfl⟩ := Ordinal.lt_omega0.1 h
-    simpa [h] using isInitial_natCast (n + 1)
-  · simpa [h, not_lt_of_ge, IsInitial] using ne_of_lt <| (ord_card_le o).trans_lt <| lt_succ o
+theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
+  ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
+  fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
 
 theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
   rintro ⟨a, ha⟩
