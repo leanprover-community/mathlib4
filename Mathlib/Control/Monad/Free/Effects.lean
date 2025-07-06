@@ -342,7 +342,7 @@ instance : MonadCont (FreeCont r) where
 /-- `run` of a `callCC` node simplifies to running the handler with the current continuation. -/
 @[simp]
 lemma run_callCC (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) (k : α → r) :
-  run (callCC f) k = run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k := by
+    run (callCC f) k = run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k := by
   simp [callCC, run_liftBind_callCC]
 
 end FreeCont
