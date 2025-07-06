@@ -82,6 +82,19 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
         s.circumcenter :=
   rfl
 
+/-- **Sylvester's theorem**: The position of the Monge point relative to the circumcenter via the
+sum of vectors to the vertices. -/
+theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ P (n + 2)) :
+    (n + 1) • (s.mongePoint -ᵥ s.circumcenter) = ∑ i , (s.points i -ᵥ s.circumcenter) := by
+  rw [mongePoint_eq_smul_vsub_vadd_circumcenter, vadd_vsub, ← smul_assoc]
+  field_simp
+  have h : Invertible (↑n + (2:ℝ) + 1) := by norm_cast; apply invertibleOfPos
+  rw [@smul_eq_iff_eq_invOf_smul _ _ _ _ (↑n + (2:ℝ) + 1)  _ _ h, smul_sum]
+  unfold Finset.centroid
+  rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
+  simp only [centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_ofNat,
+    Nat.cast_one, invOf_eq_inv]
+
 /-- The Monge point lies in the affine span. -/
 theorem mongePoint_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
     s.mongePoint ∈ affineSpan ℝ (Set.range s.points) :=
@@ -326,16 +339,11 @@ theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
   rw [orthocenter_eq_mongePoint, mongePoint_eq_smul_vsub_vadd_circumcenter]
   norm_num
 
-/-- **Sylvester's theorem** : The vector from the circumcenter to the orthocenter of a triangle
-is equal to the sum of the vectors from the circumcenter to each point. -/
+/-- **Sylvester's theorem**, specialized to triangles。 -/
 theorem orthocenter_vsub_circumcenter_eq_sum_vsub (t : Triangle ℝ P) :
-    t.orthocenter -ᵥ t.circumcenter = ∑ i ∈ Finset.univ, (t.points i -ᵥ t.circumcenter) := by
-  rw [orthocenter_eq_smul_vsub_vadd_circumcenter, vadd_vsub, smul_eq_iff_eq_invOf_smul, smul_sum,
-    ← Finset.weightedVSubOfPoint_apply (Finset.univ) (fun x: Fin 3 => (⅟ 3:ℝ)) t.points
-      t.circumcenter]
-  unfold Finset.centroid
-  rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
-  rfl
+    t.orthocenter -ᵥ t.circumcenter = ∑ i, (t.points i -ᵥ t.circumcenter) := by
+  rw [← t.smul_mongePoint_vsub_circumcenter_eq_sum_vsub, zero_add, one_smul,
+    orthocenter_eq_mongePoint]
 
 /-- The orthocenter lies in the affine span. -/
 theorem orthocenter_mem_affineSpan (t : Triangle ℝ P) :
