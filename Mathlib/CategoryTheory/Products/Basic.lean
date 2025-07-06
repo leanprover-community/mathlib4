@@ -27,6 +27,8 @@ and products of functors and natural transformations, written `F.prod G` and `α
 
 namespace CategoryTheory
 
+open Functor
+
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 

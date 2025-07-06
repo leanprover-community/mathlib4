@@ -337,6 +337,21 @@ theorem top_div_of_lt_top (h : a < ∞) : ∞ / a = ∞ := top_div_of_ne_top h.n
 theorem div_eq_top : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞ := by
   simp [div_eq_mul_inv, ENNReal.mul_eq_top]
 
+/-- See `ENNReal.div_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma div_div_cancel' (h₀ : a = 0 → b = 0) (h₁ : a = ∞ → b = 0) :
+    a / (a / b) = b := by
+  obtain rfl | ha := eq_or_ne a 0
+  · simp [h₀]
+  obtain rfl | ha' := eq_or_ne a ∞
+  · simp [h₁, top_div_of_lt_top]
+  rw [ENNReal.div_eq_inv_mul, ENNReal.inv_div (Or.inr ha') (Or.inr ha),
+    ENNReal.div_mul_cancel ha ha']
+
+/-- See `ENNReal.div_div_cancel'` for a stronger version. -/
+protected lemma div_div_cancel {a b : ℝ≥0∞} (h₀ : a ≠ 0) (h₁ : a ≠ ∞) :
+    a / (a / b) = b :=
+  ENNReal.div_div_cancel' (by simp [h₀]) (by simp [h₁])
+
 protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ ∨ c ≠ ∞) :
     a ≤ c / b ↔ a * b ≤ c := by
   induction' b with b
