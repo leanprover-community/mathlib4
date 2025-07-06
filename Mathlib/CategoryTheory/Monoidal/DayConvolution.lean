@@ -544,8 +544,8 @@ lemma leftUnitor_hom_unit_app (y : C) :
     Functor.corepresentableByEquiv] at this ⊢
   simp only [whiskerLeft_id, Category.comp_id] at this
   simp only [Category.comp_id, this]
-  simp [prod.leftUnitorEquivalence, Equivalence.congrLeft,
-    Equivalence.fullyFaithfulFunctor, Functor.FullyFaithful.homEquiv]
+  simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.FullyFaithful.homEquiv]
 
 @[simp, reassoc]
 lemma leftUnitor_inv_app (x : C) :
@@ -555,8 +555,8 @@ lemma leftUnitor_inv_app (x : C) :
   dsimp [leftUnitor, Coyoneda.fullyFaithful, corepresentableByLeft,
     leftUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
     Functor.corepresentableByEquiv]
-  simp [prod.leftUnitorEquivalence, Equivalence.congrLeft,
-    Equivalence.fullyFaithfulFunctor, Functor.FullyFaithful.homEquiv]
+  simp [prod.leftUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.FullyFaithful.homEquiv]
 
 variable {F} in
 @[reassoc (attr := simp)]
@@ -591,8 +591,8 @@ lemma rightUnitor_hom_unit_app (x : C) :
   simp only [MonoidalCategory.whiskerRight_id, Category.id_comp, Iso.hom_inv_id,
     Category.comp_id] at this
   simp only [Category.comp_id, this]
-  simp [prod.rightUnitorEquivalence, Equivalence.congrLeft,
-    Equivalence.fullyFaithfulFunctor, Functor.FullyFaithful.homEquiv]
+  simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.FullyFaithful.homEquiv]
 
 @[simp, reassoc]
 lemma rightUnitor_inv_app (x : C) :
@@ -602,8 +602,8 @@ lemma rightUnitor_inv_app (x : C) :
   dsimp [rightUnitor, Coyoneda.fullyFaithful, corepresentableByRight,
     rightUnitorCorepresentingIso, Functor.CorepresentableBy.ofIso,
     Functor.corepresentableByEquiv]
-  simp [prod.rightUnitorEquivalence, Equivalence.congrLeft,
-    Equivalence.fullyFaithfulFunctor, Functor.FullyFaithful.homEquiv]
+  simp [prod.rightUnitorEquivalence, Equivalence.congrLeft, Equivalence.fullyFaithfulFunctor,
+    Functor.FullyFaithful.homEquiv]
 
 variable {F} in
 @[reassoc (attr := simp)]
