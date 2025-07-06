@@ -126,28 +126,56 @@ structure CovariantDerivative where
   smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜),
     toFun X (a • σ) = a • toFun X σ
 
+variable {I} in
 structure IsCovariantDerivativeOn
     (f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)) (s : Set M) : Prop where
-  -- all the same axioms as CovariantDerivative, but restricted to the set U
+  -- All the same axioms as CovariantDerivative, but restricted to the set s.
   addX : ∀ (X X' : Π x : M, TangentSpace I x) (σ : Π x : M, V x),
     ∀ x ∈ s, f (X + X') σ x = f X σ x + f X' σ x
   smulX : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (g : M → 𝕜),
     ∀ x ∈ s, f (g • X) σ x = g x • f X σ x
-  addσ : ∀ (X : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x), ∀ x ∈ s,
+  addσ : ∀ (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x}, ∀ x ∈ s,
     MDifferentiableAt% (T% σ) x → MDifferentiableAt% (T% σ') x
     → f X (σ + σ') x = f X σ x + f X σ' x
-  leibniz : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (g : M → 𝕜), ∀ x ∈ s,
+  leibniz : ∀ (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {g : M → 𝕜}, ∀ x ∈ s,
     MDifferentiableAt% (T% σ) x → MDifferentiableAt% g x
     → f X (g • σ) x = (g • f X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) g x (X x)) • σ x
   smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜), ∀ x ∈ s,
     f X (a • σ) x = a • f X σ x
 
--- generalise all the lemmas to IsCovariantDerivativeOn
+variable {I F V}
 
--- lemma: CovariantDerivative.isCovariantDerivateOn (for any open set)
--- lemma: if f satisfies IsCovariantDerivativeOn univ, it defines a covariant derivative
--- lemma: IsCovariantDerivativeOn.iUnion
--- corollary: if f satisfies `IsCovariantDerivativeOn Ui` for an open cover Ui, it defines a covariant derivative
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+lemma IsCovariantDerivativeOn.mono
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)} {s t : Set M}
+    (hf : IsCovariantDerivativeOn F V f t) (hst : s ⊆ t) : IsCovariantDerivativeOn F V f s where
+  addX X X' σ x hx := hf.addX X X' σ x (hst hx)
+  smulX X σ f x hx := hf.smulX X σ f x (hst hx)
+  addσ X {_σ _σ'} x hx hσ hσ' := hf.addσ X x (hst hx) hσ hσ'
+  leibniz X {_ _} _ hx hσ hf' := hf.leibniz X _ (hst hx) hσ hf'
+  smul_const_σ X σ a x hx := hf.smul_const_σ X σ a x (hst hx)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+lemma IsCovariantDerivativeOn.iUnion {ι : Type*}
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)} {s : ι → Set M}
+    (hf : ∀ i, IsCovariantDerivativeOn F V f (s i)) : IsCovariantDerivativeOn F V f (⋃ i, s i) where
+  addX X X' σ x hx := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hf i).addX _ _ _ _ hxsi
+  smulX X σ f x hx := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hf i).smulX _ _ _ _ hxsi
+  addσ X σ σ' x hx hσ hσ' := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hf i).addσ _ _ hxsi hσ hσ'
+  leibniz X σ f x hx hσ hf' := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hf i).leibniz _ _ hxsi hσ hf'
+  smul_const_σ X σ a x hx := by
+    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
+    exact (hf i).smul_const_σ _ _ _ _ hxsi
 
 namespace CovariantDerivative
 
@@ -158,7 +186,61 @@ instance : CoeFun (CovariantDerivative I F V)
     fun _ ↦ (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
   ⟨fun e ↦ e.toFun⟩
 
-variable {I F V}
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+lemma isCovariantDerivativeOn_univ (cov : CovariantDerivative I F V) :
+    IsCovariantDerivativeOn F V cov Set.univ where
+  addX X X' σ x _ := by simp [cov.addX]
+  smulX X σ f x _ := by simp [cov.smulX]
+  addσ X σ σ' x _ hσ hσ' := cov.addσ _ _ _ _ hσ hσ'
+  leibniz X σ f x _ hσ hf := cov.leibniz X _ _ _ hσ hf
+  smul_const_σ X σ a x _ := by simp [cov.smul_const_σ X σ a]
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+lemma isCovariantDerivativeOn (cov : CovariantDerivative I F V) {s : Set M} :
+    IsCovariantDerivativeOn F V cov s := by
+  apply (cov.isCovariantDerivativeOn_univ).mono (fun ⦃a⦄ a ↦ trivial)
+
+/-- If `f : Vec(M) × Γ(E) → Vec(M)` is a covariant on `Set.univ`, it is a covariant derivative. -/
+def of_isCovariantDerivativeOn_univ
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    (hf : IsCovariantDerivativeOn F V f Set.univ) : CovariantDerivative I F V where
+  toFun := f
+  addX X X' σ := by ext; simp [hf.addX X X' σ]
+  smulX X σ g := by ext; simp [hf.smulX X σ]
+  addσ X σ σ' x hσ hf' := hf.addσ _ _ trivial hσ hf'
+  leibniz X σ f x hσ hf' := hf.leibniz X x trivial hσ hf'
+  smul_const_σ X σ a := by ext; simp [hf.smul_const_σ X σ a]
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+@[simp]
+lemma of_isCovariantDerivativeOn_univ_coe
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    (hf : IsCovariantDerivativeOn F V f Set.univ) :
+    of_isCovariantDerivativeOn_univ hf = f := rfl
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+/-- If `f : Vec(M) × Γ(E) → Vec(M)` is a covariant derivative on each set in an open cover,
+it is a covariant derivative. -/
+def of_isCovariantDerivativeOn_of_open_cover {ι : Type*} {s : ι → Set M}
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    (hf : ∀ i, IsCovariantDerivativeOn F V f (s i)) (hs : ⋃ i, s i = Set.univ) :
+    CovariantDerivative I F V :=
+  of_isCovariantDerivativeOn_univ (hs ▸ IsCovariantDerivativeOn.iUnion hf)
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+@[simp]
+lemma of_isCovariantDerivativeOn_of_open_cover_coe {ι : Type*} {s : ι → Set M}
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    (hf : ∀ i, IsCovariantDerivativeOn F V f (s i)) (hs : ⋃ i, s i = Set.univ) :
+    of_isCovariantDerivativeOn_of_open_cover hf hs = f := rfl
+
+-- TODO: generalise all the lemmas below to IsCovariantDerivativeOn
+
 /--
 A covariant derivative ∇ is called of class `C^k` iff,
 whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
