@@ -529,9 +529,13 @@ theorem continuousWithinAt_univ (f : α → β) (x : α) :
     ContinuousWithinAt f Set.univ x ↔ ContinuousAt f x := by
   rw [ContinuousAt, ContinuousWithinAt, nhdsWithin_univ]
 
-theorem continuous_iff_continuousOn_univ {f : α → β} : Continuous f ↔ ContinuousOn f univ := by
+@[simp]
+theorem continuousOn_univ {f : α → β} : ContinuousOn f univ ↔ Continuous f := by
   simp [continuous_iff_continuousAt, ContinuousOn, ContinuousAt, ContinuousWithinAt,
     nhdsWithin_univ]
+
+@[deprecated (since := "2025-07-04")]
+alias continuous_iff_continuousOn_univ := continuousOn_univ
 
 theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
     ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
@@ -817,7 +821,7 @@ alias ContinuousAt.continuousOn := continuousOn_of_forall_continuousAt
 
 @[fun_prop]
 theorem Continuous.continuousOn (h : Continuous f) : ContinuousOn f s := by
-  rw [continuous_iff_continuousOn_univ] at h
+  rw [← continuousOn_univ] at h
   exact h.mono (subset_univ _)
 
 theorem Continuous.continuousWithinAt (h : Continuous f) :
@@ -996,7 +1000,7 @@ theorem Continuous.comp_continuousOn' {g : β → γ} {f : α → β} {s : Set �
 
 theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β} (hg : ContinuousOn g s)
     (hf : Continuous f) (hs : ∀ x, f x ∈ s) : Continuous (g ∘ f) := by
-  rw [continuous_iff_continuousOn_univ] at *
+  rw [← continuousOn_univ] at *
   exact hg.comp hf fun x _ => hs x
 
 theorem ContinuousOn.image_comp_continuous {g : β → γ} {f : α → β} {s : Set α}
@@ -1148,11 +1152,11 @@ theorem continuousOn_prod_of_discrete_right [DiscreteTopology β] {f : α × β 
 discrete space, then `f` is continuous, and vice versa. -/
 theorem continuous_prod_of_discrete_left [DiscreteTopology α] {f : α × β → γ} :
     Continuous f ↔ ∀ a, Continuous (f ⟨a, ·⟩) := by
-  simp_rw [continuous_iff_continuousOn_univ]; exact continuousOn_prod_of_discrete_left
+  simp_rw [← continuousOn_univ]; exact continuousOn_prod_of_discrete_left
 
 theorem continuous_prod_of_discrete_right [DiscreteTopology β] {f : α × β → γ} :
     Continuous f ↔ ∀ b, Continuous (f ⟨·, b⟩) := by
-  simp_rw [continuous_iff_continuousOn_univ]; exact continuousOn_prod_of_discrete_right
+  simp_rw [← continuousOn_univ]; exact continuousOn_prod_of_discrete_right
 
 theorem isOpenMap_prod_of_discrete_left [DiscreteTopology α] {f : α × β → γ} :
     IsOpenMap f ↔ ∀ a, IsOpenMap (f ⟨a, ·⟩) := by
@@ -1396,7 +1400,7 @@ lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}
   exact (hf i).continuousAt ((hs i).mem_nhds hxsi) |>.continuousWithinAt
 
 /-- A function is continuous on a union of open sets `s i` iff it is continuous on each `s i`. -/
-lemma continuousOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set α}
+lemma continuousOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set α}
     (hs : ∀ i, IsOpen (s i)) :
     ContinuousOn f (⋃ i, s i) ↔ ∀ i : ι, ContinuousOn f (s i) :=
   ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
@@ -1405,7 +1409,7 @@ lemma continuousOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set α}
 lemma continuous_of_continuousOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set α}
     (hf : ∀ i : ι, ContinuousOn f (s i)) (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
     Continuous f := by
-  rw [continuous_iff_continuousOn_univ, ← hs']
+  rw [← continuousOn_univ, ← hs']
   exact ContinuousOn.iUnion_of_isOpen hf hs
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
