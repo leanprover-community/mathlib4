@@ -339,35 +339,9 @@ instance : IsPreprimitive (Perm α) α := by
   · exact IsPreprimitive.of_subsingleton
   · exact isPreprimitive_of_is_two_pretransitive (is_two_pretransitive _)
 
--- The following theorem is split into two to have shorter proofs
-variable (α) in
-/-- The permutation group of a finite type `α` acts `n`-pretransitively on `a`, for all `n`,
-for a trivial reason when `Nat.card α < n`. -/
-theorem isMultiplyPretransitive_finite [Finite α] (n : ℕ) :
-    IsMultiplyPretransitive (Perm  α) α n := by
-  have : Fintype α := Fintype.ofFinite α
-  by_cases hα : n ≤ Nat.card α
-  · suffices IsMultiplyPretransitive (Perm α) α (Nat.card α) by
-      apply isMultiplyPretransitive_of_le hα (le_rfl)
-    rw [isMultiplyPretransitive_iff]
-    intro x y
-    suffices h : Function.Bijective x ∧ Function.Bijective y by
-      use (Equiv.ofBijective x h.1).symm.trans (Equiv.ofBijective y h.2)
-      ext; simp
-    constructor
-    all_goals
-      simp only [Fintype.bijective_iff_injective_and_card, card_eq_fintype_card,
-          Fintype.card_fin, and_true, EmbeddingLike.injective]
-  · suffices IsEmpty (Fin n ↪ α) by
-      infer_instance
-    rw [isEmpty_iff]
-    intro x
-    apply hα (le_of_eq_of_le _ (Finite.card_le_of_embedding x))
-    simp only [card_eq_fintype_card, Fintype.card_fin]
-
 variable (α) in
 /-- If `α` is infinite, then `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
-theorem isMultiplyPretransitive_infinite [Infinite α] (n : ℕ) :
+theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm  α) α n := by
   rw [isMultiplyPretransitive_iff]
   classical
@@ -444,14 +418,6 @@ theorem isMultiplyPretransitive_infinite [Infinite α] (n : ℕ) :
   use Equiv.ofBijective ψ this
   ext i
   simp [ψ, x.injective.extend_apply]
-
-variable (α) in
-/-- The permutation group `Perm α` is `n`-pretransitive for all `n`. -/
-theorem isMultiplyPretransitive (n : ℕ) :
-    IsMultiplyPretransitive (Perm  α) α n := by
-  rcases finite_or_infinite α with hα | hα
-  · apply isMultiplyPretransitive_finite
-  · apply isMultiplyPretransitive_infinite
 
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
