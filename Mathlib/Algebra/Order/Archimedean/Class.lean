@@ -176,12 +176,12 @@ theorem mk_eq_mk {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ 
 
 /-- Lift a `M → α` function to `MulArchimedeanClass M → α`. -/
 @[to_additive "Lift a `M → α` function to `ArchimedeanClass M → α`."]
-def lift {α : Type*} (f : M → α) (h : ∀ (a b : M), mk a = mk b → f a = f b) :
+def lift {α : Type*} (f : M → α) (h : ∀ a b, mk a = mk b → f a = f b) :
     MulArchimedeanClass M → α :=
   Quotient.lift f fun _ _ h' ↦ h _ _ <| mk_eq_mk.mpr h'
 
 @[to_additive (attr := simp)]
-theorem lift_mk {α : Type*} (f : M → α) (h : ∀ (a b : M), mk a = mk b → f a = f b)
+theorem lift_mk {α : Type*} (f : M → α) (h : ∀ a b, mk a = mk b → f a = f b)
     (a : M) : lift f h (mk a) = f a := by
   unfold lift
   exact Quotient.lift_mk f (fun _ _ h' ↦ h _ _ <| mk_eq_mk.mpr h') a
@@ -431,12 +431,12 @@ section LiftHom
 
 variable {α : Type*} [PartialOrder α]
 
-/-- Lift a `M → α` function to `MulArchimedeanClass M →o α`, requiring it is monotone
-with respect to archimedean classes. -/
-@[to_additive "Lift a `M → α` function to `ArchimedeanClass M →o α`, requiring it is monotone
-with respect to archimedean classes."]
+/-- Lift a function `M → α` that's monotone along archimedean classes to a
+monotone function `MulArchimedeanClass M →o α`. -/
+@[to_additive "Lift a function `M → α` that's monotone along archimedean classes to a
+monotone function `ArchimedeanClass M →o α`."]
 noncomputable
-def liftOrderHom (f : M → α) (h : ∀ (a b : M), mk a ≤ mk b → f a ≤ f b) :
+def liftOrderHom (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f b) :
     MulArchimedeanClass M →o α where
   toFun := lift f fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)
   monotone' A B hle := by
@@ -445,7 +445,7 @@ def liftOrderHom (f : M → α) (h : ∀ (a b : M), mk a ≤ mk b → f a ≤ f 
     simpa using h a b (mk_le_mk.mp hle)
 
 @[to_additive (attr := simp)]
-theorem liftOrderHom_mk (f : M → α) (h : ∀ (a b : M), mk a ≤ mk b → f a ≤ f b) (a : M) :
+theorem liftOrderHom_mk (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f b) (a : M) :
     liftOrderHom f h (mk a) = f a :=
   lift_mk f (fun a b heq ↦ le_antisymm (h a b heq.le) (h b a heq.ge)) a
 
@@ -520,10 +520,10 @@ theorem lift_mk {α : Type*} (f : {a : M // a ≠ 1} → α)
     (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop = mk b.prop → f a = f b) {a : M} (ha : a ≠ 1) :
     lift f h (mk ha) = f ⟨a, ha⟩ := by simp [lift, mk, ha]
 
-/-- Lift a `f : {a : M // a ≠ 1} → α` function to `MulArchimedeanClass₁ M →o α`.,
-requiring it is monotone with respect to archimedean classes. -/
-@[to_additive "Lift a `f : {a : M // a ≠ 0} → α` function to `ArchimedeanClass₀ M →o α`.,
-requiring it is monotone with respect to archimedean classes."]
+/-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+monotone function `MulArchimedeanClass₁ M →o α`. -/
+@[to_additive "Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+monotone function `ArchimedeanClass₀ M₁ →o α`."]
 noncomputable
 def liftOrderHom {α : Type*} [PartialOrder α]
     (f : {a : M // a ≠ 1} → α) (h : ∀ (a b : {a : M // a ≠ 1}), mk a.prop ≤ mk b.prop → f a ≤ f b) :
