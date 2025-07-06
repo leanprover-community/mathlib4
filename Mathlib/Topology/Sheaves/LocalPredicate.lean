@@ -247,7 +247,7 @@ def monodromy (b b' : U) : F b ≃ F b' where
   right_inv _ := by simp_rw [h.sec_eq_of_pred (h.pred_sec _), h.sec_apply]
 
 include h in
-/-- The trivialization associated -/
+/-- The trivialization induced by a set of sections constant on `U`. -/
 def trivializationOn : TrivializationOn P U (F b) where
   sec := h.sec
   pred := h.pred_sec
@@ -259,23 +259,13 @@ namespace TrivializationOn
 
 variable {U : Opens B} {ι} (t : TrivializationOn P U ι)
 
-section -- TO REMOVE
-
-variable {ι : Type*} {π : ι → Type*} {p : ι → Prop}
-
-/-- The `Sigma` type indexed by a subtype can be canonically identified with a subtype of the
-`Sigma` type indexed by the whole type. -/
-def _root_.Equiv.sigmaSubtypeComm : (Σ i : Subtype p, π i) ≃ {f : Σ i, π i // p f.1} where
-  toFun f := ⟨⟨_, f.2⟩, f.1.2⟩
-  invFun f := ⟨⟨_, f.2⟩, f.1.2⟩
-
-end
-
 /-- A trivialization of a set of sections over a set `U` induces a trivialization of the `Sigma`
 type over `U`. -/
 def equiv : {f : Σ b, F b // f.1 ∈ U} ≃ U × ι :=
   .trans (.symm (.trans (.sigmaCongrRight (.ofBijective _ <| t.bijective ·)) .sigmaSubtypeComm))
     (.sigmaEquivProd ..)
+
+lemma symm_apply_coe (x : U × ι) : t.equiv.symm x = Sigma.mk _ (t.sec x.2 x.1) := rfl
 
 lemma preimage_snd_comp_equiv (i : ι) :
     Prod.snd ∘ t.equiv ⁻¹' {i} = Subtype.val ⁻¹' Set.range (Sigma.mk _ <| t.sec i ·) :=

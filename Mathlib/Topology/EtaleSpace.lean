@@ -74,49 +74,49 @@ set_option linter.unusedVariables false in
 /-- The underlying type of the étale space associated to a predicate on sections of a type family
 is simply the sigma type. -/
 @[nolint unusedArguments]
-def EtaleSpace (pred : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) : Type _ := Σ b, F b
+def EtaleSpace (P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) : Type _ := Σ b, F b
 
 namespace EtaleSpace
 
-variable {pred : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop}
+variable {P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop}
 
 /-- Constructor for points in the étale space. -/
-@[simps] def mk {b : B} (x : F b) : EtaleSpace pred := ⟨b, x⟩
+@[simps] def mk {b : B} (x : F b) : EtaleSpace P := ⟨b, x⟩
 
 /-- The étale space is endowed with the strongest topology
 making every admissible section continuous. -/
-instance : TopologicalSpace (EtaleSpace pred) :=
-  ⨆ (U : Opens B) (s : Π b : U, F b) (_ : pred s), coinduced (mk <| s ·) inferInstance
+instance : TopologicalSpace (EtaleSpace P) :=
+  ⨆ (U : Opens B) (s : Π b : U, F b) (_ : P s), coinduced (mk <| s ·) inferInstance
 
-lemma isOpen_iff {V : Set (EtaleSpace pred)} :
+lemma isOpen_iff {V : Set (EtaleSpace P)} :
     IsOpen V ↔
-    ∀ (U : Opens B) (s : Π b : U, F b), pred s → IsOpen ((mk <| s ·) ⁻¹' V) := by
+    ∀ (U : Opens B) (s : Π b : U, F b), P s → IsOpen ((mk <| s ·) ⁻¹' V) := by
   simp_rw [isOpen_iSup_iff, isOpen_coinduced]
 
-lemma continuous_dom_iff {X} [TopologicalSpace X] {f : EtaleSpace pred → X} :
+lemma continuous_dom_iff {X} [TopologicalSpace X] {f : EtaleSpace P → X} :
     Continuous f ↔
-    ∀ (U : Opens B) (s : Π b : U, F b), pred s → Continuous (f <| mk <| s ·) := by
+    ∀ (U : Opens B) (s : Π b : U, F b), P s → Continuous (f <| mk <| s ·) := by
   simp_rw [continuous_def, isOpen_iff, preimage_preimage,
     ← forall_comm (α := Set X), ← forall_comm (α := IsOpen _)]
 
-variable (pred) in
+variable (P) in
 /-- The projection from the étale space down to the base is continuous. -/
-def proj : C(EtaleSpace pred, B) where
+def proj : C(EtaleSpace P, B) where
   toFun := Sigma.fst
   continuous_toFun := continuous_dom_iff.mpr fun _ _ _ ↦ continuous_subtype_val
 
 section Section
 
-variable {U : Opens B} {s : Π b : U, F b} (hs : pred s)
+variable {U : Opens B} {s : Π b : U, F b} (hs : P s)
 include hs
 
-lemma continuous_section : Continuous fun b ↦ (mk (s b) : EtaleSpace pred) :=
+lemma continuous_section : Continuous fun b ↦ (mk (s b) : EtaleSpace P) :=
   continuous_iff_coinduced_le.mpr (le_iSup₂_of_le U s <| le_iSup_of_le hs le_rfl)
 
 /-- The domain of any section is homeomorphic to its range. -/
-def homeomorphRangeSection : U ≃ₜ range fun b ↦ (mk (s b) : EtaleSpace pred) where
+def homeomorphRangeSection : U ≃ₜ range fun b ↦ (mk (s b) : EtaleSpace P) where
   toFun b := ⟨_, b, rfl⟩
-  invFun x := ⟨proj pred x, by obtain ⟨_, b, rfl⟩ := x; exact b.2⟩
+  invFun x := ⟨proj P x, by obtain ⟨_, b, rfl⟩ := x; exact b.2⟩
   left_inv _ := rfl
   right_inv := by rintro ⟨_, _, rfl⟩; rfl
   continuous_toFun := (continuous_section hs).subtype_mk _
@@ -124,19 +124,19 @@ def homeomorphRangeSection : U ≃ₜ range fun b ↦ (mk (s b) : EtaleSpace pre
     rintro ⟨_, b, rfl⟩; exact b.2
 
 theorem isOpenEmbedding_restrict_proj :
-    IsOpenEmbedding ((range (mk <| s ·)).restrict (proj pred)) :=
+    IsOpenEmbedding ((range (mk <| s ·)).restrict (proj P)) :=
   U.2.isOpenEmbedding_subtypeVal.comp (homeomorphRangeSection hs).symm.isOpenEmbedding
 
-theorem isOpen_range_section (inj : ∀ b, IsStalkInj pred b) :
-    IsOpen (range fun b ↦ (mk (s b) : EtaleSpace pred)) :=
+theorem isOpen_range_section (inj : ∀ b, IsStalkInj P b) :
+    IsOpen (range fun b ↦ (mk (s b) : EtaleSpace P)) :=
   isOpen_iff.mpr fun V t ht ↦ isOpen_iff_mem_nhds.mpr fun ⟨v, hv⟩ ⟨⟨u, hu⟩, he⟩ ↦ by
     cases congr($he.1)
     have ⟨W, iU, iV, eq⟩ := inj v ⟨U, hu⟩ ⟨V, hv⟩ _ _ hs ht congr($he.2)
     exact Filter.mem_of_superset ((W.1.2.preimage continuous_subtype_val).mem_nhds W.2)
       fun v hv ↦ ⟨⟨v, iU.le hv⟩, congr(mk $(eq ⟨v, hv⟩))⟩
 
-theorem isOpenEmbedding_section (inj : ∀ b, IsStalkInj pred b) :
-    IsOpenEmbedding fun b ↦ (mk (s b) : EtaleSpace pred) := by
+theorem isOpenEmbedding_section (inj : ∀ b, IsStalkInj P b) :
+    IsOpenEmbedding fun b ↦ (mk (s b) : EtaleSpace P) := by
   rw [isOpenEmbedding_iff, isEmbedding_iff, and_assoc]
   exact ⟨.of_comp (continuous_section hs) (proj _).continuous .subtypeVal,
     fun _ _ eq ↦ Subtype.ext congr(proj _ $eq), isOpen_range_section hs inj⟩
@@ -145,17 +145,17 @@ omit hs
 
 section InjSurj
 
-variable (inj : ∀ b, IsStalkInj pred b) (surj : ∀ b, IsStalkSurj pred b)
+variable (inj : ∀ b, IsStalkInj P b) (surj : ∀ b, IsStalkSurj P b)
 include inj surj
 
-theorem isLocalHomeomorph_proj : IsLocalHomeomorph (proj pred) :=
+theorem isLocalHomeomorph_proj : IsLocalHomeomorph (proj P) :=
   isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun x ↦
     have ⟨_U, _s, hs, eq⟩ := surj _ x.2
     ⟨_, (isOpen_range_section hs inj).mem_nhds ⟨_, congr(mk $eq)⟩, isOpenEmbedding_restrict_proj hs⟩
 
-theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace pred} :
+theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace P} :
     Continuous f ↔ Continuous (proj _ ∘ f) ∧ ∀ x, ∃ (U : OpenNhds (f x).1) (s : Π b : U.1, F b),
-      pred s ∧ ∃ V ∈ 𝓝 x, ∀ x' (h' : (f x').1 ∈ U.1), x' ∈ V → s ⟨_, h'⟩ = (f x').2 := by
+      P s ∧ ∃ V ∈ 𝓝 x, ∀ x' (h' : (f x').1 ∈ U.1), x' ∈ V → s ⟨_, h'⟩ = (f x').2 := by
   refine ⟨fun h ↦ ⟨(proj _).continuous.comp h, fun x ↦ ?_⟩,
     fun ⟨cont, eq⟩ ↦ continuous_iff_continuousAt.mpr fun x ↦ ?_⟩
   · have ⟨U, s, hs, eq⟩ := surj _ (f x).2
@@ -170,22 +170,22 @@ theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace pred} 
         fun x ↦ by exact congr(mk $(eq x x.2.1 x.2.2))).continuousAt
       (Filter.inter_mem (cont.continuousAt.preimage_mem_nhds (U.1.2.mem_nhds U.2)) hV)
 
-theorem isOpen_injOn_iff_exists_continuous_section {V : Set (EtaleSpace pred)} :
+theorem isOpen_injOn_iff_exists_continuous_section {V : Set (EtaleSpace P)} :
     IsOpen V ∧ V.InjOn (proj _) ↔ letI U := proj _ '' V
-    IsOpen U ∧ ∃ s : Π b : U, F b, letI sec b : EtaleSpace pred := mk (s b)
+    IsOpen U ∧ ∃ s : Π b : U, F b, letI sec b : EtaleSpace P := mk (s b)
       Continuous sec ∧ range sec = V := by
   rw [((isLocalHomeomorph_proj inj surj).isOpen_injOn_tfae V).out 0 3 rfl]
-  refine and_congr .rfl (.trans ?_ Sigma.piSubtypeEquivSubtypeSigma.exists_congr_left.symm)
-  simp_rw [show mk = Sigma.mk _ from rfl, Sigma.mk_mk_piSubtypeEquivSubtypeSigma]
+  refine and_congr .rfl (.trans ?_ Equiv.piSubtypeEquivSubtypeSigma.exists_congr_left.symm)
+  simp_rw [show mk = Sigma.mk _ from rfl, Equiv.mk_piSubtypeEquivSubtypeSigma]
   exact ⟨fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s, hs⟩, s.continuous, hsV⟩, fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s.1, hs⟩, s.2, hsV⟩⟩
 
 theorem isOpen_range_section_iff_of_isOpen {U : Set B} {s : Π b : U, F b} :
-    letI sec b : EtaleSpace pred := mk (s b)
+    letI sec b : EtaleSpace P := mk (s b)
     IsOpen (range sec) ↔ IsOpen U ∧ Continuous sec :=
   (isLocalHomeomorph_proj inj surj).isOpen_range_section_iff U rfl
 
 theorem isOpen_range_section_iff :
-    letI sec b : EtaleSpace pred := mk (s b)
+    letI sec b : EtaleSpace P := mk (s b)
     IsOpen (range sec) ↔ Continuous sec :=
   (isOpen_range_section_iff_of_isOpen inj surj).trans <| and_iff_right U.2
 
@@ -219,6 +219,23 @@ theorem isTopologicalBasis {P : PrelocalPredicate F}
     exact hb
 
 end Section
+
+namespace TrivializationOn
+
+variable {U : Opens B} {ι : Type*} [TopologicalSpace ι] [DiscreteTopology ι]
+variable (t : TrivializationOn P U ι) (inj : ∀ b, IsStalkInj P b)
+
+/-- The étale space of a set of sections with a trivialization on `U` evenly covers `U` via
+the projection map. -/
+noncomputable def homeomorph : proj P ⁻¹' U ≃ₜ U × ι where
+  __ := t.equiv
+  continuous_toFun := (proj P).continuous.restrictPreimage.prodMk <| continuous_discrete_rng.2 <| by
+    convert fun i ↦ (isOpen_range_section (t.pred i) inj).preimage continuous_subtype_val
+    exact t.preimage_snd_comp_equiv _
+  continuous_invFun := continuous_prod_of_discrete_right.mpr
+    fun i ↦ (continuous_section (t.pred i)).subtype_mk _
+
+end TrivializationOn
 
 end EtaleSpace
 
