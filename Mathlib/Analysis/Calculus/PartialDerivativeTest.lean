@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.Gradient.Basic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # The Second Partial Derivatives Test
