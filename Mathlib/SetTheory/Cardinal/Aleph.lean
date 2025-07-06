@@ -314,9 +314,8 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
 theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
   rw [← preAleph_omega0, preAleph_le_preAleph]
 
-theorem card_le_preAleph (o : Ordinal) : o.card ≤ preAleph o := by
-  rw [← card_preOmega]
-  exact Ordinal.card_le_card (le_preOmega_self o)
+theorem card_le_preAleph (o : Ordinal) : o.card ≤ preAleph o :=
+  o.card_preOmega.trans_ge <| card_le_card <| o.le_preOmega_self
 
 theorem le_preAleph_ord (c : Cardinal) : c ≤ preAleph c.ord := by
   simpa using card_le_preAleph c.ord
