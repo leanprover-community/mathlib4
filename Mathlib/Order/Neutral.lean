@@ -87,21 +87,17 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         have e4' : (x ⊔ y) ⊓ (y ⊓ z) = (y ⊓ z) :=
           inf_eq_right.mpr (le_trans inf_le_left le_sup_right)
         rw [e3', e4'] at e2'
+        have e5 : r (x ⊓ y ⊓ z) (y ⊔ z) := h2 (y := y ⊓ z) _ _
+          (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' ((h1 _ _).mp hyz)
+        apply h2 (y := y ⊔ z)
+        rw [inf_assoc]
+        apply inf_le_of_right_le
+        exact inf_le_sup
+        rw [sup_assoc]
+        exact le_sup_right
+        apply e5
+        apply e2
 
-
-
-
-
-
-
-
-
-          --(h3 _ _ _ inf_le_sup ((h1 x y).mp hxy)).1
-
-
-
-
-        sorry
 
 
 
