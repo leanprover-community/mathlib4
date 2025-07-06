@@ -14,7 +14,7 @@ In this file, we collect a few results regarding integrability, on a measure spa
 of a `C(Y, E)`-valued function, where `Y` is a compact topological space and `E` is a normed group.
 
 These are all elementary from a mathematical point of view, but they require a bit of care in order
-to be conveniently usable. In particular, to accomodate the need of families `f : X → Y → E` which
+to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` which
 such that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
 integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumption only mention `f` (so that
 user don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
