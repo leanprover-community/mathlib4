@@ -687,20 +687,9 @@ If $f$ is not differentiable at $\overline{z}$, then both sides have the junk va
 -/
 theorem deriv_conj_comp_comp_conj (f : ℂ → ℂ) (z : ℂ) :
     deriv (conj ∘ f ∘ conj) (conj z) = conj (deriv f z) := by
-  -- Case analysis on whether f is differentiable at p
-  set g := conj ∘ f ∘ conj
   by_cases hf : DifferentiableAt ℂ f z
-  · exact (hasDerivAt_conj_comp_comp_conj hf.hasDerivAt).deriv
-  · by_cases hg : DifferentiableAt ℂ g (conj z)
-    · -- If g were differentiable, then f would be differentiable
-      have : DifferentiableAt ℂ f z := by
-        convert (hasDerivAt_conj_comp_comp_conj hg.hasDerivAt).differentiableAt using 2
-        · ext w
-          simp[g]
-        · simp
-      contradiction
-    · -- Both derivatives are zero when the functions are not differentiable
-      rw [deriv_zero_of_not_differentiableAt hg, deriv_zero_of_not_differentiableAt hf, map_zero]
+  · exact hf.hasDerivAt.conj_comp_comp_conj.deriv
+  · simp [deriv_zero_of_not_differentiableAt, hf, differentiableAt_conj_comp_comp_conj_iff]
 
 /--
 Let $f : \mathbb{C} \to \mathbb{C}$ be a function. Then the derivative of the function
