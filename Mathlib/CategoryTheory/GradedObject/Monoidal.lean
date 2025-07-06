@@ -43,7 +43,7 @@ lemma hasTensor_of_iso {X₁ X₂ Y₁ Y₂ : GradedObject I C}
     HasTensor Y₁ Y₂ := by
   let e : ((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂ ≅
     ((mapBifunctor (curriedTensor C) I I).obj Y₁).obj Y₂ := isoMk _ _
-      (fun ⟨i, j⟩ ↦ (eval i).mapIso e₁ ⊗ (eval j).mapIso e₂)
+      (fun ⟨i, j⟩ ↦ (eval i).mapIso e₁ ⊗ᵢ (eval j).mapIso e₂)
   exact hasMap_of_iso e _
 
 namespace Monoidal
@@ -96,7 +96,7 @@ noncomputable def tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ �
 lemma ι_tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
     ιTensorObj X₁ Y₁ i₁ i₂ i₁₂ h ≫ tensorHom f g i₁₂ =
-      (f i₁ ⊗ g i₂) ≫ ιTensorObj X₂ Y₂ i₁ i₂ i₁₂ h := by
+      (f i₁ ⊗ₘ g i₂) ≫ ιTensorObj X₂ Y₂ i₁ i₂ i₁₂ h := by
   rw [MonoidalCategory.tensorHom_def, assoc]
   apply ι_mapBifunctorMapMap
 
@@ -214,7 +214,7 @@ variable {X₁ X₂ X₃}
 lemma ιTensorObj₃_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom f₁ (tensorHom f₂ f₃) j =
-      (f₁ i₁ ⊗ f₂ i₂ ⊗ f₃ i₃) ≫ ιTensorObj₃ Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
+      (f₁ i₁ ⊗ₘ f₂ i₂ ⊗ₘ f₃ i₃) ≫ ιTensorObj₃ Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
   rw [ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
     ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
     ← id_tensorHom, ← id_tensorHom, ← MonoidalCategory.tensor_comp_assoc, ι_tensorHom,
@@ -258,7 +258,7 @@ variable {X₁ X₂ X₃}
 lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom (tensorHom f₁ f₂) f₃ j =
-      ((f₁ i₁ ⊗ f₂ i₂) ⊗ f₃ i₃) ≫ ιTensorObj₃' Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
+      ((f₁ i₁ ⊗ₘ f₂ i₂) ⊗ₘ f₃ i₃) ≫ ιTensorObj₃' Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
   rw [ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
     ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
     ← tensorHom_id, ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,

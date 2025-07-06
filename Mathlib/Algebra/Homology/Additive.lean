@@ -247,14 +247,14 @@ noncomputable def singleMapHomologicalComplex (j : ι) :
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · rw [zero_comp, ← F.map_id,
               (isZero_single_obj_X c j X _ h).eq_of_src (𝟙 _) 0, F.map_zero]
         inv_hom_id := by
           ext i
           dsimp
           split_ifs with h
-          · simp [h]
+          · simp
           · apply (isZero_single_obj_X c j _ _ h).eq_of_src })
     fun f => by
       ext i
