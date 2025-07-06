@@ -3,7 +3,6 @@ Copyright (c) 2025 Beibei Xiong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Beibei Xiong, Yu Shao, Weijie Jiang
 -/
-import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Choose.Basic
