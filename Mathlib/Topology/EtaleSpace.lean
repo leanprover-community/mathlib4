@@ -41,9 +41,12 @@ between sheaves and étale spaces.
 ## Main definitions
 
 
+## Main results
+
+
 -/
 
-open CategoryTheory TopologicalSpace Opposite Set
+open CategoryTheory Topology TopologicalSpace Opposite Set
 
 universe u v
 
@@ -86,10 +89,6 @@ def proj : C(EtaleSpace pred, B) where
 
 section Section
 
-lemma injOn_proj_iff {U : Set (EtaleSpace pred)} :
-    U.InjOn (proj _) ↔ ∃ s : Π b : proj _ '' U, F b, U = range (mk <| s ·) :=
-  Sigma.injOn_fst_iff
-
 variable {U : Opens B} {s : Π b : U, F b} (hs : pred s)
 include hs
 
@@ -113,8 +112,6 @@ theorem isOpen_range_section (inj : ∀ b, IsStalkInj pred b) :
     have ⟨W, iU, iV, eq⟩ := inj v ⟨U, hu⟩ ⟨V, hv⟩ _ _ hs ht congr($he.2)
     exact Filter.mem_of_superset ((W.1.2.preimage continuous_subtype_val).mem_nhds W.2)
       fun v hv ↦ ⟨⟨v, iU.le hv⟩, congr(mk $(eq ⟨v, hv⟩))⟩
-
-open Topology
 
 theorem isOpenEmbedding_section (inj : ∀ b, IsStalkInj pred b) :
     IsOpenEmbedding fun b ↦ (mk (s b) : EtaleSpace pred) := by
@@ -209,59 +206,6 @@ theorem isTopologicalBasis {P : PrelocalPredicate F}
 
 end Section
 
+end EtaleSpace
 
--- a presheaf is a sheaf iff its prelocal predicate is local ..
-
-variable (F)
-
-
-variable (X : Type*) [TopologicalSpace X] (p : C(X, B))
-
-def adjunction : {f : C(F.EtaleSpace, X) // p.comp f = proj F} ≃
-    {f : (Π U, F.obj U → (sheafOfSections p).1.obj U) //
-      ∀ U V (i : U ⟶ V), (sheafOfSections p).1.map i ∘ f U = f V ∘ F.map i} where
-  toFun := _
-  invFun := _
-  left_inv := _
-  right_inv := _
-
--- the opens in the etale space of a local predicate are exactly images of germMap .. no, only if proj is injective on the open
-
--- many functors!
--- Presheaf B -EtaleSpace→ LocalHomeo/B -sections→ Sheaf B : composition NatIso to sheafification ..
--- Presheaf -sheafification→ Sheaf -forget→ Presheaf .. adjunction such that one composition is iso to identity ..
-
-
-
-
-
-variable {X : Type*} [TopologicalSpace X] {B : TopCat}
-
-/-- The continuous sections of a (not necessarily continuous) function between two
-  topological spaces form a sheaf over the base space. -/
-def sheafOfSections (p : X → B) : B.Sheaf (Type _) :=
-  B.subsheafToTypes <| (B.continuousLocal X).and <| B.isSection p
-
-/-- The stalks of the sheaf of sections are in bijections with the fibers. -/
-def stalkSectionsEquivFiber (p : X → B) (b : B) :
-    (sheafOfSections p).presheaf.stalk b ≃ p ⁻¹' {b} where
-  toFun := ⟨_, _⟩
-  invFun := _
-  left_inv := _
-  right_inv := _
-
-
--- stalks of this sheaf is equiv to fibers of p?
--- should be the case since sheafification preserves stalks
-
--- Right adjoint is fully faithful iff the counit is an isomorphism  ...
--- "reflection", coreflection -- reflective
--- idempotent adjunction: reflective, coreflective
--- monadic adjunction
-
--- sections can be considered to be morphisms between certain objects of Top/B .. Yoneda?
--- use open set in B as "test objects"
-
-
-def EtaleSpaceOver (B : TopCat) : Type _ :=
-  ObjectProperty.FullSubcategory fun f : Over B ↦ IsLocalHomeomorph f.hom
+end TopCat
