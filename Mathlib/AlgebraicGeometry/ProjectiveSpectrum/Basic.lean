@@ -303,7 +303,7 @@ lemma awayι_preimage_basicOpen :
   ext1
   trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl))).base
   · rw [← pullbackAwayιIso_inv_fst 𝒜 f_deg hm g_deg hm' rfl]
-    simp only [TopologicalSpace.Opens.map_coe, Scheme.Hom.coe_opensRange, Scheme.comp_coeBase,
+    simp only [TopologicalSpace.Opens.map_coe, Scheme.comp_coeBase,
       TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
     rw [Set.range_eq_univ.mpr (by exact
       (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' rfl).inv.homeomorph.surjective),
@@ -312,7 +312,6 @@ lemma awayι_preimage_basicOpen :
   · letI := (awayMap (f := f) 𝒜 g_deg rfl).toAlgebra
     letI := HomogeneousLocalization.Away.isLocalization_mul f_deg g_deg rfl hm.ne'
     exact PrimeSpectrum.localization_away_comap_range _ _
-
 
 open TopologicalSpace.Opens in
 /-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
@@ -396,7 +395,7 @@ lemma homOfLE_toBasicOpenOfGlobalSections_ι
   simp only [← Category.assoc, ← Spec.map_comp, ← CommRingCat.ofHom_comp]
   congr 3
   ext
-  simp only [Fin.isValue, RingHom.coe_comp, Function.comp_apply,
+  simp only [RingHom.coe_comp, Function.comp_apply,
     HomogeneousLocalization.algebraMap_apply, HomogeneousLocalization.val_awayMap]
   simp only [← RingHom.comp_apply]
   congr 1
@@ -418,7 +417,7 @@ def openCoverOfMapIrreleventEqTop : X.OpenCover :=
       apply le_antisymm
       · rw [Ideal.span_le, Set.range_subset_iff]
         rintro ⟨i, r, hi0, hri⟩
-        simp [Subtype.ext_iff, -ZeroMemClass.coe_eq_zero,
+        simp [-ZeroMemClass.coe_eq_zero,
           DirectSum.decompose_of_mem_ne 𝒜 hri hi0.ne']
       · intro x hx
         rw [← DirectSum.sum_support_decompose 𝒜 x]
@@ -469,7 +468,7 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
       ← Scheme.comp_base_apply, basicOpenIsoSpecAway, IsOpenImmersion.isoOfRangeEq_hom_fac] at hx
     rw [← Scheme.toSpecΓ_preimage_basicOpen, TopologicalSpace.Opens.map_coe, Set.mem_preimage]
     refine Set.mem_of_subset_of_mem (Set.image_subset_iff.mpr ?_) hx
-    show PrimeSpectrum.basicOpen _ ≤ PrimeSpectrum.basicOpen _
+    change PrimeSpectrum.basicOpen _ ≤ PrimeSpectrum.basicOpen _
     simp only [CommRingCat.ofHom_comp, CommRingCat.hom_comp, CommRingCat.hom_ofHom,
       RingHom.coe_comp, Function.comp_apply, HomogeneousLocalization.algebraMap_apply,
       HomogeneousLocalization.Away.val_mk, Localization.mk_eq_mk', IsLocalization.map_mk', map_pow,
