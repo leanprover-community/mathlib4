@@ -87,8 +87,8 @@ noncomputable def hessianBilinearCompanion {V : Type*}
 }
 
 /-- TODO: for a more familiar constructor when R is a ring, see QuadraticMap.ofPolar -/
-noncomputable def iteratedFDerivQuadraticMap {V : Type*} [AddCommGroup V]
-    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+noncomputable def iteratedFDerivQuadraticMap {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
   QuadraticMap ℝ V ℝ :=
   {
     toFun := fun y => iteratedFDeriv ℝ 2 f x₀ ![y,y]
