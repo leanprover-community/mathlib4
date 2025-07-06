@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.Shrink
+import Mathlib.Algebra.Small.Group
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types.Limits
 

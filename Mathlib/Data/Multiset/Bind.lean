@@ -141,7 +141,7 @@ theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
 
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
-    (h : β = β') (hf : ∀ a ∈ m, f a ≍ f' a) : bind m f ≍ bind m f' := by
+    (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
   subst h
   simp only [heq_eq_eq] at hf
   simp [bind_congr hf]

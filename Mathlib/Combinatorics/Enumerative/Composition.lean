@@ -583,7 +583,7 @@ protected def cast (c : Composition m) (hmn : m = n) : Composition n where
 @[simp]
 theorem cast_rfl (c : Composition n) : c.cast rfl = c := rfl
 
-theorem cast_heq (c : Composition m) (hmn : m = n) : c.cast hmn ≍ c := by subst m; rfl
+theorem cast_heq (c : Composition m) (hmn : m = n) : HEq (c.cast hmn) c := by subst m; rfl
 
 theorem cast_eq_cast (c : Composition m) (hmn : m = n) :
     c.cast hmn = cast (hmn ▸ rfl) c := by

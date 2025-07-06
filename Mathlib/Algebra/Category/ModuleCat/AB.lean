@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Module.Shrink
+import Mathlib.Algebra.Small.Module
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 /-!
 

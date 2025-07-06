@@ -5,7 +5,6 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Integration of bounded continuous functions

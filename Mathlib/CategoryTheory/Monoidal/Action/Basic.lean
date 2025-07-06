@@ -29,6 +29,7 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
   classifying bicategory of `C` to `Cat`.
 * Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
 * Right actions as monoidal functors C ⥤ D ⥤ D.
+* Left actions of `C` as right `Cᴹᵒᵖ`-actions, and vice-versa.
 * (Right) Action of `(C ⥤ C)` on `C`.
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.

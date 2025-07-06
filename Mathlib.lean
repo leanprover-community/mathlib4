@@ -390,7 +390,6 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.Group.Semiconj.Units
-import Mathlib.Algebra.Group.Shrink
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
@@ -686,7 +685,6 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.RingHom
-import Mathlib.Algebra.Module.Shrink
 import Mathlib.Algebra.Module.SnakeLemma
 import Mathlib.Algebra.Module.SpanRank
 import Mathlib.Algebra.Module.Submodule.Basic
@@ -1074,7 +1072,6 @@ import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Semireal.Defs
-import Mathlib.Algebra.Ring.Shrink
 import Mathlib.Algebra.Ring.Subgroup
 import Mathlib.Algebra.Ring.Submonoid
 import Mathlib.Algebra.Ring.Submonoid.Basic
@@ -1097,6 +1094,9 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+import Mathlib.Algebra.Small.Group
+import Mathlib.Algebra.Small.Module
+import Mathlib.Algebra.Small.Ring
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
@@ -2295,7 +2295,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
@@ -2380,7 +2379,6 @@ import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Monad.Types
 import Mathlib.CategoryTheory.Monoidal.Action.Basic
 import Mathlib.CategoryTheory.Monoidal.Action.LinearFunctor
-import Mathlib.CategoryTheory.Monoidal.Action.Opposites
 import Mathlib.CategoryTheory.Monoidal.Bimod
 import Mathlib.CategoryTheory.Monoidal.Bimon_
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
@@ -3297,7 +3295,6 @@ import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Data.Nat.Factorization.LCM
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
@@ -6447,7 +6444,6 @@ import Mathlib.Topology.Order.LawsonTopology
 import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Order.LeftRightLim
 import Mathlib.Topology.Order.LeftRightNhds
-import Mathlib.Topology.Order.LiminfLimsup
 import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Order.Monotone

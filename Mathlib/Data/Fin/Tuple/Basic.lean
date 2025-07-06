@@ -1026,8 +1026,8 @@ not a definitional equality. -/
 /-- A `HEq` version of `Fin.removeNth_removeNth_eq_swap`. -/
 theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α i)
     (i : Fin (n + 1)) (j : Fin (n + 2)) :
-    i.removeNth (j.removeNth m) ≍
-      (i.predAbove j).removeNth ((j.succAbove i).removeNth m) := by
+    HEq (i.removeNth (j.removeNth m))
+      ((i.predAbove j).removeNth ((j.succAbove i).removeNth m)) := by
   apply Function.hfunext rfl
   simp only [heq_iff_eq]
   rintro k _ rfl
