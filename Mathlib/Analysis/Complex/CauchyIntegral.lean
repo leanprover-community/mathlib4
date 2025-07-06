@@ -647,4 +647,68 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       exact (d z m).differentiableWithinAt
     exact h _ m
 
+open ComplexConjugate
+
+/--
+Let $f : \mathbb{C} \to \mathbb{C}$ be a complex differentiable function at $z \in \mathbb{C}$ with
+derivative $f'(z)$. Then the function $g(w) = \overline{f(\overline{w})}$ is complex differentiable
+at $\overline{z}$ with derivative $\overline{f'(\overline{z})}$.
+-/
+theorem hasDerivAt_conj_comp_comp_conj {f : ℂ → ℂ} {z f' : ℂ} (hf : HasDerivAt f f' z) :
+    HasDerivAt (conj ∘ f ∘ conj) (conj f') (conj z) := by
+  rw [hasDerivAt_iff_tendsto] at hf ⊢
+  have := continuous_conj.tendsto (conj z)
+  rw [conj_conj] at this
+  have := Filter.Tendsto.comp hf this
+  convert this with w
+  simp only [conj_conj, smul_eq_mul, Function.comp_apply]
+  congr 1
+  · congr 1
+    rw[← norm_conj]
+    simp
+  · rw[← norm_conj]
+    simp
+
+/--
+Let $f : \mathbb{C} \to \mathbb{C}$ be a complex differentiable function at $z \in \mathbb{C}$ with
+derivative $f'(z)$. Then the function $g(w) = \overline{f(\overline{w})}$ is complex differentiable
+at $\overline{z}$ with derivative $\overline{f'(\overline{z})}$.
+-/
+theorem hasDerivAt_conj_comp_comp_conj' {f : ℂ → ℂ} {z f' : ℂ} (hf : HasDerivAt f f' (conj z)) :
+    HasDerivAt (conj ∘ f ∘ conj) (conj f') z :=
+  (conj_conj z) ▸ hasDerivAt_conj_comp_comp_conj hf
+/--
+Let $f : \mathbb{C} \to \mathbb{C}$ be a function. Then the derivative of the function
+$g(z) = \overline{f(\overline{z})}$ at $\overline{z}$ is $\overline{f'(z)}$.
+If $f$ is not differentiable at $\overline{z}$, then both sides have the junk value $0$.
+-/
+theorem deriv_conj_comp_comp_conj (f : ℂ → ℂ) (z : ℂ) :
+    deriv (conj ∘ f ∘ conj) (conj z) = conj (deriv f z) := by
+  -- Case analysis on whether f is differentiable at p
+  set g := conj ∘ f ∘ conj
+  by_cases hf : DifferentiableAt ℂ f z
+  · exact (hasDerivAt_conj_comp_comp_conj hf.hasDerivAt).deriv
+  · by_cases hg : DifferentiableAt ℂ g (conj z)
+    · -- If g were differentiable, then f would be differentiable
+      have : DifferentiableAt ℂ f z := by
+        convert (hasDerivAt_conj_comp_comp_conj hg.hasDerivAt).differentiableAt using 2
+        · ext w
+          simp[g]
+        · simp
+      contradiction
+    · -- Both derivatives are zero when the functions are not differentiable
+      rw [deriv_zero_of_not_differentiableAt hg, deriv_zero_of_not_differentiableAt hf, map_zero]
+
+/--
+Let $f : \mathbb{C} \to \mathbb{C}$ be a function. Then the derivative of the function
+$g(w) = \overline{f(\overline{w})}$ at $w$ is $\overline{f'(\overline{w})}$.
+If $f$ is not differentiable at $\overline{w}$, then both sides have the junk value $0$.
+-/
+@[simp]
+theorem deriv_conj_comp_comp_conj' (f : ℂ → ℂ) :
+    deriv (conj ∘ f ∘ conj) = conj ∘ (deriv f) ∘ conj := by
+  ext z
+  nth_rw 1 [← conj_conj z]
+  exact deriv_conj_comp_comp_conj ..
+
 end Complex
