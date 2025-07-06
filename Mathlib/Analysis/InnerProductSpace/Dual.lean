@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Group.NullSubmodule
+import Mathlib.Topology.Algebra.Module.Dual
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -56,11 +56,11 @@ local postfix:90 "†" => starRingEnd _
 
 /-- An element `x` of an inner product space `E` induces an element of the dual space `Dual 𝕜 E`,
 the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
-into `Dual 𝕜 E`.
+into `ContinuousLinearMap.Dual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/
-def toDualMap : E →ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
+def toDualMap : E →ₗᵢ⋆[𝕜] Dual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
 
 variable {E}
@@ -121,7 +121,7 @@ variable [CompleteSpace E]
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
-def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
+def toDual : E ≃ₗᵢ⋆[𝕜] Dual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
@@ -168,12 +168,12 @@ theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
 @[simp]
-theorem toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
+theorem toDual_symm_apply {x : E} {y : Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
-given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
+given by interpreting the form as a map `B : E →L⋆[𝕜] ContinuousLinearMap.Dual 𝕜 E`
 and dualizing the result using `toDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=

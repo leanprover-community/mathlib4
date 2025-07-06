@@ -9,17 +9,17 @@ import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Topology.Algebra.Module.Dual
 
 /-!
 # The topological dual of a normed space
 
-In this file we define the topological dual `NormedSpace.Dual` of a normed space, and the
-continuous linear map `NormedSpace.inclusionInDoubleDual` from a normed space into its double
-dual.
+In this file we define the continuous linear map `NormedSpace.inclusionInDoubleDual` from a normed
+space into its double dual.
 
 For base field `𝕜 = ℝ` or `𝕜 = ℂ`, this map is actually an isometric embedding; we provide a
 version `NormedSpace.inclusionInDoubleDualLi` of the map which is of type a bundled linear
-isometric embedding, `E →ₗᵢ[𝕜] (Dual 𝕜 (Dual 𝕜 E))`.
+isometric embedding, `E →ₗᵢ[𝕜] (ContinuousLinearMap.Dual 𝕜 (ContinuousLinearMap.Dual 𝕜 E))`.
 
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
@@ -43,7 +43,7 @@ dual, polar
 
 noncomputable section
 
-open Topology Bornology
+open Topology Bornology ContinuousLinearMap
 
 universe u v
 
@@ -54,9 +54,6 @@ section General
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-/-- The topological dual of a seminormed space `E`. -/
-abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
 as a bounded linear map. -/
@@ -77,18 +74,6 @@ theorem inclusionInDoubleDual_norm_le : ‖inclusionInDoubleDual 𝕜 E‖ ≤ 1
 
 theorem double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
   simpa using ContinuousLinearMap.le_of_opNorm_le _ (inclusionInDoubleDual_norm_le 𝕜 E) x
-
-/-- The dual pairing as a bilinear form. -/
-def dualPairing : Dual 𝕜 E →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
-  ContinuousLinearMap.coeLM 𝕜
-
-@[simp]
-theorem dualPairing_apply {v : Dual 𝕜 E} {x : E} : dualPairing 𝕜 E v x = v x :=
-  rfl
-
-theorem dualPairing_separatingLeft : (dualPairing 𝕜 E).SeparatingLeft := by
-  rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
-  exact ContinuousLinearMap.coe_injective
 
 end General
 
