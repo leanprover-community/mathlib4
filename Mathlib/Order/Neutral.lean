@@ -55,23 +55,35 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
       apply (h3 _ _ _ (inf_le_of_left_le hb.2) _).1
       rw [← sup_eq_right.mpr (le_inf hb.1 hc.1), ← sup_eq_left.mpr (inf_le_of_left_le hb.2)]
       exact (h3 _ _ _ (le_trans hb.1 hb.2) h).2
-    sorry
-
-/-
-      calc
-        r (b ⊓ c) ((b ⊓ c) ⊓ (b ⊔ c)) := sorry
-        r _ (b ⊔ c) := sorry
--/
-        --(b ⊔ c) := sorry
-
-    /-
     constructor
     · constructor
       · intro x
         exact h.refl _
-      · sorry
-      · intro x y z h1 h2
-      -/
+      · intro x y hxy
+        rw [h1, inf_comm, sup_comm, ← h1]
+        exact hxy
+      · intro x y z hxy hyz
+        apply e1 (a := x ⊓ y ⊓ z) (d := x ⊔ y ⊔ z)
+        rw [Set.mem_Icc]
+        constructor
+        · rw [inf_assoc]
+          exact inf_le_left
+        · rw [sup_assoc]
+          exact le_sup_left
+        simp only [Set.mem_Icc, inf_le_right, le_sup_right, and_self]
+        have e2 : r ((x ⊓ y) ⊔ (y ⊔ z)) ((x ⊔ y) ⊔ (y ⊔ z)) :=
+          (h3 _ _ _ inf_le_sup ((h1 x y).mp hxy)).2
+        have e3 : (x ⊔ y) ⊔ (y ⊔ z) = x ⊔ y ⊔ z := by
+          rw [sup_comm x y]
+          rw [← sup_sup_distrib_left]
+          rw [sup_assoc]
+        rw [e3] at e2
+
+
+
+
+
+        sorry
 
 
 
