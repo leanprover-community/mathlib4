@@ -71,7 +71,6 @@ lemma IsSigmaAlgebra_of_measurableSpace :
   congrArg (fun t : MeasurableSpace α => t.SigmaAlgebra) generateFrom_sigmaAlgebra_eq
 
 /-- Any bundled measurable set is, by definition, a member of `m.SigmaAlgebra`. -/
-@[simp]
 lemma Subtype.mem_sigma {s : {t : Set α // MeasurableSet t}} :
     (s : Set α) ∈ m.SigmaAlgebra :=
   mem_SigmaAlgebra.2 s.property

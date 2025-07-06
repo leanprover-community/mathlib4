@@ -4417,6 +4417,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.MeasureTheory.MeasurableSpace.SigmaAlgebra
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
