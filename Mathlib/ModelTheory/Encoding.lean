@@ -256,8 +256,8 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
     · obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
       rw [cast_eq_iff_heq]
       exact (Sigma.ext_iff.1 ((Sigma.eta (Option.get _ h1)).trans h2)).2
-    rw [List.drop_append_eq_append_drop, length_map, length_finRange, Nat.sub_self, drop,
-      drop_eq_nil_of_le, nil_append]
+    rw [List.drop_append, length_map, length_finRange, Nat.sub_self, drop, drop_eq_nil_of_le,
+      nil_append]
     rw [length_map, length_finRange]
   | imp _ _ ih1 ih2 =>
     intro l

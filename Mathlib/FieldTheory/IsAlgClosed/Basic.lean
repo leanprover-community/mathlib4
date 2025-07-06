@@ -413,7 +413,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
   conv_lhs => rw [← hSR.symm_apply_apply x]
-  show equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
+  change equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
   rw [AlgEquiv.commutes]
 
 /-- Algebraic closure of isomorphic fields are isomorphic -/

@@ -28,7 +28,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProduct
 -/
 
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory
 
