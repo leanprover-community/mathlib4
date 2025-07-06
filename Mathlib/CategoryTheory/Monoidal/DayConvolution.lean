@@ -1267,6 +1267,10 @@ variable {C V}
       Limits.PreservesColimitsOfShape
         (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
 
+/-- Under suitable assumptions on existence of relevant Kan extensions and preservation
+of relevant colimit by the tensor product of `V`, we can define a `MonoidalCategory D`
+from the data of a fully faithful functor `ι : D ⥤ C ⥤ V` whose essential image
+contains a Day convolution unit and is stable under binary Day convolutions. -/
 noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
   letI induced : InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D :=
     .ofHasDayConvolutions ι ffι essImageDayConvolution essImageDayConvolutionUnit
@@ -1276,6 +1280,8 @@ noncomputable def monoidalOfHasDayConvolutions : MonoidalCategory D :=
   monoidalOfLawfulDayConvolutionMonoidalCategoryStruct C V D
 
 open InducedLawfulDayConvolutionMonoidalCategoryStructCore in
+/-- The monoidal category constructed via `monoidalOfHasDayConvolutions` has a canonical
+`LawfulDayConvolutionMonoidalCategoryStruct C V D`. -/
 noncomputable def lawfulDayConvolutionMonoidalCategoryStructOfHasDayConvolutions :
     letI := monoidalOfHasDayConvolutions
       ι ffι essImageDayConvolution essImageDayConvolutionUnit
