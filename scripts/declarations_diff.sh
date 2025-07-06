@@ -206,7 +206,7 @@ then
           close(hashCmd)
           diffUrl = prUrl "/files#diff-" hash
 
-          printf("<details>\n  <summary>[%s](%s)%s</summary>\n\n", file, diffUrl, summary)
+          printf("<details>\n  <summary><a href=\"%s\">%s</a> %s</summary>\n\n", diffUrl, file, summary)
 
           # Sort declarations alphabetically
           printf("%s", fileContent[file]) | "sort"
