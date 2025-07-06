@@ -145,6 +145,6 @@ Functions are harmonic iff their compositions with continuous linear equivalence
 -/
 theorem harmonicOnNhd_comp_CLE_iff (l : F ≃L[ℝ] G) :
     HarmonicOnNhd (l ∘ f) s ↔ HarmonicOnNhd f s :=
-  forall₂_congr fun _ _ ↦ harmonicAt_iff_harmonicAt_comp_CLE l
+  forall₂_congr fun _ _ ↦ harmonicAt_comp_CLE_iff l
 
 end InnerProductSpace
