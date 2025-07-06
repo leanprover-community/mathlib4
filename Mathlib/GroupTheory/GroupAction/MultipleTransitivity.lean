@@ -312,35 +312,7 @@ instance : IsPretransitive (Perm α) α := by
   simp only [Equiv.Perm.smul_def, Equiv.swap_apply_left x y]
 
 variable (α) in
-/-- The permutation group of `α` acts 2-pretransitively on `α`. -/
-theorem is_two_pretransitive :
-    IsMultiplyPretransitive (Perm α) α 2 := by
-  rw [is_two_pretransitive_iff]
-  classical
-  intro a b c d hab hcd
-  let k := Equiv.swap a c
-  have hc : c = k • a := by simp [k]
-  simp only [show c = k • a from by simp [k]]
-  suffices ∃ g, g • a = a ∧ g • b = k⁻¹ • d by
-    obtain ⟨g, h1, h2⟩ := this
-    use k * g
-    simp [mul_smul, h1, h2]
-  use swap b (k⁻¹ • d)
-  refine ⟨?_, by simp⟩
-  apply Equiv.swap_apply_of_ne_of_ne hab
-  intro ha'
-  apply hcd
-  have hd : d = k • a := by simp [ha']
-  rw [hc, hd]
-
-/-- The action of the permutation group of `α` on `α` is preprimitive -/
-instance : IsPreprimitive (Perm α) α := by
-  cases subsingleton_or_nontrivial α
-  · exact IsPreprimitive.of_subsingleton
-  · exact isPreprimitive_of_is_two_pretransitive (is_two_pretransitive _)
-
-variable (α) in
-/-- If `α` is infinite, then `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
+/-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm  α) α n := by
   rw [isMultiplyPretransitive_iff]
@@ -418,6 +390,10 @@ theorem isMultiplyPretransitive (n : ℕ) :
   use Equiv.ofBijective ψ this
   ext i
   simp [ψ, x.injective.extend_apply]
+
+/-- The action of the permutation group of `α` on `α` is preprimitive -/
+instance : IsPreprimitive (Perm α) α :=
+  isPreprimitive_of_is_two_pretransitive (isMultiplyPretransitive _ _)
 
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
