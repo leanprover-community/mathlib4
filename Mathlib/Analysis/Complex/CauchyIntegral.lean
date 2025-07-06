@@ -668,6 +668,7 @@ at $\overline{z}$ with derivative $\overline{f'(\overline{z})}$.
 theorem hasDerivAt_conj_comp_comp_conj' {f : ℂ → ℂ} {z f' : ℂ} (hf : HasDerivAt f f' (conj z)) :
     HasDerivAt (conj ∘ f ∘ conj) (conj f') z :=
   conj_conj z ▸ hasDerivAt_conj_comp_comp_conj hf
+
 /--
 Let $f : \mathbb{C} \to \mathbb{C}$ be a function. Then the derivative of the function
 $g(z) = \overline{f(\overline{z})}$ at $\overline{z}$ is $\overline{f'(z)}$.
