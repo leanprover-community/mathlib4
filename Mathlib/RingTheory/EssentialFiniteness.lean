@@ -95,7 +95,7 @@ lemma EssFiniteType.of_isLocalization (M : Submonoid R) [IsLocalization M S] :
     EssFiniteType R S := by
   rw [essFiniteType_iff]
   use ∅
-  simp only [Finset.coe_empty, Algebra.adjoin_empty, exists_and_left, Algebra.mem_bot,
+  simp only [Finset.coe_empty, Algebra.adjoin_empty, Algebra.mem_bot,
     Set.mem_range, exists_exists_eq_and]
   intro s
   obtain ⟨⟨x, t⟩, e⟩ := IsLocalization.surj M s
@@ -253,7 +253,7 @@ def EssFiniteType.finset (hf : f.EssFiniteType) : Finset S :=
 
 lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
   algebraize [f]
-  show Algebra.EssFiniteType R S
+  change Algebra.EssFiniteType R S
   infer_instance
 
 lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}

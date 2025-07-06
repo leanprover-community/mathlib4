@@ -163,7 +163,7 @@ lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
   · refine ⟨ε, Or.inr ?_⟩
     simp [hx]
   refine ⟨inl ((fst x)⁻¹ * fst y), ?_⟩
-  simp [← inl_mul, ← mul_assoc, mul_inv_cancel₀ hx]
+  simp [← mul_assoc, mul_inv_cancel₀ hx]
 
 end Field
 
