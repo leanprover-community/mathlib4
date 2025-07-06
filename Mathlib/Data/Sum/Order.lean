@@ -339,11 +339,11 @@ def toLexRelIsoLT [LT α] [LT β] :
   RelIso.refl _
 
 @[simp]
-theorem toLexRelIsoLT_apply [LT α] [LT β] (x : α ⊕ β) : toLexRelIsoLT x = toLex x :=
+theorem toLexRelIsoLT_coe [LT α] [LT β] : ⇑(toLexRelIsoLT (α := α) (β := β)) = toLex :=
   rfl
 
 @[simp]
-theorem toLexRelIsoLT_symm_apply [LT α] [LT β] (x : α ⊕ₗ β) : toLexRelIsoLT.symm x = ofLex x :=
+theorem toLexRelIsoLT_symm_coe [LT α] [LT β] : ⇑(toLexRelIsoLT (α := α) (β := β)).symm = ofLex :=
   rfl
 
 /-- `toLex` promoted to a `RelIso` between `≤` relations. -/
@@ -352,11 +352,11 @@ def toLexRelIsoLE [LE α] [LE β] :
   RelIso.refl _
 
 @[simp]
-theorem toLexRelIsoLE_apply [LE α] [LE β] (x : α ⊕ β) : toLexRelIsoLE x = toLex x :=
+theorem toLexRelIsoLE_coe [LE α] [LE β] : ⇑(toLexRelIsoLE (α := α) (β := β)) = toLex :=
   rfl
 
 @[simp]
-theorem toLexRelIsoLE_symm_apply [LE α] [LE β] (x : α ⊕ₗ β) : toLexRelIsoLE.symm x = ofLex x :=
+theorem toLexRelIsoLE_symm_coe [LE α] [LE β] : ⇑(toLexRelIsoLE (α := α) (β := β)).symm = ofLex :=
   rfl
 
 section Preorder
