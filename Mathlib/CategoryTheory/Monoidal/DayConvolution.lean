@@ -685,14 +685,23 @@ class LawfulDayConvolutionMonoidalCategoryStruct
     (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
     [MonoidalCategory C] [MonoidalCategory V]
     (D : Type u₃) [Category.{v₃} D] [MonoidalCategoryStruct D] where
-  /-- The field `ι` interprets an element of `D` as a functor `C ⥤ V`. -/
+  /-- a functor that interprets element of `D` as functors `C ⥤ V` -/
   ι (C V D) : D ⥤ C ⥤ V
+  /-- a natural transformation `ι.obj d ⊠ ι.obj d' ⟶ tensor C ⋙ ι.obj (d ⊗ d')` -/
   convolutionExtensionUnit (C) (V) (d d' : D) :
-    ι.obj d ⊠ (ι.obj d') ⟶ tensor C ⋙ ι.obj (d ⊗ d')
+    ι.obj d ⊠ ι.obj d' ⟶ tensor C ⋙ ι.obj (d ⊗ d')
+  /-- `convolutionUnitUnit` exhibits `ι.obj (d ⊗ d')` as a left Ken extension of
+  `ι.obj d ⊠ ι.obj d'` along `tensor C`. -/
   isPointwiseLeftKanExtensionConvolutionExtensionUnit (d d' : D) :
     (Functor.LeftExtension.mk _ <|
       convolutionExtensionUnit d d').IsPointwiseLeftKanExtension
+  /-- a map `𝟙_ V ⟶ (ι.obj <| 𝟙_ D).obj (𝟙_ C)`, that we think of as defining a
+  natural transformation
+  `fromPUnit.{0} (𝟙_ V) ⟶ Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D)`. -/
   unitUnit (C) (V) : 𝟙_ V ⟶ (ι.obj <| 𝟙_ D).obj (𝟙_ C)
+  /-- the natural transformation induced by `unitUnit` exhibits
+  `(ι.obj <| 𝟙_ D).obj (𝟙_ C)` as a left Kan extension of `fromPUnit.{0} (𝟙_ V)` as a
+  along `fromPUnit.{0} (𝟙_ C)`. -/
   isPointwiseLeftKanExtensionUnitUnit :
     Functor.LeftExtension.mk _
       ({app _ := unitUnit} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
