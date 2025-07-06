@@ -109,7 +109,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         rw [MvPolynomial.coeff_eval_eq_eval_coeff]
         convert map_zero (MvPolynomial.eval x)
         ext m
-        simp only [coeff_zero, optionEquivLeft_coeff_coeff]
+        simp only [coeff_zero]
         set n := (embDomain Function.Embedding.some m).update none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
         rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]

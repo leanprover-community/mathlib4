@@ -68,8 +68,7 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     apply CommRingCat.mkUnder_ext
     intro c
     induction c
-    · simp only [AlgHom.toUnder_right, map_zero, Under.comp_right, comp_apply,
-        AlgEquiv.toUnder_hom_right_apply, Pi.evalAlgHom_apply, Pi.zero_apply]
+    · simp only [map_zero, Under.comp_right]
     · simp only [AlgHom.toUnder_right, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
         Pi.evalAlgHom_apply, Under.comp_right, comp_apply, AlgEquiv.toUnder_hom_right_apply,
         Algebra.TensorProduct.piRight_tmul]

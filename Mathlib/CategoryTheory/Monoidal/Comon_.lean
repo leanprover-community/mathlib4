@@ -222,7 +222,7 @@ instance uniqueHomToTrivial (A : Comon_ C) : Unique (A ⟶ trivial C) where
   default :=
     { hom := ε[A.X]
       is_comon_hom :=
-        { hom_comul := by simp [comul_counit, unitors_inv_equal] } }
+        { hom_comul := by simp [unitors_inv_equal] } }
   uniq f := by
     ext
     rw [← Category.comp_id f.hom]
@@ -235,8 +235,6 @@ instance : HasTerminal (Comon_ C) :=
   hasTerminal_of_unique (trivial C)
 
 open Opposite
-
--- variable (C)
 
 /-- Auxiliary definition for `Comon_ToMon_OpOpObj`. -/
 abbrev Comon_ToMon_OpOpObjMon (A : Comon_ C) : Mon_Class (op A.X) where
@@ -270,7 +268,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
     { hom := f.hom.op
       is_mon_hom :=
         { one_hom := by apply Quiver.Hom.unop_inj; simp
-          mul_hom := by apply Quiver.Hom.unop_inj; simp [op_tensorHom] } }
+          mul_hom := by apply Quiver.Hom.unop_inj; simp } }
 
 /-- Auxiliary definition for `Mon_OpOpToComonObj`. -/
 abbrev Mon_OpOpToComonObjComon (A : Mon_ (Cᵒᵖ)) : Comon_Class (unop A.X) where
@@ -327,7 +325,6 @@ variable {C} [BraidedCategory C]
 
 theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
--- @[simps!?]
 instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) :=
   inferInstanceAs <| Comon_Class (Comon_.mk A ⊗ Comon_.mk B).X
 

@@ -192,7 +192,7 @@ theorem cmp_veblenWith :
   on_goal 2 => simp [(veblenWith_right_strictMono hf _).cmp_map_eq]
   all_goals
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h]
-    simp [h.cmp_eq_lt, h.cmp_eq_gt, h.ne, h.ne', (veblenWith_right_strictMono hf _).cmp_map_eq]
+    simp [h.cmp_eq_lt, h.cmp_eq_gt, (veblenWith_right_strictMono hf _).cmp_map_eq]
 
 /-- `veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a < b`

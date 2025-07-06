@@ -833,11 +833,11 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
   invFun p := .comp g.symm <| .comp p f
   left_inv p := DFunLike.coe_injective <| by
     change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
-    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+    simp only [← OrderIso.coe_trans, Function.id_comp,
                OrderIso.self_trans_symm, OrderIso.coe_refl, Function.comp_id]
   right_inv p := DFunLike.coe_injective <| by
     change (g ∘ g.symm) ∘ p ∘ (f ∘ f.symm) = p
-    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+    simp only [← OrderIso.coe_trans, Function.id_comp,
                OrderIso.symm_trans_self, OrderIso.coe_refl, Function.comp_id]
   map_rel_iff' {p q} := by
     simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
@@ -993,6 +993,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
 that `g` is the inverse of `f`. -/
+@[simps! apply]
 def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
     [OrderHomClass G β α] (f : F) (g : G)
     (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
@@ -1008,6 +1009,13 @@ def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G 
       rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
         show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
       fun h => (f : α →o β).monotone h⟩
+
+@[simp]
+theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
+    [OrderHomClass G β α] (f : F) (g : G)
+    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
+    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : β) :
+    (ofHomInv f g h₁ h₂).symm a = g a := rfl
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]
