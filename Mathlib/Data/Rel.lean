@@ -87,12 +87,16 @@ def inv (R : Rel α β) : Rel β α := Prod.swap ⁻¹' R
 
 @[simp] lemma mem_inv : b ~[R.inv] a ↔ a ~[R] b := .rfl
 
+@[deprecated (since := "2025-07-06")] alias inv_def := mem_inv
+
 @[simp] lemma inv_inv : R.inv.inv = R := rfl
 
 @[gcongr] lemma inv_mono (h : r₁ ⊆ r₂) : r₁.inv ⊆ r₂.inv := fun (_a, _b) hab ↦ h hab
 
 @[simp] lemma inv_empty : (∅ : Rel α β).inv = ∅ := rfl
 @[simp] lemma inv_univ : inv (.univ : Rel α β) = .univ := rfl
+
+@[deprecated (since := "2025-07-06")] alias inv_bot := inv_empty
 
 variable (R) in
 /-- Domain of a relation. -/
@@ -101,6 +105,8 @@ def dom : Set α := {a | ∃ b, a ~[R] b}
 variable (R) in
 /-- Codomain of a relation, aka range. -/
 def cod : Set β := {b | ∃ a, a ~[R] b}
+
+@[deprecated (since := "2025-07-06")] alias codom := cod
 
 @[simp] lemma mem_dom : a ∈ R.dom ↔ ∃ b, a ~[R] b := .rfl
 @[simp] lemma mem_cod : b ∈ R.cod ↔ ∃ a, a ~[R] b := .rfl
@@ -116,6 +122,8 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 
 @[simp] lemma cod_inv : R.inv.cod = R.dom := rfl
 @[simp] lemma dom_inv : R.inv.dom = R.cod := rfl
+
+@[deprecated (since := "2025-07-06")] alias codom_inv := cod_inv
 
 /-- The identity relation. -/
 protected def id : Rel α α := {(a₁, a₂) | a₁ = a₂}
@@ -148,6 +156,9 @@ lemma comp_assoc (R : Rel α β) (S : Rel β γ) (t : Rel γ δ) : (R ○ S) ○
 
 @[simp] lemma univ_comp (S : Rel β γ) : (.univ : Rel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by
   aesop
+
+@[deprecated (since := "2025-07-06")] alias comp_right_top := comp_univ
+@[deprecated (since := "2025-07-06")] alias comp_left_top := univ_comp
 
 variable (R s) in
 /-- Image of a set under a relation. -/
@@ -184,12 +195,18 @@ lemma preimage_mono : Monotone R.preimage := fun _ _ ↦ preimage_subset_preimag
 variable (R) in
 lemma image_inter_subset : image R (s₁ ∩ s₂) ⊆ image R s₁ ∩ image R s₂ := image_mono.map_inf_le ..
 
+@[deprecated (since := "2025-07-06")] alias preimage_top := image_inter_subset
+
 variable (R) in
 lemma preimage_inter_subset : preimage R (t₁ ∩ t₂) ⊆ preimage R t₁ ∩ preimage R t₂ :=
   preimage_mono.map_inf_le ..
 
+@[deprecated (since := "2025-07-06")] alias image_eq_dom_of_codomain_subset := preimage_inter_subset
+
 variable (R s₁ s₂) in
 lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by aesop
+
+@[deprecated (since := "2025-07-06")] alias preimage_eq_codom_of_domain_subset := image_union
 
 variable (R t₁ t₂) in
 lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by aesop
@@ -212,6 +229,8 @@ variable (s) in
 variable (t) in
 @[simp] lemma preimage_empty_left : preimage (∅ : Rel α β) t = ∅ := by aesop
 
+@[deprecated (since := "2025-07-06")] alias preimage_bot := preimage_empty_left
+
 @[simp] lemma image_univ_left (hs : s.Nonempty) : image (.univ : Rel α β) s = .univ := by aesop
 @[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : Rel α β) t = .univ := by
   aesop
@@ -225,11 +244,16 @@ variable (R s) in
 variable (R t) in
 @[simp] lemma preimage_inter_cod : preimage R (t ∩ R.cod) = preimage R t := by aesop
 
+@[deprecated (since := "2025-07-06")] alias preimage_inter_codom_eq := preimage_inter_cod
+
 lemma inter_dom_subset_preimage_image : s ∩ R.dom ⊆ R.preimage (image R s) := by
   aesop (add simp [Set.subset_def])
 
 lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) := by
   aesop (add simp [Set.subset_def])
+
+@[deprecated (since := "2025-07-06")]
+alias image_preimage_subset_inter_codom := inter_cod_subset_image_preimage
 
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : Rel α β` is the set of `x : α` that are related *only*
@@ -307,6 +331,8 @@ def graph (f : α → β) : Rel α β := {(a, b) | f a = b}
 
 @[simp] lemma mem_graph : a ~[f.graph] b ↔ f a = b := .rfl
 
+@[deprecated (since := "2025-07-06")] alias graph_def := mem_graph
+
 theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
   aesop (add simp [Injective, Set.ext_iff])
 
@@ -333,6 +359,8 @@ lemma Rel.exists_graph_eq_iff (R : Rel α β) :
   constructor
   · aesop
   · exact (h _).unique (hf _)
+
+@[deprecated (since := "2025-07-06")] alias Relation.is_graph_iff := Rel.exists_graph_eq_iff
 
 namespace Set
 

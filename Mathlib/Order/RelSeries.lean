@@ -824,6 +824,9 @@ variable {r} in
 lemma Rel.finiteDimensional_inv : FiniteDimensional r.inv ↔ FiniteDimensional r :=
   ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
+@[deprecated (since := "2025-07-06")]
+alias Rel.finiteDimensional_swap_iff := Rel.finiteDimensional_inv
+
 instance Rel.InfiniteDimensional.inv [InfiniteDimensional r] : InfiniteDimensional r.inv :=
   ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
 
@@ -832,14 +835,23 @@ variable {r} in
 lemma Rel.infiniteDimensional_inv : InfiniteDimensional r.inv ↔ InfiniteDimensional r :=
   ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
+@[deprecated (since := "2025-07-06")]
+alias Rel.infiniteDimensional_swap_iff := Rel.infiniteDimensional_inv
+
 lemma Rel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] : r.inv.IsWellFounded := by
   rw [IsWellFounded, WellFounded.wellFounded_iff_no_descending_seq]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
   exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
 
+@[deprecated (since := "2025-07-06")]
+alias Rel.wellFounded_swap_of_finiteDimensional := Rel.IsWellFounded.inv_of_finiteDimensional
+
 lemma Rel.IsWellFounded.of_finiteDimensional [Rel.FiniteDimensional r] : r.IsWellFounded :=
   .inv_of_finiteDimensional r.inv
+
+@[deprecated (since := "2025-07-06")]
+alias Rel.wellFounded_of_finiteDimensional := Rel.IsWellFounded.of_finiteDimensional
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
