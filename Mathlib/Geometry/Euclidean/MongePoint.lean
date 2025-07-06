@@ -85,7 +85,7 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
 /-- **Sylvester's theorem**: The position of the Monge point relative to the circumcenter via the
 sum of vectors to the vertices. -/
 theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ P (n + 2)) :
-    (n + 1) • (s.mongePoint -ᵥ s.circumcenter) = ∑ i , (s.points i -ᵥ s.circumcenter) := by
+    (n + 1) • (s.mongePoint -ᵥ s.circumcenter) = ∑ i, (s.points i -ᵥ s.circumcenter) := by
   rw [mongePoint_eq_smul_vsub_vadd_circumcenter, vadd_vsub, ← smul_assoc]
   field_simp
   have h : Invertible (↑n + (2:ℝ) + 1) := by norm_cast; apply invertibleOfPos
@@ -339,7 +339,7 @@ theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
   rw [orthocenter_eq_mongePoint, mongePoint_eq_smul_vsub_vadd_circumcenter]
   norm_num
 
-/-- **Sylvester's theorem**, specialized to triangles。 -/
+/-- **Sylvester's theorem**, specialized to triangles. -/
 theorem orthocenter_vsub_circumcenter_eq_sum_vsub (t : Triangle ℝ P) :
     t.orthocenter -ᵥ t.circumcenter = ∑ i, (t.points i -ᵥ t.circumcenter) := by
   rw [← t.smul_mongePoint_vsub_circumcenter_eq_sum_vsub, zero_add, one_smul,
