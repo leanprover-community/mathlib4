@@ -100,11 +100,22 @@ def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
 -- The `Full, Faithful` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
-instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
-  map_surjective f := ⟨InducedCategory.homMk f, rfl⟩
+/-- The functor `forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C`
+is fully faithful. -/
+def fullyFaithfulForgetToPresheafedSpace :
+    (forgetToPresheafedSpace (C := C)).FullyFaithful where
+  preimage f := InducedCategory.homMk f
 
-instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
-  map_injective h := InducedCategory.homEquiv.injective h
+@[simp]
+lemma fullyFaithfulForgetToPresheafedSpace_preimage_hom {X Y : SheafedSpace C}
+    (f : forgetToPresheafedSpace.obj X ⟶ forgetToPresheafedSpace.obj Y) :
+    (fullyFaithfulForgetToPresheafedSpace.preimage f).hom = f := rfl
+
+instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full :=
+  fullyFaithfulForgetToPresheafedSpace.full
+
+instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful :=
+  fullyFaithfulForgetToPresheafedSpace.faithful
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     IsIso f.hom :=

@@ -143,6 +143,13 @@ instance : forgetToSheafedSpace.Faithful where
     ext : 1
     exact congr_arg InducedCategory.Hom.hom h
 
+/-- Constructor for morphisms in `LocallyRingedSpace`. -/
+@[simps toHom]
+def homMk {X Y : LocallyRingedSpace.{u}} (f : X.toSheafedSpace ⟶ Y.toSheafedSpace)
+    (h : ∀ (x : X), IsLocalHom (f.hom.stalkMap x).hom := by infer_instance) : X ⟶ Y where
+  toHom := f.hom
+  prop := by assumption
+
 /-- The forgetful functor from `LocallyRingedSpace` to `Top`. -/
 @[simps!]
 def forgetToTop : LocallyRingedSpace.{u} ⥤ TopCat.{u} :=
