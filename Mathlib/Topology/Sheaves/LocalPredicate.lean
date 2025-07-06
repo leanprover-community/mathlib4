@@ -178,6 +178,7 @@ indexed by `ι` which induces, for each point of `U`, a bijection between `ι` a
 at that point. Together with `IsStalkInj`, this is enough to guarantee that `U` is evenly
 covered by the étale space associated to the set of sections. -/
 structure TrivializationOn (U : Opens B) (ι : Type*) : Type _ where
+  /-- The sections indexed by `ι`. -/
   sec : ι → Π b : U, F b
   pred i : P (sec i)
   bijective b : Function.Bijective (sec · b)
