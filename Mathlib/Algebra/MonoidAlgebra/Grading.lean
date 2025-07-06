@@ -155,7 +155,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
       rwa [Finsupp.support_single_ne_zero _ hb, Finset.coe_singleton, Set.singleton_subset_iff]
         at h1
     subst this
-    simp only [map_add, Submodule.coe_mk, decomposeAux_single f m]
+    simp only [map_add, decomposeAux_single f m]
     let ih' := ih h2
     dsimp at ih'
     rw [ih', ← AddMonoidHom.map_add]

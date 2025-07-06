@@ -15,24 +15,23 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
 ## Main Definitions
 
 * `LSeries.term f s n` is the `n`th term of the L-series of the sequence `f` at `s : ℂ`.
-    We define it to be zero when `n = 0`.
+  We define it to be zero when `n = 0`.
 
-* `LSeries f` is the L-series with a given sequence `f` as its
-    coefficients. This is not the analytic continuation (which does not necessarily exist),
-    just the sum of the infinite series if it exists and zero otherwise.
+* `LSeries f` is the L-series with a given sequence `f` as its coefficients. This is not the
+  analytic continuation (which does not necessarily exist), just the sum of the infinite series if
+  it exists and zero otherwise.
 
 * `LSeriesSummable f s` indicates that the L-series of `f` converges at `s : ℂ`.
 
-* `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely)
-    at `s : ℂ` to `a : ℂ`.
+* `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely) at `s : ℂ` to
+  `a : ℂ`.
 
 ## Main Results
 
-* `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that
-    `f = O(n^(x-1))` converges at `s` when `x < s.re`.
+* `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that `f = O(n^(x-1))`
+  converges at `s` when `x < s.re`.
 
-* `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
-    then `f = O(n^(re s))`.
+* `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`, then `f = O(n^(re s))`.
 
 ## Notation
 
@@ -106,7 +105,7 @@ lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : �
 
 lemma pow_mul_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     (n + 1) ^ s * term f s (n + 1) = f (n + 1) := by
-  simp [term, natCast_add_one_cpow_ne_zero n _, mul_comm (f _), mul_div_assoc']
+  simp [term, natCast_add_one_cpow_ne_zero n _, mul_div_assoc']
 
 lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by

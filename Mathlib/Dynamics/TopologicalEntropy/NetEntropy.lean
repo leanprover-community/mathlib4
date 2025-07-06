@@ -89,7 +89,7 @@ lemma IsDynNetIn.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set
     s.card ≤ t.card := by
   have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, x ∈ ball z (dynEntourage T U n) := by
     specialize ht (hs.1 x_s)
-    simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at ht
+    simp only [mem_iUnion, exists_prop] at ht
     exact ht
   choose! F s_t using this
   simp only [mem_ball_symmetry (U_symm.dynEntourage T n)] at s_t
