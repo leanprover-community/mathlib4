@@ -27,16 +27,19 @@ analytic functions `f : ℝⁿ → ℝ`.
 partial derivative test, calculus
 -/
 
+/-- Update a vector in coordinate 0. -/
 lemma update₀ {α : Type*} (a b c : α)  :
   Function.update ![a,b] 0 c = ![c,b] := by
   ext i
   fin_cases i <;> simp
 
+/-- Update a vector in coordinate 1. -/
 lemma update₁ {α : Type*} (a b c : α) :
   Function.update ![a,b] 1 c = ![a,c] := by
   ext i
   fin_cases i <;> simp
 
+/-- The Hessian companion as a linear map. -/
 noncomputable def hessianLinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin n) → ℝ)
     (x₀ : EuclideanSpace ℝ (Fin n)) :
     EuclideanSpace ℝ (Fin n) → EuclideanSpace ℝ (Fin n) →ₗ[ℝ] ℝ := fun a => {
@@ -58,6 +61,7 @@ noncomputable def hessianLinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin 
       linarith
   }
 
+/-- The Hessian companion as a bilinear map. -/
 noncomputable def hessianBilinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin n) → ℝ)
     (x₀ : EuclideanSpace ℝ (Fin n)): LinearMap.BilinMap ℝ (EuclideanSpace ℝ (Fin n)) ℝ := {
     toFun := hessianLinearCompanion f x₀
@@ -108,6 +112,7 @@ noncomputable def iteratedFDerivQuadraticMap {n : ℕ} (f : EuclideanSpace ℝ (
       rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]
   }
 
+/-- An everywhere positive function `f:ℝⁿ → ℝ` achieves its minimum on the sphere. -/
 lemma sphere_min_of_pos_of_nonzero {n : ℕ} (f : EuclideanSpace ℝ (Fin n.succ) → ℝ)
     (hf : Continuous f) (hf' : ∀ x ≠ 0, f x > 0) :
     ∃ x : Metric.sphere 0 1, ∀ y : Metric.sphere 0 1, f x.1 ≤ f y.1 := by
@@ -176,7 +181,7 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap {n : ℕ}
         <| Continuous.matrixVecCons continuous_id' continuous_const
 }
 
-
+/-- In 0-dimensional Euclidean space, coercivity is automatic. -/
 lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ}
     {x₀ : EuclideanSpace ℝ (Fin 0)} :
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
@@ -206,12 +211,14 @@ lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ}
     rw [iteratedFDeriv]
     simp
 
+/-- The iterated Frechet derivative is continuous. -/
 theorem continuous_hessian' {k n : ℕ}
     {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)} :
     Continuous fun y ↦ (iteratedFDeriv ℝ k f x₀) fun _ => y :=
   Continuous.comp' (iteratedFDeriv ℝ k f x₀).coe_continuous
     <| continuous_pi fun _ => continuous_id'
 
+/-- The Hessian is continuous. -/
 theorem continuous_hessian {n : ℕ}
     {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)} :
     Continuous fun y ↦ (iteratedFDeriv ℝ 2 f x₀) ![y, y] := by
@@ -219,6 +226,7 @@ theorem continuous_hessian {n : ℕ}
   ext i j
   fin_cases i <;> simp
 
+/-- Positive definiteness implies coercivity. -/
 lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
     {x₀ : EuclideanSpace ℝ (Fin n)}
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) :
@@ -281,16 +289,19 @@ lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
       simp at this ⊢
       exact this
 
+/-- Higher Taylor coefficient. -/
 noncomputable def higher_taylor_coeff {n : ℕ}
     (f : EuclideanSpace ℝ (Fin n) → ℝ) (x₀ : EuclideanSpace ℝ (Fin n)) (k : ℕ) :=
     fun x =>
     (1 / Nat.factorial k : ℝ) * (iteratedFDeriv ℝ k f x₀ fun _ => x - x₀)
 
+/-- Higher Taylor polynomial. -/
 noncomputable def higher_taylor {n : ℕ}
     (f : EuclideanSpace ℝ (Fin n) → ℝ) (x₀ : EuclideanSpace ℝ (Fin n)) (k : ℕ) :
     EuclideanSpace ℝ (Fin n) → ℝ :=
   ∑ i ∈ Finset.range (k+1), higher_taylor_coeff f x₀ i
 
+/-- Second partial derivative test in terms of `higher_taylor`. -/
 theorem isLocalMin_of_PosDef_of_Littleo {n : ℕ}
     {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)}
     (h : (fun x => |f x - higher_taylor f x₀ 2 x|) =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2)
@@ -327,6 +338,7 @@ theorem isLocalMin_of_PosDef_of_Littleo {n : ℕ}
   ring_nf at h₅
   linarith
 
+/-- `higher_taylor_coeff` expresses power series correctly. -/
 lemma eliminate_higher_taylor_coeff {n : ℕ} {r : NNReal}
   (f : EuclideanSpace ℝ (Fin n) → ℝ)
   (x₀ x : EuclideanSpace ℝ (Fin n))
@@ -349,7 +361,7 @@ lemma eliminate_higher_taylor_coeff {n : ℕ} {r : NNReal}
   simp
 
 
-
+/-- Having a power series implies quadratic approximation. -/
 lemma littleO_of_powerseries {n : ℕ}
     {f : EuclideanSpace ℝ (Fin n) → ℝ}
     {x₀ : EuclideanSpace ℝ (Fin n)}
@@ -455,6 +467,7 @@ lemma littleO_of_powerseries {n : ℕ}
       · tauto
       · simp_all
 
+/-- Second partial derivative test. -/
 theorem second_derivative_test {n : ℕ}
     {f : EuclideanSpace ℝ (Fin n) → ℝ}
     {x₀ : EuclideanSpace ℝ (Fin n)}
