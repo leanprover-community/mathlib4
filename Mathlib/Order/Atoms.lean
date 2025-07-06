@@ -850,6 +850,9 @@ instance (priority := 100) : IsCoatomistic α :=
 @[simp] lemma bot_lt_iff_eq_top {a : α} : ⊥ < a ↔ a = ⊤ :=
   ⟨eq_top_of_lt, fun h ↦ h ▸ bot_lt_top⟩
 
+@[simp] lemma lt_top_iff_eq_bot {a : α} : a < ⊤ ↔ a = ⊥ :=
+  ⟨eq_bot_of_lt, fun h ↦ h ▸ bot_lt_top⟩
+
 end IsSimpleOrder
 
 theorem isSimpleOrder_iff_isAtom_top [PartialOrder α] [BoundedOrder α] :
