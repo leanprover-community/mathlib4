@@ -55,6 +55,20 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
       apply (h3 _ _ _ (inf_le_of_left_le hb.2) _).1
       rw [← sup_eq_right.mpr (le_inf hb.1 hc.1), ← sup_eq_left.mpr (inf_le_of_left_le hb.2)]
       exact (h3 _ _ _ (le_trans hb.1 hb.2) h).2
+    have ee1 (x y t : α) (hh : r x y) : r (x ⊔ t) (y ⊔ t) := by
+      apply e1 ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t) (by
+        simp
+        constructor
+        · exact le_trans inf_le_left le_sup_left
+        · rw [sup_assoc]
+          exact le_sup_left
+      ) (by
+        simp
+        constructor
+        · exact le_trans inf_le_right le_sup_left
+        · rw [sup_comm, ← sup_assoc]
+          exact le_sup_right
+      ) (h3 _ _ _ inf_le_sup ((h1 _ _).mp hh)).2
     constructor
     · constructor
       · intro x
@@ -90,10 +104,6 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
           (by rw [sup_assoc]; exact le_sup_right) e5 e2
     · sorry
     · sorry
-
-
-
-
 
 def ker (f : α → β) : α → α → Prop := fun a b => f a = f b
 
