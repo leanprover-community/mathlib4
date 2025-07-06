@@ -49,10 +49,20 @@ IFS=$'\n\t'
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
 
-if [ "${1:-}" == "long" ]
+mode="${1:-}"
+if [ "${mode}" == "long" ]
 then
   short=0
-else short=1
+  byfile=0
+elif [ "${mode}" == "by-file" ]
+then
+  short=1
+  byfile=1
+  prUrl="${2:-}"
+  shift
+else
+  short=1
+  byfile=0
 fi
 
 ## if an input commit is given, compute the diff with that, otherwise, use the git-magic `...`
@@ -113,47 +123,147 @@ fi |
 set +e
 
 ## report may be empty, if every declaration is accounted for.
-report="$(if [ "${short}" == "0" ]
+if [ "${byfile}" == "1" ]
 then
-  ## the full report is just what was computed above
-  echo "${full_output}"
-else
-  ## the short report is a shortening and reformatting of the above
-  ## basically, we want to keep just the names of the declarations
-  ## but for nameless instance, we keep the whole line
-  echo "${full_output}" |
-  awk '{
-    # strip out backticks
-    gsub(/`/, "")
-    # field 6 should be the declaration type.
-    # if it is an instance and the next word does not begin with a character
-    # then it is a nameless instance and we recreate the line
-    # (which starts with the field 6 -- `instance`)
-    if(($6 == "instance") && !($7 ~ /^[a-zA-Z]/)) {
-      rest="instance"
-      for(i=7; i<=NF-1; i++){rest=rest" "$i}
-      # remove trailing `where` or `:=`
-      gsub(/ where$/, "", rest)
-      gsub(/ :=$/, "", rest)
-      # accumulate in `acc` the whole line with value the 4th field -- this is the +- field.
-      acc[rest]=acc[rest] $4
-      # if the line is not a nameless instance, accumulate the declaration name and +-
-    } else { acc[$7]=acc[$7] $4 } } END{
-    for(d in acc) {
-      if ((acc[d] == "+-") || (acc[d] == "-+")) {
-        printf "" } else { printf("%s %s\n", acc[d], d)
+  ## by-file mode: group declarations by file
+  report="$(echo "${full_output}" |
+  awk -v prUrl="$prUrl" 'BEGIN { inTable = 0 }
+    /^\|File\|/ { inTable = 1; next }
+    /^---$/ { inTable = 0; next }
+    (inTable == 1) && /^\|/ && NF >= 7 {
+      # Extract file path, +/- indicator, and declaration
+      gsub(/`/, "")  # remove backticks
+      file = $2
+      pm = $4
+      decl = $6
+
+      # Skip if file is empty or malformed
+      if (file == "" || pm == "" || decl == "") next
+
+      # Remove a/ and b/ prefixes and treat as same file
+      gsub(/^[ab]\//, "", file)
+
+      # Handle instance declarations
+      if(($6 == "instance") && !($7 ~ /^[a-zA-Z]/)) {
+        rest="instance"
+        for(i=7; i<=NF-1; i++){rest=rest" "$i}
+        # remove trailing `where` or `:=`
+        gsub(/ where$/, "", rest)
+        gsub(/ :=$/, "", rest)
+        decl = rest
+      } else {
+        decl = $7
       }
+
+      # Skip if declaration is empty after processing
+      if (decl == "") next
+
+      # Store file->declaration mapping with +/- info
+      fileDecls[file "###" decl] = fileDecls[file "###" decl] pm
     }
-  }' |
-  ## what comes out is of the form `+- declName` or `+- instance [..]`
-  ## so, sorting, counting repeated lines and omitting lines that are counted twice
-  ## we should be left with "unique" lines or lines repeated at least 3 times
-  ## we pretend that these last ones do not appear -- they will get printed, but not formatted
-  sort | uniq -c | grep -v "^ *2 " |
-  ## on the lines that contain `+` or `-`, remove the initial `<spaces> 1` and
-  ## add backticks at the beginning and at the end of the line
-  grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
-fi)"
+    END {
+      # Process each file-declaration pair
+      for(key in fileDecls) {
+        split(key, parts, "###")
+        file = parts[1]
+        decl = parts[2]
+        pm = fileDecls[key]
+
+        # Skip paired declarations
+        if(pm == "+-" || pm == "-+") continue
+
+        # Count declarations per file
+        if(pm == "+") {
+          fileAdded[file]++
+        } else {
+          fileRemoved[file]++
+        }
+
+        # Store declarations for each file
+        fileContent[file] = fileContent[file] "`" pm " " decl "`\n"
+      }
+
+      # Output grouped by file
+      hasOutput = 0
+      for(file in fileContent) {
+        if(fileContent[file] != "" && file != "") {
+          hasOutput = 1
+          added = fileAdded[file] + 0
+          removed = fileRemoved[file] + 0
+          summary = ""
+          if(added > 0 && removed > 0) {
+            summary = sprintf("(+%d/-%d)", added, removed)
+          } else if(added > 0) {
+            summary = sprintf("(+%d)", added)
+          } else if(removed > 0) {
+            summary = sprintf("(-%d)", removed)
+          }
+
+          # construct link to file diff on GitHub
+          # cf. https://github.com/orgs/community/discussions/55764#discussioncomment-5940162
+          hashCmd = "printf \"" file "\" | shasum -a 256 | cut -d \" \" -f1"
+          hashCmd | getline hash
+          close(hashCmd)
+          diffUrl = prUrl "/files#diff-" hash
+
+          printf("<details>\n  <summary>[%s](%s)%s</summary>\n\n", file, diffUrl, summary)
+
+          # Sort declarations alphabetically
+          printf("%s", fileContent[file]) | "sort"
+          close("sort")
+
+          printf("</details>\n\n")
+        }
+      }
+
+      if(!hasOutput) {
+        print ""
+      }
+    }')"
+else
+  ## short or long mode (existing behavior)
+  report="$(if [ "${short}" == "0" ]
+  then
+    ## the full report is just what was computed above
+    echo "${full_output}"
+  else
+    ## the short report is a shortening and reformatting of the above
+    ## basically, we want to keep just the names of the declarations
+    ## but for nameless instance, we keep the whole line
+    echo "${full_output}" |
+    awk '{
+      # strip out backticks
+      gsub(/`/, "")
+      # field 6 should be the declaration type.
+      # if it is an instance and the next word does not begin with a character
+      # then it is a nameless instance and we recreate the line
+      # (which starts with the field 6 -- `instance`)
+      if(($6 == "instance") && !($7 ~ /^[a-zA-Z]/)) {
+        rest="instance"
+        for(i=7; i<=NF-1; i++){rest=rest" "$i}
+        # remove trailing `where` or `:=`
+        gsub(/ where$/, "", rest)
+        gsub(/ :=$/, "", rest)
+        # accumulate in `acc` the whole line with value the 4th field -- this is the +- field.
+        acc[rest]=acc[rest] $4
+        # if the line is not a nameless instance, accumulate the declaration name and +-
+      } else { acc[$7]=acc[$7] $4 } } END{
+      for(d in acc) {
+        if ((acc[d] == "+-") || (acc[d] == "-+")) {
+          printf "" } else { printf("%s %s\n", acc[d], d)
+        }
+      }
+    }' |
+    ## what comes out is of the form `+- declName` or `+- instance [..]`
+    ## so, sorting, counting repeated lines and omitting lines that are counted twice
+    ## we should be left with "unique" lines or lines repeated at least 3 times
+    ## we pretend that these last ones do not appear -- they will get printed, but not formatted
+    sort | uniq -c | grep -v "^ *2 " |
+    ## on the lines that contain `+` or `-`, remove the initial `<spaces> 1` and
+    ## add backticks at the beginning and at the end of the line
+    grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
+  fi)"
+fi
 
 set -e
 
@@ -172,6 +282,9 @@ printf $'<details>
 
 ## more verbose report:
 ./scripts/declarations_diff.sh long <optional_commit>
+
+## grouped by file:
+./scripts/declarations_diff.sh by-file <optional_commit>
 ```
 </details>
 

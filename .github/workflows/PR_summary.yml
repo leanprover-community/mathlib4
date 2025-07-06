@@ -202,7 +202,7 @@ jobs:
         fi
 
         echo "Compute Declarations' diff comment"
-        declDiff=$(../master-branch/scripts/declarations_diff.sh)
+        declDiff=$(../master-branch/scripts/declarations_diff.sh by-file ${{ github.event.pull_request.html_url }})
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
