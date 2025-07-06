@@ -69,14 +69,20 @@ def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 
 -- This is mild defeq abuse, right?
 variable (X Y Z) in
-noncomputable abbrev rhs1 : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product I Y Z) x (X x))
-variable (X Y Z) in
-noncomputable abbrev rhs2 : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product I Z X) x (Y x))
-variable (X Y Z) in
-noncomputable abbrev rhs3 : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product I X Y) x (Z x))
+noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product I Y Z) x (X x))
 
 variable (X Y Y') in
 lemma product_add : product I X (Y + Y') = product I X Y + product I X Y' := sorry
+
+variable (X Y) in
+lemma product_smul_left (f : M → ℝ) : product I (f • X) Y = f • product I X Y := by
+  ext x
+  simp [product, real_inner_smul_left]
+
+variable (X Y) in
+lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product I X Y := by
+  ext x
+  simp [product, real_inner_smul_right]
 
 @[simp]
 lemma product_add_left_apply (x : M) : product I (X + X') Y x = product I X Y x + product I X' Y x := sorry
@@ -85,17 +91,34 @@ lemma product_add_left_apply (x : M) : product I (X + X') Y x = product I X Y x 
 lemma product_add_right_apply (x : M) : product I X (Y + Y') x = product I X Y x + product I X Y' x := sorry
 
 variable (X Y Z Z') in
-lemma rhs1_add : rhs1 I X Y (Z + Z') = rhs1 I X Y Z + rhs1 I X Y Z' := by
+lemma rhs_aux_addZ : rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
   ext x
-  simp only [rhs1]
+  simp only [rhs_aux]
   -- only holds given enough smoothness!
   sorry
 
-variable (X Y Z Z') in
-lemma rhs2_add : rhs2 I X Y (Z + Z') = rhs2 I X Y Z + rhs2 I X Y Z' := sorry
+variable (X X' Y Z) in
+lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
+  sorry
+
+variable (X Y Y' Z) in
+lemma rhs_aux_addY : rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
+  sorry
+
+variable (X Y Z) in
+lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
+  ext x
+  simp only [rhs_aux]
+  -- only holds given enough smoothness!
+  sorry
+
+variable (X Y Z) in
+lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
+  sorry
 
 variable (X Y Z Z') in
-lemma rhs3_add : rhs3 I X Y (Z + Z') = rhs3 I X Y Z + rhs3 I X Y Z' := sorry
+lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z := by
+  sorry
 
 -- XXX: inlining even rhs1 makes things not typecheck any more!
 
@@ -104,30 +127,51 @@ variable (X Y Z) in
 If ∇ is a Levi-Civita connection on `TM`, then
 `⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
 noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
-  rhs1 I X Y Z + rhs2 I X Y Z + rhs3 I X Y Z
+  rhs_aux I X Y Z + rhs_aux I Y Z X + rhs_aux I Z X Y
   - product I Y (VectorField.mlieBracket I X Z)
   - product I Z (VectorField.mlieBracket I X Y)
   + product I X (VectorField.mlieBracket I Z Y)
   )
 
-lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E] :
+lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
+    (hZ : MDifferentiable% (T% Z)) (hZ' : MDifferentiable% (T% Z')) :
     leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
   -- A bit too painful, and have missing differentiability assumptions.
   simp only [leviCivita_rhs]
   set A : M → ℝ := (1 : M → ℝ) / 2
   rw [← left_distrib]
   apply congrArg
-  simp only [rhs1_add, rhs2_add, rhs3_add]
   ext x
-  have scifi1 : VectorField.mlieBracket I X (Z + Z') =
-    VectorField.mlieBracket I X Z + VectorField.mlieBracket I X Z' := sorry
-  have scifi2 : VectorField.mlieBracket I (Z + Z') Y =
-    VectorField.mlieBracket I Z Y + VectorField.mlieBracket I Z' Y := sorry
-  simp [scifi1, scifi2]
+  have h1 : VectorField.mlieBracket I X (Z + Z') =
+    VectorField.mlieBracket I X Z + VectorField.mlieBracket I X Z' := by
+    ext x
+    simp [VectorField.mlieBracket_add_right (V := X) (hZ x) (hZ' x)]
+  have h2 : VectorField.mlieBracket I (Z + Z') Y =
+    VectorField.mlieBracket I Z Y + VectorField.mlieBracket I Z' Y := by
+    ext x
+    simp [VectorField.mlieBracket_add_left (W := Y) (hZ x) (hZ' x)]
+  simp [h1, h2, rhs_aux_addX, rhs_aux_addY, rhs_aux_addZ]
   module
 
-lemma leviCivita_rhs_smul (f : M → ℝ) (Z' : Π x : M, TangentSpace I x) :
+lemma leviCivita_rhs_smul [CompleteSpace E]
+    (f : M → ℝ) (Z' : Π x : M, TangentSpace I x) (hf : MDifferentiable% f) (hZ : MDifferentiable% (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
+  simp only [leviCivita_rhs]
+  simp [rhs_aux_smulX, rhs_aux_smulY, rhs_aux_smulZ]
+  ext x
+  simp only [Pi.mul_apply, Pi.inv_apply, Pi.ofNat_apply, Pi.add_apply, Pi.sub_apply]
+  -- Only kind of true: get extra mfderiv's, which will cancel in the end...
+  have h1 : VectorField.mlieBracket I X (f • Z) =
+      f • VectorField.mlieBracket I X Z := by
+    ext x
+    rw [VectorField.mlieBracket_smul_right (hf x) (hZ x)]; simp; sorry
+  have h2 : VectorField.mlieBracket I (f • Z) Y =
+      f • VectorField.mlieBracket I Z Y := by
+    ext x
+    rw [VectorField.mlieBracket_smul_left (hf x) (hZ x)]; simp; sorry
+  simp [h1, h2]
+  rw [product_smul_left, product_smul_right]
+  simp; abel_nf
   sorry -- easy computation
 
 -- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
