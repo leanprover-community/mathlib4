@@ -295,6 +295,33 @@ theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
     IntervalIntegrable (fun x => f x * c) μ a b :=
   hf.mul_continuousOn continuousOn_const
 
+section SMul
+
+variable {f : ℝ → 𝕜} {g : ℝ → E} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+variable [NoAtoms μ]
+
+theorem smul_continuousOn (hf : IntervalIntegrable f μ a b)
+    (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
+  rw [intervalIntegrable_iff'] at hf ⊢
+  apply hf.smul_continuousOn hg isCompact_uIcc
+
+theorem continuousOn_smul (hg : IntervalIntegrable g μ a b)
+    (hf : ContinuousOn f [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
+  rw [intervalIntegrable_iff'] at hg ⊢
+  apply hg.continuousOn_smul hf isCompact_uIcc
+
+@[simp]
+theorem const_smul (hg : IntervalIntegrable g μ a b) (c : 𝕜) :
+    IntervalIntegrable (fun x => c • g x) μ a b :=
+  hg.continuousOn_smul continuousOn_const
+
+@[simp]
+theorem smul_const (hf : IntervalIntegrable f μ a b) (c : E) :
+    IntervalIntegrable (fun x => f x • c) μ a b :=
+  hf.smul_continuousOn continuousOn_const
+
+end SMul
+
 @[simp]
 theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedDivisionRing 𝕜] (h : IntervalIntegrable f μ a b)
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
