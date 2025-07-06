@@ -18,7 +18,8 @@ analytic functions `f : ℝⁿ → ℝ`.
 ## Main results
 
 * `second_derivative_test`:
-    Suppose `f` is a real-valued function on `n`-dimensional Euclidean space that
+    Suppose `f` is a real-valued function on a
+    finite-dimensional inner product space that
     has vanishing gradient at `x₀`, and has a power series on a ball of positive radius
     around `x₀`. If the second Frechét derivative is positive definite at `x₀` then
     `f` has  local minimum at `x₀`.
@@ -114,14 +115,16 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*}
   }
 
 /-- An everywhere positive function `f:ℝⁿ → ℝ` achieves its minimum on the sphere. -/
-lemma sphere_min_of_pos_of_nonzero {n : ℕ} (f : EuclideanSpace ℝ (Fin n.succ) → ℝ)
+lemma sphere_min_of_pos_of_nonzero {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [FiniteDimensional ℝ V] [Nontrivial V] (f : V → ℝ)
     (hf : Continuous f) (hf' : ∀ x ≠ 0, f x > 0) :
     ∃ x : Metric.sphere 0 1, ∀ y : Metric.sphere 0 1, f x.1 ≤ f y.1 := by
   have h₀ : HasCompactSupport
-    fun (x : ↑(Metric.sphere (0:EuclideanSpace ℝ (Fin n.succ)) 1)) ↦ f ↑x := by
+    fun (x : ↑(Metric.sphere (0:V) 1)) ↦ f ↑x := by
     rw [hasCompactSupport_def]
     rw [Function.support]
-    have : @setOf ↑(Metric.sphere (0:EuclideanSpace ℝ (Fin n.succ)) (1:ℝ)) (fun x ↦ f x.1 ≠ 0)
+    have : @setOf ↑(Metric.sphere (0:V) (1:ℝ)) (fun x ↦ f x.1 ≠ 0)
       = Set.univ := by
       apply subset_antisymm
       simp
@@ -137,9 +140,9 @@ lemma sphere_min_of_pos_of_nonzero {n : ℕ} (f : EuclideanSpace ℝ (Fin n.succ
     simp
     exact CompactSpace.isCompact_univ
   have ⟨m,hm⟩ := @Continuous.exists_forall_le_of_hasCompactSupport ℝ
-    (Metric.sphere (0:EuclideanSpace ℝ (Fin n.succ)) 1) _
+    (Metric.sphere (0:V) 1) _
     _ _ _ (by
-      have := (@NormedSpace.sphere_nonempty (EuclideanSpace ℝ (Fin n.succ))
+      have := (@NormedSpace.sphere_nonempty (V)
         _ _ _ 0 1).mpr (by simp)
       exact Set.Nonempty.to_subtype this) _
         (fun x => f x) (by
@@ -148,9 +151,11 @@ lemma sphere_min_of_pos_of_nonzero {n : ℕ} (f : EuclideanSpace ℝ (Fin n.succ
   use m
 
 /-- A continuous multilinear map is bilinear. -/
-noncomputable def continuousBilinearMap_of_continuousMultilinearMap {n : ℕ}
-    (g : ContinuousMultilinearMap ℝ (fun _ : Fin 2 => EuclideanSpace ℝ (Fin n)) ℝ) :
-    (EuclideanSpace ℝ (Fin n)) →L[ℝ] (EuclideanSpace ℝ (Fin n)) →L[ℝ] ℝ := {
+noncomputable def continuousBilinearMap_of_continuousMultilinearMap
+    {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+    (g : ContinuousMultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) :
+    V →L[ℝ] V →L[ℝ] ℝ := {
     toFun := fun x => {
         toFun := fun y => g.toFun ![x,y]
         map_add' := by
@@ -182,35 +187,6 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap {n : ℕ}
         <| Continuous.matrixVecCons continuous_id' continuous_const
 }
 
-/-- In 0-dimensional Euclidean space, coercivity is automatic. -/
-lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ} {x₀ : EuclideanSpace ℝ (Fin 0)} :
-    IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
-        (iteratedFDeriv ℝ 2 f x₀)) := by
-  simp [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
-  use 1
-  constructor
-  · simp
-  · intro u
-    have : u = ![] := by refine PiLp.ext ?_; intro z;have := z.2;simp at this
-    subst this
-    simp
-    have : @norm (EuclideanSpace ℝ (Fin 0)) (PiLp.normedAddCommGroup 2 fun x ↦ ℝ).toNorm
-      (@Matrix.vecEmpty ℝ : Fin 0 → ℝ) = 0 := by simp;exact Subsingleton.eq_zero ![]
-    rw [this]
-    simp
-    have : f = fun z => f ![] := by
-      ext z
-      congr
-      ext i
-      have := i.2
-      simp at this
-    rw [this]
-    simp
-    rw [iteratedFDeriv_succ_apply_left]
-    simp
-    rw [iteratedFDeriv]
-    simp
-
 /-- The iterated Frechet derivative is continuous. -/
 theorem continuous_hessian' {k : ℕ} {V : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
@@ -219,31 +195,30 @@ theorem continuous_hessian' {k : ℕ} {V : Type*}
     <| continuous_pi fun _ => continuous_id'
 
 /-- The Hessian is continuous. -/
-theorem continuous_hessian {n : ℕ}
-    {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)} :
+theorem continuous_hessian {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {f : V → ℝ} {x₀ : V} :
     Continuous fun y ↦ (iteratedFDeriv ℝ 2 f x₀) ![y, y] := by
   convert continuous_hessian' (k := 2) f x₀ using 3
-  ext i j
+  ext i
   fin_cases i <;> simp
 
 /-- Positive definiteness implies coercivity. -/
-lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)}
-    (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) :
+lemma coercive_of_posdef'  {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [FiniteDimensional ℝ V] [Nontrivial V]
+    {f : V → ℝ} {x₀ : V}
+    (hf' : (iteratedFDerivQuadraticMap f x₀).PosDef) :
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
-  by_cases H : n = 0
-  · subst H
-    exact @coercive_zero f x₀
-  obtain ⟨m,hm⟩ : ∃ m : ℕ, n = m.succ := by exact Nat.exists_eq_succ_of_ne_zero H
-  subst hm
-  have := @sphere_min_of_pos_of_nonzero m (iteratedFDerivQuadraticMap f x₀)
-    continuous_hessian hf
+  have := sphere_min_of_pos_of_nonzero (iteratedFDerivQuadraticMap f x₀)
+    continuous_hessian hf'
   simp [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
   simp [iteratedFDerivQuadraticMap] at this
   obtain ⟨m,hm⟩ := this
   have := hm.2
   use (iteratedFDeriv ℝ 2 f x₀) ![m, m]
-  have := hf m (by intro hc;subst hc;simp at hm)
+  have := hf' m (by intro hc;subst hc;simp at hm)
   simp [iteratedFDerivQuadraticMap] at this
   constructor
   · exact this
@@ -292,14 +267,17 @@ noncomputable def higher_taylor {V : Type*}
   ∑ i ∈ Finset.range (k+1), higher_taylor_coeff f x₀ i
 
 /-- Second partial derivative test in terms of `higher_taylor`. -/
-theorem isLocalMin_of_PosDef_of_Littleo {n : ℕ}
-    {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)}
+theorem isLocalMin_of_PosDef_of_Littleo {V : Type*}
+    [NormedAddCommGroup V]
+    [InnerProductSpace ℝ V]
+    [FiniteDimensional ℝ V]
+    [Nontrivial V]
+    {f : V → ℝ} {x₀ : V}
     (h : (fun x => |f x - higher_taylor f x₀ 2 x|) =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2)
     (h₀ : gradient f x₀ = 0)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) :
     IsLocalMin f x₀ := by
-  have ⟨C,hC⟩ : IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
-        (iteratedFDeriv ℝ 2 f x₀)) :=  @coercive_of_posdef n f x₀ hf
+  have ⟨C,hC⟩ := coercive_of_posdef' hf
   simp [Asymptotics.IsLittleO, Asymptotics.IsBigOWith] at h
   apply Filter.Eventually.mono <| h (half_pos hC.1)
   intro x
@@ -321,7 +299,7 @@ theorem isLocalMin_of_PosDef_of_Littleo {n : ℕ}
   rw [← h₂] at h₁
   simp at h₁
   rw [mul_assoc,show ![x - x₀, x - x₀] = fun _ => x - x₀ by
-    ext i j; fin_cases i <;> simp] at h₄
+    ext i; fin_cases i <;> simp] at h₄
   rw [(Lean.Grind.Semiring.pow_two ‖x - x₀‖).symm] at h₄
   have h₅ : - (f x - (f x₀ + 2⁻¹ * (iteratedFDeriv ℝ 2 f x₀) fun x_1 => x - x₀))
     ≤ (C / 2) * ‖x - x₀‖ ^ 2 := le_of_max_le_right h₁
@@ -348,28 +326,30 @@ lemma eliminate_higher_taylor_coeff {V : Type*}
   rw [this]
   simp
 
-theorem littleO_of_powerseries.calculation {n : ℕ}
-    {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)}
-    {p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ}
+theorem littleO_of_powerseries.calculation {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {f : V → ℝ} {x₀ : V}
+    {p : FormalMultilinearSeries ℝ V ℝ}
     {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
-    (h₃ : ∀ (x : EuclideanSpace ℝ (Fin n)), x - x₀ ∈ Metric.ball 0 ↑(r / 2) →
+    (h₃ : ∀ (x : V), x - x₀ ∈ Metric.ball 0 ↑(r / 2) →
         ∀ (n_1 : ℕ), ‖f (x₀ + (x - x₀)) - p.partialSum n_1 (x - x₀)‖
         ≤ C * (a * (‖x - x₀‖ / ↑(r / 2))) ^ n_1)
-    {D : ℝ} {x : EuclideanSpace ℝ (Fin n)}
+    {D : ℝ} {x : V}
     (hx : x ∈ Metric.ball x₀ (min (↑r / 2) (D / (C * (a * (2 / ↑r)) ^ 3)))) :
     |f x - p.partialSum 3 (x - x₀)| ≤ D * ‖x - x₀‖ ^ 2 := by
-  have h₂ := h₃ x (by aesop) 3
+  have h₂ := h₃ x (by
+    have : x ∈ Metric.ball x₀ (↑(r / 2)) := by
+        aesop
+    simp [Metric.ball] at this ⊢
+    convert this using 1
+    exact mem_sphere_iff_norm.mp rfl
+  ) 3
   simp at h₂
   apply h₂.trans
   simp at hx
   by_cases H : ‖x-x₀‖ = 0
   · have : x - x₀ = 0 := norm_eq_zero.mp H
-    have : x = x₀ := by
-      refine PiLp.ext ?_
-      intro i
-      have : (x - x₀) i = 0 := congrFun this i
-      simp_all
-      linarith
+    have : x = x₀ := by grind only
     subst this
     simp
   suffices (C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3) * ‖x-x₀‖⁻¹
@@ -395,9 +375,6 @@ theorem littleO_of_powerseries.calculation {n : ℕ}
     ring_nf
   rw [this]
   have := hx.2
-  conv at this =>
-    left
-    change ‖x - x₀‖
   simp at this ⊢
   let Q :=  (C * (a * (2 / ↑r)) ^ 3)
   conv at this =>
@@ -405,16 +382,21 @@ theorem littleO_of_powerseries.calculation {n : ℕ}
     right
     change Q
   have : Q * ‖x - x₀‖ ≤ Q * (D / Q) := by
-    refine (mul_le_mul_iff_of_pos_left ?_).mpr <| le_of_lt this
+    refine (mul_le_mul_iff_of_pos_left ?_).mpr <| le_of_lt (by
+        convert this using 1
+        exact mem_sphere_iff_norm.mp rfl
+    )
     simp [Q]
     aesop
   convert this using 2
   field_simp
 
 /-- Having a power series implies quadratic approximation. -/
-lemma littleO_of_powerseries {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
-    {x₀ : EuclideanSpace ℝ (Fin n)}
-    {p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ}
+lemma littleO_of_powerseries {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {f : V → ℝ}
+    {x₀ : V}
+    {p : FormalMultilinearSeries ℝ V ℝ}
     {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r) :
         (fun x => |f x - p.partialSum 3 (x - x₀)|)
           =o[nhds x₀]
@@ -445,9 +427,14 @@ lemma littleO_of_powerseries {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
       · simp_all
 
 /-- Second partial derivative test. -/
-theorem second_derivative_test {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
-    {x₀ : EuclideanSpace ℝ (Fin n)}
-    {p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ}
+theorem second_derivative_test' {V : Type*}
+    [NormedAddCommGroup V]
+    [InnerProductSpace ℝ V]
+    [FiniteDimensional ℝ V]
+    [Nontrivial V]
+    {f : V → ℝ}
+    {x₀ : V}
+    {p : FormalMultilinearSeries ℝ V ℝ}
     (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r)
     (h₁ : HasFPowerSeriesOnBall f p x₀ r)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
