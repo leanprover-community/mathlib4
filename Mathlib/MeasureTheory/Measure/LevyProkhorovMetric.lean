@@ -523,9 +523,7 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
             fun _ _ _ ↦ disjoint_of_subsingleton⟩
     · intro n
       simpa only [diam_empty] using LT.lt.le ε_pos
-    · simp only [iUnion_empty]
-      apply Eq.symm
-      simp only [univ_eq_empty_iff, X_emp]
+    · subsingleton
   rw [not_isEmpty_iff] at X_emp
   obtain ⟨xs, xs_dense⟩ := exists_dense_seq Ω
   have half_ε_pos : 0 < ε / 2 := half_pos ε_pos

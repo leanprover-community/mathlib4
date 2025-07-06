@@ -172,7 +172,7 @@ theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [Co
     (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
 
-theorem orthogonal_ker (T : E →L[𝕜] E) :
+theorem orthogonal_ker (T : E →L[𝕜] F) :
     (LinearMap.ker T)ᗮ = (LinearMap.range (T†)).topologicalClosure := by
   rw [← Submodule.orthogonal_orthogonal_eq_closure]
   apply le_antisymm
@@ -182,7 +182,7 @@ theorem orthogonal_ker (T : E →L[𝕜] E) :
   · rintro _ ⟨y, rfl⟩
     simp_all [T.adjoint_inner_left]
 
-theorem orthogonal_range (T : E →L[𝕜] E) :
+theorem orthogonal_range (T : E →L[𝕜] F) :
     (LinearMap.range T)ᗮ = LinearMap.ker (T†) := by
   rw [← (LinearMap.ker (T†)).orthogonal_orthogonal, (T†).orthogonal_ker]
   simp

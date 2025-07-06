@@ -36,24 +36,31 @@ def isRemoteURL (url : String) : Bool :=
 Helper function to get repository from a remote name
 -/
 def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
+  -- If the remote is already a valid URL, attempt to extract the repo from it. This happens with `gh pr checkout`
   if isRemoteURL remoteName then
-    return remoteName
+    repoFromURL remoteName
   else
+  -- If not, we use `git remote get-url` to find the URL of the remote. This assumes the remote has a
+  -- standard name like `origin` or `upstream` or it errors out.
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
+  -- If `git remote get-url` fails then bail out with an error to help debug
+  let output := out.stdout.trim
   unless out.exitCode == 0 do
     throw <| IO.userError s!"\
       Failed to run Git to determine Mathlib's repository from {remoteName} remote (exit code: {out.exitCode}).\n\
       {errorContext}\n\
-      Stdout:\n{out.stdout.trim}\nStderr:\n{out.stderr.trim}\n"
-
-  if let some repo := extractRepoFromUrl out.stdout.trim then
-    return repo
-  else
-    throw <| IO.userError s!"\
-      Failed to determine Mathlib's repository from {remoteName} remote URL.\n\
-      {errorContext}\n\
-      Detected URL: {out.stdout.trim}"
+      Stdout:\n{output}\nStderr:\n{out.stderr.trim}\n"
+  -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
+  repoFromURL output
+where repoFromURL (url : String) : IO String := do
+    if let some repo := extractRepoFromUrl url then
+      return repo
+    else
+      throw <| IO.userError s!"\
+        Failed to extract repository from remote URL: {url}.\n\
+        {errorContext}\n\
+        Please ensure the remote URL is valid and points to a GitHub repository."
 
 /--
 Finds the remote name that points to `leanprover-community/mathlib4` repository.
@@ -279,7 +286,9 @@ def downloadFiles
     IO.println s!"Attempting to download {size} file(s) from {repo} cache"
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
-      let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+      let args := #["--request", "GET", "--parallel",
+          -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+          "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
