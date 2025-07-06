@@ -301,9 +301,9 @@ theorem _root_.isSelfAdjoint_starProjection [CompleteSpace E]
   isSelfAdjoint_starProjection
 
 open ContinuousLinearMap in
-theorem IsStarProjection.hasOrthogonalProjection_range [CompleteSpace E]
-    {p : E →L[𝕜] E} (hp : IsStarProjection p) : (LinearMap.range p).HasOrthogonalProjection :=
-  have := hp.isIdempotentElem.isClosed_range.completeSpace_coe
+theorem IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
+  have := hp.isClosed_range.completeSpace_coe
   .ofCompleteSpace _
 
 /-- `U.starProjection` is a star projection. -/
@@ -317,7 +317,7 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
     IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
     p = (LinearMap.range p).starProjection := by
   refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isStarProjection_orthogonalProjection⟩
-  have := hp.hasOrthogonalProjection_range
+  have := IsIdempotentElem.hasOrthogonalProjection_range hp.isIdempotentElem
   refine ⟨this, Eq.symm ?_⟩
   ext x
   refine Submodule.eq_orthogonalProjection_of_mem_orthogonal (by simp) ?_
