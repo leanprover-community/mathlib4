@@ -91,7 +91,7 @@ variable {H : Subgroup G}
 section Normalizer
 
 @[to_additive]
-theorem center_is_normal : (center G).Normal :=
+instance center_is_normal : (center G).Normal :=
   ⟨fun a ha b ↦ by simp [mul_assoc, mem_center_iff.mp ha b, ha]⟩
 
 @[to_additive]
