@@ -220,7 +220,7 @@ theorem map_nhds_eq (hf : IsLocalHomeomorph f) (x : X) : (𝓝 x).map f = 𝓝 (
 
 /-- A local homeomorphism is continuous. -/
 protected theorem continuous (hf : IsLocalHomeomorph f) : Continuous f :=
-  continuous_iff_continuousOn_univ.mpr hf.isLocalHomeomorphOn.continuousOn
+  continuousOn_univ.mp hf.isLocalHomeomorphOn.continuousOn
 
 /-- A local homeomorphism is an open map. -/
 protected theorem isOpenMap (hf : IsLocalHomeomorph f) : IsOpenMap f :=

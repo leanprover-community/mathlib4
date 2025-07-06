@@ -62,27 +62,60 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
-/-- Commutative ring structure on `Fin n`. -/
+/-- Distributive structure on `Fin n`. -/
 instance instDistrib (n : ℕ) : Distrib (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 
-/-- Commutative ring structure on `Fin n`. -/
-instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
-    intCast n := Fin.intCast n
-    one_mul := Fin.one_mul'
-    mul_one := Fin.mul_one',
-    zero_mul := Fin.zero_mul'
-    mul_zero := Fin.mul_zero' }
+instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) where
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instDistrib n
+  zero_mul := Fin.zero_mul'
+  mul_zero := Fin.mul_zero'
+
+instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
+  one_mul := Fin.one_mul'
+  mul_one := Fin.mul_one'
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
-instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
-  { toInvolutiveNeg := Fin.instInvolutiveNeg n
-    mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
-    neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
+instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
+  toInvolutiveNeg := Fin.instInvolutiveNeg n
+  mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
+  neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul
+
+/--
+Commutative ring structure on `Fin n`.
+
+This is not a global instance, but can introduced locally using `open Fin.CommRing in ...`.
+
+This is not an instance because the `binop%` elaborator assumes that
+there are no non-trivial coercion loops,
+but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
+
+For example, for `x : Fin k` and `n : Nat`,
+it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
+silently introducing wraparound arithmetic.
+-/
+def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
+  __ := Fin.instAddMonoidWithOne n
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instNonUnitalCommRing n
+  __ := Fin.instCommMonoid n
+  intCast n := Fin.intCast n
+
+namespace CommRing
+
+attribute [scoped instance] Fin.instCommRing
+
+end CommRing
+
+instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
+  open Fin.CommRing in inferInstance
 
 end Fin
 
@@ -116,6 +149,7 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   | zero => exact (not_finite (ZMod 0)).elim
   | succ n => convert Fintype.card_fin (n + 1) using 2
 
+open Fin.CommRing in
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/

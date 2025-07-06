@@ -76,7 +76,7 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       rw [← hrx] at hx
       rw [← hry] at hy
       obtain ⟨t, ht⟩ := IsLocalization.eq.1 hxyz
-      simp only [mul_one, one_mul, Submonoid.coe_mul, Subtype.coe_mk] at ht
+      simp only [mul_one, one_mul, Submonoid.coe_mul] at ht
       suffices (t : R) * (sx * sy * sz) ∈ P from
         not_or_intro (mt hp.mem_or_mem <| not_or_intro sx.2 sy.2) sz.2
           (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.2)
@@ -252,16 +252,17 @@ namespace AtPrime
 section
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  [Algebra R A] [Algebra R B] [IsScalarTower R A B]
 
 noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
   Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
     (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-  IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P) := by
-    refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
-    simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp, Function.comp_apply,
-      Localization.localRingHom_to_map, ← IsScalarTower.algebraMap_apply]
+  IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) := .of_algebraMap_eq (by
+  simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
+    Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
+    IsScalarTower.algebraMap_apply R A B])
 
 end
 

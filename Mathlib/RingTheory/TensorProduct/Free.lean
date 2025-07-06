@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Results on bases of tensor products
@@ -24,8 +23,6 @@ and deduce that `Module.Free` is stable under base change.
 -/
 
 assert_not_exists Cardinal
-
-suppress_compilation
 
 open scoped TensorProduct
 
