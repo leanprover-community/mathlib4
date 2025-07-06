@@ -377,8 +377,7 @@ lemma leIdeal_map_algebraMap_eq_leSubmodule_min {K : Type*} [Field K] (v : Valua
     (γ : Γ₀) :
     Submodule.map (Algebra.linearMap _ _) (leIdeal v γ) = leSubmodule v (min 1 γ) := by
   ext x
-  simp only [Submodule.mem_map, mem_leIdeal_iff, Algebra.linearMap_apply,
-    exists_and_left, mem_leSubmodule_iff]
+  simp only [Submodule.mem_map, mem_leIdeal_iff, Algebra.linearMap_apply, mem_leSubmodule_iff]
   constructor
   · rintro ⟨y, hy, rfl⟩
     rcases min_cases 1 γ with ⟨h, _⟩ | ⟨h, _⟩
