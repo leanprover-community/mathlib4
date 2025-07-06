@@ -386,6 +386,10 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
 
 @[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
+theorem IsIdempotentElem.range_isProj {f : M →ₗ[S] M} (hf : IsIdempotentElem f) :
+    IsProj (range f) f :=
+  ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩
+
 namespace IsProj
 
 variable {p m}
@@ -489,5 +493,15 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+
+lemma LinearMap.IsIdempotentElem.ext {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p q : M →ₗ[R] M} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
+    (hr : range p = range q) (hk : ker p = ker q) : p = q := by
+  ext x
+  obtain ⟨v, w, rfl, _⟩ := Submodule.existsUnique_add_of_isCompl (range_isProj hp).isCompl.symm x
+  have hv' : (v : M) ∈ ker q := hk ▸ SetLike.coe_mem v
+  have hw' : (w : M) ∈ range q := hr ▸ SetLike.coe_mem w
+  simp_rw [map_add, mem_ker.mp (SetLike.coe_mem v), (mem_range_iff hp).mp (SetLike.coe_mem w),
+    mem_ker.mp hv', zero_add, (mem_range_iff hq).mp hw']
 
 end LinearMap
