@@ -175,29 +175,30 @@ theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = 
   cases q
   simp only [eq_iff, Prod.mk_inj, Prod.swap_prod_mk]
 
+def lift (f : α → α → β) [hf : IsSymmOp f] : Sym2 α → β :=
+  Quot.lift (uncurry f) <| by rintro _ _ ⟨⟩; exacts [rfl, IsSymmOp.symm_op _ _]
+
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
 `Sym2.fromRel` instead. -/
-def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β) where
-  toFun f :=
-    Quot.lift (uncurry ↑f) <| by
-      rintro _ _ ⟨⟩
-      exacts [rfl, f.prop _ _]
+@[simps]
+def liftEquiv : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β) where
+  toFun f := lift f (hf := ⟨f.2⟩)
   invFun F := ⟨curry (F ∘ Sym2.mk), fun _ _ => congr_arg F eq_swap⟩
   right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
-theorem lift_mk (f : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ }) (a₁ a₂ : α) :
-    lift f s(a₁, a₂) = (f : α → α → β) a₁ a₂ :=
+theorem liftEquiv_mk (f : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ }) (a₁ a₂ : α) :
+    liftEquiv f s(a₁, a₂) = (f : α → α → β) a₁ a₂ :=
   rfl
 
 @[simp]
-theorem coe_lift_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
-    (lift.symm F : α → α → β) a₁ a₂ = F s(a₁, a₂) :=
+theorem coe_liftEquiv_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
+    (liftEquiv.symm F : α → α → β) a₁ a₂ = F s(a₁, a₂) :=
   rfl
 
-/-- A two-argument version of `Sym2.lift`. -/
-def lift₂ :
+/-- A two-argument version of `Sym2.liftEquiv`. -/
+def liftEquiv₂ :
     { f : α → α → β → β → γ //
         ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ } ≃
       (Sym2 α → Sym2 β → γ) where
@@ -214,16 +215,17 @@ def lift₂ :
   right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]
-theorem lift₂_mk
+theorem liftEquiv₂_mk
     (f :
     { f : α → α → β → β → γ //
       ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ })
-    (a₁ a₂ : α) (b₁ b₂ : β) : lift₂ f s(a₁, a₂) s(b₁, b₂) = (f : α → α → β → β → γ) a₁ a₂ b₁ b₂ :=
+    (a₁ a₂ : α) (b₁ b₂ : β) :
+    liftEquiv₂ f s(a₁, a₂) s(b₁, b₂) = (f : α → α → β → β → γ) a₁ a₂ b₁ b₂ :=
   rfl
 
 @[simp]
-theorem coe_lift₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α) (b₁ b₂ : β) :
-    (lift₂.symm F : α → α → β → β → γ) a₁ a₂ b₁ b₂ = F s(a₁, a₂) s(b₁, b₂) :=
+theorem coe_liftEquiv₂_symm_apply (F : Sym2 α → Sym2 β → γ) (a₁ a₂ : α) (b₁ b₂ : β) :
+    (liftEquiv₂.symm F : α → α → β → β → γ) a₁ a₂ b₁ b₂ = F s(a₁, a₂) s(b₁, b₂) :=
   rfl
 
 /-- The functor `Sym2` is functorial, and this function constructs the induced maps.
@@ -268,11 +270,12 @@ def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β wher
   inj' := map.injective f.injective
 
 lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
-    lift f ∘ map g = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ :=
-  lift.symm_apply_eq.mp rfl
+    liftEquiv f ∘ map g =
+      liftEquiv ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ :=
+  liftEquiv.symm_apply_eq.mp rfl
 
 lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) (p : Sym2 γ) :
-    lift f (map g p) = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ p := by
+    liftEquiv f (map g p) = liftEquiv ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ p := by
   conv_rhs => rw [← lift_comp_map, comp_apply]
 
 section Membership
@@ -785,11 +788,28 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
   simp_all only [Pi.smul_apply', lift_mk]
 
 /--
-Multiplication as a function from `Sym2`.
+Lift a commutative operation on `α` to one on `Sym2 α`, taking commutativity from the typeclass
+system. See also `Sym2.lift`, which takes the commutativity argument explicitly, and `Sym2.fromRel`,
+which takes a symmetric relation instead.
 -/
-def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
+def liftComm (op : α → α → β) [IsSymmOp op] : Sym2 α → β :=
+  lift ⟨op, IsSymmOp.symm_op⟩
 
 @[simp]
+lemma liftComm_mk {op : α → α → β} [IsSymmOp op] (xy : α × α) :
+    liftComm op (Sym2.mk xy) = op xy.1 xy.2 := rfl
+
+lemma setOf_liftComm_eq_fromRel (r : α → α → Prop) [hr : IsSymmOp r] :
+    setOf (liftComm r) = fromRel (fun x y ↦ (hr.symm_op x y).mp) := rfl
+
+/--
+Multiplication as a function from `Sym2`.
+-/
+@[deprecated liftComm (since := "2025-07-03")]
+def mul {M} [CommMagma M] : Sym2 M → M := liftComm (· * ·)
+
+set_option linter.deprecated false in
+@[deprecated liftComm_mk (since := "2025-07-03"), simp]
 lemma mul_mk {M} [CommMagma M] (xy : M × M) :
     mul (.mk xy) = xy.1 * xy.2 := rfl
 
