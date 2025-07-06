@@ -163,21 +163,6 @@ lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (h : G < H) : V(G) ⊂ V(H) ∨
   by_contra! heq
   exact h.2 <| ext_of_le_le h.1 le_rfl heq.1 heq.2
 
-lemma sum_ncard_lt_of_lt [Finite α] [Finite β] (h : G < H) :
-    V(G).ncard + E(G).ncard < V(H).ncard + E(H).ncard := by
-  obtain hV | hE := vertexSet_ssubset_or_edgeSet_ssubset_of_lt h
-  · have hE' : E(G) ⊆ E(H) := edgeSet_mono h.1
-    have hVncard : V(G).ncard < V(H).ncard := ncard_lt_ncard hV
-    have hEncard : E(G).ncard ≤ E(H).ncard := ncard_le_ncard hE'
-    omega
-  · have hV' : V(G) ⊆ V(H) := vertexSet_mono h.1
-    have hVncard : V(G).ncard ≤ V(H).ncard := ncard_le_ncard hV'
-    have hEncard : E(G).ncard < E(H).ncard := ncard_lt_ncard hE
-    omega
-
-instance [Finite α] [Finite β] : WellFoundedLT (Graph α β) :=
-  ⟨Subrelation.wf sum_ncard_lt_of_lt (measure fun (G : Graph α β) => V(G).ncard + E(G).ncard).2⟩
-
 /- TODO : Is is reasonable to only keep the `EqOn` versions of the above?
 Also, what about functional `≤` versions? -/
 
