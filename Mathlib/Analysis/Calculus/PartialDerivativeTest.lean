@@ -41,7 +41,7 @@ lemma update₁ {α : Type*} (a b c : α) :
 
 /-- The Hessian companion as a linear map. -/
 noncomputable def hessianLinearCompanion {V : Type*} [AddCommGroup V]
-    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+    [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
     V → V →ₗ[ℝ] ℝ := fun a => {
     toFun := fun b => iteratedFDeriv ℝ 2 f x₀ ![a,b]
                     + iteratedFDeriv ℝ 2 f x₀ ![b,a]
@@ -213,7 +213,7 @@ lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ} {x₀ : EuclideanSp
 
 /-- The iterated Frechet derivative is continuous. -/
 theorem continuous_hessian' {k : ℕ} {V : Type*} [AddCommGroup V]
-    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
+    [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) :
     Continuous fun y ↦ (iteratedFDeriv ℝ k f x₀) fun _ => y :=
   Continuous.comp' (iteratedFDeriv ℝ k f x₀).coe_continuous
     <| continuous_pi fun _ => continuous_id'
@@ -281,7 +281,7 @@ lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ} {x�
 
 /-- Higher Taylor coefficient. -/
 noncomputable def higher_taylor_coeff {V : Type*} [AddCommGroup V]
-    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) (k : ℕ) :=
+    [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) (k : ℕ) :=
     fun x =>
     (1 / Nat.factorial k : ℝ) * (iteratedFDeriv ℝ k f x₀ fun _ => x - x₀)
 
@@ -329,19 +329,20 @@ theorem isLocalMin_of_PosDef_of_Littleo {n : ℕ}
   linarith
 
 /-- `higher_taylor_coeff` expresses power series correctly. -/
-lemma eliminate_higher_taylor_coeff {n : ℕ} {r : NNReal}
-  {f : EuclideanSpace ℝ (Fin n) → ℝ}
-  (x₀ x : EuclideanSpace ℝ (Fin n))
-  (p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ)
-  (h : HasFPowerSeriesOnBall f p x₀ r) (k : ℕ) :
-  (p k) (fun _ => x - x₀) = higher_taylor_coeff f x₀ k x := by
+lemma eliminate_higher_taylor_coeff {V : Type*} [AddCommGroup V]
+    [Module ℝ V] [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [ContinuousConstSMul ℝ V]
+    {f : V → ℝ} (x₀ x : V) {r : NNReal}
+    (p : FormalMultilinearSeries ℝ V ℝ)
+    (h : HasFPowerSeriesOnBall f p x₀ r) (k : ℕ) :
+    p k (fun _ => x - x₀) = higher_taylor_coeff f x₀ k x := by
   have h₀ := @HasFPowerSeriesOnBall.factorial_smul ℝ _
-    (EuclideanSpace ℝ (Fin n)) _ _ ℝ _ _ p f x₀ r h (x - x₀) _ k
+    V _ _ ℝ _ _ p f x₀ r h (x - x₀) _ k
   unfold higher_taylor_coeff
   rw [← h₀]
   norm_num
   rw [← smul_eq_mul, ← smul_eq_mul, ← smul_assoc]
-  have : ((Nat.factorial k : ℝ)⁻¹) • (Nat.factorial k : ℝ) = 1 := by
+  have : (Nat.factorial k : ℝ)⁻¹ • (Nat.factorial k : ℝ) = 1 := by
     ring_nf
     field_simp
   rw [this]
