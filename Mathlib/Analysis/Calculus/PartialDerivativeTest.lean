@@ -63,7 +63,7 @@ noncomputable def hessianLinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin 
 
 /-- The Hessian companion as a bilinear map. -/
 noncomputable def hessianBilinearCompanion {n : ℕ} (f : EuclideanSpace ℝ (Fin n) → ℝ)
-    (x₀ : EuclideanSpace ℝ (Fin n)): LinearMap.BilinMap ℝ (EuclideanSpace ℝ (Fin n)) ℝ := {
+    (x₀ : EuclideanSpace ℝ (Fin n)) : LinearMap.BilinMap ℝ (EuclideanSpace ℝ (Fin n)) ℝ := {
     toFun := hessianLinearCompanion f x₀
     map_add' := fun x y => by
         have had := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
@@ -182,8 +182,7 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap {n : ℕ}
 }
 
 /-- In 0-dimensional Euclidean space, coercivity is automatic. -/
-lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ}
-    {x₀ : EuclideanSpace ℝ (Fin 0)} :
+lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ} {x₀ : EuclideanSpace ℝ (Fin 0)} :
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
   simp [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
@@ -212,9 +211,8 @@ lemma coercive_zero {f : EuclideanSpace ℝ (Fin 0) → ℝ}
     simp
 
 /-- The iterated Frechet derivative is continuous. -/
-theorem continuous_hessian' {k n : ℕ}
-    {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)} :
-    Continuous fun y ↦ (iteratedFDeriv ℝ k f x₀) fun _ => y :=
+theorem continuous_hessian' {k n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
+    {x₀ : EuclideanSpace ℝ (Fin n)} : Continuous fun y ↦ (iteratedFDeriv ℝ k f x₀) fun _ => y :=
   Continuous.comp' (iteratedFDeriv ℝ k f x₀).coe_continuous
     <| continuous_pi fun _ => continuous_id'
 
@@ -227,8 +225,7 @@ theorem continuous_hessian {n : ℕ}
   fin_cases i <;> simp
 
 /-- Positive definiteness implies coercivity. -/
-lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
-    {x₀ : EuclideanSpace ℝ (Fin n)}
+lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)}
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) :
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
@@ -263,25 +260,16 @@ lemma coercive_of_posdef {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
         simp)
       have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
         = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
-        rw [mul_comm]
-        rw [iteratedFDeriv_succ_apply_left]
-        rw [iteratedFDeriv_succ_apply_left]
+        rw [mul_comm, iteratedFDeriv_succ_apply_left, iteratedFDeriv_succ_apply_left]
         simp
         left
         congr
       rw [this]
       have h₄ : (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] * ‖u‖⁻¹
         = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, ‖u‖⁻¹ • u] := by
-        let G := iteratedFDeriv ℝ 2 f x₀
-        change G ![‖u‖⁻¹ • u, u] * ‖u‖⁻¹ = G ![‖u‖⁻¹ • u, ‖u‖⁻¹ • u]
         rw [mul_comm]
-        let v := ‖u‖⁻¹ • u
-        change  ‖u‖⁻¹ * G ![v, u] = G ![v, ‖u‖⁻¹ • u]
-        change  ‖u‖⁻¹ * G.toFun ![v, u] = G.toFun ![v, ‖u‖⁻¹ • u]
-        simp
-        have := G.map_update_smul' ![v,u] 1 ‖u‖⁻¹ u
+        have := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
         repeat rw [update₁] at this
-        symm
         simp at this ⊢
         rw [this]
       rw [h₄]
@@ -340,34 +328,91 @@ theorem isLocalMin_of_PosDef_of_Littleo {n : ℕ}
 
 /-- `higher_taylor_coeff` expresses power series correctly. -/
 lemma eliminate_higher_taylor_coeff {n : ℕ} {r : NNReal}
-  (f : EuclideanSpace ℝ (Fin n) → ℝ)
+  {f : EuclideanSpace ℝ (Fin n) → ℝ}
   (x₀ x : EuclideanSpace ℝ (Fin n))
   (p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ)
-  (h : @HasFPowerSeriesOnBall ℝ (EuclideanSpace ℝ (Fin n)) ℝ _
-    _ _ _ _ f p x₀ r) (k : ℕ) :
+  (h : HasFPowerSeriesOnBall f p x₀ r) (k : ℕ) :
   (p k) (fun _ => x - x₀) = higher_taylor_coeff f x₀ k x := by
   have h₀ := @HasFPowerSeriesOnBall.factorial_smul ℝ _
     (EuclideanSpace ℝ (Fin n)) _ _ ℝ _ _ p f x₀ r h (x - x₀) _ k
   unfold higher_taylor_coeff
   rw [← h₀]
   norm_num
-  rw [← smul_eq_mul]
-  rw [← smul_eq_mul]
-  rw [← smul_assoc]
+  rw [← smul_eq_mul, ← smul_eq_mul, ← smul_assoc]
   have : ((Nat.factorial k : ℝ)⁻¹) • (Nat.factorial k : ℝ) = 1 := by
     ring_nf
     field_simp
   rw [this]
   simp
 
+theorem littleO_of_powerseries.calculation {n : ℕ}
+    {f : EuclideanSpace ℝ (Fin n) → ℝ} {x₀ : EuclideanSpace ℝ (Fin n)}
+    {p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ}
+    {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
+    (h₃ : ∀ (x : EuclideanSpace ℝ (Fin n)), x - x₀ ∈ Metric.ball 0 ↑(r / 2) →
+        ∀ (n_1 : ℕ), ‖f (x₀ + (x - x₀)) - p.partialSum n_1 (x - x₀)‖
+        ≤ C * (a * (‖x - x₀‖ / ↑(r / 2))) ^ n_1)
+    {D : ℝ} {x : EuclideanSpace ℝ (Fin n)}
+    (hx : x ∈ Metric.ball x₀ (min (↑r / 2) (D / (C * (a * (2 / ↑r)) ^ 3)))) :
+    |f x - p.partialSum 3 (x - x₀)| ≤ D * ‖x - x₀‖ ^ 2 := by
+  have h₂ := h₃ x (by aesop) 3
+  simp at h₂
+  apply h₂.trans
+  simp at hx
+  by_cases H : ‖x-x₀‖ = 0
+  · have : x - x₀ = 0 := norm_eq_zero.mp H
+    have : x = x₀ := by
+      refine PiLp.ext ?_
+      intro i
+      have : (x - x₀) i = 0 := congrFun this i
+      simp_all
+      linarith
+    subst this
+    simp
+  suffices (C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3) * ‖x-x₀‖⁻¹
+          ≤ (D * ‖x - x₀‖ ^ 2) * ‖x-x₀‖⁻¹ by
+    apply le_of_mul_le_mul_right this
+    aesop
+  nth_rewrite 2 [mul_assoc]
+  have : (‖x - x₀‖ ^ 2 * ‖x - x₀‖⁻¹) = ‖x - x₀‖ := by
+    rw [pow_two]
+    field_simp
+  rw [this]
+  suffices C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3 * ‖x - x₀‖⁻¹  * ‖x-x₀‖⁻¹
+       ≤ D * ‖x - x₀‖  * ‖x-x₀‖⁻¹ by
+    apply le_of_mul_le_mul_right this
+    aesop
+  nth_rewrite 3 [mul_assoc]
+  have : (‖x - x₀‖ * ‖x - x₀‖⁻¹) = 1 := by field_simp
+  rw [this]
+  simp
+  have :  C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3 * ‖x - x₀‖⁻¹ * ‖x - x₀‖⁻¹
+       =  C * (a * (1 / (↑r / 2))) ^ 3 * ‖x - x₀‖  := by
+    field_simp
+    ring_nf
+  rw [this]
+  have := hx.2
+  conv at this =>
+    left
+    change ‖x - x₀‖
+  simp at this ⊢
+  let Q :=  (C * (a * (2 / ↑r)) ^ 3)
+  conv at this =>
+    right
+    right
+    change Q
+  have : Q * ‖x - x₀‖ ≤ Q * (D / Q) := by
+    refine (mul_le_mul_iff_of_pos_left ?_).mpr <| le_of_lt this
+    simp [Q]
+    aesop
+  convert this using 2
+  field_simp
 
 /-- Having a power series implies quadratic approximation. -/
-lemma littleO_of_powerseries {n : ℕ}
-    {f : EuclideanSpace ℝ (Fin n) → ℝ}
+lemma littleO_of_powerseries {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
     {x₀ : EuclideanSpace ℝ (Fin n)}
     {p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ}
-    (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r)
-    (h₁ : HasFPowerSeriesOnBall f p x₀ r) :
+    {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r) :
         (fun x => |f x - p.partialSum 3 (x - x₀)|)
           =o[nhds x₀]
           fun x => ‖x - x₀‖ ^ 2 := by
@@ -387,79 +432,8 @@ lemma littleO_of_powerseries {n : ℕ}
   refine eventually_nhds_iff.mpr ?_
   use Metric.ball x₀ (min (r/2) (D / (C * (a * (2/r))^3)))
   constructor
-  · intro x hx
-    have h₂ := h₃ x (by aesop) 3
-    simp at h₂
-    apply h₂.trans
-    simp at hx
-    by_cases H : ‖x-x₀‖ = 0
-    · have : x - x₀ = 0 := norm_eq_zero.mp H
-      have : x = x₀ := by
-        refine PiLp.ext ?_
-        intro i
-        have : (x - x₀) i = 0 := congrFun this i
-        simp_all
-        linarith
-      subst this
-      simp
-    suffices  (C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3) * ‖x-x₀‖⁻¹
-                               ≤ (D * ‖x - x₀‖ ^ 2) * ‖x-x₀‖⁻¹ by
-      apply le_of_mul_le_mul_right this
-      aesop
-    nth_rewrite 2 [mul_assoc]
-    have : (‖x - x₀‖ ^ 2 * ‖x - x₀‖⁻¹) = ‖x - x₀‖ := by
-      rw [pow_two]
-      field_simp
-    rw [this]
-    suffices C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3 * ‖x - x₀‖⁻¹  * ‖x-x₀‖⁻¹
-           ≤ D * ‖x - x₀‖  * ‖x-x₀‖⁻¹ by
-      apply le_of_mul_le_mul_right this
-      aesop
-    nth_rewrite 3 [mul_assoc]
-    have : (‖x - x₀‖ * ‖x - x₀‖⁻¹) = 1 := by field_simp
-    rw [this]
-    simp
-    have :  C * (a * (‖x - x₀‖ / (↑r / 2))) ^ 3 * ‖x - x₀‖⁻¹ * ‖x - x₀‖⁻¹
-         =  C * (a * (1 / (↑r / 2))) ^ 3 * ‖x - x₀‖  := by
-        field_simp
-        ring_nf
-    rw [this]
-    have := hx.2
-    conv at this =>
-      left
-      change ‖x - x₀‖
-    simp at this ⊢
-    let Q :=  (C * (a * (2 / ↑r)) ^ 3)
-    conv at this =>
-      right
-      right
-      change Q
-    have : Q * ‖x - x₀‖ ≤ Q * (D / Q) := by
-      refine (mul_le_mul_iff_of_pos_left ?_).mpr <| le_of_lt this
-      simp [Q]
-      aesop
-    convert this using 2
-    field_simp
-    ring_nf
-    rw [mul_comm Q D, mul_assoc]
-    have : Q ≠ 0 := by
-      simp [Q]
-      constructor
-      aesop
-      constructor
-      intro hc
-      subst hc
-      have := ha.1
-      simp at this
-      intro hc
-      subst hc
-      have := ha.1
-      simp at this
-      aesop
-    have : Q * Q⁻¹ = 1 := by
-      field_simp
-    rw [this]
-    simp
+  · simp at ha
+    apply littleO_of_powerseries.calculation <;> tauto
   · constructor
     · exact Metric.isOpen_ball
     · simp
@@ -468,17 +442,16 @@ lemma littleO_of_powerseries {n : ℕ}
       · simp_all
 
 /-- Second partial derivative test. -/
-theorem second_derivative_test {n : ℕ}
-    {f : EuclideanSpace ℝ (Fin n) → ℝ}
+theorem second_derivative_test {n : ℕ} {f : EuclideanSpace ℝ (Fin n) → ℝ}
     {x₀ : EuclideanSpace ℝ (Fin n)}
     {p : FormalMultilinearSeries ℝ (EuclideanSpace ℝ (Fin n)) ℝ}
     (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r)
     (h₁ : HasFPowerSeriesOnBall f p x₀ r)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
-have : (fun x ↦ |f x - ∑ x_1 ∈ Finset.range (2 + 1), (p x_1) fun x_2 ↦ x - x₀|)
+  have : (fun x ↦ |f x - ∑ x_1 ∈ Finset.range (2 + 1), (p x_1) fun x_2 ↦ x - x₀|)
      = (fun x ↦ |f x - ∑ x_1 ∈ Finset.range (2 + 1), higher_taylor_coeff f x₀ x_1 x|) := by
-  ext
-  congr
-  ext
-  rw [eliminate_higher_taylor_coeff f x₀ _ p h₁]
-exact isLocalMin_of_PosDef_of_Littleo (this ▸ littleO_of_powerseries h₀ hr h₁) h₀ hf
+    ext
+    congr
+    ext
+    rw [eliminate_higher_taylor_coeff x₀ _ p h₁]
+  exact isLocalMin_of_PosDef_of_Littleo (this ▸ littleO_of_powerseries hr h₁) h₀ hf
