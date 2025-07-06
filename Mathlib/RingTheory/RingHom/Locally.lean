@@ -31,7 +31,8 @@ composition, base change, etc., so is `Locally P`.
 - `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
 - `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
-- `RingHom.locally_stableUnderCompositionWithLocalizationAway`: `Locally P` is stable under
+- `RingHom.locally_StableUnderCompositionWithLocalizationAwayTarget` and
+  `RingHom.locally_StableUnderCompositionWithLocalizationAwaySource`: `Locally P` is stable under
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
