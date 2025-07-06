@@ -946,7 +946,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 
 /-- An `affineCombination` with sum of weights 1 is in the
-`affineSpan` of an indexed family, if family is nonempty. -/
+`affineSpan` of an indexed family, if the family is nonempty. -/
 theorem affineCombination_mem_affineSpan_of_nonempty [Nonempty ι] {s : Finset ι} {w : ι → k}
     (h : ∑ i ∈ s, w i = 1) (p : ι → P) :
     s.affineCombination k p w ∈ affineSpan k (Set.range p) := by
