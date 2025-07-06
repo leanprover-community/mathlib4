@@ -168,7 +168,6 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 
-@[simp]
 theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
   simp [sInf_def]
 
