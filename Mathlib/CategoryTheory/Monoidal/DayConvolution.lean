@@ -256,7 +256,7 @@ lemma associator_hom_unit_unit (x y z : C) :
       (F.obj x ◁ (unit G H).app (y, z)) ≫
       (unit F (G ⊛ H)).app (x, y ⊗ z) ≫
       (F ⊛ G ⊛ H).map (α_ _ _ _).inv := by
-  letI := congrArg (fun t ↦ t.app ((x, y), z)) <|
+  have := congrArg (fun t ↦ t.app ((x, y), z)) <|
       (corepresentableBy₂' F G H).homEquiv.rightInverse_symm <|
         (corepresentableBy₂ F G H|>.ofIso
           (associatorCorepresentingIso F G H).symm|>.homEquiv (𝟙 _))
@@ -277,7 +277,7 @@ lemma associator_inv_unit_unit (x y z : C) :
     (α_ (F.obj x) (G.obj y) (H.obj z)).inv ≫ (unit F G).app (x, y) ▷ H.obj z ≫
       (unit (F ⊛ G) H).app (x ⊗ y, z) ≫
       ((F ⊛ G) ⊛ H).map (α_ x y z).hom := by
-  letI := congrArg (fun t ↦ t.app (x, y, z)) <|
+  have := congrArg (fun t ↦ t.app (x, y, z)) <|
       (corepresentableBy₂ F G H).homEquiv.rightInverse_symm <|
         (corepresentableBy₂' F G H|>.ofIso
           (associatorCorepresentingIso F G H)|>.homEquiv (𝟙 _))
@@ -330,7 +330,7 @@ lemma pentagon (H K : C ⥤ V)
   apply Functor.hom_ext_of_isLeftKanExtension (α := unit ((F ⊛ G) ⊛ H) K)
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft ((F ⊛ G) ⊛ H) (unit (F ⊛ G) H) K)
-  letI : (((F ⊛ G) ⊠ H) ⊠ K).IsLeftKanExtension
+  have : (((F ⊛ G) ⊠ H) ⊠ K).IsLeftKanExtension
     (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K) :=
     isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
@@ -424,7 +424,7 @@ instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
     U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
-by leveraging the fact that `U ⊠ F` is left Kan extended from `(fromPUnit 𝟙_ V) ⊠ F`. -/
+by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit 𝟙_ V) ⊠ F`. -/
 @[simps]
 def corepresentableByLeft [DayConvolution U F] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
@@ -436,7 +436,7 @@ def corepresentableByLeft [DayConvolution U F] :
   homEquiv_comp := by aesop
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `F ⊛ U` by
-leveraging the fact that `F ⊠ U` is left Kan extended from `F ⊠ (fromPUnit 𝟙_ V)`. -/
+leveraging the fact that `F ⊠ U` is a left Kan extension of `F ⊠ (fromPUnit 𝟙_ V)`. -/
 @[simps]
 def corepresentableByRight [DayConvolution F U] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
@@ -525,7 +525,7 @@ lemma leftUnitor_hom_unit_app (y : C) :
     can ▷ F.obj y ≫ (DayConvolution.unit U F).app (𝟙_ C, y) ≫
       (leftUnitor U F).hom.app (𝟙_ C ⊗ y) =
     (λ_ (F.obj y)).hom ≫ F.map (λ_ y).inv := by
-  letI := congrArg (fun t ↦ t.app (.mk PUnit.unit, y)) <|
+  have := congrArg (fun t ↦ t.app (.mk PUnit.unit, y)) <|
       (corepresentableByLeft U F).homEquiv.rightInverse_symm <|
         ((leftUnitorCorepresentingIso F).symm.hom.app F) (𝟙 _)
   dsimp [leftUnitor, Coyoneda.fullyFaithful, corepresentableByLeft,
@@ -565,13 +565,13 @@ omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
   (CostructuredArrow (Functor.fromPUnit (𝟙_ C)) d) (tensorRight v)]
 variable [DayConvolution F U]
 
-/-- Characterizing the forward direction of `leftUnitor` via the universal maps. -/
+/-- Characterizing the forward direction of `rightUnitor` via the universal maps. -/
 @[reassoc (attr := simp)]
 lemma rightUnitor_hom_unit_app (x : C) :
     F.obj x ◁ can ≫ (DayConvolution.unit F U).app (x, 𝟙_ C) ≫
       (rightUnitor U F).hom.app (x ⊗ 𝟙_ C) =
     (ρ_ _).hom ≫ F.map (ρ_ x).inv := by
-  letI := congrArg (fun t ↦ t.app (x, .mk PUnit.unit)) <|
+  have := congrArg (fun t ↦ t.app (x, .mk PUnit.unit)) <|
       (corepresentableByRight U F).homEquiv.rightInverse_symm <|
         ((rightUnitorCorepresentingIso F).symm.hom.app F) (𝟙 _)
   dsimp [rightUnitor, Coyoneda.fullyFaithful, corepresentableByRight,
@@ -634,7 +634,7 @@ lemma DayConvolution.triangle (F G U : C ⥤ V) [DayConvolutionUnit U]
   apply Functor.hom_ext_of_isLeftKanExtension _ (DayConvolution.unit _ _) _
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft (F ⊛ U) (DayConvolution.unit F U) G)
-  letI : (F ⊠ U) ⊠ G|>.IsLeftKanExtension
+  have : (F ⊠ U) ⊠ G|>.IsLeftKanExtension
       (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G) :=
     isPointwiseLeftKanExtensionExtensionUnitLeft (F ⊠ U) _ G
       (isPointwiseLeftKanExtensionExtensionUnitRight U (DayConvolutionUnit.φ U) F <|
