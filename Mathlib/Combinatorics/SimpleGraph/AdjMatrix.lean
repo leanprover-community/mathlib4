@@ -189,7 +189,7 @@ theorem adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :
 @[simp]
 theorem dotProduct_adjMatrix [NonAssocSemiring α] (v : V) (vec : V → α) :
     vec ⬝ᵥ G.adjMatrix α v = ∑ u ∈ G.neighborFinset v, vec u := by
-  simp [neighborFinset_eq_filter, dotProduct, sum_filter, Finset.sum_apply]
+  simp [neighborFinset_eq_filter, dotProduct, sum_filter]
 
 @[simp]
 theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
@@ -245,7 +245,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
       rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
-      simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk, exists_prop] at hp
+      simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy

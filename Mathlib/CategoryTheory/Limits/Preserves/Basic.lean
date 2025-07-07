@@ -245,7 +245,7 @@ preservesLimit_of_preserves_limit_cone h hF
 lemma preservesLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
     [PreservesLimit K₁ F] : PreservesLimit K₂ F where
   preserves {c} t := ⟨by
-    apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) _ _
+    apply IsLimit.postcomposeInvEquiv (Functor.isoWhiskerRight h F :) _ _
     have := (IsLimit.postcomposeInvEquiv h c).symm t
     apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
     exact Cones.ext (Iso.refl _)⟩
@@ -349,7 +349,7 @@ lemma preservesColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K
     [PreservesColimit K₁ F] :
     PreservesColimit K₂ F where
   preserves {c} t := ⟨by
-    apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) _ _
+    apply IsColimit.precomposeHomEquiv (Functor.isoWhiskerRight h F :) _ _
     have := (IsColimit.precomposeHomEquiv h c).symm t
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
     exact Cocones.ext (Iso.refl _)⟩
@@ -686,7 +686,7 @@ lemma reflectsLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁
     ReflectsLimit K₂ F where
   reflects {c} t := ⟨by
     apply IsLimit.postcomposeInvEquiv h c (isLimitOfReflects F _)
-    apply ((IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) _).symm t).ofIsoLimit _
+    apply ((IsLimit.postcomposeInvEquiv (Functor.isoWhiskerRight h F :) _).symm t).ofIsoLimit _
     exact Cones.ext (Iso.refl _)⟩
 
 @[deprecated "use reflectsLimit_of_iso_diagram" (since := "2024-11-19")]
@@ -861,7 +861,7 @@ lemma reflectsColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K�
     ReflectsColimit K₂ F where
   reflects {c} t := ⟨by
     apply IsColimit.precomposeHomEquiv h c (isColimitOfReflects F _)
-    apply ((IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) _).symm t).ofIsoColimit _
+    apply ((IsColimit.precomposeHomEquiv (Functor.isoWhiskerRight h F :) _).symm t).ofIsoColimit _
     exact Cocones.ext (Iso.refl _)⟩
 
 @[deprecated "use reflectsColimit_of_iso_diagram" (since := "2024-11-19")]

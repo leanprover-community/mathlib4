@@ -263,7 +263,7 @@ lemma lipschitzWith_one_ofFun_toFun' [Finite 𝔗] (h : ⋃₀ 𝔖 ⊆ ⋃₀ �
     LipschitzWith 1 (ofFun 𝔖 ∘ toFun 𝔗 : (α →ᵤ[𝔗] β) → (α →ᵤ[𝔖] β)) :=
   lipschitzWith_iff.mpr fun _x hx ↦ lipschitzWith_eval (h hx)
 
-lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖)  :
+lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖) :
     LipschitzWith 1 (UniformFun.ofFun ∘ s.restrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → (s →ᵤ β)) :=
   UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval ⟨s, hs, x.2⟩
 

@@ -399,8 +399,7 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
   { reindexₗ R A e e with
     map_mul' M N := by
       ext i j
-      simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, LinearEquiv.coe_mk,
-        Matrix.reindex_apply, Matrix.submatrix_apply, mul_apply]
+      simp only [mul_apply]
       refine Fintype.sum_equiv e _ _ ?_
       intro k
       simp
@@ -523,10 +522,10 @@ open WithCStarModule in
 lemma toCLM_apply_single [DecidableEq m] {M : CStarMatrix m n A} {i : m} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) = (equiv _ _).symm (fun j => a * M i j) := by
   ext
-  simp [toCLM_apply, EmbeddingLike.apply_eq_iff_eq, equiv, Equiv.refl]
+  simp [toCLM_apply, equiv, Equiv.refl]
 
 open WithCStarModule in
-lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A}{i : m} {j : n} (a : A) :
+lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
 open WithCStarModule in
@@ -655,7 +654,7 @@ private lemma antilipschitzWith_toMatrixAux :
     ‖M‖ ≤ ∑ j, ∑ i, ‖M i j‖ := by
       rw [norm_def]
       refine (toCLM M).opNorm_le_bound (by positivity) fun v => ?_
-      simp only [toCLM_apply_eq_sum, equiv_symm_pi_apply, Finset.sum_mul]
+      simp only [toCLM_apply_eq_sum, Finset.sum_mul]
       apply pi_norm_le_sum_norm _ |>.trans
       gcongr with i _
       apply norm_sum_le _ _ |>.trans
@@ -759,8 +758,7 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
           _ = ‖M * star M‖ * ‖v‖ ^ 2 := by
                     congr
                     apply MulOpposite.op_injective
-                    simp only [← toCLMNonUnitalAlgHom_eq_toCLM, Matrix.star_eq_conjTranspose,
-                      map_mul]
+                    simp only [← toCLMNonUnitalAlgHom_eq_toCLM, map_mul]
                     rfl
       have h₂ : ‖v‖ = √(‖v‖ ^ 2) := by simp
       rw [h₂, ← Real.sqrt_mul]
