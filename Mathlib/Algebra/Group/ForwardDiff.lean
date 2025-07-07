@@ -406,16 +406,16 @@ theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R[X]) :
       · rw [Finset.sum_range_succ, Nat.choose_succ_succ', ih, add_comm]
     obtain sum_choose := sum_choose_eq_choose_succ_succ p
     conv => enter [1, 2, x]; rw [fwdDiffTab_0th_diag_poly']; simp
-    have sum_extend_inner_range : ∑ x ∈ Finset.range (p + 1), ∑ x_1 ∈ Finset.range (x + 1),
-      ↑(x.choose x_1) * Δ_[1] ^[x_1]
-        (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 =
-      ∑ x ∈ Finset.range (p + 1), ∑ x_1 ∈ Finset.range (p + 1),
-      ↑(x.choose x_1) * Δ_[1] ^[x_1]
-        (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * ↑x ^ x_2) 0 := by
+    have sum_extend_inner_range : ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (x + 1),
+      ↑(x.choose k) * Δ_[1] ^[k]
+        (fun (x : ℕ) => ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 =
+      ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (p + 1),
+      ↑(x.choose k) * Δ_[1] ^[k]
+        (fun (x : ℕ) => ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 := by
       apply Finset.sum_congr rfl
       intro x hx
       have sum_sum_eq_zero : ∑ k ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose k) * Δ_[1] ^[k]
-        (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 = 0 := by
+        (fun (x : ℕ) => ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 = 0 := by
         rw [Finset.sum_Ico_eq_sum_range]
         simp
         simp at hx
@@ -427,12 +427,12 @@ theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R[X]) :
         rw [Nat.choose_eq_zero_of_lt this]
         simp
       nth_rw 1 3 [Finset.range_eq_Ico]
-      have sum_Ico_split : ∑ x_1 ∈ Finset.Ico 0 (p + 1), ↑(x.choose x_1) * Δ_[1] ^[x_1]
-          (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 =
-        ∑ x_1 ∈ Finset.Ico 0 (x + 1), ↑(x.choose x_1) * Δ_[1] ^[x_1]
-          (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 +
-        ∑ x_1 ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose x_1) * Δ_[1] ^[x_1]
-          (fun (x : ℕ) => ∑ x_2 ∈ Finset.range (n + 1), a x_2 * x ^ x_2) 0 := by
+      have sum_Ico_split : ∑ k ∈ Finset.Ico 0 (p + 1), ↑(x.choose k) * Δ_[1] ^[k]
+          (fun (x : ℕ) => ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 =
+        ∑ k ∈ Finset.Ico 0 (x + 1), ↑(x.choose k) * Δ_[1] ^[k]
+          (fun (x : ℕ) => ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 +
+        ∑ k ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose k) * Δ_[1] ^[k]
+          (fun (x : ℕ) => ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 := by
         rw [← Finset.sum_Ico_consecutive]
         · linarith
         · simp at hx
