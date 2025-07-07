@@ -173,6 +173,17 @@ theorem continuous_hessian {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V
   ext i
   fin_cases i <;> simp
 
+@[nontriviality]
+lemma isCoercive.of_subsingleton {V : Type*} [Subsingleton V]
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    (F : V →L[ℝ] V →L[ℝ] ℝ) : IsCoercive F := by
+  use 1
+  constructor
+  · simp
+  · intro u
+    rw [Subsingleton.eq_zero u]
+    simp
+
 /-- Positive definiteness implies coercivity. -/
 lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
@@ -221,13 +232,8 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
           ContinuousMultilinearMap.coe_coe, smul_eq_mul] at h₄
         rw [this, mul_comm, ← h₄]
         exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
-  use 1
-  constructor
-  · simp
-  · intro u
-    have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
-    rw [Subsingleton.eq_zero u]
-    simp
+  · have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
+    apply isCoercive.of_subsingleton
 open Finset Nat
 /-- Spelling out a sum of three. -/
 lemma finset_sum_three (t : ℕ → ℝ) :
