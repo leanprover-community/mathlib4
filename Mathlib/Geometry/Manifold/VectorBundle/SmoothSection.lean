@@ -210,6 +210,38 @@ lemma ContMDiff.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) →
 
 end operations
 
+section
+
+section
+
+-- Let `V` be a vector bundle over a `C^k` manifold `M`.
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : WithTop ℕ∞)
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [∀ x : M, TopologicalSpace (V x)]
+  [FiberBundle F V] [VectorBundle 𝕜 F V]
+
+/-- The scalar product `f • s` of a `C^k` function `f : M → 𝕜` and a section `s` of a smooth vector
+bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport f` .
+
+This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
+but we only consider sections of the form `f s`. -/
+lemma contMDiff_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} {u : Set M}
+    (hψ : ContMDiffOn I 𝓘(𝕜) n ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
+    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  apply contMDiff_of_contMDiffOn_union_of_isOpen (hψ.smul_section hs) ?_ ?_ ht
+      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
+  · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
+    intro y hy
+    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
+
+end
+
 /-- Bundled `n` times continuously differentiable sections of a vector bundle.
 Denoted as `Cₛ^n⟮I; F, V⟯` within the `Manifold` namespace. -/
 structure ContMDiffSection where

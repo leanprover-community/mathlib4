@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.ShrinkingLemma
 
@@ -61,35 +60,6 @@ universe uι uE uH uM uF
 
 open Bundle Function Filter Module Set
 open scoped Topology Manifold ContDiff
-
-section
-
--- Let `V` be a real vector bundle over a C^k real manifold `M`.
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] (n : WithTop ℕ∞)
-  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)] [∀ x : M, TopologicalSpace (V x)]
-  [FiberBundle F V] [VectorBundle ℝ F V]
-
-/-- The scalar product `f • s` of a `C^k` function `f : M → ℝ` and a section `s` of a smooth vector
-bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport f` .
-
-This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
-but we only consider sections of the form `f s`. -/
-lemma contMDiff_section_of_tsupport {s : Π (x : M), V x} {ψ : M → ℝ} {u : Set M}
-    (hψ : ContMDiffOn I 𝓘(ℝ) n ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
-    (hs : ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
-    ContMDiff I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
-  apply contMDiff_of_contMDiffOn_union_of_isOpen (hψ.smul_section hs) ?_ ?_ ht
-      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
-  · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
-    intro y hy
-    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
-  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
-
-end
 
 noncomputable section
 
