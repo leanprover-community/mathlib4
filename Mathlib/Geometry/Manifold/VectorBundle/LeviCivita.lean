@@ -155,25 +155,37 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   have eq1 := aux I X Y Z cov h
   have eq2 := aux I Y Z X cov h
   have eq3 := aux I Z X Y cov h
-  -- add (I) + (II) and subtract (III)
-
-  -- solve for ⟪cov X Y, Z⟫
+  have : rhs_aux I X Y Z + rhs_aux I Y Z X + rhs_aux I Z X Y =
+      2 * ⟪cov X Y, Z⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫
+      + ⟪Z, VectorField.mlieBracket I X Y⟫ - ⟪X, VectorField.mlieBracket I Z Y⟫ := by
+    rw [eq1, eq2, eq3]
+    sorry -- should be obvious now
+    -- add (I) + (II) and subtract (III)
+  -- solve for ⟪cov X Y, Z⟫ and obtain the claim
   sorry
 
 variable (X Y Z Z') in
 lemma rhs_aux_addZ : rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
+  have : ⟪Y, Z + Z'⟫ = ⟪Y, Z⟫ + ⟪Y, Z'⟫ := sorry
+  unfold rhs_aux
   ext x
-  simp only [rhs_aux]
-  -- only holds given enough smoothness!
+  -- have aux := mfderiv_congr this
+  --simp_rw [this]
+  ext x
+  --simp only [rhs_aux]
+  dsimp
+  -- prove: product is smooth enough, so we can apply mfderiv_add (and product_add_right)...
+  -- rw [← mfderiv_add]
+  -- simp_rw [product_add_right]
   sorry
 
 variable (X X' Y Z) in
 lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
-  sorry
+  sorry -- hopefully similar to rhs_aux_addZ
 
 variable (X Y Y' Z) in
 lemma rhs_aux_addY : rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
-  sorry
+  sorry -- hopefully similar to rhs_aux_addZ
 
 variable (X Y Z) in
 lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
