@@ -41,7 +41,7 @@ example (f : (k : Nat) → 0 < k → Type) (lt : 0 < n) : P (mdata% f n lt) := b
   exact test_sorry
 
 -- app (fn)
-/-- error: function expected
+/-- error: term in function position was rewritten to a non-function
   any x -/
 #guard_msgs in
 example (any : (α : Type) → α) (eq : (Nat → Nat) = Bool) :
@@ -117,7 +117,7 @@ example : P (forall (lt : 0 < n), @Eq (Fin n) ⟨0, lt⟩ ⟨0, lt⟩) := by
 
 /-- error: Will not cast
   y
-in cast mode 'proofs'. If inserting more casts is acceptable, use `(castMode := .all)`. -/
+in cast mode 'proofs'. If inserting more casts is acceptable, use `rw! (castMode := .all)`. -/
 #guard_msgs in
 example (Q : Fin n → Prop) (q : (x : Fin n) → Q x) :
     P fun y : Fin n => q y := by
@@ -127,7 +127,7 @@ example (Q : Fin n → Prop) (q : (x : Fin n) → Q x) :
 /-- error:
 Will not cast
   ⟨0, ⋯⟩
-in cast mode 'proofs'. If inserting more casts is acceptable, use `(castMode := .all)`. -/
+in cast mode 'proofs'. If inserting more casts is acceptable, use `rw! (castMode := .all)`. -/
 #guard_msgs in
 example (f : (k : Nat) → Fin k → Type) (lt : 0 < n) : P (f n ⟨0, lt⟩) := by
   conv in Fin.mk .. => rewrite! [eq]
@@ -209,7 +209,7 @@ theorem bool_dep_test
     (f : ∀ b, β (b && false))
     (h : false = b) :
     @P (β false) (f false) := by
-  rw! (castMode := .all) [h]
+  rewrite! (castMode := .all) [h]
   guard_target =
     @P (β b) (h.rec (motive := fun x _ => β x) <|
       h.symm.rec (motive := fun x _ => β (x && false)) <|
@@ -219,7 +219,7 @@ theorem bool_dep_test
 -- Test that requires generalizing a `let` binding.
 theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) :
     let n := 1; P (f n rfl) := by
-  rewrite! +letAbs (castMode := .all) [eq]
+  rewrite! +letAbs [eq]
   guard_target =
     let n : (x : Nat) → 1 = x → Nat := fun x _ => x
     P (f (n b eq) _)

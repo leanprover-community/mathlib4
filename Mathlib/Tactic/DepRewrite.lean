@@ -13,25 +13,23 @@ import Mathlib.Init
 namespace Mathlib.Tactic.DepRewrite
 open Lean Meta
 
-theorem dcongrArg.{u, v} {α : Sort u} {a a' : α}
-    {β : (a' : α) → @Eq α a a' → Sort v} (h : @Eq α a a')
-    (f : (a' : α) → (h : @Eq α a a') → β a' h) :
-    f a (@Eq.refl α a) =
-    @Eq.rec α a' (fun x h' ↦ β x (@Eq.trans α a a' x h h')) (f a' h) a (@Eq.symm α a a' h) :=
-  Eq.rec (Eq.refl (f a (Eq.refl a))) h
+theorem dcongrArg.{u, v} {α : Sort u} {a a' : α} {β : (a' : α) → a = a' → Sort v}
+    (h : a = a') (f : (a' : α) → (h : a = a') → β a' h) :
+    f a rfl = Eq.rec (motive := fun x h' ↦ β x (h.trans h')) (f a' h) h.symm := by
+  cases h; rfl
 
-theorem nddcongrArg.{u, v} {α : Sort u} {a a' : α}
-    {β : Sort v} (h : @Eq α a a') (f : (a' : α) → (h : @Eq α a a') → β) :
-    f a (@Eq.refl α a) = f a' h :=
-  Eq.rec (Eq.refl (f a (Eq.refl a))) h
+theorem nddcongrArg.{u, v} {α : Sort u} {a a' : α} {β : Sort v}
+    (h : a = a') (f : (a' : α) → (h : a = a') → β) :
+    f a rfl = f a' h := by
+  cases h; rfl
 
-theorem heqL.{u} {α β : Sort u} {a : α} {b : β} (h : @HEq α a β b) :
-    @Eq α a (@cast β α (@Eq.symm (Sort u) α β (@type_eq_of_heq α β a b h)) b) :=
-  HEq.rec (Eq.refl a) h
+theorem heqL.{u} {α β : Sort u} {a : α} {b : β} (h : HEq a b) :
+    a = cast (type_eq_of_heq h).symm b := by
+  cases h; rfl
 
-theorem heqR.{u} {α β : Sort u} {a : α} {b : β} (h : @HEq α a β b) :
-    @Eq β (@cast α β (@type_eq_of_heq α β a b h) a) b :=
-  HEq.rec (Eq.refl a) h
+theorem heqR.{u} {α β : Sort u} {a : α} {b : β} (h : HEq a b) :
+    cast (type_eq_of_heq h) a = b := by
+  cases h; rfl
 
 private def traceCls : Name := `Tactic.depRewrite
 private def traceClsVisit : Name := `Tactic.depRewrite.visit
@@ -75,8 +73,6 @@ structure Config where
   /-- Which transparency level to use when unifying the rewrite rule's LHS
   against subterms of the term being rewritten. -/
   transparency : TransparencyMode := .reducible
-  /-- Whether to support offset constraints such as `?x + 1 =?= e` -/
-  offsetCnstrs : Bool := true
   /-- Which occurrences to rewrite. -/
   occs : Occurrences := .all
   /-- The cast mode specifies when `rw!` is permitted to insert casts
@@ -130,10 +126,12 @@ abbrev M := ReaderT Context <| MonadCacheT ExprStructEq Expr <| StateRefT Nat Me
 we only check the sort of `t`, and it cannot change.) -/
 def checkCastAllowed (e t : Expr) (castMode : CastMode) : MetaM Unit := do
   let throwMismatch : Unit → MetaM Unit := fun _ => do
-    throwError "Will not cast{indentExpr e}\nin cast mode '{castMode}'. \
-If inserting more casts is acceptable, use `(castMode := .all)`."
-  if castMode == .proofs && !(← isProp t) then
-    throwMismatch ()
+    throwError m!"\
+      Will not cast{indentExpr e}\nin cast mode '{castMode}'. \
+      If inserting more casts is acceptable, use `rw! (castMode := .all)`."
+  if castMode == .proofs then
+    if !(← isProp t) then
+      throwMismatch ()
 
 /-- If `e : te` is a term whose type mentions `x` or `h` (the generalization variables),
 return `⋯ ▸ e : te[p/x,rfl/h]`.
@@ -210,7 +208,9 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     -- We save the metavariable context here,
     -- so that it can be rolled back unless `occs.contains i`.
     let mctx ← getMCtx
-    if ← isDefEq e ctx.p then
+    -- Note that the pattern `ctx.p` is created in the outer lctx,
+    -- so bvars from the visited term will not be unified into the pattern.
+    if ← withTransparency ctx.cfg.transparency <| isDefEq e ctx.p then
       let i ← modifyGet fun i => (i, i+1)
       if ctx.cfg.occs.contains i then
         return ctx.x
@@ -224,7 +224,8 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     let fup ← visit f none
     let tfup ← inferType fup
     withAtLeastTransparency .default <| forallBoundedTelescope tfup (some 1) fun xs _ => do
-      let #[r] := xs | throwFunctionExpected fup
+      let #[r] := xs |
+        throwError m!"term in function position was rewritten to a non-function{indentExpr fup}"
       let tr ← inferType r
       let aup ← visitAndCast a tr
       return .app fup aup
@@ -252,8 +253,9 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     and instantiate the body with `n x h`.
     -/
     if !ctx.cfg.letAbs then
-      throwError "Will not rewrite the value of{indentD ""}let {n} : {t} := {v}
-Use `rw! +letAbs` if you want to rewrite in `let`-bound values."
+      throwError m!"\
+        Will not rewrite the value of{indentD ""}let {n} : {t} := {v}\n\
+        Use `rw! +letAbs` if you want to rewrite in let-bound values."
     let lupTy ← mkForallFVars #[ctx.x, ctx.h] tup
     let lup ← mkLambdaFVars #[ctx.x, ctx.h] vup
     withLetDecl n lupTy lup fun r => do
@@ -319,10 +321,10 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
           try
             check eAbst
           catch e : Lean.Exception =>
-            throwTacticEx `depRewrite mvarId <|
-              m!"motive{indentExpr eAbst}\nis not type correct:{indentD e.toMessageData}\n" ++
-              m!"unlike with rw/rewrite, this error should NOT happen in rw!/rewrite!:\n" ++
-              m!"please report it on the Lean Zulip"
+            throwTacticEx `depRewrite mvarId <| m!"\
+              motive{indentExpr eAbst}\nis not type correct:{indentD e.toMessageData}\n\
+              unlike with rw/rewrite, this error should NOT happen in rw!/rewrite!: \
+              please report it on the Lean Zulip"
           -- construct rewrite proof
           let eType ← inferType e
           -- `eNew ≡ eAbst rhs heq`
