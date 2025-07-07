@@ -30,14 +30,13 @@ variable
 Continuously complex-differentiable functions on ℂ are harmonic.
 -/
 theorem ContDiffAt.harmonicAt (h : ContDiffAt ℂ 2 f x) : HarmonicAt f x := by
-  constructor
-  · exact h.restrict_scalars ℝ
-  · filter_upwards [h.restrictScalars_iteratedFDeriv_eventuallyEq (𝕜 := ℝ)] with a ha
-    have : (iteratedFDeriv ℂ 2 f a) (I • ![1, 1])
-        = (∏ i, I) • ((iteratedFDeriv ℂ 2 f a) ![1, 1]) :=
-      (iteratedFDeriv ℂ 2 f a).map_smul_univ (fun _ ↦ I) ![1, 1]
-    simp_all [laplacian_eq_iteratedFDeriv_complexPlane f, ← ha,
-      ContinuousMultilinearMap.coe_restrictScalars]
+  refine ⟨h.restrict_scalars ℝ, ?_⟩
+  filter_upwards [h.restrictScalars_iteratedFDeriv_eventuallyEq (𝕜 := ℝ)] with a ha
+  have : (iteratedFDeriv ℂ 2 f a) (I • ![1, 1])
+      = (∏ i, I) • ((iteratedFDeriv ℂ 2 f a) ![1, 1]) :=
+    (iteratedFDeriv ℂ 2 f a).map_smul_univ (fun _ ↦ I) ![1, 1]
+  simp_all [laplacian_eq_iteratedFDeriv_complexPlane f, ← ha,
+    ContinuousMultilinearMap.coe_restrictScalars]
 
 /--
 Analytic functions on ℂ are harmonic.
@@ -73,8 +72,7 @@ private lemma slitPlaneLemma {z : ℂ} (hz : z ≠ 0) : z ∈ slitPlane ∨ -z �
   rw [ne_eq, Complex.ext_iff] at hz
   push_neg at hz
   simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
-  by_contra contra
-  push_neg at contra
+  by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
 
 /- Helper lemma for AnalyticAt.harmonicAt_log_norm -/
