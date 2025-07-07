@@ -214,6 +214,8 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     simp only [subgroup_smul_def, smul_smul, ← mul_assoc, ← mem_stabilizer_iff]
     exact hyp (normalClosure_normal.conj_mem g (le_normalClosure hg) h)
 
+example (s : Set α) : s.ncard = Nat.card s := by
+  rw [@Set.Nat.card_coe_set_eq]
 variable [Finite α]
 
 /-- A primitivity criterion -/
@@ -224,26 +226,21 @@ theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     IsPreprimitive (fixingSubgroup G (s ∩ g • s)) (ofFixingSubgroup G (s ∩ g • s)) := by
   classical
   have hts : s ∩ g • s ≤ s := Set.inter_subset_left
-  --  IsPretransitive (fixingSubgroup G (s ∩ g • s)) (ofFixingSubgroup G (s ∩ g • s)) :=
-  have := IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
-
+  have : IsPretransitive ↥(fixingSubgroup G (s ∩ g • s)) ↥(ofFixingSubgroup G (s ∩ g • s)) :=
+    IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
   apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion G hts)
-
+  rw [show Nat.card (ofFixingSubgroup G (s ∩ g • s)) = Set.ncard (s ∩ g • s)ᶜ by
+    rw [← Set.Nat.card_coe_set_eq]; congr]
   rw [← Set.image_univ,
-    Set.ncard_image_of_injective _ (ofFixingSubgroup_of_inclusion_injective G _)]
-
-  have this : Set.ncard (s ∩  g • s)ᶜ < 2 * Set.ncard (sᶜ) := by
-    rw [Set.compl_inter, ← Nat.add_lt_add_iff_right, Set.ncard_union_add_ncard_inter]
-    rw [← Set.compl_union, two_mul, add_assoc]
-    simp only [add_lt_add_iff_left]
-    rw [← add_lt_add_iff_left, Set.ncard_add_ncard_compl,
-      Set.ncard_smul_set, ← add_assoc, Set.ncard_add_ncard_compl]
-    simp only [lt_add_iff_pos_right]
-    rwa [Set.ncard_pos, Set.nonempty_compl]
-  convert this
-  rw [← ofFixingSubgroup_carrier G,
-    ← Set.ncard_image_of_injective (Set.univ) (ofFixingSubgroup G s).inclusion_injective,
-    ← image_inclusion, Set.image_univ]
+    Set.ncard_image_of_injective _ ofFixingSubgroup_of_inclusion_injective, Set.ncard_coe]
+  rw [show ((ofFixingSubgroup G s : Set α)).ncard = sᶜ.ncard by
+    rfl]
+  rw [Set.compl_inter, ← Nat.add_lt_add_iff_right, Set.ncard_union_add_ncard_inter,
+      ← Set.compl_union, two_mul, add_assoc]
+  simp only [add_lt_add_iff_left]
+  rwa [← add_lt_add_iff_left, Set.ncard_add_ncard_compl,
+    Set.ncard_smul_set, ← add_assoc, Set.ncard_add_ncard_compl,
+    lt_add_iff_pos_right, Set.ncard_pos, Set.nonempty_compl]
 
 -- α = Ω, s = Δ, α \ s = Γ
 -- 1 ≤ #Δ < #Ω, 1 < #Γ < #Ω
@@ -297,7 +294,7 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     rw [is_one_pretransitive_iff]
 
     apply IsPretransitive.of_surjective_map
-      (ofFixingSubgroup_of_singleton_bijective G a).surjective hs_trans
+      ofFixingSubgroup_of_singleton_bijective.surjective hs_trans
 
   -- The result is assumed by induction for sets of ncard ≤ n
 
@@ -435,7 +432,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G α (a := a)]
     · rw [is_one_preprimitive_iff (stabilizer G a) (ofStabilizer G a)]
       exact IsPreprimitive.of_surjective
-        (ofFixingSubgroup_of_singleton_bijective G a).surjective
+        ofFixingSubgroup_of_singleton_bijective.surjective
     · norm_num
 
   rcases Nat.lt_or_ge (2 * n.succ) (Nat.card α) with hn1 | hn2
@@ -593,7 +590,7 @@ theorem isMultiplyPreprimitive_jordan
     · rw [ofStabilizer.isMultiplyPretransitive (a := a)]
       rw [is_one_pretransitive_iff]
       apply IsPretransitive.of_surjective_map
-        (ofFixingSubgroup_of_singleton_bijective G a).surjective hGs.toIsPretransitive
+        ofFixingSubgroup_of_singleton_bijective.surjective hGs.toIsPretransitive
     · intro t h
       simp only [Nat.cast_add, Nat.cast_one,
         (ENat.add_left_injective_of_ne_top ENat.one_ne_top).eq_iff] at h
@@ -605,7 +602,7 @@ theorem isMultiplyPreprimitive_jordan
         rw [Set.image_singleton, hg]
       rw [htb]
       refine IsPreprimitive.of_surjective
-        (conjMap_ofFixingSubgroup_bijective G hst).surjective
+        (conjMap_ofFixingSubgroup_bijective (hst := hst)).surjective
 
   -- Induction step
   intro G α _ _ _ hG s hsn hα hGs
@@ -624,29 +621,26 @@ theorem isMultiplyPreprimitive_jordan
     have : IsPreprimitive ↥(fixingSubgroup G (insert a (Subtype.val '' t)))
         (ofFixingSubgroup G (insert a (Subtype.val '' t))) :=
       IsPreprimitive.of_surjective
-        (ofFixingSubgroup_of_eq_bijective G hst).surjective
+        (ofFixingSubgroup_of_eq_bijective (hst := hst)).surjective
     have hGs' : IsPreprimitive (fixingSubgroup (stabilizer G a) t)
       (ofFixingSubgroup (stabilizer G a) t) :=
       IsPreprimitive.of_surjective
-        (ofFixingSubgroup_insert_map_bijective G a t).surjective
+        ofFixingSubgroup_insert_map_bijective.surjective
     rw [← Nat.succ_eq_one_add]
-    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G (a := a)]
-    -- stabilizer.isMultiplyPreprimitive G α _ hG.toIsPretransitive]
-    suffices n + 2 = 1 + Nat.succ n by
-      rw [this]
-      refine hrec ht_prim ?_ ?_ hGs'
-      · -- t.card = Nat.succ n
-        rw [← Set.ncard_image_of_injective t Subtype.val_injective]
-        apply Nat.add_right_cancel
-        rw [← Set.ncard_insert_of_notMem ha', ← hst, hsn]
-      · -- 1 + n.succ < Fintype.card (SubMulAction.ofStabilizer G α a)
-        change _ < Nat.card (ofStabilizer G a).carrier
-        rw [Set.Nat.card_coe_set_eq, ofStabilizer_carrier, ← Nat.succ_eq_one_add]
-        apply Nat.lt_of_add_lt_add_left
-        rw [Set.ncard_add_ncard_compl]
-        simpa only [Set.ncard_singleton]
-    · exact Nat.succ_eq_one_add (n + 1)
-    · exact Nat.le_add_left 1 (n + 1)
+    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G (a := a) _ (Nat.le_add_left 1 (n + 1))]
+    rw [show n + 2 = 1 + Nat.succ n by
+      exact Nat.succ_eq_one_add (n + 1)]
+    refine hrec ht_prim ?_ ?_ hGs'
+    · -- t.card = Nat.succ n
+      rw [← Set.ncard_image_of_injective t Subtype.val_injective]
+      apply Nat.add_right_cancel
+      rw [← Set.ncard_insert_of_notMem ha', ← hst, hsn]
+    · -- 1 + n.succ < Fintype.card (SubMulAction.ofStabilizer G α a)
+      change _ < Nat.card (ofStabilizer G a).carrier
+      rw [Set.Nat.card_coe_set_eq, ofStabilizer_carrier, ← Nat.succ_eq_one_add]
+      apply Nat.lt_of_add_lt_add_left
+      rw [Set.ncard_add_ncard_compl]
+      simpa only [Set.ncard_singleton]
   -- ∃ a t, a ∈ s ∧ s = insert a (Subtype.val '' t)
   suffices s.Nonempty by
     obtain ⟨a, ha⟩ := this
