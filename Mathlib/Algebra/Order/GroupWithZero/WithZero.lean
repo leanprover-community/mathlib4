@@ -80,7 +80,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
         exact mul_le_mul_right' h x
 
 variable {A B F : Type*} [FunLike F A B]
-variable [LinearOrderedCommGroupWithZero A] [LinearOrderedCommGroupWithZero B]
+variable [MonoidWithZero A] [LinearOrderedCommGroupWithZero B]
 variable [MonoidWithZeroHomClass F A B] {f : F}
 
 open WithZero
@@ -90,7 +90,7 @@ section Units
 /-- Given any linearly ordered commutative group with zero `A`, this is the order isomorphism
 between `WithZero Aˣ` with `A`. -/
 @[simps!]
-def withZeroUnits_OrderIso : WithZero Aˣ ≃o A where
+def withZeroUnits_OrderIso : WithZero Bˣ ≃o B where
   __ := withZeroUnitsEquiv
   map_rel_iff' {a b} := by
     simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, withZeroUnitsEquiv_apply, recZeroCoe]
@@ -103,13 +103,13 @@ def withZeroUnits_OrderIso : WithZero Aˣ ≃o A where
 
 /-- Given any linearly ordered commutative group with zero `A`, this is the inclusion of
 `WithZero Aˣ` into `A` as an ordered embedding. -/
-def withZeroUnits_OrderEmbedding : WithZero Aˣ ↪o A := withZeroUnits_OrderIso.toOrderEmbedding
+def withZeroUnits_OrderEmbedding : WithZero Bˣ ↪o B := withZeroUnits_OrderIso.toOrderEmbedding
 
 @[simp]
-lemma withZeroUnits_OrderEmbedding_apply (x : WithZero Aˣ) :
+lemma withZeroUnits_OrderEmbedding_apply (x : WithZero Bˣ) :
     withZeroUnits_OrderEmbedding x = withZeroUnitsEquiv x := rfl
 
-lemma withZeroUnits_OrderEmbedding_mul (x y : WithZero Aˣ) :
+lemma withZeroUnits_OrderEmbedding_mul (x y : WithZero Bˣ) :
     withZeroUnits_OrderEmbedding (x * y) = withZeroUnitsEquiv x * withZeroUnitsEquiv y := by
   simp [map_mul]
 
