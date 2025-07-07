@@ -12,11 +12,8 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 This file constructs examples of harmonic functions.
 
-- If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`,
-  then so is its real part, imaginary part, and complex conjugate.
-
-- If `f : ℂ → ℂ` is complex-differentiable without zero, then `log ‖f‖` is
-  harmonic.
+If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`, then so is its real
+part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f‖` is harmonic.
 -/
 
 open Complex InnerProductSpace Topology
@@ -102,9 +99,8 @@ private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁
       simp only [Function.comp_apply, Pi.mul_apply, conjCLE_apply, Pi.add_apply]
       congr
       rw [Complex.log_mul_eq_add_log_iff _ hx.2, Complex.arg_conj]
-      simp only [Complex.slitPlane_arg_ne_pi hx.1, ↓reduceIte, neg_add_cancel, Set.mem_Ioc,
-        Left.neg_neg_iff, Real.pi_pos, Real.pi_nonneg, and_self]
-      simpa [ne_eq, map_eq_zero] using hx.2
+      · simp [Complex.slitPlane_arg_ne_pi hx.1, Real.pi_pos, Real.pi_nonneg]
+      · simpa [ne_eq, map_eq_zero] using hx.2
     _ =ᶠ[𝓝 z] ⇑reCLM ∘ (⇑conjCLE ∘ log ∘ g + log ∘ g) := by
       apply Filter.eventuallyEq_iff_exists_mem.2
       use g⁻¹' (Complex.slitPlane ∩ {0}ᶜ), t₀
@@ -117,7 +113,8 @@ private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁
 /--
 If `f : ℂ → ℂ` is complex-analytic without zero, then `log ‖f‖` is harmonic.
 -/
-theorem AnalyticAt.harmonicAt_log_norm {f : ℂ → ℂ} {z : ℂ} (h₁f : AnalyticAt ℂ f z) (h₂f : f z ≠ 0) :
+theorem AnalyticAt.harmonicAt_log_norm {f : ℂ → ℂ} {z : ℂ} (h₁f : AnalyticAt ℂ f z)
+    (h₂f : f z ≠ 0) :
     HarmonicAt (Real.log ‖f ·‖) z := by
   have : (Real.log ‖f ·‖) = (2 : ℝ)⁻¹ • (Real.log ∘ Complex.normSq ∘ f) := by
     funext z
@@ -130,4 +127,5 @@ theorem AnalyticAt.harmonicAt_log_norm {f : ℂ → ℂ} {z : ℂ} (h₁f : Anal
   by_cases h₃f : f z ∈ Complex.slitPlane
   · exact analyticAt_harmonicAt_log_normSq h₁f h₂f h₃f
   · rw [(by aesop : Complex.normSq ∘ f = Complex.normSq ∘ (-f))]
-    exact analyticAt_harmonicAt_log_normSq h₁f.neg (by simpa) ((slitPlaneLemma h₂f).resolve_left h₃f)
+    exact analyticAt_harmonicAt_log_normSq h₁f.neg (by simpa)
+      ((slitPlaneLemma h₂f).resolve_left h₃f)
