@@ -268,9 +268,9 @@ theorem IsMin.mono (ha : IsMin a) (h : b ≤ a) : IsMin b := fun _ hc => h.trans
 
 theorem IsMax.mono (ha : IsMax a) (h : a ≤ b) : IsMax b := fun _ hc => (ha <| h.trans hc).trans h
 
-theorem IsMin.not_lt (h : IsMin a) : ¬b < a := fun hb => hb.not_le <| h hb.le
+theorem IsMin.not_lt (h : IsMin a) : ¬b < a := fun hb => hb.not_ge <| h hb.le
 
-theorem IsMax.not_lt (h : IsMax a) : ¬a < b := fun hb => hb.not_le <| h hb.le
+theorem IsMax.not_lt (h : IsMax a) : ¬a < b := fun hb => hb.not_ge <| h hb.le
 
 theorem not_isMin_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
 
@@ -288,11 +288,11 @@ theorem isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
 
 @[simp]
 theorem not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by
-  simp [lt_iff_le_not_ge, IsMin, not_forall, exists_prop]
+  simp [lt_iff_le_not_ge, IsMin, not_forall]
 
 @[simp]
 theorem not_isMax_iff : ¬IsMax a ↔ ∃ b, a < b := by
-  simp [lt_iff_le_not_ge, IsMax, not_forall, exists_prop]
+  simp [lt_iff_le_not_ge, IsMax, not_forall]
 
 @[simp]
 theorem not_isMin [NoMinOrder α] (a : α) : ¬IsMin a :=

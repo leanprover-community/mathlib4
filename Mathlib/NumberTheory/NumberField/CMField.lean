@@ -29,7 +29,7 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 * `NumberField.IsCM.ofIsCMExtension`: Assume that there exists `F` such that `K/F` is a
   CM-extension. Then `K` is CM.
 
-* `NumberField.IsCMField.of_abelian`: A totally complex abelian extension of `ℚ` is CM.
+* `NumberField.IsCMField.of_isMulCommutative`: A totally complex abelian extension of `ℚ` is CM.
 
 ## Implementation note
 
@@ -193,7 +193,7 @@ namespace IsCMField
 
 variable (F K : Type*) [Field K] [NumberField K] [IsTotallyComplex K]
 
-theorem of_CMExtension [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
+theorem ofCMExtension [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
     [IsQuadraticExtension F K] :
     IsCMField K where
   is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
@@ -203,7 +203,7 @@ open IntermediateField in
 /--
 A totally complex field that has a unique complex conjugation is CM.
 -/
-theorem of_isConj_unique {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) :
+theorem of_forall_isConj {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) :
     IsCMField K := by
   have : IsTotallyReal (fixedField (Subgroup.zpowers σ)) := ⟨fun w ↦ by
     obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
@@ -215,12 +215,12 @@ theorem of_isConj_unique {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsC
     have hσ' : σ ≠ 1 :=
       (isConj_ne_one_iff (hσ φ)).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ
     rw [finrank_fixedField_eq_card, Fintype.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
-  exact of_CMExtension (fixedField (Subgroup.zpowers σ)) K
+  exact ofCMExtension (fixedField (Subgroup.zpowers σ)) K
 
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/
-instance of_abelian [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
+instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
     IsCMField K := by
   let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
   obtain ⟨σ, hσ₁⟩ : ∃ σ : K ≃ₐ[ℚ] K, ComplexEmbedding.IsConj φ σ :=
@@ -231,7 +231,7 @@ instance of_abelian [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
     obtain ⟨ν, rfl⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq (k := ℚ) φ ψ (by ext; simp)
     rw [show σ = ν.symm⁻¹ * σ * ν.symm by simp]
     exact hσ₁.comp
-  exact of_isConj_unique K hσ₂
+  exact of_forall_isConj K hσ₂
 
 variable [IsCMField K]
 
@@ -240,9 +240,9 @@ instance isQuadraticExtension : IsQuadraticExtension (maximalRealSubfield K) K :
 
 noncomputable instance starRing : StarRing K where
   star := CMExtension.complexConj (maximalRealSubfield K) K
-  star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
-  star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
-  star_add := fun _ _ ↦ by rw [map_add]
+  star_involutive _ := CMExtension.complexConj_apply_apply _ _
+  star_mul _ _ := by rw [map_mul, mul_comm]
+  star_add _ _ := by rw [map_add]
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace (maximalRealSubfield K)) = Fintype.card (InfinitePlace K) :=

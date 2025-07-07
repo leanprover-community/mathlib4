@@ -48,7 +48,7 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
-  · rcases hab.lt_or_lt with hab | hab
+  · rcases hab.lt_or_gt with hab | hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
       simp only [insert_subset_iff, singleton_subset_iff]
@@ -147,14 +147,14 @@ theorem frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
 
 @[simp]
 theorem frontier_Ioi' {a : α} (ha : (Ioi a).Nonempty) : frontier (Ioi a) = {a} := by
-  simp [frontier, closure_Ioi' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Ioi' ha]
 
 theorem frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
   frontier_Ioi' nonempty_Ioi
 
 @[simp]
 theorem frontier_Iio' {a : α} (ha : (Iio a).Nonempty) : frontier (Iio a) = {a} := by
-  simp [frontier, closure_Iio' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Iio' ha]
 
 theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
   frontier_Iio' nonempty_Iio

@@ -236,7 +236,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
   have hd : d ≠ 0 := Rat.mk_denom_ne_zero_of_ne_zero hqz qdf
   let ⟨c, hc1, hc2⟩ := Rat.num_den_mk hd qdf
   rw [padicValRat.multiplicity_sub_multiplicity hp.1.ne_one hqz]
-  simp only [Nat.isUnit_iff, hc1, hc2]
+  simp only [hc1, hc2]
   rw [multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1),
     multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1)]
   · rw [Nat.cast_add, Nat.cast_add]
@@ -506,7 +506,7 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   rintro ⟨h1, h2⟩
   rw [← Nat.lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
-  refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
+  refine not_dvd_of_lt_of_lt_mul_succ h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
@@ -523,7 +523,7 @@ lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
   intro t ht
-  simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
+  simp only [Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Nat.mem_divisors]
   exact ⟨(pow_dvd_pow p <| by omega).trans pow_padicValNat_dvd, hn⟩
@@ -533,7 +533,7 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   intro t ht
-  simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
+  simp only [Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Finset.mem_erase, Nat.mem_divisors]
   refine ⟨?_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
@@ -551,7 +551,7 @@ theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
 some `k`. -/
 theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
-  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
+  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
 
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
@@ -663,6 +663,6 @@ theorem padicValInt.mul {a b : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) :
 theorem padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
-  simp only [eq_self_iff_true, padicValInt.of_nat, padicValNat_self]
+  simp only [padicValInt.of_nat, padicValNat_self]
 
 end padicValInt

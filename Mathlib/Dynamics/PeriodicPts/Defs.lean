@@ -318,7 +318,7 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
     ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
               (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
                 (minimalPeriod_pos_iff_mem_periodicPts.1 ((zero_le m).trans_lt hm)) hmn)).trans
-          (Nat.sub_le m n)).not_lt
+          (Nat.sub_le m n)).not_gt
       hm
 
 theorem iterate_injOn_Iio_minimalPeriod : (Iio <| minimalPeriod f x).InjOn (f^[·] x) :=

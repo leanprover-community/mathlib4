@@ -210,15 +210,15 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
 
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
-  WithTop.top_sub_coe
+  rfl
 
 @[simp]
 theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
-  top_sub_coe 1
+  rfl
 
 @[simp]
 theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
-  top_sub_coe a
+  rfl
 
 @[simp]
 theorem top_pos : (0 : ℕ∞) < ⊤ :=
@@ -427,7 +427,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   | (⊤ : ℕ∞) => simp
   | (n : ℕ) =>
     norm_cast
-    simp only [coe_ne_top, iff_false, ne_eq]
+    simp only [coe_ne_top]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
@@ -550,7 +550,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, WithTop.mul_top this]
-      · simp [← Nat.cast_mul, ← coe_mul] }
+      · simp [← Nat.cast_mul, - coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
@@ -566,7 +566,7 @@ end ENat
 lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
-  · simp only [bot_le, iff_true, WithBot.bot_lt_coe]
+  · simp only [bot_le, WithBot.bot_lt_coe]
   · rw [WithBot.coe_lt_coe, Nat.cast_add, ENat.coe_one, ENat.lt_add_one_iff (ENat.coe_ne_top _),
       ← WithBot.coe_le_coe, WithBot.coe_natCast]
 

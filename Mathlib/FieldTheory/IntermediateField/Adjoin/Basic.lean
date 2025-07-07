@@ -304,14 +304,14 @@ lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
   exact x.2
 
 theorem bot_eq_top_iff_finrank_eq_one :
-    (⊥ :IntermediateField F E) = ⊤ ↔ Module.finrank F E = 1 := by
+    (⊥ : IntermediateField F E) = ⊤ ↔ Module.finrank F E = 1 := by
   rw [← IntermediateField.finrank_bot', ← finrank_eq_one_iff_eq_top]
 
 variable (F E) in
 theorem isSimpleOrder_of_finrank_prime (hp : Nat.Prime (Module.finrank F E)) :
     IsSimpleOrder (IntermediateField F E) := by
   refine { toNontrivial := ?_, eq_bot_or_eq_top := ?_ }
-  · refine ⟨⊥, ⊤, fun h ↦ Nat.prime_one_false (bot_eq_top_iff_finrank_eq_one.mp h ▸ hp)⟩
+  · exact ⟨⊥, ⊤, fun h ↦ Nat.prime_one_false (bot_eq_top_iff_finrank_eq_one.mp h ▸ hp)⟩
   · intro K
     simpa [← toSubalgebra_strictMono.apply_eq_bot_iff, ← toSubalgebra_strictMono.apply_eq_top_iff]
       using (Subalgebra.isSimpleOrder_of_finrank_prime _ _ hp).eq_bot_or_eq_top K.toSubalgebra

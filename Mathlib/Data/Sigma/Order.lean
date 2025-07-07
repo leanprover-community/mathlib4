@@ -144,10 +144,10 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
     lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
-        · exact hij.not_lt hji
+        · exact hij.not_gt hji
         · exact lt_irrefl _ hji
         · exact lt_irrefl _ hij
-        · exact hab.not_le hba
+        · exact hab.not_ge hba
       · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
         · exact Sigma.Lex.left _ _ hij
         · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h) }

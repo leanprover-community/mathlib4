@@ -137,7 +137,7 @@ def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → 
   left_inv := by
     rintro ⟨p, hp⟩
     ext1
-    simp only [Submodule.coe_mk]
+    simp only
     by_cases hp0 : p = 0
     · subst hp0
       simp only [coeff_zero, LinearMap.map_zero, Finset.sum_const_zero]
@@ -145,7 +145,7 @@ def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → 
     conv_rhs => rw [p.as_sum_range' n hp, ← Fin.sum_univ_eq_sum_range]
   right_inv f := by
     ext i
-    simp only [finset_sum_coeff, Submodule.coe_mk]
+    simp only [finset_sum_coeff]
     rw [Finset.sum_eq_single i, coeff_monomial, if_pos rfl]
     · rintro j - hji
       rw [coeff_monomial, if_neg]
@@ -259,10 +259,10 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   trans (n.choose (i + 1) : R); swap
   · simp only [finset_sum_coeff, ← C_eq_natCast, coeff_C_mul_X_pow]
     rw [Finset.sum_eq_single i, if_pos rfl]
-    · simp +contextual only [@eq_comm _ i, if_false, eq_self_iff_true,
+    · simp +contextual only [@eq_comm _ i, if_false,
         imp_true_iff]
     · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
-        Nat.cast_zero, Finset.mem_range, not_lt, eq_self_iff_true, if_true, imp_true_iff]
+        Nat.cast_zero, Finset.mem_range, not_lt, if_true, imp_true_iff]
   induction' n with n ih generalizing i
   · dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
   · simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
@@ -439,7 +439,7 @@ def ofSubring (p : T[X]) : R[X] :=
 
 theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff p n : T) := by
   simp only [ofSubring, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    ite_eq_right_iff, Ne, ite_not, Classical.not_not, ite_eq_left_iff]
+    Ne, Classical.not_not, ite_eq_left_iff]
   intro h
   rw [h, ZeroMemClass.coe_zero]
 
@@ -528,7 +528,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
   · intro hf
     rw [← sum_monomial_eq f]
     refine (I.map C : Ideal R[X]).sum_mem fun n _ => ?_
-    simp only [← C_mul_X_pow_eq_monomial, ne_eq]
+    simp only [← C_mul_X_pow_eq_monomial]
     rw [mul_comm]
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 
@@ -571,7 +571,7 @@ theorem mem_leadingCoeffNth_zero (x) : x ∈ I.leadingCoeffNth 0 ↔ C x ∈ I :
 
 theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤ I.leadingCoeffNth n := by
   intro r hr
-  simp only [SetLike.mem_coe, mem_leadingCoeffNth] at hr ⊢
+  simp only [mem_leadingCoeffNth] at hr ⊢
   rcases hr with ⟨p, hpI, hpdeg, rfl⟩
   refine ⟨p * X ^ (n - m), I.mul_mem_right _ hpI, ?_, leadingCoeff_mul_X_pow⟩
   refine le_trans (degree_mul_le _ _) ?_
@@ -786,10 +786,12 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
-        convert killCompl Subtype.coe_injective |>.toRingHom.map_dvd hd <;> simp
+        convert _root_.map_dvd (killCompl Subtype.val_injective) hd
+        · simp
+        · simp
       rw [← rename_C ((↑) : s → σ)]
       let f := (rename (R := R) ((↑) : s → σ)).toRingHom
-      exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp f.map_dvd f.map_dvd⟩⟩
+      exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp (map_dvd f) (map_dvd f)⟩⟩
 
 variable {σ}
 
@@ -903,8 +905,8 @@ namespace Polynomial
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   rw [linearIndependent_iff]
-  simp only [Finsupp.linearCombination_apply, aeval_endomorphism, forall_iff_forall_finsupp, Sum,
-    support, coeff, ofFinsupp_eq_zero]
+  simp only [Finsupp.linearCombination_apply, aeval_endomorphism, forall_iff_forall_finsupp,
+    ofFinsupp_eq_zero]
   exact Iff.rfl
 
 theorem disjoint_ker_aeval_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :

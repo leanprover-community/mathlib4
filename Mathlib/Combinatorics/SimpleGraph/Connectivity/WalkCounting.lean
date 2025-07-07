@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Lattice
@@ -54,7 +54,7 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
   | nil => simp [eq_comm]
   | cons huw pwv =>
     simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
-      Set.mem_iUnion, Set.mem_image, exists_prop]
+      Set.mem_iUnion, Set.mem_image]
     constructor
     · rintro rfl
       exact ⟨_, huw, pwv, rfl, rfl⟩
@@ -70,7 +70,6 @@ def walkLengthTwoEquivCommonNeighbors (u v : V) :
     | ⟨.cons _ (.cons _ .nil), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
   invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
   left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
-  right_inv _ := rfl
 
 section LocallyFinite
 
@@ -129,7 +128,7 @@ open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_disjiUnion, mem_finsetWalkLength_iff]
+  simp [finsetWalkLengthLT, mem_coe, mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
@@ -257,7 +256,6 @@ lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Na
   cases nonempty_fintype V
   rw [Nat.card_eq_fintype_card]
   simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
-    ConnectedComponent.mem_supp_iff, Fintype.card_subtype_compl,
     ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
   rw [Finset.card_biUnion
     (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]

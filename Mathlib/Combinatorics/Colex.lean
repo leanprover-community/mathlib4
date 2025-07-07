@@ -187,7 +187,7 @@ lemma forall_lt_mono (hst : toColex s ≤ toColex t) (ht : ∀ b ∈ t, b < a) :
 /-- `s ≤ {a}` in colex iff all elements of `s` are strictly less than `a`, except possibly `a` in
 which case `s = {a}`. -/
 lemma toColex_le_singleton : toColex s ≤ toColex {a} ↔ ∀ b ∈ s, b ≤ a ∧ (a ∈ s → b = a) := by
-  simp only [toColex_le_toColex, mem_singleton, and_assoc, exists_eq_left]
+  simp only [toColex_le_toColex, mem_singleton, exists_eq_left]
   refine forall₂_congr fun b _ ↦ ?_; obtain rfl | hba := eq_or_ne b a <;> aesop
 
 /-- `s < {a}` in colex iff all elements of `s` are strictly less than `a`. -/
@@ -307,7 +307,7 @@ private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofCo
 lemma toColex_lt_toColex_iff_exists_forall_lt :
     toColex s < toColex t ↔ ∃ a ∈ t, a ∉ s ∧ ∀ b ∈ s, b ∉ t → b < a := by
   rw [← not_le, toColex_le_toColex, not_forall]
-  simp only [not_forall, not_exists, not_and, not_le, exists_prop, exists_and_left]
+  simp only [not_forall, not_exists, not_and, not_le, exists_prop]
 
 lemma lt_iff_exists_forall_lt {s t : Colex α} :
     s < t ↔ ∃ a ∈ ofColex t, a ∉ ofColex s ∧ ∀ b ∈ ofColex s, b ∉ ofColex t → b < a :=
@@ -352,7 +352,7 @@ lemma lt_iff_exists_filter_lt :
     refine ⟨m, hmt, hms, fun a hma ↦ ⟨fun has ↦ not_imp_comm.1 (hm _ has) hma.asymm, fun hat ↦ ?_⟩⟩
     by_contra has
     have hau : a ∈ u := mem_u.2 ⟨hat, has, fun b hbs hbt ↦ (hm _ hbs hbt).trans hma⟩
-    exact hma.not_le <| le_max' _ _ hau
+    exact hma.not_ge <| le_max' _ _ hau
   · rintro ⟨w, hwt, hws, hw⟩
     refine ⟨w, hwt, hws, fun a has hat ↦ ?_⟩
     by_contra! hwa
@@ -372,7 +372,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
   replace hst := hst.lt_of_ne <| toColex_inj.not.2 h'
   simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst
   obtain ⟨w, hwt, hws, hw⟩ := hst
-  obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_lt
+  obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_gt
   -- If `w < a`, then `a` is the colex witness for `s \ {a} < t \ {m}`
   · have hma : m < a := (min'_le _ _ hwt).trans_lt hwa
     refine (lt_iff_exists_forall_lt.2 ⟨a, mem_erase.2 ⟨hma.ne', (hw hwa).1 ha⟩,
@@ -556,8 +556,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
   invFun s := equivBitIndices.symm s.ofColex
   left_inv n := equivBitIndices.symm_apply_apply n
   right_inv s :=  Finset.toColex_inj.2 (equivBitIndices.apply_symm_apply s.ofColex)
-  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le),
-    toFinset_bitIndices_twoPowSum]
+  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le)]
 
 end Nat
 end Finset

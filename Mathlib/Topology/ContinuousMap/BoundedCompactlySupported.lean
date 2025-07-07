@@ -55,8 +55,8 @@ theorem norm_lt_iff_of_nonempty_compactlySupported [c : Nonempty α] {f : α →
     (h : f ∈ C_cb(α, γ)) {M : ℝ} : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
   obtain (hM | hM) := lt_or_ge 0 M
   · exact norm_lt_iff_of_compactlySupported h hM
-  · exact ⟨fun h ↦ False.elim <| (h.trans_le hM).not_le (by positivity),
-      fun h ↦ False.elim <| (h (Classical.arbitrary α) |>.trans_le hM).not_le (by positivity)⟩
+  · exact ⟨fun h ↦ False.elim <| (h.trans_le hM).not_ge (by positivity),
+      fun h ↦ False.elim <| (h (Classical.arbitrary α) |>.trans_le hM).not_ge (by positivity)⟩
 
 theorem compactlySupported_eq_top_of_isCompact (h : IsCompact (Set.univ : Set α)) :
     C_cb(α, γ) = ⊤ :=
