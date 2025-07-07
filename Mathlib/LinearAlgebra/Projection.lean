@@ -470,6 +470,7 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
+/-- Idempotent operators are equal when their range and kernels are. -/
 lemma IsIdempotentElem.ext {p q : E →ₗ[R] E} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
     (hr : range p = range q) (hk : ker p = ker q) : p = q := by
   ext x
