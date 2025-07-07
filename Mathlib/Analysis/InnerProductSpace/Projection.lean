@@ -482,6 +482,14 @@ version is important as it satisfies `IsStarProjection`. -/
 def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjection
 
+lemma starProjection_apply (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (v : E) :
+    U.starProjection v = U.orthogonalProjection v := rfl
+
+@[simp]
+lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
+    U.starProjection x ∈ U := by
+  simp only [starProjection_apply, SetLike.coe_mem]
+
 /-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem orthogonalProjection_inner_eq_zero (v : E) :
@@ -564,12 +572,6 @@ lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
   ext x
   exact ⟨fun ⟨y, hy⟩ ↦ hy ▸ coe_mem (U.orthogonalProjection y),
     fun h ↦ ⟨x, orthogonalProjection_eq_self_iff.mpr h⟩⟩
-
-@[simp]
-lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
-    U.starProjection x ∈ U := by
-  simp only [starProjection, ContinuousLinearMap.coe_comp', coe_subtypeL', coe_subtype,
-    Function.comp_apply, SetLike.coe_mem]
 
 lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
   ext
