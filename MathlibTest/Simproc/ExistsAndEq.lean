@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Simproc.ExistsAndEq
 
-universe u
+universe u v
 variable (α : Type u) (p q : α → Prop)
 
 example (a : α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = a) ∧ q b := by
@@ -17,9 +17,14 @@ error: simp made no progress
 #guard_msgs in
 example (f : α → α) : ∃ a : α, a = f a := by
   simp only [existsAndEq]
-  sorry
 
-open Lean Meta Simp
+/--
+error: simp made no progress
+-/
+#guard_msgs in
+example {β : α → Type v} (a : α) :
+    ∃ x, ∃ y : β x, x = a := by
+  simp only [existsAndEq]
 
 example {α β : Type} (f : β → α) {p q : β → Prop} :
     (∃ y b, p b ∧ f b = y ∧ q b) ↔ ∃ b, p b ∧ q b := by

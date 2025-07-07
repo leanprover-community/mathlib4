@@ -80,7 +80,9 @@ partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
     if let some path ← findEqPath a R then
       return some (.right :: path)
     return none
-  | Exists _ pb =>
+  | Exists tb pb =>
+    if (tb.containsFVar a.fvarId!) then
+      return none
     let .lam _ _ body _ := pb | return none
     findEqPath a body
   | _ => return none
