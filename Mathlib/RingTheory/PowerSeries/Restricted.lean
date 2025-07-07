@@ -115,7 +115,7 @@ lemma bddabove_nneg {f : PowerSeries R} (hf : IsRestricted R f c) :
   rcases (eq_zero_or_neZero n) with h | h
   · refine ⟨n + 1, ⟨by simp_rw [h, zero_add, gt_iff_lt, zero_lt_one], fun i => le_trans (hn i)
     (by simp_rw [h, zero_add, zero_le_one])⟩⟩
-  · refine ⟨|n|, by simpa only [gt_iff_lt, abs_pos] using Ne.symm (NeZero.ne' n),
+  · exact ⟨|n|, by simpa only [gt_iff_lt, abs_pos] using Ne.symm (NeZero.ne' n),
     fun i => le_trans (hn i) (le_abs_self n)⟩
 
 variable [IsUltrametricDist R]
