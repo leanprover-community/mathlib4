@@ -347,13 +347,18 @@ def tally (ds : Array DiffData) : Std.HashMap String Int :=
 
 end DeclDiff
 
-def file : System.FilePath :=
-  --"Mathlib/mwe_git_diff.txt"
-  --"mwe_dir/DinatTrans_git_diff.txt"
-  --"mwe_dir/ocfnash_geck_reorg_git_diff.txt"
-  "mwe_dir/jriou-types-multicoequalizer-set_git_diff.txt"
+open Lean in
+/--
+`#declaration_diff` computes the declaration diff between `upstream/master` and the current `HEAD`,
+by parsing the output of `git diff --unified=0 upstream/master...HEAD`.
 
-open Lean Elab Command in
+The command takes two optional inputs.
+* `#declaration_diff <compare>` uses the output of `git diff --unified=0 <compare>` instead.
+* `#declaration_diff verbose` produces more information about the computation, ultimately
+  printing the same message, but preceded by some useful/debugging data.
+* `#declaration_diff <compare> verbose` does the merging of the two versions above: it uses
+  `<compare>` to produce the diff and emits a verbose output.
+-/
 elab "#declaration_diff" commits:(ppSpace str)? verbose:(ppSpace "verbose")? : command => do
   let commits := if let some str := commits then str.getString else "upstream/master...HEAD"
   let env ← getEnv
