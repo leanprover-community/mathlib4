@@ -279,7 +279,6 @@ def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' whe
   invFun := (↑)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv _ := rfl
   right_inv _ := ContinuousLinearMap.coe_injective rfl
 
 /-- Algebra equivalence between the linear maps and continuous linear maps on a finite dimensional
@@ -337,27 +336,11 @@ instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F
 
 lemma toContinuousLinearMap_eq_iff_eq_toLinearMap (f : E →ₗ[𝕜] E) (g : E →L[𝕜] E) :
     f.toContinuousLinearMap = g ↔ f = g.toLinearMap := by
-  apply Iff.intro
-  · intro h
-    ext x
-    rw [ContinuousLinearMap.ext_iff] at h
-    simp_all
-  · intro h
-    ext x
-    rw [LinearMap.ext_iff] at h
-    simp_all
+  simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
 
 lemma _root_.ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap (g : E →L[𝕜] E)
     (f : E →ₗ[𝕜] E) : g.toLinearMap = f ↔ g = f.toContinuousLinearMap := by
-  apply Iff.intro
-  · intro h
-    ext x
-    rw [LinearMap.ext_iff] at h
-    simp_all
-  · intro h
-    ext x
-    rw [ContinuousLinearMap.ext_iff] at h
-    simp_all
+  simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
 
 end LinearMap
 
