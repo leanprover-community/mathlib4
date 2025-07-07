@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Sl2
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
-import Mathlib.LinearAlgebra.RootSystem.Chain
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
@@ -349,6 +349,7 @@ omit [P.IsReduced]
 /-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_ne`. -/
 private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
     ⁅e i, f j⁆ (Sum.inl k) (Sum.inr l) = 0 := by
+  classical
   letI := P.indexNeg
   have aux₁ : ∀ x ∈ Finset.univ, ¬ (P.root x = P.root i + P.root l ∧ k = j ∧ x = j) := by
     rintro  x - ⟨hl, -, rfl⟩
@@ -360,8 +361,8 @@ private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
   simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
     Matrix.fromBlocks_apply₁₁, Matrix.zero_apply, Matrix.fromBlocks_apply₁₂, Matrix.of_apply,
     mul_ite, mul_one, mul_zero, ite_self, Finset.sum_const_zero, Matrix.fromBlocks_apply₂₂,
-    ite_mul, one_mul, zero_mul, ← ite_and, zero_add, sub_eq_zero]
-  rw [Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂]
+    ite_mul, one_mul, zero_mul, ← ite_and, zero_add, sub_eq_zero, Finset.sum_ite_of_false aux₁,
+    Finset.sum_ite_of_false aux₂]
 
 include hij
 
@@ -442,9 +443,8 @@ lemma lie_e_f_ne [P.IsNotG2] :
       rintro - - ⟨⟨-, contra⟩, -⟩; contradiction
     simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
       Matrix.fromBlocks_apply₂₁, Matrix.of_apply, Matrix.fromBlocks_apply₁₂, mul_ite, mul_one,
-      mul_zero, ← ite_and, Matrix.fromBlocks_apply₂₂, ite_mul, zero_mul, Matrix.zero_apply]
-    rw [Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂]
-    simp only [Finset.sum_const_zero, zero_add]
+      mul_zero, ← ite_and, Matrix.fromBlocks_apply₂₂, ite_mul, zero_mul, Matrix.zero_apply,
+      Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂, Finset.sum_const_zero, zero_add]
     by_cases h₅ : P.root l + P.root i - P.root j ∈ range P.root; swap
     · have aux₃ : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
@@ -452,8 +452,7 @@ lemma lie_e_f_ne [P.IsNotG2] :
       have aux₄ : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
         rintro x - ⟨hx, hx'⟩; exact h₅ ⟨k, by rw [hx', hx]; abel⟩
-      rw [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
-      simp
+      simp [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
     by_cases h₆ : P.root l + P.root i ∈ range P.root; swap
     · have h₇ : P.root l - P.root j ∉ range P.root := by
         rwa [b.root_sub_mem_iff_root_add_mem i j l (by aesop) i.property j.property
@@ -464,8 +463,7 @@ lemma lie_e_f_ne [P.IsNotG2] :
       have aux₄ : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
         rintro x - ⟨hx, hx'⟩; exact h₇ ⟨x, hx⟩
-      rw [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
-      simp
+      simp [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
     obtain ⟨m, hm : P.root m = P.root l - P.root j⟩ :=
       b.root_sub_root_mem_of_mem_of_mem i j l (by aesop) i.property j.property h₅ h₃ h₆
     obtain ⟨l', hl'⟩ := h₆
@@ -476,8 +474,7 @@ lemma lie_e_f_ne [P.IsNotG2] :
       have aux₄ : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
         rintro x - ⟨hx, hx'⟩; exact hk <| by rw [hx', hx]; abel
-      rw [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
-      simp
+      simp [Finset.sum_ite_of_false aux₃, Finset.sum_ite_of_false aux₄]
     have aux₃ (x) (hx : x ≠ m) :
         ¬ (P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x) := by
       contrapose! hx

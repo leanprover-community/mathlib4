@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Chain
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
@@ -234,6 +235,18 @@ lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R][P.IsCrystallographic] [F
     P.pairingIn ℤ i j ≤ 0 := by
   by_contra! h
   exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
+
+variable {b}
+variable [CharZero R] [IsDomain R] [P.IsCrystallographic] [Finite ι] {i j : b.support}
+
+@[simp] lemma chainBotCoeff_eq_zero :
+    P.chainBotCoeff i j = 0 :=
+  chainBotCoeff_eq_zero_iff.mpr <| Or.inr <| b.sub_notMem_range_root j.property i.property
+
+lemma chainTopCoeff_eq_of_ne (hij : i ≠ j) :
+    P.chainTopCoeff i j = -P.pairingIn ℤ j i := by
+  rw [← chainTopCoeff_sub_chainBotCoeff (b.linearIndependent_pair_of_ne hij)]
+  simp
 
 end RootPairing
 

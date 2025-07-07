@@ -495,15 +495,6 @@ lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
   have := IsNotG2.pairingIn_mem_zero_one_two (P := P) (P.chainTopIdx i j) i
   aesop
 
-@[simp] lemma Base.chainBotCoeff_eq_zero {b : P.Base} {i j : b.support} :
-    P.chainBotCoeff i j = 0 :=
-  chainBotCoeff_eq_zero_iff.mpr <| Or.inr <| b.sub_notMem_range_root j.property i.property
-
-lemma Base.chainTopCoeff_eq_of_ne {b : P.Base} {i j : b.support} (hij : i ≠ j) :
-    P.chainTopCoeff i j = -P.pairingIn ℤ j i := by
-  rw [← chainTopCoeff_sub_chainBotCoeff (b.linearIndependent_pair_of_ne hij)]
-  simp
-
 /-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
 roots is a root, they cannot make an acute angle.
 
