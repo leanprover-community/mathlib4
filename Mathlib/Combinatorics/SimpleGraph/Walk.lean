@@ -503,6 +503,10 @@ theorem support_reverse {u v : V} (p : G.Walk u v) : p.reverse.support = p.suppo
 @[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
 
+theorem support_append_eq_support_dropLast_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
+    (p.append p').support = p.support.dropLast ++ p'.support := by
+  induction p <;> simp_all [List.dropLast_cons_of_ne_nil]
+
 @[simp]
 theorem head_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
     p.support.head (by simp) = a := by cases p <;> simp
@@ -942,6 +946,12 @@ lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVe
   | nil => simp [take]
   | cons => cases n <;> cases m <;> simp_all [take]
 
+lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.take n).support = p.support.take (n + 1) := by
+  induction p generalizing n with
+  | nil => simp [take]
+  | cons => cases n <;> simp_all [take]
+
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
 
@@ -985,11 +995,11 @@ lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
 
-lemma drop_support_tail {u v} {p : G.Walk u v} (n : ℕ) :
-    (p.drop n).support.tail = p.support.drop (n + 1) := by
-  induction n generalizing p u with
-  | zero => simp [drop_zero]
-  | succ _ ih => cases p <;> simp [drop, ih]
+lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.drop n).support = p.support.drop (n ⊓ p.length) := by
+  induction p generalizing n with
+  | nil => simp [drop]
+  | cons => cases n <;> simp_all [drop]
 
 /-- The walk obtained by removing the last dart of a walk. A nil walk stays nil. -/
 def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
@@ -1446,6 +1456,35 @@ lemma isSubwalk_of_append_left {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w 
 lemma isSubwalk_of_append_right {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w u} {p₃ : G.Walk v u}
     (h : p₃ = p₁.append p₂) : p₂.IsSubwalk p₃ :=
   ⟨p₁, nil, append_nil _ ▸ h⟩
+
+theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'} :
+    p₁.IsSubwalk p₂ ↔ p₁.support <:+: p₂.support := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · obtain ⟨ru, rv, h⟩ := h
+    rw [h, support_append, support_append_eq_support_dropLast_append]
+    exact List.infix_append ru.support.dropLast p₁.support rv.support.tail
+  · obtain ⟨s, t, h⟩ := h
+    have : (s.length + p₁.length) ≤ p₂.length := by
+      rw [Nat.le_iff_lt_add_one, ← length_support]
+      simp only [← h, List.append_assoc, List.length_append, length_support]
+      omega
+    have h₁ : p₂.getVert s.length = v := by
+      simp [p₂.getVert_eq_support_getElem (by omega : s.length ≤ p₂.length), ← h, List.getElem_zero]
+    have h₂ : p₂.getVert (s.length + p₁.length) = w := by
+      simp [p₂.getVert_eq_support_getElem (by omega), ← h,
+        ← p₁.getVert_eq_support_getElem (Nat.le_refl _)]
+    refine ⟨p₂.take s.length |>.copy rfl h₁, p₂.drop (s.length + p₁.length) |>.copy h₂ rfl, ?_⟩
+    apply ext_support
+    simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
+      List.take_append, drop_support_eq_support_drop_min, List.tail_drop, List.append_assoc,
+      Nat.add_sub_cancel_left, length_support]
+    rw [Nat.min_eq_left]
+    · rw [List.drop_append, List.drop_append, List.drop_eq_nil_of_le (by omega),
+        List.drop_eq_nil_of_le (by rw [length_support]; omega), p₁.support_eq_cons]
+      simp +arith
+    · simp only [Nat.le_iff_lt_add_one, ← length_support, ← h, List.length_append]
+      rw [length_support]
+      omega
 
 end Walk
 
