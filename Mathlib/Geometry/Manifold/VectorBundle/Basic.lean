@@ -164,7 +164,8 @@ bundle at all, just that it is a fiber bundle over a charted base space.
 
 namespace Bundle
 
-/-- Characterization of `C^n` functions into a vector bundle. -/
+/-- Characterization of `C^n` functions into a vector bundle.
+Version at a point within a set. -/
 theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
@@ -185,7 +186,7 @@ theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x�
     exact hx
   · simp only [mfld_simps]
 
-/-- Characterization of `C^n` functions into a vector bundle. -/
+/-- Characterization of `C^n` functions into a vector bundle. Version at a point. -/
 theorem contMDiffAt_totalSpace {f : M → TotalSpace F E} {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
@@ -213,21 +214,22 @@ theorem contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun 
 
 theorem contMDiffOn_proj {s : Set (TotalSpace F E)} :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) IB n (π F E) s :=
-  (Bundle.contMDiff_proj E).contMDiffOn
+  (contMDiff_proj E).contMDiffOn
 
 theorem contMDiffAt_proj {p : TotalSpace F E} : ContMDiffAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) p :=
-  (Bundle.contMDiff_proj E).contMDiffAt
+  (contMDiff_proj E).contMDiffAt
 
 theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     ContMDiffWithinAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) s p :=
-  (Bundle.contMDiffAt_proj E).contMDiffWithinAt
+  (contMDiffAt_proj E).contMDiffWithinAt
 
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
-theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := fun x ↦ by
+theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := by
+  intro x
   unfold zeroSection
-  rw [Bundle.contMDiffAt_section]
+  rw [contMDiffAt_section]
   apply (contMDiffAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
