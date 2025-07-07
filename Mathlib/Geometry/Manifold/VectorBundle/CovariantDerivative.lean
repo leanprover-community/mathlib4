@@ -63,16 +63,6 @@ theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (
 
 attribute [simp] mdifferentiableAt_iff_differentiableAt
 
--- XXX: make a better version of fderiv_const_smul'', with field coefficients instead!
-theorem fderiv_section_smul {𝕜 E E' : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    (σ : (x : E) → Trivial E E' x) (a : 𝕜) (x : E) :
-    fderiv 𝕜 (a • σ) x = a • fderiv 𝕜 σ x := by
-  obtain (rfl | ha) := eq_or_ne a 0
-  · simp
-  · have : Invertible a := invertibleOfNonzero ha
-    exact fderiv_const_smul'' ..
-
 lemma FiberBundle.trivializationAt.baseSet_mem_nhds {B : Type*} (F : Type*)
     [TopologicalSpace B] [TopologicalSpace F]
     (E : B → Type*) [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)]
@@ -357,9 +347,9 @@ lemma convexCombination_isRegular [IsManifold I 1 M] (cov cov' : CovariantDeriva
     (hcov : IsCkConnection cov n) (hcov' : IsCkConnection cov' n) :
     IsCkConnection (convexCombination cov cov' f) n where
   regularity {X σ} hX hσ := by
-    apply contMDiff_add_section
-    · exact contMDiff_smul_section hf <| hcov.regularity hX hσ
-    · exact contMDiff_smul_section (contMDiff_const.sub hf) <| hcov'.regularity hX hσ
+    apply ContMDiff.add_section
+    · exact hf.smul_section <| hcov.regularity hX hσ
+    · exact (contMDiff_const.sub hf).smul_section <| hcov'.regularity hX hσ
 
 omit [IsManifold I 0 M]
   [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
@@ -374,10 +364,9 @@ lemma convexCombination'_isRegular [IsManifold I 1 M] {ι : Type*} {s : Finset �
     dsimp
     have ms (i) (hi : i ∈ s) : ContMDiff I (I.prod 𝓘(𝕜, F)) n
         (T% (f i • (cov i) X σ)) := by
-      apply contMDiff_smul_section (hf' i hi)
-      exact IsCkConnection.regularity hX hσ (self := hcov i hi)
+      apply (hf' i hi).smul_section <| IsCkConnection.regularity hX hσ (self := hcov i hi)
     simp only [Finset.sum_apply, Pi.smul_apply']
-    exact contMDiff_finsum_section (t := fun i ↦ f i • (cov i) X σ) ms
+    exact .sum_section (t := fun i ↦ f i • (cov i) X σ) ms
 
 -- Future: prove a version with a locally finite sum, and deduce that C^k connections always
 -- exist (using a partition of unity argument)
@@ -396,7 +385,7 @@ noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
     rw [fderiv_add hσ hσ']
     rfl
-  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
+  smul_const_σ X σ a := by ext; simp [fderiv_const_smul_of_field a]
   leibniz X σ f x hσ hf := by
     have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
       fderiv_smul (by simp_all) (by simp_all)
@@ -445,11 +434,10 @@ noncomputable def of_endomorphism (A : E → E →L[𝕜] E' →L[𝕜] E') :
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
     simp [fderiv_add hσ hσ']
     abel
-  smul_const_σ X σ a := by ext; simp [fderiv_section_smul σ a]
+  smul_const_σ X σ a := by ext; simp [fderiv_const_smul_of_field a]
   leibniz X σ f x hσ hf := by
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
     rw [mdifferentiableAt_iff_differentiableAt] at hf
-    -- have h : DifferentiableAt 𝕜 (f • σ) x := hf.smul hσ
     have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
       fderiv_smul (by simp_all) (by simp_all)
     simp [this, bar]
@@ -696,7 +684,7 @@ lemma _root_.contMDiff_section_of_smul_smoothBumpFunction [T2Space M] [IsManifol
     (ht : IsOpen t) (ht' : tsupport ψ ⊆ t) (hn : n ≤ ∞) :
     ContMDiff I (I.prod 𝓘(ℝ, F)) n (T% fun x ↦ (ψ x • s x)) := by
   apply contMDiff_of_contMDiffOn_union_of_isOpen
-      (contMDiffOn_smul_section (ψ.contMDiff.of_le hn).contMDiffOn hs) ?_ ?_ ht
+      ((ψ.contMDiff.of_le hn).contMDiffOn.smul_section hs) ?_ ?_ ht
       (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
   · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
     intro y hy
@@ -796,7 +784,7 @@ noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDime
     simp [A, B]
     module
   map_smul' a v := by
-    simp [fderiv_section_smul, cov.smul_const_σ]
+    simp [fderiv_const_smul_of_field, cov.smul_const_σ]
     module
 
 @[simps!]
