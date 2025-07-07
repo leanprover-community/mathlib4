@@ -178,11 +178,11 @@ end CommGroupWithZero
 
 end MonoidWithZeroHom
 
-namespace MonoidWithZeroHom
+namespace MonoidHomWithZero
 
 @[deprecated (since := "2025-07-02")] alias valueMonoid := MonoidWithZeroHom.valueMonoid
 @[deprecated (since := "2025-07-02")] alias valueGroup := MonoidWithZeroHom.valueGroup
 @[deprecated (since := "2025-07-02")] alias valueMonoid₀ := MonoidWithZeroHom.valueMonoid₀
 @[deprecated (since := "2025-07-02")] alias valueGroup₀ := MonoidWithZeroHom.valueGroup₀
 
-end MonoidWithZeroHom
+end MonoidHomWithZero
