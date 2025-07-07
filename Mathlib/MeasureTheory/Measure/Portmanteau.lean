@@ -420,9 +420,9 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   intros ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
-  have nhd : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
+  have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
     Iio_mem_nhds <| ENNReal.lt_add_right μF_finite.ne (ENNReal.coe_pos.mpr ε_pos).ne'
-  specialize rs_lim (keyB nhd)
+  specialize rs_lim (keyB nhds)
   simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
@@ -533,9 +533,9 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
     · exact IsBoundedUnder.isCoboundedUnder_ge ⟨1, by simp⟩
     · exact ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h_opens
-  simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
+  simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert obs
-  simp only [Function.comp_apply, ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+  simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
 end le_liminf_open_implies_convergence
 

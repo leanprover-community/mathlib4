@@ -34,7 +34,7 @@ open AffineMap
 
 theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
     IsClosed (s.direction : Set W) ↔ IsClosed (s : Set Q) := by
-  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp [isClosed_singleton]
+  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp
   rw [← (IsometryEquiv.vaddConst x).toHomeomorph.symm.isClosed_image,
     AffineSubspace.coe_direction_eq_vsub_set_right hx]
   rfl
@@ -282,7 +282,7 @@ def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P wher
     rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometry ..]
     exact edist_smul₀ ..⟩
 
-@[simp]
+-- Cannot be @[simp] because `x` and `y` can not be inferred by `simp`.
 lemma DilationEquiv.smulTorsor_ratio {c : P} {k : 𝕜} (hk : k ≠ 0) {x y : E}
     (h : dist x y ≠ 0) : ratio (smulTorsor c hk) = ‖k‖₊ :=
   Eq.symm <| ratio_unique_of_dist_ne_zero h <| by simp [dist_eq_norm, ← smul_sub, norm_smul]

@@ -89,6 +89,21 @@ class SelbergSieve extends BoundingSieve where
 
 attribute [arith_mult] BoundingSieve.nu_mult
 
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
+@[positivity BoundingSieve.weights _]
+def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@BoundingSieve.weights $i $n) =>
+    assertInstancesCommute
+    pure (.nonnegative q(BoundingSieve.weights_nonneg $n))
+  | _, _, _ => throwError "not BoundingSieve.weights"
+
+end Mathlib.Meta.Positivity
+
 namespace SelbergSieve
 open BoundingSieve
 
@@ -211,8 +226,8 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     _ = ∑ d ∈ divisors P, muPlus d * multSum d := ?caseC
   case caseA =>
     rw [siftedsum_eq_sum_support_mul_ite]
-    apply Finset.sum_le_sum; intro n _
-    exact mul_le_mul_of_nonneg_left (hμ (Nat.gcd P n)) (weights_nonneg n)
+    gcongr with n
+    exact hμ (Nat.gcd P n)
   case caseB =>
     simp_rw [mul_sum, ← sum_filter]
     congr with n
@@ -224,18 +239,16 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
 theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
-    siftedSum ≤ X * mainSum muPlus + errSum muPlus := by
-  calc siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := siftedSum_le_sum_of_upperMoebius _ h
-   _ ≤ X * ∑ d ∈ divisors P, muPlus d * ν d + ∑ d ∈ divisors P, muPlus d * R d := ?caseA
-   _ ≤ _ := ?caseB
-  case caseA =>
-    apply le_of_eq
-    rw [mul_sum, ←sum_add_distrib]
+    siftedSum ≤ X * mainSum muPlus + errSum muPlus := calc
+  siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d :=
+    siftedSum_le_sum_of_upperMoebius _ h
+  _ = X * mainSum muPlus + ∑ d ∈ divisors P, muPlus d * R d := by
+    rw [mainSum, mul_sum, ←sum_add_distrib]
     congr with d
     dsimp only [rem]; ring
-  case caseB =>
-    apply add_le_add_left
-    apply sum_le_sum; intro d _
+  _ ≤ X * mainSum muPlus + errSum muPlus := by
+    rw [errSum]
+    gcongr _ + ∑ d ∈ _, ?_ with d
     rw [←abs_mul]
     exact le_abs_self (muPlus d * R d)
 

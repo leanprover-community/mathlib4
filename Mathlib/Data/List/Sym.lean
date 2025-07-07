@@ -157,7 +157,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
       rw [List.mem_map] at hx hy
       obtain ⟨a, hx, rfl⟩ := hx
       obtain ⟨b, hy, hx⟩ := hy
-      simp [Sym2.mk_eq_mk_iff, Ne.symm h.1] at hx
+      simp [Ne.symm h.1] at hx
       obtain ⟨rfl, rfl⟩ := hx
       exact h.2 hy
     · exact ih h.2
@@ -173,7 +173,7 @@ theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sy
       refine mem_append_left _ ?_
       rw [mem_map]
       exact ⟨_, hm, Sym2.eq_swap⟩
-    · rw [dedup_cons_of_not_mem hm, List.sym2, map_cons, ← ih, dedup_cons_of_not_mem, cons_append,
+    · rw [dedup_cons_of_notMem hm, List.sym2, map_cons, ← ih, dedup_cons_of_notMem, cons_append,
         List.Disjoint.dedup_append, dedup_map_of_injective]
       · exact (Sym2.mkEmbedding _).injective
       · exact map_mk_disjoint_sym2 x xs hm
@@ -193,7 +193,7 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
       ← Multiset.coe_add, ← Multiset.singleton_add]
-    simp only [add_assoc, add_left_comm]
+    simp only [add_left_comm]
   | trans _ _ ih1 ih2 => exact ih1.trans ih2
 
 protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.sym2 := by

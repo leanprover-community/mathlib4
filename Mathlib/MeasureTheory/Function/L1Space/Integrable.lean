@@ -72,7 +72,7 @@ theorem Integrable.aemeasurable [MeasurableSpace ε] [BorelSpace ε] [PseudoMetr
 theorem Integrable.hasFiniteIntegral {f : α → ε} (hf : Integrable f μ) : HasFiniteIntegral f μ :=
   hf.2
 
-theorem Integrable.mono_enorm {f : α → ε} {g : α → ε} (hg : Integrable g μ)
+theorem Integrable.mono_enorm {f : α → ε} {g : α → ε'} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
 
@@ -157,6 +157,11 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 /-- This lemma is a special case of `Integrable.of_finite`. -/
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
+/-- This lemma is a special case of `Integrable.of_finite`. -/
+lemma Integrable.of_subsingleton [Subsingleton α] [IsFiniteMeasure μ] {f : α → β} :
+    Integrable f μ :=
+  .of_finite
+
 theorem MemLp.integrable_enorm_rpow {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ := by
   rw [← memLp_one_iff_integrable]
@@ -170,17 +175,17 @@ theorem MemLp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : MemLp 
 theorem MemLp.integrable_enorm_rpow' [IsFiniteMeasure μ] {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
     Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ := by
   by_cases h_zero : p = 0
-  · simp [h_zero, integrable_const]
+  · simp [h_zero]
   by_cases h_top : p = ∞
-  · simp [h_top, integrable_const]
+  · simp [h_top]
   exact hf.integrable_enorm_rpow h_zero h_top
 
 theorem MemLp.integrable_norm_rpow' [IsFiniteMeasure μ] {f : α → β} {p : ℝ≥0∞} (hf : MemLp f p μ) :
     Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
   by_cases h_zero : p = 0
-  · simp [h_zero, integrable_const]
+  · simp [h_zero]
   by_cases h_top : p = ∞
-  · simp [h_top, integrable_const]
+  · simp [h_top]
   exact hf.integrable_norm_rpow h_zero h_top
 
 lemma MemLp.integrable_enorm_pow {f : α → ε} {p : ℕ} (hf : MemLp f p μ) (hp : p ≠ 0) :
@@ -383,6 +388,11 @@ theorem Integrable.add [ContinuousAdd ε']
 theorem Integrable.add'' [ContinuousAdd ε']
     {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x ↦ f x + g x) μ := hf.add hg
+
+@[simp]
+lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
+    Integrable f μ :=
+  integrable_zero _ _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
 end ENormedAddMonoid
 
@@ -634,9 +644,9 @@ theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → ε} [IsFin
   memLp_one_iff_integrable.mp (hfq.mono_exponent hq1)
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
-where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
-theorem Integrable.measure_enorm_ge_lt_top
-    {f : α → ε} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hε' : ε ≠ ∞):
+where `‖f x‖ₑ ≥ ε` is finite for all positive `ε`. -/
+theorem Integrable.measure_enorm_ge_lt_top {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+    {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hε' : ε ≠ ∞) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ := by
   refine meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero one_ne_top hf.1 hε.ne' (by simp [hε'])
     |>.trans_lt ?_
@@ -655,8 +665,8 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ₑ > ε` is finite for all positive `ε`. -/
-lemma Integrable.measure_norm_gt_lt_top_enorm {f : α → ε} (hf : Integrable f μ)
-    {ε : ℝ≥0∞} (hε : 0 < ε) : μ {x | ε < ‖f x‖ₑ} < ∞ := by
+lemma Integrable.measure_norm_gt_lt_top_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+    {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) : μ {x | ε < ‖f x‖ₑ} < ∞ := by
   by_cases hε' : ε = ∞
   · simp [hε']
   exact lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))
@@ -715,7 +725,7 @@ theorem Integrable.real_toNNReal {f : α → ℝ} (hf : Integrable f μ) :
   refine lt_of_le_of_lt ?_ ((hasFiniteIntegral_iff_norm _).1 hf.hasFiniteIntegral)
   apply lintegral_mono
   intro x
-  simp [ENNReal.ofReal_le_ofReal, abs_le, le_abs_self]
+  simp [abs_le, le_abs_self]
 
 theorem ofReal_toReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < ∞) :
     (fun x => ENNReal.ofReal (f x).toReal) =ᵐ[μ] f := by
@@ -872,7 +882,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
       simpa only [Ne, ENNReal.coe_eq_zero] using hx
   norm_map' := by
     intro u
-    simp only [eLpNorm, LinearMap.coe_mk, AddHom.coe_mk, Lp.norm_toLp,
+    simp only [eLpNorm, LinearMap.coe_mk, AddHom.coe_mk,
       one_ne_zero, ENNReal.one_ne_top, ENNReal.toReal_one, if_false, eLpNorm', ENNReal.rpow_one,
       _root_.div_one, Lp.norm_def]
     rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnreal_ennreal

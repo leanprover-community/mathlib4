@@ -65,6 +65,7 @@ noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
     rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
     dsimp
     rw [← arrowMap, ← arrowMap, arrowMap_extendToSucc]
+    rfl
 
 namespace mkOfLimit
 
@@ -107,6 +108,7 @@ lemma arrowMap_functor_to_top (i : J) (hi : i < j) :
 
 end mkOfLimit
 
+set_option backward.dsimp.proofs true in
 open mkOfLimit in
 /-- When `j` is a limit element, this is the element in `Φ.Iteration j`
 that is constructed from elements in `Φ.Iteration i` for all `i < j`. -/

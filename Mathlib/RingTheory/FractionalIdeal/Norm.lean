@@ -88,7 +88,7 @@ theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert abs
 
 theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
-  refine ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
+  refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
   simp [Algebra.norm_eq_zero_iff]
