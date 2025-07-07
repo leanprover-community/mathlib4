@@ -881,7 +881,7 @@ lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
 lemma eq_nil_copy_of_nil {p : G.Walk u v} (h : p.Nil) :
-    p = nil.copy h.eq.symm rfl := by
+    p = nil.copy rfl h.eq := by
   have := h.eq
   subst this
   simp [nil_iff_eq_nil.mp h]
@@ -932,7 +932,7 @@ lemma drop_length_nil_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
   rw [nil_iff_length_eq, drop_length, Nat.sub_eq_zero_of_le h]
 
 lemma drop_length_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
-    p.drop n = nil.copy (p.getVert_of_length_le h).symm rfl :=
+    p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
   eq_nil_copy_of_nil <| drop_length_nil_of_le h
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
