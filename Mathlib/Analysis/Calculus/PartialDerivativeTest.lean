@@ -101,9 +101,8 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     have hsm₁ := hsm ![u • v,v] 1 u v
     repeat (
     simp only [Fin.isValue, update₀, Nat.succ_eq_add_one, Nat.reduceAdd,
-    MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe, smul_eq_mul] at hsm₀
-    simp only [Fin.isValue, update₁, Nat.succ_eq_add_one, Nat.reduceAdd,
-        MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe, smul_eq_mul] at hsm₁)
+    MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe, smul_eq_mul] at hsm₀ hsm₁
+    simp only [Fin.isValue, update₁, Nat.succ_eq_add_one, Nat.reduceAdd] at hsm₁)
     rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]}
 
 /-- An everywhere positive function `f:ℝⁿ → ℝ` (`n > 0`) achieves its minimum on the sphere. -/
@@ -196,7 +195,6 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero,
       Subtype.exists, exists_prop] at this
     obtain ⟨m,hm⟩ := this
-    have := hm.2
     use iteratedFDeriv ℝ 2 f x₀ ![m, m]
     have := hf' m (by intro hc;subst hc;simp at hm)
     rw [iteratedFDerivQuadraticMap] at this
@@ -218,19 +216,17 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
           rw [mul_assoc, h₃]
           simp only [mul_one, MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe,
             ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
-        have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
-             = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
+        have h₅ : iteratedFDeriv ℝ 2 f x₀ ![u, u] * ‖u‖⁻¹
+                = iteratedFDeriv ℝ 2 f x₀ ![‖u‖⁻¹ • u, u] := by
           rw [mul_comm, iteratedFDeriv_succ_apply_left, iteratedFDeriv_succ_apply_left]
-          simp only [Fin.isValue, Matrix.cons_val_zero, Nat.reduceAdd, map_smul,
-            ContinuousMultilinearMap.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, inv_eq_zero,
-            norm_eq_zero]
+          simp only [Matrix.cons_val_zero, map_smul,
+            ContinuousMultilinearMap.smul_apply, smul_eq_mul, mul_eq_mul_left_iff]
           left
           congr
         have h₄ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
         repeat rw [update₁] at h₄
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
-          ContinuousMultilinearMap.coe_coe, smul_eq_mul] at h₄
-        rw [this, mul_comm, ← h₄]
+        simp only [MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe, smul_eq_mul] at h₄
+        rw [h₅, mul_comm, ← h₄]
         exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
 
 open Finset Nat
@@ -286,15 +282,9 @@ theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [N
     {D : ℝ} {x : V}
     (hx : x ∈ Metric.ball x₀ (min (r / 2) (D / (C * (a * (2 / r)) ^ 3)))) :
     |f x - p.partialSum 3 (x - x₀)| ≤ D * ‖x - x₀‖ ^ 2 := by
-  have h₂ := h₃ x (by
-    have : x ∈ Metric.ball x₀ ((r / 2)) := by aesop
-    simp only [Metric.ball, Set.mem_setOf_eq, dist_zero_right,
-      gt_iff_lt] at this ⊢
-    convert this using 1
-    exact mem_sphere_iff_norm.mp rfl) 3
-  simp only [add_sub_cancel, Real.norm_eq_abs] at h₂
-  apply h₂.trans
-  simp only [Metric.mem_ball, lt_inf_iff] at hx
+  simp only [Metric.mem_ball, dist_zero_right, add_sub_cancel, Real.norm_eq_abs,
+    lt_inf_iff] at h₃ hx
+  apply (h₃ x (by convert hx.1 using 1;exact mem_sphere_iff_norm.mp rfl) 3).trans
   by_cases H : ‖x-x₀‖ = 0
   · have : x - x₀ = 0 := norm_eq_zero.mp H
     have : x = x₀ := by grind only
