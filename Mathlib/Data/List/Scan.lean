@@ -8,7 +8,11 @@ import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 
-/-! ### List.scanl and List.scanr -/
+/-!
+# List scan
+
+Prove basic results about `List.scanl` and `List.scanr`.
+-/
 
 open Nat
 
@@ -16,31 +20,41 @@ namespace List
 
 variable {α β : Type*} {f : β → α → β} {b : β} {a : α} {l : List α}
 
-theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
-  | _, [] => rfl
-  | a, x :: l => by
-    rw [scanl, length_cons, length_cons, ← succ_eq_add_one, congr_arg succ]
-    exact length_scanl _ _
+/-! ### List.scanl -/
+
+@[simp]
+theorem length_scanl : (scanl f b l).length = l.length + 1 := by
+  induction l generalizing b <;> simp_all
 
 @[simp]
 theorem scanl_nil (b : β) : scanl f b nil = [b] :=
   rfl
 
 @[simp]
+theorem scanl_ne_nil : scanl f b l ≠ [] := by
+  unfold scanl
+  split <;> simp
+
+@[simp]
+theorem scanl_iff_nil : scanl f b l = [b] ↔ l = [] := by
+  constructor
+  · cases l <;> simp
+  · simp_all
+
+@[simp]
 theorem scanl_cons : scanl f b (a :: l) = [b] ++ scanl f (f b a) l := by
   simp only [scanl, singleton_append]
 
-@[simp]
 theorem getElem?_scanl_zero : (scanl f b l)[0]? = some b := by
-  cases l
-  · simp
-  · simp
+  cases l <;> simp
 
 @[simp]
-theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b := by
-  cases l
-  · simp
-  · simp
+theorem getElem_scanl_zero : (scanl f b l)[0] = b := by
+  cases l <;> simp
+
+@[simp]
+theorem head_scanl : (scanl f b l).head scanl_ne_nil = b := by
+  cases l <;> simp
 
 theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     (scanl f b l)[i]?.bind fun x => l[i]?.map fun y => f x y := by
@@ -59,7 +73,7 @@ alias get?_succ_scanl := getElem?_succ_scanl
 theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     (scanl f b l)[i + 1] =
       f ((scanl f b l)[i]'(Nat.lt_of_succ_lt h))
-        (l[i]'(Nat.lt_of_succ_lt_succ (h.trans_eq (length_scanl b l)))) := by
+        (l[i]'(Nat.lt_of_succ_lt_succ (h.trans_eq length_scanl))) := by
   induction i generalizing b l with
   | zero =>
     cases l
@@ -74,17 +88,70 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
 
--- scanr
+/-! ### List.scanr -/
+
+variable {f : α → β → β}
+
 @[simp]
-theorem scanr_nil (f : α → β → β) (b : β) : scanr f b [] = [b] :=
+theorem scanr_nil : scanr f b [] = [b] :=
   rfl
 
 @[simp]
-theorem scanr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
-    scanr f b (a :: l) = foldr f b (a :: l) :: scanr f b l := by
+theorem scanr_ne_nil : scanr f b l ≠ [] := by
+  simp [scanr]
+
+@[simp]
+theorem scanr_cons : scanr f b (a :: l) = foldr f b (a :: l) :: scanr f b l := by
   simp only [scanr, foldr, cons.injEq, and_true]
   induction l generalizing a with
   | nil => rfl
   | cons hd tl ih => simp only [foldr, ih]
+
+@[simp]
+theorem scanr_iff_nil : scanr f b l = [b] ↔ l = [] := by
+  constructor
+  · cases l <;> simp
+  · simp_all
+
+@[simp]
+theorem length_scanr : (scanr f b l).length = l.length + 1 := by
+  induction l <;> simp_all
+
+theorem getElem?_scanr_zero : (scanr f b l)[0]? = foldr f b l := by
+  cases l <;> simp
+
+@[simp]
+theorem getElem_scanr_zero : (scanr f b l)[0] = foldr f b l := by
+  cases l <;> simp
+
+@[simp]
+theorem head_scanr : (scanr f b l).head scanr_ne_nil = foldr f b l := by
+  cases l <;> simp
+
+theorem tail_scanr (h : 0 < l.length) : (scanr f b l).tail = scanr f b l.tail := by
+  induction l <;> simp_all
+
+theorem drop_scanr {i : ℕ} (h : i < l.length + 1) :
+    (scanr f b l).drop i = scanr f b (l.drop i) := by
+  induction i with
+  | zero => simp
+  | succ i ih =>
+      rw [← drop_drop]
+      simp [ih (by omega), tail_scanr (l := l.drop i) (by rw [length_drop]; omega)]
+
+theorem getElem_scanr {i : ℕ} (h : i < l.length + 1) :
+    (scanr f b l)[i]'(by simp [h]) = foldr f b (l.drop i) := by
+  induction l generalizing i with
+  | nil => simp [h]
+  | cons head tail ih =>
+      by_cases h' : i = 0
+      · simp [h']
+      · rw [length_cons] at h
+        obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h'
+        simp [@ih m (by omega)]
+
+theorem getElem?_scanr {i : ℕ} (h : i < l.length + 1) :
+    (scanr f b l)[i]? = some (foldr f b (l.drop i)) := by
+  rw [List.getElem?_eq_getElem (by simp [h]), getElem_scanr h]
 
 end List
