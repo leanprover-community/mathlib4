@@ -48,8 +48,7 @@ The prelocal predicate on functions into the stalks, asserting that the function
 -/
 def isGerm : PrelocalPredicate fun x ↦ F.stalk x where
   pred {U} f := ∃ g : F.obj (op U), ∀ x : U, f x = germ F U x.1 x.2 g
-  res := fun i _ ⟨g, p⟩ => ⟨F.map i.op g,
-    fun x ↦ (p (i x)).trans (germ_res_apply F i x x.2 g).symm⟩
+  res := fun i _ ⟨g, p⟩ ↦ ⟨F.map i.op g, fun x ↦ (p (i x)).trans (germ_res_apply F i x x.2 g).symm⟩
 
 /-- The local predicate on functions into the stalks,
 asserting that the function is locally equal to a germ.

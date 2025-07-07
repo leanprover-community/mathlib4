@@ -107,6 +107,16 @@ def proj : C(EtaleSpace P, B) where
 
 section Section
 
+theorem exists_eq_mk_of_comp_eq_id (f : B → EtaleSpace P) (hf : proj P ∘ f = id) :
+    ∃! s : Π b, F b, f = (mk <| s ·) := by
+  convert ← (Equiv.piEquivSubtypeSigma ..).bijective.existsUnique ⟨f, congr_fun hf⟩
+  exact eq_comm.trans Subtype.ext_iff
+
+theorem exists_eq_mk_of_comp_eq_val {U : Set B} (f : U → EtaleSpace P) (hf : proj P ∘ f = (↑)) :
+    ∃! s : Π b : U, F b, f = (mk <| s ·) := by
+  convert ← (Equiv.piSubtypeEquivSubtypeSigma ..).bijective.existsUnique ⟨f, hf⟩
+  exact eq_comm.trans Subtype.ext_iff
+
 variable {U : Opens B} {s : Π b : U, F b} (hs : P s)
 include hs
 
@@ -117,7 +127,6 @@ lemma continuous_section : Continuous fun b ↦ (mk (s b) : EtaleSpace P) :=
 def homeomorphRangeSection : U ≃ₜ range fun b ↦ (mk (s b) : EtaleSpace P) where
   toFun b := ⟨_, b, rfl⟩
   invFun x := ⟨proj P x, by obtain ⟨_, b, rfl⟩ := x; exact b.2⟩
-  left_inv _ := rfl
   right_inv := by rintro ⟨_, _, rfl⟩; rfl
   continuous_toFun := (continuous_section hs).subtype_mk _
   continuous_invFun := ((proj _).continuous.comp continuous_subtype_val).subtype_mk <| by
@@ -234,6 +243,8 @@ noncomputable def homeomorph : proj P ⁻¹' U ≃ₜ U × ι where
   continuous_invFun := continuous_prod_of_discrete_right.mpr
     fun i ↦ (continuous_section (t.pred i)).subtype_mk _
 
+-- TODO: IsEvenlyCovered and IsCoveringMap(On) once the definitions are fixed (#24983)
+
 end TrivializationOn
 
 theorem isSeparatedMap_proj (sep : ∀ b, IsSeparated P b) (inj : ∀ b, IsStalkInj P b) :
@@ -250,3 +261,44 @@ theorem isSeparatedMap_proj (sep : ∀ b, IsSeparated P b) (inj : ∀ b, IsStalk
 end EtaleSpace
 
 end TopCat
+
+section ContinuousSection
+
+open TopCat
+
+variable {B : TopCat.{u}} {X : Type*} [TopologicalSpace X] {p : X → B}
+
+theorem IsLocallyInjective.isStalkInj (inj : IsLocallyInjective p) (b : B) :
+    IsStalkInj (F := (p ⁻¹' {·})) (isContinuousSection p).pred b :=
+  PrelocalPredicate.isStalkInj_iff.mpr fun U s t hs ht eq ↦ by
+    have ⟨V, hV, hsV, inj⟩ := inj (s ⟨b, U.2⟩)
+    have := U.1.2.isOpenMap_subtype_val _ ((hV.preimage hs).inter (hV.preimage ht))
+    refine ⟨⟨⟨_, U.1.2.isOpenMap_subtype_val _ ((hV.preimage hs).inter (hV.preimage ht))⟩,
+      ⟨_, ⟨hsV, by apply eq ▸ hsV⟩, rfl⟩⟩, Set.image_val_subset.hom, ?_⟩
+    rintro ⟨_, b, h, rfl⟩
+    exact Subtype.ext (inj h.1 h.2 <| (s _).2.trans (t _).2.symm)
+
+theorem IsLocalHomeomorph.isStalkSurj (hp : IsLocalHomeomorph p) (b : B) :
+    IsStalkSurj (F := (p ⁻¹' {·})) (isContinuousSection p).pred b := by
+  rintro ⟨x, rfl⟩
+  have ⟨U, hU, s, hs, hxU, eq⟩ := hp.exists_section x
+  exact ⟨⟨⟨U, hU⟩, hxU⟩, fun b ↦ ⟨s b, congr_fun hs b⟩, s.continuous, Subtype.ext eq⟩
+
+theorem IsLocalHomeomorph.isSeparated_of_isSeparatedMap (hp : IsLocalHomeomorph p)
+    (sep : IsSeparatedMap p) (b : B) :
+    IsSeparated (F := (p ⁻¹' {·})) (isContinuousSection p).pred b := by
+  rintro ⟨x, eq⟩ ⟨y, rfl⟩ ne
+  have ⟨U, V, hU, hV, hxU, hyV, disj⟩ := sep x y eq (Subtype.coe_ne_coe.mpr ne)
+  have ⟨U', hU', s, hs, hxU', hsx⟩ := hp.exists_section x
+  have ⟨V', hV', t, ht, hxV', hty⟩ := hp.exists_section y
+  exact ⟨⟨⟨_, (hU'.isOpenMap_subtype_val _ (hU.preimage s.continuous)).inter
+      (hV'.isOpenMap_subtype_val _ (hV.preimage t.continuous))⟩,
+    ⟨_, hsx ▸ hxU, by exact eq⟩, _, hty ▸ hyV, rfl⟩,
+    fun b ↦ ⟨s ⟨b, image_val_subset b.2.1⟩, congr_fun hs _⟩,
+    fun b ↦ ⟨t ⟨b, image_val_subset b.2.2⟩, congr_fun ht _⟩,
+    s.continuous.comp (by fun_prop), t.continuous.comp (by fun_prop),
+    Subtype.ext ((congr_arg s <| Subtype.ext eq.symm).trans hsx),
+    Subtype.ext hty, fun b ↦ Subtype.coe_ne_coe.mp <| disjoint_iff_forall_ne.mp disj
+      (mem_of_mem_image_val b.2.1) (mem_of_mem_image_val b.2.2)⟩
+
+end ContinuousSection

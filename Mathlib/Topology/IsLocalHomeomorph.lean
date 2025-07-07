@@ -290,6 +290,14 @@ theorem isOpenEmbedding_restrict (hf : IsLocalHomeomorph f) (hs : IsOpen s) (hsf
   isOpenEmbedding_iff_continuous_injective_isOpenMap.mpr ⟨hf.continuous.comp continuous_subtype_val,
     hsf.injective, hf.isOpenMap.comp hs.isOpenMap_subtype_val⟩
 
+theorem exists_section (hf : IsLocalHomeomorph f) (x : X) :
+    ∃ U : Set Y, IsOpen U ∧ ∃ s : C(U, X), f ∘ s = (↑) ∧ ∃ h : f x ∈ U, s ⟨_, h⟩ = x := by
+  have ⟨V, hxV, hfV⟩ := isLocalHomeomorph_iff_isOpenEmbedding_restrict.mp hf x
+  obtain ⟨U, hU, s, hs, rfl⟩ := ((hf.isOpen_injOn_tfae V).out 1 4).mp hfV
+  obtain ⟨y, rfl⟩ := mem_of_mem_nhds hxV
+  rw [← f.comp_apply, hs]
+  exact ⟨U, hU, s, hs, y.2, rfl⟩
+
 open TopologicalSpace in
 /-- Ranges of continuous local sections of a local homeomorphism
 form a basis of the source space. -/
@@ -304,3 +312,11 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     exact ⟨_, this, ⟨mem_of_mem_nhds hV, hx⟩, Set.inter_subset_right⟩
 
 end IsLocalHomeomorph
+
+theorem isLocalHomeomorph_iff_isLocallyInjective_continuous_isOpenMap :
+    IsLocalHomeomorph f ↔ IsLocallyInjective f ∧ Continuous f ∧ IsOpenMap f where
+  mp h := ⟨h.isLocallyInjective, h.continuous, h.isOpenMap⟩
+  mpr h := isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun x ↦
+    have ⟨U, hU, hxU, inj⟩ := h.1 x
+    ⟨U, hU.mem_nhds hxU, isOpenEmbedding_iff_continuous_injective_isOpenMap.mpr
+      ⟨h.2.1.comp continuous_subtype_val, Set.injOn_iff_injective.mp inj, h.2.2.restrict hU⟩⟩
