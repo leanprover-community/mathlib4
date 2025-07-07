@@ -666,7 +666,7 @@ instance : SetLike (DynkinSystem α) (Set α) := ⟨Has, fun d' ↦ by aesop⟩
   If `s ⊆ d`, then every set that is measurable with respect to the
   σ-algebra `generateFrom s` also belongs to `d`.
 -/
-theorem pi_lambda
+theorem mem_of_isPiSystem_of_subset_of_measurableSet_generateFrom
     {s : Set (Set α)} (hs : IsPiSystem s) (h_sub : s ⊆ d)
     {t : Set α} (ht : MeasurableSet[generateFrom s] t) :
     t ∈ d :=
