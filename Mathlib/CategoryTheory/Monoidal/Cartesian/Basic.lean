@@ -258,7 +258,7 @@ lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
-  simp [fst_def, ← MonoidalCategory.whiskerLeft_comp_assoc]
+  simp [fst_def, ← whiskerLeft_comp_assoc]
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_snd (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ snd _ _ = snd _ _ ≫ f := by
@@ -270,23 +270,23 @@ lemma whiskerRight_fst {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ fst _ _ = f
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_snd {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ snd _ _ = snd _ _ := by
-  simp [snd_def, ← MonoidalCategory.comp_whiskerRight_assoc]
+  simp [snd_def, ← comp_whiskerRight_assoc]
 
 @[reassoc (attr := simp)]
 lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
-    (f ⊗ g) ≫ fst _ _ = fst _ _ ≫ f := by simp [tensorHom_def]
+    (f ⊗ₘ g) ≫ fst _ _ = fst _ _ ≫ f := by simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
 lemma tensorHom_snd {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
-    (f ⊗ g) ≫ snd _ _ = snd _ _ ≫ g := by simp [tensorHom_def]
+    (f ⊗ₘ g) ≫ snd _ _ = snd _ _ ≫ g := by simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
 lemma lift_map {V W X Y Z : C} (f : V ⟶ W) (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
-    lift f g ≫ (h ⊗ k) = lift (f ≫ h) (g ≫ k) := by ext <;> simp
+    lift f g ≫ (h ⊗ₘ k) = lift (f ≫ h) (g ≫ k) := by ext <;> simp
 
 @[simp]
 lemma lift_fst_comp_snd_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
-    lift (fst _ _ ≫ g) (snd _ _ ≫ g') = g ⊗ g' := by ext <;> simp
+    lift (fst _ _ ≫ g) (snd _ _ ≫ g') = g ⊗ₘ g' := by ext <;> simp
 
 @[reassoc (attr := simp)]
 lemma lift_whiskerRight {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Y ⟶ W) :
@@ -302,7 +302,7 @@ lemma lift_whiskerLeft {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Z ⟶ W) :
 lemma associator_hom_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ fst _ _ = fst _ _ ≫ fst _ _ := by
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
-    ← MonoidalCategory.whiskerLeft_comp_assoc]
+    ← whiskerLeft_comp_assoc]
 
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_fst (X Y Z : C) :
@@ -313,13 +313,13 @@ lemma associator_hom_snd_fst (X Y Z : C) :
 lemma associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ snd _ _ = snd _ _ := by
   simp [snd_def, ← leftUnitor_whiskerRight_assoc, -leftUnitor_whiskerRight,
-    ← MonoidalCategory.comp_whiskerRight_assoc]
+    ← comp_whiskerRight_assoc]
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ fst _ _ = fst _ _ := by
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
-    ← MonoidalCategory.whiskerLeft_comp_assoc]
+    ← whiskerLeft_comp_assoc]
 
 @[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
 @[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
@@ -333,7 +333,7 @@ lemma associator_inv_fst_snd (X Y Z : C) :
 lemma associator_inv_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ snd _ _ = snd _ _ ≫ snd _ _ := by
   simp [snd_def, ← leftUnitor_whiskerRight_assoc, -leftUnitor_whiskerRight,
-    ← MonoidalCategory.comp_whiskerRight_assoc]
+    ← comp_whiskerRight_assoc]
 
 @[reassoc (attr := simp)]
 lemma lift_lift_associator_hom {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :
@@ -408,7 +408,7 @@ theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := by 
 
 @[simp, reassoc]
 lemma lift_snd_comp_fst_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
-    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ g) := by aesop_cat
+    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ₘ g) := by aesop_cat
 
 @[reassoc (attr := simp)]
 lemma lift_braiding_hom {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
@@ -542,8 +542,8 @@ variable {A B} {A' B' : C}
 /-- Naturality of the `prodComparison` morphism in both arguments. -/
 @[reassoc]
 theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
-    F.map (f ⊗ g) ≫ prodComparison F A' B' =
-      prodComparison F A B ≫ (F.map f ⊗ F.map g) := by
+    F.map (f ⊗ₘ g) ≫ prodComparison F A' B' =
+      prodComparison F A B ≫ (F.map f ⊗ₘ F.map g) := by
   apply hom_ext <;>
   simp only [Category.assoc, prodComparison_fst, tensorHom_fst, prodComparison_fst_assoc,
     prodComparison_snd, tensorHom_snd, prodComparison_snd_assoc, ← F.map_comp]
@@ -568,8 +568,8 @@ variable [IsIso (prodComparison F A B)]
 /-- If the product comparison morphism is an iso, its inverse is natural in both argument. -/
 @[reassoc]
 theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodComparison F A' B')] :
-    inv (prodComparison F A B) ≫ F.map (f ⊗ g) =
-      (F.map f ⊗ F.map g) ≫ inv (prodComparison F A' B') := by
+    inv (prodComparison F A B) ≫ F.map (f ⊗ₘ g) =
+      (F.map f ⊗ₘ F.map g) ≫ inv (prodComparison F A' B') := by
   rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural]
 
 /-- If the product comparison morphism is an iso, its inverse is natural in the right argument. -/
@@ -611,8 +611,9 @@ def prodComparisonNatTrans (A : C) :
       prodComparison_snd, prodComparison_snd_assoc, whiskerLeft_snd, ← F.map_comp]
 
 theorem prodComparisonNatTrans_comp :
-    prodComparisonNatTrans (F ⋙ G) A = whiskerRight (prodComparisonNatTrans F A) G ≫
-      whiskerLeft F (prodComparisonNatTrans G (F.obj A)) := by ext; simp [prodComparison_comp]
+    prodComparisonNatTrans (F ⋙ G) A = Functor.whiskerRight (prodComparisonNatTrans F A) G ≫
+      Functor.whiskerLeft F (prodComparisonNatTrans G (F.obj A)) := by
+  ext; simp [prodComparison_comp]
 
 @[simp]
 lemma prodComparisonNatTrans_id :
@@ -622,8 +623,8 @@ lemma prodComparisonNatTrans_id :
 `prodComparison`. -/
 @[simps]
 def prodComparisonBifunctorNatTrans :
-    curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ⟶
-      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F where
+    curriedTensor C ⋙ (Functor.whiskeringRight _ _ _).obj F ⟶
+      F ⋙ curriedTensor D ⋙ (Functor.whiskeringLeft _ _ _).obj F where
   app A := prodComparisonNatTrans F A
   naturality x y f := by
     ext z
@@ -632,9 +633,11 @@ def prodComparisonBifunctorNatTrans :
 variable {E : Type u₂} [Category.{v₂} E] [CartesianMonoidalCategory E] (G : D ⥤ E)
 
 theorem prodComparisonBifunctorNatTrans_comp : prodComparisonBifunctorNatTrans (F ⋙ G) =
-      whiskerRight (prodComparisonBifunctorNatTrans F) ((whiskeringRight _ _ _).obj G) ≫
-        whiskerLeft F (whiskerRight (prodComparisonBifunctorNatTrans G)
-          ((whiskeringLeft _ _ _).obj F)) := by ext; simp [prodComparison_comp]
+    Functor.whiskerRight
+      (prodComparisonBifunctorNatTrans F) ((Functor.whiskeringRight _ _ _).obj G) ≫
+        Functor.whiskerLeft F (Functor.whiskerRight (prodComparisonBifunctorNatTrans G)
+          ((Functor.whiskeringLeft _ _ _).obj F)) := by
+  ext; simp [prodComparison_comp]
 
 instance (A : C) [∀ B, IsIso (prodComparison F A B)] : IsIso (prodComparisonNatTrans F A) := by
   letI : ∀ X, IsIso ((prodComparisonNatTrans F A).app X) := by assumption
@@ -671,14 +674,14 @@ noncomputable def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
     (tensorProductIsBinaryProduct _ _)
 
 @[simp]
-lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B := by
+lemma prodComparisonIso_hom : (prodComparisonIso F A B).hom = prodComparison F A B :=
   rfl
 
 instance isIso_prodComparison_of_preservesLimit_pair : IsIso (prodComparison F A B) := by
   rw [← prodComparisonIso_hom]
   infer_instance
 
-@[simp] lemma prodComparisonIso_id  : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
+@[simp] lemma prodComparisonIso_id : prodComparisonIso (𝟭 C) A B = .refl _ := by ext <;> simp
 
 @[simp]
 lemma prodComparisonIso_comp [PreservesLimit (pair A B) (F ⋙ G)]
@@ -700,8 +703,8 @@ noncomputable def prodComparisonNatIso (A : C) [∀ B, PreservesLimit (pair A B)
 `prodComparison F A B` is an isomorphism. -/
 @[simps! hom inv]
 noncomputable def prodComparisonBifunctorNatIso [∀ A B, PreservesLimit (pair A B) F] :
-    curriedTensor C ⋙ (whiskeringRight _ _ _).obj F ≅
-      F ⋙ curriedTensor D ⋙ (whiskeringLeft _ _ _).obj F :=
+    curriedTensor C ⋙ (Functor.whiskeringRight _ _ _).obj F ≅
+      F ⋙ curriedTensor D ⋙ (Functor.whiskeringLeft _ _ _).obj F :=
   asIso (prodComparisonBifunctorNatTrans F)
 
 end PreservesLimitPairs
@@ -814,13 +817,13 @@ omit [F.OplaxMonoidal] in
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
 the identity and composition of functors. -/
 def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
-  η' := terminalComparison F
-  δ' X Y := prodComparison F X Y
-  δ'_natural_left f X' := by ext <;> simp [← Functor.map_comp]
-  δ'_natural_right X g := by ext <;> simp [← Functor.map_comp]
-  oplax_associativity' _ _ _ := by ext <;> simp [← Functor.map_comp]
-  oplax_left_unitality' _ := by ext; simp [← Functor.map_comp]
-  oplax_right_unitality' _ := by ext; simp [← Functor.map_comp]
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left f X := by ext <;> simp [← Functor.map_comp]
+  δ_natural_right X g := by ext <;> simp [← Functor.map_comp]
+  oplax_associativity _ _ _ := by ext <;> simp [← Functor.map_comp]
+  oplax_left_unitality _ := by ext; simp [← Functor.map_comp]
+  oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 omit [F.OplaxMonoidal] in
 /-- Any functor between cartesian-monoidal categories is oplax monoidal in a unique way. -/
@@ -828,7 +831,7 @@ instance : Subsingleton F.OplaxMonoidal where
   allEq a b := by
     ext1
     · exact toUnit_unique _ _
-    · ext1; ext1; rw [← δ, ← δ, δ_of_cartesianMonoidalCategory, δ_of_cartesianMonoidalCategory]
+    · ext1; ext1; rw [δ_of_cartesianMonoidalCategory, δ_of_cartesianMonoidalCategory]
 
 end OplaxMonoidal
 
@@ -880,7 +883,7 @@ end Monoidal
 namespace Monoidal
 
 instance [F.Monoidal] : PreservesFiniteProducts F :=
-  have (A B) : IsIso (CartesianMonoidalCategory.prodComparison F A B) :=
+  have (A B : _) : IsIso (CartesianMonoidalCategory.prodComparison F A B) :=
     δ_of_cartesianMonoidalCategory F A B ▸ inferInstance
   have : IsIso (CartesianMonoidalCategory.terminalComparison F) :=
     η_of_cartesianMonoidalCategory F ▸ inferInstance

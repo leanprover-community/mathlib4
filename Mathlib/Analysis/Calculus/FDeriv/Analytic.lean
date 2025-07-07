@@ -322,13 +322,11 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   rw [this] at Z
   convert Z with n
   ext v
-  simp only [FormalMultilinearSeries.derivSeries,
+  simp only [FormalMultilinearSeries.derivSeries, ContinuousLinearMap.coe_sum', Finset.sum_apply,
     ContinuousLinearMap.compFormalMultilinearSeries_apply,
     FormalMultilinearSeries.changeOriginSeries,
     ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
-    ContinuousLinearMap.coe_sum', Finset.sum_apply,
-    Matrix.zero_empty]
+    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum]
   rfl
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. Version
@@ -578,7 +576,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
       changeOrigin, FormalMultilinearSeries.sum]
   cases isEmpty_or_nonempty ι
-  · have (l) : 1 + l ≠ Fintype.card ι := by
+  · have (l : _) : 1 + l ≠ Fintype.card ι := by
       rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
     simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
   rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
@@ -637,7 +635,7 @@ theorem _root_.HasFDerivAt.multilinear_comp
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
 over embedding of `Fin k` and `Fin (k + 1)`. -/
 private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
-    {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
+    {n : ℕ} (e : Fin (n + 1) ↪ ι) {k : ι}
     (h'k : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1) (hk : k ∈ Set.range e) :
     Fin.succ ((Equiv.embeddingFinSucc n ι e).1.toEquivRange.symm ⟨k, h'k⟩)
       = e.toEquivRange.symm ⟨k, hk⟩ := by
@@ -664,7 +662,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       have A : HasFDerivAt (f.iteratedFDeriv n) (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 _ Subtype.val x))
             ∘L (Pi.compRightL 𝕜 _ Subtype.val)) x := by
-        apply HasFDerivAt.sum (fun s _hs ↦ ?_)
+        apply HasFDerivAt.fun_sum (fun s _hs ↦ ?_)
         exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
       rwa [← H] at A
     ext v m

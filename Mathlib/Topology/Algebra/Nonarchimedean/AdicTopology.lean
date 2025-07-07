@@ -130,7 +130,7 @@ def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
   convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
   change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
-  simp [smul_top_eq_map, Algebra.id.map_eq_id, map_id, restrictScalars_self]
+  simp
 
 end Ideal
 
