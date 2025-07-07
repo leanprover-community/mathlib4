@@ -812,10 +812,10 @@ theorem map_div_right_divisors :
 
 theorem map_div_left_divisors :
       z.divisors.map ⟨fun d => (z / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ = z.divisorsAntidiag := by
-    apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
-    ext
-    rw [map_prodComm_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
-    simp
+  apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
+  ext
+  rw [map_prodComm_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
+  simp
 
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
 lemma mul_mem_one_two_three_iff {a b : ℤ} :
