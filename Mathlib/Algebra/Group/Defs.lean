@@ -335,7 +335,7 @@ include hn ha
 @[to_additive] theorem npowRec_add : npowRec (m + n) a = npowRec m a * npowRec n a := by
   obtain _ | n := n; · exact (hn rfl).elim
   induction n with
-  | zero => simp only [Nat.zero_add, npowRec, ha]
+  | zero => simp only [npowRec, ha]
   | succ n ih => rw [← Nat.add_assoc, npowRec, ih n.succ_ne_zero]; simp only [npowRec, mul_assoc]
 
 @[to_additive] theorem npowRec_succ : npowRec (n + 1) a = a * npowRec n a := by
@@ -472,7 +472,7 @@ theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k �
   induction k using Nat.strongRecOn with
   | ind k' ih =>
     match k' with
-    | 1 => simp [npowRec', mul_assoc]
+    | 1 => simp [npowRec']
     | k + 2 => simp [npowRec', ← mul_assoc, ih]
 
 @[to_additive]
@@ -498,7 +498,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | z₁ => simp [npowRec']
   | f b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
-    cases b <;> simp only [Nat.bit, cond_false, cond_true, ← Nat.two_mul, npowRec'_two_mul]
+    cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
       ← npowRec'_mul_comm (by omega), mul_assoc]
 
@@ -574,8 +574,8 @@ theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
 @[to_additive] lemma left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
 
--- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
-@[to_additive zero_nsmul, simp]
+-- This lemma is higher priority than later `zero_smul` so that the `simpNF` is happy
+@[to_additive (attr := simp high) zero_nsmul]
 theorem pow_zero (a : M) : a ^ 0 = 1 :=
   Monoid.npow_zero _
 
@@ -594,7 +594,7 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
     (a * b) ^ n * a = a * (b * a) ^ n := by
   induction n with
   | zero => simp
-  | succ n ih => simp [pow_succ', ← ih, Nat.mul_add, mul_assoc]
+  | succ n ih => simp [pow_succ', ← ih, mul_assoc]
 
 @[to_additive]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
@@ -611,8 +611,8 @@ lemma pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
 @[to_additive three_nsmul]
 lemma pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
 
--- the attributes are intentionally out of order.
-@[to_additive nsmul_zero, simp] lemma one_pow : ∀ n, (1 : M) ^ n = 1
+-- This lemma is higher priority than later `smul_zero` so that the `simpNF` is happy
+@[to_additive (attr := simp high) nsmul_zero] lemma one_pow : ∀ n, (1 : M) ^ n = 1
   | 0 => pow_zero _
   | n + 1 => by rw [pow_succ, one_pow, one_mul]
 

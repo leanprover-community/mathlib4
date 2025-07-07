@@ -15,7 +15,7 @@ limits for `K`.
 -/
 
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
 noncomputable section
 
