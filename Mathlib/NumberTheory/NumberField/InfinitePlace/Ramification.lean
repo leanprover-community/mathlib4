@@ -40,7 +40,7 @@ variable {k : Type*} [Field k] {K : Type*} [Field K] {F : Type*} [Field F]
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
-    by { ext x; show _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
+    by { ext x; change _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
 
 @[simp]
 lemma comap_mk (φ : K →+* ℂ) (f : k →+* K) : (mk φ).comap f = mk (φ.comp f) := rfl
@@ -333,9 +333,7 @@ lemma exists_isConj_of_isRamified [IsGalois k K] {φ : K →+* ℂ} (h : IsRamif
   rw [isRamified_iff_card_stabilizer_eq_two, Nat.card_eq_two_iff] at h
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, h₁, -⟩ := h
   rw [mem_stabilizer_mk_iff] at hx hy
-  by_cases h : x = 1
-  · exact ⟨y, hy.resolve_left (by rwa [ne_eq, Subtype.mk_eq_mk.not, h, eq_comm] at h₁)⟩
-  · exact ⟨x, hx.resolve_left h⟩
+  grind
 
 open scoped Classical in
 lemma card_stabilizer [IsGalois k K] :

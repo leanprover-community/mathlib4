@@ -409,7 +409,7 @@ theorem orderOf_mul_dvd_lcm (h : Commute x y) :
   exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left
 
 @[to_additive]
-theorem orderOf_dvd_lcm_mul (h : Commute x y):
+theorem orderOf_dvd_lcm_mul (h : Commute x y) :
     orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)) := by
   by_cases h0 : orderOf x = 0
   · rw [h0, lcm_zero_left]
@@ -422,7 +422,7 @@ theorem orderOf_dvd_lcm_mul (h : Commute x y):
       (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
 
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
-theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y):
+theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y) :
     orderOf (x * y) ∣ orderOf x * orderOf y :=
   dvd_trans h.orderOf_mul_dvd_lcm (lcm_dvd_mul _ _)
 

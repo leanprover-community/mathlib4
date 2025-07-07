@@ -94,8 +94,7 @@ lemma isClosedEmbedding_precomp_of_surjective
     isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.1)
   convert this
   ext x
-  simp only [Set.mem_range, Set.iInf_eq_iInter, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall,
-    RingHom.mem_ker]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall, RingHom.mem_ker]
   constructor
   · rintro ⟨g, rfl⟩ a ha; simp [ha]
   · exact fun H ↦ ⟨CommRingCat.ofHom (RingHom.liftOfSurjective f.hom hf ⟨x.hom, H⟩),
@@ -174,7 +173,7 @@ lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     (mvPolynomialHomeomorph C R A).symm.isEmbedding
   convert ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
     (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
-  have (s) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
+  have (s : _) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
     congr($(pushout.condition (f := φ)).hom s).symm
   ext f s <;> simp [fB, fC, fBC, PB, PC, PBC, F, this]
 

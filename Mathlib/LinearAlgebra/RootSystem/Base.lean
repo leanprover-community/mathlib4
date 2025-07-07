@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
@@ -257,6 +258,12 @@ lemma rootCombination_ne_zero [Algebra S R] [IsScalarTower S R M] [FaithfulSMul 
   simpa using hf
 
 end BaseCombination
+
+lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R][P.IsCrystallographic] [Finite ι]
+    {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
+    P.pairingIn ℤ i j ≤ 0 := by
+  by_contra! h
+  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
 
 end RootPairing
 

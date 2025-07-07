@@ -121,5 +121,5 @@ theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set �
 function is. -/
 theorem continuous_tsum [TopologicalSpace β] {f : α → β → F} (hf : ∀ i, Continuous (f i))
     (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) : Continuous fun x => ∑' n, f n x := by
-  simp_rw [continuous_iff_continuousOn_univ] at hf ⊢
+  simp_rw [← continuousOn_univ] at hf ⊢
   exact continuousOn_tsum hf hu fun n x _ => hfu n x

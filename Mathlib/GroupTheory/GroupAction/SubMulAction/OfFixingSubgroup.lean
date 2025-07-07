@@ -25,11 +25,11 @@ and permit to manipulate them in a relatively smooth way:
 
   * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
   multiplicative equivalence between `fixingSubgroup M (insert a s)``
-  and `fixingSubgroup (stablizer M a) s`
+  and `fixingSubgroup (stabilizer M a) s`
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
   map between `SubMulAction.ofFixingSubgroup M (insert a s)`
-  and `SubMulAction.ofFixingSubgroup (stablizer M a) s`.
+  and `SubMulAction.ofFixingSubgroup (stabilizer M a) s`.
 
   * `SubMulAction.fixingSubgroupEquivFixingSubgroup`:
   the multiplicative equivalence between `SubMulAction.fixingSubgroup M s`
@@ -313,7 +313,7 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
   toFun m := ⟨⟨m, (mem_fixingSubgroup_union_iff.mp m.prop).1⟩, by
       rintro ⟨⟨x, hx⟩, hx'⟩
       simp only [Set.mem_preimage] at hx'
-      simp only [← SetLike.coe_eq_coe, Subtype.coe_mk, SubMulAction.val_smul_of_tower]
+      simp only [← SetLike.coe_eq_coe, SubMulAction.val_smul_of_tower]
       exact (mem_fixingSubgroup_union_iff.mp m.prop).2 ⟨x, hx'⟩⟩
   map_one' := by simp
   map_mul' _ _ := by simp [← Subtype.coe_inj]

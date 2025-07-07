@@ -35,8 +35,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 assert_not_exists Equiv.Perm.cycleType
 
-suppress_compilation
-
 open scoped TensorProduct
 
 open TensorProduct
@@ -105,12 +103,12 @@ variable (R M N : Type*)
 
 /-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
 @[simps!]
-noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
+def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
   .ofLinearMap (lTensorHom (M := N)) (lTensor_id N M) (lTensor_mul N)
 
 /-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
 @[simps!]
-noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
+def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
   .ofLinearMap (rTensorHom (M := N)) (rTensor_id N M) (rTensor_mul N)
 
 end Module.End
@@ -509,6 +507,15 @@ attribute [local instance] TensorProduct.rightAlgebra
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 
+lemma right_algebraMap_apply (b : B) : algebraMap B (A ⊗[R] B) b = 1 ⊗ₜ b := rfl
+
+instance : SMulCommClass A B (A ⊗[R] B) where
+  smul_comm a b x := x.induction_on (by simp)
+    (fun _ _ ↦ by simp [Algebra.smul_def, right_algebraMap_apply, smul_tmul'])
+    fun _ _ h₁ h₂ ↦ by simpa using congr($h₁ + $h₂)
+
+instance : SMulCommClass B A (A ⊗[R] B) := .symm ..
+
 end RightAlgebra
 
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
@@ -861,7 +868,7 @@ variable (T A B : Type*) [CommSemiring T] [CommSemiring A] [CommSemiring B]
   [IsScalarTower R S A] [Algebra S T] [IsScalarTower S T A]
 
 /-- The natural isomorphism `A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B`. -/
-noncomputable def cancelBaseChange : A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B :=
+def cancelBaseChange : A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B :=
   AlgEquiv.symm <| AlgEquiv.ofLinearEquiv
     (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T A B).symm
     (by simp [Algebra.TensorProduct.one_def]) <|
