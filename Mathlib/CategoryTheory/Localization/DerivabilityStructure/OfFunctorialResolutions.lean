@@ -38,6 +38,7 @@ lemma hasRightResolutions_arrow_of_functorial_resolutions :
        hw := ⟨hi _, hi _⟩ }⟩
 
 namespace functorialRightResolutions
+open Functor
 
 variable {Φ i}
 
