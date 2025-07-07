@@ -1296,37 +1296,41 @@ structure IsLatticeCon [Lattice α] (r : α → α → Prop) : Prop extends Equi
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
-lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : IsLatticeCon r ↔
+lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
+    (IsRefl _ r) ∧
     (∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
     (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
     (∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) where
   mp := by
     intro hlc
     constructor
-    · intro x y
-      constructor
-      · intro h
-        exact hlc.trans (y := y) (by
-          conv_rhs => rw [← inf_idem y]
-          exact hlc.inf h (hlc.refl y)) (by
-          conv_lhs => rw [← sup_idem y]
-          exact hlc.sup (hlc.symm h) (hlc.refl y))
-      · intro h
-        have e1 : r x (x ⊓ y)  := by
-          conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
-          conv_rhs => rw [← inf_idem x, inf_assoc]
-          exact hlc.inf (hlc.refl x) (hlc.symm h)
-        have e2 : r (x ⊓ y) y  := by
-          conv_rhs => rw [← inf_sup_self (a := y) (b := x)]
-          conv_lhs => rw [← inf_idem y, inf_comm, inf_assoc]
-          apply hlc.inf (hlc.refl y)
-          rw [inf_comm, sup_comm]
-          exact h
-        exact hlc.trans e1 e2
-    · exact ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
+    · constructor
+      · exact hlc.refl
+    · constructor
+      · intro x y
+        constructor
+        · intro h
+          exact hlc.trans (y := y) (by
+            conv_rhs => rw [← inf_idem y]
+            exact hlc.inf h (hlc.refl y)) (by
+            conv_lhs => rw [← sup_idem y]
+            exact hlc.sup (hlc.symm h) (hlc.refl y))
+        · intro h
+          have e1 : r x (x ⊓ y)  := by
+            conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
+            conv_rhs => rw [← inf_idem x, inf_assoc]
+            exact hlc.inf (hlc.refl x) (hlc.symm h)
+          have e2 : r (x ⊓ y) y  := by
+            conv_rhs => rw [← inf_sup_self (a := y) (b := x)]
+            conv_lhs => rw [← inf_idem y, inf_comm, inf_assoc]
+            apply hlc.inf (hlc.refl y)
+            rw [inf_comm, sup_comm]
+            exact h
+          exact hlc.trans e1 e2
+      · exact ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
         ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩
   mpr := by
-    intro ⟨h1,h2,h3⟩
+    intro ⟨h0,h1,h2,h3⟩
     have e1 (a b c d : α) (hb : a ≤ b ∧ b ≤ d) (hc : a ≤ c ∧ c ≤ d) (h : r a d) : r b c := by
       rw [h1]
       conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
@@ -1386,7 +1390,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
     constructor
     · constructor
       · intro x
-        exact h.refl _
+        exact h0.refl _
       · intro x y hxy
         rw [h1, inf_comm, sup_comm, ← h1]
         exact hxy
