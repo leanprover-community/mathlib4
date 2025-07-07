@@ -314,7 +314,6 @@ lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_resi
 lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompactSpace 𝒪[K] := by
   simp only [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ, Subtype.range_coe_subtype,
-             mem_iff, ← mem_closedBall_zero_iff, Set.setOf_mem_eq,
              toNormedField.setOf_mem_integer_eq_closedBall]
   constructor <;> intro h
   · exact isCompact_closedBall 0 1
@@ -330,6 +329,6 @@ lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_fini
       toNormedField.setOf_mem_integer_eq_closedBall,
       completeSpace_iff_isComplete_univ (α := 𝒪[K]), Subtype.isComplete_iff,
       NormedField.completeSpace_iff_isComplete_closedBall, Set.image_univ,
-      Subtype.range_coe_subtype, mem_iff, ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
+      Subtype.range_coe_subtype]
 
 end Valued.integer
