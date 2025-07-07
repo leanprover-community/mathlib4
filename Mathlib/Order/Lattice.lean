@@ -1284,6 +1284,10 @@ instance Bool.instDistribLattice : DistribLattice Bool := inferInstance
 ### Lattice Congruences
 -/
 
+/--
+An equivalence relation is a congruence relation for the latice structure if it is compatible with
+the `inf` and `sup` operations.
+-/
 structure IsLatticeCon [Lattice α] (r : α → α → Prop) : Prop extends Equivalence r where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
