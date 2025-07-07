@@ -516,6 +516,7 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff [CompleteSpace 
   simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
     coe_toContinuousLinearMap_symm,
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
+  -- TODO missing API?
   rfl
 
 end LinearMap

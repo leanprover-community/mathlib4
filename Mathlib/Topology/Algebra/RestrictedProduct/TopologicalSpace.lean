@@ -655,6 +655,7 @@ theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R�
     exact inter_mem (hf hS) hφ
   have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
   have hφ' : ∀ᶠ j in 𝓟 T, MapsTo (φ j) (A₁ (f j)) (A₂ j) := by aesop
+  -- TODO missing lemma?
   have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
       inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
   rw [key]
