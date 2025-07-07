@@ -1339,30 +1339,25 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
       exact (h.2.2.2 (le_trans hb.1 hb.2) had).2
     have transitive: ∀ {x y z : α}, r x y → r y z → r x z := by
       intro x y z hxy hyz
-      apply e1 (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by
+      have e2 : r ((x ⊓ y) ⊔ (y ⊔ z)) ((x ⊔ y) ⊔ (y ⊔ z)) :=
+        (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).2
+      have e3 : (x ⊔ y) ⊔ (y ⊔ z) = x ⊔ y ⊔ z := by
+        rw [sup_comm x y, ← sup_sup_distrib_left, sup_assoc]
+      rw [e3, sup_eq_right.mpr (le_trans inf_le_right le_sup_left)] at e2
+      have e2' : r ((x ⊓ y) ⊓ (y ⊓ z)) ((x ⊔ y) ⊓ (y ⊓ z))  :=
+        (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).1
+      have e3' : (x ⊓ y) ⊓ (y ⊓ z) = x ⊓ y ⊓ z := by
+        rw [inf_comm x y, ← inf_inf_distrib_left, inf_assoc]
+      rw [e3', inf_eq_right.mpr (le_trans inf_le_left le_sup_right)] at e2'
+      exact e1 (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by
           constructor
           · rw [inf_assoc]
             exact inf_le_left
           · rw [sup_assoc]
             exact le_sup_left) (by simp only [ inf_le_right, le_sup_right, and_self])
-      have e2 : r ((x ⊓ y) ⊔ (y ⊔ z)) ((x ⊔ y) ⊔ (y ⊔ z)) :=
-        (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).2
-      have e3 : (x ⊔ y) ⊔ (y ⊔ z) = x ⊔ y ⊔ z := by
-        rw [sup_comm x y, ← sup_sup_distrib_left, sup_assoc]
-      have e4 : (x ⊓ y) ⊔ (y ⊔ z) = (y ⊔ z) :=
-        sup_eq_right.mpr (le_trans inf_le_right le_sup_left)
-      rw [e3, e4] at e2
-      have e2' : r ((x ⊓ y) ⊓ (y ⊓ z)) ((x ⊔ y) ⊓ (y ⊓ z))  :=
-        (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).1
-      have e3' : (x ⊓ y) ⊓ (y ⊓ z) = x ⊓ y ⊓ z := by
-        rw [inf_comm x y, ← inf_inf_distrib_left, inf_assoc]
-      have e4' : (x ⊔ y) ⊓ (y ⊓ z) = (y ⊓ z) :=
-        inf_eq_right.mpr (le_trans inf_le_left le_sup_right)
-      rw [e3', e4'] at e2'
-      have e5 : r (x ⊓ y ⊓ z) (y ⊔ z) := h.2.2.1
-        (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h.2.1.mp hyz)
-      apply h.2.2.1 (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
-        (by rw [sup_assoc]; exact le_sup_right) e5 e2
+        (h.2.2.1 (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
+        (by rw [sup_assoc]; exact le_sup_right) (h.2.2.1
+        (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h.2.1.mp hyz)) e2)
     {
     refl _ := h.1.refl _
     symm := by
