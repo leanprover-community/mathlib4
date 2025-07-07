@@ -1215,6 +1215,18 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
   rw [lift_lift, lift_univ, univ_umax.{u,v}] at this
   exact this
 
+theorem aleph0_lt_univ : ℵ₀ < univ.{u, v} := by
+  simpa using lift_lt_univ' ℵ₀
+
+theorem nat_lt_univ (n : ℕ) : n < univ.{u, v} :=
+  (nat_lt_aleph0 n).trans aleph0_lt_univ
+
+theorem univ_pos : 0 < univ.{u, v} :=
+  aleph0_pos.trans aleph0_lt_univ
+
+theorem univ_ne_zero : univ.{u, v} ≠ 0 :=
+  univ_pos.ne'
+
 @[simp]
 theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
@@ -1238,6 +1250,9 @@ theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c
     rw [← univ_id] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩
     exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ' _⟩
+
+theorem IsStrongLimit.univ : IsStrongLimit univ.{u, v} :=
+  ⟨univ_ne_zero, fun c h ↦ let ⟨w, h⟩ := lt_univ'.1 h; lt_univ'.2 ⟨2 ^ w, by simp [h]⟩⟩
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
     Small.{v} α ↔ Cardinal.lift.{v+1,_} #α < univ.{v, max u (v + 1)} := by
