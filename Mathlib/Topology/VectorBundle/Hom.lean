@@ -121,19 +121,34 @@ def continuousLinearMap :
   target_eq := rfl
   proj_toFun _ _ := rfl
 
+-- TODO move to Mathlib/Topology/FiberBundle/Trivialization.lean
+section
+
+open TopologicalSpace Filter Set Bundle Function
+open scoped Topology
+
+variable {B : Type*} (F : Type*) {E : B → Type*}
+variable {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
+
+variable {F}
+variable (e : Pretrivialization F proj) {x : Z}
+
+@[simp]
+lemma toFun'_mk (proj : Z → B) (e : PartialEquiv Z (B × F))
+    (open_target baseSet open_baseSet source_eq target_eq proj_toFun) :
+    toFun' (proj := proj)
+      ⟨e, open_target, baseSet, open_baseSet, source_eq, target_eq, proj_toFun⟩ = e :=
+  rfl
+
+end
+
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
 -- TODO: see if Lean 4 can generate this instance without a hint
 instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=
-    { map_add := fun L L' ↦
-        show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((L + L').comp (e₁.symmL 𝕜₁ x)) = _ by
-          simp_rw [add_comp, comp_add]
-          rfl
-      map_smul := fun c L ↦
-        show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((c • L).comp (e₁.symmL 𝕜₁ x)) = _ by
-          simp_rw [smul_comp, comp_smulₛₗ, RingHom.id_apply]
-          rfl }
+    { map_add L L' := by simp [continuousLinearMap]
+      map_smul c L:= by simp [continuousLinearMap] }
 
 theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x ↦ E₁ x →SL[σ] E₂ x) :
     (continuousLinearMap σ e₁ e₂) p =
