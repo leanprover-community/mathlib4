@@ -54,7 +54,7 @@ informal literature but not for non-reduced root pairings it is more restrictive
 doc string for further remarks. -/
 structure Base (P : RootPairing ι R M N) where
   /-- The indices of the simple roots / coroots. -/
-  support : Set ι -- TODO Make this a `Finset`?
+  support : Finset ι
   linearIndepOn_root : LinearIndepOn R P.root support
   linearIndepOn_coroot : LinearIndepOn R P.coroot support
   root_mem_or_neg_mem (i : ι) : P.root i ∈ AddSubmonoid.closure (P.root '' support) ∨
@@ -135,6 +135,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     have : P.coroot j ∈ span ℤ (P.coroot '' b.support) := b.coroot_mem_span_int j
     rw [image_eq_range, mem_span_range_iff_exists_fun] at this
     refine this.imp fun f hf ↦ ?_
+    simp only [Finset.coe_sort_coe] at hf
     simp_rw [mul_smul, ← Finset.smul_sum, Int.cast_smul_eq_zsmul, hf,
       coroot_eq_smul_coroot_iff.mpr hj]
   use f ⟨i, h⟩
@@ -180,11 +181,10 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
     · left; exact this f hk' hf₀
     · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg'])
   intro f hf hf₀
-  have _i : Fintype b.support := Fintype.ofFinite b.support
   let f' : b.support → ℤ := fun i ↦ f i
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
     suffices ∑ j, f' j • P.root j = ∑ j, f j • P.root j by rwa [this]
-    rw [← Fintype.sum_subset (s := b.support.toFinset) (by aesop), ← Finset.sum_set_coe]
+    rw [← Fintype.sum_subset (s := b.support) (by aesop), ← b.support.sum_finset_coe]; rfl
   rw [← span_nat_eq_addSubmonoid_closure, mem_toAddSubmonoid,
     Fintype.mem_span_image_iff_exists_fun] at hf
   obtain ⟨c, hc⟩ := hf
@@ -240,8 +240,7 @@ def toWeightBasis :
     Basis b.support R M :=
   Basis.mk b.linearIndepOn_root <| by
     change ⊤ ≤ span R (range <| P.root ∘ ((↑) : b.support → ι))
-    rw [top_le_iff, range_comp, Subtype.range_coe_subtype, setOf_mem_eq, b.span_root_support]
-    exact P.span_root_eq_top
+    simp [range_comp]
 
 @[simp] lemma toWeightBasis_apply (i : b.support) :
     b.toWeightBasis i = P.root i := by
@@ -436,7 +435,6 @@ lemma IsPos.induction_on
     have hfk : P.root k = ∑ j, f' j • P.root j := by
       rw [hk, hf, hff']
       simp only [Pi.add_apply, add_smul, Finset.sum_add_distrib, Pi.single_apply_smul]
-      replace hj : j ∈ b.support.toFinset := by simpa
       rw [add_sub_assoc, add_eq_left, sub_eq_zero]
       rw [Finset.sum_eq_single_of_mem j (Finset.mem_univ j) (fun l _ hl ↦ by simp [hl])]
       simp

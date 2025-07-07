@@ -104,12 +104,12 @@ def ω :
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
 
 /-- Geck's construction of the Lie algebra associated to a root system with distinguished base. -/
-def lieAlgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
+def lieAlgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range e ∪ range f)
 
 /-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction. -/
-def cartanSubalgebra [Fintype b.support] [Fintype ι] [DecidableEq ι] :
+def cartanSubalgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range h)
 
@@ -118,13 +118,13 @@ variable {b}
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
-lemma ω_mul_ω [DecidableEq ι] [Fintype ι] [Fintype b.support] :
+lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
     ω b * ω b = 1 := by
   ext (k | k) (l | l) <;>
   simp [ω, -indexNeg_neg]
 
 omit [Finite ι] [IsDomain R] in
-lemma ω_mul_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+lemma ω_mul_h [DecidableEq ι] [Fintype ι] (i : b.support) :
     ω b * h i = - h i * ω b := by
   ext (k | k) (l | l)
   · simp [ω, h]
@@ -133,7 +133,7 @@ lemma ω_mul_h [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support)
   · simp only [ω, h, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₂]
     aesop
 
-lemma ω_mul_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+lemma ω_mul_e [DecidableEq ι] [Fintype ι] (i : b.support) :
     ω b * e i = f i * ω b := by
   letI := P.indexNeg
   classical
@@ -149,14 +149,14 @@ lemma ω_mul_e [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support)
     rw [Finset.sum_eq_single_of_mem (-k) (Finset.mem_univ _) (by aesop)]
     simp [neg_eq_iff_eq_neg, sub_eq_add_neg]
 
-lemma ω_mul_f [DecidableEq ι] [Fintype ι] [Fintype b.support] (i : b.support) :
+lemma ω_mul_f [DecidableEq ι] [Fintype ι] (i : b.support) :
     ω b * f i = e i * ω b := by
   have := congr_arg (· * ω b) (congr_arg (ω b * ·) (ω_mul_e i))
   simp only [← mul_assoc, ω_mul_ω] at this
   simpa [mul_assoc, ω_mul_ω] using this.symm
 
 omit [Finite ι] [IsDomain R] [CharZero R] in
-lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
+lemma lie_h_h [Fintype ι] (i j : b.support) :
     ⁅h i, h j⁆ = 0 := by
   classical
   ext (k | k) (l | l)
@@ -168,7 +168,7 @@ lemma lie_h_h [Fintype b.support] [Fintype ι] (i j : b.support) :
     aesop
 
 /-- Lemma 3.3 (a) from [Geck](Geck2017). -/
-lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
+lemma lie_h_e [Fintype ι] (i j : b.support) :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
   classical
   ext (k | k) (l | l)
@@ -195,7 +195,7 @@ lemma lie_h_e [Fintype b.support] [Fintype ι] (i j : b.support) :
     ring
 
 /-- Lemma 3.3 (b) from [Geck](Geck2017). -/
-lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
+lemma lie_h_f [Fintype ι] (i j : b.support) :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
   classical
   suffices ω b * ⁅h j, f i⁆ = ω b * (-b.cartanMatrix i j • f i) by
@@ -213,7 +213,7 @@ lemma lie_h_f [Fintype b.support] [Fintype ι] (i j : b.support) :
     simp [mul_assoc]
 
 /-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_same`. -/
-private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) (k : ι)
+private lemma lie_e_f_same_aux [P.IsReduced] [Fintype ι] (i : b.support) (k : ι)
     (hki : k ≠ i) (hki' : k ≠ P.reflectionPerm i i) :
     ⁅e i, f i⁆ (Sum.inr k) (Sum.inr k) = h i (Sum.inr k) (Sum.inr k) := by
   classical
@@ -260,7 +260,7 @@ private lemma lie_e_f_same_aux [P.IsReduced] [Fintype b.support] [Fintype ι] (i
            P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]⟩
 
 /-- Lemma 3.4 from [Geck](Geck2017). -/
-lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support) :
+lemma lie_e_f_same [P.IsReduced] [Fintype ι] (i : b.support) :
     ⁅e i, f i⁆ = h i := by
   letI _i := P.indexNeg
   have _i : NoZeroSMulDivisors ℤ M := have := P.reflexive_left; .int_of_charZero R M
@@ -306,14 +306,14 @@ lemma lie_e_f_same [P.IsReduced] [Fintype b.support] [Fintype ι] (i : b.support
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
 
-lemma isSl2Triple [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι] (i : b.support) :
+lemma isSl2Triple [P.IsReduced] [Fintype ι] [DecidableEq ι] (i : b.support) :
     IsSl2Triple (h i) (e i) (f i) where
   h_ne_zero := fun contra ↦ by simpa [h] using congr_fun₂ contra (.inr i) (.inr i)
   lie_e_f := by rw [lie_e_f_same]
   lie_h_e_nsmul := by rw [lie_h_e]; simp
   lie_h_f_nsmul := by rw [lie_h_f]; simp
 
-lemma cartanSubalgebra_le_lieAlgebra [P.IsReduced] [Fintype b.support] [Fintype ι] [DecidableEq ι] :
+lemma cartanSubalgebra_le_lieAlgebra [P.IsReduced] [Fintype ι] [DecidableEq ι] :
     cartanSubalgebra b ≤ lieAlgebra b := by
   rw [cartanSubalgebra, lieAlgebra, LieSubalgebra.lieSpan_le]
   rintro - ⟨i, rfl⟩
