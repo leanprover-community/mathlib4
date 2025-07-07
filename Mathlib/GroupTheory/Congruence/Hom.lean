@@ -255,7 +255,7 @@ theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g
 @[to_additive "The uniqueness part of the universal property for quotients of `AddMonoid`s."]
 theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk' = f) :
     g = c.lift f H :=
-  hom_ext <| by simpa
+  hom_ext Hg
 
 /-- Surjective monoid homomorphisms constant on a congruence relation `c`'s equivalence classes
     induce a surjective homomorphism on `c`'s quotient. -/
