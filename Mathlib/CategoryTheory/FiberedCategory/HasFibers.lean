@@ -16,7 +16,7 @@ In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ �
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
 
 We also provide a canonical `HasFibers` instance, which uses the standard fibers `Fiber p S`
-(see `Mathlib/CategoryTheory/FiberedCategory/Fiber.lean`) This makes it so that any result proven
+(see `Mathlib/CategoryTheory/FiberedCategory/Fiber.lean`). This makes it so that any result proven
 about `HasFibers` can be used for the standard fibers as well.
 
 The reason for introducing this typeclass is that in practice, when working with (pre)fibered
