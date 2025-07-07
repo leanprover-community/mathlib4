@@ -56,7 +56,7 @@ theorem M.mk_eq (x y : Σ j, F.obj j)
   Quot.eqvGen_sound (Types.FilteredColimit.eqvGen_colimitTypeRel_of_rel
     (F ⋙ forget (ModuleCat R)) x y h)
 
-lemma M.map_mk {j k : J} (f : j ⟶ k) (x : F.obj j) :
+lemma M.mk_map {j k : J} (f : j ⟶ k) (x : F.obj j) :
     M.mk F ⟨k, F.map f x⟩ = M.mk F ⟨j, x⟩ :=
   M.mk_eq _ _ _ ⟨k, 𝟙 _, f, by simp⟩
 
