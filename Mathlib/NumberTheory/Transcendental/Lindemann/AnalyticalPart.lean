@@ -28,9 +28,9 @@ theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
       (s * (cexp (-(x • s)) * p.eval (x • s))) x := by
   have h₀ := (hasDerivAt_id' x).smul_const s
-  have h₁ := h₀.neg.cexp
+  have h₁ := h₀.fun_neg.cexp
   have h₂ := ((sumIDeriv p).hasDerivAt (x • s)).comp x h₀
-  convert (h₁.mul h₂).neg using 1
+  convert (h₁.mul h₂).fun_neg using 1
   nth_rw 1 [sumIDeriv_eq_self_add p]
   simp only [one_smul, eval_add, Function.comp_apply]
   ring
