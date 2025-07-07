@@ -67,7 +67,7 @@ theorem neg_ofLists (L R : List PGame) :
     · simp
     · rintro ⟨⟨a, ha⟩⟩ ⟨⟨b, hb⟩⟩ h
       have :
-        ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : HEq b c),
+        ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : b ≍ c),
           (b.down : ℕ) = ↑c.down := by
         rintro m n rfl b c
         simp only [heq_eq_eq]

@@ -3,6 +3,7 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.RelIso.Set
@@ -10,8 +11,12 @@ import Mathlib.Order.RelIso.Set
 /-!
 # Lexicographic order and order isomorphisms
 
-The main result in this file is the following: if `α` is a linear order and `x : α`, then `α` is
-order isomorphic to both `Iio x ⊕ₗ Ici x` and `Iic x ⊕ₗ Ioi x`.
+## Main declarations
+
+* `OrderIso.sumLexIioIci` and `OrderIso.sumLexIicIoi`: if `α` is a linear order and `x : α`,
+  then `α` is order isomorphic to both `Iio x ⊕ₗ Ici x` and `Iic x ⊕ₗ Ioi x`.
+* `Prod.Lex.prodUnique` and `Prod.Lex.uniqueProd`: `α ×ₗ β` is order isomorphic to one side if the
+  other side is `Unique`.
 -/
 
 open Set
@@ -135,3 +140,39 @@ theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = Sum.
   sumLexIicIoi_symm_apply_of_lt a.2
 
 end OrderIso
+
+/-! ### Degenerate products -/
+
+namespace Prod.Lex
+variable (α β : Type*)
+
+/-- Lexicographic product type with `Unique` type on the right is `OrderIso` to the left. -/
+def prodUnique [PartialOrder α] [Preorder β] [Unique β] : α ×ₗ β ≃o α where
+  toFun x := (ofLex x).1
+  invFun x := toLex (x, default)
+  left_inv x := x.rec fun (a, b) ↦ by simpa using Unique.default_eq b
+  right_inv x := by simp
+  map_rel_iff' {a b} := a.rec fun a ↦ b.rec fun b ↦ by
+    simpa [Prod.Lex.toLex_le_toLex] using le_iff_lt_or_eq
+
+variable {α β} in
+@[simp]
+theorem prodUnique_apply [PartialOrder α] [Preorder β] [Unique β] (x : α ×ₗ β) :
+    prodUnique α β x = (ofLex x).1 := rfl
+
+/-- Lexicographic product type with `Unique` type on the left is `OrderIso` to the right. -/
+def uniqueProd [Preorder α] [Unique α] [LE β] : α ×ₗ β ≃o β where
+  toFun x := (ofLex x).2
+  invFun x := toLex (default, x)
+  left_inv x := x.rec fun (a, b) ↦ by simpa using Unique.default_eq a
+  right_inv x := by simp
+  map_rel_iff' {a b} := a.rec fun a ↦ b.rec fun b ↦ by
+    have heq : a.1 = b.1 := Subsingleton.allEq _ _
+    simp [Prod.Lex.toLex_le_toLex, heq]
+
+variable {α β} in
+@[simp]
+theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
+    uniqueProd α β x = (ofLex x).2 := rfl
+
+end Prod.Lex
