@@ -14,19 +14,43 @@ register_option linter.tactic_analysis : Bool := {
 
 namespace Lean.Elab.ContextInfo
 
-/-- Run a `TermElabM` computation in the context of an infotree node. -/
-def runTermElabM {α} (ctx : ContextInfo) (lctx : LocalContext) (x : TermElabM α) : IO (α × MessageLog) := do
-  ctx.runMetaM lctx do
-    let test ← TermElabM.run' x
-    let msgs ← Core.getMessageLog
-    return (test, msgs)
+variable {α}
+
+/-- Embeds a `CoreM` action in `CommandElabM` by supplying the information stored in `info`.
+
+Copy of `ContextInfo.runCoreM` that looks up relevant information in the `CommandElabM` context.
+-/
+def runCoreM' (info : ContextInfo) (x : CoreM α) : CommandElabM α := do
+  -- We assume that this function is used only outside elaboration, mostly in the language server,
+  -- and so we can and should provide access to information regardless whether it is exported.
+  let env := info.env.setExporting false
+  let ctx ← read
+  /-
+    We must execute `x` using the `ngen` stored in `info`. Otherwise, we may create `MVarId`s and `FVarId`s that
+    have been used in `lctx` and `info.mctx`.
+  -/
+  let (x, newState) ←
+    (withOptions (fun _ => info.options) x).toIO
+      { currNamespace := info.currNamespace, openDecls := info.openDecls
+        fileName := ctx.fileName, fileMap := ctx.fileMap }
+      { env, ngen := info.ngen }
+  -- Migrate logs back to the main context.
+  modify fun state => { state with
+    messages := state.messages ++ newState.messages,
+    traceState.traces := state.traceState.traces ++ newState.traceState.traces }
+  return x
+
+def runMetaM' (info : ContextInfo) (lctx : LocalContext) (x : MetaM α) : CommandElabM α := do
+  (·.1) <$> info.runCoreM' (Lean.Meta.MetaM.run (ctx := { lctx := lctx }) (s := { mctx := info.mctx }) <|
+    -- Update the local instances, otherwise typeclass search would fail to see anything in the local context.
+    Meta.withLocalInstances (lctx.decls.toList.filterMap id) <| x)
 
 /-- Run a tactic computation in the context of an infotree node. -/
-def runTactic {α} (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId → MetaM α) : IO (α × MessageLog) := do
+def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId → MetaM α) : CommandElabM α := do
   if i.goalsBefore.all fun g => g != goal then panic!"ContextInfo.runTactic: `goal` must be an element of `i.goalsBefore`"
   let mctx := i.mctxBefore
   let lctx := (mctx.decls.find! goal).2
-  ctx.runTermElabM lctx do
+  ctx.runMetaM' lctx <| do
     -- Make a fresh metavariable because the original goal is already assigned.
     let type ← goal.getType
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
