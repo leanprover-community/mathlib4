@@ -65,90 +65,81 @@ section coordChange
 
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
 variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
-  [VectorBundle 𝕜 F E] [ContMDiffVectorBundle n F E IB] (hn : 1 ≤ n)
+  [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 variable {IB}
 
-include hn in
 theorem mdifferentiableOn_coordChangeL :
     MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
-  (contMDiffOn_coordChangeL e e').mdifferentiableOn (n := n) (hn := by simp [hn])
+  (contMDiffOn_coordChangeL e e').mdifferentiableOn le_rfl
 
-include hn in
 theorem mdifferentiableOn_symm_coordChangeL :
     MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) := by
   rw [inter_comm]
-  refine (mdifferentiableOn_coordChangeL e' e hn).congr fun b hb ↦ ?_
+  refine (mdifferentiableOn_coordChangeL e' e).congr fun b hb ↦ ?_
   rw [e.symm_coordChangeL e' hb]
 
 variable {e e'}
 
 theorem mdifferentiableAt_coordChangeL {x : B}
-    (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) (hn : 1 ≤ n) :
+    (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
-  (mdifferentiableOn_coordChangeL e e' hn).mdifferentiableAt <|
+  (mdifferentiableOn_coordChangeL e e').mdifferentiableAt <|
     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
 
 variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
 protected theorem MDifferentiableWithinAt.coordChangeL (hf : MDifferentiableWithinAt IM IB f s x)
-    (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) (hn : 1 ≤ n) :
+    (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableWithinAt IM 𝓘(𝕜, F →L[𝕜] F)
       (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
-  (mdifferentiableAt_coordChangeL he he' hn).comp_mdifferentiableWithinAt _ hf
+  (mdifferentiableAt_coordChangeL he he').comp_mdifferentiableWithinAt _ hf
 
-include hn in
 protected nonrec theorem MDifferentiableAt.coordChangeL
     (hf : MDifferentiableAt IM IB f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
-  MDifferentiableWithinAt.coordChangeL hf he he' hn
+  MDifferentiableWithinAt.coordChangeL hf he he'
   -- TODO: why no dot notation?
 
-include hn in
 protected theorem MDifferentiableOn.coordChangeL
     (hf : MDifferentiableOn IM IB f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     MDifferentiableOn IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
-  fun x hx ↦ (hf x hx).coordChangeL (he hx) (he' hx) hn
+  fun x hx ↦ (hf x hx).coordChangeL (he hx) (he' hx)
 
-include hn in
 protected theorem MDifferentiable.coordChangeL
     (hf : MDifferentiable IM IB f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     MDifferentiable IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) := fun x ↦
-  (hf x).coordChangeL hn (he x) (he' x)
+  (hf x).coordChangeL (he x) (he' x)
 
-include hn in
 protected theorem MDifferentiableWithinAt.coordChange
     (hf : MDifferentiableWithinAt IM IB f s x) (hg : MDifferentiableWithinAt IM 𝓘(𝕜, F) g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s x := by
-  refine ((hf.coordChangeL he he' hn).clm_apply hg).congr_of_eventuallyEq ?_ ?_
+  refine ((hf.coordChangeL he he').clm_apply hg).congr_of_eventuallyEq ?_ ?_
   · have : e.baseSet ∩ e'.baseSet ∈ 𝓝 (f x) :=
      (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨he, he'⟩
     filter_upwards [hf.continuousWithinAt this] with y hy
     exact (Trivialization.coordChangeL_apply' e e' hy (g y)).symm
   · exact (Trivialization.coordChangeL_apply' e e' ⟨he, he'⟩ (g x)).symm
 
-include hn in
 protected nonrec theorem MDifferentiableAt.coordChange
     (hf : MDifferentiableAt IM IB f x) (hg : MDifferentiableAt IM 𝓘(𝕜, F) g x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) x :=
-  MDifferentiableWithinAt.coordChange hn hf hg he he' -- TODO: why no dot notation?
+  MDifferentiableWithinAt.coordChange hf hg he he' -- TODO: why no dot notation?
 
-include hn in
 protected theorem MDifferentiableOn.coordChange
     (hf : MDifferentiableOn IM IB f s) (hg : MDifferentiableOn IM 𝓘(𝕜, F) g s)
     (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     MDifferentiableOn IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s := fun x hx ↦
-  (hf x hx).coordChange hn (hg x hx) (he hx) (he' hx)
+  (hf x hx).coordChange (hg x hx) (he hx) (he' hx)
 
-include hn in
 protected theorem MDifferentiable.coordChange
     (hf : MDifferentiable IM IB f) (hg : MDifferentiable IM 𝓘(𝕜, F) g)
     (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     MDifferentiable IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
-  (hf x).coordChange hn (hg x) (he x) (he' x)
+  (hf x).coordChange (hg x) (he x) (he' x)
 
 end coordChange
 
