@@ -153,7 +153,7 @@ theorem dimH_eq_iInf (s : Set X) : dimH s = ⨅ (d : ℝ≥0) (_ : μH[d] s = 0)
     simpa [hi, hj] using hausdorffMeasure_mono hij.le s
   · by_contra! h
     rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hdim_lt, hlt⟩
-    have h0 : μH[d'] s = 0 := by apply hausdorffMeasure_of_dimH_lt; exact hdim_lt
+    have h0 : μH[d'] s = 0 := hausdorffMeasure_of_dimH_lt hdim_lt
     exact hlt.not_ge (iInf₂_le d' h0)
 
 end Measurable
