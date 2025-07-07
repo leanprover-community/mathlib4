@@ -303,14 +303,6 @@ namespace Equiv.Perm
 
 variable {α : Type*}
 
-/-- The permutation group of `α` acts transitively on `α`. -/
-instance : IsPretransitive (Perm α) α := by
-  rw [isPretransitive_iff]
-  classical
-  intro x y
-  use Equiv.swap x y
-  simp only [Equiv.Perm.smul_def, Equiv.swap_apply_left x y]
-
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
