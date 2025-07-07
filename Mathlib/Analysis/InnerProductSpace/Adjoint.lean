@@ -295,7 +295,7 @@ end IsSelfAdjoint
 theorem _root_.isSelfAdjoint_starProjection [CompleteSpace E]
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     IsSelfAdjoint U.starProjection :=
-  U.orthogonalProjection_isSymmetric.isSelfAdjoint
+  U.starProjection_isSymmetric.isSelfAdjoint
 
 @[deprecated (since := "2025-07-05")] alias _root_.orthogonalProjection_isSelfAdjoint :=
   isSelfAdjoint_starProjection
@@ -320,7 +320,7 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
   have := IsIdempotentElem.hasOrthogonalProjection_range hp.isIdempotentElem
   refine ⟨this, Eq.symm ?_⟩
   ext x
-  refine Submodule.eq_orthogonalProjection_of_mem_orthogonal (by simp) ?_
+  refine Submodule.eq_starProjection_of_mem_orthogonal (by simp) ?_
   simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
     using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
 
