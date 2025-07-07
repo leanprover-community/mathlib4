@@ -612,7 +612,7 @@ instance : IsPreprimitive (Perm α) α :=
 
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
-theorem eq_top_if_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm α)}
+theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm α)}
     (hmt : IsMultiplyPretransitive G α (Nat.card α - 1)) : G = ⊤ := by
   have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card] at hmt
