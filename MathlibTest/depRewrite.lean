@@ -73,7 +73,7 @@ example (any : (α : Type) → α) (eq : (Nat × Nat) = Nat) :
 example (lt : 0 < n) :
     let A : Type := Fin n
     P (@id A ⟨0, lt⟩) := by
-  rewrite! [eq]
+  rewrite! +letAbs [eq]
   guard_target =ₐ
     let A : (x : Nat) → n = x → Type := fun x _ => Fin x
     P (@id (A m eq) ⟨0, eq ▸ lt⟩)
@@ -83,19 +83,18 @@ example (lt : 0 < n) :
 example (lt : 0 < n) :
     let x : Fin n := ⟨0, lt⟩
     P (@id (Fin n) x) := by
-  rewrite! [eq]
+  rewrite! +letAbs [eq]
   guard_target =ₐ
     let x : (x : Nat) → n = x → Fin x := fun x h => ⟨0, h ▸ lt⟩
     P (@id (Fin m) (x m eq))
   exact test_sorry
 
 -- let (proof)
--- TODO: fix this test
-set_option trace.depRewrite.cast true in
-set_option trace.depRewrite.visit true in
 example (lt' : 0 < n) : P (let lt : 0 < n := lt'; @Fin.mk n 0 (@id (0 < n) lt)) := by
-  rewrite! [eq]
-  guard_target = P (let lt : 0 < m := eq ▸ lt'; @Fin.mk m 0 (@id (0 < m) _))
+  rewrite! +letAbs [eq]
+  guard_target =ₐ P <|
+    let lt : (x : Nat) → n = x → 0 < x := fun _ h => h ▸ lt'
+    @Fin.mk m 0 (@id (0 < m) (lt m eq))
   exact test_sorry
 
 -- lam
@@ -220,7 +219,7 @@ theorem bool_dep_test
 -- Test that requires generalizing a `let` binding.
 theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) :
     let n := 1; P (f n rfl) := by
-  rewrite! (castMode := .all) [eq]
+  rewrite! +letAbs (castMode := .all) [eq]
   guard_target =
     let n : (x : Nat) → 1 = x → Nat := fun x _ => x
     P (f (n b eq) _)

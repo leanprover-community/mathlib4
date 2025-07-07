@@ -80,6 +80,21 @@ structure Config where
   /-- Determines which, if any, type-incorrect subterms
   should be casted along the equality that `depRewrite` is rewriting by. -/
   castMode : CastMode := .proofs
+  /-- Whether `let` bindings whose value contains the LHS
+  should be abstracted over the LHS.
+  This is off by default because it generalizes the types of these bindings.
+
+  For example, consider `f : (n : Nat) → n = 1 → Nat`.
+  In `let n := 1; f n (@rfl Nat n)`,
+  `@rfl Nat n : n = 1` typechecks by unfolding `n`.
+  Naïvely rewriting this by `eq : 1 = k` produces `let n := k; f n (@rfl Nat n)`
+  which is not type-correct because `n ≡ 1` is no longer definitionally true.
+  To solve this, we explicitly encode how `n` depends on the LHS:
+  replace the binding by `let n' : (x : Nat) → 1 = x → Nat := fun x _ => x`
+  and substitute `n' k eq` for `n` in the body `f n (@rfl Nat n)`.
+  This enables further rewrites that correct mismatched types. -/
+  -- TODO: Investigate other solutions to this problem.
+  letAbs : Bool := false
 
 /-- `ReaderT` context for `M`. -/
 structure Context where
@@ -227,9 +242,10 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     so that our casting mechanism can fix occurrences of `n` in the body.
     We generalize to `n := fun x h => vup(x,h)`
     and instantiate the body with `n x h`.
-
-    TODO: this results in a different let-binding. Can we restore a monomorphic let-binding?
     -/
+    if !ctx.cfg.letAbs then
+      throwError "Will not rewrite the value of{indentD ""}let {n} : {t} := {v}
+Use `rw! +letAbs` if you want to rewrite in `let`-bound values."
     let lupTy ← mkForallFVars #[ctx.x, ctx.h] tup
     let lup ← mkLambdaFVars #[ctx.x, ctx.h] vup
     withLetDecl n lupTy lup fun r => do
