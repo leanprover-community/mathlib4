@@ -591,13 +591,13 @@ theorem contMDiff_totalSpace_weighted_sum_of_local_sections
     ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
       (fun x ↦ (TotalSpace.mk x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x)) : TotalSpace F_fiber V)) := by
   intro x₀
-  apply (Bundle.contMDiffAt_section _ x₀).mpr
+  apply (Bundle.contMDiffAt_section x₀).mpr
   let e₀ := trivializationAt F_fiber V x₀
   apply ContMDiffAt.congr_of_eventuallyEq
   · apply ρ.contMDiffAt_finsum
     · intro j hx₀
-      rw [← contMDiffAt_section (s_loc j)]
-      exact h_smooth_s_loc j |>.contMDiffAt <| (hU_isOpen j).mem_nhds <| hρ_subord j hx₀
+      have := h_smooth_s_loc j |>.contMDiffAt <| (hU_isOpen j).mem_nhds <| hρ_subord j hx₀
+      rwa [Bundle.contMDiffAt_section] at this
   · have h_base : {x : M | x ∈ e₀.baseSet} ∈ 𝓝 x₀ :=
       e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
     filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
@@ -636,7 +636,7 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
   have U_op : ∀ x, IsOpen (U x) := fun x ↦ isOpen_interior
   have hU_covers_univ : univ ⊆ ⋃ x, U x := by
     intro x_pt _
-    simp only [mem_iUnion, mem_univ]
+    simp only [mem_iUnion]
     exact ⟨x_pt, mem_interior_iff_mem_nhds.mpr (h_nhds x_pt)⟩
   -- Obtain a smooth partition of unity subordinate to this open cover.
   obtain ⟨ρ, hρU⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ,
@@ -693,8 +693,8 @@ theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   let ⟨s, hs⟩ := exists_contMDiffOn_section_forall_mem_convex_of_local I (fun _ ↦ F) t ht
     (fun x₀ ↦ let ⟨U, hU, g, hgs, hgt⟩ := Hloc x₀
-      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section _ _ _ |>.mpr <| hgs y hy, hgt⟩)
-  ⟨⟨s, (Bundle.contMDiffAt_section _ _ |>.mp <| s.contMDiff ·)⟩, hs⟩
+      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section |>.mpr <| hgs y hy, hgt⟩)
+  ⟨⟨s, (Bundle.contMDiffAt_section _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
