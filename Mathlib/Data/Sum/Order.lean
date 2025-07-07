@@ -335,8 +335,10 @@ theorem not_inr_lt_inl [LT α] [LT β] {a : α} {b : β} : ¬toLex (inr b) < toL
 
 /-- `toLex` promoted to a `RelIso` between `<` relations. -/
 def toLexRelIsoLT [LT α] [LT β] :
-    Sum.Lex (· < · : α → α → Prop) (· < · : β → β → Prop) ≃r (· < · : α ⊕ₗ β → _ → _) :=
-  RelIso.refl _
+    Sum.Lex (· < · : α → α → Prop) (· < · : β → β → Prop) ≃r (· < · : α ⊕ₗ β → _ → _) where
+  toFun := toLex
+  invFun := ofLex
+  map_rel_iff' := .rfl
 
 @[simp]
 theorem toLexRelIsoLT_coe [LT α] [LT β] : ⇑(toLexRelIsoLT (α := α) (β := β)) = toLex :=
@@ -348,8 +350,10 @@ theorem toLexRelIsoLT_symm_coe [LT α] [LT β] : ⇑(toLexRelIsoLT (α := α) (�
 
 /-- `toLex` promoted to a `RelIso` between `≤` relations. -/
 def toLexRelIsoLE [LE α] [LE β] :
-    Sum.Lex (· ≤ · : α → α → Prop) (· ≤ · : β → β → Prop) ≃r (· ≤ · : α ⊕ₗ β → _ → _) :=
-  RelIso.refl _
+    Sum.Lex (· ≤ · : α → α → Prop) (· ≤ · : β → β → Prop) ≃r (· ≤ · : α ⊕ₗ β → _ → _) where
+  toFun := toLex
+  invFun := ofLex
+  map_rel_iff' := .rfl
 
 @[simp]
 theorem toLexRelIsoLE_coe [LE α] [LE β] : ⇑(toLexRelIsoLE (α := α) (β := β)) = toLex :=
