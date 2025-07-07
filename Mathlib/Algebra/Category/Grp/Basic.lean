@@ -223,10 +223,6 @@ def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful wh
   preimage f := ofHom f.hom
 
 @[to_additive]
-instance : (forget₂ Grp.{u} MonCat).Faithful :=
-  fullyFaithfulForget₂ToMonCat.faithful
-
-@[to_additive]
 instance : (forget₂ Grp.{u} MonCat).Full :=
   fullyFaithfulForget₂ToMonCat.full
 
@@ -435,10 +431,6 @@ instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
   "The forget functor from additive commutative groups to additive groups is fully faithful."]
 def fullyFaithfulForget₂ToGrp : (forget₂ CommGrp.{u} Grp).FullyFaithful where
   preimage f := ofHom f.hom
-
-@[to_additive]
-instance : (forget₂ CommGrp.{u} Grp).Faithful :=
-  fullyFaithfulForget₂ToGrp.faithful
 
 @[to_additive]
 instance : (forget₂ CommGrp.{u} Grp).Full :=
