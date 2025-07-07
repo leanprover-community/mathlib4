@@ -45,19 +45,62 @@ the left hand side at `X` is `df(X x)`, where `f := ⟨Y, Z⟩`. -/
 variable {X X' Y Y' Z Z' : Π x : M, TangentSpace I x}
 
 /-- The scalar product of two vector fields -/
-noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ := fun x ↦ inner ℝ (X x) (Y x)
+noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ :=
+  fun x ↦ inner ℝ (X x) (Y x)
 -- Riemannian.lean shows that `product` is C^k if X and Y are
 
 local notation "⟪" X ", " Y "⟫" => product I X Y
 
+section product
+
+omit [IsManifold I ∞ M]
+
+variable (X Y) in
+lemma product_swap : ⟪Y, X⟫ = ⟪X, Y⟫ := by
+  ext x
+  apply real_inner_comm
+
 variable (X) in
 @[simp]
-lemma product_zero_right : ⟪X, 0⟫ = 0 := sorry
+lemma product_zero_left : ⟪0, X⟫ = 0 := by
+  ext x
+  simp [product]
 
 @[simp]
-lemma product_zero_left : ⟪0, X⟫ = 0 := sorry
+lemma product_zero_right : ⟪X, 0⟫ = 0 := by rw [product_swap, product_zero_left]
 
-lemma product_sub_right : ⟪X, Y - Z⟫ = ⟪X, Y⟫ - ⟪X, Z⟫ := sorry
+variable (X X' Y) in
+lemma product_add_left : ⟪X + X', Y⟫ = ⟪X, Y⟫ + ⟪X', Y⟫ := by
+  ext x
+  simp [product, InnerProductSpace.add_left]
+
+variable (X Y Y') in
+lemma product_add_right : ⟪X, Y + Y'⟫ = ⟪X, Y⟫ + ⟪X, Y'⟫ := by
+  rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left]
+
+-- product_neg_left,right
+
+variable (X X' Y) in
+lemma product_sub_left : ⟪X - X', Y⟫ = ⟪X, Y⟫ - ⟪X', Y⟫ := by
+  ext x
+  simp [product, inner_sub_left]
+
+variable (X Y Y') in
+lemma product_sub_right : ⟪X, Y - Y'⟫ = ⟪X, Y⟫ - ⟪X, Y'⟫ := by
+  ext x
+  simp [product, inner_sub_right]
+
+variable (X Y) in
+lemma product_smul_left (f : M → ℝ) : product I (f • X) Y = f • product I X Y := by
+  ext x
+  simp [product, real_inner_smul_left]
+
+variable (X Y) in
+lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product I X Y := by
+  ext x
+  simp [product, real_inner_smul_right]
+
+end product
 
 namespace CovariantDerivative
 
@@ -117,25 +160,6 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   -- solve for ⟪cov X Y, Z⟫
   sorry
 
-variable (X Y Y') in
-lemma product_add : product I X (Y + Y') = product I X Y + product I X Y' := sorry
-
-variable (X Y) in
-lemma product_smul_left (f : M → ℝ) : product I (f • X) Y = f • product I X Y := by
-  ext x
-  simp [product, real_inner_smul_left]
-
-variable (X Y) in
-lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product I X Y := by
-  ext x
-  simp [product, real_inner_smul_right]
-
-@[simp]
-lemma product_add_left_apply (x : M) : product I (X + X') Y x = product I X Y x + product I X' Y x := sorry
-
-@[simp]
-lemma product_add_right_apply (x : M) : product I X (Y + Y') x = product I X Y x + product I X Y' x := sorry
-
 variable (X Y Z Z') in
 lemma rhs_aux_addZ : rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
   ext x
@@ -184,7 +208,7 @@ lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
     ext x
     simp [VectorField.mlieBracket_add_left (W := Y) (hZ x) (hZ' x)]
   simp [h1, h2, rhs_aux_addX, rhs_aux_addY, rhs_aux_addZ]
-  module
+  sorry -- module
 
 lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, TangentSpace I x}
     (hf : MDifferentiable% f) (hZ : MDifferentiable% (T% Z)) :
