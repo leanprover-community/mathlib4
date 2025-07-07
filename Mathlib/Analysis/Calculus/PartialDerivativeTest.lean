@@ -41,20 +41,17 @@ noncomputable def hessianLinearCompanion {V : Type*} [NormedAddCommGroup V]
   toFun := fun b => iteratedFDeriv ℝ 2 f x₀ ![a,b]
                   + iteratedFDeriv ℝ 2 f x₀ ![b,a]
   map_add' := fun b c => by
-    have h_add := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
-    have h₀ := h_add ![b, a] 0 b c
-    have h₁ := h_add ![a, b] 1 b c
+    have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![b, a] 0 b c
+    have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![a, b] 1 b c
     repeat (
     simp only [Fin.isValue, update₁, Nat.succ_eq_add_one, Nat.reduceAdd,
     MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe] at h₁;
     simp only [Fin.isValue, update₀, Nat.succ_eq_add_one, Nat.reduceAdd,
         MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe] at h₀)
     linarith
-  map_smul' := by
-    intro m x
-    have h_smul := (iteratedFDeriv ℝ 2 f x₀).map_update_smul'
-    have h₀ := h_smul ![x,a] 0 m x
-    have h₁ := h_smul ![a,x] 1 m x
+  map_smul' := fun m x => by
+    have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,a] 0 m x
+    have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![a,x] 1 m x
     repeat rw [update₀] at h₀; rw [update₁] at h₁
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
     ContinuousMultilinearMap.coe_coe, smul_eq_mul, RingHom.id_apply] at h₀ h₁ ⊢
@@ -65,10 +62,9 @@ noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
     [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : LinearMap.BilinMap ℝ V ℝ := {
   toFun := hessianLinearCompanion f x₀
   map_add' := fun x y => by
-    have had := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
     ext i
-    have had₀ := had ![x,i] 0 x y
-    have had₁ := had ![i,i] 1 x y
+    have had₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![x,i] 0 x y
+    have had₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![i,i] 1 x y
     repeat rw [update₀] at had₀
     repeat rw [update₁] at had₁
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
@@ -76,9 +72,8 @@ noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
         LinearMap.add_apply] at had₀ had₁ ⊢
     exact (Mathlib.Tactic.Ring.add_pf_add_overlap had₀.symm had₁.symm).symm
   map_smul' := fun m x => LinearMap.ext_iff.mpr <| fun x₁ => by
-    have hsm := (iteratedFDeriv ℝ 2 f x₀).map_update_smul'
-    have hsm₀ := hsm ![x,x₁] 0 m x
-    have hsm₁ := hsm ![x₁,x] 1 m x
+    have hsm₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,x₁] 0 m x
+    have hsm₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x₁,x] 1 m x
     have h := CancelDenoms.add_subst hsm₀.symm hsm₁.symm
     repeat rw [update₀, update₁] at h
     exact h.symm}
@@ -88,10 +83,9 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : QuadraticMap ℝ V ℝ := {
   toFun := fun y => iteratedFDeriv ℝ 2 f x₀ ![y,y]
   exists_companion' := by
-    have hsm := (iteratedFDeriv ℝ 2 f x₀).map_update_smul'
-    have had := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
     use hessianBilinearCompanion f x₀
     intro x y
+    have had := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
     have had₀ := had ![x, x + y] 0 x y
     have had₁ := had ![x,x] 1 x y
     have had₂ := had ![y,x] 1 x y
@@ -100,10 +94,8 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     ContinuousMultilinearMap.coe_coe, hessianBilinearCompanion, LinearMap.coe_mk, AddHom.coe_mk,
     hessianLinearCompanion] at had₀ had₁ had₂ ⊢
     linarith
-  toFun_smul := by
+  toFun_smul := fun u v => by
     have hsm := (iteratedFDeriv ℝ 2 f x₀).map_update_smul'
-    have had := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
-    intro u v
     have hsm₀ := hsm ![v, v] 0 u v
     have hsm₁ := hsm ![u • v,v] 1 u v
     repeat (
@@ -119,7 +111,7 @@ lemma sphere_min_of_pos_of_nonzero {V : Type*} [NormedAddCommGroup V] [NormedSpa
     (hf' : ∀ x ≠ 0, f x > 0) : ∃ x : Metric.sphere 0 1, ∀ y : Metric.sphere 0 1, f x.1 ≤ f y.1 := by
   have h₀ : HasCompactSupport fun (x : (Metric.sphere (0:V) 1)) => f x := by
     rw [hasCompactSupport_def, Function.support]
-    have : @setOf (Metric.sphere (0:V) (1:ℝ)) (fun x => f x.1 ≠ 0) = Set.univ := by
+    have : {x : Metric.sphere (0:V) (1:ℝ) | f x.1 ≠ 0} = Set.univ := by
       apply subset_antisymm
       simp only [ne_eq, Set.subset_univ]
       intro a ha
@@ -144,26 +136,22 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap {V : Type*}
     (g : ContinuousMultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) : V →L[ℝ] V →L[ℝ] ℝ := {
   toFun := fun x => {
     toFun := fun y => g.toFun ![x,y]
-    map_add' := by
-      intro a b
+    map_add' := fun a b => by
       have := g.map_update_add ![x,b] 1 a b
       repeat rw [update₁] at this
       exact this
-    map_smul' := by
-      intro m a
+    map_smul' := fun m a => by
       have := g.map_update_smul ![x,a] 1 m a
       repeat rw [update₁] at this
       exact this
     cont := Continuous.comp' g.cont <| Continuous.matrixVecCons continuous_const
             <| Continuous.matrixVecCons continuous_id' continuous_const}
-  map_add' := by
-    intro a b
+  map_add' := fun a b => by
     ext c
     have := g.map_update_add ![a,c] 0 a b
     repeat rw [update₀] at this
     exact this
-  map_smul' := by
-    intro c x
+  map_smul' := fun c x => by
     ext y
     have := g.map_update_smul ![x,y] 0 c x
     repeat rw [update₀] at this
@@ -197,7 +185,7 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
       Subtype.exists, exists_prop] at this
     obtain ⟨m,hm⟩ := this
     have := hm.2
-    use (iteratedFDeriv ℝ 2 f x₀) ![m, m]
+    use iteratedFDeriv ℝ 2 f x₀ ![m, m]
     have := hf' m (by intro hc;subst hc;simp at hm)
     rw [iteratedFDerivQuadraticMap] at this
     constructor
@@ -219,23 +207,18 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
           simp only [mul_one, MultilinearMap.toFun_eq_coe, ContinuousMultilinearMap.coe_coe,
             ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
         have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
-          = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
+             = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
           rw [mul_comm, iteratedFDeriv_succ_apply_left, iteratedFDeriv_succ_apply_left]
           simp only [Fin.isValue, Matrix.cons_val_zero, Nat.reduceAdd, map_smul,
             ContinuousMultilinearMap.smul_apply, smul_eq_mul, mul_eq_mul_left_iff, inv_eq_zero,
             norm_eq_zero]
           left
           congr
-        rw [this]
-        have h₄ : (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] * ‖u‖⁻¹
-          = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, ‖u‖⁻¹ • u] := by
-          rw [mul_comm]
-          have := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
-          repeat rw [update₁] at this
-          simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
-            ContinuousMultilinearMap.coe_coe, smul_eq_mul] at this ⊢
-          rw [this]
-        rw [h₄]
+        have h₄ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
+        repeat rw [update₁] at h₄
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
+          ContinuousMultilinearMap.coe_coe, smul_eq_mul] at h₄
+        rw [this, mul_comm, ← h₄]
         exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
   use 1
   constructor
@@ -245,16 +228,14 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     rw [Subsingleton.eq_zero u]
     simp
 
-/-- Higher Taylor coefficient. -/
-noncomputable def higher_taylor_coeff {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    (f : V → ℝ) (x₀ : V) (i : ℕ) (x : V) :=
-  (1 / Nat.factorial i : ℝ) * (iteratedFDeriv ℝ i f x₀ fun _ => x - x₀)
+/-- Taylor coefficient. -/
+noncomputable def taylor_term {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ)
+    (x₀ : V) (i : ℕ) (x : V) := 1 / i.factorial * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀
 
-
-/-- Second partial derivative test in terms of `higher_taylor`. -/
+/-- Second partial derivative test in terms of `taylor_term`. -/
 theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
     [InnerProductSpace ℝ V] [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
-    (h : (fun x => |f x - (∑ i ∈ Finset.range 3, higher_taylor_coeff f x₀ i) x|)
+    (h : (fun x => |f x - (∑ i ∈ Finset.range 3, taylor_term f x₀ i) x|)
         =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2) (h₀ : gradient f x₀ = 0)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
   have ⟨C,hC⟩ := coercive_of_posdef hf
@@ -265,9 +246,9 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
   simp only [continuousBilinearMap_of_continuousMultilinearMap, MultilinearMap.toFun_eq_coe,
     ContinuousMultilinearMap.coe_coe, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
     AddHom.coe_mk] at h₄
-  have h₃ : ∑ x_1 ∈ Finset.range 3, higher_taylor_coeff f x₀ x_1 x
-   = higher_taylor_coeff f x₀ 0 x + higher_taylor_coeff f x₀ 1 x +
-     higher_taylor_coeff f x₀ 2 x := by
+  have h₃ : ∑ y ∈ Finset.range 3, taylor_term f x₀ y x
+   = taylor_term f x₀ 0 x + taylor_term f x₀ 1 x +
+     taylor_term f x₀ 2 x := by
     repeat rw [Finset.range_succ]
     simp only [Finset.range_zero, insert_empty_eq, Finset.mem_insert, OfNat.ofNat_ne_one,
       Finset.mem_singleton, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, Finset.sum_insert,
@@ -275,7 +256,7 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
     linarith
   simp only [Finset.sum_apply, Real.norm_eq_abs, abs_abs, norm_pow]
   rw [h₃]
-  simp only [higher_taylor_coeff, Nat.factorial_zero, Nat.cast_one, ne_eq, one_ne_zero,
+  simp only [taylor_term, Nat.factorial_zero, Nat.cast_one, ne_eq, one_ne_zero,
     not_false_eq_true, div_self, iteratedFDeriv_zero_apply, one_mul, Nat.factorial_one,
     iteratedFDeriv_one_apply, map_sub, Nat.factorial_two, Nat.cast_ofNat, one_div, abs_norm]
   intro h₁
@@ -288,27 +269,20 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
   rw [mul_assoc,show ![x - x₀, x - x₀] = fun _ => x - x₀ by
     ext i; fin_cases i <;> simp] at h₄
   rw [(Lean.Grind.Semiring.pow_two ‖x - x₀‖).symm] at h₄
-  have h₅ : - (f x - (f x₀ + 2⁻¹ * (iteratedFDeriv ℝ 2 f x₀) fun x_1 => x - x₀))
+  have h₅ : - (f x - (f x₀ + 2⁻¹ * (iteratedFDeriv ℝ 2 f x₀) fun _ => x - x₀))
     ≤ (C / 2) * ‖x - x₀‖ ^ 2 := le_of_max_le_right h₁
   ring_nf at h₅
   linarith
 
-/-- `higher_taylor_coeff` expresses power series correctly. -/
-lemma eliminate_higher_taylor_coeff {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+/-- `taylor_term` expresses power series correctly. -/
+lemma eliminate_taylor_term {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [ContinuousConstSMul ℝ V] {f : V → ℝ} (x₀ x : V) {r : NNReal}
     (p : FormalMultilinearSeries ℝ V ℝ) (h : HasFPowerSeriesOnBall f p x₀ r) (k : ℕ) :
-    p k (fun _ => x - x₀) = higher_taylor_coeff f x₀ k x := by
-  have h₀ := @HasFPowerSeriesOnBall.factorial_smul ℝ _
-    V _ _ ℝ _ _ p f x₀ r h (x - x₀) _ k
-  unfold higher_taylor_coeff
-  rw [← h₀]
-  norm_num
-  rw [← smul_eq_mul, ← smul_eq_mul, ← smul_assoc]
-  have : (Nat.factorial k : ℝ)⁻¹ • (Nat.factorial k : ℝ) = 1 := by
-    ring_nf
-    field_simp
-  rw [this]
-  simp
+    p k (fun _ => x - x₀) = taylor_term f x₀ k x := by
+  unfold taylor_term
+  rw [← HasFPowerSeriesOnBall.factorial_smul h (x - x₀) k]
+  ring_nf
+  field_simp
 
 theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {f : V → ℝ} {x₀ : V} {p : FormalMultilinearSeries ℝ V ℝ}
@@ -355,8 +329,7 @@ theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [N
        ≤ (C * (a * (2 / r)) ^ 3) * (D / (C * (a * (2 / r)) ^ 3)) := by
     refine (mul_le_mul_iff_of_pos_left ?_).mpr <| le_of_lt (by
         convert this using 1
-        exact mem_sphere_iff_norm.mp rfl
-    )
+        exact mem_sphere_iff_norm.mp rfl)
     aesop
   convert this using 2
   field_simp
@@ -402,12 +375,12 @@ theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductS
     (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
   by_cases H : Nontrivial V
-  · have : (fun x => |f x - ∑ x_1 ∈ Finset.range (2 + 1), (p x_1) fun x_2 => x - x₀|)
-       = (fun x => |f x - ∑ x_1 ∈ Finset.range (2 + 1), higher_taylor_coeff f x₀ x_1 x|) := by
+  · have : (fun x => |f x - ∑ y ∈ Finset.range 3, p y fun _ => x - x₀|)
+         = (fun x => |f x - ∑ y ∈ Finset.range 3, taylor_term f x₀ y x|) := by
       ext
       congr
       ext
-      rw [eliminate_higher_taylor_coeff x₀ _ p h₁]
+      rw [eliminate_taylor_term x₀ _ p h₁]
     exact isLocalMin_of_PosDef_of_Littleo (this ▸ littleO_of_powerseries hr h₁) h₀ hf
   · have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
     simp [IsLocalMin, IsMinFilter]
