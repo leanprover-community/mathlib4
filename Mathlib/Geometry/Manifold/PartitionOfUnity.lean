@@ -58,7 +58,7 @@ smooth bump function, partition of unity
 
 universe uι uE uH uM uF
 
-open Bundle Function Filter Module Set
+open Function Filter Module Set
 open scoped Topology Manifold ContDiff
 
 noncomputable section
