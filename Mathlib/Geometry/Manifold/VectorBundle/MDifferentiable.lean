@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-
 
 /-!
 # Differentiability of functions in vector bundles
@@ -277,7 +276,7 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
   rw [Trivialization.mdifferentiableAt_snd_comp_iff₂ IB
     (FiberBundle.mem_trivializationAt_proj_source) he hf]
 
-/-- Characterization of differentiable sections a vector bundle in terms
+/-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within at set. -/
 theorem Trivialization.mdifferentiableWithinAt_section_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
@@ -332,20 +331,12 @@ variable {𝕜 B B' F M : Type*} {E : B → Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
   [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-  (I : ModelWithCorners 𝕜 EB HB) -- (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
-  -- [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
-  -- {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  -- {n : ℕ∞}
-
-variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
-
-variable [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
-
-variable {I V}
+  {I : ModelWithCorners 𝕜 EB HB}
+  [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
+  [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
 variable {f : B → 𝕜} {a : 𝕜} {s t : Π x : B, E x} {u : Set B} {x₀ : B}
 
-omit [ContMDiffVectorBundle 1 F E I] in
 lemma mdifferentiableWithinAt_add_section
     (hs : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
     (ht : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t x)) u x₀) :
@@ -356,11 +347,9 @@ lemma mdifferentiableWithinAt_add_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds <|
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · intro x hx
-      apply (e.linear 𝕜 hx).1
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1
+    · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
+  · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
 
-omit [ContMDiffVectorBundle 1 F E I] in
 lemma mdifferentiableAt_add_section
     (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀)
     (ht : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t x)) x₀) :
@@ -389,9 +378,8 @@ lemma mdifferentiableWithinAt_neg_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds <|
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · intro x hx
-      apply (e.linear 𝕜 hx).map_neg
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg
+    · exact fun x hx ↦ (e.linear 𝕜 hx).map_neg ..
+  · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg ..
 
 lemma mdifferentiableAt_neg_section
     (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
@@ -445,8 +433,7 @@ lemma MDifferentiableWithinAt.smul_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds <|
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · intro x hx
-      apply (e.linear 𝕜 hx).2
+    · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
 lemma MDifferentiableAt.smul_section (hf : MDifferentiableAt I 𝓘(𝕜) f x₀)
@@ -492,7 +479,7 @@ lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι �
       (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u x₀ := by
   classical
   induction s using Finset.induction_on with
-  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt (n := 1) le_rfl
+  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt le_rfl
   | insert i s hi h =>
     simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs i) h
 
