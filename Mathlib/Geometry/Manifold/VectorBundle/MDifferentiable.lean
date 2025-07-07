@@ -61,6 +61,22 @@ theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
         (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f
 
+/-- Characterization of differentiable sections of a vector bundle at a point within a set
+in terms of the preferred trivialization at that point. -/
+theorem mdifferentiableWithinAt_section (s : Π b, E b) {u : Set B} {b₀ : B} :
+    MDifferentiableWithinAt IB (IB.prod 𝓘(𝕜, F)) (fun b ↦ TotalSpace.mk' F b (s b)) u b₀ ↔
+      MDifferentiableWithinAt IB 𝓘(𝕜, F) (fun b ↦ (trivializationAt F E b₀ (s b)).2) u b₀ := by
+  rw [mdifferentiableWithinAt_totalSpace]
+  change MDifferentiableWithinAt _ _ id _ _ ∧ _ ↔ _
+  simp [mdifferentiableWithinAt_id]
+
+/-- Characterization of differentiable sections of a vector bundle at a point within a set
+in terms of the preferred trivialization at that point. -/
+theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
+    MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun b ↦ TotalSpace.mk' F b (s b)) b₀ ↔
+      MDifferentiableAt IB 𝓘(𝕜, F) (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
+
 namespace Bundle
 
 variable (E) {IB}
