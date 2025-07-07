@@ -118,7 +118,7 @@ end Units
 
 section MonoidWithZeroHom
 
-open MonoidWithZeroHom WithZero
+open MonoidWithZeroHom
 
 /-- The inclusion of `valueGroup₀ f` into `B` a a multiplicative homomorphism. -/
 def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
