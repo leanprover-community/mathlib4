@@ -40,30 +40,27 @@ initialize
 
 /-- See `Config.castMode`. -/
 inductive CastMode where
-  /-- Don't insert any casts. -/
-  | none
   /-- Only insert casts on proofs.
 
   In this mode, it is *not* permitted to cast subterms of proofs that are not themselves proofs.
   For example, given `y : Fin n`, `P : Fin n → Prop`, `p : (x : Fin n) → P x` and `eq : n = m`,
   we will not rewrite `p y : P y` to `p (eq ▸ y) : P (eq ▸ y)`. -/
   | proofs
-  -- TODO: `proofs` plus "good" user-defined casts such as `Fin.cast`.
+  /- TODO: `proofs` plus "good" user-defined casts such as `Fin.cast`.
+  See https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/dependent.20rewrite.20tactic/near/497185687 -/
   -- | userDef
-  /-- Insert as many `Eq.rec`s as necessary. -/
+  /-- Insert casts whenever necessary. -/
   | all
 deriving BEq
 
 instance : ToString CastMode := ⟨fun
-  | .none => "none"
   | .proofs => "proofs"
   | .all => "all"⟩
 
 /-- Embedding of `CastMode` into naturals. -/
 def CastMode.toNat : CastMode → Nat
-  | .none => 0
-  | .proofs => 1
-  | .all => 2
+  | .proofs => 0
+  | .all => 1
 
 instance : LE CastMode where
   le a b := a.toNat ≤ b.toNat
@@ -112,8 +109,6 @@ def checkCastAllowed (e t : Expr) (castMode : CastMode) : MetaM Unit := do
   let throwMismatch : Unit → MetaM Unit := fun _ => do
     throwError "Will not cast{indentExpr e}\nin cast mode '{castMode}'. \
 If inserting more casts is acceptable, use `(castMode := .all)`."
-  if castMode == .none then
-    throwMismatch ()
   if castMode == .proofs && !(← isProp t) then
     throwMismatch ()
 
