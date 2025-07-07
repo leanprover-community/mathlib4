@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Projection to a subspace
@@ -424,6 +425,12 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
       coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 
 end IsProj
+
+theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddCommGroup E] [Module S E]
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
+  le_antisymm
+    (LinearMap.range_le_ker_iff.mpr hp.one_sub_mul_self)
+    fun x hx ↦ ⟨x, by simpa [sub_eq_zero, eq_comm (a := x)] using hx⟩
 
 end LinearMap
 
