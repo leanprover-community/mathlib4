@@ -634,13 +634,10 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
       simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
 
 @[simp]
-theorem mem_divisors : ∀ {z x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := by
-  rintro z x
+theorem mem_divisors {z x} : x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := by
   rw [ne_eq, ← natAbs_eq_zero (a := z), ← natAbs_dvd_natAbs, ← Nat.mem_divisors]
   simp only [divisors, disjUnion_eq_union, mem_union]
-  match x with
-  | (n : ℕ) => simp
-  | (negSucc n) => simp
+  obtain ⟨n, rfl | rfl⟩ := x.eq_nat_or_neg <;> simp
 
 @[simp]
 theorem divisors_zero : divisors 0 = ∅ := by
@@ -648,7 +645,7 @@ theorem divisors_zero : divisors 0 = ∅ := by
   simp
 
 @[simp]
-theorem neg_divisors_eq_divisors : (-z).divisors = z.divisors := by
+theorem divisors_neg : (-z).divisors = z.divisors := by
   ext x
   simp
 
@@ -656,19 +653,13 @@ theorem neg_mem_divisors : -x ∈ z.divisors ↔ x ∈ z.divisors := by
   simp
 
 theorem abs_le_abs_of_mem_divisors (h : x ∈ z.divisors) : |x| ≤ |z| := by
-  simp at h
-  wlog hx : 0 ≤ x generalizing x
-  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_ge hx))
-  wlog hz : 0 ≤ z generalizing z
-  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_ge hz))
-  rw [abs_eq_self.mpr hx, abs_eq_self.mpr hz]
-  exact le_of_dvd (lt_of_le_of_ne hz (Ne.symm h.right)) h.left
+  simp only [← natCast_natAbs]
+  rw [mem_divisors] at h
+  exact ofNat_le.mpr <| natAbs_le_of_dvd_ne_zero h.1 h.2
 
 theorem filter_dvd_eq_divisors (h : z ≠ 0) : {x ∈ Icc (-|z|) |z| | x ∣ z} = z.divisors := by
   ext x
-  simp [and_comm, h]
-  rw [and_comm, ← abs_le]
-  exact fun hxz ↦ abs_le_abs_of_mem_divisors (by simp [hxz, h])
+  simpa [h, ← abs_le] using fun hxz ↦ abs_le_abs_of_mem_divisors (mem_divisors.mpr ⟨hxz, h⟩)
 
 theorem one_mem_divisors : 1 ∈ divisors z ↔ z ≠ 0 := by simp
 
@@ -678,9 +669,8 @@ theorem mem_divisors_self (h : z ≠ 0) : z ∈ z.divisors := by simpa
 
 theorem neg_mem_divisors_self (h : z ≠ 0) : -z ∈ z.divisors := by simpa
 
-theorem dvd_of_mem_divisors (h : x ∈ z.divisors) : x ∣ z := by
-  simp at h
-  exact h.left
+theorem dvd_of_mem_divisors (h : x ∈ z.divisors) : x ∣ z :=
+  (mem_divisors.mp h).left
 
 @[simp]
 lemma nonempty_divisors : z.divisors.Nonempty ↔ z ≠ 0 :=
@@ -698,14 +688,14 @@ theorem dvd_of_divisors_subset (hzero : x ≠ 0) (h : divisors x ⊆ divisors z)
 
 @[simp]
 theorem divisors_eq : x.divisors = y.divisors ↔ |x| = |y| := by
-  obtain rfl | hx := Decidable.eq_or_ne x 0
-  · rw [abs_zero, divisors_zero, eq_comm, divisors_eq_empty, eq_comm (a := 0), abs_eq_zero]
-  · constructor <;> rintro h
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · rw [subset_antisymm_iff] at h
-      refine dvd_antisymm (by simp) (by simp)
-        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset hx h.left)
-        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset ?_ h.right)
-      exact nonempty_divisors.mp <| (nonempty_divisors.mpr hx).mono h.left
+      refine dvd_antisymm (abs_nonneg x) (abs_nonneg y)
+        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset ?_ h.left)
+        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset hy h.right)
+      exact nonempty_divisors.mp <| (nonempty_divisors.mpr hy).mono h.right
     · obtain rfl | rfl := abs_eq_abs.mp h <;> simp
 
 @[simp]
@@ -814,25 +804,22 @@ lemma divisorsAntidiag_ofNat (n : ℕ) :
           simp +contextual [disjoint_left, eq_comm]) := rfl
 
 theorem map_div_right_divisors :
-    z.divisors.map ⟨fun d => (d, z / d), fun _ _ ↦ congr_arg Prod.fst⟩ =
-      z.divisorsAntidiag := by
+    z.divisors.map ⟨fun d ↦ (d, z / d), fun _ _ ↦ congr_arg Prod.fst⟩ = z.divisorsAntidiag := by
   ext ⟨d, nd⟩
   simp only [mem_map, mem_divisorsAntidiag, Function.Embedding.coeFn_mk, mem_divisors,
-    Prod.ext_iff, exists_prop, and_left_comm, exists_eq_left]
+    Prod.ext_iff, and_left_comm, exists_eq_left]
   constructor
   · rintro ⟨⟨⟨k, rfl⟩, hn⟩, rfl⟩
-    rw [mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left]
-    exact ⟨rfl, hn⟩
+    simp [mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left, hn]
   · rintro ⟨rfl, hn⟩
     exact ⟨⟨dvd_mul_right _ _, hn⟩, mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left⟩
 
 theorem map_div_left_divisors :
-    z.divisors.map ⟨fun d => (z / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ =
-      z.divisorsAntidiag := by
-  apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
-  ext
-  rw [map_prodComm_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
-  simp
+      z.divisors.map ⟨fun d => (z / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ = z.divisorsAntidiag := by
+    apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
+    ext
+    rw [map_prodComm_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
+    simp
 
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
 lemma mul_mem_one_two_three_iff {a b : ℤ} :
