@@ -488,7 +488,7 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
     obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       sᶜ.toFinite (Set.nonempty_of_mem ha)
       (by intro h
-          simp only [Set.top_eq_univ, Set.compl_univ_iff] at h
+          simp only [Set.compl_univ_iff] at h
           simp only [h, Set.not_nonempty_empty] at hs_nonempty)
       hab
     let t := s ∩ g • s
@@ -715,9 +715,8 @@ theorem isPretransitive_of_cycle [DecidableEq α] {g : Equiv.Perm α}
     simp only [Set.mem_compl_iff, Finset.mem_coe, Equiv.Perm.notMem_support]
     rfl
   suffices ∀ x ∈ SubMulAction.ofFixingSubgroup G ((↑g.support : Set α)ᶜ),
-      ∃ k : fixingSubgroup G ((↑g.support : Set α)ᶜ), x = k • a
-    by
-    apply IsPretransitive.mk
+      ∃ k : fixingSubgroup G ((↑g.support : Set α)ᶜ), x = k • a by
+    rw [isPretransitive_iff]
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     obtain ⟨k, hk⟩ := this x hx
     obtain ⟨k', hk'⟩ := this y hy
@@ -726,8 +725,7 @@ theorem isPretransitive_of_cycle [DecidableEq α] {g : Equiv.Perm α}
     simp only [SetLike.mk_smul_mk]
     rw [hk, hk', smul_smul, inv_mul_cancel_right]
   intro x hx
-  have hg' : (⟨g, hg⟩ : ↥G) ∈ fixingSubgroup G ((↑g.support : Set α)ᶜ) :=
-    by
+  have hg' : (⟨g, hg⟩ : ↥G) ∈ fixingSubgroup G ((↑g.support : Set α)ᶜ) := by
     simp_rw [mem_fixingSubgroup_iff G]
     intro y hy
     simpa only [Set.mem_compl_iff, Finset.mem_coe, Equiv.Perm.notMem_support] using hy
@@ -762,7 +760,6 @@ theorem Equiv.Perm.eq_top_of_isSwap_mem [DecidableEq α] (hG : IsPreprimitive G 
     exact orderOf_dvd_card
   -- important case : Nat.card α ≥ 3
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
-  -- let s := (g.support : Set α)
   have hsc : Set.ncard ((g.support)ᶜ : Set α) = n.succ := by
     apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_Finset,
@@ -774,8 +771,7 @@ theorem Equiv.Perm.eq_top_of_isSwap_mem [DecidableEq α] (hG : IsPreprimitive G 
     rw [add_comm, ← Nat.add_one_inj, Nat.sub_one_add_one (Nat.ne_zero_of_lt hα3),
       hn]]
   apply isMultiplyPreprimitive_jordan hG hsc
-  · rw [add_comm, hn]
-    exact Nat.lt_add_one (n.succ + 1)
+  · grind
   have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsSwap.isCycle h2g
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_two
@@ -804,22 +800,16 @@ theorem jordan_three_cycle [DecidableEq α]
     simp only [orderOf_mk, Equiv.Perm.IsThreeCycle.orderOf h3g]
     -- important case : Nat.card α ≥ 4
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα4
-  --  refine is_full_minus_two_pretransitive_iff α _,
   apply IsMultiplyPretransitive.alternatingGroup_le
   suffices IsMultiplyPreprimitive G α (Nat.card α - 2) by
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
-  -- suffices : IsMultiplyPreprimitive G α (Fintype.card α - 2)
-  -- apply this.left.alternatingGroup_le_of_sub_two
-  have hn' : Nat.card α - 2 = 1 + n.succ :=  by
-    simp [← Nat.card_eq_fintype_card, hn, add_comm 1]
+  have hn' : Nat.card α - 2 = 1 + n.succ :=  by grind
   rw [hn']
   refine isMultiplyPreprimitive_jordan (s := (g.supportᶜ : Set α)) hG ?_ ?_ ?_
   · apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_Finset,
       Equiv.Perm.IsThreeCycle.card_support h3g, add_comm, hn]
-  · rw [hn, Nat.succ_eq_add_one, add_comm, add_assoc]
-    simp only [add_lt_add_iff_left]
-    norm_num
+  · grind
   have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsThreeCycle.isCycle h3g
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_three
