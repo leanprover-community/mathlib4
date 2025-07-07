@@ -698,11 +698,11 @@ class LawfulDayConvolutionMonoidalCategoryStruct
   /-- a map `𝟙_ V ⟶ (ι.obj <| 𝟙_ D).obj (𝟙_ C)`, that we think of as defining a
   natural transformation
   `fromPUnit.{0} (𝟙_ V) ⟶ Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D)`. -/
-  unitUnit (C) (V) : 𝟙_ V ⟶ (ι.obj <| 𝟙_ D).obj (𝟙_ C)
+  unitUnit (C) (V) (D) : 𝟙_ V ⟶ (ι.obj <| 𝟙_ D).obj (𝟙_ C)
   /-- the natural transformation induced by `unitUnit` exhibits
   `(ι.obj <| 𝟙_ D).obj (𝟙_ C)` as a left Kan extension of `fromPUnit.{0} (𝟙_ V)` as a
   along `fromPUnit.{0} (𝟙_ C)`. -/
-  isPointwiseLeftKanExtensionUnitUnit :
+  isPointwiseLeftKanExtensionUnitUnit (C) (V) (D) :
     Functor.LeftExtension.mk _
       ({app _ := unitUnit} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
         Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D))|>.IsPointwiseLeftKanExtension
@@ -820,8 +820,8 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (𝟙_ D)`
 is a day convolution unit`. -/
 def convolutionUnit : DayConvolutionUnit (ι C V D|>.obj <| 𝟙_ D) where
-  can := unitUnit _ _
-  isPointwiseLeftKanExtensionCan := isPointwiseLeftKanExtensionUnitUnit
+  can := unitUnit _ _ _
+  isPointwiseLeftKanExtensionCan := isPointwiseLeftKanExtensionUnitUnit _ _ _
 
 attribute [local instance] convolutionUnit
 
