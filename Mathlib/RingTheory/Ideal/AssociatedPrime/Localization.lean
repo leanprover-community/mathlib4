@@ -3,9 +3,7 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Support
 
 /-!
@@ -22,7 +20,7 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
 -/
 
-variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
+variable {R : Type*} [CommRing R] (S : Submonoid R) {R' : Type*} [CommRing R'] [Algebra R R']
   [IsLocalization S R']
 
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
@@ -72,7 +70,7 @@ lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
     maximalIdeal (Localization.AtPrime p) ∈
     associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
   apply mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
-    p.primeCompl (Localization.AtPrime p) (LocalizedModule.mkLinearMap p.primeCompl M)
+    p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
 
 include S f in
@@ -105,20 +103,20 @@ lemma comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg
     have mem : r * (∏ a, g a).1 ∈ Ideal.comap (algebraMap R R') p := by
       simpa only [hx, Ideal.mem_comap, mem_ker, toSpanSingleton_apply, algebraMap_smul,
         ← IsLocalizedModule.mk'_smul, hr] using IsLocalizedModule.mk'_zero f s
-    have nmem := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.ne_top)
-      (∏ a, g a).2
-    have := (Ideal.IsPrime.mul_mem_iff_mem_or_mem prime).mp mem
+    have := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2
+    have := prime.mul_mem_iff_mem_or_mem.mp mem
     tauto
+
+variable (R')
 
 include S f in
 open Set in
 lemma associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes [IsNoetherianRing R] :
     (Ideal.comap (algebraMap R R')) ⁻¹' (associatedPrimes R M) = associatedPrimes R' M' := by
   ext p
-  exact ⟨fun h ↦ mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule S R' f p
-    (mem_preimage.mp h),
-    fun h ↦ comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg S R' f p h
-    ((isNoetherianRing_iff_ideal_fg R).mp (by assumption) _)⟩
+  exact ⟨mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule S f p,
+    fun h ↦ comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg S f p h
+    ((isNoetherianRing_iff_ideal_fg R).mp ‹_› _)⟩
 
 lemma minimalPrimes_annihilator_mem_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
     (Module.annihilator R M).minimalPrimes ⊆ associatedPrimes R M := by
