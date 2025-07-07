@@ -1486,6 +1486,11 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
       rw [length_support]
       omega
 
+lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₁) :
+    p₁ = p₂ := by
+  rw [isSubwalk_iff_support_isInfix] at h₁ h₂
+  exact ext_support <| List.infix_antisymm h₁ h₂
+
 end Walk
 
 end SimpleGraph
