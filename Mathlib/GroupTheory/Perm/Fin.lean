@@ -387,8 +387,8 @@ theorem cycleIcc_of_trivial (hijk : k < i ∨ j < k) [NeZero n] : (cycleIcc i j)
   · simp [cycleIcc, hij]
 
 @[simp]
-theorem sign_cycleIcc (hij : i ≤ j) : Perm.sign (cycleIcc i j) = (-1) ^ (j - i : ℕ)
-    := by simp [cycleIcc, hij, sub_val_of_le hij]
+theorem sign_cycleIcc (hij : i ≤ j) : Perm.sign (cycleIcc i j) = (-1) ^ (j - i : ℕ) := by
+  simp [cycleIcc, hij, sub_val_of_le hij]
 
 theorem isCycle_cycleIcc (hij : i < j) : (cycleIcc i j).IsCycle := by
   simpa [cycleIcc, Fin.le_of_lt hij] using Equiv.Perm.IsCycle.extendDomain
