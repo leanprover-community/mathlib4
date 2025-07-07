@@ -332,7 +332,7 @@ protected theorem measurableEmbedding (e : α ≃ᵐ β) : MeasurableEmbedding e
 
 /-- Equal measurable spaces are equivalent. -/
 protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace β] (h : α = β)
-    (hi : HEq i₁ i₂) : α ≃ᵐ β where
+    (hi : i₁ ≍ i₂) : α ≃ᵐ β where
   toEquiv := Equiv.cast h
   measurable_toFun := by
     subst h

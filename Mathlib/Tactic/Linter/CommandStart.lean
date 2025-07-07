@@ -58,7 +58,7 @@ def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
       | some sig => sig.getTailPos?
     else
     match cmd.find? (·.isOfKind ``Parser.Term.typeSpec) with
-      | some s => s.getPos?
+      | some s => s[0].getTailPos? -- `s[0]` is the `:` separating hypotheses and the type
       | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
         | some s => s.getPos?
         | none => none
