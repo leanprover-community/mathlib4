@@ -1389,7 +1389,7 @@ protected lemma AnalyticOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticO
 
 /-- Analytic everywhere implies continuous -/
 theorem AnalyticOnNhd.continuous {f : E → F} (fa : AnalyticOnNhd 𝕜 f univ) : Continuous f := by
-  rw [continuous_iff_continuousOn_univ]; exact fa.continuousOn
+  rw [← continuousOn_univ]; exact fa.continuousOn
 
 /-- In a complete space, the sum of a converging power series `p` admits `p` as a power series.
 This is not totally obvious as we need to check the convergence of the series. -/

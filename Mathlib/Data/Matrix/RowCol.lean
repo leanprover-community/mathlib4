@@ -483,7 +483,7 @@ theorem single_mul_eq_updateRow_zero
 @[simp]
 theorem updateRow_zero_mul_updateCol_zero
     [DecidableEq l] [DecidableEq n] [Fintype m] [NonUnitalNonAssocSemiring α]
-    (i : l) (r : m → α) (j : n) (c : m → α):
+    (i : l) (r : m → α) (j : n) (c : m → α) :
     (0 : Matrix l m α).updateRow i r * (0 : Matrix m n α).updateCol j c = single i j (r ⬝ᵥ c) := by
   rw [updateRow_mul, vecMul_updateCol, mul_updateCol, single_eq_of_single_single, Matrix.zero_mul,
     vecMul_zero, zero_mulVec, updateCol_zero_zero, updateRow, ← Pi.single, ← Pi.single]

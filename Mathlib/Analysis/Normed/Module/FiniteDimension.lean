@@ -542,7 +542,7 @@ theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimension
 
 theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous (f · y) := by
-  simp_rw [continuous_iff_continuousOn_univ, continuousOn_clm_apply]
+  simp_rw [← continuousOn_univ, continuousOn_clm_apply]
 
 end CompleteField
 

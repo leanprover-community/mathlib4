@@ -29,7 +29,7 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 end monoid, aut group
 -/
 
-assert_not_exists MonoidWithZero MulAction RelIso
+assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
 variable {A M G α β : Type*}
 
