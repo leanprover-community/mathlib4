@@ -1388,14 +1388,12 @@ def IsSubwalk {u₁ v₁ u₂ v₂} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂
   ∃ (ru : G.Walk u₂ u₁) (rv : G.Walk v₁ v₂), q = (ru.append p).append rv
 
 @[refl, simp]
-lemma isSubwalk_rfl {u v} (p : G.Walk u v) : p.IsSubwalk p := by
-  use nil, nil
-  rw [nil_append, append_nil]
+lemma isSubwalk_rfl {u v} (p : G.Walk u v) : p.IsSubwalk p :=
+  ⟨nil, nil, by simp⟩
 
 @[simp]
-lemma nil_isSubwalk {u v} (q : G.Walk u v) : (Walk.nil : G.Walk u u).IsSubwalk q := by
-  use nil, q
-  simp
+lemma nil_isSubwalk {u v} (q : G.Walk u v) : (Walk.nil : G.Walk u u).IsSubwalk q :=
+  ⟨nil, q, by simp⟩
 
 protected lemma IsSubwalk.cons {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) (h : G.Adj w u') : p.IsSubwalk (q.cons h) := by
@@ -1432,9 +1430,7 @@ lemma isSubwalk_nil_iff {u v u'} (p : G.Walk u v) :
 lemma nil_isSubwalk_iff_exists {u' u v} (q : G.Walk u v) :
     (Walk.nil : G.Walk u' u').IsSubwalk q ↔
       ∃ (ru : G.Walk u u') (rv : G.Walk u' v), q = ru.append rv := by
-  unfold IsSubwalk
-  congr!
-  simp
+  simp [IsSubwalk]
 
 lemma length_le_of_isSubwalk {u₁ v₁ u₂ v₂} {q : G.Walk u₁ v₁} {p : G.Walk u₂ v₂}
     (h : p.IsSubwalk q) :
