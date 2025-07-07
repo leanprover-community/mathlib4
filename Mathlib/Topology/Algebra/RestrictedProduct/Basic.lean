@@ -96,7 +96,7 @@ instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
   coe_injective' _ _ := Subtype.ext
 
 @[ext]
-lemma ext {x y :  Πʳ i, [R i, A i]_[𝓕]} (h : ∀ i, x i = y i) : x = y :=
+lemma ext {x y : Πʳ i, [R i, A i]_[𝓕]} (h : ∀ i, x i = y i) : x = y :=
   Subtype.ext <| funext h
 
 lemma range_coe :

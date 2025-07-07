@@ -50,7 +50,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
     rw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
-    simp only [hfx, SetLike.mem_coe, zero_mem]
+    simp only [hfx, zero_mem]
   · rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
@@ -329,7 +329,7 @@ such that `∀ x : p, f x = x`. -/
 def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p, f x = x } where
   toFun q := ⟨linearProjOfIsCompl p q q.2, linearProjOfIsCompl_apply_left q.2⟩
   invFun f := ⟨ker (f : E →ₗ[R] p), isCompl_of_proj f.2⟩
-  left_inv := fun ⟨q, hq⟩ => by simp only [linearProjOfIsCompl_ker, Subtype.coe_mk]
+  left_inv := fun ⟨q, hq⟩ => by simp only [linearProjOfIsCompl_ker]
   right_inv := fun ⟨f, hf⟩ => Subtype.eq <| f.linearProjOfIsCompl_of_proj hf
 
 @[simp]
