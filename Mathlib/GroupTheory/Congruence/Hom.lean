@@ -236,11 +236,11 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
     (c.lift (f.comp c.mk') fun x y h => show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
   ext x; rcases x with ⟨⟩; rfl
 
-/-- Extensionality for maps `f, g : M⧸~ →* N`: they are equal if their composition with
-`mk' : M → M⧸~` are equal. -/
-@[to_additive (attr := ext) "Extensionality for maps `f, g : M⧸~ →+ N`: they are equal if their
-composition with `mk' : M → M⧸~` are equal."]
-lemma hom_ext {f g : c.Quotient →* P} (h : f.comp (mk' c) = g.comp (mk' c)) : f = g := by
+/-- Homomorphisms on the quotient of a monoid by a congruence relation `c` are equal if their
+    compositions with `c.mk'` are equal. -/
+@[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
+`c` are equal if their compositions with `c.mk'` are equal."]
+lemma hom_ext {f g : c.Quotient →* P} (h : f.comp c.mk' = g.comp c.mk') : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
   congr 1
 
