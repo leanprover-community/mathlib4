@@ -144,7 +144,6 @@ theorem dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : �
 `d`-dimensional Hausdorff measure of `s` is zero. This infimum is taken in `ℝ≥0∞`.
 This gives an equivalent definition of the Hausdorff dimension. -/
 theorem dimH_eq_iInf (s : Set X) : dimH s = ⨅ (d : ℝ≥0) (_ : μH[d] s = 0), (d : ℝ≥0∞) := by
-  borelize X
   apply le_antisymm
   · rw [dimH_def]
     simp only [le_iInf_iff, iSup_le_iff, ENNReal.coe_le_coe]
