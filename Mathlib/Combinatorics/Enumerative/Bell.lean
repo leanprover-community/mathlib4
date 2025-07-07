@@ -29,12 +29,12 @@ The definition presents it as a natural number.
 
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
 
-* `Nat.standardBell n`: the `n`th standard Bell number,
+* `Nat.bell n`: the `n`th standard Bell number,
     which counts the number of partitions of a set of cardinality `n`
 
-* `Nat.standardBell_succ n` shows that
-    `standardBell (n + 1) = ∑ k ∈ Finset.range (n + 1),
-      Nat.choose n k * standardBell (n - k)`
+* `Nat.bell_succ n` shows that
+    `Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1),
+      Nat.choose n k * Nat.bell (n - k)`
 
 ## TODO
 
@@ -175,27 +175,35 @@ theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos
   · rw [← mul_assoc, ← uniformBell_mul_eq _ hn]
 
-/-- The `n`th standard Bell number,
-which counts the number of partitions of a set of cardinality `n`. -/
-def standardBell : ℕ → ℕ
+/--
+The `n`th standard Bell number,
+which counts the number of partitions of a set of cardinality `n`.
+
+## TODO
+
+Prove that `Nat.bell n` is equal to the sum of `Multiset.bell m`
+over all multisets `m : Multiset ℕ` such that `m.sum = n`.
+-/
+protected def bell : ℕ → ℕ
   | 0 => 1
-  | n + 1 => ∑ k ∈ Finset.range (n + 1), Nat.choose n k * standardBell (n - k)
+  | n + 1 => ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k)
 
-theorem standardBell_succ (n : ℕ) :
-  standardBell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * standardBell (n - k) := by
-  simp [standardBell]
-
-@[simp]
-theorem standardBell_zero : standardBell 0 = 1 := by
-  simp [standardBell]
+theorem bell_succ (n : ℕ) :
+  Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k *
+    Nat.bell (n - k) := by
+  simp [Nat.bell]
 
 @[simp]
-theorem standardBell_one : standardBell 1 = 1 := by
-  simp [standardBell]
+theorem bell_zero : Nat.bell 0 = 1 := by
+  simp [Nat.bell]
 
 @[simp]
-theorem standardBell_two : standardBell 2 = 2 := by
-  rw [standardBell_succ, Finset.sum_range_add]
+theorem bell_one : Nat.bell 1 = 1 := by
+  simp [Nat.bell]
+
+@[simp]
+theorem bell_two : Nat.bell 2 = 2 := by
+  rw [Nat.bell_succ, Finset.sum_range_add]
   simp
 
 end Nat
