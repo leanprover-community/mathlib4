@@ -42,9 +42,7 @@ initialize
 inductive CastMode where
   /-- Only insert casts on proofs.
 
-  In this mode, it is *not* permitted to cast subterms of proofs that are not themselves proofs.
-  For example, given `y : Fin n`, `P : Fin n → Prop`, `p : (x : Fin n) → P x` and `eq : n = m`,
-  we will not rewrite `p y : P y` to `p (eq ▸ y) : P (eq ▸ y)`. -/
+  In this mode, it is *not* permitted to cast subterms of proofs that are not themselves proofs. -/
   | proofs
   /- TODO: `proofs` plus "good" user-defined casts such as `Fin.cast`.
   See https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/dependent.20rewrite.20tactic/near/497185687 -/
@@ -77,8 +75,14 @@ structure Config where
   offsetCnstrs : Bool := true
   /-- Which occurrences to rewrite. -/
   occs : Occurrences := .all
-  /-- Determines which, if any, type-incorrect subterms
-  should be casted along the equality that `depRewrite` is rewriting by. -/
+  /-- The cast mode specifies when `rw!` is permitted to insert casts
+  in order to correct subterms that become type-incorect
+  as a result of rewriting.
+
+  For example, given `P : Nat → Prop`, `f : (n : Nat) → P n → Nat` and `h : P n₀`,
+  rewriting `f n₀ h` by `eq : n₀ = n₁` produces `f n₁ h`,
+  where `h : P n₁` does not typecheck.
+  The tactic will cast `h` to `eq ▸ h : P n₁` iff `.proofs ≤ castMode`. -/
   castMode : CastMode := .proofs
   /-- Whether `let` bindings whose value contains the LHS
   should be abstracted over the LHS.
@@ -382,14 +386,14 @@ open Parser Elab Tactic
 
 /--
 `rewrite!` is like `rewrite`,
-but can also insert casts to adjust types that depend on the term being rewritten.
+but can also insert casts to adjust types that depend on the LHS of a rewrite.
 It is available as an ordinary tactic and a `conv` tactic.
 
 The sort of casts that are inserted is controlled by the `castMode` configuration option.
 By default, only proof terms are casted;
 by proof irrelevance, this adds no observable complexity.
 
-With `rewrite! (castMode := .all)`, casts are inserted whenever necessary.
+With `rewrite! +letAbs (castMode := .all)`, casts are inserted whenever necessary.
 This means that the 'motive is not type correct' error never occurs,
 at the expense of creating potentially complicated terms.
 -/
