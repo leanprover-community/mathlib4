@@ -320,8 +320,9 @@ local instance {n : ℕ} {i : Fin n} : NeZero (n - i) := NeZero.of_pos (by omega
 
 variable {n : ℕ} {i j k : Fin n}
 
-/-- `cycleIcc i j hij` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
-unchanged. In other words, it rotates elements in `[i, j]` one step to the right.
+/-- `cycleIcc i j` is the cycle `(i i+1 .... j)` leaving `(0 ... i-1)` and `(j+1 ... n-1)`
+unchanged when `i ≤ j` and returns the dummy value identity when `i > j`.
+In other words, it rotates elements in `[i, j]` one step to the right.
 -/
 def cycleIcc (i j : Fin n): Perm (Fin n) := if hij : i ≤ j then
   (cycleRange ((j - i).castLT (sub_val_lt_sub hij))).extendDomain
@@ -353,8 +354,8 @@ theorem cycleIcc_of_gt (hij : i ≤ j) (h : j < k) : (cycleIcc i j) k = k := by
     exact lt_def.mpr (by simp [sub_val_of_le hij]; omega)
   simpa only [natAdd_castLEEmb, this] using eq_of_val_eq (by simp; omega)
 
-theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] : (cycleIcc i j) k = if k = j then i else
-    k + 1 := by
+theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] :
+    (cycleIcc i j) k = if k = j then i else k + 1 := by
   have hij : i ≤ j := le_trans h1 h2
   have kin : k ∈ Set.range ⇑(natAdd_castLEEmb n (sub_le_right i)) := by simp; omega
   simp only [cycleIcc_aux hij kin, natAdd_castLEEmb, cycleIcc_simp_lemma h1,
@@ -381,9 +382,7 @@ theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc i j) j = i := by
 
 theorem cycleIcc_of_trivial (hijk : k < i ∨ j < k) : (cycleIcc i j) k = k := by
   rcases Decidable.em (i ≤ j) with hij | hij
-  · rcases hijk with hki | hjk
-    · exact cycleIcc_of_lt hij hki
-    · exact cycleIcc_of_gt hij hjk
+  · exact Or.casesOn hijk (fun hki ↦ cycleIcc_of_lt hij hki) fun hjk ↦ cycleIcc_of_gt hij hjk
   · simp [cycleIcc, hij]
 
 @[simp]
