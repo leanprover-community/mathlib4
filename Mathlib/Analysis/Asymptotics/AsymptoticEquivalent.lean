@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Asymptotic equivalence
@@ -156,6 +157,16 @@ theorem IsEquivalent.sub_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u - w ~[
 
 theorem IsLittleO.add_isEquivalent (hu : u =o[l] w) (hv : v ~[l] w) : u + v ~[l] w :=
   add_comm v u ▸ hv.add_isLittleO hu
+
+theorem IsEquivalent.add_const_of_norm_tendsto_atTop {c : β}
+    (huv : u ~[l] v) (hv : Tendsto (norm ∘ v) l atTop) :
+    (u · + c) ~[l] v :=
+  huv.add_isLittleO <| isLittleO_const_left.mpr (Or.inr hv)
+
+theorem sEquivalent.const_add_of_norm_tendsto_atTop {c : β}
+    (huv : u ~[l] v) (hv : Tendsto (norm ∘ v) l atTop) :
+    (c + u ·) ~[l] v :=
+  (isLittleO_const_left.mpr (Or.inr hv)).add_isEquivalent huv
 
 theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v := huv
 
@@ -323,6 +334,33 @@ theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
 
 end NormedLinearOrderedField
+
+section Real
+
+variable {α : Type*} {u v t w : α → ℝ} {l : Filter α}
+
+theorem IsEquivalent.add_add_of_nonneg
+    (hu : 0 ≤ v) (hw : 0 ≤ w) (htu : u ~[l] v) (hvw : t ~[l] w) :
+    u + t ~[l] v + w := by
+  simp only [IsEquivalent, add_sub_add_comm]
+  change (fun x ↦ (u - v) x + (t - w) x) =o[l] (fun x ↦ v x + w x)
+  conv => enter [3, x]; rw [← (abs_eq_self).mpr (hu x), ← (abs_eq_self).mpr (hw x)]
+  simpa only [← Real.norm_eq_abs] using .add_add htu hvw
+
+theorem IsEquivalent.rpow_of_nonneg {α : Type*}
+    {t u : α → ℝ} (hu : 0 ≤ u) {l : Filter α} (h : t ~[l] u) {r : ℝ} :
+    t ^ r ~[l] u ^ r := by
+  obtain ⟨φ, hφ, htφu⟩ := IsEquivalent.exists_eq_mul h
+  rw [isEquivalent_iff_exists_eq_mul]
+  have hφr : Tendsto ((fun x ↦ x ^ r) ∘ φ) l (𝓝 1) := by
+    rw [← Real.one_rpow r]
+    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
+  use (· ^ r) ∘ φ, hφr
+  conv => enter [3]; change fun x ↦ φ x ^ r * u x ^ r
+  filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, htφu] with x hφ_pos htu'
+  simp [← Real.mul_rpow (le_of_lt hφ_pos) (hu x), htu']
+
+end Real
 
 end Asymptotics
 
