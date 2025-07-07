@@ -571,7 +571,7 @@ lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
 
 variable [UniqueHom R A]
 
-lemma cfcₙ_comp_neg (hf : ContinuousOn f ((- ·) '' (σₙ R a)) := by cfc_cont_tac)
+lemma cfcₙ_comp_neg (hf : ContinuousOn f ((-·) '' (σₙ R a)) := by cfc_cont_tac)
     (h0 : f 0 = 0 := by cfc_zero_tac) (ha : p a := by cfc_tac) :
     cfcₙ (f <| - ·) a = cfcₙ f (-a) := by
   rw [cfcₙ_comp' .., cfcₙ_neg_id _]
