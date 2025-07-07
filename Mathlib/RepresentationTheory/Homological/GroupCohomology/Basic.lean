@@ -214,6 +214,14 @@ def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm
 
+/-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
+`Hⁿ(Hom(P, A))`, where `P` is any projective resolution of `k` as a trivial `k`-linear
+`G`-representation. -/
+def groupCohomologyIso [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+    (P : ProjectiveResolution (Rep.trivial k G k)) :
+    groupCohomology A n ≅ (P.complex.linearYonedaObj k A).homology n :=
+  groupCohomologyIsoExt A n ≪≫ P.isoExt _ _
+
 lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
     Limits.IsZero (groupCohomology A (n + 1)) :=

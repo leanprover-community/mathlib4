@@ -208,14 +208,7 @@ the spaces `genWeightSpace M χ` and `shiftedGenWeightSpace R L M χ` are equiva
 lemma toEnd_eq (x : L) :
     toEnd R L (shiftedGenWeightSpace R L M χ) x =
     (shift R L M χ).conj (toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id) := by
-  ext
-  simp only [toEnd_apply_apply, map_sub, LinearEquiv.conj_apply, map_smul, LinearMap.comp_id,
-    LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
-    LinearMap.sub_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    shift_symm_apply, shift_apply, LinearMap.smul_apply, LinearMap.id_coe, id_eq,
-    AddSubgroupClass.coe_sub, SetLike.val_smul]
-  rw [LieSubmodule.coe_bracket]
-  rfl
+  tauto
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/

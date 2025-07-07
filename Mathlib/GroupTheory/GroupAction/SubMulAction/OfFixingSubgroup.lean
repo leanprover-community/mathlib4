@@ -25,11 +25,11 @@ and permit to manipulate them in a relatively smooth way:
 
   * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
   multiplicative equivalence between `fixingSubgroup M (insert a s)``
-  and `fixingSubgroup (stablizer M a) s`
+  and `fixingSubgroup (stabilizer M a) s`
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
   map between `SubMulAction.ofFixingSubgroup M (insert a s)`
-  and `SubMulAction.ofFixingSubgroup (stablizer M a) s`.
+  and `SubMulAction.ofFixingSubgroup (stabilizer M a) s`.
 
   * `SubMulAction.fixingSubgroupEquivFixingSubgroup`:
   the multiplicative equivalence between `SubMulAction.fixingSubgroup M s`

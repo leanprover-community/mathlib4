@@ -4,13 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.RingTheory.Valuation.Basic
-
 import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+import Mathlib.Algebra.Order.Group.Units
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Discrete Valuations
@@ -152,20 +148,9 @@ instance : v.IsNontrivial := by
 
 open Subgroup
 
-lemma valueGroup_genLTOne_eq_generator :
-    Subgroup.genLTOne (valueGroup v) = IsRankOneDiscrete.generator v := by
-  rw [eq_comm]
-  apply (valueGroup v).genLTOne_unique
-    ⟨IsRankOneDiscrete.generator v, IsRankOneDiscrete.generator_mem_valueGroup v⟩
-  constructor
-  · exact Subtype.coe_lt_coe.mp (IsRankOneDiscrete.generator_lt_one v)
-  · have := IsRankOneDiscrete.generator_zpowers_eq_valueGroup v
-    rw [eq_top_iff']
-    intro x
-    have hx : x.1 ∈ zpowers (IsRankOneDiscrete.generator v) := by
-      rw [IsRankOneDiscrete.generator_zpowers_eq_valueGroup v]; exact x.2
-    obtain ⟨k, hk⟩ := hx
-    exact ⟨k, by ext1; exact hk⟩
+lemma valueGroup_genLTOne_eq_generator : Subgroup.genLTOne (valueGroup v) = generator v :=
+  ((valueGroup v).genLTOne_unique (generator v)
+    ⟨generator_lt_one v, generator_zpowers_eq_valueGroup v⟩).symm
 
 end IsRankOneDiscrete
 

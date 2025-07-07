@@ -11,8 +11,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 -/
 
-suppress_compilation
-
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
 variable {R'' : Type*} [Semiring R'']

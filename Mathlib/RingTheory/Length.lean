@@ -68,8 +68,7 @@ lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h
   have := (isFiniteLength_iff_isNoetherian_isArtinian.mp H).2
   rw [← WithBot.coe_inj, Module.coe_length]
   apply le_antisymm
-  · let s' := s.map (β := Submodule R M) (s := (· < ·)) ⟨id, fun h ↦ h.1⟩
-    exact (Order.LTSeries.length_le_krullDim s')
+  · exact (Order.LTSeries.length_le_krullDim <| s.map ⟨id, fun h ↦ h.1⟩)
   · rw [Order.krullDim, iSup_le_iff]
     intro t
     refine WithBot.coe_le_coe.mpr ?_
@@ -92,7 +91,10 @@ lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R 
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
     rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
-    exact ⟨Rel.wellFounded_swap_of_finiteDimensional _, Rel.wellFounded_of_finiteDimensional _⟩
+    let R : Rel (Submodule R M) (Submodule R M) :=
+      {(N₁, N₂) : Submodule R M × Submodule R M | N₁ < N₂}
+    change R.inv.IsWellFounded ∧ R.IsWellFounded
+    exact ⟨.of_finiteDimensional R.inv, .of_finiteDimensional R⟩
   · obtain ⟨s, hs₁, hs₂⟩ := isFiniteLength_iff_exists_compositionSeries.mp H
     rw [← length_compositionSeries s hs₁ hs₂]
     simp
