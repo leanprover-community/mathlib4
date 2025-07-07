@@ -135,8 +135,8 @@ lemma mpullbackWithin_add :
 
 @[simp]
 lemma mpullbackWithin_zero : mpullbackWithin I I' f 0 s = 0 := by
-  have aux := mpullbackWithin_add (f := f) (s := s) (I := I) (I' := I') (V := 0) (V₁ := 0)
-  simp_all
+  ext x
+  simp [mpullbackWithin_apply]
 
 lemma mpullbackWithin_neg_apply :
     mpullbackWithin I I' f (-V) s x = - mpullbackWithin I I' f V s x := by
