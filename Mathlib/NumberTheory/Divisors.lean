@@ -811,7 +811,7 @@ theorem map_div_right_divisors :
     exact ⟨⟨dvd_mul_right _ _, hn⟩, mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left⟩
 
 theorem map_div_left_divisors :
-      z.divisors.map ⟨fun d => (z / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ = z.divisorsAntidiag := by
+    z.divisors.map ⟨fun d => (z / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ = z.divisorsAntidiag := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
   ext
   rw [map_prodComm_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
