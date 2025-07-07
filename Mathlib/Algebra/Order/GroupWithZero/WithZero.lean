@@ -118,32 +118,25 @@ def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
   (withZeroUnitsHom).comp <| WithZero.map' (valueGroup f).subtype
 
 /-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
-def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o WithZero Bˣ where
+def valueGroup₀_OrderEmbedding : valueGroup₀ f ↪o WithZero Bˣ where
   toFun := WithZero.map' (valueGroup f).subtype
   inj' := WithZero.map'_injective Subtype.val_injective ..
-  map_rel_iff' := by
-    intro a b
-    simp
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  map_rel_iff' {a b} := by
+    refine ⟨fun h ↦ ?_, fun h ↦ WithZero.map'_mono (fun _ _ x ↦ x) h⟩
     · revert a
-      simp [WithZero.forall]
-      intro a ha h_le
+      simp only [Function.Embedding.coeFn_mk, «forall», map_zero, WithZero.zero_le, imp_self,
+        map'_coe, Subgroup.subtype_apply, Subtype.forall, true_and]
+      intro a _ h_le
       have hb : b ≠ 0 := by
-        by_contra H
-        have := WithZero.zero_lt_coe a
-        rw [lt_iff_not_ge] at this
-        apply this
-        convert h_le
-        rw [H]
-        simp
-      obtain ⟨u, rfl⟩ := WithZero.ne_zero_iff_exists.mp hb
-      simp only [coe_le_coe, ge_iff_le, map'_coe, Subgroup.subtype_apply] at h_le ⊢
+        intro H
+        apply lt_iff_not_ge.mp <| zero_lt_coe a
+        grw [h_le, H, map_zero]
+      obtain ⟨_, rfl⟩ := ne_zero_iff_exists.mp hb
+      simp [coe_le_coe, ge_iff_le, map'_coe, Subgroup.subtype_apply] at h_le ⊢
       exact h_le
-    · apply WithZero.map'_mono _ h
-      exact fun _ _ x ↦ x
 
 /-- The inclusion of `valueGroup₀ f` into `B` as an order embedding. -/
-def valueGroup₀_OrderEmbedding : WithZero (valueGroup f) ↪o B :=
-  valueGroup₀_OrderEmbedding'.trans withZeroUnits_OrderEmbedding
+def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o B :=
+  valueGroup₀_OrderEmbedding.trans withZeroUnits_OrderEmbedding
 
 end MonoidWithZeroHom
