@@ -129,7 +129,7 @@ end IsSubDPIdeal
 open Finset Ideal
 
 /-- The ideal `J ⊓ I` is a sub-dp-ideal of `I` if and only if the divided powers have
-  some compatiblity mod `J`. (The necessity was proved as a sanity check.) -/
+  some compatibility mod `J`. (The necessity was proved as a sanity check.) -/
 theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : DividedPowers I)
   {J : Ideal A} : IsSubDPIdeal hI (J ⊓ I) ↔
     ∀ {n : ℕ} {a b : A} (_ : a ∈ I) (_ : b ∈ I) (_ : a - b ∈ J), hI.dpow n a - hI.dpow n b ∈ J := by
