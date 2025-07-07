@@ -303,8 +303,7 @@ def continuousLocal (T : Type*) [TopologicalSpace T] : LocalPredicate fun _ : X 
     locality := fun {U} f w ↦ by
       apply continuous_iff_continuousAt.2
       intro x
-      specialize w x
-      rcases w with ⟨V, m, i, w⟩
+      rcases w x with ⟨V, m, i, w⟩
       dsimp at w
       rw [continuous_iff_continuousAt] at w
       specialize w ⟨x, m⟩
@@ -337,6 +336,12 @@ def isSection {T} (p : T → X) : LocalPredicate fun _ : X ↦ T where
   pred _ f := p ∘ f = (↑)
   res _ _ h := funext fun _ ↦ congr_fun h _
   locality _ _ w := funext fun x ↦ have ⟨_, hV, _, h⟩ := w x; congr_fun h ⟨x, hV⟩
+
+/-- Continuity is a local predicate on sections of a map between topological spaces. -/
+def isContinuousSection {T} [TopologicalSpace T] (p : T → X) : LocalPredicate (p ⁻¹' {·}) where
+  pred _U f := Continuous fun x ↦ (f x).1
+  res i _f := (continuousLocal X T).res i _
+  locality U _f h := (continuousLocal X T).locality U _ h
 
 section Sheafify
 
