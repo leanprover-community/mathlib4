@@ -1297,9 +1297,9 @@ structure IsLatticeCon [Lattice α] (r : α → α → Prop) : Prop extends Equi
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
 lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : IsLatticeCon r ↔
-    (∀ x y : α, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
-    (∀ x y z : α, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
-    (∀ x y t : α, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) := by
+    (∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
+    (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
+    (∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) := by
   constructor
   · intro hlc
     constructor
@@ -1330,9 +1330,9 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
       rw [h1]
       conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
       conv_rhs => rw [← inf_eq_right.mpr (sup_le hb.2 hc.2)]
-      apply (h3 _ _ _ (inf_le_of_left_le hb.2) _).1
+      apply (h3 (inf_le_of_left_le hb.2) _).1
       rw [← sup_eq_right.mpr (le_inf hb.1 hc.1), ← sup_eq_left.mpr (inf_le_of_left_le hb.2)]
-      exact (h3 _ _ _ (le_trans hb.1 hb.2) h).2
+      exact (h3 (le_trans hb.1 hb.2) h).2
     have ee1 (x y t : α) (hh : r x y) : r (x ⊔ t) (y ⊔ t) := e1 ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t) (by
         simp
         constructor
@@ -1343,7 +1343,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         constructor
         · exact le_trans inf_le_right le_sup_left
         · rw [sup_comm, ← sup_assoc]
-          exact le_sup_right) (h3 _ _ _ inf_le_sup ((h1 _ _).mp hh)).2
+          exact le_sup_right) (h3 inf_le_sup (h1.mp hh)).2
     have ee2 (x y t : α) (hh : r x y) : r (x ⊓ t) (y ⊓ t) := by
       apply e1 ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t) (by
         simp
@@ -1355,7 +1355,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         constructor
         · rw [inf_comm, ← inf_assoc]
           exact inf_le_right
-        · exact le_trans inf_le_left le_sup_right) (h3 _ _ _ inf_le_sup ((h1 _ _).mp hh)).1
+        · exact le_trans inf_le_left le_sup_right) (h3 inf_le_sup (h1.mp hh)).1
     have transitive: ∀ {x y z : α}, r x y → r y z → r x z := by
       intro x y z hxy hyz
       apply e1 (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by
@@ -1366,22 +1366,22 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
           · rw [sup_assoc]
             exact le_sup_left) (by simp only [ inf_le_right, le_sup_right, and_self])
       have e2 : r ((x ⊓ y) ⊔ (y ⊔ z)) ((x ⊔ y) ⊔ (y ⊔ z)) :=
-        (h3 _ _ _ inf_le_sup ((h1 x y).mp hxy)).2
+        (h3 inf_le_sup (h1.mp hxy)).2
       have e3 : (x ⊔ y) ⊔ (y ⊔ z) = x ⊔ y ⊔ z := by
         rw [sup_comm x y, ← sup_sup_distrib_left, sup_assoc]
       have e4 : (x ⊓ y) ⊔ (y ⊔ z) = (y ⊔ z) :=
         sup_eq_right.mpr (le_trans inf_le_right le_sup_left)
       rw [e3, e4] at e2
       have e2' : r ((x ⊓ y) ⊓ (y ⊓ z)) ((x ⊔ y) ⊓ (y ⊓ z))  :=
-        (h3 _ _ _ inf_le_sup ((h1 x y).mp hxy)).1
+        (h3 inf_le_sup (h1.mp hxy)).1
       have e3' : (x ⊓ y) ⊓ (y ⊓ z) = x ⊓ y ⊓ z := by
         rw [inf_comm x y, ← inf_inf_distrib_left, inf_assoc]
       have e4' : (x ⊔ y) ⊓ (y ⊓ z) = (y ⊓ z) :=
         inf_eq_right.mpr (le_trans inf_le_left le_sup_right)
       rw [e3', e4'] at e2'
-      have e5 : r (x ⊓ y ⊓ z) (y ⊔ z) := h2 (y := y ⊓ z) _ _
-        (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' ((h1 _ _).mp hyz)
-      apply h2 (y := y ⊔ z) _ _ (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
+      have e5 : r (x ⊓ y ⊓ z) (y ⊔ z) := h2
+        (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h1.mp hyz)
+      apply h2 (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
         (by rw [sup_assoc]; exact le_sup_right) e5 e2
     constructor
     · constructor
