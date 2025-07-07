@@ -96,7 +96,7 @@ end Base
 
 section chainBotCoeff_mul_chainTopCoeff
 
-/-! The proof of lemma 2.6 from [Geck](Geck2017). -/
+/-! The proof of Lemma 2.6 from [Geck](Geck2017). -/
 
 variable {b : P.Base} {i j k l m : ι}
   (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j)
