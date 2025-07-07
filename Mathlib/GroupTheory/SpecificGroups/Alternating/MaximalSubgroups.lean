@@ -25,7 +25,94 @@ open MulAction
 
 variable {α : Type*} [Fintype α] [DecidableEq α]
 
+namespace Equiv.Perm
+
+omit [DecidableEq α] in
+theorem ofSubtype_mem_stabilizer' (s : Set α) (g : Equiv.Perm (sᶜ : Set α))
+    [DecidablePred fun x ↦ x ∈ sᶜ] :
+    Equiv.Perm.ofSubtype g ∈ stabilizer (Equiv.Perm α) s := by
+  classical
+  rw [mem_stabilizer_set_iff_subset_smul_set s.toFinite]
+  intro x hx
+  rw [Set.mem_smul_set]
+  use x, hx
+  simp [Equiv.Perm.ofSubtype_apply_of_not_mem g (Set.notMem_compl_iff.mpr hx)]
+
+end Equiv.Perm
+
 namespace alternatingGroup
+
+theorem stabilizer.isPreprimitive (s : Set α) (hs : (sᶜ : Set α).Nontrivial) :
+    IsPreprimitive (stabilizer (alternatingGroup α) s) s := by
+  classical
+  let φ : stabilizer (alternatingGroup α) s → Equiv.Perm s := MulAction.toPerm
+  suffices hφ : Function.Surjective φ by
+    let f : s →ₑ[φ] s := {
+      toFun := id
+      map_smul' := fun ⟨g, hg⟩ ⟨x, hx⟩ => by
+        simp only [id, Equiv.Perm.smul_def]
+        rw [toPerm_apply] }
+    have hf : Function.Bijective f := Function.bijective_id
+    rw [isPreprimitive_congr hφ hf]
+    infer_instance
+  -- function.surjective φ
+  suffices ∃ k : Equiv.Perm (sᶜ : Set α), Equiv.Perm.sign k = -1 by
+    obtain ⟨k, hk_sign⟩ := this
+    have hks : Equiv.Perm.ofSubtype k • s = s := by
+      rw [← mem_stabilizer_iff]
+      exact Equiv.Perm.ofSubtype_mem_stabilizer' s k
+    have hminus_one_ne_one : (-1 : Units ℤ) ≠ 1 := Ne.symm (units_ne_neg_self 1)
+    intro g
+    let g' := if Equiv.Perm.sign g = 1
+      then Equiv.Perm.ofSubtype g
+      else Equiv.Perm.ofSubtype g * Equiv.Perm.ofSubtype k
+    use! g'
+    rw [Equiv.Perm.mem_alternatingGroup]
+    rcases Int.units_eq_one_or (Equiv.Perm.sign g) with hsg | hsg <;>
+    · simp only [g', if_true, hminus_one_ne_one, if_false, Equiv.Perm.sign_ofSubtype,
+      Equiv.Perm.sign_mul, mul_neg, mul_one, neg_neg, hsg, hk_sign]
+    rw [mem_stabilizer_iff, Submonoid.mk_smul]
+    rcases Int.units_eq_one_or (Equiv.Perm.sign g) with hsg | hsg
+    · simp only [g', hsg, if_true]
+      exact Equiv.Perm.ofSubtype_mem_stabilizer g
+    · simp only [g', hsg, hminus_one_ne_one, if_false, mul_smul, hks]
+      exact Equiv.Perm.ofSubtype_mem_stabilizer g
+    dsimp only [id_eq, ite_true, ite_false, eq_mpr_eq_cast, cast_eq, φ]
+    rcases Int.units_eq_one_or (Equiv.Perm.sign g) with hsg | hsg
+    · simp only [g', hsg, if_true]
+      ext x
+      simp
+    · simp only [g', hsg, hminus_one_ne_one, if_false]
+      ext x
+      simp only [toPerm_apply, SMul.smul_stabilizer_def]
+      simp only [Subgroup.mk_smul, Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply]
+      rw [Equiv.Perm.ofSubtype_apply_of_not_mem k _]
+      exact Equiv.Perm.ofSubtype_apply_coe g x
+      rw [Set.notMem_compl_iff]; exact x.prop
+  -- ∃ k : equiv.perm (sᶜ : set α), equiv.perm.sign k = -1,
+  obtain ⟨a, ha, b, hb, hab⟩ := hs
+  use Equiv.swap ⟨a, ha⟩ ⟨b, hb⟩
+  rw [Equiv.Perm.sign_swap _]
+  simp [← Function.Injective.ne_iff Subtype.coe_injective, hab]
+
+theorem stabilizer.isPreprimitive' (s : Set α) (hsc : sᶜ.Nontrivial)
+    (G : Subgroup (Equiv.Perm α))
+    (hG : stabilizer (Equiv.Perm α) s ⊓ alternatingGroup α ≤ G) :
+    IsPreprimitive (stabilizer G s) s := by
+  have _ := stabilizer.isPreprimitive s hsc
+  let φ : stabilizer (alternatingGroup α) s → stabilizer G s := fun g => by
+    use! (g : alternatingGroup α)
+    apply hG
+    rw [Subgroup.mem_inf]
+    constructor
+    · let h := g.prop; rw [mem_stabilizer_iff] at h ⊢; exact h
+    · exact SetLike.coe_mem _
+    exact g.prop
+  let f : s →ₑ[φ] s :=
+    { toFun := id
+      map_smul' := fun ⟨⟨m, hm'⟩, hm⟩ ⟨a, ha⟩ => rfl }
+  have hf : Function.Surjective f := Function.surjective_id
+  exact IsPreprimitive.of_surjective hf
 
 theorem isPretransitive_ofFixingSubgroup (s : Set α) (h0 : s.Nontrivial)
     (hα : Set.ncard s < Set.ncard (sᶜ : Set α)) :
@@ -346,7 +433,7 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
           rw [Subgroup.mem_inf] at hg' ⊢
           exact ⟨h g' hg'.left, hg'.right⟩
         obtain ⟨g', hg', hg's⟩ := this
-        cases' IsBlock.def_one.mp hB ⟨g', hg'⟩ with h h
+        rcases isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩ with h | h
         · -- case g' • B = B : absurd, since B = s and choice of g'
           exfalso
           apply hg's; rw [← hBs']; exact h
@@ -354,29 +441,29 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
           suffices (g' • B).Subsingleton by
             apply Set.subsingleton_of_image _ B this
             apply Function.Bijective.injective (MulAction.bijective _)
-          apply hB_not_le_sc ((⟨g', hg'⟩ : G) • B) (IsBlock_of_block _ hB)
+          apply hB_not_le_sc ((⟨g', hg'⟩ : G) • B) (hB.translate _)
           rw [← hBs']
           exact Disjoint.subset_compl_right h
     -- is_trivial_block (coe ⁻¹' B : set s),
     suffices IsPreprimitive (stabilizer G s) (s : Set α) by
-      refine IsPreprimitive.has_trivial_blocks this ?_
-      -- is_block (coe ⁻¹' B : set s)
+      apply this.isTrivialBlock_of_isBlock
+      -- IsBlock (stabilizer G s) (Subtype.val ⁻¹' B : Set s)
       let φ' : stabilizer G s → G := Subtype.val
       let f' : s →ₑ[φ'] α := {
         toFun := Subtype.val
         map_smul' := fun ⟨m, _⟩ x => by simp [φ'] }
-      apply MulAction.IsBlock_preimage f' hB
+      exact hB.preimage f'
     apply stabilizer.isPreprimitive' s h1
     convert le_trans (le_of_lt hG) inf_le_left
   intro B hB
   unfold IsTrivialBlock
   rw [or_iff_not_imp_left]
   intro hB'
-  obtain ⟨a, ha, ha'⟩ := Set.not_subset_iff_exists_mem_not_mem.mp
-    fun h => hB' ((hB_not_le_sc B hB) h)
-  rw [Set.not_mem_compl_iff] at ha'
-  obtain ⟨b, hb, hb'⟩ := Set.not_subset_iff_exists_mem_not_mem.mp
-    fun h => hB' ((hB_not_le_s B hB) h)
+  obtain ⟨a, ha, ha'⟩ := Set.not_subset_iff_exists_mem_notMem.mp
+    fun h ↦ hB' ((hB_not_le_sc B hB) h)
+  rw [Set.notMem_compl_iff] at ha'
+  obtain ⟨b, hb, hb'⟩ := Set.not_subset_iff_exists_mem_notMem.mp
+    fun h ↦ hB' ((hB_not_le_s B hB) h)
   rw [← Set.mem_compl_iff] at hb'
   have hsc_le_B : sᶜ ⊆ B := by
     intro x hx'
@@ -385,24 +472,22 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
       suffices k • B = B by
         rw [← hkbx, ← this, Set.smul_mem_smul_set_iff]
         exact hb
-      -- k • B = B,
-      apply or_iff_not_imp_right.mp (IsBlock.def_one.mp hB ⟨k, _⟩)
-      rw [Set.not_disjoint_iff_nonempty_inter]
-      change (k • B ∩ B).Nonempty
-      use a
-      constructor
-      · rw [mem_fixingSubgroup_iff] at hk
+      suffices hk_mem : (k : Equiv.Perm α) ∈ G by
+        apply isBlock_iff_smul_eq_of_nonempty.mp hB (g := ⟨k, hk_mem⟩)
+        simp only [Subgroup.mk_smul]
+        use a
+        refine ⟨?_, ha⟩
+        rw [mem_fixingSubgroup_iff] at hk
         rw [← hk a ha']
         exact Set.smul_mem_smul_set ha
-      · exact ha
-      · -- ↑k ∈ G
-        apply le_trans (le_of_lt hG); exact inf_le_left
-        rw [Subgroup.mem_inf]; constructor
-        suffices hk' : k ∈ stabilizer (alternatingGroup α) s by
-          simpa [mem_stabilizer_iff] using hk'
-        apply MulAction.fixingSubgroup_le_stabilizer; exact hk
-        exact k.prop
-    · -- ∃ (k : fixing_subgroup (alternating_group α) s), k • b = x,
+      -- ↑k ∈ G
+      apply le_trans (le_of_lt hG); exact inf_le_left
+      rw [Subgroup.mem_inf]
+      refine ⟨?_, k.prop⟩
+      suffices hk' : k ∈ stabilizer (alternatingGroup α) s by
+        simpa [mem_stabilizer_iff] using hk'
+      exact MulAction.fixingSubgroup_le_stabilizer _ _ hk
+    · -- ∃ (k : fixingSubgroup (alternatingGroup α) s), k • b = x,
       haveI : IsPretransitive (fixingSubgroup (alternatingGroup α) s)
           (SubMulAction.ofFixingSubgroup (alternatingGroup α) s) :=
         isPretransitive_ofFixingSubgroup s h0 hα
@@ -413,30 +498,29 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
       rw [← Subtype.coe_inj, SubMulAction.val_smul] at hk
       exact hk
   -- Conclusion of the proof : B = ⊤
-  rw [eq_top_iff]
-  intro x _
+  rw [Set.eq_univ_iff_forall]
+  intro x
   obtain ⟨b, hb⟩ := h1.nonempty
   obtain ⟨⟨g, hg⟩, hgbx : g • b = x⟩ := exists_smul_eq G b x
   suffices g • B = B by
     rw [← hgbx, ← this, Set.smul_mem_smul_set_iff]
     exact hsc_le_B hb
   -- g • B = B,
-  apply or_iff_not_imp_right.mp (IsBlock.def_one.mp hB ⟨g, hg⟩)
-  rw [Set.not_disjoint_iff_nonempty_inter]
-  change (g • B ∩ B).Nonempty
+  apply isBlock_iff_smul_eq_of_nonempty.mp hB (g := ⟨g, hg⟩)
+  simp only [Subgroup.mk_smul]
   apply Set.ncard_pigeonhole
   -- card B + card (g • B) = card B + card B
   -- ... ≥ card sᶜ + card sᶜ
   -- ... > card s + card s ᶜ = card α
-  rw [← Nat.card_eq_fintype_card, ← Set.ncard_add_ncard_compl s]
+  rw [← Set.ncard_add_ncard_compl s]
   apply Nat.lt_of_lt_of_le
   · apply Nat.add_lt_add_right _ (Set.ncard (sᶜ : Set α))
-    use Set.ncard (sᶜ : Set α)
-    exact hα
+    · use Set.ncard (sᶜ : Set α)
+    · exact hα
   apply Nat.add_le_add
   · apply le_trans (Set.ncard_le_ncard hsc_le_B)
     apply le_of_eq
-    rw [MulAction.smul_set_ncard_eq]
+    rw [Set.ncard_smul_set]
   exact Set.ncard_le_ncard hsc_le_B
 
 theorem isMaximalStab'
