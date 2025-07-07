@@ -105,12 +105,20 @@ def withZeroUnits_OrderIso : WithZero Aˣ ≃o A where
 `WithZero Aˣ` into `A` as an ordered embedding. -/
 def withZeroUnits_OrderEmbedding : WithZero Aˣ ↪o A := withZeroUnits_OrderIso.toOrderEmbedding
 
+@[simp]
+lemma withZeroUnits_OrderEmbedding_apply (x : WithZero Aˣ) :
+    withZeroUnits_OrderEmbedding x = withZeroUnitsEquiv x := rfl
+
+lemma withZeroUnits_OrderEmbedding_mul (x y : WithZero Aˣ) :
+    withZeroUnits_OrderEmbedding (x * y) = withZeroUnitsEquiv x * withZeroUnitsEquiv y := by
+  simp [map_mul]
+
 
 end Units
 
 section MonoidWithZeroHom
 
-open MonoidWithZeroHom
+open MonoidWithZeroHom WithZero
 
 /-- The inclusion of `valueGroup₀ f` into `B` a a multiplicative homomorphism. -/
 def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
@@ -134,8 +142,42 @@ def valueGroup₀_OrderEmbedding : valueGroup₀ f ↪o WithZero Bˣ where
       simp [coe_le_coe, ge_iff_le, map'_coe, Subgroup.subtype_apply] at h_le ⊢
       exact h_le
 
+@[simp]
+lemma valueGroup₀_OrderEmbedding_apply (x : valueGroup₀ f) :
+    valueGroup₀_OrderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
+
+lemma valueGroup₀_OrderEmbedding_mul (x y : valueGroup₀ f) :
+    valueGroup₀_OrderEmbedding (x * y) =
+      valueGroup₀_OrderEmbedding x * valueGroup₀_OrderEmbedding y := by simp
+
 /-- The inclusion of `valueGroup₀ f` into `B` as an order embedding. -/
 def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o B :=
   valueGroup₀_OrderEmbedding.trans withZeroUnits_OrderEmbedding
+
+lemma valueGroup₀_OrderEmbedding'_apply (x : valueGroup₀ f) :
+    valueGroup₀_OrderEmbedding' x =
+      withZeroUnits_OrderEmbedding (WithZero.map' (valueGroup f).subtype x) := rfl
+
+lemma valueGroup₀_OrderEmbedding'_mul (x y : valueGroup₀ f) :
+    valueGroup₀_OrderEmbedding' (x * y) =
+      valueGroup₀_OrderEmbedding' x * valueGroup₀_OrderEmbedding' y := by
+  simp [valueGroup₀_OrderEmbedding'_apply, map_mul, withZeroUnits_OrderEmbedding_apply]
+
+instance : IsOrderedMonoid (valueGroup₀ f) where
+  mul_le_mul_left := by
+    intro a b h c
+    match a, b, c with
+    | _, _, 0 => simp
+    | 0, _, (c : valueGroup f) => simp
+    | some a, 0, _ => exact (not_le_of_gt (WithZero.zero_lt_coe a) h).elim
+    | (x : valueGroup f), (y : valueGroup f), (c : valueGroup f) =>
+      simp only [← valueGroup₀_OrderEmbedding'.le_iff_le, valueGroup₀_OrderEmbedding'_mul,
+        valueGroup₀_OrderEmbedding'_mul]
+      rw [mul_le_mul_left]
+      · rwa [coe_le_coe] at h
+      simp [valueGroup₀_OrderEmbedding', withZeroUnits_OrderEmbedding]
+
+instance : LinearOrderedCommGroupWithZero (valueGroup₀ f) where
+  zero_le_one := by simp
 
 end MonoidWithZeroHom
