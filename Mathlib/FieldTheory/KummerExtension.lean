@@ -245,7 +245,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
+      autAdjoinRootXPowSubC_root, Algebra.smul_def, MulEquiv.apply_symm_apply,
       rootsOfUnity.val_mkOfPowEq_coe, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
     split_ifs with h
@@ -397,9 +397,9 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : L ≃ₐ[K] L) :
   rw [mem_primitiveRoots hn] at hζ'
   rw [← mem_nthRoots hn, (hζ'.map_of_injective (algebraMap K L).injective).nthRoots_eq
     (rootOfSplitsXPowSubC_pow a L)] at hα
-  simp only [Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
+  simp only [Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
-  simp only [map_mul, ← map_pow, ← Algebra.smul_def, map_smul,
+  simp only [← map_pow, ← Algebra.smul_def, map_smul,
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 

@@ -110,7 +110,7 @@ end PartialOrder
 theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
     a ≤ iSup f ↔ ∃ i, a ≤ f i := by
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
-  show (a ≤ ⨆ i, f i) → _
+  change (a ≤ ⨆ i, f i) → _
   refine fun h => of_not_not fun ha' => ?_
   push_neg at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=
@@ -621,7 +621,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
     inhabit α
     refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
     refine le_antisymm ?_ (sSup_le fun c hc => hc.2)
-    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq, iInf_const]
+    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq]
     rw [← this]; clear this
     simp_rw [iInf_iSup_eq, iSup_le_iff]; intro g
     if h : (⨅ a, b ⊓ cond (g a) a (aᶜ)) = ⊥ then simp [h] else
@@ -775,10 +775,10 @@ def orderIsoBool : α ≃o Bool :=
   { equivBool with
     map_rel_iff' := @fun a b => by
       rcases eq_bot_or_eq_top a with (rfl | rfl)
-      · simp [bot_ne_top]
+      · simp
       · rcases eq_bot_or_eq_top b with (rfl | rfl)
-        · simp [bot_ne_top.symm, bot_ne_top, Bool.false_lt_true]
-        · simp [bot_ne_top] }
+        · simp [bot_ne_top.symm, Bool.false_lt_true]
+        · simp }
 
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
@@ -787,7 +787,7 @@ protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α
     compl := fun x => if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top, SDiff.sdiff, compl]
+      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp
     inf_compl_le_bot := fun x => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
@@ -830,16 +830,7 @@ open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
-    __ := IsSimpleOrder.booleanAlgebra
-    iInf_sup_le_sup_sInf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp [bot_sup_eq, ← sInf_eq_iInf]
-      · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
-    inf_sSup_le_iSup_inf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [le_bot_iff, sSup_eq_bot, bot_inf_eq, iSup_bot, le_refl]
-      · simp only [top_inf_eq, ← sSup_eq_iSup]
-        exact le_rfl }
+    __ := IsSimpleOrder.booleanAlgebra }
 
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
@@ -855,6 +846,12 @@ instance (priority := 100) : IsAtomistic α where
 
 instance (priority := 100) : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
+
+@[simp] lemma bot_lt_iff_eq_top {a : α} : ⊥ < a ↔ a = ⊤ :=
+  ⟨eq_top_of_lt, fun h ↦ h ▸ bot_lt_top⟩
+
+@[simp] lemma lt_top_iff_eq_bot {a : α} : a < ⊤ ↔ a = ⊥ :=
+  ⟨eq_bot_of_lt, fun h ↦ h ▸ bot_lt_top⟩
 
 end IsSimpleOrder
 
