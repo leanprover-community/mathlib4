@@ -275,6 +275,8 @@ protected theorem finsum {f : ι → ℝ → E} (h : ∀ i, IntervalIntegrable (
     apply intervalIntegrable_const_iff.2
     tauto
 
+section Mul
+
 theorem mul_continuousOn {f g : ℝ → A} (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x * g x) μ a b := by
   rw [intervalIntegrable_iff] at hf ⊢
@@ -295,20 +297,21 @@ theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
     IntervalIntegrable (fun x => f x * c) μ a b :=
   hf.mul_continuousOn continuousOn_const
 
+end Mul
+
 section SMul
 
 variable {f : ℝ → 𝕜} {g : ℝ → E} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
-variable [NoAtoms μ]
 
 theorem smul_continuousOn (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
-  rw [intervalIntegrable_iff'] at hf ⊢
-  apply hf.smul_continuousOn hg isCompact_uIcc
+  rw [intervalIntegrable_iff] at hf ⊢
+  exact hf.smul_continuousOn_of_subset hg measurableSet_Ioc isCompact_uIcc Ioc_subset_Icc_self
 
 theorem continuousOn_smul (hg : IntervalIntegrable g μ a b)
     (hf : ContinuousOn f [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
-  rw [intervalIntegrable_iff'] at hg ⊢
-  apply hg.continuousOn_smul hf isCompact_uIcc
+  rw [intervalIntegrable_iff] at hg ⊢
+  exact hg.continuousOn_smul_of_subset hf isCompact_uIcc measurableSet_Ioc Ioc_subset_Icc_self
 
 @[simp]
 theorem const_smul (hg : IntervalIntegrable g μ a b) (c : 𝕜) :
