@@ -55,7 +55,7 @@ def internalHomDiagramFunctor (F : C ⥤ V) : (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C 
         simpa [-NatTrans.naturality] using congr_arg (ihom (F.obj (unop j))).map
           (η.naturality <| k ◁ f) }
 
-/-- `DayConvolutionInternalHom F G H` asserts that `H` is an
+/-- `DayConvolutionInternalHom F H` asserts that `H` is an
 internal hom functor of `F` for the Day convolution monoidal structure.
 This is phrased as the data of a limit `CategoryTheory.Limits.Wedge`
 (i.e an end) on `internalHomDiagramFunctor F|>.obj G|>.obj c` for every `G` and
@@ -101,7 +101,7 @@ section ev
 
 variable (G : C ⥤ V) [DayConvolution F (H.obj G)]
 
-/-- Given `ℌ : DayConvolutionInternalHom F G H`, if we think of `H`
+/-- Given `ℌ : DayConvolutionInternalHom F H`, if we think of `H.obj G`
 as the internal hom `[F, G]`, then this is the transformation
 corresponding to the component at `G` of the "evaluation" natural morphism
 `F ⊛ [F, _] ⟶ 𝟭`. -/
@@ -151,7 +151,7 @@ section coev
 
 variable (G : C ⥤ V) [DayConvolution F G]
 
-/-- Given `ℌ : DayConvolutionInternalHom F (F ⊛ G) H`, if we think of `H`
+/-- Given `ℌ : DayConvolutionInternalHom F H`, if we think of `H.obj G`
 as the internal hom `[F, G]`, then this is the transformation
 corresponding to the component at `G` of the "coevaluation" natural morphism
 `𝟭 ⟶ [F, F ⊛ _]`. -/
