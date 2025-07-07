@@ -144,7 +144,6 @@ theorem has_swap_of_lt_stabilizer [DecidableEq α]
     intro t ht
     rw [Set.one_lt_ncard_iff] at ht
     obtain ⟨a, b, ha, hb, h⟩ := ht
-    simp only [Ne, Subtype.mk_eq_mk] at h
     use swap a b
     constructor
     rw [swap_isSwap_iff]; exact h
@@ -279,7 +278,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
         exact h0
       | inr hB_top =>
         apply Set.not_nonempty_empty
-        simp only [hBsc, Set.top_eq_univ, Set.compl_univ_iff] at hB_top
+        simp only [hBsc, Set.compl_univ_iff] at hB_top
         rw [← hB_top]
         exact h0
     | inr hcard =>

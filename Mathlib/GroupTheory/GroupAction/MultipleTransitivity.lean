@@ -336,35 +336,35 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
   constructor
   · intro hn
-    exact {
-      exists_smul_eq x y := by
-        obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
-        have hg : g ∈ stabilizer G a := by
-          rw [mem_stabilizer_iff]
-          rw [DFunLike.ext_iff] at hgxy
-          convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
-        use ⟨g, hg⟩
-        ext i
-        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
-        rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc] }
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        -- gx • x = x1 :: a
-        obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
-        -- gy • y = y1 :: a
-        obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
-        -- g • x1 = y1,
-        obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
-        use gy⁻¹ * g * gx
-        ext i
-        simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-        simp only [← smul_apply _ _ i, hgy, hgx]
-        simp only [smul_apply]
-        rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-        · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
-          simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
-        · simp only [ofStabilizer.snoc_last, ← hg, subgroup_smul_def]
-          exact g.prop }
+    rw [MulAction.isMultiplyPretransitive_iff]
+    intro x y
+    obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
+    have hg : g ∈ stabilizer G a := by
+      rw [mem_stabilizer_iff]
+      rw [DFunLike.ext_iff] at hgxy
+      convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
+    use ⟨g, hg⟩
+    ext i
+    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+    rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc]
+  · intro hn
+    rw [MulAction.isMultiplyPretransitive_iff]
+    intro x y
+      -- gx • x = x1 :: a
+    obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
+      -- gy • y = y1 :: a
+    obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
+      -- g • x1 = y1,
+    obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
+    use gy⁻¹ * g * gx
+    ext i
+    simp only [mul_smul, smul_apply, inv_smul_eq_iff]
+    simp only [← smul_apply _ _ i, hgy, hgx]
+    simp only [smul_apply]
+    rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
+    · simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
+    · simp only [ofStabilizer.snoc_last, ← hg]
+      exact g.prop
 
 end ofStabilizer
 
@@ -375,11 +375,11 @@ variable {G α : Type*} [Group G] [MulAction G α]
 open SubMulAction Fin.Embedding
 
 variable (G) in
-/-- The fixator of a finite subset of cardinal d in an n-transitive action
-acts (n-d) transitively on the complement. -/
+/-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
+acts `(n - d)`-transitively on the complement. -/
 @[to_additive
-"The fixator of a finite subset of cardinal d in an n-transitive additive action
-acts (n-d) transitively on the complement."]
+"The fixator of a finite subset of cardinal `d` in an `n`-transitive additive action
+acts `(n - d)`-transitively on the complement."]
 theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
     IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m :=
@@ -443,7 +443,7 @@ private theorem index_of_fixingSubgroup_aux
   induction k with
   | zero =>
     intro G _ α _ _ _ s hs
-    simp only [hs, zero_eq, ge_iff_le, nonpos_iff_eq_zero, tsub_zero, ne_eq]
+    simp only [hs, tsub_zero]
     rw [Set.ncard_eq_zero] at hs
     simp only [hs]
     suffices fixingSubgroup G ∅ = ⊤ by
@@ -498,8 +498,6 @@ private theorem index_of_fixingSubgroup_aux
           stabilizer_index_of_pretransitive G a]
         exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
     · rw [add_comm] at hscard
-      have := Nat.sub_eq_of_eq_add hscard
-      simp only [hs, Nat.pred_succ] at this
       convert hrec (stabilizer G a) (α := SubMulAction.ofStabilizer G a)
         (ofStabilizer.isMultiplyPretransitive.mp hmk) htcard
       all_goals { rw [nat_card_ofStabilizer_eq G a] }
@@ -597,7 +595,7 @@ theorem isMultiplyPretransitive (n : ℕ) :
           set a : α := (φ.invFun ⟨b, hb⟩ : α)
           have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
           rw [← Subtype.coe_mk a ha]
-          simp [Subtype.val_injective.extend_apply, a]
+          simp [a]
         · rintro ⟨i, hi⟩
           apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
           rw [← hi]
@@ -656,7 +654,7 @@ namespace AlternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The `alternatingGroup` on α is (Fintype.card α - 2)-pretransitive. -/
+/-- The `alternatingGroup` on `α` is `(Nat.card α - 2)`-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
@@ -698,7 +696,7 @@ theorem isMultiplyPretransitive :
             simp [ne_eq, EmbeddingLike.apply_eq_iff_eq, ← val_inj,
               coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
 
-/-- A subgroup of `Equiv.Perm α` which is (Fintype.card α - 2)-pretransitive
+/-- A subgroup of `Equiv.Perm α` which is `(Fintype.card α - 2)`-pretransitive
   contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     (G : Subgroup (Equiv.Perm α))
