@@ -10,10 +10,31 @@ import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 Given a chain complex `K`: `... ⟶ K.X 2 ⟶ K.X 1 ⟶ K.X 0`,
 a cochain complex `L`: `L.X 0 ⟶ L.X 1 ⟶ L.X 2 ⟶ ...`,
-a morphism `d₀: K.X 0 ⟶ L.X 0` satisfying the identifies `K.d 1 0 ≫ d₀ = 0`
+a morphism `d₀ : K.X 0 ⟶ L.X 0` satisfying the identifies `K.d 1 0 ≫ d₀ = 0`
 and `d₀ ≫ L.d 0 1 = 0`, we construct a cochain complex indexed by `ℤ` of the form
 `... ⟶ K.X 2 ⟶ K.X 1 ⟶ K.X 0 ⟶ L.X 0 ⟶ L.X 1 ⟶ L.X 2 ⟶ ...`,
 where `K.X 0` lies in degree `-1` and `L.X 0` in degree `0`.
+
+## Main definitions
+
+Say `K : ChainComplex C ℕ` and `L : CochainComplex C ℕ`, so `... ⟶ K₂ ⟶ K₁ ⟶ K₀`
+and `L⁰ ⟶ L¹ ⟶ L² ⟶ ...`.
+
+* `ConnectData K L`: an auxiliary structure consisting of `d₀ : K₀ ⟶ L⁰` "connecting" the
+  complexes and proofs that the induced maps `K₁ ⟶ K₀ ⟶ L₀` and `K₀ ⟶ L₀ ⟶ L₁` are both zero.
+
+Now say `h : ConnectData K L`.
+
+* `CochainComplex.ConnectData.cochainComplex h` : the induced ℤ-indexed complex
+  `... ⟶ K₁ ⟶ K₀ ⟶ L⁰ ⟶ L¹ ⟶ ...`
+* `CochainComplex.ConnectData.homologyIsoPos h (n : ℕ) (m : ℤ)` : if `m = n + 1`,
+  the isomorphism `h.cochainComplex.homology m ≅ L.homology (n + 1)`
+* `CochainComplex.ConnectData.homologyIsoNeg h (n : ℕ) (m : ℤ)` : if `m = -(n + 2)`,
+  the isomorphism `h.cochainComplex.homology m ≅ K.homology (n + 1)`
+
+## TODO
+
+* Computation of `h.cochainComplex.homology k` when `k = 0` or `k = -1`.
 
 -/
 
@@ -164,8 +185,6 @@ noncomputable def homologyIsoNeg (n : ℕ) (m : ℤ)
       (i' := m - 1) (j' := m) (k' := m + 1)
       (by simp; omega) (by simp; omega) (by simp; omega) (by simp) (by simp)).symm ≪≫
     HomologicalComplex.homologyMapIso h.restrictionLEIso (n + 1)
-
--- TODO: Study `h.cochainComplex.homology k` when `k = 0` or `k = -1`.
 
 end ConnectData
 
