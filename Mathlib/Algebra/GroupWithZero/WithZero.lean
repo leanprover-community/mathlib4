@@ -406,6 +406,7 @@ namespace MonoidWithZeroHom
 
 variable {G₀' : Type*} [GroupWithZero G₀']
 
+/-- The `MonoidWithZeroHom` from the units endowed with a zero, to the original group with zero. -/
 def withZeroUnitsHom [DecidablePred (fun a : G₀' ↦ a = 0)] :
     WithZero G₀'ˣ →*₀ G₀' where
   __ := WithZero.withZeroUnitsEquiv
