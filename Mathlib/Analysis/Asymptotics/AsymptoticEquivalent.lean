@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Asymptotic equivalence
@@ -337,28 +336,13 @@ end NormedLinearOrderedField
 
 section Real
 
-variable {α : Type*} {u v t w : α → ℝ} {l : Filter α}
-
-theorem IsEquivalent.add_add_of_nonneg
+theorem IsEquivalent.add_add_of_nonneg {α : Type*} {u v t w : α → ℝ} {l : Filter α}
     (hu : 0 ≤ v) (hw : 0 ≤ w) (htu : u ~[l] v) (hvw : t ~[l] w) :
     u + t ~[l] v + w := by
   simp only [IsEquivalent, add_sub_add_comm]
   change (fun x ↦ (u - v) x + (t - w) x) =o[l] (fun x ↦ v x + w x)
   conv => enter [3, x]; rw [← (abs_eq_self).mpr (hu x), ← (abs_eq_self).mpr (hw x)]
   simpa only [← Real.norm_eq_abs] using .add_add htu hvw
-
-theorem IsEquivalent.rpow_of_nonneg
-    (hu : 0 ≤ v) (h : u ~[l] v) {r : ℝ} :
-    u ^ r ~[l] v ^ r := by
-  obtain ⟨φ, hφ, huφv⟩ := IsEquivalent.exists_eq_mul h
-  rw [isEquivalent_iff_exists_eq_mul]
-  have hφr : Tendsto ((fun x ↦ x ^ r) ∘ φ) l (𝓝 1) := by
-    rw [← Real.one_rpow r]
-    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
-  use (· ^ r) ∘ φ, hφr
-  conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
-  filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
-  simp [← Real.mul_rpow (le_of_lt hφ_pos) (hu x), huv']
 
 end Real
 
