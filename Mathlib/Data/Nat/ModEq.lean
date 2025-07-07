@@ -17,7 +17,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 
 ## Notations
 
-`a ≡ b [MOD n]` is notation for `nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
+`a ≡ b [MOD n]` is notation for `Nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
 
 ## Tags
 
@@ -28,7 +28,7 @@ assert_not_exists OrderedAddCommMonoid Function.support
 
 namespace Nat
 
-/-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a - b` is a multiple of `n`. -/
+/-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. -/
 def ModEq (n a b : ℕ) :=
   a % n = b % n
 
