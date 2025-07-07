@@ -7,11 +7,6 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos Fernández
 import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Adjoin.FG
-import Mathlib.Algebra.Equiv.TransferInstance
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.Algebra.DirectSum.Internal
 
 /-! # Tensor products and finitely generated submodules
 
