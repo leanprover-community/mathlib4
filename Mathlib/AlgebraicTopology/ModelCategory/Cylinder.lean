@@ -10,7 +10,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 # Cylinders
 
 We introduce a notion of cylinder for an object `A : C` in a model category.
-It consists of an object `I`, a weak equivalence `σ : I ⟶ A` equipped with two sections
+It consists of an object `I`, a weak equivalence `π : I ⟶ A` equipped with two sections
 `i₀` and `i₁`. This notion shall be important in the definition of "left homotopies"
 in model categories.
 
@@ -23,37 +23,6 @@ in model categories.
 universe v u
 
 open CategoryTheory Category Limits
-
-namespace CategoryTheory
-
-/--
-In a category, given a morphism `f : A ⟶ B` and an object `X`,
-this is the obvious pushout diagram:
-```
-A ⟶ A ⨿ X
-|     |
-v     v
-B ⟶ B ⨿ X
-```
--/
-lemma IsPushout.of_coprod_inl_with_id {C : Type*} [Category C]
-    {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct A X]
-    [HasBinaryCoproduct B X] :
-    IsPushout coprod.inl f (coprod.map f (𝟙 X)) coprod.inl where
-  w := by simp
-  isColimit' := ⟨PushoutCocone.isColimitAux' _ (fun s ↦ by
-    refine ⟨coprod.desc s.inr (coprod.inr ≫ s.inl), ?_, ?_, ?_⟩
-    · ext
-      · simp [PushoutCocone.condition]
-      · simp
-    · simp
-    · intro m h₁ h₂
-      dsimp at m h₁ h₂ ⊢
-      ext
-      · simpa using h₂
-      · simp [← h₁])⟩
-
-end CategoryTheory
 
 namespace HomotopicalAlgebra
 

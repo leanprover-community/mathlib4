@@ -18,28 +18,6 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 
 open CategoryTheory Limits
 
--- to be moved
-namespace CategoryTheory.Limits
-
-variable {C : Type*} [Category C] {X Y : C} (c : BinaryCofan X Y)
-
-lemma isPushout_of_isColimit_binaryCofan_of_isInitial (hc : IsColimit c)
-    {I : C} (hI : IsInitial I) :
-    IsPushout (hI.to _) (hI.to _) c.inr c.inl where
-  w := hI.hom_ext _ _
-  isColimit' := ⟨PushoutCocone.IsColimit.mk _
-    (fun s ↦ hc.desc (BinaryCofan.mk s.inr s.inl))
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩)
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩)
-    (fun s m h₁ h₂ ↦ by
-      apply BinaryCofan.IsColimit.hom_ext hc
-      · rw [h₂, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩]
-        rfl
-      · rw [h₁, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩]
-        rfl)⟩
-
-end CategoryTheory.Limits
-
 namespace HomotopicalAlgebra
 
 variable {C : Type*} [Category C]
@@ -78,7 +56,7 @@ instance [hY : IsCofibrant Y] :
   rw [isCofibrant_iff] at hY
   rw [cofibration_iff] at hY ⊢
   exact MorphismProperty.of_isPushout
-    ((isPushout_of_isColimit_binaryCofan_of_isInitial _
+    ((IsPushout.of_isColimit_binaryCofan_of_isInitial
     (colimit.isColimit (pair X Y)) initialIsInitial).flip) hY
 
 instance [HasInitial C] [HasBinaryCoproduct X Y] [hX : IsCofibrant X] :
@@ -86,7 +64,7 @@ instance [HasInitial C] [HasBinaryCoproduct X Y] [hX : IsCofibrant X] :
   rw [isCofibrant_iff] at hX
   rw [cofibration_iff] at hX ⊢
   exact MorphismProperty.of_isPushout
-    (isPushout_of_isColimit_binaryCofan_of_isInitial _
+    (IsPushout.of_isColimit_binaryCofan_of_isInitial
     (colimit.isColimit (pair X Y)) initialIsInitial) hX
 
 end

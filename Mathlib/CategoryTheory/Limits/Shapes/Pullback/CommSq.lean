@@ -1220,6 +1220,48 @@ Z --id--> Z
 lemma id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
+/--
+In a category, given a morphism `f : A ⟶ B` and an object `X`,
+this is the obvious pushout diagram:
+```
+A ⟶ A ⨿ X
+|     |
+v     v
+B ⟶ B ⨿ X
+```
+-/
+lemma of_coprod_inl_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct A X]
+    [HasBinaryCoproduct B X] :
+    IsPushout coprod.inl f (coprod.map f (𝟙 X)) coprod.inl where
+  w := by simp
+  isColimit' := ⟨PushoutCocone.isColimitAux' _ (fun s ↦ by
+    refine ⟨coprod.desc s.inr (coprod.inr ≫ s.inl), ?_, ?_, ?_⟩
+    · ext
+      · simp [PushoutCocone.condition]
+      · simp
+    · simp
+    · intro m h₁ h₂
+      dsimp at m h₁ h₂ ⊢
+      ext
+      · simpa using h₂
+      · simp [← h₁])⟩
+
+lemma of_isColimit_binaryCofan_of_isInitial
+    {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c)
+    {I : C} (hI : IsInitial I) :
+    IsPushout (hI.to _) (hI.to _) c.inr c.inl where
+  w := hI.hom_ext _ _
+  isColimit' := ⟨PushoutCocone.IsColimit.mk _
+    (fun s ↦ hc.desc (BinaryCofan.mk s.inr s.inl))
+    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩)
+    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩)
+    (fun s m h₁ h₂ ↦ by
+      apply BinaryCofan.IsColimit.hom_ext hc
+      · rw [h₂, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩]
+        rfl
+      · rw [h₁, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩]
+        rfl)⟩
+
 end IsPushout
 
 section Equalizer
