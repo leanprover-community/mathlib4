@@ -62,7 +62,7 @@ variable [Φ.functor.Full] [Φ.functor.Faithful]
 
 variable (i) in
 /-- If `Φ : LocalizerMorphism W₁ W₂` corresponds to a class `W₁` that is
-induced by `W₂` via the fully faithful functor `Φ.functor` and that we
+induced by `W₂` via the fully faithful functor `Φ.functor` and we
 have functorial right resolutions given by a functor `ρ : C₂ ⥤ C₁`, then
 this is the natural transformation `𝟭 C₁ ⟶ Φ.functor ⋙ ρ` induced
 by `i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor`. -/
