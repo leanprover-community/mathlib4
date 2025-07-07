@@ -287,9 +287,9 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
     rw [← Set.ncard_smul_set k B]
     apply Set.ncard_le_ncard (ht := Set.toFinite s)
     rw [← Set.disjoint_compl_right_iff_subset, ← hBsc]
-    apply or_iff_not_imp_left.mp (IsBlock.def_one.mp hB k)
+    apply isBlock_iff_disjoint_smul_of_ne.mp hB
     intro h
-    apply Set.not_mem_empty a
+    apply Set.notMem_empty a
     rw [← Set.inter_compl_self s]
     constructor
     · exact ha
@@ -299,23 +299,22 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc : ∀ (B : Set α) (_ : IsBlock G B) (_ : B ⊆ sᶜ), B.Subsingleton := by
     intro B hB hBsc
-    rw [← Equiv.Perm.Subtype.image_preimage_of_val hBsc]
+    rw [← Subtype.image_preimage_of_val hBsc]
     apply Set.Subsingleton.image
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)) by
       apply Or.resolve_right this
       intro hB'
       apply hB_ne_sc B hB
-      simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff, Subtype.range_coe_subtype] at hB'
+      simp only [Set.preimage_eq_univ_iff, Subtype.range_coe_subtype] at hB'
       apply Set.Subset.antisymm hBsc hB'
     -- is_trivial_block (coe ⁻¹' B : set (sᶜ : set α)),
     suffices IsPreprimitive (stabilizer G (sᶜ : Set α)) (sᶜ : Set α) by
-      refine IsPreprimitive.has_trivial_blocks this ?_
-      -- is_block (coe ⁻¹' B : set (sᶜ : set α))
+      apply this.isTrivialBlock_of_isBlock
       let φ' : stabilizer G (sᶜ : Set α) → G := Subtype.val
       let f' : (sᶜ : Set α) →ₑ[φ'] α := {
         toFun := Subtype.val
         map_smul' := fun m x => by simp only [φ', SMul.smul_stabilizer_def] }
-      apply MulAction.IsBlock_preimage f' hB
+      exact hB.preimage f'
     apply stabilizer.isPreprimitive'
     · rw [compl_compl]; exact h0
     · rw [stabilizer_compl]
@@ -327,7 +326,7 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set s) by
       cases' this with hB' hB'
       · -- trivial case
-        rw [← Equiv.Perm.Subtype.image_preimage_of_val hBs]
+        rw [← Subtype.image_preimage_of_val hBs]
         apply Set.Subsingleton.image
         exact hB'
       · -- coe ⁻¹' B = s
@@ -335,7 +334,7 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
           apply Set.Subset.antisymm hBs
           intro x hx
           suffices x = Subtype.val (⟨x, hx⟩ : s) by
-            rw [this, ← Set.mem_preimage, hB', Set.top_eq_univ]
+            rw [this, ← Set.mem_preimage, hB']
             apply Set.mem_univ
           rfl
         have : ∃ g' ∈ G, g' • s ≠ s := by
