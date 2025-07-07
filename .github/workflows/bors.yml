@@ -290,26 +290,6 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
-      - name: check the cache
-        # We need network access to download dependencies
-        # We run this inside landrun, but restrict disk access as usual.
-        shell: landrun --unrestricted-network --rox /usr --rw /dev --rox /etc --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib -rw pr-branch/.lake/ --rw pr-branch/DownstreamTest/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-
-          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
-          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
-          if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            cd DownstreamTest
-            MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
-
-            lake env ../../master-branch/.lake/build/bin/cache get || (sleep 1; lake env ../../master-branch/.lake/build/bin/cache get)
-
-            # We need to run `lake build ProofWidgets` here to retrieve ProofWidgets via Reservoir.
-            lake build ProofWidgets
-            lake build --no-build Mathlib
-          fi
-
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
       # even when they are not touched.

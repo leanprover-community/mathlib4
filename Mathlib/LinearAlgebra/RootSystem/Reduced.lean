@@ -53,7 +53,7 @@ lemma isReduced_iff' : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
     · tauto
     · exact Or.inr (h i j h' hLin)
 
-lemma IsReduced.linearIndependent [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ - P.root j) :
+lemma IsReduced.linearIndependent [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.root j) :
     LinearIndependent R ![P.root i, P.root j] := by
   have := IsReduced.eq_or_eq_neg (P := P) i j
   aesop
@@ -261,7 +261,7 @@ lemma coxeterWeightIn_eq_four_iff_not_linearIndependent :
     P.coxeterWeightIn S i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeightIn_ne_four S, not_not]
 
-lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ - P.root j) :
+lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.root j) :
     P.coxeterWeightIn S i j ≠ 4 := by
   rw [ne_eq, coxeterWeightIn_eq_four_iff_not_linearIndependent, not_not]
   exact IsReduced.linearIndependent P h h'

@@ -481,7 +481,7 @@ variable [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)]
 
 namespace IsLocallyDirected
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The intersection `V` in the glue data associated to a locally directed diagram. -/
 noncomputable
 def V (i j : J) : (F.obj i).Opens := ⨆ (k : Σ k, (k ⟶ i) × (k ⟶ j)), (F.map k.2.1).opensRange
@@ -563,7 +563,7 @@ lemma fst_inv_eq_snd_inv
   rw [← cancel_epi α.isoOpensRange.hom]
   simp [α, ← Functor.map_comp, Subsingleton.elim (hli ≫ k₁.2.2) (hlj ≫ k₂.2.2)]
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The inclusion map `V i j ⟶ F j` in the glue data associated to a locally directed diagram. -/
 def tAux (i j : J) : (V F i j).toScheme ⟶ F.obj j :=
   (Scheme.Opens.iSupOpenCover _).glueMorphisms
@@ -577,7 +577,7 @@ lemma homOfLE_tAux (i j : J) {k : J} (fi : k ⟶ i) (fj : k ⟶ j) :
       tAux F i j = (F.map fi).isoOpensRange.inv ≫ F.map fj :=
   (Scheme.Opens.iSupOpenCover (J := Σ k, (k ⟶ i) × (k ⟶ j)) _).ι_glueMorphisms _ _ ⟨k, fi, fj⟩
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The transition map `V i j ⟶ V j i` in the glue data associated to a locally directed diagram. -/
 def t (i j : J) : (V F i j).toScheme ⟶ (V F j i).toScheme :=
   IsOpenImmersion.lift (V F j i).ι (tAux F i j) (by
@@ -598,7 +598,7 @@ variable [Small.{u} J]
 
 local notation3:max "↓"j:arg => Equiv.symm (equivShrink _) j
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The glue data associated to a locally directed diagram.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -668,7 +668,7 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
   rw [← cancel_mono (Opens.ι _)]
   simp [V, InducedCategory.category, Shrink.instCategoryShrink]
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The cocone associated to a locally directed diagram.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -680,7 +680,7 @@ def cocone : Cocone F where
     simp only [← IsIso.inv_comp_eq, ← Functor.map_inv, ← Functor.map_comp_assoc,
       glueDataι_naturality, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -703,7 +703,7 @@ def isColimit : IsColimit (cocone F) where
     simp [← hm ↓i, cocone, reassoc_of% glueDataι_naturality]
     rfl
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit as locally ringed spaces.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -753,7 +753,7 @@ def openCover : (colimit F).OpenCover :=
     fun i ↦ (glueData F).openCover).copy J F.obj (colimit.ι F)
     ((equivShrink J).trans <| (Equiv.uniqueSigma fun (_ : Unit) ↦ Shrink J).symm)
     (fun _ ↦ F.mapIso (eqToIso (by simp [GlueData.openCover, glueData]))) fun i ↦ by
-  show colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
+  change colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
   simp [← Category.assoc, ← Iso.comp_inv_eq, cocone]
 
 @[simp] lemma openCover_J : (openCover F).J = J := rfl
@@ -788,7 +788,7 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=
-  have (i) : Mono ((F ⋙ forget).map (.init i)) :=
+  have (i : _) : Mono ((F ⋙ forget).map (.init i)) :=
     (mono_iff_injective _).mpr (F.map _).isOpenEmbedding.injective
   inferInstance
 

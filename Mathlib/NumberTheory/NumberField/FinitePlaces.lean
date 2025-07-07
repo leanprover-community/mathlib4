@@ -33,7 +33,7 @@ number field, places, finite places
 
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
-open scoped Multiplicative NNReal
+open scoped WithZero NNReal
 
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
@@ -96,7 +96,7 @@ noncomputable def FinitePlace.embedding : WithVal (v.valuation K) →+* adicComp
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
 noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤₘ₀) where
+    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
   hom := {
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
@@ -116,7 +116,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
-  Valued.toNormedField (adicCompletion K v) (WithZero (Multiplicative ℤ))
+  Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
@@ -309,7 +309,7 @@ open scoped NumberField
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
   have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
-    show v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
+    change v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
     exact (Equiv.apply_symm_apply _ v).symm
   convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
 

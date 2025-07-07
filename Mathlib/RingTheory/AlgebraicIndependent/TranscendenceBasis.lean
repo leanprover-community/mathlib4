@@ -198,7 +198,7 @@ theorem IsTranscendenceBasis.sumElim_comp [NoZeroDivisors A] {x : ι → S} {y :
   let Rxy := adjoin Rx (range y)
   rw [show adjoin R (range <| Sum.elim y (algebraMap S A ∘ x)) = Rxy.restrictScalars R by
     rw [← adjoin_algebraMap_image_union_eq_adjoin_adjoin, Sum.elim_range, union_comm, range_comp]]
-  show Algebra.IsAlgebraic Rxy A
+  change Algebra.IsAlgebraic Rxy A
   have := hx.1.algebraMap_injective.nontrivial
   have := hy.1.algebraMap_injective.nontrivial
   have := hy.isAlgebraic
