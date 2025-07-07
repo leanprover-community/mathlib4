@@ -56,8 +56,8 @@ variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] (k
 
 /-- `G(k, M; R)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be the set of
 submodules of `M` whose quotient is locally free of rank `k`. Note that there is another convention
-in literature where instead the submodule is required to have rank `k`. See the implementation
-notes in the beginning of this file. -/
+in literature where instead the submodule is required to have rank `k`. See the module docstring
+of `RingTheory.Grassmannian`. -/
 @[stacks 089R] structure Grassmannian extends Submodule R M where
   finite_quotient : Module.Finite R (M ⧸ toSubmodule)
   projective_quotient : Projective R (M ⧸ toSubmodule)
