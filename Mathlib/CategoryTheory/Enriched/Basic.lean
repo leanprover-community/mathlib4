@@ -400,8 +400,8 @@ structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
 
 attribute [reassoc] GradedNatTrans.naturality
 
-/-- A (non-graded) natural transformation between to enriched functors is a natural
-transformation on graded on `𝟙_ V`. -/
+/-- A natural transformation between two enriched functors is a `𝟙_ V`-graded natural
+transformation. -/
 abbrev EnrichedNatTrans (F G : EnrichedFunctor V C D) := GradedNatTrans Center.tensorUnit F G
 
 namespace EnrichedNatTrans
