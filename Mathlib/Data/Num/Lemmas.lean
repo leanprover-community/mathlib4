@@ -480,13 +480,13 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul]
-      erw [@Nat.size_bit false n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
+        Nat.size_bit]
       have := to_nat_pos n
       dsimp [Nat.bit]; omega
   | bit1 n => by
-      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul]
-      erw [@Nat.size_bit true n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
+        Nat.size_bit]
       dsimp [Nat.bit]; omega
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n

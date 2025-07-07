@@ -81,7 +81,7 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
   rfl
 
 /- M_x is an O_SpecR(U)-module when x is in U -/
-noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop):
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop) :
     Module ((Spec.structureSheaf R).val.obj U) (Localizations M x):=
   Module.compHom (R := (Localization.AtPrime x.1.asIdeal)) _
     ((StructureSheaf.openToLocalization R U.unop x x.2).hom)
