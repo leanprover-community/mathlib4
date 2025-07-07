@@ -136,11 +136,38 @@ lemma cartanMatrix_nondegenerate [Finite ι] [IsDomain R]
   let _i : Fintype ι := Fintype.ofFinite ι
   cartanMatrixIn_nondegenerate ℤ b
 
-/-!
-lemma posForm_rootCombination {f g : b.support →₀ ℤ} (B : P.RootPositiveForm S) :
+-- Probably shouldn't use.
+lemma posForm_rootCombination {f g : b.support →₀ ℤ} (B : P.RootPositiveForm ℤ) :
     B.posForm (b.rootCombination ℤ f) (b.rootCombination ℤ g) =
-      ∑ f.sum fun i ↦ , ∑ g.sum, B.posForm
+    g.sum fun i m ↦ m • f.sum fun j n ↦ n • B.posForm (P.rootSpanMem ℤ j) (P.rootSpanMem ℤ i) := by
+  simp only [rootCombination, LinearMap.map_finsupp_linearCombination,
+    Finsupp.linearCombination_embDomain]
+  simp [Finsupp.linearCombination_apply]
+
+-- may be superfluous.
+lemma posForm_rootCombination_add {f₁ f₂ f₃ : b.support →₀ ℤ} (B : P.RootPositiveForm ℤ) :
+    B.posForm (b.rootCombination ℤ (f₁ + f₂)) (b.rootCombination ℤ f₃) =
+      B.posForm (b.rootCombination ℤ f₁) (b.rootCombination ℤ f₃) +
+        B.posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₃) := by
+  rw [b.rootCombination_add, LinearMap.BilinForm.add_left]
+
+
+/-!
+replace `posForm_rootCombination` with decomposition rules: given a subset `s` of `f.support`, split
+`posForm` into the sum of the restriction of `f` to `s` and to the complement. Then, add a lemma
+about evaluating on combinations with single support.
+
 -/
+
+lemma nonpos_posForm [Finite ι] [IsDomain R] {i j : b.support} (h : i ≠ j)
+    (B : P.RootPositiveForm ℤ) :
+    B.posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) ≤ 0 := by
+  suffices 2 • B.posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) ≤ 0 by
+    rw [two_nsmul] at this
+    linarith
+  rw [RootPositiveForm.two_smul_apply_rootSpanMem_rootSpanMem]
+  exact smul_nonpos_of_nonpos_of_nonneg (b.cartanMatrix_le_zero_of_ne i j h)
+    (RootPositiveForm.rootLength_pos B j).le
 
 lemma finsupp_base_posForm_pos [Fintype ι] [IsDomain R] {f : b.support →₀ ℤ} (hf : f ≠ 0) :
     0 < (P.posRootForm ℤ).posForm (b.rootCombination ℤ f) (b.rootCombination ℤ f) :=
@@ -172,6 +199,65 @@ lemma neighbor_disjoint (i : b.support) {s : Set b.support} (hs : s ⊆ (b.neigh
     Disjoint s {i} :=
   fun _ h1 h2 _ h3 ↦ ((b.self_notMem_neighbor i) ((h2 h3) ▸ (hs (h1 h3)))).elim
 
+lemma posForm_of_pairing_neg_three [Fintype ι] [IsDomain R] {i j : b.support} (fi fj : ℤ)
+    (hij : P.pairingIn ℤ i j = -3) :
+    (P.posRootForm ℤ).posForm (b.rootCombination ℤ (Finsupp.single i fi + Finsupp.single j fj))
+      (b.rootCombination ℤ (Finsupp.single i fi + Finsupp.single j fj)) =
+    (fj * fj + fi * fi * 3 - fi * fj * 3) * (P.posRootForm ℤ).rootLength j := by
+  rw [b.posForm_self_of_add (Finsupp.single i fi) (Finsupp.single j fj)
+        (Finsupp.single i fi + Finsupp.single j fj) rfl]
+  simp only [rootCombination_single, LinearMap.BilinForm.smul_left_of_tower,
+    LinearMap.BilinForm.smul_right_of_tower]
+  have hlk (k : ι) : (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ k) =
+    (P.posRootForm ℤ).rootLength k := rfl
+  rw [hlk i, hlk j, smul_comm 2 fj, smul_comm 2 fi, P.rootLength_of_neg_three' i j hij,
+    (P.posRootForm ℤ).two_smul_apply_rootSpanMem_rootSpanMem i j]
+  simp only [smul_eq_mul, ← mul_assoc, hij, Int.reduceNeg, neg_mul, mul_neg]
+  linear_combination
+
+lemma notMem_neighbor_of_pairing_neg_three [IsDomain R] [Fintype ι] {i j k : b.support}
+    (hij : P.pairingIn ℤ i j = -3) (hjk : j ≠ k) : k ∉ b.neighbor i := by
+  by_cases hik : i = k; · exact hik ▸ b.self_notMem_neighbor i
+  have hnij : i ≠ j := by
+    intro h
+    have : P.pairingIn ℤ i j = 2 := h ▸ P.pairingIn_same ℤ j
+    omega
+  have hp {f : b.support →₀ ℤ} (hf : f ≠ 0) := b.finsupp_base_posForm_pos hf
+  contrapose! hp
+  let f : b.support →₀ ℤ := Finsupp.single i 2 + Finsupp.single j 3 + Finsupp.single k 1
+  use f
+  constructor
+  · refine Finsupp.ne_iff.mpr ?_
+    use i
+    simp [f, Finsupp.single_eq_of_ne hnij.symm, Finsupp.single_eq_of_ne fun a ↦ hik a.symm]
+  · rw [b.posForm_self_of_add (Finsupp.single i 2 + Finsupp.single j 3) (Finsupp.single k 1) f rfl,
+      b.posForm_of_pairing_neg_three 2 3 hij]
+    simp only [Int.reduceMul, Int.reduceAdd, Int.reduceSub, rootCombination_single,
+      one_smul, b.rootCombination_add, LinearMap.BilinForm.add_left, LinearMap.BilinForm.smul_left]
+    rw [smul_add, two_smul]
+    have (i j : ι ) :
+        (2 : ℤ) * ((P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i)) (P.rootSpanMem ℤ j) =
+        P.pairingIn ℤ i j • (P.posRootForm ℤ).rootLength j := by
+      simpa using (P.posRootForm ℤ).two_smul_apply_rootSpanMem_rootSpanMem i j
+    nth_rw 1 [this i k]
+    rw [← (P.posRootForm ℤ).isSymm_posForm (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ i),
+      RingHom.id_apply, this k i, ← add_assoc]
+    refine Int.add_nonpos ?_ ?_
+    · rw [add_rotate, ← add_assoc, add_assoc _ _ (3 * (P.posRootForm ℤ).rootLength ↑j)]
+      refine Int.add_nonpos ?_ ?_
+      · dsimp [RootPositiveForm.rootLength]
+        nth_rw 1 [← one_smul ℤ ((P.posRootForm ℤ).posForm (P.rootSpanMem ℤ k) (P.rootSpanMem ℤ k))]
+        rw [← smul_eq_mul, ← add_smul]
+        refine smul_nonpos_of_nonpos_of_nonneg ?_ (zero_le_posForm P ℤ (P.rootSpanMem ℤ k))
+        exact Int.add_le_zero_iff_le_neg'.mpr <| Int.add_le_zero_iff_le_neg.mp hp
+      · rw [← P.rootLength_of_neg_three' i j hij]
+        nth_rw 2 [← one_smul ℤ ((P.posRootForm ℤ).rootLength i)]
+        rw [← add_smul]
+        refine smul_nonpos_of_nonpos_of_nonneg ?_ (le_of_lt <| (P.posRootForm ℤ).rootLength_pos i)
+        exact Int.add_one_le_of_lt <| (pairingIn_lt_zero_iff P ℤ).mp hp
+    · refine Left.nsmul_nonpos ?_ 2
+      refine Int.mul_nonpos_of_nonneg_of_nonpos (by simp) (nonpos_posForm b hjk (P.posRootForm ℤ))
+
 /-!
 lemma neighbor_isOrthogonal [IsDomain R] [Fintype ι] {i j k : b.support} (hj : j ∈ b.neighbor i)
     (hk : k ∈ b.neighbor i) :
@@ -189,10 +275,10 @@ lemma neighbor_isOrthogonal [IsDomain R] [Fintype ι] {i j k : b.support} (hj : 
     apply Finsupp.ne_iff.mpr
     use i
     simp [this]
-  · simp [rootCombination, Finsupp.linearCombination]
-
+  · rw [posForm_rootCombination]
     let x := (P.posRootForm ℤ).rootLength i
     have := (P.posRootForm ℤ).pairingIn_mul_eq_pairingIn_mul_swap i j
+
     sorry
 
 
@@ -241,6 +327,7 @@ lemma neighbor_card_le_three [IsDomain R] [Fintype ι] (i : b.support) :
   · dsimp only [rootCombination, Finsupp.linearCombination, Finsupp.coe_lsum,
       LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, SetLike.mk_smul_mk]
     simp only [posRootForm_eq, this, union_singleton]
+    sorry
 
     --have := Fintype.ofFinite S
     --have hNS : Nat.card S = 4 := by

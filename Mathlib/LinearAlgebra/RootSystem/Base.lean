@@ -240,6 +240,14 @@ lemma rootCombination_apply (f : b.support →₀ S) :
     b.rootCombination S f = f.sum fun i m ↦ m • P.rootSpanMem S i :=
   Finsupp.sum_embDomain
 
+lemma rootCombination_add (f₁ f₂ : b.support →₀ S) :
+    b.rootCombination S (f₁ + f₂) = b.rootCombination S f₁ + b.rootCombination S f₂ := by
+  simp [rootCombination]
+
+lemma rootCombination_single (i : b.support) (s : S) :
+    b.rootCombination S (Finsupp.single i s) = s • P.rootSpanMem S i := by
+  simp [rootCombination]
+
 lemma rootCombination_ne_zero [Algebra S R] [IsScalarTower S R M] [FaithfulSMul S R]
     {f : b.support →₀ S} (hf : f ≠ 0) :
     b.rootCombination S f ≠ 0 := by

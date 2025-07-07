@@ -193,6 +193,11 @@ alias rootLength_reflection_perm_self := rootLength_reflectionPerm_self
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
   simp [rootLength]
 
+lemma two_smul_apply_rootSpanMem_rootSpanMem (i j : ι) :
+    2 • B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) = P.pairingIn S i j • B.rootLength j := by
+  apply algebraMap_injective S R
+  simp [map_ofNat, B.two_mul_apply_root_root i j]
+
 lemma pairingIn_mul_eq_pairingIn_mul_swap :
     P.pairingIn S j i * B.rootLength i = P.pairingIn S i j * B.rootLength j := by
   simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
