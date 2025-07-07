@@ -37,7 +37,7 @@ for commutative *semirings*.
 ## Implementation note
 
 Evaluation of a power series at adequate elements has been defined
-in `Mathlib.RingTheory.MvPowerSeries.Evaluation`.
+in `Mathlib/RingTheory/MvPowerSeries/Evaluation.lean`.
 The goal here is to check the relevant hypotheses:
 * The ring of coefficients is endowed the discrete topology.
 * The main condition rewrites as having nilpotent constant coefficient
@@ -199,7 +199,7 @@ theorem subst_self : subst (MvPowerSeries.X : σ → MvPowerSeries σ R) = id :=
   rw [← coe_substAlgHom HasSubst.X]
   letI : UniformSpace R := ⊥
   ext1 f
-  simp only [← coe_substAlgHom HasSubst.X, substAlgHom_eq_aeval]
+  simp only [substAlgHom_eq_aeval]
   have := aeval_unique (ε := AlgHom.id R (MvPowerSeries σ R)) continuous_id
   rw [DFunLike.ext_iff] at this
   exact this f
@@ -498,7 +498,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
     finsum_eq_sum _ (coeff_subst_finite (HasSubst.smul_X a) f n)]
   simp only [Pi.smul_apply', smul_eq_mul]
   rw [Finset.sum_eq_single n _ _]
-  · simp [mul_comm, ← monomial_eq, coeff_monomial]
+  · simp [mul_comm, ← monomial_eq]
   · intro b hb hbn
     rw [← monomial_eq, coeff_monomial, if_neg (Ne.symm hbn), mul_zero]
   · intro hn

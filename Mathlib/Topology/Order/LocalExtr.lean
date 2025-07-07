@@ -13,14 +13,14 @@ import Mathlib.Topology.ContinuousOn
 ## Main definitions
 
 This file defines special versions of `Is*Filter f a l`, `*=Min/Max/Extr`, from
-`Mathlib.Order.Filter.Extr` for two kinds of filters: `nhdsWithin` and `nhds`.  These versions are
-called `IsLocal*On` and `IsLocal*`, respectively.
+`Mathlib/Order/Filter/Extr.lean` for two kinds of filters: `nhdsWithin` and `nhds`.
+These versions are called `IsLocal*On` and `IsLocal*`, respectively.
 
 ## Main statements
 
-Many lemmas in this file restate those from `Mathlib.Order.Filter.Extr`, and you can find a detailed
-documentation there. These convenience lemmas are provided only to make the dot notation return
-propositions of expected types, not just `Is*Filter`.
+Many lemmas in this file restate those from `Mathlib/Order/Filter/Extr.lean`, and you can find
+detailed documentation there. These convenience lemmas are provided only to make the dot notation
+return propositions of expected types, not just `Is*Filter`.
 
 Here is the list of statements specific to these two types of filters:
 
@@ -150,7 +150,7 @@ theorem IsLocalMinOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMinOn f 
     [NeBot (𝓝[<] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) := fun hle =>
   have : ∀ᶠ y in 𝓝[<] f a, f a ≤ y := (eventually_map.2 hf).filter_mono (inf_le_left.trans hle)
   let ⟨_y, hy⟩ := (this.and self_mem_nhdsWithin).exists
-  hy.1.not_lt hy.2
+  hy.1.not_gt hy.2
 
 theorem IsLocalMaxOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMaxOn f s a)
     [NeBot (𝓝[>] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) :=

@@ -301,7 +301,7 @@ theorem rank_le_rankOfDiscrBdd :
   have h₂ : 1 < 3 * π / 4 := by
     rw [_root_.lt_div_iff₀ (by positivity), ← _root_.div_lt_iff₀' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
-  obtain h | h := lt_or_le 1 (finrank ℚ K)
+  obtain h | h := lt_or_ge 1 (finrank ℚ K)
   · apply le_max_of_le_right
     rw [Nat.le_floor_iff]
     · have h := le_trans (abs_discr_ge h) (Int.cast_le.mpr hK)

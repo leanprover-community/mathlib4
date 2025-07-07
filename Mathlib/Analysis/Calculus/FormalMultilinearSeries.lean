@@ -267,7 +267,7 @@ theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
   order_eq_find _
 
 theorem order_eq_zero_iff' : p.order = 0 ↔ p = 0 ∨ p 0 ≠ 0 := by
-  simpa [order, Nat.sInf_eq_zero, FormalMultilinearSeries.ext_iff, eq_empty_iff_forall_not_mem]
+  simpa [order, Nat.sInf_eq_zero, FormalMultilinearSeries.ext_iff, eq_empty_iff_forall_notMem]
     using or_comm
 
 theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
@@ -280,7 +280,7 @@ theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
   apply_order_ne_zero (ne_zero_of_order_ne_zero hp)
 
 theorem apply_eq_zero_of_lt_order (hp : n < p.order) : p n = 0 :=
-  by_contra <| Nat.not_mem_of_lt_sInf hp
+  by_contra <| Nat.notMem_of_lt_sInf hp
 
 end Order
 
@@ -358,7 +358,7 @@ theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜] [Norme
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 
 @[simp]
-lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E ]
+lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
   ext n x

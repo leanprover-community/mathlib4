@@ -204,7 +204,7 @@ lemma PreconnectedSpace.induction₂' [PreconnectedSpace α] (P : α → α → 
     exact h' hz ht.1
   have C : u.Nonempty := ⟨x, (mem_of_mem_nhds (h x)).1⟩
   have D : u = Set.univ := IsClopen.eq_univ ⟨A, B⟩ C
-  show y ∈ u
+  change y ∈ u
   simp [D]
 
 /-- In a preconnected space, if a symmetric transitive relation `P x y` is true for `y` close
@@ -225,7 +225,7 @@ lemma IsPreconnected.induction₂' {s : Set α} (hs : IsPreconnected s) (P : α 
     (h' : ∀ x y z, x ∈ s → y ∈ s → z ∈ s → P x y → P y z → P x z)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : P x y := by
   let Q : s → s → Prop := fun a b ↦ P a b
-  show Q ⟨x, hx⟩ ⟨y, hy⟩
+  change Q ⟨x, hx⟩ ⟨y, hy⟩
   have : PreconnectedSpace s := Subtype.preconnectedSpace hs
   apply PreconnectedSpace.induction₂'
   · rintro ⟨x, hx⟩
@@ -549,20 +549,20 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   unfold IsPreconnected
   by_contra!
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
-  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
+  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
     · rw [preimage_subtype_coe_eq_compl hsuv H]
       exact (v_op.preimage continuous_subtype_val).isClosed_compl
     · exact u_op.preimage continuous_subtype_val
-  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.not_mem_iff_boolIndicator _).mp hy] using
+  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.notMem_iff_boolIndicator _).mp hy] using
     hs _ this x x_in_s y y_in_s
 
 /-- A `PreconnectedSpace` version of `isPreconnected_of_forall_constant` -/
 theorem preconnectedSpace_of_forall_constant
     (hs : ∀ f : α → Bool, Continuous f → ∀ x y, f x = f y) : PreconnectedSpace α :=
   ⟨isPreconnected_of_forall_constant fun f hf x _ y _ =>
-      hs f (continuous_iff_continuousOn_univ.mpr hf) x y⟩
+      hs f (continuousOn_univ.mp hf) x y⟩
 
 theorem preconnectedSpace_iff_clopen :
     PreconnectedSpace α ↔ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
