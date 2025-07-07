@@ -191,7 +191,7 @@ section
 variable [Module R₀ P] [SMulCommClass R R₀ P] [Module.Finite R₀ (M →ₗ[R] P)]
 
 theorem of_isComplemented_domain (h : IsComplemented m) : Module.Finite R₀ (m →ₗ[R] P) :=
-  .of_surjective (.lcomp ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
+  .of_surjective (.lcomp R₀ P ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
 
 instance [IsSemisimpleModule R M] : Module.Finite R₀ (m →ₗ[R] P) :=
   .of_isComplemented_domain _ _ (exists_isCompl m)
