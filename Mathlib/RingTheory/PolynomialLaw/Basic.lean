@@ -354,6 +354,7 @@ def π : lifts R M S → S ⊗[R] M := fun ⟨s, p⟩ ↦ rTensor M (φ R s).toL
 
 variable {R M N}
 
+/-- The auxiliary lift of `PolynomialLaw.toFun'` on `PolynomialLaw.lifts` -/
 def toFunLifted : lifts R M S → S ⊗[R] N :=
   fun ⟨s,p⟩ ↦ rTensor N (φ R s).toLinearMap (f.toFun' (MvPolynomial (Fin s.card) R) p)
 
