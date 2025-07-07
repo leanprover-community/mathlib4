@@ -103,7 +103,16 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         apply h2 (y := y ⊔ z) _ _ (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
           (by rw [sup_assoc]; exact le_sup_right) e5 e2
     · sorry
-    · sorry
+    · intro x₀ y₀ x₁ y₁ h₀ h₁
+      have s1 : r (x₀ ⊔ x₁) (x₀ ⊔ y₁) := by
+        conv_lhs => rw [sup_comm]
+        conv_rhs => rw [sup_comm]
+        apply ee1
+        exact h₁
+      have s2 : r (x₀ ⊔ y₁) (y₀ ⊔ y₁) := ee1 _  _ _ h₀
+
+
+
 
 def ker (f : α → β) : α → α → Prop := fun a b => f a = f b
 
