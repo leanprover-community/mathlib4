@@ -244,6 +244,13 @@ lemma hom_ext {f g : c.Quotient →* P} (h : f.comp (mk' c) = g.comp (mk' c)) : 
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
   congr 1
 
+/-- Homomorphisms on the quotient of a monoid by a congruence relation are equal if they
+    are equal on elements that are coercions from the monoid. -/
+@[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
+are equal if they are equal on elements that are coercions from the `AddMonoid`."]
+theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g :=
+  hom_ext <| DFunLike.ext _ _ h
+
 /-- The uniqueness part of the universal property for quotients of monoids. -/
 @[to_additive "The uniqueness part of the universal property for quotients of `AddMonoid`s."]
 theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk' = f) :
