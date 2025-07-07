@@ -48,7 +48,7 @@ theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
 
 @[simp]
 theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) := by
-  erw [not_forall]
+  rw [Squarefree, not_forall]
   exact ⟨0, by simp⟩
 
 theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squarefree (m : R)) :

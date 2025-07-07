@@ -133,7 +133,7 @@ end IsLimit
 
 variable (F : J ⥤ TopCat.{u})
 
-theorem limit_topology [HasLimit F]:
+theorem limit_topology [HasLimit F] :
     (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
   induced_of_isLimit _ (limit.isLimit _)
 
@@ -253,7 +253,7 @@ end IsColimit
 
 variable (F)
 
-theorem colimit_topology (F : J ⥤ TopCat.{u}) [HasColimit F]:
+theorem colimit_topology (F : J ⥤ TopCat.{u}) [HasColimit F] :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit _)
 
