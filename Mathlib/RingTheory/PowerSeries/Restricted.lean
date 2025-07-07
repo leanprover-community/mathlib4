@@ -147,10 +147,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
     simp_rw [mul_assoc, ← npow_add, hi]
   simp only [NNReal.val_eq_coe, NNReal.coe_pow, this] at InterimBound2
   have : i.1 ≥ max Nf Ng ∨ i.2 ≥ max Nf Ng := by
-    rw [← hi] at hn
-    have : i.1 + i.2 ≤ 2 * max i.1 i.2 := by
-      omega
-    simpa using (le_trans hn this)
+    omega
   rcases this with this | this
   · have FinalBound := mul_lt_mul_of_lt_of_le_of_nonneg_of_pos ((fBound2 i.1)
       (le_of_max_le_left this)) (gBound1 i.2) (Left.mul_nonneg (norm_nonneg ((coeff R i.1) f))
