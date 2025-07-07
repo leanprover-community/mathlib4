@@ -528,7 +528,6 @@ end IsGalois
 
 end GaloisEquivalentDefinitions
 
-
 section normalClosure
 
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
