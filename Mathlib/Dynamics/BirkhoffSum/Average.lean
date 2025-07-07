@@ -74,12 +74,23 @@ theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : 
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
   rwa [Nat.cast_ne_zero]
 
-lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
+theorem birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
   funext n x
   simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
 
 end birkhoffAverage
+
+section AddCommGroup
+
+variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
+
+theorem birkhoffAverage_neg {f : α → α} {g : α → M} :
+    birkhoffAverage R f (-g) = - birkhoffAverage R f g := by
+  funext n x
+  simp [birkhoffAverage, birkhoffSum]
+
+end AddCommGroup
 
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
