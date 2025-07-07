@@ -324,6 +324,32 @@ theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E �
   simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
     using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
 
+-- don't know which file this should go in
+theorem IsIdempotentElem.star {R : Type*} [Mul R] [StarMul R] {a : R} (ha : IsIdempotentElem a) :
+    IsIdempotentElem (star a) := by simp only [IsIdempotentElem, ← star_mul, ha.eq]
+
+namespace ContinuousLinearMap
+
+variable {T : E →L[𝕜] E} [CompleteSpace E]
+
+theorem IsIdempotentElem.adjoint_range_eq_range_of (hT : IsIdempotentElem T)
+    (h : (LinearMap.range T)ᗮ = LinearMap.ker T) :
+    LinearMap.range (adjoint T) = LinearMap.range T := by
+  have := hT.hasOrthogonalProjection_range
+  have := hT.star.hasOrthogonalProjection_range
+  rw [← Submodule.orthogonal_orthogonal (LinearMap.range (adjoint T)),
+    orthogonal_range, adjoint_adjoint, ← h, Submodule.orthogonal_orthogonal]
+
+/-- An idempotent operator `T` is self-adjoint iff `(range T)ᗮ = ker T`. -/
+theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentElem T) :
+    IsSelfAdjoint T ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  ⟨fun hT => hT.isSymmetric.orthogonal_range, fun h1 => isSelfAdjoint_iff'.mp
+    (coe_inj.mp (LinearMap.IsIdempotentElem.ext
+    (congr(LinearMapClass.linearMap $(h.star.eq))) (congr(LinearMapClass.linearMap $(h.eq)))
+    (adjoint_range_eq_range_of h h1) (orthogonal_range T ▸ h1)))⟩
+
+end ContinuousLinearMap
+
 namespace LinearMap
 
 variable [CompleteSpace E]
