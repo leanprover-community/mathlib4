@@ -165,7 +165,7 @@ variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
   [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
-  rw [nonsing_inv_eq_ring_inverse]
+  rw [nonsing_inv_eq_ringInverse]
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra

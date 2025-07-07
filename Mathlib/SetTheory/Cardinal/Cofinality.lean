@@ -86,24 +86,7 @@ theorem cof_eq {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : 
     Order.cof r = Order.cof s :=
   lift_inj.1 (f.cof_eq_lift)
 
-@[deprecated cof_eq (since := "2024-10-22")]
-theorem cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
-    Order.cof r ≤ Order.cof s :=
-  f.cof_eq.le
-
 end RelIso
-
-/-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
-that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
-@[deprecated Order.cof (since := "2024-10-22")]
-def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
-  Order.cof (swap rᶜ)
-
-/-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-22")]
-theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
-    { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
-  @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 
 /-! ### Cofinality of ordinals -/
 
@@ -266,7 +249,7 @@ theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hf : ∀ i, f i < c) : lsub.{u, v} f < c :=
   lt_of_le_of_ne (lsub_le hf) fun h => by
     subst h
-    exact (cof_lsub_le_lift.{u, v} f).not_lt hι
+    exact (cof_lsub_le_lift.{u, v} f).not_gt hι
 
 theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → lsub.{u, u} f < c :=
@@ -311,27 +294,13 @@ theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : �
   · rw [lift_max]
     apply max_lt _ hc'
     rwa [Cardinal.lift_aleph0]
-  · induction' l with i l H
-    · exact ha
-    · exact hf _ _ H
+  · induction l with
+    | nil => exact ha
+    | cons i l H => exact hf _ _ H
 
 theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hc' : #ι < cof c)
     (hf : ∀ (i), ∀ b < c, f i b < c) {a} : a < c → nfpFamily.{u, u} f a < c :=
   nfpFamily_lt_ord_lift hc (by rwa [(#ι).lift_id]) hf
-
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord_lift (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
-    (hc' : Cardinal.lift.{v, u} o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
-    a < c → nfpBFamily.{u, v} o f a < c :=
-  nfpFamily_lt_ord_lift hc (by rwa [mk_toType]) fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
-    (hc' : o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
-    a < c → nfpBFamily.{u, u} o f a < c :=
-  nfpBFamily_lt_ord_lift hc (by rwa [o.card.lift_id]) hf
 
 theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀ i < c, f i < c) {a} :
     a < c → nfp f a < c :=
@@ -365,7 +334,7 @@ theorem cof_blsub_le {o} (f : ∀ a < o, Ordinal) : cof (blsub.{u, u} o f) ≤ o
 theorem blsub_lt_ord_lift {o : Ordinal.{u}} {f : ∀ a < o, Ordinal} {c : Ordinal}
     (ho : Cardinal.lift.{v, u} o.card < c.cof) (hf : ∀ i hi, f i hi < c) : blsub.{u, v} o f < c :=
   lt_of_le_of_ne (blsub_le hf) fun h =>
-    ho.not_le (by simpa [← iSup_ord, hf, h] using cof_blsub_le_lift.{u, v} f)
+    ho.not_ge (by simpa [← iSup_ord, hf, h] using cof_blsub_le_lift.{u, v} f)
 
 theorem blsub_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o.card < c.cof)
     (hf : ∀ i hi, f i hi < c) : blsub.{u, u} o f < c :=
@@ -611,7 +580,7 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
   · simp [not_zero_isLimit, Cardinal.aleph0_ne_zero]
   · simp [not_succ_isLimit, Cardinal.one_lt_aleph0]
   · simp only [l, iff_true]
-    refine le_of_not_lt fun h => ?_
+    refine le_of_not_gt fun h => ?_
     obtain ⟨n, e⟩ := Cardinal.lt_aleph0.1 h
     have := cof_cof o
     rw [e, ord_nat] at this
@@ -632,21 +601,6 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
   isNormal_omega.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_omega (since := "2024-10-22")]
-theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_  o).ord.cof = o.cof :=
-  aleph_isNormal.cof_eq ho
 
 @[simp]
 theorem cof_omega0 : cof ω = ℵ₀ :=
@@ -752,7 +706,7 @@ theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder
   by_contra! h
   simp_rw [not_unbounded_iff] at h
   let f : s → α := fun x : s => wo.wf.sup x (h x.1 x.2)
-  refine h₂.not_le (le_trans (csInf_le' ⟨range f, fun x => ?_, rfl⟩) mk_range_le)
+  refine h₂.not_ge (le_trans (csInf_le' ⟨range f, fun x => ?_, rfl⟩) mk_range_le)
   rcases h₁ x with ⟨y, ⟨c, hc, hy⟩, hxy⟩
   exact ⟨f ⟨c, hc⟩, mem_range_self _, fun hxz => hxy (Trans.trans (wo.wf.lt_sup _ hy) hxz)⟩
 

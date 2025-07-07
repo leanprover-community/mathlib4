@@ -92,7 +92,8 @@ def condUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- info: μ[|s] : Measure Ω -/
-#guard_msgs in #check μ[|s]
+#guard_msgs in
+#check μ[|s]
 
 /-- Delaborator for `μ[t|s]` notation. -/
 @[app_delab DFunLike.coe]
@@ -108,9 +109,11 @@ def delabCondApplied : Delab :=
       `($μ[$t|$s])
 
 /-- info: μ[t | s] : ℝ≥0∞ -/
-#guard_msgs in #check μ[t | s]
+#guard_msgs in
+#check μ[t | s]
 /-- info: μ[t | s] : ℝ≥0∞ -/
-#guard_msgs in #check μ[|s] t
+#guard_msgs in
+#check μ[|s] t
 
 end delaborators
 
@@ -215,7 +218,8 @@ theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) (μ : Measure Ω) :
     μ[s ∩ t|s] = μ[t|s] := by
   rw [cond_apply hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply hms]
 
-theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) := by
+theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t | s] ≠ 0) :
+    0 < μ (s ∩ t) := by
   refine pos_iff_ne_zero.mpr (right_ne_zero_of_mul (a := (μ s)⁻¹) ?_)
   convert hcst
   simp [hms, Set.inter_comm, cond]

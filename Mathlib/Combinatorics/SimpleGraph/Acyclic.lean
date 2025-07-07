@@ -3,8 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Data.Fintype.Order
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 
@@ -65,7 +64,7 @@ variable {G}
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
+  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
     apply And.intro hvw
@@ -98,7 +97,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
     rcases h with h | h
     · cases q with
-      | nil => simp [Walk.isPath_def] at hp
+      | nil => simp at hp
       | cons _ q =>
         rw [Walk.cons_isPath_iff] at hp hq
         simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff, true_and] at h
@@ -166,7 +165,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   case inj =>
     intros a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
-    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_le h'))
+    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_ge h'))
     rw [dart_edge_eq_iff] at h
     obtain (h | h) := h
     · exact (congrArg (·.fst) h)
@@ -176,20 +175,20 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
         omega
-      · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
+      · simp only [isPath_copy]
         exact (hf _).tail
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
     intros x y h
     wlog h' : (f x).length ≤ (f y).length generalizing x y
     · rw [Sym2.eq_swap]
-      exact this y x h.symm (le_of_not_le h')
+      exact this y x h.symm (le_of_not_ge h')
     refine ⟨y, ?_, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
     · rintro rfl
       rw [← hf' _ nil IsPath.nil, length_nil,
           ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
-      simp [Nat.le_zero, Nat.one_ne_zero] at h'
+      simp at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
     · simp only [firstDart_toProd, getVert_cons_succ, getVert_zero, Prod.swap_prod_mk]
     case contra =>
@@ -208,7 +207,7 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
 
 /-- Every connected graph has a spanning tree. -/
 lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
-  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_minimal_le h
+  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_le_minimal h
   exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
 
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
@@ -229,7 +228,7 @@ lemma isTree_iff_connected_and_card [Finite V] :
   refine ⟨fun h ↦ ⟨h.isConnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra fun hbr ↦
-    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_lt ?_
+    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges]

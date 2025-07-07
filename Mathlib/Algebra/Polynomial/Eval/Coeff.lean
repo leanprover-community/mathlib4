@@ -37,7 +37,7 @@ variable (f : R →+* S) (x : S)
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
   simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
     mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff,
-    RingHom.map_zero, imp_true_iff, eq_self_iff_true]
+    RingHom.map_zero, imp_true_iff]
 
 @[simp]
 theorem eval₂_C_X : eval₂ C X p = p :=
@@ -45,10 +45,6 @@ theorem eval₂_C_X : eval₂ C X p = p :=
     rw [eval₂_monomial, ← smul_X_eq_monomial, C_mul']
 
 end
-
-section Eval₂
-
-end Eval₂
 
 section Eval
 

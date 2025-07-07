@@ -33,8 +33,6 @@ def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
   invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbitrary size.
@@ -66,8 +64,8 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
   { preservesColimit := fun {F} ↦
     { preserves := fun {c} hc ↦ by
         rw [isColimit_iff_coconeTypesIsColimit]
-        replace hc := (isColimit_iff_coconeTypesIsColimit _).1 ⟨hc⟩
-        exact (hc.precompose (G := F ⋙ uliftFunctor.{v}) (fun _ ↦ Equiv.ulift)
+        exact (((isColimit_iff_coconeTypesIsColimit _).1 ⟨hc⟩).precompose
+          (G := F ⋙ uliftFunctor.{v}) (fun _ ↦ Equiv.ulift)
           (fun _ ↦ rfl)).of_equiv Equiv.ulift.symm (fun _ _ ↦ rfl) } }
 
 /--

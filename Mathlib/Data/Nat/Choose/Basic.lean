@@ -12,7 +12,7 @@ import Mathlib.Order.Monotone.Defs
 This file defines binomial coefficients and proves simple lemmas (i.e. those not
 requiring more imports).
 For the lemma that `n.choose k` counts the `k`-element-subsets of an `n`-element set,
-see `Fintype.card_powersetCard` in `Mathlib.Data.Finset.Powerset`.
+see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 
 ## Main definition and results
 
@@ -25,12 +25,12 @@ see `Fintype.card_powersetCard` in `Mathlib.Data.Finset.Powerset`.
   factorial. This is used to prove `Nat.choose_le_pow` and variants. We provide similar statements
   for the ascending factorial.
 * `Nat.multichoose`: whereas `choose` counts combinations, `multichoose` counts multicombinations.
-The fact that this is indeed the correct counting function for multisets is proved in
-`Sym.card_sym_eq_multichoose` in `Data.Sym.Card`.
+  The fact that this is indeed the correct counting function for multisets is proved in
+  `Sym.card_sym_eq_multichoose` in `Data.Sym.Card`.
 * `Nat.multichoose_eq` : a proof that `multichoose n k = (n + k - 1).choose k`.
-This is central to the "stars and bars" technique in informal mathematics, where we switch between
-counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
-("stars") separated by `n-1` dividers ("bars").  See `Data.Sym.Card` for more detail.
+  This is central to the "stars and bars" technique in informal mathematics, where we switch between
+  counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
+  ("stars") separated by `n-1` dividers ("bars").  See `Data.Sym.Card` for more detail.
 
 ## Tags
 
@@ -142,7 +142,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
       rw [choose_succ_succ, Nat.add_mul, Nat.add_mul, succ_sub_succ, h, h₁, h₂, Nat.add_mul,
         Nat.mul_sub_right_distrib, factorial_succ, ← Nat.add_sub_assoc h₃, Nat.add_assoc,
         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
-    · rw [hk₁]; simp [hk₁, Nat.mul_comm, choose, Nat.sub_self]
+    · rw [hk₁]; simp [Nat.mul_comm, choose, Nat.sub_self]
 
 theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) :=
@@ -215,7 +215,7 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
   cases k with
   | zero => simp
   | succ k =>
-    obtain hk | hk := le_or_lt (k + 1) (n + 1)
+    obtain hk | hk := le_or_gt (k + 1) (n + 1)
     · rw [choose_succ_succ, Nat.add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ,
         Nat.mul_sub_left_distrib, Nat.add_sub_cancel' (Nat.mul_le_mul_left _ hk)]
     · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), Nat.zero_mul,
@@ -233,8 +233,8 @@ theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
   cases n
   · cases k
     · rw [ascFactorial_zero, choose_zero_right, factorial_zero, Nat.mul_one]
-    · simp only [zero_ascFactorial, zero_eq, Nat.zero_add, succ_sub_succ_eq_sub,
-        Nat.le_zero_eq, Nat.sub_zero, choose_succ_self, Nat.mul_zero]
+    · simp only [zero_ascFactorial, Nat.zero_add, succ_sub_succ_eq_sub,
+        Nat.sub_zero, choose_succ_self, Nat.mul_zero]
   rw [ascFactorial_eq_factorial_mul_choose]
   simp only [succ_add_sub_one]
 
@@ -294,14 +294,11 @@ private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
   rcases le_or_gt r n with b | b
-  · rcases le_or_lt r (n / 2) with a | h
+  · rcases le_or_gt r (n / 2) with a | h
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      rw [div_lt_iff_lt_mul Nat.zero_lt_two] at h
-      rw [le_div_iff_mul_le Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
-        ← Nat.sub_le_iff_le_add', Nat.mul_two, Nat.add_sub_cancel]
-      exact le_of_lt h
+      omega
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 

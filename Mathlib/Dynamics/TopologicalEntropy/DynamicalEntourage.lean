@@ -5,10 +5,11 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Dynamical entourages
+
 Bowen-Dinaburg's definition of topological entropy of a transformation `T` in a metric space
 `(X, d)` relies on the so-called dynamical balls. These balls are sets
 `B (x, ε, n) = { y | ∀ k < n, d(T^[k] x, T^[k] y) < ε }`.
@@ -18,14 +19,17 @@ balls are replaced by what we call dynamical entourages. This file collects all 
 about these objects.
 
 ## Main definitions
+
 - `dynEntourage`: dynamical entourage associated with a given transformation `T`, entourage `U`
 and time `n`.
 
 ## Tags
+
 entropy
 
 ## TODO
-Once #PR14718 has passed, add product of entourages.
+
+Add product of entourages.
 
 In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with
 these dynamical entourages.
@@ -33,7 +37,8 @@ these dynamical entourages.
 
 namespace Dynamics
 
-open Prod Set Uniformity UniformSpace
+open Prod Set UniformSpace
+open scoped Topology Uniformity
 
 variable {X : Type*}
 
@@ -62,6 +67,14 @@ lemma dynEntourage_mem_uniformity [UniformSpace X] {T : X → X} (h : UniformCon
   refine Filter.iInter_mem.2 fun k ↦ ?_
   rw [map_iterate T T k]
   exact uniformContinuous_def.1 (UniformContinuous.iterate T k h) U U_uni
+
+lemma ball_dynEntourage_mem_nhds [UniformSpace X] {T : X → X} (h : Continuous T) {U : Set (X × X)}
+    (U_uni : U ∈ 𝓤 X) (n : ℕ) (x : X) :
+    ball x (dynEntourage T U n) ∈ 𝓝 x := by
+  rw [dynEntourage_eq_inter_Ico T U n, ball_iInter, Filter.iInter_mem, Subtype.forall]
+  intro k _
+  simp only [map_iterate, _root_.ball_preimage]
+  exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
 lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
     idRel ⊆ (dynEntourage T U n) := by

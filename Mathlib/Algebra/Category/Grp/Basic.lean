@@ -16,6 +16,7 @@ We introduce the bundled categories:
 * `AddGrp`
 * `CommGrp`
 * `AddCommGrp`
+
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
 
@@ -215,15 +216,11 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   ext
   apply ConcreteCategory.congr_hom h
 
-/-- The forget functor from groups to monoids is fully faithfyl. -/
+/-- The forget functor from groups to monoids is fully faithful. -/
 @[to_additive fullyFaihtfulForget₂ToAddMonCat
-  "The forget functor from additive groups to additive monoids is fully faithfyl."]
+  "The forget functor from additive groups to additive monoids is fully faithful."]
 def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful where
   preimage f := ofHom f.hom
-
-@[to_additive]
-instance : (forget₂ Grp.{u} MonCat).Faithful :=
-  fullyFaithfulForget₂ToMonCat.faithful
 
 @[to_additive]
 instance : (forget₂ Grp.{u} MonCat).Full :=
@@ -429,15 +426,11 @@ instance hasForgetToGroup : HasForget₂ CommGrp Grp where
 @[to_additive]
 instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
 
-/-- The forget functor from commutative groups to groups is fully faithfyl. -/
+/-- The forget functor from commutative groups to groups is fully faithful. -/
 @[to_additive fullyFaihtfulForget₂ToAddGrp
-  "The forget functor from additive commutative groups to additive groups is fully faithfyl."]
+  "The forget functor from additive commutative groups to additive groups is fully faithful."]
 def fullyFaithfulForget₂ToGrp : (forget₂ CommGrp.{u} Grp).FullyFaithful where
   preimage f := ofHom f.hom
-
-@[to_additive]
-instance : (forget₂ CommGrp.{u} Grp).Faithful :=
-  fullyFaithfulForget₂ToGrp.faithful
 
 @[to_additive]
 instance : (forget₂ CommGrp.{u} Grp).Full :=

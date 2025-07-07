@@ -16,6 +16,7 @@ We introduce the bundled categories:
 * `RingCat`
 * `CommSemiRingCat`
 * `CommRingCat`
+
 along with the relevant forgetful functors between them.
 -/
 
@@ -314,9 +315,6 @@ def fullyFaithfulForget₂ToSemiRingCat :
 instance : (forget₂ RingCat SemiRingCat).Full :=
   fullyFaithfulForget₂ToSemiRingCat.full
 
-instance : (forget₂ RingCat SemiRingCat).Faithful :=
-  fullyFaithfulForget₂ToSemiRingCat.faithful
-
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   forget₂ :=
     { obj := fun R ↦ AddCommGrp.of R
@@ -475,9 +473,6 @@ def fullyFaithfulForget₂ToSemiRingCat :
 
 instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
   fullyFaithfulForget₂ToSemiRingCat.full
-
-instance : (forget₂ CommSemiRingCat SemiRingCat).Faithful :=
-  fullyFaithfulForget₂ToSemiRingCat.faithful
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
@@ -642,10 +637,6 @@ def fullyFaithfulForget₂ToRingCat :
 
 instance : (forget₂ CommRingCat RingCat).Full :=
   fullyFaithfulForget₂ToRingCat.full
-
-instance : (forget₂ CommRingCat RingCat).Faithful :=
-  fullyFaithfulForget₂ToRingCat.faithful
-
 
 @[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
     ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=

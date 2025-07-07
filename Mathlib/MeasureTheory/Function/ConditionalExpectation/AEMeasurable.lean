@@ -84,7 +84,7 @@ theorem const_smul [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β] (c : 𝕜) (hf :
 @[deprecated AEStronglyMeasurable.const_inner (since := "2025-01-23")]
 theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
     (hfm : AEStronglyMeasurable[m] f μ) (c : β) :
-    AEStronglyMeasurable[m] (fun x => (inner c (f x) : 𝕜)) μ :=
+    AEStronglyMeasurable[m] (fun x => (inner 𝕜 c (f x))) μ :=
   AEStronglyMeasurable.const_inner hfm
 
 @[deprecated AEStronglyMeasurable.of_subsingleton_cod (since := "2025-01-23")]

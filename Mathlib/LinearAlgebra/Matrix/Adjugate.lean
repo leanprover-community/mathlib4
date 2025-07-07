@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.RingTheory.Polynomial.Basic
@@ -28,8 +27,8 @@ We prove the adjugate behaves like `det A • A⁻¹`.
 
 ## Main definitions
 
- * `Matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
- * `Matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
+* `Matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
+* `Matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
 
 ## References
 
@@ -384,7 +383,7 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
       A 0 0 * A 1 1 - A 0 1 * A 1 0] := by
   ext i j
   rw [adjugate_fin_succ_eq_det_submatrix, det_fin_two]
-  fin_cases i <;> fin_cases j <;> simp [updateRow, Fin.succAbove, Fin.lt_def] <;> ring
+  fin_cases i <;> fin_cases j <;> simp [Fin.succAbove, Fin.lt_def] <;> ring
 
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i : α) :

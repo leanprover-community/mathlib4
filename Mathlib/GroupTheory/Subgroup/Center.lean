@@ -36,8 +36,10 @@ theorem coe_center : ↑(center G) = Set.center G :=
 theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 
-instance center.isCommutative : (center G).IsCommutative :=
+instance center.isMulCommutative : IsMulCommutative (center G) :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
+
+@[deprecated (since := "2025-04-09")] alias center.isCommutative := Subgroup.center.isMulCommutative
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
@@ -87,6 +89,10 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
 variable {H : Subgroup G}
 
 section Normalizer
+
+@[to_additive]
+instance instNormalCenter : (center G).Normal :=
+  ⟨fun a ha b ↦ by simp [mul_assoc, mem_center_iff.mp ha b, ha]⟩
 
 @[to_additive]
 theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by

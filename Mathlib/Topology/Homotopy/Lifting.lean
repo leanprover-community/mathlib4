@@ -204,7 +204,7 @@ variable (cov : IsCoveringMap p)
 include cov
 
 section path_lifting
-variable (γ : C(I,X)) (e : E) (γ_0 : γ 0 = p e)
+variable (γ : C(I, X)) (e : E) (γ_0 : γ 0 = p e)
 include γ_0
 
 /-- The path lifting property (existence) for covering maps. -/
@@ -217,7 +217,7 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
       (Set.Icc 0 (t n)).EqOn (p ∘ Γ) γ ∧ Γ 0 = e by
     obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max
     rw [h_max _ le_rfl] at cont eqOn
-    exact ⟨⟨Γ, continuous_iff_continuousOn_univ.mpr
+    exact ⟨⟨Γ, continuousOn_univ.mp
       (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
   intro n
@@ -241,7 +241,7 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
     simp_rw [not_le, (q x).target_eq]; intro s h
     exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
-    exacts [eqOn ⟨hs.1, h⟩, (q x).proj_symm_apply' (t_sub ⟨le_of_not_le h, hs.2⟩)]
+    exacts [eqOn ⟨hs.1, h⟩, (q x).proj_symm_apply' (t_sub ⟨le_of_not_ge h, hs.2⟩)]
   · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
 
 /-- The lift of a path to a covering space given a lift of the left endpoint. -/
@@ -258,7 +258,7 @@ lemma eq_liftPath_iff {Γ : I → E} : Γ = cov.liftPath γ e γ_0 ↔ Continuou
     Γ_cont (cov.liftPath γ e γ_0).continuous (Γ_lifts ▸ lifts.symm) 0 (Γ_0 ▸ zero.symm)⟩
 
 /-- Unique characterization of the lifted path. -/
-lemma eq_liftPath_iff' {Γ : C(I,E)} : Γ = cov.liftPath γ e γ_0 ↔ p ∘ Γ = γ ∧ Γ 0 = e := by
+lemma eq_liftPath_iff' {Γ : C(I, E)} : Γ = cov.liftPath γ e γ_0 ↔ p ∘ Γ = γ ∧ Γ 0 = e := by
   simp_rw [← DFunLike.coe_fn_eq, eq_liftPath_iff, and_iff_right (ContinuousMap.continuous _)]
 
 end path_lifting
@@ -275,7 +275,7 @@ variable (H : C(I × A, X)) (f : C(A, E)) (H_0 : ∀ a, H (0, a) = p (f a))
   continuous_toFun := cov.isLocalHomeomorph.continuous_lift cov.isSeparatedMap H
     (by ext ⟨t, a⟩; exact congr_fun (cov.liftPath_lifts ..) t)
     (by convert f.continuous with a; exact cov.liftPath_zero ..)
-    fun a ↦ by dsimp only; exact (cov.liftPath ..).2
+    fun a ↦ by dsimp only; exact (cov.liftPath (γ_0 := by simp [*])).2
 
 lemma liftHomotopy_lifts : p ∘ cov.liftHomotopy H f H_0 = H :=
   funext fun ⟨t, _⟩ ↦ congr_fun (cov.liftPath_lifts ..) t

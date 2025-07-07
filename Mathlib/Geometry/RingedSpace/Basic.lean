@@ -6,7 +6,7 @@ Authors: Justus Springer, Andrew Yang
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Topology.Sheaves.Stalks
 
@@ -75,7 +75,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.germ_exist x g'
   let W := U ⊓ V
   have hxW : x ∈ W := ⟨hx, hxV⟩
-  -- Porting note: `erw` can't write into `HEq`, so this is replaced with another `HEq` in the
+  -- Porting note: `erw` can't write into `heq`, so this is replaced with another `heq` in the
   -- desired form
   replace heq : (X.presheaf.germ _ x hxW) ((X.presheaf.map (U.infLELeft V).op) f *
       (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ _ x hxW) 1 := by
@@ -135,7 +135,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   apply X.sheaf.eq_of_locally_eq' V U iVU hcover
   intro i
   -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
-  show ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
+  change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]
   exact hg i
 

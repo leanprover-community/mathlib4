@@ -110,7 +110,7 @@ instance :
 on homological complexes, in each degree. -/
 noncomputable def mapBifunctorAssociatorX
     [H₁₂ : HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄]
-    [H₂₃ : HasGoodTrifunctor₂₃Obj F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄](j : ι₄) :
+    [H₂₃ : HasGoodTrifunctor₂₃Obj F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄] (j : ι₄) :
     (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ≅
       (mapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄).X j :=
   (GradedObject.eval j).mapIso
@@ -311,7 +311,7 @@ lemma ι_D₂ [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄]
   simp [D₂]
 
 @[reassoc (attr := simp)]
-lemma ι_D₃  :
+lemma ι_D₃ :
     ι F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j h ≫ D₃ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ j j' =
       d₃ F₁₂ G K₁ K₂ K₃ c₁₂ c₄ i₁ i₂ i₃ j' := by
   simp only [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ rfl h, D₃, assoc, mapBifunctor.ι_D₂]

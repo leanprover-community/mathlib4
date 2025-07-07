@@ -67,6 +67,11 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
     G.mk.{v, u} F x * G.mk F y = G.mk F ⟨k, F.map f x.2 * F.map g y.2⟩ :=
   MonCat.FilteredColimits.colimit_mul_mk_eq _ _ _ _ _ _
 
+@[to_additive]
+lemma colimit_mul_mk_eq' {j : J} (x y : F.obj j) :
+    G.mk.{v, u} F ⟨j, x⟩ * G.mk.{v, u} F ⟨j, y⟩ = G.mk.{v, u} F ⟨j, x * y⟩ := by
+  simpa using colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
+
 /-- The "unlifted" version of taking inverses in the colimit. -/
 @[to_additive "The \"unlifted\" version of negation in the colimit."]
 def colimitInvAux (x : Σ j, F.obj j) : G.{v, u} F :=

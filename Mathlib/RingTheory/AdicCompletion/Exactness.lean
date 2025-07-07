@@ -70,7 +70,7 @@ theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map I
   let a := mapPreimage hf b
   refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
   · refine fun n ↦ SModEq.symm ?_
-    simp only [SModEq.symm, SModEq, mapPreimage, Submodule.Quotient.mk_sub,
+    simp only [SModEq, mapPreimage, Submodule.Quotient.mk_sub,
       sub_eq_self, Submodule.Quotient.mk_eq_zero, SetLike.coe_mem, a]
   · exact _root_.AdicCompletion.ext fun n ↦ congrArg _ ((a n).property)
 
@@ -83,8 +83,6 @@ variable {P : Type u} [AddCommGroup P] [Module R P]
 section Injectivity
 
 variable [IsNoetherianRing R] [Module.Finite R N] (I)
-
-open LinearMap
 
 /-- Adic completion preserves injectivity of finite modules over a Noetherian ring. -/
 theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
@@ -147,7 +145,7 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
 open Submodule
 
 include hfg in
-/- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
+/-- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
 private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
   | .zero =>

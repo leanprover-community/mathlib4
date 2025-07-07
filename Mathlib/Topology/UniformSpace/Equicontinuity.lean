@@ -199,7 +199,7 @@ lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
 lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
     UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
   rw [UniformEquicontinuous, UniformEquicontinuousOn]
-  conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prod_map, ← map_comap]
+  conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prodMap, ← map_comap]
   rfl
 
 /-!
@@ -710,9 +710,6 @@ theorem IsUniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} 
   rw [equicontinuousAt_iff_continuousAt, equicontinuousAt_iff_continuousAt, this.continuousAt_iff]
   rfl
 
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.equicontinuousAt_iff := IsUniformInducing.equicontinuousAt_iff
-
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous at a point
 `x₀ : X` within a subset `S : Set X` iff the family `𝓕'`, obtained by composing each function
 of `𝓕` by `u`, is equicontinuous at `x₀` within `S`. -/
@@ -723,18 +720,12 @@ lemma IsUniformInducing.equicontinuousWithinAt_iff {F : ι → X → α} {S : Se
   simp only [equicontinuousWithinAt_iff_continuousWithinAt, this.continuousWithinAt_iff]
   rfl
 
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.equicontinuousWithinAt_iff := IsUniformInducing.equicontinuousWithinAt_iff
-
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous iff the
 family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is equicontinuous. -/
 lemma IsUniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : IsUniformInducing u) :
     Equicontinuous F ↔ Equicontinuous ((u ∘ ·) ∘ F) := by
   congrm ∀ x, ?_
   rw [hu.equicontinuousAt_iff]
-
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.equicontinuous_iff := IsUniformInducing.equicontinuous_iff
 
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous on a
 subset `S : Set X` iff the family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is
@@ -743,9 +734,6 @@ theorem IsUniformInducing.equicontinuousOn_iff {F : ι → X → α} {S : Set X}
     (hu : IsUniformInducing u) : EquicontinuousOn F S ↔ EquicontinuousOn ((u ∘ ·) ∘ F) S := by
   congrm ∀ x ∈ S, ?_
   rw [hu.equicontinuousWithinAt_iff]
-
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.equicontinuousOn_iff := IsUniformInducing.equicontinuousOn_iff
 
 /-- Given `u : α → γ` a uniform inducing map, a family `𝓕 : ι → β → α` is uniformly equicontinuous
 iff the family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is uniformly
@@ -756,9 +744,6 @@ theorem IsUniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : 
   simp only [uniformEquicontinuous_iff_uniformContinuous, this.uniformContinuous_iff]
   rfl
 
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformEquicontinuous_iff := IsUniformInducing.uniformEquicontinuous_iff
-
 /-- Given `u : α → γ` a uniform inducing map, a family `𝓕 : ι → β → α` is uniformly equicontinuous
 on a subset `S : Set β` iff the family `𝓕'`, obtained by composing each function of `𝓕` by `u`,
 is uniformly equicontinuous on `S`. -/
@@ -768,9 +753,6 @@ theorem IsUniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S 
   have := UniformFun.postcomp_isUniformInducing (α := ι) hu
   simp only [uniformEquicontinuousOn_iff_uniformContinuousOn, this.uniformContinuousOn_iff]
   rfl
-
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformEquicontinuousOn_iff := IsUniformInducing.uniformEquicontinuousOn_iff
 
 /-- If a set of functions is equicontinuous at some `x₀` within a set `S`, the same is true for its
 closure in *any* topology for which evaluation at any `x ∈ S ∪ {x₀}` is continuous. Since

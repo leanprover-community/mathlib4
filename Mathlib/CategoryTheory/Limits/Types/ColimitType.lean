@@ -28,10 +28,11 @@ in a categorical sense is a colimit.
 ## TODO
 * refactor `DirectedSystem` and the construction of colimits in `Type`
 by using `Functor.ColimitType`.
+* add a similar API for limits in `Type`?
 
 -/
 
-universe w₃ w₂ w₁ w₀' w₀ v u
+universe w₃ w₂ w₁ w₀ w₀' v u
 
 assert_not_exists CategoryTheory.Limits.Cocone
 
@@ -122,15 +123,15 @@ def coconeTypes : F.CoconeTypes where
 
 /-- An heterogeneous universe version of the universal property of the colimit is
 satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
-def descColimitType (c : CoconeTypes.{w₁} F) : F.ColimitType → c.pt :=
+def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
   Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)
 
 @[simp]
-lemma descColimitType_comp_ι (c : CoconeTypes.{w₁} F) (j : J) :
+lemma descColimitType_comp_ι (c : F.CoconeTypes) (j : J) :
     (F.descColimitType c).comp (F.ιColimitType j) = c.ι j := rfl
 
 @[simp]
-lemma descColimitType_ιColimitType_apply (c : CoconeTypes.{w₁} F) (j : J) (x : F.obj j) :
+lemma descColimitType_ιColimitType_apply (c : F.CoconeTypes) (j : J) (x : F.obj j) :
     F.descColimitType c (F.ιColimitType j x) = c.ι j x := rfl
 
 namespace CoconeTypes
