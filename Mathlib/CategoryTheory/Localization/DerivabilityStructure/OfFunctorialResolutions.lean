@@ -78,8 +78,7 @@ lemma Φ_functor_map_ι_app (X₁ : C₁) :
 
 include hW₁ hi in
 lemma W₁_ι_app (X₁ : C₁) : W₁ ((ι i).app X₁) := by
-  simpa only [hW₁, MorphismProperty.inverseImage_iff, Φ_functor_map_ι_app]
-    using hi (Φ.functor.obj X₁)
+  simpa [hW₁] using hi (Φ.functor.obj X₁)
 
 end functorialRightResolutions
 
