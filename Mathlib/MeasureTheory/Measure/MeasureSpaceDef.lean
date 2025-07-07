@@ -418,17 +418,8 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
     (nhds_basis_opens _).frequently_iff]
   grind
 
-/- This theorem says that if U has positive measure then there has to be a point in U, all of
-    neighborhoods have positive measure. It's probably better to prove that union result
-    below first and then use that theorem to prove this one under second countable
-    hypothesis, etc. -/
---lemma exists_mem_support_of_open_pos {U : Set X} (hU : IsOpen U) (hμ : 0 < μ U) :
---  (U ∩ μ.support).Nonempty := by sorry
+open Set
 
---lemma support_subset_closure_of_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
---  support μ ⊆ closure U := by sorry
-
-open Set in
 lemma support_eq_compl_Union_open_null :
   μ.support = (⋃₀ {U : Set X | IsOpen U ∧ μ U = 0})ᶜ  := by
     ext x
@@ -445,6 +436,69 @@ lemma support_eq_compl_Union_open_null :
       intros U hU_nhds
       rcases (mem_nhds_iff.mp hU_nhds) with ⟨V, hV_sub, hV_open, hVₓ⟩
       exact measure_pos_of_superset hV_sub <| fun a ↦ hx V hV_open a hVₓ
+
+lemma exists_mem_support_of_open_pos [SecondCountableTopology X] {U : Set X}
+    (_ : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by
+  by_contra hn
+  -- `hn : ¬ Nonempty (U ∩ μ.support)` gives `U ⊆ (μ.support)ᶜ`
+  have hsub : U ⊆ (μ.support)ᶜ := fun x hxU hxS =>
+    hn ⟨x, hxU, hxS⟩
+  -- rewrite `(μ.support)ᶜ` as the union of all open null sets
+  have hcover : U ⊆ ⋃₀ {W : Set X | IsOpen W ∧ μ W = 0} := by
+    -- first rewrite `hsub` using your lemma
+    rw [support_eq_compl_Union_open_null] at hsub
+    -- now `hsub : U ⊆ (⋃₀ {…})ᶜ` and double‐compl gives the desired cover
+    simp only [compl_compl] at hsub
+    exact hsub
+  -- 1) get the class­‐instance
+  have hLS : LindelofSpace U := inferInstance
+  -- 2) convert it to the Prop using the iff
+  have hIL : IsLindelof U :=
+    (isLindelof_iff_LindelofSpace.2 hLS)
+
+  -- 3) now extract a countable subcover
+  rcases (isLindelof_iff_countable_subcover.mp hIL)
+    (fun W : {W // IsOpen W ∧ μ W = 0} => W.val)
+    (fun W => W.prop.1)
+    (by simpa [ support_eq_compl_Union_open_null
+        , compl_compl
+        , ← sUnion_range (fun W : {W // IsOpen W ∧ μ W = 0} => W.val)
+        ]
+    using hsub)
+    with ⟨T, hTcount, hTcov⟩
+
+  -- now measure U ≤ measure of that countable union ≤ sum of μ V = 0
+  have hU_le : μ U ≤ μ (⋃ i ∈ T, i.val) :=
+    measure_mono hTcov
+
+  have h_union_le_tsum :
+    μ (⋃ i ∈ T, i.val) ≤ ∑' (i : T), μ (i.val) :=
+  measure_biUnion_le μ hTcount Subtype.val
+
+  have h_tsum_zero : ∑' (i : T), μ (i.val) = 0 := by
+    refine ENNReal.tsum_eq_zero.mpr fun i => (i.val.property.2 : μ (i.val) = 0)
+
+  -- chaining these gives `0 < μ U ≤ 0`, absurd
+  have : (0 : ℝ≥0∞) < 0 := by
+    calc
+      0 < μ U                 := hμ
+      _ ≤ μ (⋃ i ∈ T, i.val)  := hU_le
+      _ ≤ ∑' i : T, μ (i.val) := h_union_le_tsum
+      _ = 0                   := h_tsum_zero
+  exact lt_irrefl 0 this
+
+
+/- This theorem says that if U has positive measure then there has to be a point in U, all of
+    neighborhoods have positive measure. It's probably better to prove that union result
+    below first and then use that theorem to prove this one under second countable
+    hypothesis, etc. -/
+lemma exists_mem_support_of_open_pos' [SecondCountableTopology X] {U : Set X}
+    (hU : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by sorry
+
+--lemma support_subset_closure_of_pos {U : Set X} (hU : IsOpen U) (hμ : μ U > 0) :
+--  support μ ⊆ closure U := by sorry
+
+
 
 end Measure
 
