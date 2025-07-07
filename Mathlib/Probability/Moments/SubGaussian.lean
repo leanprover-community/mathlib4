@@ -748,7 +748,7 @@ protected lemma mgf_le_of_mem_Icc [IsProbabilityMeasure μ] {a b t : ℝ} (hm : 
 
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
 that is almost surely in `Set.Icc a b` for some `a b : ℝ` and has expectation zero, then `X` has a
- sub-Gaussian moment generating function with parameter `((b - a) / 2 ) ^ 2`. -/
+sub-Gaussian moment generating function with parameter `((b - a) / 2) ^ 2`. -/
 lemma hasSubgaussianMGF_of_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ} (hm : AEMeasurable X μ)
     (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hc : μ[X] = 0) :
     HasSubgaussianMGF X ((‖b - a‖₊ / 2) ^ 2) μ where
