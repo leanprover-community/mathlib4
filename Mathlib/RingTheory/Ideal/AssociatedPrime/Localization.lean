@@ -20,7 +20,7 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
 -/
 
-variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
+variable {R : Type*} [CommRing R] (S : Submonoid R) {R' : Type*} [CommRing R'] [Algebra R R']
   [IsLocalization S R']
 
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
@@ -70,7 +70,7 @@ lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes
     maximalIdeal (Localization.AtPrime p) ∈
     associatedPrimes (Localization.AtPrime p) (LocalizedModule p.primeCompl M) := by
   apply mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
-    p.primeCompl (Localization.AtPrime p) (LocalizedModule.mkLinearMap p.primeCompl M)
+    p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
 
 include S f in
@@ -107,13 +107,15 @@ lemma comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg
     have := prime.mul_mem_iff_mem_or_mem.mp mem
     tauto
 
+variable (R')
+
 include S f in
 open Set in
 lemma associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes [IsNoetherianRing R] :
     (Ideal.comap (algebraMap R R')) ⁻¹' (associatedPrimes R M) = associatedPrimes R' M' := by
   ext p
-  exact ⟨mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule S R' f p,
-    fun h ↦ comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg S R' f p h
+  exact ⟨mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule S f p,
+    fun h ↦ comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg S f p h
     ((isNoetherianRing_iff_ideal_fg R).mp ‹_› _)⟩
 
 lemma minimalPrimes_annihilator_mem_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
