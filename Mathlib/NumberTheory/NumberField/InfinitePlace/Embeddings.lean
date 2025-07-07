@@ -261,7 +261,7 @@ lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
     σ (σ x) = x := by
   simp [← φ.injective.eq_iff, hσ.eq]
 
-theorem IsConj.comp {ν : K ≃ₐ[k] K} (hσ : IsConj φ σ) :
+theorem IsConj.comp (hσ : IsConj φ σ) {ν : K ≃ₐ[k] K} :
     IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
   ext
   simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
