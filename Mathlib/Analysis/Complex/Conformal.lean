@@ -10,6 +10,7 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Data.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces
@@ -43,7 +44,6 @@ this file.
 
 ## TODO
 
-* The classical form of Cauchy-Riemann equations
 * On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
   throughout or antiholomorphic throughout.
 -/
@@ -159,3 +159,51 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this]
 
 end Conformality
+
+/-!
+### The Cauchy-Riemann Equation for Complex-Differentiable Functions
+-/
+
+/--
+Helper lemma for `differentiableAt_complex_iff_differentiableAt_real`: A real linear map
+`ℓ : ℂ →ₗ[ℝ] ℂ` respects complex scalar multiplication if it maps `I` to `I • ℓ 1`.
+-/
+theorem real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] ℂ} (h : ℓ I = I • ℓ 1) :
+    ∀ (a b : ℂ), ℓ (a • b) = a • ℓ b := by
+  intro a b
+  rw [(by simp only [real_smul, re_add_im] : a = a.re + a.im • I), (by simp : b = b.re + b.im • I)]
+  repeat rw [add_smul]
+  repeat rw [smul_add]
+  repeat rw [ℓ.map_add]
+  have t₀ : (a.im • I) • ↑b.re = (a.im * b.re) • I := by
+    simp
+    ring
+  have t₁ : (a.im • I) • b.im • I = -(a.im * b.im) • (1 : ℂ) := by
+    simp [(by ring : ↑a.im * I * (↑b.im * I) = (↑a.im * ↑b.im) * (I * I))]
+  rw [t₀, t₁, (by simp : b.re = b.re • (1 : ℂ))]
+  repeat rw [Complex.coe_smul]
+  repeat rw [ℓ.map_smul]
+  repeat rw [← Complex.coe_smul]
+  repeat rw [h]
+  simp only [smul_eq_mul, ofReal_mul, ofReal_neg, neg_mul]
+  ring_nf
+  rw [I_sq]
+  ring
+
+/--
+The Cauchy-Riemann Equation: A real-differentiable function `f : ℂ → ℂ` is complex differentiable if
+the derivative `fderiv ℝ f x` maps `I` to I • (fderiv ℝ f x) 1`.
+-/
+theorem differentiableAt_complex_iff_differentiableAt_real {f : ℂ → ℂ} {x : ℂ} :
+    (DifferentiableAt ℂ f x) ↔ (DifferentiableAt ℝ f x) ∧
+      (fderiv ℝ f x I = I • fderiv ℝ f x 1) := by
+  constructor
+  · exact fun h ↦ by simp [h.restrictScalars ℝ, h.fderiv_restrictScalars ℝ]
+  · intro ⟨h₁, h₂⟩
+    apply (differentiableAt_iff_restrictScalars ℝ h₁).2
+    use {
+      toFun := fderiv ℝ f x
+      map_add' := (fderiv ℝ f x).map_add'
+      map_smul' := real_linearMap_map_smul_complex h₂
+    }
+    rfl
