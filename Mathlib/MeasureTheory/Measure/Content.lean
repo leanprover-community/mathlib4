@@ -198,7 +198,7 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
     (U : Opens G) : μ.innerContent (Opens.comap f U) = μ.innerContent U := by
   refine (Compacts.equiv f).surjective.iSup_congr _ fun K => iSup_congr_Prop image_subset_iff ?_
   intro hK
-  simp only [Equiv.coe_fn_mk, Subtype.mk_eq_mk, Compacts.equiv]
+  simp only [Equiv.coe_fn_mk, Compacts.equiv]
   apply h
 
 @[to_additive]

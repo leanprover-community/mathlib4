@@ -12,15 +12,18 @@ import Mathlib.RingTheory.Valuation.Basic
 
 Given a linearly ordered commutative group with zero `Γ`, a valuation `v : A → Γ` on a ring `A` is
 *discrete*, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
-implemented as `MonoidHomWithZero.valueGroup v`. When `Γ := ℤₘ₀` (defined in
-`Multiplicative.termℤₘ₀`), `γ` = ofAdd (-1)` and the condition of being discrete is
+implemented as `MonoidHomWithZero.valueGroup v`. When `Γ := ℤᵐ⁰`, `γ = ofAdd (-1)` and the condition
+of being discrete is
 equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to asking that
 `1 : ℤ` belongs to the image of the corresponding *additive* valuation.
 
+Note that this definition of discrete implies that the valuation is nontrivial and of rank one, as
+is commonly assumed in number theory. To avoid potential confusion with other definitions of
+discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in this setting.
 
 ## Main Definitions
-* `IsDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if if there is an element
-`γ : Γˣ` that is `< 1` and generates the range of `v`,
+* `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if if there is
+an element `γ : Γˣ` that is `< 1` and generates the range of `v`,
 
 ## TODO
 * Define (pre)uniformizers for nontrivial discrete valuations.
@@ -30,7 +33,8 @@ equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equiv
 
 namespace Valuation
 
-open Set LinearOrderedCommGroup MonoidHomWithZero
+open Set LinearOrderedCommGroup MonoidWithZeroHom
+open Function Multiplicative Set WithZero
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
@@ -40,42 +44,42 @@ variable {A : Type*} [Ring A] (v : Valuation A Γ)
 nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
-class IsDiscrete : Prop where
+class IsRankOneDiscrete : Prop where
   exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = (valueGroup v) ∧ γ < 1
 
-namespace IsDiscrete
+namespace IsRankOneDiscrete
 
-lemma exists_generator_lt_one [IsDiscrete v] :
+lemma exists_generator_lt_one [IsRankOneDiscrete v] :
     ∃ (γ : Γˣ), Subgroup.zpowers γ = valueGroup v ∧ γ < 1 :=
   exists_generator_lt_one'
 
-/-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
-group that is `< 1`. -/
-noncomputable def generator [IsDiscrete v] : Γˣ := (exists_generator_lt_one v).choose
+/-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is a generator of
+the value group that is `< 1`. -/
+noncomputable def generator [IsRankOneDiscrete v] : Γˣ := (exists_generator_lt_one v).choose
 
-lemma generator_zpowers_eq_valueGroup [IsDiscrete v] :
+lemma generator_zpowers_eq_valueGroup [IsRankOneDiscrete v] :
     (Subgroup.zpowers (generator v)) = valueGroup v :=
   (exists_generator_lt_one v).choose_spec.1
 
-lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
+lemma generator_lt_one [IsRankOneDiscrete v] : (generator v) < 1 :=
   (exists_generator_lt_one v).choose_spec.2
 
-lemma generator_ne_one [IsDiscrete v] : (generator v) ≠ 1 :=
+lemma generator_ne_one [IsRankOneDiscrete v] : (generator v) ≠ 1 :=
   ne_of_lt <| generator_lt_one v
 
-lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
+lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneDiscrete w] :
     Units.val '' (Subgroup.zpowers (generator w)) = range w \ {0} := by
   rw [generator_zpowers_eq_valueGroup, valueGroup_eq_range]
 
-lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
+lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneDiscrete w] :
     ↑(generator w) ∈ range w := by
   apply diff_subset
   rw [← generator_zpowers_eq_range]
   exact ⟨generator w, by simp⟩
 
-lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
+lemma generator_ne_zero [IsRankOneDiscrete v] : (generator v : Γ) ≠ 0 := by simp
 
-instance [IsDiscrete v] : IsCyclic <| valueGroup v := by
+instance [IsRankOneDiscrete v] : IsCyclic <| valueGroup v := by
   rw [isCyclic_iff_exists_zpowers_eq_top, ← generator_zpowers_eq_valueGroup]
   use ⟨generator v, by simp⟩
   rw [eq_top_iff]
@@ -85,9 +89,9 @@ instance [IsDiscrete v] : IsCyclic <| valueGroup v := by
   ext
   simp [← hk]
 
-instance [IsDiscrete v] : Nontrivial (valueGroup v) :=
+instance [IsRankOneDiscrete v] : Nontrivial (valueGroup v) :=
   ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
 
-end IsDiscrete
+end IsRankOneDiscrete
 
 end Valuation
