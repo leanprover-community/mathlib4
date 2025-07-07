@@ -114,7 +114,7 @@ lemma uniformity_ball_lt_mem_uniformity {r : ValueGroupWithZero R} (hr : r ≠ 0
 lemma uniformity_ball_le_mem_uniformity {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     { p : R × R | v (p.2 - p.1) ≤ r } ∈ 𝓤 R := by
   rw [hasBasis_uniformity.mem_iff]
-  rcases le_or_gt 1 r with hr1|hr1
+  rcases le_or_gt 1 r with hr1 | hr1
   · use 1
     simp only [Units.val_one, setOf_subset_setOf, Prod.forall, true_and]
     intro _ _ h
@@ -128,20 +128,20 @@ lemma uniformity_ball_le_mem_uniformity {r : ValueGroupWithZero R} (hr : r ≠ 0
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
-  convert ((v).isTransitiveRel_uniformity_ball_lt r).isOpen_ball_of_mem_uniformity 0
-    (uniformity_ball_lt_mem_uniformity hr)
-  simp [UniformSpace.ball]
+  · convert ((v).isTransitiveRel_uniformity_ball_lt r).isOpen_ball_of_mem_uniformity 0
+      (uniformity_ball_lt_mem_uniformity hr)
+    simp [UniformSpace.ball]
 
 theorem isClosed_ball (r : ValueGroupWithZero R) :
     IsClosed {x | v x < r} := by
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
-  convert UniformSpace.isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
-    0 ((v).isSymmetricRel_uniformity_ball_lt r) ((v).isTransitiveRel_uniformity_ball_lt r)
-    (uniformity_ball_lt_mem_uniformity hr)
-  simp [UniformSpace.ball]
+  · convert UniformSpace.isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
+      0 ((v).isSymmetricRel_uniformity_ball_lt r) ((v).isTransitiveRel_uniformity_ball_lt r)
+      (uniformity_ball_lt_mem_uniformity hr)
+    simp [UniformSpace.ball]
 
 theorem isClopen_ball (r : ValueGroupWithZero R) :
     IsClopen {x | v x < r} :=
