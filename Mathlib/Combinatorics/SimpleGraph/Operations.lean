@@ -172,7 +172,7 @@ lemma lt_sup_edge (hne : s ≠ t) (hn : ¬ G.Adj s t) : G < G ⊔ edge s t :=
 lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
   obtain h | h := eq_or_ne v w
   · simp [h]
-  · refine ⟨fun h ↦ .inr <| h (by simp_all [edge_adj, h]), fun hadj v' w' hvw' ↦ ?_⟩
+  · refine ⟨fun h ↦ .inr <| h (by simp_all [edge_adj]), fun hadj v' w' hvw' ↦ ?_⟩
     aesop (add simp [edge_adj, adj_symm])
 
 variable {s t}

@@ -79,7 +79,7 @@ example : natDegree (X + X ^ 2 : ℕ[X]) = 0 := by compute_degree!
 /--
 error: 'compute_degree' inapplicable. The goal
   X.natDegree ≠ 0
-is expected to be '≤' or '='.
+is expected to be '≤', '<' or '='.
 -/
 #guard_msgs in
 example : natDegree (X : ℕ[X]) ≠ 0 := by compute_degree!
@@ -243,3 +243,13 @@ variable [CommRing R] [Nontrivial R] in
 example : (X ^ 2 + 2 • X + C 1 : R[X]).natDegree = 2 := by
   compute_degree!
   simp [coeff_X]
+
+example : (C 1 + X * 3 * (X + 3) ^ 4 : Polynomial ℤ).natDegree < 10 := by
+  compute_degree!
+
+example : (C 1 + X * 3 * (X + 3) ^ 4 : Polynomial ℤ).degree < 10 := by
+  compute_degree!
+
+variable [CommRing R] in
+example : (X ^ 2 + 2 • X + C 1 : R[X]).natDegree < 3 := by
+  compute_degree!
