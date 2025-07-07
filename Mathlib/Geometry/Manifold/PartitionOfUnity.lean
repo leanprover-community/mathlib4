@@ -587,43 +587,25 @@ theorem contMDiff_totalSpace_weighted_sum_of_local_sections
     {n : ℕ∞} {ι : Type*} (ρ : SmoothPartitionOfUnity ι I M univ) (s_loc : ι → ((x : M) → V x))
     (U : ι → Set M) (hU_isOpen : ∀ i, IsOpen (U i)) (hρ_subord : ρ.IsSubordinate U)
     (h_smooth_s_loc : ∀ i, ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x => (TotalSpace.mk x (s_loc i x) : TotalSpace F_fiber V)) (U i)) :
+      (fun x ↦ (TotalSpace.mk x (s_loc i x) : TotalSpace F_fiber V)) (U i)) :
     ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x => (TotalSpace.mk x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x)) : TotalSpace F_fiber V)) := by
-  let s_val (x : M) : V x := ∑ᶠ (j : ι), (ρ j x) • (s_loc j x)
+      (fun x ↦ (TotalSpace.mk x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x)) : TotalSpace F_fiber V)) := by
   intro x₀
-  apply (Bundle.contMDiffAt_section s_val x₀).mpr
+  apply (Bundle.contMDiffAt_section _ x₀).mpr
   let e₀ := trivializationAt F_fiber V x₀
   apply ContMDiffAt.congr_of_eventuallyEq
   · apply ρ.contMDiffAt_finsum
-    · intro j h_x₀_in_tsupport_ρj
-      have h_slocj_smooth_at_x₀ : ContMDiffAt I (I.prod 𝓘(ℝ, F_fiber)) n
-        (fun x => (TotalSpace.mk x (s_loc j x) : TotalSpace F_fiber V)) x₀ :=
-        (h_smooth_s_loc j).contMDiffAt ((hU_isOpen j).mem_nhds (hρ_subord j h_x₀_in_tsupport_ρj))
-      exact (contMDiffAt_section (s_loc j) x₀).mp h_slocj_smooth_at_x₀
-  · have : (fun x ↦ (e₀ ⟨x, s_val x⟩).2)
-            =ᶠ[𝓝 x₀]
-          fun x ↦ ∑ᶠ i, ρ i x • (e₀ ⟨x, s_loc i x⟩).2 := by
-      have h_base : {x : M | x ∈ e₀.baseSet} ∈ (𝓝 x₀) :=
-        e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
-      filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
-      have hlin : IsLinearMap ℝ (fun y ↦ (e₀ ⟨x, y⟩).2) := e₀.linear ℝ hx_base
-      have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
-        refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
-        contrapose! hi_smul_ne_zero
-        simp only [ne_eq, smul_eq_zero, not_or, mem_setOf_eq, not_and, not_not]
-        exact fun a ↦ False.elim (hi_smul_ne_zero a)
-      let Llin : V x →ₗ[ℝ] F_fiber :=
-        { toFun    := fun y ↦ (e₀ ⟨x, y⟩).2
-          map_add' := by intro u v; simpa using hlin.map_add u v
-          map_smul' := by intro c u; simpa using hlin.map_smul c u }
-      have h_map :
-          (fun y ↦ (e₀ ⟨x, y⟩).2) (∑ᶠ i, ρ i x • s_loc i x) =
-            ∑ᶠ i, ρ i x • (fun y ↦ (e₀ ⟨x, y⟩).2) (s_loc i x) := by
-        simpa only [LinearMap.toAddMonoidHom_coe, map_smul] using
-          Llin.toAddMonoidHom.map_finsum hfin
-      exact h_map
-    exact this
+    · intro j hx₀
+      rw [← contMDiffAt_section (s_loc j)]
+      exact h_smooth_s_loc j |>.contMDiffAt <| (hU_isOpen j).mem_nhds <| hρ_subord j hx₀
+  · have h_base : {x : M | x ∈ e₀.baseSet} ∈ 𝓝 x₀ :=
+      e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
+    filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
+    have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
+      refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
+      have : ρ i x ≠ 0 ∧ s_loc i x ≠ 0 := by simpa using hi_smul_ne_zero
+      exact this.1
+    simpa using e₀.linearEquivAt ℝ x hx_base |>.toAddMonoidHom.map_finsum hfin
 
 end SmoothPartitionOfUnity
 
@@ -645,42 +627,35 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
     (Hloc :
       ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
         (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
-          (fun x => (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
+          (fun x ↦ (⟨x, s_loc x⟩ : TotalSpace F_fiber V)) U_x₀) ∧
         (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
     ∃ s : Cₛ^n⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x := by
-  choose U_map h_nhds s_loc h_smooth_s_loc_on_U_map h_mem_t using Hloc
-
+  choose W h_nhds s_loc s_smooth h_mem_t using Hloc
   -- Construct an open cover from the interiors of the given neighborhoods.
-  let U_open_cover (x : M) : Set M := interior (U_map x)
-  have hU_isOpen : ∀ x, IsOpen (U_open_cover x) := fun x ↦ isOpen_interior
-  have hU_covers_univ : univ ⊆ ⋃ x, U_open_cover x := by
+  let U (x : M) : Set M := interior (W x)
+  have U_op : ∀ x, IsOpen (U x) := fun x ↦ isOpen_interior
+  have hU_covers_univ : univ ⊆ ⋃ x, U x := by
     intro x_pt _
     simp only [mem_iUnion, mem_univ]
     exact ⟨x_pt, mem_interior_iff_mem_nhds.mpr (h_nhds x_pt)⟩
-
   -- Obtain a smooth partition of unity subordinate to this open cover.
-  obtain ⟨ρ, hρ_subord⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ,
-      ρ.IsSubordinate U_open_cover :=
+  obtain ⟨ρ, hρU⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ,
+      ρ.IsSubordinate U :=
     SmoothPartitionOfUnity.exists_isSubordinate
-      I isClosed_univ U_open_cover hU_isOpen hU_covers_univ
-
-  -- Define the global section `s_val` by taking a weighted sum of the local sections.
-  let s_val (x : M) : V x := ∑ᶠ (j : M), (ρ j x) • (s_loc j x)
-
-  -- Prove that `s_val`, when viewed as a map to the total space, is smooth.
-  have hs_val_tot_space_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x => (TotalSpace.mk x (s_val x) : TotalSpace F_fiber V)) := by
-    apply SmoothPartitionOfUnity.contMDiff_totalSpace_weighted_sum_of_local_sections I V ρ s_loc
-      U_open_cover hU_isOpen hρ_subord
-    intro j
-    exact (h_smooth_s_loc_on_U_map j).mono interior_subset
-
+      I isClosed_univ U U_op hU_covers_univ
+  -- Define the global section `s` by taking a weighted sum of the local sections.
+  let s x : V x := ∑ᶠ j, (ρ j x) • s_loc j x
+  -- Prove that `s`, when viewed as a map to the total space, is smooth.
+  have s_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ (TotalSpace.mk x (s x) : TotalSpace F_fiber V)) :=
+    ρ.contMDiff_totalSpace_weighted_sum_of_local_sections
+      I V s_loc U U_op hρU fun j ↦ (s_smooth j).mono interior_subset
   -- Construct the smooth section and prove it lies in the convex sets `t x`.
-  refine ⟨⟨s_val, hs_val_tot_space_smooth⟩, fun x => ?_⟩
-  apply (ht_conv x).finsum_mem (fun j => ρ.nonneg j x) (ρ.sum_eq_one (mem_univ x))
+  refine ⟨⟨s, s_smooth⟩, fun x ↦ ?_⟩
+  apply (ht_conv x).finsum_mem (ρ.nonneg · x) (ρ.sum_eq_one (mem_univ x))
   intro j h_ρjx_ne_zero
   have h_x_in_tsupport_ρj : x ∈ tsupport (ρ j) := subset_closure (mem_support.mpr h_ρjx_ne_zero)
-  have h_x_in_Umap_j : x ∈ U_map j := interior_subset (hρ_subord j h_x_in_tsupport_ρj)
+  have h_x_in_Umap_j : x ∈ W j := interior_subset (hρU j h_x_in_tsupport_ρj)
   exact h_mem_t j x h_x_in_Umap_j
 
 /-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
@@ -715,20 +690,11 @@ trivial bundle. See also `exists_smooth_forall_mem_convex_of_local` and
 `exists_smooth_forall_mem_convex_of_local_const`. -/
 theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
-    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
-  let V (_ : M) : Type _ := F
-  rcases exists_contMDiffOn_section_forall_mem_convex_of_local I V t ht
-    (fun x₀ ↦ by
-      rcases Hloc x₀ with ⟨U, hU, g, hgs, hgt⟩
-      refine ⟨U, hU, g, ?_, hgt⟩
-      intro y hy
-      rw [@Bundle.contMDiffWithinAt_section]
-      apply hgs y hy)
-    with ⟨s, hs⟩
-  refine ⟨⟨fun x ↦ (s x : F), fun x₀ ↦ ?_⟩, hs⟩
-  have := s.contMDiff x₀
-  rw [Bundle.contMDiffAt_section] at this
-  exact this
+    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
+  let ⟨s, hs⟩ := exists_contMDiffOn_section_forall_mem_convex_of_local I (fun _ ↦ F) t ht
+    (fun x₀ ↦ let ⟨U, hU, g, hgs, hgt⟩ := Hloc x₀
+      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section _ _ _ |>.mpr <| hgs y hy, hgt⟩)
+  ⟨⟨s, (Bundle.contMDiffAt_section _ _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
