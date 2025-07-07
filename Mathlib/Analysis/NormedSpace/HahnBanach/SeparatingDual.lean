@@ -129,9 +129,9 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     map_add' := fun a b ↦ by simp [add_smul]; abel
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
-      simp only [id_eq, eq_mpr_eq_cast, RingHom.id_apply, smul_eq_mul, AddHom.toFun_eq_coe,
+      simp only [RingHom.id_apply, smul_eq_mul,
         -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
-        AddHom.coe_mk, map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel]
+        map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel]
       rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel₀ Gy]
       simp only [smul_sub, one_mul]
       abel

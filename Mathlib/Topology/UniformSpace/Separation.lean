@@ -137,7 +137,7 @@ theorem inseparable_iff_clusterPt_uniformity {x y : α} :
 
 theorem t0Space_iff_uniformity :
     T0Space α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
-  simp only [t0Space_iff_inseparable, inseparable_iff_ker_uniformity, mem_ker, id]
+  simp only [t0Space_iff_inseparable, inseparable_iff_ker_uniformity, mem_ker]
 
 theorem t0Space_iff_uniformity' :
     T0Space α ↔ Pairwise fun x y ↦ ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
