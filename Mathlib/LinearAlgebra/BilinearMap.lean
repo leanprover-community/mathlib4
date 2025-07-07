@@ -119,24 +119,6 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
     -- It looks like we now run out of assignable metavariables.
     (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
 
-section lcomp
-
-variable (S N) [Module R N] [SMulCommClass R S N]
-
-/-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
-`Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
-def lcomp (f : M →ₗ[R] M₂) : (M₂ →ₗ[R] N) →ₗ[S] M →ₗ[R] N :=
-  flip <| LinearMap.comp (flip id) f
-
-variable {S N}
-
-@[simp]
-theorem lcomp_apply (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) (x : M) : lcomp S N f g x = g (f x) := rfl
-
-theorem lcomp_apply' (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) : lcomp S N f g = g ∘ₗ f := rfl
-
-end lcomp
-
 end
 
 @[simp]
@@ -271,9 +253,6 @@ theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
 variable {R}
 
 variable (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
-
-@[simp]
-theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
 
 variable (A Pₗ)
 variable [Module A Pₗ] [SMulCommClass R A Pₗ]
