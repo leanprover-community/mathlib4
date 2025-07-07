@@ -230,7 +230,7 @@ instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K
     intro ψ
     obtain ⟨ν, rfl⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq (k := ℚ) φ ψ (by ext; simp)
     rw [show σ = ν.symm⁻¹ * σ * ν.symm by simp]
-    exact hσ₁.comp
+    exact hσ₁.comp _
   exact of_forall_isConj K hσ₂
 
 variable [IsCMField K]
