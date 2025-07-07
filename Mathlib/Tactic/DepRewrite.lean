@@ -84,8 +84,8 @@ structure Config where
   where `h : P n₁` does not typecheck.
   The tactic will cast `h` to `eq ▸ h : P n₁` iff `.proofs ≤ castMode`. -/
   castMode : CastMode := .proofs
-  /-- Whether `let` bindings whose value contains the LHS
-  should be abstracted over the LHS.
+  /-- Whether `let` bindings whose type or value contains the LHS
+  may be abstracted over the LHS.
   This is off by default because it generalizes the types of these bindings.
 
   For example, consider `f : (n : Nat) → n = 1 → Nat`.
@@ -255,7 +255,8 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     if !ctx.cfg.letAbs then
       throwError m!"\
         Will not rewrite the value of{indentD ""}let {n} : {t} := {v}\n\
-        Use `rw! +letAbs` if you want to rewrite in let-bound values."
+        Use `rw! +letAbs` if you want to rewrite in let-bound values. \
+        Note: in the generated motive, the value is{indentExpr vup}"
     let lupTy ← mkForallFVars #[ctx.x, ctx.h] tup
     let lup ← mkLambdaFVars #[ctx.x, ctx.h] vup
     withLetDecl n lupTy lup fun r => do

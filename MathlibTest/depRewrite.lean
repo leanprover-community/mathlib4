@@ -1,6 +1,6 @@
 import Mathlib.Tactic.DepRewrite
 
-/-! Basic tests for `rewrite!`. -/
+/-! ## Basic tests for `rewrite!`. -/
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -30,17 +30,17 @@ elab "fst% " e:term : term => do
   let e ← elabTerm e tp
   return .proj ``Prod 0 e
 
-/-! Tests for proof-only mode. -/
+/-! ## Tests for proof-only mode. -/
 
 variable {n m : Nat} (eq : n = m)
 
--- mdata
+-- Rewrite a term annotated with `mdata`.
 example (f : (k : Nat) → 0 < k → Type) (lt : 0 < n) : P (mdata% f n lt) := by
   rewrite! [eq]
   guard_target =ₐ P (mdata% f m (eq ▸ lt))
   exact test_sorry
 
--- app (fn)
+-- Rewrite the function in an application into a non-function.
 /-- error: term in function position was rewritten to a non-function
   any x -/
 #guard_msgs in
@@ -49,18 +49,19 @@ example (any : (α : Type) → α) (eq : (Nat → Nat) = Bool) :
   rewrite! [eq]
   exact test_sorry
 
--- app (arg)
+-- Rewrite the argument in an application.
 example (f : (k : Nat) → Fin k → Type) (lt : 0 < n) : P (f n ⟨0, lt⟩) := by
   rewrite! [eq]
   guard_target =ₐ P (f m ⟨0, eq ▸ lt⟩)
   exact test_sorry
 
--- proj
+-- Rewrite the structure in a projection.
 example (lt : 0 < n) : P (fst% ((⟨0, lt⟩, ()) : Fin n × Unit)) := by
   rewrite! [eq]
   guard_target =ₐ P (fst% ((⟨0, eq ▸ lt⟩, ()) : Fin m × Unit))
   exact test_sorry
 
+-- Rewrite the structure in a projection into a non-projectible structure.
 /-- error: projection type mismatch
   (any x).1 -/
 #guard_msgs in
@@ -69,7 +70,7 @@ example (any : (α : Type) → α) (eq : (Nat × Nat) = Nat) :
   rw! [eq]
   exact test_sorry
 
--- let (value)
+-- Rewrite the value of a let-binding.
 example (lt : 0 < n) :
     let A : Type := Fin n
     P (@id A ⟨0, lt⟩) := by
@@ -79,7 +80,7 @@ example (lt : 0 < n) :
     P (@id (A m eq) ⟨0, eq ▸ lt⟩)
   exact test_sorry
 
--- let (type)
+-- Rewrite the type of a let-binding.
 example (lt : 0 < n) :
     let x : Fin n := ⟨0, lt⟩
     P (@id (Fin n) x) := by
@@ -89,7 +90,7 @@ example (lt : 0 < n) :
     P (@id (Fin m) (x m eq))
   exact test_sorry
 
--- let (proof)
+-- Rewrite the type of a let-binding whose value is a proof.
 example (lt' : 0 < n) : P (let lt : 0 < n := lt'; @Fin.mk n 0 (@id (0 < n) lt)) := by
   rewrite! +letAbs [eq]
   guard_target =ₐ P <|
@@ -97,24 +98,25 @@ example (lt' : 0 < n) : P (let lt : 0 < n := lt'; @Fin.mk n 0 (@id (0 < n) lt)) 
     @Fin.mk m 0 (@id (0 < m) (lt m eq))
   exact test_sorry
 
--- lam
+-- Rewrite in the argument type of a function.
 example : P fun (y : Fin n) => y := by
   rewrite! [eq]
   guard_target =ₐ P fun (y : Fin m) => y
   exact test_sorry
 
--- lam (proof)
+-- Rewrite in a function with a proof argument.
 example : P fun (lt : 0 < n) => @Fin.mk n 0 (@id (0 < n) lt) := by
   rewrite! [eq]
-  guard_target = P fun (lt : 0 < m) => @Fin.mk m 0 (@id (0 < m) _)
+  guard_target =ₐ P fun (lt : 0 < m) => @Fin.mk m 0 (@id (0 < m) lt)
   exact test_sorry
 
--- forall
+-- Rewrite in a quantifier.
 example : P (forall (lt : 0 < n), @Eq (Fin n) ⟨0, lt⟩ ⟨0, lt⟩) := by
   rewrite! [eq]
-  guard_target = P (forall (lt : 0 < m), @Eq (Fin m) ⟨0, lt⟩ ⟨0, lt⟩)
+  guard_target =ₐ P (forall (lt : 0 < m), @Eq (Fin m) ⟨0, lt⟩ ⟨0, lt⟩)
   exact test_sorry
 
+-- Attempt to cast a non-proof in proof-only cast mode.
 /-- error: Will not cast
   y
 in cast mode 'proofs'. If inserting more casts is acceptable, use `rw! (castMode := .all)`. -/
@@ -124,6 +126,7 @@ example (Q : Fin n → Prop) (q : (x : Fin n) → Q x) :
   rewrite! [eq]
   exact test_sorry
 
+-- Attempt to cast a non-proof in proof-only cast mode.
 /-- error:
 Will not cast
   ⟨0, ⋯⟩
@@ -133,7 +136,7 @@ example (f : (k : Nat) → Fin k → Type) (lt : 0 < n) : P (f n ⟨0, lt⟩) :=
   conv in Fin.mk .. => rewrite! [eq]
   exact test_sorry
 
-/-- Ensure we traverse proof terms (ordinary `rw` succeeds here). -/
+-- Ensure we traverse proof terms (ordinary `rw` succeeds here).
 example
     (R : (n : Nat) → Prop)
     (Q : Prop)
@@ -145,49 +148,58 @@ example
   guard_target =ₐ t (q m (r m))
   exact test_sorry
 
-/-! Tests for all-casts mode. -/
+-- Rewrite a more complex term (not just an fvar).
+variable {foo : Nat → Nat} {bar : Nat → Nat} (eq : foo n = bar m) in
+example (f : (k : Nat) → Fin k → Type) (lt : 0 < foo n) : P (f (foo n) ⟨0, lt⟩) := by
+  rewrite! [eq]
+  guard_target =ₐ P (f (bar m) ⟨0, eq ▸ lt⟩)
+  exact test_sorry
+
+/-! ## Tests for all-casts mode. -/
 
 variable (B : Nat → Type)
 
--- app (polymorphic fn)
+-- Rewrite the arguments to a polymorphic function.
 example (f : (k : Nat) → B k → Nat) (b : B n) : P (f n b) := by
   rewrite! (castMode := .all) [eq]
-  guard_target = P (f m (eq ▸ b))
+  guard_target =ₐ P (f m (eq ▸ b))
   exact test_sorry
 
--- app (monomorphic fn)
+-- Rewrite the argument to a monomorphic function.
 example (f : B n → Nat) (b : (k : Nat) → B k) : P (f (b n)) := by
   rewrite! (castMode := .all) [eq]
-  guard_target = P (f (eq ▸ b m))
+  guard_target =ₐ P (f (eq ▸ b m))
   exact test_sorry
 
--- lam
+-- Rewrite a type-valued lambda.
 example (f : B n → Nat) : P fun y : B n => f y := by
   rewrite! (castMode := .all) [eq]
-  guard_target = P fun y : B m => f (eq ▸ y)
+  guard_target =ₐ P fun y : B m => f (eq ▸ y)
   exact test_sorry
 
--- lam (as argument, contravariant)
+-- Rewrite in contravariant position in a higher-order application.
 example (F : (f : Fin n → Nat) → Nat) :
     P (F fun y : Fin n => y.1) := by
   rewrite! (castMode := .all) [eq]
   guard_target =ₐ P (F (eq ▸ fun y : Fin m => y.1))
   exact test_sorry
 
--- lam (as argument, covariant)
+-- Rewrite in covariant position in a higher-order application.
 example (F : (f : Nat → Fin (n+1)) → Nat) :
     P (F fun k : Nat => finOfNat n k) := by
   rewrite! (castMode := .all) [eq]
   guard_target =ₐ P (F (eq ▸ fun k : Nat => finOfNat m k))
   exact test_sorry
 
--- lam (as argument, invariant)
+-- Rewrite in invariant position in a higher-order application.
 example (b : (k : Nat) → B k) (F : (f : (k : Fin n) → B k.1) → Nat) :
     P (F fun k : Fin n => b k.1) := by
   rewrite! (castMode := .all) [eq]
   guard_target =ₐ P (F (eq ▸ fun k : Fin m => b k.1))
   exact test_sorry
 
+-- Attempt to rewrite with an LHS that does not appear in the target,
+-- but does appear in types of the target's subterms.
 /-- error: tactic 'depRewrite' failed, did not find instance of the pattern in the target expression
   n
 n m : Nat
@@ -202,7 +214,7 @@ example (f : B n → Nat) (b : B n) :
   rewrite! [eq]
   exact test_sorry
 
--- Test that requires casting twice.
+-- Test casting twice (from the LHS to `x` and back).
 theorem bool_dep_test
     (b : Bool)
     (β : Bool → Sort u)
@@ -216,21 +228,11 @@ theorem bool_dep_test
         f b)
   exact test_sorry
 
--- Test that requires generalizing a `let` binding.
+-- Rewrite a `let` binding that requires generalization.
 theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) :
     let n := 1; P (f n rfl) := by
   rewrite! +letAbs [eq]
   guard_target =
     let n : (x : Nat) → 1 = x → Nat := fun x _ => x
     P (f (n b eq) _)
-  exact test_sorry
-
-/-! Tests for proof-only mode, rewriting compound terms (non-fvars). -/
-
-variable {foo : Nat → Nat} {bar : Nat → Nat} (eq : foo n = bar m)
-
--- app (arg)
-example (f : (k : Nat) → Fin k → Type) (lt : 0 < foo n) : P (f (foo n) ⟨0, lt⟩) := by
-  rewrite! [eq]
-  guard_target =ₐ P (f (bar m) ⟨0, eq ▸ lt⟩)
   exact test_sorry
