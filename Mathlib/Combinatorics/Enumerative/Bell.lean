@@ -189,7 +189,8 @@ protected def bell : ℕ → ℕ
   | n + 1 => ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k)
 
 theorem bell_succ (n : ℕ) :
-    Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k) := by
+    Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k *
+      Nat.bell (n - k) := by
   simp [Nat.bell]
 
 @[simp]
@@ -202,7 +203,6 @@ theorem bell_one : Nat.bell 1 = 1 := by
 
 @[simp]
 theorem bell_two : Nat.bell 2 = 2 := by
-  rw [Nat.bell_succ, Finset.sum_range_add]
-  simp
+  simp [Nat.bell, Finset.range]
 
 end Nat
