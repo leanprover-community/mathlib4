@@ -562,7 +562,6 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (K.orthogonalProjection v : E
 lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     LinearMap.range U.starProjection = U := by
   ext x
-  simp only [LinearMap.mem_range, starProjection, ContinuousLinearMap.comp_apply, subtypeL_apply]
   exact ⟨fun ⟨y, hy⟩ ↦ hy ▸ coe_mem (U.orthogonalProjection y),
     fun h ↦ ⟨x, orthogonalProjection_eq_self_iff.mpr h⟩⟩
 
