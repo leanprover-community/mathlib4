@@ -41,7 +41,7 @@ See `ContinuousCohomology.MultiInd.d`.
 - Show that short exact sequences induces long exact sequences in certain scenarios.
 -/
 
-open CategoryTheory ContinuousMap
+open CategoryTheory Functor ContinuousMap
 
 variable (R G : Type*) [CommRing R] [Group G] [TopologicalSpace R]
 
