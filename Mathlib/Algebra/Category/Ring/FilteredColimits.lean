@@ -134,8 +134,8 @@ lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
     descAddMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
   congr_fun ((forget _).congr_map
     ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
-    (F ⋙ forget₂ SemiRingCat AddCommMonCat)).fac
-      ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
+      (F ⋙ forget₂ SemiRingCat AddCommMonCat)).fac
+        ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
 def descMonoidHom : R F →* t.1 :=
