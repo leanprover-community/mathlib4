@@ -50,6 +50,7 @@ theorem mem_nhds {s : Set R} {x : R} :
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
+  rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   · intro x hx
