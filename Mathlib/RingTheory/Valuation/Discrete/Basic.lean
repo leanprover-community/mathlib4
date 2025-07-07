@@ -99,7 +99,8 @@ instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
   rw [not_nontrivial_iff_subsingleton, subsingleton_iff] at H
   intro x hx
   specialize H ⟨x, hx⟩ ⟨1, one_mem_valueMonoid v⟩
-  rw [mem_singleton_iff, ← Submonoid.mk_eq_one, H, coe_one]
+  simpa using H
+
 
 instance [IsRankOneDiscrete v] : v.IsNontrivial := by
   constructor
@@ -109,7 +110,7 @@ instance [IsRankOneDiscrete v] : v.IsNontrivial := by
   constructor
   · simp [hπ]
   · rw [hπ]
-    simp only [← coe_one, ne_eq, Subtype.mk.injEq] at hγ
+    simp only [← MonoidWithZeroHom.coe_one, ne_eq, Subtype.mk.injEq] at hγ
     simp [hγ, Units.val_eq_one]
 
 end IsRankOneDiscrete
