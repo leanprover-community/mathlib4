@@ -220,7 +220,7 @@ This is a building block for showing that the `(p+1)`-th difference of a polynom
 degree `p` is zero.
 -/
 theorem fwdDiff_iter_pow_lt {x j n : ℕ} (h : j < n):
-  Δ_[1] ^[n] (fun x ↦ x ^ j : ℕ → R) x = (fun _ ↦ 0) x := by
+  Δ_[1] ^[n] (fun x ↦ x ^ j : ℕ → R) x = (fun _ ↦  0) x := by
   revert j
   induction' n with n ih
   · simp only [not_lt_zero', Function.iterate_zero, id_eq,
@@ -235,14 +235,11 @@ theorem fwdDiff_iter_pow_lt {x j n : ℕ} (h : j < n):
       add_pow, Finset.sum_range_succ]
     simp only [one_pow, mul_one, Nat.cast_id,
       tsub_self, pow_zero, Nat.choose_self, Nat.cast_one]
-    conv_lhs=> enter[2]; ext k; rw [Nat.add_sub_cancel_right (m := (x + k) ^ j),
+    conv_lhs => enter[2]; ext k; rw [Nat.add_sub_cancel_right (m := (x + k) ^ j),
       mul_assoc, ← Nat.cast_mul, Finset.mul_sum]
     norm_num
     simp [Finset.mul_sum, Finset.sum_comm, ← mul_assoc, ← mul_assoc, ← Finset.sum_mul]
-    rw [Finset.sum_eq_zero]
-    intro k hk; simp only [Finset.mem_range] at hk
-    rw [ih (by linarith)]
-    simp
+    exact Finset.sum_eq_zero fun k hk ↦ have _ := Finset.mem_range.1 hk; by simp [ih (by linarith)]
 
 /-- The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`. -/
 theorem fwdDiff_iter_eq_factorial {n x : ℕ} :
@@ -271,12 +268,12 @@ theorem fwdDiff_iter_eq_factorial {n x : ℕ} :
     nth_rw 6 [show n = n + 1 - 1 by rw [Nat.add_sub_cancel]]
     rw [mul_comm, Nat.mul_factorial_pred (by linarith)]
     simp only [add_eq_right]
-    rw [Finset.sum_eq_zero]; intro k hk
-    simp only [Finset.mem_range] at hk
-    obtain h := fwdDiff_iter_eq_sum_shift (n := n) (y := x) (f := (fun x ↦ x ^ k : ℕ → R)) (h := 1)
-    simp only [Int.reduceNeg, smul_eq_mul, mul_one, Nat.cast_add,
-      zsmul_eq_mul, Int.cast_mul, Int.cast_pow, Int.cast_neg, Int.cast_one, Int.cast_natCast] at h
-    rw [← h, fwdDiff_iter_pow_lt (by linarith), zero_mul]
+    exact Finset.sum_eq_zero fun k hk ↦ have _ := Finset.mem_range.1 hk; by
+      obtain h :=
+        fwdDiff_iter_eq_sum_shift (n := n) (y := x) (f := (fun x ↦ x ^ k : ℕ → R)) (h := 1)
+      simp only [Int.reduceNeg, smul_eq_mul, mul_one, Nat.cast_add,
+        zsmul_eq_mul, Int.cast_mul, Int.cast_pow, Int.cast_neg, Int.cast_one, Int.cast_natCast] at h
+      rw [← h, fwdDiff_iter_pow_lt (by linarith), zero_mul]
 
 /--
 The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
