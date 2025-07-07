@@ -53,7 +53,7 @@ theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 := by
   rcases n.eq_zero_or_pos with (rfl | h0)
   · simp
   apply minpoly.isIntegrallyClosed_dvd (isIntegral h h0)
-  simp only [((IsPrimitiveRoot.iff_def μ n).mp h).left, aeval_X_pow, eq_intCast, Int.cast_one,
+  simp only [((IsPrimitiveRoot.iff_def μ n).mp h).left, aeval_X_pow,
     aeval_one, map_sub, sub_self]
 
 /-- The reduction modulo `p` of the minimal polynomial of a root of unity `μ` is separable. -/
@@ -198,7 +198,7 @@ theorem is_roots_of_minpoly [DecidableEq K] :
   have hpos := Nat.pos_of_ne_zero hn
   intro x hx
   obtain ⟨m, _, hcop, rfl⟩ := (isPrimitiveRoot_iff h).1 ((mem_primitiveRoots hpos).1 hx)
-  simp only [Multiset.mem_toFinset, mem_roots]
+  simp only [Multiset.mem_toFinset]
   convert pow_isRoot_minpoly h hcop using 0
   rw [← mem_roots]
   exact map_monic_ne_zero <| minpoly.monic <| isIntegral h hpos

@@ -84,7 +84,7 @@ protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affin
 @[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
     [SMulCommClass G k V] {p : ι → V} {a : G} :
     AffineIndependent k (a • p) ↔ AffineIndependent k p := by
-  simp +contextual [AffineIndependent, weightedVSub_smul,
+  simp +contextual [AffineIndependent,
     ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
 
 protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
@@ -300,7 +300,7 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
     have hs' : fs'.weightedVSub p w' = (0 : V) := by
       rw [← hs, Finset.weightedVSub_map]
       congr with i
-      simp_all only [comp_apply, EmbeddingLike.apply_eq_iff_eq, exists_eq, dite_true]
+      simp_all only [comp_apply]
     rw [← ha fs' w' hw's hs' (f i0) ((Finset.mem_map' _).2 hi0), hw']
 
 /-- If a family is affinely independent, so is any subfamily indexed
@@ -865,6 +865,25 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
 @[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
     Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
   simp [faceOpposite]
+
+lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) (j : Fin (n - 1 + 1)) :
+    (s.faceOpposite i).points j =
+      s.points (Fin.succAbove i (Fin.cast (Nat.sub_one_add_one (NeZero.ne _)) j)) := by
+  simp_rw [faceOpposite, face, comp_apply, Finset.orderEmbOfFin_compl_singleton_apply]
+
+lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1) :
+    (s.faceOpposite i).points n = s.points i.rev := by
+  have h : i.rev = Fin.succAbove i n := by decide +revert
+  simp [h, faceOpposite_point_eq_point_succAbove]
+
+@[simp] lemma faceOpposite_point_eq_point_one (s : Simplex k P 1) (n : Fin 1) :
+    (s.faceOpposite 0).points n = s.points 1 :=
+  s.faceOpposite_point_eq_point_rev _ _
+
+@[simp] lemma faceOpposite_point_eq_point_zero (s : Simplex k P 1) (n : Fin 1) :
+    (s.faceOpposite 1).points n = s.points 0 :=
+  s.faceOpposite_point_eq_point_rev _ _
 
 /-- Needed to make `affineSpan (s.points '' {i}ᶜ)` nonempty. -/
 instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
