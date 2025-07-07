@@ -62,50 +62,65 @@ end Lean.Elab.ContextInfo
 
 namespace TacticAnalysis
 
-/-- Output for the tactic transformer. -/
-abbrev Out := Std.HashMap String.Range Syntax
+inductive TriggerCondition
+  | skip
+  | continue
+  | accept
+deriving BEq
 
-def filterTactics (_stx : Syntax) (acc : Out) (tree : InfoTree) : CommandElabM Out := do
+/-- Specifies which analysis steps to take. -/
+structure Config (α) where
+  /-- Which (sequences of) tactics to analyze. -/
+  trigger (precedingSequence : Array Syntax) (currentTactic : Syntax) : TriggerCondition
+  /-- Code to run in the context of the tactic, for example an alternative tactic. -/
+  test (goal : MVarId) : MetaM α
+  /-- Decides what to report to the user. -/
+  tell (stx : Syntax) (original : List MVarId × Nat) (new : α × Nat) : Option MessageData
+
+def filterTactics {α} (config : Config α) (_stx : Syntax) (tree : InfoTree) : CommandElabM Unit := do
   -- Turn the CommandElabM into a surrounding context for traversing the tree.
   let ctx ← read
   let state ← get
   let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
-  -- TODO: is an accumulator a good idea here? Or should we merge the maps?
-  let f ← tree.visitM (ctx? := some ctxInfo)
+  let _ ← tree.visitM (ctx? := some ctxInfo)
     (fun _ _ _ => pure true) -- TODO: skip if it doesn't match the range of `stx`.
-    (fun ctx i _c cs => do
-      -- Accumulate intermediate results.
-      let fAcc : Out → Out := cs.foldl (init := id) (fun acc f => f.getD id ∘ acc)
-      -- Should we addd the current piece of syntax?
+    (fun ctx i _c _cs => do
+      -- Should we add the current piece of syntax?
       if let .ofTacticInfo i := i then
         let stx := i.stx
-        let kind := stx.getKind
-        if let some r := stx.getRange? true then
-          -- TODO: customizability for the line below.
-          -- This only works for 1 tactic, not a sequence.
-          let trigger := kind == `Mathlib.Tactic.linarith
-          if trigger then
-            if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-              let (originalTest, originalHeartbeats) ← withHeartbeats <| ctx.runTactic i goal fun goal => do
-                try
-                  Lean.Elab.runTactic goal stx
-                catch e =>
-                  logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-                  return ([goal], {})
-              let (newTest, newHeartbeats) ← withHeartbeats <| ctx.runTactic i goal fun goal => do
-                -- Call grind
-                let params ← Meta.Grind.mkParams {}
-                let result ← Meta.Grind.main goal params (pure ())
-                pure !result.hasFailed
-              logInfoAt stx m!"{stx}: {originalHeartbeats} ({originalTest.1}); grind: {newHeartbeats} ({newTest})"
-              if newTest then
-                return (fun acc => acc.insert r stx) ∘ fAcc
-      return fAcc)
-  return f.getD id acc
+        -- This only works for 1 tactic, not a sequence.
+        let condition := config.trigger #[] stx
+        if condition == .accept then
+          if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
+            let old ← withHeartbeats <| ctx.runTactic i goal fun goal => do
+              try
+                Lean.Elab.runTactic goal stx
+              catch e =>
+                logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
+                return ([goal], {})
+            let new ← withHeartbeats <| ctx.runTactic i goal config.test
+            if let some msg := config.tell stx (old.1.1, old.2) new then
+              Linter.logLint linter.tactic_analysis stx msg)
 
-def filterTacticsList (stx : Syntax)
-    (trees : PersistentArray InfoTree) (acc : Out) : CommandElabM Out :=
-  trees.foldlM (filterTactics stx) acc
+def filterTacticsList {α} (config : Config α) (stx : Syntax)
+    (trees : PersistentArray InfoTree) : CommandElabM Unit :=
+  trees.forM (filterTactics config stx)
+
+def linarithToGrindConfig : Config (List MVarId × Term.State) where
+  trigger _ stx := if stx.getKind == `Mathlib.Tactic.linarith then .accept else .skip
+  test goal := withOptions (fun opts => opts.set `grind.warning false) do
+    let tac ← `(tactic| grind)
+    try
+      Lean.Elab.runTactic goal tac
+    catch _ =>
+      return ([goal], {}) -- Failure is not an issue here.
+  tell stx old new :=
+    if new.1.1 == [] then
+      if old.2 * 2 > new.2 then
+        m!"'{stx}' can be replaced with 'grind'"
+      else
+        m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
+    else none
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
@@ -134,14 +149,7 @@ def tactic_analysis : Linter where run := withSetOptionIn fun stx => do
     | return
   -/
   let trees ← getInfoTrees
-  let map ← filterTacticsList stx trees {}
-  let unused := map.toArray
-  let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
-  let mut last : String.Range := ⟨0, 0⟩
-  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
-    if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.tactic_analysis stx m!"'{stx}' can be replaced with 'grind'"
-    last := r
+  filterTacticsList linarithToGrindConfig stx trees
 
 initialize addLinter tactic_analysis
 
