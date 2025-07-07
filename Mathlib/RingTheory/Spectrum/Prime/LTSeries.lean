@@ -89,8 +89,7 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
   obtain ⟨q, hxq, hq2, hq⟩ : ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧
       p ⟨p.length - 2, p.length.sub_lt_succ 2⟩ < q ∧ q < p.last :=
     (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two
-      (p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt (by simp [hp, h0]))))
-        (p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt (by simp [hp])))) hx
+      (p.strictMono (Nat.pred_lt (by simp [hp, h0]))) (p.strictMono (Nat.pred_lt (by simp [hp]))) hx
   obtain ⟨Q, hx, hQ, hh, hl⟩ := hn (p.eraseLast.eraseLast.snoc q hq2) (by simp [hxq]) <| by
     simpa [hp] using Nat.succ_pred_eq_of_ne_zero h0
   have h1 : 1 < Q.length + 1 := Nat.lt_of_sub_ne_zero (hQ.symm.trans_ne h0)
