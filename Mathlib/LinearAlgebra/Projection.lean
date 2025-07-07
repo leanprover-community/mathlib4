@@ -454,6 +454,31 @@ theorem submodule_eq_top_iff {f : M →ₗ[S] M} (hf : IsProj m f) :
 
 end IsProj
 
+/-- Given an idempotent linear operator `p`, we have
+`x ∈ range p` if and only if `p(x) = x` for all `x`. -/
+theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
+    x ∈ range p ↔ p x = x := by
+  refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
+  rw [← hy, ← Module.End.mul_apply, hp.eq]
+
+open LinearMap in
+/-- Given an idempotent linear operator `q`,
+we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
+theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempotentElem q)
+    {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
+    q.comp p = p ↔ range p ≤ range q := by
+  simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
+    SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+
+lemma IsIdempotentElem.ext {p q : E →ₗ[R] E} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
+    (hr : range p = range q) (hk : ker p = ker q) : p = q := by
+  ext x
+  obtain ⟨v, w, rfl, _⟩ := Submodule.existsUnique_add_of_isCompl (range_isProj hp).isCompl.symm x
+  have hv' : (v : E) ∈ ker q := hk ▸ SetLike.coe_mem v
+  have hw' : (w : E) ∈ range q := hr ▸ SetLike.coe_mem w
+  simp_rw [map_add, mem_ker.mp (SetLike.coe_mem v), (mem_range_iff hp).mp (SetLike.coe_mem w),
+    mem_ker.mp hv', zero_add, (mem_range_iff hq).mp hw']
+
 end LinearMap
 
 end Ring
@@ -472,36 +497,3 @@ theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
 end LinearMap
 
 end CommRing
-
-namespace LinearMap
-
-variable {S M : Type*} [Semiring S] [AddCommMonoid M] [Module S M]
-
-open Submodule LinearMap
-
-/-- Given an idempotent linear operator `p`, we have
-`x ∈ range p` if and only if `p(x) = x` for all `x`. -/
-theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
-    x ∈ range p ↔ p x = x := by
-  refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
-  rw [← hy, ← Module.End.mul_apply, hp.eq]
-
-/-- Given an idempotent linear operator `q`,
-we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
-theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempotentElem q)
-    {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
-    q.comp p = p ↔ range p ≤ range q := by
-  simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
-    SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-
-lemma IsIdempotentElem.ext {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    {p q : M →ₗ[R] M} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
-    (hr : range p = range q) (hk : ker p = ker q) : p = q := by
-  ext x
-  obtain ⟨v, w, rfl, _⟩ := Submodule.existsUnique_add_of_isCompl (range_isProj hp).isCompl.symm x
-  have hv' : (v : M) ∈ ker q := hk ▸ SetLike.coe_mem v
-  have hw' : (w : M) ∈ range q := hr ▸ SetLike.coe_mem w
-  simp_rw [map_add, mem_ker.mp (SetLike.coe_mem v), (mem_range_iff hp).mp (SetLike.coe_mem w),
-    mem_ker.mp hv', zero_add, (mem_range_iff hq).mp hw']
-
-end LinearMap
