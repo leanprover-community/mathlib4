@@ -3,9 +3,9 @@ Copyright (c) 2025 Antoine Chambert-Loir & María-Inés de Frutos-Fernández. Al
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Congruence.Hom
+import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 
 /-! # Polynomial laws on modules
@@ -19,8 +19,8 @@ For type theoretic reasons, if `R : Type u`, then the definition of the polynomi
 is restricted to `R`-algebras `S` such that `S : Type u`.
 Using the fact that a module is the direct limit of its finitely generated submodules, that a
 finitely generated subalgebra is a quotient of a polynomial ring in the universe `u`, plus
-the commutation of tensor products with direct limits, we will extend the functor
-to all `R`-algebras (TODO).
+the commutation of tensor products with direct limits, we extend the functor
+to all `R`-algebras.
 
 ## Main definitions/lemmas
 
@@ -378,11 +378,11 @@ variable
 
 --MI: I added this, but I am not sure whether it will be useful.
 theorem toFun'_eq_of_diagram'
-    (hψ : Function.Injective (LinearMap.rTensor (R := R) (N := B) (P := T) M ψ))
+    (hψ : Function.Injective (rTensor (R := R) (N := B) (P := T) M ψ))
     (hgh : ψ.comp g = h.comp φ)
     (hpq : (h.comp φ).toLinearMap.rTensor M p = ψ.toLinearMap.rTensor M q) :
     (h.comp φ).toLinearMap.rTensor N (f.toFun' A p) = ψ.toLinearMap.rTensor N (f.toFun' B q) := by
-  rw [← hgh, comp_toLinearMap, LinearMap.rTensor_comp, LinearMap.coe_comp, Function.comp_apply]
+  rw [← hgh, comp_toLinearMap, rTensor_comp, LinearMap.coe_comp, Function.comp_apply]
     at hpq ⊢
   rw [f.isCompat_apply', hψ hpq]
 
