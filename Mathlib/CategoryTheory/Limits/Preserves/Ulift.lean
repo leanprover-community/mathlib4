@@ -64,7 +64,7 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
   { preservesColimit := fun {F} ↦
     { preserves := fun {c} hc ↦ by
         rw [isColimit_iff_coconeTypesIsColimit]
-        exact (((isColimit_iff_coconeTypesIsColimit _).1 ⟨hc⟩).precompose 
+        exact (((isColimit_iff_coconeTypesIsColimit _).1 ⟨hc⟩).precompose
           (G := F ⋙ uliftFunctor.{v}) (fun _ ↦ Equiv.ulift)
           (fun _ ↦ rfl)).of_equiv Equiv.ulift.symm (fun _ _ ↦ rfl) } }
 
