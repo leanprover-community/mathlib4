@@ -313,16 +313,6 @@ theorem continuousOn_smul (hg : IntervalIntegrable g μ a b)
   rw [intervalIntegrable_iff] at hg ⊢
   exact hg.continuousOn_smul_of_subset hf isCompact_uIcc measurableSet_Ioc Ioc_subset_Icc_self
 
-@[simp]
-theorem const_smul (hg : IntervalIntegrable g μ a b) (c : 𝕜) :
-    IntervalIntegrable (fun x => c • g x) μ a b :=
-  hg.continuousOn_smul continuousOn_const
-
-@[simp]
-theorem smul_const (hf : IntervalIntegrable f μ a b) (c : E) :
-    IntervalIntegrable (fun x => f x • c) μ a b :=
-  hf.smul_continuousOn continuousOn_const
-
 end SMul
 
 @[simp]
