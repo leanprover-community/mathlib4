@@ -5,8 +5,10 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.RingTheory.Valuation.ValuationSubring
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Discrete Valuations
@@ -437,18 +439,17 @@ open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum IsDiscreteValuationRing
 variable (A K : Type*) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A] [Field K]
   [Algebra A K] [IsFractionRing A K]
 
-/-- The maximal ideal of a DVR-/
+/-- The maximal ideal of a discrete valuation ring. -/
 def maximalIdeal : HeightOneSpectrum A where
   asIdeal := IsLocalRing.maximalIdeal A
   isPrime := Ideal.IsMaximal.isPrime (maximalIdeal.isMaximal A)
-  ne_bot := by
-    simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using not_isField A
+  ne_bot := by simpa [ne_eq, ← isField_iff_maximalIdeal_eq] using not_isField A
 
 instance isRankOneDiscrete :
     IsRankOneDiscrete ((maximalIdeal A).valuation K) := by
   have : Nontrivial ↥(valueGroup (valuation K (maximalIdeal A))) := by
     let v := (maximalIdeal A).valuation K
-    set π := valuation_exists_uniformizer K (maximalIdeal A)|>.choose with hπ_def
+    let π := valuation_exists_uniformizer K (maximalIdeal A)|>.choose
     have hπ : v π = ↑(ofAdd (-1 : ℤ)) :=
       valuation_exists_uniformizer K (maximalIdeal A)|>.choose_spec
     rw [Subgroup.nontrivial_iff_exists_ne_one]
@@ -463,36 +464,35 @@ instance isRankOneDiscrete :
 
 variable {A K}
 
-theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ (1 : ℤₘ₀)) :
+open scoped WithZero
+
+theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ (1 : ℤᵐ⁰)) :
     ∃ a : A, algebraMap A K a = x := by
   obtain ⟨π, hπ⟩ := exists_irreducible A
   obtain ⟨a, ⟨b, ⟨hb, h_frac⟩⟩⟩ := IsFractionRing.div_surjective (A := A) x
   by_cases ha : a = 0
   · rw [← h_frac]
     use 0
-    rw [ha, _root_.map_zero, zero_div]
+    rw [ha, map_zero, zero_div]
   · rw [← h_frac] at H
     obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible ha hπ
     obtain ⟨m, w, rfl⟩ := eq_unit_mul_pow_irreducible (nonZeroDivisors.ne_zero hb) hπ
     replace hb := (mul_mem_nonZeroDivisors.mp hb).2
-    rw [mul_comm (w : A) _, _root_.map_mul _ (u : A) _, _root_.map_mul _ _ (w : A),
-      div_eq_mul_inv, mul_assoc, Valuation.map_mul, Integers.one_of_isUnit' u.isUnit,
-      one_mul, mul_inv, ← mul_assoc, Valuation.map_mul, _root_.map_mul] at H
-    simp only [map_inv₀] at H
-    rw [Integers.one_of_isUnit' w.isUnit, inv_one, mul_one, ← div_eq_mul_inv, ← map_div₀,
-      ← @IsFractionRing.mk'_mk_eq_div _ _ K _ _ _ (π ^ n) _ hb] at H
-    erw [@valuation_of_mk' A _ _ K _ _ _ (maximalIdeal A) (π ^ n) ⟨π ^ m, hb⟩,
-      _root_.map_pow, _root_.map_pow] at H
+    rw [mul_comm (w : A) _, map_mul _ (u : A) _, map_mul _ _ (w : A), div_eq_mul_inv, mul_assoc,
+      Valuation.map_mul, Integers.one_of_isUnit' u.isUnit (valuation_le_one _), one_mul,
+      mul_inv, ← mul_assoc, Valuation.map_mul, map_mul, map_inv₀, map_inv₀,
+      Integers.one_of_isUnit' w.isUnit (valuation_le_one _), inv_one, mul_one, ← div_eq_mul_inv,
+      ← map_div₀, ← @IsFractionRing.mk'_mk_eq_div _ _ K _ _ _ (π ^ n) _ hb,
+      valuation_of_mk', map_pow, map_pow] at H
     have h_mn : m ≤ n := by
-      have π_lt_one :=
-        (intValuation_lt_one_iff_dvd (maximalIdeal A) π).mpr
+      have v_π_lt_one := (intValuation_lt_one_iff_dvd (maximalIdeal A) π).mpr
           (dvd_of_eq ((irreducible_iff_uniformizer _).mp hπ))
-      have : (maximalIdeal A).intValuation π ≠ 0 := intValuation_ne_zero _ _ hπ.ne_zero
+      have v_π_ne_zero : (maximalIdeal A).intValuation π ≠ 0 := intValuation_ne_zero _ _ hπ.ne_zero
       zify
       rw [← WithZero.coe_one, div_eq_mul_inv, ← zpow_natCast, ← zpow_natCast, ← ofAdd_zero,
-        ← zpow_neg, ← zpow_add₀, ← sub_eq_add_neg] at H
-      rw [← sub_nonneg, ← zpow_le_one_iff_right_of_lt_one₀ _ π_lt_one]
-      exacts [H, zero_lt_iff.mpr this, this]
+        ← zpow_neg, ← zpow_add₀ v_π_ne_zero, ← sub_eq_add_neg] at H
+      rwa [← sub_nonneg, ← zpow_le_one_iff_right_of_lt_one₀ (zero_lt_iff.mpr v_π_ne_zero)
+        v_π_lt_one]
     use u * π ^ (n - m) * w.2
     simp only [← h_frac, Units.inv_eq_val_inv, _root_.map_mul, _root_.map_pow, map_units_inv,
       mul_assoc, mul_div_assoc ((algebraMap A _) ↑u) _ _]
@@ -503,7 +503,7 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
     rw [pow_sub₀ _ _ h_mn]
     apply IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
     rw [mem_nonZeroDivisors_iff_ne_zero]
-    exacts [hπ.ne_zero, valuation_le_one (maximalIdeal A), valuation_le_one (maximalIdeal A)]
+    exact hπ.ne_zero
 
 theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =
     ((maximalIdeal A).valuation K).valuationSubring.toSubring := by
