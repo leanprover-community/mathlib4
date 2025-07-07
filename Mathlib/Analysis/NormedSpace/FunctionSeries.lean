@@ -55,7 +55,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   classical
   refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
   have := (tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos
-  simp only [not_forall, Classical.not_imp, not_le, gt_iff_lt,
+  simp only [gt_iff_lt,
     eventually_atTop, ge_iff_le, Finset.le_eq_subset] at *
   obtain ⟨t, ht⟩ := this
   rw [eventually_iff_exists_mem] at hfu
@@ -121,5 +121,5 @@ theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set �
 function is. -/
 theorem continuous_tsum [TopologicalSpace β] {f : α → β → F} (hf : ∀ i, Continuous (f i))
     (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) : Continuous fun x => ∑' n, f n x := by
-  simp_rw [continuous_iff_continuousOn_univ] at hf ⊢
+  simp_rw [← continuousOn_univ] at hf ⊢
   exact continuousOn_tsum hf hu fun n x _ => hfu n x

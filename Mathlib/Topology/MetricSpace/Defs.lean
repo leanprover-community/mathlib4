@@ -103,11 +103,11 @@ theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
 /-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, dist_eq_zero]
 
 @[simp]
 theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, zero_eq_dist]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, zero_eq_dist]
 
 namespace Metric
 
