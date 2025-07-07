@@ -160,10 +160,9 @@ theorem stirlingSecond_self (n : ℕ) : stirlingSecond n n = 1 := by
   induction n <;> simp [*, stirlingSecond, stirlingSecond_eq_zero_of_lt (lt_succ_self _)]
 
 theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
-  simp [stirlingSecond]
   induction' n with n ih
   · rfl
-  · simp [stirlingSecond_succ_zero, stirlingSecond_succ_succ, ih]
+  · rw [stirlingSecond, stirlingSecond_succ_zero, ih]
 
 theorem stirlingSecond_succ_self_left (n : ℕ) :
     stirlingSecond (n + 1) n = (n + 1).choose 2 := by
