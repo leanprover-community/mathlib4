@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.BumpFunction
+import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.ShrinkingLemma
 
@@ -58,8 +59,39 @@ smooth bump function, partition of unity
 
 universe uι uE uH uM uF
 
-open Function Filter Module Set
+open Bundle Function Filter Module Set
 open scoped Topology Manifold ContDiff
+
+section
+
+-- Let `V` be a real vector bundle over a smooth Hausdorff manifold `M`.
+variable {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} [IsManifold I ∞ M] [T2Space M]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] (n : WithTop ℕ∞)
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)] [∀ x : M, TopologicalSpace (V x)]
+  [FiberBundle F V] [VectorBundle ℝ F V]
+
+/-- If `ψ: M → ℝ` a smooth bump function and `s` is a section of a smooth vector bundle `V → M`,
+the scalar product `ψ s` is `C^n` if `s` is `C^n` on an open set containing `tsupport ψ`.
+This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
+but we only consider sections of the form `ψ s`. -/
+lemma contMDiff_section_of_smul_smoothBumpFunction
+    {s : Π (x : M), V x} {ψ : SmoothBumpFunction I x} {t : Set M}
+    (hs : ContMDiffOn I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) t)
+    (ht : IsOpen t) (ht' : tsupport ψ ⊆ t) (hn : n ≤ ∞) :
+    ContMDiff I (I.prod 𝓘(ℝ, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  apply contMDiff_of_contMDiffOn_union_of_isOpen
+      ((ψ.contMDiff.of_le hn).contMDiffOn.smul_section hs) ?_ ?_ ht
+      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
+  · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
+    intro y hy
+    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
+
+end
 
 noncomputable section
 
