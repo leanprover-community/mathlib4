@@ -272,11 +272,11 @@ end Differentials
 section Cycles
 
 /-- The 1-cycles `Z₁(G, A)` of `A : Rep k G`, defined as the kernel of the map
-`(G →₀ A) → A` sending `single g a ↦ ρ_A(g⁻¹)(a) - a`. -/
+`(G →₀ A) → A` defined by `single g a ↦ ρ_A(g⁻¹)(a) - a`. -/
 def cycles₁ : Submodule k (G →₀ A) := LinearMap.ker (d₁₀ A).hom
 
 /-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
-`(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
+`(G² →₀ A) → (G →₀ A)` defined by `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def cycles₂ : Submodule k (G × G →₀ A) := LinearMap.ker (d₂₁ A).hom
 
 variable {A}
@@ -303,7 +303,7 @@ theorem cycles₁_eq_top_of_isTrivial [A.IsTrivial] : cycles₁ A = ⊤ := by
   rw [cycles₁, d₁₀_eq_zero_of_isTrivial, ModuleCat.hom_zero, LinearMap.ker_zero]
 
 variable (A) in
-/-- The natural inclusion `Z₁(G, A) ≅ C₁(G, A)` is an isomorphism when the representation
+/-- The natural inclusion `Z₁(G, A) ⟶ C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
 abbrev cycles₁IsoOfIsTrivial [A.IsTrivial] :
     ModuleCat.of k (cycles₁ A) ≅ ModuleCat.of k (G →₀ A) :=
@@ -334,12 +334,12 @@ end Cycles
 section Boundaries
 
 /-- The 1-boundaries `B₁(G, A)` of `A : Rep k G`, defined as the image of the map
-`(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
+`(G² →₀ A) → (G →₀ A)` defined by `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def boundaries₁ : Submodule k (G →₀ A) :=
   LinearMap.range (d₂₁ A).hom
 
 /-- The 2-boundaries `B₂(G, A)` of `A : Rep k G`, defined as the image of the map
-`(G³ →₀ A) → (G² →₀ A)` sending
+`(G³ →₀ A) → (G² →₀ A)` defined by
 `a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
 def boundaries₂ : Submodule k (G × G →₀ A) :=
   LinearMap.range (d₃₂ A).hom
@@ -360,7 +360,7 @@ lemma boundaries₁_le_cycles₁ : boundaries₁ A ≤ cycles₁ A :=
   mem_cycles₁_of_mem_boundaries₁
 
 variable (A) in
-/-- Natural inclusion `B₁(G, A) →ₗ[k] Z₁(G, A)`. -/
+/-- The natural inclusion `B₁(G, A) →ₗ[k] Z₁(G, A)`. -/
 abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
   Submodule.inclusion (boundaries₁_le_cycles₁ A)
 
@@ -399,7 +399,7 @@ lemma boundaries₂_le_cycles₂ : boundaries₂ A ≤ cycles₂ A :=
   mem_cycles₂_of_mem_boundaries₂
 
 variable (A) in
-/-- Natural inclusion `B₂(G, A) →ₗ[k] Z₂(G, A)`. -/
+/-- The natural inclusion `B₂(G, A) →ₗ[k] Z₂(G, A)`. -/
 abbrev boundariesToCycles₂ [DecidableEq G] : boundaries₂ A →ₗ[k] cycles₂ A :=
   Submodule.inclusion (boundaries₂_le_cycles₂ A)
 
