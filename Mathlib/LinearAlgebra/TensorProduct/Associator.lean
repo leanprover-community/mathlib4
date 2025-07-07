@@ -11,8 +11,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 -/
 
-suppress_compilation
-
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
 variable {R'' : Type*} [Semiring R'']
@@ -65,7 +63,11 @@ variable (R M)
 /-- The base ring is a right identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def rid : M ⊗[R] R ≃ₗ[R] M :=
-  LinearEquiv.trans (TensorProduct.comm R M R) (TensorProduct.lid R M)
+  LinearEquiv.ofLinear
+    (lift <| .flip (LinearMap.lsmul R M))
+    (mk R M R |>.flip 1)
+    (LinearMap.ext <| one_smul _)
+    (ext <| by ext; simp)
 
 end
 
@@ -76,6 +78,16 @@ theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • 
 @[simp]
 theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
+
+@[simp]
+theorem comm_trans_lid :
+    TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
+
+@[simp]
+theorem comm_trans_rid :
+    TensorProduct.comm R R M ≪≫ₗ TensorProduct.rid R M = TensorProduct.lid R M :=
+  LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
 
 variable (R) in
 theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
@@ -102,17 +114,14 @@ section
 
 variable (R M N P)
 
+attribute [local ext high] ext in
 /-- The associator for tensor product of R-modules, as a linear equivalence. -/
-protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P := by
-  refine
-      LinearEquiv.ofLinear (lift <| lift <| comp (lcurry R _ _ _) <| mk _ _ _)
-        (lift <| comp (uncurry R _ _ _) <| curry <| mk _ _ _)
-        (ext <| LinearMap.ext fun m => ext' fun n p => ?_)
-        (ext <| flip_inj <| LinearMap.ext fun p => ext' fun m n => ?_) <;>
-    repeat'
-      first
-        |rw [lift.tmul]|rw [compr₂_apply]|rw [comp_apply]|rw [mk_apply]|rw [flip_apply]
-        |rw [lcurry_apply]|rw [uncurry_apply]|rw [curry_apply]|rw [id_apply]
+protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P :=
+  LinearEquiv.ofLinear
+    (lift <| lift <| lcurry _ _ _ _ ∘ₗ mk _ _ _)
+    (lift <| uncurry _ _ _ _ ∘ₗ curry (mk R _ _))
+    (by ext; rfl)
+    (by ext; rfl)
 
 end
 
@@ -179,6 +188,23 @@ theorem leftComm_symm_tmul (m : M) (n : N) (p : P) :
     (leftComm R M N P).symm (n ⊗ₜ (m ⊗ₜ p)) = m ⊗ₜ (n ⊗ₜ p) :=
   rfl
 
+variable (M N P) in
+attribute [local ext high] ext in
+/-- A tensor product analogue of `mul_right_comm`. -/
+def rightComm : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] (M ⊗[R] P) ⊗[R] N :=
+  LinearEquiv.ofLinear
+    (lift (lift (LinearMap.lflip ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
+    (lift (lift (LinearMap.lflip ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
+  (by ext; rfl) (by ext; rfl)
+
+@[simp]
+theorem rightComm_tmul (m : M) (n : N) (p : P) :
+    rightComm R M N P ((m ⊗ₜ n) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ n :=
+  rfl
+
+@[simp]
+theorem rightComm_symm : (rightComm R M N P).symm = rightComm R M P N := rfl
+
 variable (M N P Q)
 
 /-- This special case is worth defining explicitly since it is useful for defining multiplication
@@ -192,10 +218,9 @@ the `TensorProduct.semiring` instance (currently defined "by hand" using `Tensor
 
 See also `mul_mul_mul_comm`. -/
 def tensorTensorTensorComm : (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] P) ⊗[R] N ⊗[R] Q :=
-  let e₁ := TensorProduct.assoc R M N (P ⊗[R] Q)
-  let e₂ := congr (1 : M ≃ₗ[R] M) (leftComm R N P Q)
-  let e₃ := (TensorProduct.assoc R M P (N ⊗[R] Q)).symm
-  e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
+  (TensorProduct.assoc R (M ⊗[R] N) P Q).symm
+    ≪≫ₗ congr (TensorProduct.rightComm R M N P) (.refl R Q)
+    ≪≫ₗ TensorProduct.assoc R (M ⊗[R] P) N Q
 
 variable {M N P Q}
 
@@ -256,13 +281,22 @@ variable {N}
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
 
+open TensorProduct (assoc lid rid)
+
+lemma lTensor_tensor (f : P →ₗ[R] Q) :
+    lTensor (M ⊗[R] N) f = (assoc R M N Q).symm ∘ₗ (f.lTensor N).lTensor M ∘ₗ assoc R M N P :=
+  TensorProduct.ext <| TensorProduct.ext rfl
+
 theorem rTensor_tensor : rTensor (M ⊗[R] N) g =
-    TensorProduct.assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (TensorProduct.assoc R P M N).symm :=
+    assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (assoc R P M N).symm :=
   TensorProduct.ext <| LinearMap.ext fun _ ↦ TensorProduct.ext rfl
 
 open TensorProduct
 
 theorem lid_comp_rTensor (f : N →ₗ[R] R) :
-    (TensorProduct.lid R M).comp (rTensor M f) = lift ((lsmul R M).comp f) := ext' fun _ _ ↦ rfl
+    (lid R M).comp (rTensor M f) = lift ((lsmul R M).comp f) := ext' fun _ _ ↦ rfl
+
+lemma rid_comp_lTensor (f : M →ₗ[R] R) :
+    (rid R N).comp (lTensor N f) = lift ((lsmul R N).flip.compl₂ f) := ext' fun _ _ ↦ rfl
 
 end LinearMap

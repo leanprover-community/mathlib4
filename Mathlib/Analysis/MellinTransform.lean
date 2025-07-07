@@ -171,7 +171,7 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
 theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
     HasMellin (fun t => c • f t) s  (c • mellin f s) :=
-  ⟨hf.const_smul c, by simp [HasMellin, mellin, smul_comm, hf.integral_smul]⟩
+  ⟨hf.const_smul c, by simp [mellin, smul_comm, hf.integral_smul]⟩
 
 end Defs
 
@@ -236,7 +236,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
       measurableSet_Ioo
     exact continuousAt_rpow_const _ _ (Or.inl ht.1.ne')
   · apply HasFiniteIntegral.mono'
-    · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
+    · change HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
       refine (Integrable.hasFiniteIntegral ?_).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
@@ -343,14 +343,14 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       ((continuousOn_of_forall_continuousAt fun t ht => ?_).mul ?_)
     · exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
     · refine continuous_ofReal.comp_continuousOn ?_
-      exact continuousOn_log.mono (subset_compl_singleton_iff.mpr not_mem_Ioi_self)
+      exact continuousOn_log.mono (subset_compl_singleton_iff.mpr notMem_Ioi_self)
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t := by
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => ?_
     simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc]
     gcongr
     rw [norm_cpow_eq_rpow_re_of_pos ht]
-    rcases le_or_lt 1 t with h | h
+    rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
         (rpow_nonneg (zero_le_one.trans h) _)
       rw [sub_re, one_re, sub_le_sub_iff_right]
@@ -376,7 +376,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       · simp_rw [mul_comm]
         refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi.isLocallyClosed
         refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)
-        exact subset_compl_singleton_iff.mpr not_mem_Ioi_self
+        exact subset_compl_singleton_iff.mpr notMem_Ioi_self
       · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_
         simp only [norm_smul, Real.norm_eq_abs]
       · refine (isBigO_rpow_zero_log_smul hw1 hf_bot).norm_left.congr_left fun t ↦ ?_

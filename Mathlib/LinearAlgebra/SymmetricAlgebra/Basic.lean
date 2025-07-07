@@ -64,7 +64,7 @@ theorem induction {motive : SymmetricAlgebra R M → Prop}
 open TensorAlgebra in
 instance : CommSemiring (SymmetricAlgebra R M) where
   mul_comm a b := by
-    show Commute a b
+    change Commute a b
     induction b using SymmetricAlgebra.induction with
     | algebraMap r => exact Algebra.commute_algebraMap_right _ _
     | ι x => induction a using SymmetricAlgebra.induction with
@@ -109,7 +109,8 @@ theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
 lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
   apply algHom_ext
   rw [lift_comp_ι]
-  rfl
+  ext
+  simp
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=

@@ -61,7 +61,7 @@ instance : SetLike (IntermediateField K L) L :=
     simp ⟩
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
-  show -x ∈S.toSubalgebra; simpa
+  change -x ∈S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
 def toSubfield : Subfield L :=
@@ -113,6 +113,9 @@ theorem mem_toSubalgebra (s : IntermediateField K L) (x : L) : x ∈ s.toSubalge
 @[simp]
 theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield ↔ x ∈ s :=
   Iff.rfl
+
+theorem toSubalgebra_strictMono :
+    StrictMono (IntermediateField.toSubalgebra : _ → Subalgebra K L) := fun _ _ h ↦ h
 
 /-- Copy of an intermediate field with a new `carrier` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -289,6 +292,16 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
   { S with
     algebraMap_mem' := algebra_map_mem }
 
+@[simp]
+theorem Subfield.toIntermediateField_toSubfield (S : Subfield L)
+    (algebra_map_mem : ∀ x, (algebraMap K L) x ∈ S) :
+    (S.toIntermediateField algebra_map_mem).toSubfield = S := rfl
+
+@[simp]
+theorem Subfield.coe_toIntermediateField (S : Subfield L)
+    (algebra_map_mem : ∀ x, (algebraMap K L) x ∈ S) :
+    ((S.toIntermediateField algebra_map_mem) : Set L) = S := rfl
+
 namespace IntermediateField
 
 /-- An intermediate field inherits a field structure. -/
@@ -298,16 +311,16 @@ instance toField : Field S :=
 @[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
   classical
-    induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
-    · simp
-    · rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
+    induction (Finset.univ : Finset ι) using Finset.induction_on with
+    | empty => simp
+    | insert i s hi H => rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
   classical
-    induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
-    · simp
-    · rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
+    induction (Finset.univ : Finset ι) using Finset.induction_on with
+    | empty => simp
+    | insert i s hi H => rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.
@@ -754,8 +767,6 @@ def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
@@ -806,8 +817,6 @@ into an order isomorphism from
 def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
