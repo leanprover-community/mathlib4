@@ -170,7 +170,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n ((f : E → F) + (g : E → F)) x‖ ≤
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
-  refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+  gcongr _ * ?_
   rw [iteratedFDeriv_add_apply (f.smooth _).contDiffAt (g.smooth _).contDiffAt]
   exact norm_add_le _ _
 
@@ -219,15 +219,13 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' := fun k n => by
-        refine ⟨f.seminormAux k n * (‖c‖ + 1), fun x => ?_⟩
-        have hc : 0 ≤ ‖c‖ := by positivity
-        refine le_trans ?_ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans ?_)
-        · apply Eq.le
+      decay' k n := .intro (f.seminormAux k n * ‖c‖) fun x ↦ calc
+        ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • ⇑f) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ * ‖c‖ := by
           rw [mul_comm _ ‖c‖, ← mul_assoc]
           exact decay_smul_aux k n f c x
-        · apply mul_le_mul_of_nonneg_left _ (f.seminormAux_nonneg k n)
-          linarith }⟩
+        _ ≤ SchwartzMap.seminormAux k n f * ‖c‖ := by
+          gcongr
+          apply f.le_seminormAux }⟩
 
 @[simp]
 theorem smul_apply {f : 𝓢(E, F)} {c : 𝕜} {x : E} : (c • f) x = c • f x :=
@@ -241,9 +239,8 @@ instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 �
 
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
-  refine
-    (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
-      fun x => (decay_smul_aux k n f c x).le.trans ?_
+  refine (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
+      fun x => (decay_smul_aux k n f c x).trans_le ?_
   rw [mul_assoc]
   exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
 
@@ -452,7 +449,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
     (1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤
       2 ^ m.1 * (Finset.Iic m).sup (fun m => SchwartzMap.seminorm 𝕜 m.1 m.2) f := by
   rw [add_comm, add_pow]
-  simp only [one_pow, mul_one, Finset.sum_congr, Finset.sum_mul]
+  simp only [one_pow, mul_one, Finset.sum_mul]
   norm_cast
   rw [← Nat.sum_range_choose m.1]
   push_cast
@@ -555,7 +552,7 @@ lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
 lemma _root_.Function.HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
   refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
-  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero, forall_const]
+  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
   positivity
 
 lemma _root_.Function.HasTemperateGrowth.const (c : F) :
@@ -686,7 +683,7 @@ theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
         rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
-        exact Real.enorm_rpow_of_nonneg (Real.rpow_nonneg (h_one_add x).le _) NNReal.zero_le_coe
+        exact Real.enorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
       refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
       rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
       gcongr
@@ -800,10 +797,10 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
     𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
   refine mkCLM (fun f x => B (f x) (g x))
     (fun _ _ _ => by
-      simp only [map_add, add_left_inj, Pi.add_apply, eq_self_iff_true,
+      simp only [map_add, Pi.add_apply,
         ContinuousLinearMap.add_apply])
     (fun _ _ _ => by
-      simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+      simp only [map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
       (f.smooth'.prodMk hg.1)) ?_
@@ -860,7 +857,7 @@ provided that the function is temperate and growths polynomially near infinity. 
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
   refine mkCLM (fun f x => f (g x))
-    (fun _ _ _ => by simp only [add_left_inj, Pi.add_apply, eq_self_iff_true]) (fun _ _ _ => rfl)
+    (fun _ _ _ => by simp only [Pi.add_apply]) (fun _ _ _ => rfl)
     (fun f => f.smooth'.comp hg.1) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
@@ -895,7 +892,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     rw [mul_pow]
     have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
     gcongr
-    · exact le_trans (by simp [hC]) (le_self_pow₀ (by simp [hC]) hN₁')
+    · exact le_trans (by simp) (le_self_pow₀ (by simp [hC]) hN₁')
     · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
       simp only [le_add_iff_nonneg_right, norm_nonneg]
   have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 (mod_cast le_top) x hbound hgrowth'
@@ -1270,7 +1267,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   calc eLpNorm (⇑f) p μ
   _ = eLpNorm ((fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) • fun x ↦ (1 + ‖x‖) ^ k • f x) p μ := by
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
-    simp [Real.rpow_neg (h_one_add x).le, (h_one_add x).ne']
+    simp [(h_one_add x).ne']
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
     refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
     refine Continuous.aestronglyMeasurable ?_

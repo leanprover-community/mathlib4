@@ -11,16 +11,17 @@ import Mathlib.MeasureTheory.Integral.SetToL1
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here
 for L1 functions by extending the integral on simple functions. See the file
-`Mathlib.MeasureTheory.Integral.Bochner.Basic` for the integral of functions and corresponding API.
+`Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` for the integral of functions
+and corresponding API.
 
 ## Main definitions
 
 The Bochner integral is defined through the extension process described in the file
-`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
+`Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
-  (defined in the file `Mathlib.MeasureTheory.Integral.SetToL1`) with respect to the set `s`.
+  (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
 2. Define the integral on simple functions of the type `SimpleFunc α E` (notation : `α →ₛ E`)
   where `E` is a real normed space. (See `SimpleFunc.integral` for details.)
@@ -137,7 +138,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [OrderedSMul ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -236,7 +237,7 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
     rcases hy with ⟨⟨rfl, -⟩ | ⟨x, -, rfl⟩, h₀⟩
     exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
   · dsimp
-    rw [Set.piecewise_eq_indicator, indicator_preimage_of_not_mem,
+    rw [Set.piecewise_eq_indicator, indicator_preimage_of_notMem,
       measureReal_restrict_apply (f.measurableSet_preimage _)]
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
@@ -478,7 +479,7 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   filter_upwards [posPart_toSimpleFunc (-f), neg_toSimpleFunc f]
   intro a h₁ h₂
   rw [h₁]
-  show max _ _ = max _ _
+  change max _ _ = max _ _
   rw [h₂]
   simp
 
@@ -494,7 +495,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
     rw [SimpleFunc.map_apply, h]
     conv_lhs => rw [← SimpleFunc.negPart_map_norm, SimpleFunc.map_apply]
   rw [integral, norm_eq_integral, norm_eq_integral, ← SimpleFunc.integral_sub]
-  · show (toSimpleFunc f).integral μ =
+  · change (toSimpleFunc f).integral μ =
       ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂] with _ h₁ h₂
@@ -576,7 +577,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 @[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
-  show (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
+  change (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
   exact map_smul (integralCLM' 𝕜) c f
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=

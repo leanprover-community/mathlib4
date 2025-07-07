@@ -117,7 +117,7 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem map_toSubmonoid (f : G →* G') (K : Subgroup G):
+theorem map_toSubmonoid (f : G →* G') (K : Subgroup G) :
   (Subgroup.map f K).toSubmonoid = Submonoid.map f K.toSubmonoid := rfl
 
 @[to_additive (attr := simp)]
@@ -253,12 +253,17 @@ theorem map_inf_eq (H K : Subgroup G) (f : G →* N) (hf : Function.Injective f)
 theorem map_bot (f : G →* N) : (⊥ : Subgroup G).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgroup.map f ⊤ = ⊤ := by
   rw [eq_top_iff]
   intro x _
   obtain ⟨y, hy⟩ := h x
   exact ⟨y, trivial, hy⟩
+
+@[to_additive (attr := simp)]
+lemma map_equiv_top {F : Type*} [EquivLike F G N] [MulEquivClass F G N] (f : F) :
+    map (f : G →* N) ⊤ = ⊤ :=
+  map_top_of_surjective _ (EquivLike.surjective f)
 
 @[to_additive (attr := simp)]
 theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
@@ -275,8 +280,6 @@ def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
     H.subgroupOf K ≃* H where
   toFun g := ⟨g.1, g.2⟩
   invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
-  left_inv _g := Subtype.ext (Subtype.ext rfl)
-  right_inv _g := Subtype.ext rfl
   map_mul' _g _h := rfl
 
 @[to_additive (attr := simp)]
