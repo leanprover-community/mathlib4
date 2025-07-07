@@ -6,9 +6,10 @@ Authors: Jujian Zhang
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Change Of Rings
@@ -139,8 +140,6 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     { toFun := g
       map_add' := by simp
       map_smul' := g.hom.map_smul }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 section
@@ -931,9 +930,11 @@ lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
 
 @[reassoc]
 lemma extendScalars_assoc :
-    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫ whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ =
-      (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
-        (Functor.associator _ _ _).inv := by
+    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫
+      Functor.whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ =
+        (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫
+          Functor.whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
+            (Functor.associator _ _ _).inv := by
   ext M m
   have h₁ := extendScalarsComp_hom_app_one_tmul (f₂₃.comp f₁₂) f₃₄ M m
   have h₂ := extendScalarsComp_hom_app_one_tmul f₁₂ (f₃₄.comp f₂₃) M m
@@ -948,16 +949,18 @@ lemma extendScalars_assoc :
 that is needed in the definition `CommRingCat.moduleCatExtendScalarsPseudofunctor`
 in the file `Algebra.Category.ModuleCat.Pseudofunctor` -/
 lemma extendScalars_assoc' :
-    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫ whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ ≫
-      (Functor.associator _ _ _).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).inv ≫
-        (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).inv = 𝟙 _ := by
+    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫
+      Functor.whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ ≫
+        (Functor.associator _ _ _).hom ≫
+          Functor.whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).inv ≫
+            (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).inv = 𝟙 _ := by
   rw [extendScalars_assoc_assoc]
-  simp only [Iso.inv_hom_id_assoc, ← whiskerLeft_comp_assoc, Iso.hom_inv_id,
-    whiskerLeft_id', Category.id_comp]
+  simp only [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
+    Functor.whiskerLeft_id', Category.id_comp]
 
 @[reassoc]
 lemma extendScalars_id_comp :
-    (extendScalarsComp (RingHom.id R₁) f₁₂).hom ≫ whiskerRight (extendScalarsId R₁).hom _ ≫
+    (extendScalarsComp (RingHom.id R₁) f₁₂).hom ≫ Functor.whiskerRight (extendScalarsId R₁).hom _ ≫
       (Functor.leftUnitor _).hom = 𝟙 _ := by
   ext M m
   dsimp
@@ -968,7 +971,7 @@ lemma extendScalars_id_comp :
 
 @[reassoc]
 lemma extendScalars_comp_id :
-    (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ whiskerLeft _ (extendScalarsId R₂).hom ≫
+    (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ Functor.whiskerLeft _ (extendScalarsId R₂).hom ≫
       (Functor.rightUnitor _).hom = 𝟙 _ := by
   ext M m
   dsimp

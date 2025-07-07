@@ -75,8 +75,8 @@ def quotToQuotUlift (F : J ⥤ Type u) : Quot F → Quot (F ⋙ uliftFunctor.{u'
 
 @[simp]
 lemma quotToQuotUlift_ι (F : J ⥤ Type u) (j : J) (x : F.obj j) :
-    quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
-  dsimp [quotToQuotUlift, Quot.ι]
+    quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) :=
+  rfl
 
 /--
 The obvious map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
@@ -87,8 +87,8 @@ def quotUliftToQuot (F : J ⥤ Type u) : Quot (F ⋙ uliftFunctor.{u'}) → Quot
 
 @[simp]
 lemma quotUliftToQuot_ι (F : J ⥤ Type u) (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
-    quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
-  dsimp [quotUliftToQuot, Quot.ι]
+    quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down :=
+  rfl
 
 /--
 The equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
