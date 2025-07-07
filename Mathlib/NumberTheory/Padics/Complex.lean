@@ -44,7 +44,7 @@ open scoped NNReal
 
 variable (p : ℕ) [hp : Fact (Nat.Prime p)]
 
-/-- `PadicAlgCl p` is the algebraic closure of `ℚ_[p]`. -/
+/-- `PadicAlgCl p` is a fixed algebraic closure of `ℚ_[p]`. -/
 abbrev PadicAlgCl := AlgebraicClosure ℚ_[p]
 
 namespace PadicAlgCl
