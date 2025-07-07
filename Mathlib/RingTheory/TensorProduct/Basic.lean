@@ -35,8 +35,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 assert_not_exists Equiv.Perm.cycleType
 
-suppress_compilation
-
 open scoped TensorProduct
 
 open TensorProduct
@@ -105,12 +103,12 @@ variable (R M N : Type*)
 
 /-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
 @[simps!]
-noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
+def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
   .ofLinearMap (lTensorHom (M := N)) (lTensor_id N M) (lTensor_mul N)
 
 /-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
 @[simps!]
-noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
+def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
   .ofLinearMap (rTensorHom (M := N)) (rTensor_id N M) (rTensor_mul N)
 
 end Module.End
@@ -509,6 +507,15 @@ attribute [local instance] TensorProduct.rightAlgebra
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 
+lemma right_algebraMap_apply (b : B) : algebraMap B (A ⊗[R] B) b = 1 ⊗ₜ b := rfl
+
+instance : SMulCommClass A B (A ⊗[R] B) where
+  smul_comm a b x := x.induction_on (by simp)
+    (fun _ _ ↦ by simp [Algebra.smul_def, right_algebraMap_apply, smul_tmul'])
+    fun _ _ h₁ h₂ ↦ by simpa using congr($h₁ + $h₂)
+
+instance : SMulCommClass B A (A ⊗[R] B) := .symm ..
+
 end RightAlgebra
 
 /-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
@@ -861,7 +868,7 @@ variable (T A B : Type*) [CommSemiring T] [CommSemiring A] [CommSemiring B]
   [IsScalarTower R S A] [Algebra S T] [IsScalarTower S T A]
 
 /-- The natural isomorphism `A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B`. -/
-noncomputable def cancelBaseChange : A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B :=
+def cancelBaseChange : A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B :=
   AlgEquiv.symm <| AlgEquiv.ofLinearEquiv
     (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T A B).symm
     (by simp [Algebra.TensorProduct.one_def]) <|
@@ -1059,6 +1066,22 @@ lemma tmul_one_eq_one_tmul (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ alg
 
 end
 
+variable (R A B) in
+lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] :
+    Subring.closure (Set.range (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∪
+      Set.range Algebra.TensorProduct.includeRight) = ⊤ := by
+  rw [← top_le_iff]
+  rintro x -
+  induction x with
+  | zero => exact zero_mem _
+  | tmul x y =>
+    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
+      (Algebra.TensorProduct.includeRight y) ∈ _
+    · simp
+    · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
+        (Subring.subset_closure (.inr ⟨_, rfl⟩))
+  | add x y _ _ => exact add_mem ‹_› ‹_›
 section
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
@@ -1072,7 +1095,7 @@ def lmul'' : S ⊗[R] S →ₐ[S] S :=
     { __ := LinearMap.mul' R S
       map_smul' := fun s x ↦ x.induction_on (by simp)
         (fun _ _ ↦ by simp [TensorProduct.smul_tmul', mul_assoc])
-        fun x y hx hy ↦ by simp_all [hx, hy, mul_add] }
+        fun x y hx hy ↦ by simp_all [mul_add] }
     (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
 
 theorem lmul''_eq_lid_comp_mapOfCompatibleSMul :
@@ -1106,7 +1129,7 @@ def lmulEquiv [CompatibleSMul R S S S] : S ⊗[R] S ≃ₐ[S] S :=
   .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
     (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
       rw [mul_comm, ← smul_eq_mul, smul_tmul, smul_eq_mul, mul_one])
-    fun _ _ hx hy ↦ by simp_all [hx, hy, add_tmul]
+    fun _ _ hx hy ↦ by simp_all [add_tmul]
 
 theorem lmulEquiv_eq_lidOfCompatibleSMul [CompatibleSMul R S S S] :
     lmulEquiv R S = lidOfCompatibleSMul R S S :=
@@ -1209,7 +1232,7 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
       intro x
       simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
-        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_apply, Module.End.one_eq_id,
+        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
 
 end LinearMap
@@ -1306,7 +1329,7 @@ protected def module : Module (A ⊗[R] B) M where
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
       simp only [moduleAux_apply, mul_add, LinearMap.map_add,
-        LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
+        LinearMap.add_apply, moduleAux_apply, hz, hw]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
