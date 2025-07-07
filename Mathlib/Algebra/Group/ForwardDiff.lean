@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang
+Authors: Giulio Caflisch, David Loeffler, Yu Shao, Beibei Xiong, Weijie Jiang
 -/
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.AddChar
