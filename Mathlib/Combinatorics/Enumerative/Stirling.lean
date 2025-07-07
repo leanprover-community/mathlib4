@@ -54,13 +54,16 @@ def stirlingFirst : ℕ → ℕ → ℕ
   | n + 1, k + 1 => n * stirlingFirst n (k + 1) + stirlingFirst n k
 
 @[simp]
-theorem stirlingFirst_zero: stirlingFirst 0 0 = 1 := rfl
+theorem stirlingFirst_zero: stirlingFirst 0 0 = 1 :=
+  rfl
 
 @[simp]
-theorem stirlingFirst_zero_succ (k : ℕ) : stirlingFirst 0 (succ k) = 0 := rfl
+theorem stirlingFirst_zero_succ (k : ℕ) : stirlingFirst 0 (succ k) = 0 :=
+  rfl
 
 @[simp]
-theorem stirlingFirst_succ_zero (n : ℕ) : stirlingFirst (succ n) 0 = 0 := rfl
+theorem stirlingFirst_succ_zero (n : ℕ) : stirlingFirst (succ n) 0 = 0 :=
+  rfl
 
 theorem stirlingFirst_succ_left (n k : ℕ) (hk : k ≠ 0) :
     stirlingFirst (n + 1) k = n * stirlingFirst n k + stirlingFirst n (k - 1) := by
@@ -76,7 +79,8 @@ theorem stirlingFirst_succ_right (n k : ℕ) (hn : n ≠ 0) :
   rfl
 
 theorem stirlingFirst_succ_succ (n k : ℕ) :
-    stirlingFirst (n + 1) (k + 1) = n * stirlingFirst n (k + 1) + stirlingFirst n k := by rfl
+    stirlingFirst (n + 1) (k + 1) = n * stirlingFirst n (k + 1) + stirlingFirst n k := by
+  rfl
 
 theorem stirlingFirst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → stirlingFirst n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
@@ -115,13 +119,16 @@ def stirlingSecond : ℕ → ℕ → ℕ
     (k + 1) * stirlingSecond n (k + 1) + stirlingSecond n k
 
 @[simp]
-theorem stirlingSecond_zero : stirlingSecond 0 0 = 1 := rfl
+theorem stirlingSecond_zero : stirlingSecond 0 0 = 1 :=
+  rfl
 
 @[simp]
-theorem stirlingSecond_zero_succ (k : ℕ) : stirlingSecond 0 (succ k) = 0 := rfl
+theorem stirlingSecond_zero_succ (k : ℕ) : stirlingSecond 0 (succ k) = 0 :=
+  rfl
 
 @[simp]
-theorem stirlingSecond_succ_zero (n : ℕ) : stirlingSecond (succ n) 0 = 0 := rfl
+theorem stirlingSecond_succ_zero (n : ℕ) : stirlingSecond (succ n) 0 = 0 :=
+  rfl
 
 theorem stirlingSecond_succ_left (n k : ℕ) (hk : k ≠ 0) :
     stirlingSecond (n + 1) k = k * stirlingSecond n k + stirlingSecond n (k - 1) := by
@@ -156,9 +163,7 @@ theorem stirlingSecond_one_right (n : ℕ) : stirlingSecond (n + 1) 1 = 1 := by
   simp [stirlingSecond]
   induction' n with n ih
   · rfl
-  · simp [stirlingSecond_succ_zero]
-    nth_rw 2 [show 1 = 0 + 1 by ring]
-    simp [stirlingSecond_succ_succ, ih]
+  · simp [stirlingSecond_succ_zero, stirlingSecond_succ_succ, ih]
 
 theorem stirlingSecond_succ_self_left (n : ℕ) :
     stirlingSecond (n + 1) n = (n + 1).choose 2 := by
