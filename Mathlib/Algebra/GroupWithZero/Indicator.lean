@@ -69,8 +69,11 @@ lemma indicator_prod_one {t : Set κ} {j : κ} :
 
 variable (M₀) [Nontrivial M₀]
 
-lemma indicator_eq_zero_iff_not_mem : indicator s 1 i = (0 : M₀) ↔ i ∉ s := by
+lemma indicator_eq_zero_iff_notMem : indicator s 1 i = (0 : M₀) ↔ i ∉ s := by
   classical simp [indicator_apply, imp_false]
+
+@[deprecated (since := "2025-05-23")]
+alias indicator_eq_zero_iff_not_mem := indicator_eq_zero_iff_notMem
 
 lemma indicator_eq_one_iff_mem : indicator s 1 i = (1 : M₀) ↔ i ∈ s := by
   classical simp [indicator_apply, imp_false]

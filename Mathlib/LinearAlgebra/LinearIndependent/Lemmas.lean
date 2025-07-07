@@ -351,6 +351,20 @@ alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
   nontriviality R
   simpa using pair_add_smul_add_smul_iff (x := x) (y := y) 1 b 0 1
 
+@[simp] lemma LinearIndependent.pair_add_right_iff :
+    LinearIndependent R ![x, x + y] ↔ LinearIndependent R ![x, y] := by
+  suffices ∀ x y : M, LinearIndependent R ![x, x + y] → LinearIndependent R ![x, y] from
+    ⟨this x y, fun h ↦ by simpa using this (-x) (x + y) (by simpa)⟩
+  simp only [LinearIndependent.pair_iff]
+  intro x y h s t h'
+  obtain ⟨h₁, h₂⟩ := h (s - t) t (by rw [sub_smul, smul_add, ← h']; abel)
+  rw [h₂, sub_zero] at h₁
+  tauto
+
+@[simp] lemma LinearIndependent.pair_add_left_iff :
+    LinearIndependent R ![x + y, y] ↔ LinearIndependent R ![x, y] := by
+  rw [← pair_symm_iff, add_comm, pair_add_right_iff, pair_symm_iff]
+
 end Pair
 
 end Module
@@ -437,7 +451,7 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
       exact hIlinind (Finsupp.mem_support_iff.mp hx)
     use f i, hfi
     have hfi' : i ∈ f.support := Finsupp.mem_support_iff.mpr hfi
-    rw [← Finset.insert_erase hfi', Finset.sum_insert (Finset.not_mem_erase _ _),
+    rw [← Finset.insert_erase hfi', Finset.sum_insert (Finset.notMem_erase _ _),
       add_eq_zero_iff_eq_neg] at sum_f
     rw [sum_f]
     refine neg_mem (sum_mem fun c hc => smul_mem _ _ (subset_span ⟨c, ?_, rfl⟩))
@@ -552,17 +566,23 @@ theorem LinearIndepOn.mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : Lin
   simp [linearIndepOn_insert_iff, h, has]
 
 /-- A shortcut to a convenient form for the negation in `LinearIndepOn.mem_span_iff`. -/
-theorem LinearIndepOn.not_mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
+theorem LinearIndepOn.notMem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
     f a ∉ Submodule.span K (f '' s) ↔ LinearIndepOn K f (insert a s) ∧ a ∉ s := by
   rw [h.mem_span_iff, _root_.not_imp]
+
+@[deprecated (since := "2025-05-23")]
+alias LinearIndepOn.not_mem_span_iff := LinearIndepOn.notMem_span_iff
 
 theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∈ Submodule.span K s ↔ (LinearIndepOn K id (insert a s) → a ∈ s) := by
   simpa using h.mem_span_iff (a := a)
 
-theorem LinearIndepOn.not_mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
+theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∉ Submodule.span K s ↔ LinearIndepOn K id (insert a s) ∧ a ∉ s := by
   rw [h.mem_span_iff_id, _root_.not_imp]
+
+@[deprecated (since := "2025-05-23")]
+alias LinearIndepOn.not_mem_span_iff_id := LinearIndepOn.notMem_span_iff_id
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} :=
@@ -572,11 +592,11 @@ theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_pair := linearIndepOn_id_pair
 
 /-- `LinearIndepOn.pair_iff` is a version that works over arbitrary rings. -/
-theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0):
+theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
     LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
   rw [pair_comm]
   convert linearIndepOn_insert (s := {i}) (a := j) hij.symm
-  simp [hi, mem_span_singleton, linearIndependent_unique_iff]
+  simp [hi, mem_span_singleton]
 
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
 theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
@@ -745,7 +765,7 @@ theorem exists_of_linearIndepOn_of_finite_span {t : Finset V}
         eq_empty_of_subset_empty <|
           -- Porting note: `-inter_subset_left, -subset_inter_iff` required.
           Subset.trans
-            (by simp [inter_subset_inter, Subset.refl, -inter_subset_left, -subset_inter_iff])
+            (by simp [inter_subset_inter, -inter_subset_left, -subset_inter_iff])
             (le_of_eq hst)
       Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
         (fun this =>
@@ -779,7 +799,7 @@ theorem exists_of_linearIndepOn_of_finite_span {t : Finset V}
         (by simp +contextual [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, and_imp, or_imp]),
+    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, or_imp]),
       h.2.1, by simp only [h.2.2, eq]⟩
 
 @[deprecated (since := "2025-02-15")] alias

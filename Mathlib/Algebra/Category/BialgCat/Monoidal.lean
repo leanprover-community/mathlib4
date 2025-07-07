@@ -11,11 +11,11 @@ import Mathlib.RingTheory.Bialgebra.TensorProduct
 /-!
 # The monoidal structure on the category of bialgebras
 
-In `Mathlib.RingTheory.Bialgebra.TensorProduct`, given two `R`-bialgebras `A, B`, we define a
+In `Mathlib/RingTheory/Bialgebra/TensorProduct.lean`, given two `R`-bialgebras `A, B`, we define a
 bialgebra instance on `A ⊗[R] B` as well as the tensor product of two `BialgHom`s as a
 `BialgHom`, and the associator and left/right unitors for bialgebras as `BialgEquiv`s.
 In this file, we declare a `MonoidalCategory` instance on the category of bialgebras, with data
-fields given by the definitions in `Mathlib.RingTheory.Bialgebra.TensorProduct`, and Prop
+fields given by the definitions in `Mathlib/RingTheory/Bialgebra/TensorProduct.lean`, and Prop
 fields proved by pulling back the `MonoidalCategory` instance on the category of algebras,
 using `Monoidal.induced`.
 
@@ -36,9 +36,9 @@ noncomputable instance instMonoidalCategoryStruct :
   whiskerRight f X := ofHom (f.1.rTensor X)
   tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.1 g.1)
   tensorUnit := of R R
-  associator X Y Z := (Bialgebra.TensorProduct.assoc R X Y Z).toBialgIso
+  associator X Y Z := (Bialgebra.TensorProduct.assoc R R X Y Z).toBialgIso
   leftUnitor X := (Bialgebra.TensorProduct.lid R X).toBialgIso
-  rightUnitor X := (Bialgebra.TensorProduct.rid R X).toBialgIso
+  rightUnitor X := (Bialgebra.TensorProduct.rid R R X).toBialgIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `BialgCat.instMonoidalCategoryStruct` and the forgetful functor to algebras. -/

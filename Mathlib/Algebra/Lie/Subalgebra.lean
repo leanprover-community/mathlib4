@@ -67,6 +67,9 @@ instance : AddSubgroupClass (LieSubalgebra R L) L where
   zero_mem L' := L'.zero_mem'
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
+instance : SMulMemClass (LieSubalgebra R L) R L where
+  smul_mem {s} := SMulMemClass.smul_mem (s := s.toSubmodule)
+
 /-- A Lie subalgebra forms a new Lie ring. -/
 instance lieRing (L' : LieSubalgebra R L) : LieRing L' where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
@@ -132,8 +135,8 @@ protected theorem add_mem {x y : L} : x ∈ L' → y ∈ L' → (x + y : L) ∈ 
 protected theorem sub_mem {x y : L} : x ∈ L' → y ∈ L' → (x - y : L) ∈ L' :=
   sub_mem
 
-theorem smul_mem (t : R) {x : L} (h : x ∈ L') : t • x ∈ L' :=
-  (L' : Submodule R L).smul_mem t h
+protected theorem smul_mem (t : R) {x : L} (h : x ∈ L') : t • x ∈ L' :=
+  SMulMemClass.smul_mem _ h
 
 theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈ L' :=
   L'.lie_mem' hx hy
@@ -314,7 +317,7 @@ theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
   rw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
   use x
-  simp only [Subtype.mk_eq_mk, rangeRestrict_apply]
+  simp only [rangeRestrict_apply]
 
 /-- A Lie algebra is equivalent to its range under an injective Lie algebra morphism. -/
 noncomputable def equivRangeOfInjective (h : Function.Injective f) : L ≃ₗ⁅R⁆ f.range :=

@@ -29,7 +29,7 @@ local notation "π₂" => prod.snd
 local notation "π(" a ", " b ")" => prod.lift a b
 
 /-- The object `X ⊗ Y` in the `Dial C` category just tuples the left and right components. -/
-@[simps] def tensorObj (X Y : Dial C) : Dial C where
+@[simps] def tensorObjImpl (X Y : Dial C) : Dial C where
   src := X.src ⨯ Y.src
   tgt := X.tgt ⨯ Y.tgt
   rel :=
@@ -37,12 +37,12 @@ local notation "π(" a ", " b ")" => prod.lift a b
     (Subobject.pullback (prod.map π₂ π₂)).obj Y.rel
 
 /-- The functorial action of `X ⊗ Y` in `Dial C`. -/
-@[simps] def tensorHom {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
-    tensorObj X₁ Y₁ ⟶ tensorObj X₂ Y₂ where
+@[simps] def tensorHomImpl {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+    tensorObjImpl X₁ Y₁ ⟶ tensorObjImpl X₂ Y₂ where
   f := prod.map f.f g.f
   F := π(prod.map π₁ π₁ ≫ f.F, prod.map π₂ π₂ ≫ g.F)
   le := by
-    simp only [tensorObj, Subobject.inf_pullback]
+    simp only [tensorObjImpl, Subobject.inf_pullback]
     apply inf_le_inf <;> rw [← Subobject.pullback_comp, ← Subobject.pullback_comp]
     · have := (Subobject.pullback (prod.map π₁ π₁ :
         (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).monotone (Hom.le f)
@@ -54,34 +54,35 @@ local notation "π(" a ", " b ")" => prod.lift a b
       convert this using 3 <;> simp
 
 /-- The unit for the tensor `X ⊗ Y` in `Dial C`. -/
-@[simps] def tensorUnit : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
+@[simps] def tensorUnitImpl : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
 
 /-- Left unit cancellation `1 ⊗ X ≅ X` in `Dial C`. -/
-@[simps!] def leftUnitor (X : Dial C) : tensorObj tensorUnit X ≅ X :=
+@[simps!] def leftUnitorImpl (X : Dial C) : tensorObjImpl tensorUnitImpl X ≅ X :=
   isoMk (Limits.prod.leftUnitor _) (Limits.prod.leftUnitor _) <| by simp [Subobject.pullback_top]
 
 /-- Right unit cancellation `X ⊗ 1 ≅ X` in `Dial C`. -/
-@[simps!] def rightUnitor (X : Dial C) : tensorObj X tensorUnit ≅ X :=
+@[simps!] def rightUnitorImpl (X : Dial C) : tensorObjImpl X tensorUnitImpl ≅ X :=
   isoMk (Limits.prod.rightUnitor _) (Limits.prod.rightUnitor _) <| by simp [Subobject.pullback_top]
 
 /-- The associator for tensor, `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)` in `Dial C`. -/
 @[simps!]
-def associator (X Y Z : Dial C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
+def associatorImpl (X Y Z : Dial C) :
+    tensorObjImpl (tensorObjImpl X Y) Z ≅ tensorObjImpl X (tensorObjImpl Y Z) :=
   isoMk (prod.associator ..) (prod.associator ..) <| by
     simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_assoc]
 
 @[simps!]
 instance : MonoidalCategoryStruct (Dial C) where
-  tensorUnit := tensorUnit
-  tensorObj := tensorObj
-  whiskerLeft X _ _ f := tensorHom (𝟙 X) f
-  whiskerRight f Y := tensorHom f (𝟙 Y)
-  tensorHom := tensorHom
-  leftUnitor := leftUnitor
-  rightUnitor := rightUnitor
-  associator := associator
+  tensorUnit := tensorUnitImpl
+  tensorObj := tensorObjImpl
+  whiskerLeft X _ _ f := tensorHomImpl (𝟙 X) f
+  whiskerRight f Y := tensorHomImpl f (𝟙 Y)
+  tensorHom := tensorHomImpl
+  leftUnitor := leftUnitorImpl
+  rightUnitor := rightUnitorImpl
+  associator := associatorImpl
 
-theorem tensor_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by aesop_cat
+theorem tensor_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by aesop_cat
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
@@ -94,11 +95,11 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
     (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by aesop_cat
 
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
-    (𝟙 (𝟙_ (Dial C)) ⊗ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
+    (𝟙 (𝟙_ (Dial C)) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
-    (f ⊗ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
+    (f ⊗ₘ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
 theorem pentagon (W X Y Z : Dial C) :

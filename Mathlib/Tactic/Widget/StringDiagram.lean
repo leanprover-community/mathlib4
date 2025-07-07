@@ -53,7 +53,7 @@ file can also be used to display the string diagram for general bicategories (se
 PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
 categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
 Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
+`Mathlib/CategoryTheory/Bicategory/SingleObj.lean`, although the string diagram widget does not use
 it directly.
 
 -/
@@ -366,7 +366,7 @@ def mkEqHtml (lhs rhs : Html) : Html :=
 /-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
 Otherwise `none`. -/
 def stringEqM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
+  let e ← whnfR <| ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some lhs ← stringM? lhs | return none
   let some rhs ← stringM? rhs | return none
@@ -375,7 +375,7 @@ def stringEqM? (e : Expr) : MetaM (Option Html) := do
 /-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
 Otherwise `none`. -/
 def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
-  forallTelescopeReducing (← inferType e) fun xs a => do
+  forallTelescopeReducing (← whnfR <| ← inferType e) fun xs a => do
     if let some html ← stringM? (mkAppN e xs) then
       return some html
     else if let some html ← stringEqM? a then

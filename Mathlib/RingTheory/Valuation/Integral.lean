@@ -29,7 +29,7 @@ open Polynomial
 
 theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
   let ⟨p, hpm, hpx⟩ := hx
-  le_of_not_lt fun hvx : 1 < v x => by
+  le_of_not_gt fun hvx : 1 < v x => by
     rw [hpm.as_sum, eval₂_add, eval₂_pow, eval₂_X, eval₂_finset_sum, add_eq_zero_iff_eq_neg] at hpx
     replace hpx := congr_arg v hpx; refine ne_of_gt ?_ hpx
     rw [v.map_neg, v.map_pow]
