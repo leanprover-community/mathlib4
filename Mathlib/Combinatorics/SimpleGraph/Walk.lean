@@ -880,6 +880,12 @@ lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
 
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
+lemma eq_nil_copy_of_nil {p : G.Walk u v} (h : p.Nil) :
+    p = nil.copy h.eq.symm rfl := by
+  have := h.eq
+  subst this
+  simp [nil_iff_eq_nil.mp h]
+
 /-- The recursion principle for nonempty walks -/
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
@@ -909,20 +915,6 @@ lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
 
-lemma drop_length_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
-    p.drop n = Walk.nil.copy (p.getVert_of_length_le h).symm rfl := by
-  induction n generalizing p u with
-  | zero => cases p <;> simp [Walk.drop] at h ⊢
-  | succ n ih =>
-    cases p
-    · simp [Walk.drop]
-    rw [Walk.length_cons, Nat.add_le_add_iff_right] at h
-    simp [Walk.drop, ih h]
-
-lemma drop_length_nil_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
-    (p.drop n).Nil := by
-  simp [drop_length_of_le h]
-
 @[simp]
 lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
   induction p generalizing n with
@@ -934,6 +926,14 @@ lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVe
   induction p generalizing n with
   | nil => simp [drop]
   | cons => cases n <;> simp_all [drop, Nat.add_right_comm]
+
+lemma drop_length_nil_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    (p.drop n).Nil := by
+  rw [nil_iff_length_eq, drop_length, Nat.sub_eq_zero_of_le h]
+
+lemma drop_length_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.drop n = nil.copy (p.getVert_of_length_le h).symm rfl :=
+  eq_nil_copy_of_nil <| drop_length_nil_of_le h
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
