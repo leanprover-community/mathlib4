@@ -101,7 +101,7 @@ def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
       mul :=
         { hom := μ[M.X.X]
           is_comon_hom :=
-            { hom_comul := by simp [tensor_μ] } } }
+            { hom_comul := by simp } } }
 
 /-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
