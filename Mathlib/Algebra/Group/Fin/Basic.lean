@@ -26,12 +26,12 @@ variable {n : ℕ}
 /-! ### Instances -/
 
 instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [Fin.ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [Fin.ext_iff, add_def, Nat.add_comm]
+  add_assoc := by simp [add_def, Nat.add_assoc]
+  add_comm := by simp [add_def, Nat.add_comm]
 
 instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [Fin.ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [Fin.ext_iff, add_def, add_comm]
+  add_assoc := by simp [add_def, Nat.add_assoc]
+  add_comm := by simp [add_def, add_comm]
 
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add

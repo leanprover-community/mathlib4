@@ -72,10 +72,8 @@ variable [ModelCategory C]
 
 instance : MorphismProperty.IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C) :=
   MorphismProperty.IsWeakFactorizationSystem.mk' _ _ (fun {A B X Y} i p hi hp ↦ by
-    rw [mem_trivialCofibrations_iff] at hi
+    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i|>.mp hi
     rw [← fibration_iff] at hp
-    have := hi.1
-    have := hi.2
     infer_instance)
 
 instance : MorphismProperty.IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C) :=
@@ -93,7 +91,7 @@ section mk'
 open MorphismProperty
 
 variable {C} in
-private lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations C]
+private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
@@ -112,8 +110,7 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations
     { i := Arrow.homMk (h.i.left ≫ hw.i) h.i.right
       r := Arrow.homMk sq.lift h.r.right }
   have h' : trivialFibrations C hw.p :=
-    ⟨hw.hp, by simpa only [← weakEquivalence_iff]
-      using weakEquivalence_of_precomp_of_fac hw.fac⟩
+    ⟨hw.hp, (weakEquivalence_iff _).1 (weakEquivalence_of_precomp_of_fac hw.fac)⟩
   simpa only [weakEquivalence_iff] using (of_retract this h').2
 
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms

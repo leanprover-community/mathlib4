@@ -318,7 +318,7 @@ theorem tendstoUniformlyOn_empty : TendstoUniformlyOn F f p ∅ := fun u _ => by
 theorem tendstoUniformlyOn_singleton_iff_tendsto :
     TendstoUniformlyOn F f p {x} ↔ Tendsto (fun n : ι => F n x) p (𝓝 (f x)) := by
   simp_rw [tendstoUniformlyOn_iff_tendsto, Uniform.tendsto_nhds_right, tendsto_def]
-  exact forall₂_congr fun u _ => by simp [mem_prod_principal, preimage]
+  exact forall₂_congr fun u _ => by simp [preimage]
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
 `fun n ↦ fun a ↦ g n` converges to the constant function `fun a ↦ b` on any set `s` -/
@@ -341,7 +341,7 @@ theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace �
   change Tendsto (Prod.map (↿F) ↿F ∘ φ) (𝓝[U] x ×ˢ 𝓟 V) (𝓤 γ)
   simp only [nhdsWithin, Filter.prod_eq_inf, comap_inf, inf_assoc, comap_principal, inf_principal]
   refine hF.comp (Tendsto.inf ?_ <| tendsto_principal_principal.2 fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
-  simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff, (· ∘ ·),
+  simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff,
     nhds_eq_comap_uniformity, comap_comap]
   exact tendsto_comap.prodMk (tendsto_diag_uniformity _ _)
 
@@ -489,7 +489,7 @@ theorem UniformCauchySeqOnFilter.mono_left {p'' : Filter ι} (hf : UniformCauchy
     (hp : p'' ≤ p) : UniformCauchySeqOnFilter F p'' p' := by
   intro u hu
   have := (hf u hu).filter_mono (p'.prod_mono_left (Filter.prod_mono hp hp))
-  exact this.mono (by simp)
+  assumption
 
 theorem UniformCauchySeqOnFilter.mono_right {p'' : Filter α} (hf : UniformCauchySeqOnFilter F p p')
     (hp : p'' ≤ p') : UniformCauchySeqOnFilter F p p'' := fun u hu =>
