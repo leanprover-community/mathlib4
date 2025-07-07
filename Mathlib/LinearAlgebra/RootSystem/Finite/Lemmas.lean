@@ -83,7 +83,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
     have : 0 ≤ P.coxeterWeightIn ℤ i j := by
       simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm ℤ) i j
     obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
-    exact ⟨n, by simp [← P.algebraMap_coxeterWeightIn ℤ, hn]⟩
+    exact ⟨n, by simp [hn]⟩
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢
@@ -111,7 +111,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
   aesop -- #24551 (this should be faster)
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
-    (hij : α i ≠ α j) (hij' : α i ≠ - α j) :
+    (hij : α i ≠ α j) (hij' : α i ≠ -α j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1)} : Set (ℤ × ℤ)) := by
@@ -134,9 +134,9 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
   rw [hij'.1, hij'.2] at h' <;> omega
 
 variable {P} in
-lemma RootPositiveForm.rootLength_lt_of_pairingIn_nmem
+lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
     (B : P.RootPositiveForm ℤ) {i j : ι}
-    (hne : α i ≠ α j) (hne' : α i ≠ - α j)
+    (hne : α i ≠ α j) (hne' : α i ≠ -α j)
     (hij : P.pairingIn ℤ i j ∉ ({-1, 0, 1} : Set ℤ)) :
     B.rootLength j < B.rootLength i := by
   have hij' : P.pairingIn ℤ i j = -3 ∨ P.pairingIn ℤ i j = -2 ∨ P.pairingIn ℤ i j = 2 ∨
@@ -151,6 +151,10 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_nmem
   have hi := B.rootLength_pos i
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' | hij' | hij' <;>
   rw [hji, hij'] at aux₂ <;> omega
+
+@[deprecated (since := "2025-05-23")]
+alias RootPositiveForm.rootLength_lt_of_pairingIn_nmem :=
+  RootPositiveForm.rootLength_lt_of_pairingIn_notMem
 
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
@@ -193,10 +197,10 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
       rcases this with h₁ | h₁
       · replace h₁ : P.pairing i j = 1 := by simpa [← P.algebraMap_pairingIn ℤ]
-        exact ⟨P.reflection_perm j i, by simpa [h₁] using P.reflection_apply_root j i⟩
+        exact ⟨P.reflectionPerm j i, by simpa [h₁] using P.reflection_apply_root j i⟩
       · replace h₁ : P.pairing j i = 1 := by simpa [← P.algebraMap_pairingIn ℤ]
         rw [← neg_mem_range_root_iff, neg_sub]
-        exact ⟨P.reflection_perm i j, by simpa [h₁] using P.reflection_apply_root i j⟩
+        exact ⟨P.reflectionPerm i j, by simpa [h₁] using P.reflection_apply_root i j⟩
     have : P.coxeterWeightIn ℤ i j ∈ ({1, 2, 3} : Set _) := by
       have aux₁ := P.coxeterWeightIn_mem_set_of_isCrystallographic i j
       have aux₂ := (linearIndependent_iff_coxeterWeightIn_ne_four P ℤ).mp hli
@@ -224,7 +228,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
 /-- If two roots make an obtuse angle then their sum is a root (provided it is not zero).
 
 See `RootPairing.pairingIn_le_zero_of_root_add_mem` for a partial converse. -/
-lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ - α j) :
+lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ -α j) :
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
@@ -392,13 +396,13 @@ variable {i j} in
 lemma pairingIn_le_zero_of_ne :
     P.pairingIn ℤ i j ≤ 0 := by
   by_contra! h
-  exact b.sub_nmem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
+  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
 
 /-- This is Lemma 2.5 (a) from [Geck](Geck2017). -/
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
     α k - α j ∈ Φ := by
-  rcases lt_or_le 0 (P.pairingIn ℤ j k) with hm | hm
+  rcases lt_or_ge 0 (P.pairingIn ℤ j k) with hm | hm
   · rw [← neg_mem_range_root_iff, neg_sub]
     exact P.root_sub_root_mem_of_pairingIn_pos hm hkj.symm
   obtain ⟨l, hl⟩ := hk
@@ -415,7 +419,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     suffices α l - α k ∉ Φ by contrapose! this; exact P.root_sub_root_mem_of_pairingIn_pos this hkl
     replace hl : α l - α k = α i - α j := by rw [hl]; module
     rw [hl]
-    exact b.sub_nmem_range_root hi hj
+    exact b.sub_notMem_range_root hi hj
   have hki : P.pairingIn ℤ i k ≤ -2 := by
     suffices P.pairingIn ℤ l k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k by linarith
     apply algebraMap_injective ℤ R
@@ -437,26 +441,26 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     apply algebraMap_injective ℤ R
     simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
     convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
-    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add, LinearMap.sub_apply,
-      LinearMap.add_apply, root_coroot_eq_pairing, hki, pairing_same]
+    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add,
+      root_coroot_eq_pairing, hki, pairing_same]
     ring
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
 
 /-- This is Lemma 2.5 (b) from [Geck](Geck2017). -/
 lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
-    (hkj : α k ≠ - α i) (hk' : α k - α j ∈ Φ) :
+    (hkj : α k ≠ -α i) (hk' : α k - α j ∈ Φ) :
     α k + α i ∈ Φ := by
   let _i := P.indexNeg
   replace hk : α (-k) + α j - α i ∈ Φ := by
     rw [← neg_mem_range_root_iff]
     convert hk using 1
-    simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+    simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
   convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose! hkj; aesop)
     (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
-  simp only [indexNeg_neg, root_reflection_perm, reflection_apply_self]
+  simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
 end Base

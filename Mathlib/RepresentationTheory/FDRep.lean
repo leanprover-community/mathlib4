@@ -57,7 +57,7 @@ open CategoryTheory.Limits
 Note that `R` can be any ring,
 but the main case of interest is when `R = k` is a field and `G` is a group. -/
 abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
-  Action (FGModuleCat R) G
+  Action (FGModuleCat.{u} R) G
 
 namespace FDRep
 
@@ -176,8 +176,6 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, f.comm⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
 
 end FDRep
 

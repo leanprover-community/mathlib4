@@ -50,7 +50,7 @@ variable [Zero M] [Zero M'] [CommMonoid N]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
     (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) := by
   refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) ?_)
-  exact not_mem_support_iff.1 hx
+  exact notMem_support_iff.1 hx
 
 @[to_additive]
 theorem prod_fintype [Fintype α] (f : α →₀ M) (g : α → M → N) (h : ∀ i, g i 0 = 1) :
@@ -69,7 +69,7 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
 @[to_additive]
 theorem prod_mapRange_index {f : M → M'} {hf : f 0 = 0} {g : α →₀ M} {h : α → M' → N}
     (h0 : ∀ a, h a 0 = 1) : (mapRange f hf g).prod h = g.prod fun a b => h a (f b) :=
-  Finset.prod_subset support_mapRange fun _ _ H => by rw [not_mem_support_iff.1 H, h0]
+  Finset.prod_subset support_mapRange fun _ _ H => by rw [notMem_support_iff.1 H, h0]
 
 @[to_additive (attr := simp)]
 theorem prod_zero_index {h : α → M → N} : (0 : α →₀ M).prod h = 1 :=
@@ -160,7 +160,7 @@ theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : �
   classical
     by_cases hyf : y ∈ f.support
     · exact Finsupp.mul_prod_erase f y g hyf
-    · rw [not_mem_support_iff.mp hyf, hg y, erase_of_not_mem_support hyf, one_mul]
+    · rw [notMem_support_iff.mp hyf, hg y, erase_of_notMem_support hyf, one_mul]
 
 @[to_additive]
 theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [SubmonoidClass S N]
@@ -181,7 +181,7 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     f.prod g = g a (f a) := by
   refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h => ?_)
   · exact h₀ b (mem_support_iff.mp hb₁) hb₂
-  · simp only [not_mem_support_iff] at h
+  · simp only [notMem_support_iff] at h
     rw [h]
     exact h₁ h
 
@@ -303,7 +303,7 @@ theorem prod_inv [Zero M] [CommGroup G] {f : α →₀ M} {h : α → M → G} :
 @[simp]
 theorem sum_sub [Zero M] [SubtractionCommMonoid G] {f : α →₀ M} {h₁ h₂ : α → M → G} :
     (f.sum fun a b => h₁ a b - h₂ a b) = f.sum h₁ - f.sum h₂ :=
-  Finset.sum_sub_distrib
+  Finset.sum_sub_distrib ..
 
 /-- Taking the product under `h` is an additive-to-multiplicative homomorphism of finsupps,
 if `h` is an additive-to-multiplicative homomorphism on the support.
@@ -501,7 +501,7 @@ theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
       Disjoint f1.support f2.support → (∏ x ∈ f1.support, g x (f1 x + f2 x)) = f1.prod g :=
     fun hd =>
     Finset.prod_congr rfl fun x hx => by
-      simp only [not_mem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
+      simp only [notMem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
   classical simp_rw [← this hd, ← this hd.symm, add_comm (f2 _), Finsupp.prod, support_add_eq hd,
       prod_union hd, add_apply]
 
@@ -509,7 +509,7 @@ theorem prod_dvd_prod_of_subset_of_dvd [Zero M] [CommMonoid N] {f1 f2 : α →�
     {g1 g2 : α → M → N} (h1 : f1.support ⊆ f2.support)
     (h2 : ∀ a : α, a ∈ f1.support → g1 a (f1 a) ∣ g2 a (f2 a)) : f1.prod g1 ∣ f2.prod g2 := by
   classical
-    simp only [Finsupp.prod, Finsupp.prod_mul]
+    simp only [Finsupp.prod]
     rw [← sdiff_union_of_subset h1, prod_union sdiff_disjoint]
     apply dvd_mul_of_dvd_right
     apply prod_dvd_prod_of_dvd
@@ -521,7 +521,7 @@ lemma indicator_eq_sum_attach_single [AddCommMonoid M] {s : Finset α} (f : ∀ 
   · refine Finset.sum_congr rfl (fun _ _ => ?_)
     rw [indicator_of_mem]
   · intro i _ hi
-    rw [not_mem_support_iff.mp hi, single_zero]
+    rw [notMem_support_iff.mp hi, single_zero]
 
 lemma indicator_eq_sum_single [AddCommMonoid M] (s : Finset α) (f : α → M) :
     indicator s (fun x _ ↦ f x) = ∑ x ∈ s, single x (f x) :=
@@ -607,9 +607,12 @@ end
 namespace Nat
 
 /-- If `0 : ℕ` is not in the support of `f : ℕ →₀ ℕ` then `0 < ∏ x ∈ f.support, x ^ (f x)`. -/
-theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.support) :
+theorem prod_pow_pos_of_zero_notMem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.support) :
     0 < f.prod (· ^ ·) :=
   Nat.pos_iff_ne_zero.mpr <| Finset.prod_ne_zero_iff.mpr fun _ hf =>
     pow_ne_zero _ fun H => by subst H; exact nhf hf
+
+@[deprecated (since := "2025-05-23")]
+alias prod_pow_pos_of_zero_not_mem_support := prod_pow_pos_of_zero_notMem_support
 
 end Nat

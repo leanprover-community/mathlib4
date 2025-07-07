@@ -11,7 +11,7 @@ import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 This file defines certain polynomials associated to division polynomials of Weierstrass curves.
 These are defined in terms of the auxiliary sequences for normalised elliptic divisibility sequences
-(EDS) as defined in `Mathlib.NumberTheory.EllipticDivisibilitySequence`.
+(EDS) as defined in `Mathlib/NumberTheory/EllipticDivisibilitySequence.lean`.
 
 ## Mathematical background
 
@@ -70,7 +70,7 @@ and `Φₙ ∈ R[X]` respectively, which are defined in terms of `Ψ₂Sq ∈ R[
 
 ## Implementation notes
 
-Analogously to `Mathlib.NumberTheory.EllipticDivisibilitySequence`, the bivariate polynomials
+Analogously to `Mathlib/NumberTheory/EllipticDivisibilitySequence.lean`, the bivariate polynomials
 `Ψₙ` are defined in terms of the univariate polynomials `preΨₙ`. This is done partially to avoid
 ring division, but more crucially to allow the definition of `ΨSqₙ` and `Φₙ` as univariate
 polynomials without needing to work under the coordinate ring, and to allow the computation of their

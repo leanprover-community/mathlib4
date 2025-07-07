@@ -51,7 +51,7 @@ the set of elements of `l`. -/
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem _ _⟩
   invFun x := ⟨idxOf (↑x) l, idxOf_lt_length_iff.2 x.2⟩
-  left_inv i := by simp only [List.get_idxOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
+  left_inv i := by simp only [List.get_idxOf, Fin.eta, H]
   right_inv x := by simp
 
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
@@ -209,7 +209,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       ∃ (n m : Fin l.length) (_ : n < m),
         x = l.get n ∧ x = l.get m := by
   classical
-    rw [duplicate_iff_two_le_count, le_count_iff_replicate_sublist,
+    rw [duplicate_iff_two_le_count, ← replicate_sublist_iff,
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩

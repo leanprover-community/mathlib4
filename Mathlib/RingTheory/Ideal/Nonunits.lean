@@ -38,8 +38,10 @@ theorem zero_mem_nonunits [MonoidWithZero α] : 0 ∈ nonunits α ↔ (0 : α) �
   not_congr isUnit_zero_iff
 
 @[simp 1001] -- increased priority to appease `simpNF`
-theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
+theorem one_notMem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
+
+@[deprecated (since := "2025-05-23")] alias one_not_mem_nonunits := one_notMem_nonunits
 
 -- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]

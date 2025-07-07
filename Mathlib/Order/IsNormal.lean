@@ -37,7 +37,7 @@ namespace IsNormal
 section LinearOrder
 variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
-/-- This condition is the LHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
+/-- This condition is the RHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
 theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
     (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f := by
   refine ⟨hf, fun {a} ha ↦ ⟨?_, hl ha⟩⟩
@@ -76,7 +76,7 @@ theorem map_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) : IsSuccLimit (f 
   · obtain ⟨c, hc, hc'⟩ := (hf.lt_iff_exists_lt ha).1 hb.lt
     have hc' := hb.ge_of_gt hc'
     rw [hf.strictMono.le_iff_le] at hc'
-    exact hc.not_le hc'
+    exact hc.not_ge hc'
 
 theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty) :
     IsLUB (f '' s) (f a) := by
@@ -86,7 +86,7 @@ theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonem
   · by_cases ha : a ∈ s
     · simp_rw [mem_upperBounds, forall_mem_image] at hb
       exact hb ha
-    · have ha' := hs.isSuccLimit_of_not_mem hs' ha
+    · have ha' := hs.isSuccLimit_of_notMem hs' ha
       rw [le_iff_forall_le hf ha']
       intro c hc
       obtain ⟨d, hd, hcd, hda⟩ := hs.exists_between hc

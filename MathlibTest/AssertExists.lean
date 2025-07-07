@@ -25,9 +25,7 @@ info:
 /--
 warning: the module 'Lean.Elab.Command' is (transitively) imported via
 Lean.Elab.Command,
-  which is imported by Mathlib.Tactic.Linter.DirectoryDependency,
-  which is imported by Mathlib.Tactic.Linter.Header,
-  which is imported by Mathlib.Tactic.Linter.DeprecatedSyntaxLinter,
+  which is imported by Lean.Linter.Sets,
   which is imported by Mathlib.Init,
   which is imported by Mathlib.Util.AssertExistsExt,
   which is imported by Mathlib.Util.AssertExists,
