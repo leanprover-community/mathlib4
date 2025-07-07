@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
+import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Data.NNReal.Defs
 import Mathlib.RingTheory.Valuation.Basic
 
@@ -58,7 +59,7 @@ theorem zero_of_hom_zero {x : valueGroup₀ v} (hx : hom v x = 0) : x = 0 := by
 
 /-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
-theorem hom_eq_zero_iff {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
+theorem hom_eq_zero_iff {x : valueGroup₀ v} : hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
 
 /-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : Valuation R Γ₀`. -/
