@@ -65,6 +65,9 @@ lemma cfcHom_integral [NormedSpace ℝ A] (a : A) (f : X → C(spectrum 𝕜 a, 
     ∫ x, cfcHom (a := a) ha (f x) ∂μ = cfcHom (a := a) ha (∫ x, f x ∂μ) :=
   cfcL_integral a f hf₁ ha
 
+/-- An integrability criterion for the continuous functional calculus.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`integrable_cfc`. -/
 lemma integrable_cfc' (f : X → 𝕜 → 𝕜) (a : A)
     (hf : Integrable
       (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) μ)
@@ -73,6 +76,9 @@ lemma integrable_cfc' (f : X → 𝕜 → 𝕜) (a : A)
   conv in cfc _ _ => rw [cfc_eq_cfcL_mkD _ a]
   exact cfcL_integrable _ _ hf ha
 
+/-- An integrability criterion for the continuous functional calculus.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`integrableOn_cfc`. -/
 lemma integrableOn_cfc' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
     (hf : IntegrableOn
       (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) s μ)
@@ -81,6 +87,9 @@ lemma integrableOn_cfc' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
   exact integrable_cfc' _ _ hf ha
 
 open Set Function in
+/-- An integrability criterion for the continuous functional calculus.
+This version assumes joint continuity of `f`, see `integrable_cfc'` for a statement
+with weaker assumptions. -/
 lemma integrable_cfc [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
     (hf : ContinuousOn (uncurry f) (univ ×ˢ spectrum 𝕜 a))
@@ -94,6 +103,9 @@ lemma integrable_cfc [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
 
 open Set Function in
+/-- An integrability criterion for the continuous functional calculus.
+This version assumes joint continuity of `f`, see `integrableOn_cfc'` for a statement
+with weaker assumptions. -/
 lemma integrableOn_cfc [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
@@ -108,7 +120,9 @@ lemma integrableOn_cfc [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
 
 open Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`cfc_integral`. -/
 lemma cfc_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (hf₁ : ∀ᵐ x ∂μ, ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : Integrable
@@ -133,7 +147,9 @@ lemma cfc_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
   rw [← key₁, key₂]
 
 open Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`cfc_setIntegral`. -/
 lemma cfc_setIntegral' {s : Set X} [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (hf₁ : ∀ᵐ x ∂(μ.restrict s), ContinuousOn (f x) (spectrum 𝕜 a))
     (hf₂ : IntegrableOn
@@ -143,7 +159,9 @@ lemma cfc_setIntegral' {s : Set X} [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜)
   cfc_integral' _ _ hf₁ hf₂ ha
 
 open Function Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+This version assumes joint continuity of `f`, see `cfc_integral'` for a statement
+with weaker assumptions. -/
 lemma cfc_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X]
     (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
     (hf : ContinuousOn (uncurry f) (univ ×ˢ spectrum 𝕜 a))
@@ -157,7 +175,9 @@ lemma cfc_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpac
   · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this bound bound_int bound_ge
 
 open Function Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+This version assumes joint continuity of `f`, see `cfc_setIntegral'` for a statement
+with weaker assumptions. -/
 lemma cfc_setIntegral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
@@ -199,6 +219,9 @@ lemma cfcₙL_integrable (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     Integrable (fun x ↦ cfcₙL (a := a) ha (f x)) μ :=
   ContinuousLinearMap.integrable_comp _ hf₁
 
+/-- An integrability criterion for the continuous functional calculus.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`integrable_cfcₙ`. -/
 lemma integrable_cfcₙ' (f : X → 𝕜 → 𝕜) (a : A)
     (hf : Integrable
       (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) μ)
@@ -207,6 +230,9 @@ lemma integrable_cfcₙ' (f : X → 𝕜 → 𝕜) (a : A)
   conv in cfcₙ _ _ => rw [cfcₙ_eq_cfcₙL_mkD _ a]
   exact cfcₙL_integrable _ _ hf ha
 
+/-- An integrability criterion for the continuous functional calculus.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`integrableOn_cfcₙ`. -/
 lemma integrableOn_cfcₙ' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
     (hf : IntegrableOn
       (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) s μ)
@@ -215,6 +241,9 @@ lemma integrableOn_cfcₙ' {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
   exact integrable_cfcₙ' _ _ hf ha
 
 open Set Function in
+/-- An integrability criterion for the continuous functional calculus.
+This version assumes joint continuity of `f`, see `integrable_cfcₙ'` for a statement
+with weaker assumptions. -/
 lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A)
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
@@ -230,6 +259,9 @@ lemma integrable_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] (f : X →
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨trivial, hz⟩
 
 open Set Function in
+/-- An integrability criterion for the continuous functional calculus.
+This version assumes joint continuity of `f`, see `integrableOn_cfcₙ'` for a statement
+with weaker assumptions. -/
 lemma integrableOn_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
@@ -245,7 +277,9 @@ lemma integrableOn_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
 
 open Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`cfcₙ_integral`. -/
 lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (hf₁ : ∀ᵐ x ∂μ, ContinuousOn (f x) (quasispectrum 𝕜 a))
     (hf₂ : ∀ᵐ x ∂μ, f x 0 = 0)
@@ -272,7 +306,9 @@ lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
   rw [← key₁, key₂]
 
 open Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+For a version with stronger assumptions which in practice are often easier to verify, see
+`cfcₙ_setIntegral`. -/
 lemma cfcₙ_setIntegral' {s : Set X} [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     (hf₁ : ∀ᵐ x ∂(μ.restrict s), ContinuousOn (f x) (quasispectrum 𝕜 a))
     (hf₂ : ∀ᵐ x ∂(μ.restrict s), f x 0 = 0)
@@ -283,7 +319,9 @@ lemma cfcₙ_setIntegral' {s : Set X} [NormedSpace ℝ A] (f : X → 𝕜 → �
   cfcₙ_integral' _ _ hf₁ hf₂ hf₃ ha
 
 open Function Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+This version assumes joint continuity of `f`, see `cfcₙ_integral'` for a statement
+with weaker assumptions. -/
 lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X]
     (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
@@ -299,7 +337,9 @@ lemma cfcₙ_integral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableS
   · exact hasFiniteIntegral_mkD_restrict_of_bound f _ this f_zero bound bound_int bound_ge
 
 open Function Set in
-/-- The continuous functional calculus commutes with integration. -/
+/-- The continuous functional calculus commutes with integration.
+This version assumes joint continuity of `f`, see `cfcₙ_setIntegral'` for a statement
+with weaker assumptions. -/
 lemma cfcₙ_setIntegral [NormedSpace ℝ A] [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set X}
     (hs : MeasurableSet s) (f : X → 𝕜 → 𝕜) (bound : X → ℝ) (a : A)
     [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)]
