@@ -156,7 +156,7 @@ noncomputable instance : (inclusion F).Full :=
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
     isomorphism. -/
 noncomputable def factoringCompInclusion : factoring F ⋙ inclusion F ≅ F :=
-  isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight (Equivalence.unitIso _).symm _)
 
 instance : IsFilteredOrEmpty (SmallFilteredIntermediate F) :=
   IsFilteredOrEmpty.of_equivalence (equivSmallModel _)
@@ -295,7 +295,7 @@ noncomputable instance : (inclusion F).Full :=
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
     isomorphism. -/
 noncomputable def factoringCompInclusion : factoring F ⋙ inclusion F ≅ F :=
-  isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight (Equivalence.unitIso _).symm _)
 
 instance : IsCofilteredOrEmpty (SmallCofilteredIntermediate F) :=
   IsCofilteredOrEmpty.of_equivalence (equivSmallModel _)
