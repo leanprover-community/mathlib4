@@ -449,7 +449,7 @@ instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
 @[simp]
 lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
     Spec.map (inv f) = inv (Spec.map f) := by
-  show Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
+  change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
 
 section
@@ -785,7 +785,7 @@ lemma Scheme.iso_hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
 @[simp]
 lemma Scheme.iso_hom_base_inv_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     (e.inv.base (e.hom.base x)) = x := by
-  show (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[reassoc (attr := simp)]
@@ -796,7 +796,7 @@ lemma Scheme.iso_inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
 @[simp]
 lemma Scheme.iso_inv_base_hom_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
     (e.hom.base (e.inv.base y)) = y := by
-  show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :

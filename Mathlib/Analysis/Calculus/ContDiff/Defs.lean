@@ -242,7 +242,7 @@ theorem ContDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContDiffWithinAt 𝕜
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq h₁ <| h₁.self_of_nhdsWithin hx
 
-theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s):
+theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun H ↦ H.congr_of_eventuallyEq_of_mem h₁.symm hx, fun H ↦ H.congr_of_eventuallyEq_of_mem h₁ hx⟩
 
@@ -1109,7 +1109,7 @@ theorem ContDiff.contDiffOn (h : ContDiff 𝕜 n f) : ContDiffOn 𝕜 n f s :=
 
 @[simp]
 theorem contDiff_zero : ContDiff 𝕜 0 f ↔ Continuous f := by
-  rw [← contDiffOn_univ, continuous_iff_continuousOn_univ]
+  rw [← contDiffOn_univ, ← continuousOn_univ]
   exact contDiffOn_zero
 
 theorem contDiffAt_zero : ContDiffAt 𝕜 0 f x ↔ ∃ u ∈ 𝓝 x, ContinuousOn f u := by
@@ -1203,7 +1203,7 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
         ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
-  simp [contDiffOn_univ.symm, continuous_iff_continuousOn_univ, differentiableOn_univ.symm,
+  simp [contDiffOn_univ.symm, continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
 
 theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :

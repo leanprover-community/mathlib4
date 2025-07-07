@@ -7,7 +7,6 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Sum
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.CC
 import Mathlib.Tactic.Lift
 
 /-!
@@ -516,7 +515,7 @@ def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b :
 
 @[simp]
 lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
-    (s: {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
+    (s : {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
     sigmaSigmaSubtypeEq a b s = cast (congrArg₂ γ s.2.1 s.2.2) s.1.2.2 := by
   simp [sigmaSigmaSubtypeEq]
 
@@ -668,10 +667,10 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
   split_ifs <;> simp [*]
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 /-- `swap a b` is the permutation that swaps `a` and `b` and
   leaves other values as is. -/

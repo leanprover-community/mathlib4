@@ -893,7 +893,7 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
   dsimp
   simp_rw [dist_eq_norm, ← sub_smul, norm_smul]
   apply isBoundedUnder_le_mul_tendsto_zero
-  · show IsBoundedUnder _ _ fun _ ↦ _
+  · change IsBoundedUnder _ _ fun _ ↦ _
     simpa using hbdd
   · rw [← tendsto_zero_iff_norm_tendsto_zero]
     exact tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded hmul.norm.isBoundedUnder_le hf₁

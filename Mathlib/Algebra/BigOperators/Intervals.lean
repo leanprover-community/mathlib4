@@ -3,13 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Algebra.Order.Interval.Finset.Basic
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Results about big operators over intervals
@@ -19,7 +16,7 @@ We prove results about big operators over intervals.
 
 open Nat
 
-variable {α M : Type*}
+variable {α G M : Type*}
 
 namespace Finset
 
@@ -50,12 +47,6 @@ theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrdere
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
   rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_notMem_Ico, mul_comm]
-
-@[to_additive]
-theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
-    ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
-  have ha : a ∉ Ico (a + 1) b := by simp
-  rw [← prod_insert ha, ← Finset.insert_Ico_add_one_left_eq_Ico  hab]
 
 @[to_additive]
 theorem prod_Ico_consecutive (f : ℕ → M) {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
@@ -101,7 +92,7 @@ theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ}
   simpa only [div_eq_mul_inv] using prod_Ico_eq_mul_inv f h
 
 @[to_additive]
-theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
+theorem prod_range_div_prod_range {G : Type*} [CommGroup G] {f : ℕ → G} {n m : ℕ} (hnm : n ≤ m) :
     ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) = ∏ k ∈ range m with n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr

@@ -246,7 +246,7 @@ variable (hf : IsCoveringMap f)
 include hf
 
 protected theorem continuous : Continuous f :=
-  continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn
+  continuousOn_univ.mp hf.isCoveringMapOn.continuousOn
 
 protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr hf.isCoveringMapOn.isLocalHomeomorphOn
@@ -278,6 +278,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
 
 variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
+/-- Proposition 1.34 of [hatcher02]. -/
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
