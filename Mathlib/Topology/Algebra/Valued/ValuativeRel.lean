@@ -105,3 +105,16 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
   isClopen_sphere hr |>.isOpen
 
 end ValuativeTopology
+
+namespace ValuativeRel
+
+@[inherit_doc]
+scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
+
+@[inherit_doc]
+scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal 𝒪[K]
+
+@[inherit_doc]
+scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField 𝒪[K]
+
+end ValuativeRel
