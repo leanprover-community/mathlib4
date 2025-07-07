@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Projectivization.Basic
 Show that the general linear group of `V` acts on `ℙ K V`.
 -/
 
-open scoped LinearAlgebra.Projectivization MatrixGroups
+open scoped LinearAlgebra.Projectivization MatrixGroups Matrix
 
 namespace Projectivization
 
@@ -47,6 +47,11 @@ variable {K n : Type*} [Field K] [Fintype n] [DecidableEq n]
 /-- For a field `K`, the group `GL n K` acts on `ℙ K (n → K)`. -/
 instance instGLFinAction : MulAction (GL n K) (ℙ K (n → K)) :=
   .compHom _ Matrix.GeneralLinearGroup.toLin.toMonoidHom
+
+@[simp]
+lemma pi_smul_apply (g : GL n K) {v : n → K} (hv : v ≠ 0) :
+    g • mk K v hv = mk K (g.val *ᵥ v) (g.toLin.toLinearEquiv.map_ne_zero_iff.mpr hv) := by
+  rfl
 
 /-- For a field `K`, the group `GL (Fin 2) K` acts on `ℙ K (K × K)`. -/
 instance instGLFinTwoAction : MulAction (GL (Fin 2) K) (ℙ K (K × K)) :=
