@@ -3,6 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Interval.Finset.Nat
@@ -159,6 +160,12 @@ lemma partialSups_succ' {α : Type*} [SemilatticeSup α] [LinearOrder ι] [Local
 lemma comp_partialSups {F : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [FunLike F α β]
     [SupHomClass F α β] (f : ι → α) (g : F) : partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]
+
+lemma partialSups_const_add {α : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [Lattice α]
+    [AddGroup α] [CovariantClass α α (· + ·) (· ≤ ·)] (f : ι → α) (c : α) (i : ι) :
+    partialSups (c + f ·) i = c + partialSups f i := by
+  change (partialSups (OrderIso.addLeft c ∘ f)) i = _
+  rw [comp_partialSups f (OrderIso.addLeft c)]; rfl
 
 /-!
 ### Functions out of `ℕ`
