@@ -260,10 +260,9 @@ theorem Module.support_quotient (I : Ideal R) :
 
 open Pointwise in
 theorem Module.support_quotSMulTop (x : R) :
-    Module.support R (QuotSMulTop x M) = Module.support R M ∩ zeroLocus {x} := by
-  refine (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
+    support R (QuotSMulTop x M) = support R M ∩ zeroLocus {x} :=
+  (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
     ((⊤ : Submodule R M).ideal_span_singleton_smul x).symm |>.support_eq.trans <|
-      (Module.support_quotient _).trans ?_
-  rw [zeroLocus_span]
+      (support_quotient _).trans <| by rw [zeroLocus_span]
 
 end Finite
