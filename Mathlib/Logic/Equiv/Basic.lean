@@ -403,8 +403,8 @@ def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False
     · intro n
       exfalso
       exact h n
-    · intro _
-      exact rfl
+    · intro
+      rfl
   (sigmaSubtypeEquivOfSubset _ _ h').symm.trans (sigmaCongrLeft' (optionIsSomeEquiv α))
 
 section Sigma

@@ -9,7 +9,7 @@ import Mathlib.Topology.Sheaves.LocalPredicate
 /-!
 # Étale spaces of local predicates and presheaves
 
-The traditional approach to étale spaces startsfrom a (pre)sheaf on a base space and
+The traditional approach to étale spaces starts from a (pre)sheaf on a base space and
 directly constructs the associated étale space with a local homeomorphism to the base space.
 We instead construct a local homeomorphism from an arbitrary type family (over the base space)
 with a predicate on sections (over open sets of the base space) specifying the "admissible"
@@ -54,8 +54,8 @@ to behave like the family of stalks of the admissible sections.
 * `EtaleSpace.continuous_cod_iff`: a function to the étale space is continuous if and only if
   it agrees with an admissible section around each point (requires both criteria).
 
-* `EtaleSpace.continuous_section_iff`: a section is continuous if and only if
-  it is admissible according to the sheafified predicate
+* `EtaleSpace.continuous_section_iff`: a section is continuous if and only if it is admissible
+  according to the sheafified predicate, i.e., it locally agrees with admissible sections
   (requires both criteria and that the predicate is pre-local).
 
 * `EtaleSpace.isTopologicalBasis`: the étale space has a basis consisting of
@@ -149,8 +149,7 @@ variable (inj : ∀ b, IsStalkInj P b) (surj : ∀ b, IsStalkSurj P b)
 include inj surj
 
 theorem isLocalHomeomorph_proj : IsLocalHomeomorph (proj P) :=
-  isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun x ↦
-    have ⟨_U, _s, hs, eq⟩ := surj _ x.2
+  isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun x ↦ have ⟨_U, _s, hs, eq⟩ := surj _ x.2
     ⟨_, (isOpen_range_section hs inj).mem_nhds ⟨_, congr(mk $eq)⟩, isOpenEmbedding_restrict_proj hs⟩
 
 theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace P} :
@@ -236,6 +235,17 @@ noncomputable def homeomorph : proj P ⁻¹' U ≃ₜ U × ι where
     fun i ↦ (continuous_section (t.pred i)).subtype_mk _
 
 end TrivializationOn
+
+theorem isSeparatedMap_proj (sep : ∀ b, IsSeparated P b) (inj : ∀ b, IsStalkInj P b) :
+    IsSeparatedMap (proj P) :=
+  fun x y eq ne ↦ by
+    have ⟨U, s, t, hs, ht, hsx, hty, ne⟩ := sep (proj P x) x.2 (eq ▸ y.2)
+      fun eq2 ↦ ne <| Sigma.ext eq (by simp [eq2])
+    refine ⟨_, _, isOpen_range_section hs inj, isOpen_range_section ht inj, ⟨_, congr(mk $hsx)⟩,
+      ⟨_, congr(mk $hty).trans <| Sigma.ext eq <| by simp⟩, Set.disjoint_iff_forall_ne.mpr ?_⟩
+    rintro _ ⟨b, rfl⟩ _ ⟨b', rfl⟩ eq
+    cases Subtype.ext congr(proj P $eq)
+    exact ne b congr($eq.2)
 
 end EtaleSpace
 
