@@ -50,6 +50,15 @@ noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ := f
 
 local notation "⟪" X ", " Y "⟫" => product I X Y
 
+variable (X) in
+@[simp]
+lemma product_zero_right : ⟪X, 0⟫ = 0 := sorry
+
+@[simp]
+lemma product_zero_left : ⟪0, X⟫ = 0 := sorry
+
+lemma product_sub_right : ⟪X, Y - Z⟫ = ⟪X, Y⟫ - ⟪X, Z⟫ := sorry
+
 namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `TM`.
@@ -85,23 +94,14 @@ noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
   )
 
 variable (X Y Z) in
-lemma aux (h : cov.IsLeviCivitaConnection) (x : M) : rhs_aux I X Y Z =
+lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
     ⟪cov X Y, Z⟫ + ⟪Y, cov Z X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
-  unfold rhs_aux
-  have : ⟪Y, cov X Z⟫ - ⟪Y, cov Z X⟫ = ⟪Y, VectorField.mlieBracket I X Z⟫ := by
-    ext x
-    have := h.2
-    rw [isTorsionFree_iff] at this
-    specialize this X Y
-    simp only [product]
-    sorry /-trans ⟪Y x, cov X Z x - cov Z X x⟫
-    · sorry -- product is linear...
-    sorry -- congr_fun/congr_arg -/
-  --have : ⟪Y x, cov X Z x⟫ = ⟪Y x, cov Z X x⟫ + product I Y (VectorField.mlieBracket I X Z) x := by
-  --  sorry
+  have : ⟪Y, cov X Z - cov Z X⟫ = ⟪Y, VectorField.mlieBracket I X Z⟫ := by
+    simp [isTorsionFree_iff.mp h.2 X Z]
   trans ⟪cov X Y, Z⟫ + ⟪Y, cov X Z⟫
-  · sorry -- apply h.1 X Y Z
-  · sorry -- simp [this, add_assoc]
+  · ext x
+    exact h.1 X Y Z x
+  · simp [← this, product_sub_right]
 
 -- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
 variable (X Y Z) in
@@ -109,12 +109,12 @@ variable (X Y Z) in
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
 lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
     ⟪cov X Y, Z⟫ = leviCivita_rhs I X Y Z := by
-  have eq1 (x) := aux I X Y Z cov h x
-  have eq2 (x) := aux I Y Z X cov h x
-  have eq3 (x) := aux I Z X Y cov h x
+  have eq1 := aux I X Y Z cov h
+  have eq2 := aux I Y Z X cov h
+  have eq3 := aux I Z X Y cov h
   -- add (I) + (II) and subtract (III)
 
-  -- solve for product I (cov X Y) Z
+  -- solve for ⟪cov X Y, Z⟫
   sorry
 
 variable (X Y Y') in
