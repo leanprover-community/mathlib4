@@ -6,6 +6,11 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Center.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 
+/-!
+# Twisting a shift
+
+-/
+
 namespace CategoryTheory
 
 variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
