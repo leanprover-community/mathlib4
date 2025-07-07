@@ -9,15 +9,16 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
-# The `p`-adic complex numbers.
+# The field `ℂ_[p]` of `p`-adic complex numbers.
 
-In this file we define the field `ℂ_[p]` of `p`-adic complex numbers and we give it both a normed
-field and a valued field structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
+In this file we define the field `ℂ_[p]` of `p`-adic complex numbers as the `p`-adic completion of
+an algebraic closure of `ℚ_[p]`. We endow `ℂ_[p]` with both a normed field and a valued field
+structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Definitions
 * `PadicAlgCl p` : the algebraic closure of `ℚ_[p]`.
-* `PadicComplex p` : the type of `p`-adic complex numbers.
-* `PadicComplexInt` : the ring of integers of `ℂ_[p]`.
+* `PadicComplex p` : the type of `p`-adic complex numbers, denoted by `ℂ_[p]`.
+* `PadicComplexInt p` : the ring of integers of `ℂ_[p]`.
 
 ## Main Results
 
@@ -37,7 +38,7 @@ p-adic, p adic, padic, norm, valuation, Cauchy, completion, p-adic completion
 
 noncomputable section
 
-open Valued Valuation
+open Valuation
 
 open scoped NNReal
 
@@ -133,11 +134,7 @@ instance : Algebra ℚ_[p] ℂ_[p] where
   smul_def' r x := by
     apply UniformSpace.Completion.ext' (continuous_const_smul r) (continuous_mul_left _)
     intro a
-    have : UniformSpace.Completion.coeRingHom ((algebraMap ℚ_[p] (PadicAlgCl p)) r) * ↑a =
-       UniformSpace.Completion.coeRingHom ((algebraMap ℚ_[p] (PadicAlgCl p)) r) *
-       UniformSpace.Completion.coeRingHom a := rfl
-    rw [← UniformSpace.Completion.coe_smul, RingHom.coe_comp, Function.comp_apply,
-      this, ← map_mul, Algebra.smul_def]
+    rw [RingHom.coe_comp, Function.comp_apply, Algebra.smul_def]
     rfl
 
 instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
