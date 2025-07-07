@@ -34,7 +34,8 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
 
-/-- Characterization of differentiable functions into a vector bundle. -/
+/-- Characterization of differentiable functions into a vector bundle.
+Version at a point within a set -/
 theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
       MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
@@ -56,6 +57,8 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     exact hx
   · simp only [mfld_simps]
 
+/-- Characterization of differentiable functions into a vector bundle.
+Version at a point -/
 theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
     MDifferentiableAt IM (IB.prod 𝓘(𝕜, F)) f x₀ ↔
       MDifferentiableAt IM IB (fun x => (f x).proj) x₀ ∧
