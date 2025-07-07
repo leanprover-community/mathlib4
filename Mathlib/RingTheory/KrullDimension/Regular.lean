@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Yonele Hu
+Authors: Nailin Guan, Yongle Hu
 -/
 import Mathlib.RingTheory.KrullDimension.Module
 import Mathlib.RingTheory.Regular.RegularSequence
@@ -25,9 +25,8 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
 
 local notation "𝔪" => IsLocalRing.maximalIdeal R
 
-open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum
+open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
-open scoped Classical in
 /-- If $M$ is a finite module over a Noetherian local ring $R$, then $\dim M \le \dim M/xM + 1$
   for all $x$ in the maximal ideal of the local ring $R$. -/
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
@@ -36,7 +35,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
   refine iSup_le_iff.mpr (fun q ↦ ?_)
-  let p : LTSeries (support R M) :=
+  classical let p : LTSeries (support R M) :=
     if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨closedPoint R, closedPoint_mem_support R M⟩ lt else q
   obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
     by_cases lt : (q.last).1.1 < 𝔪
@@ -67,7 +66,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
       exact ⟨hp.trans (h0.trans_le (q.head_le _)), q.monotone
         ((Fin.natCast_eq_mk (Nat.lt_of_add_left_lt hi)).trans_le (Nat.le_add_left 1 i)) hxq⟩
-    step := fun ⟨i, _⟩ ↦ q.strictMono (i + 1).lt_add_one
+    step := by exact fun ⟨i, _⟩ ↦ q.strictMono (by simp)
   }
   calc
     (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
@@ -98,9 +97,7 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
       have hq := (p i).2
       simp only [support_quotSMulTop, Set.mem_inter_iff] at hq
       exact ⟨(p i).1, hq.1⟩
-    step := by
-      intro i
-      simp [p.3 i]
+    step := fun i ↦ by simpa using p.3 i
   }
   have hx : x ∈ q.head.1.1 := by
     have hp := p.head.2
@@ -109,7 +106,7 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     exact hp.2
   have hq := q.head.2
   simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hq
-  rcases Ideal.exists_minimalPrimes_le hq with ⟨r, hrm, hr⟩
+  rcases exists_minimalPrimes_le hq with ⟨r, hrm, hr⟩
   let r : support R M := ⟨⟨r, minimalPrimes_isPrime hrm⟩, mem_support_iff_of_finite.mpr hrm.1.2⟩
   have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hx)
   exact le_of_eq_of_le (by simpa only [q.cons_length] using by rfl) (le_iSup _ (q.cons r hr))
@@ -125,49 +122,43 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal
     (fun _ ↦ notMem_minimalPrimes_of_isSMulRegular reg) hx
 
-open Pointwise in
 lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
     (hx : x ∈ maximalIdeal R) : ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 = ringKrullDim R := by
   rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
   exact supportDim_quotSMulTop_succ_eq_supportDim reg hx
 
-open Pointwise in
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :
-    ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R := by
-  have := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
-  simp only [smul_eq_mul, mul_top] at this
-  rw [ringKrullDim_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R this).toRingEquiv,
+    ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
+  have h := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
+  simp only [smul_eq_mul, mul_top] at h
+  rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R h).toRingEquiv,
     ringKrullDim_quotSMulTop_succ_eq_ringKrullDim reg hx]
 
 /-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
   $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
 theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
     (reg : IsRegular M rs) :
-    supportDim R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
+    supportDim R (M ⧸ ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
   generalize len : rs.length = n
   induction' n with n hn generalizing M rs
-  · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
+  · rw [List.length_eq_zero_iff.mp len, ofList_nil, Submodule.bot_smul]
     simpa using supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl)
   · match rs with
     | [] => simp at len
     | x :: rs' =>
-      simp only [List.length_cons, Nat.cast_add, Nat.cast_one]
+      simp only [Nat.cast_add, Nat.cast_one]
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
-      have : IsSMulRegular M x := ((isRegular_cons_iff M _ _).mp reg).1
       have mem : x ∈ maximalIdeal R := by
-        simp only [mem_maximalIdeal, mem_nonunits_iff]
-        by_contra isu
-        absurd reg.2
-        simp [Ideal.span_singleton_eq_top.mpr isu]
+        simpa using fun isu ↦ reg.2 (by simp [span_singleton_eq_top.mpr isu])
       rw [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
-        ← supportDim_quotSMulTop_succ_eq_supportDim this mem,
+        ← supportDim_quotSMulTop_succ_eq_supportDim ((isRegular_cons_iff M _ _).mp reg).1 mem,
         ← hn rs' ((isRegular_cons_iff M _ _).mp reg).2 len, add_assoc]
 
 lemma _root_.ringKrullDim_regular_sequence_add_length_eq_ringKrullDim (rs : List R)
-    (reg : IsRegular R rs) : ringKrullDim (R ⧸ Ideal.ofList rs) + rs.length = ringKrullDim R := by
-  have eq : Ideal.ofList rs = Ideal.ofList rs • (⊤ : Ideal R) := by simp
-  rw [ringKrullDim_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R eq).toRingEquiv,
+    (reg : IsRegular R rs) : ringKrullDim (R ⧸ ofList rs) + rs.length = ringKrullDim R := by
+  have eq : ofList rs = ofList rs • (⊤ : Ideal R) := by simp
+  rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R eq).toRingEquiv,
     ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
   exact supportDim_regular_sequence_add_length_eq_supportDim rs reg
 
