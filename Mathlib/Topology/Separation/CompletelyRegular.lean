@@ -18,7 +18,7 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
   and a point `x ∈ Kᶜ`, there is a continuous function `f` from `X` to the unit interval, so that
   `f x = 0` and `f k = 1` for all `k ∈ K`. A completely regular space is a regular space, and a
   normal space is a completely regular space.
-* `T35Space`: A T₃.₅ space is a completely regular space that is also T₁. A T₃.₅ space is a T₃
+* `T35Space`: A T₃.₅ space is a completely regular space that is also T₀. A T₃.₅ space is a T₃
   space and a T₄ space is a T₃.₅ space.
 
 ## Main results
@@ -103,9 +103,36 @@ lemma Topology.IsInducing.completelyRegularSpace
 instance {p : X → Prop} [CompletelyRegularSpace X] : CompletelyRegularSpace (Subtype p) :=
   Topology.IsInducing.subtypeVal.completelyRegularSpace
 
-/-- A T₃.₅ space is a completely regular space that is also T1. -/
+lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
+    IsInducing (stoneCechUnit : X → StoneCech X) := by
+  rw [isInducing_iff_nhds]
+  intro x
+  apply le_antisymm
+  · rw [← map_le_iff_le_comap]; exact continuous_stoneCechUnit.continuousAt
+  · simp_rw [le_nhds_iff, ((nhds_basis_opens _).comap _).mem_iff, and_assoc]
+    intro U hxU hU
+    obtain ⟨f, hf, efx, hfU⟩ :=
+      CompletelyRegularSpace.completely_regular x Uᶜ hU.isClosed_compl (notMem_compl_iff.mpr hxU)
+    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => ext; simp [EqOn, subset_def]
+    rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
+    refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
+      isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
+    rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton_iff]
+    norm_num
+
+lemma isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :
+    IsDenseInducing (stoneCechUnit : X → StoneCech X) where
+  toIsInducing := isInducing_stoneCechUnit
+  dense := denseRange_stoneCechUnit
+
+lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
+    CompletelyRegularSpace X ↔ IsInducing (stoneCechUnit : X → StoneCech X) where
+  mp _ := isInducing_stoneCechUnit
+  mpr hs := hs.completelyRegularSpace
+
+/-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
-class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyRegularSpace X
+class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, CompletelyRegularSpace X
 
 instance T35Space.instT3space [T35Space X] : T3Space X where
 
@@ -114,12 +141,12 @@ instance T4Space.instT35Space [T4Space X] : T35Space X where
 lemma Topology.IsEmbedding.t35Space
     {Y : Type v} [TopologicalSpace Y] [T35Space Y]
     {f : X → Y} (hf : IsEmbedding f) : T35Space X :=
-  @T35Space.mk _ _ hf.t1Space hf.isInducing.completelyRegularSpace
+  @T35Space.mk _ _ hf.t0Space hf.isInducing.completelyRegularSpace
 
 instance {p : X → Prop} [T35Space X] : T35Space (Subtype p) where
 
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
-    SeparatesPoints (Continuous : Set (X → ℝ)) := by
+    SeparatesPoints {f : X → ℝ | Continuous f} := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
@@ -129,7 +156,7 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
 alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
 
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
-    SeparatesPoints (Continuous : Set (X → I)) := by
+    SeparatesPoints {f : X → I | Continuous f} := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
@@ -148,3 +175,18 @@ lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
 
 @[deprecated (since := "2025-04-13")]
 alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space
+
+lemma isEmbedding_stoneCechUnit [T35Space X] :
+    IsEmbedding (stoneCechUnit : X → StoneCech X) where
+  toIsInducing := isInducing_stoneCechUnit
+  injective := injective_stoneCechUnit_of_t35Space
+
+lemma isDenseEmbedding_stoneCechUnit [T35Space X] :
+    IsDenseEmbedding (stoneCechUnit : X → StoneCech X) where
+  toIsDenseInducing := isDenseInducing_stoneCechUnit
+  injective := injective_stoneCechUnit_of_t35Space
+
+lemma t35Space_iff_isEmbedding_stoneCechUnit :
+    T35Space X ↔ IsEmbedding (stoneCechUnit : X → StoneCech X) where
+  mp _ := isEmbedding_stoneCechUnit
+  mpr hs := hs.t35Space

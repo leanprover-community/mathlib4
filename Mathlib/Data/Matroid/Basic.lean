@@ -294,16 +294,12 @@ theorem encard_diff_le_aux {B₁ B₂ : Set α}
     (B₂ \ B₁).eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt
   · rw [exch.antichain hB₂ hB₁ (diff_eq_empty.mp he)]
   · exact le_top.trans_eq hinf.symm
-
   obtain ⟨f, hf, hB'⟩ := exch B₂ B₁ hB₂ hB₁ e he
-
   have : encard (insert f (B₂ \ {e}) \ B₁) < encard (B₂ \ B₁) := by
     rw [insert_diff_of_mem _ hf.1, diff_diff_comm]; exact hcard
-
   have hencard := encard_diff_le_aux exch hB₁ hB'
   rw [insert_diff_of_mem _ hf.1, diff_diff_comm, ← union_singleton, ← diff_diff, diff_diff_right,
     inter_singleton_eq_empty.mpr he.2, union_empty] at hencard
-
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
   exact add_le_add_right hencard 1
 termination_by (B₂ \ B₁).encard
@@ -333,7 +329,7 @@ section aesop
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (config := { terminal := true })
+  aesop $c* (config := {terminal := true})
   (rule_sets := [$(Lean.mkIdent `Matroid):ident]))
 
 /- We add a number of trivial lemmas (deliberately specialized to statements in terms of the
@@ -1109,7 +1105,7 @@ theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.
   rw [← Set.finite_image_iff hf.injOn]
   refine (hE.finite_subsets.prod hE.finite_subsets.finite_subsets).subset ?_
   rintro _ ⟨M, hE : M.E ⊆ E, rfl⟩
-  simp only [Set.mem_prod, Set.mem_setOf_eq, Set.setOf_subset_setOf]
+  simp only [Set.mem_prod, Set.mem_setOf_eq]
   exact ⟨hE, fun B hB ↦ hB.subset_ground.trans hE⟩
 
 /-- For finite `E`, finitely many matroids have ground set `E`. -/

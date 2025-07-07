@@ -363,8 +363,6 @@ end Filter
 
 namespace Ultrafilter
 
-open Filter
-
 variable {m : α → β} {s : Set α} {g : Ultrafilter β}
 
 theorem comap_inf_principal_neBot_of_image_mem (h : m '' s ∈ g) : (Filter.comap m g ⊓ 𝓟 s).NeBot :=

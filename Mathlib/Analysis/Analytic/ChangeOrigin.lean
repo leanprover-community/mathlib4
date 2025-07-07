@@ -236,8 +236,7 @@ theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0
   apply Finset.sum_eq_zero (fun s hs ↦ ?_)
   ext v
   have : p (1 + n) = 0 := p.congr_zero (by abel) hp
-  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.curryFinFinset_apply,
-    ContinuousMultilinearMap.zero_apply, this]
+  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.zero_apply, this]
 
 end
 
@@ -265,7 +264,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   set f : (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
   have hsf : Summable f := by
-    refine .of_nnnorm_bounded _ (p.changeOriginSeries_summable_aux₁ h) ?_
+    refine .of_nnnorm_bounded (p.changeOriginSeries_summable_aux₁ h) ?_
     rintro ⟨k, l, s, hs⟩
     dsimp only [Subtype.coe_mk]
     exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
@@ -278,7 +277,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
       refine HasSum.sigma_of_hasSum this (fun l => ?_) ?_
       · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
         apply hasSum_fintype
-      · refine .of_nnnorm_bounded _
+      · refine .of_nnnorm_bounded
           (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k)
             fun s => ?_
         refine (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq ?_

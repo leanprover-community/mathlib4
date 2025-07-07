@@ -123,7 +123,7 @@ theorem denseRange_zpow_iff_surjective {a : G} :
     rcases h.exists_mem_open isOpen_Ioo this with ⟨l, hl⟩
     have : m < l ∧ l < m + 1 := by simpa [zpow_lt_zpow_iff_right ha₀] using hl
     omega
-  rcases hne.lt_or_lt with hlt | hlt
+  rcases hne.lt_or_gt with hlt | hlt
   · refine ⟨b * a * a, hm', ?_⟩
     simpa only [zpow_add, zpow_sub, zpow_one, ← div_eq_mul_inv, lt_div_iff_mul_lt,
       mul_lt_mul_iff_right] using hlt
