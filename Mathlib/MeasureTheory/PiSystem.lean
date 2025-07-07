@@ -659,8 +659,7 @@ theorem generateFrom_eq {s : Set (Set α)} (hs : IsPiSystem s) :
       rw [ofMeasurableSpace_toMeasurableSpace]
       exact generate_le _ fun t ht => measurableSet_generateFrom ht)
 
-instance : SetLike (DynkinSystem α) (Set α) :=
-  ⟨ Has, fun _ _ h => ext (fun s => Iff.of_eq (congrFun h s)) ⟩
+instance : SetLike (DynkinSystem α) (Set α) := ⟨Has, fun d' ↦ by aesop⟩
 
 /-- **Dynkin’s π-λ theorem** in its common form.
   Let `s : Set (Set α)` be a π-system and `d : DynkinSystem α` a Dynkin system.
