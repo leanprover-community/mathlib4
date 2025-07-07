@@ -27,7 +27,7 @@ section secondDerivativeAPI
 ## Supporting API
 
 The definition of the Laplacian of a function `f : E → F` involves the notion of the second
-derivative, which can be seen as a continous multilinear map `ContinuousMultilinearMap 𝕜 (fun (i :
+derivative, which can be seen as a continuous multilinear map `ContinuousMultilinearMap 𝕜 (fun (i :
 Fin 2) ↦ E) F`, a bilinear map `E →ₗ[𝕜] E →ₗ[𝕜] F`, or a linear map on tensors `E ⊗[𝕜] E →ₗ[𝕜]
 F`. This section provides convenience API to convert between these notions.
 -/
