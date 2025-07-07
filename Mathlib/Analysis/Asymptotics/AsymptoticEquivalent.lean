@@ -163,7 +163,7 @@ theorem IsEquivalent.add_const_of_norm_tendsto_atTop {c : β}
     (u · + c) ~[l] v :=
   huv.add_isLittleO <| isLittleO_const_left.mpr (Or.inr hv)
 
-theorem sEquivalent.const_add_of_norm_tendsto_atTop {c : β}
+theorem IsEquivalent.const_add_of_norm_tendsto_atTop {c : β}
     (huv : u ~[l] v) (hv : Tendsto (norm ∘ v) l atTop) :
     (c + u ·) ~[l] v :=
   (isLittleO_const_left.mpr (Or.inr hv)).add_isEquivalent huv
@@ -347,18 +347,18 @@ theorem IsEquivalent.add_add_of_nonneg
   conv => enter [3, x]; rw [← (abs_eq_self).mpr (hu x), ← (abs_eq_self).mpr (hw x)]
   simpa only [← Real.norm_eq_abs] using .add_add htu hvw
 
-theorem IsEquivalent.rpow_of_nonneg {α : Type*}
-    {t u : α → ℝ} (hu : 0 ≤ u) {l : Filter α} (h : t ~[l] u) {r : ℝ} :
-    t ^ r ~[l] u ^ r := by
-  obtain ⟨φ, hφ, htφu⟩ := IsEquivalent.exists_eq_mul h
+theorem IsEquivalent.rpow_of_nonneg
+    (hu : 0 ≤ v) (h : u ~[l] v) {r : ℝ} :
+    u ^ r ~[l] v ^ r := by
+  obtain ⟨φ, hφ, huφv⟩ := IsEquivalent.exists_eq_mul h
   rw [isEquivalent_iff_exists_eq_mul]
   have hφr : Tendsto ((fun x ↦ x ^ r) ∘ φ) l (𝓝 1) := by
     rw [← Real.one_rpow r]
     exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
   use (· ^ r) ∘ φ, hφr
-  conv => enter [3]; change fun x ↦ φ x ^ r * u x ^ r
-  filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, htφu] with x hφ_pos htu'
-  simp [← Real.mul_rpow (le_of_lt hφ_pos) (hu x), htu']
+  conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
+  filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
+  simp [← Real.mul_rpow (le_of_lt hφ_pos) (hu x), huv']
 
 end Real
 
