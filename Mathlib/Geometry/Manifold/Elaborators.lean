@@ -235,7 +235,7 @@ elab:max "MDifferentiable%" t:term:arg : term => do
 elab:max "ContMDiff%" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTerm nt wtn
+  let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
   | .forallE _ src tgt _ =>
@@ -247,7 +247,7 @@ elab:max "ContMDiff%" nt:term:arg t:term:arg : term => do
 elab:max "ContMDiffAt%" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTerm nt wtn
+  let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
   | .forallE _ src tgt _ =>
