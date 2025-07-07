@@ -212,8 +212,6 @@ end operations
 
 section
 
-section
-
 -- Let `V` be a vector bundle over a `C^k` manifold `M`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
