@@ -12,6 +12,28 @@ register_option linter.tactic_analysis : Bool := {
   descr := "enable transformations for tactics"
 }
 
+namespace Lean.Elab.ContextInfo
+
+/-- Run a `TermElabM` computation in the context of an infotree node. -/
+def runTermElabM {α} (ctx : ContextInfo) (lctx : LocalContext) (x : TermElabM α) : IO (α × MessageLog) := do
+  ctx.runMetaM lctx do
+    let test ← TermElabM.run' x
+    let msgs ← Core.getMessageLog
+    return (test, msgs)
+
+/-- Run a tactic computation in the context of an infotree node. -/
+def runTactic {α} (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId → MetaM α) : IO (α × MessageLog) := do
+  if i.goalsBefore.all fun g => g != goal then panic!"ContextInfo.runTactic: `goal` must be an element of `i.goalsBefore`"
+  let mctx := i.mctxBefore
+  let lctx := (mctx.decls.find! goal).2
+  ctx.runTermElabM lctx do
+    -- Make a fresh metavariable because the original goal is already assigned.
+    let type ← goal.getType
+    let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
+    x goal.mvarId!
+
+end Lean.Elab.ContextInfo
+
 namespace TacticAnalysis
 
 /-- Output for the tactic transformer. -/
@@ -35,23 +57,15 @@ def filterTactics (_stx : Syntax) (acc : Out) (tree : InfoTree) : CommandElabM O
         if let some r := stx.getRange? true then
           -- TODO: customizability for the line below.
           -- This only works for 1 tactic, not a sequence.
-          let trigger := kind == `linarith
+          let trigger := kind == `Mathlib.Tactic.linarith
           if trigger then
             if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-              let mctx := i.mctxBefore
-              let lctx := (mctx.decls.find! goal).2
-              let (test, msgs) ← ctx.runMetaM lctx do
-                let test ← TermElabM.run' do
-                  -- Make a fresh metavariable because the original goal is already assigned.
-                  let type ← goal.getType
-                  let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
-                  -- Call grind
-                  let params ← Meta.Grind.mkParams {}
-                  let result ← Meta.Grind.main goal.mvarId! params (pure ())
-                  logInfoAt stx (← result.toMessageData)
-                  pure !result.hasFailed
-                let msgs ← Core.getMessageLog
-                return (test, msgs)
+              let (test, msgs) ← ctx.runTactic i goal fun goal => do
+                -- Call grind
+                let params ← Meta.Grind.mkParams {}
+                let result ← Meta.Grind.main goal params (pure ())
+                logInfoAt stx (← result.toMessageData)
+                pure !result.hasFailed
               modify (fun state => { state with messages := state.messages ++ msgs })
               if test then
                 return (fun acc => acc.insert r stx) ∘ fAcc
