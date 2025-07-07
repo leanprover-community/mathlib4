@@ -674,3 +674,15 @@ lemma mapValueGroupWithZero_valuation (a : A) :
   apply ValueGroupWithZero.sound <;> simp
 
 end ValuativeExtension
+
+namespace ValuativeRel
+
+variable {R : Type*} [CommRing R] [ValuativeRel R]
+
+instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
+  obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := R)
+  exact .comap f.toMonoidHom hf
+
+proof_wanted IsRankLeOne.ofMulArchimedean [MulArchimedean (ValueGroupWithZero R)] : IsRankLeOne R
+
+end ValuativeRel
