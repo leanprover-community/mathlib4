@@ -395,52 +395,38 @@ private lemma card_pairs_eq_card_smul_inter_smul {x y : G} :
 open goldenRatio in
 /-- If `A` has doubling strictly less than `φ`, then `A * A⁻¹` is covered by
 at most constant number of cosets of a finite subgroup of `G`. -/
-theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
-    (hA1 : #(A⁻¹ * A) ≤ K * #A) (hA2 : #(A * A⁻¹) ≤ K * #A) :
-    ∃ (H : Subgroup G) (_ : Fintype H) (Z : Finset G) (_: #Z ≤ K * (2-K) / (1-K*(K-1))),
+theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
+    (hA₁ : #(A⁻¹ * A) ≤ K * #A) (hA₂ : #(A * A⁻¹) ≤ K * #A) :
+    ∃ (H : Subgroup G) (_ : Fintype H) (Z : Finset G) (_: #Z ≤ K * (2 - K) / (1- K * (K - 1))),
     A * A⁻¹ = (H : Set G) * Z := by
   classical
 
   have K_pos : 0 < K := by positivity
+  have hK₀ : 0 < K := by positivity
+  have hKφ' : 0 < φ - K := by linarith
+  have hKψ' : 0 < K - ψ := by linarith [goldConj_neg]
+  have hK₂' : 0 < 2 - K := by linarith [gold_lt_two]
+  have const_pos : 0 < K * (2 - K) / ((φ - K) * (K - ψ)) := by positivity
 
-  have calc1 : (1-K*(K-1)) = (φ-K) * (K-ψ) := by
+  have calc1 : (1 - K * (K - 1)) = (φ - K) * (K - ψ) := by
     rw [mul_sub, ← sub_add, mul_sub, sub_mul, sub_mul,
           ← sub_add, gold_mul_goldConj, sub_neg_eq_add]
     ring_nf
   rw [calc1]
 
-  have const_pos : K * (2-K) / ((φ - K) * (K - ψ)) > 0 := by
-    apply div_pos
-    · apply mul_pos
-      · linarith
-      · linarith [hK2, gold_lt_two]
-    · apply mul_pos
-      · linarith [hK2]
-      · linarith [hK1, goldConj_neg]
-
   obtain rfl | emptyA := A.eq_empty_or_nonempty
-  · refine ⟨⊥, inferInstance, ∅, ?_, ?_⟩
-    · simp [card_empty, CharP.cast_eq_zero]
-      linarith only [const_pos]
-    · simp
+  · exact ⟨⊥, inferInstance, ∅, by simp [const_pos.le]⟩
 
   let S := A * A⁻¹
-  have id_in_S : 1 ∈ S := by
-    obtain ⟨a, ha⟩ := emptyA
-    rw [← mul_inv_cancel a]
-    exact mul_mem_mul ha (inv_mem_inv ha)
+  have id_in_S : 1 ∈ S := by obtain ⟨a, ha⟩ := emptyA; simpa using mul_mem_mul ha (inv_mem_inv ha)
 
   let H := stabilizer G S
-
   have HS_eq_S : (H : Set G) * S = S := by simp [H, ← stabilizer_coe_finset]
   have finH : Finite H := by
     simpa [H, ← stabilizer_coe_finset] using stabilizer_finite (by simpa [S]) S.finite_toSet
   cases nonempty_fintype H
 
-  use H
-  use inferInstance
-
-  let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | Set.Nonempty ((cH : Set G) ∩ (S: Set G))}
+  let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ S : Set G).Nonempty}
 
   have fin_preZ : preZ.Finite := by
     let f_preZ : Set G → S := fun cH =>
@@ -473,28 +459,15 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
     exact Finite.Set.finite_of_finite_image preZ inj_f_preZ
 
   let preZ' := fin_preZ.toFinset
-  have elts_preZ'_nonempty {cH : Set G} : (cH ∈ preZ') → Set.Nonempty (cH ∩ S) := by
-    intro hcH
+  have elts_preZ'_nonempty (cH : Set G) (hcH : cH ∈ preZ') : (cH ∩ S).Nonempty := by
     rw [Set.Finite.mem_toFinset, Set.mem_setOf] at hcH
     exact hcH.2
 
-  let chooseZ : {cH : Set G | cH ∈ preZ'} → G := fun cH =>
-    Classical.choose (elts_preZ'_nonempty cH.2)
-
-  let Z := Finset.image chooseZ preZ'.attach
+  choose! chooseZ chooseZ_spec using elts_preZ'_nonempty
+  let Z := Finset.image chooseZ preZ'
 
   have Z_subset_S : Z ⊆ S := by
-    intro z hz
-    unfold Z at hz
-    rw [mem_image] at hz
-    obtain ⟨c, hc1, hc2⟩ := hz
-    unfold chooseZ at hc2
-    have hc : (c : Set G) ∈ preZ' := by exact coe_mem c
-    rw [Set.Finite.mem_toFinset fin_preZ] at hc
-    apply And.right at hc
-    apply Classical.choose_spec at hc
-    apply Set.mem_of_mem_inter_right at hc
-    simp_all only [setOf_mem, coe_sort_coe, mem_attach, mem_coe]
+    simpa [Z, Finset.image_subset_iff] using fun x hx ↦ (chooseZ_spec _ hx).2
 
   have S_eq_HZ : (S: Set G) = H * Z := by
     apply Set.Subset.antisymm
@@ -511,12 +484,11 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
           · rw [← one_mul x]
             exact mem_rightCoset x (one_mem H)
           · exact hx
-      let z := chooseZ ⟨cx, cx_in_preZ'⟩
-      have z_in_cx : z ∈ cx := Set.mem_of_mem_inter_left
-        (Classical.choose_spec (elts_preZ'_nonempty cx_in_preZ'))
+      let z := chooseZ cx
+      have z_in_cx : z ∈ cx := (chooseZ_spec _ cx_in_preZ').1
       have z_in_Z : z ∈ Z := by
         apply Finset.mem_image_of_mem
-        simp_all only [setOf_mem, coe_sort_coe, mem_attach]
+        exact cx_in_preZ'
       have x_in_Hz : x ∈ (H: Set G) <• z := by
         rw [mem_rightCoset_iff, SetLike.mem_coe]
         rw [mem_rightCoset_iff, SetLike.mem_coe] at z_in_cx
@@ -542,30 +514,30 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
       rw [← mem_coe, S_eq_HZ, ← hyz]
       exact Set.mul_mem_mul (Set.mem_toFinset.mp hy) (mem_coe.mpr hz)
 
-  refine ⟨Z, ?_, mod_cast S_eq_HZ⟩
+  refine ⟨H, inferInstance, Z, ?_, mod_cast S_eq_HZ⟩
   let r : G → ℕ := fun z => #{xy ∈ A ×ˢ A | xy.1 * (xy.2 : G)⁻¹ = z}
 
-  have many_big_z : #{z ∈ S | r z > (K - 1) * #A} ≥ (φ-K)*(K-ψ)/(2-K) * #A := by
-    let k := #{z ∈ S | r z > (K - 1) * #A}
+  have many_big_z : #{z ∈ S | (K - 1) * #A < r z} ≥ (φ - K) * (K - ψ) / (2 - K) * #A := by
+    let k := #{z ∈ S | (K - 1) * #A < r z}
 
-    have ineq1 : (#A) * (#A) ≤ ((2 - K) * k + K * (K - 1) * #A) * #A := by
+    have ineq1 : #A * #A ≤ ((2 - K) * k + K * (K - 1) * #A) * #A := by
       calc
-        (#A : ℝ) * (#A) = #(A ×ˢ A) := by simp only [card_product, Nat.cast_mul]
-                      _ = ∑ z ∈ S, r z                                            := ?eq1
-                      _ = ∑ z ∈ {z ∈ S | r z > (K - 1) * #A}, r z
-                            + ∑ z ∈ {z ∈ S | ¬ r z > (K - 1) * #A}, r z           := ?eq2
-                      _ ≤ ∑ z ∈ {z ∈ S | r z > (K - 1) * #A}, r z
-                            + ∑ z ∈ {z ∈ S | ¬ r z > (K - 1) * #A}, (K - 1) * #A  := ?eq3
-                      _ ≤ ∑ z ∈ {z ∈ S | r z > (K - 1) * #A}, r z
-                            + (K - 1) * #A * #{z ∈ S | ¬ r z > (K - 1) * #A}      := ?eq4
-                      _ ≤ ∑ z ∈ {z ∈ S | r z > (K - 1) * #A}, r z
-                            + (K - 1) * #A * (K * #A - k)                         := ?eq5
-                      _ = ∑ z ∈ {z ∈ S | r z > (K - 1) * #A}, r z
-                            + (K * (K - 1) * #A - (K - 1) * k) * #A               := by ring
-                      _ ≤ ∑ z ∈ {z ∈ S | r z > (K - 1) * #A}, #A
-                            + (K * (K - 1) * #A - (K - 1) * k) * #A               := ?eq6
-                      _ = k * #A + (K * (K - 1) * #A - (K - 1) * k) * #A          := ?eq7
-                      _ = ((2 - K) * k + K * (K - 1) * #A) * #A                   := by ring
+        (#A : ℝ) * #A = #(A ×ˢ A) := by simp only [card_product, Nat.cast_mul]
+                    _ = ∑ z ∈ S, r z                                            := ?eq1
+                    _ = ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
+                          + ∑ z ∈ {z ∈ S | ¬ (K - 1) * #A < r z}, r z           := ?eq2
+                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
+                          + ∑ z ∈ {z ∈ S | ¬ (K - 1) * #A < r z}, (K - 1) * #A  := ?eq3
+                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
+                          + (K - 1) * #A * #{z ∈ S | ¬ (K - 1) * #A < r z}      := ?eq4
+                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
+                          + (K - 1) * #A * (K * #A - k)                         := ?eq5
+                    _ = ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
+                          + (K * (K - 1) * #A - (K - 1) * k) * #A               := by ring
+                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, #A
+                          + (K * (K - 1) * #A - (K - 1) * k) * #A               := ?eq6
+                    _ = k * #A + (K * (K - 1) * #A - (K - 1) * k) * #A          := ?eq7
+                    _ = ((2 - K) * k + K * (K - 1) * #A) * #A                   := by ring
       case eq1 =>
         unfold r
         rw [Nat.cast_inj]
@@ -580,20 +552,20 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
         )
       case eq2 =>
         rw [← Nat.cast_add, Nat.cast_inj]
-        exact Eq.symm (sum_filter_add_sum_filter_not S (fun z => r z > (K - 1) * #A) r)
+        exact Eq.symm (sum_filter_add_sum_filter_not S (fun z => (K - 1) * #A < r z) r)
       case eq3 =>
         push_cast
         gcongr with z hz
         exact not_lt.mp (mem_filter.mp hz).2
       case eq4 =>
-        apply add_le_add_left
-        rw [card_eq_sum_ones {z ∈ S | ¬↑(r z) > (K - 1) * ↑(#A)}, Nat.cast_sum,
+        gcongr
+        rw [card_eq_sum_ones {z ∈ S | ¬ (K - 1) * #A < r z}, Nat.cast_sum,
             mul_sum, mul_assoc, ← Nat.cast_mul, mul_one]
       case eq5 =>
         have : 0 ≤ K - 1 := by linarith
         gcongr
         simp only [le_sub_iff_add_le', k, ← Nat.cast_add, filter_card_add_filter_neg_card_eq_card]
-        exact hA2
+        exact hA₂
       case eq6 =>
         gcongr with z hz
         apply card_le_card_of_injOn (fun xy => xy.1)
@@ -610,9 +582,9 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
           rw [inv_inj] at hxy
           exact Prod.ext h hxy
       case eq7 =>
-      · rw [add_right_cancel_iff, ← Nat.cast_mul, Nat.cast_inj]
+        rw [add_right_cancel_iff, ← Nat.cast_mul, Nat.cast_inj]
         unfold k
-        rw [card_eq_sum_ones {z ∈ S | r z > (K - 1) * #A}, sum_mul, one_mul]
+        rw [card_eq_sum_ones {z ∈ S | (K - 1) * #A < r z}, sum_mul, one_mul]
 
     have ineq2 := le_of_mul_le_mul_right ineq1 <| by simpa
 
@@ -620,9 +592,9 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
       rw [← calc1]
       linarith only [ineq2]
 
-    apply le_of_mul_le_mul_of_pos_left ?_ (sub_pos.mpr (lt_trans hK2 gold_lt_two))
+    apply le_of_mul_le_mul_of_pos_left ?_ hK₂'
     have : (2 - K) * ((φ - K) * (K - ψ) / (2 - K) * (#A: ℝ)) = (φ - K) * (K - ψ) * #A := by
-      field_simp [ne_of_gt (sub_pos.mpr (lt_trans hK2 gold_lt_two))]
+      field_simp [hK₂'.ne']
       ring
 
     rw [this]
@@ -677,8 +649,8 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
     exact ⟨x * y⁻¹ * t, by simp [ht, mul_assoc], ((a * b⁻¹)⁻¹ * t)⁻¹, by simp [ht, mul_assoc]⟩
 
 
-  have big_H : Fintype.card H ≥ (φ-K)*(K-ψ)/(2-K) * #A := by
-    change Fintype.card (H: Set G) ≥ (φ-K)*(K-ψ)/(2-K) * #A
+  have big_H : Fintype.card H ≥ (φ - K) * (K - ψ) / (2 - K) * #A := by
+    change Fintype.card (H: Set G) ≥ (φ - K) * (K - ψ) / (2 - K) * #A
     rw [← Set.toFinset_card]
     exact le_trans many_big_z (by
       change #(H : Set G).toFinset ≥ (#{z ∈ S | r z > (K - 1) * #A} : ℝ)
@@ -705,71 +677,56 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK1 : 1 < K) (hK2 : K < φ)
       apply Set.mul_mem_mul
       · simp_all only [Set.mem_toFinset]
       · exact mem_coe.mpr hxz.2
-    unfold Set.InjOn
-    intro xy hxy wt hwt hxywt
-    rw [mem_coe, mem_product, Set.mem_toFinset, mem_image] at hxy hwt
-    obtain ⟨hx, cx, hcx1, hcx2⟩ := hxy
-    obtain ⟨hw, cw, hcw1, hcw2⟩ := hwt
 
-    have hcx1 := cx.property
+    simp only [Set.InjOn, coe_product, Set.coe_toFinset, coe_image,
+      Set.mem_prod, SetLike.mem_coe, and_imp, Prod.forall, Prod.mk.injEq, Z]
+    rintro x y hx hy w t hw ht hxywt
+    rw [Set.mem_image] at hy ht
+
+    obtain ⟨cx, hcx1, hcx2⟩ := hy
     change (cx : Set G) ∈ preZ' at hcx1
-    unfold preZ' at hcx1
+    have hcx3 : y ∈ (cx : Set G) := by simpa [hcx2] using (chooseZ_spec _ hcx1).1
     rw [Set.Finite.mem_toFinset fin_preZ] at hcx1
-    unfold preZ at hcx1
-
-    have hcx3 : xy.2 ∈ (cx : Set G) := by
-      rw [← hcx2]
-      exact Set.mem_of_mem_inter_left (Classical.choose_spec hcx1.2)
-
     have hcx4 := rightCoset_eq_of_mem hcx1.1 hcx3
 
-    have hcw1 := cw.property
+    obtain ⟨cw, hcw1, hcw2⟩ := ht
     change (cw : Set G) ∈ preZ' at hcw1
-    unfold preZ' at hcw1
+    have hcw3 : t ∈ (cw : Set G) := by simpa [hcw2] using (chooseZ_spec _ hcw1).1
     rw [Set.Finite.mem_toFinset fin_preZ] at hcw1
-    unfold preZ at hcw1
-
-    have hcw3 : wt.2 ∈ (cw : Set G) := by
-      rw [← hcw2]
-      exact Set.mem_of_mem_inter_left (Classical.choose_spec hcw1.2)
-
     have hcw4 := rightCoset_eq_of_mem hcw1.1 hcw3
 
-    change xy.1 * xy.2 = wt.1 * wt.2 at hxywt
     rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc] at hxywt
     rw [← hxywt, op_mul, ← smul_smul,
         rightCoset_mem_rightCoset H (H.mul_mem (H.inv_mem hw) hx),
         ← hcx4] at hcw4
 
-    have cw_eq_cx := SetCoe.ext hcw4
-
-    rw [cw_eq_cx, hcx2] at hcw2
+    rw [hcw4, hcx2] at hcw2
     rw [hcw2, mul_eq_right, inv_mul_eq_one] at hxywt
-    exact Prod.ext (Eq.symm hxywt) hcw2
+    exact ⟨(Eq.symm hxywt), hcw2⟩
 
 
   apply le_of_mul_le_mul_of_pos_left ?_ (by
-    change (0: ℝ) < Fintype.card H
+    change (0 : ℝ) < Fintype.card H
     rw [← Nat.cast_zero, Nat.cast_lt]
-    exact Finset.Nonempty.card_pos ⟨(1:H), mem_univ 1⟩
+    exact Finset.Nonempty.card_pos ⟨(1 : H), mem_univ 1⟩
   )
 
   rw [← Nat.cast_mul, ← card_mul_eq_mul_card]
 
-  have K_ineq1 : (1 + √5) - 2* K > 0 := by
-    have _ : (1 + √5) / 2 - K > 0 := by simp [hK2]
+  have K_ineq1 : 0 < (1 + √5) - 2 * K := by
+    have _ : 0 < (1 + √5) / 2 - K := by simp [hKφ]
     linarith
-  have K_ineq2 : K * 2 - (1 - √5) > 0 := by
-    have _ : K - (1 - √5) / 2 > 0 := by simp [lt_trans goldConj_neg K_pos]
+  have K_ineq2 : 0 < K * 2 - (1 - √5) := by
+    have _ : 0 < K - (1 - √5) / 2 := by simp [lt_trans goldConj_neg K_pos]
     linarith
 
   calc
-    #S  ≤ K * #A                                                    := by assumption
-      _ = (φ-K)*(K-ψ)/(2-K) * #A * (K*(2-K)/((φ-K)*(K-ψ)))          := ?_
-      _ ≤ ↑(Fintype.card ↥H) * (K * (2 - K) / ((φ - K) * (K - ψ)))  := by gcongr
+    #S  ≤ K * #A                                                                  := by assumption
+      _ = (φ - K) * (K - ψ) / (2 - K) * #A * (K * (2 - K) / ((φ - K) * (K - ψ)))  := ?_
+      _ ≤ ↑(Fintype.card ↥H) * (K * (2 - K) / ((φ - K) * (K - ψ)))                := by gcongr
 
-  · field_simp [ne_of_gt K_pos, ne_of_gt (sub_pos.mpr hK2),
-                ne_of_gt (sub_pos.mpr (lt_trans hK2 gold_lt_two)),
+  · field_simp [ne_of_gt K_pos, ne_of_gt (sub_pos.mpr hKφ),
+                ne_of_gt (sub_pos.mpr (lt_trans hKφ gold_lt_two)),
                 ne_of_gt (sub_pos.mpr (lt_trans goldConj_neg K_pos))]
     ring
 
