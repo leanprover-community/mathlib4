@@ -72,6 +72,7 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 
 * `measure_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of independent sub-Gaussian
   random variables.
+* `hasSubgaussianMGF_of_mem_Icc`: Hoeffding's lemma for bounded random variables.
 * `measure_sum_ge_le_of_HasCondSubgaussianMGF`: the Azuma-Hoeffding inequality for sub-Gaussian
   random variables.
 
@@ -745,7 +746,9 @@ protected lemma mgf_le_of_mem_Icc [IsProbabilityMeasure μ] {a b t : ℝ} (hm : 
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by field_simp
 
-/-- **Hoeffding lemma**. -/
+/-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
+that is almost surely in `Set.Icc a b` for some `a b : ℝ` and has expectation zero, then `X` has a
+ sub-Gaussian moment generating function with parameter `((b - a) / 2 ) ^ 2`. -/
 lemma hasSubgaussianMGF_of_mem_Icc [IsProbabilityMeasure μ] {a b : ℝ} (hm : AEMeasurable X μ)
     (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hc : μ[X] = 0) :
     HasSubgaussianMGF X ((‖b - a‖₊ / 2) ^ 2) μ where
