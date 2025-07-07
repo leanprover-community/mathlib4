@@ -146,13 +146,15 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
     (z : Sym2 α) (f : (p : α × α) → motive (Sym2.mk p)) : motive z :=
   Quot.recOnSubsingleton z f
 
+theorem mk_surjective : Function.Surjective (@Sym2.mk α) := Quot.mk_surjective
+
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
-  Quot.mk_surjective.exists.trans Prod.exists
+  mk_surjective.exists.trans Prod.exists
 
 protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f s(x, y) :=
-  Quot.mk_surjective.forall.trans Prod.forall
+  mk_surjective.forall.trans Prod.forall
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
@@ -816,5 +818,16 @@ lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s :=
   simp [pair_subset_iff]
 
 lemma sym2_eq_mk_image : s.sym2 = Sym2.mk '' s ×ˢ s := by ext ⟨x, y⟩; aesop
+
+lemma mk_preimage_sym2 : Sym2.mk ⁻¹' s.sym2 = s ×ˢ s := rfl
+
+lemma sym2_empty : (∅ : Set α).sym2 = ∅ := by ext ⟨x, y⟩; simp
+lemma sym2_univ : (Set.univ : Set α).sym2 = Set.univ := by ext ⟨x, y⟩; simp
+
+theorem sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
+  preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
+
+theorem sym2_iInter {ι : Type*} (f : ι → Set α) : (⋂ i, f i).sym2 = ⋂ i, (f i).sym2 := by
+  ext ⟨x, y⟩; simp [forall_and]
 
 end Set
