@@ -85,7 +85,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.truncation (hf : AEStronglyMea
   exact (stronglyMeasurable_id.indicator measurableSet_Ioc).aestronglyMeasurable
 
 theorem abs_truncation_le_bound (f : α → ℝ) (A : ℝ) (x : α) : |truncation f A x| ≤ |A| := by
-  simp only [truncation, Set.indicator, Set.mem_Icc, id, Function.comp_apply]
+  simp only [truncation, Set.indicator, id, Function.comp_apply]
   split_ifs with h
   · exact abs_le_abs h.2 (neg_le.2 h.1.le)
   · simp [abs_nonneg]
@@ -94,14 +94,14 @@ theorem abs_truncation_le_bound (f : α → ℝ) (A : ℝ) (x : α) : |truncatio
 theorem truncation_zero (f : α → ℝ) : truncation f 0 = 0 := by simp [truncation]; rfl
 
 theorem abs_truncation_le_abs_self (f : α → ℝ) (A : ℝ) (x : α) : |truncation f A x| ≤ |f x| := by
-  simp only [truncation, indicator, Set.mem_Icc, id, Function.comp_apply]
+  simp only [truncation, indicator, id, Function.comp_apply]
   split_ifs
   · exact le_rfl
   · simp [abs_nonneg]
 
 theorem truncation_eq_self {f : α → ℝ} {A : ℝ} {x : α} (h : |f x| < A) :
     truncation f A x = f x := by
-  simp only [truncation, indicator, Set.mem_Icc, id, Function.comp_apply, ite_eq_left_iff]
+  simp only [truncation, indicator, id, Function.comp_apply, ite_eq_left_iff]
   intro H
   apply H.elim
   simp [(abs_lt.1 h).1, (abs_lt.1 h).2.le]
@@ -419,20 +419,19 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
       _ = ∑ j ∈ range (u (N - 1)), (∑ i ∈ range N with j < u i, ((u i : ℝ) ^ 2)⁻¹) * Var[Y j] := by
         simp_rw [mul_sum, sum_mul, sum_sigma']
         refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_
-        · simp only [mem_sigma, mem_range, filter_congr_decidable, mem_filter, and_imp,
+        · simp only [mem_sigma, mem_range, mem_filter, and_imp,
             Sigma.forall]
           exact fun a b haN hb ↦ ⟨hb.trans_le <| u_mono <| Nat.le_pred_of_lt haN, haN, hb⟩
         all_goals simp
       _ ≤ ∑ j ∈ range (u (N - 1)), c ^ 5 * (c - 1)⁻¹ ^ 3 / ↑j ^ 2 * Var[Y j] := by
         gcongr ∑ _ ∈ _, ?_ with j
         rcases eq_zero_or_pos j with (rfl | hj)
-        · simp only [Nat.cast_zero, zero_pow, Ne, Nat.one_ne_zero,
-            not_false_iff, div_zero, zero_mul]
+        · simp only [Nat.cast_zero]
           simp only [Y, Nat.cast_zero, truncation_zero, variance_zero, mul_zero, le_rfl]
         apply mul_le_mul_of_nonneg_right _ (variance_nonneg _ _)
         convert sum_div_nat_floor_pow_sq_le_div_sq N (Nat.cast_pos.2 hj) c_one using 2
         · simp only [u, Nat.cast_lt]
-        · simp only [Y, S, u, C, one_div]
+        · simp only [u, one_div]
       _ = c ^ 5 * (c - 1)⁻¹ ^ 3 * ∑ j ∈ range (u (N - 1)), ((j : ℝ) ^ 2)⁻¹ * Var[Y j] := by
         simp_rw [mul_sum, div_eq_mul_inv, mul_assoc]
       _ ≤ c ^ 5 * (c - 1)⁻¹ ^ 3 * (2 * 𝔼[X 0]) := by
@@ -471,7 +470,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
       ENNReal.ofReal_lt_top
   filter_upwards [ae_eventually_notMem I4.ne] with ω hω
   simp_rw [S, not_le, mul_comm, sum_apply] at hω
-  convert hω; simp only [Y, S, u, C, sum_apply]
+  convert hω; simp only [Y, u, sum_apply]
 
 include hint hindep hident hnonneg in
 /-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
@@ -488,7 +487,7 @@ theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
   apply Asymptotics.isLittleO_iff.2 fun ε εpos => ?_
   obtain ⟨i, hi⟩ : ∃ i, v i < ε := ((tendsto_order.1 v_lim).2 ε εpos).exists
   filter_upwards [hω i] with n hn
-  simp only [Real.norm_eq_abs, abs_abs, Nat.abs_cast]
+  simp only [Real.norm_eq_abs, Nat.abs_cast]
   exact hn.le.trans (mul_le_mul_of_nonneg_right hi.le (Nat.cast_nonneg _))
 
 include hint hident in
@@ -664,7 +663,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
     let Y : ℕ → Ω → ℝ := fun n ↦ F ∘ (X n)
     have : ∀ᵐ (ω : Ω) ∂μ, Tendsto (fun (n : ℕ) ↦ (n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, Y i ω)
         atTop (𝓝 μ[Y 0]) := by
-      simp only [Function.const_one, smul_eq_mul, ← div_eq_inv_mul]
+      simp only [smul_eq_mul, ← div_eq_inv_mul]
       apply strong_law_ae_real
       · exact SimpleFunc.integrable_of_isFiniteMeasure
           ((SimpleFunc.piecewise s hs (SimpleFunc.const _ (1 : ℝ))
@@ -767,15 +766,15 @@ lemma strong_law_ae_of_measurable
     = ‖(n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, (X i ω - Y k i ω) +
         ((n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, Y k i ω - μ[Y k 0]) + (μ[Y k 0] - μ[X 0])‖ := by
       congr
-      simp only [Function.comp_apply, sum_sub_distrib, smul_sub]
+      simp only [sum_sub_distrib, smul_sub]
       abel
   _ ≤ ‖(n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, (X i ω - Y k i ω)‖ +
         ‖(n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, Y k i ω - μ[Y k 0]‖ + ‖μ[Y k 0] - μ[X 0]‖ :=
       norm_add₃_le
   _ ≤ (∑ i ∈ Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
       gcongr
-      simp only [Function.comp_apply, norm_smul, norm_inv, RCLike.norm_natCast,
-        div_eq_inv_mul, inv_pos, Nat.cast_pos, inv_lt_zero]
+      simp only [norm_smul, norm_inv, RCLike.norm_natCast,
+        div_eq_inv_mul]
       gcongr
       exact norm_sum_le _ _
   _ ≤ δ + δ + δ := by
