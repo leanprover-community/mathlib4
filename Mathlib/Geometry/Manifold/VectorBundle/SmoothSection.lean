@@ -158,25 +158,25 @@ lemma ContMDiff.smul_section (hf : ContMDiff I 𝓘(𝕜) n f)
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) :=
   fun x₀ ↦ .smul_section (hf x₀) (hs x₀)
 
-lemma ContMDiffWithinAt.smul_const_section
+lemma ContMDiffWithinAt.const_smul_section
     (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
     ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u x₀ :=
   .smul_section contMDiffWithinAt_const hs
 
-lemma ContMDiffAt.smul_const_section
+lemma ContMDiffAt.const_smul_section
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
     ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) x₀ :=
   .smul_section contMDiffAt_const hs
 
-lemma ContMDiffOn.smul_const_section
+lemma ContMDiffOn.const_smul_section
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u :=
   .smul_section contMDiffOn_const hs
 
-lemma ContMDiff.smul_const_section
+lemma ContMDiff.const_smul_section
     (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) :=
-  fun x₀ ↦ .smul_const_section (hs x₀)
+  fun x₀ ↦ .const_smul_section (hs x₀)
 
 lemma ContMDiffWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
     (hs : ∀ i ∈ s,
@@ -308,7 +308,7 @@ instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ :=
-  ⟨fun c s ↦ ⟨c • ⇑s, s.contMDiff.smul_const_section⟩⟩
+  ⟨fun c s ↦ ⟨c • ⇑s, s.contMDiff.const_smul_section⟩⟩
 
 @[simp]
 theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I; F, V⟯) = r • ⇑s :=
