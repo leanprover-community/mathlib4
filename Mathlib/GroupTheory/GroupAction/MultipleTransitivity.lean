@@ -374,7 +374,7 @@ theorem isMultiplyPretransitive (n : ℕ) :
           set a : α := (φ.invFun ⟨b, hb⟩ : α)
           have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
           rw [← Subtype.coe_mk a ha]
-          simp [Subtype.val_injective.extend_apply, a]
+          simp [a]
         · rintro ⟨i, hi⟩
           apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
           rw [← hi]
