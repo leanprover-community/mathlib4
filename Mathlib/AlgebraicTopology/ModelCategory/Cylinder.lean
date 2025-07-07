@@ -69,23 +69,23 @@ structure Cylinder (A : C) where
   /-- the second "inclusion" in the cylinder -/
   i₁ : A ⟶ I
   /-- the weak equivalence of the cylinder -/
-  σ : I ⟶ A
-  i₀_σ : i₀ ≫ σ = 𝟙 A := by aesop_cat
-  i₁_σ : i₁ ≫ σ = 𝟙 A := by aesop_cat
-  weakEquivalence_σ : WeakEquivalence σ := by infer_instance
+  π : I ⟶ A
+  i₀_π : i₀ ≫ π = 𝟙 A := by aesop_cat
+  i₁_π : i₁ ≫ π = 𝟙 A := by aesop_cat
+  weakEquivalence_π : WeakEquivalence π := by infer_instance
 
 namespace Cylinder
 
-attribute [instance] weakEquivalence_σ
-attribute [reassoc (attr := simp)] i₀_σ i₁_σ
+attribute [instance] weakEquivalence_π
+attribute [reassoc (attr := simp)] i₀_π i₁_π
 
 variable {A : C} (P : Cylinder A)
 
 instance : WeakEquivalence P.i₀ :=
-  weakEquivalence_of_postcomp_of_fac (P.i₀_σ)
+  weakEquivalence_of_postcomp_of_fac P.i₀_π
 
 instance : WeakEquivalence P.i₁ :=
-  weakEquivalence_of_postcomp_of_fac (P.i₁_σ)
+  weakEquivalence_of_postcomp_of_fac P.i₁_π
 
 /-- the map from the coproduct of two copies of `A` to `P.I`, when `P` is
 a cylinder object for `A`. `P` shall be a *good* cylinder object
@@ -104,10 +104,10 @@ def symm : Cylinder A where
   I := P.I
   i₀ := P.i₁
   i₁ := P.i₀
-  σ := P.σ
+  π := P.π
 
 @[simp, reassoc]
-lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
+lemma symm_i : P.symm.i =
   (coprod.braiding A A).hom ≫ P.i := by aesop_cat
 
 /-- A cylinder object `P` is good if the morphism
@@ -115,11 +115,11 @@ lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
 class IsGood : Prop where
   cofibration_i : Cofibration P.i := by infer_instance
 
-/-- A good cylinder object `P` is very good if `P.σ` is a (trivial) fibration. -/
+/-- A good cylinder object `P` is very good if `P.π` is a (trivial) fibration. -/
 class IsVeryGood : Prop extends P.IsGood where
-  fibration_σ : Fibration P.σ := by infer_instance
+  fibration_π : Fibration P.π := by infer_instance
 
-attribute [instance] IsGood.cofibration_i IsVeryGood.fibration_σ
+attribute [instance] IsGood.cofibration_i IsVeryGood.fibration_π
 
 instance [IsCofibrant A] [P.IsGood] : Cofibration P.i₀ := by
   rw [← P.inl_i]
@@ -132,6 +132,9 @@ instance [IsCofibrant A] [P.IsGood] : Cofibration P.i₁ := by
 instance [IsCofibrant A] [P.IsGood] : IsCofibrant P.I :=
   isCofibrant_of_cofibration P.i₀
 
+instance [IsFibrant A] [P.IsVeryGood] : IsFibrant P.I :=
+  isFibrant_of_fibration P.π
+
 instance [P.IsGood] : P.symm.IsGood where
   cofibration_i := by
     dsimp
@@ -139,7 +142,7 @@ instance [P.IsGood] : P.symm.IsGood where
     infer_instance
 
 instance [P.IsVeryGood] : P.symm.IsVeryGood where
-  fibration_σ := by
+  fibration_π := by
     dsimp
     infer_instance
 
@@ -155,26 +158,28 @@ noncomputable def ofFactorizationData : Cylinder A where
   I := h.Z
   i₀ := coprod.inl ≫ h.i
   i₁ := coprod.inr ≫ h.i
-  σ := h.p
+  π := h.p
 
 @[simp]
 lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by aesop_cat
 
 instance : (ofFactorizationData h).IsVeryGood where
   cofibration_i := by simpa using inferInstanceAs (Cofibration h.i)
-  fibration_σ := by dsimp; infer_instance
+  fibration_π := by dsimp; infer_instance
 
 instance [HasTerminal C] [IsFibrant A] [(fibrations C).IsStableUnderComposition] :
     IsFibrant (ofFactorizationData h).I :=
-  isFibrant_of_fibration (ofFactorizationData h).σ
+  isFibrant_of_fibration (ofFactorizationData h).π
 
 end
 
 variable (A) in
-lemma exists_very_good_cylinder :
+lemma exists_very_good :
     ∃ (P : Cylinder A), P.IsVeryGood :=
   ⟨ofFactorizationData (MorphismProperty.factorizationData _ _ _),
     inferInstance⟩
+
+instance : Nonempty (Cylinder A) := ⟨(exists_very_good A).choose⟩
 
 /-- The gluing of two good cylinders. -/
 @[simps]
@@ -183,12 +188,12 @@ noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
   I := pushout P.i₁ P'.i₀
   i₀ := P.i₀ ≫ pushout.inl _ _
   i₁ := P'.i₁ ≫ pushout.inr _ _
-  σ := pushout.desc P.σ P'.σ (by simp)
-  weakEquivalence_σ := by
+  π := pushout.desc P.π P'.π (by simp)
+  weakEquivalence_π := by
     have : WeakEquivalence ((P.i₀ ≫ pushout.inl P.i₁ P'.i₀) ≫
-        pushout.desc P.σ P'.σ (by simp)) := by
+        pushout.desc P.π P'.π (by simp)) := by
       simp only [assoc, colimit.ι_desc, PushoutCocone.mk_ι_app,
-        Cylinder.i₀_σ]
+        Cylinder.i₀_π]
       infer_instance
     apply weakEquivalence_of_precomp (P.i₀ ≫ pushout.inl _ _)
 
