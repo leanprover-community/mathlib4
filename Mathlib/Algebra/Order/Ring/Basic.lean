@@ -25,6 +25,12 @@ theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
   rcases h with ⟨y, rfl⟩
   exact mul_self_nonneg y
 
+@[simp]
+lemma not_isSquare_of_neg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : x < 0) : ¬ IsSquare x :=
+  (h.not_ge ·.nonneg)
+
 namespace MonoidHom
 
 variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)

@@ -8,9 +8,9 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # The homology of a restriction
 
-Under extremely favourable circumstrnaces, we may relate the
+Under favourable circumstances, we may relate the
 homology of `K : HomologicalComplex C c'` in degree `j'` and
-that of `K.restriction e` id a degree `j`  when `e : Embedding c c'`
+that of `K.restriction e` in degree `j` when `e : Embedding c c'`
 is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
 
@@ -107,7 +107,7 @@ lemma pOpcycles_restrictionOpcyclesIso_inv :
       (K.restrictionXIso e hj').inv ≫ (K.restriction e).pOpcycles j := by
   simp [restrictionOpcyclesIso]
 
-/-- The isomorphism `(K.restriction e).opcycles j ≅ K.opcycles j'` when `e.f j = j'`,
+/-- The isomorphism `(K.restriction e).homology j ≅ K.homology j'` when `e.f j = j'`,
 the predecessors `i` and `i'` of `j` and `j'` satisfy `e.f i = i'`,
 and the successors `k` and `k'` of `j` and `j'` satisfy `e.f k = k'` -/
 noncomputable def restrictionHomologyIso :
