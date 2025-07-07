@@ -251,7 +251,7 @@ theorem Trivialization.mdifferentiableWithinAt_snd_comp_iff₂
 
 variable (e e')
 
-theorem mdifferentiableAt_change_section_trivialization
+theorem Trivialization.mdifferentiableAt_snd_comp_iff₂
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {x₀ : M}
     (he : f x₀ ∈ e.source) (he' : f x₀ ∈ e'.source)
@@ -290,7 +290,7 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
   rw [mdifferentiableAt_totalSpace]
   apply and_congr_right
   intro hf
-  rw [mdifferentiableAt_change_section_trivialization IB
+  rw [Trivialization.mdifferentiableAt_snd_comp_iff₂ IB
     (FiberBundle.mem_trivializationAt_proj_source) he hf]
 
 /-- Characterization of differentiable sections a vector bundle in terms
