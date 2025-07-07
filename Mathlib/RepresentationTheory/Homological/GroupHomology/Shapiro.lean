@@ -12,7 +12,7 @@ import Mathlib.RepresentationTheory.FiniteIndex
 
 Given a commutative ring `k` and a finite index subgroup `S ≤ G`, the file
 `RepresentationTheory/FiniteIndex.lean` defines a natural isomorphism between the functors
-`Ind_S^G, Coind_S^G : Rep k S ⥤ Rep k G`.
+`Ind_S^G` and `Coind_S^G : Rep k S ⥤ Rep k G`.
 
 Using this isomorphism, we conclude that the `(Co)ind_S^G` and `Res(S) : Rep k G ⥤ Rep k S` are
 both left and right adjoint to each other, and thus that `Res(S)` is an exact functor which
