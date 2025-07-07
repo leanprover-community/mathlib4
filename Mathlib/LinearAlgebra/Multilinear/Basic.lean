@@ -273,7 +273,6 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
         simpa [update_eq_const_of_subsingleton] using f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
         simpa [update_eq_const_of_subsingleton] using f.map_update_smul 0 i c x }
-  left_inv _ := rfl
   right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (M₁) {M₂}
@@ -434,7 +433,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
     by_cases h : j = i
     · rw [h]
       simp [m'', hit]
-    · by_cases h' : j ∈ t <;> simp [m'', h, hit, h']
+    · by_cases h' : j ∈ t <;> simp [m'', h, h']
   rw [A, f.map_update_add, B, C, Finset.sum_powerset_insert hit, Hrec, Hrec, add_comm (_ : M₂)]
   congr 1
   refine Finset.sum_congr rfl fun s hs => ?_
@@ -490,7 +489,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         congr
         apply Finset.card_le_one_iff.1 (Ai_singleton i) hj
         exact mem_piFinset.mp hr i
-      simp only [Finset.sum_congr rfl this, Finset.mem_univ, Finset.sum_const, Ai_card i, one_nsmul]
+      simp only [Finset.sum_congr rfl this, Finset.sum_const, Ai_card i, one_nsmul]
     simp only [Finset.sum_congr rfl this, Ai_card, card_piFinset, prod_const_one, one_nsmul,
       Finset.sum_const]
   -- Remains the interesting case where one of the `A i`, say `A i₀`, has cardinality at least 2.
@@ -532,7 +531,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       have : j = j₂ := by
         simpa [C] using hj
       rw [this]
-      simp only [B, mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
+      simp only [B, mem_sdiff, not_true, not_false_iff, Finset.mem_singleton,
         update_self, and_false]
     · simp [hi]
   have Beq :
@@ -719,11 +718,11 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     simp only [i.2, update_self, dite_true]
   · rw [Function.update_of_ne h]
     by_cases h' : P j
-    · simp only [h', ne_eq, Subtype.mk.injEq, dite_true]
+    · simp only [h', dite_true]
       have h'' : ¬ ⟨j, h'⟩ = i :=
         fun he => by apply_fun (fun x => x.1) at he; exact h he
       rw [Function.update_of_ne h'']
-    · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
+    · simp only [h', dite_false]
 
 lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
     [DecidableEq {a // ¬ P a}]
@@ -812,7 +811,7 @@ theorem comp_compMultilinearMap (g : M₃ →ₗ[R] M₄) (g' : M₂ →ₗ[R] M
 
 /-- The two types of composition are associative. -/
 theorem compMultilinearMap_compLinearMap
-    (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂) (f' : ∀ i, M₁' i →ₗ[R] M₁ i):
+    (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂) (f' : ∀ i, M₁' i →ₗ[R] M₁ i) :
     g.compMultilinearMap (f.compLinearMap f') = (g.compMultilinearMap f).compLinearMap f' := rfl
 
 @[simp]
@@ -982,7 +981,6 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[S] MultilinearMap R M�
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0
-  left_inv _ := rfl
   right_inv f := ext fun _ => MultilinearMap.congr_arg f <| Subsingleton.elim _ _
 
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
@@ -1175,7 +1173,7 @@ theorem ext_ring [Finite ι] ⦃f g : MultilinearMap R (fun _ : ι => R) M₂⦄
   obtain ⟨_⟩ := nonempty_fintype ι
   have hf := f.map_smul_univ x (fun _ ↦ 1)
   have hg := g.map_smul_univ x (fun _ ↦ 1)
-  simp_all [h, hf, hg]
+  simp_all
 
 section
 
@@ -1214,11 +1212,11 @@ protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
   MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
     (fun m i x y ↦ by
       have : (List.finRange n).idxOf i < n := by simp
-      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul,
         mul_add, add_mul])
     (fun m i c x ↦ by
       have : (List.finRange n).idxOf i < n := by simp
-      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this])
+      simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set])
 
 variable {R A n}
 
@@ -1336,7 +1334,7 @@ theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁
 
 @[deprecated (since := "2024-11-03")] protected alias map_sub := MultilinearMap.map_update_sub
 
-lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i)  :
+lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i) :
     f (update x i v) = f x - f (update x i (x i - v)) := by
   rw [map_update_sub, update_eq_self, sub_sub_cancel]
 
