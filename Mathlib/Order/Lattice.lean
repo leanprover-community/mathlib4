@@ -1333,7 +1333,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
       apply (h3 (inf_le_of_left_le hb.2) _).1
       rw [← sup_eq_right.mpr (le_inf hb.1 hc.1), ← sup_eq_left.mpr (inf_le_of_left_le hb.2)]
       exact (h3 (le_trans hb.1 hb.2) h).2
-    have ee1 (x y t : α) (hh : r x y) : r (x ⊔ t) (y ⊔ t) := e1 ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t) (by
+    have ee1 {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) := e1 ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t) (by
         simp
         constructor
         · exact le_trans inf_le_left le_sup_left
@@ -1344,7 +1344,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         · exact le_trans inf_le_right le_sup_left
         · rw [sup_comm, ← sup_assoc]
           exact le_sup_right) (h3 inf_le_sup (h1.mp hh)).2
-    have ee2 (x y t : α) (hh : r x y) : r (x ⊓ t) (y ⊓ t) := by
+    have ee2 {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) := by
       apply e1 ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t) (by
         simp
         constructor
@@ -1359,7 +1359,6 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
     have transitive: ∀ {x y z : α}, r x y → r y z → r x z := by
       intro x y z hxy hyz
       apply e1 (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by
-          --rw [Set.mem_Icc]
           constructor
           · rw [inf_assoc]
             exact inf_le_left
@@ -1392,18 +1391,14 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         exact hxy
       · exact transitive
     · intro x₀ y₀ x₁ y₁ h₀ h₁
-      have s1 : r (x₀ ⊓ x₁) (x₀ ⊓ y₁) := by
+      exact transitive (by
         conv_lhs => rw [inf_comm]
         conv_rhs => rw [inf_comm]
-        apply ee2
-        exact h₁
-      have s2 : r (x₀ ⊓ y₁) (y₀ ⊓ y₁) := ee2 _  _ _ h₀
-      exact transitive s1 s2
+        exact ee2 h₁
+      ) (ee2 h₀)
     · intro x₀ y₀ x₁ y₁ h₀ h₁
-      have s1 : r (x₀ ⊔ x₁) (x₀ ⊔ y₁) := by
+      exact transitive (by
         conv_lhs => rw [sup_comm]
         conv_rhs => rw [sup_comm]
-        apply ee1
-        exact h₁
-      have s2 : r (x₀ ⊔ y₁) (y₀ ⊔ y₁) := ee1 _  _ _ h₀
-      exact transitive s1 s2
+        exact ee1 h₁
+      ) (ee1 h₀)
