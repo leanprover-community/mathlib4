@@ -80,8 +80,10 @@ instance : IsTopologicalRing R := by
   ext s
   simp [(RingSubgroupsBasis.hasBasis_nhds _ _).mem_iff, mem_nhds, Valuation.ltAddSubgroup]
 
--- this is a local instance to prevent timeouts in typeclass inference
--- since otherwise, TC search for `UniformSpace R` will start exploring `ValuativeTopology R`
+/-- A ring with a topological additive structure and a valuative relationship is
+a uniform space made up of entourages of the form `{ (x, y) | v (y - x) < γ }`.
+However, this is a global instance to prevent timeouts in typeclass inference,
+since otherwise, TC search for `UniformSpace R` will start exploring `ValuativeTopology R`. -/
 local instance : UniformSpace R := IsTopologicalAddGroup.toUniformSpace R
 
 open Uniformity in
