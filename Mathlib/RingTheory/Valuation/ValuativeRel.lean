@@ -623,7 +623,7 @@ lemma isNontrivial_iff_isNontrivial :
     · refine ⟨r, ?_, ?_⟩
       · simpa [valuation] using hr
       · simp only [ne_eq, ValueGroupWithZero.mk_eq_one, not_and, valuation, Valuation.coe_mk,
-        MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, OneMemClass.coe_one] at hr' hs ⊢
+          MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, OneMemClass.coe_one] at hr' hs ⊢
         contrapose! hr'
         exact hr'.imp hs.right.trans' hs.left.trans
     · refine ⟨s, ?_, hs⟩
