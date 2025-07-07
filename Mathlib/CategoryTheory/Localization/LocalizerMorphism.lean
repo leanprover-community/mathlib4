@@ -197,6 +197,7 @@ lemma isLocalizedEquivalence_of_unit_of_unit (Ψ : LocalizerMorphism W₂ W₁)
         (asIso (whiskerRight ε₁ W₁.Q)).symm ≪≫ Functor.leftUnitor _
     · exact Functor.associator _ _ _ ≪≫
         isoWhiskerLeft _ (CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm ≪≫
+        (Functor.associator _ _ _).symm ≪≫
         (asIso (whiskerRight ε₂ W₂.Q)).symm ≪≫ Functor.leftUnitor _
 
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
