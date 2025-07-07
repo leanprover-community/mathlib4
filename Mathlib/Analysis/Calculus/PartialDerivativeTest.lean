@@ -71,14 +71,15 @@ noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
         ContinuousMultilinearMap.coe_coe, hessianLinearCompanion, LinearMap.coe_mk, AddHom.coe_mk,
         LinearMap.add_apply] at had₀ had₁ ⊢
     exact (Mathlib.Tactic.Ring.add_pf_add_overlap had₀.symm had₁.symm).symm
-  map_smul' := fun m x => LinearMap.ext_iff.mpr <| fun x₁ => by
+  map_smul' := fun m x => LinearMap.ext_iff.mpr fun x₁ => by
     have hsm₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,x₁] 0 m x
     have hsm₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x₁,x] 1 m x
     have h := CancelDenoms.add_subst hsm₀.symm hsm₁.symm
     repeat rw [update₀, update₁] at h
     exact h.symm}
 
-/-- TODO: for a more familiar constructor when R is a ring, see QuadraticMap.ofPolar -/
+/-- The second iterated Frechét derivative as a quadratic map.
+  (A simpler construction, since `ℝ` is a ring, could use `QuadraticMap.ofPolar`.) -/
 noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : QuadraticMap ℝ V ℝ := {
   toFun := fun y => iteratedFDeriv ℝ 2 f x₀ ![y,y]
@@ -227,16 +228,21 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
     rw [Subsingleton.eq_zero u]
     simp
-
-/-- Taylor coefficient. -/
-noncomputable def taylor_term {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] (f : V → ℝ)
-    (x₀ : V) (i : ℕ) (x : V) := 1 / i.factorial * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀
+open Finset Nat
+/-- Spelling out a sum of three. -/
+lemma finset_sum_three (t : ℕ → ℝ) :
+     ∑ y ∈ range 3, t y = t 0 + t 1 + t 2 := by
+    repeat rw [range_succ]
+    simp only [range_zero, insert_empty_eq, Finset.mem_insert, OfNat.ofNat_ne_one,
+      Finset.mem_singleton, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, Finset.sum_insert,
+      one_ne_zero, Finset.sum_singleton]
+    linarith
 
 /-- Second partial derivative test in terms of `taylor_term`. -/
 theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
     [InnerProductSpace ℝ V] [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
-    (h : (fun x => |f x - (∑ i ∈ Finset.range 3, taylor_term f x₀ i) x|)
-        =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2) (h₀ : gradient f x₀ = 0)
+    (h : (fun x => f x - ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀)
+      =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2) (h₀ : gradient f x₀ = 0)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
   have ⟨C,hC⟩ := coercive_of_posdef hf
   simp only [Asymptotics.IsLittleO, Asymptotics.IsBigOWith] at h
@@ -246,17 +252,9 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
   simp only [continuousBilinearMap_of_continuousMultilinearMap, MultilinearMap.toFun_eq_coe,
     ContinuousMultilinearMap.coe_coe, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
     AddHom.coe_mk] at h₄
-  have h₃ : ∑ y ∈ Finset.range 3, taylor_term f x₀ y x
-   = taylor_term f x₀ 0 x + taylor_term f x₀ 1 x +
-     taylor_term f x₀ 2 x := by
-    repeat rw [Finset.range_succ]
-    simp only [Finset.range_zero, insert_empty_eq, Finset.mem_insert, OfNat.ofNat_ne_one,
-      Finset.mem_singleton, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, Finset.sum_insert,
-      one_ne_zero, Finset.sum_singleton]
-    linarith
-  simp only [Finset.sum_apply, Real.norm_eq_abs, abs_abs, norm_pow]
-  rw [h₃]
-  simp only [taylor_term, Nat.factorial_zero, Nat.cast_one, ne_eq, one_ne_zero,
+  simp only [Real.norm_eq_abs, norm_pow]
+  rw [finset_sum_three]
+  simp only [Nat.factorial_zero, Nat.cast_one, ne_eq, one_ne_zero,
     not_false_eq_true, div_self, iteratedFDeriv_zero_apply, one_mul, Nat.factorial_one,
     iteratedFDeriv_one_apply, map_sub, Nat.factorial_two, Nat.cast_ofNat, one_div, abs_norm]
   intro h₁
@@ -273,16 +271,6 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
     ≤ (C / 2) * ‖x - x₀‖ ^ 2 := le_of_max_le_right h₁
   ring_nf at h₅
   linarith
-
-/-- `taylor_term` expresses power series correctly. -/
-lemma eliminate_taylor_term {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    [ContinuousConstSMul ℝ V] {f : V → ℝ} (x₀ x : V) {r : NNReal}
-    (p : FormalMultilinearSeries ℝ V ℝ) (h : HasFPowerSeriesOnBall f p x₀ r) (k : ℕ) :
-    p k (fun _ => x - x₀) = taylor_term f x₀ k x := by
-  unfold taylor_term
-  rw [← HasFPowerSeriesOnBall.factorial_smul h (x - x₀) k]
-  ring_nf
-  field_simp
 
 theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {f : V → ℝ} {x₀ : V} {p : FormalMultilinearSeries ℝ V ℝ}
@@ -307,42 +295,39 @@ theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [N
     have : x = x₀ := by grind only
     subst this
     simp
-  apply le_of_mul_le_mul_right (a := ‖x-x₀‖⁻¹) (a0 := by aesop)
-  nth_rewrite 2 [mul_assoc]
-  rw [pow_two]
-  nth_rewrite 2 [mul_assoc]
-  have : (‖x - x₀‖ * ‖x - x₀‖⁻¹) = 1 := by field_simp
-  rw [this]
-  simp only [mul_one, ge_iff_le]
-  apply le_of_mul_le_mul_right (a := ‖x-x₀‖⁻¹) (a0 := by aesop)
-  nth_rewrite 3 [mul_assoc]
-  have : (‖x - x₀‖ * ‖x - x₀‖⁻¹) = 1 := by field_simp
-  rw [this]
-  have : C * (a * (‖x - x₀‖ / (r / 2))) ^ 3 * ‖x - x₀‖⁻¹ * ‖x - x₀‖⁻¹
-      =  C * (a * (1 / (r / 2))) ^ 3 * ‖x - x₀‖  := by
+  · apply le_of_mul_le_mul_right (a := ‖x-x₀‖⁻¹) (a0 := by aesop)
+    nth_rewrite 2 [mul_assoc]
+    rw [pow_two]
+    nth_rewrite 2 [mul_assoc]
+    rw [show (‖x - x₀‖ * ‖x - x₀‖⁻¹) = 1 by field_simp]
+    simp only [mul_one]
+    apply le_of_mul_le_mul_right (a := ‖x-x₀‖⁻¹) (a0 := by aesop)
+    nth_rewrite 3 [mul_assoc]
+    rw [show (‖x - x₀‖ * ‖x - x₀‖⁻¹) = 1 by field_simp]
+    have : C * (a * (‖x - x₀‖ / (r / 2))) ^ 3 * ‖x - x₀‖⁻¹ * ‖x - x₀‖⁻¹
+        =  C * (a * (1 / (r / 2))) ^ 3 * ‖x - x₀‖  := by
+        field_simp
+        ring_nf
+    rw [this]
+    simp only [one_div, inv_div, mul_one, ge_iff_le]
+    have : (C * (a * (2 / r)) ^ 3) * ‖x - x₀‖
+         ≤ (C * (a * (2 / r)) ^ 3) * (D / (C * (a * (2 / r)) ^ 3)) := by
+        refine (mul_le_mul_iff_of_pos_left ?_).mpr <| le_of_lt (by
+            convert hx.2 using 1
+            exact mem_sphere_iff_norm.mp rfl)
+        aesop
+    convert this using 2
     field_simp
     ring_nf
-  rw [this]
-  simp only [one_div, inv_div, mul_one, ge_iff_le]
-  have := hx.2
-  have : (C * (a * (2 / r)) ^ 3) * ‖x - x₀‖
-       ≤ (C * (a * (2 / r)) ^ 3) * (D / (C * (a * (2 / r)) ^ 3)) := by
-    refine (mul_le_mul_iff_of_pos_left ?_).mpr <| le_of_lt (by
-        convert this using 1
-        exact mem_sphere_iff_norm.mp rfl)
-    aesop
-  convert this using 2
-  field_simp
-  ring_nf
 
 /-- Having a power series implies quadratic approximation. -/
 lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {f : V → ℝ} {x₀ : V} {p : FormalMultilinearSeries ℝ V ℝ}
-    {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r) :
-    (fun x => |f x - p.partialSum 3 (x - x₀)|) =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2 := by
+    {r : NNReal} (hr : 0 < r) (h : HasFPowerSeriesOnBall f p x₀ r) :
+    (fun x => f x - p.partialSum 3 (x - x₀)) =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2 := by
   rw [Asymptotics.IsLittleO]
   intro D hD
-  obtain ⟨a,ha⟩ := HasFPowerSeriesOnBall.uniform_geometric_approx' h₁ (by
+  obtain ⟨a,ha⟩ := HasFPowerSeriesOnBall.uniform_geometric_approx' h (by
       change ENNReal.ofNNReal ((r / 2)) < r
       simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENNReal.coe_div, ENNReal.coe_ofNat]
       refine ENNReal.half_lt_self ?_ ?_
@@ -351,16 +336,15 @@ lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
         subst hc
         simp at hr
       · simp)
-  obtain ⟨C,hC⟩ := ha.2
-  have h₃ (x) := hC.2 (x - x₀)
   rw [Asymptotics.IsBigOWith]
-  refine eventually_nhds_iff.mpr ?_
-  simp only [Real.norm_eq_abs, abs_abs, norm_pow]
+  apply eventually_nhds_iff.mpr
+  simp only [Real.norm_eq_abs, norm_pow]
+  obtain ⟨C,hC⟩ := ha.2
   use Metric.ball x₀ (min (r/2) (D / (C * (a * (2/r))^3)))
   constructor
-  · convert @littleO_of_powerseries.calculation V _ _ f x₀ p r hr a ha.1.1 C hC.1 h₃ D using 3
-    congr
-    apply abs_norm
+  · intro
+    rw [abs_norm]
+    exact littleO_of_powerseries.calculation hr ha.1.1 hC.1 fun x => hC.2 (x - x₀)
   · constructor
     · exact Metric.isOpen_ball
     · simp only [Metric.mem_ball, dist_self, lt_inf_iff, Nat.ofNat_pos, div_pos_iff_of_pos_right,
@@ -375,12 +359,18 @@ theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductS
     (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
   by_cases H : Nontrivial V
-  · have : (fun x => |f x - ∑ y ∈ Finset.range 3, p y fun _ => x - x₀|)
-         = (fun x => |f x - ∑ y ∈ Finset.range 3, taylor_term f x₀ y x|) := by
-      ext
+  · have (x : V) (i : ℕ) : p i (fun _ => x - x₀)
+      = 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀ := by
+      rw [← HasFPowerSeriesOnBall.factorial_smul h₁ (x - x₀) i]
+      ring_nf
+      field_simp
+    have (x : V) : ∑ i ∈ range 3, p i (fun _ => x - x₀)
+                 = ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀ := by
       congr
       ext
-      rw [eliminate_taylor_term x₀ _ p h₁]
-    exact isLocalMin_of_PosDef_of_Littleo (this ▸ littleO_of_powerseries hr h₁) h₀ hf
+      rw [this]
+    have (x : V) := congrArg (HSub.hSub (f x)) (this x)
+    exact isLocalMin_of_PosDef_of_Littleo
+        (funext_iff.mpr this ▸ littleO_of_powerseries hr h₁) h₀ hf
   · have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
     simp [IsLocalMin, IsMinFilter]
