@@ -93,8 +93,8 @@ noncomputable def derivedη : 𝟭 D₁ ⟶ G' ⋙ F' :=
 
 @[reassoc (attr := simp)]
 lemma derivedη_fac_app (X₁ : C₁) :
-  (adj.derivedη W₁ α β).app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
-    L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by
+    (adj.derivedη W₁ α β).app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
+      L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by
   simpa using ((G' ⋙ F').leftDerived_fac_app ((Functor.associator _ _ _).inv ≫
     whiskerRight α F') W₁ _ (L₁.rightUnitor.hom ≫ L₁.leftUnitor.inv ≫ whiskerRight adj.unit L₁ ≫
       (Functor.associator _ _ _).hom ≫ whiskerLeft G β ≫ (Functor.associator _ _ _).inv)) X₁
