@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Floor.Ring
 ## Summary
 
 This is a collection of simple lemmas between the different structures used for the computation
-of continued fractions defined in `Mathlib.Algebra.ContinuedFractions.Computation.Basic`.
+of continued fractions defined in `Mathlib/Algebra/ContinuedFractions/Computation/Basic.lean`.
 The file consists of three sections:
 1. Recurrences and inversion lemmas for `IntFractPair.stream`: these lemmas give us inversion
   rules and recurrences for the computation of the stream of integer and fractional parts of
@@ -239,8 +239,7 @@ theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFract
     (of v).s.get? n = some ⟨1, (IntFractPair.of ifp_n.fr⁻¹).b⟩ :=
   have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
     cases ifp_n
-    simp only [IntFractPair.stream, Nat.add_eq, add_zero, stream_nth_eq, Option.some_bind,
-      ite_eq_right_iff]
+    simp only [IntFractPair.stream, stream_nth_eq, Option.bind_some, ite_eq_right_iff]
     intro; contradiction
   get?_of_eq_some_of_succ_get?_intFractPair_stream this
 
@@ -250,10 +249,9 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
     { a := 1
       b := p.b }) := by
   rw [of, IntFractPair.seq1]
-  simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
-    Stream'.Seq.get?, Stream'.map]
+  simp only [Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.get?, Stream'.map]
   rw [← Stream'.get_succ, Stream'.get, Option.map.eq_def]
-  split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
+  split <;> simp_all only [Option.bind_some, Option.bind_none, Function.comp_apply]
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.
 -/

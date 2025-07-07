@@ -386,7 +386,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl
-        exact i.prop.not_le hm
+        exact i.prop.not_ge hm
       map_add' := fun x y => by
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
@@ -450,8 +450,8 @@ def coeff (h : IsAdjoinRootMonic S f) : S →ₗ[R] ℕ → R :=
 
 theorem coeff_apply_lt (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) (hi : i < natDegree f) :
     h.coeff z i = h.basis.repr z ⟨i, hi⟩ := by
-  simp only [coeff, LinearMap.comp_apply, Finsupp.lcoeFun_apply, Finsupp.lmapDomain_apply,
-    LinearEquiv.coe_coe, liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
+  simp only [coeff,
+    liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
   rfl
 
 theorem coeff_apply_coe (h : IsAdjoinRootMonic S f) (z : S) (i : Fin (natDegree f)) :
@@ -459,8 +459,8 @@ theorem coeff_apply_coe (h : IsAdjoinRootMonic S f) (z : S) (i : Fin (natDegree 
 
 theorem coeff_apply_le (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) (hi : natDegree f ≤ i) :
     h.coeff z i = 0 := by
-  simp only [coeff, LinearMap.comp_apply, Finsupp.lcoeFun_apply, Finsupp.lmapDomain_apply,
-    LinearEquiv.coe_coe, liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
+  simp only [coeff,
+    liftPolyₗ_apply, LinearMap.coe_mk]
   nontriviality R
   exact
     Polynomial.coeff_eq_zero_of_degree_lt
@@ -470,7 +470,7 @@ theorem coeff_apply (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) :
     h.coeff z i = if hi : i < natDegree f then h.basis.repr z ⟨i, hi⟩ else 0 := by
   split_ifs with hi
   · exact h.coeff_apply_lt z i hi
-  · exact h.coeff_apply_le z i (le_of_not_lt hi)
+  · exact h.coeff_apply_le z i (le_of_not_gt hi)
 
 theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
     h.coeff (h.root ^ n) = Pi.single n 1 := by
@@ -480,12 +480,12 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
   · calc
       h.basis.repr (h.root ^ n) ⟨i, _⟩ = h.basis.repr (h.basis ⟨n, hn⟩) ⟨i, hi⟩ := by
         rw [h.basis_apply, Fin.val_mk]
-      _ = Pi.single (f := fun _ => R) ((⟨n, hn⟩ : Fin _) : ℕ) (1 : (fun _ => R) n)
+      _ = Pi.single (M := fun _ => R) ((⟨n, hn⟩ : Fin _) : ℕ) (1 : (fun _ => R) n)
         ↑(⟨i, _⟩ : Fin _) := by
         rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
           Finsupp.single_apply_left Fin.val_injective]
-      _ = Pi.single (f := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
-  · refine (Pi.single_eq_of_ne (f := fun _ => R) ?_ (1 : (fun _ => R) n)).symm
+      _ = Pi.single (M := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
+  · rw [Pi.single_eq_of_ne]
     rintro rfl
     simp [hi] at hn
 

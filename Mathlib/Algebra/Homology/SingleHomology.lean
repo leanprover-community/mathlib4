@@ -87,7 +87,7 @@ lemma singleObjCyclesSelfIso_hom_singleObjOpcyclesSelfIso_hom :
   simp [singleObjCyclesSelfIso, singleObjOpcyclesSelfIso]
 
 @[reassoc (attr := simp)]
-lemma singleObjCyclesSelfIso_inv_homologyπ  :
+lemma singleObjCyclesSelfIso_inv_homologyπ :
     (singleObjCyclesSelfIso _ _ _).inv ≫ ((single C c j).obj A).homologyπ j =
       (singleObjHomologySelfIso _ _ _).inv := by
   simp [singleObjCyclesSelfIso, singleObjHomologySelfIso]

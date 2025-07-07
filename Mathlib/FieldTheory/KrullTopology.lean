@@ -176,8 +176,8 @@ theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L
     IsOpen (E.fixingSubgroup : Set (L ≃ₐ[K] L)) := by
   have h_basis : E.fixingSubgroup.carrier ∈ galGroupBasis K L :=
     ⟨E.fixingSubgroup, ⟨E, ‹_›, rfl⟩, rfl⟩
-  have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
-  exact Subgroup.isOpen_of_mem_nhds _ h_nhd
+  have h_nhds := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
+  exact Subgroup.isOpen_of_mem_nhds _ h_nhds
 
 /-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ L ≃ₐ[K] L` is
   closed. -/
@@ -202,9 +202,9 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
         (Algebra.IsIntegral.isIntegral x)
       let H := E.fixingSubgroup
       have h_basis : (H : Set (L ≃ₐ[K] L)) ∈ galGroupBasis K L := ⟨H, ⟨E, ⟨h_findim, rfl⟩⟩, rfl⟩
-      have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
-      rw [mem_nhds_iff] at h_nhd
-      rcases h_nhd with ⟨W, hWH, hW_open, hW_1⟩
+      have h_nhds := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
+      rw [mem_nhds_iff] at h_nhds
+      rcases h_nhds with ⟨W, hWH, hW_open, hW_1⟩
       refine ⟨f • W, g • W,
         ⟨hW_open.leftCoset f, hW_open.leftCoset g, ⟨1, hW_1, mul_one _⟩, ⟨1, hW_1, mul_one _⟩, ?_⟩⟩
       rw [Set.disjoint_left]
@@ -308,7 +308,7 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k 
     replace hfd := i.finiteDimensional
     rw [i.finrank_eq, this _ hfd] at hL'
     exact (Subgroup.index_antitone <| fixingSubgroup_le <|
-      IntermediateField.lift_le L').not_lt hL'
+      IntermediateField.lift_le L').not_gt hL'
   let E := normalClosure k L K
   have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
   let L' := restrict hle

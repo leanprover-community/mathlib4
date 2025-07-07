@@ -207,14 +207,14 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
-  rw [support_binomial h hx hy, card_insert_of_not_mem (mt mem_singleton.mp h), card_singleton]
+  rw [support_binomial h hx hy, card_insert_of_notMem (mt mem_singleton.mp h), card_singleton]
 
 theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) : #(support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
-    card_insert_of_not_mem
+    card_insert_of_notMem
       (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
-    card_insert_of_not_mem (mt mem_singleton.mp hmn.ne), card_singleton]
+    card_insert_of_notMem (mt mem_singleton.mp hmn.ne), card_singleton]
 
 end Fewnomials
 
@@ -289,7 +289,7 @@ theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
   rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, map_sum]
-  simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C, Nat.cast_id]
+  simp only [lcoeff_apply, ← C_eq_natCast, ← C_pow, coeff_mul_C]
   rw [Finset.sum_eq_single k, coeff_X_pow_self, one_mul]
   · intro _ _ h
     simp [coeff_X_pow, h.symm]

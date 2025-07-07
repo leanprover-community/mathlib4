@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # The derivative of a linear equivalence
@@ -465,7 +466,7 @@ under a map with onto derivative has also the unique differentiability property 
 theorem HasFDerivWithinAt.uniqueDiffWithinAt (h : HasFDerivWithinAt f f' s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) (h' : DenseRange f') : UniqueDiffWithinAt 𝕜 (f '' s) (f x) := by
   refine ⟨h'.dense_of_mapsTo f'.continuous hs.1 ?_, h.continuousWithinAt.mem_closure_image hs.2⟩
-  show
+  change
     Submodule.span 𝕜 (tangentConeAt 𝕜 s x) ≤
       (Submodule.span 𝕜 (tangentConeAt 𝕜 (f '' s) (f x))).comap f'
   rw [Submodule.span_le]
@@ -557,5 +558,3 @@ theorem fderiv_comp_smul (c : 𝕜) : fderiv 𝕜 (f <| c • ·) x = c • fder
   rcases eq_or_ne c 0 with rfl | hc <;> simp [smul_set_univ₀, *]
 
 end SMulLeft
-
-
