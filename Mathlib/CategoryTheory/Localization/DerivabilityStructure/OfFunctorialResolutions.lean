@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
 /-!
-# Functorial resolutions gives derivability structures
+# Functorial resolutions give derivability structures
 
 In this file, we provide a constructor for right derivability structures.
 We assume that `Φ : LocalizerMorphism W₁ W₂` is given by
