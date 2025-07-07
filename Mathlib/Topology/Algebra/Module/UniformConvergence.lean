@@ -23,7 +23,7 @@ space of continuous linear maps between two topological vector spaces.
 
 ## Implementation notes
 
-Like in `Mathlib.Topology.UniformSpace.UniformConvergenceTopology`, we use the type aliases
+Like in `Mathlib/Topology/UniformSpace/UniformConvergenceTopology.lean`, we use the type aliases
 `UniformFun` (denoted `α →ᵤ β`) and `UniformOnFun` (denoted `α →ᵤ[𝔖] β`) for functions from `α`
 to `β` endowed with the structures of uniform convergence and `𝔖`-convergence.
 

@@ -298,7 +298,7 @@ def coconesIsoComponentInv {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
   app j := (adj.homEquiv (K.obj j) Y).symm (t.app j)
   naturality j j' f := by
     erw [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm, t.naturality]
-    dsimp; simp
+    simp
 
 /-- auxiliary construction for `conesIso` -/
 @[simp]

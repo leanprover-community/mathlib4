@@ -68,7 +68,7 @@ theorem condExp_eq_zero_or_one_of_condIndepSet_self
     (h_indep : CondIndepSet m hm t t μ) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
   -- TODO: Why is not inferred?
-  have (a) : IsFiniteMeasure (condExpKernel μ m a) := inferInstance
+  have (a : _) : IsFiniteMeasure (condExpKernel μ m a) := inferInstance
   have h := ae_of_ae_trim hm (Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep)
   filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
   rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]

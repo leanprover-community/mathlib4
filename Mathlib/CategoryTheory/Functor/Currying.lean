@@ -18,6 +18,8 @@ and verify that they provide an equivalence of categories
 
 namespace CategoryTheory
 
+namespace Functor
+
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
@@ -38,8 +40,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   map T :=
     { app := fun X => (T.app X.1).app X.2
       naturality := fun X Y f => by
-        simp only [prod_comp_fst, prod_comp_snd, Category.comp_id, Category.assoc, Functor.map_id,
-          Functor.map_comp, NatTrans.id_app, NatTrans.comp_app]
+        simp only [Category.assoc]
         slice_lhs 2 3 => rw [NatTrans.naturality]
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
         rw [Category.assoc] }
@@ -50,13 +51,13 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X, g)
-      map_id := fun Y => by simp only [F.map_id]; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map_id := fun Y => by simp only; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
       map_comp := fun f g => by simp [← F.map_comp]}
   map f :=
     { app := fun Y => F.map (f, 𝟙 Y)
       naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
   map_id := fun X => by ext Y; exact F.map_id _
-  map_comp := fun f g => by ext Y; dsimp; simp [← F.map_comp]
+  map_comp := fun f g => by ext Y; simp [← F.map_comp]
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
 -/
@@ -128,8 +129,6 @@ applying `whiskeringRight` and currying back
 def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E :=
   uncurry ⋙
     whiskeringRight _ _ _ ⋙ (whiskeringLeft _ _ _).obj (prodFunctorToFunctorProd _ _ _) ⋙ curry
-
-namespace Functor
 
 variable {B C D E}
 

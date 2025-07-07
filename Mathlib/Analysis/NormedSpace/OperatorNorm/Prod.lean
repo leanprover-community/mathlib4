@@ -97,7 +97,6 @@ noncomputable def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) �
       apply funext
       rintro ⟨φ, ψ⟩
       refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
-      dsimp
       simp)
 
 variable {M₁ M₂ M₃ M₄}
@@ -115,7 +114,7 @@ theorem _root_.Continuous.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X → 
 
 theorem _root_.Continuous.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄}
     (hf : Continuous fun x => (f x : M₁ →L[𝕜] M₂)) (hg : Continuous fun x => (g x : M₃ →L[𝕜] M₄)) :
-    Continuous fun x => ((f x).prod (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄) :=
+    Continuous fun x => ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄) :=
   (prodMapL 𝕜 M₁ M₂ M₃ M₄).continuous.comp (hf.prodMk hg)
 
 theorem _root_.ContinuousOn.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X → M₃ →L[𝕜] M₄} {s : Set X}
@@ -126,7 +125,7 @@ theorem _root_.ContinuousOn.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X �
 theorem _root_.ContinuousOn.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄} {s : Set X}
     (hf : ContinuousOn (fun x => (f x : M₁ →L[𝕜] M₂)) s)
     (hg : ContinuousOn (fun x => (g x : M₃ →L[𝕜] M₄)) s) :
-    ContinuousOn (fun x => ((f x).prod (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄)) s :=
+    ContinuousOn (fun x => ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄)) s :=
   hf.prod_mapL _ hg
 
 end Prod
@@ -155,7 +154,7 @@ variable (𝕜 E F)
 
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
 @[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F]  :
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
     ‖snd 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_snd_le ..) ?_
   let ⟨f, hf⟩ := exists_ne (0 : F)

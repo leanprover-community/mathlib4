@@ -61,7 +61,7 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
     (fun c v w => by
       simp only [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c),
         MulAction.mul_smul])
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib])
+    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
     (fun _ v w => by
       simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
 
@@ -74,7 +74,7 @@ theorem Matrix.toLinearMap₂'Aux_single (f : Matrix n m N₂) (i : n) (j : m) :
         (if j = j' then (1 : S₂) else (0 : S₂)) • f i' j') =
       f i j := by
     simp_rw [← Finset.smul_sum]
-    simp only [op_smul_eq_smul, ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ, ↓reduceIte]
+    simp only [ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ, ↓reduceIte]
   rw [← this]
   exact Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by aesop
 
@@ -185,7 +185,7 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → S₁) (y :
     rw [RingHom.id_apply, RingHom.id_apply, smul_comm]
 
 theorem Matrix.toLinearMap₂'_apply' {T : Type*} [CommSemiring T] (M : Matrix n m T) (v : n → T)
-    (w : m → T) : Matrix.toLinearMap₂' T M v w = dotProduct v (M *ᵥ w) := by
+    (w : m → T) : Matrix.toLinearMap₂' T M v w = v ⬝ᵥ (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, dotProduct, Matrix.mulVec, dotProduct]
   refine Finset.sum_congr rfl fun _ _ => ?_
   rw [Finset.mul_sum]
@@ -406,7 +406,7 @@ theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) 
       (toMatrix b₁' b₁ l)ᵀ * LinearMap.toMatrix₂ b₁ b₂ B * toMatrix b₂' b₂ r := by
   ext i j
   simp only [LinearMap.toMatrix₂_apply, compl₁₂_apply, transpose_apply, Matrix.mul_apply,
-    LinearMap.toMatrix_apply, LinearEquiv.coe_mk, sum_mul]
+    LinearMap.toMatrix_apply, sum_mul]
   rw [sum_comm]
   conv_lhs => rw [← LinearMap.sum_repr_mul_repr_mul b₁ b₂]
   rw [Finsupp.sum_fintype]
@@ -415,7 +415,7 @@ theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) 
     rw [Finsupp.sum_fintype]
     · apply sum_congr rfl
       rintro j' -
-      simp only [smul_eq_mul, LinearMap.toMatrix_apply, Basis.equivFun_apply, mul_assoc, mul_comm,
+      simp only [smul_eq_mul, mul_assoc, mul_comm,
         mul_left_comm]
     · intros
       simp only [zero_smul, smul_zero]
@@ -568,17 +568,9 @@ def pairSelfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 @[simp]
 theorem mem_pairSelfAdjointMatricesSubmodule :
     A₁ ∈ pairSelfAdjointMatricesSubmodule J J₂ ↔ Matrix.IsAdjointPair J J₂ A₁ A₁ := by
-  simp only [pairSelfAdjointMatricesSubmodule, LinearEquiv.coe_coe, LinearMap.toMatrix'_apply,
-    Submodule.mem_map, mem_isPairSelfAdjointSubmodule]
-  constructor
-  · rintro ⟨f, hf, hA⟩
-    have hf' : f = toLin' A₁ := by rw [← hA, Matrix.toLin'_toMatrix']
-    rw [hf'] at hf
-    rw [← isAdjointPair_toLinearMap₂']
-    exact hf
-  · intro h
-    refine ⟨toLin' A₁, ?_, LinearMap.toMatrix'_toLin' _⟩
-    exact (isAdjointPair_toLinearMap₂' _ _ _ _).mpr h
+  simp only [pairSelfAdjointMatricesSubmodule, Submodule.mem_map_equiv,
+    mem_isPairSelfAdjointSubmodule, toMatrix'_symm, ← isAdjointPair_toLinearMap₂',
+    IsPairSelfAdjoint, toLin'_apply']
 
 /-- The submodule of self-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
@@ -588,8 +580,7 @@ def selfAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 @[simp]
 theorem mem_selfAdjointMatricesSubmodule :
     A₁ ∈ selfAdjointMatricesSubmodule J ↔ J.IsSelfAdjoint A₁ := by
-  erw [mem_pairSelfAdjointMatricesSubmodule]
-  rfl
+  rw [selfAdjointMatricesSubmodule, mem_pairSelfAdjointMatricesSubmodule, Matrix.IsSelfAdjoint]
 
 /-- The submodule of skew-adjoint matrices with respect to the bilinear form corresponding to
 the matrix `J`. -/
@@ -599,7 +590,7 @@ def skewAdjointMatricesSubmodule : Submodule R (Matrix n n R) :=
 @[simp]
 theorem mem_skewAdjointMatricesSubmodule :
     A₁ ∈ skewAdjointMatricesSubmodule J ↔ J.IsSkewAdjoint A₁ := by
-  erw [mem_pairSelfAdjointMatricesSubmodule]
+  rw [skewAdjointMatricesSubmodule, mem_pairSelfAdjointMatricesSubmodule]
   simp [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair]
 
 end MatrixAdjoints

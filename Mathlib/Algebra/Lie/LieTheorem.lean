@@ -91,7 +91,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       suffices Submodule.map (T χ w) U ≤ U from this <| Submodule.mem_map_of_mem hx
       rw [Submodule.map_iSup, iSup_le_iff]
       rintro (_|i)
-      · simp [U', Submodule.map_span]
+      · simp [U']
       · exact (T_apply_succ w i).trans (le_iSup _ _) }
   have hzU (x : V) (hx : x ∈ U) : (π z) x ∈ U := by
     suffices Submodule.map (π z) U ≤ U from this <| Submodule.mem_map_of_mem hx
@@ -100,7 +100,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
   have trace_za_zero : (LieModule.toEnd R A _ ⁅z, a⁆).trace R U = 0 := by
     have hres : LieModule.toEnd R A U ⁅z, a⁆ = ⁅(π z).restrict hzU, LieModule.toEnd R A U a⁆ := by
       ext ⟨x, hx⟩
-      show ⁅⁅z, a⁆, x⁆ = ⁅z, ⁅a, x⁆⁆ - ⁅a, ⁅z, x⁆⁆
+      change ⁅⁅z, a⁆, x⁆ = ⁅z, ⁅a, x⁆⁆ - ⁅a, ⁅z, x⁆⁆
       simp only [leibniz_lie z a, add_sub_cancel_right]
     rw [hres, LinearMap.trace_lie]
   have trace_T_U_zero (w : A) : (T χ w).trace R U = 0 := by
@@ -165,20 +165,17 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
   obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
-  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_not_mem hA hz
+  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_notMem hA hz
   let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
   let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
-
   set W : LieSubmodule k L V := weightSpaceOfIsLieTower k V χ₀
   obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ W z).HasEigenvalue c := by
     have : Nontrivial W := inferInstanceAs (Nontrivial (weightSpace V χ₀))
     apply Module.End.exists_hasEigenvalue_of_genEigenspace_eq_top
     exact LieModule.IsTriangularizable.maxGenEigenspace_eq_top z
-
   obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
   have hv' : ∀ (x : ↥A), ⁅x, v⁆ = χ₀ x • v := by
     simpa [W, weightSpaceOfIsLieTower, mem_weightSpace] using hv
-
   use (χ₀.comp π₁) + c • (e.comp π₂)
   refine nontrivial_of_ne ⟨v, ?_⟩ 0 ?_
   · rw [mem_weightSpace]
