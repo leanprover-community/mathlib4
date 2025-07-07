@@ -345,7 +345,7 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       sᶜ.toFinite (Set.nonempty_of_mem ha)
       (by intro h
-          simp only [Set.top_eq_univ, Set.compl_univ_iff] at h
+          simp only [Set.compl_univ_iff] at h
           simp only [h, Set.not_nonempty_empty] at hs_nonempty)
       hab
     let t := s ∩ g • s
