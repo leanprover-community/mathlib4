@@ -93,10 +93,8 @@ theorem stirlingFirst_self (n : ℕ) : stirlingFirst n n = 1 := by
 theorem stirlingFirst_succ_self_left (n : ℕ) : stirlingFirst (n + 1) n = (n + 1).choose 2 := by
   induction' n with n ih
   · simp
-  · rw [stirlingFirst_succ_succ, ih, stirlingFirst_self]
-    simp [choose_succ_succ]
-    ring
-
+  · rw [stirlingFirst_succ_succ, ih, stirlingFirst_self, mul_one, Nat.choose_succ_succ (n + 1),
+      Nat.choose_one_right]
 
 theorem stirlingFirst_one_right (n : ℕ) : stirlingFirst (n + 1) 1 = n.factorial := by
   induction' n with n hn
@@ -166,8 +164,7 @@ theorem stirlingSecond_succ_self_left (n : ℕ) :
     stirlingSecond (n + 1) n = (n + 1).choose 2 := by
   induction' n with n ih
   · simp
-  · rw [stirlingSecond_succ_succ, ih, stirlingSecond_self]
-    simp [choose_succ_succ]
-    ring
+  · rw [stirlingSecond_succ_succ, ih, stirlingSecond_self, mul_one,
+      Nat.choose_succ_succ (n + 1), Nat.choose_one_right]
 
 end Nat
