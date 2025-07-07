@@ -20,8 +20,8 @@ universe u v
 noncomputable section
 
 theorem UnivLE.ofEssSurj (w : (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj) :
-    UnivLE.{max u v, v} :=
-  fun α ↦ by
+    UnivLE.{max u v, v} where
+  small α := by
     obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage α
     exact ⟨a', ⟨(Iso.toEquiv m).symm.trans Equiv.ulift⟩⟩
 

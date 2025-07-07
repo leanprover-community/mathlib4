@@ -17,7 +17,7 @@ in general, but we can still register them as `PartialEquiv`.
 ## Main definitions
 
 * `PartialHomeomorph.extend`: compose a partial homeomorphism into `H` with the model `I`,
-to obtain a `PartialEquiv` into `E`. Extended charts are an example of this.
+  to obtain a `PartialEquiv` into `E`. Extended charts are an example of this.
 * `extChartAt I x`: the extended chart at `x`, obtained by composing the `chartAt H x` with `I`.
   Since the target is in general not open, this is not a partial homeomorphism in general, but
   we register them as `PartialEquiv`s.
@@ -31,11 +31,11 @@ to obtain a `PartialEquiv` into `E`. Extended charts are an example of this.
 `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
-modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
+  modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
 * `LocallyCompactSpace.of_locallyCompact_manifold`: a locally compact manifold must be modelled
-on a locally compact space.
+  on a locally compact space.
 * `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifolds must be modelled
-on a finite-dimensional space
+  on a finite-dimensional space
 
 -/
 
@@ -136,16 +136,23 @@ lemma extend_image_target_mem_nhds {x : M} (hx : x ∈ f.source) :
     f.extend_coe, Set.preimage_comp, I.preimage_image f.target]
   exact (f.continuousAt hx).preimage_mem_nhds (f.open_target.mem_nhds (f.map_source hx))
 
-theorem extend_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x ∈ f.source)
+theorem extend_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x ∈ f.source)
     {s : Set M} (h : s ∈ 𝓝 x) : (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_boundaryless hx, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
-theorem extend_image_nhd_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.source)
+@[deprecated (since := "2025-05-22")]
+alias extend_image_nhd_mem_nhds_of_boundaryless := extend_image_nhds_mem_nhds_of_boundaryless
+
+theorem extend_image_nhds_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.source)
     (h'x : f.extend I x ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 x) :
     (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
+
+@[deprecated (since := "2025-05-22")]
+alias extend_image_nhd_mem_nhds_of_mem_interior_range :=
+  extend_image_nhds_mem_nhds_of_mem_interior_range
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
 
@@ -264,6 +271,11 @@ theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M �
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
     ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
+
+theorem extend_preimage_mem_nhds_of_mem_nhdsWithin {s : Set E} {x : M} (hx : x ∈ f.source)
+    (hs : s ∈ 𝓝[range I] (f.extend I x)) :
+    (f.extend I) ⁻¹' s ∈ 𝓝 x := by
+  rwa [← map_extend_nhds (I := I) f hx] at hs
 
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/
@@ -444,17 +456,26 @@ theorem map_extChartAt_nhds_of_boundaryless [I.Boundaryless] (x : M) :
   rw [extChartAt]
   exact map_extend_nhds_of_boundaryless (chartAt H x) (mem_chart_source H x)
 
-theorem extChartAt_image_nhd_mem_nhds_of_mem_interior_range {x y} (hx : y ∈ (extChartAt I x).source)
+theorem extChartAt_image_nhds_mem_nhds_of_mem_interior_range {x y}
+    (hx : y ∈ (extChartAt I x).source)
     (h'x : extChartAt I x y ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 y) :
     (extChartAt I x) '' s ∈ 𝓝 (extChartAt I x y) := by
   rw [extChartAt]
-  exact extend_image_nhd_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
+  exact extend_image_nhds_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
+
+@[deprecated (since := "2025-05-22")]
+alias extChartAt_image_nhd_mem_nhds_of_mem_interior_range :=
+  extChartAt_image_nhds_mem_nhds_of_mem_interior_range
 
 variable {x} in
-theorem extChartAt_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless]
+theorem extChartAt_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless]
     {x : M} (hx : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
   rw [extChartAt]
-  exact extend_image_nhd_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
+  exact extend_image_nhds_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
+
+@[deprecated (since := "2025-05-22")]
+alias extChartAt_image_nhd_mem_nhds_of_boundaryless :=
+  extChartAt_image_nhds_mem_nhds_of_boundaryless
 
 theorem extChartAt_target_mem_nhdsWithin' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=
@@ -639,6 +660,12 @@ theorem map_extChartAt_symm_nhdsWithin_range (x : M) :
     map (extChartAt I x).symm (𝓝[range I] extChartAt I x x) = 𝓝 x :=
   map_extChartAt_symm_nhdsWithin_range' (mem_extChartAt_source x)
 
+theorem extChartAt_preimage_mem_nhds_of_mem_nhdsWithin {s : Set E} {x x' : M}
+    (hx : x' ∈ (extChartAt I x).source)
+    (hs : s ∈ 𝓝[range I] (extChartAt I x x')) :
+    (extChartAt I x) ⁻¹' s ∈ 𝓝 x' :=
+  extend_preimage_mem_nhds_of_mem_nhdsWithin _ (by simpa using hx) hs
+
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/
 theorem extChartAt_preimage_mem_nhdsWithin' {x x' : M} (h : x' ∈ (extChartAt I x).source)
@@ -806,7 +833,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
     hcom.image_of_continuousOn <| (continuousOn_extChartAt x).mono hss
   apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := y)
   rw [← (extChartAt I x).right_inv h'y]
-  apply extChartAt_image_nhd_mem_nhds_of_mem_interior_range
+  apply extChartAt_image_nhds_mem_nhds_of_mem_interior_range
     (PartialEquiv.map_target (extChartAt I x) h'y) _ hmem
   simp only [(extChartAt I x).right_inv h'y]
   exact interior_mono (extChartAt_target_subset_range x) hy

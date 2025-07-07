@@ -112,7 +112,6 @@ noncomputable def transfiniteCompositionOfShapeιIteration :
     Φ.prop.TransfiniteCompositionOfShape J (Φ.ιIteration J) where
   isoBot := Φ.iterationFunctorObjBotIso J
   map_mem j hj := by
-    dsimp
     have := (Φ.iter (Order.succ j)).prop_map_succ j (Order.lt_succ_of_not_isMax hj)
     rw [prop_iff] at this ⊢
     simp only [Φ.iterationFunctor_obj j (Φ.iter (Order.succ j)) (Order.le_succ j),

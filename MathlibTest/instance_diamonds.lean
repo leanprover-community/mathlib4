@@ -114,24 +114,6 @@ end Units
 
 end SMul
 
-/-! ## `WithTop` (Type with point at infinity) instances -/
-
-
-section WithTop
-
-example (R : Type _) [h : StrictOrderedSemiring R] :
-    @WithTop.addCommMonoid R
-        (@NonUnitalNonAssocSemiring.toAddCommMonoid R
-          (@NonAssocSemiring.toNonUnitalNonAssocSemiring R
-            (@Semiring.toNonAssocSemiring R (@StrictOrderedSemiring.toSemiring R h)))) =
-      @OrderedAddCommMonoid.toAddCommMonoid (WithTop R)
-        (@WithTop.orderedAddCommMonoid R
-          (@OrderedCancelAddCommMonoid.toOrderedAddCommMonoid R
-            (@StrictOrderedSemiring.toOrderedCancelAddCommMonoid R h))) := by
-  with_reducible_and_instances rfl
-
-end WithTop
-
 /-! ## `Multiplicative` instances -/
 
 
@@ -247,6 +229,9 @@ example :
       ZMod.commRing p := by
   with_reducible_and_instances rfl
 
+-- We need `open Fin.CommRing`, as otherwise `Fin.instCommRing` is not an instance,
+-- so `with_reducible_and_instances` doesn't have the desired effect.
+open Fin.CommRing in
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
   with_reducible_and_instances rfl
 

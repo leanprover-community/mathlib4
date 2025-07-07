@@ -67,6 +67,7 @@ under composition and inverses.
 -/
 @[ext]
 structure Subgroupoid (C : Type u) [Groupoid C] where
+  /-- The arrow choice for each pair of vertices -/
   arrows : ∀ c d : C, Set (c ⟶ d)
   protected inv : ∀ {c d} {p : c ⟶ d}, p ∈ arrows c d → Groupoid.inv p ∈ arrows d c
   protected mul : ∀ {c d e} {p}, p ∈ arrows c d → ∀ {q}, q ∈ arrows d e → p ≫ q ∈ arrows c e
@@ -278,7 +279,7 @@ structure IsWide : Prop where
 theorem isWide_iff_objs_eq_univ : S.IsWide ↔ S.objs = Set.univ := by
   constructor
   · rintro h
-    ext x; constructor <;> simp only [top_eq_univ, mem_univ, imp_true_iff, forall_true_left]
+    ext x; constructor <;> simp only [mem_univ, imp_true_iff, forall_true_left]
     apply mem_objs_of_src S (h.wide x)
   · rintro h
     refine ⟨fun c => ?_⟩

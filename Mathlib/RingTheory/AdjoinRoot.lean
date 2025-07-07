@@ -199,7 +199,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
       rw [aeval_C]
       rfl)
     (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
-    rw [_root_.map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
+    rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
     rfl
 
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
@@ -307,8 +307,8 @@ theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
   ⟨fun f g =>
     algHom_ext
       (@inv_unique _ _ (algebraMap R S r) _ _
-        (by rw [← f.commutes, ← _root_.map_mul, algebraMap_eq, root_isInv, map_one])
-        (by rw [← g.commutes, ← _root_.map_mul, algebraMap_eq, root_isInv, map_one]))⟩
+        (by rw [← f.commutes, ← map_mul, algebraMap_eq, root_isInv, map_one])
+        (by rw [← g.commutes, ← map_mul, algebraMap_eq, root_isInv, map_one]))⟩
 
 end AdjoinInv
 
@@ -470,6 +470,22 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
       have := Finset.mem_univ i
       contradiction
 
+lemma _root_.Polynomial.Monic.free_adjoinRoot (hg : g.Monic) : Module.Free R (AdjoinRoot g) :=
+  .of_basis (powerBasis' hg).basis
+
+lemma _root_.Polynomial.Monic.finite_adjoinRoot (hg : g.Monic) : Module.Finite R (AdjoinRoot g) :=
+  .of_basis (powerBasis' hg).basis
+
+/-- An unwrapped version of `AdjoinRoot.free_of_monic` for better discoverability. -/
+lemma _root_.Polynomial.Monic.free_quotient (hg : g.Monic) :
+    Module.Free R (R[X] ⧸ Ideal.span {g}) :=
+  hg.free_adjoinRoot
+
+/-- An unwrapped version of `AdjoinRoot.finite_of_monic` for better discoverability. -/
+lemma _root_.Polynomial.Monic.finite_quotient (hg : g.Monic) :
+    Module.Finite R (R[X] ⧸ Ideal.span {g}) :=
+  hg.finite_adjoinRoot
+
 variable [Field K] {f : K[X]}
 
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
@@ -478,7 +494,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine (minpoly.unique K _ f'_monic ?_ ?_).symm
-  · rw [_root_.map_mul, aeval_eq, mk_self, zero_mul]
+  · rw [map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
@@ -813,7 +829,7 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
           (aeval pb.gen g) := by
   simp only [quotientEquivQuotientMinpolyMap, toRingEquiv_eq_coe, symm_trans_apply,
     quotEquivQuotMap_symm_apply_mk, ofRingEquiv_symm_apply, quotientEquiv_symm_mk,
-    toRingEquiv_symm, RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
+    RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
     symm_toRingEquiv]
 
 end PowerBasis
@@ -828,11 +844,3 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
-
-variable (R) in
-theorem Polynomial.exists_dvd_map_of_isAlgebraic [CommRing R] [CommRing S] [NoZeroDivisors S]
-    [Algebra R S] [Algebra.IsAlgebraic R S] (f : S[X]) (hf : f ≠ 0) :
-    ∃ g : R[X], g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
-  have ⟨g, ne, eq⟩ := (id ⟨f, hf, by simp⟩ : IsAlgebraic S (AdjoinRoot.root f)).restrictScalars R
-  ⟨g, ne, by rwa [aeval_def, IsScalarTower.algebraMap_eq R S, ← eval₂_map, ← aeval_def,
-    AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero] at eq⟩

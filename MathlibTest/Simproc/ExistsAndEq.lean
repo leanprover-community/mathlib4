@@ -53,6 +53,7 @@ a : X × Y
 ⊢ (∃ a_1 b, (P (a_1, b) ∧ (a_1, b) = a) ∧ Q (a_1, b)) ↔ P a ∧ Q a
 -/
 #guard_msgs in
+set_option linter.unusedSimpArgs false in
 example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
     (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
   simp only [Prod.exists, existsAndEq]

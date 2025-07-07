@@ -27,9 +27,6 @@ If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
 
-
-suppress_compilation
-
 universe v w x u
 
 open CategoryTheory
@@ -86,11 +83,11 @@ def associator (M : ModuleCat.{v} R) (N : ModuleCat.{w} R) (K : ModuleCat.{x} R)
 
 /-- (implementation) the left unitor for R-modules -/
 def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
+  (TensorProduct.lid R M).toModuleIso
 
 /-- (implementation) the right unitor for R-modules -/
 def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
+  (TensorProduct.rid R M).toModuleIso
 
 @[simps -isSimp]
 instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) where
@@ -175,11 +172,8 @@ namespace MonoidalCategory
 
 @[simp]
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
-    (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
+    (f ⊗ₘ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
-
-@[deprecated (since := "2024-09-30")] alias hom_apply := tensorHom_tmul
-
 
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
@@ -233,7 +227,7 @@ variable (f : M₁ → M₂ → M₃) (h₁ : ∀ m₁ m₂ n, f (m₁ + m₂) n
   (h₄ : ∀ (a : R) m n, f m (a • n) = a • f m n)
 
 /-- Construct for morphisms from the tensor product of two objects in `ModuleCat`. -/
-noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
+def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
   ofHom <| TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
 
 @[simp]

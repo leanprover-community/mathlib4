@@ -19,16 +19,12 @@ namespace List
 
 @[simp]
 theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
-  Set.eq_empty_iff_forall_not_mem.trans eq_nil_iff_forall_not_mem.symm
-
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
-lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
+  Set.eq_empty_iff_forall_notMem.trans eq_nil_iff_forall_not_mem.symm
 
 @[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
 
-theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
+theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
+    Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
@@ -39,14 +35,14 @@ theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and, eq_self_iff_true, insertIdx_succ_cons] at h
-      rw [Nat.succ_inj']
+    · simp only [insertIdx_succ_cons] at h
+      rw [Nat.succ_inj]
       refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
 
-@[deprecated (since := "2024-10-21")]
-alias injOn_insertNth_index_of_not_mem := injOn_insertIdx_index_of_not_mem
+@[deprecated (since := "2025-05-23")]
+alias injOn_insertIdx_index_of_not_mem := injOn_insertIdx_index_of_notMem
 
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
@@ -105,7 +101,7 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
   | _ :: _, [], _ => rfl
   | [], _ :: _, _ => rfl
   | a :: as, b :: bs, s => by
-    simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
+    simp only [mapAccumr₂, mapAccumr₂_eq_foldr f as]
     rfl
 
 end MapAccumr

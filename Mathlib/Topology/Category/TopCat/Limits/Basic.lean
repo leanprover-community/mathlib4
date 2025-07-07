@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Adjunctions
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
@@ -131,7 +133,7 @@ end IsLimit
 
 variable (F : J ⥤ TopCat.{u})
 
-theorem limit_topology [HasLimit F]:
+theorem limit_topology [HasLimit F] :
     (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
   induced_of_isLimit _ (limit.isLimit _)
 
@@ -181,7 +183,7 @@ instance topologicalSpaceCoconePtOfCoconeForget :
 of the underlying cocone of types, this is a cocone for `F` whose point is
 `c.pt` with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
 @[simps pt ι_app]
-def coconeOfCoconeForget  : Cocone F where
+def coconeOfCoconeForget : Cocone F where
   pt := of (coconePtOfCoconeForget c)
   ι :=
     { app j := ofHom (ContinuousMap.mk (c.ι.app j) (by
@@ -226,7 +228,7 @@ theorem coinduced_of_isColimit :
     IsColimit.comp_coconePointUniqueUpToIso_hom hc' hc j
   apply (homeoOfIso e).coinduced_eq.symm.trans
   dsimp [coconeOfCoconeForget_pt, c', topologicalSpaceCoconePtOfCoconeForget]
-  simp only [coinduced_iSup, c']
+  simp only [coinduced_iSup]
   conv_rhs => simp only [← he]
   rfl
 
@@ -251,7 +253,7 @@ end IsColimit
 
 variable (F)
 
-theorem colimit_topology (F : J ⥤ TopCat.{u}) [HasColimit F]:
+theorem colimit_topology (F : J ⥤ TopCat.{u}) [HasColimit F] :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit _)
 

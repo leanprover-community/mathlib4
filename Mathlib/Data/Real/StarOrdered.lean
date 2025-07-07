@@ -15,8 +15,8 @@ open scoped NNReal
 `ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
 want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
 In addition, providing this instance here makes it available earlier in the import
-hierarchy; otherwise in order to access it we would need to import `Mathlib.Analysis.RCLike.Basic`.
--/
+hierarchy; otherwise in order to access it we would need to import
+`Mathlib/Analysis/RCLike/Basic.lean`. -/
 instance Real.instStarOrderedRing : StarOrderedRing ℝ :=
   StarOrderedRing.of_nonneg_iff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨√r, (mul_self_sqrt hr).symm⟩, ?_⟩

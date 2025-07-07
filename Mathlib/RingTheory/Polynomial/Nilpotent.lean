@@ -17,8 +17,8 @@ import Mathlib.RingTheory.Polynomial.Tower
 This file is a place for results related to nilpotency in (single-variable) polynomial rings.
 
 ## Main results:
- * `Polynomial.isNilpotent_iff`
- * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
+* `Polynomial.isNilpotent_iff`
+* `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
 
 -/
 
@@ -90,8 +90,8 @@ protected lemma isNilpotent_iff :
 
 @[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
-  simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi
+  simp only [Polynomial.isNilpotent_iff]
+  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_gt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
   · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
   · simpa [hi, revAt_le] using h (N - i)
@@ -141,7 +141,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     intros I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
     have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
-      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← _root_.map_mul, hQ, map_one, degree_one]
+      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← map_mul, hQ, map_one, degree_one]
     have hcoeff : (f P).coeff n = 0 := by
       refine coeff_eq_zero_of_degree_lt ?_
       rw [hPQ.1]
@@ -162,7 +162,7 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
   have : ∀ i, coeff (C r + X * P) (i + 1) = coeff P i := by simp
   simp_rw [isUnit_iff_coeff_isUnit_isNilpotent, Nat.forall_ne_zero_iff, this]
   simp only [coeff_add, coeff_C_zero, mul_coeff_zero, coeff_X_zero, zero_mul, add_zero,
-    and_congr_right_iff, ← Polynomial.isNilpotent_iff]
+    ← Polynomial.isNilpotent_iff]
 
 lemma isUnit_iff' :
     IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X)  := by

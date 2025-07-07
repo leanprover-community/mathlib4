@@ -14,7 +14,8 @@ as such a structure must be trivial (`⊥ = x = ⊤` for all `x`).
 The same applies to any superclasses, e.g. combining `StrictOrderedSemiring` with `CompleteLattice`.
 -/
 
-example {α : Type*} [OrderedCancelAddCommMonoid α] [BoundedOrder α] [Nontrivial α] : False :=
+example {α : Type*} [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+    [BoundedOrder α] [Nontrivial α] : False :=
   have top_pos := pos_of_lt_add_right (bot_le.trans_lt (add_lt_add_left bot_lt_top (⊥ : α)))
   have top_add_top_lt_self := lt_add_of_le_of_pos (@le_top _ _ _ (⊤ + ⊤)) top_pos
   top_add_top_lt_self.false

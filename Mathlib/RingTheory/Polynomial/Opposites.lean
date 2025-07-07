@@ -14,7 +14,7 @@ over a semiring and the polynomial ring over the opposite semiring. -/
 
 open Polynomial
 
-open Polynomial MulOpposite
+open MulOpposite
 
 variable {R : Type*} [Semiring R]
 
@@ -90,7 +90,7 @@ theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (u
 @[simp]
 theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree := by
   by_cases p0 : p = 0
-  · simp only [p0, _root_.map_zero, natDegree_zero, unop_zero]
+  · simp only [p0, map_zero, natDegree_zero, unop_zero]
   · simp only [p0, natDegree_eq_support_max', Ne, EmbeddingLike.map_eq_zero_iff, not_false_iff,
       support_opRingEquiv, unop_eq_zero_iff]
 

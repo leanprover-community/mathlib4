@@ -126,7 +126,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
   ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
-  simp only [Category.comp_id, Category.id_comp, Category.assoc, End.one_def, eqToHom_refl,
+  simp only [Category.comp_id, Category.id_comp, End.one_def, eqToHom_refl,
     Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply, biproduct.components]
   split_ifs with h
   · cases h
@@ -146,7 +146,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Matrix.mul_apply, Limits.biproduct.components,
     HomOrthogonal.matrixDecomposition_apply, Category.comp_id, Category.id_comp, Category.assoc,
-    End.mul_def, eqToHom_refl, eqToHom_trans_assoc, Finset.sum_congr]
+    End.mul_def, eqToHom_refl, eqToHom_trans_assoc]
   conv_lhs => rw [← Category.id_comp w, ← biproduct.total]
   simp only [Preadditive.sum_comp, Preadditive.comp_sum]
   apply Finset.sum_congr_set

@@ -416,7 +416,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
   refine ⟨H.subtype '' S, ?_, ?_⟩
   · have : H.subtype '' (S * H'') = H.subtype '' S * H''.map H.subtype := image_mul H.subtype
     rw [← this, cmem.mul_eq]
-    simp [Set.ext_iff]
+    simp
   · rw [← cmem.card_mul_card]
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
@@ -432,7 +432,7 @@ lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
   refine ⟨H.subtype '' S, ?_, ?_⟩
   · have : H.subtype '' (H'' * S) = H''.map H.subtype * H.subtype '' S := image_mul H.subtype
     rw [← this, cmem.mul_eq]
-    simp [Set.ext_iff]
+    simp
   · have : Nat.card H'' * Nat.card S = Nat.card H := cmem.card_mul_card
     rw [← this]
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
@@ -472,7 +472,7 @@ theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
       rw [equiv_fst_eq_mul_inv]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
       -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
-      rw [equiv_fst_eq_mul_inv]; simp [equiv_fst_eq_mul_inv, ← mul_assoc]
+      rw [equiv_fst_eq_mul_inv]; simp [← mul_assoc]
 
 theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
     (hHT.equiv g₁).snd = (hHT.equiv g₂).snd ↔ RightCosetEquivalence H g₁ g₂ := by
@@ -589,7 +589,7 @@ alias _root_.Subgroup.MemLeftTransversals.toEquiv := leftQuotientEquiv
 @[to_additive "A left transversal is finite iff the subgroup has finite index."]
 theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := by
   rw [← h.leftQuotientEquiv.finite_iff]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient, fun _ ↦ finite_quotient_of_finiteIndex⟩
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemLeftTransversals.finite_iff := finite_left_iff
@@ -653,7 +653,7 @@ alias _root_.Subgroup.MemRightTransversals.toEquiv := rightQuotientEquiv
 theorem finite_right_iff (h : IsComplement H T) : Finite T ↔ H.FiniteIndex := by
   rw [← h.rightQuotientEquiv.finite_iff,
     (QuotientGroup.quotientRightRelEquivQuotientLeftRel H).finite_iff]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient, fun _ ↦ finite_quotient_of_finiteIndex⟩
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemRightTransversals.finite_iff := finite_right_iff
@@ -730,7 +730,7 @@ noncomputable instance : MulAction F H.LeftTransversal where
       · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
       · rintro ⟨-, t', ht', rfl⟩ h
         replace h := QuotientAction.inv_mul_mem f⁻¹ h
-        simp only [Subtype.ext_iff, Subtype.coe_mk, smul_left_cancel_iff, inv_smul_smul] at h ⊢
+        simp only [Subtype.ext_iff, smul_left_cancel_iff, inv_smul_smul] at h ⊢
         exact Subtype.ext_iff.mp (ht2 ⟨t', ht'⟩ h)⟩
   one_smul T := Subtype.ext (one_smul F (T : Set G))
   mul_smul f₁ f₂ T := Subtype.ext (mul_smul f₁ f₂ (T : Set G))

@@ -46,7 +46,7 @@ theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p
     simp only [takeWhile_nil, Bool.not_eq_true, true_iff]
     intro h
     simp at h
-  | cons x xs IH => by_cases hp : p x <;> simp [hp, IH]
+  | cons x xs IH => by_cases hp : p x <;> simp [hp]
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
   induction l with simp [takeWhile] at hx
@@ -77,10 +77,10 @@ lemma find?_eq_head?_dropWhile_not :
     set ph := p head with phh
     rcases ph with rfl | rfl
     · have phh' : ¬(p head = true) := by simp [phh.symm]
-      rw [find?_cons_of_neg _ phh', dropWhile_cons_of_pos]
+      rw [find?_cons_of_neg phh', dropWhile_cons_of_pos]
       · exact hi
       · simpa using phh
-    · rw [find?_cons_of_pos _ phh.symm, dropWhile_cons_of_neg]
+    · rw [find?_cons_of_pos phh.symm, dropWhile_cons_of_neg]
       · simp
       · simpa using phh
 

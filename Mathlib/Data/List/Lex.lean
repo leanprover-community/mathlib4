@@ -17,11 +17,11 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `Mathlib.Data.Finset.Colex`: Colexicographic order on finite sets.
-* `Mathlib.Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Mathlib.Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Mathlib.Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
-* `Mathlib.Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Mathlib/Data/Finset/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib/Data/Pi/Lex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
 
 
@@ -37,9 +37,7 @@ variable {α : Type u}
 
 theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
-
-@[deprecated (since := "2025-03-14")] alias Lex.cons_iff := lex_cons_iff
+  ⟨fun h => by obtain - | h | h := h; exacts [(irrefl_of r a h).elim, h], Lex.cons⟩
 
 @[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
 
@@ -104,8 +102,8 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
       · exact Lex.rel h
       · exact Lex.cons h
     · rcases h with (_ | h | h)
-      · exact Or.inr ⟨rfl, h⟩
       · exact Or.inl h
+      · exact Or.inr ⟨rfl, h⟩
 
 theorem append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
   | _, _, _, nil => nil

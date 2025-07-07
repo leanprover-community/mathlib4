@@ -3,8 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Derivative of the cartesian product of functions
@@ -378,7 +379,7 @@ variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGrou
 @[simp]
 theorem hasStrictFDerivAt_pi' :
     HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x := by
-  simp only [hasStrictFDerivAt_iff_isLittleO, ContinuousLinearMap.coe_pi]
+  simp only [hasStrictFDerivAt_iff_isLittleO]
   exact isLittleO_pi
 
 @[fun_prop]
@@ -404,7 +405,7 @@ theorem hasStrictFDerivAt_pi :
 theorem hasFDerivAtFilter_pi' :
     HasFDerivAtFilter Φ Φ' x L ↔
       ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L := by
-  simp only [hasFDerivAtFilter_iff_isLittleO, ContinuousLinearMap.coe_pi]
+  simp only [hasFDerivAtFilter_iff_isLittleO]
   exact isLittleO_pi
 
 theorem hasFDerivAtFilter_pi :

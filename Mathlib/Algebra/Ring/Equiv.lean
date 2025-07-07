@@ -289,6 +289,14 @@ theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).sy
   rfl
 
 @[simp]
+theorem coe_toMulEquiv_symm (e : R ≃+* S) : (e.symm : S ≃* R) = (e : R ≃* S).symm :=
+  rfl
+
+@[simp]
+theorem coe_toAddEquiv_symm (e : R ≃+* S) : (e.symm : S ≃+ R) = (e : R ≃+ S).symm :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 
@@ -372,12 +380,6 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     α ≃+* β ≃ (αᵐᵒᵖ ≃+* βᵐᵒᵖ) where
   toFun f := { AddEquiv.mulOp f.toAddEquiv, MulEquiv.op f.toMulEquiv with }
   invFun f := { AddEquiv.mulOp.symm f.toAddEquiv, MulEquiv.op.symm f.toMulEquiv with }
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 /-- The 'unopposite' of a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. Inverse to `RingEquiv.op`. -/
 @[simp]
@@ -531,10 +533,10 @@ def prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAss
   toEquiv := Equiv.prodCongr f g
   map_mul' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_mul, map_mul, Prod.snd_mul, Prod.mk_mul_mk]
+      Prod.map, map_mul, Prod.mk_mul_mk]
   map_add' _ _ := by
     simp only [Equiv.toFun_as_coe, Equiv.prodCongr_apply, EquivLike.coe_coe,
-      Prod.map, Prod.fst_add, map_add, Prod.snd_add, Prod.mk_add_mk]
+      Prod.map, map_add, Prod.mk_add_mk]
 
 @[simp]
 theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
@@ -590,7 +592,7 @@ theorem coe_monoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S �
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem coe_addMonoidHom_trans [NonUnitalNonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+ S') = (e₂ : S →+ S').comp ↑e₁ :=
   rfl
 
@@ -883,6 +885,23 @@ theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRi
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
     (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
   rfl
+
+variable (α β R) in
+/-- `Equiv.sumArrowEquivProdArrow` as a ring isomorphism. -/
+def sumArrowEquivProdArrow : (α ⊕ β → R) ≃+* (α → R) × (β → R) where
+  __ := Equiv.sumArrowEquivProdArrow α β R
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma sumArrowEquivProdArrow_apply (x) :
+    sumArrowEquivProdArrow α β R x = Equiv.sumArrowEquivProdArrow α β R x := rfl
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
+    (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
 
 end RingEquiv
 

@@ -87,11 +87,11 @@ theorem forall₂_cons_right_iff {b l u} :
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
-    simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff, true_and]
+    simp only [forall₂_nil_left_iff, forall_prop_of_false not_mem_nil, imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
-      @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
-    simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
+      exists_and_left]
+    simp only [and_comm, and_assoc, ← exists_and_right]
 
 @[simp]
 theorem forall₂_map_left_iff {f : γ → α} :
@@ -169,7 +169,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
           (IH h₁ fun h => h₂ <| by
-            simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
+            simp only [zip, zipWith, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
 
 theorem forall₂_take : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (take n l₁) (take n l₂)

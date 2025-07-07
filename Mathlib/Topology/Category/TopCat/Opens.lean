@@ -134,9 +134,6 @@ theorem coe_inclusion' {X : TopCat} {U : Opens X} :
 theorem isOpenEmbedding {X : TopCat.{u}} (U : Opens X) : IsOpenEmbedding (inclusion' U) :=
   U.2.isOpenEmbedding_subtypeVal
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
-
 /-- The inclusion of the top open subset (i.e. the whole space) is an isomorphism.
 -/
 def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
@@ -310,9 +307,6 @@ lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y
     (hf : IsOpenEmbedding f) : Function.Injective hf.isOpenMap.functor.obj :=
   fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.injective (congr_arg (↑· : Opens Y → Set Y) e))
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.functor_obj_injective := IsOpenEmbedding.functor_obj_injective
-
 namespace Topology.IsInducing
 
 /-- Given an inducing map `X ⟶ Y` and some `U : Opens X`, this is the union of all open sets
@@ -376,9 +370,6 @@ theorem isOpenEmbedding_obj_top {X : TopCat} (U : Opens X) :
   ext1
   exact Set.image_univ.trans Subtype.range_coe
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_obj_top := isOpenEmbedding_obj_top
-
 @[simp]
 theorem inclusion'_map_eq_top {X : TopCat} (U : Opens X) : (Opens.map U.inclusion').obj U = ⊤ := by
   ext1
@@ -413,7 +404,6 @@ lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
     exact x.2
   · intro h
     exact ⟨⟨x, h⟩, rfl⟩
-@[deprecated (since := "2024-09-07")] alias set_range_forget_map_inclusion' := set_range_inclusion'
 
 @[simp]
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :

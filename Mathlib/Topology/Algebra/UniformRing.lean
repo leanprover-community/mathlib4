@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Completion of topological rings:
@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.UniformGroup.Basic
 This files endows the completion of a topological ring with a ring structure.
 More precisely the instance `UniformSpace.Completion.ring` builds a ring structure
 on the completion of a ring endowed with a compatible uniform structure in the sense of
-`UniformAddGroup`. There is also a commutative version when the original ring is commutative.
+`IsUniformAddGroup`. There is also a commutative version when the original ring is commutative.
 Moreover, if a topological ring is an algebra over a commutative semiring, then so is its
 `UniformSpace.Completion`.
 
@@ -63,7 +63,7 @@ theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
   ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 
-variable [UniformAddGroup α]
+variable [IsUniformAddGroup α]
 
 instance : ContinuousMul (Completion α) where
   continuous_mul := by
@@ -139,7 +139,7 @@ def coeRingHom : α →+* Completion α where
 theorem continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :=
   continuous_coe α
 
-variable {β : Type u} [UniformSpace β] [Ring β] [UniformAddGroup β] [IsTopologicalRing β]
+variable {β : Type u} [UniformSpace β] [Ring β] [IsUniformAddGroup β] [IsTopologicalRing β]
   (f : α →+* β) (hf : Continuous f)
 
 /-- The completion extension as a ring morphism. -/
@@ -180,8 +180,8 @@ def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
 
 section Algebra
 
-variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [IsTopologicalRing A] (R : Type*)
-  [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
+variable (A : Type*) [Ring A] [UniformSpace A] [IsUniformAddGroup A] [IsTopologicalRing A]
+  (R : Type*) [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
@@ -207,7 +207,7 @@ end Algebra
 
 section CommRing
 
-variable (R : Type*) [CommRing R] [UniformSpace R] [UniformAddGroup R] [IsTopologicalRing R]
+variable (R : Type*) [CommRing R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
 
 instance commRing : CommRing (Completion R) :=
   { Completion.ring with

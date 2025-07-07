@@ -63,15 +63,15 @@ such as typeclass instances and `0 : α`.
 -/
 structure Context where
   /-- The type of the ambient additive commutative group or monoid. -/
-  α       : Expr
+  α : Expr
   /-- The universe level for `α`. -/
-  univ    : Level
+  univ : Level
   /-- The expression representing `0 : α`. -/
-  α0      : Expr
+  α0 : Expr
   /-- Specify whether we are in an additive commutative group or an additive commutative monoid. -/
   isGroup : Bool
   /-- The `AddCommGroup α` or `AddCommMonoid α` expression. -/
-  inst    : Expr
+  inst : Expr
 
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext (e : Expr) : MetaM Context := do
@@ -186,7 +186,7 @@ theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
-  simp [term, zero_nsmul, one_nsmul]
+  simp [term, zero_nsmul]
 
 theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
@@ -397,8 +397,6 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
       evalAtom e
   | _ => evalAtom e
 
-open Lean Elab Meta Tactic
-
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let tm := if tk.isSome then .default else .reducible
@@ -459,17 +457,18 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 -/
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let ctx ← Simp.mkContext
-    (config := { zetaDelta := cfg.zetaDelta })
-    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
-    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
-    let ctx' := ctx.setSimpTheorems #[← thms.foldlM (·.addConst ·) {:_}]
+    let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta })
+      (simpTheorems := #[← thms.foldlM (·.addConst ·) {}])
+      (congrTheorems := ← getSimpCongrTheorems)
     pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+  let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta, singlePass := true })
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -486,7 +485,7 @@ partial def abelNFCore
           guard e.isApp -- all interesting group expressions are applications
           let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
           guard !a.isAtom
-          let r ← simp { expr := a, proof? := pa }
+          let r ← liftMetaM <| simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
         catch _ => pure <| .continue
@@ -497,7 +496,7 @@ partial def abelNFCore
     evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
 
-open Elab.Tactic Parser.Tactic
+open Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
@@ -564,3 +563,9 @@ macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
 
 end Mathlib.Tactic.Abel
+
+/-!
+We register `abel` with the `hint` tactic.
+-/
+
+register_hint abel

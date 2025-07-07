@@ -3,9 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.Normed.Order.Basic
 
 /-!
 # Asymptotic equivalence
@@ -124,7 +122,7 @@ theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β)
 
 theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
-  simp (config := { unfoldPartialApp := true }) only [IsEquivalent, const, isLittleO_const_iff h]
+  simp +unfoldPartialApp only [IsEquivalent, const, isLittleO_const_iff h]
   constructor <;> intro h
   · have := h.sub (tendsto_const_nhds (x := -c))
     simp only [Pi.sub_apply, sub_neg_eq_add, sub_add_cancel, zero_add] at this
@@ -288,11 +286,22 @@ protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
     (fun x ↦ t x / v x) ~[l] fun x ↦ u x / w x := by
   simpa only [div_eq_mul_inv] using htu.mul hvw.inv
 
+protected theorem IsEquivalent.pow (h : t ~[l] u) (n : ℕ) : t ^ n ~[l] u ^ n := by
+  induction n with
+  | zero => simpa using IsEquivalent.refl
+  | succ _ ih => simpa [pow_succ] using ih.mul h
+
+protected theorem IsEquivalent.zpow (h : t ~[l] u) (z : ℤ) : t ^ z ~[l] u ^ z := by
+  match z with
+  | Int.ofNat _ => simpa using h.pow _
+  | Int.negSucc _ => simpa using (h.pow _).inv
+
 end mul_inv
 
 section NormedLinearOrderedField
 
-variable {α β : Type*} [NormedLinearOrderedField β] {u v : α → β} {l : Filter α}
+variable {α β : Type*} [NormedField β] [LinearOrder β] [IsStrictOrderedRing β]
+  {u v : α → β} {l : Filter α}
 
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :
     Tendsto v l atTop :=
@@ -403,5 +412,18 @@ theorem IsTheta.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h
 instance transIsThetaIsEquivalent :
     @Trans (α → β₂) (α → β) (α → β) (IsTheta l) (IsEquivalent l) (IsTheta l) where
   trans := IsTheta.trans_isEquivalent
+
+theorem IsEquivalent.comp_tendsto {α₂ : Type*} {f g : α₂ → β} {l' : Filter α₂}
+    (hfg : f ~[l'] g) {k : α → α₂} (hk : Filter.Tendsto k l l') : (f ∘ k) ~[l] (g ∘ k) :=
+  IsLittleO.comp_tendsto hfg hk
+
+@[simp]
+theorem isEquivalent_map {α₂ : Type*} {f g : α₂ → β} {k : α → α₂} :
+    f ~[Filter.map k l] g ↔ (f ∘ k) ~[l] (g ∘ k) :=
+  isLittleO_map
+
+theorem IsEquivalent.mono {f g : α → β} {l' : Filter α} (h : f ~[l'] g) (hl : l ≤ l') :
+    f ~[l] g :=
+  IsLittleO.mono h hl
 
 end Asymptotics

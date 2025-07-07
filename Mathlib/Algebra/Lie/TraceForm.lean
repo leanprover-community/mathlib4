@@ -24,12 +24,12 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 ## Main definitions
 
- * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-   on `L` called the trace Form.
- * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
-   representation of a Lie algebra vanishes.
- * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
-   form on `L` via the trace form construction.
+* `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
+  on `L` called the trace Form.
+* `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
+  representation of a Lie algebra vanishes.
+* `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
+  form on `L` via the trace form construction.
 -/
 
 variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -70,11 +70,11 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ y * (φ x * φ z)) := ?_
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
     _ = traceForm R L M x ⁅y, z⁆ := ?_
-  · simp only [LieHom.map_lie, Ring.lie_def, ← LinearMap.mul_eq_comp]
-  · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
+  · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
+  · simp only [sub_mul, map_sub, mul_assoc]
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
-      ← LinearMap.mul_eq_comp]
+      ← Module.End.mul_eq_comp]
 
 /-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint wrt
 the trace form. -/
@@ -161,7 +161,7 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
 lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
-    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = -B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ genWeightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
@@ -172,10 +172,10 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
     intro m n
     replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ (-1 : R), smul_eq_mul]
-    conv_lhs => rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
-      ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
+    conv_lhs => rw [pow_succ, Module.End.mul_eq_comp, LinearMap.comp_apply, ih, hB,
+      ← (φ x).comp_apply, ← Module.End.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
-    apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
+    refine LieSubmodule.iSup_induction (motive := fun m ↦ (B m₀) m = 0) _ hm₁ this (map_zero _) ?_
     aesop
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
@@ -226,7 +226,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     convert finite_genWeightSpaceOf_ne_bot R L M z
     exact LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)
   classical
-  have h := LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpaceOf R L M z
+  have h := LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
     simp [← LieSubmodule.iSup_toSubmodule]
   simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
@@ -408,8 +408,8 @@ lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   classical
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace' K L M)
-    (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K L M)
+    (LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpace' K L M)
+    (LieSubmodule.iSup_toSubmodule_eq_top.mpr <| iSup_genWeightSpace_eq_top' K L M)
   simp_rw [traceForm_apply_apply, LinearMap.trace_eq_sum_trace_restrict hds hxy,
     ← traceForm_genWeightSpace_eq K L M _ x y]
   rfl
