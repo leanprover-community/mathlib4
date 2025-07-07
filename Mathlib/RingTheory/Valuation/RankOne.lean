@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández
+Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Data.NNReal.Defs
 import Mathlib.RingTheory.Valuation.Basic
 
@@ -12,8 +13,9 @@ import Mathlib.RingTheory.Valuation.Basic
 We define rank one valuations.
 
 ## Main Definitions
-* `RankOne` : A valuation `v` has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
-  Note that this class contains the data of the inclusion of the codomain of `v` into `ℝ≥0`.
+* `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
+`MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
+of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
 
 ## Tags
 
@@ -22,7 +24,7 @@ valuation, rank one
 
 noncomputable section
 
-open Function Multiplicative
+open Function Multiplicative MonoidWithZeroHom
 
 open scoped NNReal
 
@@ -30,11 +32,12 @@ variable {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ
 
 namespace Valuation
 
-/-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
-  Note that this class includes the data of an inclusion morphism `Γ₀ → ℝ≥0`. -/
+/-- A valuation has rank one if it is nontrivial and its image (defined as
+`MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
+of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`. -/
 class RankOne (v : Valuation R Γ₀) where
   /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
-  hom : Γ₀ →*₀ ℝ≥0
+  hom : valueGroup₀ v →*₀ ℝ≥0
   strictMono' : StrictMono hom
   nontrivial' : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1
 
