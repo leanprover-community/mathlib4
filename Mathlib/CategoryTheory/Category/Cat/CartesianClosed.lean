@@ -49,12 +49,12 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
 /-- The isomorphism of categories of bifunctors given by currying. -/
 @[simps!]
 def curryingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (C × D ⥤ E) :=
-  isoOfEquiv CategoryTheory.currying Functor.curry_obj_uncurry_obj Functor.uncurry_obj_curry_obj
+  isoOfEquiv currying Functor.curry_obj_uncurry_obj Functor.uncurry_obj_curry_obj
 
 /-- The isomorphism of categories of bifunctors given by flipping the arguments. -/
 @[simps!]
 def flippingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (D ⥤ C ⥤ E) :=
-  isoOfEquiv CategoryTheory.flipping Functor.flip_flip Functor.flip_flip
+  isoOfEquiv flipping Functor.flip_flip Functor.flip_flip
 
 end
 
