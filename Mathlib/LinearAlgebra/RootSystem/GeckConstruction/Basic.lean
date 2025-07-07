@@ -369,14 +369,14 @@ private lemma lie_e_f_ne_aux₁ :
   classical
   ext (k | k)
   · rw [Matrix.transpose_apply, lie_e_f_ne_aux₀, Pi.zero_apply]
-  · rw [Matrix.transpose_apply]
-    have hij' : (j : ι) ≠ -i := by simpa using b.root_ne_neg_of_ne j.property i.property (by aesop)
-    simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
-      Matrix.fromBlocks_apply₂₁, Matrix.of_apply, Matrix.fromBlocks_apply₁₂, and_true, mul_ite,
-      mul_one, mul_zero, ← ite_and, Matrix.fromBlocks_apply₂₂, sub_self, P.ne_zero, reduceIte,
-      Finset.sum_const_zero, add_zero, hij', and_false, Base.chainBotCoeff_eq_zero,
-      CharP.cast_eq_zero, zero_add]
-    rw [Finset.sum_eq_single_of_mem j (Finset.mem_univ _) (by aesop)]
+  · suffices ((if k = i then ↑|b.cartanMatrix i j| else (0 : R)) -
+        ∑ x, if P.root x = P.root i + P.root j ∧ P.root k = P.root x - P.root j then
+          (P.chainTopCoeff j x : R) + 1 else 0) = 0 by
+      have hij : (j : ι) ≠ -i := by simpa using b.root_ne_neg_of_ne j.property i.property (by aesop)
+      have aux : ∀ x ∈ Finset.univ,
+        x ≠ j → (if x = j ∧ k = i then ↑|b.cartanMatrix i x| else 0) = (0 : R) := by aesop
+      simpa [e, f, P.ne_zero, hij, -indexNeg_neg, ← ite_and,
+        Finset.sum_eq_single_of_mem j (Finset.mem_univ _) aux]
     rcases eq_or_ne k i with rfl | hk; swap
     · rw [if_neg (by tauto), Finset.sum_ite_of_false (by aesop)]; simp
     by_cases hij_mem : P.root i + P.root j ∈ range P.root
@@ -428,14 +428,17 @@ lemma lie_e_f_ne [P.IsNotG2] :
     /- Geck Case 2.
     It's all just definition unfolding and case analysis: the only real content is the external
     lemma `chainBotCoeff_mul_chainTopCoeff`. -/
-    have aux₁ : ∀ x ∈ Finset.univ, ¬ ((x = i ∧ l = -i) ∧ k = -j) := by
-      rintro - - ⟨⟨-, contra⟩, -⟩; contradiction
-    have aux₂ : ∀ x ∈ Finset.univ, ¬ ((x = j ∧ l = j) ∧ k = i) := by
-      rintro - - ⟨⟨-, contra⟩, -⟩; contradiction
-    simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
-      Matrix.fromBlocks_apply₂₁, Matrix.of_apply, Matrix.fromBlocks_apply₁₂, mul_ite, mul_one,
-      mul_zero, ← ite_and, Matrix.fromBlocks_apply₂₂, ite_mul, zero_mul, Matrix.zero_apply,
-      Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂, Finset.sum_const_zero, zero_add]
+    suffices
+      (∑ x, if P.root x = P.root l - P.root j ∧ P.root k = P.root i + P.root x then
+          ((P.chainBotCoeff i x : R) + 1) * (P.chainTopCoeff j l + 1) else 0) =
+      (∑ x, if P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j then
+          ((P.chainTopCoeff j x : R) + 1) * (P.chainBotCoeff i l + 1) else 0) by
+      have h₁ : ∀ x ∈ Finset.univ, ¬ ((x = i ∧ l = -i) ∧ k = -j) := by
+        rintro - - ⟨⟨-, contra⟩, -⟩; contradiction
+      have h₂ : ∀ x ∈ Finset.univ, ¬ ((x = j ∧ l = j) ∧ k = i) := by
+        rintro - - ⟨⟨-, contra⟩, -⟩; contradiction
+      rw [← sub_eq_zero] at this
+      simpa [e, f, ← ite_and, Finset.sum_ite_of_false h₁, Finset.sum_ite_of_false h₂, -indexNeg_neg]
     by_cases h₅ : P.root l + P.root i - P.root j ∈ range P.root; swap
     · have aux₃ : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
@@ -478,8 +481,7 @@ lemma lie_e_f_ne [P.IsNotG2] :
       exact hl'.symm
     rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₃ _ h)]),
       Finset.sum_eq_single_of_mem l' (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₄ _ h)]),
-      if_pos (⟨hm, by rw [hm, hk]; abel⟩), if_pos ⟨by rw [hl', add_comm], by rw [hl', hk]⟩,
-      sub_eq_zero]
+      if_pos (⟨hm, by rw [hm, hk]; abel⟩), if_pos ⟨by rw [hl', add_comm], by rw [hl', hk]⟩]
     have := chainBotCoeff_mul_chainTopCoeff i.property j.property (by aesop) hl'.symm hm.symm h₅
     norm_cast
 
