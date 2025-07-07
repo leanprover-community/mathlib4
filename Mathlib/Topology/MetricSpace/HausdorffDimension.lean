@@ -140,6 +140,27 @@ theorem dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : �
     (h' : μH[d] s ≠ ∞) : dimH s = d :=
   le_antisymm (dimH_le_of_hausdorffMeasure_ne_top h') (le_dimH_of_hausdorffMeasure_ne_zero h)
 
+/-- The Hausdorff dimension of a set `s` is the infimum of all `d : ℝ≥0` such that the
+`d`-dimensional Hausdorff measure of `s` is zero. This infimum is taken in `ℝ≥0∞`.
+This is an equivalent formulation of `dimH_def`. -/
+theorem dimH_eq_iInf (s : Set X) : dimH s = ⨅ (d : ℝ≥0) (_ : μH[d] s = 0), (d : ℝ≥0∞) := by
+  borelize X
+  rw [dimH_def]
+  apply le_antisymm
+  · simp only [le_iInf_iff, iSup_le_iff, ENNReal.coe_le_coe]
+    intro i hi j hj
+    by_contra! hij
+    simpa [hi, hj] using hausdorffMeasure_mono (le_of_lt hij) s
+  · by_contra! h
+    rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hdim_lt, hlt⟩
+    have h0 : μH[d'] s = 0 := by
+      apply hausdorffMeasure_of_dimH_lt
+      rw [dimH_def]
+      exact hdim_lt
+    have hle : (⨅ (d'' : ℝ≥0) (_ : μH[d''] s = 0), (d'' : ℝ≥0∞)) ≤ (d' : ℝ≥0∞) := by
+      exact iInf₂_le d' h0
+    exact lt_irrefl _ (hlt.trans_le hle)
+
 end Measurable
 
 @[mono]
