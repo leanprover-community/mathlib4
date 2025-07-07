@@ -772,26 +772,79 @@ def LVCRS.IsAdicSpace (X : LVCRS.{u}) : Prop :=
   ∀ x : X, ∃ (U : OpenNhds x) (A : HuberPair.{u}),
     (Nonempty (Spa.{u} A ≅ (X.toPreLVCRS.restrict U.isOpenEmbedding)))
 
-structure AdicSpace where
-  X : LVCRS
-  isAdic : X.IsAdicSpace
+structure AdicSpace extends LVCRS where
+  isAdic : toLVCRS.IsAdicSpace
 
-instance : Category.{u} AdicSpace.{u} := InducedCategory.category (·.X.toPreLVCRS)
+namespace AdicSpace
 
-def AdicSpace.toPreLVCRS : AdicSpace.{u} ⥤ PreLVCRS.{u} := inducedFunctor _
+@[ext]
+structure Hom (X Y : AdicSpace.{u}) extends
+    PreLVCRS.Hom X.toPreLVCRS Y.toPreLVCRS where
+
+def Hom.comp {X Y Z : AdicSpace.{u}} (f : X.Hom Y) (g : Y.Hom Z) : X.Hom Z where
+  __ := PreLVCRS.Hom.comp f.1 g.1
+
+def Hom.id (X : AdicSpace.{u}) : X.Hom X where
+  __ := PreLVCRS.Hom.id X.toPreLVCRS
+
+instance : Category.{u} AdicSpace.{u} where
+  Hom := AdicSpace.Hom
+  id := Hom.id
+  comp := Hom.comp
+
+def forgetToPreLVCRS : AdicSpace.{u} ⥤ PreLVCRS.{u} where
+  obj X := X.toPreLVCRS
+  map {X Y} f := f.1
 
 def PreLVCRS.forgetToPresheafedSpace : PreLVCRS.{u} ⥤ PresheafedSpace TopRingCat.{u} where
   obj X := X.toPresheafedSpace
   map f := f.hom
 
-def AdicSpace.forgetToPresheafedSpace : AdicSpace.{u} ⥤ PresheafedSpace TopRingCat.{u} :=
-  toPreLVCRS ⋙ PreLVCRS.forgetToPresheafedSpace
+def forgetToPresheafedSpace : AdicSpace.{u} ⥤ PresheafedSpace TopRingCat.{u} :=
+  forgetToPreLVCRS ⋙ PreLVCRS.forgetToPresheafedSpace
 
 abbrev PreLVCRS.IsOpenImmersion : MorphismProperty PreLVCRS := fun _ _ f ↦
   PresheafedSpace.IsOpenImmersion (PreLVCRS.forgetToPresheafedSpace.map f)
 
-abbrev AdicSpace.IsOpenImmersion : MorphismProperty AdicSpace := fun _ _ f ↦
-  PreLVCRS.IsOpenImmersion (AdicSpace.toPreLVCRS.map f)
+abbrev IsOpenImmersion : MorphismProperty AdicSpace := fun _ _ f ↦
+  PreLVCRS.IsOpenImmersion (forgetToPreLVCRS.map f)
+
+def Hom.base {X Y : AdicSpace.{u}} (f : X ⟶ Y) : X.1.carrier ⟶ Y.1.carrier :=
+  f.1.1.1
+
+instance : CoeSort AdicSpace.{u} (Type u) where
+  coe X := X.1.1
+
+abbrev Opens (X : AdicSpace.{u}) := TopologicalSpace.Opens X.1
+
+scoped[AdicSpace] notation3 "Γ(" X ", " U ")" =>
+  (PresheafedSpace.presheaf (PreLVCRS.toPresheafedSpace
+    (LVCRS.toPreLVCRS (AdicSpace.toLVCRS X)))).obj
+    (op (α := AdicSpace.Opens _) U)
+
+variable {X Y : AdicSpace.{u}}
+
+def Opens.adicSpace (U : X.Opens) : AdicSpace.{u} :=
+  sorry
+
+instance : CoeOut X.Opens AdicSpace.{u} where
+  coe U := U.adicSpace
+
+def Opens.ι (U : X.Opens) : (U : AdicSpace.{u}) ⟶ X :=
+  sorry
+
+def Opens.preimage (f : X ⟶ Y) (U : Y.Opens) : X.Opens :=
+  U.comap f.hom.base.1
+
+def Hom.restrict (f : X ⟶ Y) (U : Y.Opens) : (U.preimage f : AdicSpace.{u}) ⟶ U :=
+  sorry
+
+@[reassoc (attr := simp)]
+lemma Hom.restrict_ι (f : X ⟶ Y) (U : Y.Opens) :
+    f.restrict U ≫ U.ι = (U.preimage f).ι ≫ f :=
+  sorry
+
+end AdicSpace
 
 open CategoryTheory.Functor
 
@@ -842,3 +895,5 @@ theorem mapSheaf_map_c {X Y : SheafedSpace C} (f : X ⟶ Y) :
   rfl
 
 end Functor
+
+end CategoryTheory
