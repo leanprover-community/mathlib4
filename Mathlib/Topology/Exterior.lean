@@ -10,7 +10,7 @@ import Mathlib.Topology.Inseparable
 # Exterior of a set
 
 We define `exterior s` to be the intersection of all neighborhoods of `s`,
-see `Topology/Defs/Filter`.
+see `Mathlib/Topology/Defs/Filter.lean`.
 Note that this construction has no standard name in the literature.
 
 In this file we prove basic properties of this operation.

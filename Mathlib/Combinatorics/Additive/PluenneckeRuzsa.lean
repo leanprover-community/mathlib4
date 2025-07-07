@@ -32,7 +32,7 @@ inequality.
 ## See also
 
 In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
-does. See `Mathlib.Combinatorics.Additive.SmallTripling`.
+does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
 
 open MulOpposite Nat
@@ -55,7 +55,7 @@ theorem ruzsa_triangle_inequality_div_div_div (A B C : Finset G) :
       ((mem_bipartiteBelow _).1 hu).2.symm.trans ?_
   · obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
     refine card_le_card_of_injOn (fun b ↦ (a / b, c / b)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
-    · rw [mem_bipartiteAbove]
+    · rw [mem_coe, mem_bipartiteAbove]
       exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hc hb), div_div_div_cancel_right ..⟩
     · exact div_right_injective (Prod.ext_iff.1 h).1
   · exact ((mem_bipartiteBelow _).1 hv).2

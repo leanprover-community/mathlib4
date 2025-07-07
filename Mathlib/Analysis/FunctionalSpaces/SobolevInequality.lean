@@ -123,7 +123,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
       = ∫⋯∫⁻_insert i s,
             f ^ (1 - (s.card : ℝ) * p) * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) ^ p ∂μ := by
           -- unfold `T` and reformulate the exponents
-          simp_rw [T, card_insert_of_not_mem hi]
+          simp_rw [T, card_insert_of_notMem hi]
           congr!
           push_cast
           ring
@@ -186,7 +186,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
               · rw [lmarginal_singleton]
               refine prod_congr rfl fun j hj => ?_
               have hi' : i ∉ ({j} : Finset ι) := by
-                simp only [Finset.mem_singleton, Finset.mem_insert, Finset.mem_compl] at hj ⊢
+                simp only [Finset.mem_singleton] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)
               rw [lmarginal_insert _ hf hi']
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ (p + (1 - k * p)) *  ∏ j ∈ s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p := by
@@ -206,7 +206,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
                   rw [Finset.union_comm]
                   rfl
                 · rw [Finset.disjoint_singleton]
-                  simp only [Finset.mem_insert, Finset.mem_compl] at hj
+                  simp only at hj
                   exact fun h ↦ hi (h ▸ hj)
 
 /-- Auxiliary result for the grid-lines lemma.  Given a nonnegative function on a finitary product
@@ -226,7 +226,7 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
   · rw [← lmarginal_union μ f hf]
     · rw [← insert_compl_insert hi]
       rfl
-    rw [Finset.disjoint_singleton_left, not_mem_compl]
+    rw [Finset.disjoint_singleton_left, notMem_compl]
     exact mem_insert_self i s
   · -- the main nontrivial point is to check that an exponent `p` satisfying `0 ≤ p` and
     -- `(#ι - 1) * p ≤ 1` is in the valid range for the inductive-step lemma
@@ -504,10 +504,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   have h1p : (p : ℝ) ≠ 1 := hq.lt.ne'
   have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
-  have h0p' : p' ≠ 0 := by
-    suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
-    rw [← inv_pos, hp', sub_pos]
-    exact inv_strictAnti₀ hq.pos h2p
+  have h0p' : p' ≠ 0 := by assumption
   have h2q : 1 / n' - 1 / q = 1 / p' := by
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
@@ -534,8 +531,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
-  have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
-    ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
+  have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ := by finiteness
   have h7u := hu.continuous -- for fun_prop
   let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
   have hv : ContDiff ℝ 1 v := hu.norm_rpow h1γ
@@ -544,8 +540,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have :=
   calc (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = eLpNorm v n' μ := by
         rw [← h2γ, eLpNorm_nnreal_eq_lintegral hn.symm.pos.ne']
-        simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul,
-          ← ENNReal.coe_rpow_of_nonneg]
+        simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul]
     _ ≤ C * eLpNorm (fderiv ℝ v) 1 μ := eLpNorm_le_eLpNorm_fderiv_one μ hv h2v hn
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by

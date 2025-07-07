@@ -133,7 +133,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
   have mus : μ s < ∞ := Integrable.measure_le_lt_top hf hb_neg
   have h_int_gt : (∫ x in s, f x ∂μ) ≤ b * μ.real s := by
     have h_const_le : (∫ x in s, f x ∂μ) ≤ ∫ _ in s, b ∂μ := by
-      refine setIntegral_mono_ae_restrict hf.integrableOn (integrableOn_const.mpr (Or.inr mus)) ?_
+      refine setIntegral_mono_ae_restrict hf.integrableOn (integrableOn_const mus.ne) ?_
       rw [EventuallyLE, ae_restrict_iff₀ (hs.mono μ.restrict_le_self)]
       exact Eventually.of_forall fun x hxs => hxs
     rwa [setIntegral_const, smul_eq_mul, mul_comm] at h_const_le

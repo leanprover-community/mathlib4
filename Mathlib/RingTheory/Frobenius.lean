@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant
+import Mathlib.RingTheory.Invariant.Basic
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.Unramified.Locus
 
@@ -111,7 +111,7 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   have hk' : ↑k ∉ Q := fun h ↦ hk' (Q.mem_of_dvd (Nat.cast_dvd_cast (hζ.2 m ‹_›)) h)
   have : NeZero k := ⟨hk.ne'⟩
   obtain ⟨i, hi, e⟩ := hζ.eq_pow_of_pow_eq_one (ξ := φ ζ) (by rw [← map_pow, hζ.1, map_one])
-  have (j) : 1 - ζ ^ ((q + k - i) * j) ∈ Q := by
+  have (j : _) : 1 - ζ ^ ((q + k - i) * j) ∈ Q := by
     rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit k.pos_of_neZero).pow (i * j)),
       sub_mul, one_mul, ← pow_add, ← add_mul, tsub_add_cancel_of_le (by linarith), add_mul,
         pow_add, pow_mul _ k, hζ.1, one_pow, mul_one, pow_mul, e, ← map_pow, mul_comm, pow_mul]
@@ -148,8 +148,8 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
       Localization.AtPrime.comap_maximalIdeal]
   intro x
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
-  simp [localize, coe_mk, -mem_maximalIdeal, mem_nonunits_iff, Localization.localRingHom_mk',
-    ← IsLocalization.mk'_pow, h]
+  simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
+    ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,
     IsLocalization.AtPrime.mk'_mem_maximal_iff (Localization.AtPrime Q) Q]
   simp only [SubmonoidClass.coe_pow, ← Ideal.Quotient.eq_zero_iff_mem]

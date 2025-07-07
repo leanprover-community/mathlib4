@@ -34,7 +34,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 section
 

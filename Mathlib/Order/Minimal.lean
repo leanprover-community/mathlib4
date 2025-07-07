@@ -177,7 +177,7 @@ section Preorder
 variable [Preorder α]
 
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
-  simp [Minimal, lt_iff_le_not_le, not_imp_not, imp.swap]
+  simp [Minimal, lt_iff_le_not_ge, imp.swap]
 
 theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
@@ -207,7 +207,7 @@ theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
   minimal_lt_iff (α := αᵒᵈ)
 
 theorem not_minimal_iff_exists_lt (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
-  simp_rw [not_minimal_iff hx, lt_iff_le_not_le, and_comm]
+  simp_rw [not_minimal_iff hx, lt_iff_le_not_ge, and_comm]
 
 alias ⟨exists_lt_of_not_minimal, _⟩ := not_minimal_iff_exists_lt
 
@@ -221,7 +221,7 @@ variable [WellFoundedLT α]
 
 lemma exists_minimalFor_of_wellFoundedLT (P : ι → Prop) (f : ι → α) (hP : ∃ i, P i) :
     ∃ i, MinimalFor P f i := by
-  simpa [not_lt_iff_le_imp_le, InvImage] using (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
+  simpa [not_lt_iff_le_imp_ge, InvImage] using (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
 
 lemma exists_minimal_of_wellFoundedLT (P : α → Prop) (hP : ∃ a, P a) : ∃ a, Minimal P a :=
   exists_minimalFor_of_wellFoundedLT P id hP
@@ -354,12 +354,15 @@ theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
 theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
   h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
 
-theorem Minimal.not_mem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
+theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
   fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
+
+@[deprecated (since := "2025-05-23")]
+alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_singleton
 
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
-  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.not_mem_of_prop_diff_singleton hP hx⟩,
+  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_diff_singleton hP hx⟩,
     fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
       h.2 x hxs (hP ht <| subset_diff_singleton hts hxt)⟩⟩
 

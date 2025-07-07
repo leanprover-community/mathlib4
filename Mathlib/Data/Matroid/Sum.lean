@@ -85,9 +85,8 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
   maximality X _ I hI hIX := by
     choose Js hJs using
       fun i ↦ (hI i).subset_isBasis'_of_subset (preimage_mono (f := Sigma.mk i) hIX)
-
     use univ.sigma Js
-    simp only [maximal_subset_iff', mem_univ, mk_preimage_sigma, le_eq_subset, and_imp]
+    simp only [maximal_subset_iff', mem_univ, mk_preimage_sigma, and_imp]
     refine ⟨?_, ⟨fun i ↦ (hJs i).1.indep, ?_⟩, fun S hS hSX hJS ↦ ?_⟩
     · rw [← univ_sigma_preimage_mk I]
       exact sigma_mono rfl.subset fun i ↦ (hJs i).2
@@ -175,7 +174,7 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 
 @[simp] lemma sum'_isBasis_iff {I X} :
     (Matroid.sum' M).IsBasis I X ↔ ∀ i, (M i).IsBasis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
-  simp [Matroid.sum']
+  simp only [Matroid.sum', mapEquiv_isBasis_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBasis_iff]
   convert Iff.rfl <;>
   exact ext <| by simp
 
@@ -236,14 +235,14 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
 @[simp] lemma sum_indep_iff (M : Matroid α) (N : Matroid β) {I : Set (α ⊕ β)} :
     (M.sum N).Indep I ↔ M.Indep (.inl ⁻¹' I) ∧ N.Indep (.inr ⁻¹' I) := by
   simp only [Matroid.sum, mapEquiv_indep_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
-    Equiv.symm_symm, sigma_indep_iff, Bool.forall_bool, Equiv.ulift_apply]
+    Equiv.symm_symm, sigma_indep_iff, Bool.forall_bool]
   convert Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
 @[simp] lemma sum_isBase_iff {M : Matroid α} {N : Matroid β} {B : Set (α ⊕ β)} :
     (M.sum N).IsBase B ↔ M.IsBase (.inl ⁻¹' B) ∧ N.IsBase (.inr ⁻¹' B) := by
   simp only [Matroid.sum, mapEquiv_isBase_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
-    Equiv.symm_symm, sigma_isBase_iff, Bool.forall_bool, Equiv.ulift_apply]
+    Equiv.symm_symm, sigma_isBase_iff, Bool.forall_bool]
   convert Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
@@ -251,7 +250,7 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
     (M.sum N).IsBasis I X ↔
       (M.IsBasis (Sum.inl ⁻¹' I) (Sum.inl ⁻¹' X) ∧ N.IsBasis (Sum.inr ⁻¹' I) (Sum.inr ⁻¹' X)) := by
   simp only [Matroid.sum, mapEquiv_isBasis_iff, Equiv.sumCongr_symm,
-    Equiv.sumCongr_apply, Equiv.symm_symm, sigma_isBasis_iff, Bool.forall_bool, Equiv.ulift_apply,
+    Equiv.sumCongr_apply, Equiv.symm_symm, sigma_isBasis_iff, Bool.forall_bool,
     Equiv.sumEquivSigmaBool, Equiv.coe_fn_mk, Equiv.ulift]
   convert Iff.rfl <;> exact ext <| by simp
 
