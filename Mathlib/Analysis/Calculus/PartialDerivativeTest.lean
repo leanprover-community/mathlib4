@@ -190,8 +190,8 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     (hf' : (iteratedFDerivQuadraticMap f x₀).PosDef) :
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
-  by_cases H : Nontrivial V
-  · have := sphere_min_of_pos_of_nonzero continuous_hessian hf'
+    nontriviality V
+    have := sphere_min_of_pos_of_nonzero continuous_hessian hf'
     rw [IsCoercive, continuousBilinearMap_of_continuousMultilinearMap]
     simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero,
       Subtype.exists, exists_prop] at this
@@ -232,8 +232,7 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
           ContinuousMultilinearMap.coe_coe, smul_eq_mul] at h₄
         rw [this, mul_comm, ← h₄]
         exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
-  · have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
-    apply isCoercive.of_subsingleton
+
 open Finset Nat
 /-- Spelling out a sum of three. -/
 lemma finset_sum_three (t : ℕ → ℝ) :
@@ -359,24 +358,27 @@ lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
       · tauto
       · simp_all
 
+@[nontriviality]
+lemma isLocalMin.of_subsingleton {V : Type*} [TopologicalSpace V]
+    [Subsingleton V] {f : V → ℝ} {x₀ : V} : IsLocalMin f x₀ := by
+  simp [IsLocalMin, IsMinFilter]
+
 /-- Second partial derivative test. -/
 theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V} {p : FormalMultilinearSeries ℝ V ℝ}
     (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r)
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
-  by_cases H : Nontrivial V
-  · have (x : V) (i : ℕ) : p i (fun _ => x - x₀)
+  nontriviality V
+  have (x : V) (i : ℕ) : p i (fun _ => x - x₀)
       = 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀ := by
       rw [← HasFPowerSeriesOnBall.factorial_smul h₁ (x - x₀) i]
       ring_nf
       field_simp
-    have (x : V) : ∑ i ∈ range 3, p i (fun _ => x - x₀)
-                 = ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀ := by
+  have (x : V) : ∑ i ∈ range 3, p i (fun _ => x - x₀)
+               = ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀ := by
       congr
       ext
       rw [this]
-    have (x : V) := congrArg (HSub.hSub (f x)) (this x)
-    exact isLocalMin_of_PosDef_of_Littleo
+  have (x : V) := congrArg (HSub.hSub (f x)) (this x)
+  exact isLocalMin_of_PosDef_of_Littleo
         (funext_iff.mpr this ▸ littleO_of_powerseries hr h₁) h₀ hf
-  · have : Subsingleton V := not_nontrivial_iff_subsingleton.mp H
-    simp [IsLocalMin, IsMinFilter]
