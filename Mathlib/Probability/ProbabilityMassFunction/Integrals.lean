@@ -51,6 +51,6 @@ theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
 end General
 
 theorem bernoulli_expectation {p : ℝ≥0} (h : p ≤ 1) :
-    ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p := by simp [integral_eq_sum]
+    ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
 
 end PMF
