@@ -80,9 +80,9 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
         norm_cast at h ⊢
         exact mul_le_mul_right' h x
 
-variable {A B F : Type*} [FunLike F A B] (f : F)
+variable {A B F : Type*} [FunLike F A B]
 variable [LinearOrderedCommGroupWithZero A] [LinearOrderedCommGroupWithZero B]
-variable [MonoidWithZeroHomClass F A B] {f}
+variable [MonoidWithZeroHomClass F A B] {f : F}
 
 open WithZero
 
@@ -93,29 +93,14 @@ between `WithZero Aˣ` with `A`. -/
 @[simps!]
 def withZeroUnits_OrderIso : WithZero Aˣ ≃o A where
   __ := withZeroUnitsEquiv
-  map_rel_iff' /- {⟨u | u⟩ ⟨v | v⟩} -/ := by
-      intro a b
-      simp [recZeroCoe]
-      split
-      · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-        · exact WithZero.zero_le b
-        · rcases b with a | a
-          · rfl
-          · simp
-      · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-        · rcases b with u | u
-          · simp at h
-          · simp only [Units.val_le_val] at h
-            rw [← WithZero.coe_le_coe] at h
-            convert h
-        · rcases b with u | u
-          · simp
-            replace h := LE.le.not_gt h
-            apply h
-            exact compareOfLessAndEq_eq_lt.mp rfl --surely wrong
-          · simp
-            rw [← WithZero.coe_le_coe]
-            exact h
+  map_rel_iff' {a b} := by
+    simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, withZeroUnitsEquiv_apply, recZeroCoe]
+    split
+    · exact ⟨fun _ ↦ WithZero.zero_le b, by simp⟩
+    · rcases b
+      · simpa using compareOfLessAndEq_eq_lt.mp rfl
+      rw [Units.val_le_val, ← WithZero.coe_le_coe]
+      rfl
 
 /-- Given any linearly ordered commutative group with zero `A`, this is the inclusion of
 `WithZero Aˣ` into `A` as an ordered embedding. -/
