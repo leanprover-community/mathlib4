@@ -141,7 +141,7 @@ theorem drop_scanr {i : ℕ} (h : i ≤ l.length) : (scanr f b l).drop i = scanr
 theorem getElem_scanr {i : ℕ} (h : i < l.length + 1) :
     (scanr f b l)[i]'(by simp [h]) = foldr f b (l.drop i) := by
   induction l generalizing i with
-  | nil => simp [h]
+  | nil => simp
   | cons head tail ih =>
       obtain rfl |  h' := eq_or_ne i 0
       · simp
