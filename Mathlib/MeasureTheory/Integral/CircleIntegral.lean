@@ -201,8 +201,10 @@ nonrec theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
 protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     CircleIntegrable (∑ i ∈ s, f i) c R := by
-  rw [CircleIntegrable, (by aesop : (fun θ ↦ (∑ i ∈ s, f i) (circleMap c R θ))
-    = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
+  simp_rw [CircleIntegrable, Finset.sum_apply,
+    -- TODO
+    (by aesop :
+      (fun θ ↦ ∑ i ∈ s, f i (circleMap c R θ)) = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
   exact IntervalIntegrable.sum s h
 
 /-- Sums of circle integrable functions are circle integrable. -/
