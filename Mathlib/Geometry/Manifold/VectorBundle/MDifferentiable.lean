@@ -82,6 +82,53 @@ theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
       MDifferentiableAt IB 𝓘(𝕜, F) (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
 
+namespace Bundle
+
+variable (E) {IB}
+
+theorem mdifferentiable_proj : MDifferentiable (IB.prod 𝓘(𝕜, F)) IB (π F E) := fun x ↦ by
+  have : MDifferentiableAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) id x := mdifferentiableAt_id
+  rw [mdifferentiableAt_totalSpace] at this
+  exact this.1
+
+theorem mdifferentiableOn_proj {s : Set (TotalSpace F E)} :
+    MDifferentiableOn (IB.prod 𝓘(𝕜, F)) IB (π F E) s :=
+  (mdifferentiable_proj E).mdifferentiableOn
+
+theorem mdifferentiableAt_proj {p : TotalSpace F E} :
+    MDifferentiableAt (IB.prod 𝓘(𝕜, F)) IB (π F E) p :=
+  (mdifferentiable_proj E).mdifferentiableAt
+
+theorem mdifferentiableWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
+    MDifferentiableWithinAt (IB.prod 𝓘(𝕜, F)) IB (π F E) s p :=
+  (mdifferentiableAt_proj E).mdifferentiableWithinAt
+
+variable (𝕜) [∀ x, AddCommMonoid (E x)]
+variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
+
+theorem mdifferentiable_zeroSection : MDifferentiable IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) := by
+  intro x
+  unfold zeroSection
+  rw [mdifferentiableAt_section]
+  apply (mdifferentiableAt_const (c := 0)).congr_of_eventuallyEq
+  filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
+    (mem_baseSet_trivializationAt F E x)] with y hy
+    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
+
+theorem mdifferentiableOn_zeroSection {t : Set B} :
+    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) t :=
+  (mdifferentiable_zeroSection _ _).mdifferentiableOn
+
+theorem mdifferentiableAt_zeroSection {x : B} :
+    MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) x :=
+  (mdifferentiable_zeroSection _ _).mdifferentiableAt
+
+theorem mdifferentiableWithinAt_zeroSection {t : Set B} {x : B} :
+    MDifferentiableWithinAt IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) t x :=
+  (mdifferentiable_zeroSection _ _ x).mdifferentiableWithinAt
+
+end Bundle
+
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
   [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 
