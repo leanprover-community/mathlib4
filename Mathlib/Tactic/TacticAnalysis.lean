@@ -1,9 +1,11 @@
 import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
+import Lean.Elab.Tactic.Meta
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Batteries.CodeAction -- to enable the hole code action
 import Lean.Meta.Tactic.Grind.Main
+import Lean.Util.Heartbeats
 
 open Lean Elab Term Command Linter
 
@@ -84,14 +86,19 @@ def filterTactics (_stx : Syntax) (acc : Out) (tree : InfoTree) : CommandElabM O
           let trigger := kind == `Mathlib.Tactic.linarith
           if trigger then
             if let [goal] := i.goalsBefore then -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-              let (test, msgs) ← ctx.runTactic i goal fun goal => do
+              let (originalTest, originalHeartbeats) ← withHeartbeats <| ctx.runTactic i goal fun goal => do
+                try
+                  Lean.Elab.runTactic goal stx
+                catch e =>
+                  logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
+                  return ([goal], {})
+              let (newTest, newHeartbeats) ← withHeartbeats <| ctx.runTactic i goal fun goal => do
                 -- Call grind
                 let params ← Meta.Grind.mkParams {}
                 let result ← Meta.Grind.main goal params (pure ())
-                logInfoAt stx (← result.toMessageData)
                 pure !result.hasFailed
-              modify (fun state => { state with messages := state.messages ++ msgs })
-              if test then
+              logInfoAt stx m!"{stx}: {originalHeartbeats} ({originalTest.1}); grind: {newHeartbeats} ({newTest})"
+              if newTest then
                 return (fun acc => acc.insert r stx) ∘ fAcc
       return fAcc)
   return f.getD id acc
