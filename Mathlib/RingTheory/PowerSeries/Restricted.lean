@@ -104,7 +104,7 @@ lemma bddabove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (converg
   · right
     apply Finset.le_max'
     simp only [Finset.mem_image, Finset.mem_range]
-    refine ⟨i, by exact Order.lt_add_one_iff.mpr h, rfl⟩
+    exact ⟨i, by exact Order.lt_add_one_iff.mpr h, rfl⟩
   · exact Or.inl (le_of_lt (lt_of_le_of_lt (mul_le_mul_of_nonneg_left
       (by simpa only [abs_pow] using le_abs_self (c ^ i)) (norm_nonneg _)) (hf i h)))
 
