@@ -21,7 +21,7 @@ Say `K : ChainComplex C ℕ` and `L : CochainComplex C ℕ`, so `... ⟶ K₂ �
 and `L⁰ ⟶ L¹ ⟶ L² ⟶ ...`.
 
 * `ConnectData K L`: an auxiliary structure consisting of `d₀ : K₀ ⟶ L⁰` "connecting" the
-  complexes and proofs that the induced maps `K₁ ⟶ K₀ ⟶ L₀` and `K₀ ⟶ L₀ ⟶ L₁` are both zero.
+  complexes and proofs that the induced maps `K₁ ⟶ K₀ ⟶ L⁰` and `K₀ ⟶ L⁰ ⟶ L¹` are both zero.
 
 Now say `h : ConnectData K L`.
 
