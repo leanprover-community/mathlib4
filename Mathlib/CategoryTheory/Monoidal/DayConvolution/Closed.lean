@@ -222,8 +222,7 @@ theorem left_triangle_component (G : C ⥤ V) [DayConvolution F G]
   apply MonoidalClosed.curry_injective
   simp [MonoidalClosed.curry_natural_left]
 
-theorem right_triangle_component (G : C ⥤ V) [DayConvolution F G]
-    [DayConvolution F (H.obj G)] :
+theorem right_triangle_component (G : C ⥤ V) [DayConvolution F (H.obj G)] :
     ℌ.coev_app (H.obj G) ≫ H.map (ℌ.ev_app G) = 𝟙 (H.obj G) := by
   ext c
   apply Limits.Wedge.IsLimit.hom_ext (ℌ.isLimitWedge _ c)
