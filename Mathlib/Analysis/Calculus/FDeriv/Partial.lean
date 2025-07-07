@@ -31,7 +31,7 @@ theorem hasStrictFDerivAt_uncurried_coprod [IsRCLikeNormedField 𝕜]
     {fx : X → Y → X →L[𝕜] Z} (cfx : ContinuousAt ↿fx (x₀, y₀))
     (dfx : ∀ᶠ z in 𝓝 (x₀, y₀), HasFDerivAt (f · z.2) (↿fx z) z.1)
     {fy : X → Y → Y →L[𝕜] Z} (cfy : ContinuousAt ↿fy (x₀, y₀))
-    (dfy : ∀ᶠ z in 𝓝 (x₀, y₀), HasFDerivAt (f z.1 ·) ((↿fy) z) z.2) :
+    (dfy : ∀ᶠ z in 𝓝 (x₀, y₀), HasFDerivAt (f z.1 ·) (↿fy z) z.2) :
     HasStrictFDerivAt ↿f (.coprod (fx x₀ y₀) (fy x₀ y₀)) (x₀, y₀) := by
   rw [hasStrictFDerivAt_iff_isLittleO, Asymptotics.isLittleO_iff]
   intro c hc
