@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
@@ -227,6 +228,12 @@ lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
   b.flip.sub_notMem_range_root hi hj
 
 @[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
+
+lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R][P.IsCrystallographic] [Finite ι]
+    {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
+    P.pairingIn ℤ i j ≤ 0 := by
+  by_contra! h
+  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
 
 end RootPairing
 
