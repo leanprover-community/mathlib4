@@ -35,7 +35,7 @@ lemma isCofibrant_iff (X : C) :
 lemma isCofibrant_iff_of_isInitial [(cofibrations C).RespectsIso]
     {A X : C} (i : A ⟶ X) (hA : IsInitial A) :
     IsCofibrant X ↔ Cofibration i := by
-  simp only [isCofibrant_iff, cofibration_iff]
+  simp only [cofibration_iff]
   apply (cofibrations C).arrow_mk_iso_iff
   exact Arrow.isoMk (IsInitial.uniqueUpToIso initialIsInitial hA) (Iso.refl _)
 
@@ -54,7 +54,7 @@ lemma isFibrant_iff (X : C) :
 lemma isFibrant_iff_of_isTerminal [(fibrations C).RespectsIso]
     {X Y : C} (p : X ⟶ Y) (hY : IsTerminal Y) :
     IsFibrant X ↔ Fibration p := by
-  simp only [isFibrant_iff, fibration_iff]
+  simp only [fibration_iff]
   symm
   apply (fibrations C).arrow_mk_iso_iff
   exact Arrow.isoMk (Iso.refl _) (IsTerminal.uniqueUpToIso hY terminalIsTerminal)

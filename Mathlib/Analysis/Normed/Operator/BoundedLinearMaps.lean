@@ -479,6 +479,20 @@ theorem ContinuousWithinAt.clm_apply {X} [TopologicalSpace X] {f : X → E →L[
     ContinuousWithinAt (fun x ↦ f x (g x)) s x :=
   isBoundedBilinearMap_apply.continuous.continuousAt.comp_continuousWithinAt (hf.prodMk hg)
 
+theorem ContinuousOn.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+    ContinuousOn (fun x => (f x).coprod (g x)) s := by
+  simp only [← comp_fst_add_comp_snd]
+  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
+
+theorem Continuous.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G}
+    (hf : Continuous f) (hg : Continuous g) :
+    Continuous (fun x => (f x).coprod (g x)) := by
+  apply continuousOn_univ.mp
+  exact hf.continuousOn.continuousLinearMapCoprod hg.continuousOn
+
 end
 
 namespace ContinuousLinearEquiv
