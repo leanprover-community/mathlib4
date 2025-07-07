@@ -94,12 +94,10 @@ structure Context where
   x : Expr
   /-- A proof of `p = x`. Must be an fvar. -/
   h : Expr
-  /-- Delayed substitution of type-casted variables. See `withSubst?`. -/
-  subst : FVarSubst := {}
   -- TODO: use `@[computed_field]`s below when `structure` supports that
-  /-- Cached `p.toHeadIndex` .-/
+  /-- Cached `p.toHeadIndex`. -/
   pHeadIdx : HeadIndex := p.toHeadIndex
-  /-- Cached `p.toNumArgs` .-/
+  /-- Cached `p.toNumArgs`. -/
   pNumArgs : Nat := p.headNumArgs
 
 /-- Monad for computing `dabstract`.
@@ -131,19 +129,6 @@ def castBack? (e te x h : Expr) : MetaM (Option Expr) := do
       mkLambdaFVars #[x', h'] <| te.replaceFVars #[x, h] #[x', ← mkEqTrans h h']
   some <$> mkEqRec motive e (← mkEqSymm h)
 
-/-- Supposing `y : ty` is a local variable,
-run `k` with `[⋯ ▸ y/y]` in the substitution map,
-where `⋯ ▸ y : ty[p/x,rfl/h]`. -/
-def withSubst? {α : Type} (y ty : Expr) (k : M α) : M α := do
-  let ctx ← read
-  match ← castBack? y ty ctx.x ctx.h with
-  | some e =>
-    -- We do NOT check whether this is an allowed cast here
-    -- because it might not ever be used
-    -- (e.g. if the bound variable is never mentioned).
-    withReader (fun ctx => { ctx with subst := ctx.subst.insert y.fvarId! e }) k
-  | none => k
-
 mutual
 
 /-- Given `e`, return `e[x/p]` (i.e., `e` with occurrences of `p` replaced by `x`).
@@ -152,7 +137,7 @@ If `et?` is not `none`, the output is guaranteed to have type (defeq to) `et?`.
 Does _not_ assume that `e` is well-typed,
 but assumes that for all subterms `e'` of `e`,
 `e'[x/p]` is well-typed.
-We use this when processing lambdas:
+We use this when processing binders:
 to traverse `fun (x : α) => b`,
 we add `x : α[x/p]` to the local context
 and continue traversing `b`.
@@ -203,19 +188,6 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   let ctx ← read
   if e.hasLooseBVars then
     throwError "internal error: forgot to instantiate"
-  if ← isProof e then
-    /- Recall that `e` might be type-incorrect.
-    We assume it will become type-correct after traversal,
-    but by proof irrelevance we can skip traversing proofs,
-    instead casting them at the top-level.
-    However, in this case we need to fix `e`
-    by applying the delayed substitution `subst`
-    which replaces bound variables with type-correct terms.
-    We do not do this eagerly when introducing binders
-    because it can introduce more casts than necessary. -/
-    -- QUESTION(WN): in `.proofs` cast mode,
-    -- can this observably 'leak' non-proof casts in the type of `ctx.subst.apply e`?
-    return ctx.subst.apply e
   if e.toHeadIndex == ctx.pHeadIdx && e.headNumArgs == ctx.pNumArgs then
     -- We save the metavariable context here,
     -- so that it can be rolled back unless `occs.contains i`.
@@ -248,7 +220,7 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     let tup ← visit t none
     let vup ← visitAndCast v tup
     if !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId!) then
-      let ret ← withLetDecl n tup vup fun r => withSubst? r tup do
+      let ret ← withLetDecl n tup vup fun r => do
         let bup ← visitAndCast (b.instantiate1 r) et?
         return .letE n tup vup (bup.abstract #[r]) bi
       return ret
@@ -265,20 +237,20 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     -/
     let lupTy ← mkForallFVars #[ctx.x, ctx.h] tup
     let lup ← mkLambdaFVars #[ctx.x, ctx.h] vup
-    withLetDecl n lupTy lup fun r => withSubst? r lupTy do
+    withLetDecl n lupTy lup fun r => do
       let rxh := mkAppN r #[ctx.x, ctx.h]
       let bup ← visitAndCast (b.instantiate1 rxh) et?
       return .letE n lupTy lup (bup.abstract #[r]) bi
   | .lam n t b bi =>
     let tup ← visit t none
-    withLocalDecl n bi tup fun r => withSubst? r tup do
+    withLocalDecl n bi tup fun r => do
       -- TODO(WN): there should be some way to propagate the expected type here,
       -- but it is not easy to do correctly (see `lam (as argument)` tests).
       let bup ← visit (b.instantiate1 r) none
       return .lam n tup (bup.abstract #[r]) bi
   | .forallE n t b bi =>
     let tup ← visit t none
-    withLocalDecl n bi tup fun r => withSubst? r tup do
+    withLocalDecl n bi tup fun r => do
       let bup ← visit (b.instantiate1 r) none
       return .forallE n tup (bup.abstract #[r]) bi
   | _ => return e

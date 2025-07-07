@@ -134,6 +134,18 @@ example (f : (k : Nat) → Fin k → Type) (lt : 0 < n) : P (f n ⟨0, lt⟩) :=
   conv in Fin.mk .. => rewrite! [eq]
   exact test_sorry
 
+/-- Ensure we traverse proof terms (ordinary `rw` succeeds here). -/
+example
+    (R : (n : Nat) → Prop)
+    (Q : Prop)
+    (r : (n : Nat) → R n)
+    (q : (n : Nat) → R n → Q)
+    (t : Q → Prop) :
+    t (q n (r n)) := by
+  rewrite! [eq]
+  guard_target =ₐ t (q m (r m))
+  exact test_sorry
+
 /-! Tests for all-casts mode. -/
 
 variable (B : Nat → Type)
