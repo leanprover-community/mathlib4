@@ -358,11 +358,7 @@ private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
     rintro  x - ⟨hl, -, rfl⟩
     replace hl : P.root i = P.root j - P.root l := by simpa [neg_eq_iff_eq_neg] using hl
     exact b.sub_notMem_range_root i.property j.property ⟨-l, by simp [hl]⟩
-  simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
-    Matrix.fromBlocks_apply₁₁, Matrix.zero_apply, Matrix.fromBlocks_apply₁₂, Matrix.of_apply,
-    mul_ite, mul_one, mul_zero, ite_self, Finset.sum_const_zero, Matrix.fromBlocks_apply₂₂,
-    ite_mul, one_mul, zero_mul, ← ite_and, zero_add, sub_eq_zero, Finset.sum_ite_of_false aux₁,
-    Finset.sum_ite_of_false aux₂]
+  simp [e, f, -indexNeg_neg, ← ite_and, Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂]
 
 include hij
 
@@ -394,8 +390,7 @@ private lemma lie_e_f_ne_aux₁ :
     · have aux : ∀ x ∈ Finset.univ,
           ¬ (P.root x = P.root i + P.root j ∧ P.root i = P.root x - P.root j) := by
         rintro x - ⟨hx, -⟩; exact hij_mem ⟨x, hx⟩
-      rw [Finset.sum_ite_of_false aux]
-      simp [b.cartanMatrix_apply_eq_zero_iff hij, hij_mem]
+      simp [Finset.sum_ite_of_false aux, b.cartanMatrix_apply_eq_zero_iff hij, hij_mem]
 
 /-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_ne`. -/
 private lemma lie_e_f_ne_aux₂ :
@@ -420,11 +415,7 @@ lemma lie_e_f_ne [P.IsNotG2] :
   letI := P.indexNeg
   classical
   ext (k | k) (l | l)
-  · simp only [e, f, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
-      Matrix.fromBlocks_apply₁₁, Matrix.zero_apply, mul_zero, Finset.sum_const_zero,
-      Matrix.fromBlocks_apply₁₂, Matrix.of_apply, Matrix.fromBlocks_apply₂₁, mul_ite, ite_mul,
-      one_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, reduceIte, neg_inj, zero_add]
-    aesop
+  · aesop (erase simp indexNeg_neg) (add simp [e, f, Matrix.mul_apply, mul_ite, ite_mul])
   · exact lie_e_f_ne_aux₀ k l
   · have aux₁ : P.root k ≠ P.root i - P.root j :=
       fun contra ↦ b.sub_notMem_range_root i.property j.property ⟨k, contra⟩
@@ -433,7 +424,7 @@ lemma lie_e_f_ne [P.IsNotG2] :
     rcases eq_or_ne l j with rfl | h₃
     · rw [← ⁅e i, f j⁆.transpose_apply, lie_e_f_ne_aux₁ hij, Pi.zero_apply, Matrix.zero_apply]
     rcases eq_or_ne l (-i) with rfl | h₄
-    · rw [←  ⁅e i, f j⁆.transpose_apply, lie_e_f_ne_aux₂ hij, Pi.zero_apply, Matrix.zero_apply]
+    · rw [← ⁅e i, f j⁆.transpose_apply, lie_e_f_ne_aux₂ hij, Pi.zero_apply, Matrix.zero_apply]
     /- Geck Case 2.
     It's all just definition unfolding and case analysis: the only real content is the external
     lemma `chainBotCoeff_mul_chainTopCoeff`. -/
