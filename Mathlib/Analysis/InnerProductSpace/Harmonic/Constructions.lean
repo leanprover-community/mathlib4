@@ -65,15 +65,6 @@ theorem ContDiffAt.harmonicAt_conjugate {f : ℂ → ℂ} (h : AnalyticAt ℂ f 
 -/
 
 /- Helper lemma for AnalyticAt.harmonicAt_log_norm -/
-private lemma slitPlaneLemma {z : ℂ} (hz : z ≠ 0) : z ∈ slitPlane ∨ -z ∈ slitPlane := by
-  rw [mem_slitPlane_iff, mem_slitPlane_iff]
-  rw [ne_eq, Complex.ext_iff] at hz
-  push_neg at hz
-  simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
-  by_contra! contra
-  exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
-
-/- Helper lemma for AnalyticAt.harmonicAt_log_norm -/
 private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁g : AnalyticAt ℂ g z)
     (h₂g : g z ≠ 0) (h₃g : g z ∈ slitPlane) :
     HarmonicAt (Real.log ∘ normSq ∘ g) z := by
@@ -124,4 +115,4 @@ theorem AnalyticAt.harmonicAt_log_norm {f : ℂ → ℂ} {z : ℂ} (h₁f : Anal
   · exact analyticAt_harmonicAt_log_normSq h₁f h₂f h₃f
   · rw [(by aesop : Complex.normSq ∘ f = Complex.normSq ∘ (-f))]
     exact analyticAt_harmonicAt_log_normSq h₁f.neg (by simpa)
-      ((slitPlaneLemma h₂f).resolve_left h₃f)
+      ((mem_slitPlane_or_neg_mem_slitPlane h₂f).resolve_left h₃f)
