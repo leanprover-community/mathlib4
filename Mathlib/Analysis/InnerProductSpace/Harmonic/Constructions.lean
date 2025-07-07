@@ -38,11 +38,9 @@ theorem ContDiffAt.harmonicAt (h : ContDiffAt ℂ 2 f x) : HarmonicAt f x := by
   simp_all [laplacian_eq_iteratedFDeriv_complexPlane f, ← ha,
     ContinuousMultilinearMap.coe_restrictScalars]
 
-/--
-Analytic functions on ℂ are harmonic.
--/
-theorem AnalyticAt.harmonicAt [CompleteSpace F] (h : AnalyticAt ℂ f x) :
-    HarmonicAt f x := h.contDiffAt.harmonicAt
+/-- Analytic functions on ℂ are harmonic. -/
+theorem AnalyticAt.harmonicAt [CompleteSpace F] (h : AnalyticAt ℂ f x) : HarmonicAt f x :=
+  h.contDiffAt.harmonicAt
 
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its real part is harmonic.
