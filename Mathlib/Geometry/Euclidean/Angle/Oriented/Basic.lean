@@ -756,13 +756,21 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     refine ⟨![m 0 + m 1 * r, m 1], ?_⟩
     change (m 0 + m 1 * r) • x + m 1 • y = 0 ∧ (m 0 + m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [smul_add, smul_smul, ← add_assoc, ← add_smul] at h
-    grind
+    refine ⟨h, not_and_or.1 fun h0 => ?_⟩
+    obtain ⟨h0, h1⟩ := h0
+    rw [h1] at h0 hm
+    rw [zero_mul, add_zero] at h0
+    simp [h0] at hm
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • y = 0 at h
     refine ⟨![m 0 - m 1 * r, m 1], ?_⟩
     change (m 0 - m 1 * r) • x + m 1 • (r • x + y) = 0 ∧ (m 0 - m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [sub_smul, smul_add, smul_smul, ← add_assoc, sub_add_cancel]
-    grind
+    refine ⟨h, not_and_or.1 fun h0 => ?_⟩
+    obtain ⟨h0, h1⟩ := h0
+    rw [h1] at h0 hm
+    rw [zero_mul, sub_zero] at h0
+    simp [h0] at hm
 
 /-- Adding a multiple of the first vector passed to `oangle` to the second vector does not change
 the sign of the angle. -/
