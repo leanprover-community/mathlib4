@@ -197,7 +197,7 @@ lemma homologySequenceδ_comp :
   rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
 
 @[reassoc]
-lemma homologySequence_comp  :
+lemma homologySequence_comp :
     (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
   rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero]
 
@@ -209,7 +209,7 @@ lemma homologySequence_exact₂ :
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
     (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
-    (by dsimp; simp) (by dsimp; simp)
+    (by simp) (by simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by

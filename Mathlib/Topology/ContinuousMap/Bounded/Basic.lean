@@ -217,6 +217,12 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
 theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
   Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nndist]
 
+theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
+  simp_rw [edist_nndist, nndist_eq_iSup]
+  refine ENNReal.coe_iSup ⟨nndist f g, ?_⟩
+  rintro - ⟨x, hx, rfl⟩
+  exact nndist_coe_le_nndist x
+
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
   Iff.intro
@@ -541,8 +547,8 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
 @[to_additive (attr := simps)
 "Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
 `AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
-protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
+    [TopologicalSpace α] [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
     (α →ᵇ β) →* (α →ᵇ γ) where
@@ -626,7 +632,7 @@ instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
       rw [dist_le (mul_nonneg C_nonneg dist_nonneg)]
       intro x
       refine le_trans (lipschitz_with_lipschitz_const_add ⟨f₁ x, g₁ x⟩ ⟨f₂ x, g₂ x⟩) ?_
-      refine mul_le_mul_of_nonneg_left ?_ C_nonneg
+      gcongr
       apply max_le_max <;> exact dist_coe_le_dist x⟩
 
 end LipschitzAdd
@@ -697,8 +703,8 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
         let ⟨b, hb⟩ := f.bounded
         ⟨dist c 0 * b, fun x y => by
           refine (dist_smul_pair c (f x) (f y)).trans ?_
-          refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
-          exact hb x y⟩ }
+          gcongr
+          apply hb⟩ }
 
 @[simp]
 theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f x := rfl
@@ -723,14 +729,14 @@ instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
     rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
     intro x
     refine (dist_smul_pair c (f₁ x) (f₂ x)).trans ?_
-    exact mul_le_mul_of_nonneg_left (dist_coe_le_dist x) dist_nonneg
+    gcongr
+    apply dist_coe_le_dist
   dist_pair_smul' c₁ c₂ f := by
-    rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
+    rw [dist_le (by positivity)]
     intro x
     refine (dist_pair_smul c₁ c₂ (f x)).trans ?_
-    refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
-    convert dist_coe_le_dist (β := β) x
-    simp
+    gcongr
+    apply dist_coe_le_dist (g := 0)
 
 end SMul
 

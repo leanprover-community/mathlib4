@@ -221,6 +221,9 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
     (Subtype.preirreducibleSpace h.isPreirreducible).isPreirreducible_univ
   toNonempty := h.nonempty.to_subtype
 
+instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
+  ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
+
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
   isPreirreducible_univ u v := by

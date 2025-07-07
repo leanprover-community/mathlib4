@@ -45,6 +45,16 @@ structure Monad extends C ⥤ C where
   left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
   right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by aesop_cat
 
+@[reassoc]
+lemma Monad.unit_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
+    f ≫ T.η.app Y = T.η.app X ≫ T.map f :=
+  T.η.naturality _
+
+@[reassoc]
+lemma Monad.mu_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
+    T.map (T.map f) ≫ T.μ.app Y = T.μ.app X ≫ T.map f :=
+  T.μ.naturality _
+
 /-- The data of a comonad on C consists of an endofunctor G together with natural transformations
 ε : G ⟶ 𝟭 C and δ : G ⟶ G ⋙ G satisfying three equations:
 - δ_X ≫ G δ_X = δ_X ≫ δ_(GX) (coassociativity)
@@ -60,6 +70,16 @@ structure Comonad extends C ⥤ C where
     aesop_cat
   left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by aesop_cat
   right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by aesop_cat
+
+@[reassoc]
+lemma Comonad.counit_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
+    T.map f ≫ T.ε.app Y = T.ε.app X ≫ f :=
+  T.ε.naturality _
+
+@[reassoc]
+lemma Comonad.delta_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
+    T.map f ≫ T.δ.app Y = T.δ.app X ≫ T.map (T.map f) :=
+  T.δ.naturality _
 
 variable {C}
 variable (T : Monad C) (G : Comonad C)
@@ -249,8 +269,7 @@ variable {C}
 
 /-- An isomorphism of monads gives a natural isomorphism of the underlying functors.
 -/
-/- Porting note: removed
-`@[simps (config := { rhsMd := semireducible })]`
+/- Porting note: removed `@[simps (rhsMd := semireducible)]`
 and replaced with `@[simps]` in the two declarations below -/
 @[simps!]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
@@ -309,7 +328,7 @@ def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C wh
     slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
     simp
   right_unit X := by
-    simp only [id_obj, NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
+    simp only [NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
       Category.assoc, NatTrans.naturality_assoc]
     slice_lhs 2 4 =>
       simp only [← T.map_comp]
@@ -336,7 +355,7 @@ def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad 
   ε := i.inv ≫ T.ε
   δ := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
   right_counit X := by
-    simp only [id_obj, comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
+    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
     slice_lhs 4 5 => rw [← F.map_comp]
     simp only [hom_inv_id_app, Functor.map_id, id_comp, ← i.hom.naturality]
     slice_lhs 2 3 => rw [T.right_counit]
@@ -363,8 +382,8 @@ lemma map_unit_app (T : Monad C) (X : C) [IsIso T.μ] :
 lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
     IsSplitMono (T.η.app X) ↔ IsIso (T.η.app X) := by
   refine ⟨fun _ ↦ ⟨retraction (T.η.app X), by simp, ?_⟩, fun _ ↦ inferInstance⟩
-  erw [← map_id, ← IsSplitMono.id (T.η.app X), map_comp, T.map_unit_app X, T.η.naturality]
-  rfl
+  rw [← map_id, ← show T.η.app X ≫ retraction (T.η.app X) = 𝟙 X from IsSplitMono.id _,
+    map_comp, T.map_unit_app X, ← T.unit_naturality]
 
 end Monad
 
@@ -377,8 +396,8 @@ lemma map_counit_app (T : Comonad C) (X : C) [IsIso T.δ] :
 lemma isSplitEpi_iff_isIso_counit (T : Comonad C) (X : C) [IsIso T.δ] :
     IsSplitEpi (T.ε.app X) ↔ IsIso (T.ε.app X) := by
   refine ⟨fun _ ↦ ⟨section_ (T.ε.app X), ?_, by simp⟩, fun _ ↦ inferInstance⟩
-  erw [← map_id, ← IsSplitEpi.id (T.ε.app X), map_comp, T.map_counit_app X, T.ε.naturality]
-  rfl
+  rw [← map_id, ← show section_ (T.ε.app X) ≫ T.ε.app X = 𝟙 X from IsSplitEpi.id (T.ε.app X),
+    map_comp, T.map_counit_app X, T.counit_naturality]
 
 end Comonad
 

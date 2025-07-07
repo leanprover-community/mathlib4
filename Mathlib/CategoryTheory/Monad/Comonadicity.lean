@@ -28,7 +28,7 @@ comonadicity theorem:
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms`
 
-This file has been adapted from `Mathlib.CategoryTheory.Monad.Monadicity`.
+This file has been adapted from `Mathlib/CategoryTheory/Monad/Monadicity.lean`.
 Please try to keep them in sync.
 
 ## Tags
@@ -91,13 +91,13 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
       toFun f := by
         refine equalizer.lift (adj.homEquiv _ _ f.f) ?_
         simp only [Adjunction.toComonad_coe, Functor.comp_obj, Adjunction.homEquiv_unit,
-          Functor.id_obj, Category.assoc, ← G.map_comp, ← f.h, comparison_obj_A, comparison_obj_a]
+          Category.assoc, ← G.map_comp, ← f.h, comparison_obj_A, comparison_obj_a]
         rw [Functor.comp_map, Functor.map_comp, Adjunction.unit_naturality_assoc,
           Adjunction.unit_naturality]
       invFun f := by
         refine ⟨(adj.homEquiv _ _).symm (f ≫ (equalizer.ι _ _)), (adj.homEquiv _ _).injective ?_⟩
         simp only [Adjunction.toComonad_coe, Functor.comp_obj, comparison_obj_A, comparison_obj_a,
-          Adjunction.homEquiv_counit, Functor.id_obj, Functor.map_comp, Category.assoc,
+          Adjunction.homEquiv_counit, Functor.map_comp, Category.assoc,
           Functor.comp_map, Adjunction.homEquiv_unit, Adjunction.unit_naturality_assoc,
           Adjunction.unit_naturality, Adjunction.right_triangle_components_assoc]
         congr 1
@@ -316,7 +316,7 @@ This is the converse of `createsFSplitEqualizersOfComonadic`.
 -/
 def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
-  let I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
+  have I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
     rw [hasLimit_iff_of_iso (diagramIsoParallelPair _)]
     exact inferInstanceAs <| HasEqualizer (F.map f) (F.map g)
   have : HasEqualizerOfIsCosplitPair F := ⟨fun _ _ => hasLimit_of_created (parallelPair _ _) F⟩

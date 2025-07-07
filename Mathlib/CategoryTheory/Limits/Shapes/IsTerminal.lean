@@ -68,7 +68,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse,Function.LeftInverse]
-    intro u; funext X; simp only
+    subsingleton
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
@@ -235,6 +235,13 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
     dsimp [Function.LeftInverse,Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
+/-- If `F` is an empty diagram, then a cone over `F` is limiting iff the cone point is terminal. -/
+noncomputable
+def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
+    IsLimit c ≃ IsTerminal c.pt :=
+  (IsLimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
+    (isLimitEmptyConeEquiv _ _ _ (.refl _))
+
 /-- Being initial is independent of the empty diagram, its universe, and the cocone over it,
     as long as the cocone points are isomorphic. -/
 def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ : Cocone F₂)
@@ -256,6 +263,14 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
   right_inv := by
     dsimp [Function.LeftInverse,Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
+
+/-- If `F` is an empty diagram,
+then a cocone over `F` is colimiting iff the cocone point is initial. -/
+noncomputable
+def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category J] [IsEmpty J]
+    {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c.pt :=
+  (IsColimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
+    (isColimitEmptyCoconeEquiv _ _ _ (.refl _))
 
 end Univ
 

@@ -364,7 +364,7 @@ def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
 
 set_option linter.docPrime false in -- This is about `ContinuousMulEquiv.mk'`
 @[simp]
-lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y)  : ⇑(mk' f h) = f := rfl
+lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : ⇑(mk' f h) = f := rfl
 
 end coe
 
@@ -417,6 +417,7 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   continuous_toFun := cme.continuous_invFun
   continuous_invFun := cme.continuous_toFun }
 initialize_simps_projections ContinuousMulEquiv (toFun → apply, invFun → symm_apply)
+initialize_simps_projections ContinuousAddEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive]
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl

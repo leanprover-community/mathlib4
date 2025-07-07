@@ -292,25 +292,27 @@ end LinearMap
 
 section Nonneg
 
-@[simp]
+-- Cannot be @[simp] because the LHS is not in simp normal form
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
-    (h : v ∈ Module.End.eigenspace T μ) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
-  simp only [mem_eigenspace_iff.mp h, inner_smul_right, inner_self_eq_norm_sq_to_K]
+    (h : T v = μ • v) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
+  simp only [h, inner_smul_right, inner_self_eq_norm_sq_to_K]
 
 theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
-  obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
-  have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
+  obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
+  have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv₂
+  simp only [mem_genEigenspace_one] at hv₁
   have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
-    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
+    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv₁)
   exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
     (hnn : ∀ x : E, 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
-  obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
-  have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
+  obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
+  have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv₂
+  simp only [mem_genEigenspace_one] at hv₁
   have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
-    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
+    mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv₁)
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 end Nonneg

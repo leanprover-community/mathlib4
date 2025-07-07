@@ -116,7 +116,7 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     intro g' hg' hAB
     apply hg'
     simp_rw [hAB]
-    simp_all only [map_zero, HahnSeries.coeff_zero, not_true_eq_false]
+    simp_all only [map_zero, not_true_eq_false]
 
 @[simp]
 theorem compHahnSeries_add (u v : U) :
