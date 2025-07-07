@@ -90,9 +90,7 @@ def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
   isLimit :=
     { lift := fun _ _ => PUnit.unit
       fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by
-        funext
-        subsingleton }
+      uniq := fun _ _ _ => by constructor }
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
@@ -668,7 +666,6 @@ noncomputable def isLimitEquivBijective :
   invFun h := IsLimit.ofIsoLimit (Types.pullbackLimitCone f g).isLimit
     (Iso.symm (PullbackCone.ext (Equiv.ofBijective _ h).toIso))
   left_inv _ := Subsingleton.elim _ _
-  right_inv _ := rfl
 
 end PullbackCone
 
@@ -949,7 +946,6 @@ def MulticospanIndex.sectionsEquiv :
   invFun s :=
     { val := fun i ↦ s.val (.left i)
       property := fun r ↦ (s.property (.fst r)).trans (s.property (.snd r)).symm }
-  left_inv _ := rfl
   right_inv s := by
     ext (_|r)
     · rfl

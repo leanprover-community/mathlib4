@@ -46,10 +46,10 @@ lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
     {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
 
 lemma heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : p ≍ p' := by injection h
 
 lemma hom_heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : e ≍ e' := by injection h
 
 /-- The length of a path is the number of arrows it uses. -/
 def length {a : V} : ∀ {b : V}, Path a b → ℕ
@@ -217,7 +217,7 @@ def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
 /-- Given decidable equality on paths of length up to `n`, we can construct
 decidable equality on paths of length up to `n + 1`. -/
 def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
-    (h₂ : ∀ (v w : V), DecidableEq (v ⟶  w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
+    (h₂ : ∀ (v w : V), DecidableEq (v ⟶ w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
     (v w : V) : DecidableEq (BoundedPaths v w (n + 1)) :=
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with

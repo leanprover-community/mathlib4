@@ -816,7 +816,7 @@ protected theorem mul_inv_rev (a b : tsze R M) :
   ext
   · rw [fst_inv, fst_mul, fst_mul, mul_inv_rev, fst_inv, fst_inv]
   · simp only [snd_inv, snd_mul, fst_mul, fst_inv]
-    simp only [neg_smul, smul_neg, smul_add]
+    simp only [smul_neg, smul_add]
     simp_rw [mul_inv_rev, smul_comm (_ : R), op_smul_op_smul, smul_smul, add_comm, neg_add]
     obtain ha0 | ha := eq_or_ne (fst a) 0
     · simp [ha0]
@@ -947,8 +947,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
-        simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul_comm, hg, smul_zero,
-          op_smul_eq_smul]
+        simp only [add_zero, zero_add, add_mul, mul_add, hg]
         rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
@@ -1051,11 +1050,7 @@ def liftEquivOfComm :
     toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
-    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩
-    left_inv := fun f => rfl
-    right_inv := fun fg => Subtype.ext <|
-      Prod.ext (AlgHom.toLinearMap_injective <| LinearMap.ext_ring <| by simp)
-      rfl }
+    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩ }
 
 section map
 
