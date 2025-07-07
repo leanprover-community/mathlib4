@@ -34,8 +34,8 @@ n distinct elements into k non-empty subsets.
 
 # References:
 
-* [Stirling Numbers of the First Kind – MathWorld](https://mathworld.wolfram.com/StirlingNumberoftheFirstKind.html)
-* [Stirling Numbers of the Second Kind – MathWorld](https://mathworld.wolfram.com/StirlingNumberoftheSecondKind.html)
+* [Stirling Numbers of the First Kind – ProofWiki](https://proofwiki.org/wiki/Definition:Stirling_Numbers_of_the_First_Kind/Unsigned)
+* [Stirling Numbers of the Second Kind – ProofWiki](https://proofwiki.org/wiki/Definition:Stirling_Numbers_of_the_Second_Kind)
 
 -/
 
