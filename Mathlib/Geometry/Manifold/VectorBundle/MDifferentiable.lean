@@ -80,16 +80,16 @@ theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
 
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
-         [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
+  [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 
--- TODO: compare with ContMDiffWithinAt.change_section_trivialization
-
-lemma MDifferentiableWithinAt.coordChange
+-- FIXME: should this (and ContMDiffWithinAt.change_section_trivialization)
+-- be named `coordChange` instead?
+lemma MDifferentiableWithinAt.change_section_trivialization
     {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
     (e' : Trivialization F TotalSpace.proj)  [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (hex₀ : (f x₀).proj ∈ e.baseSet) (he'x₀ : (f x₀).proj ∈ e'.baseSet)
-    (hf : MDifferentiableWithinAt IM IB (fun x ↦ (f x).proj) s x₀)
+    (hf : MDifferentiableWithinAt IM IB (π F E ∘ f) s x₀)
     (he'f : MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e' (f x)).2) s x₀) :
     MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) s x₀ := by
   have : ∀ᶠ x in 𝓝[s] x₀, (e (f x)).2 = e'.coordChangeL 𝕜 e (f x).proj (e' (f x)).2 := by
@@ -107,23 +107,25 @@ lemma MDifferentiableWithinAt.coordChange
     exact bar.clm_apply he'f
   rw [e'.coordChangeL_apply e ⟨he'x₀, hex₀⟩, e'.symm_proj_apply (f x₀) he'x₀]
 
-theorem mdifferentiableWithinAt_coordChange
+theorem mdifferentiableWithinAt_change_section_trivialization
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (hex₀ : (f x₀).proj ∈ e.baseSet) (he'x₀ : (f x₀).proj ∈ e'.baseSet)
-    (hf : MDifferentiableWithinAt IM IB (fun x ↦ (f x).proj) s x₀) :
+    (hf : MDifferentiableWithinAt IM IB (π F E ∘ f) s x₀) :
     MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) s x₀ ↔
     MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e' (f x)).2) s x₀ :=
-  ⟨hf.coordChange IB e he'x₀ hex₀, hf.coordChange IB e' hex₀ he'x₀⟩
+  ⟨hf.change_section_trivialization IB e he'x₀ hex₀,
+   hf.change_section_trivialization IB e' hex₀ he'x₀⟩
 
-theorem mdifferentiableAt_change_triv
+theorem mdifferentiableAt_change_section_trivialization
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {x₀ : M}
     (hex₀ : (f x₀).proj ∈ e.baseSet) (he'x₀ : (f x₀).proj ∈ e'.baseSet)
     (hf : MDifferentiableAt IM IB (fun x ↦ (f x).proj) x₀) :
     MDifferentiableAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) x₀ ↔
     MDifferentiableAt IM 𝓘(𝕜, F) (fun x ↦ (e' (f x)).2) x₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_coordChange IB hex₀ he'x₀ hf
+  simpa [← mdifferentiableWithinAt_univ] using
+    mdifferentiableWithinAt_change_section_trivialization IB hex₀ he'x₀ hf
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within at set. -/
@@ -138,7 +140,8 @@ theorem Trivialization.mdifferentiableWithinAt_totalSpace_iff
   rw [mdifferentiableWithinAt_totalSpace]
   apply and_congr_right
   intro hf
-  rw [mdifferentiableWithinAt_coordChange IB hex₀ (FiberBundle.mem_baseSet_trivializationAt' _) hf]
+  rw [mdifferentiableWithinAt_change_section_trivialization IB hex₀
+    (FiberBundle.mem_baseSet_trivializationAt' _) hf]
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point. -/
@@ -153,7 +156,8 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
   rw [mdifferentiableAt_totalSpace]
   apply and_congr_right
   intro hf
-  rw [mdifferentiableAt_change_triv IB hex₀ (FiberBundle.mem_baseSet_trivializationAt' _) hf]
+  rw [mdifferentiableAt_change_section_trivialization IB hex₀
+    (FiberBundle.mem_baseSet_trivializationAt' _) hf]
 
 /-- Characterization of differentiable sections a vector bundle in terms
 of any trivialization. Version at a point within at set. -/
