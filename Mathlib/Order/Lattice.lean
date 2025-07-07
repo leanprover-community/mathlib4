@@ -1299,9 +1299,9 @@ structure IsLatticeCon [Lattice α] (r : α → α → Prop) : Prop extends Equi
 lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : IsLatticeCon r ↔
     (∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
     (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
-    (∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) := by
-  constructor
-  · intro hlc
+    (∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) where
+  mp := by
+    intro hlc
     constructor
     · intro x y
       constructor
@@ -1325,7 +1325,8 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) (h : IsRefl _ r) : I
         exact hlc.trans e1 e2
     · exact ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
         ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩
-  · intro ⟨h1,h2,h3⟩
+  mpr := by
+    intro ⟨h1,h2,h3⟩
     have e1 (a b c d : α) (hb : a ≤ b ∧ b ≤ d) (hc : a ≤ c ∧ c ≤ d) (h : r a d) : r b c := by
       rw [h1]
       conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
