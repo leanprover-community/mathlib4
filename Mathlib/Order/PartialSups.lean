@@ -8,6 +8,7 @@ import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -147,6 +148,14 @@ theorem partialSups_bot [PartialOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
   -- should we add a lemma `Finset.Iic_bot`?
   suffices Iic (⊥ : ι) = {⊥} by simp only [this, sup'_singleton]
   simp only [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
+
+lemma partialSups_succ' {α : Type*} [SemilatticeSup α] [LinearOrder ι] [LocallyFiniteOrder ι]
+    [SuccOrder ι] [OrderBot ι] (f : ι → α) (i : ι) :
+    (partialSups f) (Order.succ i) = f ⊥ ⊔ (partialSups (f ∘ Order.succ)) i := by
+  refine Succ.rec (by simp) (fun j _ h ↦ ?_) (bot_le (a := i))
+  have : (partialSups (f ∘ Order.succ)) (Order.succ j) =
+      ((partialSups (f ∘ Order.succ)) j ⊔ (f ∘ Order.succ) (Order.succ j)) := by simp
+  simp [this, h, sup_assoc]
 
 lemma comp_partialSups {F : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [FunLike F α β]
     [SupHomClass F α β] (f : ι → α) (g : F) : partialSups (g ∘ f) = g ∘ partialSups f := by
