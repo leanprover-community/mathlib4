@@ -51,19 +51,20 @@ theorem mem_nhds {s : Set R} {x : R} :
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
   rw [isOpen_iff_mem_nhds]
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
-  intro x hx
-  rw [mem_nhds]
-  simp only [setOf_subset_setOf]
-  exact ⟨Units.mk0 _ hr,
-    fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
+  · intro x hx
+    rw [mem_nhds]
+    simp only [setOf_subset_setOf]
+    exact ⟨Units.mk0 _ hr,
+      fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
 
 theorem isClosed_ball (r : ValueGroupWithZero R) :
     IsClosed {x | v x < r} := by
-  rcases eq_or_ne r 0 with rfl|hr
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
-  exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v (Units.mk0 r hr)) (isOpen_ball _)
+  · exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v (Units.mk0 r hr))
+      (isOpen_ball _)
 
 theorem isClopen_ball (r : ValueGroupWithZero R) :
     IsClopen {x | v x < r} :=
@@ -85,7 +86,7 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [mem_nhds]
   have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
-  refine ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
+  exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
 theorem isClopen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
