@@ -165,8 +165,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   · simp_rw [← Real.norm_eq_abs]
     exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
       stronglyMeasurable_condExp.norm.measurable
-  simp only [← smul_eq_mul, ← setIntegral_const, NNReal.val_eq_coe, RCLike.ofReal_real_eq_id,
-    _root_.id]
+  simp only [← smul_eq_mul, ← setIntegral_const]
   refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
   refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
     (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
@@ -239,7 +238,7 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     by_cases hx : x ∈ s
     · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
         Function.const_apply]
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_notMem, not_false_iff, zero_mul]
   apply @SimpleFunc.induction _ _ m _ (fun f => _)
     (fun c s hs => ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ => ?_) f
   · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise,
@@ -356,7 +355,7 @@ theorem condExp_mul_of_stronglyMeasurable_left {f g : α → ℝ} (hf : Strongly
   filter_upwards with x
   by_cases hxs : x ∈ sets n
   · simpa only [hxs, Set.indicator_of_mem] using h_norm n x hxs
-  · simp only [hxs, Set.indicator_of_not_mem, not_false_iff, _root_.norm_zero, Nat.cast_nonneg]
+  · simp only [hxs, Set.indicator_of_notMem, not_false_iff, _root_.norm_zero, Nat.cast_nonneg]
 
 @[deprecated (since := "2025-01-22")]
 alias condexp_stronglyMeasurable_mul := condExp_mul_of_stronglyMeasurable_left

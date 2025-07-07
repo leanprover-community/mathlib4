@@ -15,7 +15,7 @@ numbers. More generally, we give formulae for any Hurwitz zeta functions at any 
 integer in terms of Bernoulli polynomials.
 
 (Note that most of the actual work for these formulae is done elsewhere, in
-`Mathlib.NumberTheory.ZetaValues`. This file has only those results which really need the
+`Mathlib/NumberTheory/ZetaValues.lean`. This file has only those results which really need the
 definition of Hurwitz zeta and related functions, rather than working directly with the defining
 sums in the convergence range.)
 

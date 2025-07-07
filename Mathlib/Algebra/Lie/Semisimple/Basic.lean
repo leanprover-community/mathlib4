@@ -238,7 +238,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   constructor
   -- `j` brackets to `0` with `z`, since `⁅j, z⁆` is contained in `⁅J, K⁆ ≤ J ⊓ K`,
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
-  · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
+  · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.notMem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
     apply LieSubmodule.lie_mem_lie j.2
     simpa only [K, Finset.sup_id_eq_sSup] using hz

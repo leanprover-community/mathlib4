@@ -263,7 +263,6 @@ variable {J : Type u} [Category.{v} J]
 instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F :=
   HasLimit.mk { cone := _, isLimit := limitOfDiagramInitial (initialIsInitial) F }
 
--- See note [dsimp, simp]
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
 to the limit of `F`. -/
