@@ -104,7 +104,7 @@ theorem stirlingFirst_one_right (n : ℕ) : stirlingFirst (n + 1) 1 = n.factoria
   induction' n with n hn
   · rfl
   · rw [stirlingFirst_succ_succ, zero_add, hn, stirlingFirst_succ_zero]
-    simp [Nat.sub_self, Nat.factorial_succ]
+    simp [Nat.factorial_succ]
 
 
 /--
