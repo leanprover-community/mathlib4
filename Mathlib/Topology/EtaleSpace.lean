@@ -7,10 +7,10 @@ import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
-# Étale spaces of local predicates and presheaves
+# Étalé spaces of local predicates and presheaves
 
-The traditional approach to étale spaces starts from a (pre)sheaf on a base space and
-directly constructs the associated étale space with a local homeomorphism to the base space.
+The traditional approach to étalé spaces starts from a (pre)sheaf on a base space and
+directly constructs the associated étalé space with a local homeomorphism to the base space.
 We instead construct a local homeomorphism from an arbitrary type family (over the base space)
 with a predicate on sections (over open sets of the base space) specifying the "admissible"
 sections, provided that the type family behaves like the family of stalks of the presheaf
@@ -18,7 +18,7 @@ of admissible sections (i.e., satisfies the conditions `IsStalkInj` and `IsStalk
 
 The passage between (pre)sheaves and (pre)local predicates was already established during
 the development of sheafification (see `TopCat.LocalPredicate` and the file
-``Mathlib.Topology.Sheaves.Sheafify`), and we obtain the étale space of a (pre)sheaf by
+``Mathlib.Topology.Sheaves.Sheafify`), and we obtain the étalé space of a (pre)sheaf by
 combining both steps. But our theory can also be applied to situations where the type family
 is not (definitionally) the stalks of a presheaf: for example it can be a family of Hom types
 in the fundamental groupoid when constructing the universal cover, or a constant family
@@ -29,7 +29,7 @@ family as "stalks" and their elements as "germs".
 
 ## Main definitions
 
-* `EtaleSpace`: The étale space associated to a set of admissible sections given in the form of
+* `EtaleSpace`: The étalé space associated to a set of admissible sections given in the form of
   a predicate. It is endowed with the strongest topology making every admissible section continuous.
   `EtaleSpace.mk` is its constructor and `EtaleSpace.proj` is the continuous projection to the
   base space.
@@ -39,26 +39,26 @@ family as "stalks" and their elements as "germs".
 Some results below requires the type family satisfies the injectivity and/or surjectivity criteria
 to behave like the family of stalks of the admissible sections.
 
-* `EtaleSpace.isOpenEmbedding_restrict_proj`: the projection from the étale space
+* `EtaleSpace.isOpenEmbedding_restrict_proj`: the projection from the étalé space
   to the base space is an open embedding on the range of every admissible section.
 
 * `EtaleSpace.isOpenEmbedding_section`: every admissible section is an open embedding
   (requires injectivity criterion).
 
-* `EtaleSpace.isLocalHomeomorph_proj`: the projection from the étale space to the base space
+* `EtaleSpace.isLocalHomeomorph_proj`: the projection from the étalé space to the base space
   is a local homeomorphism (requires both criteria).
 
 * `EtaleSpace.isOpen_range_section_iff_of_isOpen`: the range of a section is open if and only if
   it is the range of a continuous section over an open set (requires both criteria).
 
-* `EtaleSpace.continuous_cod_iff`: a function to the étale space is continuous if and only if
+* `EtaleSpace.continuous_cod_iff`: a function to the étalé space is continuous if and only if
   it agrees with an admissible section around each point (requires both criteria).
 
 * `EtaleSpace.continuous_section_iff`: a section is continuous if and only if it is admissible
   according to the sheafified predicate, i.e., it locally agrees with admissible sections
   (requires both criteria and that the predicate is pre-local).
 
-* `EtaleSpace.isTopologicalBasis`: the étale space has a basis consisting of
+* `EtaleSpace.isTopologicalBasis`: the étalé space has a basis consisting of
   the ranges of admissible sections (with the same requirements as the above).
 -/
 
@@ -71,7 +71,7 @@ namespace TopCat
 variable {B : TopCat.{u}} {F : B → Type v}
 
 set_option linter.unusedVariables false in
-/-- The underlying type of the étale space associated to a predicate on sections of a type family
+/-- The underlying type of the étalé space associated to a predicate on sections of a type family
 is simply the `Sigma` type. -/
 @[nolint unusedArguments]
 def EtaleSpace (P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) : Type _ := Σ b, F b
@@ -80,10 +80,10 @@ namespace EtaleSpace
 
 variable {P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop}
 
-/-- Constructor for points in the étale space. -/
+/-- Constructor for points in the étalé space. -/
 @[simps] def mk {b : B} (x : F b) : EtaleSpace P := ⟨b, x⟩
 
-/-- The étale space is endowed with the strongest topology
+/-- The étalé space is endowed with the strongest topology
 making every admissible section continuous. -/
 instance : TopologicalSpace (EtaleSpace P) :=
   ⨆ (U : Opens B) (s : Π b : U, F b) (_ : P s), coinduced (mk <| s ·) inferInstance
@@ -100,7 +100,7 @@ lemma continuous_dom_iff {X} [TopologicalSpace X] {f : EtaleSpace P → X} :
     ← forall_comm (α := Set X), ← forall_comm (α := IsOpen _)]
 
 variable (P) in
-/-- The projection from the étale space down to the base is continuous. -/
+/-- The projection from the étalé space down to the base is continuous. -/
 def proj : C(EtaleSpace P, B) where
   toFun := Sigma.fst
   continuous_toFun := continuous_dom_iff.mpr fun _ _ _ ↦ continuous_subtype_val
@@ -233,7 +233,7 @@ namespace TrivializationOn
 variable {U : Opens B} {ι : Type*} [TopologicalSpace ι] [DiscreteTopology ι]
 variable (t : TrivializationOn P U ι) (inj : ∀ b, IsStalkInj P b)
 
-/-- The étale space of a set of sections with a trivialization on `U` evenly covers `U` via
+/-- The étalé space of a set of sections with a trivialization on `U` evenly covers `U` via
 the projection map. -/
 noncomputable def homeomorph : proj P ⁻¹' U ≃ₜ U × ι where
   __ := t.equiv
