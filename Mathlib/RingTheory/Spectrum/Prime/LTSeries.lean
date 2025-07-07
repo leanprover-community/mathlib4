@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Yonele Hu. All rights reserved.
+Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yonele Hu
+Authors: Yongle Hu
 -/
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
