@@ -37,10 +37,9 @@ namespace Valuation
 of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`. -/
 class RankOne (v : Valuation R Γ₀) where
   /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
-  hom : valueGroup₀ v →*₀ ℝ≥0
+  hom (v) : valueGroup₀ v →*₀ ℝ≥0
   strictMono' : StrictMono hom
   nontrivial' : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1
-
 namespace RankOne
 
 variable (v : Valuation R Γ₀) [RankOne v]
@@ -51,7 +50,7 @@ lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := nontrivial'
 
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
   `x = 0`. -/
-theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
+theorem zero_of_hom_zero {x : valueGroup₀ v} (hx : hom v x = 0) : x = 0 := by
   refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ ?_).symm
   have hs := strictMono v h_lt
   rw [map_zero, hx] at hs
