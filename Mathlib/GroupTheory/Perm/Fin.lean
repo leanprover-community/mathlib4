@@ -379,7 +379,7 @@ theorem cycleIcc_of_ge_and_lt (h1 : i ≤ k) (h2 : k < j) [NeZero n] : (cycleIcc
 theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc i j) j = i := by
   simp [cycleIcc_of hij (Fin.ge_of_eq rfl)]
 
-theorem cycleIcc_of_trivial (hijk : k < i ∨ j < k) [NeZero n] : (cycleIcc i j) k = k := by
+theorem cycleIcc_of_trivial (hijk : k < i ∨ j < k) : (cycleIcc i j) k = k := by
   rcases Decidable.em (i ≤ j) with hij | hij
   · rcases hijk with hki | hjk
     · exact cycleIcc_of_lt hij hki
