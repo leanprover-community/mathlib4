@@ -46,10 +46,10 @@ theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 
-lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
-    (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
+lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀ a, β a} {f' : ∀ a, β' a}
+    (hα : α = α') (h : ∀ a a', a ≍ a' → f a ≍ f' a') : f ≍ f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : ∀a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
@@ -513,7 +513,7 @@ theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') :
   have := congr_fun h a'
   rwa [update_self, update_self] at this
 
-lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
+lemma forall_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_self]
   simp +contextual

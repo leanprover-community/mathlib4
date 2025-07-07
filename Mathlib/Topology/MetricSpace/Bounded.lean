@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -38,13 +39,13 @@ open scoped ENNReal Uniformity Topology Pointwise
 universe u v w
 
 variable {α : Type u} {β : Type v} {X ι : Type*}
-variable [PseudoMetricSpace α]
 
 namespace Metric
 
 section Bounded
 
 variable {x : α} {s t : Set α} {r : ℝ}
+variable [PseudoMetricSpace α]
 
 /-- Closed balls are bounded -/
 theorem isBounded_closedBall : IsBounded (closedBall x r) :=
@@ -340,6 +341,9 @@ section Diam
 
 variable {s : Set α} {x y z : α}
 
+section PseudoMetricSpace
+variable [PseudoMetricSpace α]
+
 /-- The diameter of a set in a metric space. To get controllable behavior even when the diameter
 should be infinite, we express it in terms of the `EMetric.diam` -/
 noncomputable def diam (s : Set α) : ℝ :=
@@ -507,6 +511,16 @@ theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set 
     (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
   (hs 0).isComplete.nonempty_iInter_of_nonempty_biInter hs h's h h'
 
+end PseudoMetricSpace
+
+section MetricSpace
+
+theorem diam_pos [MetricSpace α] (hs1 : s.Nontrivial) (hs2 : IsBounded s) : 0 < diam s := by
+  rcases hs1 with ⟨x, hx, y, hy, hxy⟩
+  exact (dist_pos.mpr hxy).trans_le <| Metric.dist_le_diam_of_mem hs2 hx hy
+
+end MetricSpace
+
 end Diam
 
 end Metric
@@ -527,6 +541,8 @@ def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
 end Mathlib.Meta.Positivity
 
 open Metric
+
+variable [PseudoMetricSpace α]
 
 theorem Metric.cobounded_eq_cocompact [ProperSpace α] : cobounded α = cocompact α := by
   nontriviality α; inhabit α

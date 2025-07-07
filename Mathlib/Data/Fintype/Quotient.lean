@@ -153,7 +153,7 @@ def finChoiceEquiv :
 def finHRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (q : ∀ i, Quotient (S i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
-    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → HEq (f a) (f b)) :
+    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → f a ≍ f b) :
     C q :=
   eval_finChoice q ▸ (finChoice q).hrecOn f h
 

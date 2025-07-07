@@ -216,10 +216,10 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   induction' s using Finset.cons_induction with a s has ih generalizing n
   · cases n <;> simp
   rw [Finset.sum_cons, piAntidiag_cons, sum_disjiUnion]
-  simp only [sum_map, Function.Embedding.coeFn_mk, Pi.add_apply, multinomial_cons,
-    Pi.add_apply, eq_self_iff_true, if_true, Nat.cast_mul, noncommProd_cons, eq_self_iff_true,
+  simp only [sum_map, Pi.add_apply, multinomial_cons,
+    Pi.add_apply, if_true, Nat.cast_mul, noncommProd_cons,
     if_true, sum_add_distrib, sum_ite_eq', has, if_false, add_zero,
-    addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
+    addRightEmbedding_apply]
   suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
     ∑ g ∈ piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
       multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
