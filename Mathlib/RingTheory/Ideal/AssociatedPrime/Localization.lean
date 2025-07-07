@@ -3,9 +3,7 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Support
 
 /-!
@@ -105,9 +103,8 @@ lemma comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg
     have mem : r * (∏ a, g a).1 ∈ Ideal.comap (algebraMap R R') p := by
       simpa only [hx, Ideal.mem_comap, mem_ker, toSpanSingleton_apply, algebraMap_smul,
         ← IsLocalizedModule.mk'_smul, hr] using IsLocalizedModule.mk'_zero f s
-    have nmem := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.ne_top)
-      (∏ a, g a).2
-    have := (Ideal.IsPrime.mul_mem_iff_mem_or_mem prime).mp mem
+    have := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2
+    have := prime.mul_mem_iff_mem_or_mem.mp mem
     tauto
 
 include S f in
@@ -115,10 +112,9 @@ open Set in
 lemma associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes [IsNoetherianRing R] :
     (Ideal.comap (algebraMap R R')) ⁻¹' (associatedPrimes R M) = associatedPrimes R' M' := by
   ext p
-  exact ⟨fun h ↦ mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule S R' f p
-    (mem_preimage.mp h),
+  exact ⟨mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule S R' f p,
     fun h ↦ comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg S R' f p h
-    ((isNoetherianRing_iff_ideal_fg R).mp (by assumption) _)⟩
+    ((isNoetherianRing_iff_ideal_fg R).mp ‹_› _)⟩
 
 lemma minimalPrimes_annihilator_mem_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
     (Module.annihilator R M).minimalPrimes ⊆ associatedPrimes R M := by
