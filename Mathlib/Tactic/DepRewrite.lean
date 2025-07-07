@@ -33,10 +33,14 @@ theorem heqR.{u} {α β : Sort u} {a : α} {b : β} (h : @HEq α a β b) :
     @Eq β (@cast α β (@type_eq_of_heq α β a b h) a) b :=
   HEq.rec (Eq.refl a) h
 
+private def traceCls : Name := `Tactic.depRewrite
+private def traceClsVisit : Name := `Tactic.depRewrite.visit
+private def traceClsCast : Name := `Tactic.depRewrite.cast
+
 initialize
-  registerTraceClass `depRewrite
-  registerTraceClass `depRewrite.visit
-  registerTraceClass `depRewrite.cast
+  registerTraceClass traceCls
+  registerTraceClass traceClsVisit
+  registerTraceClass traceClsCast
 
 /-- See `Config.castMode`. -/
 inductive CastMode where
@@ -165,7 +169,7 @@ partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
   -- between definientia and definienda (δ reductions).
   if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te' et then
     return e'
-  trace[depRewrite.cast] "casting{indentExpr e'}\nto expected type{indentExpr et}"
+  trace[traceClsCast] "casting{indentExpr e'}\nto expected type{indentExpr et}"
   let ctx ← read
   checkCastAllowed e' te' ctx.cfg.castMode
 
@@ -176,17 +180,17 @@ partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
   | some e'' =>
     let te'' ← inferType e''
     if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te'' et then
-      trace[depRewrite.cast] "done with one cast (x ↦ p):{indentExpr e''}"
+      trace[traceClsCast] "done with one cast (x ↦ p):{indentExpr e''}"
       return e''
 
     let motive ← mkLambdaFVars #[ctx.x, ctx.h] et
     let e''' ← mkEqRec motive e'' ctx.h
-    trace[depRewrite.cast] "done with two casts (x ↦ p, p ↦ x):{indentExpr e'''}"
+    trace[traceClsCast] "done with two casts (x ↦ p, p ↦ x):{indentExpr e'''}"
     return e'''
   | none =>
     let motive ← mkLambdaFVars #[ctx.x, ctx.h] et
     let e'' ← mkEqRec motive e' ctx.h
-    trace[depRewrite.cast] "done with one cast (x ↦ p):{indentExpr e''}"
+    trace[traceClsCast] "done with one cast (x ↦ p):{indentExpr e''}"
     return e''
 
 /-- Like `visitAndCast`, but does not insert casts at the top level.
@@ -195,7 +199,7 @@ The expected types of certain subterms are computed from `et?`. -/
 -- was rewritten inside a `visit`,
 -- and then skipping the type correctness check if it wasn't.
 partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
-  withTraceNode `depRewrite.visit (fun
+  withTraceNode traceClsVisit (fun
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
     | .error _ => pure m!"{e} => 💥️") do
   checkCache { val := e : ExprStructEq } fun _ => Meta.withIncRecDepth do
@@ -276,7 +280,7 @@ end
 def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
   let e ← instantiateMVars e
   let tp ← inferType p
-  withTraceNode `depRewrite (fun
+  withTraceNode traceCls (fun
     -- Message shows unified pattern (without mvars) b/c it is constructed after the body runs
     | .ok motive => pure m!"{e} =[x/{p}]=> {motive}"
     | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
