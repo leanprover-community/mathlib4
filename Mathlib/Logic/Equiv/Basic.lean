@@ -409,7 +409,12 @@ def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False
 
 section Sigma
 
-variable {ι : Type*} {π : ι → Type*} {p : ι → Prop}
+variable {α ι : Type*} {π : ι → Type*} {p : ι → Prop}
+
+/-- Functions to a `Sigma` type are in bijection with a `Sigma` type of dependent functions. -/
+def arrowSigma : (α → Σ i, π i) ≃ Σ i : α → ι, ∀ x, π (i x) where
+  toFun f := ⟨Sigma.fst ∘ f, fun x ↦ (f x).2⟩
+  invFun f a := .mk _ (f.2 a)
 
 /-- The `Sigma` type indexed by a subtype can be canonically identified with a subtype of the
 `Sigma` type indexed by the whole type. -/
@@ -425,11 +430,12 @@ def piEquivSubtypeSigma : (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f
   invFun f i := cast (congr_arg π (f.2 i)) (f.1 i).2
   right_inv f := Subtype.ext <| funext fun i ↦ Sigma.ext (f.2 i).symm <| by simp
 
-/-- The sections of a sigma type over a subtype are in bijection with the corresponding pi type. -/
+/-- The `Pi`-type `∀ i : Subtype p, π i` indexed by a subtype is equivalent to the type of
+sections of the `Sigma` type `Σ i, π i` over the subtype. -/
 def piSubtypeEquivSubtypeSigma :
     (∀ i : Subtype p, π i) ≃ { f : Subtype p → Σ i, π i // Sigma.fst ∘ f = (↑) } :=
   (piEquivSubtypeSigma ..).trans <| .trans
-    (.subtypeEquivOfSubtype' (.arrowCongr (.refl _) sigmaSubtypeComm))
+    (subtypeEquivOfSubtype' (arrowCongr (.refl _) sigmaSubtypeComm))
     { toFun f := ⟨val ∘ f.1, funext (congr_arg val <| f.2 ·)⟩
       invFun f := ⟨fun i ↦ ⟨_, by apply congr_fun f.2 i ▸ i.2⟩, (Subtype.ext <| congr_fun f.2 ·)⟩ }
 

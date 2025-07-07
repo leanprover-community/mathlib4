@@ -72,7 +72,7 @@ variable {B : TopCat.{u}} {F : B → Type v}
 
 set_option linter.unusedVariables false in
 /-- The underlying type of the étale space associated to a predicate on sections of a type family
-is simply the sigma type. -/
+is simply the `Sigma` type. -/
 @[nolint unusedArguments]
 def EtaleSpace (P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) : Type _ := Σ b, F b
 
@@ -179,15 +179,15 @@ theorem isOpen_injOn_iff_exists_continuous_section {V : Set (EtaleSpace P)} :
   simp_rw [show mk = Sigma.mk _ from rfl, Equiv.mk_piSubtypeEquivSubtypeSigma]
   exact ⟨fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s, hs⟩, s.continuous, hsV⟩, fun ⟨s, hs, hsV⟩ ↦ ⟨⟨s.1, hs⟩, s.2, hsV⟩⟩
 
-theorem isOpen_range_section_iff_of_isOpen {U : Set B} {s : Π b : U, F b} :
+theorem isOpen_range_section_iff {U : Set B} {s : Π b : U, F b} :
     letI sec b : EtaleSpace P := mk (s b)
     IsOpen (range sec) ↔ IsOpen U ∧ Continuous sec :=
   (isLocalHomeomorph_proj inj surj).isOpen_range_section_iff U rfl
 
-theorem isOpen_range_section_iff :
+theorem isOpen_range_section_opens_iff :
     letI sec b : EtaleSpace P := mk (s b)
     IsOpen (range sec) ↔ Continuous sec :=
-  (isOpen_range_section_iff_of_isOpen inj surj).trans <| and_iff_right U.2
+  (isOpen_range_section_iff inj surj).trans <| and_iff_right U.2
 
 end InjSurj
 
