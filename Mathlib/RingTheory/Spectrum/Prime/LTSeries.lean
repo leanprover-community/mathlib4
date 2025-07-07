@@ -91,20 +91,10 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two
       (p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt (by simp [hp, h0]))))
         (p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt (by simp [hp])))) hx
-  obtain ⟨Q, hxQ, hQ, hh, hl⟩ :=
-    hn (p.eraseLast.eraseLast.snoc q hq2) (by simp only [RelSeries.last_snoc, hxq]) <| by
-      simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, hp]
-      exact Nat.succ_pred_eq_of_ne_zero h0
-  refine ⟨Q.snoc p.last ?_, ?_, ?_, ?_, ?_⟩
-  · simp [← hl, RelSeries.last_snoc, hq]
-  · have h1 : 1 = (1 : Fin (Q.length + 1)).castSucc := by
-      have h : 1 < Q.length + 1 := by
-        rw [← hQ]
-        exact Nat.sub_ne_zero_iff_lt.mp h0
-      simp only [Fin.one_eq_mk_of_lt h, Fin.castSucc_mk, Fin.mk_one]
-    simp only [h1, RelSeries.snoc_castSucc, hxQ]
-  · simp only [hQ, RelSeries.snoc_length]
-  · simp only [RelSeries.head_snoc, ← hh, RelSeries.head_eraseLast]
-  · simp only [RelSeries.last_snoc]
+  obtain ⟨Q, hx, hQ, hh, hl⟩ := hn (p.eraseLast.eraseLast.snoc q hq2) (by simp [hxq]) <| by
+    simpa [hp] using Nat.succ_pred_eq_of_ne_zero h0
+  have h1 : 1 < Q.length + 1 := Nat.lt_of_sub_ne_zero (hQ.symm.trans_ne h0)
+  have h : 1 = (1 : Fin (Q.length + 1)).castSucc := by simp [Fin.one_eq_mk_of_lt h1]
+  exact ⟨Q.snoc p.last (by simp [← hl, hq]), by simp [h, hx], by simp [hQ], by simp [← hh], by simp⟩
 
 end PrimeSpectrum
