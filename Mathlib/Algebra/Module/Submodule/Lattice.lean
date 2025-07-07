@@ -85,9 +85,7 @@ protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = 
 
 @[ext high]
 protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
-  rcases x with ⟨x, xm⟩; rcases y with ⟨y, ym⟩; congr
-  rw [(Submodule.eq_bot_iff _).mp rfl x xm]
-  rw [(Submodule.eq_bot_iff _).mp rfl y ym]
+  subsingleton
 
 protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
   simp only [ne_eq, p.eq_bot_iff, not_forall, exists_prop]

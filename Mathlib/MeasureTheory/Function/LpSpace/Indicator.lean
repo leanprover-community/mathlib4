@@ -183,7 +183,7 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
   simp only [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp hp₀ hp]
   convert tendsto_const_nhds.mul
     (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
-  · simp [Real.rpow_eq_zero_iff_of_nonneg, ENNReal.toReal_eq_zero_iff, hp, hp₀]
+  · simp [ENNReal.toReal_eq_zero_iff, hp, hp₀]
   · simp
 
 /-- A family of `indicatorConstLp` functions is continuous in the parameter,
@@ -255,7 +255,7 @@ alias Memℒp.toLp_const := MemLp.toLp_const
 lemma indicatorConstLp_univ :
     indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
   rw [← MemLp.toLp_const, indicatorConstLp]
-  simp only [Set.indicator_univ, Function.const]
+  simp only [Set.indicator_univ]
 
 theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by

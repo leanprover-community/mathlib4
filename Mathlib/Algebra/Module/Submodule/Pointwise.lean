@@ -394,7 +394,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
     (hx : x ∈ s • N)
     (smul₀ : ∀ ⦃r : S⦄ ⦃n : M⦄ (mem₁ : r ∈ s) (mem₂ : n ∈ N),
       motive (r • n) (mem_set_smul_of_mem_mem mem₁ mem₂))
-    (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N) ,
+    (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N),
       motive m mem → motive (r • m) (Submodule.smul_mem _ r mem)) --
     (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁ : m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
