@@ -100,7 +100,6 @@ protected nonrec theorem MDifferentiableAt.coordChangeL
     (hf : MDifferentiableAt IM IB f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   MDifferentiableWithinAt.coordChangeL hf he he'
-  -- TODO: why no dot notation?
 
 protected theorem MDifferentiableOn.coordChangeL
     (hf : MDifferentiableOn IM IB f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
@@ -127,7 +126,7 @@ protected nonrec theorem MDifferentiableAt.coordChange
     (hf : MDifferentiableAt IM IB f x) (hg : MDifferentiableAt IM 𝓘(𝕜, F) g x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     MDifferentiableAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) x :=
-  MDifferentiableWithinAt.coordChange hf hg he he' -- TODO: why no dot notation?
+  MDifferentiableWithinAt.coordChange hf hg he he'
 
 protected theorem MDifferentiableOn.coordChange
     (hf : MDifferentiableOn IM IB f s) (hg : MDifferentiableOn IM 𝓘(𝕜, F) g s)
