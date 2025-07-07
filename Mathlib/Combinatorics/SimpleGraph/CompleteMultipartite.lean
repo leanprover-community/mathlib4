@@ -23,6 +23,10 @@ A graph is complete multipartite iff non-adjacency is transitive.
 * `SimpleGraph.IsPathGraph3Compl`: predicate for three vertices to be a witness to
    non-complete-multi-partite-ness of a graph G. (The name refers to the fact that the three
    vertices form the complement of `pathGraph 3`.)
+
+# See also: Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
+  `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` a maximally `r + 1`- cliquefree graph
+   is `r`-colorable iff it is complete-multipartite.
 -/
 
 universe u
@@ -48,7 +52,6 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     G ≃g completeMultipartiteGraph (fun (c : Quotient h.setoid) ↦ {x // h.setoid.r c.out x}) where
   toFun := fun x ↦ ⟨_, ⟨_, Quotient.mk_out x⟩⟩
   invFun := fun ⟨_, x⟩ ↦  x.1
-  left_inv := fun _ ↦ rfl
   right_inv := fun ⟨_, x⟩ ↦ Sigma.subtype_ext (Quotient.mk_eq_iff_out.2 <| h.setoid.symm x.2) rfl
   map_rel_iff' := by
     simp_rw [Equiv.coe_fn_mk, comap_adj, top_adj, ne_eq, Quotient.eq]
@@ -67,8 +70,8 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
 
 lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsCompleteMultipartite)
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
-    (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩)
-          <| hc.comap h.iso.symm.toEmbedding).of_embedding h.iso.toEmbedding
+  (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
+    hc.comap h.iso.symm.toEmbedding).of_embedding h.iso.toEmbedding
 
 variable (G) in
 /--

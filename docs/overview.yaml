@@ -145,6 +145,7 @@ General algebra:
   Algebraic Number Theory:
     Finiteness of the class number: 'NumberField.RingOfIntegers.instFintypeClassGroup'
     Dirichlet unit theorem: 'NumberField.Units.exist_unique_eq_mul_prod'
+    Dirichlet class number formula: 'NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT'
 
   Representation theory:
     representation : 'Representation'
@@ -561,6 +562,7 @@ Logic and computation:
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
     combinatorial game: 'SetTheory.Game'
+    Turing degrees: 'TuringDegree'
   Complexity:
     polynomial-time computation: 'Turing.TM2ComputableInPolyTime'
   Formal languages:

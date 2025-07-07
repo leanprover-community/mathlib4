@@ -14,10 +14,10 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Option`
-* `Mathlib.Algebra.Group.Action.Prod`
-* `Mathlib.Algebra.Group.Action.Sigma`
-* `Mathlib.Algebra.Group.Action.Sum`
+* `Mathlib/Algebra/Group/Action/Option.lean`
+* `Mathlib/Algebra/Group/Action/Prod.lean`
+* `Mathlib/Algebra/Group/Action/Sigma.lean`
+* `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
 assert_not_exists MonoidWithZero

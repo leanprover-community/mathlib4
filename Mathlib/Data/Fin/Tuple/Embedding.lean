@@ -64,7 +64,7 @@ theorem coe_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
 theorem init_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
     init (snoc x ha) = x := by
   apply coe_injective
-  simp [snoc, init, init_snoc]
+  simp [snoc, init]
 
 theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} {i : Fin n} :
     snoc x ha i.castSucc  = x i := by
@@ -101,7 +101,7 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
       by_cases hi : i = 0
       · by_cases hj : j = 0
         · simp [hi, hj]
-        · simp only [if_pos hi, if_neg hj, eq_one_of_ne_zero j hj,
+        · simp only [if_pos hi, eq_one_of_ne_zero j hj,
           if_neg (Ne.symm Fin.zero_ne_one)] at hij
           apply (h hij).elim
       · rw [eq_one_of_ne_zero i hi] at hij ⊢
@@ -113,10 +113,9 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
     by_cases hi : i = 0
     · rw [if_pos hi, hi]
     · rw [if_neg hi, Fin.eq_one_of_ne_zero i hi]
-  right_inv := fun ⟨⟨a, b⟩, h⟩ ↦ by simp
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
-def embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α :=
+def embFinTwo {a b : α} (h : a ≠ b) : Fin 2 ↪ α :=
   twoEmbeddingEquiv.invFun ⟨(a, b), h⟩
 
 theorem embFinTwo_apply_zero {a b : α} (h : a ≠ b) :
@@ -126,4 +125,3 @@ theorem embFinTwo_apply_one {a b : α} (h : a ≠ b) :
     embFinTwo h 1 = b := rfl
 
 end Function.Embedding
-

@@ -91,6 +91,51 @@ lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e
     rw [← nsmul_lie, ← t.lie_h_e_nsmul, lie_lie, hm', lie_smul, he, lie_smul, hm',
       smul_smul, smul_smul, mul_comm ρ μ, sub_self]
 
+variable (R) in
+open Submodule in
+/-- The subalgebra associated to an `sl₂` triple. -/
+def toLieSubalgebra (t : IsSl2Triple h e f) :
+    LieSubalgebra R L where
+  __ := span R {e, f, h}
+  lie_mem' {x y} hx hy := by
+    simp only [carrier_eq_coe, SetLike.mem_coe] at hx hy ⊢
+    induction hx using span_induction with
+    | zero => simp
+    | add u v hu hv hu' hv' => simpa only [add_lie] using add_mem hu' hv'
+    | smul t u hu hu' => simpa only [smul_lie] using smul_mem _ t hu'
+    | mem u hu =>
+      induction hy using span_induction with
+      | zero => simp
+      | add u v hu hv hu' hv' => simpa only [lie_add] using add_mem hu' hv'
+      | smul t u hv hv' => simpa only [lie_smul] using smul_mem _ t hv'
+      | mem v hv =>
+        simp only [mem_insert_iff, mem_singleton_iff] at hu hv
+        rcases hu with rfl | rfl | rfl <;>
+        rcases hv with rfl | rfl | rfl <;> (try simp only [lie_self, zero_mem])
+        · rw [t.lie_e_f]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_e_nsmul, neg_mem_iff]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [← lie_skew, t.lie_e_f, neg_mem_iff]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_f_nsmul, neg_neg]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [t.lie_h_e_nsmul]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [t.lie_h_f_nsmul, neg_mem_iff]
+          apply nsmul_mem <| subset_span _
+          simp
+
+lemma mem_toLieSubalgebra_iff {x : L} {t : IsSl2Triple h e f} :
+    x ∈ t.toLieSubalgebra R ↔ ∃ c₁ c₂ c₃ : R, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
+  simp_rw [t.lie_e_f, toLieSubalgebra, ← LieSubalgebra.mem_toSubmodule, Submodule.mem_span_triple,
+    eq_comm]
+
 namespace HasPrimitiveVectorWith
 
 variable {m : M} {μ : R} {t : IsSl2Triple h e f}
@@ -148,7 +193,7 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
     {μ - 2 * n | n : ℕ}
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
     (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
-      Module.End.hasEigenvector_iff, Module.End.mem_eigenspace_iff])).finite
+      Module.End.hasEigenvector_iff])).finite
 
 lemma pow_toEnd_f_ne_zero_of_eq_nat
     [CharZero R] [NoZeroSMulDivisors R M]
@@ -163,7 +208,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
     rw [← Int.cast_smul_eq_zsmul R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
       Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this
     simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
-    exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_lt i.lt_succ_self
+    exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_gt i.lt_succ_self
 
 lemma pow_toEnd_f_eq_zero_of_eq_nat
     [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]

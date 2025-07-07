@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
@@ -196,7 +197,7 @@ lemma pos_or_neg_of_sum_smul_root_mem [CharZero R] [Fintype ι] (f : ι → ℤ)
   · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
     aesop
 
-lemma sub_nmem_range_root [CharZero R] [Finite ι]
+lemma sub_notMem_range_root [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.root i - P.root j ∉ range P.root := by
   rcases eq_or_ne j i with rfl | hij
@@ -213,10 +214,20 @@ lemma sub_nmem_range_root [CharZero R] [Finite ι]
   · simpa [hij, f] using pos j
   · simpa [hij, f] using neg i
 
-lemma sub_nmem_range_coroot [CharZero R] [Finite ι]
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
+
+lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
-  b.flip.sub_nmem_range_root hi hj
+  b.flip.sub_notMem_range_root hi hj
+
+@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
+
+lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R][P.IsCrystallographic] [Finite ι]
+    {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
+    P.pairingIn ℤ i j ≤ 0 := by
+  by_contra! h
+  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
 
 end RootPairing
 
@@ -236,6 +247,10 @@ def toWeightBasis :
     b.toWeightBasis i = P.root i := by
   simp [toWeightBasis]
 
+@[simp] lemma toWeightBasis_repr_root (i : b.support) :
+    b.toWeightBasis.repr (P.root i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
+
 /-- A base of a root system yields a basis of the coroot space. -/
 def toCoweightBasis :
     Basis b.support R N :=
@@ -244,6 +259,10 @@ def toCoweightBasis :
 @[simp] lemma toCoweightBasis_apply (i : b.support) :
     b.toCoweightBasis i = P.coroot i :=
   b.flip.toWeightBasis_apply (P := P.flip) i
+
+@[simp] lemma toCoweightBasis_repr_coroot (i : b.support) :
+    b.toCoweightBasis.repr (P.coroot i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
 
 include b
 variable [Fintype ι]

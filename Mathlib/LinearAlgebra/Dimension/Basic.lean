@@ -229,7 +229,7 @@ theorem lift_rank_le_of_surjective_injective
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
@@ -240,7 +240,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
-  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, this]
 
 variable {S' : Type v} [Semiring S'] [Algebra R' S']
 
@@ -378,6 +378,28 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
 
 @[deprecated (since := "2024-11-21")]
 alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
+
+variable (R R' M) in
+lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
+    [SMulWithZero R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :
+    Module.rank R' M ≤ Module.rank R M := by
+  rw [Module.rank, Module.rank]
+  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le (Cardinal.bddAbove_range _)
+    ⟨s, hs.restrict_scalars (by simpa [← faithfulSMul_iff_injective_smul_one])⟩ le_rfl
+
+variable (R R') in
+lemma Module.lift_rank_bot_le_lift_rank_of_isScalarTower (T : Type w) [Module R R']
+    [NonAssocSemiring T] [Module R T] [Module R' T] [IsScalarTower R' T T] [FaithfulSMul R' T]
+    [IsScalarTower R R' T] :
+    Cardinal.lift.{w} (Module.rank R R') ≤ Cardinal.lift (Module.rank R T) :=
+  LinearMap.lift_rank_le_of_injective ((LinearMap.toSpanSingleton R' T 1).restrictScalars R) <|
+    (faithfulSMul_iff_injective_smul_one R' T).mp ‹_›
+
+variable (R R') in
+lemma Module.rank_bot_le_rank_of_isScalarTower (T : Type u') [Module R R'] [NonAssocSemiring T]
+    [Module R T] [Module R' T] [IsScalarTower R' T T] [FaithfulSMul R' T] [IsScalarTower R R' T] :
+    Module.rank R R' ≤ Module.rank R T := by
+  simpa using Module.lift_rank_bot_le_lift_rank_of_isScalarTower R R' T
 
 end
 

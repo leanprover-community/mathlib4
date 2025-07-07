@@ -206,7 +206,6 @@ variable (p) in
 /-- `frobeniusFun` is tautologically a polynomial function.
 
 See also `frobenius_isPoly`. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
 
@@ -254,7 +253,6 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
   frobeniusFun_isPoly _
 
@@ -284,7 +282,7 @@ theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius 
 
 @[simp]
 theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
-  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card, eq_self_iff_true,
+  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card,
     forall_const]
 
 variable (R)
