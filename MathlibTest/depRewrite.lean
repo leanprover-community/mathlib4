@@ -70,7 +70,7 @@ example (any : (α : Type) → α) (eq : (Nat × Nat) = Nat) :
   rw! [eq]
   exact test_sorry
 
--- Rewrite the value of a let-binding.
+-- Rewrite the value of a dependent let-binding.
 example (lt : 0 < n) :
     let A : Type := Fin n
     P (@id A ⟨0, lt⟩) := by
@@ -80,22 +80,22 @@ example (lt : 0 < n) :
     P (@id (A m eq) ⟨0, eq ▸ lt⟩)
   exact test_sorry
 
--- Rewrite the type of a let-binding.
+-- Rewrite the type of a nondependent let-binding.
 example (lt : 0 < n) :
-    let x : Fin n := ⟨0, lt⟩
+    let +nondep x : Fin n := ⟨0, lt⟩
     P (@id (Fin n) x) := by
-  rewrite! +letAbs [eq]
+  rewrite! [eq]
   guard_target =ₐ
-    let x : (x : Nat) → n = x → Fin x := fun x h => ⟨0, h ▸ lt⟩
-    P (@id (Fin m) (x m eq))
+    let +nondep x : Fin m := ⟨0, eq ▸ lt⟩
+    P (@id (Fin m) x)
   exact test_sorry
 
 -- Rewrite the type of a let-binding whose value is a proof.
-example (lt' : 0 < n) : P (let lt : 0 < n := lt'; @Fin.mk n 0 (@id (0 < n) lt)) := by
-  rewrite! +letAbs [eq]
+example (lt' : 0 < n) : P (have lt : 0 < n := lt'; @Fin.mk n 0 (@id (0 < n) lt)) := by
+  rewrite! [eq]
   guard_target =ₐ P <|
-    let lt : (x : Nat) → n = x → 0 < x := fun _ h => h ▸ lt'
-    @Fin.mk m 0 (@id (0 < m) (lt m eq))
+    have lt : 0 < m := eq ▸ lt'
+    @Fin.mk m 0 (@id (0 < m) lt)
   exact test_sorry
 
 -- Rewrite in the argument type of a function.

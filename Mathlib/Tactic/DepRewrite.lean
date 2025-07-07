@@ -235,22 +235,20 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
     if !tbup.isAppOf n then
       throwError m!"projection type mismatch{indentExpr <| .proj n i bup}"
     return .proj n i bup
-  | .letE n t v b bi =>
+  | .letE n t v b nondep =>
     let tup ← visit t none
     let vup ← visitAndCast v tup
-    if !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId!) then
-      let ret ← withLetDecl n tup vup fun r => do
+    if nondep || !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId!) then
+      return ← withLetDecl n tup vup (nondep := nondep) fun r => do
         let bup ← visitAndCast (b.instantiate1 r) et?
-        return .letE n tup vup (bup.abstract #[r]) bi
-      return ret
+        return .letE n tup vup (bup.abstract #[r]) nondep
 
     /-
-    The body may rely on the definitional equality `n ≡ vup`.
-    In case the value `vup` depends on `x` (meaning it was rewritten),
-    we need to explicitly encode this dependency
-    so that our casting mechanism can fix occurrences of `n` in the body.
-    We generalize to `n := fun x h => vup(x,h)`
-    and instantiate the body with `n x h`.
+    If `nondep` is `false`, the body may rely on the definitional equality `n ≡ v`.
+    If `vup` contains `x/h`, we may have broken this equality by rewriting.
+    We fix this by allowing further rewrites from `x` back to `p` in the body
+    by generalizing to `n' := fun x h => vup(x,h)` and instantiating `b[n' x h/n]`.
+    See also `Config.letAbs`.
     -/
     if !ctx.cfg.letAbs then
       throwError m!"\
@@ -259,10 +257,10 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
         Note: in the generated motive, the value is{indentExpr vup}"
     let lupTy ← mkForallFVars #[ctx.x, ctx.h] tup
     let lup ← mkLambdaFVars #[ctx.x, ctx.h] vup
-    withLetDecl n lupTy lup fun r => do
+    withLetDecl n lupTy lup (nondep := nondep) fun r => do
       let rxh := mkAppN r #[ctx.x, ctx.h]
       let bup ← visitAndCast (b.instantiate1 rxh) et?
-      return .letE n lupTy lup (bup.abstract #[r]) bi
+      return .letE n lupTy lup (bup.abstract #[r]) nondep
   | .lam n t b bi =>
     let tup ← visit t none
     withLocalDecl n bi tup fun r => do
