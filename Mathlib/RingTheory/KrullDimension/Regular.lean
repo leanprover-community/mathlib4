@@ -23,30 +23,27 @@ namespace Module
 variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
   {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
-local notation "𝔪" => IsLocalRing.maximalIdeal R
-
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
 /-- If $M$ is a finite module over a Noetherian local ring $R$, then $\dim M \le \dim M/xM + 1$
   for all $x$ in the maximal ideal of the local ring $R$. -/
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
-  rcases subsingleton_or_nontrivial M with h | h
+  rcases subsingleton_or_nontrivial M with h | _
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
   refine iSup_le_iff.mpr (fun q ↦ ?_)
   classical let p : LTSeries (support R M) :=
-    if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨closedPoint R, closedPoint_mem_support R M⟩ lt else q
+    if h : q.last < closedPoint R then q.snoc ⟨closedPoint R, closedPoint_mem_support R M⟩ h else q
   obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
-    by_cases lt : (q.last).1.1 < 𝔪
-    · rw [show p = q.snoc ⟨⟨𝔪, _⟩, _⟩ lt from dif_pos lt]
-      simp [hx]
-    · have hq : q.last.1.1 = 𝔪 := by
+    by_cases lt : q.last.1 < closedPoint R
+    · simpa [show p = q.snoc ⟨_, _⟩ lt from dif_pos lt] using hx
+    · have hq : q.last.1 = closedPoint R := by
         contrapose! lt
         exact lt_of_le_of_ne (le_maximalIdeal_of_isPrime q.last.1.1) lt
-      simp [show p = q from dif_neg lt, hq, hx]
+      simpa [show p = q from dif_neg lt, hq] using hx
   obtain ⟨q, hxq, hq, h0, _⟩ :=
-    PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hxp
+    exist_ltSeries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
   refine (Nat.cast_le.mpr le).trans ?_
   by_cases h : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
@@ -66,18 +63,14 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
       simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
       exact ⟨hp.trans (h0.trans_le (q.head_le _)), q.monotone
         ((Fin.natCast_eq_mk (Nat.lt_of_add_left_lt hi)).trans_le (Nat.le_add_left 1 i)) hxq⟩
-    step := by exact fun ⟨i, _⟩ ↦ q.strictMono (by simp)
+    step := by exact fun _ ↦ q.strictMono (by simp)
   }
-  calc
-    (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
-    _ = (p.length - (1 : ℕ) : WithBot ℕ∞) + 1 := by simp
-    _ ≤ _ := by
-      refine add_le_add_right ?_ 1
-      exact le_iSup_iff.mpr fun _ h ↦ h q'
+  calc (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
+    _ ≤ _ := by simpa using add_le_add_right (by exact le_iSup_iff.mpr fun _ h ↦ h q') 1
 
 omit [IsNoetherianRing R] [IsLocalRing R] in
-/-- If $M$ is a finite module over a comm ring $R$, $x \in M$ is not in any minimal prime of $M$,
-  then $\dim M/xM + 1 \le \dim M$. -/
+/-- If $M$ is a finite module over a commutative ring $R$, $x \in M$ is not in any minimal prime of
+  $M$, then $\dim M/xM + 1 \le \dim M$. -/
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
@@ -99,17 +92,15 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
       exact ⟨(p i).1, hq.1⟩
     step := fun i ↦ by simpa using p.3 i
   }
-  have hx : x ∈ q.head.1.1 := by
-    have hp := p.head.2
-    simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
-      SetLike.mem_coe] at hp
-    exact hp.2
+  have hp := p.head.2
+  simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff,
+    SetLike.mem_coe] at hp
   have hq := q.head.2
   simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hq
   rcases exists_minimalPrimes_le hq with ⟨r, hrm, hr⟩
   let r : support R M := ⟨⟨r, minimalPrimes_isPrime hrm⟩, mem_support_iff_of_finite.mpr hrm.1.2⟩
-  have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hx)
-  exact le_of_eq_of_le (by simpa only [q.cons_length] using by rfl) (le_iSup _ (q.cons r hr))
+  have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hp.2)
+  exact le_of_eq_of_le (by simp [q]) (le_iSup _ (q.cons r hr))
 
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ maximalIdeal R) :
@@ -137,8 +128,7 @@ lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
 
 /-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
   $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
-theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R)
-    (reg : IsRegular M rs) :
+theorem supportDim_regular_sequence_add_length_eq_supportDim (rs : List R) (reg : IsRegular M rs) :
     supportDim R (M ⧸ ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
   generalize len : rs.length = n
   induction' n with n hn generalizing M rs
