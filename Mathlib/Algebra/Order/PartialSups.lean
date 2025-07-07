@@ -20,6 +20,7 @@ lemma partialSups_add_one [Add ι] [One ι] [LinearOrder ι] [LocallyFiniteOrder
     (f : ι → α) (i : ι) : partialSups f (i + 1) = partialSups f i ⊔ f (i + 1) :=
   Order.succ_eq_add_one i ▸ partialSups_succ f i
 
-lemma partialSups_add_one' (f : ℕ → α) (n : ℕ) :
-    partialSups f (n + 1) = f 0 ⊔ partialSups (f ∘ (fun k ↦ k + 1)) n := by
-  exact Order.succ_eq_add_one n ▸ partialSups_succ' f n
+lemma partialSups_add_one' [Add ι] [One ι] [LinearOrder ι] [OrderBot ι] [LocallyFiniteOrder ι]
+    [SuccAddOrder ι] (f : ι → α)  (i : ι) :
+    partialSups f (i + 1) = f ⊥ ⊔ partialSups (f ∘ (fun k ↦ k + 1)) i := by
+  simpa [← Order.succ_eq_add_one] using partialSups_succ' f i
