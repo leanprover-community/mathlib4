@@ -85,7 +85,7 @@ abbrev ofHom {X Y : Type v}
     (f : X →L[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom f
 
-@[simp] lemma hom_ofHom  {X Y : Type v}
+@[simp] lemma hom_ofHom {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) :
