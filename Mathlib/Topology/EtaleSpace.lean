@@ -258,6 +258,16 @@ theorem isSeparatedMap_proj (sep : ∀ b, IsSeparated P b) (inj : ∀ b, IsStalk
     cases Subtype.ext congr(proj P $eq)
     exact ne b congr($eq.2)
 
+/-- The adjunction between predicates on sections and topological spaces over a base space. -/
+def adjunction {X : Type*} [TopologicalSpace X] {p : X → B} :
+    {f : C(EtaleSpace P, X) // p ∘ f = proj P} ≃
+    {f : Π b, F b → p ⁻¹' {b} // P ≤ Pullback f (isContinuousSection p).pred} where
+  toFun f := ⟨fun _b x ↦ ⟨f.1 (mk x), congr_fun f.2 _⟩,
+    fun _U _s hs ↦ f.1.continuous.comp (continuous_section hs)⟩
+  invFun f := ⟨⟨fun x ↦ f.1 _ x.2, continuous_dom_iff.mpr f.2⟩, funext fun x ↦ (f.1 _ x.2).2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 end EtaleSpace
 
 end TopCat

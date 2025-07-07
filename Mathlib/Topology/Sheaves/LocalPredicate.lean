@@ -117,6 +117,25 @@ structure LocalPredicate extends PrelocalPredicate T where
     satisfied -/
   locality : IsLocal pred
 
+section Pullback
+
+variable {X T} {S : X → Type*} (F : Π x : X, T x → S x) (P : ∀ ⦃U : Opens X⦄, (∀ x : U, S x) → Prop)
+
+/-- The pullback of a predicate along a map between type families. -/
+def Pullback ⦃U : Opens X⦄ (s : ∀ x : U, T x) : Prop := P (F _ <| s ·)
+
+/-- The pullback of a prelocal predicate. -/
+def PrelocalPredicate.pullback (P : PrelocalPredicate S) : PrelocalPredicate T where
+  pred := Pullback F P.pred
+  res i f := P.res i (F _ <| f ·)
+
+/-- The pullback of a local predicate. -/
+def LocalPredicate.pullback (P : LocalPredicate S) : LocalPredicate T where
+  __ := P.toPrelocalPredicate.pullback F
+  locality U s := P.locality U (F _ <| s ·)
+
+end Pullback
+
 section Properties
 
 variable {B : TopCat} {F : B → Type*} (P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) (b : B)
