@@ -71,8 +71,7 @@ theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
     rw [Units.ext_iff, torsionMapQuot_apply, Units.val_one] at h
     refine hμ.not_coprime_norm_of_mk_eq_one hI₁ ht' h ?_
     exact Nat.dvd_one.mp (hI₂ ▸ Nat.gcd_dvd_gcd_of_dvd_right (absNorm I) ht)
-  · have : t = 1 := by grind
-    simpa [this] using hζ
+  · simpa [show t = 1 by grind] using hζ
 
 /--
 If the norm of the (nonzero) prime ideal `P` is coprime with the order of the torsion of `K`, then
