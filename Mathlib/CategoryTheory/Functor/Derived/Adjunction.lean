@@ -133,10 +133,10 @@ after the post-composition with any functor.
 `F ⋙ L₁ ⋙ G'`). -/
 @[simps!]
 noncomputable def derived [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
-  [(G' ⋙ F').IsLeftDerivedFunctor
-    ((Functor.associator _ _ _).inv ≫ whiskerRight α F') W₁]
-  [(F' ⋙ G').IsRightDerivedFunctor
-    (whiskerRight β G' ≫ (Functor.associator _ _ _).hom) W₂] : G' ⊣ F' :=
+    [(G' ⋙ F').IsLeftDerivedFunctor
+      ((Functor.associator _ _ _).inv ≫ whiskerRight α F') W₁]
+    [(F' ⋙ G').IsRightDerivedFunctor
+      (whiskerRight β G' ≫ (Functor.associator _ _ _).hom) W₂] : G' ⊣ F' :=
   adj.derived' W₁ W₂ α β (adj.derivedη W₁ α β) (adj.derivedε W₂ α β)
 
 end Adjunction
