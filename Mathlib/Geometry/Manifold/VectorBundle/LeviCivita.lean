@@ -37,8 +37,6 @@ variable {n : WithTop ℕ∞}
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
-local notation "⟪" x ", " y "⟫" => inner ℝ x y
-
 /-! Compatible connections: a connection on TM is compatible with the metric on M iff
 `∇ X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩` holds for all vector fields X, Y and Z on `M`.
 The left hand side is the pushforward of the function `⟨Y, Z⟩` along the vector field `X`:
@@ -47,8 +45,10 @@ the left hand side at `X` is `df(X x)`, where `f := ⟨Y, Z⟩`. -/
 variable {X X' Y Y' Z Z' : Π x : M, TangentSpace I x}
 
 /-- The scalar product of two vector fields -/
-noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ := fun x ↦ ⟪X x, Y x⟫
+noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ := fun x ↦ inner ℝ (X x) (Y x)
 -- Riemannian.lean shows that `product` is C^k if X and Y are
+
+local notation "⟪" X ", " Y "⟫" => product I X Y
 
 namespace CovariantDerivative
 
@@ -60,7 +60,7 @@ variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 def IsCompatible : Prop :=
   ∀ X Y Z : Π x : M, TangentSpace I x, -- XXX: missing differentiability hypotheses!
   ∀ x : M,
-  mfderiv I 𝓘(ℝ) (product I Y Z) x (X x) = ⟪cov X Y x, Z x⟫ + ⟪Y x, cov X Z x⟫
+  mfderiv I 𝓘(ℝ) ⟪Y, Z⟫ x (X x) = ⟪cov X Y, Z⟫ x + ⟪Y, cov X Z⟫ x
 
 -- TODO: make g part of the notation!
 /-- A covariant derivative on `TM` is called the **Levi-Civita connection** for a Riemannian metric
@@ -69,7 +69,7 @@ def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 
 -- This is mild defeq abuse, right?
 variable (X Y Z) in
-noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) (product I Y Z) x (X x))
+noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) ⟪Y, Z⟫ x (X x))
 
 -- XXX: inlining rhs_aux makes things not typecheck any more!
 
@@ -79,35 +79,36 @@ If ∇ is a Levi-Civita connection on `TM`, then
 `⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
 noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
   rhs_aux I X Y Z + rhs_aux I Y Z X + rhs_aux I Z X Y
-  - product I Y (VectorField.mlieBracket I X Z)
-  - product I Z (VectorField.mlieBracket I X Y)
-  + product I X (VectorField.mlieBracket I Z Y)
+  - ⟪Y ,(VectorField.mlieBracket I X Z)⟫
+  - ⟪Z, (VectorField.mlieBracket I X Y)⟫
+  + ⟪X, (VectorField.mlieBracket I Z Y)⟫
   )
 
 variable (X Y Z) in
-lemma aux (h : cov.IsLeviCivitaConnection) (x : M) : rhs_aux I X Y Z x =
-    ⟪cov X Y x, Z x⟫ + ⟪Y x, cov Z X x⟫ + product I Y (VectorField.mlieBracket I X Z) x := by
+lemma aux (h : cov.IsLeviCivitaConnection) (x : M) : rhs_aux I X Y Z =
+    ⟪cov X Y, Z⟫ + ⟪Y, cov Z X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
   unfold rhs_aux
-  have : ⟪Y x, cov X Z x⟫ - ⟪Y x, cov Z X x⟫ = product I Y (VectorField.mlieBracket I X Z) x := by
+  have : ⟪Y, cov X Z⟫ - ⟪Y, cov Z X⟫ = ⟪Y, VectorField.mlieBracket I X Z⟫ := by
+    ext x
     have := h.2
     rw [isTorsionFree_iff] at this
     specialize this X Y
     simp only [product]
-    trans ⟪Y x, cov X Z x - cov Z X x⟫
+    sorry /-trans ⟪Y x, cov X Z x - cov Z X x⟫
     · sorry -- product is linear...
-    sorry -- congr_fun/congr_arg
-  have : ⟪Y x, cov X Z x⟫ = ⟪Y x, cov Z X x⟫ + product I Y (VectorField.mlieBracket I X Z) x := by
-    sorry
-  trans ⟪cov X Y x, Z x⟫ + ⟪Y x, cov X Z x⟫
-  · apply h.1 X Y Z
-  · simp [this, add_assoc]
+    sorry -- congr_fun/congr_arg -/
+  --have : ⟪Y x, cov X Z x⟫ = ⟪Y x, cov Z X x⟫ + product I Y (VectorField.mlieBracket I X Z) x := by
+  --  sorry
+  trans ⟪cov X Y, Z⟫ + ⟪Y, cov X Z⟫
+  · sorry -- apply h.1 X Y Z
+  · sorry -- simp [this, add_assoc]
 
 -- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
 variable (X Y Z) in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
 lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
-    product I (cov X Y) Z = leviCivita_rhs I X Y Z := by
+    ⟪cov X Y, Z⟫ = leviCivita_rhs I X Y Z := by
   have eq1 (x) := aux I X Y Z cov h x
   have eq2 (x) := aux I Y Z X cov h x
   have eq3 (x) := aux I Z X Y cov h x
@@ -210,7 +211,7 @@ variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 lemma congr_of_forall_product {X X' : Π x : M, TangentSpace I x}
-    (h : ∀ Z : Π x : M, TangentSpace I x, product I X Z = product I X' Z) : X = X' := by
+    (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
   -- any vector bundle with a bundle metric has local orthonormal frames (not just a local frame)
   --  -> apply Gram-Schmidt to a local frame; prove orthonormality w.r.t. bundle metric
   -- prove: local orthonormal frame is C^k when the bundle metric is
