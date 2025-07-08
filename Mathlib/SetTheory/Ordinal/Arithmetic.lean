@@ -576,6 +576,9 @@ theorem lt_add_iff_of_isLimit {a b c : Ordinal} (hc : IsLimit c) :
     rwa [add_succ, lt_succ_iff]
   · exact ⟨d, hd, ha.le⟩
 
+@[deprecated (since := "2025-07-08")]
+alias lt_add_of_limit := lt_add_iff_of_isLimit
+
 theorem add_le_iff_of_isLimit {a b c : Ordinal} (hb : IsLimit b) :
     a + b ≤ c ↔ ∀ d < b, a + d ≤ c := by
   simpa using (lt_add_iff_of_isLimit hb).not
