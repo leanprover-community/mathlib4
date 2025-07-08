@@ -23,9 +23,7 @@ also in the subset.
 - There is a Galois insertion between the subsets of points of a projective space
   and the subspaces of the projective space, which is given by taking the span of the set of points.
 - The subspaces of a projective space form a complete lattice under inclusion.
-
-# Future Work
-- Show that there is a one-to-one order-preserving correspondence between subspaces of a
+- There is a one-to-one order-preserving correspondence between subspaces of a
   projective space and the submodules of the underlying vector space.
 -/
 
@@ -207,3 +205,53 @@ theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span 
 end Subspace
 
 end Projectivization
+
+namespace Submodule
+
+variable {K V}
+
+/-- Subspaces of a vector space correspond to subspaces of its projectivization. -/
+def projectivization : Submodule K V ≃o Projectivization.Subspace K V :=
+  Equiv.toOrderIso {
+    toFun s := {
+      carrier := setOf <| Projectivization.lift (↑· ∈ s) <| by
+        rintro ⟨-, h⟩ ⟨y, -⟩ c rfl
+        exact Iff.eq <| s.smul_mem_iff <| left_ne_zero_of_smul h
+      mem_add' _ _ _ _ _ h₁ h₂ := s.add_mem h₁ h₂
+    }
+    invFun s := {
+      carrier := {x | (h : x ≠ 0) → Projectivization.mk K x h ∈ s.carrier}
+      add_mem' := by
+        intro x y hx₁ hy₁
+        rcases eq_or_ne x 0 with rfl | hx₂
+        · rw [zero_add]; exact hy₁
+        rcases eq_or_ne y 0 with rfl | hy₂
+        · rw [add_zero]; exact hx₁
+        intro hxy
+        exact s.mem_add _ _ hx₂ hy₂ hxy (hx₁ hx₂) (hy₁ hy₂)
+      zero_mem' h := h.irrefl.elim
+      smul_mem' c x h₁ h₂ := by
+        convert h₁ (right_ne_zero_of_smul h₂) using 1
+        rw [Projectivization.mk_eq_mk_iff']
+        exact ⟨c, rfl⟩
+    }
+    left_inv s := by
+      ext x
+      change (x ≠ 0 → x ∈ s) ↔ x ∈ s
+      refine ⟨fun h => ?_, fun h _ => h⟩
+      rcases eq_or_ne x 0 with rfl | hx
+      · exact s.zero_mem
+      · exact h hx
+    right_inv s := by
+      ext x
+      cases x with | _ x hx =>
+      exact ⟨fun h => h hx, fun h _ => h⟩
+  }
+  (fun _ _ h₁ => Projectivization.ind fun _ _ h₂ => h₁ h₂)
+  (fun _ _ h₁ _ h₂ _ => h₁ <| h₂ _)
+
+@[simp]
+theorem mem_projectivization_iff (s : Submodule K V) {v : V} (hv : v ≠ 0) :
+    Projectivization.mk K v hv ∈ s.projectivization ↔ v ∈ s := Iff.rfl
+
+end Submodule
