@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.RingTheory.Adjoin.Field
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 
@@ -178,3 +179,8 @@ theorem IntermediateField.isSplittingField_iff :
 theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : p.Splits (algebraMap K L)) :
     p.IsSplittingField K (adjoin K (p.rootSet L)) :=
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin K (p.rootSet L) hx, rfl⟩
+
+def Polynomial.isSplittingField_C {K : Type*} [Field K] (a : K) :
+    Polynomial.IsSplittingField K K (.C a) where
+  splits' := by simp
+  adjoin_rootSet' := by simp
