@@ -138,28 +138,19 @@ theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLim
   · exact isLimit_opow l.one_lt l'
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
-  rcases lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ | h₁
+  rcases (one_le_iff_pos.2 h₁).eq_or_gt with h₁ | h₁
+  · simp_all
   · exact (opow_le_opow_iff_right h₁).2 h₂
-  · subst a
-    -- Porting note: `le_refl` is required.
-    simp only [one_opow, le_refl]
 
 theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c ≤ b ^ c := by
-  by_cases a0 : a = 0
-  -- Porting note: `le_refl` is required.
-  · subst a
-    by_cases c0 : c = 0
-    · subst c
-      simp only [opow_zero, le_refl]
-    · simp only [zero_opow c0, Ordinal.zero_le]
+  obtain rfl | ha := eq_or_ne a 0
+  · obtain rfl | ha := eq_or_ne c 0 <;> simp_all
   · induction c using limitRecOn with
-    | zero => simp only [opow_zero, le_refl]
-    | succ c IH =>
-      simpa only [opow_succ] using mul_le_mul' IH ab
+    | zero => simp
+    | succ c IH => simpa using mul_le_mul' IH ab
     | isLimit c l IH =>
-      exact
-        (opow_le_of_limit a0 l).2 fun b' h =>
-          (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 a0).trans_le ab) h.le)
+      exact (opow_le_of_limit ha l).2 fun b' h ↦
+        (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 ha).trans_le ab) h.le)
 
 theorem opow_le_opow {a b c d : Ordinal} (hac : a ≤ c) (hbd : b ≤ d) (hc : 0 < c) : a ^ b ≤ c ^ d :=
   (opow_le_opow_left b hac).trans (opow_le_opow_right hc hbd)
