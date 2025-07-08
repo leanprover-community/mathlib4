@@ -483,7 +483,7 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
   exists_add_of_le {a b} := by
     refine inductionOn₂ a b fun α r _ β s _ ⟨f⟩ ↦ ?_
     obtain ⟨γ, t, _, ⟨g⟩⟩ := f.exists_sum_relIso
-    exact ⟨type t, g.ordinal_type_eq.symm⟩
+    exact ⟨_, g.ordinal_type_eq.symm⟩
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
 instance sub : Sub Ordinal where
