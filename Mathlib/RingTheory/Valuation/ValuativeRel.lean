@@ -75,7 +75,8 @@ class ValuativeRel (R : Type*) [CommRing R] where
   rel_mul_cancel {x y z} : ¬ rel z 0 → rel (x * z) (y * z) → rel x y
   not_rel_one_zero : ¬ rel 1 0
 
-@[inherit_doc] infix:50  " ≤ᵥ " => ValuativeRel.rel
+@[inherit_doc ValuativeRel.rel]
+notation:50 (name := valuativeRel) a:50 " ≤ᵥ " b:51 => binrel% ValuativeRel.rel a b
 
 namespace Valuation
 
@@ -127,7 +128,7 @@ lemma rel_trans' {x y z : R} (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
 
 protected alias rel.trans' := rel_trans'
 
-lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
+lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : (x * x') ≤ᵥ y * y' := by
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
 
@@ -267,7 +268,7 @@ theorem ValueGroupWithZero.mk_one_one : ValueGroupWithZero.mk (1 : R) 1 = 1 :=
 
 @[simp]
 theorem ValueGroupWithZero.mk_eq_one (x : R) (y : posSubmonoid R) :
-    ValueGroupWithZero.mk x y = 1 ↔ x ≤ᵥ y ∧ y.val ≤ᵥ x := by
+    ValueGroupWithZero.mk x y = 1 ↔ x ≤ᵥ y ∧ y ≤ᵥ x := by
   simp [← mk_one_one, mk_eq_mk]
 
 theorem ValueGroupWithZero.lift_zero {α : Sort*} (f : R → posSubmonoid R → α)
