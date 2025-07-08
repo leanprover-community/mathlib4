@@ -300,12 +300,8 @@ theorem norm_mk_lt' (S : AddSubgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
     ∃ s ∈ S, ‖m + s‖ < ‖mk' S m‖ + ε := exists_norm_add_lt _ _ hε
 
 /-- The quotient norm satisfies the triangle inequality. -/
-theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
-  rcases And.intro (mk_surjective x) (mk_surjective y) with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
-  simp only [← mk'_apply, ← map_add, quotient_norm_mk_eq, sInf_image']
-  refine le_ciInf_add_ciInf fun a b ↦ ?_
-  refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ norm_nonneg _⟩ (a + b) ?_
-  exact (congr_arg norm (add_add_add_comm _ _ _ _)).trans_le (norm_add_le _ _)
+theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ :=
+  norm_add_le x y
 
 /-- The quotient norm of `0` is `0`. -/
 @[deprecated norm_zero (since := "2025-02-02")]
