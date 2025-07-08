@@ -5,6 +5,7 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+import Mathlib.Geometry.Manifold.Elaborators
 
 /-!
 # Gram-Schmidt orthonormalisation on sections of Riemannian vector bundles
@@ -260,3 +261,33 @@ theorem gramSchmidt_linearIndependent {x} (h₀ : LinearIndependent ℝ (s · x)
     (fun _ _ h ↦ gramSchmidt_orthogonal s h x)
 
 end VectorBundle
+
+-- When given a local frame, this produces an orthonormal local frame...
+-- nothing new to prove; will prove in the frames file
+
+-- Continuity and smoothness.
+
+-- gramSchmidt followed by trivialisation commutes
+
+variable {n : WithTop ℕ∞}
+
+lemma gramSchmidt_contMDiffWithinAt (s : ι → (x : B) → E x) (i : ι) {u : Set B} (x : B)
+    (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x) :
+    CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
+  simp_rw [VectorBundle.gramSchmidt_def]
+  -- in principle, the proof is not bad: difference, finite sums of smooth sections are smooth
+  -- challenge 1: do this using (well-founded) induction
+  -- challenge 2: my definition is point-wise, need to relate to something in a trivialisation
+  sorry
+
+lemma gramSchmidt_contMDiffAt (s : ι → (x : B) → E x) (i : ι) (x : B)
+    (hs : ∀ i, CMDiffAt n (T% (s i)) x) : CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
+  contMDiffWithinAt_univ.mpr <| gramSchmidt_contMDiffWithinAt _ _ _ fun i ↦ hs i
+
+lemma gramSchmidt_contMDiffOn (s : ι → (x : B) → E x) (i : ι) (u : Set B)
+    (hs : ∀ i, CMDiff[u] n (T% (s i))) : CMDiff[u] n (T% (VectorBundle.gramSchmidt s i)) :=
+  fun x hx ↦ gramSchmidt_contMDiffWithinAt _ _ _ fun i ↦ hs i x hx
+
+lemma gramSchmidt_contMDiff (s : ι → (x : B) → E x) (i : ι)
+    (hs : ∀ i, CMDiff n (T% (s i))) : CMDiff n (T% (VectorBundle.gramSchmidt s i)) :=
+  fun x ↦ gramSchmidt_contMDiffAt _ _ _ (fun i ↦ hs i x)
