@@ -98,40 +98,41 @@ lemma divergentSet_invariant {f : α → α} {x φ}:
     intro hx
     simp only [divergentSet, Set.mem_preimage, birkhoffSup, Set.mem_singleton_iff, iSup_eq_top] at *
     intro M hM
-    cases' M using EReal.rec with a
-    · use 0; apply EReal.bot_lt_coe
-    case top => contradiction
+    induction M using EReal.rec with
+    | bot => exact ⟨0, EReal.bot_lt_coe _⟩
+    | top => contradiction
+    | coe a => ?_
   case mp =>
-    cases' hx (- φ x + a) (EReal.coe_lt_top _) with N hN
+    obtain ⟨N, hN⟩ := hx (- φ x + a) (EReal.coe_lt_top _)
     norm_cast at *
     rw [neg_add_lt_iff_lt_add, ← birkhoffSum_succ'] at hN
     use N + 1
   case mpr =>
-    cases' hx (φ x + a) (EReal.coe_lt_top _) with N hN
+    obtain ⟨N, hN⟩ :=  hx (φ x + a) (EReal.coe_lt_top _)
     norm_cast at *
     conv =>
       congr
       intro i
       rw [← add_lt_add_iff_left (φ x), ← birkhoffSum_succ']
-    cases' N with N
-    · /- ugly case! :( -/
-      cases' hx ↑(birkhoffSum f φ 1 x) (EReal.coe_lt_top _) with N hNN
-      cases' N with N
-      · exfalso; exact (lt_self_iff_false _).mp hNN
-      · use N
+    match N with
+    | 0 =>
+      obtain ⟨N, hNN⟩ := hx ↑ (birkhoffSum f φ 1 x) (EReal.coe_lt_top _)
+      match N with
+      | 0 =>
+        exfalso; exact (lt_self_iff_false _).mp hNN
+      | N + 1 =>
+        use N
         norm_cast at hNN
         exact lt_trans hN hNN
-    · use N
+    | N + 1 => use N
 
 lemma divergentSet_measurable
-    {f : α → α} (hf : Measurable f)
-    {φ : α → ℝ} (hφ : Measurable φ) :
+    {f : α → α} (hf : Measurable f) {φ : α → ℝ} (hφ : Measurable φ) :
     MeasurableSet (divergentSet f φ) :=
-      measurableSet_preimage (birkhoffSup_measurable hf hφ) (measurableSet_singleton _)
+  measurableSet_preimage (birkhoffSup_measurable hf hφ) (measurableSet_singleton _)
 
 lemma divergentSet_mem_invalg
-    {f : α → α} (hf : Measurable f)
-    {φ : α → ℝ} (hφ : Measurable φ) :
+    {f : α → α} (hf : Measurable f) {φ : α → ℝ} (hφ : Measurable φ) :
     MeasurableSet[invariants f] (divergentSet f φ) :=
   /- should be `Set.ext divergentSet_invariant` but it is VERY slow -/
   ⟨divergentSet_measurable hf hφ, funext (fun _ ↦ propext divergentSet_invariant)⟩
@@ -173,15 +174,16 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
   rcases hx with ⟨M', M_lt_top, M_is_bound⟩
 
   /- the upper bound is, in fact, a real number -/
-  cases' M' using EReal.rec with M
-  case bot => exfalso; exact (EReal.bot_lt_coe _).not_ge (M_is_bound 0)
-  case top => contradiction
-  norm_cast at M_is_bound
+  -- cases' M' using EReal.rec with M
+  -- case bot => exfalso; exact (EReal.bot_lt_coe _).not_ge (M_is_bound 0)
+  -- case top => contradiction
+  -- norm_cast at M_is_bound
 
-  -- induction M' using EReal.rec with
-  -- | bot => exfalso; exact (EReal.bot_lt_coe _).not_ge (M_is_bound 0)
-  -- | top => contradiction
-  -- | coe a => norm_cast at M_is_bound
+  obtain ⟨M, hM⟩ : ∃ (M : ℝ), ∀ (n : ℕ), birkhoffSum f φ (n + 1) x ≤ M := by
+    induction M' using EReal.rec with
+    | bot => exfalso; exact (EReal.bot_lt_coe _).not_ge (M_is_bound 0)
+    | top => contradiction
+    | coe M => exact ⟨M, by norm_cast at M_is_bound⟩
 
   /- use archimedian property of reals -/
   obtain ⟨N, hN⟩ := Archimedean.arch M hε
@@ -190,7 +192,7 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
       exact hN.trans_lt <| smul_lt_smul_of_pos_right (Nat.lt_succ_of_le hn) hε
     rw [nsmul_eq_mul] at this
     exact (inv_smul_lt_iff_of_pos (Nat.cast_pos.mpr (Nat.zero_lt_succ n))).mpr
-        ((M_is_bound n).trans_lt this)
+        ((hM n).trans_lt this)
 
   /- conclusion -/
   use N + 1
