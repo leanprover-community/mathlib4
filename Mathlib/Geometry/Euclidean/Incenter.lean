@@ -262,8 +262,7 @@ def inradius : ℝ :=
 
 @[simp] lemma exsphere_univ : s.exsphere Finset.univ = s.insphere := by
   rw [exsphere, ← Finset.compl_empty, excenterWeightsUnnorm_compl, excenterWeights_compl]
-  simp only [Pi.neg_apply, Finset.sum_neg_distrib, inv_neg, abs_neg]
-  rfl
+  simp [Pi.neg_apply, Finset.sum_neg_distrib, insphere, exsphere]
 
 @[simp] lemma excenter_univ : s.excenter Finset.univ = s.incenter := by
   rw [excenter, exsphere_univ, insphere_center]
@@ -428,7 +427,7 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
       simp_rw [h'', ← Finset.mul_sum] at h1
       ext j
       rw [h'', eq_inv_of_mul_eq_one_left h1]
-      rfl
+      simp [excenterWeights]
     subst hw
     exact ⟨s.sum_excenterWeights_eq_one_iff.1 h1, rfl⟩
   · rintro ⟨h, rfl⟩

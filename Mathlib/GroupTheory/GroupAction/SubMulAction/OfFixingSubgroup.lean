@@ -24,11 +24,11 @@ and permit to manipulate them in a relatively smooth way:
 
   * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
   multiplicative equivalence between `fixingSubgroup M (insert a s)``
-  and `fixingSubgroup (stablizer M a) s`
+  and `fixingSubgroup (stabilizer M a) s`
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
   map between `SubMulAction.ofFixingSubgroup M (insert a s)`
-  and `SubMulAction.ofFixingSubgroup (stablizer M a) s`.
+  and `SubMulAction.ofFixingSubgroup (stabilizer M a) s`.
 
   * `SubMulAction.fixingSubgroupEquivFixingSubgroup`:
   the multiplicative equivalence between `SubMulAction.fixingSubgroup M s`
@@ -240,7 +240,6 @@ theorem fixingSubgroup_smul_eq_fixingSubgroup_map_conj :
     fixingSubgroup M (g • s) = (fixingSubgroup M s).map (MulAut.conj g).toMonoidHom :=
   (fixingSubgroup_map_conj_eq rfl).symm
 
-variable (M) in
 /-- The equivalence of `fixingSubgroup M t` with `fixingSubgroup M s`
   when `s` is a translate of `t`. -/
 @[to_additive
@@ -253,7 +252,7 @@ def fixingSubgroupEquivFixingSubgroup (hg : g • t = s) :
 
 @[to_additive (attr := simp)]
 theorem fixingSubgroupEquivFixingSubgroup_coe_apply (hg : g • t = s) (x : fixingSubgroup M t) :
-    (fixingSubgroupEquivFixingSubgroup M hg x : M) = MulAut.conj g x := rfl
+    (fixingSubgroupEquivFixingSubgroup hg x : M) = MulAut.conj g x := rfl
 
 /-- Conjugation induces an equivariant map between the `SubMulAction` of
 the fixing subgroup of a subset and that of a translate. -/
@@ -261,9 +260,7 @@ the fixing subgroup of a subset and that of a translate. -/
 "Conjugation induces an equivariant map between the `SubAddAction` of
 the fixing subgroup of a subset and that of a translate."]
 def conjMap_ofFixingSubgroup (hg : g • t = s) :
-    ofFixingSubgroup M t
-      →ₑ[fixingSubgroupEquivFixingSubgroup M hg]
-        ofFixingSubgroup M s where
+    ofFixingSubgroup M t →ₑ[fixingSubgroupEquivFixingSubgroup hg] ofFixingSubgroup M s where
   toFun := fun ⟨x, hx⟩ =>
     ⟨g • x, by
       intro hgxt; apply hx
@@ -292,9 +289,8 @@ theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} {hst : g • s
 
 end FixingSubgroupConj
 
-variable (s t : Set α)
+variable {s t : Set α}
 
-variable {s t} in
 @[to_additive]
 lemma mem_fixingSubgroup_union_iff {g : M} :
     g ∈ fixingSubgroup M (s ∪ t) ↔ g ∈ fixingSubgroup M s ∧ g ∈ fixingSubgroup M t := by
@@ -315,7 +311,7 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
   map_one' := by simp
   map_mul' _ _ := by simp [← Subtype.coe_inj]
 
-variable (M) in
+variable (M s t) in
 /-- The identity between the iterated `SubMulAction`
   of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
   of the union, as an equivariant map. -/
@@ -346,13 +342,10 @@ def map_ofFixingSubgroupUnion :
     rw [← SetLike.coe_eq_coe, ← SetLike.coe_eq_coe]
     exact subgroup_smul_def ⟨m, hm⟩ x
 
-variable (M) in
 @[to_additive]
 theorem map_ofFixingSubgroupUnion_def (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :
     ((SubMulAction.map_ofFixingSubgroupUnion M s t) x : α) = x :=
   rfl
-
-variable {s t}
 
 @[to_additive]
 theorem map_ofFixingSubgroupUnion_bijective :
@@ -440,7 +433,7 @@ noncomputable def ofFixingSubgroup.append
     {n : ℕ} [Finite s] (x : Fin n ↪ ofFixingSubgroup M s) :
     Fin (s.ncard + n) ↪ α := by
   have : Nonempty (Fin (s.ncard) ≃ s) :=
-    Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+    Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
   let y := (Classical.choice this).toEmbedding
   apply Fin.Embedding.append (x := y.trans (subtype _)) (y := x.trans (subtype _))
   rw [Set.disjoint_iff_forall_ne]
@@ -453,7 +446,7 @@ noncomputable def ofFixingSubgroup.append
 theorem ofFixingSubgroup.append_left {n : ℕ} [Finite s]
     (x : Fin n ↪ ofFixingSubgroup M s) (i : Fin s.ncard) :
     let Hs : Nonempty (Fin (s.ncard) ≃ s) :=
-      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
+      Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
     ofFixingSubgroup.append x (Fin.castAdd n i) = (Classical.choice Hs) i := by
   simp [ofFixingSubgroup.append]
 

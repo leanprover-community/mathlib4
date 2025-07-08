@@ -214,8 +214,6 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     simp only [subgroup_smul_def, smul_smul, ← mul_assoc, ← mem_stabilizer_iff]
     exact hyp (normalClosure_normal.conj_mem g (le_normalClosure hg) h)
 
-example (s : Set α) : s.ncard = Nat.card s := by
-  rw [@Set.Nat.card_coe_set_eq]
 variable [Finite α]
 
 /-- A primitivity criterion -/
@@ -230,7 +228,7 @@ theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
   apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion G hts)
   rw [show Nat.card (ofFixingSubgroup G (s ∩ g • s)) = Set.ncard (s ∩ g • s)ᶜ by
-    rw [← Set.Nat.card_coe_set_eq]; congr]
+    rw [← Nat.card_coe_set_eq]; congr]
   rw [← Set.image_univ,
     Set.ncard_image_of_injective _ ofFixingSubgroup_of_inclusion_injective, Set.ncard_coe]
   rw [show ((ofFixingSubgroup G s : Set α)).ncard = sᶜ.ncard by
@@ -637,7 +635,7 @@ theorem isMultiplyPreprimitive_jordan
       rw [← Set.ncard_insert_of_notMem ha', ← hst, hsn]
     · -- 1 + n.succ < Fintype.card (SubMulAction.ofStabilizer G α a)
       change _ < Nat.card (ofStabilizer G a).carrier
-      rw [Set.Nat.card_coe_set_eq, ofStabilizer_carrier, ← Nat.succ_eq_one_add]
+      rw [Nat.card_coe_set_eq, ofStabilizer_carrier, ← Nat.succ_eq_one_add]
       apply Nat.lt_of_add_lt_add_left
       rw [Set.ncard_add_ncard_compl]
       simpa only [Set.ncard_singleton]
@@ -762,7 +760,7 @@ theorem Equiv.Perm.eq_top_of_isSwap_mem [DecidableEq α] (hG : IsPreprimitive G 
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
   have hsc : Set.ncard ((g.support)ᶜ : Set α) = n.succ := by
     apply Nat.add_left_cancel
-    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_Finset,
+    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       Equiv.Perm.card_support_eq_two.mpr h2g, add_comm, hn]
   apply Equiv.Perm.eq_top_of_isMultiplyPretransitive
   suffices IsMultiplyPreprimitive G α (Nat.card α - 1) by
@@ -803,11 +801,10 @@ theorem jordan_three_cycle [DecidableEq α]
   apply IsMultiplyPretransitive.alternatingGroup_le
   suffices IsMultiplyPreprimitive G α (Nat.card α - 2) by
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
-  have hn' : Nat.card α - 2 = 1 + n.succ :=  by grind
-  rw [hn']
+  rw [show Nat.card α - 2 = 1 + n.succ by grind]
   refine isMultiplyPreprimitive_jordan (s := (g.supportᶜ : Set α)) hG ?_ ?_ ?_
   · apply Nat.add_left_cancel
-    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_Finset,
+    rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       Equiv.Perm.IsThreeCycle.card_support h3g, add_comm, hn]
   · grind
   have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsThreeCycle.isCycle h3g
