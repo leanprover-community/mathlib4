@@ -16,20 +16,15 @@ and outputs a set of orthogonal vectors which have the same span.
 
 ## Main results
 
-- `gramSchmidt` : the Gram-Schmidt process
-- `gramSchmidt_orthogonal` :
-  `gramSchmidt` produces an orthogonal system of vectors.
-- `span_gramSchmidt` :
-  `gramSchmidt` preserves span of vectors.
-- `gramSchmidt_ne_zero` :
-  If the input vectors of `gramSchmidt` are linearly independent,
+- `gramSchmidt`: the Gram-Schmidt process
+- `gramSchmidt_orthogonal`: `gramSchmidt` produces an orthogonal system of vectors.
+- `span_gramSchmidt`: `gramSchmidt` preserves span of vectors.
+- `gramSchmidt_ne_zero`: if the input vectors of `gramSchmidt` are linearly independent,
   then the output vectors are non-zero.
-- `gramSchmidt_basis` :
-  The basis produced by the Gram-Schmidt process when given a basis as input.
-- `gramSchmidtNormed` :
+- `gramSchmidt_basis`: the basis produced by the Gram-Schmidt process when given a basis as input
+- `gramSchmidtNormed`:
   the normalized `gramSchmidt` (i.e each vector in `gramSchmidtNormed` has unit length.)
-- `gramSchmidt_orthonormal` :
-  `gramSchmidtNormed` produces an orthornormal system of vectors.
+- `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthornormal system of vectors.
 - `gramSchmidtOrthonormalBasis`: orthonormal basis constructed by the Gram-Schmidt process from
   an indexed set of vectors of the right size
 -/
@@ -230,8 +225,7 @@ theorem coe_gramSchmidtBasis (b : Basis ι 𝕜 E) : (gramSchmidtBasis b : ι �
   Basis.coe_mk _ _
 
 variable (𝕜) in
-/-- the normalized `gramSchmidt`
-(i.e each vector in `gramSchmidtNormed` has unit length.) -/
+/-- the normalized `gramSchmidt` (i.e each vector in `gramSchmidtNormed` has unit length.) -/
 noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
   (‖gramSchmidt 𝕜 f n‖ : 𝕜)⁻¹ • gramSchmidt 𝕜 f n
 
