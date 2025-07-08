@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
@@ -291,7 +291,7 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
   rw [Trivialization.mdifferentiableAt_snd_comp_iff₂ IB
     (FiberBundle.mem_trivializationAt_proj_source) he hf]
 
-/-- Characterization of differentiable sections a vector bundle in terms
+/-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within at set. -/
 theorem Trivialization.mdifferentiableWithinAt_section_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
