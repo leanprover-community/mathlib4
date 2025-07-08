@@ -354,7 +354,7 @@ theorem codisjoint_iff_exists_add_eq :
   rw [codisjoint_iff, eq_top_iff']
   exact forall_congr' (fun z => mem_sup.trans <| by simp)
 
-@[deprecated codisjoint_iff_exists_add_eq (since := "2025-07-05")]
+@[deprecated (since := "2025-07-05")] alias ⟨exists_add_eq_of_codisjoint, _⟩ := codisjoint_iff_exists_add_eq
   simpa only [h.eq_top] using Submodule.mem_top
 
 variable (p p')
