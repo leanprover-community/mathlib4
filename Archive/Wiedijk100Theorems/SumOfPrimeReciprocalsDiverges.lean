@@ -151,7 +151,7 @@ theorem card_le_two_pow {x k : ℕ} : #{e ∈ M x k | Squarefree (e + 1)} ≤ 2 
     #M₁ ≤ #(image f K) := card_le_card h
     _ ≤ #K := card_image_le
     _ ≤ 2 ^ #(image Nat.succ (range k)) := by simp only [K, card_powerset]; rfl
-    _ ≤ 2 ^ #(range k) := pow_right_mono₀ one_le_two card_image_le
+    _ ≤ 2 ^ #(range k) := pow_right_monotone₀ one_le_two card_image_le
     _ = 2 ^ k := by rw [card_range k]
 
 /--

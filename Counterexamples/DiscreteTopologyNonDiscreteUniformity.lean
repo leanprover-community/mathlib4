@@ -123,7 +123,7 @@ lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
   · have h1 : (d : ℝ) ^ (n - m) ≤ 1 - (d : ℝ)⁻¹ := calc
       (d : ℝ) ^ (n - m) ≤ (d : ℝ)⁻¹ := by
         rw [← zpow_neg_one]
-        apply zpow_right_mono₀ <| Nat.one_le_cast.mpr hd0
+        apply zpow_right_monotone₀ <| Nat.one_le_cast.mpr hd0
         linarith
       _ ≤ 1 - (d : ℝ)⁻¹ := by
         rw [inv_eq_one_div, one_sub_div <| Nat.cast_ne_zero.mpr (ne_of_gt hd0),

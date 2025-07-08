@@ -807,14 +807,14 @@ protected def monoid : Monoid (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 
 -- `Finset.pow_left_monotone` doesn't exist since it would syntactically be a special case of
--- `pow_left_mono`
+-- `pow_left_monotone`
 
 @[to_additive]
 protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
 @[to_additive (attr := gcongr)]
-lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := subset_of_le (pow_left_mono n hst)
+lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := subset_of_le (pow_left_monotone n hst)
 
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=

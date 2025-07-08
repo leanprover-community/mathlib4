@@ -331,8 +331,8 @@ lemma inv_le_dual :
 lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by
   by_cases hI : I = 0; · simp [hI]
-  convert mul_right_mono ((dual A K I)⁻¹)
-    (mul_left_mono I (inv_le_dual A K I)) using 1
+  convert mul_right_monotone ((dual A K I)⁻¹)
+    (mul_left_monotone I (inv_le_dual A K I)) using 1
   · simp only [mul_inv_cancel₀ hI, one_mul]
   · simp only [mul_inv_cancel₀ (dual_ne_zero A K (hI := hI)), mul_assoc, mul_one]
 
@@ -341,7 +341,7 @@ lemma dual_eq_mul_inv :
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
   · suffices dual A K I * I ≤ dual A K 1 by
-      convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel₀ hI, mul_one, mul_assoc]
+      convert mul_right_monotone I⁻¹ this using 1; simp only [mul_inv_cancel₀ hI, mul_one, mul_assoc]
     rw [← le_dual_iff A K hI]
   rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel₀ hI, mul_one]
 

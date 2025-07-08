@@ -22,7 +22,7 @@ Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R`
 
 ## Main statements
 
-  * `mul_left_mono` and `mul_right_mono` state that ideal multiplication is monotone
+  * `mul_left_monotone` and `mul_right_monotone` state that ideal multiplication is monotone
   * `mul_div_self_cancel_iff` states that `1 / I` is the inverse of `I` if one exists
 
 ## Implementation notes
@@ -542,15 +542,19 @@ theorem coeIdeal_mul (I J : Ideal R) : (↑(I * J) : FractionalIdeal S P) = I * 
   simp only [mul_def]
   exact coeToSubmodule_injective (coeSubmodule_mul _ _ _)
 
-theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := by
+theorem mul_left_monotone (I : FractionalIdeal S P) : Monotone (I * ·) := by
   intro J J' h
   simp only [mul_def]
   exact mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
 
-theorem mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := by
+@[deprecated (since := "2025-07-08")] alias mul_left_mono := mul_left_monotone
+
+theorem mul_right_monotone (I : FractionalIdeal S P) : Monotone (· * I) := by
   intro J J' h
   simp only [mul_def]
   exact mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
+
+@[deprecated (since := "2025-07-08")] alias mul_right_mono := mul_right_monotone
 
 theorem mul_mem_mul {I J : FractionalIdeal S P} {i j : P} (hi : i ∈ I) (hj : j ∈ J) :
     i * j ∈ I * J := by
@@ -619,11 +623,11 @@ theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : Fracti
   mul_le.mpr fun _ hk _ hj => mul_mem_mul hk (hIJ hj)
 
 theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I := by
-  convert mul_left_mono I hI
+  convert mul_left_monotone I hI
   exact (mul_one I).symm
 
 theorem mul_self_le_self {I : FractionalIdeal S P} (hI : I ≤ 1) : I * I ≤ I := by
-  convert mul_left_mono I hI
+  convert mul_left_monotone I hI
   exact (mul_one I).symm
 
 theorem coeIdeal_le_one {I : Ideal R} : (I : FractionalIdeal S P) ≤ 1 := fun _ hx =>

@@ -166,8 +166,11 @@ theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monot
     simp_rw [pow_succ]
     exact (Monotone.pow_const hf _).mul' hf
 
-@[to_additive nsmul_right_mono]
-theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow_const _
+@[to_additive nsmul_right_monotone]
+theorem pow_left_monotone (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow_const _
+
+@[deprecated (since := "2025-07-08")] alias nsmul_right_mono := nsmul_right_monotone
+@[deprecated (since := "2025-07-08")] alias pow_left_mono := pow_left_monotone
 
 @[to_additive (attr := gcongr)]
 lemma pow_le_pow {a b : M} (hab : a ≤ b) (ht : 1 ≤ b) {m n : ℕ} (hmn : m ≤ n) : a ^ m ≤ b ^ n :=
@@ -245,7 +248,7 @@ variable [MulLeftMono M] [MulRightMono M]
 
 @[to_additive lt_of_nsmul_lt_nsmul_right]
 theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
-  (pow_left_mono _).reflect_lt
+  (pow_left_monotone _).reflect_lt
 
 @[to_additive min_lt_of_add_lt_two_nsmul]
 theorem min_lt_of_mul_lt_sq {a b c : M} (h : a * b < c ^ 2) : min a b < c := by

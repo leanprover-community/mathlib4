@@ -145,12 +145,18 @@ section Preorder
 variable [Preorder α]
 
 @[to_additive]
-lemma mul_left_mono [MulLeftMono α] {a : α} : Monotone (a * ·) :=
+lemma mul_left_monotone [MulLeftMono α] {a : α} : Monotone (a * ·) :=
   fun _ _ h ↦ mul_le_mul_left' h _
 
+@[deprecated (since := "2025-07-08")] alias add_left_mono := add_left_monotone
+@[deprecated (since := "2025-07-08")] alias mul_left_mono := mul_left_monotone
+
 @[to_additive]
-lemma mul_right_mono [MulRightMono α] {a : α} : Monotone (· * a) :=
+lemma mul_right_monotone [MulRightMono α] {a : α} : Monotone (· * a) :=
   fun _ _ h ↦ mul_le_mul_right' h _
+
+@[deprecated (since := "2025-07-08")] alias add_right_mono := add_right_monotone
+@[deprecated (since := "2025-07-08")] alias mul_right_mono := mul_right_monotone
 
 @[to_additive]
 lemma mul_left_strictMono [MulLeftStrictMono α] {a : α} : StrictMono (a * ·) :=
@@ -329,19 +335,19 @@ theorem trichotomy_of_mul_eq_mul
 
 @[to_additive]
 lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
+    a * max b c = max (a * b) (a * c) := mul_left_monotone.map_max
 
 @[to_additive]
 lemma max_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
-    max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
+    max a b * c = max (a * c) (b * c) := mul_right_monotone.map_max
 
 @[to_additive]
 lemma mul_min [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
-    a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
+    a * min b c = min (a * b) (a * c) := mul_left_monotone.map_min
 
 @[to_additive]
 lemma min_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
-    min a b * c = min (a * c) (b * c) := mul_right_mono.map_min
+    min a b * c = min (a * c) (b * c) := mul_right_monotone.map_min
 
 @[to_additive] lemma min_lt_max_of_mul_lt_mul
     [MulLeftMono α] [MulRightMono α]
@@ -1126,35 +1132,35 @@ variable [Mul α] [Preorder α] [Preorder β] {f g : β → α} {s : Set β}
 
 @[to_additive const_add]
 theorem Monotone.const_mul' [MulLeftMono α] (hf : Monotone f) (a : α) : Monotone fun x ↦ a * f x :=
-  mul_left_mono.comp hf
+  mul_left_monotone.comp hf
 
 @[to_additive const_add]
 theorem MonotoneOn.const_mul' [MulLeftMono α] (hf : MonotoneOn f s) (a : α) :
-    MonotoneOn (fun x => a * f x) s := mul_left_mono.comp_monotoneOn hf
+    MonotoneOn (fun x => a * f x) s := mul_left_monotone.comp_monotoneOn hf
 
 @[to_additive const_add]
 theorem Antitone.const_mul' [MulLeftMono α] (hf : Antitone f) (a : α) : Antitone fun x ↦ a * f x :=
-  mul_left_mono.comp_antitone hf
+  mul_left_monotone.comp_antitone hf
 
 @[to_additive const_add]
 theorem AntitoneOn.const_mul' [MulLeftMono α] (hf : AntitoneOn f s) (a : α) :
-    AntitoneOn (fun x => a * f x) s := mul_left_mono.comp_antitoneOn hf
+    AntitoneOn (fun x => a * f x) s := mul_left_monotone.comp_antitoneOn hf
 
 @[to_additive add_const]
 theorem Monotone.mul_const' [MulRightMono α] (hf : Monotone f) (a : α) :
-    Monotone fun x => f x * a := mul_right_mono.comp hf
+    Monotone fun x => f x * a := mul_right_monotone.comp hf
 
 @[to_additive add_const]
 theorem MonotoneOn.mul_const' [MulRightMono α] (hf : MonotoneOn f s) (a : α) :
-    MonotoneOn (fun x => f x * a) s := mul_right_mono.comp_monotoneOn hf
+    MonotoneOn (fun x => f x * a) s := mul_right_monotone.comp_monotoneOn hf
 
 @[to_additive add_const]
 theorem Antitone.mul_const' [MulRightMono α] (hf : Antitone f) (a : α) : Antitone fun x ↦ f x * a :=
-  mul_right_mono.comp_antitone hf
+  mul_right_monotone.comp_antitone hf
 
 @[to_additive add_const]
 theorem AntitoneOn.mul_const' [MulRightMono α] (hf : AntitoneOn f s) (a : α) :
-    AntitoneOn (fun x => f x * a) s := mul_right_mono.comp_antitoneOn hf
+    AntitoneOn (fun x => f x * a) s := mul_right_monotone.comp_antitoneOn hf
 
 /-- The product of two monotone functions is monotone. -/
 @[to_additive add "The sum of two monotone functions is monotone."]

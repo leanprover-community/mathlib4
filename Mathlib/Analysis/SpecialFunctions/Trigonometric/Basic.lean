@@ -646,12 +646,15 @@ theorem sqrtTwoAddSeries_succ (x : ℝ) :
   | 0 => rfl
   | n + 1 => by rw [sqrtTwoAddSeries, sqrtTwoAddSeries_succ _ _, sqrtTwoAddSeries]
 
-theorem sqrtTwoAddSeries_monotone_left {x y : ℝ} (h : x ≤ y) :
+theorem sqrtTwoAddSeries_mono_left {x y : ℝ} (h : x ≤ y) :
     ∀ n : ℕ, sqrtTwoAddSeries x n ≤ sqrtTwoAddSeries y n
   | 0 => h
   | n + 1 => by
     rw [sqrtTwoAddSeries, sqrtTwoAddSeries]
-    exact sqrt_le_sqrt (add_le_add_left (sqrtTwoAddSeries_monotone_left h _) _)
+    exact sqrt_le_sqrt (add_le_add_left (sqrtTwoAddSeries_mono_left h _) _)
+
+@[deprecated (since := "2025-07-08")]
+alias sqrtTwoAddSeries_monotone_left := sqrtTwoAddSeries_mono_left
 
 @[simp]
 theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2
