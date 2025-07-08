@@ -27,9 +27,6 @@ lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := b
   rw [zpow_add_one]
   exact lt_mul_of_one_lt_right' (a ^ n) ha
 
-@[to_additive zsmul_pos] lemma one_lt_zpow (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
-  simpa using zpow_right_strictMono ha hn
-
 @[deprecated (since := "2024-11-13")] alias one_lt_zpow' := one_lt_zpow
 
 @[to_additive zsmul_left_strictAnti]

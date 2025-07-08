@@ -88,15 +88,15 @@ noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
-    show map _ Q.1 = Q.1
+    change map _ Q.1 = Q.1
     simpa only [map_one] using map_id Q.1
   mul_smul σ τ Q := by
     apply Subtype.val_inj.mp
-    show map _ Q.1 = map _ (map _ Q.1)
+    change map _ Q.1 = map _ (map _ Q.1)
     rw [map_mul]
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
-theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B):
+theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B) :
     (σ • P).1 = map (galRestrict A K L B σ) P :=
   rfl
 

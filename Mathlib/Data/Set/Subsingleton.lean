@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Insert
+import Mathlib.Tactic.ByContra
 
 /-!
 # Subsingleton
@@ -15,7 +16,7 @@ elements.
 
 -/
 
-assert_not_exists RelIso
+assert_not_exists HeytingAlgebra RelIso
 
 open Function
 
@@ -231,7 +232,7 @@ theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
 
 @[simp]
 theorem singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ :=
-  nonempty_compl.mp (nonempty_compl_of_nontrivial a)
+  fun h ↦ nontrivial_univ.not_subset_singleton h.superset
 
 @[simp]
 theorem singleton_ssubset_univ [Nontrivial α] (a : α) : {a} ⊂ univ :=
