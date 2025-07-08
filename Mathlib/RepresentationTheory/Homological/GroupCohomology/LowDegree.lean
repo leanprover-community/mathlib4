@@ -1112,43 +1112,6 @@ lemma isoCocycles₂_hom_comp_i :
 alias isoTwoCocycles_hom_comp_subtype := isoTwoCocycles_hom_comp_i
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-<<<<<<< HEAD
-lemma isoTwoCocycles_inv_comp_iCocycles :
-    (isoTwoCocycles A).inv ≫ iCocycles A 2 =
-      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ (twoCochainsIso A).inv :=
-  (CommSq.horiz_inv ⟨isoTwoCocycles_hom_comp_i A⟩).w
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma toCocycles_comp_isoTwoCocycles_hom :
-    toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
-      (oneCochainsIso A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
-  simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_dOne_eq,
-    shortComplexH2_f]
-
-/-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
-cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
-def isoH2 : groupCohomology A 2 ≅ H2 A :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH2Iso A) _ _)
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_isoH2_hom  :
-    π A 2 ≫ (isoH2 A).hom = (isoTwoCocycles A).hom ≫ H2π A := by
-  simp [isoH2, isoTwoCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
-
-@[deprecated (since := "2025-06-12")]
-alias groupCohomologyπ_comp_isoH2_hom := π_comp_isoH2_hom
-
-end H2
-
-end groupCohomologyIso
-
-end groupCohomology
-========
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-
-deprecated_module (since := "2025-06-14")
->>>>>>>> 7fbffbbebf1229db6873883f50959f116569dc37:Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean
-=======
 lemma isoCocycles₂_inv_comp_iCocycles :
     (isoCocycles₂ A).inv ≫ iCocycles A 2 =
       (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ (cochainsIso₂ A).inv :=
