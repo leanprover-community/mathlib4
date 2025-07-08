@@ -236,7 +236,7 @@ lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
         (RegularWreathProduct.toPermInj (IteratedWreathProduct G n) G (Fin n → G))
 
 /-- The encoding of the Sylow `p`-subgroups of `Perm α` as an iterated wreath product. -/
-noncomputable def Sylow.mulEquivIteratedWreathProduct  (p : ℕ) [hp : Fact (Nat.Prime p)] (n : ℕ)
+noncomputable def Sylow.mulEquivIteratedWreathProduct (p : ℕ) [hp : Fact (Nat.Prime p)] (n : ℕ)
     (α : Type*) [Finite α] (hα : Nat.card α = p ^ n)
     (G : Type*) [Group G] [Finite G] (hG : Nat.card G = p)
     (P : Sylow p (Equiv.Perm α)) :

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.BooleanAlgebra.Set
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -57,19 +58,19 @@ instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by a
 
 instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
 
-theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp [lt_irrefl]
+theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
 
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [le_refl]
 
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
-theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp [lt_irrefl]
+theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
 
 theorem left_mem_Ici : a ∈ Ici a := by simp
 
-theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp [lt_irrefl]
+theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp
 
-theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp [lt_irrefl]
+theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
 
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
@@ -681,7 +682,7 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
   refine ⟨fun h ↦ ?_, subsingleton_Icc_of_ge⟩
   contrapose! h
-  simp only [gt_iff_lt, not_subsingleton_iff]
+  simp only [not_subsingleton_iff]
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[simp]
@@ -983,7 +984,7 @@ theorem Iic_prod_eq (a : α × β) : Iic a = Iic a.1 ×ˢ Iic a.2 :=
 @[simp]
 theorem Icc_prod_Icc (a₁ a₂ : α) (b₁ b₂ : β) : Icc a₁ a₂ ×ˢ Icc b₁ b₂ = Icc (a₁, b₁) (a₂, b₂) := by
   ext ⟨x, y⟩
-  simp [and_assoc, and_comm, and_left_comm]
+  simp [and_assoc, and_left_comm]
 
 theorem Icc_prod_eq (a b : α × β) : Icc a b = Icc a.1 b.1 ×ˢ Icc a.2 b.2 := by simp
 
