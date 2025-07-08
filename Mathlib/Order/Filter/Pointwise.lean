@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Ring.Defs
@@ -1089,5 +1090,26 @@ theorem zero_smul_filter (hg : g.NeBot) : (0 : α) • g = 0 :=
       exact zero_mem_zero
 
 end SMulWithZero
+
+section Cancel
+
+@[to_additive]
+theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MulAction γ β] {m : α → β} {c : γ}
+    {f : Filter α} {g : Filter β} (hc : IsUnit c) :
+    Tendsto (c • m) f (c • g) ↔ Tendsto m f g := by
+  rcases hc.exists_left_inv with ⟨d, hd⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ tendsto_map.comp H⟩
+  simpa [Function.comp_def, smul_smul, hd] using (tendsto_map (f := (d • ·))).comp H
+
+@[to_additive (attr := simp)]
+theorem smul_tendsto_smul_iff [Group γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+    {g : Filter β} : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
+  Group.isUnit _ |>.smul_tendsto_smul_iff
+
+theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+    {g : Filter β} (hc : c ≠ 0) : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
+  hc.isUnit.smul_tendsto_smul_iff
+
+end Cancel
 
 end Filter

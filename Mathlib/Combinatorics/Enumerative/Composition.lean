@@ -583,7 +583,7 @@ protected def cast (c : Composition m) (hmn : m = n) : Composition n where
 @[simp]
 theorem cast_rfl (c : Composition n) : c.cast rfl = c := rfl
 
-theorem cast_heq (c : Composition m) (hmn : m = n) : HEq (c.cast hmn) c := by subst m; rfl
+theorem cast_heq (c : Composition m) (hmn : m = n) : c.cast hmn ≍ c := by subst m; rfl
 
 theorem cast_eq_cast (c : Composition m) (hmn : m = n) :
     c.cast hmn = cast (hmn ▸ rfl) c := by
@@ -816,12 +816,7 @@ considering the restriction of the subset to `{1, ..., n-1}` and shifting to the
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
   toFun c :=
     { i : Fin (n - 1) |
-        (⟨1 + (i : ℕ), by
-              apply (add_lt_add_left i.is_lt 1).trans_le
-              rw [Nat.succ_eq_add_one, add_comm]
-              exact add_le_add (Nat.sub_le n 1) (le_refl 1)⟩ :
-            Fin n.succ) ∈
-          c.boundaries }.toFinset
+        (⟨1 + (i : ℕ), by omega⟩ : Fin n.succ) ∈ c.boundaries }.toFinset
   invFun s :=
     { boundaries :=
         { i : Fin n.succ |
