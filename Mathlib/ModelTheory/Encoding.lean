@@ -44,7 +44,7 @@ variable {α : Type u'}
 
 open FirstOrder Cardinal
 
-open Computability List Structure Cardinal Fin
+open Computability List Structure Fin
 
 namespace Term
 
@@ -96,7 +96,7 @@ protected def encoding : Encoding (L.Term α) where
   decode_encode t := by
     have h := listDecode_encode_list [t]
     rw [flatMap_singleton] at h
-    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 theorem listEncode_injective :
@@ -122,7 +122,8 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
-    refine ⟨Infinite.of_injective (fun i => ⟨i + 1, var (Sum.inr i)⟩) fun i j ij => ?_, ?_⟩
+    refine ⟨Infinite.of_injective
+        (fun i => ⟨i + 1, var (Sum.inr (Fin.ofNat _ i))⟩) fun i j ij => ?_, ?_⟩
     · cases ij
       rfl
     · rw [Cardinal.le_def]
@@ -141,7 +142,7 @@ instance [Encodable α] [Encodable (Σ i, L.Functions i)] : Encodable (L.Term α
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
     rw [← flatMap_singleton listEncode, listDecode_encode_list]
-    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
+    simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
       id_eq]
 
 instance [h1 : Countable α] [h2 : Countable (Σ l, L.Functions l)] : Countable (L.Term α) := by
@@ -226,8 +227,8 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
   | equal =>
     intro l
     rw [listEncode, cons_append, cons_append, listDecode, dif_pos]
-    · simp only [eq_mp_eq_cast, cast_eq, eq_self_iff_true, heq_iff_eq, and_self_iff, nil_append]
-    · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
+    · simp only [eq_mp_eq_cast, cast_eq, nil_append]
+    · simp only
   | @rel φ_n φ_l φ_R ts =>
     intro l
     rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
@@ -255,8 +256,8 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
     · obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
       rw [cast_eq_iff_heq]
       exact (Sigma.ext_iff.1 ((Sigma.eta (Option.get _ h1)).trans h2)).2
-    rw [List.drop_append_eq_append_drop, length_map, length_finRange, Nat.sub_self, drop,
-      drop_eq_nil_of_le, nil_append]
+    rw [List.drop_append, length_map, length_finRange, Nat.sub_self, drop, drop_eq_nil_of_le,
+      nil_append]
     rw [length_map, length_finRange]
   | imp _ _ ih1 ih2 =>
     intro l

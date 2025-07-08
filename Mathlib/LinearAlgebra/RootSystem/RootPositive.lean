@@ -93,7 +93,7 @@ lemma apply_weylGroup_coe_mul (g : P.weylGroup) (x y : M) :
   apply_weylGroup_smul _ g x y
 
 @[simp]
-lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)]:
+lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)] :
     B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
@@ -228,7 +228,7 @@ lemma zero_lt_pairingIn_iff [IsStrictOrderedRing S] :
 
 lemma coxeterWeight_nonneg [IsStrictOrderedRing S] : 0 ≤ P.coxeterWeightIn S i j := by
   dsimp [coxeterWeightIn]
-  rcases lt_or_le 0 (P.pairingIn S i j) with h | h
+  rcases lt_or_ge 0 (P.pairingIn S i j) with h | h
   · exact le_of_lt <| mul_pos h ((zero_lt_pairingIn_iff B i j).mp h)
   · have hn : P.pairingIn S j i ≤ 0 := by rwa [← not_lt, ← zero_lt_pairingIn_iff B i j, not_lt]
     exact mul_nonneg_of_nonpos_of_nonpos h hn

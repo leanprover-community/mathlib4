@@ -169,14 +169,14 @@ namespace SatelliteConfig
 variable {α : Type*} [MetricSpace α] {N : ℕ} {τ : ℝ} (a : SatelliteConfig α N τ)
 
 theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (last N) := by
-  rcases lt_or_le i (last N) with (H | H)
+  rcases lt_or_ge i (last N) with (H | H)
   · exact a.inter i H
   · have I : i = last N := top_le_iff.1 H
     have := (a.rpos (last N)).le
     simp only [I, add_nonneg this this, dist_self]
 
 theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := by
-  rcases lt_or_le i (last N) with (H | H)
+  rcases lt_or_ge i (last N) with (H | H)
   · exact (a.hlast i H).2
   · have : i = last N := top_le_iff.1 H
     rw [this]
@@ -279,7 +279,7 @@ theorem lastStep_nonempty :
   suffices H : Function.Injective p.index from not_injective_of_ordinal p.index H
   intro x y hxy
   wlog x_le_y : x ≤ y generalizing x y
-  · exact (this hxy.symm (le_of_not_le x_le_y)).symm
+  · exact (this hxy.symm (le_of_not_ge x_le_y)).symm
   rcases eq_or_lt_of_le x_le_y with (rfl | H); · rfl
   simp only [nonempty_def, not_exists, exists_prop, not_and, not_lt, not_le, mem_setOf_eq,
     not_forall] at h
@@ -291,8 +291,8 @@ theorem lastStep_nonempty :
       rw [TauPackage.index]; rfl
     rw [this]
     exact (Classical.epsilon_spec h).1
-  simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_le,
-    Subtype.exists, Subtype.coe_mk] at A
+  simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and,
+    Subtype.exists] at A
   specialize A x H
   simp? [hxy] at A says simp only [hxy, mem_ball, dist_self, not_lt] at A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
@@ -341,7 +341,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
   rw [color_i]
   have N_mem : N ∈ univ \ A := by
     simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton_iff,
-      mem_closedBall, not_and, mem_univ, mem_diff, Subtype.exists, Subtype.coe_mk]
+      not_and, mem_univ, mem_diff, Subtype.exists]
     intro j ji _
     exact (IH j ji (ji.trans hi)).ne'
   suffices sInf (univ \ A) ≠ N by
@@ -358,8 +358,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have : k ∈ A := by
       simpa only [true_and, mem_univ, Classical.not_not, mem_diff] using
         Nat.notMem_of_lt_sInf hk
-    simp only [mem_iUnion, mem_singleton_iff, exists_prop, Subtype.exists, exists_and_right,
-      and_assoc] at this
+    simp only [] at this
     simpa only [A, exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
@@ -369,12 +368,12 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
   have color_G : ∀ n, n ≤ N → p.color (G n) = n := by
     intro n hn
     rcases hn.eq_or_lt with (rfl | H)
-    · simp only [G]; simp only [color_i, Inf_eq_N, if_true, eq_self_iff_true]
+    · simp only [G]; simp only [color_i, Inf_eq_N, if_true]
     · simp only [G]; simp only [H.ne, (hg n H).right.right.symm, if_false]
   have G_lt_last : ∀ n, n ≤ N → G n < p.lastStep := by
     intro n hn
     rcases hn.eq_or_lt with (rfl | H)
-    · simp only [G]; simp only [hi, if_true, eq_self_iff_true]
+    · simp only [G]; simp only [hi, if_true]
     · simp only [G]; simp only [H.ne, (hg n H).left.trans hi, if_false]
   have fGn :
       ∀ n, n ≤ N →
@@ -400,8 +399,8 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have hb : (b : ℕ) ≤ N := Nat.lt_succ_iff.1 b.2
     constructor
     · have := (fGn b hb).1
-      simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_le,
-        Subtype.exists, Subtype.coe_mk] at this
+      simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and,
+        Subtype.exists] at this
       simpa only [dist_comm, mem_ball, not_lt] using this (G a) G_lt
     · apply le_trans _ (fGn a ha).2
       have B : p.c (p.index (G b)) ∉ p.iUnionUpTo (G a) := by
@@ -409,7 +408,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       let b' : { t // p.c t ∉ p.iUnionUpTo (G a) } := ⟨p.index (G b), B⟩
       apply @le_ciSup _ _ _ (fun t : { t // p.c t ∉ p.iUnionUpTo (G a) } => p.r t) _ b'
       refine ⟨p.r_bound, fun t ht => ?_⟩
-      simp only [exists_prop, mem_range, Subtype.exists, Subtype.coe_mk] at ht
+      simp only [exists_prop, mem_range, Subtype.exists] at ht
       rcases ht with ⟨u, hu⟩
       rw [← hu.2]
       exact p.r_le _
@@ -421,7 +420,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       h := by
         intro a b a_ne_b
         wlog G_le : G a ≤ G b generalizing a b
-        · exact (this a_ne_b.symm (le_of_not_le G_le)).symm
+        · exact (this a_ne_b.symm (le_of_not_ge G_le)).symm
         have G_lt : G a < G b := by
           rcases G_le.lt_or_eq with (H | H); · exact H
           have A : (a : ℕ) ≠ b := Fin.val_injective.ne a_ne_b
@@ -431,13 +430,13 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       hlast := by
         intro a ha
         have I : (a : ℕ) < N := ha
-        have : G a < G (Fin.last N) := by dsimp; simp [G, I.ne, (hg a I).1]
+        have : G a < G (Fin.last N) := by simp [G, I.ne, (hg a I).1]
         exact Gab _ _ this
       inter := by
         intro a ha
         have I : (a : ℕ) < N := ha
-        have J : G (Fin.last N) = i := by dsimp; simp only [G, if_true, eq_self_iff_true]
-        have K : G a = g a := by dsimp [G]; simp [I.ne, (hg a I).1]
+        have J : G (Fin.last N) = i := by dsimp; simp only [G, if_true]
+        have K : G a = g a := by simp [G, I.ne]
         convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
   exact hN.false sc
@@ -478,7 +477,7 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
       ∃ jy : Ordinal, jy < p.lastStep ∧ p.color jy = i ∧ y = p.index jy := by
       simpa only [s, exists_prop, mem_iUnion, mem_singleton_iff] using hy
     wlog jxy : jx ≤ jy generalizing jx jy
-    · exact (this jy jy_lt jyi hy jx jx_lt jxi hx x_ne_y.symm (le_of_not_le jxy)).symm
+    · exact (this jy jy_lt jyi hy jx jx_lt jxi hx x_ne_y.symm (le_of_not_ge jxy)).symm
     replace jxy : jx < jy := by
       rcases lt_or_eq_of_le jxy with (H | rfl); · { exact H }; · { exact (x_ne_y rfl).elim }
     let A : Set ℕ :=
@@ -492,11 +491,11 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
       apply csInf_mem
       refine ⟨N, ?_⟩
       simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton_iff, not_and,
-        mem_univ, mem_diff, Subtype.exists, Subtype.coe_mk]
+        mem_univ, mem_diff, Subtype.exists]
       intro k hk _
       exact (p.color_lt (hk.trans jy_lt) hN).ne'
     simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton_iff, not_and,
-      mem_univ, mem_diff, Subtype.exists, Subtype.coe_mk] at h
+      mem_univ, mem_diff, Subtype.exists] at h
     specialize h jx jxy
     contrapose! h
     simpa only [jxi, jyi, and_true, eq_self_iff_true, ← not_disjoint_iff_nonempty_inter] using h
@@ -530,7 +529,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       (t : Set α).PairwiseDisjoint fun x => closedBall x (r x) := by
   classical
   -- exclude the trivial case where `μ s = 0`.
-  rcases le_or_lt (μ s) 0 with (hμs | hμs)
+  rcases le_or_gt (μ s) 0 with (hμs | hμs)
   · have : μ s = 0 := le_bot_iff.1 hμs
     refine ⟨∅, by simp only [Finset.coe_empty, empty_subset], ?_, ?_⟩
     · simp only [this, Finset.notMem_empty, diff_empty, iUnion_false, iUnion_empty,
@@ -570,7 +569,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       have : x ∈ range a.c := by simpa only [a, Subtype.range_coe_subtype, setOf_mem_eq]
       simpa only [mem_iUnion, bex_def] using hu' this
     refine mem_iUnion.2 ⟨i, ⟨hx, ?_⟩⟩
-    simp only [v, exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk]
+    simp only [v, exists_prop, mem_iUnion, SetCoe.exists, exists_and_right]
     exact ⟨y, ⟨y.2, by simpa only [Subtype.coe_eta]⟩, ball_subset_closedBall h'⟩
   have S : ∑ _i : Fin N, μ s / N ≤ ∑ i, μ (s ∩ v i) :=
     calc
@@ -974,7 +973,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
           · exact fun i => measurableSet_closedBall
         _ ≤ μ u := by
           apply measure_mono
-          simp only [SetCoe.forall, Subtype.coe_mk, iUnion_subset_iff]
+          simp only [SetCoe.forall, iUnion_subset_iff]
           intro x hx
           apply Subset.trans (closedBall_subset_ball (hr0 x hx).2.2) (hR x (t0s hx)).2
         _ ≤ μ s + ε / 2 := μu
@@ -988,7 +987,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
           let F : S i ≃ ((↑) : s' → α) '' S i := this.bijOn_image.equiv _
           exact (F.tsum_eq fun x => μ (closedBall x (r x))).symm
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by
-          congr 1; ext x; have : (x : α) ∈ s' := x.1.2; simp only [s', r, if_pos this]
+          grind
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
           haveI : Encodable (S i) := (S_count i).toEncodable
           rw [measure_iUnion]
@@ -996,7 +995,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
           · exact fun i => measurableSet_closedBall
         _ ≤ μ v := by
           apply measure_mono
-          simp only [SetCoe.forall, Subtype.coe_mk, iUnion_subset_iff]
+          simp only [SetCoe.forall, iUnion_subset_iff]
           intro x xs' _
           exact (hr1 x xs').2
         _ ≤ ε / 2 / N := by have : μ s' = 0 := μt0; rwa [this, zero_add] at μv

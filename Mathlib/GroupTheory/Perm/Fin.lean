@@ -41,11 +41,11 @@ theorem Equiv.Perm.decomposeFin_symm_apply_zero {n : ℕ} (p : Fin (n + 1)) (e :
 theorem Equiv.Perm.decomposeFin_symm_apply_succ {n : ℕ} (e : Perm (Fin n)) (p : Fin (n + 1))
     (x : Fin n) : Equiv.Perm.decomposeFin.symm (p, e) x.succ = swap 0 p (e x).succ := by
   refine Fin.cases ?_ ?_ p
-  · simp [Equiv.Perm.decomposeFin, EquivFunctor.map]
+  · simp [Equiv.Perm.decomposeFin]
   · intro i
     by_cases h : i = e x
-    · simp [h, Equiv.Perm.decomposeFin, EquivFunctor.map]
-    · simp [h, Equiv.Perm.decomposeFin, EquivFunctor.map, swap_apply_def, Ne.symm h]
+    · simp [h, Equiv.Perm.decomposeFin]
+    · simp [Equiv.Perm.decomposeFin, swap_apply_def, Ne.symm h]
 
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_apply_one {n : ℕ} (e : Perm (Fin (n + 1))) (p : Fin (n + 2)) :
@@ -110,10 +110,12 @@ theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   clear hx'
   obtain ⟨x, hx⟩ := x
   rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]
-  induction' x with x ih; · rfl
-  rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
-  rw [Ne, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
-  exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
+  induction x with
+  | zero => rfl
+  | succ x ih =>
+    rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
+    rw [Ne, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
+    exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
 
 theorem isCycle_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : IsCycle (finRotate n) := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h
@@ -130,6 +132,7 @@ theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate
 
 namespace Fin
 
+open Fin.NatCast in -- TODO: refactor to avoid needing this
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
@@ -155,7 +158,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
   rw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding, ← coe_castLEEmb,
     viaFintypeEmbedding_apply_image, coe_castLEEmb, coe_castLE, coe_finRotate]
-  simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
+  simp only [Fin.ext_iff, val_last, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl
   · rw [Fin.val_add_one_of_lt]
@@ -164,7 +167,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
   rcases n with - | n
-  · exact absurd le_rfl i.pos.not_le
+  · exact absurd le_rfl i.pos.not_ge
   rw [cycleRange_of_le h]
   split_ifs with h'
   · rfl
@@ -197,7 +200,7 @@ theorem cycleRange_apply {n : ℕ} [NeZero n] (i j : Fin n) :
 @[simp]
 theorem cycleRange_zero (n : ℕ) [NeZero n] : cycleRange (0 : Fin n) = 1 := by
   ext j
-  rcases (Fin.zero_le' j).eq_or_lt with rfl | hj
+  rcases (Fin.zero_le j).eq_or_lt with rfl | hj
   · simp
   · rw [cycleRange_of_gt hj, one_apply]
 
@@ -256,6 +259,29 @@ theorem cycleRange_symm_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange.symm j.succ = i.succAbove j :=
   i.cycleRange.injective (by simp)
 
+@[simp]
+theorem insertNth_apply_cycleRange_symm {n : ℕ} {α : Type*} (p : Fin (n + 1)) (a : α)
+    (x : Fin n → α) (j : Fin (n + 1)) :
+    (p.insertNth a x : _ → α) (p.cycleRange.symm j) = (Fin.cons a x : _ → α) j := by
+  cases j using Fin.cases <;> simp
+
+@[simp]
+theorem insertNth_comp_cycleRange_symm {n : ℕ} {α : Type*} (p : Fin (n + 1)) (a : α)
+    (x : Fin n → α) : (p.insertNth a x ∘ p.cycleRange.symm : _ → α) = Fin.cons a x := by
+  ext j
+  simp
+
+@[simp]
+theorem cons_apply_cycleRange {n : ℕ} {α : Type*} (a : α) (x : Fin n → α)
+    (p : Fin (n + 1)) (j : Fin (n + 1)) :
+    (Fin.cons a x : _ → α) (p.cycleRange j) = (p.insertNth a x : _ → α) j := by
+  rw [← insertNth_apply_cycleRange_symm, Equiv.symm_apply_apply]
+
+@[simp]
+theorem cons_comp_cycleRange {n : ℕ} {α : Type*} (a : α) (x : Fin n → α) (p : Fin (n + 1)) :
+    (Fin.cons a x : _ → α) ∘ p.cycleRange = p.insertNth a x := by
+  ext; simp
+
 theorem isCycle_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
     IsCycle (cycleRange i) := by
   obtain ⟨i, hi⟩ := i
@@ -273,7 +299,8 @@ theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
   exact cycleType_finRotate
 
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
-  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
+  rw [IsThreeCycle, cycleType_cycleRange two_ne_zero]
+  simp
 
 end Fin
 
@@ -289,7 +316,7 @@ theorem Equiv.Perm.sign_eq_prod_prod_Iio (σ : Equiv.Perm (Fin n)) :
     rw [h, Finset.prod_sigma', Equiv.Perm.signAux]
     convert rfl using 2 with x hx
     · simp [Finset.ext_iff, Equiv.Perm.mem_finPairsLT]
-    simp [not_lt, ← ite_not (p := _ ≤ _)]
+    simp [← ite_not (p := _ ≤ _)]
   refine σ.swap_induction_on (by simp) fun π i j hne h_eq ↦ ?_
   rw [Equiv.Perm.signAux_mul, Equiv.Perm.sign_mul, h_eq, Equiv.Perm.sign_swap hne,
     Equiv.Perm.signAux_swap hne]
@@ -311,15 +338,15 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     refine ⟨?_, fun hlt ↦ ?_⟩
     · rintro ⟨i, j, hij, rfl, rfl⟩
       exact inf_le_sup.lt_of_ne <| by simp [hij.ne.symm]
-    obtain hlt' | hle := lt_or_le (σ.symm x1) (σ.symm x2)
+    obtain hlt' | hle := lt_or_ge (σ.symm x1) (σ.symm x2)
     · exact ⟨_, _, hlt', by simp [hlt.le]⟩
     exact ⟨_, _, hle.lt_of_ne (by simp [hlt.ne]), by simp [hlt.le]⟩
   nth_rw 2 [← hφD]
   rw [Finset.prod_image fun x hx y hy ↦ Finset.injOn_of_card_image_eq (by rw [hφD]) hx hy]
   refine Finset.prod_congr rfl fun ⟨x₁, x₂⟩ hx ↦ ?_
   replace hx : x₂ < x₁ := by simpa [hD] using hx
-  obtain hlt | hle := lt_or_le (σ x₁) (σ x₂)
-  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_lt, ← hf]
+  obtain hlt | hle := lt_or_ge (σ x₁) (σ x₂)
+  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_gt, ← hf]
   simp [inf_eq_right.2 hle, sup_eq_left.2 hle, hx]
 
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]

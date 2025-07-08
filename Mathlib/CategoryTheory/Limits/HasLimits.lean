@@ -337,7 +337,6 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
     (HasLimit.isoOfEquivalence e w).hom ≫ limit.π G k =
       limit.π F (e.inverse.obj k) ≫ w.inv.app (e.inverse.obj k) ≫ G.map (e.counit.app k) := by
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
-  dsimp
   simp
 
 @[simp]
@@ -345,8 +344,7 @@ theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
     (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j =
     limit.π G (e.functor.obj j) ≫ w.hom.app j := by
-  simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
-  dsimp
+  simp only [HasLimit.isoOfEquivalence]
   simp
 
 section Pre
@@ -483,7 +481,7 @@ theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
 
 theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
-  ext1; simp [← category.assoc]
+  ext1; simp
 
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
   aesop_cat
@@ -864,7 +862,7 @@ theorem HasColimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasColimit F] {G : K �
     (e : J ≌ K) (w : e.functor ⋙ G ≅ F) (j : J) :
     colimit.ι F j ≫ (HasColimit.isoOfEquivalence e w).hom =
       F.map (e.unit.app j) ≫ w.inv.app _ ≫ colimit.ι G _ := by
-  simp [HasColimit.isoOfEquivalence, IsColimit.coconePointsIsoOfEquivalence_inv]
+  simp [HasColimit.isoOfEquivalence]
 
 @[simp]
 theorem HasColimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasColimit F] {G : K ⥤ C} [HasColimit G]
@@ -1012,7 +1010,7 @@ theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ 
 theorem colimit.map_desc (c : Cocone G) :
     colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
   ext j
-  simp [← assoc, colimit.ι_map, assoc, colimit.ι_desc, colimit.ι_desc]
+  simp [colimit.ι_desc, colimit.ι_desc]
 
 theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
     colimit.pre F E ≫ colim.map α = colim.map (whiskerLeft E α) ≫ colimit.pre G E := by
@@ -1023,7 +1021,7 @@ theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
 theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     colimit.pre F E₁ = colim.map (whiskerRight α F) ≫ colimit.pre F E₂ := by
   ext1
-  simp [← assoc, assoc]
+  simp
 
 theorem colimit.pre_id (F : J ⥤ C) :
     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by aesop_cat

@@ -27,7 +27,7 @@ section SetLike
 variable {S' : Type*} [SetLike S' M'] (s : S')
 
 @[to_additive]
-instance (priority := low) [SMul M' α]  : SMul s α where
+instance (priority := low) [SMul M' α] : SMul s α where
   smul m a := (m : M') • a
 
 section MulOneClass

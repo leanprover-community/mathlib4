@@ -149,7 +149,6 @@ def natTransEquiv : (𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G) ≃ (F �
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop
-  right_inv _ := rfl
 
 end CategoryTheory.Functor
 

@@ -557,8 +557,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
       rcases lt_or_gt_of_ne h with h | h
       · rw [List.getI_append]
         simpa only [List.length_map, List.length_reverse] using h
-      · rw [gt_iff_lt] at h
-        rw [List.getI_eq_default, List.getI_eq_default] <;>
+      · rw [List.getI_eq_default, List.getI_eq_default] <;>
           simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
             List.length_append, List.length_map]
     · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
@@ -599,8 +598,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
         rcases lt_or_gt_of_ne h with h | h
         · rw [List.getI_append]
           simpa only [List.length_map, List.length_reverse] using h
-        · rw [gt_iff_lt] at h
-          rw [List.getI_eq_default, List.getI_eq_default] <;>
+        · rw [List.getI_eq_default, List.getI_eq_default] <;>
             simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
               List.length_append, List.length_map]
       · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
@@ -630,24 +628,28 @@ theorem tr_respects_aux₁ {k} (o q v) {S : List (Γ k)} {L : ListBlank (∀ k, 
     (hL : L.map (proj k) = ListBlank.mk (S.map some).reverse) (n) (H : n ≤ S.length) :
     Reaches₀ (TM1.step (tr M)) ⟨some (go k o q), v, Tape.mk' ∅ (addBottom L)⟩
       ⟨some (go k o q), v, (Tape.move Dir.right)^[n] (Tape.mk' ∅ (addBottom L))⟩ := by
-  induction' n with n IH; · rfl
-  apply (IH (le_of_lt H)).tail
-  rw [iterate_succ_apply']
-  simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
-    addBottom_nth_snd, Option.mem_def]
-  rw [stk_nth_val _ hL, List.getElem?_eq_getElem]
-  · rfl
-  · rwa [List.length_reverse]
+  induction n with
+  | zero => rfl
+  | succ n IH =>
+    apply (IH (le_of_lt H)).tail
+    rw [iterate_succ_apply']
+    simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
+      addBottom_nth_snd, Option.mem_def]
+    rw [stk_nth_val _ hL, List.getElem?_eq_getElem]
+    · rfl
+    · rwa [List.length_reverse]
 
 theorem tr_respects_aux₃ {q v} {L : ListBlank (∀ k, Option (Γ k))} (n) : Reaches₀ (TM1.step (tr M))
     ⟨some (ret q), v, (Tape.move Dir.right)^[n] (Tape.mk' ∅ (addBottom L))⟩
     ⟨some (ret q), v, Tape.mk' ∅ (addBottom L)⟩ := by
-  induction' n with n IH; · rfl
-  refine Reaches₀.head ?_ IH
-  simp only [Option.mem_def, TM1.step]
-  rw [Option.some_inj, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
-    addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Function.comp_apply, Tape.move_right_left]
-  rfl
+  induction n with
+  | zero => rfl
+  | succ n IH =>
+    refine Reaches₀.head ?_ IH
+    simp only [Option.mem_def, TM1.step]
+    rw [Option.some_inj, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
+      addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Function.comp_apply, Tape.move_right_left]
+    rfl
 
 theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
     (hT : ∀ k, ListBlank.map (proj k) T = ListBlank.mk ((S k).map some).reverse)
@@ -762,7 +764,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       obtain ⟨IH₁, IH₂⟩ := IH ss' fun x hx ↦ sub x <| Or.inr hx
       refine ⟨by simp only [trNormal_run, TM1.SupportsStmt]; intros; exact hgo, fun l h ↦ ?_⟩
       rw [trStmts₁_run] at h
-      simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+      simp only [Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         at h
       rcases h with (⟨rfl | rfl⟩ | h)
       · cases s
