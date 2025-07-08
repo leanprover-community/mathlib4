@@ -2639,6 +2639,7 @@ import Mathlib.CategoryTheory.Retract
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.CommShiftTwo
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.CategoryTheory.Shift.Linear

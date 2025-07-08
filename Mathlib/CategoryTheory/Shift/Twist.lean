@@ -57,6 +57,8 @@ def shiftMkCore : ShiftMkCore (TwistShift t) A where
       ← Units.val_mul, ← Units.val_mul, t.assoc a b c]
     simp [shiftFunctorAdd_assoc_hom_app (C := C) a b c X, shiftFunctorAdd']
 
+instance : HasShift (TwistShift t) A := hasShiftMk _ _ (shiftMkCore t)
+
 end TwistShift
 
 end CategoryTheory
