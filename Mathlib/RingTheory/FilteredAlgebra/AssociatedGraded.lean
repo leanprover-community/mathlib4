@@ -422,7 +422,7 @@ lemma GradedPiece.intCast_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
 
 lemma GradedPiece.intCast_negSucc_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
     intCast F F_lt (Int.negSucc n) = - (natCast F F_lt (n + 1)) := by
-  simp [intCast, natCast, negSucc_zsmul]
+  simp [intCast, natCast]
 
 instance [hasGMul F F_lt] : DirectSum.GRing (GradedPiece F F_lt) where
   intCast := GradedPiece.intCast F F_lt
@@ -532,14 +532,15 @@ variable [hasGSMul F F_lt FM FM_lt]
 theorem hasGSMul.mul_equiv_mul {i : ι} {j : ιM} ⦃x₁ x₂ : ofClass (F i)⦄
     (hx : x₁ ≈ x₂) ⦃y₁ y₂ : ofClass (FM j)⦄ (hy : y₁ ≈ y₂) :
     x₁ • y₁ ≈ x₂ • y₂ := by
-  simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at hx hy ⊢
-  show -(x₁ • y₁).1 + (x₂ • y₂).1 ∈ (FM_lt (i +ᵥ j))
-  have eq : - (x₁ • y₁).1 + (x₂ • y₂).1 = ((- x₁ + x₂) : R) • y₁ + (x₂ : R) • (- y₁ + y₂) := by
-    simp only [add_smul, neg_smul, smul_add, smul_neg]
-    abel
-  rw [eq]
-  exact add_mem (hasGSMul.F_lt_smul_mem (F := F) (FM := FM) hx y₁.2)
-    (hasGSMul.smul_F_lt_mem (F := F) (FM := FM) x₂.2 hy)
+  simp only [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at hx hy
+  have : -(x₁ • y₁).1 + (x₂ • y₂).1 ∈ (FM_lt (i +ᵥ j)) := by
+    have eq : - (x₁ • y₁).1 + (x₂ • y₂).1 = ((- x₁ + x₂) : R) • y₁ + (x₂ : R) • (- y₁ + y₂) := by
+      simp only [add_smul, neg_smul, smul_add, smul_neg]
+      abel
+    rw [eq]
+    exact add_mem (hasGSMul.F_lt_smul_mem (F := F) (FM := FM) hx y₁.2)
+      (hasGSMul.smul_F_lt_mem (F := F) (FM := FM) x₂.2 hy)
+  simpa [HasEquiv.Equiv, QuotientAddGroup.leftRel_apply]
 
 /-- The scalar multiplication
 `GradedPiece F F_lt i → GradedPiece FM FM_lt j → GradedPiece FM FM_lt (i +ᵥ j)`
@@ -605,7 +606,7 @@ theorem GradedPiece.smul_zero {i : ι} {j : ιM} (a : GradedPiece F F_lt i) :
   congr
   exact SetCoe.ext (_root_.smul_zero _)
 
-theorem GradedPiece.zero_smul  {i : ι} {j : ιM} (a : GradedPiece FM FM_lt j) :
+theorem GradedPiece.zero_smul {i : ι} {j : ιM} (a : GradedPiece FM FM_lt j) :
     (0 : GradedPiece F F_lt i) • a = (0 : GradedPiece FM FM_lt (i +ᵥ j)) := by
   rw [← map_zero (GradedPiece.mk FM FM_lt), ← map_zero (GradedPiece.mk F F_lt)]
   induction a using GradedPiece.induction_on
