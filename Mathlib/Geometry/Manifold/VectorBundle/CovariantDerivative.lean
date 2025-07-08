@@ -57,7 +57,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 @[simp]
 theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
-    MDifferentiableAt% (T% σ) e ↔
+    MDiffAt (T% σ) e ↔
     DifferentiableAt 𝕜 σ e := by
   simp [mdifferentiableAt_totalSpace, mdifferentiableAt_iff_differentiableAt]
 
@@ -77,9 +77,8 @@ variable {I F V x} in
 if one is differentiable at `x` then so is the other.
 Issue: EventuallyEq does not work for dependent functions. -/
 lemma mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
-    (hσ₁ : MDifferentiableAt% (T% σ) x)
-    (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
-    MDifferentiableAt% (T% σ') x := by
+    (hσ₁ : MDiffAt (T% σ) x) (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
+    MDiffAt (T% σ') x := by
   apply MDifferentiableAt.congr_of_eventuallyEq hσ₁
   -- TODO: split off a lemma?
   apply Set.EqOn.eventuallyEq_of_mem _ hs
@@ -93,8 +92,8 @@ variable {I F V x} in
 one is differentiable at `x` iff the other is. -/
 lemma mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
     (hσ : ∀ x ∈ s, σ x = σ' x) :
-    MDifferentiableAt% (T% σ) x  ↔
-    MDifferentiableAt% (T% σ') x :=
+    MDiffAt (T% σ) x  ↔
+    MDiffAt (T% σ') x :=
   ⟨fun h ↦ mdifferentiableAt_dependent_congr hs h hσ,
    fun h ↦ mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
 
@@ -110,11 +109,11 @@ structure IsCovariantDerivativeOn
   smulX (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (g : M → 𝕜) {x : M}
     (hx : x ∈ s := by trivial) : f (g • X) σ x = g x • f X σ x
   addσ (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x}
-    (hσ : MDifferentiableAt% (T% σ) x) (hσ' : MDifferentiableAt% (T% σ') x)
+    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x)
     (hx : x ∈ s := by trivial) :
     f X (σ + σ') x = f X σ x + f X σ' x
   leibniz (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {g : M → 𝕜} {x}
-    (hσ : MDifferentiableAt% (T% σ) x) (hg : MDifferentiableAt% g x) (hx : x ∈ s := by trivial):
+    (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial):
     f X (g • σ) x = (g • f X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) g x (X x)) • σ x
   smul_const_σ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) {x}
     (hx : x ∈ s := by trivial) : f X (a • σ) x = a • f X σ x
@@ -211,7 +210,7 @@ This is a class so typeclass inference can deduce this automatically.
 -/
 class _root_.IsCkConnection (cov : CovariantDerivative I F V) (k : ℕ∞) [IsManifold I 1 M] where
   regularity : ∀ {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x},
-    ContMDiff% (k + 1) (T% σ) → ContMDiff I (I.prod 𝓘(𝕜, E)) k (T% X) →
+    CMDiff (k + 1) (T% σ) → ContMDiff I (I.prod 𝓘(𝕜, E)) k (T% X) →
     ContMDiff% k (T% (cov X σ))
 
 -- future: if g is a C^k metric on a manifold M, the corresponding Levi-Civita connection
@@ -241,7 +240,7 @@ omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
 lemma _root_.IsCovariantDerivativeOn.zeroσ (hf : IsCovariantDerivativeOn F V f s)
     (X : Π x : M, TangentSpace I x)
     {x} (hx : x ∈ s := by trivial) : f X 0 x = 0 := by
-  have : MDifferentiableAt% (T% fun x ↦ (0 : V x)) x := by -- TODO: fix using upcoming mdiff lemma
+  have : MDiffAt (T% fun x ↦ (0 : V x)) x := by -- TODO: fix using upcoming mdiff lemma
     exact (contMDiff_zeroSection 𝕜 V).mdifferentiableAt le_rfl
   simpa using (hf.addσ X this this : f X (0+0) x = _)
 
@@ -375,7 +374,7 @@ omit [IsManifold I 0 M]
 /-- A convex combination of two `C^k` connections is a `C^k` connection. -/
 lemma ContMDiffCovariantDerivativeOn.convexCombination [IsManifold I 1 M]
     {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
-    {u} {f : M → 𝕜} {n : ℕ∞} (hf : ContMDiffOn I 𝓘(𝕜) n f u)
+    {u: Set M} {f : M → 𝕜} {n : ℕ∞} (hf : CMDiff[u] n f)
     (Hcov : ContMDiffCovariantDerivativeOn (F := F) n cov u)
     (Hcov' : ContMDiffCovariantDerivativeOn (F := F) n cov' u) :
     ContMDiffCovariantDerivativeOn F n (fun X σ ↦ (f • (cov X σ)) + (1 - f) • (cov' X σ)) u where
@@ -573,7 +572,7 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
   [VectorBundle ℝ F V] in
 lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
-    (hσ : MDifferentiableAt% (T% σ) x)
+    (hσ : MDiffAt (T% σ) x)
     (f : SmoothBumpFunction I x) :
     cov X ((f : M → ℝ) • σ) x = cov X σ x := by
   rw [cov.leibniz _ _ _ _ hσ]
@@ -591,7 +590,7 @@ omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ
 lemma congr_σ_of_eventuallyEq
     (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
-    (hσ : MDifferentiableAt% (T% σ) x)
+    (hσ : MDiffAt (T% σ) x)
     (hσσ' : ∀ x ∈ s, σ x = σ' x) :
     cov X σ x = cov X σ' x := by
   -- Choose a smooth bump function ψ with support around `x` contained in `s`
@@ -634,8 +633,8 @@ lemma _root_.IsCovariantDerivativeOn.differenceAux_smul_eq
     (hcov' : IsCovariantDerivativeOn F V cov' u)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
     {x : M} (hx : x ∈ u := by trivial)
-    (hσ : MDifferentiableAt% (T% σ) x)
-    (hf : MDifferentiableAt% f x) :
+    (hσ : MDiffAt (T% σ) x)
+    (hf : MDiffAt f x) :
     differenceAux cov cov' X ((f : M → ℝ) • σ) x = f x • differenceAux cov cov' X σ x:=
   calc _
     _ = cov X ((f : M → ℝ) • σ) x - cov' X ((f : M → ℝ) • σ) x := rfl
@@ -666,8 +665,8 @@ lemma _root_.IsCovariantDerivativeOn.differenceAux_tensorial
     [T2Space M] [IsManifold I ∞ M]
     [FiniteDimensional ℝ F] [ContMDiffVectorBundle 1 F V I]
     {X X' : Π x : M, TangentSpace I x} {σ σ' : Π x : M, V x} {x₀ : M}
-    (hσ : MDifferentiableAt% (T% σ) x₀)
-    (hσ' : MDifferentiableAt% (T% σ') x₀)
+    (hσ : MDiffAt (T% σ) x₀)
+    (hσ' : MDiffAt (T% σ') x₀)
     (hXX' : X x₀ = X' x₀) (hσσ' : σ x₀ = σ' x₀) (hx : x₀ ∈ u := by trivial) :
     differenceAux cov cov' X σ x₀ = differenceAux cov cov' X' σ' x₀ := by
   trans differenceAux cov cov' X' σ x₀
@@ -782,7 +781,7 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 lemma mdifferentiable_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
     [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
-    MDifferentiable% (T% extend I F σ₀) :=
+    MDiff (T% extend I F σ₀) :=
   contMDiff_extend σ₀ |>.mdifferentiable (by simp)
 
 /-- The difference of two covariant derivatives, as a tensorial map -/
@@ -943,8 +942,8 @@ variable [IsManifold I 1 M]
 variable {cov : CovariantDerivative I F V}
 
 lemma proj_mderiv {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} (x : M)
-    (hX : MDifferentiableAt% (T% X) x)
-    (hσ : MDifferentiableAt% (T% σ) x) :
+    (hX : MDiffAt (T% X) x)
+    (hσ : MDiffAt (T% σ) x) :
     cov X σ x = cov.proj (σ x)
       (mfderiv I (I.prod 𝓘(ℝ, F)) (T% σ) x (X x)) := by
   sorry
@@ -989,8 +988,8 @@ lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_ze
 
 variable (Y) in
 lemma torsion_add_left_apply [CompleteSpace E] {x : M}
-    (hX : MDifferentiableAt% (T% X) x)
-    (hX' : MDifferentiableAt% (T% X') x) :
+    (hX : MDiffAt (T% X) x)
+    (hX' : MDiffAt (T% X') x) :
     torsion cov (X + X') Y x = torsion cov X Y x + torsion cov X' Y x := by
   simp [torsion, cov.isCovariantDerivativeOn.addX X X' (x := x)]
   rw [cov.isCovariantDerivativeOn.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
@@ -998,29 +997,27 @@ lemma torsion_add_left_apply [CompleteSpace E] {x : M}
 
 variable (Y) in
 lemma torsion_add_left [CompleteSpace E]
-    (hX : MDifferentiable% (T% X))
-    (hX' : MDifferentiable% (T% X')) :
+    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) :
     torsion cov (X + X') Y = torsion cov X Y + torsion cov X' Y := by
   ext x
   exact cov.torsion_add_left_apply _ (hX x) (hX' x)
 
 lemma torsion_add_right_apply [CompleteSpace E] {x : M}
-    (hX : MDifferentiableAt% (T% X) x)
-    (hX' : MDifferentiableAt% (T% X') x) :
+    (hX : MDiffAt (T% X) x)
+    (hX' : MDiffAt (T% X') x) :
     torsion cov Y (X + X') x = torsion cov Y X x + torsion cov Y X' x := by
   rw [torsion_antisymm, Pi.neg_apply,
     cov.torsion_add_left_apply _ hX hX', torsion_antisymm Y, torsion_antisymm Y]
   simp; abel
 
 lemma torsion_add_right [CompleteSpace E]
-    (hX : MDifferentiable% (T% X))
-    (hX' : MDifferentiable% (T% X')) :
+    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) :
     torsion cov Y (X + X') = torsion cov Y X + torsion cov Y X' := by
   rw [torsion_antisymm, torsion_add_left _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
 
 variable (Y) in
-lemma torsion_smul_left_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDifferentiableAt% f x)
-    (hX : MDifferentiableAt% (T% X) x) :
+lemma torsion_smul_left_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDiffAt f x)
+    (hX : MDiffAt (T% X) x) :
     torsion cov (f • X) Y x = f x • torsion cov X Y x := by
   simp only [torsion, cov.isCovariantDerivativeOn.smulX X Y f, Pi.sub_apply]
   rw [cov.isCovariantDerivativeOn.leibniz Y hX hf, VectorField.mlieBracket_smul_left hf hX]
@@ -1028,22 +1025,20 @@ lemma torsion_smul_left_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MD
   abel
 
 variable (Y) in
-lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
-    (hX : MDifferentiable% (T% X)) :
+lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
     torsion cov (f • X) Y = f • torsion cov X Y := by
   ext x
   exact cov.torsion_smul_left_apply _ (hf x) (hX x)
 
 variable (X) in
-lemma torsion_smul_right_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDifferentiableAt% f x)
-    (hX : MDifferentiableAt% (T% Y) x) :
+lemma torsion_smul_right_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDiffAt f x)
+    (hX : MDiffAt (T% Y) x) :
     torsion cov X (f • Y) x = f x • torsion cov X Y x := by
   rw [torsion_antisymm, Pi.neg_apply, torsion_smul_left_apply X hf hX, torsion_antisymm X]
   simp
 
 variable (X) in
-lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDifferentiable% f)
-    (hY : MDifferentiable% (T% Y)) :
+lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) :
     torsion cov X (f • Y) = f • torsion cov X Y := by
   ext x
   apply cov.torsion_smul_right_apply _ (hf x) (hY x)
@@ -1054,8 +1049,8 @@ the value of `torsion cov X Y` at `x₀` depends only on `X x₀` and `Y x₀`. 
 def torsion_tensorial [T2Space M] [IsManifold I ∞ M]
     [FiniteDimensional ℝ F] [ContMDiffVectorBundle 1 F V I]
     {X X' Y Y' : Π x : M, TangentSpace I x} {x₀ : M}
-    (hX : MDifferentiableAt% (T% X) x₀) (hX' : MDifferentiableAt% (T% X') x₀)
-    (hY : MDifferentiableAt% (T% Y) x₀) (hY' : MDifferentiableAt% (T% Y') x₀)
+    (hX : MDiffAt (T% X) x₀) (hX' : MDiffAt (T% X') x₀)
+    (hY : MDiffAt (T% Y) x₀) (hY' : MDiffAt (T% Y') x₀)
     (hXX' : X x₀ = X' x₀) (hYY' : Y x₀ = Y' x₀) :
     (torsion cov X Y) x₀ = (torsion cov X' Y') x₀ := by
   apply tensoriality_criterion₂ I E (TangentSpace I) E (TangentSpace I) hX hX' hY hY' hXX' hYY'
@@ -1073,7 +1068,6 @@ variable (cov) in
 def IsTorsionFree : Prop := torsion cov = 0
 
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
-
 
 -- This should be obvious, I'm doing something wrong.
 lemma isTorsionFree_iff : IsTorsionFree cov ↔
