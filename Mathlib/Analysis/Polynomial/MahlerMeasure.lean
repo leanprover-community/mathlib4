@@ -61,7 +61,7 @@ theorem logMahlerMeasure_monomial (n : ℕ) (z : ℂ) : (monomial n z).logMahler
 and `0` otherwise -/
 noncomputable def MahlerMeasure (p : ℂ[X]) := if p ≠ 0 then exp (p.logMahlerMeasure) else 0
 
-theorem mahlerMeasure_def_of_ne_zero {p : ℂ[X]} (hp : p ≠ 0): p.MahlerMeasure =
+theorem mahlerMeasure_def_of_ne_zero {p : ℂ[X]} (hp : p ≠ 0) : p.MahlerMeasure =
     exp ((2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖p.eval (circleMap 0 1 x)‖) :=
   by simp [MahlerMeasure, hp, logMahlerMeasure_def]
 
