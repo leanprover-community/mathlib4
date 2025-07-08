@@ -299,8 +299,8 @@ theorem exists_section (hf : IsLocalHomeomorph f) (x : X) :
   exact ⟨U, hU, s, hs, y.2, rfl⟩
 
 open TopologicalSpace in
-/-- Ranges of continuous local sections of a local homeomorphism
-form a basis of the source space. -/
+/-- Ranges of continuous local sections of a local homeomorphism form a basis of
+the source space. See `isOpen_injOn_tfae` for more characterizations of sets in the basis. -/
 theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
