@@ -118,6 +118,7 @@ lemma associatedPrimes_isLocalizedModule_eq_preimage_comap_associatedPrimes [IsN
     fun h ↦ comap_mem_associatePrimes_of_mem_associatedPrimes_isLocalizedModule_and_fg S f p h
     ((isNoetherianRing_iff_ideal_fg R).mp ‹_› _)⟩
 
+variable (R M) in
 lemma minimalPrimes_annihilator_mem_associatedPrimes [IsNoetherianRing R] [Module.Finite R M] :
     (Module.annihilator R M).minimalPrimes ⊆ associatedPrimes R M := by
   intro p hp
