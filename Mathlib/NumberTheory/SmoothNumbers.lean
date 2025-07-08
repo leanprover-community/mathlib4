@@ -289,6 +289,9 @@ lemma smoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
   simp_rw [mem_factoredNumbers'] at hm ⊢
   exact fun p hp hp' ↦ mem_primesBelow.mpr ⟨Finset.mem_range.mp <| hm p hp hp', hp⟩
 
+@[deprecated (since := "2025-07-08")]
+alias smmoothNumbers_eq_factoredNumbers_primesBelow := smoothNumbers_eq_factoredNumbers_primesBelow
+
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
   inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n}
