@@ -187,7 +187,7 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
 variable [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
 
 variable (X Y Z Z') in
-lemma rhs_aux_addZ (hY : MDiff Y) (hZ : MDiff Z) (hZ' : MDiff Z') :
+lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
   rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
   have hZ : MDiff ⟪Y, Z⟫ := sorry -- use C^n metric and hY, hZ and hZ'
   have hZ' : MDiff ⟪Y, Z'⟫ := sorry
@@ -202,7 +202,7 @@ lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z
   simp [rhs_aux]
 
 variable (X Y Y' Z) in
-lemma rhs_aux_addY (hY : MDiff Y) (hY' : MDiff Y') (hZ : MDiff Z) :
+lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
     rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
   ext x
   simp only [rhs_aux]
