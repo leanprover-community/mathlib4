@@ -475,9 +475,3 @@ def barResolution.extIso (V : Rep k G) (n : ℕ) :
   (barResolution k G).isoExt n V
 
 end Rep
-<<<<<<< HEAD
-========
-deprecated_module (since := "2025-06-14")
->>>>>>>> 7fbffbbebf1229db6873883f50959f116569dc37:Mathlib/RepresentationTheory/GroupCohomology/Resolution.lean
-=======
->>>>>>> 7fbffbbebf1229db6873883f50959f116569dc37

@@ -226,11 +226,3 @@ lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
     Limits.IsZero (groupCohomology A (n + 1)) :=
   (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
-<<<<<<< HEAD
-========
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
-
-deprecated_module (since := "2025-06-14")
->>>>>>>> 7fbffbbebf1229db6873883f50959f116569dc37:Mathlib/RepresentationTheory/GroupCohomology/Basic.lean
-=======
->>>>>>> 7fbffbbebf1229db6873883f50959f116569dc37
