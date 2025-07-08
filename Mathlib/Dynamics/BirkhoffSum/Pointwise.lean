@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis, Oliver Butterley
 -/
 import Mathlib.Algebra.Order.AddGroup.PartialSups
-import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
@@ -22,7 +22,7 @@ import Mathlib.Topology.Separation.CompletelyRegular
 
 ## Main statements
 
-* `___`
+* `ae_tendsTo_birkhoffAverage_condExp`: time average coincides with conditional expectation
 
 -/
 
@@ -46,6 +46,8 @@ lemma birkhoffMax_succ {f : α → α} {φ n x} :
   simp [Function.comp_apply, ← Pi.partialSups_apply]
   rfl
 
+/-- The difference between the maximum of `birkhoffSum f φ i` for `i` ranging from `1` to `n + 1`
+and the maximum of the same quantity for `i` ranging from `2` to `n + 2`. -/
 abbrev birkhoffMaxDiff (f : α → α) (φ : α → ℝ) (n : ℕ) (x : α) :=
   birkhoffMax f φ (n + 1) x - birkhoffMax f φ n (f x)
 
@@ -78,16 +80,15 @@ section DivergentSet
 
 open MeasureTheory Measure MeasurableSpace Filter Topology
 
-variable {α : Type*} -- [msα : MeasurableSpace α] (μ : Measure α := by volume_tac)
+variable {α : Type*}
 
 /-- The supremum of `birkhoffSum f φ (n + 1) x` over `n : ℕ`. -/
 noncomputable def birkhoffSup (f : α → α) (φ : α → ℝ) (x : α) : EReal :=
   iSup fun n ↦ ↑(birkhoffSum f φ (n + 1) x)
 
 lemma birkhoffSup_measurable [MeasurableSpace α] {f : α → α} (hf : Measurable f) {φ : α → ℝ}
-    (hφ : Measurable φ) :
-    Measurable (birkhoffSup f φ) := Measurable.iSup
-  (fun _ ↦ Measurable.coe_real_ereal (birkhoffSum_measurable hf hφ))
+    (hφ : Measurable φ) : Measurable (birkhoffSup f φ) :=
+  Measurable.iSup (fun _ ↦ Measurable.coe_real_ereal (birkhoffSum_measurable hf hφ))
 
 /-- The set of points `x` for which `birkhoffSup f φ x = ⊤`. -/
 def divergentSet (f : α → α) (φ : α → ℝ) : Set α := (birkhoffSup f φ)⁻¹' {⊤}
@@ -105,27 +106,22 @@ lemma divergentSet_invariant {f : α → α} {x φ}:
     | coe a => ?_
   case mp =>
     obtain ⟨N, hN⟩ := hx (- φ x + a) (EReal.coe_lt_top _)
-    norm_cast at *
-    rw [neg_add_lt_iff_lt_add, ← birkhoffSum_succ'] at hN
     use N + 1
-  case mpr =>
-    obtain ⟨N, hN⟩ :=  hx (φ x + a) (EReal.coe_lt_top _)
     norm_cast at *
-    conv =>
-      congr
-      intro i
-      rw [← add_lt_add_iff_left (φ x), ← birkhoffSum_succ']
+    rwa [neg_add_lt_iff_lt_add, ← birkhoffSum_succ'] at hN
+  case mpr =>
+    suffices ∃ i, φ x + a < birkhoffSum f φ (i + 1 + 1) x by
+      norm_cast at *
+      obtain ⟨i, hi⟩ := this
+      exact ⟨i, by rwa [← add_lt_add_iff_left (φ x), ← birkhoffSum_succ']⟩
+    obtain ⟨N, hN⟩ := hx (φ x + a) (EReal.coe_lt_top _)
     match N with
     | 0 =>
-      obtain ⟨N, hNN⟩ := hx ↑ (birkhoffSum f φ 1 x) (EReal.coe_lt_top _)
-      match N with
-      | 0 =>
-        exfalso; exact (lt_self_iff_false _).mp hNN
-      | N + 1 =>
-        use N
-        norm_cast at hNN
-        exact lt_trans hN hNN
-    | N + 1 => use N
+      obtain ⟨M, hM⟩ := hx ↑(birkhoffSum f φ 1 x) (EReal.coe_lt_top _)
+      match M with
+      | 0 => simp_all
+      | N + 1 => exact ⟨N, lt_trans (EReal.coe_lt_coe_iff.mp hN) <| EReal.coe_lt_coe_iff.mp hM⟩
+    | N + 1 => exact ⟨N, EReal.coe_lt_coe_iff.mp hN⟩
 
 lemma divergentSet_measurable
     {f : α → α} [MeasurableSpace α] (hf : Measurable f) {φ : α → ℝ} (hφ : Measurable φ) :
@@ -157,6 +153,7 @@ lemma birkhoffMaxDiff_tendsto_of_mem_divergentSet {f : α → α} {x φ} (hx : x
   obtain ⟨N, hN⟩ := tendsto_atTop_atTop.mp (birkhoffMax_tendsto_top_mem_divergentSet hx') 0
   exact tendsto_atTop_of_eventually_const (i₀ := N) fun i hi ↦ inf_of_le_left (hN i hi)
 
+/-- The filter of non-negative real numbers. -/
 abbrev nonneg : Filter ℝ := ⨅ ε > 0, 𝓟 (Set.Iio ε)
 
 lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x φ}
@@ -244,11 +241,9 @@ lemma int_birkhoffMaxDiff_in_divergentSet_nonneg (hf : MeasurePreserving f μ μ
     0 ≤ ∫ x in divergentSet f φ, birkhoffMaxDiff f φ n x ∂μ := by
   unfold birkhoffMaxDiff
   have : (μ.restrict (divergentSet f φ)).map f = μ.restrict (divergentSet f φ) := by
-    nth_rw 1 [
-      ← (divergentSet_mem_invalg hf.measurable hφ').2,
+    nth_rw 1 [← (divergentSet_mem_invalg hf.measurable hφ').2,
       ← μ.restrict_map hf.measurable (divergentSet_measurable hf.measurable hφ'),
-      hf.map_eq
-    ]
+      hf.map_eq]
   have mi {n : ℕ} := birkhoffMax_integrable μ hf hφ (n := n)
   have mm {n : ℕ} := birkhoffMax_measurable hf.measurable hφ' (n := n)
   rw [integral_sub, sub_nonneg]
@@ -265,7 +260,6 @@ lemma int_in_divergentSet_nonneg (hf : MeasurePreserving f μ μ)
     (int_birkhoffMaxDiff_in_divergentSet_tendsto μ hf hφ hφ')
     (fun _ ↦ int_birkhoffMaxDiff_in_divergentSet_nonneg μ hf hφ hφ')
 
-/- these seem to be missing? -/
 omit [MeasurableSpace α] in
 lemma nullMeasurableSpace_le [msα : MeasurableSpace α] {μ : Measure α} :
     msα ≤ NullMeasurableSpace.instMeasurableSpace (α := α) (μ := μ) :=
@@ -289,7 +283,7 @@ lemma divergentSet_zero_meas_of_condexp_neg [hμ : IsProbabilityMeasure μ]
         exact Eventually.ne_of_lt pos
       · apply measurableSet_support _
         apply (stronglyMeasurable_condExp).measurable.neg.le _
-        exact (le_trans (invariants_le f) nullMeasurableSpace_le)
+        refine (le_trans (invariants_le f) nullMeasurableSpace_le)
     · exact ae_le_of_ae_lt pos
     · exact integrable_condExp.restrict.neg
   exact this.not_ge (int_in_divergentSet_nonneg μ hf hφ hφ')
@@ -322,15 +316,16 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
   have ψ_measurable : Measurable ψ := by
     suffices Measurable (μ[φ|invariants f]) by measurability
     exact stronglyMeasurable_condExp.measurable.le (invariants_le f)
-  -- It follows from the definition of `ψ` that `ψ` is a.e. equal to `-ε`.
+  -- It follows from the definition of `ψ` that it is a.e. equal to `-ε`.
   have condexpψ_const : μ[ψ|invariants f] =ᵐ[μ] - fun _ ↦ ε := calc
-    μ[ψ|invariants f]
-    _ =ᵐ[μ] _ - _ := condExp_sub hφ (integrable_condExp.add (integrable_const _)) _
-    _ =ᵐ[μ] _ - (_ + _) := (condExp_add integrable_condExp (integrable_const _) _).neg.add_left
-    _ =ᵐ[μ] _ - (_ + _) := (condExp_condExp_of_le (le_of_eq rfl)
-                            (invariants_le f)).add_right.neg.add_left
+    _ =ᵐ[μ] μ[φ|invariants f] - μ[μ[φ|invariants f] + fun _ ↦ ε|invariants f] :=
+      condExp_sub hφ (integrable_condExp.add (integrable_const _)) _
+    _ =ᵐ[μ] μ[φ|invariants f] - (μ[μ[φ|invariants f]|invariants f] + μ[fun _ ↦ ε|invariants f]) :=
+      (condExp_add integrable_condExp (integrable_const _) _).neg.add_left
+    _ =ᵐ[μ] μ[φ|invariants f] - (μ[φ|invariants f] + μ[fun _ ↦ ε|invariants f]) :=
+      (condExp_condExp_of_le (le_of_eq rfl) (invariants_le f)).add_right.neg.add_left
     _ = - μ[fun _ ↦ ε|invariants f] := by simp
-    _ = - fun _ ↦ ε := by rw [condExp_const (invariants_le f)]
+    _ = - fun _ ↦ ε := by rw [condExp_const <| invariants_le f]
   -- For typical points the time average of `ψ` is eventually non-negative.
   have limsup_nonpos : ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f ψ · x) atTop nonneg := by
     suffices ∀ᵐ x ∂μ, μ[ψ|invariants f] x < 0 from
@@ -372,24 +367,20 @@ private lemma ae_tendsTo_birkhoffAverage_condExp_aux
     obtain ⟨n₁, hn₁⟩ := hx₁ δ hδ
     obtain ⟨n₂, hn₂⟩ := hx₂ δ hδ
     simp_rw [δ] at hn₁ hn₂ ⊢
-    use (max n₁ n₂)
-    intro m hm
-    apply abs_lt.mpr
-    constructor
+    refine ⟨max n₁ n₂, fun m hm ↦ abs_lt.mpr ⟨?_, ?_⟩⟩
     · specialize hn₂ m (le_of_max_le_right hm)
       rw [hx₃, birkhoffAverage_neg] at hn₂
       norm_num at hn₂
       linarith
     · specialize hn₁ m (le_of_max_le_left hm)
       linarith
-  refine this.mono fun x hx => Metric.tendsto_atTop.mpr fun ε hε => ?_
+  refine this.mono fun x hx ↦ Metric.tendsto_atTop.mpr fun ε hε ↦ ?_
   obtain ⟨k, hk⟩ := Archimedean.arch 1 hε
   have hk' : 1 < (k + 1) • ε :=
     hk.trans_lt <| smul_lt_smul_of_pos_right (lt_add_one k) hε
   simp only [eventually_atTop, ge_iff_le, Subtype.forall, gt_iff_lt] at hx
   obtain ⟨N, hN⟩ := hx k.succ (Nat.zero_lt_succ k)
-  use N
-  intro n hn
+  refine ⟨N, fun n hn ↦ ?_⟩
   apply (hN n hn).trans
   rw [inv_lt_iff_one_lt_mul₀ (Nat.cast_pos.mpr k.succ_pos)]
   norm_num at hk' ⊢
