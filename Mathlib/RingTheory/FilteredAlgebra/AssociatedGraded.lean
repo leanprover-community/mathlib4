@@ -96,7 +96,6 @@ theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPie
 
 section support
 
-@[simp]
 theorem support_of (i : ι) (x : GradedPiece F F_lt i) (h : x ≠ 0)
     [(i : ι) → (x : GradedPiece F F_lt i) → Decidable (x ≠ 0)] : (of x).support = {i} :=
   DirectSum.support_of i x h
@@ -311,13 +310,12 @@ lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : ofCla
       rw [← mul_sub, sub_eq_neg_add, succ_nsmul i d]
       exact hasGMul.mul_F_lt_mem (Filtration.pow_mem F F_lt d x₁) h
     have mem2 : x₂.1 ^ d * x₂.1 - x₁.1 ^ d * x₂.1 ∈ F_lt ((d + 1) • i) := by
-      rw [← sub_mul, sub_eq_neg_add]
-      simp only [← sub_mul, sub_eq_neg_add, succ_nsmul i d]
+      rw [← sub_mul, sub_eq_neg_add, succ_nsmul i d]
       exact hasGMul.F_lt_mul_mem hd x₂.2
-    show -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 ∈ (F_lt ((d + 1) • i))
     have : -(x₁.1 ^ d * x₁.1) + x₂.1 ^ d * x₂.1 =
       x₁.1 ^ d * x₂.1 - x₁.1 ^ d * x₁.1 + (x₂.1 ^ d * x₂.1 - x₁.1 ^ d * x₂.1) := by abel
-    simpa only [this] using add_mem mem1 mem2
+    have mem := add_mem mem1 mem2
+    rwa [← this] at mem
 
 /-- The graded nat power between graded pieces. -/
 def GradedPiece.gnpow [hasGMul F F_lt] (n : ℕ) {i : ι} :
@@ -397,8 +395,8 @@ lemma GradedPiece.natCast_zero [IsRingFiltration F F_lt] :
 lemma GradedPiece.natCast_succ [IsRingFiltration F F_lt] (n : ℕ) :
     (natCast F F_lt n.succ : GradedPiece F F_lt 0) =
     (natCast F F_lt n : GradedPiece F F_lt 0) + 1 := by
-  show mk F F_lt (n.succ • (1 : F 0)) = mk F F_lt ((n • (1 : F 0)) + (1 : F 0))
-  simp [succ_nsmul]
+  simp only [natCast, Nat.succ_eq_add_one, succ_nsmul, map_add, map_nsmul, add_right_inj]
+  rfl
 
 instance [hasGMul F F_lt] : DirectSum.GSemiring (GradedPiece F F_lt) :=
 { GradedMul.instGMonoidGradedPieceOfHasGMul F F_lt with
@@ -416,14 +414,11 @@ def GradedPiece.intCast [IsRingFiltration F F_lt] (n : ℤ) : GradedPiece F F_lt
 
 lemma GradedPiece.intCast_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
     intCast F F_lt n = natCast F F_lt n := by
-  show mk F F_lt ((n : ℤ) • (1 : F 0)) = mk F F_lt (n • (1 : F 0))
-  simp
+  simp [intCast, natCast]
 
 lemma GradedPiece.intCast_negSucc_ofNat [IsRingFiltration F F_lt] (n : ℕ) :
     intCast F F_lt (Int.negSucc n) = - (natCast F F_lt (n + 1)) := by
-  show mk F F_lt ((Int.negSucc n) • (1 : F 0)) = - mk F F_lt ((n + 1) • (1 : F 0))
-  simp only [negSucc_zsmul, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, mk_eq]
-  rfl
+  simp [intCast, natCast, negSucc_zsmul]
 
 instance [hasGMul F F_lt] : DirectSum.GRing (GradedPiece F F_lt) where
   intCast := GradedPiece.intCast F F_lt
