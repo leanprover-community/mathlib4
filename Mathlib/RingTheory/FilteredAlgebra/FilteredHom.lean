@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 HuanYu Zheng, Yi Yuan, Weichen Jiao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: HuanYu Zheng, Yi Yuan, Weichen Jiao
+Authors: HuanYu Zheng, Yi Yuan, Weichen Jiao, Nailin Guan
 -/
 import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
 import Mathlib.Algebra.Ring.Hom.Defs
@@ -61,7 +61,7 @@ class FilteredHomClass (F : Type*) {A B α β ι : Type*} [FunLike F A B]
 
 end
 
-variable {ι A B C α β γ: Type*} [SetLike α A] [SetLike β B] [SetLike γ C]
+variable {ι A B C α β γ : Type*} [SetLike α A] [SetLike β B] [SetLike γ C]
 
 variable (FA : ι → α) (FA_lt : outParam <| ι → α)
 variable (FB : ι → β) (FB_lt : outParam <| ι → β)
@@ -121,7 +121,7 @@ end
 
 section
 
-variable {ι A B C α β γ: Type*} [SetLike α A] [SetLike β B] [SetLike γ C]
+variable {ι A B C α β γ : Type*} [SetLike α A] [SetLike β B] [SetLike γ C]
 
 variable [AddCommGroup A] [AddCommGroup B] [AddCommGroup C]
 
@@ -160,7 +160,7 @@ def id : FilteredAddGroupHom FA FA_lt FA FA_lt where
   pieces_wise ha := ha
   pieces_wise_lt ha := ha
 
-variable  (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom FA FA_lt FB FB_lt)
+variable (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom FA FA_lt FB FB_lt)
 
 variable {FA FB FC FA_lt FB_lt FC_lt}
 
@@ -324,13 +324,13 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     (AssociatedGraded FR FR_lt) →+* (AssociatedGraded FS FS_lt) where
   __ := f.1.AssociatedGradedAddMonoidHom
   map_one' := by
-    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-    show (FilteredAddGroupHom.AssociatedGradedAddMonoidHom f.1)
+    have : (FilteredAddGroupHom.AssociatedGradedAddMonoidHom f.1)
       (AssociatedGraded.of (1 : GradedPiece FR FR_lt 0)) =
-      AssociatedGraded.of (1 : GradedPiece FS FS_lt 0)
-    rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
-    show AssociatedGraded.of ⟦(⟨f.toRingHom 1, _⟩ : FS 0)⟧ = AssociatedGraded.of ⟦⟨1, _⟩⟧
-    simp [RingHom.map_one f.toRingHom]
+      AssociatedGraded.of (1 : GradedPiece FS FS_lt 0) := by
+      rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
+      change AssociatedGraded.of ⟦(⟨f.toRingHom 1, _⟩ : FS 0)⟧ = AssociatedGraded.of ⟦⟨1, _⟩⟧
+      simp [RingHom.map_one f.toRingHom]
+    simpa
   map_mul' a b := DirectSum.induction_on a (by simp)
     (DirectSum.induction_on b (by simp)
       (fun j y' i x' ↦ by
