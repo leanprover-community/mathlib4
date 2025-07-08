@@ -677,7 +677,10 @@ def LeftExtension.isUniversalOfPrecomp₂
           apply hα.hom_ext
           ext t
           have := congr_app u.w t
-          simp at this
+          simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
+            whiskeringLeft_obj_obj, comp_obj, StructuredArrow.left_eq_id,
+            const_obj_map, id_comp, precomp₂_obj_hom_app, whiskeringLeft_obj_map,
+            NatTrans.comp_app, whiskerLeft_app, assoc] at this
           simp [this])⟩, ?_⟩
     intro a
     dsimp
@@ -686,7 +689,10 @@ def LeftExtension.isUniversalOfPrecomp₂
     ext t
     have := congr_app u.w t
     have a_w := a.w
-    simp at this a_w
+    simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
+      whiskeringLeft_obj_obj, comp_obj, StructuredArrow.left_eq_id,
+      const_obj_map, id_comp, precomp₂_obj_hom_app, whiskeringLeft_obj_map,
+      NatTrans.comp_app, whiskerLeft_app, assoc] at this a_w
     simp [← this, a_w]
   apply IsInitial.ofUnique
 
