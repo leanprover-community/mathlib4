@@ -66,6 +66,8 @@ lemma pathELength_eq_lintegral_mfderiv_Ioo :
 
 lemma pathELength_eq_lintegral_mfderivWithin_Icc :
     pathELength I γ a b = ∫⁻ t in Icc a b, ‖mfderivWithin 𝓘(ℝ) I γ (Icc a b) t 1‖ₑ := by
+  -- we use that the endpoints have measure 0 to rewrite on `Ioo a b`, where `mfderiv` and
+  -- `mfderivWithin` coincide.
   rw [pathELength_eq_lintegral_mfderiv_Icc, ← restrict_Ioo_eq_restrict_Icc]
   apply setLIntegral_congr_fun measurableSet_Ioo (fun t ht ↦ ?_)
   rw [mfderivWithin_of_mem_nhds]
@@ -88,8 +90,7 @@ lemma pathELength_congr (h : EqOn γ γ' (Icc a b)) : pathELength I γ a b = pat
 
 lemma pathELength_mono (h : a' ≤ a) (h' : b ≤ b') :
     pathELength I γ a b ≤ pathELength I γ a' b' := by
-  simp only [pathELength_eq_lintegral_mfderiv_Icc]
-  exact lintegral_mono_set (Icc_subset_Icc h h')
+  simpa [pathELength_eq_lintegral_mfderiv_Icc] using lintegral_mono_set (Icc_subset_Icc h h')
 
 lemma pathELength_add (h : a ≤ b) (h' : b ≤ c) :
     pathELength I γ a b + pathELength I γ b c = pathELength I γ a c := by
@@ -108,7 +109,7 @@ lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {a b : ℝ}
   simp_rw [← mfderivWithin_comp_projIcc_one]
   have : MeasurePreserving (Subtype.val : Icc a b → ℝ) volume
     (volume.restrict (Icc a b)) := measurePreserving_subtype_coe measurableSet_Icc
-  rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this
+  rw [← MeasurePreserving.lintegral_comp_emb this
     (MeasurableEmbedding.subtype_coe measurableSet_Icc)]
   congr
   ext t
