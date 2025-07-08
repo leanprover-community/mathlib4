@@ -58,17 +58,20 @@ def isLocallyGerm : LocalPredicate fun x ↦ F.stalk x :=
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
-theorem isStalkSurj_isGerm (x : X) : IsStalkSurj (Sheafify.isGerm F).pred x := fun t ↦ by
+theorem isStalkSurj_isGerm (x : X) : IsStalkSurj (isGerm F).pred x := fun t ↦ by
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist x t
   exact ⟨⟨U, m⟩, fun y ↦ F.germ _ _ y.2 s, ⟨s, fun _ ↦ rfl⟩, rfl⟩
 
-theorem isStalkInj_isGerm (x : X) : IsStalkInj (Sheafify.isGerm F).pred x := by
+theorem isStalkInj_isGerm (x : X) : IsStalkInj (isGerm F).pred x := by
   intro U V sU sV ⟨gU, mU⟩ ⟨gV, mV⟩ e
   have := (mU _).symm.trans (e.trans (mV _))
   have ⟨W, mW, iU, iV, e⟩ := F.germ_eq x _ _ gU gV this
   refine ⟨⟨W, mW⟩, iU, iV, fun w ↦ (mU _).trans (.trans ?_ <| .symm <| mV _)⟩
   exact (congr_fun (F.germ_res iU w w.2) gU).symm.trans (congr_arg (F.germ W w w.2) e)
     |>.trans (congr_fun (F.germ_res iV w w.2) gV)
+
+theorem adjunction {G : X → Type*} (P : Π ⦃U : Opens X⦄, (Π x : U, G x) → Prop) :
+    {f : Π x, F.stalk x → G x // (isGerm F).pred ≤ Pullback f P} ≃ _
 
 end Sheafify
 

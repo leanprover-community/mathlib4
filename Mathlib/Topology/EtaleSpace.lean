@@ -3,6 +3,7 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.Topology.Covering
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.Sheaves.LocalPredicate
 
@@ -76,9 +77,9 @@ is simply the `Sigma` type. -/
 @[nolint unusedArguments]
 def EtaleSpace (P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) : Type _ := Σ b, F b
 
-namespace EtaleSpace
-
 variable {P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop}
+
+namespace EtaleSpace
 
 /-- Constructor for points in the étale space. -/
 @[simps] def mk {b : B} (x : F b) : EtaleSpace P := ⟨b, x⟩
@@ -136,15 +137,15 @@ theorem isOpenEmbedding_restrict_proj :
     IsOpenEmbedding ((range (mk <| s ·)).restrict (proj P)) :=
   U.2.isOpenEmbedding_subtypeVal.comp (homeomorphRangeSection hs).symm.isOpenEmbedding
 
-theorem isOpen_range_section (inj : ∀ b, IsStalkInj P b) :
+theorem isOpen_range_section (inj : ∀ b ∈ U, IsStalkInj P b) :
     IsOpen (range fun b ↦ (mk (s b) : EtaleSpace P)) :=
   isOpen_iff.mpr fun V t ht ↦ isOpen_iff_mem_nhds.mpr fun ⟨v, hv⟩ ⟨⟨u, hu⟩, he⟩ ↦ by
     cases congr($he.1)
-    have ⟨W, iU, iV, eq⟩ := inj v ⟨U, hu⟩ ⟨V, hv⟩ _ _ hs ht congr($he.2)
+    have ⟨W, iU, iV, eq⟩ := inj v hu ⟨U, hu⟩ ⟨V, hv⟩ _ _ hs ht congr($he.2)
     exact Filter.mem_of_superset ((W.1.2.preimage continuous_subtype_val).mem_nhds W.2)
       fun v hv ↦ ⟨⟨v, iU.le hv⟩, congr(mk $(eq ⟨v, hv⟩))⟩
 
-theorem isOpenEmbedding_section (inj : ∀ b, IsStalkInj P b) :
+theorem isOpenEmbedding_section (inj : ∀ b ∈ U, IsStalkInj P b) :
     IsOpenEmbedding fun b ↦ (mk (s b) : EtaleSpace P) := by
   rw [isOpenEmbedding_iff, isEmbedding_iff, and_assoc]
   exact ⟨.of_comp (continuous_section hs) (proj _).continuous .subtypeVal,
@@ -159,7 +160,8 @@ include inj surj
 
 theorem isLocalHomeomorph_proj : IsLocalHomeomorph (proj P) :=
   isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun x ↦ have ⟨_U, _s, hs, eq⟩ := surj _ x.2
-    ⟨_, (isOpen_range_section hs inj).mem_nhds ⟨_, congr(mk $eq)⟩, isOpenEmbedding_restrict_proj hs⟩
+    ⟨_, (isOpen_range_section hs fun _ _ ↦ inj _).mem_nhds ⟨_, congr(mk $eq)⟩,
+      isOpenEmbedding_restrict_proj hs⟩
 
 theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace P} :
     Continuous f ↔ Continuous (proj _ ∘ f) ∧ ∀ x, ∃ (U : OpenNhds (f x).1) (s : Π b : U.1, F b),
@@ -167,7 +169,7 @@ theorem continuous_cod_iff {X} [TopologicalSpace X] {f : X → EtaleSpace P} :
   refine ⟨fun h ↦ ⟨(proj _).continuous.comp h, fun x ↦ ?_⟩,
     fun ⟨cont, eq⟩ ↦ continuous_iff_continuousAt.mpr fun x ↦ ?_⟩
   · have ⟨U, s, hs, eq⟩ := surj _ (f x).2
-    refine ⟨U, s, hs, _, ((isOpen_range_section hs inj).preimage h).mem_nhds <|
+    refine ⟨U, s, hs, _, ((isOpen_range_section hs fun _ _ ↦ inj _).preimage h).mem_nhds <|
       by exact ⟨_, congr(mk $eq)⟩, fun x hx ⟨b, eq⟩ ↦ ?_⟩
     set y := f x with hy; clear_value y
     have : s ⟨y.1, hx⟩ = y.2 := by cases eq; rfl
@@ -228,10 +230,26 @@ theorem isTopologicalBasis {P : PrelocalPredicate F}
 
 end Section
 
+theorem isSeparatedMap_proj (sep : ∀ b, IsSeparated P b) (inj : ∀ b, IsStalkInj P b) :
+    IsSeparatedMap (proj P) :=
+  fun x y eq ne ↦ by
+    have ⟨U, s, t, hs, ht, hsx, hty, ne⟩ := sep (proj P x) x.2 (eq ▸ y.2)
+      fun eq2 ↦ ne <| Sigma.ext eq (by simp [eq2])
+    refine ⟨_, _, isOpen_range_section hs fun _ _ ↦ inj _, isOpen_range_section ht fun _ _ ↦ inj _,
+      ⟨_, congr(mk $hsx)⟩, ⟨_, congr(mk $hty).trans <| Sigma.ext eq <| by simp⟩,
+      Set.disjoint_iff_forall_ne.mpr ?_⟩
+    rintro _ ⟨b, rfl⟩ _ ⟨b', rfl⟩ eq
+    cases Subtype.ext congr(proj P $eq)
+    exact ne b congr($eq.2)
+
+end EtaleSpace
+
+open EtaleSpace
+
 namespace TrivializationOn
 
 variable {U : Opens B} {ι : Type*} [TopologicalSpace ι] [DiscreteTopology ι]
-variable (t : TrivializationOn P U ι) (inj : ∀ b, IsStalkInj P b)
+variable (t : TrivializationOn P U ι) (inj : ∀ b ∈ U, IsStalkInj P b)
 
 /-- The étale space of a set of sections with a trivialization on `U` evenly covers `U` via
 the projection map. -/
@@ -243,22 +261,28 @@ noncomputable def homeomorph : proj P ⁻¹' U ≃ₜ U × ι where
   continuous_invFun := continuous_prod_of_discrete_right.mpr
     fun i ↦ (continuous_section (t.pred i)).subtype_mk _
 
--- TODO: IsEvenlyCovered and IsCoveringMap(On) once the definitions are fixed (#24983)
+include t inj in
+theorem isEvenlyCovered {b : B} (hb : b ∈ U) : IsEvenlyCovered (proj P) b ι :=
+  ⟨‹_›, U, hb, U.2, U.2.preimage (proj P).continuous, t.homeomorph inj, fun _ ↦ rfl⟩
+
+include t inj in
+theorem isCoveringMapOn : IsCoveringMapOn (proj P) U :=
+  fun _b hb ↦ (t.isEvenlyCovered inj hb).to_isEvenlyCovered_preimage
 
 end TrivializationOn
 
-theorem isSeparatedMap_proj (sep : ∀ b, IsSeparated P b) (inj : ∀ b, IsStalkInj P b) :
-    IsSeparatedMap (proj P) :=
-  fun x y eq ne ↦ by
-    have ⟨U, s, t, hs, ht, hsx, hty, ne⟩ := sep (proj P x) x.2 (eq ▸ y.2)
-      fun eq2 ↦ ne <| Sigma.ext eq (by simp [eq2])
-    refine ⟨_, _, isOpen_range_section hs inj, isOpen_range_section ht inj, ⟨_, congr(mk $hsx)⟩,
-      ⟨_, congr(mk $hty).trans <| Sigma.ext eq <| by simp⟩, Set.disjoint_iff_forall_ne.mpr ?_⟩
-    rintro _ ⟨b, rfl⟩ _ ⟨b', rfl⟩ eq
-    cases Subtype.ext congr(proj P $eq)
-    exact ne b congr($eq.2)
+theorem IsLocallyConstant.isEvenlyCovered {b : B} (h : IsLocallyConstant P b) :
+    IsEvenlyCovered (proj P) b (F b) :=
+  have ⟨U, _, hU⟩ := h ⊤
+  let _ : TopologicalSpace (F (⟨b, U.2⟩ : U.1)) := ⊥
+  have := discreteTopology_bot
+  have := (hU.trivializationOn (b := ⟨b, U.2⟩)).isEvenlyCovered
+  _
 
-end EtaleSpace
+theorem isCoveringMap_of_isLocallyConstant (h : ∀ b, IsLocallyConstant P b) :
+    IsCoveringMap (proj P) :=
+  fun x ↦ have ⟨U, hU⟩ := h x ⊤
+    _
 
 end TopCat
 

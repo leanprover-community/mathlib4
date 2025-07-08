@@ -249,7 +249,7 @@ def monodromy (b b' : U) : F b ≃ F b' where
 
 include h in
 /-- The trivialization induced by a set of sections constant on `U`. -/
-def trivializationOn : TrivializationOn P U (F b) where
+def trivializationOn (b : U) : TrivializationOn P U (F b) where
   sec := h.sec
   pred := h.pred_sec
   bijective _ := (h.monodromy ..).bijective
