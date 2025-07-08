@@ -8,10 +8,8 @@ import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Order.PartialSups
 
 /-!
-# `PartialSups` in an `AddGroup`
+# `PartialSups` of functions taking values in an `AddGroup`
 -/
-
-open Finset
 
 variable {α ι : Type*}
 
