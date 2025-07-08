@@ -967,11 +967,11 @@ theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f
   h.comp₂ (· * ·) h'
 
 @[to_additive]
-lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β}  (h : f₁ =ᶠ[l] f₂) :
+lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
     f₃ * f₁ =ᶠ[l] f₃ * f₂ := EventuallyEq.mul (by rfl) h
 
 @[to_additive]
-lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β}  (h : f₁ =ᶠ[l] f₂) :
+lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
     f₁ * f₃ =ᶠ[l] f₂ * f₃ := EventuallyEq.mul h (by rfl)
 
 @[to_additive const_smul]

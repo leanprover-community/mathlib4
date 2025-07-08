@@ -189,4 +189,13 @@ instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [ValuativeTopol
     Valued R (ValueGroupWithZero R) :=
   .mk (valuation R) ValuativeTopology.mem_nhds_iff
 
+@[inherit_doc]
+scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
+
+@[inherit_doc]
+scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal 𝒪[K]
+
+@[inherit_doc]
+scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField 𝒪[K]
+
 end ValuativeRel
