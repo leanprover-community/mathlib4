@@ -96,7 +96,6 @@ theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPie
 
 section support
 
-@[simp]
 theorem support_of (i : ι) (x : GradedPiece F F_lt i) (h : x ≠ 0)
     [(i : ι) → (x : GradedPiece F F_lt i) → Decidable (x ≠ 0)] : (of x).support = {i} :=
   DirectSum.support_of i x h
