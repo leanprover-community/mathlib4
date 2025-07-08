@@ -123,19 +123,18 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
     (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
 
 /-- A shorthand for the unit transformation exhibiting `(F ⊗ G).functor` as a
-left Kan extension of `F ⊠ G` along `tensor C`. -/
+left Kan extension of `F.functor ⊠ G.functor` along `tensor C`. -/
 abbrev η (F G : C ⊛⥤ V) :
     F.functor ⊠ G.functor ⟶ (tensor C) ⋙ (F ⊗ G).functor :=
   LawfulDayConvolutionMonoidalCategoryStruct.convolutionExtensionUnit
     C V F G
 
 open LawfulDayConvolutionMonoidalCategoryStruct in
-instance (F G : C ⊛⥤ V) : (F ⊗ G).functor.IsLeftKanExtension
-    (convolutionExtensionUnit C V F G) :=
+instance (F G : C ⊛⥤ V) : (F ⊗ G).functor.IsLeftKanExtension (η F G) :=
   (isPointwiseLeftKanExtensionConvolutionExtensionUnit F G).isLeftKanExtension
 
 open LawfulDayConvolutionMonoidalCategoryStruct in
-theorem hom_tensor_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
+theorem tensor_hom_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
     (h : ∀ (x y : C),
       (η F G).app (x, y) ≫ α.natTrans.app (x ⊗ y) =
       (η F G).app (x, y) ≫ β.natTrans.app (x ⊗ y)) :
@@ -145,6 +144,24 @@ theorem hom_tensor_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
     (F ⊗ G).functor (convolutionExtensionUnit C V F G) _|>.injective
   ext ⟨x, y⟩
   exact h x y
+
+/-- A natural transformation `F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor`
+defines a morphism `F ⨂ G ⟶ H`. -/
+def tensorDesc {F G H : C ⊛⥤ V}
+    (α : F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor) :
+    F ⊗ G ⟶ H :=
+  .mk <| (F ⊗ G).functor.descOfIsLeftKanExtension (η F G) H.functor α
+
+lemma η_comp_tensorDec {F G H : C ⊛⥤ V}
+    (α : F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor) :
+   (η F G) ≫ Functor.whiskerLeft _ (tensorDesc α).natTrans = α :=
+  Functor.descOfIsLeftKanExtension_fac _ _ _ _
+
+@[reassoc (attr := simp)]
+lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
+    (α : F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor) (x y : C) :
+   (η F G).app (x , y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
+  Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
 open LawfulDayConvolutionMonoidalCategoryStruct
 /-- An abstract isomorphism between `(F ⊗ G).functor` and the generic pointwise
@@ -180,6 +197,45 @@ lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
       (isoPointwiseLeftKanExtension F G).inv.app (x ⊗ y) =
     (η F G).app (x, y) := by
   simp [η, isoPointwiseLeftKanExtension]
+
+variable (C V) in
+/-- A shorthand for the canonical map `𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C)`
+that exhibits `(𝟙_ (C ⊛⥤ V)).functor` as a Day convolution unit. -/
+abbrev ν : 𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C) :=
+  LawfulDayConvolutionMonoidalCategoryStruct.unitUnit C V (C ⊛⥤ V)
+
+variable (C V) in
+/-- The reinterpretation of `ν` as a natural transformation. -/
+abbrev νNatTrans :
+    Functor.fromPUnit.{0} (𝟙_ V) ⟶
+      Functor.fromPUnit.{0} (𝟙_ C) ⋙ (𝟙_ (C ⊛⥤ V)).functor where
+  app _ := ν C V
+
+open LawfulDayConvolutionMonoidalCategoryStruct in
+instance : (𝟙_ (C ⊛⥤ V)).functor.IsLeftKanExtension (νNatTrans C V) :=
+  isPointwiseLeftKanExtensionUnitUnit C V (C ⊛⥤ V)|>.isLeftKanExtension
+
+lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
+    (h : ν C V ≫ α.natTrans.app (𝟙_ C) = ν C V ≫ β.natTrans.app (𝟙_ C)) :
+    α = β := by
+  ext1
+  apply Functor.hom_ext_of_isLeftKanExtension
+    (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
+  ext
+  exact h
+
+/-- Given `F : C ⊛⥤ V`, a morphism `𝟙_ V ⟶ F.functor.obj (𝟙_ C)` induces a
+(unique) morphism `𝟙_ (C ⊛⥤ V) ⟶ F`. -/
+def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
+    𝟙_ (C ⊛⥤ V) ⟶ F :=
+  .mk <| Functor.descOfIsLeftKanExtension (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
+    F.functor ({ app _ := φ })
+
+@[reassoc (attr := simp)]
+lemma ν_comp_unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
+    ν C V ≫ (unitDesc φ).natTrans.app (𝟙_ C) = φ :=
+  Functor.descOfIsLeftKanExtension_fac_app (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
+    F.functor ({ app _ := φ }) default
 
 end DayFunctor
 
