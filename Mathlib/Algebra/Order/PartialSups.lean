@@ -3,7 +3,6 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Order.PartialSups
 import Mathlib.Order.SuccPred.LinearLocallyFinite
@@ -31,14 +30,7 @@ lemma partialSups_succ' {α : Type*} [SemilatticeSup α] [LinearOrder ι] [Local
       ((partialSups (f ∘ Order.succ)) j ⊔ (f ∘ Order.succ) (Order.succ j)) := by simp
   simp [this, h, sup_assoc]
 
-lemma partialSups_const_add {α : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [Lattice α]
-    [AddGroup α] [CovariantClass α α (· + ·) (· ≤ ·)] (f : ι → α) (c : α) (i : ι) :
-    partialSups (c + f ·) i = c + partialSups f i := by
-  change (partialSups (OrderIso.addLeft c ∘ f)) i = _
-  rw [comp_partialSups f (OrderIso.addLeft c)]; rfl
-
-/-- See also `partialSups_add_one` for an alternative decomposition of
-`partialSups f (i + 1)`. -/
+/-- See `partialSups_add_one` for another decomposition of `partialSups f (i + 1)`. -/
 lemma partialSups_add_one' [Add ι] [One ι] [LinearOrder ι] [OrderBot ι] [LocallyFiniteOrder ι]
     [SuccAddOrder ι] (f : ι → α)  (i : ι) :
     partialSups f (i + 1) = f ⊥ ⊔ partialSups (f ∘ (fun k ↦ k + 1)) i := by
