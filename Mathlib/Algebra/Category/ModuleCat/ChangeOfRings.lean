@@ -836,13 +836,13 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
 lemma extendRestrictScalarsAdj_homEquiv_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
     {f : R →+* S} {M : ModuleCat.{max v u₂} R} {N : ModuleCat S}
-    (φ : (extendScalars f).obj M ⟶ N) (m : M):
+    (φ : (extendScalars f).obj M ⟶ N) (m : M) :
     (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ m) :=
   rfl
 
 lemma extendRestrictScalarsAdj_unit_app_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
-    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M):
+    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M) :
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
