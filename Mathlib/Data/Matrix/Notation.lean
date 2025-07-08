@@ -479,21 +479,18 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
   fin_cases i <;> fin_cases j
     <;> simp [Matrix.mul_apply, Fin.sum_univ_succ, ← add_assoc]
 
-@[simp]
 theorem vec1_eq_iff {a b : α} : ![a] = ![b] ↔ a = b := by
   simp
 
 theorem vec1_eq {a b : α} (h : a = b) : ![a] = ![b] :=
   vec1_eq_iff.2 h
 
-@[simp]
 theorem vec2_eq_iff {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] = ![b₀, b₁] ↔ a₀ = b₀ ∧ a₁ = b₁ := by
   simp
 
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] :=
   vec2_eq_iff.2 ⟨h₀, h₁⟩
 
-@[simp]
 theorem vec3_eq_iff {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
     ![a₀, a₁, a₂] = ![b₀, b₁, b₂] ↔ a₀ = b₀ ∧ a₁ = b₁ ∧ a₂ = b₂ := by
   simp
