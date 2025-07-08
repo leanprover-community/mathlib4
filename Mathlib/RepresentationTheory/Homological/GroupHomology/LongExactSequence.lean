@@ -140,7 +140,7 @@ theorem mem_cycles₁_of_comp_eq_d₂₁
     {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.hom x = d₂₁ X.X₂ y) :
     x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.2 <| by
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
-  simp_all [shortComplexH1, LinearMap.compLeft]
+  simp_all [shortComplexH1]
 
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
