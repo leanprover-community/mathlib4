@@ -47,14 +47,14 @@ variable (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E �
     (b : Basis ι ℝ F) {x : B} (hx : x ∈ e.baseSet)
 namespace Basis
 
--- TODO: do Gram-Schmidt in R bundles first!
+-- TODO: revisit this using GramSchmidtOrtho.lean!
 
-noncomputable def orthonormalFrame_toBasis_at
-     : Basis ι ℝ (E x) :=
-  sorry -- b.map (e.linearEquivAt (R := 𝕜) x hx).symm
+-- noncomputable def orthonormalFrame_toBasis_at : Basis ι ℝ (E x) :=
+--   sorry -- b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
-open scoped Classical in
--- If x is outside of `e.baseSet`, this returns the junk value 0.
-noncomputable def orthonormalFrame : ι → (x : B) → E x := fun i x ↦
-  -- idea: take the vector b i and apply the trivialisation e to it.
-  b.localFrame e x--if hx : x ∈ e.baseSet then b.localFrame_toBasis_at e hx i else 0
+-- open scoped Classical in
+-- -- If x is outside of `e.baseSet`, this returns the junk value 0.
+-- noncomputable def orthonormalFrame : ι → (x : B) → E x := fun i x ↦
+--   -- idea: take the vector b i and apply the trivialisation e to it.
+--   b.localFrame e x--if hx : x ∈ e.baseSet then b.localFrame_toBasis_at e hx i else 0
+end Basis

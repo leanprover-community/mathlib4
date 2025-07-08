@@ -31,7 +31,6 @@ variable {n : WithTop ℕ∞}
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-  [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
   -- comes in a future PR by sgouezel; don't need this part yet
   -- [IsRiemannianManifold I M]
 
@@ -185,6 +184,8 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
     (A := A) (D := D) (E := E) (F := F) (h := by simp [this]; sorry)
   sorry -- obvious: if 2 • A = stuff, A = 1/2 stuff
 
+variable [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
+
 variable (X Y Z Z') in
 lemma rhs_aux_addZ (hY : MDiff Y) (hZ : MDiff Z) (hZ' : MDiff Z') :
   rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
@@ -194,6 +195,7 @@ lemma rhs_aux_addZ (hY : MDiff Y) (hZ : MDiff Z) (hZ' : MDiff Z') :
   ext x
   rw [product_add_right, mfderiv_add (hZ x) (hZ' x)]; simp; congr
 
+omit [IsManifold I ∞ M] in
 variable (X X' Y Z) in
 lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
   ext x
@@ -250,7 +252,7 @@ lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tang
   simp only [leviCivita_rhs]
   simp [rhs_aux_smulX, rhs_aux_smulY, rhs_aux_smulZ]
   ext x
-  simp only [Pi.mul_apply, Pi.inv_apply, Pi.ofNat_apply, Pi.add_apply, Pi.sub_apply]
+  simp only [Pi.mul_apply, /-Pi.inv_apply, Pi.ofNat_apply,-/ Pi.add_apply /-, Pi.sub_apply-/]
   -- Only kind of true: get extra mfderiv's, which will cancel in the end...
   have h1 : VectorField.mlieBracket I X (f • Z) =
       f • VectorField.mlieBracket I X Z := by
@@ -262,7 +264,7 @@ lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tang
     rw [VectorField.mlieBracket_smul_left (hf x) (hZ x)]; simp; sorry
   simp [h1, h2]
   rw [product_smul_left, product_smul_right]
-  simp; abel_nf
+  simp only [Pi.smul_apply', smul_eq_mul]; abel_nf
   sorry -- easy computation
 
 variable {I} in
