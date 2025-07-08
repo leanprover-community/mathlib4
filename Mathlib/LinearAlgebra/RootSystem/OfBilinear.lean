@@ -78,7 +78,7 @@ lemma coroot_apply_self : coroot B hx x = 2 :=
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [LinearEquiv.coe_coe, reflection_apply, LinearMap.map_sub, map_smul, sub_apply,
+  simp only [reflection_apply, LinearMap.map_sub, map_smul, sub_apply,
     smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
@@ -167,7 +167,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
     ext z
     simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_
-    simp only [mem_setOf_eq, PerfectPairing.flip_apply_apply, mul_sub,
+    simp only [mem_setOf_eq, mul_sub,
       apply_self_mul_coroot_apply B y.2, ← mul_assoc]
     rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB z, ← hSB z,
       RingHom.id_apply, RingHom.id_apply, Module.reflection_apply, map_sub,

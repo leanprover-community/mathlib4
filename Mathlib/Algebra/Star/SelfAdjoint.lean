@@ -102,6 +102,10 @@ theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R 
     [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).map f
 
+@[aesop 10% apply]
+theorem isStarNormal {R : Type*} [Mul R] [Star R] {x : R} (hx : IsSelfAdjoint x) :
+    IsStarNormal x := ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
+
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
@@ -158,10 +162,6 @@ theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star 
 @[aesop 90% apply]
 theorem conjugate_self {x : R} (hx : IsSelfAdjoint x) {z : R} (hz : IsSelfAdjoint z) :
     IsSelfAdjoint (z * x * z) := by nth_rewrite 2 [← hz]; exact conjugate hx z
-
-@[aesop 10% apply]
-theorem isStarNormal {x : R} (hx : IsSelfAdjoint x) : IsStarNormal x :=
-  ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
 
 end Semigroup
 
@@ -561,10 +561,10 @@ theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module 
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul_neg _ _
 
 protected instance IsStarNormal.zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
-  ⟨by simp only [Commute.refl, star_comm_self, star_zero]⟩
+  ⟨by simp only [Commute.refl, star_zero]⟩
 
 protected instance IsStarNormal.one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
-  ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
+  ⟨by simp only [Commute.refl, star_one]⟩
 
 protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=

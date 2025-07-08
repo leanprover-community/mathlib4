@@ -51,14 +51,14 @@ This is every declaration until the type-specification, if there is one, or the 
 as well as all `variable` commands.
 -/
 def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
-  if let some cmd := stx.find? (·.isOfKind ``Parser.Command.declaration) then
+  if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
       | none => dbg_trace "unreachable?"; none
       | some sig => sig.getTailPos?
     else
     match cmd.find? (·.isOfKind ``Parser.Term.typeSpec) with
-      | some s => s.getPos?
+      | some s => s[0].getTailPos? -- `s[0]` is the `:` separating hypotheses and the type
       | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
         | some s => s.getPos?
         | none => none

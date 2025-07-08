@@ -72,12 +72,12 @@ lemma hasSmallLocalizedHom_iff_of_isos {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y'
   exact small_congr (Iso.homCongr (W.Q.mapIso e) (W.Q.mapIso e'))
 
 variable (X) in
-lemma hasSmallLocalizedHom_iff_target {Y Y' : C} (f : Y ⟶  Y') (hf : W f):
+lemma hasSmallLocalizedHom_iff_target {Y Y' : C} (f : Y ⟶ Y') (hf : W f) :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X Y' := by
   simp only [hasSmallLocalizedHom_iff W W.Q]
   exact small_congr (Iso.homCongr (Iso.refl _) (Localization.isoOfHom W.Q W f hf))
 
-lemma hasSmallLocalizedHom_iff_source {X' : C} (f : X ⟶  X') (hf : W f) (Y : C) :
+lemma hasSmallLocalizedHom_iff_source {X' : C} (f : X ⟶ X') (hf : W f) (Y : C) :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X' Y := by
   simp only [hasSmallLocalizedHom_iff W W.Q]
   exact small_congr (Iso.homCongr (Localization.isoOfHom W.Q W f hf) (Iso.refl _))
@@ -167,7 +167,7 @@ lemma mk_comp_mk [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y 
 
 @[simp]
 lemma comp_mk_id [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y Y]
-    (α : SmallHom.{w} W X Y)  :
+    (α : SmallHom.{w} W X Y) :
     α.comp (mk W (𝟙 Y)) = α :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 
@@ -264,9 +264,9 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
     SmallHom.equiv_equiv_symm W₂ W₂.Q L₂ E₂ α₂]
   change α₂.inv.app _ ≫ E₂.map (β.hom.app X ≫ G'.map g ≫ β.inv.app Y) ≫ _ = _
   let γ : G' ⋙ E₂ ≅ E₁ ⋙ G := liftNatIso W₁.Q W₁ (W₁.Q ⋙ G' ⋙ E₂) (W₁.Q ⋙ E₁ ⋙ G) _ _
-    ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight β.symm E₂ ≪≫
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ α₂ ≪≫ e ≪≫
-      isoWhiskerRight α₁.symm G ≪≫ Functor.associator _ _ _)
+    ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight β.symm E₂ ≪≫
+      Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ α₂ ≪≫ e ≪≫
+      Functor.isoWhiskerRight α₁.symm G ≪≫ Functor.associator _ _ _)
   have hγ : ∀ (X : C₁), γ.hom.app (W₁.Q.obj X) =
       E₂.map (β.inv.app X) ≫ α₂.hom.app (Φ.functor.obj X) ≫
         e.hom.app X ≫ G.map (α₁.inv.app X) := fun X ↦ by
