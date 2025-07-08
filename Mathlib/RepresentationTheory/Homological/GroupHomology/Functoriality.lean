@@ -112,11 +112,6 @@ noncomputable abbrev cyclesMap (n : ℕ) :
     groupHomology.cycles A n ⟶ groupHomology.cycles B n :=
   HomologicalComplex.cyclesMap (chainsMap f φ) n
 
-@[reassoc, elementwise]
-lemma cyclesMap_comp_i :
-    cyclesMap f φ n ≫ iCycles B n = iCycles A n ≫ (chainsMap f φ).f n  := by
-  simp
-
 @[simp]
 lemma cyclesMap_id : cyclesMap (MonoidHom.id G) (𝟙 A) n = 𝟙 _ := by
   simp [cyclesMap]
@@ -251,11 +246,11 @@ noncomputable def mapShortComplexH1 :
   comm₁₂ := by
     simp only [shortComplexH1]
     ext : 3
-    simpa [dOne, map_add, map_sub, ← map_inv] using congr(single _ $((hom_comm_apply φ _ _).symm))
+    simpa [d₂₁, map_add, map_sub, ← map_inv] using congr(single _ $((hom_comm_apply φ _ _).symm))
   comm₂₃ := by
     simp only [shortComplexH1]
     ext : 3
-    simpa [← map_inv, dZero] using (hom_comm_apply φ _ _).symm
+    simpa [← map_inv, d₁₀] using (hom_comm_apply φ _ _).symm
 
 @[simp]
 theorem mapShortComplexH1_zero :
