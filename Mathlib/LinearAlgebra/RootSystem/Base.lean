@@ -233,7 +233,7 @@ lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
 
 @[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
-lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R][P.IsCrystallographic] [Finite ι]
+lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R] [P.IsCrystallographic] [Finite ι]
     {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.pairingIn ℤ i j ≤ 0 := by
   by_contra! h

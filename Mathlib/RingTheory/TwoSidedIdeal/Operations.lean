@@ -202,12 +202,12 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
 
 open Pointwise Set
 
-lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     t * s ⊆ I := by
   rintro - ⟨r, -, x, hx, rfl⟩
   exact mul_mem_left _ _ _ (h hx)
 
-lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     s * t ⊆ I := by
   rintro - ⟨x, hx, r, -, rfl⟩
   exact mul_mem_right _ _ _ (h hx)
