@@ -118,9 +118,7 @@ lemma sphere_min_of_pos_of_nonzero {V : Type*} [NormedAddCommGroup V] [NormedSpa
       suffices f a > 0 by aesop
       apply hf'
       intro hc
-      have : ‖a.1‖ = 1 := norm_eq_of_mem_sphere a
-      rw [hc] at this
-      simp at this
+      simpa [hc] using norm_eq_of_mem_sphere a
     rw [this]
     simp only [isClosed_univ, IsClosed.closure_eq]
     exact CompactSpace.isCompact_univ
@@ -138,24 +136,20 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap {V : Type*}
     toFun := fun y => g.toFun ![x,y]
     map_add' := fun a b => by
       have := g.map_update_add ![x,b] 1 a b
-      repeat rw [update₁] at this
-      exact this
+      simpa [update₁] using this
     map_smul' := fun m a => by
       have := g.map_update_smul ![x,a] 1 m a
-      repeat rw [update₁] at this
-      exact this
+      simpa [update₁] using this
     cont := Continuous.comp' g.cont <| Continuous.matrixVecCons continuous_const
             <| Continuous.matrixVecCons continuous_id' continuous_const}
   map_add' := fun a b => by
     ext c
     have := g.map_update_add ![a,c] 0 a b
-    repeat rw [update₀] at this
-    exact this
+    simpa [update₀] using this
   map_smul' := fun c x => by
     ext y
     have := g.map_update_smul ![x,y] 0 c x
-    repeat rw [update₀] at this
-    exact this
+    simpa [update₀] using this
   cont := continuous_clm_apply.mpr fun x => Continuous.comp' g.cont
     <| Continuous.matrixVecCons continuous_id' continuous_const}
 
@@ -196,7 +190,7 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
       Subtype.exists, exists_prop] at this
     obtain ⟨m,hm⟩ := this
     use iteratedFDeriv ℝ 2 f x₀ ![m, m]
-    have := hf' m (by intro hc;subst hc;simp at hm)
+    have := hf' m (by intro hc;simp [hc] at hm)
     rw [iteratedFDerivQuadraticMap] at this
     constructor
     · exact this
@@ -328,8 +322,7 @@ lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
       refine ENNReal.half_lt_self ?_ ?_
       · simp only [ne_eq, ENNReal.coe_eq_zero]
         intro hc
-        subst hc
-        simp at hr
+        simp [hc] at hr
       · simp)
   rw [Asymptotics.IsBigOWith]
   apply eventually_nhds_iff.mpr
