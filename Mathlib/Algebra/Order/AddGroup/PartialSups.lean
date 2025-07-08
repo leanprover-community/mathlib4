@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Lua Viana Reis
 -/
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Order.PartialSups
 
 /-!
