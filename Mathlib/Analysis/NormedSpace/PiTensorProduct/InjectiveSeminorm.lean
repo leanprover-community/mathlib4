@@ -38,36 +38,37 @@ space.
 ## Main definitions
 
 * `PiTensorProduct.toDualContinuousMultilinearMap`: The `𝕜`-linear map from
-`⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending `x` to the map
-`f ↦ f x`.
+  `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending `x` to the map
+  `f ↦ f x`.
 * `PiTensorProduct.injectiveSeminorm`: The injective seminorm on `⨂[𝕜] i, Eᵢ`.
 * `PiTensorProduct.liftEquiv`: The bijection between `ContinuousMultilinearMap 𝕜 E F`
-and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as a continuous linear equivalence.
+  and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as a continuous linear equivalence.
 * `PiTensorProduct.liftIsometry`: The bijection between `ContinuousMultilinearMap 𝕜 E F`
-and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as an isometric linear equivalence.
+  and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as an isometric linear equivalence.
 * `PiTensorProduct.tprodL`: The canonical continuous multilinear map from `E = Πᵢ Eᵢ`
-to `⨂[𝕜] i, Eᵢ`.
+  to `⨂[𝕜] i, Eᵢ`.
 * `PiTensorProduct.mapL`: The continuous linear map from `⨂[𝕜] i, Eᵢ` to `⨂[𝕜] i, E'ᵢ`
-induced by a family of continuous linear maps `Eᵢ →L[𝕜] E'ᵢ`.
+  induced by a family of continuous linear maps `Eᵢ →L[𝕜] E'ᵢ`.
 * `PiTensorProduct.mapLMultilinear`: The continuous multilinear map from
-`Πᵢ (Eᵢ →L[𝕜] E'ᵢ)` to `(⨂[𝕜] i, Eᵢ) →L[𝕜] (⨂[𝕜] i, E'ᵢ)` sending a family
-`f` to `PiTensorProduct.mapL f`.
+  `Πᵢ (Eᵢ →L[𝕜] E'ᵢ)` to `(⨂[𝕜] i, Eᵢ) →L[𝕜] (⨂[𝕜] i, E'ᵢ)` sending a family
+  `f` to `PiTensorProduct.mapL f`.
 
 ## Main results
 
 * `PiTensorProduct.norm_eval_le_injectiveSeminorm`: The main property of the injective seminorm
-on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from
+  on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from
 `E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
-`fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
+  `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
-`‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
+  `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 
 ## TODO
 
 * If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
-`⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
-depends on PR https://github.com/leanprover-community/mathlib4/pull/11156. It should probably go in a separate file.
+  `⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
+  depends on PR https://github.com/leanprover-community/mathlib4/pull/11156.
+  It should probably go in a separate file.
 
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
 
@@ -238,18 +239,16 @@ induced by `PiTensorProduct.lift`, for every normed space `F`.
 -/
 @[simps]
 noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F where
-  toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖
-    (fun x ↦ norm_eval_le_injectiveSeminorm f x)
+  toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖ fun x ↦
+    norm_eval_le_injectiveSeminorm f x
   map_add' f g := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_add, map_add,
     LinearMap.mkContinuous_apply, LinearMap.add_apply, ContinuousLinearMap.add_apply]
   map_smul' a f := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_smul, map_smul,
     LinearMap.mkContinuous_apply, LinearMap.smul_apply, RingHom.id_apply,
     ContinuousLinearMap.coe_smul', Pi.smul_apply]
-  invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ (fun x ↦ by
+  invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ fun x ↦ by
     simp only [lift_symm, LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe]
-    refine le_trans (ContinuousLinearMap.le_opNorm _ _) (mul_le_mul_of_nonneg_left ?_
-      (norm_nonneg l))
-    exact injectiveSeminorm_tprod_le x)
+    exact ContinuousLinearMap.le_opNorm_of_le _ (injectiveSeminorm_tprod_le x)
   left_inv f := by ext x; simp only [LinearMap.mkContinuous_coe, LinearEquiv.symm_apply_apply,
       MultilinearMap.coe_mkContinuous, ContinuousMultilinearMap.coe_coe]
   right_inv l := by
@@ -269,12 +268,10 @@ noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
     norm_map' := by
       intro f
       refine le_antisymm ?_ ?_
-      · simp only [liftEquiv, lift_symm, LinearEquiv.coe_mk]
+      · simp only [liftEquiv_apply]
         exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
-      · conv_lhs => rw [← (liftEquiv 𝕜 E F).left_inv f]
-        simp only [liftEquiv, lift_symm, AddHom.toFun_eq_coe, AddHom.coe_mk,
-          LinearEquiv.invFun_eq_symm, LinearEquiv.coe_symm_mk, LinearMap.mkContinuous_coe,
-          LinearEquiv.coe_mk]
+      · conv_lhs => rw [← (liftEquiv 𝕜 E F).symm_apply_apply f]
+        rw [liftEquiv_symm_apply]
         exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg _) _ }
 
 variable {𝕜 E F}
@@ -285,15 +282,12 @@ theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : �
   simp only [liftIsometry, LinearIsometryEquiv.coe_mk, liftEquiv_apply,
     LinearMap.mkContinuous_apply]
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`.
 -/
 @[simps!]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
-
-variable {𝕜}
 
 @[simp]
 theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
@@ -411,8 +405,8 @@ private theorem mapL_add_smul_aux {ι : Type uι}
   symm
   rw [update_eq_iff]
   constructor
-  · simp only [update_same]
-  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_noteq]
+  · simp only [update_self]
+  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_of_ne]
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :

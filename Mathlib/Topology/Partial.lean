@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Order.Filter.Partial
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Partial functions and topological spaces
@@ -62,14 +62,13 @@ theorem pcontinuous_iff' {f : X →. Y} :
   rintro x ⟨y, ys, fxy⟩ t
   rw [mem_principal]
   intro (h : f.preimage s ⊆ t)
-  change t ∈ 𝓝 x
   apply mem_of_superset _ h
   have h' : ∀ s ∈ 𝓝 y, f.preimage s ∈ 𝓝 x := by
     intro s hs
     have : PTendsto' f (𝓝 x) (𝓝 y) := hf fxy
     rw [ptendsto'_def] at this
     exact this s hs
-  show f.preimage s ∈ 𝓝 x
+  change f.preimage s ∈ 𝓝 x
   apply h'
   rw [mem_nhds_iff]
   exact ⟨s, Set.Subset.refl _, os, ys⟩

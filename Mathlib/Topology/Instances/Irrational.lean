@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Topology.Separation.GDelta
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Topology of irrational numbers
@@ -36,7 +37,6 @@ open Filter Topology
 protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 
-@[deprecated (since := "2024-02-15")] alias isGδ_irrational := IsGδ.setOf_irrational
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_
@@ -58,10 +58,10 @@ instance : OrderTopology { x // Irrational x } :=
     ⟨⟨z, hz⟩, hxz, hzy⟩
 
 instance : NoMaxOrder { x // Irrational x } :=
-  ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_nat 1⟩, by simp⟩⟩
+  ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_natCast 1⟩, by simp⟩⟩
 
 instance : NoMinOrder { x // Irrational x } :=
-  ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_nat 1⟩, by simp⟩⟩
+  ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_natCast 1⟩, by simp⟩⟩
 
 instance : DenselyOrdered { x // Irrational x } :=
   ⟨fun _ _ hlt =>

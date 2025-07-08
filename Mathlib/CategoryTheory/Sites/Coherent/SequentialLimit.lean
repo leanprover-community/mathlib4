@@ -33,6 +33,7 @@ namespace CategoryTheory.coherentTopology
 
 variable {C : Type u} [Category.{v} C] [Preregular C] [FinitaryExtensive C]
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
 variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)} {c : Cone F}
     (hc : IsLimit c)
     (hF : ∀ n, Sheaf.IsLocallySurjective (F.map (homOfLE (Nat.le_succ n)).op))
@@ -89,7 +90,7 @@ variable (h : ∀ (G : ℕᵒᵖ ⥤ C),
   (∀ n, EffectiveEpi (G.map (homOfLE (Nat.le_succ n)).op)) → EffectiveEpi (limit.π G ⟨0⟩))
 
 include hF h hc in
-lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map  :
+lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
     Sheaf.IsLocallySurjective (c.π.app ⟨0⟩) := by
   rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff]
   intro X y

@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Facts about the gaussian integers relying on quadratic reciprocity.
@@ -31,21 +30,12 @@ open PrincipalIdealRing
 theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     (hpi : Prime (p : ℤ[i])) : p % 4 = 3 :=
   hp.1.eq_two_or_odd.elim
-    (fun hp2 =>
-      absurd hpi
-        (mt irreducible_iff_prime.2 fun ⟨_, h⟩ => by
-          have := h ⟨1, 1⟩ ⟨1, -1⟩ (hp2.symm ▸ rfl)
-          rw [← norm_eq_one_iff, ← norm_eq_one_iff] at this
-          exact absurd this (by decide)))
+    (fun hp2 => by
+      have := hpi.irreducible.isUnit_or_isUnit (a := ⟨1, 1⟩) (b := ⟨1, -1⟩)
+      simp [hp2, Zsqrtd.ext_iff, ← norm_eq_one_iff, norm_def] at this)
     fun hp1 =>
     by_contradiction fun hp3 : p % 4 ≠ 3 => by
-      have hp41 : p % 4 = 1 := by
-        rw [← Nat.mod_mul_left_mod p 2 2, show 2 * 2 = 4 from rfl] at hp1
-        have := Nat.mod_lt p (show 0 < 4 by decide)
-        revert this hp3 hp1
-        generalize p % 4 = m
-        intros; interval_cases m <;> simp_all -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
-      let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 <| by rw [hp41]; decide
+      let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 <| by assumption
       obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := by
         exact ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
       have hpk : p ∣ k ^ 2 + 1 := by
@@ -56,7 +46,7 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
         calc
           1 + k * k ≤ k + k * k := by
             apply add_le_add_right
-            exact (Nat.pos_of_ne_zero fun (hk0 : k = 0) => by clear_aux_decl; simp_all [pow_succ'])
+            exact (Nat.pos_of_ne_zero fun (hk0 : k = 0) => by clear_aux_decl; simp_all)
           _ = k * (k + 1) := by simp [add_comm, mul_add]
           _ < p * p := mul_lt_mul k_lt_p k_lt_p (Nat.succ_pos _) (Nat.zero_le _)
       have hpk₁ : ¬(p : ℤ[i]) ∣ ⟨k, -1⟩ := fun ⟨x, hx⟩ =>

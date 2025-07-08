@@ -6,7 +6,7 @@ Authors: Jujian Zhang, Junyan Xu
 
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Injective
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.AddCircle.Defs
 import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -76,6 +76,24 @@ from `B⋆` to `A⋆`.
   toFun L := L.comp f.toAddMonoidHom
   map_add' := by aesop
   map_smul' r c := by ext x; exact congr(c $(f.map_smul r x)).symm
+
+@[simp]
+lemma dual_zero : dual (0 : A →ₗ[R] B) = 0 := by
+  ext f
+  exact map_zero f
+
+lemma dual_comp {C : Type*} [AddCommGroup C] [Module R C] (f : A →ₗ[R] B) (g : B →ₗ[R] C) :
+    dual (g.comp f) = (dual f).comp (dual g) := by
+  ext
+  rfl
+
+lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective f) :
+    Function.Injective (dual f) := by
+  intro φ ψ eq
+  ext x
+  obtain ⟨y, rfl⟩ := hf x
+  change (dual f) φ _ = (dual f) ψ _
+  rw [eq]
 
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
@@ -210,5 +228,24 @@ lemma dual_surjective_iff_injective {f : A →ₗ[R] A'} :
 theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
     Function.Injective (f.rTensor B) ↔ Function.Surjective (f.lcomp R <| CharacterModule B) := by
   simp [← dual_rTensor_conj_homEquiv, dual_surjective_iff_injective]
+
+lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective (dual f)) :
+    Function.Surjective f := by
+  rw [← LinearMap.range_eq_top, ← Submodule.unique_quotient_iff_eq_top]
+  refine ⟨Unique.mk inferInstance fun a ↦ eq_zero_of_character_apply fun c ↦ ?_⟩
+  obtain ⟨b, rfl⟩ := QuotientAddGroup.mk'_surjective _ a
+  suffices eq : dual (Submodule.mkQ _) c = 0 from congr($eq b)
+  refine hf ?_
+  rw [← LinearMap.comp_apply, ← dual_comp, LinearMap.range_mkQ_comp, dual_zero,
+    LinearMap.zero_apply, dual_apply, AddMonoidHom.zero_comp]
+
+lemma dual_injective_iff_surjective {f : A →ₗ[R] A'} :
+    Function.Injective (dual f) ↔ Function.Surjective f :=
+  ⟨fun h ↦ surjective_of_dual_injective f h, fun h ↦ dual_injective_of_surjective f h⟩
+
+lemma dual_bijective_iff_bijective {f : A →ₗ[R] A'} :
+    Function.Bijective (dual f) ↔ Function.Bijective f :=
+  ⟨fun h ↦ ⟨dual_surjective_iff_injective.mp h.2, dual_injective_iff_surjective.mp h.1⟩,
+  fun h ↦ ⟨dual_injective_iff_surjective.mpr h.2, dual_surjective_iff_injective.mpr h.1⟩⟩
 
 end CharacterModule

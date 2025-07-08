@@ -34,11 +34,9 @@ section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α]
 
--- Porting note: Not simp because simp can prove it
 theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ :=
   sup_of_le_left le_top
 
--- Porting note: Not simp because simp can prove it
 theorem sup_top_eq (a : α) : a ⊔ ⊤ = ⊤ :=
   sup_of_le_right le_top
 
@@ -48,11 +46,9 @@ section SemilatticeSupBot
 
 variable [SemilatticeSup α] [OrderBot α] {a b : α}
 
--- Porting note: Not simp because simp can prove it
 theorem bot_sup_eq (a : α) : ⊥ ⊔ a = a :=
   sup_of_le_right bot_le
 
--- Porting note: Not simp because simp can prove it
 theorem sup_bot_eq (a : α) : a ⊔ ⊥ = a :=
   sup_of_le_left bot_le
 
@@ -65,10 +61,8 @@ section SemilatticeInfTop
 
 variable [SemilatticeInf α] [OrderTop α] {a b : α}
 
--- Porting note: Not simp because simp can prove it
 lemma top_inf_eq (a : α) : ⊤ ⊓ a = a := inf_of_le_right le_top
 
--- Porting note: Not simp because simp can prove it
 lemma inf_top_eq (a : α) : a ⊓ ⊤ = a := inf_of_le_left le_top
 
 @[simp]
@@ -81,10 +75,8 @@ section SemilatticeInfBot
 
 variable [SemilatticeInf α] [OrderBot α]
 
--- Porting note: Not simp because simp can prove it
 lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le
 
--- Porting note: Not simp because simp can prove it
 lemma inf_bot_eq (a : α) : a ⊓ ⊥ = ⊥ := inf_of_le_right bot_le
 
 end SemilatticeInfBot
@@ -162,4 +154,42 @@ theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = 
 theorem max_eq_top [OrderTop α] {a b : α} : max a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   @min_eq_bot αᵒᵈ _ _ a b
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+lemma max_ne_top [OrderTop α] {a b : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : max a b ≠ ⊤ := by
+  by_contra h
+  obtain (h | h) := max_eq_top.mp h
+  all_goals simp_all
+
 end LinearOrder
+
+/-! ### Induction on `WellFoundedGT` and `WellFoundedLT` -/
+
+section WellFounded
+
+@[elab_as_elim]
+theorem WellFoundedGT.induction_top [Preorder α] [WellFoundedGT α] [OrderTop α]
+    {P : α → Prop} (hexists : ∃ M, P M) (hind : ∀ N ≠ ⊤, P N → ∃ M > N, P M) : P ⊤ := by
+  contrapose! hexists
+  intro M
+  induction M using WellFoundedGT.induction with
+  | ind x IH =>
+    by_cases hx : x = ⊤
+    · exact hx ▸ hexists
+    · intro hx'
+      obtain ⟨M, hM, hM'⟩ := hind x hx hx'
+      exact IH _ hM hM'
+
+@[elab_as_elim]
+theorem WellFoundedLT.induction_bot [Preorder α] [WellFoundedLT α] [OrderBot α]
+    {P : α → Prop} (hexists : ∃ M, P M) (hind : ∀ N ≠ ⊥, P N → ∃ M < N, P M) : P ⊥ := by
+  contrapose! hexists
+  intro M
+  induction M using WellFoundedLT.induction with
+  | ind x IH =>
+    by_cases hx : x = ⊥
+    · exact hx ▸ hexists
+    · intro hx'
+      obtain ⟨M, hM, hM'⟩ := hind x hx hx'
+      exact IH _ hM hM'
+
+end WellFounded

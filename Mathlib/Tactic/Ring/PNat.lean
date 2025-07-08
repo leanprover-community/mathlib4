@@ -25,6 +25,7 @@ instance {n} : CSLiftVal (no_index (OfNat.ofNat (n+1)) : ℕ+) (n + 1) := ⟨rfl
 
 instance {n h} : CSLiftVal (Nat.toPNat n h) n := ⟨rfl⟩
 
+
 instance {n} : CSLiftVal (Nat.succPNat n) (n + 1) := ⟨rfl⟩
 
 instance {n} : CSLiftVal (Nat.toPNat' n) (n.pred + 1) := ⟨rfl⟩

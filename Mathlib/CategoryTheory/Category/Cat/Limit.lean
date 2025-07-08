@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
@@ -67,10 +67,10 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects)) where
         ← congr_fun (limit.w (homDiagram Y Z) h) g]
   id_comp _ := by
     apply Types.limit_ext.{v, v}
-    aesop_cat
+    simp
   comp_id _ := by
     apply Types.limit_ext.{v, v}
-    aesop_cat
+    simp
 
 /-- Auxiliary definition: the limit category. -/
 @[simps]
@@ -133,7 +133,6 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
       intro j
       simp [Types.Limit.lift_π_apply', ← w j]
     · intro X Y f
-      dsimp
       simp [fun j => Functor.congr_hom (w j).symm f]
 
 end HasLimits

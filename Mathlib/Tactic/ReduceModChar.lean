@@ -82,7 +82,7 @@ mutual
     assumeInstancesCommute
     return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
 
-  /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentation, otherwise
+  /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
       reduce it using `norm_num`. -/
   partial def normIntNumeral' {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
       (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
@@ -91,10 +91,8 @@ mutual
 end
 
 lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
-    (k : R) = (k % p : ℤ) := by
-  calc
-    (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
-    _ = ↑(k % p) := by simp [CharP.cast_eq_zero R]
+    (k : R) = (k % p : ℤ) :=
+  CharP.intCast_eq_intCast_mod R p
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/
@@ -192,9 +190,9 @@ match Expr.getAppFnArgs t with
     let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
 
     let n ← mkFreshExprMVarQ q(ℕ)
-    let .some instCharP ← findLocalDeclWithType? q(CharP $t $n) | return .failure
+    let .some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
 
-    return .intLike (← instantiateMVarsQ n) instRing (.fvar instCharP)
+    return .intLike (← instantiateMVarsQ n) instRing instCharP
 
 /-- Given an expression `e`, determine whether it is a numeric expression in characteristic `n`,
 and if so, reduce `e` modulo `n`.
@@ -283,7 +281,7 @@ partial def reduceModCharHyp (expensive := false) (fvarId : FVarId) : TacticM Un
     let prf ← derive (expensive := expensive) hyp
     return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
-open Parser.Tactic Elab.Tactic
+open Parser.Tactic
 
 /--
 The tactic `reduce_mod_char` looks for numeric expressions in characteristic `p`

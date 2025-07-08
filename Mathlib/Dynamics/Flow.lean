@@ -3,8 +3,9 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Flows and invariant sets
@@ -54,15 +55,16 @@ def IsFwInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) :
 theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
     (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
 
-/-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem IsFwInvariant.isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α} {s : Set α}
+theorem IsFwInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
+    {ϕ : τ → α → α} {s : Set α}
     (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 
-/-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α}
-    {s : Set α} :
+theorem isFwInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
+    {ϕ : τ → α → α} {s : Set α} :
     IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
 
@@ -105,7 +107,7 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 @[continuity, fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
-  ϕ.cont'.comp (ht.prod_mk hf)
+  ϕ.cont'.comp (ht.prodMk hf)
 
 alias _root_.Continuous.flow := Flow.continuous
 
@@ -135,7 +137,7 @@ end Flow
 
 namespace Flow
 
-variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ]
+variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [IsTopologicalAddGroup τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
@@ -149,17 +151,12 @@ theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t
 def reverse : Flow τ α where
   toFun t := ϕ (-t)
   cont' := ϕ.continuous continuous_fst.neg continuous_snd
-  map_add' _ _ _ := by dsimp; rw [neg_add, map_add]
-  map_zero' _ := by dsimp; rw [neg_zero, map_zero_apply]
+  map_add' _ _ _ := by rw [neg_add, map_add]
+  map_zero' _ := by rw [neg_zero, map_zero_apply]
 
--- Porting note: add @continuity to Flow.toFun so that these works:
--- Porting note: Homeomorphism.continuous_toFun  : Continuous toFun  := by continuity
--- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
-  rw [← curry_uncurry ϕ.toFun]
-  apply continuous_curry
-  exact ϕ.cont'
+  fun_prop
 
 /-- The map `ϕ t` as a homeomorphism. -/
 def toHomeomorph (t : τ) : (α ≃ₜ α) where

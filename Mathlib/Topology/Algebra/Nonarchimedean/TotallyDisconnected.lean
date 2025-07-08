@@ -20,8 +20,8 @@ is implied by the fact that a nonarchimedean group is totally separated.
 
 ## Notation
 
- - `G` : Is a nonarchimedean group.
- - `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
+- `G` : Is a nonarchimedean group.
+- `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
 
 ## References
 
@@ -36,7 +36,7 @@ namespace NonarchimedeanGroup
 
 @[to_additive]
 lemma exists_openSubgroup_separating {a b : G} (h : a ≠ b) :
-    ∃ (V : OpenSubgroup G), Disjoint (a • (V : Set G)) (b • V) := by
+    ∃ V : OpenSubgroup G, Disjoint (a • (V : Set G)) (b • V) := by
   obtain ⟨u, v, _, open_v, mem_u, mem_v, dis⟩ := t2_separation (h ∘ inv_mul_eq_one.mp)
   obtain ⟨V, hV⟩ := is_nonarchimedean v (open_v.mem_nhds mem_v)
   use V

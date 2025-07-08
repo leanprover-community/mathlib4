@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 /-!
 
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
@@ -14,6 +14,8 @@ the functor which takes a set to the condensed set corresponding to locally cons
 set, and the forgetful functor from the category of condensed sets to the category of sets
 (see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
+
+assert_not_exists RelIso
 
 variable {X Y Z : Type*}
 
@@ -30,7 +32,7 @@ as an arbitrary such `x`.
 -/
 noncomputable def image (f : Y → Z) (a : Fiber f) : Z := a.2.choose.1
 
-lemma eq_fiber_image  (f : Y → Z) (a : Fiber f) : a.1 = f ⁻¹' {a.image} := a.2.choose_spec.symm
+lemma eq_fiber_image (f : Y → Z) (a : Fiber f) : a.1 = f ⁻¹' {a.image} := a.2.choose_spec.symm
 
 /--
 Given `y : Y`, `Fiber.mk f y` is the fiber of `f` that `y` belongs to, as an element of `Fiber f`.

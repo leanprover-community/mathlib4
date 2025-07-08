@@ -189,6 +189,8 @@ open WalkingReflexivePair
 
 namespace WalkingReflexivePair
 
+-- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
 /-- The type of morphisms for the diagram indexing reflexive (co)equalizers -/
 inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
   | left : Hom one zero
@@ -198,10 +200,6 @@ inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
   | rightCompReflexion : Hom one one
   | id (X : WalkingReflexivePair) : Hom X X
   deriving DecidableEq
-
-attribute [-simp, nolint simpNF] Hom.id.sizeOf_spec
-attribute [-simp, nolint simpNF] Hom.leftCompReflexion.sizeOf_spec
-attribute [-simp, nolint simpNF] Hom.rightCompReflexion.sizeOf_spec
 
 /-- Composition of morphisms in the diagram indexing reflexive (co)equalizers -/
 def Hom.comp :
@@ -236,7 +234,7 @@ open Hom
 
 @[simp]
 lemma Hom.id_eq (X : WalkingReflexivePair) :
-    Hom.id X = 𝟙 X := by rfl
+    Hom.id X = 𝟙 X := rfl
 
 @[reassoc (attr := simp)]
 lemma reflexion_comp_left : reflexion ≫ left = 𝟙 zero := rfl
@@ -414,10 +412,8 @@ def mkNatTrans : F ⟶ G where
     cases f
     all_goals
       dsimp
-      simp only [Functor.map_id, Category.id_comp, Category.comp_id,
-        Functor.map_comp, h₁, h₂, h₃, reassoc_of% h₁, reassoc_of% h₂,
-        reflexivePair_map_reflexion, reflexivePair_map_left, reflexivePair_map_right,
-        Category.assoc]
+      simp only [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
+        reassoc_of% h₁, reassoc_of% h₂, Category.assoc]
 
 @[simp]
 lemma mkNatTrans_app_zero : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
@@ -474,7 +470,7 @@ lemma whiskerRightMkNatTrans {F G : WalkingReflexivePair ⥤ C}
     {h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right}
     {h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion}
     {D : Type u₂} [Category.{v₂} D] (H : C ⥤ D) :
-    whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H =
+    Functor.whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H =
       mkNatTrans (H.map e₀) (H.map e₁)
           (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
           (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
@@ -543,7 +539,7 @@ lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
     ((reflexiveCoforkEquivCofork F).functor.obj G).π = G.π := by
   dsimp [reflexiveCoforkEquivCofork]
   rw [ReflexiveCofork.π, Cofork.π]
-  aesop_cat
+  simp
 
 @[simp]
 lemma reflexiveCoforkEquivCofork_inverse_obj_π

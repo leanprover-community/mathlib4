@@ -22,12 +22,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
 open Multiset Subtype Function
 
@@ -48,12 +43,22 @@ section Disjoint
 variable {f : α → β} {s t u : Finset α} {a b : α}
 
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
-  ⟨fun h a hs ht => not_mem_empty a <|
+  ⟨fun h a hs ht => notMem_empty a <|
     singleton_subset_iff.mp (h (singleton_subset_iff.mpr hs) (singleton_subset_iff.mpr ht)),
     fun h _ hs ht _ ha => (h (hs ha) (ht ha)).elim⟩
 
+alias ⟨_root_.Disjoint.notMem_of_mem_left_finset, _⟩ := disjoint_left
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_left_finset := Disjoint.notMem_of_mem_left_finset
+
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
   rw [_root_.disjoint_comm, disjoint_left]
+
+alias ⟨_root_.Disjoint.notMem_of_mem_right_finset, _⟩ := disjoint_right
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_right_finset := Disjoint.notMem_of_mem_right_finset
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp only [disjoint_left, imp_not_comm, forall_eq']
@@ -91,7 +96,7 @@ theorem disjoint_singleton_left : Disjoint (singleton a) s ↔ a ∉ s := by
 theorem disjoint_singleton_right : Disjoint s (singleton a) ↔ a ∉ s :=
   disjoint_comm.trans disjoint_singleton_left
 
--- Porting note: Left-hand side simplifies @[simp]
+-- Not `simp` since `disjoint_singleton_{left,right}` prove it.
 theorem disjoint_singleton : Disjoint ({a} : Finset α) {b} ↔ a ≠ b := by
   rw [disjoint_singleton_left, mem_singleton]
 
@@ -134,17 +139,17 @@ theorem coe_disjUnion {s t : Finset α} (h : Disjoint s t) :
 
 theorem disjUnion_comm (s t : Finset α) (h : Disjoint s t) :
     disjUnion s t h = disjUnion t s h.symm :=
-  eq_of_veq <| add_comm _ _
+  eq_of_veq <| Multiset.add_comm _ _
 
 @[simp]
 theorem empty_disjUnion (t : Finset α) (h : Disjoint ∅ t := disjoint_bot_left) :
     disjUnion ∅ t h = t :=
-  eq_of_veq <| zero_add _
+  eq_of_veq <| Multiset.zero_add _
 
 @[simp]
 theorem disjUnion_empty (s : Finset α) (h : Disjoint s ∅ := disjoint_bot_right) :
     disjUnion s ∅ h = s :=
-  eq_of_veq <| add_zero _
+  eq_of_veq <| Multiset.add_zero _
 
 theorem singleton_disjUnion (a : α) (t : Finset α) (h : Disjoint {a} t) :
     disjUnion {a} t h = cons a t (disjoint_singleton_left.mp h) :=

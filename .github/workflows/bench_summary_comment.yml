@@ -10,18 +10,18 @@ jobs:
     if: github.event.issue.pull_request && (startsWith(github.event.comment.body, 'Here are the [benchmark results]'))
     runs-on: ubuntu-latest
     steps:
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: master
           sparse-checkout: |
             scripts/bench_summary.lean
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
 
       - name: Summarize bench output
         run: |
@@ -33,3 +33,11 @@ jobs:
         env:
           PR:  ${{ github.event.issue.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Remove "bench-after-CI"
+        # we use curl rather than octokit/request-action so that the job won't fail
+        # (and send an annoying email) if the labels don't exist
+        run: |
+          curl --request DELETE \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels/bench-after-CI \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'

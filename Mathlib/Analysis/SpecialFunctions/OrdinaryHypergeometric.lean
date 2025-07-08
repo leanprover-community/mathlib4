@@ -54,7 +54,7 @@ open Nat FormalMultilinearSeries
 section Field
 
 variable {𝕂 : Type*} (𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸]
-  [TopologicalRing 𝔸]
+  [IsTopologicalRing 𝔸]
 
 /-- The coefficients in the ordinary hypergeometric sum. -/
 noncomputable abbrev ordinaryHypergeometricCoefficient (a b c : 𝕂) (n : ℕ) := ((n !⁻¹ : 𝕂) *
@@ -67,8 +67,8 @@ noncomputable def ordinaryHypergeometricSeries (a b c : 𝕂) : FormalMultilinea
 
 variable {𝔸} (a b c : 𝕂)
 
-/-- `ordinaryHypergeometric (a b c : 𝕂) : 𝔸 → 𝔸` is the ordinary hypergeometric map, defined as the
-sum of the `FormalMultilinearSeries` `ordinaryHypergeometricSeries 𝔸 a b c`.
+/-- `ordinaryHypergeometric (a b c : 𝕂) : 𝔸 → 𝔸`, denoted `₂F₁`, is the ordinary hypergeometric map,
+defined as the sum of the `FormalMultilinearSeries` `ordinaryHypergeometricSeries 𝔸 a b c`.
 
 Note that this takes the junk value `0` outside the radius of convergence.
 -/
@@ -102,7 +102,7 @@ theorem ordinaryHypergeometric_eq_tsum : ₂F₁ a b c =
   funext (ordinaryHypergeometric_sum_eq a b c)
 
 theorem ordinaryHypergeometricSeries_apply_zero (n : ℕ) :
-    (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => 0) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
+    ordinaryHypergeometricSeries 𝔸 a b c n (fun _ => 0) = Pi.single (M := fun _ => 𝔸) 0 1 n := by
   rw [ordinaryHypergeometricSeries, ofScalars_apply_eq, ordinaryHypergeometricCoefficient]
   cases n <;> simp
 
@@ -168,8 +168,8 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
 
 theorem ordinaryHypergeometricSeries_norm_div_succ_norm (n : ℕ)
     (habc : ∀ kn < n, (↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c)) :
-      ‖ordinaryHypergeometricCoefficient a b c n‖ / ‖ordinaryHypergeometricCoefficient a b c n.succ‖
-      = ‖a + n‖⁻¹ * ‖b + n‖⁻¹ * ‖c + n‖ * ‖1 + (n : 𝕂)‖ := by
+    ‖ordinaryHypergeometricCoefficient a b c n‖ / ‖ordinaryHypergeometricCoefficient a b c n.succ‖ =
+      ‖a + n‖⁻¹ * ‖b + n‖⁻¹ * ‖c + n‖ * ‖1 + (n : 𝕂)‖ := by
   simp only [mul_inv_rev, factorial_succ, cast_mul, cast_add,
     cast_one, ascPochhammer_succ_eval, norm_mul, norm_inv]
   calc
@@ -193,11 +193,11 @@ theorem ordinaryHypergeometricSeries_norm_div_succ_norm (n : ℕ)
 are non-positive integers. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) :
-      (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
+    (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
   convert ofScalars_radius_eq_of_tendsto 𝔸 _ one_ne_zero ?_
   suffices Tendsto (fun k : ℕ ↦ (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k)) atTop (𝓝 1) by
     simp_rw [ordinaryHypergeometricSeries_norm_div_succ_norm a b c _ (fun n _ ↦ habc n)]
-    simp [← norm_mul, ← norm_inv]
+    simp only [← norm_inv, ← norm_mul, NNReal.coe_one]
     convert Filter.Tendsto.norm this
     exact norm_one.symm
   have (k : ℕ) : (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k) =

@@ -16,9 +16,9 @@ measure, which gives measure `1` to the parallelepiped spanned by the basis.
 
 * `parallelepiped v` is the parallelepiped spanned by a finite family of vectors.
 * `Basis.parallelepiped` is the parallelepiped associated to a basis, seen as a compact set with
-nonempty interior.
+  nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
-corresponding parallelepiped.
+  corresponding parallelepiped.
 
 In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
@@ -55,7 +55,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
   classical
   ext x
   simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
-    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
   aesop
@@ -205,11 +205,9 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (have := FiniteDimensional.of_fintype_basis b
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis b
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (have := FiniteDimensional.of_fintype_basis (b.map e)
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
@@ -225,11 +223,11 @@ theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     · use t ∘ Sum.inl
       constructor
       · exact ⟨(ht1.1 <| Sum.inl ·), (ht1.2 <| Sum.inl ·)⟩
-      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+      simp [ht2, Prod.fst_sum]
     · use t ∘ Sum.inr
       constructor
       · exact ⟨(ht1.1 <| Sum.inr ·), (ht1.2 <| Sum.inr ·)⟩
-      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+      simp [ht2, Prod.snd_sum]
   intro h
   rcases h with ⟨⟨t, ht1, ht2⟩, ⟨s, hs1, hs2⟩⟩
   use Sum.elim t s
@@ -334,9 +332,9 @@ protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
+theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.ofLp := rfl
 
 theorem coe_measurableEquiv_symm :
-    ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = WithLp.toLp _ := rfl
 
 end EuclideanSpace
