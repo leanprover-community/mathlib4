@@ -95,7 +95,7 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
 instance : RankOne (PadicAlgCl.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
   strictMono' := strictMono_id
-  nontrivial' := by
+  exists_val_nontrivial' := by
     use p
     have hp : Nat.Prime p := hp.1
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
@@ -152,7 +152,7 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
 instance : RankOne (PadicComplex.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
   strictMono' := strictMono_id
-  nontrivial' := by
+  exists_val_nontrivial' := by
     use p
     have hp : Nat.Prime p := hp.1
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
