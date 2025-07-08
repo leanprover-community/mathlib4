@@ -39,14 +39,14 @@ attribute [local instance] IsWellOrder.toHasWellFounded
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
+namespace InnerProductSpace
+
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
-noncomputable def InnerProductSpace.gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
+noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).orthogonalProjection (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
-
-open InnerProductSpace
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
@@ -218,6 +218,12 @@ theorem gramSchmidt_linearIndependent {f : ι → E} (h₀ : LinearIndependent �
   linearIndependent_of_ne_zero_of_inner_eq_zero (fun _ => gramSchmidt_ne_zero _ h₀) fun _ _ =>
     gramSchmidt_orthogonal 𝕜 f
 
+end InnerProductSpace
+
+open InnerProductSpace
+
+variable {𝕜}
+
 /-- When given a basis, `gramSchmidt` produces a basis. -/
 noncomputable def gramSchmidtBasis (b : Basis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.mk (gramSchmidt_linearIndependent b.linearIndependent)
@@ -269,6 +275,8 @@ theorem gramSchmidt_orthonormal' (f : ι → E) :
   rintro i j (hij : ¬_)
   rw [Subtype.ext_iff] at hij
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
+
+open Submodule Set Order
 
 theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
     span 𝕜 (gramSchmidtNormed 𝕜 f '' s) = span 𝕜 (gramSchmidt 𝕜 f '' s) := by
