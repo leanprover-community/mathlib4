@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Order.AddGroup.PartialSups
+import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 import Mathlib.Data.Real.StarOrdered
