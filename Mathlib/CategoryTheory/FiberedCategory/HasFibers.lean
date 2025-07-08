@@ -69,7 +69,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The composition with the functor `p` is *equal* to the constant functor mapping to `S`. -/
   comp_const (S : 𝒮) : ι S ⋙ p = (const (Fib S)).obj S
   /-- The induced functor from `Fib S` to the fiber of `𝒳 ⥤ 𝒮` over `S` is an equivalence. -/
-  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S))
+  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S)) := by infer_instance
 
 namespace HasFibers
 

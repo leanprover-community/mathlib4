@@ -55,16 +55,16 @@ class Functor.IsHomLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) :
 macro "subst_hom_lift" p:term:max f:term:max φ:term:max : tactic =>
   `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p := $p) (f := $f) (φ := $φ))
 
+namespace IsHomLift
+
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`. -/
 @[simp]
-instance {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
+instance map {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
   cond := by constructor
 
 @[simp]
 instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
   rw [← p.map_id]; infer_instance
-
-namespace IsHomLift
 
 protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) : p.IsHomLift (𝟙 R) (𝟙 a) := by
   cases ha; infer_instance
@@ -172,7 +172,7 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f �
 instance comp_id_lift : p.IsHomLift f (𝟙 a ≫ φ) := by
   simp_all
 
-instance id_comp_lift  : p.IsHomLift f (φ ≫ 𝟙 b) := by
+instance id_comp_lift : p.IsHomLift f (φ ≫ 𝟙 b) := by
   simp_all
 
 instance lift_id_comp : p.IsHomLift (𝟙 R ≫ f) φ := by

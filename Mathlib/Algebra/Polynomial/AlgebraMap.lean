@@ -106,25 +106,25 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
       rw [Ne, SetLike.ext_iff, not_forall]
       refine ⟨X, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top,
-        algebraMap_apply, not_forall]
+        algebraMap_apply]
       intro x
       rw [ext_iff, not_forall]
       refine ⟨1, ?_⟩
-      simp [coeff_C]⟩⟩
+      simp⟩⟩
 
 @[simp]
 theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   simp only [eval₂_eq_sum, sum_def]
-  simp only [map_sum, map_mul, map_pow, eq_intCast, map_intCast, AlgHom.commutes]
+  simp only [map_sum, map_mul, map_pow, AlgHom.commutes]
 
 @[simp]
 theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
     (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p := by
   conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
   simp only [eval₂_eq_sum, sum_def]
-  simp only [map_sum, map_mul, map_pow, eq_intCast, map_intCast]
+  simp only [map_sum, map_mul, map_pow]
   simp [Polynomial.C_eq_algebraMap]
 
 -- these used to be about `algebraMap ℤ R`, but now the simp-normal form is `Int.castRingHom R`.
@@ -173,7 +173,7 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
     (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
   apply AlgHom.ext
   intro x
-  simp [AlgHom.comp_algebraMap, map_map]
+  simp [map_map]
   congr
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
@@ -560,7 +560,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
     arg 2
     simp [coeff_mul_X_sub_C, sub_mul, mul_assoc, ← pow_succ']
   rw [sum_range_sub']
-  simp [coeff_monomial]
+  simp
 
 theorem not_isUnit_X_sub_C [Nontrivial R] (r : R) : ¬IsUnit (X - C r) :=
   fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ => zero_ne_one' R <| by rw [← eval_mul_X_sub_C, hgf, eval_one]
@@ -627,8 +627,7 @@ lemma aeval_apply_smul_mem_of_le_comap'
   | monomial n t hmq =>
     dsimp only at hmq ⊢
     rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
-    rw [← q.map_le_iff_le_comap] at hq
-    exact hq ⟨_, hmq, rfl⟩
+    solve_by_elim
 
 lemma aeval_apply_smul_mem_of_le_comap
     (hm : m ∈ q) (p : R[X]) (f : Module.End R M) (hq : q ≤ q.comap f) :
