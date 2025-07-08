@@ -123,8 +123,9 @@ lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
   simp [ω, -indexNeg_neg]
 
 omit [Finite ι] [IsDomain R] in
-lemma ω_mul_h [DecidableEq ι] [Fintype ι] (i : b.support) :
+lemma ω_mul_h [Fintype ι] (i : b.support) :
     ω b * h i = - h i * ω b := by
+  classical
   ext (k | k) (l | l)
   · simp [ω, h]
   · simp [ω, h]
