@@ -169,7 +169,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         if trailing.toString.trimLeft.isEmpty then
           rargs.push (`MaxHeartbeats, stx,
             s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
-              as in\nset_option {opt} {n} in\n-- reason for change\n...\n")
+              as in\nset_option {opt} {n} in\n-- reason for change\n...")
         else
           rargs
     | _ => rargs

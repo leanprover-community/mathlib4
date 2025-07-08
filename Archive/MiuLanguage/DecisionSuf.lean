@@ -109,14 +109,11 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     (_ : c % 3 = 1 ∨ c % 3 = 2) (xs : Miustr)
     (hder : Derivable (↑(M :: replicate (c + 3 * k) I) ++ xs)) :
     Derivable (↑(M :: (replicate c I ++ replicate k U)) ++ xs) := by
-  revert xs
-  induction k with
+  induction k generalizing xs with
   | zero =>
-    simp only [replicate, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
+    simpa only [replicate, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
   | succ a ha =>
-    intro xs
     specialize ha (U :: xs)
-    intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
     rw [replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
       singleton_append]
