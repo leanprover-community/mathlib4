@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Lua Viana Reis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Lua Viana Reis, Oliver Butterley
+-/
 import Mathlib.Algebra.Order.AddGroup.PartialSups
 import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
@@ -11,6 +16,15 @@ import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.MeasurableSpace.Invariants
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Separation.CompletelyRegular
+
+/-!
+# Pointwise Ergodic Theorem (Birkhoff's Ergodic Theorem)
+
+## Main statements
+
+* `___`
+
+-/
 
 section BirkhoffMax
 
