@@ -12,10 +12,11 @@ import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 
 Given a commutative ring `k` and a group `G`, this file shows that a short exact sequence of
 `k`-linear `G`-representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` induces a short exact sequence of
-complexes of inhomogeneous chains `0 ⟶ C(X₁) ⟶ C(X₂) ⟶ C(X₃) ⟶ 0`, where `Hₙ(C(Xᵢ))`
-is the `n`th group homology of `Xᵢ`.
+complexes
+`0 ⟶ inhomogeneousChains X₁ ⟶ inhomogeneousChains X₂ ⟶ inhomogeneousChains X₃ ⟶ 0`.
 
-This allows us to specialize API about long exact sequences to group homology.
+Since the homology of `inhomogeneousChains Xᵢ` is the group homology of `Xᵢ`, this allows us
+to specialize API about long exact sequences to group homology.
 
 ## Main definitions
 
@@ -86,6 +87,7 @@ noncomputable abbrev δ (i j : ℕ) (hij : j + 1 = i) :
   (map_chainsFunctor_shortExact hX).δ i j hij
 
 open Limits
+
 theorem epi_δ_of_isZero (n : ℕ) (h : IsZero (groupHomology X.X₂ n)) :
     Epi (δ hX (n + 1) n rfl) := SnakeInput.epi_δ _ h
 
@@ -97,7 +99,7 @@ theorem isIso_δ_of_isZero (n : ℕ) (hs : IsZero (groupHomology X.X₂ (n + 1))
     IsIso (δ hX (n + 1) n rfl) := SnakeInput.isIso_δ _ hs h
 
 /-- Given an exact sequence of `G`-representations `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0`, this expresses an
-`n`-chain `x : Gⁿ →₀ X₁` such that `f ∘ x ∈ Bⁿ(G, X₂)` as a cycle. -/
+`n`-chain `x : Gⁿ →₀ X₁` such that `f ∘ x ∈ Bₙ(G, X₂)` as a cycle. -/
 noncomputable abbrev cyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) →₀ X.X₂}
     {x : (Fin j → G) →₀ X.X₁}
     (hx : mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
@@ -107,37 +109,51 @@ noncomputable abbrev cyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) →₀ X.X
       (by simpa using hx) _
 
 theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `z` be an `j + 1`-cycle for `X₃`
     (z : (Fin i → G) →₀ X.X₃) (hz : (inhomogeneousChains X.X₃).d i j z = 0)
+    -- Let `y` be an `j + 1`-chain for `X₂` such that `g ∘ y = z`
     (y : (Fin i → G) →₀ X.X₂) (hy : (chainsMap (MonoidHom.id G) X.g).f i y = z)
+    -- Let `x` be an `j`-chain for `X₁` such that `f ∘ x = d(y)`
     (x : (Fin j → G) →₀ X.X₁)
+    -- Then `x` is an `j`-cycle and `δ z = x` in `Hⱼ(X₁)`.
     (hx : mapRange.linearMap X.f.hom.hom x = (inhomogeneousChains X.X₂).d i j y) :
     δ hX i j hij (π X.X₃ i <| cyclesMk j (by simp [← hij]) z (by simpa using hz)) =
       π X.X₁ j (cyclesMkOfCompEqD hX hx) := by
   exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using hx) _ rfl
 
-theorem δ₀_apply (z : oneCycles X.X₃) (y : G →₀ X.X₂)
-    (hy : mapRange.linearMap X.g.hom.hom y = z.1) (x : X.X₁) (hx : X.f.hom x = dZero X.X₂ y) :
+theorem δ₀_apply
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `z` by a 1-cycle for `X₃` and `y` a 1-chain for `X₂` such that `g ∘ y = z`.
+    (z : cycles₁ X.X₃) (y : G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.hom y = z.1)
+    -- Let `x : X₁` be such that `f(x) = d(y)`.
+    (x : X.X₁) (hx : X.f.hom x = d₁₀ X.X₂ y) :
+    -- Then `δ z = x` in `H₀(X₁)`.
     δ hX 1 0 rfl (H1π X.X₃ z) = H0π X.X₁ x := by
   simpa only [H1π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H0π,
-    ← cyclesMk_0_eq X.X₁, ← cyclesMk_1_eq X.X₃]
-  using δ_apply hX (i := 1) (j := 0) rfl ((oneChainsIso X.X₃).inv z.1) (by simp)
-    ((oneChainsIso X.X₂).inv y) (Finsupp.ext fun _ => by simp [oneChainsIso, ← hy])
-    ((zeroChainsIso X.X₁).inv x) (Finsupp.ext fun _ => by simp [zeroChainsIso, ← hx])
+    ← cyclesMk₀_eq X.X₁, ← cyclesMk₁_eq X.X₃]
+  using δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by simp)
+    ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hy])
+    ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₀, ← hx])
 
-theorem mem_oneCycles_of_comp_eq_dOne
-    {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.hom x = dOne X.X₂ y) :
-    x ∈ oneCycles X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.2 <| by
+theorem mem_cycles₁_of_comp_eq_d₂₁
+    {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.hom x = d₂₁ X.X₂ y) :
+    x ∈ cycles₁ X.X₁ := LinearMap.mem_ker.2 <| (Rep.mono_iff_injective X.f).1 hX.2 <| by
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
-theorem δ₁_apply (z : twoCycles X.X₃) (y : G × G →₀ X.X₂)
-    (hy : mapRange.linearMap X.g.hom.hom y = z.1) (x : G →₀ X.X₁)
-    (hx : mapRange.linearMap X.f.hom.hom x = dOne X.X₂ y) :
-    δ hX 2 1 rfl (H2π X.X₃ z) = H1π X.X₁ ⟨x, mem_oneCycles_of_comp_eq_dOne hX hx⟩ := by
+theorem δ₁_apply
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `z` by a 2-cycle for `X₃` and `y` a 2-chain for `X₂` such that `g ∘ y = z`.
+    (z : cycles₂ X.X₃) (y : G × G →₀ X.X₂) (hy : mapRange.linearMap X.g.hom.hom y = z.1)
+    -- Let `x` be a 1-chain for `X₁` such that `f ∘ x = d(y)`.
+    (x : G →₀ X.X₁) (hx : mapRange.linearMap X.f.hom.hom x = d₂₁ X.X₂ y) :
+    -- Then `x` is a 1-cycle and `δ z = x` in `H₁(X₁)`.
+    δ hX 2 1 rfl (H2π X.X₃ z) = H1π X.X₁ ⟨x, mem_cycles₁_of_comp_eq_d₂₁ hX hx⟩ := by
   simpa only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H1π,
-    ← cyclesMk_2_eq X.X₃, ← cyclesMk_1_eq X.X₁]
-  using δ_apply hX (i := 2) (j := 1) rfl ((twoChainsIso X.X₃).inv z.1) (by simp)
-    ((twoChainsIso X.X₂).inv y) (Finsupp.ext fun _ => by simp [twoChainsIso, ← hy])
-    ((oneChainsIso X.X₁).inv x) (Finsupp.ext fun _ => by simp [oneChainsIso, ← hx])
+    ← cyclesMk₂_eq X.X₃, ← cyclesMk₁_eq X.X₁]
+  using δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by simp)
+    ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₂, ← hy])
+    ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hx])
 
 end groupHomology

@@ -101,7 +101,7 @@ theorem intDegree_add_le {x y : RatFunc K} (hy : y ≠ 0) (hxy : x + y ≠ 0) :
     intDegree (x + y) ≤ max (intDegree x) (intDegree y) := by
   by_cases hx : x = 0
   · simp only [hx, zero_add, ne_eq] at hxy
-    simp [hx, hxy]
+    simp [hx]
   rw [intDegree_add hxy, ←
     natDegree_num_mul_right_sub_natDegree_denom_mul_left_eq_intDegree hx y.denom_ne_zero,
     mul_comm y.denom, ←
