@@ -237,6 +237,60 @@ lemma ν_comp_unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C
   Functor.descOfIsLeftKanExtension_fac_app (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
     F.functor ({ app _ := φ }) default
 
+section structureLemmas
+
+open LawfulDayConvolutionMonoidalCategoryStruct
+
+@[reassoc (attr := simp)]
+lemma η_app_comp_tensorHom_natTrans_app_tensor
+    {F₁ F₂ F₁' F₂' : C ⊛⥤ V} (f₁ : F₁ ⟶ F₁') (f₂ : F₂ ⟶ F₂') (x y : C) :
+    (η F₁ F₂).app (x, y) ≫ (f₁ ⊗ₘ f₂).natTrans.app (x ⊗ y) =
+    (f₁.natTrans.app x ⊗ₘ f₂.natTrans.app y) ≫ (η F₁' F₂').app (x, y) :=
+  convolutionExtensionUnit_comp_ι_map_tensorHom_app C V f₁ f₂ _ _
+
+@[reassoc (attr := simp)]
+lemma η_app_comp_whiskerRight_natTrans_app_tensor
+    {F₁ F₁' : C ⊛⥤ V} (f₁ : F₁ ⟶ F₁') (F₂ : C ⊛⥤ V) (x y : C) :
+    (η F₁ F₂).app (x, y) ≫ (f₁ ▷ F₂).natTrans.app (x ⊗ y) =
+    (f₁.natTrans.app x ▷ F₂.functor.obj y) ≫ (η F₁' F₂).app (x, y) := by
+  simp [← tensorHom_id]
+
+@[reassoc (attr := simp)]
+lemma η_app_comp_whiskerLeft_natTrans_app_tensor
+    (F₁ : C ⊛⥤ V) {F₂ F₂' : C ⊛⥤ V} (f₂ : F₂ ⟶ F₂') (x y : C) :
+    (η F₁ F₂).app (x, y) ≫ (F₁ ◁ f₂).natTrans.app (x ⊗ y) =
+    (F₁.functor.obj x ◁ f₂.natTrans.app y) ≫ (η F₁ F₂').app (x, y) := by
+  simp [← id_tensorHom]
+
+@[reassoc (attr := simp)]
+lemma η_η_associator_hom (F F' F'': C ⊛⥤ V) (x y z : C) :
+    (η F F').app (x, y) ▷ F''.functor.obj z ≫
+      (η (F ⊗ F') F'').app (x ⊗ y, z) ≫
+      (α_ F F' F'').hom.natTrans.app ((x ⊗ y) ⊗ z) =
+    (α_ _ _ _).hom ≫
+      F.functor.obj x ◁ (η F' F'').app (y, z) ≫
+      (η F (F' ⊗ F'')).app (x, y ⊗ z) ≫
+      (F ⊗ F' ⊗ F'').functor.map (α_ _ _ _).inv :=
+  associator_hom_unit_unit _ _ _ _ _ _ _
+
+@[reassoc (attr := simp)]
+lemma ν_η_leftUnitor (F : C ⊛⥤ V) (y : C) :
+    ν C V ▷ F.functor.obj y ≫
+      (η (𝟙_ (C ⊛⥤ V)) F).app (𝟙_ C, y) ≫
+      (λ_ F).hom.natTrans.app (𝟙_ C ⊗ y) =
+    (λ_ (F.functor.obj y)).hom ≫ F.functor.map (λ_ y).inv :=
+  leftUnitor_hom_unit_app V F y
+
+@[reassoc (attr := simp)]
+lemma ν_η_rightUnitor (F : C ⊛⥤ V) (y : C) :
+    (F.functor.obj y ◁ ν C V) ≫
+      (η F (𝟙_ (C ⊛⥤ V))).app (y, 𝟙_ C) ≫
+      (ρ_ F).hom.natTrans.app (y ⊗ 𝟙_ C) =
+    (ρ_ _).hom ≫ F.functor.map (ρ_ y).inv :=
+  rightUnitor_hom_unit_app V F y
+
+end structureLemmas
+
 end DayFunctor
 
 end
