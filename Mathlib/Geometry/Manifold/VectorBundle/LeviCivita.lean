@@ -171,7 +171,6 @@ lemma rhs_aux_addZ : rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z'
   ext x
   -- have aux := mfderiv_congr this
   --simp_rw [this]
-  ext x
   --simp only [rhs_aux]
   dsimp
   -- prove: product is smooth enough, so we can apply mfderiv_add (and product_add_right)...
@@ -203,7 +202,7 @@ lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I 
   sorry
 
 lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
-    (hZ : MDifferentiable% (T% Z)) (hZ' : MDifferentiable% (T% Z')) :
+    (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
     leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
   -- A bit too painful, and have missing differentiability assumptions.
   simp only [leviCivita_rhs]
@@ -223,7 +222,7 @@ lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
   sorry -- module
 
 lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, TangentSpace I x}
-    (hf : MDifferentiable% f) (hZ : MDifferentiable% (T% Z)) :
+    (hf : MDiff f) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
   simp only [leviCivita_rhs]
   simp [rhs_aux_smulX, rhs_aux_smulY, rhs_aux_smulZ]
