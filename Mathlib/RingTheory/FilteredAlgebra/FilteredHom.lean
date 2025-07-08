@@ -316,13 +316,13 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     (AssociatedGraded FR FR_lt) →+* (AssociatedGraded FS FS_lt) where
   __ := f.1.AssociatedGradedAddMonoidHom
   map_one' := by
-    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-    show (FilteredAddGroupHom.AssociatedGradedAddMonoidHom f.1)
+    have : (FilteredAddGroupHom.AssociatedGradedAddMonoidHom f.1)
       (AssociatedGraded.of (1 : GradedPiece FR FR_lt 0)) =
-      AssociatedGraded.of (1 : GradedPiece FS FS_lt 0)
-    rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
-    show AssociatedGraded.of ⟦(⟨f.toRingHom 1, _⟩ : FS 0)⟧ = AssociatedGraded.of ⟦⟨1, _⟩⟧
-    simp [RingHom.map_one f.toRingHom]
+      AssociatedGraded.of (1 : GradedPiece FS FS_lt 0) := by
+      rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
+      change AssociatedGraded.of ⟦(⟨f.toRingHom 1, _⟩ : FS 0)⟧ = AssociatedGraded.of ⟦⟨1, _⟩⟧
+      simp [RingHom.map_one f.toRingHom]
+    simpa
   map_mul' a b := DirectSum.induction_on a (by simp)
     (DirectSum.induction_on b (by simp)
       (fun j y' i x' ↦ by
