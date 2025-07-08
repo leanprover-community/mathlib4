@@ -1203,7 +1203,6 @@ lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b 
     (div_le_div_iff_of_pos_left ha hb hc)
 
 -- Not a `mono` lemma b/c `div_le_div₀` is strictly more general
-@[gcongr]
 lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   gcongr

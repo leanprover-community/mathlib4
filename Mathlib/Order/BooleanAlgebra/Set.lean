@@ -250,11 +250,9 @@ theorem inter_union_compl (s t : Set α) : s ∩ t ∪ s ∩ tᶜ = s :=
 theorem diff_subset_diff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ :=
   show s₁ ≤ s₂ → t₂ ≤ t₁ → s₁ \ t₁ ≤ s₂ \ t₂ from sdiff_le_sdiff
 
-@[gcongr]
 theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t :=
   sdiff_le_sdiff_right ‹s₁ ≤ s₂›
 
-@[gcongr]
 theorem diff_subset_diff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t :=
   sdiff_le_sdiff_left ‹t ≤ u›
 

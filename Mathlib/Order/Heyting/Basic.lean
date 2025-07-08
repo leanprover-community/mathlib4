@@ -503,11 +503,9 @@ theorem sup_sdiff_right_self : (a ⊔ b) \ b = a \ b := by rw [sup_sdiff, sdiff_
 @[simp]
 theorem sup_sdiff_left_self : (a ⊔ b) \ a = b \ a := by rw [sup_comm, sup_sdiff_right_self]
 
-@[gcongr]
 theorem sdiff_le_sdiff_right (h : a ≤ b) : a \ c ≤ b \ c :=
   sdiff_le_iff.2 <| h.trans <| le_sup_sdiff
 
-@[gcongr]
 theorem sdiff_le_sdiff_left (h : a ≤ b) : c \ b ≤ c \ a :=
   sdiff_le_iff.2 <| le_sup_sdiff.trans <| sup_le_sup_right h _
 

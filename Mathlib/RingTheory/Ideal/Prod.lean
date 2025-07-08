@@ -45,11 +45,9 @@ theorem prod_mono {I₁ I₂ : Ideal R} {J₁ J₂ : Ideal S} (hI : I₁ ≤ I�
     prod I₁ J₁ ≤ prod I₂ J₂ :=
   Set.prod_mono hI hJ
 
-@[gcongr]
 theorem prod_mono_left {I₁ I₂ : Ideal R} {J : Ideal S} (hI : I₁ ≤ I₂) : prod I₁ J ≤ prod I₂ J :=
   Set.prod_mono_left hI
 
-@[gcongr]
 theorem prod_mono_right {I : Ideal R} {J₁ J₂ : Ideal S} (hJ : J₁ ≤ J₂) : prod I J₁ ≤ prod I J₂ :=
   Set.prod_mono_right hJ
 
