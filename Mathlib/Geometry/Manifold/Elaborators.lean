@@ -212,6 +212,37 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
 
     throwError "Couldn’t find models with corners"
 
+-- TODO: scope all these elaborators to the `Manifold` namespace
+
+-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
+-- trying to determine `I` and `J` from the local context.
+-- The argument x can be omitted.
+elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let ef ← Term.elabTerm f none
+  let etype ← inferType ef >>= instantiateMVars
+  let _estype ← inferType ef >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    -- TODO: check that `estype` and src are compatible/the same!
+    return ← mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
+  | _ => throwError m!"Term {ef} is not a function."
+
+-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
+-- trying to determine `I` and `J` from the local context.
+elab:max "MDiffAt" t:term:arg : term => do
+  let e ← Term.elabTerm t none
+  let etype ← inferType e >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
+  | _ => throwError m!"Term {e} is not a function."
+
+-- FIXME: remove in favour of MDiffAt (once that one is scoped)
 elab:max "MDifferentiableAt%" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
@@ -222,6 +253,34 @@ elab:max "MDifferentiableAt%" t:term:arg : term => do
     return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
+-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f`, trying to determine `I` and `J` from the
+-- local context.
+elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let et ← Term.elabTerm t none
+  let _estype ← inferType es >>= instantiateMVars
+  let etype ← inferType et >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    -- TODO: check that `estype` and src are compatible/the same!
+    return ← mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
+  | _ => throwError m!"Term {et} is not a function."
+
+-- `MDiff f` elaborates to `MDifferentiable I J f`,
+-- trying to determine `I` and `J` from the local context.
+elab:max "MDiff" t:term:arg : term => do
+  let e ← Term.elabTerm t none
+  let etype ← inferType e >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
+  | _ => throwError m!"Term {e} is not a function."
+
+-- TODO: remove in favour of MDiff
 elab:max "MDifferentiable%" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
@@ -232,6 +291,65 @@ elab:max "MDifferentiable%" t:term:arg : term => do
     return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
+-- `CMDiffAt[s] n f` elaborates to `ContMDiffWithinAt I J n f s`
+elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let ef ← Term.elabTerm f none
+  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let ne ← Term.elabTerm nt wtn
+  let _estype ← inferType es >>= instantiateMVars
+  let eftype ← inferType ef >>= instantiateMVars
+  match eftype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    -- TODO: check `estype` and src are compatible
+    return ← mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
+  | _ => throwError m!"Term {ef} is not a function."
+
+-- `CMDiffAt n f` elaborates to `ContMDiffAt I J n f s`
+elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
+  let e ← Term.elabTerm t none
+  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let ne ← Term.elabTerm nt wtn
+  let etype ← inferType e >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
+  | _ => throwError m!"Term {e} is not a function."
+
+-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`
+elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let ef ← Term.elabTerm f none
+  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let ne ← Term.elabTerm nt wtn
+  let _estype ← inferType es >>= instantiateMVars
+  let eftype ← inferType ef >>= instantiateMVars
+  match eftype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    -- TODO: check `estype` and src are compatible
+    return ← mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
+  | _ => throwError m!"Term {ef} is not a function."
+
+-- `CMDiff n f` elaborates to `ContMDiff I J n f`
+elab:max "CMDiff" nt:term:arg t:term:arg : term => do
+  let e ← Term.elabTerm t none
+  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let ne ← Term.elabTerm nt wtn
+  let etype ← inferType e >>= instantiateMVars
+  match etype with
+  | .forallE _ src tgt _ =>
+    let srcI ← find_model src
+    let tgtI ← find_model tgt (src, srcI)
+    return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
+  | _ => throwError m!"Term {e} is not a function."
+
+-- TODO: remove in favour of CMDiff
 elab:max "ContMDiff%" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
@@ -244,6 +362,7 @@ elab:max "ContMDiff%" nt:term:arg t:term:arg : term => do
     return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
 
+-- TODO: remove in favour of CMDiffAt
 elab:max "ContMDiffAt%" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
