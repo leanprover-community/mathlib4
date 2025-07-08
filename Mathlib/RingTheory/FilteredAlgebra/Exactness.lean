@@ -26,7 +26,7 @@ exact.
 
 namespace FilteredAddGroupHom
 
-variable {ι A B C σA σB σC: Type*} [SetLike σA A] [SetLike σB B] [SetLike σC C]
+variable {ι A B C σA σB σC : Type*} [SetLike σA A] [SetLike σB B] [SetLike σC C]
 
 variable [AddCommGroup A] [AddCommGroup B] [AddCommGroup C]
 variable [AddSubgroupClass σA A] [AddSubgroupClass σB B] [AddSubgroupClass σC C]
@@ -114,7 +114,7 @@ variable [AddCommGroup T] [SetLike σT T] [AddSubgroupClass σT T]
 
 variable {FR : ι → σR} {FS : ι → σS} {FT : ι → σT}
 
-variable {FR_lt: outParam <| ι → σR} {FS_lt: outParam <| ι → σS} {FT_lt: outParam <| ι → σT}
+variable {FR_lt : outParam <| ι → σR} {FS_lt : outParam <| ι → σS} {FT_lt : outParam <| ι → σT}
 
 variable (f : FilteredAddGroupHom FR FR_lt FS FS_lt) (g : FilteredAddGroupHom FS FS_lt FT FT_lt)
 
