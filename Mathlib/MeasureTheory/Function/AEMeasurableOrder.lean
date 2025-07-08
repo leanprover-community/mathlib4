@@ -79,7 +79,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       change μ _ = 0
       convert this
       ext y
-      simp only [not_exists, exists_prop, mem_setOf_eq, mem_compl_iff, not_notMem]
+      simp only [mem_setOf_eq, mem_compl_iff, not_notMem]
     filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i
@@ -99,7 +99,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
         dense_iff_inter_open.1 s_dense (Ioo (f x) q) isOpen_Ioo (nonempty_Ioo.2 hq)
       refine ⟨⟨r, rs⟩, ?_⟩
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
-      simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
+      simp only [A, rq, piecewise_eq_of_mem]
   exact ⟨f', f'_meas, ff'⟩
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable
