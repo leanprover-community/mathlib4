@@ -45,8 +45,6 @@ namespace DinatTrans
 /-- Notation for dinatural transformations. -/
 scoped infixr:50 " ⤞ " => DinatTrans
 
-variable {E : Type u₃} [Category.{v₃} E] {F : Type u₄} [Category.{v₄} F]
-
 variable {F G H : Cᵒᵖ ⥤ C ⥤ D}
 
 /-- Post-composition with a natural transformation. -/
