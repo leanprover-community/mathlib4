@@ -123,16 +123,9 @@ lemma deriv_star_conj {f : 𝕜 → F} :
     deriv (star ∘ f ∘ conj) = star ∘ deriv f ∘ conj := by
   ext z
   by_cases hf : DifferentiableAt 𝕜 f (conj z)
-  · have hd := hf.hasDerivAt.star_conj.deriv
-    simp only [Function.comp_def, RingHomCompTriple.comp_apply, RingHom.id_apply,
-      Function.comp_apply] at hd ⊢
-    exact hd
-  · simp only [Function.comp_apply, hf, not_false_eq_true, deriv_zero_of_not_differentiableAt,
-      star_zero]
-    apply deriv_zero_of_not_differentiableAt
-    contrapose! hf
-    rw[← RCLike.conj_conj z] at hf
-    rwa[← differentiableAt_star_conj_iff]
+  · convert hf.hasDerivAt.star_conj.deriv; simp
+  · have := differentiableAt_star_conj_iff.not.2 hf
+    simp_all [deriv_zero_of_not_differentiableAt]
 
 /--
 The derivative of `conj ∘ f ∘ conj` is `conj ∘ deriv f ∘ conj`, allowing for the possibility that
