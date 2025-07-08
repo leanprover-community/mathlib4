@@ -15,31 +15,10 @@ TODO: add a more complete doc-string
 
 -/
 
-open Bundle Filter Function Topology
-
 open scoped Bundle Manifold ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section
-
-variable {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-
-
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  -- `F` model fiber
-  (n : WithTop ℕ∞)
-  (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
-  [∀ x : M, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
-  [∀ x, ContinuousSMul 𝕜 (V x)]
-  [FiberBundle F V] [VectorBundle 𝕜 F V]
-  -- `V` vector bundle
-
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
@@ -350,23 +329,5 @@ elab:max "ContMDiffAt%" nt:term:arg t:term:arg : term => do
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
-
-variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
-variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
-
-variable {EM' : Type*} [NormedAddCommGroup EM']
-  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  (f : M → M') (m : M)
-
--- Other tests in MathlibTest/DifferentialGeomtry/Elaborators.
-
-/-- info: ContMDiff I (I.prod 𝓘(𝕜, E)) 1 fun m ↦ TotalSpace.mk' E m (X m) : Prop -/
-#guard_msgs in
-#check ContMDiff% 1 (T% X)
-
-/-- info: ContMDiffAt I (I.prod 𝓘(𝕜, E)) 1 (fun m ↦ TotalSpace.mk' E m (X m)) m : Prop -/
-#guard_msgs in
-#check ContMDiffAt% 1 (T% X) m
 
 end
