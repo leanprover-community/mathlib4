@@ -126,16 +126,25 @@ The `rel` tactic is finishing-only: if fails if any main or side goals are not r
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
-/-- `GCongrKey` is the key used to store and look up `gcongr` lemmas. -/
+/-- `GCongrKey` is the key used in the hashmap for looking up `gcongr` lemmas. -/
 structure GCongrKey where
   /-- The name of the relation. For example, `a + b ≤ a + c` has ``relName := `LE.le``. -/
   relName : Name
   /-- The name of the head function. For example, `a + b ≤ a + c` has ``head := `HAdd.hAdd``. -/
   head : Name
+  /-- The number of arguments that `head` is applied to.
+  For example, `a + b ≤ a + c` has `arity := 6`. -/
+  arity : Nat
+deriving Inhabited, DecidableEq, Hashable
+
+/-- `GCongrKeyAndArgs` is the key used to store and look up `gcongr` lemmas. -/
+structure GCongrKeyAndArgs where
+  /-- The key used in the hashmap. -/
+  key : GCongrKey
   /-- The array of which arguments in the application of `head` are different.
   For example, `a + b ≤ a + c` has `#[false, false, false, false, false, true]`. -/
-  varyingArgs : Array Bool
-deriving Inhabited, BEq, Hashable
+  varyingArgs : Vector Bool key.arity
+deriving Inhabited
 
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
@@ -149,10 +158,10 @@ structure GCongrLemma where
   deriving Inhabited, Repr
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
-initialize gcongrExt : SimpleScopedEnvExtension (GCongrKey × GCongrLemma)
-    (Std.HashMap GCongrKey (Array GCongrLemma)) ←
+initialize gcongrExt : SimpleScopedEnvExtension (GCongrKeyAndArgs × GCongrLemma)
+    (Std.DHashMap GCongrKey (fun key => Std.TreeMap (Vector Bool key.arity) GCongrLemma)) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, lem) => m.insert n ((m.getD n #[]).push lem)
+    addEntry := fun m (n, lem) => m.insert n.key ((m.getD n.key {}).insert n.varyingArgs lem)
     initial := {}
   }
 
@@ -179,9 +188,9 @@ def getRel (e : Expr) : Option (Name × Expr × Expr) :=
       none
   | _ => none
 
-/-- Construct the `GCongrKey` and `GCongrLemma` data from a given lemma. -/
-def makeGCongrLemma (decl : Name) (declTy : Expr) (numHyps : Nat) :
-    MetaM (GCongrKey × GCongrLemma) := do
+/-- Construct the `GCongrKeyAndArgs` and `GCongrLemma` data from a given lemma. -/
+def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps : Nat) :
+    MetaM (GCongrKeyAndArgs × GCongrLemma) := do
   withReducible <| forallBoundedTelescope declTy numHyps fun xs targetTy => do
     let fail {α} (m : MessageData) : MetaM α := throwError "\
       @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
@@ -242,8 +251,9 @@ def makeGCongrLemma (decl : Name) (declTy : Expr) (numHyps : Nat) :
             return mainSubgoals.push (i, j.1, args.size - 1)
         return mainSubgoals
       i := i + 1
-    -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
-    return ({ relName, head, varyingArgs }, { declName := decl, mainSubgoals })
+    -- store all the information from this parse in a `GCongrKeyAndArgs` and a `GCongrLemma`
+    let key := { relName, head, arity := varyingArgs.size }
+    return ({ key, varyingArgs := varyingArgs.toVector }, { declName, mainSubgoals })
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -360,7 +370,7 @@ def containsHole (template : Expr) : MetaM Bool := do
 section Trans
 
 /-!
-The lemmas `rel_imp_rel`, `rel_trans` and `rel_trans'` are too general to be tagged with
+The lemmas `rel_imp`, `rel_trans` and `rel_trans'` are too general to be tagged with
 `@[gcongr]`, so instead we use `getTransLemma?` to look up these lemmas.
 -/
 
@@ -376,15 +386,15 @@ lemma rel_trans' (h : r b c) : r a b → r a c := fun h' => rel_trans h' h
 `getTransLemma?` constructs a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
 This will be tried if there is no other available `@[gcongr]` lemma.
 For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a congruence of the form
-`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`, `rel_trans` or `rel_trans'`.
+`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp`, `rel_trans` or `rel_trans'`.
 -/
-def getTransLemma? (key : GCongrKey) : Array GCongrLemma := Id.run do
+def getTransLemma? (relName : Name) (varyingArgs : Array Bool) : Array GCongrLemma :=
   -- check that the relation is an implication
-  if key.relName != `_Implies then #[] else
-  let num := key.varyingArgs.size
+  if relName != `_Implies then #[] else
+  let num := varyingArgs.size
   if h : 2 ≤ num then
-    if key.varyingArgs.any id (stop := num - 2) then #[] else
-    match key.varyingArgs[num - 2], key.varyingArgs[num - 1] with
+    if varyingArgs.any id (stop := num - 2) then #[] else
+    match varyingArgs[num - 2], varyingArgs[num - 1] with
     | true, true =>
       #[{ declName := ``rel_imp_rel, mainSubgoals := #[(7, num - 2, 0), (8, num - 1, 0)] }]
     | true, false =>
@@ -474,10 +484,13 @@ partial def _root_.Lean.MVarId.gcongr
   let s ← saveState
   let mut ex? := none
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
-  -- the goal and whether the boolean-array of varying/nonvarying arguments of such
-  -- a lemma matches `varyingArgs`.
-  let key := { relName, head := lhsHead, varyingArgs }
-  for lem in (gcongrExt.getState (← getEnv)).getD key #[] ++ getTransLemma? key do
+  -- the goal and whose boolean-array of varying/nonvarying arguments is at least `varyingArgs`.
+  let key := { relName, head := lhsHead, arity := varyingArgs.size }
+  let lemmas := (gcongrExt.getState (← getEnv)).getD key {}
+  let lemmas := lemmas.foldl (init := #[]) fun lems varyingArgs' lem =>
+    if varyingArgs.toVector ≤ varyingArgs' then lems.push lem else lems
+  let lemmas := lemmas ++ getTransLemma? relName varyingArgs
+  for lem in lemmas do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
@@ -506,16 +519,24 @@ partial def _root_.Lean.MVarId.gcongr
         let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
         -- Introduce all variables and hypotheses in this subgoal.
         let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names (maxIntros? := numHyps)
-        -- B. If there is a template, look up the part of the template corresponding to the `j`-th
-        -- input to the head function
-        let tpl ← tplArgs[j]!.1.mapM fun e => do
-          let (_vs, _, e) ← lambdaMetaTelescope e
-          pure e
-        -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
-        -- appropriate template
-        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 grewriteHole mainGoalDischarger
-          sideGoalDischarger
-        (names, subgoals) := (names2, subgoals ++ subgoals2)
+        -- If the `j`-th input is the same in LHS and RHS, then we have a `rfl` goal
+        if !varyingArgs[j]! then
+          try
+            mvarId.applyRfl
+          catch ex =>
+            throwError "hypothesis {i} of `@[gcongr]` lemma '{lem.declName}' has a relation \
+              that coudn't be shown to be reflexive:\n{ex.toMessageData}"
+        else
+          -- B. If there is a template, look up the part of the template corresponding to the `j`-th
+          -- input to the head function
+          let tpl ← tplArgs[j]!.1.mapM fun e => do
+            let (_vs, _, e) ← lambdaMetaTelescope e
+            pure e
+          -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
+          -- appropriate template
+          let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 grewriteHole mainGoalDischarger
+            sideGoalDischarger
+          (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
       -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
       -- by the `apply`.
