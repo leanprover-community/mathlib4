@@ -403,18 +403,18 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
   Order.IsNormal f
 
-theorem IsNormal.limit_le {f : Ordinal → Ordinal} (H : IsNormal f) :
+theorem IsNormal.limit_le {f} (H : IsNormal f) :
     ∀ {o}, IsLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a :=
   H.le_iff_forall_le
 
-theorem IsNormal.limit_lt {f : Ordinal → Ordinal} (H : IsNormal f) {o} (h : IsLimit o) {a} :
+theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsLimit o) {a} :
     a < f o ↔ ∃ b < o, a < f b :=
   H.lt_iff_exists_lt h
 
-theorem IsNormal.strictMono {f : Ordinal → Ordinal} (H : IsNormal f) : StrictMono f :=
+theorem IsNormal.strictMono {f} (H : IsNormal f) : StrictMono f :=
   Order.IsNormal.strictMono H
 
-theorem IsNormal.monotone {f : Ordinal → Ordinal} (H : IsNormal f) : Monotone f :=
+theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
 
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
