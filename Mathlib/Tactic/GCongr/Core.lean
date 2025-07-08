@@ -486,11 +486,12 @@ partial def _root_.Lean.MVarId.gcongr
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal and whose boolean-array of varying/nonvarying arguments is at least `varyingArgs`.
   let key := { relName, head := lhsHead, arity := varyingArgs.size }
-  let lemmas := (gcongrExt.getState (← getEnv)).getD key {}
-  let lemmas := lemmas.foldl (init := #[]) fun lems varyingArgs' lem =>
-    if varyingArgs.toVector ≤ varyingArgs' then lems.push lem else lems
-  let lemmas := lemmas ++ getTransLemma? relName varyingArgs
-  for lem in lemmas do
+  let mut lemmas := #[]
+  if let some candidates := (gcongrExt.getState (← getEnv)).get? key then
+    for (varyingArgsCandidate, lem) in candidates do
+      if varyingArgs.size.all fun i _ => !varyingArgs[i] || varyingArgsCandidate[i] then
+        lemmas := lemmas.push lem
+  for lem in lemmas ++ getTransLemma? relName varyingArgs do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
