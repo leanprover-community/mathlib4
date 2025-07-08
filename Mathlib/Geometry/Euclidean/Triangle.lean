@@ -299,7 +299,7 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist (p₁ p₂ p₃ : P) :
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
 /-- A variant of the law of sines, angle-at-point form. -/
-theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁):
+theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁) :
     Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
   field_simp [dist_ne_zero.mpr h23, dist_ne_zero.mpr h31]
   exact law_sin _ _ _
