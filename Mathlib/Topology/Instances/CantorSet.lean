@@ -107,10 +107,11 @@ theorem cantorSet_eq_union_halves :
   rotate_left
   · exact (mulRight_bijective₀ 3⁻¹ (by norm_num)).comp (AddGroup.addLeft_bijective 2)
   · exact mulRight_bijective₀ 3⁻¹ (by norm_num)
-  rw [← Set.iInter_union_of_antitone
-    (by exact Set.monotone_image.comp_antitone preCantorSet_antitone)
-    (by exact Set.monotone_image.comp_antitone preCantorSet_antitone)]
-  change ⋂ n, preCantorSet n = ⋂ n, preCantorSet (n + 1)
+  simp_rw [← Function.comp_def,
+    ← Set.iInter_union_of_antitone
+      (Set.monotone_image.comp_antitone preCantorSet_antitone)
+      (Set.monotone_image.comp_antitone preCantorSet_antitone),
+    Function.comp_def, ← preCantorSet_succ]
   exact (preCantorSet_antitone.iInter_nat_add _).symm
 
 /-- The preCantor sets are closed. -/
