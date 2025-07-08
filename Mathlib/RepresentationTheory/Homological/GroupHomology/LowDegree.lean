@@ -649,7 +649,7 @@ end ofDistribMulAction
 
 open ShortComplex
 
-section zeroCyclesIso
+section cyclesIso₀
 
 instance : Epi (shortComplexH0 A).g := inferInstanceAs <| Epi ((coinvariantsMk k G).app A)
 
@@ -698,9 +698,9 @@ lemma coinvariantsMk_comp_opcyclesIso₀_inv :
       (chainsIso₀ A).inv ≫ (inhomogeneousChains A).pOpcycles 0 :=
   (CommSq.vert_inv ⟨pOpcycles_comp_opcyclesIso_hom A⟩).w
 
-end zeroCyclesIso
+end cyclesIso₀
 
-section isoOneCycles
+section isoCycles₁
 
 variable [DecidableEq G]
 
@@ -736,9 +736,9 @@ lemma toCycles_comp_isoCycles₁_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₂₁_eq,
     shortComplexH1_f]
 
-end isoOneCycles
+end isoCycles₁
 
-section isoTwoCycles
+section isoCycles₂
 
 variable [DecidableEq G]
 
@@ -774,5 +774,5 @@ lemma toCycles_comp_isoCycles₂_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₃₂_eq,
     shortComplexH2_f]
 
-end isoTwoCycles
+end isoCycles₂
 end groupHomology
