@@ -246,7 +246,7 @@ def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
   obj F :=
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon_.forget₂Mon_ D) with
       comm := { mul_comm := by ext X; exact IsCommMon.mul_comm (F.obj X).X } }
-  map α := (monFunctorCategoryEquivalence C D).inverse.map (whiskerRight α _)
+  map α := (monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _)
 
 /-- The unit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/

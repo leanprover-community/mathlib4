@@ -3,6 +3,8 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.RootSystem.Chain
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
@@ -85,6 +87,12 @@ lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
   have := linearIndepOn_iff'.mp b.linearIndepOn_root ({i, j} : Finset ι) 1
     (by simp [Set.insert_subset_iff, hi, hj]) (by simp [Finset.sum_pair hij, contra])
   aesop
+
+lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
+    LinearIndependent R ![P.root i, P.root j] := by
+  have : ({(j : ι), (i : ι)} : Set ι) ⊆ b.support := by simp [pair_subset_iff]
+  rw [← linearIndepOn_id_range_iff (by aesop)]
+  simpa [image_pair] using LinearIndepOn.id_image <| b.linearIndepOn_root.mono this
 
 lemma root_mem_span_int (i : ι) :
     P.root i ∈ span ℤ (P.root '' b.support) := by
@@ -221,6 +229,24 @@ lemma sub_notMem_range_coroot [CharZero R] [Finite ι]
   b.flip.sub_notMem_range_root hi hj
 
 @[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
+
+lemma pairingIn_le_zero_of_ne [CharZero R] [IsDomain R][P.IsCrystallographic] [Finite ι]
+    {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
+    P.pairingIn ℤ i j ≤ 0 := by
+  by_contra! h
+  exact b.sub_notMem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
+
+variable {b}
+variable [CharZero R] [IsDomain R] [P.IsCrystallographic] [Finite ι] {i j : b.support}
+
+@[simp] lemma chainBotCoeff_eq_zero :
+    P.chainBotCoeff i j = 0 :=
+  chainBotCoeff_eq_zero_iff.mpr <| Or.inr <| b.sub_notMem_range_root j.property i.property
+
+lemma chainTopCoeff_eq_of_ne (hij : i ≠ j) :
+    P.chainTopCoeff i j = -P.pairingIn ℤ j i := by
+  rw [← chainTopCoeff_sub_chainBotCoeff (b.linearIndependent_pair_of_ne hij)]
+  simp
 
 end RootPairing
 
