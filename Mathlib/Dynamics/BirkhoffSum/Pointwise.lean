@@ -174,11 +174,6 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
   rcases hx with ⟨M', M_lt_top, M_is_bound⟩
 
   /- the upper bound is, in fact, a real number -/
-  -- cases' M' using EReal.rec with M
-  -- case bot => exfalso; exact (EReal.bot_lt_coe _).not_ge (M_is_bound 0)
-  -- case top => contradiction
-  -- norm_cast at M_is_bound
-
   obtain ⟨M, hM⟩ : ∃ (M : ℝ), ∀ (n : ℕ), birkhoffSum f φ (n + 1) x ≤ M := by
     induction M' using EReal.rec with
     | bot => exfalso; exact (EReal.bot_lt_coe _).not_ge (M_is_bound 0)
@@ -202,7 +197,7 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
 
 /- From now on, assume f is measure-preserving and φ is integrable. -/
 variable {f : α → α} (hf : MeasurePreserving f μ μ)
-         {φ : α → ℝ} (hφ : Integrable φ μ) (hφ' : Measurable φ) /- seems necessary? -/
+         {φ : α → ℝ} (hφ : Integrable φ μ) (hφ' : Measurable φ)
 
 lemma iterates_integrable {i : ℕ} (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) :
     Integrable (φ ∘ f^[i]) μ := by
@@ -367,7 +362,7 @@ theorem birkhoffErgodicTheorem (hf : MeasurePreserving f μ μ) (hφ : Integrabl
       ∀ᶠ n in atTop, |birkhoffAverage ℝ f φ n x - (invCondexp μ f φ x)| < (k : ℝ)⁻¹ := by
     apply ae_all_iff.mpr
     rintro ⟨k, hk⟩
-    let δ := (k : ℝ)⁻¹/2
+    let δ := (k : ℝ)⁻¹ / 2
     have hδ : δ > 0 := by simpa [δ]
     have p₁ := birkhoffErgodicTheorem_aux μ hδ hf hφ hφ'
     have p₂ := birkhoffErgodicTheorem_aux μ hδ hf hφ.neg hφ'.neg
@@ -402,18 +397,28 @@ theorem birkhoffErgodicTheorem (hf : MeasurePreserving f μ μ) (hφ : Integrabl
   norm_num at hk' ⊢
   linarith
 
-/-- Here we drop the assumption that the observable is `Measurable`. -/
-theorem birkhoffErgodicTheorem' {Φ : α → ℝ} (hf : MeasurePreserving f μ μ) (hΦ : Integrable Φ μ) :
-    ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f Φ · x) atTop (𝓝 (invCondexp μ f Φ x)) := by
+theorem birkhoffErgodicTheorem'' (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ)
+    (hφ' : Measurable φ) :
+    ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f φ · x) atTop (𝓝 (μ[φ|invariants f] x)) := by
+  exact birkhoffErgodicTheorem μ hf hφ hφ'
+
+
+/-- **Pointwise Ergodic Theorem** a.k.a. **Birkhoff's Ergodic Theorem**
+
+Time average coincides with conditional expectation for typical points. -/
+theorem ae_tendsTo_birkhoffAverage_condExp {Φ : α → ℝ}
+    (μ : Measure α) [IsProbabilityMeasure μ]
+    (hf : MeasurePreserving f μ μ) (hΦ : Integrable Φ μ) :
+    ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f Φ · x) atTop (𝓝 (μ[Φ|invariants f] x)) := by
   -- Take `φ` as the measurable approximation to the ae measurable `Φ`.
   let φ := hΦ.left.mk
   have hφ' : Measurable φ := hΦ.left.measurable_mk
   have hΦ' : Φ =ᵐ[μ] φ := hΦ.left.ae_eq_mk
   have hφ : Integrable φ μ := (integrable_congr hΦ.left.ae_eq_mk).mp hΦ
   -- Obtain a full measure set such that the three relevant results hold.
-  obtain ⟨s, hs, hs'⟩ : ∃ s ∈ ae μ, Set.EqOn (invCondexp μ f Φ) (invCondexp μ f φ) s :=
+  obtain ⟨s, hs, hs'⟩ : ∃ s ∈ ae μ, Set.EqOn (μ[Φ|invariants f]) (μ[φ|invariants f]) s :=
     eventuallyEq_iff_exists_mem.mp <| condExp_congr_ae hΦ'
-  obtain ⟨t, ht, ht'⟩ := eventually_iff_exists_mem.mp <| birkhoffErgodicTheorem μ hf hφ hφ'
+  obtain ⟨t, ht, ht'⟩ := eventually_iff_exists_mem.mp <| birkhoffErgodicTheorem'' μ hf hφ hφ'
   have := ae_all_iff.mpr <| birkhoffAverage_ae_eq_of_ae_eq ℝ hf.quasiMeasurePreserving hΦ'
   obtain ⟨u, hu, hu'⟩ := eventually_iff_exists_mem.mp this
   -- Apply the three results on the chosen set.
