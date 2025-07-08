@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth, Floris van Doorn
+Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
@@ -12,7 +12,11 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 # `C^n` sections
 
 In this file we define the type `ContMDiffSection` of `n` times continuously differentiable
-sections of a vector bundle over a manifold `M` and prove that it's a module.
+sections of a vector bundle over a manifold `M` and prove that it's a module over the base field.
+
+In passing, we prove that binary and finite sums, differences and scalar products of `C^n`
+sections are `C^n`.
+
 -/
 
 
@@ -31,7 +35,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `V` vector bundle
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
--- Binary and finite sums and scalar products of smooth sections are smooth
+-- Binary and finite sums, negative, differences and scalar products of smooth sections are smooth
 section operations
 
 -- Let V be a vector bundle
