@@ -406,7 +406,7 @@ alias submatrix_updateColumn_succAbove := submatrix_updateCol_succAbove
 
 end Submatrix
 
-section Vec2AndVec3
+section Vec
 
 section One
 
@@ -479,14 +479,31 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
   fin_cases i <;> fin_cases j
     <;> simp [Matrix.mul_apply, Fin.sum_univ_succ, ← add_assoc]
 
-theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
-  subst_vars
-  rfl
+@[simp]
+theorem vec1_eq_iff {a b : α} : ![a] = ![b] ↔ a = b := by
+  simp
+
+theorem vec1_eq {a b : α} (h : a = b) : ![a] = ![b] :=
+  vec1_eq_iff.2 h
+
+@[simp]
+theorem vec2_eq_iff {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] = ![b₀, b₁] ↔ a₀ = b₀ ∧ a₁ = b₁ := by
+  simp
+
+theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] :=
+  vec2_eq_iff.2 ⟨h₀, h₁⟩
+
+@[simp]
+theorem vec3_eq_iff {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
+    ![a₀, a₁, a₂] = ![b₀, b₁, b₂] ↔ a₀ = b₀ ∧ a₁ = b₁ ∧ a₂ = b₂ := by
+  simp
 
 theorem vec3_eq {a₀ a₁ a₂ b₀ b₁ b₂ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) (h₂ : a₂ = b₂) :
-    ![a₀, a₁, a₂] = ![b₀, b₁, b₂] := by
-  subst_vars
-  rfl
+    ![a₀, a₁, a₂] = ![b₀, b₁, b₂] :=
+  vec3_eq_iff.2 ⟨h₀, h₁, h₂⟩
+
+theorem vec1_add [Add α] (a b : α) : ![a] + ![b] = ![a + b] := by
+  rw [cons_add_cons, empty_add_empty]
 
 theorem vec2_add [Add α] (a₀ a₁ b₀ b₁ : α) : ![a₀, a₁] + ![b₀, b₁] = ![a₀ + b₀, a₁ + b₁] := by
   rw [cons_add_cons, cons_add_cons, empty_add_empty]
@@ -494,6 +511,9 @@ theorem vec2_add [Add α] (a₀ a₁ b₀ b₁ : α) : ![a₀, a₁] + ![b₀, b
 theorem vec3_add [Add α] (a₀ a₁ a₂ b₀ b₁ b₂ : α) :
     ![a₀, a₁, a₂] + ![b₀, b₁, b₂] = ![a₀ + b₀, a₁ + b₁, a₂ + b₂] := by
   rw [cons_add_cons, cons_add_cons, cons_add_cons, empty_add_empty]
+
+theorem smul_vec1 {R : Type*} [SMul R α] (x : R) (a : α) :
+    x • ![a] = ![x • a] := by rw [smul_cons, smul_empty]
 
 theorem smul_vec2 {R : Type*} [SMul R α] (x : R) (a₀ a₁ : α) :
     x • ![a₀, a₁] = ![x • a₀, x • a₁] := by rw [smul_cons, smul_cons, smul_empty]
@@ -504,8 +524,15 @@ theorem smul_vec3 {R : Type*} [SMul R α] (x : R) (a₀ a₁ a₂ : α) :
 
 variable [AddCommMonoid α] [Mul α]
 
+theorem vec1_dotProduct' {a b : α} : ![a] ⬝ᵥ ![b] = a * b := by
+  rw [cons_dotProduct_cons, dotProduct_empty, add_zero]
+
+@[simp]
+theorem vec1_dotProduct (v w : Fin 1 → α) : v ⬝ᵥ w = v 0 * w 0 :=
+  vec1_dotProduct'
+
 theorem vec2_dotProduct' {a₀ a₁ b₀ b₁ : α} : ![a₀, a₁] ⬝ᵥ ![b₀, b₁] = a₀ * b₀ + a₁ * b₁ := by
-  rw [cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty, add_zero]
+  rw [cons_dotProduct_cons, vec1_dotProduct']
 
 @[simp]
 theorem vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 :=
@@ -513,15 +540,14 @@ theorem vec2_dotProduct (v w : Fin 2 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 
 
 theorem vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
     ![a₀, a₁, a₂] ⬝ᵥ ![b₀, b₁, b₂] = a₀ * b₀ + a₁ * b₁ + a₂ * b₂ := by
-  rw [cons_dotProduct_cons, cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty,
-    add_zero, add_assoc]
+  rw [cons_dotProduct_cons, vec2_dotProduct', add_assoc]
 
 -- This is not tagged `@[simp]` because it does not mesh well with simp lemmas for
 -- dot and cross products in dimension 3.
 theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
   vec3_dotProduct'
 
-end Vec2AndVec3
+end Vec
 
 end Matrix
 
