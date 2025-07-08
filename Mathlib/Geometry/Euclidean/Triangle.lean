@@ -59,18 +59,15 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
     real_inner_self_eq_norm_mul_norm, ← real_inner_self_eq_norm_mul_norm, real_inner_sub_sub_self,
     sub_add_eq_add_sub]
 
-/-- **Law of sines** (sine rule), vector form. -/
+/-- **Law of sines** (sine rule), vector angle form. -/
 theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
     Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖ := by
-  wlog h : x ≠ 0 ∧ y ≠ 0 ∧ x ≠ y
-  · obtain rfl | hy := eq_or_ne y 0
-    · simp
-    obtain rfl | hx := eq_or_ne x 0
-    · simp [angle_neg_right, angle_self hy]
-    obtain rfl | hxy := eq_or_ne x y
-    · simp [angle_self hx]
-    cases h ⟨hx, hy, hxy⟩
-  obtain ⟨hx, hy, hxy⟩ := h
+  obtain rfl | hy := eq_or_ne y 0
+  · norm_num
+  obtain rfl | hx := eq_or_ne x 0
+  · simp [angle_neg_right, angle_self hy]
+  obtain rfl | hxy := eq_or_ne x y
+  · simp [angle_self hx]
   have h_sin (x y : V) (hx : x ≠ 0) (hy : y ≠ 0) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
     field_simp [sin_angle_mul_norm_mul_norm]
