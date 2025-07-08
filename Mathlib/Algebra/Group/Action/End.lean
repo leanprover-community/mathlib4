@@ -94,7 +94,7 @@ instance : MulAction.IsPretransitive (Perm α) α := by
   classical
   intro x y
   use Equiv.swap x y
-  simp only [Perm.smul_def, swap_apply_left x y]
+  simp
 
 end Equiv.Perm
 
