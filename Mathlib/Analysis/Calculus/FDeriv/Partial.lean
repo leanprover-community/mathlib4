@@ -38,7 +38,7 @@ theorem hasStrictFDerivAt_uncurry_coprod [IsRCLikeNormedField 𝕜]
   obtain ⟨δ, hδ, hxy⟩ : ∃ δ > 0, ∀ x y, x ∈ Metric.ball x₀ δ → y ∈ Metric.ball y₀ δ →
       (HasFDerivAt (f · y) (fx x y) x ∧ ‖fx x y - fx x₀ y₀‖ < ε / 2) ∧
       (HasFDerivAt (f x ·) (fy x y) y ∧ ‖fy x y - fy x₀ y₀‖ < ε / 2) := by
-    simp_rw [← Set.forall_prod_set', ball_prod_same, ← Metric.eventually_nhds_iff_ball]
+    simp_rw [← Set.forall_prod_set_iff, ball_prod_same, ← Metric.eventually_nhds_iff_ball]
     have cfx := cfx.eventually_mem (Metric.ball_mem_nhds (fx x₀ y₀) (half_pos hε))
     have cfy := cfy.eventually_mem (Metric.ball_mem_nhds (fy x₀ y₀) (half_pos hε))
     filter_upwards [dfx, cfx, dfy, cfy] with z dfx cfx dfy cfy using ⟨⟨dfx, cfx⟩, ⟨dfy, cfy⟩⟩
