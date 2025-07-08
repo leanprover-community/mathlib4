@@ -139,17 +139,12 @@ theorem isSuccLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o
   rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   exact ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
 
-set_option linter.deprecated false in
-@[deprecated isSuccLimit_of_principal_add (since := "2025-02-09")]
-theorem isLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o) : o.IsLimit :=
-  isSuccLimit_of_principal_add ho₁ ho
-
-@[deprecated (since := "2024-10-16")]
-alias principal_add_isLimit := isLimit_of_principal_add
+@[deprecated (since := "2025-07-08")]
+alias isLimit_of_principal_add := isSuccLimit_of_principal_add
 
 theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
-  · cases' lt_or_le 1 o with ho₁ ho₁
+  · rcases lt_or_ge 1 o with ho₁ | ho₁
     · exact op_eq_self_of_principal hao (isNormal_add_right a) ho
         (isSuccLimit_of_principal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
@@ -293,10 +288,8 @@ theorem isSuccLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o
   isSuccLimit_of_principal_add ((lt_succ 1).trans (succ_one ▸ ho₂))
     (principal_add_of_principal_mul ho (ne_of_gt ho₂))
 
-set_option linter.deprecated false in
-@[deprecated isSuccLimit_of_principal_mul (since := "2025-02-09")]
-theorem isLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o) : o.IsLimit :=
-  isSuccLimit_of_principal_mul ho₂ ho
+@[deprecated (since := "2025-07-08")]
+alias isLimit_of_principal_mul := isSuccLimit_of_principal_mul
 
 theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩

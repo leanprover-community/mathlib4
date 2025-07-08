@@ -273,30 +273,6 @@ theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b 
     (mul_le_mul_left' (succ_le_of_lt hvb) _) using 1
   exact opow_succ b u
 
-section deprecated
-
-set_option linter.deprecated false
-
-@[deprecated opow_le_of_isSuccLimit (since := "2025-02-09")]
-theorem opow_le_of_limit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsLimit b) :
-    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c :=
-  opow_le_of_isSuccLimit a0 h
-
-@[deprecated lt_opow_of_isSuccLimit (since := "2025-02-09")]
-theorem lt_opow_of_limit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsLimit c) :
-    a < b ^ c ↔ ∃ c' < c, a < b ^ c' :=
-  lt_opow_of_isSuccLimit b0 h
-
-@[deprecated isSuccLimit_opow (since := "2025-02-09")]
-theorem isLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsLimit b → IsLimit (a ^ b) :=
-  isSuccLimit_opow a1
-
-@[deprecated isSuccLimit_opow (since := "2025-02-09")]
-theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a ^ b) :=
-  isSuccLimit_opow_left l hb
-
-end deprecated
-
 /-! ### Ordinal logarithm -/
 
 /-- The ordinal logarithm is the solution `u` to the equation `x = b ^ u * v + w` where `v < b` and

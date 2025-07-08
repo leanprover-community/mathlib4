@@ -36,6 +36,7 @@ variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
+-- todo: generalize to other well-orders
 theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a := by
   refine ⟨fun h ha => ?_, fun ha => ?_⟩
   · obtain ⟨b, c, hbc, hbc'⟩ :=
@@ -170,6 +171,7 @@ theorem isClosed_iff_bsup :
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
 
+-- todo: generalize to other well-orders
 theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := by
   simp only [frontier_eq_closure_inter_closure, Set.mem_inter_iff, mem_closure_iff] at ha
   by_contra h
@@ -180,10 +182,8 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
   subst hb; subst hc
   exact hc' hb'
 
-set_option linter.deprecated false in
-@[deprecated isSuccLimit_of_mem_frontier (since := "2025-02-09")]
-theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a :=
-  isSuccLimit_of_mem_frontier ha
+@[deprecated (since := "2025-07-08")]
+alias isLimit_of_mem_frontier := isLimit_of_mem_frontier
 
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{max u v}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
@@ -282,10 +282,8 @@ theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSu
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
 
-set_option linter.deprecated false in
-@[deprecated IsAcc.isSuccLimit (since := "2025-02-09")]
-theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o :=
-  h.isSuccLimit
+@[deprecated IsAcc.isSuccLimit (since := "2025-07-08")]
+alias IsAcc.isLimit := IsAcc.isSuccLimit
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by
