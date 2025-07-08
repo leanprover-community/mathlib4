@@ -494,7 +494,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
     lmapDomain _ k (fun s => (g, g⁻¹ * s.1 * g)) f - lmapDomain _ k (fun s => (s.1, g)) f
   use Y
   apply (moduleCat_pOpcycles_eq_iff _ _ _).2 ⟨Z, ?_⟩
-  show d₂₁ A Z = mapRange id rfl (lmapDomain _ k Subtype.val Y) -
+  change d₂₁ A Z = mapRange id rfl (lmapDomain _ k Subtype.val Y) -
     mapRange.linearMap (Submodule.subtype _) (mapDomain id x)
   simpa [map_finsuppSum, mapDomain, map_sub, ← hX, sum_single_index, finsuppProdLEquiv,
     finsuppProdEquiv, Finsupp.uncurry, d₂₁, Y, Z, sum_mapRange_index,
@@ -519,16 +519,16 @@ instance [DecidableEq (G ⧸ S)] :
   have : d₁₀ _ Y ∈ Coinvariants.ker (A.ρ.comp S.subtype) := by
     have h' := congr($((mapShortComplexH1 (B := toCoinvariants A S)
       (MonoidHom.id G) (toCoinvariantsMkQ A S)).comm₂₃) Y)
-    simp_all [shortComplexH1, ← Coinvariants.mk_eq_zero, hY]
+    simp_all [shortComplexH1, ← Coinvariants.mk_eq_zero]
   /- Thus we can pick a representation of `d(Y)` as a sum `∑ ρ(sᵢ⁻¹)(aᵢ) - aᵢ`, `sᵢ ∈ S, aᵢ ∈ A`,
 and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
-  rcases chains₀ToCoinvariantsKer_surjective
-    ((Action.res _ S.subtype).obj A) ⟨dZero A Y, this⟩ with ⟨(Z : S →₀ A), hZ⟩
+  rcases chains₁ToCoinvariantsKer_surjective
+    ((Action.res _ S.subtype).obj A) ⟨d₁₀ A Y, this⟩ with ⟨(Z : S →₀ A), hZ⟩
   have H : d₁₀ A (Y - mapDomain S.subtype Z) = 0 := by
     simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, - LinearMap.sub_apply, d₁₀,
       sum_mapDomain_index_inj] using Subtype.ext_iff.1 hZ.symm
   use H1π A ⟨Y - mapDomain S.subtype Z, H⟩
-  simp only [H1CoresCoinf_X₃, H1CoresCoinf_X₂, H1CoresCoinf_g, ModuleCat.hom_ofHom,
+  simp only [H1CoresCoinf_X₃, H1CoresCoinf_X₂, H1CoresCoinf_g,
     Subgroup.coe_subtype, H1π_comp_map_apply]
 /- Moreover, the image of `Y - ∑ aᵢ·sᵢ` in `Z₁(G ⧸ S, A_S)` is `x - ∑ aᵢ·1`, and hence differs from
 `x` by a boundary, since `aᵢ·1 = d(aᵢ·(1, 1))`. -/
@@ -605,24 +605,23 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
   rcases (moduleCat_pOpcycles_eq_iff _ _ _).1 hα with ⟨(δ : G × G →₀ A), hβ⟩
 /- Then, by assumption, `d(W + δ) = C₁(i, Id)(α + Z) - x`. -/
   have hαZ : d₂₁ A (W + δ) = mapDomain Subtype.val (α + Z) - x := by
-    simp_all only [shortComplexH1, moduleCatMk_X₂_carrier, moduleCatMk_X₃_carrier, Finsupp.coe_sub,
-      moduleCatMk_g, ModuleCat.hom_ofHom, moduleCatMk_X₁_carrier, Coinvariants.mk_eq_zero,
-      LinearMap.mem_range, Action.res_obj_V, Subgroup.coe_subtype, lmapDomain_apply,
-      Finsupp.coe_add, Pi.sub_apply, Pi.add_apply, mapShortComplexH1_τ₂, ModuleCat.ofHom_comp,
-      Action.id_hom, ModuleCat.hom_id, mapRange.linearMap_id, ModuleCat.ofHom_id, Category.comp_id,
-      LinearMap.coe_comp, Function.comp_apply, coinvariantsShortComplex_X₁, Submodule.coe_subtype,
+    simp_all only [shortComplexH1, Finsupp.coe_sub, ModuleCat.hom_ofHom, Action.res_obj_V,
+      Subgroup.coe_subtype, lmapDomain_apply, Finsupp.coe_add, Pi.sub_apply, Pi.add_apply,
+      mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, Action.id_hom, ModuleCat.hom_id,
+      mapRange.linearMap_id, ModuleCat.ofHom_id, Category.comp_id, LinearMap.coe_comp,
+      Function.comp_apply, coinvariantsShortComplex_X₁, Submodule.coe_subtype,
       coinvariantsShortComplex_f, MonoidHom.coe_id, lmapDomain_id, subtype_hom, Category.id_comp,
-      mapRange.linearMap_apply, map_sub, map_add, moduleCatMk_f, ← sub_add, ← sub_sub,
-      sub_add_eq_add_sub, add_sub_cancel, mapDomain_add, b]
+      mapRange.linearMap_apply, map_sub, map_add, ← sub_add, ← sub_sub, sub_add_eq_add_sub,
+      add_sub_cancel, mapDomain_add, b]
 /- So we claim that `α + Z` is an element of `Z₁(S, A)` which differs from `x` by a boundary in
 `Z₁(G, A)`. -/
   use H1π _ ⟨α + Z, ?_⟩
 /- Indeed, by `hαZ`, `d(W + δ)` is the desired boundary: -/
-  · simp only [H1CoresCoinf_X₂, H1CoresCoinf_X₁, H1CoresCoinf_f, H1π_comp_map_apply, b]
+  · simp only [H1CoresCoinf_X₂, H1CoresCoinf_X₁, H1CoresCoinf_f, H1π_comp_map_apply]
     refine (H1π_eq_iff _ _).2 ⟨W + δ, ?_⟩
     simp only [hαZ, Action.res_obj_V, mapCycles₁_hom, ModuleCat.ofHom_comp, Subgroup.coe_subtype,
       Action.id_hom, ModuleCat.hom_id, mapRange.linearMap_id, ModuleCat.ofHom_id, Category.comp_id,
-      ModuleCat.hom_ofHom, LinearMap.restrict_coe_apply, lmapDomain_apply, b]
+      ModuleCat.hom_ofHom, LinearMap.restrict_coe_apply, lmapDomain_apply]
 /- And `α + Z` is a cycle, since `d(W + δ) + x` is. -/
   · rw [mem_cycles₁_iff]
     have : x + d₂₁ A (W + δ) ∈ cycles₁ A := Submodule.add_mem _ x.2 (d₂₁_apply_mem_cycles₁ _)
