@@ -119,3 +119,16 @@ scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
   is_topological_valuation := ValuativeTopology.mem_nhds_iff
 
 end Valued
+
+namespace ValuativeRel
+
+@[inherit_doc]
+scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
+
+@[inherit_doc]
+scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal 𝒪[K]
+
+@[inherit_doc]
+scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField 𝒪[K]
+
+end ValuativeRel
