@@ -143,8 +143,8 @@ theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a
   · exact (opow_le_opow_iff_right h₁).2 h₂
 
 theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c ≤ b ^ c := by
-  obtain rfl | ha := eq_or_ne a 0
-  · obtain rfl | ha := eq_or_ne c 0 <;> simp_all
+  by_cases ha : a = 0
+  · by_cases c = 0 <;> simp_all
   · induction c using limitRecOn with
     | zero => simp
     | succ c IH => simpa using mul_le_mul' IH ab
