@@ -224,7 +224,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] 
     simp only [not_le] at this
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
       exists_min_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
-    refine ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim ?_ (le_trans ha₀.le)⟩
+    refine ⟨a₀, ha₀s, fun a has => (lt_or_ge (f a) x).elim ?_ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
     push_neg at not_all_top

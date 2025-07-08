@@ -386,7 +386,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl
-        exact i.prop.not_le hm
+        exact i.prop.not_ge hm
       map_add' := fun x y => by
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
@@ -470,7 +470,7 @@ theorem coeff_apply (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) :
     h.coeff z i = if hi : i < natDegree f then h.basis.repr z ⟨i, hi⟩ else 0 := by
   split_ifs with hi
   · exact h.coeff_apply_lt z i hi
-  · exact h.coeff_apply_le z i (le_of_not_lt hi)
+  · exact h.coeff_apply_le z i (le_of_not_gt hi)
 
 theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
     h.coeff (h.root ^ n) = Pi.single n 1 := by

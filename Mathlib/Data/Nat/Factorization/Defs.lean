@@ -66,7 +66,7 @@ theorem primeFactorsList_count_eq {n p : ℕ} : n.primeFactorsList.count p = n.f
   apply _root_.le_antisymm
   · rw [le_padicValNat_iff_replicate_subperm_primeFactorsList pp hn0.ne']
     exact List.replicate_sublist_iff.mpr le_rfl |>.subperm
-  · rw [← Nat.lt_add_one_iff, lt_iff_not_ge, ge_iff_le,
+  · rw [← Nat.lt_add_one_iff, lt_iff_not_ge,
       le_padicValNat_iff_replicate_subperm_primeFactorsList pp hn0.ne']
     intro h
     have := h.count_le p

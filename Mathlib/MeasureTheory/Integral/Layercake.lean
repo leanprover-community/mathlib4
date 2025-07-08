@@ -233,7 +233,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
           apply setLIntegral_mono' measurableSet_Ioc (fun x hx ↦ ?_)
           rw [← h's]
           gcongr
-          exact fun a ha ↦ hx.2.trans (le_of_lt ha)
+          exact fun ha ↦ hx.2.trans (le_of_lt ha)
       _ ≤ ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) :=
           lintegral_mono_set Ioc_subset_Ioi_self
     /- The second integral is infinite, as one integrates among other things on those `ω` where
@@ -330,7 +330,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         exact restrict_le_self _
       spanning := by
         apply eq_univ_iff_forall.2 (fun a ↦ ?_)
-        rcases le_or_lt (f a) M with ha|ha
+        rcases le_or_gt (f a) M with ha|ha
         · exact mem_iUnion.2 ⟨0, Or.inl ha⟩
         · obtain ⟨n, hn⟩ : ∃ n, u n < f a := ((tendsto_order.1 ulim).2 _ ha).exists
           exact mem_iUnion.2 ⟨n, Or.inr hn⟩ }

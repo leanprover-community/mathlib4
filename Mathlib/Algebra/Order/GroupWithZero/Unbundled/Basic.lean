@@ -209,29 +209,29 @@ theorem pos_and_pos_or_neg_and_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (h
     exact mul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 theorem neg_of_mul_pos_right [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : a ≤ 0) : b < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.1.not_le ha).2
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.1.not_ge ha).2
 
 theorem neg_of_mul_pos_left [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : b ≤ 0) : a < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.2.not_le ha).1
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.2.not_ge ha).1
 
 theorem neg_iff_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) : a < 0 ↔ b < 0 :=
   ⟨neg_of_mul_pos_right hab ∘ le_of_lt, neg_of_mul_pos_left hab ∘ le_of_lt⟩
 
 theorem Left.neg_of_mul_neg_right [PosMulMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_gt h
 
 alias neg_of_mul_neg_right := Left.neg_of_mul_neg_right
 
 theorem Right.neg_of_mul_neg_right [MulPosMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_gt h
 
 theorem Left.neg_of_mul_neg_left [PosMulMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_gt h
 
 alias neg_of_mul_neg_left := Left.neg_of_mul_neg_left
 
 theorem Right.neg_of_mul_neg_left [MulPosMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_gt h
 
 end LinearOrder
 
@@ -608,7 +608,7 @@ lemma pow_left_inj₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n �
   (pow_left_strictMonoOn₀ hn).eq_iff_eq ha hb
 
 lemma pow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
-  obtain ha₁ | ha₁ := ha₁.lt_or_lt
+  obtain ha₁ | ha₁ := ha₁.lt_or_gt
   · exact (pow_right_strictAnti₀ ha₀ ha₁).injective
   · exact (pow_right_strictMono₀ ha₁).injective
 
@@ -653,7 +653,7 @@ lemma lt_of_pow_lt_pow_left₀ (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a 
   lt_of_not_ge fun hn => not_lt_of_ge (pow_le_pow_left₀ hb hn _) h
 
 lemma le_of_pow_le_pow_left₀ (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) : a ≤ b :=
-  le_of_not_lt fun h1 => not_le_of_lt (pow_lt_pow_left₀ h1 hb hn) h
+  le_of_not_gt fun h1 => not_le_of_gt (pow_lt_pow_left₀ h1 hb hn) h
 
 lemma sq_eq_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b := by
   simp [ha, hb]
@@ -1250,11 +1250,11 @@ lemma div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0
 
 lemma neg_of_div_neg_right (h : a / b < 0) (ha : 0 ≤ a) : b < 0 :=
   have := PosMulMono.toPosMulReflectLT (α := G₀)
-  lt_of_not_ge fun hb ↦ (div_nonneg ha hb).not_lt h
+  lt_of_not_ge fun hb ↦ (div_nonneg ha hb).not_gt h
 
 lemma neg_of_div_neg_left (h : a / b < 0) (hb : 0 ≤ b) : a < 0 :=
   have := PosMulMono.toPosMulReflectLT (α := G₀)
-  lt_of_not_ge fun ha ↦ (div_nonneg ha hb).not_lt h
+  lt_of_not_ge fun ha ↦ (div_nonneg ha hb).not_gt h
 
 end PosMulMono
 
@@ -1271,7 +1271,7 @@ lemma inv_le_one_iff₀ : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
 
 lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun n : ℤ ↦ a ^ n := by
-  obtain ha₁ | ha₁ := ha₁.lt_or_lt
+  obtain ha₁ | ha₁ := ha₁.lt_or_gt
   · exact (zpow_right_strictAnti₀ ha₀ ha₁).injective
   · exact (zpow_right_strictMono₀ ha₁).injective
 

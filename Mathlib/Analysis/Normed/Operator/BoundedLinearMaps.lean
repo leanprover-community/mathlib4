@@ -446,22 +446,24 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_deriv (h : IsBoundedBilinearMap 
 
 end BilinearMap
 
+variable {X : Type*} [TopologicalSpace X]
+
 @[continuity, fun_prop]
-theorem Continuous.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+theorem Continuous.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     (hg : Continuous g) (hf : Continuous f) : Continuous fun x => (g x).comp (f x) :=
   (compL 𝕜 E F G).continuous₂.comp₂ hg hf
 
-theorem ContinuousOn.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+theorem ContinuousOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     {s : Set X} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
     ContinuousOn (fun x => (g x).comp (f x)) s :=
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prodMk hf)
 
 @[continuity, fun_prop]
-theorem Continuous.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
+theorem Continuous.clm_apply {f : X → (E →L[𝕜] F)} {g : X → E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) (g x)) :=
   isBoundedBilinearMap_apply.continuous.comp₂ hf hg
 
-theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
+theorem ContinuousOn.clm_apply {f : X → (E →L[𝕜] F)} {g : X → E}
     {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ f x (g x)) s :=
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prodMk hg)

@@ -54,8 +54,11 @@ namespace HahnSeries
 
 variable [Zero Γ] [PartialOrder Γ]
 
-instance [Zero R] [One R] : One (HahnSeries Γ R) :=
-  ⟨single 0 1⟩
+instance [Zero R] [One R] : One (HahnSeries Γ R) where one := single 0 1
+instance [Zero R] [NatCast R] : NatCast (HahnSeries Γ R) where natCast n := single 0 n
+instance [Zero R] [IntCast R] : IntCast (HahnSeries Γ R) where intCast z := single 0 z
+instance [Zero R] [NNRatCast R] : NNRatCast (HahnSeries Γ R) where nnratCast q := single 0 q
+instance [Zero R] [RatCast R] : RatCast (HahnSeries Γ R) where ratCast q := single 0 q
 
 open Classical in
 @[simp]
@@ -65,9 +68,14 @@ theorem coeff_one [Zero R] [One R] {a : Γ} :
 
 @[deprecated (since := "2025-01-31")] alias one_coeff := coeff_one
 
-@[simp]
-theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 :=
-  rfl
+@[simp] theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 := rfl
+theorem single_zero_natCast [Zero R] [NatCast R] (n : ℕ) : single (0 : Γ) (n : R) = n := rfl
+theorem single_zero_intCast [Zero R] [IntCast R] (z : ℤ) : single (0 : Γ) (z : R) = z := rfl
+theorem single_zero_nnratCast [Zero R] [NNRatCast R] (q : ℚ≥0) : single (0 : Γ) (q : R) = q := rfl
+theorem single_zero_ratCast [Zero R] [RatCast R] (q : ℚ) : single (0 : Γ) (q : R) = q := rfl
+
+theorem single_zero_ofNat [Zero R] [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+    single (0 : Γ) (ofNat(n) : R) = ofNat(n) := rfl
 
 @[simp]
 theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries Γ R) = {0} :=
@@ -89,9 +97,16 @@ theorem leadingCoeff_one [MulZeroOneClass R] : (1 : HahnSeries Γ R).leadingCoef
 
 @[simp]
 protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) :
-    (1 : HahnSeries Γ R).map f = (1 : HahnSeries Γ S) := by
-  ext g
-  by_cases h : g = 0 <;> simp [h]
+    (1 : HahnSeries Γ R).map f = (1 : HahnSeries Γ S) :=
+  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ <| f.map_one
+
+instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (HahnSeries Γ R) where
+  natCast_zero := by simp [← single_zero_natCast]
+  natCast_succ n := by simp [← single_zero_natCast]
+
+instance [AddCommGroupWithOne R] : AddCommGroupWithOne (HahnSeries Γ R) where
+  intCast_ofNat n := by simp [← single_zero_natCast, ← single_zero_intCast]
+  intCast_negSucc n := by simp [← single_zero_natCast, ← single_zero_intCast]
 
 end HahnSeries
 
@@ -557,7 +572,7 @@ instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
     mul_assoc := mul_assoc' }
 
 instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
-  { AddMonoidWithOne.unary,
+  { inferInstanceAs (AddMonoidWithOne (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
     one_mul := fun x => by
       ext
@@ -591,11 +606,12 @@ instance [NonUnitalRing R] : NonUnitalRing (HahnSeries Γ R) :=
 
 instance [NonAssocRing R] : NonAssocRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocRing (HahnSeries Γ R)),
-    inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)) with }
+    inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
+    inferInstanceAs (AddGroupWithOne (HahnSeries Γ R)) with }
 
 instance [Ring R] : Ring (HahnSeries Γ R) :=
   { inferInstanceAs (Semiring (HahnSeries Γ R)),
-    inferInstanceAs (AddCommGroup (HahnSeries Γ R)) with }
+    inferInstanceAs (AddCommGroupWithOne (HahnSeries Γ R)) with }
 
 instance [NonUnitalCommRing R] : NonUnitalCommRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),

@@ -79,7 +79,7 @@ theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
   le_sup as
 
 theorem notMem_of_max_lt_coe {a : α} {s : Finset α} (h : s.max < a) : a ∉ s :=
-  mt le_max h.not_le
+  mt le_max h.not_ge
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_max_lt_coe := notMem_of_max_lt_coe
 
@@ -150,7 +150,7 @@ theorem min_le {a : α} {s : Finset α} (as : a ∈ s) : s.min ≤ a :=
   inf_le as
 
 theorem notMem_of_coe_lt_min {a : α} {s : Finset α} (h : ↑a < s.min) : a ∉ s :=
-  mt min_le h.not_le
+  mt min_le h.not_ge
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_coe_lt_min := notMem_of_coe_lt_min
 
@@ -244,6 +244,8 @@ theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 /-- `{a}.max' _` is `a`. -/
 @[simp]
 theorem max'_singleton (a : α) : ({a} : Finset α).max' (singleton_nonempty _) = a := by simp [max']
+
+theorem min'_le_max' (hs : s.Nonempty) : s.min' hs ≤ s.max' hs := min'_le _ _ (max'_mem _ _)
 
 theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
     s.min' ⟨i, H1⟩ < s.max' ⟨i, H1⟩ :=
@@ -411,7 +413,7 @@ theorem card_le_of_interleaved {s t : Finset α}
   replace h : ∀ᵉ (x ∈ s) (y ∈ s), x < y → ∃ z ∈ t, x < z ∧ z < y := by
     intro x hx y hy hxy
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
-    rcases h x hx a has hxa fun z hzs hz => hz.2.not_le <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
+    rcases h x hx a has hxa fun z hzs hz => hz.2.not_ge <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
     exact ⟨b, hbt, hxb, hba.trans_le <| ha _ hy hxy⟩
   set f : α → WithTop α := fun x => (t.filter fun y => x < y).min
   have f_mono : StrictMonoOn f s := by

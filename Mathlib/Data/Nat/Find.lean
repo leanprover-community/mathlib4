@@ -70,7 +70,7 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  Nat.le_of_not_lt fun l => Nat.find_min H l h
+  Nat.le_of_not_gt fun l => Nat.find_min H l h
 
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
   constructor
@@ -220,7 +220,7 @@ lemma findGreatest_le (n : ℕ) : Nat.findGreatest P n ≤ n :=
   (findGreatest_eq_iff.1 rfl).1
 
 lemma le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
-  le_of_not_lt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
+  le_of_not_gt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
 
 lemma findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] {m n} (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest P n := by

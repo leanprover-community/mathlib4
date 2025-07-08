@@ -333,7 +333,7 @@ of these subgroups has index not exceeding the number of cosets. -/
 theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
-  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
+  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_gt
   cases s.eq_empty_or_nonempty with
   | inl hs => simp only [hs, Finset.sum_empty, zero_lt_one]
   | inr hs =>

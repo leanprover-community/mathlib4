@@ -209,7 +209,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
     Fintype.card P ≤ Fintype.card L := by
   classical
   by_contra hc₂
-  obtain ⟨f, hf₁, hf₂⟩ := Nondegenerate.exists_injective_of_card_le (le_of_not_le hc₂)
+  obtain ⟨f, hf₁, hf₂⟩ := Nondegenerate.exists_injective_of_card_le (le_of_not_ge hc₂)
   have :=
     calc
       ∑ p, lineCount L p = ∑ l, pointCount P l := sum_lineCount_eq_sum_pointCount P L

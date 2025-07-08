@@ -276,7 +276,7 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
   · rfl
   · exact pred_le _
   · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
-    exact absurd H this.not_le
+    exact absurd H this.not_ge
   · rfl
 
 @[gcongr]

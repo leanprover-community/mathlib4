@@ -67,7 +67,7 @@ variable (Z : Type*) [SMul P Z]
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with additive actions
 of `M` and `N`, a function `f : X → Y` is `φ`-equivariant if `f (m +ᵥ x) = (φ m) +ᵥ (f x)`. -/
-structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
+structure AddActionHom {M N : Type*} (φ : M → N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
   /-- The underlying function. -/
   protected toFun : X → Y
   /-- The proposition that the function commutes with the additive actions. -/

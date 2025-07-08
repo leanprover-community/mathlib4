@@ -121,6 +121,17 @@ theorem exponent_eq_zero_iff : exponent G = 0 ↔ ¬ExponentExists G :=
 theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G = 0 :=
   exponent_eq_zero_iff.mpr fun h ↦ h.orderOf_pos g |>.ne' hg
 
+@[to_additive]
+theorem exponent_eq_sInf :
+    Monoid.exponent G = sInf {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1} := by
+  by_cases h : Monoid.ExponentExists G
+  · have h' : {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1}.Nonempty := h
+    rw [Monoid.exponent, dif_pos h, Nat.sInf_def h']
+    congr
+  · have : {d | 0 < d ∧ ∀ (x : G), x ^ d = 1} = ∅ :=
+      Set.eq_empty_of_forall_notMem fun n hn ↦ h ⟨n, hn⟩
+    rw [Monoid.exponent_eq_zero_iff.mpr h, this, Nat.sInf_empty]
+
 /-- The exponent is zero iff for all nonzero `n`, one can find a `g` such that `g ^ n ≠ 1`. -/
 @[to_additive "The exponent is zero iff for all nonzero `n`, one can find a `g` such that
 `n • g ≠ 0`."]
@@ -200,7 +211,7 @@ theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ 
       apply exponent_min' _ h
       simp_rw [← pow_eq_mod_exponent]
       exact hG
-    exact h₂.not_le h₃
+    exact h₂.not_ge h₃
 
 @[to_additive]
 alias ⟨_, exponent_dvd_of_forall_pow_eq_one⟩ := exponent_dvd_iff_forall_pow_eq_one
@@ -234,7 +245,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
     suffices key : ¬exponent G ∣ exponent G / p by
       rwa [exponent_dvd_iff_forall_pow_eq_one, not_forall] at key
     exact fun hd =>
-      hp.one_lt.not_le
+      hp.one_lt.not_ge
         ((mul_le_iff_le_one_left he).mp <|
           Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
   obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ordProj_dvd _ _
@@ -429,7 +440,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨g, hg⟩ := hp.exists_orderOf_eq_pow_factorization_exponent G
   suffices orderOf t < orderOf (t ^ p ^ k * g) by
     rw [ht] at this
-    exact this.not_le (le_csSup hfin.bddAbove <| Set.mem_range_self _)
+    exact this.not_ge (le_csSup hfin.bddAbove <| Set.mem_range_self _)
   have hpk : p ^ k ∣ orderOf t := Nat.ordProj_dvd _ _
   have hpk' : orderOf (t ^ p ^ k) = orderOf t / p ^ k := by
     rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]

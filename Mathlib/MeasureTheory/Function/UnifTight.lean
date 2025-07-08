@@ -158,6 +158,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
 
+open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
 private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}

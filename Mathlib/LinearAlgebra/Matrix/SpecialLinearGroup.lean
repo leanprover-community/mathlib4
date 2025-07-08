@@ -468,12 +468,12 @@ theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, ad
 
 theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
   induction n with
-  | hz => rw [zpow_zero, coe_one, Matrix.one_fin_two]
-  | hp n h =>
+  | zero => rw [zpow_zero, coe_one, Matrix.one_fin_two]
+  | succ n h =>
     simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
     congrm !![_, ?_; _, _]
     rw [mul_one, mul_one, add_comm]
-  | hn n h =>
+  | pred n h =>
     simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
     congrm !![?_, ?_; _, _] <;> ring
 

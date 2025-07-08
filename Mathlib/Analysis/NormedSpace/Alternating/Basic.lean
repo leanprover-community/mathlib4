@@ -97,7 +97,7 @@ satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`
 on a shell `ε / ‖c‖ < ‖m i‖ < ε` for some positive number `ε` and an elements `c : 𝕜`, `1 < ‖c‖`,
 then it satisfies this inequality for all `m`.
 
-If the domain is a Hausdorff space, then the continuity assumption is reduntant,
+If the domain is a Hausdorff space, then the continuity assumption is redundant,
 see `bound_of_shell` below. -/
 theorem bound_of_shell_of_continuous (f : E [⋀^ι]→ₗ[𝕜] F) (hfc : Continuous f)
     {ε : ℝ} {C : ℝ} (hε : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)

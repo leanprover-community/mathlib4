@@ -1293,7 +1293,7 @@ theorem biUnion_diff_biUnion_subset (s₁ s₂ : Set α) :
 
 /-- If `t` is an indexed family of sets, then there is a natural map from `Σ i, t i` to `⋃ i, t i`
 sending `⟨i, x⟩` to `x`. -/
-def sigmaToiUnion (x : Σi, t i) : ⋃ i, t i :=
+def sigmaToiUnion (x : Σ i, t i) : ⋃ i, t i :=
   ⟨x.2, mem_iUnion.2 ⟨x.1, x.2.2⟩⟩
 
 theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)

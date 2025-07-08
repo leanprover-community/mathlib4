@@ -182,7 +182,7 @@ noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
 
 instance wellFoundedLT [WellFoundedGT α] :
     WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
 
 end DegLex
 

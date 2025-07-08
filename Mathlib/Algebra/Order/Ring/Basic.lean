@@ -267,7 +267,7 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀
-  obtain hb | hb := lt_or_le 0 b
+  obtain hb | hb := lt_or_ge 0 b
   · exact (hn.pow_nonpos ha).trans_lt (pow_pos hb _)
   obtain ⟨c, hac⟩ := exists_add_of_le ha
   obtain ⟨d, hbd⟩ := exists_add_of_le hb

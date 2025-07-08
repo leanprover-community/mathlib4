@@ -38,7 +38,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
   rwa [exp_log hx] at this
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · field_simp [hx.ne]
@@ -73,7 +73,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
     · convert hasDerivAt_exp (log y)
       rw [exp_log hy]
     · exact analyticAt_rexp.contDiffAt
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
       apply ContDiffAt.comp
       apply A _ (Left.neg_pos_iff.mpr hx)

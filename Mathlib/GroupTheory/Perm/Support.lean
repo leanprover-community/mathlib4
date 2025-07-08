@@ -104,7 +104,7 @@ theorem Disjoint.mul_right (H1 : Disjoint f g) (H2 : Disjoint f h) : Disjoint f 
   rw [disjoint_comm]
   exact H1.symm.mul_left H2.symm
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it `@[simp]`
+@[simp]
 theorem disjoint_conj (h : Perm α) : Disjoint (h * f * h⁻¹) (h * g * h⁻¹) ↔ Disjoint f g :=
   (h⁻¹).forall_congr fun {_} ↦ by simp only [mul_apply, eq_inv_iff_eq]
 
@@ -113,9 +113,10 @@ theorem Disjoint.conj (H : Disjoint f g) (h : Perm α) : Disjoint (h * f * h⁻�
 
 theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g) :
     Disjoint f l.prod := by
-  induction' l with g l ih
-  · exact disjoint_one_right _
-  · rw [List.prod_cons]
+  induction l with
+  | nil => exact disjoint_one_right _
+  | cons g l ih =>
+    rw [List.prod_cons]
     exact (h _ List.mem_cons_self).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
 
 theorem disjoint_noncommProd_right {ι : Type*} {k : ι → Perm α} {s : Finset ι}
@@ -320,9 +321,10 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
     (hx : x ∈ l.prod.support) : ∃ f : Perm α, f ∈ l ∧ x ∈ f.support := by
   contrapose! hx
   simp_rw [mem_support, not_not] at hx ⊢
-  induction' l with f l ih
-  · rfl
-  · rw [List.prod_cons, mul_apply, ih, hx]
+  induction l with
+  | nil => rfl
+  | cons f l ih =>
+    rw [List.prod_cons, mul_apply, ih, hx]
     · simp only [List.find?, List.mem_cons, true_or]
     intros f' hf'
     refine hx f' ?_
@@ -402,9 +404,10 @@ theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ 
 
 theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g x) (k : ℕ) :
     ∀ x ∈ f.support ∩ g.support, (f ^ k) x = (g ^ k) x := by
-  induction' k with k hk
-  · simp
-  · intro x hx
+  induction k with
+  | zero => simp
+  | succ k hk =>
+    intro x hx
     rw [pow_succ, mul_apply, pow_succ, mul_apply, h _ hx, hk]
     rwa [mem_inter, apply_mem_support, ← h _ hx, apply_mem_support, ← mem_inter]
 
@@ -424,9 +427,10 @@ theorem Disjoint.support_mul (h : Disjoint f g) : (f * g).support = f.support �
 
 theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise Disjoint) :
     l.prod.support = (l.map support).foldr (· ⊔ ·) ⊥ := by
-  induction' l with hd tl hl
-  · simp
-  · rw [List.pairwise_cons] at h
+  induction l with
+  | nil => simp
+  | cons hd tl hl =>
+    rw [List.pairwise_cons] at h
     have : Disjoint hd tl.prod := disjoint_prod_right _ h.left
     simp [this.support_mul, hl h.right]
 
@@ -448,9 +452,10 @@ theorem support_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
 
 theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
-  induction' l with hd tl hl
-  · simp
-  · rw [List.prod_cons, List.map_cons, List.foldr_cons]
+  induction l with
+  | nil => simp
+  | cons hd tl hl =>
+    rw [List.prod_cons, List.map_cons, List.foldr_cons]
     refine (support_mul_le hd tl.prod).trans ?_
     exact sup_le_sup le_rfl hl
 
@@ -523,9 +528,10 @@ theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x 
 
 theorem eq_on_support_mem_disjoint {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwise Disjoint) :
     ∀ x ∈ f.support, f x = l.prod x := by
-  induction' l with hd tl IH
-  · simp at h
-  · intro x hx
+  induction l with
+  | nil => simp at h
+  | cons hd tl IH =>
+    intro x hx
     rw [List.pairwise_cons] at hl
     rw [List.mem_cons] at h
     rcases h with (rfl | h)
@@ -643,9 +649,10 @@ theorem Disjoint.card_support_mul (h : Disjoint f g) :
 
 theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.Pairwise Disjoint) :
     #l.prod.support = (l.map (card ∘ support)).sum := by
-  induction' l with a t ih
-  · exact card_support_eq_zero.mpr rfl
-  · obtain ⟨ha, ht⟩ := List.pairwise_cons.1 h
+  induction l with
+  | nil => exact card_support_eq_zero.mpr rfl
+  | cons a t ih =>
+    obtain ⟨ha, ht⟩ := List.pairwise_cons.1 h
     rw [List.prod_cons, List.map_cons, List.sum_cons, ← ih ht]
     exact (disjoint_prod_right _ ha).card_support_mul
 

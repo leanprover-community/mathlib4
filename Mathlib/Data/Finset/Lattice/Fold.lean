@@ -569,7 +569,7 @@ theorem comp_sup_eq_sup_comp_of_is_total [SemilatticeSup β] [OrderBot β] (g : 
 protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a ≤ f b := by
   apply Iff.intro
   · induction s using cons_induction with
-    | empty => exact (absurd · (not_le_of_lt ha))
+    | empty => exact (absurd · (not_le_of_gt ha))
     | cons c t hc ih =>
       rw [sup_cons, le_sup_iff]
       exact fun
@@ -1132,14 +1132,20 @@ set_option linter.docPrime false in
   induction' s using cons_induction <;> simp [*]
 
 @[simp]
-theorem sup_singleton'' (s : Finset β) (f : β → α) :
+theorem sup_singleton_apply (s : Finset β) (f : β → α) :
     (s.sup fun b => {f b}) = s.image f := by
   ext a
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
+@[deprecated (since := "2025-05-24")]
+alias sup_singleton'' := sup_singleton_apply
+
 @[simp]
-theorem sup_singleton' (s : Finset α) : s.sup singleton = s :=
-  (s.sup_singleton'' _).trans image_id
+theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
+  (s.sup_singleton_apply _).trans image_id
+
+@[deprecated (since := "2025-05-24")]
+alias sup_singleton' := sup_singleton_eq_self
 
 end Finset

@@ -674,7 +674,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     rw [cocompact_eq_atBot_atTop, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
-  rcases le_or_lt ‖f x₀‖ C with h | h
+  rcases le_or_gt ‖f x₀‖ C with h | h
   ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax
   · -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.
@@ -696,7 +696,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
         _ = |(z - x₀).re| := by rw [sub_re, ofReal_re, _root_.abs_sub_comm]
         _ ≤ ‖z - x₀‖ := abs_re_le_norm _
     -- Thus we have `C < ‖f x₀‖ = ‖f 0‖ ≤ C`. Contradiction completes the proof.
-    refine (h.not_le <| this ▸ ?_).elim
+    refine (h.not_ge <| this ▸ ?_).elim
     simpa using him 0
 
 /-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that

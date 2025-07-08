@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Analysis.Convex.Cone.Closure
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Analysis.InnerProductSpace.Defs
 
 /-!
 # Proper cones
@@ -136,7 +136,7 @@ variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
-  (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.nonempty K.isClosed
+  zero_mem K.toPointedCone
 
 /-- The closure of image of a proper cone under a continuous `ℝ`-linear map is a proper cone. We
 use continuous maps here so that the comap of f is also a map between proper cones. -/
@@ -157,20 +157,6 @@ theorem mem_map {f : E →L[ℝ] F} {K : ProperCone ℝ E} {y : F} :
 @[simp]
 theorem map_id (K : ProperCone ℝ E) : K.map (ContinuousLinearMap.id ℝ E) = K :=
   ProperCone.toPointedCone_injective <| by simpa using IsClosed.closure_eq K.isClosed
-
-/-- The inner dual cone of a proper cone is a proper cone. -/
-def dual (K : ProperCone ℝ E) : ProperCone ℝ E where
-  toSubmodule := PointedCone.dual (K : PointedCone ℝ E)
-  isClosed' := isClosed_innerDualCone _
-
-@[simp, norm_cast]
-theorem coe_dual (K : ProperCone ℝ E) : K.dual = (K : Set E).innerDualCone :=
-  rfl
-
-open scoped InnerProductSpace in
-@[simp]
-theorem mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ := by
-  aesop
 
 /-- The preimage of a proper cone under a continuous `ℝ`-linear map is a proper cone. -/
 noncomputable def comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : ProperCone ℝ E where
@@ -196,70 +182,4 @@ theorem mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.c
   Iff.rfl
 
 end InnerProductSpace
-
-section CompleteSpace
-
-open scoped InnerProductSpace
-
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
-
-/-- The dual of the dual of a proper cone is itself. -/
-@[simp]
-theorem dual_dual (K : ProperCone ℝ E) : K.dual.dual = K :=
-  ProperCone.toPointedCone_injective <| PointedCone.toConvexCone_injective <|
-    (K : ConvexCone ℝ E).innerDualCone_of_innerDualCone_eq_self K.nonempty K.isClosed
-
-/-- This is a relative version of
-`ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem`, which we recover by setting
-`f` to be the identity map. This is also a geometric interpretation of the Farkas' lemma
-stated using proper cones. -/
-theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F} :
-    b ∈ K.map f ↔ ∀ y : F, adjoint f y ∈ K.dual → 0 ≤ ⟪y, b⟫_ℝ :=
-  Iff.intro
-    (by
-      -- suppose `b ∈ K.map f`
-      simp_rw [mem_map, PointedCone.mem_closure, PointedCone.coe_map, coe_coe,
-        mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_coe, mem_dual,
-        adjoint_inner_right, forall_exists_index, and_imp]
-      -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
-      rintro seq hmem htends y hinner
-      suffices h : ∀ n, 0 ≤ ⟪y, seq n⟫_ℝ from
-        ge_of_tendsto'
-          (Continuous.seqContinuous (Continuous.inner (@continuous_const _ _ _ _ y) continuous_id)
-            htends)
-          h
-      intro n
-      obtain ⟨_, h, hseq⟩ := hmem n
-      simpa only [← hseq, real_inner_comm] using hinner h)
-    (by
-      -- proof by contradiction
-      -- suppose `b ∉ K.map f`
-      intro h
-      contrapose! h
-      -- as `b ∉ K.map f`, there is a hyperplane `y` separating `b` from `K.map f`
-      let C := PointedCone.toConvexCone (𝕜 := ℝ) (E := F) (K.map f)
-      obtain ⟨y, hxy, hyb⟩ :=
-        @ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem
-        _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h
-      -- the rest of the proof is a straightforward algebraic manipulation
-      refine ⟨y, ?_, hyb⟩
-      simp_rw [ProperCone.mem_dual, adjoint_inner_right]
-      intro x hxK
-      apply hxy (f x)
-      simp_rw [C, coe_map]
-      apply subset_closure
-      simp_rw [PointedCone.toConvexCone_map, ConvexCone.coe_map, coe_coe, mem_image,
-        SetLike.mem_coe]
-      exact ⟨x, hxK, rfl⟩)
-
-theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
-    (disj : b ∉ K.map f) : ∃ y : F, adjoint f y ∈ K.dual ∧ ⟪y, b⟫_ℝ < 0 := by
-  contrapose! disj; rwa [K.hyperplane_separation]
-
-@[deprecated (since := "2025-05-24")]
-alias hyperplane_separation_of_nmem := hyperplane_separation_of_notMem
-
-end CompleteSpace
-
 end ProperCone

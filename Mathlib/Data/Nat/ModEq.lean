@@ -378,7 +378,7 @@ theorem add_mod_add_ite (a b c : ℕ) :
     · rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]
 
 theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
-    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_lt hc), add_zero]
+    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_gt hc), add_zero]
 
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
     (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, if_pos hc]
@@ -386,7 +386,7 @@ theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
 theorem add_div_eq_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
     (a + b) / c = a / c + b / c :=
   if hc0 : c = 0 then by simp [hc0]
-  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_lt hc), add_zero]
+  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_gt hc), add_zero]
 
 protected theorem add_div_of_dvd_right {a b c : ℕ} (hca : c ∣ a) : (a + b) / c = a / c + b / c :=
   if h : c = 0 then by simp [h]

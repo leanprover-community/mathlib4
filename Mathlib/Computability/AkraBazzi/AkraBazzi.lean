@@ -268,7 +268,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
   induction n using Nat.strongRecOn with
   | ind n h_ind =>
-    cases lt_or_le n R.n₀ with
+    cases lt_or_ge n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
     | inr hn => -- R.n₀ ≤ n
       rw [R.h_rec n hn]
@@ -501,7 +501,6 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
                             (R.b_pos i) (ne_of_lt <| R.b_lt_one i)
                   rw [← isTheta_const_mul_right this]
 
-
 /-!
 #### Akra-Bazzi exponent `p`
 
@@ -628,7 +627,7 @@ lemma eventually_atTop_sumTransform_le :
   intro i
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
-  cases le_or_lt 0 (p a b + 1) with
+  cases le_or_gt 0 (p a b + 1) with
   | inl hp => -- 0 ≤ p a b + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
@@ -1392,7 +1391,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
             -- Apply the induction hypothesis, or use the base case depending on how large `n` is
               gcongr (∑ i, a i * ?_) + g n with i _
               · exact le_of_lt <| R.a_pos _
-              · cases lt_or_le (r i n) n₀ with
+              · cases lt_or_ge (r i n) n₀ with
                 | inl ri_lt_n₀ => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
                 | inr n₀_le_ri =>
                   exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) n₀_le_ri

@@ -8,7 +8,10 @@ on:
 
 jobs:
   handle_failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+
+    if: ${{ github.repository == 'leanprover-community/mathlib4' &&
+            github.event.workflow_run.conclusion == 'failure' &&
+            github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
 
     steps:
