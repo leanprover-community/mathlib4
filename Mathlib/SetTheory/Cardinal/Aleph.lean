@@ -563,14 +563,12 @@ theorem isNormal_preBeth : IsNormal (ord ∘ preBeth) := by
   exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
 
 theorem isStrongLimit_preBeth {o : Ordinal} (H : IsLimit o) : IsStrongLimit (preBeth o) := by
-  constructor
-  · simpa using H.ne_bot
-  · intro a ha
-    rw [preBeth_limit H.isSuccPrelimit] at ha
-    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-      have := power_le_power_left two_ne_zero ha.le
-      rw [← preBeth_succ] at this
-      exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
+  refine ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩
+  rw [preBeth_limit H.isSuccPrelimit] at ha
+  rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+  have := power_le_power_left two_ne_zero ha.le
+  rw [← preBeth_succ] at this
+  exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
