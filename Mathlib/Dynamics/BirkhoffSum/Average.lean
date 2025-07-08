@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Lua Viana Reis
+Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 -/
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Algebra.Module.Basic
