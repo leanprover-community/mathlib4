@@ -89,13 +89,11 @@ lemma Ideal.exact_mulQuot_quotOfMul {a : R} (I : Ideal R) :
     Function.Exact (Ideal.mulQuot a I) (Ideal.quotOfMul a I) := by
   simp only [exact_iff]
   have : ker (Ideal.quotOfMul a I) = a • ⊤ := by
-    simp only [Ideal.quotOfMul, Submodule.factor, Submodule.mapQ, comp_id, Submodule.ker_liftQ,
-      Submodule.ker_mkQ]
-    suffices Submodule.map (Submodule.mkQ (a • I)) (Submodule.span R {a}) = a • ⊤ by exact this
-    rw [Submodule.map_span]
-    simp only [Submodule.mkQ_apply, Quotient.mk_eq_mk, Set.image_singleton, Ideal.Quotient.smul_top]
+    simp only [← submodule_span_eq, quotOfMul, Submodule.factor, Submodule.mapQ, comp_id,
+      Submodule.ker_liftQ, Submodule.ker_mkQ, Submodule.map_span, Submodule.mkQ_apply,
+      Quotient.mk_eq_mk, Set.image_singleton, Quotient.smul_top]
   simp [this, Ideal.mulQuot, Submodule.mapQ.eq_1, Submodule.range_liftQ,
-   range_comp, Ideal.Quotient.smul_top, ← Ideal.submodule_span_eq, LinearMap.map_span]
+    range_comp, Ideal.Quotient.smul_top, ← Ideal.submodule_span_eq, LinearMap.map_span]
 
 namespace Ring
 variable (R)
@@ -138,9 +136,8 @@ def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
     rfl
   map_mul' := by
     intro x y
-    split_ifs
-    · rename_i _ b
-      rw[← MonoidWithZeroHom.map_mul]
+    split_ifs with _ _ b
+    · rw [← MonoidWithZeroHom.map_mul]
       congr
       exact ord_mul R b
     all_goals simp_all [mul_mem_nonZeroDivisors]
@@ -185,14 +182,15 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
     simpa [this]
   f this
 
-lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) : ordFrac R (algebraMap R K x) =
-  ordMonoidWithZeroHom R x := by
+lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) :
+    ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
   simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]
 
 lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
-  ordFrac R (IsLocalization.mk' K a.1 b) = ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
+    ordFrac R (IsLocalization.mk' K a.1 b) =
+      ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
   simp [ordFrac_eq_ord]
 
 end Ring

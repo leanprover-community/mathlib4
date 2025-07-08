@@ -1974,6 +1974,7 @@ import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Adjunction
 import Mathlib.CategoryTheory.Category.Cat.AsSmall
+import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 import Mathlib.CategoryTheory.Category.Cat.Colimit
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.Cat.Op
@@ -4682,6 +4683,7 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 import Mathlib.NumberTheory.NumberField.Units.Regulator
 import Mathlib.NumberTheory.Ostrowski
 import Mathlib.NumberTheory.Padics.AddChar
+import Mathlib.NumberTheory.Padics.Complex
 import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.MahlerBasis
 import Mathlib.NumberTheory.Padics.PadicIntegers
@@ -6140,8 +6142,10 @@ import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.Valued.LocallyCompact
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
+import Mathlib.Topology.Algebra.Valued.ValuativeRel
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
+import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.ApproximateUnit
 import Mathlib.Topology.Baire.BaireMeasurable
