@@ -186,26 +186,28 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   sorry -- obvious: if 2 • A = stuff, A = 1/2 stuff
 
 variable (X Y Z Z') in
-lemma rhs_aux_addZ : rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
-  have : ⟪Y, Z + Z'⟫ = ⟪Y, Z⟫ + ⟪Y, Z'⟫ := sorry
+lemma rhs_aux_addZ (hY : MDiff Y) (hZ : MDiff Z) (hZ' : MDiff Z') :
+  rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
+  have hZ : MDiff ⟪Y, Z⟫ := sorry -- use C^n metric and hY, hZ and hZ'
+  have hZ' : MDiff ⟪Y, Z'⟫ := sorry
   unfold rhs_aux
   ext x
-  -- have aux := mfderiv_congr this
-  --simp_rw [this]
-  --simp only [rhs_aux]
-  dsimp
-  -- prove: product is smooth enough, so we can apply mfderiv_add (and product_add_right)...
-  -- rw [← mfderiv_add]
-  -- simp_rw [product_add_right]
-  sorry
+  rw [product_add_right, mfderiv_add (hZ x) (hZ' x)]; simp; congr
 
 variable (X X' Y Z) in
 lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
-  sorry -- hopefully similar to rhs_aux_addZ
+  ext x
+  simp [rhs_aux]
 
 variable (X Y Y' Z) in
-lemma rhs_aux_addY : rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
-  sorry -- hopefully similar to rhs_aux_addZ
+lemma rhs_aux_addY (hY : MDiff Y) (hY' : MDiff Y') (hZ : MDiff Z) :
+    rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
+  ext x
+  simp only [rhs_aux]
+  have hY : MDiff ⟪Y, Z⟫ := sorry -- use C^n metric and hY, hY' and hZ
+  have hY' : MDiff ⟪Y', Z⟫ := sorry
+  rw [product_add_left, mfderiv_add (hY x) (hY' x)]
+  simp; congr
 
 variable (X Y Z) in
 lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
@@ -228,8 +230,8 @@ lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
   -- A bit too painful, and have missing differentiability assumptions.
   simp only [leviCivita_rhs]
   set A : M → ℝ := (1 : M → ℝ) / 2
-  rw [← left_distrib]
-  apply congrArg
+  --rw [← left_distrib]
+  --apply congrArg
   ext x
   have h1 : VectorField.mlieBracket I X (Z + Z') =
     VectorField.mlieBracket I X Z + VectorField.mlieBracket I X Z' := by
@@ -239,7 +241,7 @@ lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
     VectorField.mlieBracket I Z Y + VectorField.mlieBracket I Z' Y := by
     ext x
     simp [VectorField.mlieBracket_add_left (W := Y) (hZ x) (hZ' x)]
-  simp [h1, h2, rhs_aux_addX, rhs_aux_addY, rhs_aux_addZ]
+  simp [h1, h2, rhs_aux_addX] -- rhs_aux_addY, rhs_aux_addZ
   sorry -- module
 
 lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, TangentSpace I x}
