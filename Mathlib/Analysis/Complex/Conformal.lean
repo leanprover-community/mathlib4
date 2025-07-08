@@ -174,7 +174,7 @@ variable
 
 /--
 Helper lemma for `differentiableAt_complex_iff_differentiableAt_real`: A real linear map `ℓ : ℂ
-→ₗ[ℝ] ℂ` respects complex scalar multiplication if it maps `I` to `I • ℓ 1`.
+→ₗ[ℝ] E` respects complex scalar multiplication if it maps `I` to `I • ℓ 1`.
 -/
 lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I • ℓ 1) :
     ∀ (a b : ℂ), ℓ (a • b) = a • ℓ b := by
@@ -220,11 +220,10 @@ theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
     simp
   · intro ⟨h₁, h₂⟩
     apply (differentiableWithinAt_iff_restrictScalars ℝ h₁ hs).2
-    use {
-      toFun := fderivWithin ℝ f s x
-      map_add' := (fderivWithin ℝ f s x).map_add'
-      map_smul' := real_linearMap_map_smul_complex h₂
-    }
+    use { toFun := fderivWithin ℝ f s x
+          map_add' := (fderivWithin ℝ f s x).map_add'
+          map_smul' := real_linearMap_map_smul_complex h₂ }
+    rfl
     rfl
 
 /--
