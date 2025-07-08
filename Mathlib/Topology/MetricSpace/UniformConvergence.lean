@@ -246,7 +246,7 @@ lemma lipschitzOnWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} {s : Set
   simp [lipschitzOnWith_iff_restrict, lipschitzWith_iff]
   rfl
 
-lemma edist_eval_le {f g : α →ᵤ[𝔖] β} {x : α} (hx : x ∈ ⋃₀ 𝔖):
+lemma edist_eval_le {f g : α →ᵤ[𝔖] β} {x : α} (hx : x ∈ ⋃₀ 𝔖) :
     edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ edist f g :=
   edist_le.mp le_rfl x hx
 

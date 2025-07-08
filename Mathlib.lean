@@ -6231,6 +6231,7 @@ import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.Topology.Compactification.OnePoint.Sphere
 import Mathlib.Topology.Compactification.OnePointEquiv
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyCoherentSpace
@@ -6531,7 +6532,6 @@ import Mathlib.Topology.Specialization
 import Mathlib.Topology.Spectral.Basic
 import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.Spectral.Prespectral
-import Mathlib.Topology.StoneCech
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.UniformSpace.AbsoluteValue
