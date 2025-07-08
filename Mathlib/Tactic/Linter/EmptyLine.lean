@@ -144,7 +144,7 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         Linter.logLint linter.style.emptyLine (.ofRange rg)
           m!"Please, write a comment here or remove this line, \
             but do not place empty lines within commands!\nContext:\n\
-            {indentD s!"{s.push '↓'}"}{indentD s!"⏎{before}⏎⏎{after}⏎"}\n"
+            {indentD s!"{s.push '↓'}"}{indentD s!"⏎{before}⏎⏎{after}⏎"}"
 
 initialize addLinter emptyLineLinter
 

@@ -16,7 +16,7 @@ Context:
               ↓
   ⏎  refine ?_⏎⏎  apply ?_⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
@@ -24,7 +24,7 @@ Context:
              ↓
   ⏎  apply ?_⏎⏎  refine ?_⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
@@ -32,7 +32,7 @@ Context:
               ↓
   ⏎  refine ?_⏎⏎⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
 example : True := by
@@ -52,7 +52,7 @@ Context:
                     ↓
   ⏎example : True :=⏎⏎  trivial⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
 /-- This is a doc-string.
@@ -70,7 +70,7 @@ Context:
             ↓
   ⏎  let _ ←⏎⏎`(/-- hello -/ abbrev D := 0)⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
@@ -78,7 +78,7 @@ Context:
      ↓
   ⏎--⏎⏎D⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
@@ -86,7 +86,7 @@ Context:
     ↓
   ⏎D⏎⏎:= 0)⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
 run_cmd
@@ -140,7 +140,7 @@ Context:
                         ↓
   ⏎structure WithAString⏎⏎ where⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
 /--
@@ -169,7 +169,7 @@ Context:
                        ↓
   ⏎example : True := by⏎⏎-- Here I start⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
@@ -177,7 +177,7 @@ Context:
          ↓
   ⏎--stop⏎⏎trivial⏎⏎
 
-note: this linter can be disabled with `set_option linter.style.emptyLine false`
+Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 -/
 #guard_msgs in
 example : True := by
