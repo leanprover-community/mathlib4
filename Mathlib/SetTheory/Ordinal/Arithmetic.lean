@@ -568,11 +568,6 @@ theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a
 theorem add_le_iff {a b c : Ordinal} (hb : b ≠ 0) : a + b ≤ c ↔ ∀ d < b, a + d < c := by
   simpa using (lt_add_iff hb).not
 
-@[deprecated add_le_iff (since := "2024-12-08")]
-theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a + d < c) :
-    a + b ≤ c :=
-  (add_le_iff hb.ne').2 h
-
 theorem lt_add_iff_of_isLimit {a b c : Ordinal} (hc : IsLimit c) :
     a < b + c ↔ ∃ d < c, a < b + d := by
   rw [lt_add_iff hc.ne_zero]
@@ -584,6 +579,9 @@ theorem lt_add_iff_of_isLimit {a b c : Ordinal} (hc : IsLimit c) :
 theorem add_le_iff_of_isLimit {a b c : Ordinal} (hb : IsLimit b) :
     a + b ≤ c ↔ ∀ d < b, a + d ≤ c := by
   simpa using (lt_add_iff_of_isLimit hb).not
+
+@[deprecated (since := "2025-07-08")]
+alias add_le_of_limit := add_le_iff_of_isLimit
 
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
   ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_iff_of_isLimit l⟩
