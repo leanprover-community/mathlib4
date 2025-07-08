@@ -237,7 +237,7 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
   ext x; rcases x with ⟨⟩; rfl
 
 /-- Homomorphisms on the quotient of a monoid by a congruence relation `c` are equal if their
-    compositions with `c.mk'` are equal. -/
+compositions with `c.mk'` are equal. -/
 @[to_additive (attr := ext) "Homomorphisms on the quotient of an `AddMonoid` by an additive
 congruence relation `c` are equal if their compositions with `c.mk'` are equal."]
 lemma hom_ext {f g : c.Quotient →* P} (h : f.comp c.mk' = g.comp c.mk') : f = g := by
