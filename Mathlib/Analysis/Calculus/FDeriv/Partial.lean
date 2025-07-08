@@ -12,7 +12,7 @@ This file concerns the partial derivatives of a bivariate function.
 
 ## Main results
 
-- `hasStrictFDerivAt_uncurried_coprod`: establishing strict differentiability of the uncurried
+- `hasStrictFDerivAt_uncurry_coprod`: establishing strict differentiability of the uncurried
   function in the product space, this requires validity of the mean value theorem in both underlying
   spaces.
 -/
