@@ -101,11 +101,7 @@ theorem opow_ne_zero {a : Ordinal} (b : Ordinal) (a0 : a ≠ 0) : a ^ b ≠ 0 :=
 
 @[simp]
 theorem opow_eq_zero {a b : Ordinal} : a ^ b = 0 ↔ a = 0 ∧ b ≠ 0 := by
-  obtain rfl | ha := eq_or_ne a 0
-  · obtain rfl | hb := eq_or_ne b 0
-    · simp
-    · simp [hb]
-  · simp [opow_ne_zero b ha, ha]
+  by_cases a = 0 <;> by_cases b = 0 <;> simp_all [opow_ne_zero]
 
 @[simp, norm_cast]
 theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
