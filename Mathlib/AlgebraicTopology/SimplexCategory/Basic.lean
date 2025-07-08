@@ -810,9 +810,7 @@ theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ 
   infer_instance
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
-  suffices IsIso i by
-    haveI := this
-    apply eq_id_of_isIso
+  suffices IsIso i from eq_id_of_isIso _
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
