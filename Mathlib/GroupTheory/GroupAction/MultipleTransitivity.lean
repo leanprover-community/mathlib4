@@ -300,13 +300,9 @@ end Higher
 
 end MulAction
 
-namespace SubMulAction
+variable {G α : Type*} [Group G] [MulAction G α]
 
-variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
-
-open MulAction Function.Embedding SubMulAction
-
-namespace ofStabilizer
+namespace SubMulAction.ofStabilizer
 
 open scoped BigOperators Pointwise Cardinal
 
@@ -363,7 +359,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
         rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
         · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
           simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
-        · simp only [ofStabilizer.snoc_last, ← hg, subgroup_smul_def]
+        · simp only [ofStabilizer.snoc_last, ← hg]
           exact g.prop }
 
 end ofStabilizer
@@ -382,25 +378,25 @@ acts (n-d) transitively on the complement. -/
 acts (n-d) transitively on the complement."]
 theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n]
     (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
-    IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m :=
-  let _ : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
-  let Hs : Nonempty (Fin (s.ncard) ≃ s) :=
-      Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
-  { exists_smul_eq x y := by
-      set x' := SubMulAction.ofFixingSubgroup.append x with hx
-      set y' := ofFixingSubgroup.append y with hy
-      obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
-      suffices g ∈ fixingSubgroup G s by
-        use ⟨g, this⟩
-        ext i
-        simp only [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
-        simp only [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
-      intro a
-      set i := (Classical.choice Hs).symm a
-      have ha : (Classical.choice Hs) i = a := by simp [i]
-      rw [← ha]
-      nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
-      rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx] }
+    IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m where
+  exists_smul_eq x y := by
+    have : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
+    have Hs : Nonempty (Fin (s.ncard) ≃ s) :=
+      Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
+    set x' := ofFixingSubgroup.append x with hx
+    set y' := ofFixingSubgroup.append y with hy
+    obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
+    suffices g ∈ fixingSubgroup G s by
+      use ⟨g, this⟩
+      ext i
+      rw [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
+      simp [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
+    intro a
+    set i := (Classical.choice Hs).symm a
+    have ha : (Classical.choice Hs) i = a := by simp [i]
+    rw [← ha]
+    nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
+    rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx]
 
 /-- The fixator of a finite subset of cardinal d in an n-transitive action
 acts m transitively on the complement if d + m ≤ n. -/
@@ -443,7 +439,7 @@ private theorem index_of_fixingSubgroup_aux
   induction k with
   | zero =>
     intro G _ α _ _ _ s hs
-    simp only [hs, zero_eq, ge_iff_le, nonpos_iff_eq_zero, tsub_zero, ne_eq]
+    simp only [hs, tsub_zero]
     rw [Set.ncard_eq_zero] at hs
     simp only [hs]
     suffices fixingSubgroup G ∅ = ⊤ by
@@ -499,7 +495,7 @@ private theorem index_of_fixingSubgroup_aux
         exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
     · rw [add_comm] at hscard
       have := Nat.sub_eq_of_eq_add hscard
-      simp only [hs, Nat.pred_succ] at this
+      simp only [hs] at this
       convert hrec (stabilizer G a) (α := SubMulAction.ofStabilizer G a)
         (ofStabilizer.isMultiplyPretransitive.mp hmk) htcard
       all_goals { rw [nat_card_ofStabilizer_eq G a] }
@@ -597,7 +593,7 @@ theorem isMultiplyPretransitive (n : ℕ) :
           set a : α := (φ.invFun ⟨b, hb⟩ : α)
           have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
           rw [← Subtype.coe_mk a ha]
-          simp [Subtype.val_injective.extend_apply, a]
+          simp [a]
         · rintro ⟨i, hi⟩
           apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
           rw [← hi]
@@ -813,3 +809,4 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end AlternatingGroup
+

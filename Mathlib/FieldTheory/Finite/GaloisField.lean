@@ -155,8 +155,8 @@ theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
-  let h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
-  let inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
+  have h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
+  have inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
   (@IsSplittingField.algEquiv _ (ZMod p) _ _ _ (X ^ p ^ 1 - X : (ZMod p)[X]) inst).symm
 
 section Fintype
@@ -250,7 +250,7 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
       (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
       Nat.sub_pos_of_lt Finite.one_lt_card
-    rw [← Set.ncard_coe_Finset, ← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]; congr; ext
+    rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr; ext
     simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
 
 theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by

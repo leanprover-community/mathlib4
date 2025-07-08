@@ -151,7 +151,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
   Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
       rw [leftRel_apply]
-      show (g₁⁻¹ * g₂) • x = x
+      change (g₁⁻¹ * g₂) • x = x
       rw [mul_smul, ← H, inv_smul_smul]
 
 /-- **Orbit-stabilizer theorem**. -/
