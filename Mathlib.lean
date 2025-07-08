@@ -2609,6 +2609,7 @@ import Mathlib.CategoryTheory.Sites.Subcanonical
 import Mathlib.CategoryTheory.Sites.Subsheaf
 import Mathlib.CategoryTheory.Sites.Types
 import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.ZeroHypercover
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.SmallObject.Basic
 import Mathlib.CategoryTheory.SmallObject.Construction
