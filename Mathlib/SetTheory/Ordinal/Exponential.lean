@@ -317,7 +317,7 @@ theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     simpa only [h, opow_zero] using this
   · rw [log_def hb x, succ_pred_eq_iff_not_isSuccPrelimit, not_isSuccPrelimit_iff']
     simpa [eq_comm] using h
-  · rcases (lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
+  · rcases (lt_opow_of_isSuccLimit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
     exact h₁.not_ge.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
 
 theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :
