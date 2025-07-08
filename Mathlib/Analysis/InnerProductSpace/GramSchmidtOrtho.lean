@@ -167,8 +167,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
     rw [Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
-      rw [mem_orthogonal_singleton_iff_inner_left]
-      rw [← mem_orthogonal_singleton_iff_inner_right]
+      rw [mem_orthogonal_singleton_iff_inner_left, ← mem_orthogonal_singleton_iff_inner_right]
       exact this (gramSchmidt_mem_span 𝕜 f (le_refl j))
     rw [isOrtho_span]
     rintro u ⟨k, hk, rfl⟩ v (rfl : v = f i)
