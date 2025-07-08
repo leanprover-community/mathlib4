@@ -821,12 +821,12 @@ lemma map_dblZ : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
 
 @[simp]
 lemma map_dblX : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
-  simp only [dblX, map_dblU, map_negY]
+  simp only [dblX]
   map_simp
 
 @[simp]
 lemma map_negDblY : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
-  simp only [negDblY, map_dblU, map_dblX, map_negY]
+  simp only [negDblY]
   map_simp
 
 @[simp]
