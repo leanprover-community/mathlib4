@@ -79,8 +79,7 @@ lemma HasDerivAt.star_conj {f : 𝕜 → F} {f' : F} (hf : HasDerivAt f f' x) :
 `conj z`. -/
 lemma hasDerivAt_star_conj_iff {f : 𝕜 → F} {x : 𝕜} {f' : F} :
     HasDerivAt (star ∘ f ∘ conj) (star f') (conj x) ↔ HasDerivAt f f' x :=
-  ⟨fun hf ↦ by convert hf.star_conj <;> simp [Function.comp_def],
-  fun hf ↦ hf.star_conj⟩
+  ⟨fun hf ↦ by convert hf.star_conj <;> simp [Function.comp_def], fun hf ↦ hf.star_conj⟩
 
 /-- If `f` has derivative `f'` at `z`, then `conj ∘ f ∘ conj` has derivative `conj f'` at
 `conj z`. -/
