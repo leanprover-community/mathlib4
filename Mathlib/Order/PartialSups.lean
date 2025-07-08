@@ -3,12 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.SuccPred.Basic
-import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -149,23 +147,9 @@ theorem partialSups_bot [PartialOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
   suffices Iic (⊥ : ι) = {⊥} by simp only [this, sup'_singleton]
   simp only [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
 
-lemma partialSups_succ' {α : Type*} [SemilatticeSup α] [LinearOrder ι] [LocallyFiniteOrder ι]
-    [SuccOrder ι] [OrderBot ι] (f : ι → α) (i : ι) :
-    (partialSups f) (Order.succ i) = f ⊥ ⊔ (partialSups (f ∘ Order.succ)) i := by
-  refine Succ.rec (by simp) (fun j _ h ↦ ?_) (bot_le (a := i))
-  have : (partialSups (f ∘ Order.succ)) (Order.succ j) =
-      ((partialSups (f ∘ Order.succ)) j ⊔ (f ∘ Order.succ) (Order.succ j)) := by simp
-  simp [this, h, sup_assoc]
-
 lemma comp_partialSups {F : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [FunLike F α β]
     [SupHomClass F α β] (f : ι → α) (g : F) : partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]
-
-lemma partialSups_const_add {α : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [Lattice α]
-    [AddGroup α] [CovariantClass α α (· + ·) (· ≤ ·)] (f : ι → α) (c : α) (i : ι) :
-    partialSups (c + f ·) i = c + partialSups f i := by
-  change (partialSups (OrderIso.addLeft c ∘ f)) i = _
-  rw [comp_partialSups f (OrderIso.addLeft c)]; rfl
 
 /-!
 ### Functions out of `ℕ`
