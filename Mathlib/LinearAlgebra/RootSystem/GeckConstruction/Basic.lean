@@ -133,7 +133,7 @@ lemma ω_mul_h [Fintype ι] (i : b.support) :
   · simp only [ω, h, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₂]
     aesop
 
-lemma ω_mul_e [DecidableEq ι] [Fintype ι] (i : b.support) :
+lemma ω_mul_e [Fintype ι] (i : b.support) :
     ω b * e i = f i * ω b := by
   letI := P.indexNeg
   classical
