@@ -515,9 +515,9 @@ noncomputable abbrev mapCycles₂ :
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
 
-lemma mapTwoCycles_hom :
-    (mapTwoCycles f φ).hom = (fTwo f φ).hom.restrict (fun x _ => by
-      have := congr($((mapShortComplexH2 f φ).comm₂₃) x); simp_all [twoCycles, shortComplexH2]) :=
+lemma mapCycles₂_hom :
+    (mapCycles₂ f φ).hom = (f₂ f φ).hom.restrict (fun x _ => by
+      have := congr($((mapShortComplexH2 f φ).comm₂₃) x); simp_all [cycles₂, shortComplexH2]) :=
   rfl
 
 @[reassoc, elementwise]
