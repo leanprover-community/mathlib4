@@ -224,7 +224,7 @@ variable {c}
 
 @[simp]
 lemma fac_apply (hc : IsColimitCore.{w₂} c)
-    (c' : CoconeTypes.{w₂} F) (j : J) (x : F.obj j):
+    (c' : CoconeTypes.{w₂} F) (j : J) (x : F.obj j) :
     hc.desc c' (c.ι j x) = c'.ι j x :=
   congr_fun (hc.fac c' j) x
 
