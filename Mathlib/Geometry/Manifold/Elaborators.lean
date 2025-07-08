@@ -94,27 +94,7 @@ elab "T%" t:term : term => do
   | _ => pure ()
   return e
 
-variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
-
-/-- info: fun x ↦ TotalSpace.mk' F x (σ x) : M → TotalSpace F V -/
-#guard_msgs in
-#check T% σ
-
-/-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/
-#guard_msgs in
-#check T% σ'
-
-/-- info: fun a ↦ TotalSpace.mk' E' a (s a) : E → TotalSpace E' (Trivial E E') -/
-#guard_msgs in
-#check T% s
-
-variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
-
-/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
-#guard_msgs in
-#check T% X
-
-example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
+-- Tests in MathlibTest/DifferentialGeometry/Elaborators.lean.
 
 -- FIXME: better failure when trying to find a normedfield instance
 def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
@@ -375,18 +355,15 @@ elab:max "ContMDiffAt%" nt:term:arg t:term:arg : term => do
     return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
 
+variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
+variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
+
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   (f : M → M') (m : M)
 
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% (T% X)
-
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) m : Prop -/
-#guard_msgs in
-#check MDifferentiableAt% (T% X) m
+-- Other tests in MathlibTest/DifferentialGeomtry/Elaborators.
 
 /-- info: ContMDiff I (I.prod 𝓘(𝕜, E)) 1 fun m ↦ TotalSpace.mk' E m (X m) : Prop -/
 #guard_msgs in
@@ -395,48 +372,5 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 /-- info: ContMDiffAt I (I.prod 𝓘(𝕜, E)) 1 (fun m ↦ TotalSpace.mk' E m (X m)) m : Prop -/
 #guard_msgs in
 #check ContMDiffAt% 1 (T% X) m
-
-/-- info: MDifferentiableAt I I' f : M → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% f
-
-/-- info: MDifferentiableAt I I' f m : Prop -/
-#guard_msgs in
-#check MDifferentiableAt% f m
-
-variable (g : E → E')
--- set_option trace.MDiffElab true in
-
-/-- info: MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') g : E → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% g
-
-variable (h : 𝕜 → E')
-
-/-- info: MDifferentiableAt 𝓘(𝕜, 𝕜) 𝓘(𝕜, E') h : 𝕜 → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% h
-
-variable (h' : M → 𝕜)
-
-/-- info: MDifferentiableAt I 𝓘(𝕜, 𝕜) h' : M → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% h'
-
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, F)) fun x ↦ TotalSpace.mk' F x (σ x) : M → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% (T% σ)
-
-/--
-info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x ↦ TotalSpace.mk' E' x (σ' x) : E → Prop
--/
-#guard_msgs in
-#check MDifferentiableAt% (T% σ')
-
-/--
-info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun a ↦ TotalSpace.mk' E' a (s a) : E → Prop
--/
-#guard_msgs in
-#check MDifferentiableAt% (T% s)
 
 end
