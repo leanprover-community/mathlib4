@@ -655,7 +655,7 @@ theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEithe
   hg.continuousOn_smul_of_subset hf hK hK.measurableSet Subset.rfl
 
 theorem IntegrableOn.smul_continuousOn_of_subset [SecondCountableTopologyEither X E] {f : X → 𝕜}
-  (hf : IntegrableOn f A μ) {g : X → E} (hg : ContinuousOn g K)
+    (hf : IntegrableOn f A μ) {g : X → E} (hg : ContinuousOn g K)
     (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
     IntegrableOn (fun x => f x • g x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
