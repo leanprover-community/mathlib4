@@ -332,6 +332,9 @@ theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
     exact h _ h'⟩
 
+@[deprecated (since := "2025-07-08")]
+alias preAleph_le_of_isLimit := preAleph_le_of_isSuccPrelimit
+
 theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preAleph o = ⨆ a : Iio o, preAleph a := by
   refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
@@ -422,6 +425,9 @@ theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
 theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isSuccLimit_ord (aleph0_le_aleph _)
+
+@[deprecated (since := "2025-07-08")]
+alias isLimit_omega := isSuccLimit_omega
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by

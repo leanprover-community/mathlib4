@@ -65,9 +65,15 @@ theorem opow_le_of_isSuccLimit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsSuccLimit
   rw [opow_limit a0 h, Ordinal.iSup_le_iff, Subtype.forall]
   rfl
 
+@[deprecated (since := "2025-07-08")]
+alias opow_le_of_limit := opow_le_of_isSuccLimit
+
 theorem lt_opow_of_isSuccLimit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsSuccLimit c) :
     a < b ^ c ↔ ∃ c' < c, a < b ^ c' := by
   simpa using (opow_le_of_isSuccLimit b0 h).not
+
+@[deprecated (since := "2025-07-08")]
+alias lt_opow_of_limit := lt_opow_of_isSuccLimit
 
 @[simp]
 theorem opow_one (a : Ordinal) : a ^ (1 : Ordinal) = a := by
@@ -129,6 +135,9 @@ theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c 
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).isSuccLimit
 
+@[deprecated (since := "2025-07-08")]
+alias isLimit_opow := isSuccLimit_opow
+
 theorem isSuccLimit_opow_left {a b : Ordinal} (l : IsSuccLimit a) (hb : b ≠ 0) :
     IsSuccLimit (a ^ b) := by
   rcases zero_or_succ_or_isSuccLimit b with (e | ⟨b, rfl⟩ | l')
@@ -136,6 +145,9 @@ theorem isSuccLimit_opow_left {a b : Ordinal} (l : IsSuccLimit a) (hb : b ≠ 0)
   · rw [opow_succ]
     exact isSuccLimit_mul (opow_pos _ l.bot_lt) l
   · exact isSuccLimit_opow (one_lt_of_isSuccLimit l) l'
+
+@[deprecated (since := "2025-07-08")]
+alias isLimit_opow_left := isSuccLimit_opow_left
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ | h₁
