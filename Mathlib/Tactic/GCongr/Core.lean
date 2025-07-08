@@ -374,7 +374,7 @@ def containsHole (template : Expr) : MetaM Bool := do
 section Trans
 
 /-!
-The lemmas `rel_imp`, `rel_trans` and `rel_trans'` are too general to be tagged with
+The lemmas `rel_imp_rel`, `rel_trans` and `rel_trans'` are too general to be tagged with
 `@[gcongr]`, so instead we use `getTransLemma?` to look up these lemmas.
 -/
 
@@ -390,7 +390,7 @@ lemma rel_trans' (h : r b c) : r a b → r a c := fun h' => rel_trans h' h
 `getTransLemma?` constructs a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
 This will be tried if there is no other available `@[gcongr]` lemma.
 For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a congruence of the form
-`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp`, `rel_trans` or `rel_trans'`.
+`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`, `rel_trans` or `rel_trans'`.
 -/
 def getTransLemma? (relName : Name) (varyingArgs : Array Bool) : Array GCongrLemma :=
   -- check that the relation is an implication
