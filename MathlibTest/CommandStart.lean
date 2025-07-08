@@ -1,8 +1,25 @@
-import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
-import Mathlib.Tactic.Lemma
+--import Aesop.Frontend.Attribute
+import Mathlib.adomaniLeanUtils.inspect_syntax
+--import Mathlib.Tactic.Lemma
 
+inspect /-!-/
 set_option linter.style.commandStart true
+
+inspect
+instance : Repr Unit := {reprPrec _ a := f!"{a}"}
+def G  : Repr Unit  :=   {reprPrec _ a := f!"{a}"}
+
+--inspect
+/-- `extend_docs <declName> before <prefix_string> after <suffix_string>` extends the
+docs of `<declName>` by adding `<prefix_string>` before and `<suffix_string>` after. -/
+syntax "extend_docs" ident (colGt &"before" str)? (colGt &"after" str)? : command
+
+
+inspect
+elab_rules : tactic
+| `(tactic| skip) => do
+  return
 
 /--
 warning: missing space in the source

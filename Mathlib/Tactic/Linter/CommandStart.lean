@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+import Lean.Parser.Syntax
 import Mathlib.Tactic.Linter.Header
-
 /-!
 #  The `commandStart` linter
 
@@ -44,6 +44,11 @@ register_option linter.style.commandStart.verbose : Bool := {
   descr := "enable the commandStart linter"
 }
 
+def skipped : Std.HashSet SyntaxNodeKind := Std.HashSet.emptyWithCapacity
+  |>.insert ``Parser.Command.moduleDoc
+  |>.insert ``Parser.Command.elab_rules
+  |>.insert ``Lean.Parser.Command.syntax
+
 /--
 `CommandStart.endPos stx` returns the position up until the `commandStart` linter checks the
 formatting.
@@ -51,20 +56,22 @@ This is every declaration until the type-specification, if there is one, or the 
 as well as all `variable` commands.
 -/
 def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
+  --dbg_trace stx.getKind
+  if skipped.contains stx.getKind then none else
   if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
       | none => dbg_trace "unreachable?"; none
-      | some sig => sig.getTailPos?
+      | some sig => stx.getTailPos? --sig.getTailPos?
     else
     match cmd.find? (·.isOfKind ``Parser.Term.typeSpec) with
-      | some s => s[0].getTailPos? -- `s[0]` is the `:` separating hypotheses and the type
+      | some _s => stx.getTailPos? --s[0].getTailPos? -- `s[0]` is the `:` separating hypotheses and the type
       | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
-        | some s => s.getPos?
-        | none => none
+        | some s => stx.getTailPos? --s.getPos?
+        | none => stx.getTailPos? --none
   else if stx.isOfKind ``Parser.Command.variable || stx.isOfKind ``Parser.Command.omit then
     stx.getTailPos?
-  else none
+  else stx.getTailPos?
 
 /--
 A `FormatError` is the main structure tracking how some surface syntax differs from its
@@ -242,6 +249,12 @@ abbrev unlintedNodes := #[
 
   -- The pretty-printer adds a space between the backticks and the actual name.
   ``Parser.Term.doubleQuotedName,
+
+  -- the `f!"..."` for interpolating a string
+  ``Std.termF!_,
+
+  -- `{structure}`
+  ``Parser.Term.structInst,
   ]
 
 /--
