@@ -233,8 +233,6 @@ def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
   continuous_toFun := continuous_rng_of_top.mpr <| continuous_pi fun i ↦
     continuous_subtype_val.comp <| continuous_apply i
   continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <| continuous_eval i
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The obvious bijection between `Πʳ i, [R i, A i]_[⊥]` and `Π i, R i` is a homeomorphism. -/
 def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
@@ -242,8 +240,6 @@ def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   invFun f i := f i
   continuous_toFun := continuous_rng_of_bot.mpr <| continuous_pi fun i ↦ continuous_apply i
   continuous_invFun := continuous_pi continuous_eval
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- Assume that `S` is a subset of `ι` with finite complement, that each `R i` is weakly locally
 compact, and that `A i` is *compact* for all `i ∈ S`. Then the restricted product

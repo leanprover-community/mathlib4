@@ -60,7 +60,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
     ∂ (initSeg s) = initSeg (erase s <| min' s hs) := by
   -- This is a pretty painful proof, with lots of cases.
   ext t
-  simp only [mem_shadow_iff_insert_mem, mem_initSeg, exists_prop]
+  simp only [mem_shadow_iff_insert_mem, mem_initSeg]
   constructor
   -- First show that if t ∪ a ≤ s, then t ≤ s - min s
   · rintro ⟨a, ha, hst, hts⟩
@@ -70,7 +70,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- Now show that if t ≤ s - min s, there is j such that t ∪ j ≤ s
   -- We choose j as the smallest thing not in t
   simp_rw [le_iff_eq_or_lt, lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc]
-  simp only [toColex_inj, ofColex_toColex, ne_eq, and_imp]
+  simp only [toColex_inj, and_imp]
   rintro cards' (rfl | ⟨k, hks, hkt, z⟩)
   -- If t = s - min s, then use j = min s so t ∪ j = s
   · refine ⟨min' s hs, notMem_erase _ _, ?_⟩

@@ -143,7 +143,7 @@ end
 section
 
 variable {M N : CommGrp_ C} (f : M.X ≅ N.X) (one_f : η ≫ f.hom = η := by aesop_cat)
-  (mul_f : μ ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ := by aesop_cat)
+  (mul_f : μ ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `Grp_ C`. -/
 def mkIso : M ≅ N :=
@@ -180,7 +180,7 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   obj A :=
     { F.mapGrp.obj A.toGrp_ with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
@@ -209,8 +209,8 @@ theorem comp_mapCommGrp_mul (A : CommGrp_ C) :
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
-  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp)
+    (by simp))
 
 /-- The composition functor is also the composition on commutative group objects. -/
 @[simps!]
@@ -221,7 +221,7 @@ noncomputable def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ 
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
-  app X := .mk (f.app _)
+  app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
@@ -233,7 +233,7 @@ attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp_ C ⥤ CommGrp_ D where
   obj F := F.1.mapCommGrp
-  map {F G} α := { app := fun A => { hom := α.app A.X } }
+  map {F G} α := { app A := .mk' (α.app A.X) }
 
 end Functor
 

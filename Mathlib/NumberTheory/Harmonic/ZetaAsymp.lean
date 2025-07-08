@@ -125,7 +125,7 @@ proved by directly evaluating the sum of the first `N` terms and using the limit
 -/
 lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   rw [hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) 1)]
-  show Tendsto (fun N ↦ term_sum 1 N) atTop _
+  change Tendsto (fun N ↦ term_sum 1 N) atTop _
   simp_rw [term_sum_one, sub_eq_neg_add]
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg

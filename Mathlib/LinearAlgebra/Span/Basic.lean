@@ -44,6 +44,11 @@ variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 variable {s t : Set M}
 
+lemma _root_.AddSubmonoid.toNatSubmodule_closure (s : Set M) :
+    (AddSubmonoid.closure s).toNatSubmodule = .span ℕ s :=
+  (Submodule.span_le.mpr AddSubmonoid.subset_closure).antisymm'
+    ((Submodule.span ℕ s).toAddSubmonoid.closure_le.mpr Submodule.subset_span)
+
 /-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
@@ -428,6 +433,11 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M]
+
+lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
+    (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
+  (Submodule.span_le.mpr AddSubgroup.subset_closure).antisymm'
+    ((Submodule.span ℤ s).toAddSubgroup.closure_le.mpr Submodule.subset_span)
 
 @[simp]
 theorem span_neg (s : Set M) : span R (-s) = span R s :=
