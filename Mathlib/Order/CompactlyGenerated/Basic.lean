@@ -552,7 +552,6 @@ instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice 
       right
       have hc' := CompleteLattice.Iic_coatomic_of_compact_element hc
       rw [← isAtomic_iff_isCoatomic] at hc'
-      haveI := hc'
       obtain con | ⟨a, ha, hac⟩ := eq_bot_or_exists_atom_le (⟨c, le_refl c⟩ : Set.Iic c)
       · exfalso
         apply hcbot
