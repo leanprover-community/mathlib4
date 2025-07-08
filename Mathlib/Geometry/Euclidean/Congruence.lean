@@ -44,19 +44,19 @@ variable {ι V₁ V₂ P₁ P₂ : Type*}
   {a b c : P₁} {a' b' c' : P₂}
 
 lemma triangle_congruent_iff_dist_eq {t₁ : Fin 3 → P₁} {t₂ : Fin 3 → P₂} :
-    t₁ ≅ t₂ ↔ ∀ (i j : Fin 3),dist (t₁ i) (t₁ j) = dist (t₂ i) (t₂ j) := congruent_iff_dist_eq
+    t₁ ≅ t₂ ↔ ∀ (i j : Fin 3), dist (t₁ i) (t₁ j) = dist (t₂ i) (t₂ j) := congruent_iff_dist_eq
 
 /-- Side Side Side, possibly degenerate. -/
 theorem side_side_side (hd₁ : dist a b = dist a' b') (hd₂ : dist b c = dist b' c')
     (hd₃ : dist c a = dist c' a') :
-  ![a, b, c] ≅ ![a', b', c'] := by
+    ![a, b, c] ≅ ![a', b', c'] := by
   rw [triangle_congruent_iff_dist_eq]
   intro i j
   fin_cases i <;> fin_cases j <;> simp_all [dist_comm]
 
 /-- Side Angle Side, possibly degenerate. -/
 theorem side_angle_side (h : ∠ a b c = ∠ a' b' c') (hd₁ : dist a b = dist a' b')
-    (hd₂ : dist b c = dist b' c') : ![a,b,c] ≅ ![a',b',c'] := by
+    (hd₂ : dist b c = dist b' c') : ![a, b, c] ≅ ![a', b', c'] := by
   apply side_side_side hd₁ hd₂
   rw [dist_comm, dist_comm c' a', ← sq_eq_sq₀ (by positivity) (by positivity), pow_two, pow_two,
     EuclideanGeometry.law_cos a b c, EuclideanGeometry.law_cos a' b' c']
