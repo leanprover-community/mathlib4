@@ -116,7 +116,7 @@ lemma associated_prime_eq_minimalPrimes_isCohenMacaulay (M : ModuleCat.{v} R)
     [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M] :
     associatedPrimes R M = (Module.annihilator R M).minimalPrimes :=
   le_antisymm (fun p hp ↦ associated_prime_minimal_of_isCohenMacaulay p M hp)
-    Module.associatedPrimes.minimalPrimes_annihilator_mem_associatedPrimes
+    (Module.associatedPrimes.minimalPrimes_annihilator_mem_associatedPrimes R M)
 
 lemma ENat.add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
   ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
