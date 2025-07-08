@@ -60,7 +60,7 @@ theorem isPreprimitive_ofFixingSubgroup_conj_iff {s : Set α} {g : G} :
     IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s) ↔
       IsPreprimitive (fixingSubgroup G (g • s)) (ofFixingSubgroup G (g • s)) :=
   isPreprimitive_congr
-    (fixingSubgroupEquivFixingSubgroup G rfl).surjective
+    (fixingSubgroupEquivFixingSubgroup rfl).surjective
     conjMap_ofFixingSubgroup_bijective
 
 @[to_additive]
