@@ -33,7 +33,6 @@ instance : ValuativeRel ℚ_[p] := .ofValuation NormedField.valuation'
   rw [lt_iff_le_not_ge]
   simpa using le_of_lt
 
-@[simp]
 lemma valuation_p_ne_zero : valuation ℚ_[p] p ≠ 0 := by simp [hp.out.ne_zero]
 
 @[simp]
