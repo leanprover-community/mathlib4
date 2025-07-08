@@ -67,7 +67,7 @@ variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
   (F : A ⥤ B) (G : C ⥤ B)
 
 attribute [local instance] CatCommSq.vId in
-/-- The identitiy `CatCospanTransform` -/
+/-- The identity `CatCospanTransform` -/
 @[simps]
 def id : CatCospanTransform F G F G where
   left := 𝟭 A
