@@ -246,6 +246,8 @@ theorem map_comp {g : β → γ} {f : α → β} : Sym2.map (g ∘ f) = Sym2.map
 theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) = map (g ∘ f) x := by
   induction x; aesop
 
+theorem map_mk (f : α → β) (x : α × α) : map f (Sym2.mk x) = Sym2.mk (Prod.map f f x) := rfl
+
 @[simp]
 theorem map_pair_eq (f : α → β) (x y : α) : map f s(x, y) = s(f x, f y) :=
   rfl
@@ -834,12 +836,9 @@ lemma sym2_preimage {f : α → β} {s : Set β} : (f ⁻¹' s).sym2 = Sym2.map 
   ext ⟨x, y⟩
   simp
 
-lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.sym2 := by
-  ext z
-  induction z using Sym2.inductionOn with | hf x y =>
-  simp only [mk'_mem_sym2_iff, mem_prod, mem_image, Sym2.ext_iff, Sym2.mem_map, mem_iff,
-    Sym2.exists, iff_iff_implies_and_implies, or_imp]
-  grind
+lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.sym2 :=
+  preimage_injective.mpr Sym2.mk_surjective <| by
+    simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, Sym2.map_mk, Prod.map]
 
 lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
   preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
