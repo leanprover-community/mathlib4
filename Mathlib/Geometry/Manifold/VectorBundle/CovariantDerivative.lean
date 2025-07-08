@@ -1074,6 +1074,7 @@ def IsTorsionFree : Prop := torsion cov = 0
 
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
 
+
 -- This should be obvious, I'm doing something wrong.
 lemma isTorsionFree_iff : IsTorsionFree cov ↔
     ∀ X Y, cov X Y - cov Y X = VectorField.mlieBracket I X Y := by
@@ -1081,9 +1082,8 @@ lemma isTorsionFree_iff : IsTorsionFree cov ↔
   constructor
   · intro h
     intro X Y
-    have : torsion cov X Y = 0 := sorry
-    rw [torsion] at this
-    sorry
+    have : torsion cov X Y = 0 := by simp [h]
+    exact eq_of_sub_eq_zero this
   · intro h
     ext X Y x
     specialize h X Y
