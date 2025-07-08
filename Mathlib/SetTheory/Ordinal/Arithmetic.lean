@@ -418,9 +418,8 @@ theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
 
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
-    IsNormal f ↔ StrictMono f ∧ ∀ o, IsLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a where
-  mp h := ⟨h.1, fun o ho a H ↦ (h.2 ho).2 <| by simpa [upperBounds]⟩
-  mpr h := .of_mem_lowerBounds_upperBounds h.1 fun ho ↦ by simpa [upperBounds] using h.2 _ ho
+    IsNormal f ↔ StrictMono f ∧ ∀ o, IsLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
+  isNormal_iff
 
 theorem IsNormal.lt_iff {f} (H : IsNormal f) {a b} : f a < f b ↔ a < b :=
   StrictMono.lt_iff_lt <| H.strictMono
@@ -499,8 +498,7 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) :
               rintro ⟨⟩ <;> constructor <;> assumption⟩
 
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
-  IsNormal.of_mem_lowerBounds_upperBounds add_left_strictMono fun hb c ↦
-    by simp [upperBounds, add_le_of_limit hb]
+  ⟨add_left_strictMono, fun hb c ↦ by simp [upperBounds, add_le_of_limit hb]⟩
 
 theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
   (isNormal_add_right a).isLimit
