@@ -159,9 +159,13 @@ structure GCongrLemma where
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
 initialize gcongrExt : SimpleScopedEnvExtension (GCongrKeyAndArgs × GCongrLemma)
-    (Std.DHashMap GCongrKey (fun key => Std.TreeMap (Vector Bool key.arity) GCongrLemma)) ←
+    (Std.DHashMap GCongrKey (fun key => Std.TreeMap (Vector Bool key.arity) (Array GCongrLemma))) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, lem) => m.insert n.key ((m.getD n.key {}).insert n.varyingArgs lem)
+    addEntry := fun m (n, lem) => m.alter n.key fun
+      | none => some { (n.varyingArgs, #[lem]) }
+      | some map => some <| map.alter n.varyingArgs fun
+        | none => some #[lem]
+        | some lemmas => some (lemmas.push lem)
     initial := {}
   }
 
@@ -488,9 +492,9 @@ partial def _root_.Lean.MVarId.gcongr
   let key := { relName, head := lhsHead, arity := varyingArgs.size }
   let mut lemmas := #[]
   if let some candidates := (gcongrExt.getState (← getEnv)).get? key then
-    for (varyingArgsCandidate, lem) in candidates do
-      if varyingArgs.size.all fun i _ => !varyingArgs[i] || varyingArgsCandidate[i] then
-        lemmas := lemmas.push lem
+    for (varyingArgsLems, lems) in candidates do
+      if varyingArgs.size.all fun i _ => !varyingArgs[i] || varyingArgsLems[i] then
+        lemmas := lemmas ++ lems
   for lem in lemmas ++ getTransLemma? relName varyingArgs do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
