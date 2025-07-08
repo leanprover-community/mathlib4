@@ -3,6 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yi Yuan
 -/
+import Mathlib.Data.Fin.SuccPred
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Fin.Rotate
@@ -131,9 +132,6 @@ theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate
 
 namespace Fin
 
-lemma val_add_one'{n : ℕ} [NeZero n]{i j: Fin n}(hij : i < j) : (i + 1).1 = i.1 + 1 := by
-  simpa [add_def] using Nat.mod_eq_of_lt (by omega)
-
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain (castLEEmb (by omega)).toEquivRange
@@ -144,12 +142,12 @@ theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = 
 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
-  have jin : j ∈ Set.range ⇑(castLEEmb (n := i + 1) (m := n) (by omega)) := by simp; omega
-  have : (castLEEmb (by omega)).toEquivRange (castLT j (n := i + 1) (by omega)) = ⟨j, jin⟩ := by
+  have jin : j ∈ Set.range ⇑(castLEEmb (n := i + 1) (by omega)) := by simp; omega
+  have : (castLEEmb (by omega)).toEquivRange (castLT j (by omega)) = ⟨j, jin⟩ := by
       rw [Function.Embedding.toEquivRange_apply]
       simp only [coe_castLEEmb, castLEEmb_apply, Subtype.mk.injEq]
       rfl
-  rw [cycleRange, (finRotate (i + 1)).extendDomain_apply_subtype (castLEEmb (m := n)
+  rw [cycleRange, (finRotate (i + 1)).extendDomain_apply_subtype (castLEEmb
     (by omega)).toEquivRange jin, Function.Embedding.toEquivRange_apply]
   split_ifs with ch
   · have : ((castLEEmb (by omega)).toEquivRange.symm ⟨j, jin⟩) = last i := by
@@ -158,10 +156,9 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     rfl
   · refine eq_of_val_eq ?_
     have hij := lt_of_le_of_ne h ch
-    simp [← this, val_add_one' hij]
+    simp [← this, val_add_one_of_lt' hij]
     have : (j.castLT (by omega) : Fin (i + 1)) < (i.castLT (by omega) : Fin (i + 1)) := hij
-    simp [val_add_one' this]
-
+    simp [val_add_one_of_lt' this]
 
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
@@ -367,10 +364,9 @@ theorem cycleIcc_of (h1 : i ≤ k) (h2 : k ≤ j) [NeZero n] :
     simpa [h3, cycleRange_of_eq h] using by omega
   · have h : subNat i.1 (k.cast (by omega)) (by simp [h1]) < (j - i).castLT
         (sub_val_lt_sub hij) := by simp [subNat, lt_iff_val_lt_val, sub_val_of_le hij]; omega
-    have : (k.1 + 1) % n = k.1 + 1 := Nat.mod_eq_of_lt (by omega)
     rw [cycleRange_of_lt h, subNat]
-    simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk, this]
-    rw [Nat.mod_eq_of_lt (by omega)]
+    simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
+    rw [Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
     omega
 
 theorem cycleIcc_of_ge_and_lt (h1 : i ≤ k) (h2 : k < j) [NeZero n] : (cycleIcc i j) k = k + 1 := by
