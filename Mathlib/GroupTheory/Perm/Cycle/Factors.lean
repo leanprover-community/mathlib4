@@ -317,8 +317,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
     rcases k with - | k
     · refine ⟨#(f.cycleOf x).support, ?_, self_le_add_right _ _, ?_⟩
-      · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
-        simpa using hx
+      · assumption
       · simp only [pow_zero, coe_one, id_eq] at hk'
         subst hk'
         rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
@@ -339,7 +338,7 @@ theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
   rw [← cycleOf_zpow_apply_self g x, cycle_zpow_mem_support_iff]
   · rw [← Int.dvd_iff_emod_eq_zero]
   · exact isCycle_cycleOf g hx
-  · simp only [mem_support, cycleOf_apply_self]; exact hx
+  · simp only [cycleOf_apply_self]; exact hx
 
 end CycleOf
 
@@ -808,9 +807,10 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
       let x := σ.truncCycleFactors.out
       exact (congr_arg P x.2.1).mp (this x.1 x.2.2.1 x.2.2.2)
   intro l
-  induction' l with σ l ih
-  · exact fun _ _ => base_one
-  · intro h1 h2
+  induction l with
+  | nil => exact fun _ _ => base_one
+  | cons σ l ih =>
+    intro h1 h2
     rw [List.prod_cons]
     exact
       induction_disjoint σ l.prod (disjoint_prod_right _ (List.pairwise_cons.mp h2).1)

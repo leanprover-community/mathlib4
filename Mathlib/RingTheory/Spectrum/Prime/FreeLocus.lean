@@ -66,8 +66,7 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
     algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
     IsLocalization.map_id_mk']
-  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
-    IsLocalization.map_id_mk']
+  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
@@ -237,7 +236,7 @@ lemma nontrivial_of_rankAtStalk_pos (h : 0 < rankAtStalk (R := R) M) :
     Nontrivial M := by
   by_contra! hn
   have : Subsingleton M := not_nontrivial_iff_subsingleton.mp hn
-  simp [rankAtStalk, this] at h
+  simp at h
 
 lemma rankAtStalk_eq_of_equiv {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
     rankAtStalk (R := R) M = rankAtStalk N := by
@@ -276,7 +275,7 @@ lemma rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
     free_of_flat_of_isLocalRing
   simp_rw [rankAtStalk, e.finrank_eq, Module.finrank_pi_fintype, finsum_eq_sum_of_fintype]
 
-lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R):
+lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R) :
     rankAtStalk M p =
       finrank (Localization.AtPrime p.asIdeal) (Localization.AtPrime p.asIdeal ⊗[R] M) := by
   let e : LocalizedModule p.asIdeal.primeCompl M ≃ₗ[Localization.AtPrime p.asIdeal]

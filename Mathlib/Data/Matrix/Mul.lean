@@ -59,7 +59,9 @@ section DotProduct
 
 variable [Fintype m] [Fintype n]
 
-/-- `dotProduct v w` is the sum of the entrywise products `v i * w i` -/
+/-- `dotProduct v w` is the sum of the entrywise products `v i * w i`.
+
+See also `dotProductEquiv`. -/
 def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
@@ -326,7 +328,7 @@ theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N
 instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
 
 theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
-    {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k :=
+    {i k} : (M * N) i k = (M i) ⬝ᵥ fun j => N j k :=
   rfl
 
 theorem two_mul_expl {R : Type*} [NonUnitalNonAssocSemiring R] (A B : Matrix (Fin 2) (Fin 2) R) :

@@ -159,7 +159,7 @@ lemma toENatAux_nat (n : ℕ) : toENatAux n = n := Nat.cast_injective.extend_app
 lemma toENatAux_zero : toENatAux 0 = 0 := toENatAux_nat 0
 
 lemma toENatAux_eq_top {a : Cardinal} (ha : ℵ₀ ≤ a) : toENatAux a = ⊤ :=
-  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_lt <| hn ▸ nat_lt_aleph0 n
+  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_gt <| hn ▸ nat_lt_aleph0 n
 
 lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
   | (n : ℕ) => toENatAux_nat n

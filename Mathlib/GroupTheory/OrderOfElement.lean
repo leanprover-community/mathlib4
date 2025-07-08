@@ -409,7 +409,7 @@ theorem orderOf_mul_dvd_lcm (h : Commute x y) :
   exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left
 
 @[to_additive]
-theorem orderOf_dvd_lcm_mul (h : Commute x y):
+theorem orderOf_dvd_lcm_mul (h : Commute x y) :
     orderOf y ∣ Nat.lcm (orderOf x) (orderOf (x * y)) := by
   by_cases h0 : orderOf x = 0
   · rw [h0, lcm_zero_left]
@@ -422,7 +422,7 @@ theorem orderOf_dvd_lcm_mul (h : Commute x y):
       (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
 
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
-theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y):
+theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y) :
     orderOf (x * y) ∣ orderOf x * orderOf y :=
   dvd_trans h.orderOf_mul_dvd_lcm (lcm_dvd_mul _ _)
 
@@ -1096,13 +1096,13 @@ variable [Ring G] [LinearOrder G] [IsStrictOrderedRing G] {a x : G}
 
 protected lemma IsOfFinOrder.eq_neg_one (ha₀ : a ≤ 0) (ha : IsOfFinOrder a) : a = -1 :=
   (sq_eq_one_iff.1 <| ha.pow.eq_one <| sq_nonneg a).resolve_left <| by
-    rintro rfl; exact one_pos.not_le ha₀
+    rintro rfl; exact one_pos.not_ge ha₀
 
 theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   rw [orderOf_eq_zero_iff']
   intro n hn hx
   replace hx : |x| ^ n = 1 := by simpa only [abs_one, abs_pow] using congr_arg abs hx
-  rcases h.lt_or_lt with h | h
+  rcases h.lt_or_gt with h | h
   · exact ((pow_lt_one₀ (abs_nonneg x) h hn.ne').ne hx).elim
   · exact ((one_lt_pow₀ h hn.ne').ne' hx).elim
 

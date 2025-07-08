@@ -110,6 +110,11 @@ theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
   hg.comp x (hf.mono inter_subset_left) inter_subset_right
 
 @[fun_prop]
+theorem DifferentiableAt.fun_comp' {f : E → F} {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
+    (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (fun x ↦ g (f x)) x :=
+  (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
+
+@[fun_prop]
 theorem DifferentiableAt.comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (g ∘ f) x :=
   (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
@@ -189,9 +194,20 @@ theorem fderiv_comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f 
 @[deprecated (since := "2024-10-31")] alias fderiv.comp_fderivWithin := fderiv_comp_fderivWithin
 
 @[fun_prop]
+theorem DifferentiableOn.fun_comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
+    (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) :
+    DifferentiableOn 𝕜 (fun x ↦ g (f x)) s :=
+  fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
+
+@[fun_prop]
 theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
     (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) : DifferentiableOn 𝕜 (g ∘ f) s :=
   fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
+
+@[fun_prop]
+theorem Differentiable.fun_comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
+    Differentiable 𝕜 (fun x ↦ g (f x)) :=
+  fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
 
 @[fun_prop]
 theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :

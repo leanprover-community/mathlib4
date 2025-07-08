@@ -356,7 +356,7 @@ open Ordering
 
 theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a ≤ f b ↔ a ≤ b :=
-  ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_le h, fun h ↦
+  ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_ge h, fun h ↦
     h.lt_or_eq_dec.elim (fun h' ↦ (hf ha hb h').le) fun h' ↦ h' ▸ le_rfl⟩
 
 theorem StrictAntiOn.le_iff_le (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
@@ -655,7 +655,7 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
   refine ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ ?_⟩
   rintro (n | _ | n)
   · exact hf n.lt_succ_self
-  · show g 1 < f 0
+  · change g 1 < f 0
     rw [hf₀, ← hg₀]
     exact hg Nat.zero_lt_one
   · exact hg (Nat.lt_succ_self _)
@@ -673,28 +673,28 @@ end Int
 theorem Monotone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Monotone f) (n : ℕ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℕ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h1).not_le (Nat.le_of_lt_succ <| hf.reflect_lt h2)
+  exact (hf.reflect_lt h1).not_ge (Nat.le_of_lt_succ <| hf.reflect_lt h2)
 
 /-- If `f` is an antitone function from `ℕ` to a preorder such that `x` lies between `f (n + 1)` and
 `f n`, then `x` doesn't lie in the range of `f`. -/
 theorem Antitone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Antitone f) (n : ℕ) {x : α}
     (h1 : f (n + 1) < x) (h2 : x < f n) (a : ℕ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h2).not_le (Nat.le_of_lt_succ <| hf.reflect_lt h1)
+  exact (hf.reflect_lt h2).not_ge (Nat.le_of_lt_succ <| hf.reflect_lt h1)
 
 /-- If `f` is a monotone function from `ℤ` to a preorder and `x` lies between `f n` and
   `f (n + 1)`, then `x` doesn't lie in the range of `f`. -/
 theorem Monotone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Monotone f) (n : ℤ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℤ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h1).not_le (Int.le_of_lt_add_one <| hf.reflect_lt h2)
+  exact (hf.reflect_lt h1).not_ge (Int.le_of_lt_add_one <| hf.reflect_lt h2)
 
 /-- If `f` is an antitone function from `ℤ` to a preorder and `x` lies between `f (n + 1)` and
 `f n`, then `x` doesn't lie in the range of `f`. -/
 theorem Antitone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Antitone f) (n : ℤ) {x : α}
     (h1 : f (n + 1) < x) (h2 : x < f n) (a : ℤ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h2).not_le (Int.le_of_lt_add_one <| hf.reflect_lt h1)
+  exact (hf.reflect_lt h2).not_ge (Int.le_of_lt_add_one <| hf.reflect_lt h1)
 
 end Preorder
 

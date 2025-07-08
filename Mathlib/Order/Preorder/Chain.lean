@@ -148,7 +148,7 @@ lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
 
 lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
-  ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_le h⟩
+  ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_ge h⟩
 
 lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
@@ -158,7 +158,7 @@ lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
-  ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_lt h⟩
+  ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_gt h⟩
 
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1
@@ -200,7 +200,7 @@ theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
-  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop, exists_and_left] at hs₂
+  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop] at hs₂
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
@@ -209,7 +209,7 @@ theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
     rw [exists_and_left] at h
-    simp [SuccChain, dif_neg, h, Subset.rfl]
+    simp [SuccChain, h]
 
 end Chain
 

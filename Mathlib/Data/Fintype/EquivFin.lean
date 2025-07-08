@@ -358,8 +358,6 @@ alias equiv_of_fintype_self_embedding_to_embedding := toEmbedding_equivOfFiniteS
     (α ↪ α) ≃ (α ≃ α) where
   toFun e := e.equivOfFiniteSelfEmbedding
   invFun e := e.toEmbedding
-  left_inv e := rfl
-  right_inv e := by ext; rfl
 
 /-- A constructive embedding of a fintype `α` in another fintype `β` when `card α ≤ card β`. -/
 def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
@@ -476,7 +474,7 @@ end Infinite
 instance : Infinite ℕ :=
   Infinite.of_not_fintype <| by
     intro h
-    exact (Finset.range _).card_le_univ.not_lt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
+    exact (Finset.range _).card_le_univ.not_gt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
 
 instance Int.infinite : Infinite ℤ :=
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
@@ -559,7 +557,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
     obtain ⟨x, hx⟩ := exists_notMem_finset t
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
-    simp [hx, ht]
+    simp [ht]
 
 end Infinite
 

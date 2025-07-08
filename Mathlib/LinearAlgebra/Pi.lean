@@ -238,9 +238,9 @@ theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring 
   simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
 
 @[simp high]
-theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
-    [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :
-    LinearMap.lsum R M R (LinearMap.single R M) = LinearMap.id :=
+theorem lsum_single (S) [Fintype ι] [Semiring S]
+    [∀ i, Module S (φ i)] [∀ i, SMulCommClass R S (φ i)] :
+    LinearMap.lsum R φ S (LinearMap.single R φ) = LinearMap.id :=
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
 
 variable {R φ}
@@ -278,22 +278,21 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
       (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) ?_) ?_ ?_
   · intro b
-    simp only [mem_iInf, mem_ker, funext_iff, proj_apply, pi_apply]
+    simp only [mem_iInf, mem_ker, proj_apply, pi_apply]
     intro j hjJ
     have : j ∉ I := fun hjI => hd.le_bot ⟨hjI, hjJ⟩
     rw [dif_neg this, zero_apply]
   · simp only [pi_comp, comp_assoc, subtype_comp_codRestrict, proj_pi, Subtype.coe_prop]
     ext b ⟨j, hj⟩
-    simp only [dif_pos, Function.comp_apply, Function.eval_apply, LinearMap.codRestrict_apply,
-      LinearMap.coe_comp, LinearMap.coe_proj, LinearMap.pi_apply, Submodule.subtype_apply,
-      Subtype.coe_prop]
+    simp only [dif_pos,
+      LinearMap.coe_proj, LinearMap.pi_apply]
     rfl
   · ext1 ⟨b, hb⟩
     apply Subtype.ext
     ext j
     have hb : ∀ i ∈ J, b i = 0 := by
       simpa only [mem_iInf, mem_ker, proj_apply] using (mem_iInf _).1 hb
-    simp only [comp_apply, pi_apply, id_apply, proj_apply, subtype_apply, codRestrict_apply]
+    simp only [comp_apply, pi_apply, id_apply, codRestrict_apply]
     split_ifs with h
     · rfl
     · exact (hb _ <| (hu trivial).resolve_left h).symm
@@ -406,6 +405,26 @@ theorem iSup_map_single [DecidableEq ι] [Finite ι] :
   exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
 
 end Submodule
+
+namespace LinearMap
+
+variable [Semiring R]
+
+lemma ker_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
+    [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
+    LinearMap.ker (f.compLeft I) = Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.ker f) :=
+  Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr_fun hx i,
+    fun hx => funext fun i => hx i trivial⟩
+
+lemma range_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
+    [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
+    LinearMap.range (f.compLeft I) =
+      Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.range f) :=
+  Submodule.ext fun _ => ⟨fun ⟨y, hy⟩ i _ => ⟨y i, congr_fun hy i⟩, fun hx => by
+    choose y hy using hx
+    exact ⟨fun i => y i trivial, funext fun i => hy i trivial⟩⟩
+
+end LinearMap
 
 namespace LinearEquiv
 

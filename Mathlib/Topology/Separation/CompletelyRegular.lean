@@ -18,7 +18,7 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
   and a point `x ∈ Kᶜ`, there is a continuous function `f` from `X` to the unit interval, so that
   `f x = 0` and `f k = 1` for all `k ∈ K`. A completely regular space is a regular space, and a
   normal space is a completely regular space.
-* `T35Space`: A T₃.₅ space is a completely regular space that is also T₁. A T₃.₅ space is a T₃
+* `T35Space`: A T₃.₅ space is a completely regular space that is also T₀. A T₃.₅ space is a T₃
   space and a T₄ space is a T₃.₅ space.
 
 ## Main results
@@ -130,9 +130,9 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
 
-/-- A T₃.₅ space is a completely regular space that is also T1. -/
+/-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
-class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyRegularSpace X
+class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, CompletelyRegularSpace X
 
 instance T35Space.instT3space [T35Space X] : T3Space X where
 
@@ -141,7 +141,7 @@ instance T4Space.instT35Space [T4Space X] : T35Space X where
 lemma Topology.IsEmbedding.t35Space
     {Y : Type v} [TopologicalSpace Y] [T35Space Y]
     {f : X → Y} (hf : IsEmbedding f) : T35Space X :=
-  @T35Space.mk _ _ hf.t1Space hf.isInducing.completelyRegularSpace
+  @T35Space.mk _ _ hf.t0Space hf.isInducing.completelyRegularSpace
 
 instance {p : X → Prop} [T35Space X] : T35Space (Subtype p) where
 
