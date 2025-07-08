@@ -81,13 +81,13 @@ lemma zpow_left_strictMono (hn : 0 < n) : StrictMono ((· ^ n) : α → α) := f
 @[deprecated (since := "2024-11-13")] alias zpow_strictMono_left := zpow_left_strictMono
 
 @[to_additive zsmul_right_monotone]
-lemma zpow_left_monotonetone (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
+lemma zpow_left_monotone (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
   rw [← one_le_div', ← div_zpow]; exact one_le_zpow (one_le_div'.2 hab) hn
 
 @[deprecated (since := "2025-07-08")] alias zsmul_mono_right := zsmul_right_monotone
-@[deprecated (since := "2025-07-08")] alias zpow_left_mono := zpow_left_monotonetone
+@[deprecated (since := "2025-07-08")] alias zpow_left_mono := zpow_left_monotone
 
-@[deprecated (since := "2024-11-13")] alias zpow_mono_left := zpow_left_monotonetone
+@[deprecated (since := "2024-11-13")] alias zpow_mono_left := zpow_left_monotone
 
 variable {α}
 
