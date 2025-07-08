@@ -519,11 +519,7 @@ theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
 
 @[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by
-  apply map_injective (closure s).subtype_injective
-  rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, range_subtype,
-    Set.image_preimage_eq_of_subset]
-  rw [coe_subtype, Subtype.range_coe_subtype]
-  exact subset_closure
+  simp
 
 @[to_additive]
 theorem comap_sup_eq_of_le_range {H K : Subgroup N} (hH : H ≤ f.range) (hK : K ≤ f.range) :

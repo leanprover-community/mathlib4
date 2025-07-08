@@ -4,6 +4,20 @@ import Mathlib.Tactic.Lemma
 
 set_option linter.style.commandStart true
 
+/--
+warning: missing space in the source
+
+This part of the code
+  'example: True'
+should be written as
+  'example : True'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example: True := trivial
+
 -- Constructs that are ignored by the linter, and (former) false positives.
 section noFalsePositives
 

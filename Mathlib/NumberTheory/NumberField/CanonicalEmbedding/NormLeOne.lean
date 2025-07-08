@@ -257,7 +257,7 @@ theorem injective_expMap :
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=
-  continuous_iff_continuousOn_univ.mpr <| (expMap_source K) ▸ expMap.continuousOn
+  continuousOn_univ.mp <| (expMap_source K) ▸ expMap.continuousOn
 
 variable {K}
 
