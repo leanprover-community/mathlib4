@@ -5,6 +5,7 @@ Authors: Winston Yin
 -/
 import Mathlib.Analysis.Calculus.Implicit
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
+-- import Mathlib.Order.Filter.Prod
 
 noncomputable section
 
@@ -73,7 +74,7 @@ def implicitFunctionOfProd (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤
 /-- Implicit function `y` defined by `f (x, y x) = x`. -/
 def implicitFunctionOfProd' (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) : E → F :=
-  fun x ↦ (implicitFunctionOfProd hf hf' hf'' x a.2).2
+  fun x ↦ (implicitFunctionOfProd hf hf' hf'' x (f a)).2
 
 lemma implicitFunctionOfProd_fst (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) :
@@ -87,12 +88,47 @@ lemma rightFun_implicitFunctionOfProd (hf : HasStrictFDerivAt f f' a) (hf' : ran
   (implicitFunctionDataOfProd hf hf' hf'').prod_map_implicitFunction.mono
     fun _ ↦ congr_arg Prod.snd
 
+section
+
+variable {α β γ δ : Type*} {ι : Sort*}
+variable {s : Set α} {t : Set β} {f : Filter α} {g : Filter β}
+
+theorem Filter.eventually_prod_iff_exists_mem {p : α × β → Prop} :
+    (∀ᶠ x in f ×ˢ g, p x) ↔ ∃ s ∈ f, ∃ t ∈ g, ∀ x ∈ s, ∀ y ∈ t, p ⟨x, y⟩ := by
+  rw [Filter.eventually_iff_exists_mem]
+  refine ⟨fun ⟨st, hst, h⟩ ↦ ?_, fun ⟨s, hs, t, ht, h⟩ ↦ ?_⟩
+  · have ⟨s, hs, t, ht, hp⟩ := Filter.mem_prod_iff.mp hst
+    exact ⟨s, hs, t, ht, fun x hx y hy ↦ h _ <| hp ⟨hx, hy⟩⟩
+  · exact ⟨s ×ˢ t, Filter.prod_mem_prod hs ht, fun ⟨x, y⟩ ⟨hx, hy⟩ ↦ h x hx y hy⟩
+
+end
+
+-- lemma rightFun_implicitFunctionOfProd₀ (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+--     (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) :
+--     ∀ᶠ x in 𝓝 a.1, f (implicitFunctionOfProd hf hf' hf'' x)
+
 lemma rightFun_implicitFunctionOfProd' (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) :
-    ∀ᶠ x in 𝓝 a.1, f (x, implicitFunctionOfProd' hf hf' hf'' x) = a.2 := by
-  have := rightFun_implicitFunctionOfProd hf hf' hf''
-  rw [eventually_iff_exists_mem] at this
-  obtain ⟨u, hu, h⟩ := this
+    ∀ᶠ x in 𝓝 a.1, f (x, implicitFunctionOfProd' hf hf' hf'' x) = f a := by
+  -- it's a little annoying to go from `∀ᶠ (x, y) in 𝓝 a` to `∀ᶠ x in 𝓝 a.1` while fixing `y`, but
+  -- this statement is true
+
+
+
+  -- have := rightFun_implicitFunctionOfProd hf hf' hf''
+  -- rw [nhds_prod_eq, Filter.eventually_prod_iff_exists_mem] at this
+  -- obtain ⟨u, hu, v, hv, h⟩ := this
+  -- rw [eventually_iff_exists_mem]
+  -- refine ⟨u, hu, ?_⟩
+  -- intro x hx
+  -- have hmem : f a ∈ v := by sorry
+  -- have := h x hx (f a) hmem
+  -- dsimp only at this
+  -- rw [← this]
+  -- congr 1
+  -- ext
+  -- ·
+  -- rw [implicitFunctionOfProd']
   sorry
 
 end ImplicitFunctionData
