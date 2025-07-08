@@ -348,6 +348,8 @@ theorem tsmul_eq_smul_one_tmul {S : Type*} [Semiring S] [Module R S] [SMulCommCl
     (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
   nth_rw 1 [← mul_one s, ← smul_eq_mul, smul_tmul']
 
+@[deprecated (since := "2025-07-08")] alias tsmul_eq_smul_one_tuml := tsmul_eq_smul_one_tmul
+
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
