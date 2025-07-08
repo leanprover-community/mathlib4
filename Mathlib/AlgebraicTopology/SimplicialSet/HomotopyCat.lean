@@ -167,7 +167,7 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
     SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
     Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
     Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
-  show X.map (𝟙 _) = _
+  change X.map (𝟙 _) = _
   rw [X.map_id]
   rfl
 
@@ -195,7 +195,7 @@ end
 
 section
 
-private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
+private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl

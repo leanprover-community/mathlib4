@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.SetTheory.Cardinal.Embedding
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -97,16 +98,22 @@ namespace MulAction
 
 open scoped BigOperators Pointwise Cardinal
 
-variable (G α : Type*) [Group G] [MulAction G α]
+variable {G α : Type*} [Group G] [MulAction G α]
 
+variable (G α) in
 /-- An action of a group on a type `α` is `n`-pretransitive
 if the associated action on `Fin n ↪ α` is pretransitive. -/
 @[to_additive "An additive action of an additive group on a type `α`
 is `n`-pretransitive if the associated action on `Fin n ↪ α` is pretransitive."]
 abbrev IsMultiplyPretransitive (n : ℕ) := IsPretransitive G (Fin n ↪ α)
 
-variable {G H α β : Type*} [Group G] [MulAction G α] [Group H] [MulAction H β]
-  {σ : G → H} {f : α →ₑ[σ] β} (hf : Function.Injective f)
+@[to_additive]
+theorem isMultiplyPretransitive_iff {n : ℕ} :
+    IsMultiplyPretransitive G α n ↔ ∀ x y : Fin n ↪ α, ∃ g : G, g • x = y :=
+  isPretransitive_iff _ _
+
+variable {H β : Type*} [Group H] [MulAction H β] {σ : G → H}
+  {f : α →ₑ[σ] β} (hf : Function.Injective f)
 
 /- If there exists a surjective equivariant map `α →ₑ[σ] β`
 then pretransitivity descends from `n ↪ α` to `n ↪ β`.
@@ -294,71 +301,97 @@ end MulAction
 
 namespace Equiv.Perm
 
-variable {α : Type*} [Fintype α]
+variable {α : Type*}
 
--- Move?
-/-- The permutation group of `α` acts transitively on `α`. -/
-instance : IsPretransitive (Perm α) α where
-  exists_smul_eq x y := by
-    classical
-    use Equiv.swap x y
-    simp only [Equiv.Perm.smul_def, Equiv.swap_apply_left x y]
-
-/-- The permutation group of `α` acts 2-pretransitively on `α`. -/
-theorem is_two_pretransitive (α : Type*) :
-    IsMultiplyPretransitive (Perm α) α 2 := by
-  rw [is_two_pretransitive_iff]
+variable (α) in
+/-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
+theorem isMultiplyPretransitive (n : ℕ) :
+    IsMultiplyPretransitive (Perm  α) α n := by
+  rw [isMultiplyPretransitive_iff]
   classical
-  intro a b c d hab hcd
-  let k := Equiv.swap a c
-  have hc : c = k • a := by simp [k]
-  simp only [show c = k • a from by simp [k]]
-  suffices ∃ g, g • a = a ∧ g • b = k⁻¹ • d by
-    obtain ⟨g, h1, h2⟩ := this
-    use k * g
-    simp [mul_smul, h1, h2]
-  use swap b (k⁻¹ • d)
-  refine ⟨?_, by simp⟩
-  apply Equiv.swap_apply_of_ne_of_ne hab
-  intro ha'
-  apply hcd
-  have hd : d = k • a := by simp [ha']
-  rw [hc, hd]
+  intro x y
+  have (x : Fin n ↪ α) : Cardinal.mk (range x) = n := by
+    simp [Finset.card_image_of_injective, PLift.down_injective]
+  have hxy : Cardinal.mk ((range x)ᶜ : Set α) = Cardinal.mk ((range y)ᶜ : Set α) := by
+    rw [← Cardinal.add_nat_inj n]
+    nth_rewrite 1 [← this x]
+    rw [← this y]
+    simp only [add_comm, Cardinal.mk_sum_compl]
+  rw [Cardinal.eq] at hxy
+  obtain ⟨φ⟩ := hxy
+  let φ' : α → α := Function.extend Subtype.val (fun a ↦ ↑(φ a)) id
+  set ψ : α → α := Function.extend x y φ'
+  have : Function.Bijective ψ := by
+    constructor
+    · intro a b hab
+      by_cases ha : a ∈ range x
+      · obtain ⟨i, rfl⟩ := ha
+        by_cases hb : b ∈ range x
+        · obtain ⟨j, rfl⟩ := hb
+          simp only [ψ, x.injective.extend_apply, y.injective.eq_iff] at hab
+          rw [hab]
+        · simp only [ψ, φ', x.injective.extend_apply] at hab
+          rw [Function.extend_apply' _ _ _ hb] at hab
+          rw [← Set.mem_compl_iff] at hb
+          rw [← Subtype.coe_mk b hb, Subtype.val_injective.extend_apply] at hab
+          exfalso
+          have : y i ∈ (range y)ᶜ := by
+            rw [hab]
+            exact Subtype.coe_prop (φ ⟨b, hb⟩)
+          rw [Set.mem_compl_iff] at this
+          apply this
+          exact mem_range_self i
+      · by_cases hb : b ∈ range x
+        obtain ⟨j, rfl⟩ := hb
+        · simp only [ψ, φ', x.injective.extend_apply] at hab
+          rw [Function.extend_apply' _ _ _ ha] at hab
+          rw [← Set.mem_compl_iff] at ha
+          rw [← Subtype.coe_mk a ha, Subtype.val_injective.extend_apply] at hab
+          exfalso
+          have : y j ∈ (range y)ᶜ := by
+            rw [← hab]
+            exact Subtype.coe_prop (φ ⟨a, ha⟩)
+          rw [Set.mem_compl_iff] at this
+          apply this
+          exact mem_range_self j
+        · simp only [ψ, Function.extend_apply' _ _ _ ha,
+            Function.extend_apply' _ _ _ hb, φ'] at hab
+          rw [← Set.mem_compl_iff] at ha hb
+          rw [← Subtype.coe_mk b hb, ← Subtype.coe_mk a ha] at hab
+          rw [Subtype.val_injective.extend_apply, Subtype.val_injective.extend_apply] at hab
+          rwa [← Subtype.coe_mk a ha, ← Subtype.coe_mk b hb,
+              Subtype.coe_inj, ← φ.injective.eq_iff, ← Subtype.coe_inj]
+    · intro b
+      by_cases hb : b ∈ range y
+      · obtain ⟨i, rfl⟩ := hb
+        use x i
+        simp only [ψ, x.injective.extend_apply]
+      · rw [← Set.mem_compl_iff] at hb
+        use φ.invFun ⟨b, hb⟩
+        simp only [ψ]
+        rw [Function.extend_apply' _ _ _ ?_]
+        · simp only [φ']
+          set a : α := (φ.invFun ⟨b, hb⟩ : α)
+          have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
+          rw [← Subtype.coe_mk a ha]
+          simp [a]
+        · rintro ⟨i, hi⟩
+          apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
+          rw [← hi]
+          exact mem_range_self i
+  use Equiv.ofBijective ψ this
+  ext i
+  simp [ψ, x.injective.extend_apply]
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
-instance {α : Type*} : IsPreprimitive (Equiv.Perm α) α := by
-  cases subsingleton_or_nontrivial α
-  · exact IsPreprimitive.of_subsingleton
-  · exact isPreprimitive_of_is_two_pretransitive (is_two_pretransitive α)
-
--- TODO : generalize when `α` is infinite. This simplifies a proof above
-variable (α) in
-/-- The permutation group of a finite type `α` acts `n`-pretransitively on `a`, for all `n`,
-for a trivial reason when `Nat.card α < n`. -/
-theorem isMultiplyPretransitive (n : ℕ) : IsMultiplyPretransitive (Perm  α) α n := by
-  by_cases hα : n ≤ Nat.card α
-  · suffices IsMultiplyPretransitive (Perm α) α (Nat.card α) by
-      apply isMultiplyPretransitive_of_le hα (le_rfl)
-    exact {
-      exists_smul_eq x y := by
-        suffices h : Function.Bijective x ∧ Function.Bijective y by
-          use (Equiv.ofBijective x h.1).symm.trans (Equiv.ofBijective y h.2)
-          ext; simp
-        constructor
-        all_goals
-          simp only [Fintype.bijective_iff_injective_and_card, card_eq_fintype_card,
-            Fintype.card_fin, and_true, EmbeddingLike.injective] }
-  · suffices IsEmpty (Fin n ↪ α) by
-      infer_instance
-    exact {
-      false x := by
-        apply hα (le_of_eq_of_le _ (Finite.card_le_of_embedding x))
-        simp only [card_eq_fintype_card, Fintype.card_fin] }
+instance : IsPreprimitive (Perm α) α :=
+  isPreprimitive_of_is_two_pretransitive (isMultiplyPretransitive _ _)
 
 -- This is optimal, `AlternatingGroup α` is `Nat.card α - 2`-pretransitive.
 /-- A subgroup of `Perm α` is `⊤` if(f) it is `(Nat.card α - 1)`-pretransitive. -/
-theorem eq_top_if_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
+theorem eq_top_if_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm α)}
     (hmt : IsMultiplyPretransitive G α (Nat.card α - 1)) : G = ⊤ := by
+  have := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card] at hmt
   let j : Fin (Fintype.card α - 1) ↪ Fin (Fintype.card α) :=
     (Fin.castLEEmb ((Fintype.card α).sub_le 1))
@@ -392,11 +425,9 @@ theorem eq_top_if_isMultiplyPretransitive {G : Subgroup (Equiv.Perm α)}
         rw [Fin.ext_iff, hi, hj]
   apply Equiv.Perm.ext; intro a
   obtain ⟨i, rfl⟩ := (hx x) a
-  let zi := hgk i
-  simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at zi
-  simp only [Function.Embedding.toFun_eq_coe]
-  rw [← zi]
-  rfl
+  specialize hgk i
+  simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
+  simp [← hgk, Subgroup.smul_def, Perm.smul_def]
 
 end Equiv.Perm
 
@@ -478,23 +509,23 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
     (s : Set α) [Finite s] (hmn : s.ncard + m = n) :
     IsMultiplyPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) m where
   exists_smul_eq x y := by
-      have : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
-      have Hs : Nonempty (Fin (s.ncard) ≃ s) :=
-        Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
-      set x' := ofFixingSubgroup.append x with hx
-      set y' := ofFixingSubgroup.append y with hy
-      obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
-      suffices g ∈ fixingSubgroup G s by
-        use ⟨g, this⟩
-        ext i
-        rw [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
-        simp [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
-      intro a
-      set i := (Classical.choice Hs).symm a
-      have ha : (Classical.choice Hs) i = a := by simp [i]
-      rw [← ha]
-      nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
-      rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx]
+    have : IsMultiplyPretransitive G α (s.ncard + m) := by rw [hmn]; infer_instance
+    have Hs : Nonempty (Fin (s.ncard) ≃ s) :=
+      Finite.card_eq.mp (by simp [Nat.card_coe_set_eq])
+    set x' := ofFixingSubgroup.append x with hx
+    set y' := ofFixingSubgroup.append y with hy
+    obtain ⟨g, hg⟩ := exists_smul_eq G x' y'
+    suffices g ∈ fixingSubgroup G s by
+      use ⟨g, this⟩
+      ext i
+      rw [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
+      simp [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
+    intro a
+    set i := (Classical.choice Hs).symm a
+    have ha : (Classical.choice Hs) i = a := by simp [i]
+    rw [← ha]
+    nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
+    rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx]
 
 /-- The fixator of a finite subset of cardinal `d` in an `n`-transitive action
 acts `m` transitively on the complement if `d + m ≤ n`. -/
