@@ -880,7 +880,7 @@ noncomputable def extendScalarsId : extendScalars (RingHom.id R) ≅ 𝟭 _ :=
   ((conjugateIsoEquiv (extendRestrictScalarsAdj (RingHom.id R)) Adjunction.id).symm
     (restrictScalarsId R)).symm
 
-lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M):
+lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M) :
     (extendScalarsId R).inv.app M m = (1 : R) ⊗ₜ m := rfl
 
 lemma homEquiv_extendScalarsId (M : ModuleCat R) :

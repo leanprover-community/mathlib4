@@ -148,7 +148,7 @@ instance category : Category (CatCospanTransform F G F' G') where
 
 attribute [local ext] CatCospanTransformMorphism in
 @[ext]
-lemma hom_ext {ψ ψ' : CatCospanTransform F G F' G'} {θ θ': ψ ⟶ ψ'}
+lemma hom_ext {ψ ψ' : CatCospanTransform F G F' G'} {θ θ' : ψ ⟶ ψ'}
     (hl : θ.left = θ'.left) (hr : θ.right = θ'.right) (hb : θ.base = θ'.base) :
     θ = θ' := by
   apply CatCospanTransformMorphism.ext <;> assumption
