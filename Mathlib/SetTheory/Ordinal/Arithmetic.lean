@@ -483,14 +483,14 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
   exists_add_of_le {a b} := by
     refine inductionOn₂ a b fun α r _ β s _ ⟨f⟩ ↦ ?_
     obtain ⟨γ, t, _, ⟨g⟩⟩ := f.exists_sum_relIso
-    exact ⟨_, g.ordinal_type_eq.symm⟩
+    exact ⟨type t, g.ordinal_type_eq.symm⟩
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
 instance sub : Sub Ordinal where
   sub a b := if h : b ≤ a then Classical.choose (exists_add_of_le h) else 0
 
 private theorem sub_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a - b = 0 :=
-  dif_neg h.not_le
+  dif_neg h.not_ge
 
 protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - b) = a := by
   change b + dite _ _ _ = a
@@ -502,7 +502,7 @@ theorem add_sub_cancel (a b : Ordinal) : a + b - a = b := by
   simpa using Ordinal.add_sub_cancel_of_le (le_add_right a b)
 
 theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) := by
-  obtain h | h := le_or_lt b a
+  obtain h | h := le_or_gt b a
   · exact (Ordinal.add_sub_cancel_of_le h).ge
   · rw [sub_eq_zero_of_lt h, add_zero]
     exact h.le
@@ -510,7 +510,7 @@ theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) := by
 theorem sub_le {a b c : Ordinal} : a - b ≤ c ↔ a ≤ b + c where
   mp h := (le_add_sub a b).trans (add_le_add_left h _)
   mpr h := by
-    obtain h' | h' := le_or_lt b a
+    obtain h' | h' := le_or_gt b a
     · rwa [← add_le_add_iff_left b, Ordinal.add_sub_cancel_of_le h']
     · rw [sub_eq_zero_of_lt h']
       exact Ordinal.zero_le c
