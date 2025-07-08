@@ -361,7 +361,8 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
        This uses that fintype.card s < fintype.card sᶜ.
        In the equality case, fintype.card s = fintype.card sᶜ, it is possible that B = sᶜ,
        then G is the wreath product,
-       this is case (b) of the O'Nan-Scott classification of max'l subgroups of the symmetric group -/
+       this is case (b) of the O'Nan-Scott classification
+       of maximal subgroups of the alternating group -/
   have hB_ne_sc : ∀ (B : Set α) (_ : IsBlock G B), ¬B = sᶜ := by
     intro B hB hBsc
     obtain ⟨b, hb⟩ := h1.nonempty; rw [← hBsc] at hb
@@ -411,7 +412,7 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
   have hB_not_le_s : ∀ (B : Set α) (_ : IsBlock G B), B ⊆ s → B.Subsingleton := by
     intro B hB hBs
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set s) by
-      cases' this with hB' hB'
+      rcases this with hB' | hB'
       · -- trivial case
         rw [← Subtype.image_preimage_of_val hBs]
         apply Set.Subsingleton.image
@@ -523,11 +524,10 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
     rw [Set.ncard_smul_set]
   exact Set.ncard_le_ncard hsc_le_B
 
-theorem isMaximalStab'
-    -- (hα : 4 < fintype.card α)
+theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     (s : Set α)
     (h0' : s.Nontrivial) (h1' : sᶜ.Nontrivial) (hs : Set.ncard s < Set.ncard (sᶜ : Set α)) :
-    Subgroup.IsMaximal (stabilizer (alternatingGroup α) s) := by
+    IsCoatom (stabilizer (alternatingGroup α) s) := by
   suffices hα : 4 < Fintype.card α by
   -- h0 : s.nonempty, h1  : sᶜ.nonempty
   /-   have h1' : sᶜ.nontrivial,
@@ -538,70 +538,63 @@ theorem isMaximalStab'
    -/
   --  cases em(s.nontrivial) with h0' h0',
   -- We start with the case where s.nontrivial
-    constructor; constructor
+    constructor
     · -- stabilizer (alternating_group α) s ≠ ⊤
-      exact stabilizer_ne_top' s h0'.nonempty h1'
+      exact stabilizer_ne_top' s h0'.nonempty h1'.nonempty (Or.inl h0')
     · -- ∀ (G : subgroup (alternating_group α)), stabilizer (alternating_group α) s < b) → b = ⊤
       intro G' hG'
       suffices alternatingGroup α ≤ G'.map (alternatingGroup α).subtype by
         rw [eq_top_iff]; intro g _
         obtain ⟨g', hg', hgg'⟩ := this g.prop
-        simp only [Subgroup.coeSubtype, SetLike.coe_eq_coe] at hgg'
+        simp only [Subgroup.coe_subtype, SetLike.coe_eq_coe] at hgg'
         rw [← hgg']; exact hg'
       --   apply is_maximal_stab'_temp' s hα,
       apply le_of_isPreprimitive s hα
       · rw [← Subgroup.subgroupOf_map_subtype, Subgroup.map_subtype_le_map_subtype]
-        rw [MulAction.stabilizer_subgroupOf_eq] at hG'
         exact le_of_lt hG'
       · apply isPreprimitive_of_stabilizer_lt s h0' h1' hs (le_of_lt hα)
-        rw [lt_iff_le_not_le]
+        rw [lt_iff_le_not_ge]
         constructor
         · intro g
           simp only [Subgroup.mem_inf]
           rintro ⟨hg, hg'⟩
           refine And.intro ?_ hg'
-          simp only [Subgroup.mem_map, Subgroup.coeSubtype, exists_prop]
+          simp only [Subgroup.mem_map, Subgroup.coe_subtype]
           use ⟨g, hg'⟩
           constructor
           · apply le_of_lt hG'
             simpa only [mem_stabilizer_iff] using hg
           · rfl
         · intro h
-          rw [lt_iff_le_not_le] at hG' ; apply hG'.right
+          rw [lt_iff_le_not_ge] at hG' ; apply hG'.right
           intro g' hg'
           rw [mem_stabilizer_iff]
           change (g' : Equiv.Perm α) • s = s; rw [← mem_stabilizer_iff]
           apply @inf_le_left (Subgroup (Equiv.Perm α)) _; apply h
           rw [Subgroup.mem_inf]
           apply And.intro _ g'.prop
-          simp only [Subgroup.mem_map, Subgroup.coeSubtype, SetLike.coe_eq_coe, exists_prop, exists_eq_right]
+          simp only [Subgroup.mem_map, Subgroup.coe_subtype, SetLike.coe_eq_coe, exists_eq_right]
           exact hg'
   -- hα : 4 < fintype.card α
   have h0 : 2 ≤ Set.ncard s := by
-    rw [Nat.succ_le_iff, Set.one_lt_ncard_iff_nontrivial]
-    exact h0'
+    rw [Nat.succ_le_iff, Set.one_lt_ncard_iff]
+    obtain ⟨a, ha, b, hb, h⟩ := h0'
+    use a, b, ha, hb, h
   rw [← Nat.card_eq_fintype_card, ← Set.ncard_add_ncard_compl s]
   change 2 + 2 < _
   apply lt_of_le_of_lt
-  exact Nat.add_le_add_right h0 2
+  · exact Nat.add_le_add_right h0 2
   apply Nat.add_lt_add_left
   exact lt_of_le_of_lt h0 hs
 
-theorem three_le {c n : ℕ} (h : 1 ≤ n) (h' : n < c) (hh' : c ≠ 2 * n) : 3 ≤ c :=
-  by
-  cases' Nat.eq_or_lt_of_le h with h h
-  · rw [← h] at h' hh'
-    cases' Nat.eq_or_lt_of_le h' with h' h'
-    · exfalso; apply hh' h'.symm
-    exact h'
-  rw [Nat.succ_le_iff]
-  exact lt_of_le_of_lt h h'
+private theorem three_le {c n : ℕ} (h : 1 ≤ n) (h' : n < c) (hh' : c ≠ 2 * n) : 3 ≤ c := by
+  grind
 
 /-- stabilizer (alternating_group α) s is a maximal subgroup of alternating_group α,
   provided s ≠ ⊥, s ≠ ⊤ and fintype.card α ≠ 2 * fintype.card ↥s) -/
 theorem Stabilizer.isMaximal (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
     (hs : Fintype.card α ≠ 2 * Set.ncard s) :
-    Subgroup.IsMaximal (stabilizer (alternatingGroup α) s) := by
+    IsCoatom (stabilizer (alternatingGroup α) s) := by
   have hα : 3 ≤ Fintype.card α := by
     rw [← Set.ncard_pos, ← Nat.succ_le_iff] at h0 h1
     refine three_le h0 ?_ hs
@@ -612,7 +605,7 @@ theorem Stabilizer.isMaximal (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
     apply lt_of_lt_of_le _ hα
     norm_num
   have h : ∀ (t : Set α) (_ : t.Nonempty) (_ : t.Subsingleton),
-    (stabilizer (alternatingGroup α) t).IsMaximal := by
+    IsCoatom (stabilizer (alternatingGroup α) t) := by
     intro t ht ht'
     suffices ∃ a : α, t = ({a} : Set α) by
       obtain ⟨a, rfl⟩ := this
