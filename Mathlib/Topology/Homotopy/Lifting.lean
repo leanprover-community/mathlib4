@@ -217,7 +217,7 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
       (Set.Icc 0 (t n)).EqOn (p ∘ Γ) γ ∧ Γ 0 = e by
     obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max
     rw [h_max _ le_rfl] at cont eqOn
-    exact ⟨⟨Γ, continuous_iff_continuousOn_univ.mpr
+    exact ⟨⟨Γ, continuousOn_univ.mp
       (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
   intro n

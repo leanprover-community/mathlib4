@@ -606,8 +606,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
         root_apply_coroot hα]
       lie_e := by rw [← lie_skew, hy, neg_zero] }
   obtain ⟨n, hn⟩ := P.exists_nat
-  replace hn : -2 = (n : ℤ) := by norm_cast at hn
-  omega
+  assumption_mod_cast
 
 /-- The embedded `sl₂` associated to a root. -/
 noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :

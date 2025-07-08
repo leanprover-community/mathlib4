@@ -512,16 +512,10 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change mkRingHom r x = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
 
 end CommRing
 

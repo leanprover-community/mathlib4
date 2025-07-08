@@ -100,6 +100,12 @@ a context with the stronger assumption that `f'` is continuous, one can use
 `ContinuousOn.intervalIntegrable` or `ContinuousOn.integrableOn_Icc` or
 `ContinuousOn.integrableOn_uIcc`.
 
+Versions of FTC-2 under the simpler assumption that the function is `C^1` are given in the
+file `Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff`.
+
+Applications to integration by parts are in the file
+`Mathlib.MeasureTheory.Integral.IntegrationByParts`.
+
 ### `intervalIntegral.FTCFilter` class
 
 As explained above, many theorems in this file rely on the typeclass
@@ -919,11 +925,15 @@ theorem derivWithin_integral_left (hf : IntervalIntegrable f volume a b) {s t : 
   (integral_hasDerivWithinAt_left hf hmeas ha).derivWithin hs
 
 /-- The integral of a continuous function is differentiable on a real set `s`. -/
-theorem differentiableOn_integral_of_continuous {s : Set ℝ}
-    (hintg : ∀ x ∈ s, IntervalIntegrable f volume a x) (hcont : Continuous f) :
-    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s := fun y hy =>
-  (integral_hasDerivAt_right (hintg y hy) hcont.aestronglyMeasurable.stronglyMeasurableAtFilter
-        hcont.continuousAt).differentiableAt.differentiableWithinAt
+theorem differentiable_integral_of_continuous (hcont : Continuous f) :
+    Differentiable ℝ (fun u => ∫ x in a..u, f x) := fun _ ↦
+  (integral_hasDerivAt_right (hcont.intervalIntegrable _ _)
+    hcont.aestronglyMeasurable.stronglyMeasurableAtFilter hcont.continuousAt).differentiableAt
+
+/-- The integral of a continuous function is differentiable on a real set `s`. -/
+theorem differentiableOn_integral_of_continuous {s : Set ℝ} (hcont : Continuous f) :
+    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s :=
+  (differentiable_integral_of_continuous hcont).differentiableOn
 
 end FTC1
 
@@ -1156,7 +1166,9 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
-  its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`. -/
+its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`.
+
+See also `integral_deriv_of_contDiffOn_Icc` for a similar theorem assuming that `f` is `C^1`. -/
 theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableAt ℝ f x)
     (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a :=
   integral_eq_sub_of_hasDerivAt (fun x hx => (hderiv x hx).hasDerivAt) hint
