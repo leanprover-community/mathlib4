@@ -240,9 +240,8 @@ omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
 lemma _root_.IsCovariantDerivativeOn.zeroσ (hf : IsCovariantDerivativeOn F V f s)
     (X : Π x : M, TangentSpace I x)
     {x} (hx : x ∈ s := by trivial) : f X 0 x = 0 := by
-  have : MDiffAt (T% fun x ↦ (0 : V x)) x := by -- TODO: fix using upcoming mdiff lemma
-    exact (contMDiff_zeroSection 𝕜 V).mdifferentiableAt le_rfl
-  simpa using (hf.addσ X this this : f X (0+0) x = _)
+  simpa using (hf.addσ X (mdifferentiableAt_zeroSection ..)
+    (mdifferentiableAt_zeroSection ..) : f X (0+0) x = _)
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
      [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
@@ -251,23 +250,6 @@ omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
 lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) : cov X 0 = 0 := by
   ext x
   apply cov.isCovariantDerivativeOn.zeroσ
-
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
-  [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
-/-- If `σ` and `σ'` are equal sections of `E`, they have equal covariant derivatives. -/
-lemma _root_.IsCovariantDerivativeOn.congr_σ  (_hf : IsCovariantDerivativeOn F V f s)
-    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) (x : M) :
-    f X σ x = f X σ' x := by
-  simp [funext hσ]
-
-
-omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
-  [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
-/-- If `σ` and `σ'` are equal sections of `E`, they have equal covariant derivatives. -/
-lemma congr_σ (cov : CovariantDerivative I F V)
-    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) (x : M) :
-    cov X σ x = cov X σ' x :=
-  cov.isCovariantDerivativeOn.congr_σ X hσ x
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [VectorBundle 𝕜 F V] in
@@ -603,7 +585,7 @@ lemma congr_σ_of_eventuallyEq
   -- Then, it's a chain of (dependent) equalities.
   calc cov X σ x
     _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_σ_smoothBumpFunction _ hσ]
-    _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
+    _ = cov X ((ψ : M → ℝ) • σ') x := sorry -- use simp [funext hσ] and (by simp [this])
     _ = cov X σ' x := by
       simp [cov.congr_σ_smoothBumpFunction, mdifferentiableAt_dependent_congr hs hσ hσσ']
 -/

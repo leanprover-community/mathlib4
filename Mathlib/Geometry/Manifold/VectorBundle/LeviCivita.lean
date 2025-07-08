@@ -139,12 +139,10 @@ noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
 variable (X Y Z) in
 lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
     ⟪cov X Y, Z⟫ + ⟪Y, cov Z X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
-  have : ⟪Y, cov X Z - cov Z X⟫ = ⟪Y, VectorField.mlieBracket I X Z⟫ := by
-    simp [isTorsionFree_iff.mp h.2 X Z]
   trans ⟪cov X Y, Z⟫ + ⟪Y, cov X Z⟫
   · ext x
     exact h.1 X Y Z x
-  · simp [← this, product_sub_right]
+  · simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
 
 -- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
 variable (X Y Z) in
