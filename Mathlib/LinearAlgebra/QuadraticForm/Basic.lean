@@ -126,7 +126,7 @@ theorem polar_add_left_iff {f : M → N} {x x' y : M} :
 theorem polar_comp {F : Type*} [AddCommGroup S] [FunLike F N S] [AddMonoidHomClass F N S]
     (f : M → N) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
-  simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
+  simp only [polar, Function.comp_apply, map_sub]
 
 /-- `QuadraticMap.polar` as a function from `Sym2`. -/
 def polarSym2 (f : M → N) : Sym2 M → N :=
@@ -840,7 +840,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 instance : SMulCommClass R (Submonoid.center R) M where
   smul_comm r r' m := by
-    simp_rw [Submonoid.smul_def, smul_smul, (Set.mem_center_iff.1 r'.prop).1]
+    simp_rw [Submonoid.smul_def, smul_smul, ((Set.mem_center_iff.1 r'.prop).1 _).eq]
 
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
@@ -1006,7 +1006,7 @@ theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
   ext
   simp only [associated_apply, linMulLin_apply, map_add, smul_add, LinearMap.add_apply,
     LinearMap.smul_apply, compl₁₂_apply, mul_apply', smul_eq_mul, invOf_smul_eq_iff]
-  simp only [smul_add, Module.End.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
+  simp only [Module.End.smul_def, Module.End.ofNat_apply, nsmul_eq_mul, Nat.cast_ofNat,
     mul_invOf_cancel_left']
   ring_nf
 
