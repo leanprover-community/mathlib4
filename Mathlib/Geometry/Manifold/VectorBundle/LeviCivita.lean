@@ -78,7 +78,11 @@ variable (X Y Y') in
 lemma product_add_right : ⟪X, Y + Y'⟫ = ⟪X, Y⟫ + ⟪X, Y'⟫ := by
   rw [product_swap, product_swap _ Y, product_swap _ Y', product_add_left]
 
--- product_neg_left,right
+variable (X Y) in
+@[simp] lemma product_neg_left : ⟪-X, Y⟫ = -⟪X, Y⟫ := by ext x; simp [product]
+
+variable (X Y) in
+@[simp] lemma product_neg_right : ⟪X, -Y⟫ = -⟪X, Y⟫ := by ext x; simp [product]
 
 variable (X X' Y) in
 lemma product_sub_left : ⟪X - X', Y⟫ = ⟪X, Y⟫ - ⟪X', Y⟫ := by
@@ -129,8 +133,8 @@ variable (X Y Z) in
 /-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
 If ∇ is a Levi-Civita connection on `TM`, then
 `⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
-noncomputable def leviCivita_rhs : M → ℝ := 1 / 2 * (
-  rhs_aux I X Y Z + rhs_aux I Y Z X + rhs_aux I Z X Y
+noncomputable def leviCivita_rhs : M → ℝ := (1 / 2 : ℝ) • (
+  rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y
   - ⟪Y ,(VectorField.mlieBracket I X Z)⟫
   - ⟪Z, (VectorField.mlieBracket I X Y)⟫
   + ⟪X, (VectorField.mlieBracket I Z Y)⟫
@@ -144,23 +148,42 @@ lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
     exact h.1 X Y Z x
   · simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
 
--- XXX: are there useful intermediate lemmas to deduce just for metric or torsion-free connections?
+lemma isolate_aux {α : Type*} [AddCommGroup α]
+    (X Y Z A D E F : α) (h : X + Y - Z = 2 * A + D + E - F) :
+    2 * A = X + Y - Z - D - E + F := by
+  trans (X + Y - Z) - D - E + F
+  · rw [h]; abel
+  · abel
+
 variable (X Y Z) in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
 lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
     ⟪cov X Y, Z⟫ = leviCivita_rhs I X Y Z := by
-  have eq1 := aux I X Y Z cov h
-  have eq2 := aux I Y Z X cov h
-  have eq3 := aux I Z X Y cov h
-  have : rhs_aux I X Y Z + rhs_aux I Y Z X + rhs_aux I Z X Y =
-      2 * ⟪cov X Y, Z⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫
-      + ⟪Z, VectorField.mlieBracket I X Y⟫ - ⟪X, VectorField.mlieBracket I Z Y⟫ := by
+  set A := ⟪cov X Y, Z⟫
+  set B := ⟪cov Z X, Y⟫
+  set C := ⟪cov Y Z, X⟫
+  set D := ⟪Y, VectorField.mlieBracket I X Z⟫ with D_eq
+  set E := ⟪Z, VectorField.mlieBracket I Y X⟫ with E_eq
+  set F := ⟪X, VectorField.mlieBracket I Z Y⟫ with F_eq
+  have eq1 : rhs_aux I X Y Z = A + B + D := by
+    simp only [aux I X Y Z cov h, A, B, D, product_swap _ Y (cov Z X)]
+  have eq2 : rhs_aux I Y Z X = C + A + E := by
+    simp only [aux I Y Z X cov h, A, C, E, product_swap _ (cov X Y) Z]
+  have eq3 : rhs_aux I Z X Y = B + C + F := by
+    simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (cov Y Z)]
+  -- add (I) and (II), subtract (III)
+  have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = 2 * A + D + E - F := by
     rw [eq1, eq2, eq3]
-    sorry -- should be obvious now
-    -- add (I) + (II) and subtract (III)
+    abel_nf
+    grind [zsmul_eq_mul, Int.cast_ofNat, Int.reduceNeg, neg_smul, one_smul]
+
   -- solve for ⟪cov X Y, Z⟫ and obtain the claim
-  sorry
+  simp only [leviCivita_rhs] -- - D - E + F
+  ext x
+  have almost := isolate_aux (X := rhs_aux I X Y Z) (Y := rhs_aux I Y Z X) (Z := rhs_aux I Z X Y)
+    (A := A) (D := D) (E := E) (F := F) (h := by simp [this]; sorry)
+  sorry -- obvious: if 2 • A = stuff, A = 1/2 stuff
 
 variable (X Y Z Z') in
 lemma rhs_aux_addZ : rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
