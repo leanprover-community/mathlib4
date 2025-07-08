@@ -399,7 +399,8 @@ elab "#declaration_diff" commits:(ppSpace str)? verbose:(ppSpace "verbose")? : c
     -- We skip diffs where as many declarations have been added as removed.
     if count == 0 then tot
     else tot.push m!"{if 0 < count then m!"+{count}" else m!"{count}"} `{decl}`"
-  logInfo <| .joinSep report.toList "\n"
+  let (p, m) := tally.fold (init := (0, 0)) fun (p, m) _ i => (p + i.toNat, m + (-i).toNat)
+  logInfo <| .joinSep ((report.push m!"").push m!"(+{p} / -{m})").toList "\n"
 
 #declaration_diff "upstream/master...jriou-types-multicoequalizer-set" --verbose
 
@@ -489,6 +490,8 @@ info: +1 `BicartSq`
 +2 `zigzag_of_eqvGen_colimitTypeRel`
 +1 `ι_colimitDesc`
 +1 `ιColimitType_eq_iff`
+
+(+65 / -12)
 -/
 #guard_msgs in
 #declaration_diff "upstream/master...jriou-types-multicoequalizer-set" verbose
