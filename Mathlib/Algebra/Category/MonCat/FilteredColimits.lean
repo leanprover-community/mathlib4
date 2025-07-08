@@ -259,9 +259,9 @@ noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
 noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
   fac t j := rfl
-  uniq t m h := MonCat.ext (fun y ↦ by
+  uniq t m h := MonCat.ext fun y ↦ by
     obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
-    exact ConcreteCategory.congr_hom (h j) y )
+    exact ConcreteCategory.congr_hom (h j) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
