@@ -532,10 +532,10 @@ theorem isBoundary₁_iff (x : G →₀ A) :
   constructor
   · rintro ⟨y, hy⟩
     use y.sum (fun g a => single g (g.1⁻¹ • a))
-    simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
+    simp_all [sum_sum_index]
   · rintro ⟨x, hx⟩
     use x.sum (fun g a => single g (g.1 • a))
-    simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
+    simp_all [sum_sum_index]
 
 theorem isBoundary₂_iff (x : G × G →₀ A) :
     IsBoundary₂ x ↔ ∃ y : G × G × G →₀ A, y.sum
@@ -544,10 +544,10 @@ theorem isBoundary₂_iff (x : G × G →₀ A) :
   constructor
   · rintro ⟨y, hy⟩
     use y.sum (fun g a => single g (g.1⁻¹ • a))
-    simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
+    simp_all [sum_sum_index]
   · rintro ⟨x, hx⟩
     use x.sum (fun g a => single g (g.1 • a))
-    simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
+    simp_all [sum_sum_index]
 
 end
 end IsBoundary
