@@ -216,9 +216,9 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   ext
   apply ConcreteCategory.congr_hom h
 
-/-- The forget functor from groups to monoids is fully faithful. -/
+/-- The forgetful functor from groups to monoids is fully faithful. -/
 @[to_additive fullyFaihtfulForget₂ToAddMonCat
-  "The forget functor from additive groups to additive monoids is fully faithful."]
+  "The forgetful functor from additive groups to additive monoids is fully faithful."]
 def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful where
   preimage f := ofHom f.hom
 
