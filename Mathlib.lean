@@ -1382,6 +1382,7 @@ import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
+import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.Darboux
@@ -1512,6 +1513,7 @@ import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.Convex.Cone.Closure
+import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Analysis.Convex.Continuous
@@ -1585,6 +1587,7 @@ import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 import Mathlib.Analysis.InnerProductSpace.Laplacian
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
@@ -1971,6 +1974,7 @@ import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Adjunction
 import Mathlib.CategoryTheory.Category.Cat.AsSmall
+import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 import Mathlib.CategoryTheory.Category.Cat.Colimit
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.Cat.Op
@@ -3638,6 +3642,7 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Convex.Cone.Basic
+import Mathlib.Geometry.Convex.Cone.Dual
 import Mathlib.Geometry.Convex.Cone.Pointed
 import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
@@ -4146,7 +4151,8 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
@@ -4665,6 +4671,7 @@ import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
 import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
+import Mathlib.NumberTheory.NumberField.Ideal.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
@@ -4676,6 +4683,7 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 import Mathlib.NumberTheory.NumberField.Units.Regulator
 import Mathlib.NumberTheory.Ostrowski
 import Mathlib.NumberTheory.Padics.AddChar
+import Mathlib.NumberTheory.Padics.Complex
 import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.MahlerBasis
 import Mathlib.NumberTheory.Padics.PadicIntegers
@@ -5247,6 +5255,7 @@ import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Radical
+import Mathlib.RingTheory.Grassmannian
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.HEval
@@ -6133,8 +6142,10 @@ import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.Valued.LocallyCompact
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
+import Mathlib.Topology.Algebra.Valued.ValuativeRel
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
+import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
 import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.ApproximateUnit
 import Mathlib.Topology.Baire.BaireMeasurable
