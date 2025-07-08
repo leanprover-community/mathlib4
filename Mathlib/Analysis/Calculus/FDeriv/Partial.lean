@@ -87,7 +87,7 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
   {f'xz : E →L[𝕜] G} {f'y : E × F → F →L[𝕜] G}
   (hf'y_cont : ContinuousWithinAt f'y (s ×ˢ t) z)
   (hf'xz : HasFDerivWithinAt (f ∘ (·, z.2)) f'xz s z.1)
-  (hf'y : ∀ z' ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (z'.1, ·)) (f'y z') t z'.2) :
+  (hf'y : ∀ z' ∈ s ×ˢ t, HasFDerivAt (f ∘ (z'.1, ·)) (f'y z') z'.2) :
     HasFDerivWithinAt f (f'xz.coprod (f'y z)) (s ×ˢ t) z := by
   replace hz : _ ∧ _ := ⟨mem_prod.mp hz, hz⟩
   simp only at hz
@@ -147,7 +147,7 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
       HasFDerivWithinAt (f ∘ (x,·)) (f'y (x,y)) (ball z.2 (min δy δt)) y := by
     intro y' hy'
     rw [mem_ball_iff_norm, lt_min_iff] at hy'
-    apply (hf'y (x,y') (mem_prod.mpr ⟨hst.1.1, _⟩)).mono
+    apply (hf'y (x,y') (mem_prod.mpr ⟨hst.1.1, _⟩)).hasFDerivWithinAt.mono
     · calc
         ball z.2 (min δy δt)
           ⊆ ball z.2 δt := ball_subset_ball (min_le_right _ _)
@@ -240,7 +240,7 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open
   (hz : z ∈ s ×ˢ t) (hs : IsOpen s)
   {f'x : E × F → E →L[𝕜] G} {f'yz : F →L[𝕜] G}
   (hf'x_cont : ContinuousWithinAt f'x (s ×ˢ t) z)
-  (hf'x : ∀ z' ∈ s ×ˢ t, HasFDerivWithinAt (f ∘ (·, z'.2)) (f'x z') s z'.1)
+  (hf'x : ∀ z' ∈ s ×ˢ t, HasFDerivAt (f ∘ (·, z'.2)) (f'x z') z'.1)
   (hf'yz : HasFDerivWithinAt (f ∘ (z.1, ·)) f'yz t z.2) :
     HasFDerivWithinAt f ((f'x z).coprod f'yz) (s ×ˢ t) z := by
   have hmt_st := mapsTo_swap_prod s t
@@ -331,10 +331,10 @@ theorem hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
   {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u) {z : E × F} (hz : z ∈ u)
   {f'x : E × F → E →L[𝕜] G} {f'y : E × F → F →L[𝕜] G}
   (hf'x_cont : ContinuousWithinAt f'x u z) (hf'y_cont : ContinuousWithinAt f'y u z)
-  (hf'x : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (·, z.2)) (f'x z) ((·, z.2) ⁻¹' u) z.1)
-  (hf'y : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (z.1, ·)) (f'y z) ((z.1, ·) ⁻¹' u) z.2) :
+  (hf'x : ∀ z ∈ u, HasFDerivAt (f ∘ (·, z.2)) (f'x z) z.1)
+  (hf'y : ∀ z ∈ u, HasFDerivAt (f ∘ (z.1, ·)) (f'y z) z.2) :
     ContinuousWithinAt (fun z => (f'x z).coprod (f'y z)) u z
-    ∧ HasFDerivWithinAt f ((f'x z).coprod (f'y z)) u z := by
+    ∧ HasFDerivAt f ((f'x z).coprod (f'y z)) z := by
   refine ⟨?cont, ?diff⟩
   case cont =>
     -- combine continuity of partial to get continuity of total derivative
@@ -343,8 +343,6 @@ theorem hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
     -- first restrict all properties to a product neighborhood of z
     obtain ⟨s,t,hs,ht,hz1,hz2,hst⟩ := isOpen_prod_iff.mp hu z.1 z.2 hz
     have hstn : s ×ˢ t ∈ nhds z := IsOpen.mem_nhds (hs.prod ht) (mem_prod.mpr ⟨hz1, hz2⟩)
-    apply (hasFDerivWithinAt_inter hstn).mp
-    rw [← right_eq_inter.mpr hst]
     have hsu (z : E × F) (hz : z ∈ s ×ˢ t) : s ⊆ ((·,z.2) ⁻¹' u) := by
       apply HasSubset.Subset.trans _ (preimage_mono hst)
       rw [mk_preimage_prod_left (mem_prod.mpr hz).2]
@@ -353,12 +351,13 @@ theorem hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
       rw [mk_preimage_prod_right (mem_prod.mpr hz).1]
     replace hf'y_cont := hf'y_cont.mono hst
     -- now apply the weaker criteria to get differentiability
+    apply HasFDerivWithinAt.hasFDerivAt _ hstn
     apply hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
       ⟨hz1,hz2⟩ ht
       hf'y_cont
       _ _
-    · exact (hf'x z hz).mono (hsu z ⟨hz1,hz2⟩)
-    · exact (fun z hz => (hf'y z (mem_of_subset_of_mem hst hz)).mono (htu z hz))
+    · exact (hf'x z hz).hasFDerivWithinAt.mono (hsu z ⟨hz1,hz2⟩)
+    · exact (fun z hz => (hf'y z (mem_of_subset_of_mem hst hz)))
 
 /-- If a function `f : E × F → G` has partial derivative `f'x` or `f'y` continuous
 on an open set `u`, then `f` is continously differentiable on this set, with
@@ -375,10 +374,10 @@ theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
   {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u)
   {f'x : E × F → E →L[𝕜] G} {f'y : E × F → F →L[𝕜] G}
   (hf'x_cont : ContinuousOn f'x u) (hf'y_cont : ContinuousOn f'y u)
-  (hf'x : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (·, z.2)) (f'x z) ((·, z.2) ⁻¹' u) z.1)
-  (hf'y : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (z.1, ·)) (f'y z) ((z.1, ·) ⁻¹' u) z.2) :
+  (hf'x : ∀ z ∈ u, HasFDerivAt (f ∘ (·, z.2)) (f'x z) z.1)
+  (hf'y : ∀ z ∈ u, HasFDerivAt (f ∘ (z.1, ·)) (f'y z) z.2) :
     ContinuousOn (fun z => (f'x z).coprod (f'y z)) u
-    ∧ ∀ z ∈ u, HasFDerivWithinAt f ((f'x z).coprod (f'y z)) u z := by
+    ∧ ∀ z ∈ u, HasFDerivAt f ((f'x z).coprod (f'y z)) z := by
   simp only [ContinuousOn, ← forall₂_and]
   intro z hz
   apply hasFDerivWithinAt_continuousWithinAt_of_partial_continuousWithinAt_open
