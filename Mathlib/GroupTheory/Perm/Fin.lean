@@ -131,37 +131,37 @@ theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate
 
 namespace Fin
 
-open Fin.NatCast in -- TODO: refactor to avoid needing this
+lemma val_add_one'{n : ℕ} [NeZero n]{i j: Fin n}(hij : i < j) : (i + 1).1 = i.1 + 1 := by
+  simpa [add_def] using Nat.mod_eq_of_lt (by omega)
+
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
-  (finRotate (i + 1)).extendDomain
-    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)) (↑)
-      (by
-        intro x
-        ext
-        simp))
+  (finRotate (i + 1)).extendDomain (castLEEmb (by omega)).toEquivRange
 
 theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = j := by
-  rw [cycleRange, ofLeftInverse'_eq_ofInjective,
-    ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_notMem_range]
-  simpa
+  rw [cycleRange, Perm.extendDomain_apply_not_subtype]
+  simpa using h
 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
-  cases n
-  · subsingleton
-  have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
-    ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
-  ext
-  rw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
-    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding, ← coe_castLEEmb,
-    viaFintypeEmbedding_apply_image, coe_castLEEmb, coe_castLE, coe_finRotate]
-  simp only [Fin.ext_iff, val_last, Fin.eta, castLE_mk]
-  split_ifs with heq
-  · rfl
-  · rw [Fin.val_add_one_of_lt]
-    exact lt_of_lt_of_le (lt_of_le_of_ne h (mt (congr_arg _) heq)) (le_last i)
+  have jin : j ∈ Set.range ⇑(castLEEmb (n := i + 1) (m := n) (by omega)) := by simp; omega
+  have : (castLEEmb (by omega)).toEquivRange (castLT j (n := i + 1) (by omega)) = ⟨j, jin⟩ := by
+      rw [Function.Embedding.toEquivRange_apply]
+      simp only [coe_castLEEmb, castLEEmb_apply, Subtype.mk.injEq]
+      rfl
+  rw [cycleRange, (finRotate (i + 1)).extendDomain_apply_subtype (castLEEmb (m := n)
+    (by omega)).toEquivRange jin, Function.Embedding.toEquivRange_apply]
+  split_ifs with ch
+  · have : ((castLEEmb (by omega)).toEquivRange.symm ⟨j, jin⟩) = last i := by
+      simpa only [coe_castLEEmb, ← this, symm_apply_apply] using eq_of_val_eq (by simp [ch])
+    rw [this, finRotate_last]
+    rfl
+  · refine eq_of_val_eq ?_
+    have hij := lt_of_le_of_ne h ch
+    simp [← this, val_add_one' hij]
+    have : (j.castLT (by omega) : Fin (i + 1)) < (i.castLT (by omega) : Fin (i + 1)) := hij
+    simp [val_add_one' this]
+
 
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
@@ -324,7 +324,7 @@ variable {n : ℕ} {i j k : Fin n}
 unchanged when `i ≤ j` and returns the dummy value identity when `i > j`.
 In other words, it rotates elements in `[i, j]` one step to the right.
 -/
-def cycleIcc (i j : Fin n): Perm (Fin n) := if hij : i ≤ j then
+def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then
   (cycleRange ((j - i).castLT (sub_val_lt_sub hij))).extendDomain
   (natAdd_castLEEmb n (sub_le_right i)).toEquivRange else Equiv.refl (Fin n)
 
