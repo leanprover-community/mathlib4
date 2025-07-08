@@ -465,7 +465,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
   mpr := fun ⟨y, hyx, hy⟩ =>
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
-lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
+lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
     n < coheight x ↔ ∃ y > x, coheight y = n :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
