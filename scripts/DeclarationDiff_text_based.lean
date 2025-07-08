@@ -395,7 +395,7 @@ elab "#declaration_diff" commits:(ppSpace str)? verbose:(ppSpace "verbose")? : c
     logInfo <| .joinSep (m!"ERRORS\n"::errors.toList) m!"\n"
 
   let tally := DeclDiff.tally diffDatas
-  let report := tally.toArray.qsort (·.1 < ·.1) |>.foldl (init := #[]) fun tot (decl, count) =>
+  let report := tally.toArray.qsort (·.1.toLower < ·.1.toLower) |>.foldl (init := #[]) fun tot (decl, count) =>
     -- We skip diffs where as many declarations have been added as removed.
     if count == 0 then tot
     else tot.push m!"{if 0 < count then m!"+{count}" else m!"{count}"} `{decl}`"
@@ -420,29 +420,20 @@ new: true
 ---
 info: +1 `BicartSq`
 +1 `CoconeTypes.isColimit_iff`
-+1 `IsColimit.precompose`
-+1 `Lattice.BicartSq.multicoequalizerDiagram`
-+1 `M.map_mk`
-+1 `M.mk_map`
-+2 `M.mk_surjective`
-+1 `MulticoequalizerDiagram`
--1 `Quot.desc_colimitCocone`
--1 `Quot.desc_quotQuotUliftEquiv`
--1 `Quot.desc_toCocone_desc`
 +1 `coconeTypesEquiv`
-+1 `colimitEquivColimitType`
-+1 `colimitEquivColimitType_apply`
-+1 `colimitEquivColimitType_symm_apply`
--1 `colimitModule.add_smul`
--1 `colimitModule.one_smul`
-+1 `colimitTypeRelEquivOrbitRelQuotient`
-+1 `colimitTypeRel_iff_orbitRel`
 +1 `colimit_add_mk_eq`
 +1 `colimit_add_mk_eq'`
 +1 `colimit_mul_mk_eq`
 +2 `colimit_mul_mk_eq'`
 +1 `colimit_one_eq`
 +1 `colimit_zero_eq`
++1 `colimitEquivColimitType`
++1 `colimitEquivColimitType_apply`
++1 `colimitEquivColimitType_symm_apply`
+-1 `colimitModule.add_smul`
+-1 `colimitModule.one_smul`
++1 `colimitTypeRel_iff_orbitRel`
++1 `colimitTypeRelEquivOrbitRelQuotient`
 +1 `commSq`
 +1 `descAddMonoidHom`
 +1 `descAddMonoidHom_quotMk`
@@ -465,18 +456,27 @@ info: +1 `BicartSq`
 +1 `instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (F.ColimitType)`
 -1 `instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (Quot F)`
 +1 `instance {J : Type} [SmallCategory J] [FinCategory J]`
-+1 `isColimitOfMulticoequalizerDiagram`
++1 `IsColimit.precompose`
 +1 `isColimit_iff_coconeTypesIsColimit`
 +1 `isColimit_precompose_iff`
++1 `isColimitOfMulticoequalizerDiagram`
 +1 `isMulticoequalizer_iff`
++1 `Lattice.BicartSq.multicoequalizerDiagram`
 +1 `le₁₂`
 +1 `le₁₃`
 +1 `le₂₄`
 +1 `le₃₄`
++1 `M.map_mk`
++1 `M.mk_map`
++2 `M.mk_surjective`
++1 `MulticoequalizerDiagram`
 +1 `multicofork`
 +1 `multispanIndex`
 +1 `naturality_symm`
 +2 `precompose`
+-1 `Quot.desc_colimitCocone`
+-1 `Quot.desc_quotQuotUliftEquiv`
+-1 `Quot.desc_toCocone_desc`
 -1 `quotQuotUliftEquiv`
 -1 `quotToQuotUlift`
 -1 `quotToQuotUlift_ι`
@@ -487,8 +487,8 @@ info: +1 `BicartSq`
 +1 `small_colimitType_of_hasColimit`
 -1 `toCocone`
 +2 `zigzag_of_eqvGen_colimitTypeRel`
-+1 `ιColimitType_eq_iff`
 +1 `ι_colimitDesc`
++1 `ιColimitType_eq_iff`
 -/
 #guard_msgs in
 #declaration_diff "upstream/master...jriou-types-multicoequalizer-set" verbose
