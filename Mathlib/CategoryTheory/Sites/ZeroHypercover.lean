@@ -10,8 +10,10 @@ import Mathlib.CategoryTheory.Sites.Coverage
 
 Given a coverage `J` on a category `C`, we define the tyoe
 of `0`-hypercovers of an object `S : C`. They consists of a covering family
-of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced
-presieve is in `J`.
+of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve is in `J`.
+
+We define this with respect to a coverage and not to a Grothendieck topology, because this
+yields more control over the components of the cover.
 -/
 
 universe w' w v u
