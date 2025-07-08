@@ -31,6 +31,7 @@ namespace Order
 @[mk_iff isNormal_iff']
 structure IsNormal [LinearOrder α] [LinearOrder β] (f : α → β) : Prop where
   strictMono : StrictMono f
+  /-- This condition is the RHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
   mem_lowerBounds_upperBounds_of_isSuccLimit {a : α} (ha : IsSuccLimit a) :
     f a ∈ lowerBounds (upperBounds (f '' Iio a))
 
