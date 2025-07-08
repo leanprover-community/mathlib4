@@ -347,7 +347,7 @@ theorem _root_.MeasurableSet.analyticSet_image {X Y : Type*} [MeasurableSpace X]
   rcases hf.exists_continuous with ⟨τ', hle, hfc, hτ'⟩
   letI m' : MeasurableSpace X := @borel _ τ'
   haveI b' : BorelSpace X := ⟨rfl⟩
-  have hle := borel_anti hle
+  have hle := borel_antitone hle
   exact (hle _ hs).analyticSet.image_of_continuous hfc
 
 /-- Preimage of an analytic set is an analytic set. -/
@@ -879,7 +879,7 @@ theorem Measurable.measurableEmbedding {f : γ → α}
 theorem MeasureTheory.borel_eq_borel_of_le {t t' : TopologicalSpace γ}
     (ht : PolishSpace (h := t)) (ht' : PolishSpace (h := t')) (hle : t ≤ t') :
     @borel _ t = @borel _ t' := by
-  refine le_antisymm ?_ (borel_anti hle)
+  refine le_antisymm ?_ (borel_antitone hle)
   intro s hs
   have e := @Continuous.measurableEmbedding
     _ _ (@borel _ t') t' _ _ (@BorelSpace.mk _ _ (borel γ) rfl)

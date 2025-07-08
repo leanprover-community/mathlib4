@@ -329,7 +329,9 @@ lemma revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual
 
 lemma rev_strictAnti : StrictAnti (@rev n) := fun _ _ ↦ rev_lt_rev.mpr
 
-lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
+lemma rev_antitone : Antitone (@rev n) := rev_strictAnti.antitone
+
+@[deprecated (since := "2025-07-08")] alias rev_anti := rev_antitone
 
 /-! #### Order embeddings -/
 

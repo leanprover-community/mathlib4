@@ -225,13 +225,13 @@ protected lemma IsClopen.lowerClosure_pi (hs : IsClopen s) (hs' : BddAbove s) :
 
 lemma closure_upperClosure_comm_pi (hs : BddBelow s) :
     closure (upperClosure s : Set (ι → ℝ)) = upperClosure (closure s) :=
-  (closure_minimal (upperClosure_anti subset_closure) <|
+  (closure_minimal (upperClosure_antitone subset_closure) <|
       isClosed_closure.upperClosure_pi hs.closure).antisymm <|
     upperClosure_min (closure_mono subset_upperClosure) (upperClosure s).upper.closure
 
 lemma closure_lowerClosure_comm_pi (hs : BddAbove s) :
     closure (lowerClosure s : Set (ι → ℝ)) = lowerClosure (closure s) :=
-  (closure_minimal (lowerClosure_mono subset_closure) <|
+  (closure_minimal (lowerClosure_monotone subset_closure) <|
         isClosed_closure.lowerClosure_pi hs.closure).antisymm <|
     lowerClosure_min (closure_mono subset_lowerClosure) (lowerClosure s).lower.closure
 

@@ -577,7 +577,7 @@ lemma lineMap_mono [LinearOrder k] [Preorder V1] [AddRightMono V1] [SMulPosMono 
   gcongr
   simpa
 
-lemma lineMap_anti [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k V1]
+lemma lineMap_antitone [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k V1]
     {p₀ p₁ : V1} (h : p₁ ≤ p₀) :
     Antitone (lineMap (k := k) p₀ p₁) := by
   intro x y hxy
@@ -588,6 +588,8 @@ lemma lineMap_anti [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k
   rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
   gcongr
   simpa
+
+@[deprecated (since := "2025-07-08")] alias lineMap_anti := lineMap_antitone
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
