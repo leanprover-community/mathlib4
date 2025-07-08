@@ -25,7 +25,7 @@ We show that this notion is invariant under reparameterization by a monotone map
 We define `riemannianEDist x y` as the infimum of the length of `C^1` paths between `x`
 and `y`. We show that this can be realized using `C^1` paths that are locally constant around the
 endpoints, in `exists_lt_locally_constant_of_riemannianEDist_lt`. Such paths can be glued while
-retaining the `C^1` property. We deduce that `riemannianEDist` satisfied the triangle inequality,
+retaining the `C^1` property. We deduce that `riemannianEDist` satisfies the triangle inequality,
 in `riemannianEDist_triangle`.
 -/
 
