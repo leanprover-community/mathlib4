@@ -332,7 +332,7 @@ lemma pentagon (H K : C ⥤ V)
     [DayConvolution G H] [DayConvolution (F ⊛ G) H] [DayConvolution F (G ⊛ H)]
     [DayConvolution H K] [DayConvolution G (H ⊛ K)] [DayConvolution (G ⊛ H) K]
     [DayConvolution ((F ⊛ G) ⊛ H) K] [DayConvolution (F ⊛ G) (H ⊛ K)]
-    [DayConvolution (F ⊛ G ⊛ H) K] [DayConvolution F  (G ⊛ H ⊛ K)]
+    [DayConvolution (F ⊛ G ⊛ H) K] [DayConvolution F (G ⊛ H ⊛ K)]
     [DayConvolution F ((G ⊛ H) ⊛ K)] :
     map (associator F G H).hom (𝟙 K) ≫
         (associator F (G ⊛ H) K).hom ≫ map (𝟙 F) (associator G H K).hom =
