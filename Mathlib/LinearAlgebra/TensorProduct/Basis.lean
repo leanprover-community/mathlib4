@@ -49,7 +49,7 @@ theorem Basis.tensorProduct_apply' (b : Basis ι S M) (c : Basis κ R N) (i : ι
 theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m : M) (n : N)
     (i : ι) (j : κ) :
     (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
-  simp [Basis.tensorProduct, mul_comm]
+  simp [Basis.tensorProduct]
 
 variable (S : Type*) [Semiring S] [Algebra R S]
 

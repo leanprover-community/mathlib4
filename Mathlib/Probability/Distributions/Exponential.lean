@@ -131,13 +131,13 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
   case neg =>
     simp only [exponentialPDF_eq]
     rw [setLIntegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
-    exact ae_of_all _ fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
+    exact fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
   case pos =>
     rw [lintegral_Iic_eq_lintegral_Iio_add_Icc _ h, lintegral_exponentialPDF_of_nonpos (le_refl 0),
       zero_add]
     simp only [exponentialPDF_eq]
-    rw [setLIntegral_congr_fun measurableSet_Icc (ae_of_all _
-        (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
+    rw [setLIntegral_congr_fun measurableSet_Icc (g := fun x ↦ ENNReal.ofReal (r * rexp (-(r * x))))
+      (by intro a ha; simp [ha.1])]
     rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
         (Eventually.of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
     · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by

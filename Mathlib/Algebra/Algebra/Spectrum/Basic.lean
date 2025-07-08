@@ -101,7 +101,7 @@ theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
 
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   apply not_iff_not.mp
-  simp [Set.not_notMem, mem_iff]
+  simp [mem_iff]
 
 @[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff
 
@@ -218,8 +218,7 @@ theorem add_mem_add_iff {a : A} {r s : R} : r + s ∈ σ (↑ₐ s + a) ↔ r �
   rw [add_mem_iff, neg_add_cancel_left]
 
 theorem smul_mem_smul_iff {a : A} {s : R} {r : Rˣ} : r • s ∈ σ (r • a) ↔ s ∈ σ a := by
-  simp only [mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one, smul_assoc, ← smul_sub,
-    isUnit_smul_iff]
+  simp only [mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, ← smul_sub, isUnit_smul_iff]
 
 theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   ext x

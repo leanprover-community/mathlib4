@@ -5,12 +5,11 @@ Authors: Mantas Bakšys
 -/
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Set.Image
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
-import Mathlib.Tactic.Abel
 
 /-!
 # Rearrangement inequality
@@ -76,7 +75,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
   set τ : Perm ι := σ.trans (swap a (σ a)) with hτ
   have hτs : {x | τ x ≠ x} ⊆ s := by
     intro x hx
-    simp only [τ, Ne, Set.mem_setOf_eq, Equiv.coe_trans, Equiv.swap_comp_apply] at hx
+    simp only [τ, Ne, Set.mem_setOf_eq, Equiv.swap_comp_apply] at hx
     split_ifs at hx with h₁ h₂
     · obtain rfl | hax := eq_or_ne x a
       · contradiction

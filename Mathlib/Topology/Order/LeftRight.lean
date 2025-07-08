@@ -95,37 +95,62 @@ theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
 
 theorem continuousWithinAt_Iio_iff_Iic {a : α} {f : α → β} :
     ContinuousWithinAt f (Iio a) a ↔ ContinuousWithinAt f (Iic a) a :=
-  @continuousWithinAt_Ioi_iff_Ici αᵒᵈ _ _ _ _ _ f
+  continuousWithinAt_Ioi_iff_Ici (α := αᵒᵈ)
+
+theorem continuousWithinAt_inter_Ioi_iff_Ici {a : α} {f : α → β} {s : Set α} :
+    ContinuousWithinAt f (s ∩ Ioi a) a ↔ ContinuousWithinAt f (s ∩ Ici a) a := by
+  simp [← Ici_diff_left, ← inter_diff_assoc, continuousWithinAt_diff_self]
+
+theorem continuousWithinAt_inter_Iio_iff_Iic {a : α} {f : α → β} {s : Set α} :
+    ContinuousWithinAt f (s ∩ Iio a) a ↔ ContinuousWithinAt f (s ∩ Iic a) a :=
+  continuousWithinAt_inter_Ioi_iff_Ici (α := αᵒᵈ)
 
 end PartialOrder
 
 section TopologicalSpace
 
-variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β] {s : Set α}
 
 theorem nhdsLE_sup_nhdsGE (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]
 
 @[deprecated (since := "2024-12-21")] alias nhds_left_sup_nhds_right := nhdsLE_sup_nhdsGE
 
+theorem nhdsWithinLE_sup_nhdsWithinGE (a : α) : 𝓝[s ∩ Iic a] a ⊔ 𝓝[s ∩ Ici a] a = 𝓝[s] a := by
+  rw [← nhdsWithin_union, ← inter_union_distrib_left, Iic_union_Ici, inter_univ]
+
 theorem nhdsLT_sup_nhdsGE (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iio_union_Ici, nhdsWithin_univ]
 
 @[deprecated (since := "2024-12-21")] alias nhds_left'_sup_nhds_right := nhdsLT_sup_nhdsGE
+
+theorem nhdsWithinLT_sup_nhdsWithinGE (a : α) : 𝓝[s ∩ Iio a] a ⊔ 𝓝[s ∩ Ici a] a = 𝓝[s] a := by
+  rw [← nhdsWithin_union, ← inter_union_distrib_left, Iio_union_Ici, inter_univ]
 
 theorem nhdsLE_sup_nhdsGT (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ioi, nhdsWithin_univ]
 
 @[deprecated (since := "2024-12-21")] alias nhds_left_sup_nhds_right' := nhdsLE_sup_nhdsGT
 
+theorem nhdsWithinLE_sup_nhdsWithinGT (a : α) : 𝓝[s ∩ Iic a] a ⊔ 𝓝[s ∩ Ioi a] a = 𝓝[s] a := by
+  rw [← nhdsWithin_union, ← inter_union_distrib_left, Iic_union_Ioi, inter_univ]
+
 theorem nhdsLT_sup_nhdsGT (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
   rw [← nhdsWithin_union, Iio_union_Ioi]
 
 @[deprecated (since := "2024-12-21")] alias nhds_left'_sup_nhds_right' := nhdsLT_sup_nhdsGT
 
-lemma nhdsWithin_right_sup_nhds_singleton (a : α) :
+theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
+    𝓝[s ∩ Iio a] a ⊔ 𝓝[s ∩ Ioi a] a = 𝓝[s \ {a}] a := by
+  rw [← nhdsWithin_union, ← inter_union_distrib_left, Iio_union_Ioi, compl_eq_univ_diff,
+    inter_sdiff_left_comm, univ_inter]
+
+lemma nhdsGT_sup_nhdsWithin_singleton (a : α) :
     𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
   simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]
+
+@[deprecated (since := "2025-06-15")]
+alias nhdsWithin_right_sup_nhds_singleton := nhdsGT_sup_nhdsWithin_singleton
 
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iic a) a ∧ ContinuousWithinAt f (Ici a) a := by
@@ -135,5 +160,16 @@ theorem continuousAt_iff_continuous_left'_right' {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iio a) a ∧ ContinuousWithinAt f (Ioi a) a := by
   rw [continuousWithinAt_Ioi_iff_Ici, continuousWithinAt_Iio_iff_Iic,
     continuousAt_iff_continuous_left_right]
+
+theorem continuousWithinAt_iff_continuous_left_right {a : α} {f : α → β} :
+    ContinuousWithinAt f s a ↔
+      ContinuousWithinAt f (s ∩ Iic a) a ∧ ContinuousWithinAt f (s ∩ Ici a) a := by
+  simp only [ContinuousWithinAt, ← tendsto_sup, nhdsWithinLE_sup_nhdsWithinGE]
+
+theorem continuousWithinAt_iff_continuous_left'_right' {a : α} {f : α → β} :
+    ContinuousWithinAt f s a ↔
+      ContinuousWithinAt f (s ∩ Iio a) a ∧ ContinuousWithinAt f (s ∩ Ioi a) a := by
+  rw [continuousWithinAt_inter_Ioi_iff_Ici, continuousWithinAt_inter_Iio_iff_Iic,
+    continuousWithinAt_iff_continuous_left_right]
 
 end TopologicalSpace

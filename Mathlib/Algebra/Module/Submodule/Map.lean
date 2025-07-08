@@ -531,8 +531,8 @@ of `t.subtype`. -/
 def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtype p ≃ₗ[R] p where
   toFun x := ⟨x, x.2⟩
   invFun x := ⟨⟨x, hpq x.2⟩, x.2⟩
-  left_inv x := by simp only [coe_mk, SetLike.eta, LinearEquiv.coe_coe]
-  right_inv x := by simp only [Subtype.coe_mk, SetLike.eta, LinearEquiv.coe_coe]
+  left_inv x := by simp only [SetLike.eta]
+  right_inv x := by simp only [SetLike.eta]
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -690,9 +690,7 @@ variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
 
-theorem map_eq_comap {p : Submodule R M} :
-    (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
-  SetLike.coe_injective <| by simp [e.image_eq_preimage]
+@[deprecated (since := "2025-06-18")] alias map_eq_comap := Submodule.map_equiv_eq_comap_symm
 
 /-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
 `p` of the domain onto the image of that submodule.
@@ -703,7 +701,7 @@ This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap
 def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) :=
   { ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map (e : M →ₛₗ[σ₁₂] M₂)) fun x =>
       ⟨x, by
-        simp only [LinearMap.domRestrict_apply, eq_self_iff_true, and_true, SetLike.coe_mem,
+        simp only [LinearMap.domRestrict_apply, and_true, SetLike.coe_mem,
           SetLike.mem_coe]⟩ with
     invFun := fun y =>
       ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by
@@ -711,7 +709,7 @@ def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M �
         rw [Submodule.mem_map] at hy
         rcases hy with ⟨x, hx, hxy⟩
         subst hxy
-        simp only [symm_apply_apply, Submodule.coe_mk, coe_coe, hx]⟩
+        simp only [symm_apply_apply, coe_coe, hx]⟩
     left_inv := fun x => by
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]
