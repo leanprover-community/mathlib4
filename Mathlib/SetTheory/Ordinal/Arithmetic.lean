@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.IsNormal
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -396,32 +397,30 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 
 /-- A normal ordinal function is a strictly increasing function which is
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
-  `a < o`. -/
+  `a < o`.
+
+  Todo: deprecate this in favor of `Order.IsNormal`. -/
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
-  (∀ o, f o < f (succ o)) ∧ ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
+  Order.IsNormal f
 
-theorem IsNormal.limit_le {f} (H : IsNormal f) :
+theorem IsNormal.limit_le {f : Ordinal → Ordinal} (H : IsNormal f) :
     ∀ {o}, IsLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a :=
-  @H.2
+  H.le_iff_forall_le
 
-theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsLimit o) {a} :
+theorem IsNormal.limit_lt {f : Ordinal → Ordinal} (H : IsNormal f) {o} (h : IsLimit o) {a} :
     a < f o ↔ ∃ b < o, a < f b :=
-  not_iff_not.1 <| by simpa only [exists_prop, not_exists, not_and, not_lt] using H.2 _ h a
+  H.lt_iff_exists_lt h
 
-theorem IsNormal.strictMono {f} (H : IsNormal f) : StrictMono f := fun a b =>
-  limitRecOn b (Not.elim (not_lt_of_ge <| Ordinal.zero_le _))
-    (fun _b IH h =>
-      (lt_or_eq_of_le (le_of_lt_succ h)).elim (fun h => (IH h).trans (H.1 _)) fun e => e ▸ H.1 _)
-    fun _b l _IH h => lt_of_lt_of_le (H.1 a) ((H.2 _ l _).1 le_rfl _ (l.succ_lt h))
+theorem IsNormal.strictMono {f : Ordinal → Ordinal} (H : IsNormal f) : StrictMono f :=
+  Order.IsNormal.strictMono H
 
-theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
+theorem IsNormal.monotone {f : Ordinal → Ordinal} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
 
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
-    IsNormal f ↔ StrictMono f ∧ ∀ o, IsLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
-  ⟨fun hf => ⟨hf.strictMono, fun a ha c => (hf.2 a ha c).2⟩, fun ⟨hs, hl⟩ =>
-    ⟨fun a => hs (lt_succ a), fun a ha c =>
-      ⟨fun hac _b hba => ((hs hba).trans_le hac).le, hl a ha c⟩⟩⟩
+    IsNormal f ↔ StrictMono f ∧ ∀ o, IsLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a where
+  mp h := ⟨h.1, fun o ho a H ↦ (h.2 ho).2 <| by simpa [upperBounds]⟩
+  mpr h := .of_mem_lowerBounds_upperBounds h.1 fun ho ↦ by simpa [upperBounds] using h.2 _ ho
 
 theorem IsNormal.lt_iff {f} (H : IsNormal f) {a b} : f a < f b ↔ a < b :=
   StrictMono.lt_iff_lt <| H.strictMono
@@ -454,7 +453,7 @@ theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempt
       rcases not_forall₂.1 (mt (H₂ S).2 <| (lt_succ S).not_ge) with ⟨a, h₁, h₂⟩
       exact (H.le_iff.2 <| succ_le_of_lt <| not_le.1 h₂).trans (h _ h₁)
     | isLimit S L _ =>
-      refine (H.2 _ L _).2 fun a h' => ?_
+      refine (H.le_iff_forall_le L).2 fun a h' => ?_
       rcases not_forall₂.1 (mt (H₂ a).2 h'.not_ge) with ⟨b, h₁, h₂⟩
       exact (H.le_iff.2 <| (not_le.1 h₂).le).trans (h _ h₁)⟩
 
@@ -463,20 +462,13 @@ theorem IsNormal.le_set' {f o} (H : IsNormal f) (p : Set α) (p0 : p.Nonempty) (
   simpa [H₂] using H.le_set (g '' p) (p0.image g) b
 
 theorem IsNormal.refl : IsNormal id :=
-  ⟨lt_succ, fun _o l _a => Ordinal.limit_le l⟩
+  .id
 
 theorem IsNormal.trans {f g} (H₁ : IsNormal f) (H₂ : IsNormal g) : IsNormal (f ∘ g) :=
-  ⟨fun _x => H₁.lt_iff.2 (H₂.1 _), fun o l _a =>
-    H₁.le_set' (· < o) ⟨0, l.pos⟩ g _ fun _c => H₂.2 _ l _⟩
+  H₁.comp H₂
 
-theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (ho : IsLimit o) : IsLimit (f o) := by
-  rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
-  use (H.lt_iff.2 ho.pos).ne_bot
-  intro a ha
-  obtain ⟨b, hb, hab⟩ := (H.limit_lt ho).1 ha
-  rw [← succ_le_iff] at hab
-  apply hab.trans_lt
-  rwa [H.lt_iff]
+theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (ho : IsLimit o) : IsLimit (f o) :=
+  H.map_isSuccLimit ho
 
 theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) :
     a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
@@ -507,7 +499,8 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) :
               rintro ⟨⟩ <;> constructor <;> assumption⟩
 
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
-  ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_of_limit l⟩
+  IsNormal.of_mem_lowerBounds_upperBounds add_left_strictMono fun hb c ↦
+    by simp [upperBounds, add_le_of_limit hb]
 
 theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
   (isNormal_add_right a).isLimit
@@ -770,13 +763,11 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
         | H β s =>
           exact mul_le_of_limit_aux h H⟩
 
-theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-  ⟨fun b => by
-      beta_reduce
-      rw [mul_succ]
-      simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
-    fun _ l _ => mul_le_of_limit l⟩
+theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
+  refine IsNormal.of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
+  · simpa [mul_succ] using (add_lt_add_iff_left (a * b)).2 h
+  · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_of_limit hb] using
+      fun c hc ↦ mul_le_mul_left' hc.le a
 
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
