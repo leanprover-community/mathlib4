@@ -262,60 +262,6 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousWithinAt_prod_open
   unfold cle_swap
   simp only [Prod.swap_swap, comp_apply, ContinuousLinearMap.coprod_comp_prodComm]
 
--- XXX: copy to Mathlib/Topology/ContinuousOn.lean
-open ContinuousLinearMap in
-theorem ContinuousWithinAt.clm_comp
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [TopologicalSpace X]
-  {g : X → F →L[𝕜] G}
-  {f : X → E →L[𝕜] F} {s : Set X} {x : X}
-  (hg : ContinuousWithinAt g s x) (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun y ↦ (g y).comp (f y)) s x :=
-  (compL 𝕜 E F G).continuous₂.continuousAt.comp_continuousWithinAt (hg.prodMk hf)
-
-open ContinuousLinearMap in
-theorem ContinuousAt.clm_comp
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [TopologicalSpace X]
-  {g : X → F →L[𝕜] G}
-  {f : X → E →L[𝕜] F} {x : X}
-  (hg : ContinuousAt g x) (hf : ContinuousAt f x) :
-    ContinuousAt (fun y ↦ (g y).comp (f y)) x :=
-  (hg.continuousWithinAt.clm_comp hf.continuousWithinAt).continuousAt Filter.univ_mem
-
--- XXX: copy to Mathlib/Analysis/Normed/Operator/BoundedLinearMaps.lean
-open ContinuousLinearMap in
-theorem ContinuousWithinAt.continuousLinearMapCoprod
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [TopologicalSpace X]
-    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X} {x : X}
-    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun y => (f y).coprod (g y)) s x := by
-  simp only [← comp_fst_add_comp_snd]
-  exact (hf.clm_comp continuousWithinAt_const).add (hg.clm_comp continuousWithinAt_const)
-
-open ContinuousLinearMap in
-theorem ContinuousAt.continuousLinearMapCoprod
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [TopologicalSpace X]
-    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {x : X}
-    (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun y => (f y).coprod (g y)) x :=
-  (hf.continuousWithinAt.continuousLinearMapCoprod
-    hg.continuousWithinAt).continuousAt Filter.univ_mem
-
 /-- If a function `f : E × F → G` has partial derivative `f'x` or `f'y` on an open set `u`,
 and they are continuous at `z ∈ u`, then `f` is continously differentiable at `z`, with
 the derivative given by `f' z = (f'x z).coprod (f'y z)`.
