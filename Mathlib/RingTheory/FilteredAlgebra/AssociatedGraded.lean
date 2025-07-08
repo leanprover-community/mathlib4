@@ -500,14 +500,15 @@ def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt
 lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.mk 0
     ((GradedPiece.algebraMap F F_lt) (r * s)) = GradedMonoid.mk (0 + 0) (GradedMonoid.GMul.mul
     ((GradedPiece.algebraMap F F_lt) r) ((GradedPiece.algebraMap F F_lt) s)) := by
-  congr
-  · rw [zero_add]
-  · show HEq (mk F F_lt ((r * s) • (1 : F 0))) _
+  have : (mk F F_lt ((r * s) • (1 : F 0))) ≍ GradedMonoid.GMul.mul
+    ((algebraMap F F_lt) r) ((algebraMap F F_lt) s) := by
     rw [mul_comm r s]
     have : ((s * r) • (1 : F 0)).1 = (r • (1 : F 0)).1 * (s • (1 : F 0)).1 := by
       simpa using mul_smul s r (1 : A)
     apply HEq_eq_mk_eq F F_lt (AddZeroClass.zero_add 0).symm this ((s * r) • (1 : F 0)).2
       (IsRingFiltration.toGradedMonoid.mul_mem (r • (1 : F 0)).2 (s • (1 : F 0)).2) rfl rfl
+  congr
+  exact (zero_add 0).symm
 
 lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
     HEq ((mk F F_lt (r • (1 : F 0))) * a) (a * (mk F F_lt (r • (1 : F 0)))) := by
