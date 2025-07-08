@@ -287,7 +287,7 @@ elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
 elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTerm nt wtn
+  let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
   | .forallE _ src tgt _ =>
@@ -301,7 +301,7 @@ elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTerm nt wtn
+  let ne ← Term.elabTermEnsuringType nt wtn
   let _estype ← inferType es >>= instantiateMVars
   let eftype ← inferType ef >>= instantiateMVars
   match eftype with
