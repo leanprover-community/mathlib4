@@ -138,11 +138,43 @@ def IsLimit (o : Ordinal) : Prop :=
 theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
   simp [IsSuccLimit]
 
+@[deprecated (since := "2025-07-09")]
+alias isLimit_iff := isSuccLimit_iff
+
+@[deprecated (since := "2025-07-09")]
+alias IsLimit.isSuccPrelimit := IsSuccLimit.isSuccPrelimit
+
+@[deprecated (since := "2025-07-09")]
+alias IsLimit.succ_lt := IsSuccLimit.succ_lt
+
 @[simp]
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
 
 @[simp]
 theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Ordinal) := not_isSuccLimit_bot
+
+@[deprecated (since := "2025-07-09")]
+alias not_zero_isLimit := not_isSuccLimit_zero
+
+@[deprecated (since := "2025-07-09")]
+alias not_succ_isLimit := not_isSuccLimit_succ
+
+set_option linter.deprecated false in
+@[deprecated not_isSuccLimit_succ (since := "2025-07-09")]
+theorem not_succ_of_isLimit {o} (h : IsLimit o) : ¬∃ a, o = succ a
+  | ⟨a, e⟩ => not_succ_isLimit a (e ▸ h)
+
+@[deprecated (since := "2025-07-09")]
+alias succ_lt_of_isLimit := IsSuccLimit.succ_lt_iff
+
+@[deprecated (since := "2025-07-09")]
+alias le_succ_of_isLimit := IsSuccLimit.le_succ_iff
+
+@[deprecated (since := "2025-07-09")]
+alias limit_le := IsSuccLimit.le_iff_forall_le
+
+@[deprecated (since := "2025-07-09")]
+alias lt_limit := IsSuccLimit.lt_iff_exists_lt
 
 @[simp]
 theorem isSuccPrelimit_lift {o : Ordinal} : IsSuccPrelimit (lift.{u, v} o) ↔ IsSuccPrelimit o :=
@@ -152,31 +184,43 @@ theorem isSuccPrelimit_lift {o : Ordinal} : IsSuccPrelimit (lift.{u, v} o) ↔ I
 theorem isSuccLimit_lift {o : Ordinal} : IsSuccLimit (lift.{u, v} o) ↔ IsSuccLimit o :=
   liftInitialSeg.isSuccLimit_apply_iff
 
-@[simp]
-theorem isSuccPrelimit_lift {o : Ordinal.{v}} :
-    IsSuccPrelimit (lift.{u} o) ↔ IsSuccPrelimit o :=
-  liftInitialSeg.isSuccPrelimit_apply_iff
+@[deprecated (since := "2025-07-09")]
+alias lift_isLimit := isSuccLimit_lift
 
+set_option linter.deprecated false in
+@[deprecated IsSuccLimit.bot_lt (since := "2025-07-09")]
 theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
   IsSuccLimit.bot_lt h
+
+set_option linter.deprecated false in
+@[deprecated IsSuccLimit.ne_bot (since := "2025-07-09")]
+theorem IsLimit.ne_zero {o : Ordinal} (h : IsLimit o) : o ≠ 0 :=
+  h.pos.ne'
 
 theorem natCast_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) (n : ℕ) : n < o := by
   simpa using h.add_natCast_lt h.bot_lt n
 
+@[deprecated (since := "2025-07-09")]
+alias IsLimit.nat_lt := natCast_lt_of_isSuccLimit
+
 theorem one_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) : 1 < o :=
   mod_cast natCast_lt_of_isSuccLimit h 1
 
+@[deprecated (since := "2025-07-09")]
+alias IsLimit.one_lt := one_lt_of_isSuccLimit
+
 theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
   simpa using isMin_or_mem_range_succ_or_isSuccLimit o
+
+@[deprecated (since := "2025-07-09")]
+alias zero_or_succ_or_limit := zero_or_succ_or_isSuccLimit
 
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
 def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (zero : C 0) (succ : ∀ o, C o → C (succ o))
-    (limit : ∀ o, IsSuccLimit o → (∀ o' < o, C o') → C o) : C o := by
-  refine SuccOrder.limitRecOn o (fun a ha ↦ ?_) (fun a _ ↦ succ a) limit
-  convert zero
-  simpa using ha
+    (limit : ∀ o, IsSuccLimit o → (∀ o' < o, C o') → C o) : C o :=
+  SuccOrder.limitRecOn o (fun _a ha ↦ ha.eq_bot ▸ zero) (fun a _ ↦ succ a) limit
 
 @[simp]
 theorem limitRecOn_zero {motive} (H₁ H₂ H₃) : @limitRecOn motive 0 H₁ H₂ H₃ = H₁ :=
@@ -192,6 +236,7 @@ theorem limitRecOn_limit {motive} (o H₁ H₂ H₃ h) :
     @limitRecOn motive o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn motive x H₁ H₂ H₃ :=
   SuccOrder.limitRecOn_of_isSuccLimit ..
 
+#exit
 /-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
   added to all cases. The final term's domain is the ordinals below `l`. -/
 @[elab_as_elim]
