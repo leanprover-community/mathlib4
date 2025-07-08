@@ -76,7 +76,7 @@ instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   whiskerLeft X _ _ f := X.1 ◁ f
   whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
-  tensorHom f g := f ⊗ g
+  tensorHom f g := f ⊗ₘ g
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
   associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
   leftUnitor X :=  P.isoMk (λ_ X.1)

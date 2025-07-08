@@ -64,7 +64,7 @@ def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
     prop' := by
       intro t x hx
       dsimp only [coe_mk, pi_eval, toFun_eq_coe, HomotopyWith.coe_toContinuousMap]
-      simp only [funext_iff, ← forall_and]
+      simp only [funext_iff]
       intro i
       exact (homotopies i).prop' t x hx }
 
@@ -208,7 +208,7 @@ theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
 theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
     prod (projLeft p) (projRight p) = p := by
   induction p using Quotient.inductionOn
-  simp only [projLeft, projRight, ← Path.Homotopic.map_lift, prod_lift]
+  simp only [projLeft, projRight, ← Path.Homotopic.map_lift]
   congr
 
 end Prod
