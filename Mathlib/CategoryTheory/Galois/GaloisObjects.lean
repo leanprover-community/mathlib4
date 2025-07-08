@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Galois objects in Galois categories

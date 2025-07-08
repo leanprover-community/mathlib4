@@ -498,7 +498,7 @@ equality of types, using it should be avoided if possible. -/
 theorem fin_injective : Function.Injective Fin := fun m n h =>
   (Fintype.card_fin m).symm.trans <| (Fintype.card_congr <| Equiv.cast h).trans (Fintype.card_fin n)
 
-theorem Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : HEq i j) :
+theorem Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : i ≍ j) :
     (i : ℕ) = (j : ℕ) :=
   (Fin.heq_ext_iff (fin_injective (type_eq_of_heq h))).1 h
 
