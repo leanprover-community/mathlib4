@@ -53,7 +53,7 @@ theorem birkhoffMaxDiff_aux {f : α → α} {φ n x} :
     birkhoffMaxDiff f φ n x = φ x - (0 ⊓ birkhoffMax f φ n (f x)) := by
   rw [sub_eq_sub_iff_add_eq_add, birkhoffMax_succ, add_assoc, add_right_inj, max_add_min, zero_add]
 
-lemma birkhoffMaxDiff_antitone  {f : α → α} {φ} : Antitone (birkhoffMaxDiff f φ) := by
+lemma birkhoffMaxDiff_antitone {f : α → α} {φ} : Antitone (birkhoffMaxDiff f φ) := by
   intro m n h x
   rw [birkhoffMaxDiff_aux, birkhoffMaxDiff_aux]
   apply add_le_add_left
