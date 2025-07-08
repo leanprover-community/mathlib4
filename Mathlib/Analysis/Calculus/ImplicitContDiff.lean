@@ -56,6 +56,45 @@ def implicitFunctionDataOfProd (hf : HasStrictFDerivAt f f' a) (hf' : range f' =
     rw [isCompl_comm, this, LinearMap.ker_fst, hf'']
     exact LinearMap.isCompl_range_inl_inr
 
+-- /-- A partial homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`
+-- to vertical subspaces. -/
+-- def implicitToPartialHomeomorphOfProd (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+--     (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) : PartialHomeomorph (E × F) (E × F) :=
+--   (implicitFunctionDataOfProd hf hf' hf'').toPartialHomeomorph
+
+-- lemma implicitFunctionDataOfProd_leftFun_apply (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+--     (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) (p : E × F) :
+
+
+def implicitFunctionOfProd (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+    (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) : E → F → E × F :=
+  (implicitFunctionDataOfProd hf hf' hf'').implicitFunction
+
+/-- Implicit function `y` defined by `f (x, y x) = x`. -/
+def implicitFunctionOfProd' (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+    (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) : E → F :=
+  fun x ↦ (implicitFunctionOfProd hf hf' hf'' x a.2).2
+
+lemma implicitFunctionOfProd_fst (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+    (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) :
+    ∀ᶠ p in 𝓝 (a.1, f a), (implicitFunctionOfProd hf hf' hf'' p.1 p.2).1 = p.1 := by
+  exact (implicitFunctionDataOfProd hf hf' hf'').prod_map_implicitFunction.mono
+    fun _ ↦ congr_arg Prod.fst
+
+lemma rightFun_implicitFunctionOfProd (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+    (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) :
+    ∀ᶠ p in 𝓝 (a.1, f a), f (implicitFunctionOfProd hf hf' hf'' p.1 p.2) = p.2 :=
+  (implicitFunctionDataOfProd hf hf' hf'').prod_map_implicitFunction.mono
+    fun _ ↦ congr_arg Prod.snd
+
+lemma rightFun_implicitFunctionOfProd' (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+    (hf'' : ker f' = range (LinearMap.inl 𝕜 E F)) :
+    ∀ᶠ x in 𝓝 a.1, f (x, implicitFunctionOfProd' hf hf' hf'' x) = a.2 := by
+  have := rightFun_implicitFunctionOfProd hf hf' hf''
+  rw [eventually_iff_exists_mem] at this
+  obtain ⟨u, hu, h⟩ := this
+  sorry
+
 end ImplicitFunctionData
 
 end
