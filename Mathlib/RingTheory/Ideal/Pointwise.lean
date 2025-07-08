@@ -93,7 +93,7 @@ theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
   exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
 
 @[simp]
-theorem pointwise_smul_toAddSubGroup {R : Type*} [Ring R] [MulSemiringAction M R]
+theorem pointwise_smul_toAddSubgroup {R : Type*} [Ring R] [MulSemiringAction M R]
     (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r)  :
     (a • S).toAddSubgroup = a • S.toAddSubgroup := by
   ext

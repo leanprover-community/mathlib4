@@ -275,7 +275,7 @@ lemma IsUnramified.stabilizer_eq_bot (h : IsUnramified k w) : Stab w = ⊥ := by
   simp only [mem_stabilizer_mk_iff, Subgroup.mem_bot, forall_eq_or_imp, true_and]
   exact fun σ hσ ↦ hσ.isUnramified_mk_iff.mp ((mk_embedding w).symm ▸ h)
 
-lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk
+lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
     {φ : K →+* ℂ} (h : ComplexEmbedding.IsConj φ σ) :
     (Stab (mk φ) : Set (K ≃ₐ[k] K)) = {1, σ} := by
   ext

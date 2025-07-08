@@ -561,7 +561,7 @@ theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
   rw [nodal_eq_mul_nodal_erase hi, mul_div_cancel_left₀]
   exact X_sub_C_ne_zero _
 
-theorem nodalWeight_eq_eval_nodal_derative (hi : i ∈ s) :
+theorem nodalWeight_eq_eval_nodal_derivative (hi : i ∈ s) :
     nodalWeight s v i = (eval (v i) (Polynomial.derivative (nodal s v)))⁻¹ := by
   rw [eval_nodal_derivative_eval_node_eq hi, nodalWeight_eq_eval_nodal_erase_inv]
 
