@@ -1080,9 +1080,9 @@ lemma isTorsionFree_iff : IsTorsionFree cov ↔
     ∀ X Y, cov X Y - cov Y X = VectorField.mlieBracket I X Y := by
   simp [IsTorsionFree]
   constructor
-  · intro h
-    intro X Y
+  · intro h X Y
     have : torsion cov X Y = 0 := by simp [h]
+    -- XXX: abel, ring, module and grind all fail here
     exact eq_of_sub_eq_zero this
   · intro h
     ext X Y x
