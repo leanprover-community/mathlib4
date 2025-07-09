@@ -186,14 +186,17 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
 
 variable [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
 
+-- TODO: should be MDifferentiable.inner_bundle, but fails with an instance synthesis error
+-- I do not understand.
+variable {I} in
+lemma foo (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ := sorry
+
 variable (X Y Z Z') in
 lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
   rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
-  have hZ : MDiff ⟪Y, Z⟫ := sorry -- use C^n metric and hY, hZ and hZ'
-  have hZ' : MDiff ⟪Y, Z'⟫ := sorry
   unfold rhs_aux
   ext x
-  rw [product_add_right, mfderiv_add (hZ x) (hZ' x)]; simp; congr
+  rw [product_add_right, mfderiv_add ((foo hY hZ) x) ((foo hY hZ') x)]; simp; congr
 
 omit [IsManifold I ∞ M] in
 variable (X X' Y Z) in
@@ -206,24 +209,30 @@ lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z))
     rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
   ext x
   simp only [rhs_aux]
-  have hY : MDiff ⟪Y, Z⟫ := sorry -- use C^n metric and hY, hY' and hZ
-  have hY' : MDiff ⟪Y', Z⟫ := sorry
-  rw [product_add_left, mfderiv_add (hY x) (hY' x)]
+  rw [product_add_left, mfderiv_add ((foo hY hZ) x) ((foo hY' hZ) x)]
   simp; congr
 
 variable (X Y Z) in
 lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
   ext x
   simp only [rhs_aux]
+  rw [product_smul_right]
+  -- XXX: not true, the product rule gives us two terms
+  -- and there is missing API in mathlib!
   -- only holds given enough smoothness!
   sorry
 
 variable (X Y Z) in
 lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
-  sorry
+  ext x
+  simp [rhs_aux]
 
 variable (X Y Z Z') in
 lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z := by
+  ext x
+  simp [rhs_aux]
+  rw [product_smul_left]
+  -- TODO: get a second term from the product rule!
   sorry
 
 lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
@@ -327,7 +336,7 @@ noncomputable def existence_candidate [FiniteDimensional ℝ E] :
 variable (X Y) in
 -- The above definition behaves well: for each compatible trivialisation e,
 -- using e on e.baseSet yields the same result as above.
-lemma foo [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M))
+lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M))
     [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) :
   existence_candidate I M X Y x = existence_candidate_aux I X Y e x := sorry
 
@@ -352,6 +361,6 @@ def LeviCivitaConnection : CovariantDerivative I E (TangentSpace I : M → Type 
   -- IsCovariantDerivativeOn
   sorry
 
-lemma bar : (LeviCivitaConnection I M).IsLeviCivitaConnection  := sorry
+lemma baz : (LeviCivitaConnection I M).IsLeviCivitaConnection := sorry
 
 end CovariantDerivative
