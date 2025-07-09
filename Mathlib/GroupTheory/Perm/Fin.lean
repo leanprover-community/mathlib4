@@ -387,7 +387,7 @@ theorem sign_cycleIcc (hij : i ≤ j) : Perm.sign (cycleIcc i j) = (-1) ^ (j - i
 
 theorem isCycle_cycleIcc (hij : i < j) : (cycleIcc i j).IsCycle := by
   simpa [cycleIcc, Fin.le_of_lt hij] using Equiv.Perm.IsCycle.extendDomain
-    (natAdd_castLEEmb n _).toEquivRange (isCycle_cycleRange (castLT_sub_nezero hij))
+    (natAdd_castLEEmb _).toEquivRange (isCycle_cycleRange (castLT_sub_nezero hij))
 
 theorem cycleType_cycleIcc (hij : i < j) : Perm.cycleType (cycleIcc i j) = {(j - i + 1: ℕ)} := by
   simpa [cycleIcc, Fin.le_of_lt hij, cycleType_cycleRange (castLT_sub_nezero hij)] using
