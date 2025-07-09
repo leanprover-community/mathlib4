@@ -99,7 +99,9 @@ theorem e_assoc' (W X Y Z : C) :
 morphism. -/
 @[ext]
 structure EnrichedIso (X Y : C) where
+  /-- The forward direction of an isomorphism. -/
   hom : 𝟙_ V ⟶ X ⟶[V] Y
+  /-- The backward direction of an isomorphism. -/
   inv : 𝟙_ V ⟶ Y ⟶[V] X
   hom_inv : (λ_ _).inv ≫ (hom ⊗ₘ inv) ≫ eComp V X Y X = eId V X := by aesop_cat
   inv_hom : (λ_ _).inv ≫ (inv ⊗ₘ hom) ≫ eComp V Y X Y = eId V Y := by aesop_cat
