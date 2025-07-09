@@ -62,9 +62,7 @@ and outputs a set of sections which are point-wise orthogonal with the same span
 Basically, we apply the Gram-Schmidt algorithm point-wise. -/
 noncomputable def gramSchmidt [WellFoundedLT ι]
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
-  s n x - ∑ i : Finset.Iio n, (ℝ ∙ VectorBundle.gramSchmidt s i x).orthogonalProjection (s n x)
-termination_by n
-decreasing_by exact Finset.mem_Iio.1 i.2
+  InnerProductSpace.gramSchmidt ℝ (s · x) n
 
 -- Let `s i` be a collection of sections in `E`, indexed by `ι`.
 variable {s : ι → (x : B) → E x}
@@ -76,7 +74,7 @@ variable (s) in
 theorem gramSchmidt_def (n : ι) (x) :
     gramSchmidt s n x =
       s n x - ∑ i ∈ Iio n, (ℝ ∙ gramSchmidt s i x).orthogonalProjection (s n x) := by
-  rw [← sum_attach, attach_eq_univ, gramSchmidt]
+  simp only [gramSchmidt, InnerProductSpace.gramSchmidt_def]
 
 variable (s) in
 theorem gramSchmidt_def' (n : ι) (x) :
@@ -97,97 +95,47 @@ variable (s) in
 theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     [WellFoundedLT ι] (s : ι → (x : B) → E x) : gramSchmidt s ⊥ = s ⊥ := by
   ext x
-  rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
+  apply InnerProductSpace.gramSchmidt_zero
 
 variable (s) in
 /-- **Gram-Schmidt Orthogonalisation**:
 `gramSchmidt` produces an orthogonal system of vectors. -/
 theorem gramSchmidt_orthogonal {a b : ι} (h₀ : a ≠ b) (x) :
-    ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 := by
-  suffices ∀ a b : ι, a < b → ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 by
-    rcases h₀.lt_or_gt with ha | hb
-    · exact this _ _ ha
-    · rw [inner_eq_zero_symm]
-      exact this _ _ hb
-  clear h₀ a b
-  intro a b h₀
-  revert a
-  apply wellFounded_lt.induction b
-  intro b ih a h₀
-  simp only [gramSchmidt_def s b, inner_sub_right, inner_sum, orthogonalProjection_singleton,
-    inner_smul_right]
-  rw [Finset.sum_eq_single_of_mem a (Finset.mem_Iio.mpr h₀)]
-  · by_cases h : gramSchmidt s a x = 0
-    · simp only [h, inner_zero_left, zero_div, zero_mul, sub_zero]
-    · rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel₀, sub_self]
-      rwa [inner_self_ne_zero]
-  intro i hi hia
-  simp only [mul_eq_zero, div_eq_zero_iff]
-  right
-  rcases hia.lt_or_gt with hia₁ | hia₂
-  · rw [inner_eq_zero_symm]
-    exact ih a h₀ i hia₁
-  · exact ih i (mem_Iio.1 hi) a hia₂
+    ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 :=
+  InnerProductSpace.gramSchmidt_orthogonal _ _ h₀
 
 variable (s) in
 /-- This is another version of `gramSchmidt_orthogonal` using `Pairwise` instead. -/
 theorem gramSchmidt_pairwise_orthogonal (x) :
-    Pairwise fun a b ↦ ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 := fun _ _ h ↦
-      gramSchmidt_orthogonal s h _
+    Pairwise fun a b ↦ ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 :=
+  fun _ _ h ↦ gramSchmidt_orthogonal s h _
 
 variable (s) in
 theorem gramSchmidt_inv_triangular {i j : ι} (hij : i < j) (x) :
-    ⟪gramSchmidt s j x, s i x⟫ = 0 := by
-  rw [gramSchmidt_def'' s]
-  simp only [inner_add_right, inner_sum, inner_smul_right]
-  set b /-: ι → E-/ := gramSchmidt s
-  convert zero_add (0 : ℝ)
-  · exact gramSchmidt_orthogonal s hij.ne' x
-  apply Finset.sum_eq_zero
-  rintro k hki'
-  have hki : k < i := by simpa using hki'
-  have : ⟪b j x, b k x⟫ = 0 := gramSchmidt_orthogonal s (hki.trans hij).ne' x
-  simp [this]
+    ⟪gramSchmidt s j x, s i x⟫ = 0 :=
+  InnerProductSpace.gramSchmidt_inv_triangular _ _ hij
 
 open Submodule Set Order
 
 variable (s) in
 theorem mem_span_gramSchmidt {i j : ι} (hij : i ≤ j) (x) :
-    s i x ∈ span ℝ ((gramSchmidt s · x) '' Set.Iic j) := by
-  rw [gramSchmidt_def' s i]
-  simp_rw [orthogonalProjection_singleton]
-  exact Submodule.add_mem _ (subset_span <| mem_image_of_mem _ hij)
-    (Submodule.sum_mem _ fun k hk ↦ smul_mem (span ℝ ((gramSchmidt s · x) '' Set.Iic j)) _ <|
-      subset_span <| mem_image_of_mem (gramSchmidt s · x) <| (Finset.mem_Iio.1 hk).le.trans hij)
+    s i x ∈ span ℝ ((gramSchmidt s · x) '' Set.Iic j) :=
+  InnerProductSpace.mem_span_gramSchmidt _ _ hij
 
 variable (s) in
 theorem gramSchmidt_mem_span (x) :
-    ∀ {j i}, i ≤ j → gramSchmidt s i x ∈ span ℝ ((s · x) '' Set.Iic j) := by
-  intro j i hij
-  rw [gramSchmidt_def s i]
-  simp_rw [orthogonalProjection_singleton]
-  refine Submodule.sub_mem _ (subset_span (mem_image_of_mem _ hij))
-    (Submodule.sum_mem _ fun k hk ↦ ?_)
-  let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
-  exact smul_mem _ _
-    (span_mono (image_subset (s · x) <| Set.Iic_subset_Iic.2 hkj.le)
-      <| gramSchmidt_mem_span _ le_rfl)
-termination_by j => j
+    ∀ {j i}, i ≤ j → gramSchmidt s i x ∈ span ℝ ((s · x) '' Set.Iic j) :=
+  InnerProductSpace.gramSchmidt_mem_span _ _
 
 variable (s) in
 theorem span_gramSchmidt_Iic (c : ι) (x) :
     span ℝ ((gramSchmidt s · x) '' Set.Iic c) = span ℝ ((s · x) '' Set.Iic c) :=
-  span_eq_span (Set.image_subset_iff.2 fun _ ↦ gramSchmidt_mem_span _ _) <|
-    Set.image_subset_iff.2 fun _ hx ↦ mem_span_gramSchmidt s hx _
+  InnerProductSpace.span_gramSchmidt_Iic ..
 
 variable (s) in
 theorem span_gramSchmidt_Iio (c : ι) (x) :
-    span ℝ ((gramSchmidt s · x) '' Set.Iio c) = span ℝ ((s · x) '' Set.Iio c) := by
-  refine span_eq_span (Set.image_subset_iff.2 fun _ hi ↦
-    span_mono (image_subset _ <| Iic_subset_Iio.2 hi) <| gramSchmidt_mem_span _ _ le_rfl) <|
-      Set.image_subset_iff.2 fun _ hi ↦
-        span_mono (image_subset _ <| Iic_subset_Iio.2 hi) <| fun hx ↦ ?_
-  apply mem_span_gramSchmidt s le_rfl _
+    span ℝ ((gramSchmidt s · x) '' Set.Iio c) = span ℝ ((s · x) '' Set.Iio c) :=
+  InnerProductSpace.span_gramSchmidt_Iio _ _ _
 
 -- variable (s) in
 -- /-- `gramSchmidt` preserves span of vectors. -/
@@ -217,29 +165,15 @@ theorem gramSchmidt_of_orthogonal {x} (hs : Pairwise fun i j ↦ ⟪s i x, s j x
   · simp
 
 theorem gramSchmidt_ne_zero_coe (n : ι) (x)
-    (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) : gramSchmidt s n x ≠ 0 := by
-  by_contra h
-  have h₁ : s n x ∈ span ℝ ((s · x) '' Set.Iio n) := by
-    rw [← span_gramSchmidt_Iio s n x, gramSchmidt_def' s, h, zero_add]
-    apply Submodule.sum_mem _ _
-    intro a ha
-    simp only [orthogonalProjection_singleton]
-    apply Submodule.smul_mem _ _ _
-    rw [Finset.mem_Iio] at ha
-    exact subset_span ⟨a, ha, by rfl⟩
-  have h₂ : ((s · x) ∘ ((↑) : Set.Iic n → ι)) ⟨n, le_refl n⟩ ∈
-      span ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι) '' Set.Iio ⟨n, le_refl n⟩) := by
-    rw [image_comp]
-    simpa using h₁
-  apply LinearIndependent.notMem_span_image h₀ _ h₂
-  simp only [Set.mem_Iio, lt_self_iff_false, not_false_iff]
+    (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) : gramSchmidt s n x ≠ 0 :=
+  InnerProductSpace.gramSchmidt_ne_zero_coe _ h₀
 
 variable (s) in
 /-- If the input vectors of `gramSchmidt` are linearly independent,
 then the output vectors are non-zero. -/
 theorem gramSchmidt_ne_zero (n : ι) {x} (h₀ : LinearIndependent ℝ (s · x)) :
     gramSchmidt s n x ≠ 0 :=
-  gramSchmidt_ne_zero_coe _ x (h₀.comp _ Subtype.coe_injective)
+  InnerProductSpace.gramSchmidt_ne_zero _ h₀
 
 -- not needed at the moment: I want a point-wise version, along the lines
 -- "if s i x is a basis, then gramSchmidgt s i x is a triangular matrix"
@@ -258,8 +192,7 @@ theorem gramSchmidt_triangular {x} {i j : ι} (hij : i < j) (b : Basis ι ℝ (E
 /-- `gramSchmidt` produces linearly independent vectors when given linearly independent vectors. -/
 theorem gramSchmidt_linearIndependent {x} (h₀ : LinearIndependent ℝ (s · x)) :
     LinearIndependent ℝ (gramSchmidt s · x) :=
-  linearIndependent_of_ne_zero_of_inner_eq_zero (fun _ ↦ gramSchmidt_ne_zero _ _ h₀)
-    (fun _ _ h ↦ gramSchmidt_orthogonal s h x)
+  InnerProductSpace.gramSchmidt_linearIndependent h₀
 
 end VectorBundle
 
