@@ -1368,9 +1368,9 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
     trans := transitive
     inf := by
       have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
-        closed_interval ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t) (by
-          simp
-          exact ⟨by (rw [inf_assoc]; exact inf_le_left), le_trans inf_le_left le_sup_left⟩) (by
+        closed_interval ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
+          ⟨inf_le_inf_right _ inf_le_left, inf_le_inf_right _ le_sup_left⟩
+          (by
             simp
             exact ⟨(by rw [inf_comm, ← inf_assoc]; exact inf_le_right),
               (le_trans inf_le_left le_sup_right)⟩)
