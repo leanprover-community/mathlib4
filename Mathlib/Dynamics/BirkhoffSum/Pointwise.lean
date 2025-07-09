@@ -86,14 +86,6 @@ lemma birkhoffMax_measurable [MeasurableSpace α] {f : α → α} (hf : Measurab
     (hφ : Measurable φ) {n} : Measurable (birkhoffMax f φ n) := by
   induction n <;> unfold birkhoffMax <;> measurability
 
-/-- The supremum of `birkhoffSum f φ (n + 1) x` over `n : ℕ`. -/
-noncomputable def birkhoffSup (f : α → α) (φ : α → ℝ) (x : α) : EReal :=
-  iSup fun n ↦ ↑(birkhoffSum f φ (n + 1) x)
-
-lemma birkhoffSup_measurable [MeasurableSpace α] {f : α → α} (hf : Measurable f) {φ : α → ℝ}
-    (hφ : Measurable φ) : Measurable (birkhoffSup f φ) :=
-  Measurable.iSup (fun _ ↦ Measurable.coe_real_ereal (birkhoffSum_measurable hf hφ))
-
 end BirkhoffMax
 
 section DivergentSet
@@ -101,6 +93,14 @@ section DivergentSet
 open MeasureTheory Measure MeasurableSpace Filter Topology
 
 variable {α : Type*}
+
+/-- The supremum of `birkhoffSum f φ (n + 1) x` over `n : ℕ`. -/
+noncomputable def birkhoffSup (f : α → α) (φ : α → ℝ) (x : α) : EReal :=
+  iSup fun n ↦ ↑(birkhoffSum f φ (n + 1) x)
+
+lemma birkhoffSup_measurable [MeasurableSpace α] {f : α → α} (hf : Measurable f) {φ : α → ℝ}
+    (hφ : Measurable φ) : Measurable (birkhoffSup f φ) :=
+  Measurable.iSup (fun _ ↦ Measurable.coe_real_ereal (birkhoffSum_measurable hf hφ))
 
 /-- The set of points `x` for which `birkhoffSup f φ x = ⊤`. -/
 def divergentSet (f : α → α) (φ : α → ℝ) : Set α := (birkhoffSup f φ)⁻¹' {⊤}
@@ -138,9 +138,8 @@ lemma divergentSet_measurable {f : α → α} [MeasurableSpace α] (hf : Measura
     (hφ : Measurable φ) : MeasurableSet (divergentSet f φ) :=
   measurableSet_preimage (birkhoffSup_measurable hf hφ) (measurableSet_singleton _)
 
-lemma divergentSet_mem_invalg [MeasurableSpace α]
-    {f : α → α} (hf : Measurable f) {φ : α → ℝ} (hφ : Measurable φ) :
-    MeasurableSet[invariants f] (divergentSet f φ) :=
+lemma divergentSet_mem_invalg [MeasurableSpace α] {f : α → α} (hf : Measurable f) {φ : α → ℝ}
+    (hφ : Measurable φ) : MeasurableSet[invariants f] (divergentSet f φ) :=
   ⟨divergentSet_measurable hf hφ, funext (fun _ ↦ propext divergentSet_invariant)⟩
 
 lemma birkhoffMax_tendsto_top_mem_divergentSet {f : α → α} {x φ} (hx : x ∈ divergentSet f φ) :
@@ -166,8 +165,7 @@ lemma birkhoffMaxDiff_tendsto_of_mem_divergentSet {f : α → α} {x φ} (hx : x
 abbrev nonneg : Filter ℝ := ⨅ ε > 0, 𝓟 (Set.Iio ε)
 
 lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x φ}
-    (hx : x ∉ divergentSet f φ) :
-    Tendsto (birkhoffAverage ℝ f φ · x) atTop nonneg := by
+    (hx : x ∉ divergentSet f φ) : Tendsto (birkhoffAverage ℝ f φ · x) atTop nonneg := by
   /- it suffices to show there are upper bounds ≤ ε for all ε > 0 -/
   simp only [tendsto_iInf, gt_iff_lt, tendsto_principal, Set.mem_Iio, eventually_atTop, ge_iff_le]
   intro ε hε
@@ -195,10 +193,7 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
   specialize upperBound n.pred (Nat.le_pred_of_lt hn)
   rwa [← Nat.succ_pred_eq_of_pos (Nat.zero_lt_of_lt hn)]
 
-/- From now on, assume f is measure-preserving and φ is integrable. -/
-variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac)
-    (hf : MeasurePreserving f μ μ)
-    {φ : α → ℝ} (hφ : Integrable φ μ) (hφ' : Measurable φ)
+variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac) {φ : α → ℝ}
 
 lemma iterates_integrable {i : ℕ} (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) :
     Integrable (φ ∘ f^[i]) μ := by
