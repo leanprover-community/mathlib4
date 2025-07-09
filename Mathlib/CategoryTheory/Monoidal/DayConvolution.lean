@@ -409,19 +409,21 @@ lemma hom_ext {c : C} {v : V} {g h : U.obj c ⟶ v}
   intro j
   simpa using e j.hom
 
-variable (F : C ⥤ V)
+variable {D : Type u₃} [Category.{v₃} D] (K : D ⥤ V)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorRight v)]
 
-instance : (F ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) F :=
+instance : (K ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) K :=
   isPointwiseLeftKanExtensionExtensionUnitRight
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) K isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
 
-instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
+instance : (U ⊠ K).IsLeftKanExtension <| extensionUnitLeft U (φ U) K :=
   isPointwiseLeftKanExtensionExtensionUnitLeft
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) K isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+
+variable (F : C ⥤ V)
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit 𝟙_ V) ⊠ F`. -/
