@@ -12,8 +12,9 @@ import Mathlib.CategoryTheory.Products.Associator
 Given functors `F G : C ⥤ V` between two monoidal categories,
 this file defines a typeclass `DayConvolution` on functors `F` `G` that contains
 a functor `F ⊛ G`, as well as the required data to exhibit `F ⊛ G` as a pointwise
-left Kan extension of `F ⊠ G` (see `CategoryTheory/Monoidal/ExternalProduct` for the definition)
-along the tensor product of `C`. Such a functor is called a Day convolution of `F` and `G`, and
+left Kan extension of `F ⊠ G` (see `Mathlib/CategoryTheory/Monoidal/ExternalProduct/Basic.lean`
+for the definition) along the tensor product of `C`.
+Such a functor is called a Day convolution of `F` and `G`, and
 although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
 
 We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data
@@ -175,7 +176,7 @@ section associator
 
 open Functor
 
-variable (H : C ⥤ V) [DayConvolution G H] [DayConvolution F (G ⊛ H)] [DayConvolution (F ⊛ G) H]
+variable {D : Type u₃} [Category.{v₃} D] (K : D ⥤ V)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
@@ -183,15 +184,18 @@ variable (H : C ⥤ V) [DayConvolution G H] [DayConvolution F (G ⊛ H)] [DayCon
 
 open MonoidalCategory.ExternalProduct
 
-instance : (F ⊠ G ⊛ H).IsLeftKanExtension <|
-    extensionUnitRight (G ⊛ H) (unit G H) F :=
+instance : (K ⊠ F ⊛ G).IsLeftKanExtension <|
+    extensionUnitRight (F ⊛ G) (unit F G) K :=
   (isPointwiseLeftKanExtensionExtensionUnitRight _ _ _ <|
-    isPointwiseLeftKanExtensionUnit G H).isLeftKanExtension
+    isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
-instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
-    extensionUnitLeft (F ⊛ G) (unit F G) H :=
+instance : ((F ⊛ G) ⊠ K).IsLeftKanExtension <|
+    extensionUnitLeft (F ⊛ G) (unit F G) K :=
   (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
+
+
+variable (H : C ⥤ V) [DayConvolution G H] [DayConvolution F (G ⊛ H)] [DayConvolution (F ⊛ G) H]
 
 /-- The `CorepresentableBy` structure asserting that the Type-valued functor
 `Y ↦ (F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ Y)` is corepresented by
@@ -420,19 +424,21 @@ lemma hom_ext {c : C} {v : V} {g h : U.obj c ⟶ v}
   intro j
   simpa using e j.hom
 
-variable (F : C ⥤ V)
+variable {D : Type u₃} [Category.{v₃} D] (K : D ⥤ V)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorRight v)]
 
-instance : (F ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) F :=
+instance : (K ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) K :=
   isPointwiseLeftKanExtensionExtensionUnitRight
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) K isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
 
-instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
+instance : (U ⊠ K).IsLeftKanExtension <| extensionUnitLeft U (φ U) K :=
   isPointwiseLeftKanExtensionExtensionUnitLeft
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) K isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+
+variable (F : C ⥤ V)
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit 𝟙_ V) ⊠ F`. -/
@@ -629,7 +635,7 @@ Note that this extension is exactly the one that characterizes the left
 unitors for Day convolutions in `leftUnitor_hom_unit_app`. -/
 @[simps]
 def unitLeft (F : C ⥤ V) [DayConvolution U F] :
-    F ⋙ tensorLeft (𝟙_ V) ⟶ tensorLeft (𝟙_ C) ⋙ (U ⊛ F) where
+    F ⋙ tensorLeft (𝟙_ V) ⟶ tensorLeft (𝟙_ C) ⋙ U ⊛ F where
   app x := can ▷ (F.obj x) ≫ (DayConvolution.unit U F).app (𝟙_ C, x)
   naturality {x y} f := by
     dsimp
@@ -637,28 +643,39 @@ def unitLeft (F : C ⥤ V) [DayConvolution U F] :
       ← tensor_comp_assoc, Category.comp_id, Category.id_comp,
       ← DayConvolution.unit_naturality, Functor.map_id]
 
+/-- An extension of `K ⋙ tensorLeft (𝟙_ V)` along ` Prod.sectR (𝟙_ C) D`
+(for any `K : _ ⥤ V`), which we will show is a left Kan extension.
+This is useful for working with morphisms out of `U ⊠ K`. -/
+@[simps]
+def unitLeftExternal {D : Type u₃} [Category D] (K : D ⥤ V) :
+    K ⋙ tensorLeft (𝟙_ V) ⟶ Prod.sectR (𝟙_ C) D ⋙ U ⊠ K where
+  app y := can ▷ _
+  naturality {x y} f := by simp [← whisker_exchange]
+
+instance isLeftKanExtensionUnitLeftExternal
+    {D : Type u₃} [Category D] (K : D ⥤ V) :
+    (U ⊠ K).IsLeftKanExtension (unitLeftExternal U K) :=
+  let α₀ :
+    K ⋙ tensorLeft (𝟙_ V) ≅ (prod.leftUnitorEquivalence D).inverse ⋙
+      fromPUnit.{0} (𝟙_ V) ⊠ K := NatIso.ofComponents fun _ ↦ .refl _
+  let Φ :
+      (prod.leftUnitorEquivalence D).inverse ⋙
+        (fromPUnit.{0} <| 𝟙_ C).prod (𝟭 D) ≅
+      (Prod.sectR (𝟙_ C) D) :=
+    NatIso.ofComponents fun _ ↦ .refl _
+  isLeftKanExtension_iff_postcompose α₀.hom (Prod.sectR (𝟙_ C) D) Φ
+    (extensionUnitLeft U (φ U) K) (unitLeftExternal U K) (by aesop_cat)|>.mp
+      inferInstance
+
 variable [DayConvolution U F]
 
 instance isLeftKanExtensionUnitLeft :
-    (U ⊛ F).IsLeftKanExtension (unitLeft U F) := by
-  let α₀ :
-    F ⋙ tensorLeft (𝟙_ V) ≅ (prod.leftUnitorEquivalence C).inverse ⋙
-      fromPUnit.{0} (𝟙_ V) ⊠ F := NatIso.ofComponents fun _ ↦ .refl _
-  let β₀ : F ⋙ tensorLeft (𝟙_ V) ⟶ (Prod.sectR (𝟙_ C) C) ⋙ (U ⊠ F) :=
-    { app y := can ▷ _
-      naturality {x y} f := by simp [← whisker_exchange] }
-  let Φ :
-      (prod.leftUnitorEquivalence C).inverse ⋙
-        (fromPUnit.{0} (𝟙_ C)).prod (𝟭 C) ≅
-      (Prod.sectR (𝟙_ C) C) :=
-    NatIso.ofComponents fun _ ↦ .refl _
-  haveI : (U ⊠ F).IsLeftKanExtension β₀ :=
-    isLeftKanExtension_iff_postcompose α₀.hom (Prod.sectR (𝟙_ C) C) Φ
-      (extensionUnitLeft U (φ U) F) β₀ (by aesop_cat)|>.mp inferInstance
+    (U ⊛ F).IsLeftKanExtension (unitLeft U F) :=
   let ψ : (Prod.sectR (𝟙_ C) C) ⋙ (tensor C) ≅ tensorLeft (𝟙_ C) :=
     NatIso.ofComponents fun _ ↦ .refl _
-  exact isLeftKanExtension_iff_postcompose β₀ (tensorLeft (𝟙_ C)) ψ
-      (DayConvolution.unit U F) _ (by aesop_cat)|>.mp inferInstance
+  isLeftKanExtension_iff_postcompose (unitLeftExternal U F)
+    (tensorLeft <| 𝟙_ C) ψ (DayConvolution.unit U F) _ (by aesop_cat)|>.mp
+      inferInstance
 
 variable {F} in
 lemma hom_ext_unit_left {G : C ⥤ V} {α β : U ⊛ F ⟶ G}
@@ -668,7 +685,7 @@ lemma hom_ext_unit_left {G : C ⥤ V} {α β : U ⊛ F ⟶ G}
     α = β := by
   apply (U ⊛ F).hom_ext_of_isLeftKanExtension (unitLeft U F)
   ext t
-  simpa using (h t)
+  simpa using h t
 
 end
 
@@ -691,28 +708,39 @@ def unitRight (F : C ⥤ V) [DayConvolution F U] :
       ← tensor_comp_assoc, Category.comp_id, Category.id_comp,
       ← DayConvolution.unit_naturality, Functor.map_id]
 
+/-- An extension of `K ⋙ tensorLeft (𝟙_ V)` (for any `K : _ ⥤ V`) along
+`Prod.sectL D (𝟙_ C)`, which we will show is a left Kan extension.
+This is useful for working with morphisms out of `K ⊠ U`. -/
+@[simps]
+def unitRightExternal {D : Type u₃} [Category D] (K : D ⥤ V) :
+    K ⋙ tensorRight (𝟙_ V) ⟶ Prod.sectL D (𝟙_ C) ⋙ K ⊠ U where
+  app y := _ ◁ can
+  naturality {x y} f := by simp [whisker_exchange]
+
+instance isLeftKanExtensionUnitRightExternal
+    {D : Type u₃} [Category D] (K : D ⥤ V) :
+    (K ⊠ U).IsLeftKanExtension (unitRightExternal U K) :=
+  let α₀ :
+    K ⋙ tensorRight (𝟙_ V) ≅ (prod.rightUnitorEquivalence D).inverse ⋙
+      K ⊠ fromPUnit.{0} (𝟙_ V) := NatIso.ofComponents fun _ ↦ .refl _
+  let Φ :
+      (prod.rightUnitorEquivalence D).inverse ⋙
+        (𝟭 D).prod (fromPUnit.{0} <| 𝟙_ C)  ≅
+      (Prod.sectL D (𝟙_ C)) :=
+    NatIso.ofComponents fun _ ↦ .refl _
+  isLeftKanExtension_iff_postcompose α₀.hom (Prod.sectL D (𝟙_ C)) Φ
+    (extensionUnitRight U (φ U) K) (unitRightExternal U K) (by aesop_cat)|>.mp
+      inferInstance
+
 variable [DayConvolution F U]
 
 instance isLeftKanExtensionUnitRight :
-    (F ⊛ U).IsLeftKanExtension (unitRight U F) := by
-  let α₀ :
-    F ⋙ tensorRight (𝟙_ V) ≅ (prod.rightUnitorEquivalence C).inverse ⋙
-      F ⊠ fromPUnit.{0} (𝟙_ V) := NatIso.ofComponents fun _ ↦ .refl _
-  let β₀ : F ⋙ tensorRight (𝟙_ V) ⟶ (Prod.sectL C (𝟙_ C)) ⋙ (F ⊠ U) :=
-    { app y := _ ◁ can
-      naturality {x y} f := by simp [whisker_exchange] }
-  let Φ :
-      (prod.rightUnitorEquivalence C).inverse ⋙
-        (𝟭 C).prod (fromPUnit.{0} (𝟙_ C))  ≅
-      (Prod.sectL C (𝟙_ C)) :=
-    NatIso.ofComponents fun _ ↦ .refl _
-  haveI : (F ⊠ U).IsLeftKanExtension β₀ :=
-    isLeftKanExtension_iff_postcompose α₀.hom (Prod.sectL C (𝟙_ C)) Φ
-      (extensionUnitRight U (φ U) F) β₀ (by aesop_cat)|>.mp inferInstance
+    (F ⊛ U).IsLeftKanExtension (unitRight U F) :=
   let ψ : (Prod.sectL C (𝟙_ C)) ⋙ (tensor C) ≅ tensorRight (𝟙_ C) :=
     NatIso.ofComponents fun _ ↦ .refl _
-  exact isLeftKanExtension_iff_postcompose β₀ (tensorRight (𝟙_ C)) ψ
-      (DayConvolution.unit F U) _ (by aesop_cat)|>.mp inferInstance
+  isLeftKanExtension_iff_postcompose (unitRightExternal U F)
+    (tensorRight (𝟙_ C)) ψ (DayConvolution.unit F U) _ (by aesop_cat)|>.mp
+      inferInstance
 
 variable {F} in
 lemma hom_ext_unit_right {G : C ⥤ V} {α β : F ⊛ U ⟶ G}
