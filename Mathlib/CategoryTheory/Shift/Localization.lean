@@ -233,7 +233,7 @@ instance NatTrans.commShift_iso_hom_of_localization :
   constructor
   intro a
   ext X
-  simp only [comp_app, whiskerRight_app, whiskerLeft_app,
+  simp only [comp_app, Functor.whiskerRight_app, Functor.whiskerLeft_app,
     Functor.commShiftIso_comp_hom_app,
     Functor.commShiftOfLocalization_iso_hom_app,
     Category.assoc, ← Functor.map_comp, ← Functor.map_comp_assoc,

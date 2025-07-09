@@ -46,6 +46,9 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
 
+@[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
+  Set.ext fun z ↦ z.ind fun a b => by simp
+
 theorem sym2_cons (a : α) (s : Finset α) (ha : a ∉ s) :
     (s.cons a ha).sym2 = ((s.cons a ha).map <| Sym2.mkEmbedding a).disjUnion s.sym2 (by
       simp [Finset.disjoint_left, ha]) :=
@@ -204,7 +207,7 @@ theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := b
       ⟨a, h _ <| Sym.mem_cons_self _ _,
         mem_image_of_mem _ <| ih.2 fun b hb ↦ h _ <| Sym.mem_cons_of_mem hb⟩
 
-@[simp]
+-- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
 theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=
