@@ -90,7 +90,7 @@ lemma accumulate_last {i n m : ℕ} (hin : i < n) (hmi : m = i + 1) (t : Fin n �
 
 lemma accumulate_injective {n m} (hnm : n ≤ m) : Function.Injective (accumulate n m) := by
   refine fun t s he ↦ funext fun i ↦ ?_
-  obtain h|h := lt_or_ge (i.1 + 1) m
+  obtain h | h := lt_or_ge (i.1 + 1) m
   · have := accumulate_rec i.2 h s
     rwa [← he, accumulate_rec i.2 h t, add_right_cancel_iff] at this
   · have := h.antisymm (i.2.nat_succ_le.trans hnm)
