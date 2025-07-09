@@ -6,17 +6,15 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Perm.MaximalSubgroups
 import Mathlib.GroupTheory.SpecificGroups.Alternating
-/-! # Maximal subgroups of the alternating group -/
+/-! # Maximal subgroups of the alternating group
 
-/-
-import Jordan.Mathlib.Alternating
-import Jordan.IndexNormal
-import Jordan.Primitive
-import Jordan.MultipleTransitivity
-import Jordan.StabilizerPrimitive
-import Jordan.PermIwasawa
-import Jordan.PermMaximal
-import Jordan.V4
+* `AlternatingGroup.isCoatom_stabilizer`:
+if `s : Set α` is nonempty as well as its complement, and `Nat.card α ≠ 2 * s.ncard',
+then `stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`.
+
+This is the “intransitive case” of the O'Nan-Scott classification
+of maximal subgroups of the alternating groups.
+
 -/
 
 open scoped Pointwise
@@ -40,7 +38,7 @@ theorem ofSubtype_mem_stabilizer' (s : Set α) (g : Equiv.Perm (sᶜ : Set α))
 
 end Equiv.Perm
 
-namespace alternatingGroup
+namespace AlternatingGroup
 
 theorem stabilizer.isPreprimitive (s : Set α) (hs : (sᶜ : Set α).Nontrivial) :
     IsPreprimitive (stabilizer (alternatingGroup α) s) s := by
@@ -530,12 +528,6 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     IsCoatom (stabilizer (alternatingGroup α) s) := by
   suffices hα : 4 < Fintype.card α by
   -- h0 : s.nonempty, h1  : sᶜ.nonempty
-  /-   have h1' : sᶜ.nontrivial,
-    { rw [← set.nontrivial_coe, ← fintype.one_lt_card_iff_nontrivial],
-      apply lt_of_le_of_lt _ hs,
-      rw [nat.succ_le_iff, fintype.card_pos_iff, set.nonempty_coe_sort],
-      exact h0, },
-   -/
   --  cases em(s.nontrivial) with h0' h0',
   -- We start with the case where s.nontrivial
     constructor
@@ -590,7 +582,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
 private theorem three_le {c n : ℕ} (h : 1 ≤ n) (h' : n < c) (hh' : c ≠ 2 * n) : 3 ≤ c := by
   grind
 
-/-- stabilizer (alternating_group α) s is a maximal subgroup of alternating_group α,
+/-- `stabilizer (alternating_group α) s` is a maximal subgroup of alternating_group α,
   provided s ≠ ⊥, s ≠ ⊤ and fintype.card α ≠ 2 * fintype.card ↥s) -/
 theorem isCoatom_stabilizer (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
     (hs : Nat.card α ≠ 2 * Set.ncard s) :
@@ -638,105 +630,4 @@ theorem isCoatom_stabilizer (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
   · simp only [Set.not_nontrivial_iff] at h0'
     exact h s h0 h0'
 
-#exit
-
-/-- The action of alternating_group α on the n-element subsets of α is preprimitive
-provided 0 < n < #α and #α ≠ 2*n -/
-theorem Nat.Combination.isPreprimitive_of_alt (n : ℕ) (h_one_le : 1 ≤ n)
-    (hn : n < Fintype.card α) (hα : Fintype.card α ≠ 2 * n) :
-    IsPreprimitive (alternatingGroup α) (n.Combination α) := by
-  have hα' : 3 ≤ Fintype.card α := three_le h_one_le hn hα
-  have : Nontrivial α := by
-    rw [← Fintype.one_lt_card_iff_nontrivial];
-    exact lt_of_le_of_lt h_one_le hn
-  cases' Nat.eq_or_lt_of_le h_one_le with h_one h_one_lt
-  · -- n = 1 :
-    rw [← h_one]
-    apply isPreprimitive_of_surjective_map
-      (Nat.bijective_toCombination_one_equivariant _ α).surjective
-    exact AlternatingGroup.isPreprimitive hα'
-  -- h_one_lt : 1 < n
-  have ht : IsPretransitive (alternatingGroup α) (n.Combination α) := by
-    -- apply nat.finset_is_pretransitive_of_multiply_pretransitive,
-    have : Fintype.card α - n + n = Fintype.card α := by apply Nat.sub_add_cancel; exact le_of_lt hn
-    rw [isPretransitive.of_bijective_map_iff Function.surjective_id
-        (Nat.Combination_compl_bijective (alternatingGroup α) α this)]
-    apply Nat.Combination_isPretransitive_of_IsMultiplyPretransitive
-    apply isMultiplyPretransitive_of_higher (alternatingGroup α) α _
-      (Nat.sub_le_sub_left h_one_lt _)
-    · rw [ENat.card_eq_coe_fintype_card]
-      simp only [ENat.coe_le_coe, tsub_le_self]
-    · apply IsMultiplyPretransitive.alternatingGroup_of_sub_two
-  have : Nontrivial (n.Combination α) :=
-    Nat.Combination_nontrivial α (lt_trans (Nat.lt_succ_self 0) h_one_lt) hn
-  obtain ⟨sn⟩ := Nontrivial.to_nonempty (α := n.Combination α)
-  let s := sn.val
-  let hs : s.card = n := sn.prop
-  -- have hs : (s : finset α).card = n := s.prop,
-  rw [← maximal_stabilizer_iff_preprimitive (alternatingGroup α) sn]
-  have : stabilizer (alternatingGroup α) sn =
-    stabilizer (alternatingGroup α) (s : Set α) := by
-    ext g
-    simp only [mem_stabilizer_iff]
-    rw [← Subtype.coe_inj]
-    change g • s = s ↔ _
-    rw [← Finset.coe_smul_finset, ← Finset.coe_inj]
-  rw [this]
-  apply Stabilizer.isMaximal (s : Set α)
-  · simp only [Finset.coe_nonempty, ← Finset.card_pos, hs]
-    apply lt_trans one_pos h_one_lt
-  · simp only [← Finset.coe_compl, Finset.coe_nonempty, ← Finset.card_compl_lt_iff_nonempty,
-      compl_compl, hs]
-    exact hn
-  · simp only [Set.ncard_coe_Finset, hs]
-    exact hα
-
-end alternatingGroup
-
-
-section Junk
-
-variable {α G H : Type _} [Group G] [Group H] [MulAction G α] {N : Subgroup G}
-
-theorem Subgroup.map_subgroupOf_eq {K : Subgroup N} : (K.map N.subtype).subgroupOf N = K := by
-  rw [← Subgroup.comap_subtype, Subgroup.comap_map_eq, Subgroup.ker_subtype, sup_bot_eq]
-
-theorem MulAction.stabilizer_subgroupOf_eq {a : α} :
-    stabilizer N a = (stabilizer G a).subgroupOf N :=
-  by
-  ext n
-  simp only [Subgroup.mem_subgroupOf, mem_stabilizer_iff]
-  rfl
-
-example (K K' : Subgroup G) : K < K' ↔ K ≤ K' ∧ K ≠ K' :=
-  lt_iff_le_and_ne
-
-theorem Subgroup.map_iff_mono_of_injective {f : G →* H} {K K' : Subgroup G}
-    (hf : Function.Injective f) : K ≤ K' ↔ Subgroup.map f K ≤ Subgroup.map f K' :=
-  by
-  constructor
-  exact Subgroup.map_mono
-  · intro h
-    intro x hx
-    suffices f x ∈ Subgroup.map f K' by
-      simp only [Subgroup.mem_map] at this
-      obtain ⟨y, hy, hx⟩ := this
-      rw [← hf hx]; exact hy
-    apply h
-    rw [Subgroup.mem_map]
-    exact ⟨x, hx, rfl⟩
-
-theorem Subgroup.map_strict_mono_of_injective {f : G →* H} {K K' : Subgroup G}
-    (hf : Function.Injective f) :
-    K < K' ↔ Subgroup.map f K < Subgroup.map f K' := by
-  simp only [lt_iff_le_not_le]
-  simp_rw [← Subgroup.map_iff_mono_of_injective hf]
-
-theorem Subgroup.map_injective_of_injective {f : G →* H} {K K' : Subgroup G}
-    (hf : Function.Injective f) :
-    Subgroup.map f K = Subgroup.map f K' ↔ K = K' := by
-  simp only [le_antisymm_iff, ← Subgroup.map_iff_mono_of_injective hf]
-
-end Junk
-
-
+end AlternatingGroup
