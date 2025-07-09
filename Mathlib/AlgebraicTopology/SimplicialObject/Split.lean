@@ -125,7 +125,6 @@ theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
     simp only at h
     subst h
     refine ext _ _ rfl ?_
-    haveI := hf
     simp only [eqToHom_refl, comp_id]
     exact eq_id_of_epi f
 
