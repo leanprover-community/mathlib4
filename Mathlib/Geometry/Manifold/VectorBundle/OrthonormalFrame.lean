@@ -41,14 +41,30 @@ variable
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
+variable {s : ι → (x : B) → E x} {u : Set B}
+
+-- also: monotonicity? will see if useful, at all...
+
+/-- Applying the Gram-Schmidt procedure to a local frame yields another local frame. -/
+def IsLocalFrameOn.gramSchmidt (hs : IsLocalFrameOn IB F n s u) :
+    IsLocalFrameOn IB F n (VectorBundle.gramSchmidt s) u where
+  linearIndependent := by
+    intro x hx
+    exact VectorBundle.gramSchmidt_linearIndependent (hs.linearIndependent hx)
+  generating := by
+    intro x hx
+    sorry -- lemma about Gram-Schmidt...
+  contMDiffOn i := gramSchmidt_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
+      fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
+
+namespace Basis
+
 -- bad, for prototyping
 variable {b : Basis ι ℝ F}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
     [MemTrivializationAtlas e] {x : B} -- (hx : x ∈ e.baseSet)
-namespace Basis
 
--- noncomputable def orthonormalFrame_toBasis_at : Basis ι ℝ (E x) :=
---   sorry -- b.map (e.linearEquivAt (R := 𝕜) x hx).symm
+-- noncomputable def orthonormalFrame_toBasis_at : Basis ι ℝ (E x) := sorry
 
 variable (b e) in
 /-- The orthonormal frame associated to the basis `b` and the trivialisation `e`:
@@ -57,15 +73,20 @@ In particular, if x is outside of `e.baseSet`, this returns the junk value 0. -/
 noncomputable def orthonormalFrame : ι → (x : B) → E x :=
   VectorBundle.gramSchmidt (b.localFrame e)
 
+omit [IsManifold IB n B] in
+/-- An orthonormal frame w.r.t. a local trivialisation is a local frame. -/
+lemma orthonormalFrame_isLocalFrameOn : IsLocalFrameOn IB F n (b.orthonormalFrame e) e.baseSet :=
+  (b.localFrame_isLocalFrameOn_baseSet IB n e).gramSchmidt
+
+omit [IsManifold IB n B] in
 variable (b e) in
 /-- Each orthonormal frame `s^i ∈ Γ(E)` of a `C^k` vector bundle, defined by a local
 trivialisation `e`, is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_orthonormalFrame_baseSet (i : ι) :
-    CMDiff[e.baseSet] n (T% b.orthonormalFrame e i) := by
-  apply gramSchmidt_contMDiffOn _ _ (fun i ↦ b.contMDiffOn_localFrame_baseSet n e _)
-  intro x hx
-  sorry -- missing lemma: localFrame is linearly independent at each point in the baseSet
+    CMDiff[e.baseSet] n (T% b.orthonormalFrame e i) :=
+  orthonormalFrame_isLocalFrameOn.contMDiffOn _
 
+omit [IsManifold IB n B] in
 variable (b e) in
 lemma _root_.contMDiffAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.baseSet) :
     CMDiffAt n (T% b.orthonormalFrame e i) x :=
@@ -87,3 +108,16 @@ lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
   apply localFrame_apply_of_notMem e b hx
 
 end Basis
+
+/- next steps:
+
+lemma: local frame coefficients (in the same way),
+a section is C^k iff its coefficients are
+(prove for IsLocalFrameOn first!)
+
+lemma: frame coefficient of s_i is the product with that local section
+  (only true here, by orthogonality)
+
+cor: section t is smooth iff each product <t, si> is (just rewrite twice)
+
+lemma: uniqueness (what I need for torsion) -/
