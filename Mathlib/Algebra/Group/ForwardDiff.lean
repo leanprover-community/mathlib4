@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Forward difference operators and Newton series
@@ -318,8 +317,6 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (a : ℕ → R):
         ring
       rw [this, fwdDiff_iter_pow_eq_zero_of_lt (by linarith)]
       simp only [Pi.zero_apply, mul_zero]
-
-open Polynomial
 
 /--
 **Newton's series** for a polynomial function.
