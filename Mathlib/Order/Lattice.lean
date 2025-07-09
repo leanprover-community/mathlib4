@@ -1307,8 +1307,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
     · constructor
       · intro x y
         constructor
-        · intro h
-          exact hlc.trans (y := y) (by
+        · exact fun h => hlc.trans (y := y) (by
             conv_rhs => rw [← inf_idem y]
             exact hlc.inf h (hlc.refl y)) (by
             conv_lhs => rw [← sup_idem y]
