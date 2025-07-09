@@ -3,6 +3,7 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.Topology.Covering
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.Sheaves.LocalPredicate
 
@@ -271,7 +272,28 @@ noncomputable def homeomorph : proj P ⁻¹' U ≃ₜ U × ι where
   continuous_invFun := continuous_prod_of_discrete_right.mpr
     fun i ↦ (continuous_section (t.pred i)).subtype_mk _
 
+include t inj in
+theorem isEvenlyCovered {b : B} (hb : b ∈ U) : IsEvenlyCovered (proj P) b ι :=
+  ⟨‹_›, U, hb, U.2, U.2.preimage (proj P).continuous, t.homeomorph inj, fun _ ↦ rfl⟩
+
+include t inj in
+theorem isCoveringMapOn : IsCoveringMapOn (proj P) U :=
+  fun _b hb ↦ (t.isEvenlyCovered inj hb).to_isEvenlyCovered_preimage
+
 end TrivializationOn
+
+theorem isEvenlyCovered_of_isLocallyConstant {P : PrelocalPredicate F} {U : Opens B}
+    (h : ∀ b ∈ U, IsLocallyConstant P.pred b) {b : B} (hb : b ∈ U) :
+    IsEvenlyCovered (proj P.pred) b (proj P.pred ⁻¹' {b}) :=
+  have ⟨V, hVU, hV⟩ := h b hb ⟨U, hb⟩
+  let _ : TopologicalSpace (F (⟨b, V.2⟩ : V.1)) := ⊥
+  have := discreteTopology_bot
+  hV.trivializationOn ⟨b, V.2⟩ |>.isEvenlyCovered
+    (fun b hb ↦ (h b <| hVU hb).hasIdentityPrinciple.isStalkInj) V.2 |>.to_isEvenlyCovered_preimage
+
+theorem isCoveringMap_of_isLocallyConstant {P : PrelocalPredicate F}
+    (h : ∀ b, IsLocallyConstant P.pred b) : IsCoveringMap (proj P.pred) :=
+  fun x ↦ isEvenlyCovered_of_isLocallyConstant (fun _ _ ↦ h _) (Opens.mem_top x)
 
 end TopCat
 
