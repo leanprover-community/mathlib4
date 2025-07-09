@@ -297,9 +297,11 @@ lemma gramSchmidt_contMDiffWithinAt [IsContMDiffRiemannianBundle IB n F E]
   apply (hs i).sub_section
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
-  have hproj : CMDiffAt[u] n (T% VectorBundle.gramSchmidt s i') x := sorry -- use recursion!
-  apply contMDiffWithinAt_myproj hproj (hs i)
+  apply contMDiffWithinAt_myproj (gramSchmidt_contMDiffWithinAt s i' x hs) (hs i)
   sorry -- TODO: figure out the right preconditions!
+termination_by i
+decreasing_by
+  exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
 
 lemma gramSchmidt_contMDiffAt (s : ι → (x : B) → E x) (i : ι) (x : B)
     (hs : ∀ i, CMDiffAt n (T% (s i)) x) : CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
