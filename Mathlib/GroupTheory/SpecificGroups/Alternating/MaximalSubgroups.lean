@@ -172,7 +172,7 @@ theorem stabilizer_ne_top' (s : Set α) (hs : s.Nonempty) (hsc : sᶜ.Nonempty)
 -- autrement dit : fintype.card α ≥ 4.
 -- La condition est nécessaire :
 -- dans le cas α = {1, 2, 3}, t = {1,2} ou t = {1}, le résultat est faux
-theorem moves_in (hα : 4 ≤ Fintype.card α) (t : Set α) :
+theorem moves_in (hα : 4 ≤ Nat.card α) (t : Set α) :
     ∀ a ∈ t, ∀ b ∈ t, ∃ g ∈ stabilizer (Equiv.Perm α) t ⊓ alternatingGroup α, g • a = b := by
   intro a ha b hb
   by_cases hab : a = b
@@ -184,12 +184,10 @@ theorem moves_in (hα : 4 ≤ Fintype.card α) (t : Set α) :
     · -- fintype.card t ≤ 2, alors on prend le produit d'un swap (a b) avec un swap dans tᶜ
       have h : 1 < Set.ncard (tᶜ : Set α) := by
         by_contra h
-        rw [not_lt] at h
         rw [← not_lt] at hα
         apply hα
-        rw [← Nat.card_eq_fintype_card, ← Set.ncard_add_ncard_compl t]
-        apply Nat.lt_succ_of_le
-        apply add_le_add ht h
+        rw [← Set.ncard_add_ncard_compl t]
+        grind
       rw [Set.one_lt_ncard_iff] at h
       obtain ⟨c, d, hc, hd, hcd⟩ := h
       simp only [Ne] at hcd
@@ -263,7 +261,7 @@ theorem moves_in (hα : 4 ≤ Fintype.card α) (t : Set α) :
       convert Set.ncard_le_ncard ht
       rw [(Set.ncard_pair hab).symm]
 
-theorem moves_in' (hα : 4 ≤ Fintype.card α) (G : Subgroup (Equiv.Perm α)) (t : Set α)
+theorem moves_in' (hα : 4 ≤ Nat.card α) (G : Subgroup (Equiv.Perm α)) (t : Set α)
     (hGt : stabilizer (Equiv.Perm α) t ⊓ alternatingGroup α ≤ G) :
     ∀ a ∈ t, ∀ b ∈ t, ∃ g : G, g • a = b := by
   intro a ha b hb
@@ -290,7 +288,7 @@ theorem has_three_cycle_of_stabilizer' (s : Set α) (hs : 2 < Set.ncard s) :
   grind  -- since x ∉ s, x ≠ u, for any u ∈ s
 
 omit [DecidableEq α] in
-theorem has_three_cycle_of_stabilizer [DecidableEq α] (s : Set α) (hα : 4 < Fintype.card α) :
+theorem has_three_cycle_of_stabilizer [DecidableEq α] (s : Set α) (hα : 4 < Nat.card α) :
     ∃ g : Equiv.Perm α, g.IsThreeCycle ∧ g ∈ stabilizer (Equiv.Perm α) s := by
   rcases Nat.lt_or_ge 2 (Set.ncard s) with hs | hs
   · exact has_three_cycle_of_stabilizer' s hs
@@ -300,28 +298,30 @@ theorem has_three_cycle_of_stabilizer [DecidableEq α] (s : Set α) (hα : 4 < F
       rw [stabilizer_compl] at hg'
       exact ⟨hg, hg'⟩
     rw [lt_iff_not_ge] at hα ⊢
-    intro hs'; apply hα
-    rw [← Nat.card_eq_fintype_card, ← Set.ncard_add_ncard_compl s]
-    exact Nat.add_le_add hs hs'
+    intro hs'
+    apply hα
+    rw [← Set.ncard_add_ncard_compl s]
+    grind
 
-theorem le_of_isPreprimitive (s : Set α) (hα : 4 < Fintype.card α)
-    (G : Subgroup (Equiv.Perm α))
-    (hG : stabilizer (Equiv.Perm α) s ⊓ alternatingGroup α ≤ G)
-    (hG' : IsPreprimitive G α) :
+theorem le_of_isPreprimitive (h4 : 4 < Nat.card α)
+    (G : Subgroup (Equiv.Perm α)) [hG' : IsPreprimitive G α]
+    {s : Set α}
+    (hG : stabilizer (Equiv.Perm α) s ⊓ alternatingGroup α ≤ G) :
     alternatingGroup α ≤ G := by
   -- We need to prove that alternating_group α ≤ ⊤
   -- G contains a three_cycle
-  obtain ⟨g, hg3, hg⟩ := has_three_cycle_of_stabilizer s hα
+  obtain ⟨g, hg3, hg⟩ := has_three_cycle_of_stabilizer s h4
   -- By Jordan's theorem, it suffices to prove that G acts primitively
   apply jordan_three_cycle hG' hg3
   apply hG
   simp only [Subgroup.mem_inf, hg, true_and]
   exact Equiv.Perm.IsThreeCycle.mem_alternatingGroup hg3
 
-theorem isPreprimitive_of_stabilizer_lt (s : Set α)
-    (h0 : s.Nontrivial) (h1 : sᶜ.Nontrivial)
-    (hα : Set.ncard s < Set.ncard (sᶜ : Set α)) (h4 : 4 ≤ Fintype.card α)
-    (G : Subgroup (Equiv.Perm α))
+theorem isPreprimitive_of_stabilizer_lt
+    (h4 : 4 ≤ Nat.card α)
+    {G : Subgroup (Equiv.Perm α)}
+    {s : Set α} (h0 : s.Nontrivial) (h1 : sᶜ.Nontrivial)
+    (hα : Set.ncard s < Set.ncard (sᶜ : Set α))
     (hG : stabilizer (Equiv.Perm α) s ⊓ alternatingGroup α < G ⊓ alternatingGroup α) :
     IsPreprimitive G α := by
   -- G acts transitively
@@ -331,18 +331,12 @@ theorem isPreprimitive_of_stabilizer_lt (s : Set α)
     apply Equiv.Perm.IsPretransitive.of_partition G (s := s)
     · intro a ha b hb
       obtain ⟨g, hg, H⟩ := moves_in h4 s a ha b hb
-      use! g
-      exact hG' hg
-      exact H
+      use! g, hG' hg, H
     · intro a ha b hb
       obtain ⟨g, hg, H⟩ := moves_in h4 (sᶜ) a ha b hb
-      use! g
-      apply hG'
-      rw [stabilizer_compl] at hg ; exact hg
-      exact H
+      use! g, hG' (by rwa [stabilizer_compl] at hg), H
     · intro h
       apply (lt_iff_le_not_ge.mp hG).right
-      --  G ⊓ alternating_group α ≤ stabilizer (equiv.perm α) s ⊓ alternating_group α,
       rw [le_inf_iff]
       constructor
       · intro g
@@ -526,7 +520,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     (s : Set α)
     (h0' : s.Nontrivial) (h1' : sᶜ.Nontrivial) (hs : Set.ncard s < Set.ncard (sᶜ : Set α)) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
-  suffices hα : 4 < Fintype.card α by
+  suffices hα : 4 < Nat.card α by
   -- h0 : s.nonempty, h1  : sᶜ.nonempty
   --  cases em(s.nontrivial) with h0' h0',
   -- We start with the case where s.nontrivial
@@ -558,76 +552,59 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
             simpa only [mem_stabilizer_iff] using hg
           · rfl
         · intro h
-          rw [lt_iff_le_not_ge] at hG' ; apply hG'.right
+          rw [lt_iff_le_not_ge] at hG'
+          apply hG'.right
           intro g' hg'
           rw [mem_stabilizer_iff]
           change (g' : Equiv.Perm α) • s = s; rw [← mem_stabilizer_iff]
-          apply @inf_le_left (Subgroup (Equiv.Perm α)) _; apply h
-          rw [Subgroup.mem_inf]
-          apply And.intro _ g'.prop
-          simp only [Subgroup.mem_map, Subgroup.coe_subtype, SetLike.coe_eq_coe, exists_eq_right]
-          exact hg'
+          apply inf_le_left (α := Subgroup (Equiv.Perm α))
+          apply h
+          simp [g'.prop, hg']
   -- hα : 4 < fintype.card α
   have h0 : 2 ≤ Set.ncard s := by
     rw [Nat.succ_le_iff, Set.one_lt_ncard_iff]
     obtain ⟨a, ha, b, hb, h⟩ := h0'
     use a, b, ha, hb, h
-  rw [← Nat.card_eq_fintype_card, ← Set.ncard_add_ncard_compl s]
-  change 2 + 2 < _
-  apply lt_of_le_of_lt
-  · exact Nat.add_le_add_right h0 2
-  apply Nat.add_lt_add_left
-  exact lt_of_le_of_lt h0 hs
-
-private theorem three_le {c n : ℕ} (h : 1 ≤ n) (h' : n < c) (hh' : c ≠ 2 * n) : 3 ≤ c := by
+  rw [← Set.ncard_add_ncard_compl s]
   grind
+
+theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
+    {s : Set α} (h : s.Nonempty) (h1 : s.Subsingleton) :
+    IsCoatom (stabilizer (alternatingGroup α) s) := by
+  have _ : Nontrivial α := by
+    rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
+    grind
+  obtain ⟨a, ha⟩ := h
+  rw [Set.Subsingleton.eq_singleton_of_mem h1 ha, stabilizer_singleton]
+  have : IsPreprimitive (alternatingGroup α) α :=
+    AlternatingGroup.isPreprimitive_of_three_le_card α h3
+  apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
 /-- `stabilizer (alternating_group α) s` is a maximal subgroup of alternating_group α,
   provided s ≠ ⊥, s ≠ ⊤ and fintype.card α ≠ 2 * fintype.card ↥s) -/
-theorem isCoatom_stabilizer (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
-    (hs : Nat.card α ≠ 2 * Set.ncard s) :
+theorem isCoatom_stabilizer {s : Set α}
+    (h0 : s.Nonempty) (h1 : sᶜ.Nonempty) (hs : Nat.card α ≠ 2 * Set.ncard s) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
   have hα : 3 ≤ Nat.card α := by
+    rw [← Set.ncard_add_ncard_compl s] at hs ⊢
+    by_contra! h3
     rw [← Set.ncard_pos, ← Nat.succ_le_iff] at h0 h1
-    refine three_le h0 ?_ hs
-    rw [← Set.ncard_add_ncard_compl s]
-    exact Nat.lt_add_of_pos_right h1
-  have : Nontrivial α := by
-    rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
-    apply lt_of_lt_of_le _ hα
-    norm_num
-  have h : ∀ (t : Set α) (_ : t.Nonempty) (_ : t.Subsingleton),
-    IsCoatom (stabilizer (alternatingGroup α) t) := by
-    intro t ht ht'
-    suffices ∃ a : α, t = ({a} : Set α) by
-      obtain ⟨a, rfl⟩ := this
-      have : stabilizer (alternatingGroup α) ({a} : Set α) = stabilizer (alternatingGroup α) a := by
-        ext
-        simp only [mem_stabilizer_iff, Set.smul_set_singleton, Set.singleton_eq_singleton_iff]
-      rw [this]
-      have : IsPreprimitive (alternatingGroup α) α :=
-        AlternatingGroup.isPreprimitive_of_three_le_card α hα
-      apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
-    · obtain ⟨a, ha⟩ := ht
-      exact ⟨a, Set.Subsingleton.eq_singleton_of_mem ht' ha⟩
+    grind
   by_cases h0' : Set.Nontrivial s
   · by_cases h1' : Set.Nontrivial sᶜ
-    · rcases Nat.lt_trichotomy s.ncard (sᶜ).ncard with hs' | hs'
+    · rcases Nat.lt_trichotomy s.ncard sᶜ.ncard with hs' | hs'
       · exact isCoatom_stabilizer_of_ncard_lt_ncard_compl s h0' h1' hs'
       rcases hs' with hs' | hs'
       · exfalso; apply hs
-        rw [← Set.ncard_add_ncard_compl s, ← hs', ← two_mul]
+        rw [← Set.ncard_add_ncard_compl s, ← hs', two_mul]
       · rw [← compl_compl s] at h0'
         rw [← stabilizer_compl]
-        apply isCoatom_stabilizer_of_ncard_lt_ncard_compl (sᶜ) h1' h0'
-        simp_rw [compl_compl s]
-        convert hs'
-      -- h0' : s.nontrivial, h1' : ¬(s.nontrivial)
+        apply isCoatom_stabilizer_of_ncard_lt_ncard_compl sᶜ h1' h0'
+        simpa
     · simp only [Set.not_nontrivial_iff] at h1'
       rw [← stabilizer_compl]
-      exact h (sᶜ) h1 h1'
-    -- h0' : ¬(s.nontrivial),
+      exact isCoatom_stabilizer_singleton hα h1 h1'
   · simp only [Set.not_nontrivial_iff] at h0'
-    exact h s h0 h0'
+    exact isCoatom_stabilizer_singleton hα h0 h0'
 
 end AlternatingGroup
