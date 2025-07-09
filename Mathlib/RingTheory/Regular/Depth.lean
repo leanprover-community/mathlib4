@@ -406,14 +406,9 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext.{max u v} N M i)) ↔
     (∀ i < n, Subsingleton (Ext.{max u v} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i)) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · have : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
-        Module.support R N = PrimeSpectrum.zeroLocus I ∧
-        ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
-        use N
-      exact ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 1 2).mpr
-        this
-    · have rees :=
-        ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 0 1).mpr h
+    · apply ((lemma222 I n M ‹_› ‹_› smul_lt).out 1 2).mpr
+      use N
+    · have rees := ((lemma222 I n M ‹_› ‹_› smul_lt).out 0 1).mpr h
       apply rees N
       simp [Nfin, Nntr, hsupp]
   simp [Ideal.depth, moduleDepth_eq_sup_nat]
@@ -503,7 +498,7 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
   rw [moduleDepth_eq_sup_nat]
   congr
   ext m
-  simp only [Set.mem_setOf_eq, exists_prop, exists_and_left]
+  simp only [Set.mem_setOf_eq, exists_prop]
   refine ⟨fun ⟨lt_top, h⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
   · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt_top) with ⟨n, hn⟩
     simp only [← hn, Nat.cast_lt, Nat.cast_inj] at h ⊢
@@ -511,12 +506,10 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
       Module.support R N = PrimeSpectrum.zeroLocus I ∧
       ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
       use N
-    rcases ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 2 3).mp
-      this with ⟨rs, len, mem, reg⟩
+    rcases ((lemma222 I n M ‹_› ‹_› smul_lt).out 2 3).mp this with ⟨rs, len, mem, reg⟩
     use rs
   · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
-    have rees := ((lemma222 I rs.length M (by assumption) (by assumption)
-      smul_lt).out 3 0).mp (by use rs)
+    have rees := ((lemma222 I rs.length M ‹_› ‹_› smul_lt).out 3 0).mp (by use rs)
     apply rees N
     simp [Nntr, Nfin, hsupp]
 
