@@ -88,7 +88,7 @@ def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ x : V , (Function.support (f �
 
 @[simp]
 theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
-    (hf : ∀(x : V), (Function.support (fun g => f g x)).IsPWO) : (of_coeff f hf).coeff = f :=
+    (hf : ∀ (x : V), (Function.support (fun g => f g x)).IsPWO) : (of_coeff f hf).coeff = f :=
   rfl
 
 theorem coeff_smul (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
@@ -490,7 +490,7 @@ section binomialPow
 
 variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [CommRing R] [CommRing S]
 [BinomialRing S] [Module S Γ] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
-[PartialOrder Γ₁] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁]  [Module S W] [Algebra S R]
+[PartialOrder Γ₁] [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] [Module S W] [Algebra S R]
 [IsScalarTower S R W]
 
 omit [BinomialRing S] [Module S W] [Algebra S R] in
@@ -562,7 +562,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
         rw [Set.mem_image] at hkn
         exact (hkn hk).elim
       · intro k hks
-        simp only [f]
+        simp only
         rw [HahnSeries.binomialPow_coeff_eq R h n k, ← smul_assoc, ← smul_assoc,
           smul_one_smul]
   · refine Function.support_subset_iff'.mpr ?_
@@ -627,14 +627,14 @@ theorem equivDomain_apply_apply (Y : HStateFieldMap Γ₁ R U₀ V W) (u : U₀)
     equivDomain Γ R U₀ V W f f₁ Y u v =
       HahnModule.equivDomainModuleHom f f₁ (Y u v) := by
   dsimp [equivDomain]
-  rw [HVertexOperator.equivDomainSemi_apply_apply]
+  erw [HVertexOperator.equivDomainSemi_apply_apply]
 
 @[simp]
 theorem equivDomain_symm_apply_apply (Y : HStateFieldMap Γ₁' R U₀ V W) (u : U₀) (v : V) :
     (equivDomain Γ R U₀ V W f f₁).symm Y u v =
       (HahnModule.equivDomainModuleHom f f₁).symm (Y u v) := by
   dsimp [equivDomain]
-  rw [HVertexOperator.equivDomainSemi_symm_apply_apply]
+  erw [HVertexOperator.equivDomainSemi_symm_apply_apply]
 
 end
 
@@ -758,7 +758,7 @@ section Composition
 -/
 
 variable [PartialOrder Γ] [PartialOrder Γ₁] [AddCommGroup U] [Module R U] [AddCommGroup X]
-[Module R X]  [AddCommGroup Y] [Module R Y]
+[Module R X] [AddCommGroup Y] [Module R Y]
 
 /-- Left iterated vertex operator. -/
 def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) X)

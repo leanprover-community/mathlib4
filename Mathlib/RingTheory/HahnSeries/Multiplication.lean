@@ -511,7 +511,7 @@ theorem coeff_single_mul_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
 theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
     {b : Γ} : (x * single b r).coeff (a + b) = x.coeff a * r := by
   by_cases hr : r = 0
-  · simp [hr, coeff_mul]
+  · simp [hr]
   simp only [hr, coeff_mul, support_single_of_ne, Ne, not_false_iff]
   by_cases hx : x.coeff a = 0
   · simp only [hx, zero_mul]
@@ -794,11 +794,11 @@ def hmap [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[
   map_add' x y := by ext; simp
   map_smul' s x := by
     ext g
-    simp only [Equiv.symm_apply_apply, HahnSeries.map_coeff, coeff_smul, ZeroHom.coe_coe, map_sum,
-      map_smul, RingHom.id_apply]
+    simp only [Equiv.symm_apply_apply, HahnSeries.map_coeff, coeff_smul, map_sum, map_smul,
+      RingHom.id_apply]
     refine Eq.symm <| sum_subset (fun gh hgh => ?_) (fun gh hgh hz => (by simp_all))
     simp_all only [mem_vaddAntidiagonal, HahnSeries.mem_support, ne_eq, HahnSeries.map_coeff,
-      ZeroHom.coe_coe, not_false_eq_true, and_true, true_and]
+      not_false_eq_true, and_true, true_and]
     apply fun h => hgh.2.1 (LinearMap.map_zero (R := R) (f := f) ▸ congrArg f h)
 
 @[simp]
@@ -1080,15 +1080,15 @@ theorem embDomain_smul (φ : Γ ↪o Γ') (f : Γ₁ ↪o Γ₂) (hf : ∀ (g : 
     · rintro ⟨i, j⟩ hij
       simp only [mem_map, mem_vaddAntidiagonal, HahnSeries.mem_support, ne_eq,
         Embedding.coe_prodMap, RelEmbedding.coe_toEmbedding, Prod.exists, Prod.map_apply,
-        Embedding.refl_apply, Prod.mk.injEq] at hij
+        Prod.mk.injEq] at hij
       obtain ⟨i, j, ⟨hx, hy, rfl⟩, rfl, rfl⟩ := hij
       simp [hx, hy, hf]
     · rintro ⟨_, _⟩ h1 h2
       contrapose! h2
       obtain ⟨i, _, rfl⟩ := HahnSeries.support_embDomain_subset (left_ne_zero_of_smul h2)
       obtain ⟨j, _, rfl⟩ := HahnSeries.support_embDomain_subset (right_ne_zero_of_smul h2)
-      simp only [exists_prop, mem_map, Prod.mk_inj, mem_vaddAntidiagonal,
-        Function.Embedding.coe_prodMap, HahnSeries.mem_support, Prod.exists]
+      simp only [mem_map, mem_vaddAntidiagonal, Function.Embedding.coe_prodMap,
+        HahnSeries.mem_support, Prod.exists]
       simp only [mem_vaddAntidiagonal, HahnSeries.embDomain_coeff, HahnSeries.mem_support, ← hf,
         OrderEmbedding.eq_iff_eq, Equiv.symm_apply_apply, HahnSeries.embDomain_coeff] at h1
       exact ⟨i, j, h1, rfl⟩
@@ -1208,7 +1208,7 @@ instance [Semiring R] (f : F) :
     RingHomCompTriple HahnSeries.C (HahnSeries.equivDomainRingHom (R := R) f).toRingHom
       HahnSeries.C where
   comp_eq := by
-    have h : EquivLike.inv f 0 = 0 := EquivLike.inv_apply_eq_iff_eq_apply.mpr (map_zero f).symm
+    have h : EquivLike.inv f 0 = 0 := EquivLike.inv_apply_eq.mpr (map_zero f).symm
     ext r g
     by_cases hg : g = 0
     · simp [h, hg]
@@ -1226,7 +1226,7 @@ theorem equivDomainRingHom_single [NonAssocSemiring R] (f : F) (g : Γ) (r : R) 
   · simp [h]
   · have : EquivLike.inv f g' ≠ g := by
       contrapose! h
-      exact EquivLike.inv_apply_eq_iff_eq_apply.mp h
+      exact EquivLike.inv_apply_eq.mp h
     simp [h, this]
 
 @[simp]
@@ -1234,7 +1234,7 @@ theorem equivDomainRingHom_symm_single [NonAssocSemiring R] (f : F) (g : Γ') (r
     (equivDomainRingHom f).symm (single g r) = single (EquivLike.inv f g) r := by
   ext g'
   by_cases h : f g' = g
-  · have hinv : EquivLike.inv f g = g' := EquivLike.inv_apply_eq_iff_eq_apply.mpr h.symm
+  · have hinv : EquivLike.inv f g = g' := EquivLike.inv_apply_eq.mpr h.symm
     have : OrderIsoClass.toOrderIso f g'= f g' := rfl
     simp [equivDomainRingHom, h, hinv, this]
   · have : EquivLike.inv f g ≠ g' := by

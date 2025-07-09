@@ -74,8 +74,8 @@ namespace Prod
 
 section
 variable {α : Type*} {β : Type*}
-variable  (ra  : α → α → Prop)
-variable  (rb  : β → β → Prop)
+variable (ra : α → α → Prop)
+variable (rb : β → β → Prop)
 
 /-- The relation on a reverse lexicographic product. -/
 protected inductive RevLex : α × β → α × β → Prop where
@@ -158,7 +158,7 @@ instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×�
     · intro hxy
       obtain h | ⟨h₁, h₂⟩ := hxy
       · exact ⟨Or.inl h, ⟨not_lt_of_gt h, fun he ↦ ((ne_of_lt h) he.symm).elim⟩⟩
-      · exact ⟨Or.inr <| ⟨h₁, le_of_lt h₂⟩, ⟨by simp [h₁, lt_irrefl], fun _ ↦ not_le_of_gt h₂⟩⟩
+      · exact ⟨Or.inr <| ⟨h₁, le_of_lt h₂⟩, ⟨by simp [h₁], fun _ ↦ not_le_of_gt h₂⟩⟩
     · intro h
       obtain ⟨h₁ | ⟨h₂, h₃⟩, ⟨h₄, h₅⟩⟩ := h
       · exact Or.inl h₁

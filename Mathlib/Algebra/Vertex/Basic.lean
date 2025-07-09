@@ -33,9 +33,9 @@ theorem Int.toNat_sub_eq_zero_leq {m n : ℤ} : Int.toNat (-m - n) = 0 ↔ -n �
   simp only [Int.toNat_eq_zero, tsub_le_iff_right, zero_add]
   exact neg_le
 
-theorem Int.neg_sub_one_sub_nat (i : ℕ) (r s t : ℤ) (hi: i ≤ t) :
+theorem Int.neg_sub_one_sub_nat (i : ℕ) (r s t : ℤ) (h : i ≤ t) :
     -r - s - ↑(Int.toNat t - i) = ↑i - (r + Int.toNat t) - s := by
-  rw [Nat.cast_sub ((Int.le_toNat (le_trans (Int.natCast_nonneg i) hi)).mpr hi),
+  rw [Nat.cast_sub ((Int.le_toNat (le_trans (Int.natCast_nonneg i) h)).mpr h),
     sub_eq_sub_iff_add_eq_add, Int.sub_add_cancel, sub_add_sub_cancel', sub_add_cancel_right]
 
 theorem Int.neg_one_pow_sub (n i : ℕ) (hi : i ≤ n) : (-1) ^ (n - i) = (-1) ^ n * (-1) ^ i := by
@@ -137,7 +137,7 @@ theorem Borcherds_id_at_zero_iff_commutator_formula (a b c : V) (r s : ℤ) :
   simp_rw [zero_add]
   exact eq_comm
 
-theorem Borcherds_sum_1_eq_zero (a b c : V) (r s t : ℤ) (h : - order Y a b ≤ t) :
+theorem Borcherds_sum_1_eq_zero (a b c : V) (r s t : ℤ) (h : -order Y a b ≤ t) :
     Borcherds_sum_1 Y a b c r s t = 0 := by
   unfold Borcherds_sum_1
   have hrange : Int.toNat (-t - order Y a b) = 0 := by
@@ -145,7 +145,7 @@ theorem Borcherds_sum_1_eq_zero (a b c : V) (r s t : ℤ) (h : - order Y a b ≤
     exact h
   rw [hrange, Finset.range_zero, Finset.sum_empty]
 
-theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
+theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s : ℤ) :
     (Finset.sum (Finset.antidiagonal (Int.toNat (-s - order Y b c))) fun m ↦
     (-1) ^ m.2 • Nat.choose (Int.toNat (-s - order Y b c)) m.2 •
     (HVertexOperator.coeff (Y a) (-r - 1 - m.1))
@@ -153,12 +153,11 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
     Borcherds_sum_2 Y a b c r s (Int.toNat (-s - order Y b c)) := by
   unfold Borcherds_sum_2 ncoeff
   rw [Finset.Nat.antidiagonal_eq_map']
-  simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
+  simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-s - order Y b c)))]
   · refine Finset.sum_congr rfl ?_
     intro i hi
-    simp_all only [Finset.mem_range, Int.reduceNeg, neg_sub,
-      sub_neg_eq_add, add_sub_cancel_left, LinearMap.coe_mk, AddHom.coe_mk]
+    simp_all only [Finset.mem_range, Int.reduceNeg, neg_sub, LinearMap.coe_mk, AddHom.coe_mk]
     congr 1
     rw [Ring.choose_natCast, natCast_zsmul]
     congr 1
@@ -173,14 +172,14 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
     linarith
   rw [h, LinearMap.map_zero, smul_zero, smul_zero]
 
-theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (Finset.antidiagonal
+theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s : ℤ) : Finset.sum (Finset.antidiagonal
     (Int.toNat (-r - order Y a c))) (fun m => -(-1)^(m.2) • (Nat.choose (Int.toNat
     (-r - order Y a c)) m.2) • HVertexOperator.coeff (Y b) (-s - 1 - m.2)
     (HVertexOperator.coeff (Y a) (-r - 1 - m.1) c)) =
     Borcherds_sum_3 Y a b c r s (Int.toNat (-r - order Y a c)) := by
   unfold Borcherds_sum_3 ncoeff
   rw [Finset.Nat.antidiagonal_eq_map]
-  simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
+  simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-r - order Y a c)))]
   · refine Finset.sum_congr rfl ?_
     intro i hi
@@ -189,8 +188,7 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
     have : (-1) ^ ((-r - order Y a c).toNat - i) = (-1) ^ (-r - order Y a c).toNat * (-1) ^ i :=
       Int.neg_one_pow_sub (-r - order Y a c).toNat i <| Nat.le_of_succ_le hi
     rw [this, ← Units.coe_neg_one]
-    simp only [Int.reduceNeg, zpow_one, ← Int.negOnePow_def, neg_mul, one_mul, Units.neg_smul,
-      neg_inj]
+    simp only [← Int.negOnePow_def]
     rw [Int.negOnePow_add, mul_comm _ (Int.negOnePow 1), ← smul_smul (Int.negOnePow 1),
       Int.negOnePow_one]
     simp only [Units.val_neg, Units.val_one, Int.reduceNeg, Units.neg_smul, one_smul, neg_inj]
@@ -231,7 +229,7 @@ theorem Borcherds_id_at_large_t_iff_locality (a b c : V) (r s t : ℤ) (h : - or
   exact eq_comm
 -/
 
-theorem weak_assoc_right (a b c : V) (r s t: ℤ) (h : r ≥ - order Y a c) :
+theorem weak_assoc_right (a b c : V) (r s t : ℤ) (h : r ≥ -order Y a c) :
     Borcherds_sum_3 Y a b c r s t = 0 := by
   unfold Borcherds_sum_3
   have hrange : Int.toNat (-r - order Y a c) = 0 := by
@@ -241,7 +239,7 @@ theorem weak_assoc_right (a b c : V) (r s t: ℤ) (h : r ≥ - order Y a c) :
 
 -- need to revise weak associativity : pairs of fields are weakly associative
 
-theorem Borcherds_id_at_large_r_iff_weak_assoc (a b c : V) (r s t: ℤ) (h : r ≥ - order Y a c) :
+theorem Borcherds_id_at_large_r_iff_weak_assoc (a b c : V) (r s t : ℤ) (h : r ≥ -order Y a c) :
     Borcherds_id Y a b c r s t ↔ weak_associativity Y a b c r s t := by
   unfold Borcherds_id weak_associativity
   rw [weak_assoc_right Y a b c r s t h, add_zero]

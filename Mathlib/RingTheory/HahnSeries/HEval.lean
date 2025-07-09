@@ -48,7 +48,7 @@ noncomputable section
 variable {Γ Γ' R V α β σ : Type*}
 
 theorem sum_eq_top [AddCommMonoid Γ] (s : Finset σ) (f : σ → WithTop Γ)
-    (h : ∃i ∈ s, f i = ⊤) : ∑ i ∈ s, f i = ⊤ := by
+    (h : ∃ i ∈ s, f i = ⊤) : ∑ i ∈ s, f i = ⊤ := by
   induction s using cons_induction with
   | empty => simp_all only [notMem_empty, false_and, exists_false]
   | cons i s his ih =>
@@ -224,7 +224,7 @@ theorem powerSeriesFamily_hsum_zero (f : PowerSeries R) :
 theorem powerSeriesFamily_add {x : HahnSeries Γ V} (f g : PowerSeries R) :
     powerSeriesFamily x (f + g) = powerSeriesFamily x f + powerSeriesFamily x g := by
   ext1 n
-  by_cases hx: 0 < x.orderTop <;> · by_cases hx: 0 < x.orderTop <;> · simp [hx, hx, add_smul]
+  by_cases hx: 0 < x.orderTop <;> · by_cases hx: 0 < x.orderTop <;> · simp [hx, add_smul]
 
 theorem powerSeriesFamily_smul {x : HahnSeries Γ V} (f : PowerSeries R) (r : R) :
     powerSeriesFamily x (r • f) = HahnSeries.single (0 : Γ) r • powerSeriesFamily x f := by
@@ -375,7 +375,7 @@ def mvPowers [Fintype σ] (y : σ →₀ HahnSeries Γ V) :
 
 @[simp]
 theorem mvPowers_apply {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
-    (hy : ∀i, 0 < (y i).orderTop) (n : σ →₀ ℕ) :
+    (hy : ∀ i, 0 < (y i).orderTop) (n : σ →₀ ℕ) :
     (mvPowers y) n = ∏ i, y i ^ n i := by
   simp [mvPowers, equiv_map_on_fintype_finsupp, hy]
 
@@ -407,10 +407,10 @@ abbrev mvPowerSeriesFamily [Fintype σ] (y : σ →₀ HahnSeries Γ V)
   smulFamily (fun n => MvPowerSeries.coeff R n f) (mvPowers y)
 
 theorem mvPowerSeriesFamily_toFun [Fintype σ] (y : σ →₀ HahnSeries Γ V)
-    (hy : ∀i, 0 < (y i).orderTop) (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
+    (hy : ∀ i, 0 < (y i).orderTop) (f : MvPowerSeries σ R) (n : σ →₀ ℕ) :
     mvPowerSeriesFamily y f n =
       (MvPowerSeries.coeff R n f) • ∏ i, (y i) ^ (n i) := by
-  simp [equiv_map_on_fintype_finsupp, hy]
+  simp [hy]
 
 theorem mvPowerSeriesFamilyAdd [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (f g : MvPowerSeries σ R) :
@@ -542,21 +542,20 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     simp only [hsum, smulFamily_toFun, coeff_one, powers_toFun, ite_smul, one_smul,
       zero_smul]
     ext g
-    simp only [powers_toFun]
+    simp only
     rw [finsum_eq_single _ (0 : ℕ) (fun n hn => by simp_all)]
     simp
   map_mul' a b := by
     simp only [← hsum_mul, hsum_powerSeriesFamily_mul]
   map_zero' := by
-    simp only [hsum, smulFamily_toFun, map_zero, powers_toFun, smul_ite, zero_smul,
-      smul_zero, ite_self, coeff_zero, finsum_zero, mk_eq_zero, Pi.zero_def]
+    simp only [hsum, smulFamily_toFun, map_zero, powers_toFun, smul_ite, zero_smul, ite_self,
+      coeff_zero, finsum_zero, mk_eq_zero, Pi.zero_def]
   map_add' a b := by
     simp only [powerSeriesFamily_add, hsum_add]
   commutes' r := by
     simp only [algebraMap_eq]
     ext g
-    simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_of_orderTop_pos, hx,
-      ite_smul, zero_smul]
+    simp only [coeff_hsum, smulFamily_toFun, coeff_C, ite_smul, zero_smul]
     rw [finsum_eq_single _ 0 fun n hn => by simp [hn]]
     by_cases hg : g = 0 <;> simp [powers_toFun, hg, Algebra.algebraMap_eq_smul_one]
 
@@ -600,8 +599,7 @@ theorem coeff_heval_zero (f : PowerSeries R) :
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp [powers_toFun]
   · intro n hn
-    simp only [ne_eq, coeff_toFun, smulFamily_toFun, powers_of_orderTop_pos,
-      HahnSeries.coeff_smul, smul_eq_mul]
+    simp only [coeff_toFun, smulFamily_toFun, HahnSeries.coeff_smul, smul_eq_mul]
     refine mul_eq_zero_of_right ((coeff R n) f) (coeff_eq_zero_of_lt_orderTop ?_)
     by_cases h : 0 < x.orderTop
     · refine (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr h) ?_)

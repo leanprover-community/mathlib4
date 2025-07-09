@@ -164,7 +164,7 @@ theorem binomialPow_coeff_eq {g g' : Γ} (h : g < g') (r : R) (n : ℕ) :
   simp only [binomialPow_apply, PowerSeries.heval_apply]
   rw [add_comm, HahnSeries.coeff_single_mul_add, one_mul]
   simp only [SummableFamily.coeff_hsum, SummableFamily.smulFamily_toFun,
-    PowerSeries.binomialSeries_coeff, smul_eq_mul, mul_one, coeff_smul]
+    PowerSeries.binomialSeries_coeff, smul_eq_mul, coeff_smul]
   rw [finsum_eq_single _ n, SummableFamily.powers_of_orderTop_pos
     (pos_orderTop_single_sub A h (-1 : A)) n, single_pow, coeff_single_same,
     ← Int.cast_negOnePow_natCast, mul_comm, ← smul_eq_mul]
@@ -356,7 +356,7 @@ theorem one_sub_single_npow_coeff {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
     · simp [hn, hk]
     · rw [hn, Nat.choose_eq_zero_of_lt (Nat.zero_lt_of_ne_zero hk)]
       have hkg : k • g ≠ 0 • g := fun h => hk (StrictMono.injective (nsmul_left_strictMono hg) h)
-      simp_all [hk, hkg]
+      simp_all
   · have hm : (1 : PowerSeries R) - PowerSeries.X = PowerSeries.rescale (-1 : R)
         ((1 : PowerSeries R) + PowerSeries.X) := by
       simp [Mathlib.Tactic.RingNF.add_neg]
@@ -388,7 +388,7 @@ def UnitBinomial {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : Is
 theorem unitBinomial_eq_single_add_single {g g' : Γ} {hg : IsAddUnit g} {hgg' : g < g'} {a : R}
     {ha : IsUnit a} {b : R} : UnitBinomial hg hgg' ha b = single g a + single g' b := by
   simp only [UnitBinomial, AddUnits.neg_eq_val_neg, Units.inv_eq_val_inv, Units.val_mul,
-    val_UnitSingle, IsUnit.unit_spec, mul_sub, mul_one, single_mul_single, sub_right_inj]
+    val_UnitSingle, IsUnit.unit_spec, mul_sub, mul_one, single_mul_single]
   rw [← add_assoc, IsAddUnit.add_val_neg, zero_add, ← mul_assoc, IsUnit.mul_val_inv, one_mul,
     sub_eq_iff_eq_add, add_assoc, ← single_add, add_neg_cancel, single_eq_zero, add_zero]
 
@@ -498,7 +498,7 @@ theorem supp_one_sub_single {g : Γ} (r : R) :
     (1 - single g r).support ⊆ {0, g} := by
   rw [sub_eq_add_neg, ← single_neg]
   refine support_add_subset.trans ?_
-  simp_all only [support_neg, Set.union_subset_iff]
+  simp only [Set.union_subset_iff]
   constructor
   · by_cases h : Nontrivial R
     · rw [support_one]

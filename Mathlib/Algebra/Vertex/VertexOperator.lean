@@ -81,7 +81,7 @@ theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
 noncomputable def of_coeff (f : ℤ → Module.End R V)
-    (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V :=
+    (hf : ∀ x : V, ∃ n : ℤ, ∀ m : ℤ, m < n → (f m) x = 0) : VertexOperator R V :=
   HVertexOperator.of_coeff f
     (fun x => HahnSeries.suppBddBelow_supp_PWO (fun n => (f n) x)
       (HahnSeries.forallLTEqZero_supp_BddBelow (fun n => (f n) x)
@@ -98,7 +98,8 @@ theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
     (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
     (of_coeff f hf) [[n]] = f (-n - 1) := by
   ext v
-  dsimp [ncoeff]
+  dsimp only [ncoeff, LinearMap.coe_mk, AddHom.coe_mk, coeff_apply_apply]
+  simp
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
   ⟨(HahnModule.lof R (Γ := ℤ) (V := V)) ∘ₗ HahnSeries.single.linearMap (0 : ℤ)⟩

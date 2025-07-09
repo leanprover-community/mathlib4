@@ -99,26 +99,26 @@ theorem ncoeff_smul_left_eq (r : R) (a b : V) (n : ℤ) :
 zero otherwise.  In particular, `a ⁅n⁆ b = 0` for `n ≥ -order a b`. -/
 noncomputable def order (a b : V) : ℤ := HahnSeries.order ((HahnModule.of R).symm (Y a b))
 
-theorem coeff_zero_if_lt_order (a b : V) (n : ℤ) (h: n < order Y a b) :
+theorem coeff_zero_if_lt_order (a b : V) (n : ℤ) (h : n < order Y a b) :
     HVertexOperator.coeff (Y a) n b = 0 := by
   rw [order] at h
   simp only [HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
-theorem coeff_nonzero_at_order (a b : V) (h: Y a b ≠ 0) :
+theorem coeff_nonzero_at_order (a b : V) (h : Y a b ≠ 0) :
     HVertexOperator.coeff (Y a) (order Y a b) b ≠ 0 := by
   rw [order, HVertexOperator.coeff]
   simp only [LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_order_ne_zero h
 
-theorem ncoeff_zero_if_neg_order_leq (a b : V) (n : ℤ) (h: - order Y a b ≤ n) :
+theorem ncoeff_zero_if_neg_order_leq (a b : V) (n : ℤ) (h : -order Y a b ≤ n) :
     ncoeff (Y a) n b = 0 := by
   rw [ncoeff]
   refine coeff_zero_if_lt_order Y a b (-n-1) ?_
   rw [Int.sub_one_lt_iff, neg_le]
   exact h
 
-theorem ncoeff_nonzero_at_neg_order_minus_one (a b : V) (h: Y a b ≠ 0) :
+theorem ncoeff_nonzero_at_neg_order_minus_one (a b : V) (h : Y a b ≠ 0) :
     ncoeff (Y a) (-order Y a b - 1) b ≠ 0 := by
   dsimp [ncoeff]
   rw [neg_sub, sub_neg_eq_add, add_sub_cancel_left]
@@ -176,7 +176,7 @@ def IsLocal (a b : V) : Prop :=
 -- weak associativity needs to be changed to the vertex operator definition.
 -/
 /-- The weak associativity property for vertex algebras. -/
-def weak_associativity (a b c : V) (r s t: ℤ) : Prop :=
+def weak_associativity (a b c : V) (r s t : ℤ) : Prop :=
   Borcherds_sum_1 Y a b c r s t = Borcherds_sum_2 Y a b c r s t
 
 end VertexAlg

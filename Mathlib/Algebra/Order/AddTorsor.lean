@@ -184,7 +184,7 @@ variable (Z : Type*) [LE Z] [SMul P Z]
 /-- Equivariant functions :
 When `φ : M ≃ N` is an equivalence, and types `X` and `Y` are endowed with additive actions
 of `M` and `N`, an equivalence `f : X ≃ Y` is `φ`-equivariant if `f (m +ᵥ x) = (φ m) +ᵥ (f x)`. -/
-structure OrderedAddActionEquiv (φ: M ≃ N) (X : Type*) [LE X] [VAdd M X] (Y : Type*) [LE Y]
+structure OrderedAddActionEquiv (φ : M ≃ N) (X : Type*) [LE X] [VAdd M X] (Y : Type*) [LE Y]
     [VAdd N Y] where
   /-- The underlying function. -/
   protected toEquiv : X ≃o Y
@@ -276,7 +276,7 @@ abbrev OrderedMulActionEquivClass (F : Type*) (M : outParam Type*)
     cases g
     simp only [OrderedMulActionEquiv.mk.injEq]
     ext
-    simp [h, hs]
+    simp [h]
 
 @[to_additive] instance : OrderIsoClass (X ≃oₑ[φ] Y) X Y where
   map_le_map_iff f := f.toEquiv.map_rel_iff'
@@ -393,7 +393,7 @@ instance [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
 
 /-- An ordered equivariant isomorphism given by `lexEquiv`. -/
 @[to_additive "An ordered additive-equivariant isomorphism given by `lexEquiv`."]
-def lexEquivSMul  (G G₁ P₁ P₂) [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
+def lexEquivSMul (G G₁ P₁ P₂) [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
     [PartialOrder P₂] [SMul G₁ P₂] :
     (P₁ ×ₗ P₂) ≃oₑ[(Prod.RevLex.lexEquiv G G₁).toEquiv] (P₂ ×ᵣ P₁) where
   toEquiv := Prod.RevLex.lexEquiv P₁ P₂

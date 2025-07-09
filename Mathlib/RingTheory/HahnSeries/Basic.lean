@@ -614,7 +614,7 @@ theorem suppBddBelow_supp_PWO [LinearOrder Γ] [LocallyFiniteOrder Γ] (f : Γ �
   Set.isPWO_iff_isWF.mpr hf.wellFoundedOn_lt
 
 theorem forallLTEqZero_supp_BddBelow [LinearOrder Γ] (f : Γ → R) (n : Γ)
-    (hn : ∀(m : Γ), m < n → f m = 0) : BddBelow (Function.support f) := by
+    (hn : ∀ (m : Γ), m < n → f m = 0) : BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
   intro m hm
@@ -637,7 +637,7 @@ theorem zero_ofSuppBddBelow [LinearOrder Γ] [LocallyFiniteOrder Γ] [Nonempty �
   rfl
 
 theorem order_ofForallLtEqZero [LinearOrder Γ] [LocallyFiniteOrder Γ] [Zero Γ] (f : Γ → R)
-    (hf : f ≠ 0) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+    (hf : f ≠ 0) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   dsimp only [order]
   by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0

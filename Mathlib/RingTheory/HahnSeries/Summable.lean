@@ -431,7 +431,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
       ((s a.1).coeff ij.1) • ((t a.2).coeff ij.2)
   · exact fun gh _ => smul_support_finite s t gh
   · exact fun a ha => by
-      simp only [coeff_smul, ne_eq, Set.mem_setOf_eq] at ha
+      simp only [ne_eq, Set.mem_setOf_eq] at ha
       obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero ha
       simp only [mem_coe, mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
         Function.mem_support, exists_prop, Prod.exists]
@@ -615,9 +615,9 @@ theorem pi_PWO_iUnion_support (s : Finset σ) {R} [CommSemiring R] (α : σ → 
   | cons a s' has hp =>
     refine (isPWO_iUnion_support_prod_mul (ht a) hp).mono ?_
     intro g hg
-    simp_all only [dite_true, mem_cons, not_false_eq_true, prod_cons, or_false,
-      or_true, Set.mem_iUnion, mem_support, ne_eq, Prod.exists]
+    simp only [mem_cons, prod_cons, Set.mem_iUnion, mem_support, true_or, ↓reduceDIte] at hg
     obtain ⟨f, hf⟩ := hg
+    simp only [Set.mem_iUnion, mem_support, Prod.exists]
     use f a (mem_cons_self a s'), fun i hi => f i (mem_cons_of_mem hi)
     have hor : ∏ i ∈ s', (if h : i = a ∨ i ∈ s' then t i (f i (mem_cons.mpr h)) else 1) =
         ∏ i ∈ s', if h : i ∈ s' then t i (f i (mem_cons_of_mem h)) else 1 := by
@@ -649,7 +649,6 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
   | empty => exact Set.Subsingleton.finite fun x _ y _ =>
     (funext₂ fun j hj => False.elim ((List.mem_nil_iff j).mp hj))
   | cons a s' has hp =>
-    simp_all only [ne_eq, dite_true, not_false_eq_true, or_false, or_true]
     simp only [prod_cons, mem_cons, true_or, ↓reduceDIte, coeff_mul]
     have hor : ∀ b : (i : σ) → i ∈ (cons a s' has) → α i,
         ∏ i ∈ s', (if h : i ∈ cons a s' has then t i (b i h) else 1) =
@@ -698,7 +697,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
             ∏ x_1 ∈ s', (if h : x_1 = a ∨ x_1 ∈ s' then t x_1 (x x_1 (mem_cons.mpr h)) else 1) =
             ∏ x_1 ∈ s', (if h : x_1 ∈ s' then t x_1 (x x_1 (mem_cons_of_mem h)) else 1) :=
           prod_congr rfl fun i hi => (by simp [hi])
-        simp_all [hpr]
+        simp_all
 
 open Classical in
 /-- A summable family made from pointwise multiplication along a finite collection of summable
@@ -779,17 +778,16 @@ theorem pi_PWO_iUnion_support_Fintype {R} [CommSemiring R] (α : σ → Type*)
     by_cases h : Nontrivial R
     · rw [support_one, Set.iUnion_singleton_eq_range]
       intro x hx y hy
-      simp_all [Set.mem_range, exists_prop', support_one, Set.iUnion_singleton_eq_range]
+      simp_all
     · simp [← @single_zero_one,
         ← subsingleton_iff_zero_eq_one.mpr (not_nontrivial_iff_subsingleton.mp h)]
   | cons a s has hp =>
     refine (isPWO_iUnion_support_prod_mul (ht a) hp).mono ?_
     intro g hg
-    simp_all only [dite_true, mem_cons, not_false_eq_true, prod_cons, or_false,
-      or_true, Set.mem_iUnion, mem_support, ne_eq, Prod.exists]
+    simp only [Set.mem_iUnion, mem_support, prod_cons] at hg
     obtain ⟨f, hf⟩ := hg
+    simp only [Set.mem_iUnion, mem_support, ne_eq, Prod.exists]
     use f a, fun i => f i
-
 
 open Classical in
 /-- The equivalence between a pi type over a fintype and a pi type on `univ`. -/

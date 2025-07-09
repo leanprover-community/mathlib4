@@ -64,7 +64,7 @@ variable (Z : Type*) [SMul P Z]
 /-- Equivariant functions :
 When `φ : M ≃ N` is an equivalence, and types `X` and `Y` are endowed with additive actions
 of `M` and `N`, an equivalence `f : X ≃ Y` is `φ`-equivariant if `f (m +ᵥ x) = (φ m) +ᵥ (f x)`. -/
-structure AddActionEquiv (φ: M ≃ N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
+structure AddActionEquiv (φ : M ≃ N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
   /-- The underlying function. -/
   protected toEquiv : X ≃ Y
   /-- The proposition that the function commutes with the additive actions. -/
@@ -153,7 +153,7 @@ abbrev MulActionEquivClass (F : Type*) (M : outParam Type*)
     cases g
     simp only [MulActionEquiv.mk.injEq]
     ext
-    simp [h, hs]
+    simp [h]
 
 @[to_additive]
 instance : MulActionSemiEquivClass (X ≃ₑ[φ] Y) φ X Y where
