@@ -3,7 +3,6 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Topology.Covering
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.Sheaves.LocalPredicate
 
@@ -220,13 +219,14 @@ theorem isTopologicalBasis {P : PrelocalPredicate F}
     IsTopologicalBasis {V : Set (EtaleSpace P.pred) |
       ∃ (U : Opens B) (s : Π b : U, F b), P.pred s ∧ V = range (mk <| s ·)} :=
   isTopologicalBasis_of_isOpen_of_nhds
-      (by rintro _ ⟨U, s, hs, rfl⟩; exact isOpen_range_section hs inj) fun ⟨b, x⟩ V hx hV ↦ by
-    have ⟨U, s, hs, eq⟩ := surj _ x
-    let W : Opens B := ⟨_, U.1.2.isOpenMap_subtype_val _ (isOpen_iff.mp hV _ s hs)⟩
-    refine ⟨_, ⟨W, _, P.res image_val_subset.hom s hs, rfl⟩,
-      ⟨⟨b, ⟨b, U.2⟩, by rwa [mem_preimage, eq], rfl⟩, congr(mk $eq)⟩, ?_⟩
-    rintro _ ⟨⟨_, b, hb, rfl⟩, rfl⟩
-    exact hb
+    (by rintro _ ⟨U, s, hs, rfl⟩; exact isOpen_range_section hs fun _ _ ↦ inj _)
+      fun ⟨b, x⟩ V hx hV ↦ by
+      have ⟨U, s, hs, eq⟩ := surj _ x
+      let W : Opens B := ⟨_, U.1.2.isOpenMap_subtype_val _ (isOpen_iff.mp hV _ s hs)⟩
+      refine ⟨_, ⟨W, _, P.res image_val_subset.hom s hs, rfl⟩,
+        ⟨⟨b, ⟨b, U.2⟩, by rwa [mem_preimage, eq], rfl⟩, congr(mk $eq)⟩, ?_⟩
+      rintro _ ⟨⟨_, b, hb, rfl⟩, rfl⟩
+      exact hb
 
 end Section
 
@@ -241,6 +241,16 @@ theorem isSeparatedMap_proj (sep : ∀ b, IsSeparated P b) (inj : ∀ b, IsStalk
     rintro _ ⟨b, rfl⟩ _ ⟨b', rfl⟩ eq
     cases Subtype.ext congr(proj P $eq)
     exact ne b congr($eq.2)
+
+/-- The adjunction between predicates on sections and topological spaces over a base space. -/
+def adjunction {X : Type*} [TopologicalSpace X] {p : X → B} :
+    {f : C(EtaleSpace P, X) // p ∘ f = proj P} ≃
+    {f : Π b, F b → p ⁻¹' {b} // P ≤ Pullback f (isContinuousSection p).pred} where
+  toFun f := ⟨fun _b x ↦ ⟨f.1 (mk x), congr_fun f.2 _⟩,
+    fun _U _s hs ↦ f.1.continuous.comp (continuous_section hs)⟩
+  invFun f := ⟨⟨fun x ↦ f.1 _ x.2, continuous_dom_iff.mpr f.2⟩, funext fun x ↦ (f.1 _ x.2).2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 end EtaleSpace
 
@@ -261,39 +271,7 @@ noncomputable def homeomorph : proj P ⁻¹' U ≃ₜ U × ι where
   continuous_invFun := continuous_prod_of_discrete_right.mpr
     fun i ↦ (continuous_section (t.pred i)).subtype_mk _
 
-include t inj in
-theorem isEvenlyCovered {b : B} (hb : b ∈ U) : IsEvenlyCovered (proj P) b ι :=
-  ⟨‹_›, U, hb, U.2, U.2.preimage (proj P).continuous, t.homeomorph inj, fun _ ↦ rfl⟩
-
-include t inj in
-theorem isCoveringMapOn : IsCoveringMapOn (proj P) U :=
-  fun _b hb ↦ (t.isEvenlyCovered inj hb).to_isEvenlyCovered_preimage
-
 end TrivializationOn
-
-theorem IsLocallyConstant.isEvenlyCovered {b : B} (h : IsLocallyConstant P b) :
-    IsEvenlyCovered (proj P) b (F b) :=
-  have ⟨U, _, hU⟩ := h ⊤
-  let _ : TopologicalSpace (F (⟨b, U.2⟩ : U.1)) := ⊥
-  have := discreteTopology_bot
-  have := (hU.trivializationOn (b := ⟨b, U.2⟩)).isEvenlyCovered
-  _
-
-theorem isCoveringMap_of_isLocallyConstant (h : ∀ b, IsLocallyConstant P b) :
-    IsCoveringMap (proj P) :=
-  fun x ↦ have ⟨U, hU⟩ := h x ⊤
-    _
-/-- The adjunction between predicates on sections and topological spaces over a base space. -/
-def adjunction {X : Type*} [TopologicalSpace X] {p : X → B} :
-    {f : C(EtaleSpace P, X) // p ∘ f = proj P} ≃
-    {f : Π b, F b → p ⁻¹' {b} // P ≤ Pullback f (isContinuousSection p).pred} where
-  toFun f := ⟨fun _b x ↦ ⟨f.1 (mk x), congr_fun f.2 _⟩,
-    fun _U _s hs ↦ f.1.continuous.comp (continuous_section hs)⟩
-  invFun f := ⟨⟨fun x ↦ f.1 _ x.2, continuous_dom_iff.mpr f.2⟩, funext fun x ↦ (f.1 _ x.2).2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-end EtaleSpace
 
 end TopCat
 

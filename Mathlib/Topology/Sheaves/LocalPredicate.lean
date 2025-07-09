@@ -157,7 +157,7 @@ abbrev IsStalkInj :=
 /-- The injectivity criterion suitable for a prelocal predicate. -/
 abbrev IsStalkInj' :=
   ∀ (U : OpenNhds b) (s t : Π b : U.1, F b), P s → P t → s ⟨b, U.2⟩ = t ⟨b, U.2⟩ →
-    ∃ (V : OpenNhds b) (incl : V ⟶ U), ∀ b : V.1, s (incl b) = t (incl b)
+    ∃ (V : OpenNhds b) (i : V ⟶ U), ∀ b : V.1, s (i b) = t (i b)
 
 theorem IsStalkInj.isStalkInj' {b : B} (h : IsStalkInj P b) : IsStalkInj' P b :=
   fun U s t hs ht eq ↦ have ⟨W, iU, _, h⟩ := h U U s t hs ht eq; ⟨W, iU, h⟩
@@ -165,8 +165,8 @@ theorem IsStalkInj.isStalkInj' {b : B} (h : IsStalkInj P b) : IsStalkInj' P b :=
 theorem PrelocalPredicate.isStalkInj_iff {P : PrelocalPredicate F} {b : B} :
     IsStalkInj P.pred b ↔ IsStalkInj' P.pred b := by
   refine ⟨(·.isStalkInj'), fun h U V s t hs ht eq ↦ ?_⟩
-  have ⟨W, incl, h⟩ := h _ _ _ (P.res (infLELeft U V) s hs) (P.res (infLERight U V) t ht) eq
-  exact ⟨W, incl ≫ infLELeft U V, incl ≫ infLERight U V, h⟩
+  have ⟨W, i, h⟩ := h _ _ _ (P.res (infLELeft U V) s hs) (P.res (infLERight U V) t ht) eq
+  exact ⟨W, i ≫ infLELeft U V, i ≫ infLERight U V, h⟩
 
 /-- A set of sections satisfies the identity principle on an open set `U` if sections on `U`
 are determined by any germ. `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq` shows that

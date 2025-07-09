@@ -70,8 +70,22 @@ theorem isStalkInj_isGerm (x : X) : IsStalkInj (isGerm F).pred x := by
   exact (congr_fun (F.germ_res iU w w.2) gU).symm.trans (congr_arg (F.germ W w w.2) e)
     |>.trans (congr_fun (F.germ_res iV w w.2) gV)
 
-theorem adjunction {G : X → Type*} (P : Π ⦃U : Opens X⦄, (Π x : U, G x) → Prop) :
-    {f : Π x, F.stalk x → G x // (isGerm F).pred ≤ Pullback f P} ≃ _
+/-- The adjunction between presheaves and prelocal predicates. -/
+def adjunction (F : Presheaf (Type u) X) {G : X → Type u} (P : PrelocalPredicate G) :
+    {f : Π x, F.stalk x → G x // (isGerm F).pred ≤ (P.pullback f).pred} ≃
+    (F ⟶ subpresheafToTypes P) where
+  toFun f := ⟨fun U s ↦ ⟨fun x ↦ f.1 _ (F.germ _ _ x.2 s), f.2 _ _ ⟨_, fun _ ↦ rfl⟩⟩,
+    fun U V i ↦ funext fun s ↦ Subtype.ext <| funext fun x ↦ congr_arg _ (F.germ_res_apply ..)⟩
+  invFun f := ⟨fun x ↦ stalkToFiber P x ∘ (stalkFunctor _ x).map f,
+    fun U s' ⟨s, eq⟩ ↦ by
+      simp_rw [PrelocalPredicate.pullback, Pullback, eq, Function.comp_apply]
+      convert (f.app _ s).2
+      exact (congr_arg _ (stalkFunctor_map_germ_apply _ _ _ f _)).trans (stalkToFiber_germ ..)⟩
+  left_inv f := Subtype.ext <| funext fun x ↦ funext fun g ↦ by
+    obtain ⟨U, hx, s, rfl⟩ := F.germ_exist x g
+    exact (congr_arg _ (stalkFunctor_map_germ_apply (C := Type u) ..)).trans (stalkToFiber_germ ..)
+  right_inv f := ext fun U ↦ funext fun s ↦ Subtype.ext <| funext fun x ↦
+    (congr_arg _ (stalkFunctor_map_germ_apply (C := Type u) ..)).trans (stalkToFiber_germ ..)
 
 end Sheafify
 
