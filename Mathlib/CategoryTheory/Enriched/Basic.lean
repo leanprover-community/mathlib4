@@ -480,6 +480,13 @@ instance category : Category (EnrichedFunctor V C D) where
 
 end EnrichedNatTrans
 
+def EnrichedFunctor.isoOfComponents {F G : EnrichedFunctor V C D} (h : ∀ X, (F.obj X) ⟶[V] (G.obj X)):
+    F ≅ G where
+  hom := sorry
+  inv := sorry
+
+#exit
+
 variable [BraidedCategory V]
 
 open BraidedCategory
