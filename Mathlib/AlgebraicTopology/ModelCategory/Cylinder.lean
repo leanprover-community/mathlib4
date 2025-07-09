@@ -14,6 +14,19 @@ It consists of an object `I`, a weak equivalence `π : I ⟶ A` equipped with tw
 `i₀` and `i₁`. This notion shall be important in the definition of "left homotopies"
 in model categories.
 
+## Implementation notes
+
+The most important definition in this file is `Cylinder A`. This structure
+extends another structure `Precylinder A` (which does not assume that `C`
+has a notion of weak equivalences, which can be interesting in situations
+where we have not yet obtained the model category axioms).
+
+The good properties of cylinders are stated as typeclasses `Cylinder.IsGood`
+and `Cylinder.IsVeryGood`.
+
+The existence of very good cylinder objects in model categories is stated
+in the lemma `Cylinder.exists_very_good`.
+
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/cylinder+object
@@ -26,11 +39,11 @@ open CategoryTheory Category Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type u} [Category.{v} C] [ModelCategory C]
+variable {C : Type u} [Category.{v} C]
 
-/-- In a model category `C`, a cylinder for `A : C` is the data of
-a weak equivalence `σ : I ⟶ A` equipped with two sections. -/
-structure Cylinder (A : C) where
+/-- A precylinder for `A : C` is the data of a morphism
+`σ : I ⟶ A` equipped with two sections. -/
+structure Precylinder (A : C) where
   /-- the underlying object of a cylinder -/
   I : C
   /-- the first "inclusion" in the cylinder -/
@@ -41,20 +54,24 @@ structure Cylinder (A : C) where
   π : I ⟶ A
   i₀_π : i₀ ≫ π = 𝟙 A := by aesop_cat
   i₁_π : i₁ ≫ π = 𝟙 A := by aesop_cat
-  weakEquivalence_π : WeakEquivalence π := by infer_instance
 
-namespace Cylinder
+namespace Precylinder
 
-attribute [instance] weakEquivalence_π
 attribute [reassoc (attr := simp)] i₀_π i₁_π
 
-variable {A : C} (P : Cylinder A)
+variable {A : C} (P : Precylinder A)
 
-instance : WeakEquivalence P.i₀ :=
-  weakEquivalence_of_postcomp_of_fac P.i₀_π
+/-- The precylinder object obtained by switching the two inclusions. -/
+@[simps]
+def symm : Precylinder A where
+  I := P.I
+  i₀ := P.i₁
+  i₁ := P.i₀
+  π := P.π
 
-instance : WeakEquivalence P.i₁ :=
-  weakEquivalence_of_postcomp_of_fac P.i₁_π
+section
+
+variable [HasBinaryCoproduct A A]
 
 /-- the map from the coproduct of two copies of `A` to `P.I`, when `P` is
 a cylinder object for `A`. `P` shall be a *good* cylinder object
@@ -67,53 +84,109 @@ lemma inl_i : coprod.inl ≫ P.i = P.i₀ := by simp [i]
 @[reassoc (attr := simp)]
 lemma inr_i : coprod.inr ≫ P.i = P.i₁ := by simp [i]
 
-/-- The cylinder object obtained by switching the two inclusions. -/
-@[simps]
-def symm : Cylinder A where
-  I := P.I
-  i₀ := P.i₁
-  i₁ := P.i₀
-  π := P.π
+end
 
 @[simp, reassoc]
-lemma symm_i : P.symm.i =
+lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
   (coprod.braiding A A).hom ≫ P.i := by aesop_cat
+
+end Precylinder
+
+/-- In a category with weak equivalences, a cylinder is the
+data of a weak equivalence `σ : I ⟶ A` equipped with two sections -/
+structure Cylinder [CategoryWithWeakEquivalences C] (A : C) extends Precylinder A where
+  weakEquivalence_π : WeakEquivalence π := by infer_instance
+
+namespace Cylinder
+
+attribute [instance] weakEquivalence_π
+
+section
+
+variable {A : C} [CategoryWithWeakEquivalences C] (P : Cylinder A)
+
+/-- The cylinder object obtained by switching the two inclusions. -/
+@[simps!]
+def symm : Cylinder A where
+  toPrecylinder := P.toPrecylinder.symm
+  weakEquivalence_π := by dsimp; infer_instance
+
+@[simp, reassoc]
+lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
+  (coprod.braiding A A).hom ≫ P.i := P.toPrecylinder.symm_i
+
+section
+
+variable [(weakEquivalences C).HasTwoOutOfThreeProperty]
+  [(weakEquivalences C).ContainsIdentities]
+
+instance : WeakEquivalence P.i₀ :=
+  weakEquivalence_of_postcomp_of_fac P.i₀_π
+
+instance : WeakEquivalence P.i₁ :=
+  weakEquivalence_of_postcomp_of_fac P.i₁_π
+
+end
 
 /-- A cylinder object `P` is good if the morphism
 `P.i : A ⨿ A ⟶ P.I` is a cofibration. -/
-class IsGood : Prop where
+class IsGood [HasBinaryCoproduct A A] [CategoryWithCofibrations C] : Prop where
   cofibration_i : Cofibration P.i := by infer_instance
 
 /-- A good cylinder object `P` is very good if `P.π` is a (trivial) fibration. -/
-class IsVeryGood : Prop extends P.IsGood where
+class IsVeryGood [HasBinaryCoproduct A A] [CategoryWithCofibrations C]
+    [CategoryWithFibrations C] : Prop extends P.IsGood where
   fibration_π : Fibration P.π := by infer_instance
 
 attribute [instance] IsGood.cofibration_i IsVeryGood.fibration_π
 
-instance [IsCofibrant A] [P.IsGood] : Cofibration P.i₀ := by
+section
+
+variable [HasBinaryCoproduct A A] [CategoryWithCofibrations C]
+  [HasInitial C] [(cofibrations C).IsStableUnderComposition]
+  [(cofibrations C).IsStableUnderCobaseChange]
+  [IsCofibrant A] [P.IsGood]
+
+instance : Cofibration P.i₀ := by
   rw [← P.inl_i]
   infer_instance
 
-instance [IsCofibrant A] [P.IsGood] : Cofibration P.i₁ := by
+instance : Cofibration P.i₁ := by
   rw [← P.inr_i]
   infer_instance
 
-instance [IsCofibrant A] [P.IsGood] : IsCofibrant P.I :=
+instance : IsCofibrant P.I :=
   isCofibrant_of_cofibration P.i₀
 
-instance [IsFibrant A] [P.IsVeryGood] : IsFibrant P.I :=
+end
+
+instance [HasBinaryCoproducts C] [CategoryWithCofibrations C] [P.IsGood]
+    [(cofibrations C).RespectsIso] : P.symm.IsGood where
+  cofibration_i := by
+    have hi : cofibrations C P.i := by rw [← cofibration_iff]; infer_instance
+    rw [P.symm_i, cofibration_iff]
+    refine ((cofibrations C).arrow_mk_iso_iff ?_).2 hi
+    exact Arrow.isoMk (coprod.braiding A A) (Iso.refl _)
+
+section
+
+variable [CategoryWithCofibrations C] [CategoryWithFibrations C]
+  [(fibrations C).IsStableUnderComposition]
+
+instance [HasBinaryCoproduct A A] [HasTerminal C] [IsFibrant A] [P.IsVeryGood] : IsFibrant P.I :=
   isFibrant_of_fibration P.π
 
-instance [P.IsGood] : P.symm.IsGood where
-  cofibration_i := by
-    dsimp
-    rw [symm_i]
-    infer_instance
-
-instance [P.IsVeryGood] : P.symm.IsVeryGood where
+instance [(cofibrations C).RespectsIso] [HasBinaryCoproducts C] [P.IsVeryGood] :
+    P.symm.IsVeryGood where
   fibration_π := by
     dsimp
     infer_instance
+
+end
+
+end
+
+variable [ModelCategory C] {A : C} (P : Cylinder A)
 
 section
 
@@ -162,7 +235,7 @@ noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
     have : WeakEquivalence ((P.i₀ ≫ pushout.inl P.i₁ P'.i₀) ≫
         pushout.desc P.π P'.π (by simp)) := by
       simp only [assoc, colimit.ι_desc, PushoutCocone.mk_ι_app,
-        Cylinder.i₀_π]
+        Precylinder.i₀_π]
       infer_instance
     apply weakEquivalence_of_precomp (P.i₀ ≫ pushout.inl _ _)
 
@@ -170,7 +243,7 @@ instance [IsCofibrant A] (P P' : Cylinder A) [P.IsGood] [P'.IsGood] :
     (P.trans P').IsGood where
   cofibration_i := by
     let ψ : P.I ⨿ A ⟶ (P.trans P').I := coprod.desc (pushout.inl _ _) (P'.i₁ ≫ pushout.inr _ _)
-    rw [show (P.trans P').i = coprod.map P.i₀ (𝟙 A) ≫ ψ by simp [Cylinder.i, ψ]]
+    rw [show (P.trans P').i = coprod.map P.i₀ (𝟙 A) ≫ ψ by simp [Precylinder.i, ψ]]
     have fac : coprod.map P.i₁ (𝟙 A) ≫ ψ = P'.i ≫ pushout.inr _ _ := by
       ext
       · simp [ψ, pushout.condition]
