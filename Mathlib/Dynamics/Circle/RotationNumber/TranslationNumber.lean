@@ -302,7 +302,7 @@ theorem commute_sub_nat (n : ℕ) : Function.Commute f (· - n) := by
 
 theorem commute_add_int : ∀ n : ℤ, Function.Commute f (· + n)
   | (n : ℕ) => f.commute_add_nat n
-  | -[n + 1] => by simpa [sub_eq_add_neg] using f.commute_sub_nat (n + 1)
+  | -[n+1] => by simpa [sub_eq_add_neg] using f.commute_sub_nat (n + 1)
 
 theorem commute_int_add (n : ℤ) : Function.Commute f (n + ·) := by
   simpa only [add_comm _ (n : ℝ)] using f.commute_add_int n
@@ -569,7 +569,7 @@ theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
       h.comp (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
-    (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
+    (h : Tendsto (fun n : ℕ => f^[n+1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (mod_cast h)
 
 theorem transnumAuxSeq_zero : f.transnumAuxSeq 0 = f 0 := by simp [transnumAuxSeq]
@@ -648,7 +648,7 @@ theorem translationNumber_pow : ∀ n : ℕ, τ (f ^ n) = n * τ f
 @[simp]
 theorem translationNumber_zpow (f : CircleDeg1Liftˣ) : ∀ n : ℤ, τ (f ^ n : Units _) = n * τ f
   | (n : ℕ) => by simp [translationNumber_pow f n]
-  | -[n + 1] => by simp; ring
+  | -[n+1] => by simp; ring
 
 @[simp]
 theorem translationNumber_conj_eq (f : CircleDeg1Liftˣ) (g : CircleDeg1Lift) :

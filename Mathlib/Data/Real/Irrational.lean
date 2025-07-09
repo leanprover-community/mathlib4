@@ -481,7 +481,7 @@ theorem of_zpow : ∀ m : ℤ, Irrational (x ^ m) → Irrational x
   | (n : ℕ) => fun h => by
     rw [zpow_natCast] at h
     exact h.of_pow _
-  | -[n + 1] => fun h => by
+  | -[n+1] => fun h => by
     rw [zpow_negSucc] at h
     exact h.of_inv.of_pow _
 

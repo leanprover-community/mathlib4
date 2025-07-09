@@ -48,7 +48,7 @@ variable {R : Type u} [AddGroupWithOne R]
 -- TODO: I don't like that `norm_cast` is used here, because it results in `norm_cast`
 -- introducing the "implementation detail" `Int.negSucc`.
 @[simp, norm_cast squash]
-theorem cast_negSucc (n : ℕ) : (-[n + 1] : R) = -(n + 1 : ℕ) :=
+theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 
 @[simp, norm_cast]
@@ -73,7 +73,7 @@ theorem cast_one : ((1 : ℤ) : R) = 1 := by
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
   | (0 : ℕ) => by simp
   | (n + 1 : ℕ) => by rw [cast_natCast, neg_ofNat_succ]; simp
-  | -[n + 1] => by rw [Int.neg_negSucc, cast_natCast]; simp
+  | -[n+1] => by rw [Int.neg_negSucc, cast_natCast]; simp
 
 @[simp, norm_cast]
 theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
@@ -89,12 +89,12 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
   | (m : ℕ), (n : ℕ) => by simp [← Int.natCast_add]
-  | (m : ℕ), -[n + 1] => by
+  | (m : ℕ), -[n+1] => by
     rw [Int.ofNat_add_negSucc, cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
     rw [Int.negSucc_add_ofNat, cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_iff_eq_add,
       add_assoc, eq_neg_add_iff_add_eq, ← Nat.cast_add, ← Nat.cast_add, Nat.add_comm]
-  | -[m+1], -[n + 1] => by
+  | -[m+1], -[n+1] => by
     rw [Int.negSucc_add_negSucc, succ_eq_add_one, cast_negSucc, cast_negSucc, cast_negSucc,
       ← neg_add_rev, ← Nat.cast_add, Nat.add_right_comm m n 1, Nat.add_assoc, Nat.add_comm]
 

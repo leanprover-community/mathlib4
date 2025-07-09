@@ -422,8 +422,8 @@ lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
   | zero => simpa using hf _ hab ha hb
   | succ n hn =>
     rw [Function.iterate_succ_apply'] at hb ⊢
-    have : succ^[n + 1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
-    by_cases hb' : IsMax (succ^[n + 1] a)
+    have : succ^[n+1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
+    by_cases hb' : IsMax (succ^[n+1] a)
     · rw [succ_eq_iff_isMax.2 hb']
       exact hn this
     · exact (hn this).trans (hf _ hb' this hb)
@@ -479,8 +479,8 @@ lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
   | zero => simpa using hf _ hab hb ha
   | succ n hn =>
     rw [Function.iterate_succ_apply'] at ha ⊢
-    have : pred^[n + 1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
-    by_cases ha' : IsMin (pred^[n + 1] b)
+    have : pred^[n+1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
+    by_cases ha' : IsMin (pred^[n+1] b)
     · rw [pred_eq_iff_isMin.2 ha']
       exact hn this
     · exact (hn this).trans' (hf _ ha' this ha)

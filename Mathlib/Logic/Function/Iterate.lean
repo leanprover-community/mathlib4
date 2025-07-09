@@ -11,7 +11,7 @@ import Mathlib.Logic.Function.Conjugate
 In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 * `iterate_zero`, `iterate_succ`, `iterate_succ'`, `iterate_add`, `iterate_mul`:
-  formulas for `f^[0]`, `f^[n + 1]` (two versions), `f^[n+m]`, and `f^[n*m]`;
+  formulas for `f^[0]`, `f^[n+1]` (two versions), `f^[n+m]`, and `f^[n*m]`;
 
 * `iterate_id` : `id^[n]=id`;
 

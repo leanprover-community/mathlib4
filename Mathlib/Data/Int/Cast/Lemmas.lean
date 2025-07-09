@@ -93,7 +93,7 @@ def castRingHom : ℤ →+* α where
 
 lemma cast_commute : ∀ (n : ℤ) (a : α), Commute ↑n a
   | (n : ℕ), x => by simpa using n.cast_commute x
-  | -[n + 1], x => by
+  | -[n+1], x => by
     simpa only [cast_negSucc, Commute.neg_left_iff, Commute.neg_right_iff] using
       (n + 1).cast_commute (-x)
 
@@ -103,7 +103,7 @@ lemma commute_cast (a : α) (n : ℤ) : Commute a n := (cast_commute ..).symm
 
 @[simp] lemma _root_.zsmul_eq_mul (a : α) : ∀ n : ℤ, n • a = n * a
   | (n : ℕ) => by rw [natCast_zsmul, nsmul_eq_mul, Int.cast_natCast]
-  | -[n + 1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
+  | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
 
 lemma _root_.zsmul_eq_mul' (a : α) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]

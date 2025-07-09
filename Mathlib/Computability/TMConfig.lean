@@ -39,7 +39,7 @@ output, with enough expressivity to write any partial recursive function. The pr
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
 * `succ` returns the successor of the head of the input, defaulting to zero if there is no head:
   * `succ [] = [1]`
-  * `succ (n :: v) = [n + 1]`
+  * `succ (n :: v) = [n+1]`
 * `tail` returns the tail of the input
   * `tail [] = []`
   * `tail (n :: v) = v`
@@ -87,7 +87,7 @@ we functions that return a single result return a singleton `[n]`, or in some ca
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
 * `succ` returns the successor of the head of the input, defaulting to zero if there is no head:
   * `succ [] = [1]`
-  * `succ (n :: v) = [n + 1]`
+  * `succ (n :: v) = [n+1]`
 * `tail` returns the tail of the input
   * `tail [] = []`
   * `tail (n :: v) = v`

@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.PathCategory.Basic
 /-! # Presentation of the simplex category by generators and relations.
 
 We introduce `SimplexCategoryGenRel` as the category presented by generating
-morphisms `δ i : [n] ⟶ [n + 1]` and `σ i : [n + 1] ⟶ [n]` and subject to the
+morphisms `δ i : [n] ⟶ [n+1]` and `σ i : [n+1] ⟶ [n]` and subject to the
 simplicial identities, and we provide induction principles for reasoning about
 objects and morphisms in this category.
 

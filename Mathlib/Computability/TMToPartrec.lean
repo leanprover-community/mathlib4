@@ -99,7 +99,7 @@ prove that only finitely many labels are accessible.) The labels are:
 * `read (f : Option Γ' → Λ')`: go to state `f s` where `s` is the local store. Again this is only
   here for convenience.
 * `succ q`: perform a successor operation. Assuming `[n]` is encoded on `main` before,
-  `[n + 1]` will be on main after. This implements successor for binary natural numbers.
+  `[n+1]` will be on main after. This implements successor for binary natural numbers.
 * `pred q₁ q₂`: perform a predecessor operation or `case` statement. If `[]` is encoded on
   `main` before, then we transition to `q₁` with `[]` on main; if `(0 :: v)` is on `main` before
   then `v` will be on `main` after and we transition to `q₁`; and if `(n + 1 :: v)` is on `main`
