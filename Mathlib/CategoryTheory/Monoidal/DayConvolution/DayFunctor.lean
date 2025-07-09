@@ -122,6 +122,23 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
     (fun _ _ => ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
     (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
 
+/-- The functor underlying `𝟙_ C ⊛⥤ V` is a DayConvolutionUnit.
+We’re not making this a global instance given that `DayConvolution` and
+`DayConvolutionUnit` are data-carrying classes that we might prefer to
+not register globally. This is nonetheless useful as a local instance in
+some cases. -/
+def unitFunctorDayConvoltionUnit : DayConvolutionUnit (𝟙_ (C ⊛⥤ V)).functor :=
+  LawfulDayConvolutionMonoidalCategoryStruct.convolutionUnit _ _ (C ⊛⥤ V)
+
+/-- There is always a day convolution of `F.functor` and `G.functor`.
+We’re not making this a global instance given that `DayConvolution` and
+`DayConvolutionUnit` are data-carrying classes that we might prefer to
+not register globally. This is nonetheless useful as a local instance in
+some cases. -/
+def dayConvolutionFunctorFunctor (F G : C ⊛⥤ V) :
+    DayConvolution F.functor G.functor :=
+  LawfulDayConvolutionMonoidalCategoryStruct.convolution _ _ _ F G
+
 /-- A shorthand for the unit transformation exhibiting `(F ⊗ G).functor` as a
 left Kan extension of `F.functor ⊠ G.functor` along `tensor C`. -/
 abbrev η (F G : C ⊛⥤ V) :
@@ -263,7 +280,7 @@ lemma η_app_comp_whiskerLeft_natTrans_app_tensor
   simp [← id_tensorHom]
 
 @[reassoc (attr := simp)]
-lemma η_η_associator_hom (F F' F'': C ⊛⥤ V) (x y z : C) :
+lemma η_η_associator_hom (F F' F'' : C ⊛⥤ V) (x y z : C) :
     (η F F').app (x, y) ▷ F''.functor.obj z ≫
       (η (F ⊗ F') F'').app (x ⊗ y, z) ≫
       (α_ F F' F'').hom.natTrans.app ((x ⊗ y) ⊗ z) =
@@ -290,6 +307,90 @@ lemma ν_η_rightUnitor (F : C ⊛⥤ V) (y : C) :
   rightUnitor_hom_unit_app V F y
 
 end structureLemmas
+
+section
+
+attribute [local instance] dayConvolutionFunctorFunctor unitFunctorDayConvoltionUnit
+variable {D : Type u₃} [Category.{v₃} D]
+
+/-- We expose the "unit left" transformation that exhibits `U ⊛ F` as a
+left Kan extension of `F ⋙ tensorLeft (𝟙_ V)` along `tensorLeft (𝟙_ C)`. -/
+def unitLeft (F : C ⊛⥤ V) :
+    F.functor ⋙ tensorLeft (𝟙_ V) ⟶ tensorLeft (𝟙_ C) ⋙ (𝟙_ (C ⊛⥤ V) ⊗ F).functor :=
+  DayConvolutionUnit.unitLeft (𝟙_ (C ⊛⥤ V)).functor F.functor
+
+@[simp]
+lemma unitLeft_app (F : C ⊛⥤ V) (c : C) :
+    (unitLeft F).app c =
+    ν C V ▷ (F.functor.obj c) ≫ (η (𝟙_ _) F).app (𝟙_ _, c) :=
+  rfl
+
+/-- We expose the "unit right" transformation that exhibits `F ⊛ U` as a
+left Kan extension of `F ⋙ tensorRight (𝟙_ V)` along `tensorRight (𝟙_ C)`. -/
+def unitRight (F : C ⊛⥤ V) :
+    F.functor ⋙ tensorRight (𝟙_ V) ⟶ tensorRight (𝟙_ C) ⋙ (F ⊗ 𝟙_ (C ⊛⥤ V)).functor :=
+  DayConvolutionUnit.unitRight (𝟙_ (C ⊛⥤ V)).functor F.functor
+
+@[simp]
+lemma unitRight_app (F : C ⊛⥤ V) (c : C) :
+    (unitRight F).app c =
+    (F.functor.obj c) ◁ ν C V ≫ (η F (𝟙_ _)).app (c, 𝟙_ _) :=
+  rfl
+
+variable (C) in
+/-- A variant of the previous which instead considers `(𝟙_ (C ⊛⥤ V)).functor ⊠ _` -/
+def unitLeftExternal (K : D ⥤ V) :
+    K ⋙ tensorLeft (𝟙_ V) ⟶ Prod.sectR (𝟙_ C) D ⋙ (𝟙_ (C ⊛⥤ V)).functor ⊠ K :=
+  DayConvolutionUnit.unitLeftExternal _ K
+
+@[simp]
+lemma unitLeftExternal_app (K : D ⥤ V) (x : D) :
+    (unitLeftExternal C K).app x = ν C V ▷ K.obj x :=
+  rfl
+
+variable (C) in
+/-- A variant of the previous which instead considers `(𝟙_ (C ⊛⥤ V)).functor ⊠ _` -/
+def unitRightExternal (K : D ⥤ V) :
+    K ⋙ tensorRight (𝟙_ V) ⟶ Prod.sectL D (𝟙_ C) ⋙ K ⊠ (𝟙_ (C ⊛⥤ V)).functor :=
+  DayConvolutionUnit.unitRightExternal _ K
+
+@[simp]
+lemma unitRightExternal_app (K : D ⥤ V) (x : D) :
+    (unitRightExternal C K).app x = K.obj x ◁ ν C V :=
+  rfl
+
+open DayConvolution in
+instance isLeftKanExtensionUnitLeft (F : C ⊛⥤ V) :
+    (𝟙_ (C ⊛⥤ V) ⊗ F).functor.IsLeftKanExtension (unitLeft F) :=
+  inferInstanceAs <| (_ ⊛ _).IsLeftKanExtension <|
+    DayConvolutionUnit.unitLeft (𝟙_ (C ⊛⥤ V)).functor F.functor
+
+open DayConvolution in
+instance isLeftKanExtensionUnitRight (F : C ⊛⥤ V) :
+    (F ⊗ 𝟙_ (C ⊛⥤ V)).functor.IsLeftKanExtension (unitRight F) :=
+  inferInstanceAs <| (_ ⊛ _).IsLeftKanExtension <|
+    DayConvolutionUnit.unitRight (𝟙_ (C ⊛⥤ V)).functor F.functor
+
+instance isLeftKanExtensionUnitLeftExternal (K : D ⥤ V) :
+    ((𝟙_ (C ⊛⥤ V)).functor ⊠ K).IsLeftKanExtension (unitLeftExternal C K) :=
+  inferInstanceAs <| ((𝟙_ (C ⊛⥤ V)).functor ⊠ K).IsLeftKanExtension <|
+    DayConvolutionUnit.unitLeftExternal _ K
+
+open DayConvolution in
+instance isLeftKanExtensionExtensionUnitLeft (F G : C ⊛⥤ V) (K : D ⥤ V) :
+    ((F ⊗ G).functor ⊠ K).IsLeftKanExtension <|
+      ExternalProduct.extensionUnitLeft _ (η F G) K :=
+  inferInstanceAs <| ((F.functor ⊛ G.functor) ⊠ K).IsLeftKanExtension <|
+    ExternalProduct.extensionUnitLeft _ (DayConvolution.unit F.functor G.functor) K
+
+open DayConvolution in
+instance isLeftKanExtensionExtensionUnitRight (F G : C ⊛⥤ V) (K : D ⥤ V) :
+    (K ⊠ (F ⊗ G).functor).IsLeftKanExtension <|
+      ExternalProduct.extensionUnitRight _ (η F G) K :=
+  inferInstanceAs <| (K ⊠ (F.functor ⊛ G.functor)).IsLeftKanExtension <|
+    ExternalProduct.extensionUnitRight _ (DayConvolution.unit F.functor G.functor) K
+
+end
 
 end DayFunctor
 
