@@ -18,21 +18,22 @@ variable {R : Type u} [CommRing R] [IsNoetherianRing R]
 
 open RingTheory.Sequence IsLocalRing Ideal
 
-lemma Ideal.ofList_height_le_length [IsLocalRing R] (rs : List R)
-    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) : (Ideal.ofList rs).height ≤ rs.length := by
+lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
+    (Ideal.ofList rs).height ≤ rs.length := by
   classical
-  have : (Ideal.ofList rs) ≠ ⊤ :=
-    (lt_of_le_of_lt (span_le.mpr mem) IsPrime.ne_top'.lt_top).ne_top
-  apply le_trans (Ideal.height_le_spanFinrank _ this)
+  apply le_trans (Ideal.height_le_spanFinrank _ h)
   simp only [Nat.cast_le, Ideal.ofList, ← List.coe_toFinset]
   apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet rs.toFinset))
   rw [Set.ncard_coe_Finset]
   apply List.toFinset_card_le
 
-lemma Ideal.ofList_height_eq_length_of_isRegular [IsLocalRing R] (rs : List R)
-    (reg : IsWeaklyRegular R rs) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
-    (Ideal.ofList rs).height = rs.length := by
-  apply le_antisymm (Ideal.ofList_height_le_length rs mem)
+lemma IsLocalRing.Ideal.ofList_height_le_length' [IsLocalRing R] (rs : List R)
+    (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) : (Ideal.ofList rs).height ≤ rs.length :=
+  Ideal.ofList_height_le_length rs (lt_of_le_of_lt (span_le.mpr mem) IsPrime.ne_top'.lt_top).ne_top
+
+lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWeaklyRegular R rs)
+    (h : Ideal.ofList rs ≠ ⊤) : (Ideal.ofList rs).height = rs.length := by
+  apply le_antisymm (Ideal.ofList_height_le_length rs h)
   generalize len : rs.length = n
   induction' n with n hn generalizing rs
   · simp
@@ -51,8 +52,8 @@ lemma Ideal.ofList_height_eq_length_of_isRegular [IsLocalRing R] (rs : List R)
       rw [List.getElem_take, this]
       exact reg.1 i (lt_of_lt_of_le hi (rs.length_take_le' n))
     let _ := hq.1.1
-    have le := le_trans (hn (rs.take n) reg' (fun r hr ↦ mem r (List.mem_of_mem_take hr)) len')
-      (Ideal.height_mono hq.1.2)
+    have le := le_trans (hn (rs.take n) reg' (ne_top_of_le_ne_top h (Ideal.span_mono
+      (fun r hr ↦ List.mem_of_mem_take hr))) len') (Ideal.height_mono hq.1.2)
     rw [Ideal.height_eq_primeHeight] at le
     apply le_trans (add_le_add_right le 1) (Ideal.primeHeight_add_one_le_of_lt (lep.lt_of_ne _))
     by_contra eq
@@ -62,6 +63,12 @@ lemma Ideal.ofList_height_eq_length_of_isRegular [IsLocalRing R] (rs : List R)
     absurd Module.notMem_minimalPrimes_of_isSMulRegular (reg.1 n (by simp [len])) p_min
     apply hp.1.2 (Ideal.subset_span _)
     simp
+
+lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular' [IsLocalRing R] (rs : List R)
+    (reg : IsWeaklyRegular R rs) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
+    (Ideal.ofList rs).height = rs.length :=
+  Ideal.ofList_height_eq_length_of_isWeaklyRegular rs reg
+    (lt_of_le_of_lt (span_le.mpr mem) IsPrime.ne_top'.lt_top).ne_top
 
 omit [IsNoetherianRing R] in
 lemma IsLocalRing.height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes [IsLocalRing R]
@@ -133,7 +140,7 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
       · exact mem r mem_rs
       · simpa [eqx] using hx
     have ht' : (ofList (rs ++ [x])).height = (rs ++ [x]).length := by
-      apply le_antisymm (Ideal.ofList_height_le_length _ mem')
+      apply le_antisymm (Ideal.ofList_height_le_length' _ mem')
       simp only [List.length_append, List.length_cons, List.length_nil, zero_add, Nat.cast_add,
         Nat.cast_one, height, ofList_append, ofList_cons, ofList_nil, bot_le, sup_of_le_left,
         le_iInf_iff]
@@ -222,7 +229,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
             use r
         have max_mem := maximalIdeal_mem_minimalPrimes_of_surjective (Ideal.Quotient.mk p)
           Ideal.Quotient.mk_surjective le mem netop
-        have := Ideal.ofList_height_le_length (rs'.map (algebraMap R (R ⧸ p))) mem_max
+        have := Ideal.ofList_height_le_length' (rs'.map (algebraMap R (R ⧸ p))) mem_max
         have coe_eq : ((rs'.length + 1 : ℕ) : WithBot ℕ∞) = ((rs'.length + 1 : ℕ) : ℕ∞) := rfl
         rw [height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ max_mem,
           ← WithBot.coe_le_coe, List.length_map, maximalIdeal_height_eq_ringKrullDim,
@@ -274,8 +281,8 @@ lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
   simp only [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop (ModuleCat.of R R), exists_prop,
     sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
   intro n rs reg mem len
-  rw [← len,
-    ← ofList_height_eq_length_of_isRegular rs reg.1 (fun r hr ↦ le_maximalIdeal netop (mem r hr))]
+  rw [← len, ← ofList_height_eq_length_of_isWeaklyRegular' rs reg.1
+    (fun r hr ↦ le_maximalIdeal netop (mem r hr))]
   exact Ideal.height_mono (span_le.mpr mem)
 
 lemma Ideal.exist_regular_sequence_length_eq_height [IsCohenMacaulayLocalRing R]
@@ -319,7 +326,7 @@ lemma Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaul
   have mem' := (fun r hr ↦ le_maximalIdeal_of_isPrime p (mem r hr))
   have CM := (quotient_regular_isCohenMacaulay_iff_isCohenMacaulay (ModuleCat.of R R) rs reg).mp
     ((isCohenMacaulayLocalRing_iff R).mp (by assumption))
-  have ht_eq := Ideal.ofList_height_eq_length_of_isRegular rs reg.1 mem'
+  have ht_eq := Ideal.ofList_height_eq_length_of_isWeaklyRegular' rs reg.1 mem'
   rw [← Ideal.height_eq_primeHeight, ← len]
   rw [(isCohenMacaulayLocalRing_def R).mp (by assumption),
     ← depth_quotient_regular_sequence_add_length_eq_depth (ModuleCat.of R R) rs reg]
