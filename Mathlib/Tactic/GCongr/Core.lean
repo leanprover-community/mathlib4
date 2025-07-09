@@ -445,7 +445,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- B. If the template doesn't contain any `?_`, and the goal wasn't closed by `rfl`,
     -- we report that the provided pattern doesn't apply.
     unless ← containsHole tpl do
-      try withDefault g.applyRfl
+      try withDefault g.applyRfl; return (true, names, #[])
       catch ex => throwError "gcongr failed, \
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`\n{ex.toMessageData}"
