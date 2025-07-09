@@ -39,6 +39,16 @@ example : True := by {trivial }
 -- Ideally, this would complain, but we silenced the linter for `declare_aesop_rule_sets`.
 declare_aesop_rule_sets [$id](default := true)
 
+-- The linter ignores `macro`, `elab` and `elab_rules`
+macro "#F" : command => `(section
+)
+elab "#F" : command => do Lean.Elab.Command.elabCommand (← `(section)
+)
+elab_rules : tactic
+| `(tactic| skip
+) => do
+  return
+
 end Desiderata_and_todos
 
 /--
@@ -59,10 +69,6 @@ example (h : False) : False := by
 -- Ignore `⟨...⟩`, since it is convenient to allow a line-break after `⟨` to align multiple fields.
 example := (⟨
   0⟩ : Inhabited Nat)
-
-elab_rules : tactic
-| `(tactic| skip) => do
-  return
 
 /--
 warning: missing space in the source
