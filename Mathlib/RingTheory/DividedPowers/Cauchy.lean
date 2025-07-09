@@ -70,7 +70,7 @@ theorem exp_zero [IsAbsoluteValue (R := A) (‖·‖)] [CauSeq.IsComplete A (‖
 
 theorem exp_add [IsAbsoluteValue (R := A) (‖·‖)] [CauSeq.IsComplete A (‖·‖)]
     [CauchyDividedPower A] {x y : A} (hx : x ∈ CauchyDividedPower.support)
-    (hy : y ∈ CauchyDividedPower.support) (hxy : x * y = y * x):
+    (hy : y ∈ CauchyDividedPower.support) (hxy : x * y = y * x) :
     exp (x + y) = exp x * exp y := by
   simp_rw [exp, exp', lim_mul_lim]
   apply (lim_eq_lim_of_equiv _).symm

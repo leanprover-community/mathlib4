@@ -37,12 +37,10 @@ def eval [Semiring R] (f : PowerSeries R) : PowerSeries R →ₗ[R] PowerSeries 
   toFun g := mk (fun n => ∑ i ∈ antidiagonal n, (coeff R i.1 g) * coeff R i.2 (f ^ i.1))
   map_add' x y := by
     ext n
-    simp [add_mul, sum_add_distrib, fun n g => coeff_mk n fun n ↦
-      ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1)]
+    simp [add_mul, sum_add_distrib]
   map_smul' r x := by
     ext n
-    simp [mul_sum, mul_assoc, fun n g => coeff_mk n fun n ↦
-      ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1)]
+    simp [mul_sum, mul_assoc]
 
 lemma eval_coeff [Semiring R] (f g : PowerSeries R) (n : ℕ) :
     (coeff R n) (eval f g) = ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1) :=

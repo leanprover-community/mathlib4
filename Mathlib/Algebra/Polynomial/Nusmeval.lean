@@ -42,7 +42,7 @@ section NonUnital
 
 variable {R : Type u} [Semiring R] {S : Type v}
 
-variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ+] (p: ℕ+ →₀ R) (x : S)
+variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ+] (p : ℕ+ →₀ R) (x : S)
 
 /-- Scalar multiplication by a positive power. -/
 def smul_ppow : ℕ+ → R → S := fun n r => r • x^n
@@ -76,7 +76,7 @@ variable {R : Type u} [Semiring R] {S : Type v}
 
 variable [NonUnitalNonAssocSemiring S] [Module R S]
 
-variable [Pow S ℕ+] [PNatPowAssoc S] (p: ℕ+ →₀ R) (x : S)
+variable [Pow S ℕ+] [PNatPowAssoc S] (p : ℕ+ →₀ R) (x : S)
 
 theorem _root_.zero_ppow (n : ℕ+) : (0:S)^n = 0 := by
   refine PNat.recOn n (ppow_one 0) ?_
