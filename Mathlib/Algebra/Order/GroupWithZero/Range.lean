@@ -83,5 +83,3 @@ instance : LinearOrderedCommGroupWithZero (valueGroup₀ f) where
   zero_le_one := by simp
 
 end MonoidWithZeroHom
-
-#min_imports
