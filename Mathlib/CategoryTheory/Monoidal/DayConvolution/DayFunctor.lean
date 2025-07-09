@@ -96,9 +96,9 @@ variable
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorRight v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
     [∀ (v : V) (d : C × C),
       Limits.PreservesColimitsOfShape
         (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
@@ -253,6 +253,31 @@ lemma ν_comp_unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C
 section structureLemmas
 
 open LawfulDayConvolutionMonoidalCategoryStruct
+
+open scoped Prod in
+@[reassoc (attr := simp)]
+lemma η_naturality {F₁ F₂ : C ⊛⥤ V} {x₁ x₂ y₁ y₂ : C}
+    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
+    F₁.functor.map f₁ ▷ F₂.functor.obj x₂ ≫
+      F₁.functor.obj y₁ ◁ F₂.functor.map f₂ ≫ (η F₁ F₂).app (y₁, y₂) =
+    (η F₁ F₂).app (x₁, x₂) ≫ (F₁ ⊗ F₂).functor.map (f₁ ⊗ₘ f₂) := by
+  simpa using η F₁ F₂|>.naturality (f₁ ×ₘ f₂)
+
+open scoped Prod in
+@[reassoc (attr := simp)]
+lemma η_naturality_left {F₁ F₂ : C ⊛⥤ V} {x y : C}
+    (f : x ⟶ y) (z : C) :
+    F₁.functor.map f ▷ F₂.functor.obj z ≫ (η F₁ F₂).app (y, z) =
+    (η F₁ F₂).app (x, z) ≫ (F₁ ⊗ F₂).functor.map (f ▷ z) := by
+  simpa using η F₁ F₂|>.naturality (f ×ₘ (𝟙 z))
+
+open scoped Prod in
+@[reassoc (attr := simp)]
+lemma η_naturality_right {F₁ F₂ : C ⊛⥤ V}
+    (x : C) {y z : C} (f : y ⟶ z) :
+    F₁.functor.obj x ◁ F₂.functor.map f ≫ (η F₁ F₂).app (x, z) =
+    (η F₁ F₂).app (x, y) ≫ (F₁ ⊗ F₂).functor.map (x ◁ f) := by
+  simpa using η F₁ F₂|>.naturality ((𝟙 x) ×ₘ f)
 
 @[reassoc (attr := simp)]
 lemma η_app_comp_tensorHom_natTrans_app_tensor
