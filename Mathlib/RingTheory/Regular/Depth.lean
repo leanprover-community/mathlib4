@@ -670,7 +670,7 @@ lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : Mod
   · match rs with
     | [] => simp at len
     | x :: rs' =>
-      simp only [List.length_cons, Nat.cast_add, Nat.cast_one]
+      simp only [Nat.cast_add, Nat.cast_one]
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1
       rw [moduleDepth_eq_of_iso_snd N
@@ -852,8 +852,7 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth  [IsLocalR
       have mem' : ∀ r ∈ List.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))) rs',
         r ∈ maximalIdeal (R ⧸ x • (⊤ : Ideal R)) := by
         intro r hr
-        simp only [Quotient.algebraMap_eq, List.mem_map] at hr
-        rcases hr with ⟨r', hr', eq⟩
+        rcases List.mem_map.mp hr with ⟨r', hr', eq⟩
         simpa [← eq] using mem.2 r' hr'
       simp [← hn (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))
         ((RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff (R ⧸ x • (⊤ : Ideal R))
