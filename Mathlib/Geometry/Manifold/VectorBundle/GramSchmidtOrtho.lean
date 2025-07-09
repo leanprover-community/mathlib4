@@ -298,8 +298,11 @@ lemma gramSchmidt_contMDiffWithinAt [IsContMDiffRiemannianBundle IB n F E]
   apply (hs i).sub_section
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
-  have aux : { x // x ∈ Set.Iic i' } → { x // x ∈ Set.Iic i } := sorry
-  have : Function.Injective aux := sorry
+  have aux : { x // x ∈ Set.Iic i' } → { x // x ∈ Set.Iic i } :=
+    fun ⟨x, hx⟩ ↦ ⟨x, hx.trans (Finset.mem_Iio.mp hi').le⟩
+  have : Function.Injective aux := by
+    intro ⟨x, hx⟩ ⟨x', hx'⟩ h
+    sorry -- unfold aux, obvious, right?
   have asdf := hs'.comp aux this
   have : LinearIndependent ℝ ((fun x_1 ↦ s x_1 x) ∘ @Subtype.val ι fun x ↦ x ∈ Set.Iic i') := by
     convert asdf
@@ -307,7 +310,7 @@ lemma gramSchmidt_contMDiffWithinAt [IsContMDiffRiemannianBundle IB n F E]
     -- ext x'
     simp --only [Function.comp_apply]
     congr
-    sorry
+    sorry -- obvious by definition of aux
   apply contMDiffWithinAt_myproj (gramSchmidt_contMDiffWithinAt s i' x hs this) (hs i)
   apply VectorBundle.gramSchmidt_ne_zero_coe _ _ this
 termination_by i
