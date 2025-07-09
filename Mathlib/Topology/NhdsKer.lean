@@ -9,8 +9,8 @@ import Mathlib.Topology.Inseparable
 /-!
 # Neighborhoods kernel of a set
 
-We define `nhdsKer s` to be the intersection of all neighborhoods of `s`,
-see `Mathlib/Topology/Defs/Filter.lean`.
+In `Mathlib/Topology/Defs/Filter.lean`, `nhdsKer s` is defined to be the intersection of all
+neighborhoods of `s`.
 Note that this construction has no standard name in the literature.
 
 In this file we prove basic properties of this operation.
