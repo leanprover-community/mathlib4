@@ -284,11 +284,10 @@ lemma gramSchmidt_contMDiffWithinAt (s : ι → (x : B) → E x) (i : ι) {u : S
     (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
   simp_rw [VectorBundle.gramSchmidt_def]
-  have : ContMDiffWithinAt IB (IB.prod 𝓘(ℝ, F)) n (T% s i) u x := sorry
-  apply this.sub_section
+  apply (hs i).sub_section
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
-  have hproj : CMDiffAt[u] n (T% VectorBundle.gramSchmidt s i') x := sorry
+  have hproj : CMDiffAt[u] n (T% VectorBundle.gramSchmidt s i') x := sorry -- use recursion!
   apply foo x hproj (hs i)
 
   -- challenge 1: do this using (well-founded) induction
