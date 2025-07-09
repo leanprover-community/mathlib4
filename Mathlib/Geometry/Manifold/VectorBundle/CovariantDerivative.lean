@@ -902,6 +902,24 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
 
 end classification
 
+section from_trivialization
+
+variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e]
+
+noncomputable
+def _root_.Trivialization.covDeriv (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x)
+    (x : M) : V x := e.symm x (mfderiv I 𝓘(ℝ, F) (fun x' ↦ (e (σ x')).2) x (X x))
+
+lemma _root_.Trivialization.covDeriv_isCovariantDerivativeOn :
+    IsCovariantDerivativeOn (I := I) F V e.covDeriv e.baseSet where
+  addX X X' σ x hx := by sorry
+  smulX X σ c' x hx := by sorry
+  addσ X σ σ' x hσ hσ' hx := by sorry
+  smul_const_σ X σ a x hx := by sorry
+  leibniz X σ f x hσ hf hx := by sorry
+
+end from_trivialization
+
 section horiz
 
 def proj (cov : CovariantDerivative I F V) (e : TotalSpace F V) :
