@@ -597,7 +597,7 @@ section transitivity
 def LeftExtension.precomp₂
     {F₀ : C ⥤ H} {L : C ⥤ D} {F₁ : D ⥤ H} (L' : D ⥤ D') (α : F₀ ⟶ L ⋙ F₁) :
     L'.LeftExtension F₁ ⥤ (L ⋙ L').LeftExtension F₀ :=
-  (LeftExtension.precomp L' F₁ L) ⋙ (StructuredArrow.map α)
+  LeftExtension.precomp L' F₁ L ⋙ StructuredArrow.map α
 
 variable
     {L : C ⥤ D} {L' : D ⥤ D'}
