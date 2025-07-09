@@ -129,6 +129,22 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
 
+variable (f) in
+open Classical in
+/-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. It cannot land
+in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will not be in
+`valueMonoid₀ f`. -/
+def restrict₀ : A →*₀ (valueGroup₀ f) where
+  toFun a :=
+    if h : f a ≠ 0 then (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) else 0
+  map_one' := by simp ; rfl
+  map_mul' := by
+    intro a b
+    simp only [map_mul, ne_eq, Units.mk0_mul, dite_mul, zero_mul]
+    split_ifs with h hb ha
+    any_goals rfl
+    all_goals rw [mul_eq_zero] at h ; tauto
+  map_zero' := by simp
 
 end GroupWithZero
 section CommGroupWithZero

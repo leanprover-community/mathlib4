@@ -65,8 +65,8 @@ instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     let ψ : valueGroup (valuation (K := K)) →* (ℝ≥0)ˣ :=
       {toFun := fun x ↦ x.1, map_one' := rfl, map_mul' x y := rfl}
     exact (MonoidWithZeroHom.withZeroUnitsHom).comp (WithZero.map' ψ)
-  strictMono' := by sorry
-  nontrivial' := (exists_one_lt_norm K).imp fun x h ↦ by
+  strictMono' := (valueGroup₀_OrderEmbedding' (f := valuation (K := K))).strictMono
+  exists_val_nontrivial := (exists_one_lt_norm K).imp fun x h ↦ by
     have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
     simp [valuation_apply, ← NNReal.coe_inj, h.ne', h']
 
