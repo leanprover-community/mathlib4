@@ -43,8 +43,6 @@ theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :
 theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
   rfl
 
-@[deprecated (since := "2024-10-17")] alias map_mk := map_apply
-
 attribute [mfld_simps] map_apply
 
 -- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.

@@ -92,7 +92,7 @@ def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
     exact e.inv_hom_id
 
 /-- Compatible equivalences of types and hom-types induce an isomorphism of reflexive quivers. -/
-def isoOfEquiv {V W : Type u } [ReflQuiver V] [ReflQuiver W] (e : V ≃ W)
+def isoOfEquiv {V W : Type u} [ReflQuiver V] [ReflQuiver W] (e : V ≃ W)
     (he : ∀ (X Y : V), (X ⟶ Y) ≃ (e X ⟶ e Y))
     (h_id : ∀ (X : V), he _ _ (𝟙rq X) = ReflQuiver.id (obj := W) (e X)) :
     ReflQuiv.of V ≅ ReflQuiv.of W := isoOfQuivIso (Quiv.isoOfEquiv e he) h_id
@@ -169,7 +169,7 @@ def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
     exact (free.map_id X.toQuiv).symm
   map_comp {X Y Z} f g := by
     apply (Quotient.lift_unique _ _ _ _ _).symm
-    show FreeRefl.quotientFunctor _ ⋙ _ = _
+    change FreeRefl.quotientFunctor _ ⋙ _ = _
     rw [Cat.comp_eq_comp, ← Functor.assoc, freeReflMap_naturality, Functor.assoc,
       freeReflMap_naturality, ← Functor.assoc]
     have : freeMap (f ≫ g).toPrefunctor =
@@ -209,8 +209,7 @@ def adj.counit.app (C : Type u) [Category.{max u v} C] :
     intro x y f g rel
     cases rel
     unfold pathComposition
-    simp only [Adjunction.mkOfHomEquiv_counit_app, Equiv.coe_fn_symm_mk,
-      Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath]
+    simp only [composePath_toPath]
     rfl)
 
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. -/
@@ -240,7 +239,7 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       conv => rhs; rw [Cat.id_eq_id]; apply Functor.comp_id
       simp only [id_comp]
       rw [Cat.comp_eq_comp, ← Functor.assoc]
-      show (Cat.FreeRefl.quotientFunctor _ ⋙ Cat.freeReflMap _) ⋙ _ = _
+      change (Cat.FreeRefl.quotientFunctor _ ⋙ Cat.freeReflMap _) ⋙ _ = _
       rw [Cat.freeReflMap_naturality, Functor.assoc]
       dsimp only [Cat.freeRefl, Cat.free_obj, Cat.of_α, of_val, forget_obj,
         adj.unit.app_toPrefunctor]
@@ -249,7 +248,7 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       rw [Cat.freeMap_comp, Functor.assoc, Quiv.pathComposition_naturality]
       rw [← Functor.assoc]
       have := Quiv.freeMap_pathsOf_pathComposition
-      simp only [Cat.of_α] at this
+      simp only at this
       rw [this]
       exact Functor.id_comp _
     right_triangle := by

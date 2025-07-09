@@ -36,7 +36,7 @@ protected theorem hasFiniteFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
   r_le := by simp
   r_pos := ENNReal.coe_lt_top
   hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
-    simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries]
+    simp [Finset.sum_range_succ, hasSum_zero, fpowerSeries]
   finite := by
     intro m hm
     match m with
@@ -124,8 +124,7 @@ protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] 
     r_pos := ENNReal.coe_lt_top
     hasSum := fun _ =>
       (hasSum_nat_add_iff' 3).1 <| by
-        simp only [Finset.sum_range_succ, Finset.sum_range_one, Prod.fst_add, Prod.snd_add,
-          f.map_add_add]
+        simp only [Finset.sum_range_succ, Prod.fst_add, Prod.snd_add, f.map_add_add]
         simp [fpowerSeriesBilinear, hasSum_zero] }
 
 protected theorem hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
@@ -167,7 +166,7 @@ theorem analyticOn_id : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticWithinAt_id
 
 /-- `fst` is analytic -/
-theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
+theorem analyticAt_fst : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
   (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
 theorem analyticWithinAt_fst : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=

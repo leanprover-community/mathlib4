@@ -43,9 +43,6 @@ alias embedding_coe := isEmbedding_coe
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
   ⟨isEmbedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_coe := isOpenEmbedding_coe
-
 @[norm_cast]
 theorem tendsto_coe {α : Type*} {f : Filter α} {m : α → ℝ} {a : ℝ} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
@@ -91,9 +88,6 @@ alias embedding_coe_ennreal := isEmbedding_coe_ennreal
 theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennreal
-
 @[norm_cast]
 theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
@@ -112,7 +106,8 @@ theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp only [lt_top_iff_ne_top]
 
 nonrec theorem nhds_top_basis : (𝓝 (⊤ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Ioi ·) := by
-  refine nhds_top_basis.to_hasBasis (fun x hx => ?_) fun _ _ ↦ ⟨_, coe_lt_top _, Subset.rfl⟩
+  refine (nhds_top_basis (α := EReal)).to_hasBasis (fun x hx => ?_)
+    fun _ _ ↦ ⟨_, coe_lt_top _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, hxy, -⟩
   exact ⟨_, trivial, Ioi_subset_Ioi hxy.le⟩
 
@@ -129,7 +124,8 @@ theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]
 
 theorem nhds_bot_basis : (𝓝 (⊥ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Iio ·) := by
-  refine _root_.nhds_bot_basis.to_hasBasis (fun x hx => ?_) fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
+  refine (_root_.nhds_bot_basis (α := EReal)).to_hasBasis (fun x hx => ?_)
+    fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, -, hxy⟩
   exact ⟨_, trivial, Iio_subset_Iio hxy.le⟩
 
@@ -158,8 +154,8 @@ lemma nhdsWithin_top : 𝓝[≠] (⊤ : EReal) = (atTop).map Real.toEReal := by
 
 lemma nhdsWithin_bot : 𝓝[≠] (⊥ : EReal) = (atBot).map Real.toEReal := by
   apply (nhdsWithin_hasBasis nhds_bot_basis_Iic _).ext (atBot_basis.map Real.toEReal)
-  · simp only [EReal.image_coe_Iic, Set.subset_compl_singleton_iff, Set.mem_Ioc, lt_self_iff_false,
-      bot_le, and_true, not_false_eq_true, true_and]
+  · simp only [EReal.image_coe_Iic,
+      true_and]
     intro x hx
     by_cases hx_top : x = ⊤
     · simp [hx_top]
@@ -481,7 +477,7 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
       apply lt_of_le_of_lt _ p1_gt
       rw [EReal.coe_nonneg]
       apply mul_nonneg _ (le_of_lt (inv_pos_of_pos h))
-      simp only [gt_iff_lt, Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, le_max_iff, le_refl, or_true]
+      simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, le_max_iff, le_refl, or_true]
     have a2_pos : 0 < ((a/2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
     have lock := mul_le_mul_of_nonneg_right (le_of_lt p1_gt) (le_of_lt a2_pos)
     have key := mul_le_mul_of_nonneg_left (le_of_lt p2_gt) (le_of_lt p1_pos)

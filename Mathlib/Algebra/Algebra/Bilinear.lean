@@ -89,7 +89,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
 -- TODO: upgrade to A-linear map if A is a semiring.
-noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
+def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 
 variable {A}
@@ -190,8 +190,8 @@ theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
 @[simp]
 theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) :=
   match n with
-  | 0 => by rw [pow_zero, pow_zero, mulLeft_one, LinearMap.one_eq_id]
-  | (n + 1) => by rw [pow_succ, pow_succ, mulLeft_mul, LinearMap.mul_eq_comp, pow_mulLeft]
+  | 0 => by rw [pow_zero, pow_zero, mulLeft_one, Module.End.one_eq_id]
+  | (n + 1) => by rw [pow_succ, pow_succ, mulLeft_mul, Module.End.mul_eq_comp, pow_mulLeft]
 
 end left
 
@@ -211,8 +211,8 @@ theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
 @[simp]
 theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) :=
   match n with
-  | 0 => by rw [pow_zero, pow_zero, mulRight_one, LinearMap.one_eq_id]
-  | (n + 1) => by rw [pow_succ, pow_succ', mulRight_mul, LinearMap.mul_eq_comp, pow_mulRight]
+  | 0 => by rw [pow_zero, pow_zero, mulRight_one, Module.End.one_eq_id]
+  | (n + 1) => by rw [pow_succ, pow_succ', mulRight_mul, Module.End.mul_eq_comp, pow_mulRight]
 
 end right
 
@@ -240,7 +240,7 @@ theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
 
 theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
     IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
-  rw [Module.End_isUnit_iff, Iff.comm]
+  rw [Module.End.isUnit_iff, Iff.comm]
   exact IsUnit.isUnit_iff_mulLeft_bijective
 
 theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.linearMap R A := by

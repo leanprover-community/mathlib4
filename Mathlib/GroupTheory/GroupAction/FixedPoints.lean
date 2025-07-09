@@ -12,7 +12,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 # Properties of `fixedPoints` and `fixedBy`
 
 This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
-that don't directly belong to `Mathlib.GroupTheory.GroupAction.Basic`.
+that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`.
 
 ## Main theorems
 
@@ -125,6 +125,7 @@ theorem set_mem_fixedBy_iff (s : Set α) (g : G) :
     s ∈ fixedBy (Set α) g ↔ ∀ x, g • x ∈ s ↔ x ∈ s := by
   simp_rw [mem_fixedBy, ← eq_inv_smul_iff, Set.ext_iff, Set.mem_inv_smul_set_iff, Iff.comm]
 
+@[to_additive]
 theorem smul_mem_of_set_mem_fixedBy {s : Set α} {g : G} (s_in_fixedBy : s ∈ fixedBy (Set α) g)
     {x : α} : g • x ∈ s ↔ x ∈ s := (set_mem_fixedBy_iff s g).mp s_in_fixedBy x
 

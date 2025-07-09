@@ -162,4 +162,9 @@ lemma universallyClosed_eq_universallySpecializing :
   · rw [universallyClosed_eq]
     exact universally_mono fun X Y f ⟨h₁, h₂⟩ ↦ (isClosedMap_iff_specializingMap _).mpr h₁
 
+instance (priority := low) Surjective.of_universallyClosed_of_isDominant
+    [UniversallyClosed f] [IsDominant f] : Surjective f := by
+  rw [surjective_iff, ← Set.range_eq_univ, ← f.denseRange.closure_range,
+    f.isClosedMap.isClosed_range.closure_eq]
+
 end AlgebraicGeometry

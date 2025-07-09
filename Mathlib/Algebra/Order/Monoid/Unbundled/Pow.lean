@@ -288,7 +288,7 @@ theorem Left.pow_lt_one_iff [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n)
 theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   haveI := mulRightMono_of_mulRightStrictMono M
-  ⟨fun H => not_le.mp fun k => H.not_le <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+  ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
 
 end LinearOrder
 
@@ -303,5 +303,11 @@ theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n
   lift n to ℕ using hn
   rw [zpow_natCast]
   apply one_le_pow_of_one_le' H
+
+@[to_additive zsmul_pos]
+lemma one_lt_zpow {x : G} (hx : 1 < x) {n : ℤ} (hn : 0 < n) : 1 < x ^ n := by
+  lift n to ℕ using Int.le_of_lt hn
+  rw [zpow_natCast]
+  exact one_lt_pow' hx (Int.natCast_pos.mp hn).ne'
 
 end DivInvMonoid

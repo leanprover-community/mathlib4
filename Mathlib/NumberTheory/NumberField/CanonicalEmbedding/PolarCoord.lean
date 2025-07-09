@@ -155,8 +155,7 @@ theorem lintegral_comp_polarCoordReal_symm (f : realMixedSpace K → ℝ≥0∞)
       (polarCoordReal K).open_target.measurableSet
       (fun x _ ↦ (hasFDerivAt_polarCoordReal_symm K x).hasFDerivWithinAt)
       (polarCoordReal K).symm.injOn f]
-  refine setLIntegral_congr_fun (polarCoordReal K).open_target.measurableSet ?_
-  filter_upwards with x hx
+  refine setLIntegral_congr_fun (polarCoordReal K).open_target.measurableSet (fun x hx ↦ ?_)
   simp_rw [det_fderivPolarCoordRealSymm, Finset.abs_prod,
     ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦ abs_nonneg _), abs_of_mem_polarCoordReal_target K hx]
 
@@ -347,7 +346,7 @@ variable {K}
 
 variable {A : Set (mixedSpace K)}
 
-theorem normAtComplexPlaces_polarSpaceCoord_symm  [NumberField K] (x : polarSpace K) :
+theorem normAtComplexPlaces_polarSpaceCoord_symm [NumberField K] (x : polarSpace K) :
     normAtComplexPlaces ((polarSpaceCoord K).symm x) =
       normAtComplexPlaces (mixedSpaceOfRealSpace x.1) := by
   ext w

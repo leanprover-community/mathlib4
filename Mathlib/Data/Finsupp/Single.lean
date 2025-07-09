@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -53,12 +54,11 @@ def single (a : α) (b : M) : α →₀ M where
       rw [if_neg hb, mem_singleton]
       obtain rfl | ha := eq_or_ne a' a
       · simp [hb, Pi.single, update]
-      simp [Pi.single_eq_of_ne' ha.symm, ha]
+      simp [ha]
 
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
-  simp_rw [@eq_comm _ a a']
-  convert Pi.single_apply a b a'
+  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
@@ -70,7 +70,7 @@ theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
-  classical exact Pi.single_eq_same (f := fun _ ↦ M) a b
+  classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
 
 @[simp]
 theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
@@ -101,7 +101,9 @@ theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = 
   if_neg hb
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
-  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _; exact Subset.refl _]
+  classical
+  simp only [single]
+  split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
   rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
@@ -122,14 +124,14 @@ theorem single_apply_ne_zero {a x : α} {b : M} : single a b x ≠ 0 ↔ x = a �
   simp [single_apply_eq_zero]
 
 theorem mem_support_single (a a' : α) (b : M) : a ∈ (single a' b).support ↔ a = a' ∧ b ≠ 0 := by
-  simp [single_apply_eq_zero, not_or]
+  simp [single_apply_eq_zero]
 
 theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
   refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
   rintro ⟨h, rfl⟩
   ext x
   by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
-  exact not_mem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
+  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
 
 theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     single a₁ b₁ = single a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := by
@@ -154,6 +156,9 @@ theorem single_left_injective (h : b ≠ 0) : Function.Injective fun a : α => s
 
 theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
   (single_left_injective h).eq_iff
+
+lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
+  RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
   simpa only [support_single_ne_zero _ h] using singleton_ne_empty _
@@ -278,7 +283,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     · rw [Finset.mem_erase]
       simp [ha]
     · rw [Finset.mem_insert]
-      simp [ha]
+      simp
     · rw [Finset.mem_insert]
       simp [ha]
 
@@ -310,7 +315,7 @@ theorem support_update [DecidableEq α] [DecidableEq M] :
 @[simp]
 theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
   classical
-  simp only [update, ite_true, mem_support_iff, ne_eq, not_not]
+  simp only [update, ite_true]
   congr!
 
 variable {b}
@@ -318,7 +323,7 @@ variable {b}
 theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
     support (f.update a b) = insert a f.support := by
   classical
-  simp only [update, h, ite_false, mem_support_iff, ne_eq]
+  simp only [update, h, ite_false]
   congr!
 
 theorem support_update_subset [DecidableEq α] :
@@ -384,7 +389,7 @@ theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' =
 theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
     f.erase a a' = if a' = a then 0 else f a' := by
   rw [erase, coe_mk]
-  convert rfl
+  simp only [ite_eq_ite]
 
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
@@ -399,10 +404,12 @@ theorem erase_single_ne {a a' : α} {b : M} (h : a ≠ a') : erase a (single a' 
   · rw [erase_ne hs]
 
 @[simp]
-theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
+theorem erase_of_notMem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
   ext b; by_cases hab : b = a
-  · rwa [hab, erase_same, eq_comm, ← not_mem_support_iff]
+  · rwa [hab, erase_same, eq_comm, ← notMem_support_iff]
   · rw [erase_ne hab]
+
+@[deprecated (since := "2025-05-23")] alias erase_of_not_mem_support := erase_of_notMem_support
 
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   simp
@@ -416,7 +423,7 @@ theorem erase_update_of_ne (f : α →₀ M) {a a' : α} (ha : a ≠ a') (b : M)
     erase a (update f a' b) = update (erase a f) a' b := by
   rw [erase_eq_update_zero, erase_eq_update_zero, update_comm _ ha]
 
--- not `simp` as `erase_of_not_mem_support` can prove this
+-- not `simp` as `erase_of_notMem_support` can prove this
 theorem erase_idem (f : α →₀ M) (a : α) :
     erase a (erase a f) = erase a f := by
   rw [erase_eq_update_zero, erase_eq_update_zero, update_idem]
@@ -535,7 +542,8 @@ lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
-See `Finsupp.lsingle` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
+See `Finsupp.lsingle` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
+linear map. -/
 @[simps]
 def singleAddHom (a : α) : M →+ α →₀ M where
   toFun := single a
@@ -548,7 +556,7 @@ theorem update_eq_single_add_erase (f : α →₀ M) (a : α) (b : M) :
     ext j
     rcases eq_or_ne a j with (rfl | h)
     · simp
-    · simp [Function.update_of_ne h.symm, single_apply, h, erase_ne, h.symm]
+    · simp [h, erase_ne, h.symm]
 
 theorem update_eq_erase_add_single (f : α →₀ M) (a : α) (b : M) :
     f.update a b = f.erase a + single a b := by
@@ -556,7 +564,7 @@ theorem update_eq_erase_add_single (f : α →₀ M) (a : α) (b : M) :
     ext j
     rcases eq_or_ne a j with (rfl | h)
     · simp
-    · simp [Function.update_of_ne h.symm, single_apply, h, erase_ne, h.symm]
+    · simp [h, erase_ne, h.symm]
 
 theorem single_add_erase (a : α) (f : α →₀ M) : single a (f a) + f.erase a = f := by
   rw [← update_eq_single_add_erase, update_self]

@@ -30,7 +30,7 @@ theorem of_injective [IsLocalRing S] {f : R →+* S} (hf : Function.Injective f)
 
 /-- If in a sub(semi)ring `R` of a local (semi)ring `S` every element is either
 invertible or a zero divisor, then `R` is local. -/
-theorem of_subring [IsLocalRing S]  {R : Subsemiring S} (h : ∀ a, a ∈ R⁰ → IsUnit a) :
+theorem of_subring [IsLocalRing S] {R : Subsemiring S} (h : ∀ a, a ∈ R⁰ → IsUnit a) :
     IsLocalRing R :=
   of_injective R.subtype_injective h
 

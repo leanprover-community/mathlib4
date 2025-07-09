@@ -198,8 +198,8 @@ and `b` with respect to `V`.
 theorem egauge_prod_mk {F : Type*} [AddCommGroup F] [Module 𝕜 F] {U : Set E} {V : Set F}
     (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
     egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
-  refine le_antisymm (le_of_forall_lt' fun r hr ↦ ?_) (le_egauge_prod _ _ _ _)
-  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod, mk_mem_prod] at hr ⊢
+  refine le_antisymm (le_of_forall_gt fun r hr ↦ ?_) (le_egauge_prod _ _ _ _)
+  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod] at hr ⊢
   rcases hr with ⟨⟨x, hx, hxr⟩, ⟨y, hy, hyr⟩⟩
   cases le_total ‖x‖ ‖y‖ with
   | inl hle => exact ⟨y, ⟨hU.smul_mono hle hx, hy⟩, hyr⟩
@@ -233,7 +233,7 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
     (x : ∀ i, E i) (hI₀ : I = univ ∨ (∃ i ∈ I, x i ≠ 0) ∨ (𝓝[≠] (0 : 𝕜)).NeBot) :
     egauge 𝕜 (I.pi U) x = ⨆ i ∈ I, egauge 𝕜 (U i) (x i) := by
   refine le_antisymm ?_ (iSup₂_le fun i hi ↦ le_egauge_pi hi _ _)
-  refine le_of_forall_lt' fun r hr ↦ ?_
+  refine le_of_forall_gt fun r hr ↦ ?_
   have : ∀ i ∈ I, ∃ c : 𝕜, x i ∈ c • U i ∧ ‖c‖ₑ < r := fun i hi ↦
     egauge_lt_iff.mp <| (le_iSup₂ i hi).trans_lt hr
   choose! c hc hcr using this
@@ -324,7 +324,7 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x�
     · simpa [enorm, ← NNReal.coe_eq_zero] using h₀
   · rcases eq_or_ne ‖x‖ 0 with hx | hx
     · have hx' : ‖x‖ₑ = 0 := by simpa [enorm, ← coe_nnnorm, NNReal.coe_eq_zero] using hx
-      simp [egauge_eq_zero_iff, hx']
+      simp only [hx', mul_zero, ENNReal.zero_div, nonpos_iff_eq_zero, egauge_eq_zero_iff]
       refine (frequently_iff_neBot.2 (inferInstance : NeBot (𝓝[≠] (0 : 𝕜)))).mono fun c hc ↦ ?_
       simp [mem_smul_set_iff_inv_smul_mem₀ hc, norm_smul, hx, hr]
     · rcases rescale_to_shell_semi_normed hc hr hx with ⟨a, ha₀, har, -, hainv⟩

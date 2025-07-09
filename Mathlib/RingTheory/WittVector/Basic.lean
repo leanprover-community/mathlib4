@@ -119,7 +119,7 @@ theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
 
 theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
-    cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
+    cases n <;> simp [*, Int.castDef, neg, natCast] <;> rfl
 
 end mapFun
 
@@ -145,7 +145,7 @@ elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
-  simpa (config := { unfoldPartialApp := true }) [WittVector.ghostFun, aeval_rename, aeval_bind₁,
+  simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
     comp, uncurry, peval, eval] using this
   )))
 
@@ -211,7 +211,7 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
     ext n
     have := bind₁_wittPolynomial_xInTermsOfW p R n
     apply_fun aeval x.coeff at this
-    simpa (config := { unfoldPartialApp := true }) only [aeval_bind₁, aeval_X, ghostFun,
+    simpa +unfoldPartialApp only [aeval_bind₁, aeval_X, ghostFun,
       aeval_wittPolynomial]
   right_inv := by
     intro x

@@ -3,12 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Absolute values
@@ -17,12 +16,12 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 ## Main definitions
 
- * `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
- * `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
- * `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
-   linear ordered field preserve `0`, `*` and `1`
- * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
-   value
+* `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
+* `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
+* `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
+  linear ordered field preserve `0`, `*` and `1`
+* `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
+  value
 -/
 
 variable {ι α R S : Type*}
@@ -286,7 +285,7 @@ end LinearOrderedCommRing
 section trivial
 
 variable {R : Type*} [Semiring R] [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
-variable {S : Type*} [OrderedSemiring S] [Nontrivial S]
+variable {S : Type*} [Semiring S] [PartialOrder S] [IsOrderedRing S] [Nontrivial S]
 
 /-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
 protected
@@ -318,7 +317,7 @@ section nontrivial
 
 section OrderedSemiring
 
-variable {R : Type*} [Semiring R] {S : Type*} [OrderedSemiring S]
+variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S] [IsOrderedRing S]
 
 /-- An absolute value on a semiring `R` without zero divisors is *nontrivial* if it takes
 a value `≠ 1` on a nonzero element.
@@ -339,12 +338,14 @@ lemma isNontrivial_iff_ne_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDiv
   · simp
   · simp [H, hx]
 
+omit [IsOrderedRing S] in
 lemma not_isNontrivial_iff (v : AbsoluteValue R S) :
     ¬ v.IsNontrivial ↔ ∀ x ≠ 0, v x = 1 := by
   simp only [IsNontrivial]
   push_neg
   rfl
 
+omit [IsOrderedRing S] in
 @[simp]
 lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x : R} (hx : x ≠ 0) :
     v x = 1 :=
@@ -354,11 +355,12 @@ end OrderedSemiring
 
 section LinearOrderedSemifield
 
-variable [Field R] [LinearOrderedSemifield S] [ExistsAddOfLE S] {v : AbsoluteValue R S}
+variable [Field R] [Semifield S] [LinearOrder S] [IsStrictOrderedRing S] [ExistsAddOfLE S]
+  {v : AbsoluteValue R S}
 
 lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
-  rcases hx₁.lt_or_lt with h | h
+  rcases hx₁.lt_or_gt with h | h
   · refine ⟨x⁻¹, ?_⟩
     rw [map_inv₀]
     exact (one_lt_inv₀ <| v.pos hx₀).mpr h
@@ -534,7 +536,7 @@ end IsCancelMulZero
 
 section LinearOrderedSemifield
 
-variable {S : Type*} [LinearOrderedSemifield S]
+variable {S : Type*} [Semifield S] [LinearOrder S]
 
 section DivisionSemiring
 

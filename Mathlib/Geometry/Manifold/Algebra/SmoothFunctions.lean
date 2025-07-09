@@ -109,8 +109,8 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
     [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : ContMDiff I' I'' n φ) :
     C^n⟮I, N; I', G'⟯ →* C^n⟮I, N; I'', G''⟯ where
   toFun f := ⟨φ ∘ f, hφ.comp f.contMDiff⟩
-  map_one' := by ext; show φ 1 = 1; simp
-  map_mul' f g := by ext x; show φ (f x * g x) = φ (f x) * φ (g x); simp
+  map_one' := by ext; change φ 1 = 1; simp
+  map_mul' f g := by ext x; change φ (f x * g x) = φ (f x) * φ (g x); simp
 
 variable (I') {N}
 

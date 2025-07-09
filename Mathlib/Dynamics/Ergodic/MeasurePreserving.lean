@@ -124,6 +124,10 @@ theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s :
   rw [← hf.map_eq] at hs ⊢
   rw [map_apply₀ hf.1.aemeasurable hs]
 
+theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
+  simp [measureReal_def, measure_preimage hf hs]
+
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq, hfe.map_apply]
@@ -175,7 +179,7 @@ lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
   induction' n with n ih; · simp
-  simp only [add_smul, one_smul, ← n.add_one]
+  simp only [add_smul, one_smul]
   refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih ?_)
   replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
     hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
@@ -194,7 +198,7 @@ theorem exists_mem_iterate_mem_of_measure_univ_lt_mul_measure (hf : MeasurePrese
       ∃ i < n, ∃ j < n, i ≠ j ∧ (f^[i] ⁻¹' s ∩ f^[j] ⁻¹' s).Nonempty := by
     simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ (fun m _ ↦ A m) this
   wlog hlt : i < j generalizing i j
-  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
+  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_gt.resolve_left hlt)
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
 

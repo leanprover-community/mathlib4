@@ -105,7 +105,7 @@ but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
 theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
     [AddCommGroup M] [Module R M] (hv : iSupIndep fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
-  refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
+  refine linearIndependent_iff_eq_zero_of_smul_mem_span.mpr fun i r hi => ?_
   replace hv := iSupIndep_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ (⊥ : Submodule R M) := by
@@ -254,8 +254,8 @@ theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (
 @[simp]
 theorem torsionBySet_singleton_eq : torsionBySet R M {a} = torsionBy R M a := by
   ext x
-  simp only [mem_torsionBySet_iff, SetCoe.forall, Subtype.coe_mk, Set.mem_singleton_iff,
-    forall_eq, mem_torsionBy_iff]
+  simp only [mem_torsionBySet_iff, SetCoe.forall, Set.mem_singleton_iff, forall_eq,
+    mem_torsionBy_iff]
 
 theorem torsionBySet_le_torsionBySet_of_subset {s t : Set R} (st : s ⊆ t) :
     torsionBySet R M t ≤ torsionBySet R M s :=
@@ -911,8 +911,16 @@ variable (A : Type*) [AddCommGroup A] (n : ℤ)
 def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup
 
-@[inherit_doc]
-scoped notation:max (priority := high) A"["n"]" => torsionBy A n
+@[inherit_doc torsionBy]
+scoped syntax:max (name := torsionByStx) (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($A[$n]) => `(torsionBy $A $n)
+
+/-- Unexpander for `torsionBy`. -/
+@[scoped app_unexpander torsionBy]
+def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $A $n) => `($A[$n])
+  | _ => throw ()
 
 lemma torsionBy.neg : A[-n] = A[n] := by
   ext a
@@ -928,7 +936,7 @@ lemma torsionBy.nsmul_iff {x : A} :
     x ∈ A[n] ↔ n • x = 0 :=
   Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.mem_torsionBy_iff ..
 
-lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
+lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n]) :
     s • x = (s % n) • x :=
   nsmul_eq_mod_nsmul s (torsionBy.nsmul x)
 

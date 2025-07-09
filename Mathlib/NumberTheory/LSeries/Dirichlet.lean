@@ -83,7 +83,7 @@ end Moebius
 open Nat
 
 open scoped ArithmeticFunction.zeta in
-lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (hn : n ≠ 0) :
+lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [AddMonoidWithOne R] {n : ℕ} (hn : n ≠ 0) :
     (1 : ℕ → R) n = (ζ ·) n := by
   simp [hn]
 
@@ -153,7 +153,7 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   simp_all [χ.map_nonunit this, delta]
 
 /-- The Dirichlet character mod `1` corresponds to the constant function `1`. -/
-lemma modOne_eq_one {R : Type*} [CommSemiring R] {χ : DirichletCharacter R 1} :
+lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1} :
     ((χ ·) : ℕ → R) = 1 := by
   ext
   rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]

@@ -178,7 +178,7 @@ lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F 
 variable (F K₁)
 
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
- equivalence. -/
+equivalence. -/
 @[simps, stacks 0BR4]
 def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E where
   toFun σ := AlgHom.restrictNormal' σ E

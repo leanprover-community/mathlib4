@@ -77,7 +77,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
   | h0 =>
     cases n
     · decide
-    · simp [eq_comm]
+    · simp
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons, antidiagonalTuple, List.mem_flatMap, List.mem_map,
       List.Nat.mem_antidiagonal, Fin.cons_inj, exists_eq_right_right, ih,
@@ -89,7 +89,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
   induction' k with k ih generalizing n
   · cases n
     · simp
-    · simp [eq_comm]
+    · simp
   simp_rw [antidiagonalTuple, List.nodup_flatMap]
   constructor
   · intro i _
@@ -105,7 +105,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
     · rw [List.mem_map] at hx₁ hx₂
       obtain ⟨⟨x₁, hx₁, rfl⟩, ⟨x₂, hx₂, h₁₂⟩⟩ := hx₁, hx₂
       dsimp at h₁₂
-      rw [Fin.cons_inj, Nat.succ_inj'] at h₁₂
+      rw [Fin.cons_inj, Nat.succ_inj] at h₁₂
       obtain ⟨h₁₂, rfl⟩ := h₁₂
       rw [Function.onFun, h₁₂] at h
       exact h (List.mem_map_of_mem hx₁) (List.mem_map_of_mem hx₂)
@@ -142,8 +142,8 @@ theorem antidiagonalTuple_pairwise_pi_lex :
   | k + 1, n => by
     simp_rw [antidiagonalTuple, List.pairwise_flatMap, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
-    simp only [Fin.pi_lex_lt_cons_cons, eq_self_iff_true, true_and, lt_self_iff_false,
+    simp only [mem_antidiagonal, Prod.forall]
+    simp only [Fin.pi_lex_lt_cons_cons, true_and, lt_self_iff_false,
       false_or]
     refine ⟨fun _ _ _ => antidiagonalTuple_pairwise_pi_lex k _, ?_⟩
     induction' n with n n_ih
@@ -155,7 +155,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
         obtain ⟨a, b, _, rfl : (Nat.succ a, b) = p⟩ := hp
         exact Or.inl (Nat.zero_lt_succ _)
       dsimp
-      simp_rw [Nat.succ_inj', Nat.succ_lt_succ_iff]
+      simp_rw [Nat.succ_inj, Nat.succ_lt_succ_iff]
       exact n_ih
 
 end List.Nat
@@ -240,7 +240,6 @@ def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) �
   toFun x := x.2
   invFun x := ⟨∑ i, x i, x, mem_antidiagonalTuple.mpr rfl⟩
   left_inv := fun ⟨_, _, h⟩ => Sigma.subtype_ext (mem_antidiagonalTuple.mp h) rfl
-  right_inv _ := rfl
 
 end EquivProd
 

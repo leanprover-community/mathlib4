@@ -213,10 +213,7 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
           dsimp
           rw [ModuleCat.Derivation.desc_d, Derivation'.app_apply]
           erw [relativeDifferentials'_map_d φ' f]
-          rw [ModuleCat.Derivation.desc_d]
-          dsimp
-          rw [Derivation.d_map]
-          dsimp) })
+          simp) })
     (fun {M'} d' ↦ by
       ext X b
       apply ModuleCat.Derivation.desc_d)
@@ -224,7 +221,7 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
       ext1 X
       exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h))
 
-instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
+instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _, ⟨isUniversal' φ'⟩⟩
 
 end DifferentialsConstruction
 
