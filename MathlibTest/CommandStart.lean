@@ -1,38 +1,60 @@
 import Mathlib.Tactic.Linter.CommandStart
 import Aesop.Frontend.Attribute
+import Aesop.Frontend.Command
 import Mathlib.Tactic.Lemma
 
 set_option linter.style.commandStart true
 
---inspect
-/-- `extend_docs <declName> before <prefix_string> after <suffix_string>` extends the
-docs of `<declName>` by adding `<prefix_string>` before and `<suffix_string>` after. -/
-syntax "extend_docs" ident (colGt &"before" str)? (colGt &"after" str)? : command
+section Desiderata_and_todos
 
-#guard_msgs(drop info) in
--- It would be good if we could inspect `let`s, but the next example should be
--- fixed first.
-#check let  _ := 0; 0
+-- The "tactic `{...}` is ignored entirely:
+-- the pretty-printer wants a space after `{`, but not one before `}`.
+example : True := by {refine ?_   ;    trivial  }
 
-#guard_msgs(drop info) in
--- This one pretty-prints as `let(_)`, without a space.
-#check let(_) := 0; 0
+-- Ideally, this would complain, but the pretty-printer prefers this version.
+example : True = True := by
+  conv =>
+    ·rfl
 
-#guard_msgs(drop info) in
--- Ignore `⟨...⟩`, since it is convenient to allow a line-break after `⟨` to align multiple fields.
-#check (⟨
-  0⟩ : Inhabited Nat)
-
-example : True := by {trivial }
-
--- We would like this to emit an error.
-example (h : 0 = 1) : False := by
-  rcases(h)
+-- Ideally, these would complain, but we silenced the linter for `rcases`.
+example (h : False) : False := by rcases  h
+example (h : False) : False := by rcases(h)
 
 structure X where
   A : {_ : Nat} → Nat → Nat
 
-example : X where A {a} b := a + b
+-- The pretty printer does not place spaces around the braces`{}`.
+example : X where A{a}b := a + b
+
+-- Ideally, these would complain, but we silenced the linter for `let`.
+example := let(_) := 0; 0
+example := let  _ := 0; 0
+
+example : True := by {trivial }
+
+-- Ideally, this would complain, but we silenced the linter for `declare_aesop_rule_sets`.
+declare_aesop_rule_sets [$id](default := true)
+
+end Desiderata_and_todos
+
+/--
+warning: missing space in the source
+
+This part of the code
+  'obtain(⟨h⟩)'
+should be written as
+  'obtain (⟨h⟩)'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example (h : False) : False := by
+  obtain(⟨h⟩) := h
+
+-- Ignore `⟨...⟩`, since it is convenient to allow a line-break after `⟨` to align multiple fields.
+example := (⟨
+  0⟩ : Inhabited Nat)
 
 elab_rules : tactic
 | `(tactic| skip) => do
@@ -56,10 +78,7 @@ example: True := trivial
 section noFalsePositives
 
 -- Explicit name literals: used to error (and the suggested replacement is invalid syntax).
-structure foo (name: Lean.Name) where
-
-#guard_msgs in
-def bar (_param : List (foo ``String)) := 1
+example := ``Nat
 
 -- This example would trigger the linter if we did not special case
 -- `where` in `Mathlib.Linter.Style.CommandStart.getUnlintedRanges`.
@@ -69,84 +88,6 @@ where
   /-- A -/
   aux : Unit := ()
 
--- For structure fields, all field definitions are linted.
--- TODO: currently, only the first field is linted
-/--
-warning: extra space in the source
-
-This part of the code
-  'field1     : Nat'
-should be written as
-  'field1 : Nat'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-structure A where
-  field1     : Nat
-  field2 : Nat
-
--- TODO: this is not linted yet!
-structure B where
-  field1 : Nat
-  field2     : Nat
-
--- TODO: this is not linted yet!
-structure C where
-  field1 :     Nat
-  field2     : Nat
-
--- Note that the linter does not attempt to recognise or respect manual alignment of fields:
--- this is often brittle and should usually be removed.
-/--
-warning: extra space in the source
-
-This part of the code
-  'field1    :  '
-should be written as
-  'field1 : Nat'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-structure D where
-  field1    :     Nat
-  field2    : Nat
-
--- This also applies to consecutive declarations.
-/--
-warning: declaration uses 'sorry'
----
-warning: extra space in the source
-
-This part of the code
-  'instance   {R}'
-should be written as
-  'instance {R} :'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-instance   {R} : Add R := sorry
-/--
-warning: declaration uses 'sorry'
----
-warning: extra space in the source
-
-This part of the code
-  'instance   {R}'
-should be written as
-  'instance {R} :'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-instance   {R} : Add R := sorry
-
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
 
@@ -155,9 +96,9 @@ variable (d : Lean.Name := ``Nat) in open Nat
 
 -- Code inside `run_cmd` is not checked at all.
 run_cmd
-  for _ in [0] do
-    let _ ← `(
-      end)
+  for  _ in[0]   do
+    let _    ←  `(
+      end )
 
 def Card : Type → Nat := fun _ => 0
 
@@ -187,7 +128,7 @@ open Nat in
   -- hi
 example : True := trivial
 
-structure X where
+structure FX where
   /-- A doc -/
   x : Nat
 
@@ -243,6 +184,135 @@ end noFalsePositives
 
 -- Miscellaneous constructs: variable, include, omit statements; aesop rulesets
 section misc
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1     : Nat'
+should be written as
+  'field1 : Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure A where
+  field1     : Nat
+  field2 : Nat
+
+/--
+warning: extra space in the source
+
+This part of the code
+  'field2     : Nat'
+should be written as
+  'field2 : Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure B where
+  field1 : Nat
+  field2     : Nat
+
+/--
+warning: extra space in the source
+
+This part of the code
+  ':     Nat'
+should be written as
+  ': Nat
+'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  'field2     : Nat'
+should be written as
+  'field2 : Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure C where
+  field1 :     Nat
+  field2     : Nat
+
+-- Note that the linter does not attempt to recognise or respect manual alignment of fields:
+-- this is often brittle and should usually be removed.
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1    :  '
+should be written as
+  'field1 : Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  ':     Nat'
+should be written as
+  ': Nat
+'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  'field2    : Nat'
+should be written as
+  'field2 : Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure D where
+  field1    :     Nat
+  field2    : Nat
+
+-- This also applies to consecutive declarations.
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   {R}'
+should be written as
+  'instance {R} :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   {R} : Add R := sorry
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   {R}'
+should be written as
+  'instance {R} :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   {R} : Add R := sorry
 
 variable [h : Add Nat] [Add Nat]
 
@@ -316,7 +386,7 @@ warning: extra space in the source
 This part of the code
   'Nat]  [Add'
 should be written as
-  ' [Add'
+  'Nat] [Add'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -324,7 +394,20 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
 omit  [h : Add Nat]  [Add Nat]
 
--- Include statements are not linted.
+/--
+warning: extra space in the source
+
+This part of the code
+  'include     h
+
+'
+should be written as
+  'include h'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 include     h
 
 /--
@@ -365,7 +448,17 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
 example    : True := trivial
 
--- Additional spaces after the colon are not linted yet.
+/--
+warning: extra space in the source
+
+This part of the code
+  ':     True'
+should be written as
+  ': True'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
 #guard_msgs in
 example :     True := trivial
 
@@ -376,6 +469,27 @@ This part of the code
   'example  :  True'
 should be written as
   'example : True'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: extra space in the source
+
+This part of the code
+  ':  True'
+should be written as
+  ': True'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: missing space in the source
+
+This part of the code
+  ':=trivial'
+should be written as
+  ':=
+  trivial'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`

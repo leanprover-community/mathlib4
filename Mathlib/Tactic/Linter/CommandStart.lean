@@ -268,6 +268,12 @@ abbrev unlintedNodes := #[
   -- the `{ tacticSeq }` syntax pretty prints without a space on the left and with a space on the
   -- right.
   ``Parser.Tactic.tacticSeqBracketed,
+
+  -- in `conv` mode, the focusing dot (`·`) is *not* followed by a space
+  ``Parser.Tactic.Conv.«conv·._»,
+
+  -- The pretty printer does not place spaces around the braces`{}`.
+  ``Parser.Term.structInstField,
   ]
 
 /--
