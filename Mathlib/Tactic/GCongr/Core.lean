@@ -407,7 +407,7 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   }]
 
 end Trans
-
+#synth OrElse (MetaM Unit)
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
 "main" goals which are generated, and run the discharger on side goals which are generated. If there
@@ -424,7 +424,9 @@ partial def _root_.Lean.MVarId.gcongr
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
     -- `mainGoalDischarger`, and continue on if this fails.
-    try withReducible g.applyRfl; mainGoalDischarger g; return (true, names, #[])
+    try
+      (withReducible g.applyRfl) <|> mainGoalDischarger g
+      return (true, names, #[])
     catch _ => pure ()
   | some tpl =>
     -- B. If there is a template:
