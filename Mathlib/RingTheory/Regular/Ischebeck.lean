@@ -148,8 +148,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         simpa only [Module.supportDim_eq_of_equiv e, this, WithBot.unbot_zero,
           ← ENat.coe_zero, ENat.coe_inj, eq_comm] using eq0
       let S := (ModuleCat.of R L).smulShortComplex x
-      have reg : IsSMulRegular (ModuleCat.of R L) x := by
-        show Function.Injective (x • (LinearMap.id (R := R) (M := L)))
+      have reg' : Function.Injective (x • (LinearMap.id (R := R) (M := L))) := by
         rw [← LinearMap.ker_eq_bot]
         ext l
         simp only [mem_ker, smul_apply, id_coe, id_eq, Submodule.mem_bot]
@@ -162,6 +161,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         · absurd xzero
           exact Ideal.Quotient.eq_zero_iff_mem.not.mpr (Set.notMem_of_mem_diff hx)
         · rw [zero, map_zero]
+      have reg : IsSMulRegular (ModuleCat.of R L) x := reg'
       have hS := reg.smulShortComplex_shortExact
       apply le_sSup
       intro i hi
@@ -224,7 +224,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
           (zero.eq_zero_of_tgt _)
         ext a
-        show x • a = Ext.bilinearCompOfLinear R _ _ _ _ _ _ (zero_add i)
+        change x • a = Ext.bilinearCompOfLinear R _ _ _ _ _ _ (zero_add i)
           ((Ext.homEquiv₀_linearHom R).symm
           (ModuleCat.homLinearEquiv.symm (S := R) (x • LinearMap.id))) a
         simp only [map_smul, smul_apply]
