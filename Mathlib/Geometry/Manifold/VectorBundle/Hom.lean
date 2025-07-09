@@ -327,7 +327,8 @@ lemma MDifferentiableWithinAt.clm_bundle_apply
     (hϕ : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂))
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m))
       s x)
-    (hv : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁)) (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x) :
+    (hv : MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₁))
+      (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x) :
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F₂))
       (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s x := by
   simp only [mdifferentiableWithinAt_hom_bundle] at hϕ
