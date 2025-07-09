@@ -16,13 +16,28 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
+open RingTheory.Sequence
+
 class Ideal.IsUnmixed (I : Ideal R) : Prop where
   height_eq : ∀ {p : Ideal R}, p ∈ associatedPrimes R (R ⧸ I) → p.height = I.height
 
 variable [IsNoetherianRing R]
 
+theorem isCohenMacaulayRing_of_unmixed
+    (unmix : ∀ (l : List R), (Ideal.ofList l).height = l.length → (Ideal.ofList l).IsUnmixed) :
+    IsCohenMacaulayRing R := by
+  apply (isCohenMacaulayRing_def R).mpr (fun p hp ↦ ?_)
+  have : p.height ≠ ⊤ := by
+    have := p.finiteHeight_of_isNoetherianRing.1
+    have := Ideal.IsPrime.ne_top hp
+    tauto
+  have (i : ℕ) : i ≤ p.height → ∃ rs : List R, ∀ r ∈ rs, r ∈ p ∧ IsWeaklyRegular R rs ∧
+    rs.length = i := by
+    induction' i with i hi
+    · sorry
+    · sorry
+  sorry
 
-
-theorem isCohenMacaulayLocalRing_iff_umixed : IsCohenMacaulayLocalRing R ↔
+theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     ∀ (l : List R), (Ideal.ofList l).height = l.length → (Ideal.ofList l).IsUnmixed := by
   sorry
