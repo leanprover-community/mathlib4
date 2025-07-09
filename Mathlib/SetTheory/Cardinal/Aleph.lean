@@ -544,7 +544,7 @@ theorem preBeth_one : preBeth 1 = 1 := by
 @[simp]
 theorem preBeth_omega : preBeth ω = ℵ₀ := by
   apply le_antisymm
-  · rw [preBeth_limit isLimit_omega0.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
+  · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
     rw [preBeth_nat]
@@ -608,12 +608,12 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ := by
 theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o := by
   simp [beth, add_succ]
 
-theorem beth_limit {o : Ordinal} (ho : o.IsLimit) : ℶ_ o = ⨆ a : Iio o, ℶ_ a := by
-  rw [beth_eq_preBeth, preBeth_limit (isLimit_add ω ho).isSuccPrelimit]
+theorem beth_limit {o : Ordinal} (ho : IsSuccLimit o) : ℶ_ o = ⨆ a : Iio o, ℶ_ a := by
+  rw [beth_eq_preBeth, preBeth_limit (isSuccLimit_add ω ho).isSuccPrelimit]
   apply le_antisymm <;>
     apply ciSup_mono' (bddAbove_of_small _) <;>
     intro i
-  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.pos⟩, ?_⟩
+  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.bot_lt⟩, ?_⟩
     simpa [beth_eq_preBeth] using le_add_sub _ _
   · exact ⟨⟨_, add_lt_add_left i.2 ω⟩, le_rfl⟩
 
@@ -642,7 +642,7 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit 
       have := power_le_power_left two_ne_zero ha.le
       rw [← beth_succ] at this
       exact this.trans_lt (beth_strictMono (H.succ_lt hi))
-    · rw [isLimit_iff]
+    · rw [isSuccLimit_iff]
       exact ⟨h, H⟩
 
 end Cardinal

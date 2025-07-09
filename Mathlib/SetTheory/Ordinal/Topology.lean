@@ -82,7 +82,8 @@ theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
 theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho => ?_
   by_cases ho' : IsSuccLimit o
-  · simp only [(SuccOrder.hasBasis_nhds_Ioc_of_exists_lt ⟨0, ho'.pos⟩).mem_iff, ho', true_implies]
+  · simp only [(SuccOrder.hasBasis_nhds_Ioc_of_exists_lt ⟨0, ho'.bot_lt⟩).mem_iff, ho',
+      true_implies]
     refine exists_congr fun a => and_congr_right fun ha => ?_
     simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
   · simp [nhds_eq_pure.2 ho', ho, ho']
