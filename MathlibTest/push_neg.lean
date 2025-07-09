@@ -23,13 +23,13 @@ example : ¬(p ∧ q) → (p → ¬q) := by
   guard_hyp h : p → ¬q
   exact h
 
-example : (∀ (x : α), ¬ p' x) → ¬ ∃(x : α), p' x := by
+example : (∀ (x : α), ¬ p' x) → ¬ ∃ (x : α), p' x := by
   intro h
   push_neg
   guard_target = ∀ (x : α), ¬p' x
   exact h
 
-example : (¬ ∀ (x : α), p' x) → (∃(x : α), ¬ p' x) := by
+example : (¬ ∀ (x : α), p' x) → (∃ (x : α), ¬ p' x) := by
   intro h
   push_neg at h
   guard_hyp h : ∃ (x : α), ¬p' x
