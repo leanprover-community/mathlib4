@@ -8,6 +8,12 @@ import Mathlib.CategoryTheory.Whiskering
 /-!
 # Inserting associators and unitors
 
+
+## TODO
+
+- Inserting isomorphisms (not just morphisms). To obtain "simplified" expressions, we need to
+  collect simp lemmas for isomorphisms (e.g., pentagon identities in terms of `Iso` terms).
+
 -/
 
 open Lean Meta Elab Qq
@@ -25,13 +31,6 @@ structure CategoryExpr where
   inst : Expr
   objLevel : Level
   morLevel : Level
-  deriving Inhabited
-
-structure Normalize.Result where
-  /-- The normalized 1-morphism. -/
-  normalizedHom : Expr
-  /-- The 2-morphism from the original 1-morphism to the normalized 1-morphism. -/
-  toNormalize : Expr
   deriving Inhabited
 
 /-- The domain of a morphism. -/
@@ -55,94 +54,6 @@ def tgtExpr (η : Expr) : MetaM CategoryExpr := do
       return ⟨D, inst, u₂, v₂⟩
     | _ => throwError m!"{η} is not a functor type"
   | _ => throwError m!"{η} is not a functor type"
-
-partial def normalize (p : Expr) (f : Expr) :
-    MetaM Normalize.Result := do
-  match (← whnfR f).getAppFnArgs with
-  | (``Functor.id, #[_, _]) => do
-    let _A ← srcExpr f
-    let _B ← tgtExpr f
-    have u₁ := _A.objLevel
-    have v₁ := _A.morLevel
-    have u₂ := _B.objLevel
-    have v₂ := _B.morLevel
-    have A : Q(Type u₁) := _A.type
-    have B : Q(Type u₂) := _B.type
-    have _instA : Q(Category.{v₁} $A) := _A.inst
-    have _instB : Q(Category.{v₂} $B) := _B.inst
-    have p : Q($A ⥤ $B) := p
-    return ⟨p, q(Functor.rightUnitor $p)⟩
-  | (``Functor.comp, #[_, _, _, _, _, _, f, g]) =>
-    let ⟨pf, η_f⟩ ← normalize p f
-    let ⟨pfg, η_g⟩ ← normalize pf g
-    let _A ← srcExpr p
-    let _B ← srcExpr f
-    let _C ← srcExpr g
-    let _D ← tgtExpr g
-    have u₁ := _A.objLevel
-    have v₁ := _A.morLevel
-    have u₂ := _B.objLevel
-    have v₂ := _B.morLevel
-    have u₃ := _C.objLevel
-    have v₃ := _C.morLevel
-    have u₄ := _D.objLevel
-    have v₄ := _D.morLevel
-    have A : Q(Type u₁) := _A.type
-    have B : Q(Type u₂) := _B.type
-    have C : Q(Type u₃) := _C.type
-    have D : Q(Type u₄) := _D.type
-    have _instA : Q(Category.{v₁} $A) := _A.inst
-    have _instB : Q(Category.{v₂} $B) := _B.inst
-    have _instC : Q(Category.{v₃} $C) := _C.inst
-    have _instD : Q(Category.{v₄} $D) := _D.inst
-    have pf : Q($A ⥤ $C) := pf
-    have pfg : Q($A ⥤ $D) := pfg
-    have F : Q($B ⥤ $C) := f
-    have G : Q($C ⥤ $D) := g
-    have p : Q($A ⥤ $B) := p
-    have η_f : Q($p ⋙ $F ≅ $pf) := η_f
-    have η_g : Q($pf ⋙ $G ≅ $pfg) := η_g
-    let η_f' := q(Functor.isoWhiskerRight $η_f $G)
-    return ⟨pfg, q((Functor.associator $p $F $G).symm ≪≫ $η_f' ≪≫ $η_g)⟩
-  | _ =>
-    let _A ← srcExpr p
-    let _B ← srcExpr f
-    let _C ← tgtExpr f
-    have u₁ := _A.objLevel
-    have v₁ := _A.morLevel
-    have u₂ := _B.objLevel
-    have v₂ := _B.morLevel
-    have u₃ := _C.objLevel
-    have v₃ := _C.morLevel
-    have A : Q(Type u₁) := _A.type
-    have B : Q(Type u₂) := _B.type
-    have C : Q(Type u₃) := _C.type
-    have _instA : Q(Category.{v₁} $A) := _A.inst
-    have _instB : Q(Category.{v₂} $B) := _B.inst
-    have _instC : Q(Category.{v₃} $C) := _C.inst
-    have p : Q($A ⥤ $B) := p
-    have f : Q($B ⥤ $C) := f
-    return ⟨q($p ⋙ $f), q(Iso.refl ($p ⋙ $f))⟩
-
--- def associators (f g : Expr) : MetaM Expr := do
---   let _C ← srcExpr f
---   let _D ← tgtExpr f
---   have u₁ := _C.objLevel
---   have v₁ := _C.morLevel
---   have u₂ := _D.objLevel
---   have v₂ := _D.morLevel
---   have C : Q(Type u₁) := _C.type
---   have D : Q(Type u₂) := _D.type
---   have _instC : Q(Category.{v₁} $C) := _C.inst
---   have _instD : Q(Category.{v₂} $D) := _D.inst
---   have f : Q($C ⥤ $D) := f
---   have g : Q($C ⥤ $D) := g
---   let ⟨f', η_f⟩ ← normalize q(𝟭 $C) f
---   let ⟨_ , η_g⟩ ← normalize q(𝟭 $C) g
---   have f' : Q($C ⥤ $D) := f'
---   have η_f : Q(𝟭 $C ⋙ $f ≅ $f') := η_f
---   have η_g : Q(𝟭 $C ⋙ $g ≅ $f') := η_g
---   return q(((Functor.leftUnitor _).symm ≪≫ $η_f ≪≫ Iso.symm $η_g ≪≫ (Functor.leftUnitor _)).hom)
 
 def isComp? (f : Expr) : MetaM (Option (Expr × Expr)) := do
   match (← whnfR f).getAppFnArgs with
@@ -254,7 +165,7 @@ def assocInv? (i fgh : Expr) : MetaM (Option (Expr × Expr × Expr × Expr)) := 
     | none => return none
   | none => return none
 
-partial def associators' (f g : Expr) : MetaM Expr := do
+partial def associators (f g : Expr) : MetaM Expr := do
   withIncRecDepth do
     match ← refl? f g with
     | some f => do
@@ -291,7 +202,7 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have f : Q($A ⥤ $B) := f
       have g : Q($B ⥤ $C) := g
       have h : Q($B ⥤ $C) := h
-      let assoc ← associators' g h
+      let assoc ← associators g h
       have assoc : Q($g ≅ $h) := assoc
       return q(Functor.isoWhiskerLeft $f $assoc)
     | _ => do
@@ -315,7 +226,7 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have f : Q($A ⥤ $B) := f
       have g : Q($A ⥤ $B) := g
       have h : Q($B ⥤ $C) := h
-      let assoc ← associators' f g
+      let assoc ← associators f g
       have assoc : Q($f ≅ $g) := assoc
       return q(Functor.isoWhiskerRight $assoc $h)
     | _ => do
@@ -333,9 +244,8 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have _instB : Q(Category.{v₂} $B) := _B.inst
       have f : Q($A ⥤ $B) := f
       have g : Q($B ⥤ $B) := g
-      let assoc ← associators' q(𝟭 $B) g
+      let assoc ← associators q(𝟭 $B) g
       have assoc : Q(𝟭 $B ≅ $g) := assoc
-      logInfo m!"associators: {assoc}"
       return q((Functor.rightUnitor $f).symm ≪≫ (Functor.isoWhiskerLeft $f $assoc))
     | none => do
     match ← postCompSrc? f g with
@@ -352,7 +262,7 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have _instB : Q(Category.{v₂} $B) := _B.inst
       have f : Q($A ⥤ $B) := f
       have g : Q($B ⥤ $B) := g
-      let assoc ← associators' g q(𝟭 $B)
+      let assoc ← associators g q(𝟭 $B)
       have assoc : Q($g ≅ 𝟭 $B) := assoc
       return q(Functor.isoWhiskerLeft $f $assoc ≪≫ Functor.rightUnitor $f)
     | none => do
@@ -370,9 +280,8 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have _instB : Q(Category.{v₂} $B) := _B.inst
       have f : Q($A ⥤ $B) := f
       have g : Q($A ⥤ $B) := g
-      let assoc ← associators' f g
+      let assoc ← associators f g
       have assoc : Q($f ≅ $g) := assoc
-      logInfo m!"associators: {assoc}"
       return q(Functor.leftUnitor $f ≪≫ $assoc)
     | none => do
     match ← leftUnitorInv? f g with
@@ -389,7 +298,7 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have _instB : Q(Category.{v₂} $B) := _B.inst
       have f : Q($A ⥤ $B) := f
       have g : Q($A ⥤ $B) := g
-      let assoc ← associators' f g
+      let assoc ← associators f g
       have assoc : Q($f ≅ $g) := assoc
       return q($assoc ≪≫ (Functor.leftUnitor $g).symm)
     | none => do
@@ -407,7 +316,7 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have _instB : Q(Category.{v₂} $B) := _B.inst
       have f : Q($A ⥤ $B) := f
       have g : Q($A ⥤ $B) := g
-      let assoc ← associators' f g
+      let assoc ← associators f g
       have assoc : Q($f ≅ $g) := assoc
       return q(Functor.rightUnitor $f ≪≫ $assoc)
     | none => do
@@ -425,7 +334,7 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have _instB : Q(Category.{v₂} $B) := _B.inst
       have f : Q($A ⥤ $B) := f
       have g : Q($A ⥤ $B) := g
-      let assoc ← associators' f g
+      let assoc ← associators f g
       have assoc : Q($f ≅ $g) := assoc
       return q($assoc ≪≫ (Functor.rightUnitor $g).symm)
     | none => do
@@ -455,7 +364,7 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have g : Q($B ⥤ $C) := g
       have h : Q($C ⥤ $D) := h
       have i : Q($A ⥤ $D) := i
-      let assoc ← associators' q($f ⋙ $g ⋙ $h) i
+      let assoc ← associators q($f ⋙ $g ⋙ $h) i
       have assoc : Q($f ⋙ $g ⋙ $h ≅ $i) := assoc
       return q(Functor.associator $f $g $h ≪≫ $assoc)
     | none => do
@@ -485,15 +394,14 @@ partial def associators' (f g : Expr) : MetaM Expr := do
       have g : Q($B ⥤ $C) := g
       have h : Q($C ⥤ $D) := h
       have i : Q($A ⥤ $D) := i
-      let assoc ← associators' i q($f ⋙ $g ⋙ $h)
+      let assoc ← associators i q($f ⋙ $g ⋙ $h)
       have assoc : Q($i ≅ $f ⋙ $g ⋙ $h) := assoc
       return q($assoc ≪≫ (Functor.associator $f $g $h).symm)
     | none => do
       throwError
         m!"Failed to find associators for {f} and {g}."
 
-def associators'Hom (f g : Expr) : MetaM Expr := do
-  let assoc ← associators' f g
+def associatorsHom (f g : Expr) : MetaM Expr := do
   let _A ← srcExpr f
   let _B ← tgtExpr f
   have u₁ := _A.objLevel
@@ -506,10 +414,11 @@ def associators'Hom (f g : Expr) : MetaM Expr := do
   have _instB : Q(Category.{v₂} $B) := _B.inst
   have f : Q($A ⥤ $B) := f
   have g : Q($A ⥤ $B) := g
+  let assoc ← associators f g
   have assoc : Q($f ≅ $g) := assoc
   return q(Iso.hom $assoc)
 
-/-- The domain of a morphism. -/
+/-- The domain and the codomain of a morphism. -/
 def FunctorExpr (η : Expr) : MetaM (Expr × Expr) := do
   let η ← whnfR η
   match η.getAppFnArgs with
@@ -689,7 +598,7 @@ def elabAssociators : Term.TermElab := fun _ expectedType? => do
   | none => throwError "expected type not provided for `assoc%`"
   | some e =>
     let ⟨F, G⟩ ← FunctorExpr e
-    let α ← associators'Hom F G
+    let α ← associatorsHom F G
     let thms := (← simpTheoremNames.mapM (fun n => mkSimpTheoremFromConst n)).flatten
     let thms : SimpTheorems := (thms.foldl (·.addSimpTheorem ·)) {}
     let (α', _) ← simp α (← Simp.mkContext (simpTheorems := #[thms]))
@@ -699,47 +608,3 @@ def elabAssociators : Term.TermElab := fun _ expectedType? => do
 end Associators
 
 end Mathlib.Tactic
-
-namespace CategoryTheory
-
-open CategoryTheory
-
-universe v₁ v₂ v₃ u₁ u₂ u₃
-variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{v₂} B]
-variable {C : Type u₃} [Category.{v₃} C]
-variable {D : Type u₃} [Category.{v₃} D]
-variable {E : Type u₃} [Category.{v₃} E]
-
-variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (I : D ⥤ E)
-
-open Functor
-
-local infixr:81 " ◁ " => Functor.whiskerLeft
-local infixl:81 " ▷ " => Functor.whiskerRight
-local notation "α_" => Functor.associator
-local notation "λ_" => Functor.leftUnitor
-local notation "ρ_" => Functor.rightUnitor
-
-example : F ⟶ F ⋙ 𝟭 _ :=
-  assoc%
-
-example : ((F ⋙ G) ⋙ H) ⋙ I ⟶ F ⋙ 𝟭 _ ⋙ G ⋙ H ⋙ I :=
-  assoc%
-
-example : (F ⋙ G) ⋙ H ⟶ F ⋙ (G ⋙ H) :=
-  assoc%
-
-example : F ⋙ (G ⋙ H) ⟶ (F ⋙ G) ⋙ H :=
-  assoc%
-
-example : F ⋙ (G ⋙ H) ⋙ I ⟶ (F ⋙ G) ⋙ H ⋙ I :=
-  assoc%
-
-example : H ⋙ I ⟶ (𝟭 _ ⋙ H) ⋙ I :=
-  assoc%
-
-example : (F ⋙ G) ⋙ (H ⋙ I) ⟶ F ⋙ (G ⋙ 𝟭 _ ⋙ H) ⋙ I :=
-  assoc%
-
-end CategoryTheory
