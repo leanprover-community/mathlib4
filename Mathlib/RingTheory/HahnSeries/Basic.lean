@@ -341,6 +341,10 @@ theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r 
   simp only [leadingCoeff, single_eq_zero_iff]
   by_cases h : r = 0 <;> simp [h]
 
+theorem coeff_untop_eq_leadingCoeff {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    x.coeff (x.orderTop.untop (ne_zero_iff_orderTop.mp hx)) = x.leadingCoeff := by
+  rw [HahnSeries.leadingCoeff_of_ne hx, (WithTop.untop_eq_iff _).mpr (HahnSeries.orderTop_of_ne hx)]
+
 open Classical in
 /-- A leading term of a Hahn series is a Hahn series with subsingleton support at minimal-order.
   This is uniquely defined if `Γ` is a linear order. -/
@@ -443,7 +447,7 @@ theorem zero_lt_orderTop_of_order {x : HahnSeries Γ R} (hx : 0 < x.order) : 0 <
 theorem zero_le_orderTop_iff {x : HahnSeries Γ R} : 0 ≤ x.orderTop ↔ 0 ≤ x.order := by
   by_cases h : x = 0
   · simp_all
-  · simp_all [order_of_ne h, orderTop_of_ne h, zero_lt_orderTop_iff]
+  · simp_all [order_of_ne h, orderTop_of_ne h]
 
 theorem leadingCoeff_eq {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0

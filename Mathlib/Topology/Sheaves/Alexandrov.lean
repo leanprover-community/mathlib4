@@ -108,14 +108,14 @@ def lowerCone
         ⟨.mk .unit, f.right, 𝟙 _⟩
     naturality := by
       rintro x y e
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, principals_obj,
+      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
         Functor.op_obj, ObjectProperty.ι_obj, Functor.pointwiseRightKanExtension_obj,
         Category.id_comp, Functor.comp_map, Category.assoc]
       rw [← S.w ((projSup Us).map e), Category.assoc]
       congr 1
       simp only [projSup_obj, Functor.comp_obj, Functor.op_obj, ObjectProperty.ι_obj,
         Functor.pointwiseRightKanExtension_obj, projSup_map, homOfLE_leOfHom, Functor.comp_map,
-        Functor.op_map, Quiver.Hom.unop_op, ObjectProperty.ιOfLE_map,
+        Functor.op_map, Quiver.Hom.unop_op,
         Functor.pointwiseRightKanExtension_map, limit.lift_π]
       let xx : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=
         ⟨.mk .unit, x.right, 𝟙 _⟩
@@ -154,7 +154,7 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     rw [← S.w ee.op, Category.assoc]
     congr 1
     simp only [comp_obj, op_obj, ObjectProperty.ι_obj, pointwiseRightKanExtension_obj,
-      Functor.comp_map, op_map, Quiver.Hom.unop_op, ObjectProperty.ιOfLE_map,
+      Functor.comp_map, op_map, Quiver.Hom.unop_op,
       pointwiseRightKanExtension_map, limit.lift_π, xx, VV]
     congr
   uniq := by
@@ -168,7 +168,7 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     · apply exists_le_of_le_sup
       exact f.unop.le
     · rw [← hm]
-      simp only [mapCone_pt, Cocone.op_pt, pointwiseRightKanExtension_obj, principals_obj,
+      simp only [mapCone_pt, Cocone.op_pt, pointwiseRightKanExtension_obj,
         const_obj_obj, comp_obj, op_obj, ObjectProperty.ι_obj, mapCone_π_app, Cocone.op_π,
         NatTrans.op_app, pointwiseRightKanExtension_map, Category.assoc, limit.lift_π]
       congr
