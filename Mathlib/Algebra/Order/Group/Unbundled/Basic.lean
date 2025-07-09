@@ -469,7 +469,7 @@ variable [MulRightMono α] {a b c : α}
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 
-@[to_additive sub_le_sub_right]
+@[to_additive (attr := gcongr) sub_le_sub_right]
 theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
 
@@ -517,7 +517,7 @@ theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
 
-@[to_additive sub_le_sub_left]
+@[to_additive (attr := gcongr) sub_le_sub_left]
 theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
   (div_le_div_iff_left c).2 h
 
