@@ -123,17 +123,16 @@ local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
 
 lemma ext_hom_eq_zero_of_mem_ann {r : R} (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
     (AddCommGrp.ofHom <| ((Ext.mk₀ <| r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
-  apply congrArg AddCommGrp.ofHom <| AddMonoidHom.ext fun h ↦ ?_
-  show (((Ext.homEquiv₀_linearHom R).symm (r • 𝟙 M)).postcompOfLinear R N _) h = 0
-  simp only [Ext.postcompOfLinear, Ext.bilinearCompOfLinear, Ext.homEquiv₀_linearHom,
-    AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, Equiv.invFun_as_coe,
-    AddEquiv.coe_toEquiv_symm, map_smul, LinearEquiv.coe_symm_mk, Ext.addEquiv₀_symm_apply,
-    LinearMap.smul_apply, LinearMap.flip_apply, LinearMap.coe_mk, AddHom.coe_mk, Ext.comp_mk₀_id]
-  rw [← Ext.mk₀_id_comp h]
-  show r • (Ext.bilinearCompOfLinear R N N M 0 n n (zero_add n)).flip
-    h ((Ext.homEquiv₀_linearHom R).symm (𝟙 N)) = 0
-  have : r • (𝟙 N) = 0 := by
-    ext
-    exact Module.mem_annihilator.mp mem_ann _
-  rw [← map_smul, ← map_smul, this]
-  simp
+  ext h
+  have : (((Ext.homEquiv₀_linearHom R).symm (r • 𝟙 M)).postcompOfLinear R N (add_zero n)) h =
+    0 := by
+    have : r • (𝟙 N) = 0 := ModuleCat.hom_ext
+      (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp mem_ann _))
+    have : r • (Ext.bilinearCompOfLinear R N N M 0 n n (zero_add n)).flip
+      h ((Ext.homEquiv₀_linearHom R).symm (𝟙 N)) = 0 := by
+      rw [← map_smul, ← map_smul, this]
+      simp
+    have : r • h = 0 := by rwa [← Ext.mk₀_id_comp h]
+    simpa [Ext.postcompOfLinear, Ext.bilinearCompOfLinear, Ext.homEquiv₀_linearHom]
+  simpa only [AddCommGrp.hom_ofHom, AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply,
+    AddCommGrp.hom_zero, AddMonoidHom.zero_apply]
