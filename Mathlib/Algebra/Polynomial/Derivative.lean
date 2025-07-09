@@ -357,7 +357,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
     simp [Finset.range]
   | succ n IH =>
     calc
-      derivative^[n+1] (p * q) =
+      derivative^[n + 1] (p * q) =
           derivative (∑ k ∈ range n.succ,
               n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
         rw [Function.iterate_succ_apply', IH]
@@ -369,17 +369,17 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
           smul_add, sum_add_distrib]
       _ = (∑ k ∈ range n.succ,
                 n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
-              1 • (derivative^[n+1] p * derivative^[0] q) +
+              1 • (derivative^[n + 1] p * derivative^[0] q) +
             ∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
         ?_
       _ = ((∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
               ∑ k ∈ range n.succ,
                 n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
-            1 • (derivative^[n+1] p * derivative^[0] q) := by
+            1 • (derivative^[n + 1] p * derivative^[0] q) := by
         rw [add_comm, add_assoc]
       _ = (∑ i ∈ range n.succ,
               (n + 1).choose (i + 1) • (derivative^[n + 1 - (i + 1)] p * derivative^[i + 1] q)) +
-            1 • (derivative^[n+1] p * derivative^[0] q) := by
+            1 • (derivative^[n + 1] p * derivative^[0] q) := by
         simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
       _ = ∑ k ∈ range n.succ.succ,
             n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) := by
