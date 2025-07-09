@@ -592,16 +592,16 @@ private theorem three_le {c n : ℕ} (h : 1 ≤ n) (h' : n < c) (hh' : c ≠ 2 *
 
 /-- stabilizer (alternating_group α) s is a maximal subgroup of alternating_group α,
   provided s ≠ ⊥, s ≠ ⊤ and fintype.card α ≠ 2 * fintype.card ↥s) -/
-theorem Stabilizer.isMaximal (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
-    (hs : Fintype.card α ≠ 2 * Set.ncard s) :
+theorem isCoatom_stabilizer (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
+    (hs : Nat.card α ≠ 2 * Set.ncard s) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
-  have hα : 3 ≤ Fintype.card α := by
+  have hα : 3 ≤ Nat.card α := by
     rw [← Set.ncard_pos, ← Nat.succ_le_iff] at h0 h1
     refine three_le h0 ?_ hs
-    rw [← Nat.card_eq_fintype_card, ← Set.ncard_add_ncard_compl s]
+    rw [← Set.ncard_add_ncard_compl s]
     exact Nat.lt_add_of_pos_right h1
   have : Nontrivial α := by
-    rw [← Fintype.one_lt_card_iff_nontrivial]
+    rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
     apply lt_of_lt_of_le _ hα
     norm_num
   have h : ∀ (t : Set α) (_ : t.Nonempty) (_ : t.Subsingleton),
@@ -613,32 +613,32 @@ theorem Stabilizer.isMaximal (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
         ext
         simp only [mem_stabilizer_iff, Set.smul_set_singleton, Set.singleton_eq_singleton_iff]
       rw [this]
-      apply hasMaximalStabilizersOfPreprimitive
-      apply AlternatingGroup.isPreprimitive hα
+      have : IsPreprimitive (alternatingGroup α) α :=
+        AlternatingGroup.isPreprimitive_of_three_le_card α hα
+      apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
     · obtain ⟨a, ha⟩ := ht
-      use a; exact Set.Subsingleton.eq_singleton_of_mem ht' ha
+      exact ⟨a, Set.Subsingleton.eq_singleton_of_mem ht' ha⟩
   by_cases h0' : Set.Nontrivial s
-  -- cases' em s.Nontrivial with h0' h0'
-  by_cases h1' : Set.Nontrivial sᶜ
-  -- cases' em sᶜ.Nontrivial with h1' h1'
-  -- h0' : s.nontrivial, h1' : sᶜ.nontrivial
-  cases' Nat.lt_trichotomy (Set.ncard s) (Set.ncard (sᶜ : Set α)) with hs' hs'
-  · exact isMaximalStab' s h0' h1' hs'
-  cases' hs' with hs' hs'
-  · exfalso; apply hs
-    rw [← Nat.card_eq_fintype_card, ← Set.ncard_add_ncard_compl s, ← hs', ← two_mul]
-  · rw [← compl_compl s] at h0'
-    rw [← stabilizer_compl]
-    apply isMaximalStab' (sᶜ) h1' h0'
-    simp_rw [compl_compl s]
-    convert hs'
-  -- h0' : s.nontrivial, h1' : ¬(s.nontrivial)
-  · simp only [Set.not_nontrivial_iff] at h1'
-    rw [← stabilizer_compl]
-    exact h (sᶜ) h1 h1'
-  -- h0' : ¬(s.nontrivial),
+  · by_cases h1' : Set.Nontrivial sᶜ
+    · rcases Nat.lt_trichotomy s.ncard (sᶜ).ncard with hs' | hs'
+      · exact isCoatom_stabilizer_of_ncard_lt_ncard_compl s h0' h1' hs'
+      rcases hs' with hs' | hs'
+      · exfalso; apply hs
+        rw [← Set.ncard_add_ncard_compl s, ← hs', ← two_mul]
+      · rw [← compl_compl s] at h0'
+        rw [← stabilizer_compl]
+        apply isCoatom_stabilizer_of_ncard_lt_ncard_compl (sᶜ) h1' h0'
+        simp_rw [compl_compl s]
+        convert hs'
+      -- h0' : s.nontrivial, h1' : ¬(s.nontrivial)
+    · simp only [Set.not_nontrivial_iff] at h1'
+      rw [← stabilizer_compl]
+      exact h (sᶜ) h1 h1'
+    -- h0' : ¬(s.nontrivial),
   · simp only [Set.not_nontrivial_iff] at h0'
     exact h s h0 h0'
+
+#exit
 
 /-- The action of alternating_group α on the n-element subsets of α is preprimitive
 provided 0 < n < #α and #α ≠ 2*n -/
