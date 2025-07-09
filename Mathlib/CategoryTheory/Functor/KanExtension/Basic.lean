@@ -612,24 +612,22 @@ def LeftExtension.isUniversalPrecomp₂
     (hα : (LeftExtension.mk F₁ α).IsUniversal)
     {b : L'.LeftExtension F₁} (hb : b.IsUniversal) :
     ((LeftExtension.precomp₂ L' α).obj b).IsUniversal := by
-  letI : (Y : (L ⋙ L').LeftExtension F₀) →
-      Unique ((precomp₂ L' α).obj b ⟶ Y) := by
-    intro y
+  letI (y : (L ⋙ L').LeftExtension F₀) :
+      Unique ((precomp₂ L' α).obj b ⟶ y) := by
     let u : L'.LeftExtension F₁ :=
       mk y.right <|
         hα.desc <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom
-    let f := hb.desc <| u
     refine
-      ⟨⟨StructuredArrow.homMk f
+      ⟨⟨StructuredArrow.homMk (hb.desc <| u)
         (by
           ext x
           haveI hb_fac_app := congr_app (hb.fac u) (L.obj x)
           haveI hα_fac_app :=
             congr_app (hα.fac <| LeftExtension.mk _ <|
-              y.hom ≫ (L.associator L' y.right).hom) (x)
+              y.hom ≫ (L.associator L' y.right).hom) x
           dsimp at hα_fac_app hb_fac_app
-          simp [f, hb_fac_app, u, hα_fac_app])⟩, ?_⟩
+          simp [hb_fac_app, u, hα_fac_app])⟩, ?_⟩
     intro a
     dsimp
     ext1
@@ -648,7 +646,7 @@ def LeftExtension.isUniversalPrecomp₂
       comp_obj, StructuredArrow.left_eq_id, const_obj_map, id_comp,
       precomp₂_obj_right, whiskeringLeft_obj_map, NatTrans.comp_app,
       precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
-    simp [← a_w_t, f, hb_fac_app, u, hα_fac_app]
+    simp [← a_w_t, hb_fac_app, u, hα_fac_app]
   apply IsInitial.ofUnique
 
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
@@ -661,9 +659,7 @@ def LeftExtension.isUniversalOfPrecomp₂
     {b : L'.LeftExtension F₁}
     (hb : ((LeftExtension.precomp₂ L' α).obj b).IsUniversal) :
     b.IsUniversal := by
-  letI : (Y : L'.LeftExtension F₁) →
-      Unique (b ⟶ Y) := by
-    intro y
+  letI (y : L'.LeftExtension F₁) : Unique (b ⟶ y) := by
     let u : (LeftExtension.precomp₂ L' α).obj b ⟶
       (LeftExtension.precomp₂ L' α).obj y := hb.to _
     haveI := u.w
@@ -715,7 +711,7 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
     (γ : F₀ ⟶ L'' ⋙ F₂)
     (hγ :
       α ≫ whiskerLeft _ β ≫
-        (Functor.associator _ _ _).inv ≫ (whiskerRight e.hom F₂) =
+        (Functor.associator _ _ _).inv ≫ whiskerRight e.hom F₂ =
       γ := by aesop_cat) :
     F₂.IsLeftKanExtension β ↔ F₂.IsLeftKanExtension γ := by
   let Ψ := leftExtensionEquivalenceOfIso₁ e F₀
