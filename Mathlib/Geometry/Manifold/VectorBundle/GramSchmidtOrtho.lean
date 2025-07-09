@@ -5,6 +5,7 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.Elaborators
 
 /-!
@@ -267,18 +268,30 @@ end VectorBundle
 
 -- Continuity and smoothness.
 
--- gramSchmidt followed by trivialisation commutes
-
 variable {n : WithTop ℕ∞}
+
+-- TODO: fix pretty-printing of my new elaborators!
+set_option linter.style.commandStart false
+
+def foo {s t : (x : B) → E x} {u : Set B} (x : B)
+    (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) :
+    -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
+    letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).orthogonalProjection (t x);
+    CMDiffAt[u] n (T% S) x := by
+  sorry
 
 lemma gramSchmidt_contMDiffWithinAt (s : ι → (x : B) → E x) (i : ι) {u : Set B} (x : B)
     (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
   simp_rw [VectorBundle.gramSchmidt_def]
-  -- in principle, the proof is not bad: difference, finite sums of smooth sections are smooth
+  have : ContMDiffWithinAt IB (IB.prod 𝓘(ℝ, F)) n (T% s i) u x := sorry
+  apply this.sub_section
+  apply ContMDiffWithinAt.sum_section
+  intro i' hi'
+  have hproj : CMDiffAt[u] n (T% VectorBundle.gramSchmidt s i') x := sorry
+  apply foo x hproj (hs i)
+
   -- challenge 1: do this using (well-founded) induction
-  -- challenge 2: my definition is point-wise, need to relate to something in a trivialisation
-  sorry
 
 lemma gramSchmidt_contMDiffAt (s : ι → (x : B) → E x) (i : ι) (x : B)
     (hs : ∀ i, CMDiffAt n (T% (s i)) x) : CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
