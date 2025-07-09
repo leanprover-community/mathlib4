@@ -277,6 +277,10 @@ abbrev unlintedNodes := #[
 
   -- `throwError "Sorry"` does not pretty-print the space before the opening `"`.
   ``Lean.termThrowError__,
+
+  -- Ignore term-mode `have`, since it does not print a space between `have` and the identifier,
+  -- if there is a parenthesis in-between.
+  ``Parser.Term.have
   ]
 
 /--

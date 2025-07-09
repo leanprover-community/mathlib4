@@ -49,6 +49,11 @@ elab_rules : tactic
 ) => do
   return
 
+-- Ideally, this would complain, but we silenced the linter for term-mode `have`.
+example : True :=
+  have(h) := trivial
+  h
+
 end Desiderata_and_todos
 
 /--
