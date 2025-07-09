@@ -43,7 +43,7 @@ variable [NeZero (1 : R)] {m n : ℤ}
 
 @[simp] lemma cast_nonneg : ∀ {n : ℤ}, (0 : R) ≤ n ↔ 0 ≤ n
   | (n : ℕ) => by simp
-  | -[n+1] => by
+  | -[n + 1] => by
     have : -(n : R) < 1 := lt_of_le_of_lt (by simp) zero_lt_one
     simpa [(negSucc_lt_zero n).not_ge, ← sub_eq_add_neg, le_neg] using this.not_ge
 

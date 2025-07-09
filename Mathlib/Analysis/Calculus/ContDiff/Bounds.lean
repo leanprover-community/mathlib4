@@ -44,7 +44,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       ‖B‖ * ∑ i ∈ Finset.range (n + 1), (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ := by
   /- We argue by induction on `n`. The bound is trivial for `n = 0`. For `n + 1`, we write
-    the `(n+1)`-th derivative as the `n`-th derivative of the derivative `B f g' + B f' g`,
+    the `(n + 1)`-th derivative as the `n`-th derivative of the derivative `B f g' + B f' g`,
     and apply the inductive assumption to each of those two terms. For this induction to make sense,
     the spaces of linear maps that appear in the induction should be in the same universe as the
     original spaces, which explains why we assume in the lemma that all spaces live in the same
@@ -354,7 +354,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     {D : ℝ} (hC : ∀ i, i ≤ n → ‖iteratedFDerivWithin 𝕜 i g t (f x)‖ ≤ C)
     (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDerivWithin 𝕜 i f s x‖ ≤ D ^ i) :
     ‖iteratedFDerivWithin 𝕜 n (g ∘ f) s x‖ ≤ n ! * C * D ^ n := by
-  /- We argue by induction on `n`, using that `D^(n+1) (g ∘ f) = D^n (g ' ∘ f ⬝ f')`. The successive
+  /- We argue by induction on `n`, using that `D^(n + 1) (g ∘ f) = D^n (g ' ∘ f ⬝ f')`. The successive
     derivatives of `g' ∘ f` are controlled thanks to the inductive assumption, and those of `f'` are
     controlled by assumption.
     As composition of linear maps is a bilinear map, one may use

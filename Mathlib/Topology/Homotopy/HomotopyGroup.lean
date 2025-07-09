@@ -26,7 +26,7 @@ We provide a group instance using path composition and show commutativity when `
 * `GenLoop N x` is the type of continuous functions `I^N → X` that send the boundary to `x`,
 * `HomotopyGroup.Pi n X x` denoted `π_ n X x` is the quotient of `GenLoop (Fin n) x` by
   homotopy relative to the boundary,
-* group instance `Group (π_(n+1) X x)`,
+* group instance `Group (π_(n + 1) X x)`,
 * commutative group instance `CommGroup (π_(n+2) X x)`.
 
 TODO:
@@ -35,7 +35,7 @@ TODO:
   is a group isomorphism.
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
 * Actions of π_1 on π_n.
-* Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
+* Lie algebra: `⁅π_(n + 1), π_(m+1)⁆` contained in `π_(n+m+1)`.
 
 -/
 
@@ -224,7 +224,7 @@ theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fr
     toContinuousMap_comp_symm, ContinuousMap.comp_id]
   ext; rfl
 
-/-- The `n+1`-dimensional loops are in bijection with the loops in the space of
+/-- The `n + 1`-dimensional loops are in bijection with the loops in the space of
   `n`-dimensional loops with base point `const`.
   We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
 @[simps]
@@ -249,7 +249,7 @@ abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f => f.comp (Cube.insertAt i),
     (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
 
-/-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
+/-- A homotopy between `n + 1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
 def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary N)) :
     C(I × I, C(I^{ j // j ≠ i }, X)) :=
@@ -285,7 +285,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 
 /-- The converse to `GenLoop.homotopyTo`: a homotopy between two loops in the space of
-  `n`-dimensional loops can be seen as a homotopy between two `n+1`-dimensional paths. -/
+  `n`-dimensional loops can be seen as a homotopy between two `n + 1`-dimensional paths. -/
 @[simps!] def homotopyFrom (i : N) {p q : Ω^ N X x} (H : (toLoop i p).Homotopy (toLoop i q)) :
     C(I × I^N, X) :=
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
@@ -452,7 +452,7 @@ def HomotopyGroup.pi1EquivFundamentalGroup : π_ 1 X x ≃ FundamentalGroup X x 
 
 namespace HomotopyGroup
 
-/-- Group structure on `HomotopyGroup N X x` for nonempty `N` (in particular `π_(n+1) X x`). -/
+/-- Group structure on `HomotopyGroup N X x` for nonempty `N` (in particular `π_(n + 1) X x`). -/
 instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup <| Classical.arbitrary N).group
 

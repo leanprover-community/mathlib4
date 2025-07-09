@@ -19,11 +19,11 @@ import Mathlib.Tactic.Common
 
 Also, support functions for operating with n-tuples of types, such as:
 
-* `append1 α β`    - append type `β` to n-tuple `α` to obtain an (n+1)-tuple
-* `drop α`         - drops the last element of an (n+1)-tuple
-* `last α`         - returns the last element of an (n+1)-tuple
+* `append1 α β`    - append type `β` to n-tuple `α` to obtain an (n + 1)-tuple
+* `drop α`         - drops the last element of an (n + 1)-tuple
+* `last α`         - returns the last element of an (n + 1)-tuple
 * `appendFun f g` - appends a function g to an n-tuple of functions
-* `dropFun f`     - drops the last function from an n+1-tuple
+* `dropFun f`     - drops the last function from an n + 1-tuple
 * `lastFun f`     - returns the last function of a tuple.
 
 Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not definitionally equal
@@ -90,7 +90,7 @@ def append1 (α : TypeVec n) (β : Type*) : TypeVec (n + 1)
 /-- retain only a `n-length` prefix of the argument -/
 def drop (α : TypeVec.{u} (n + 1)) : TypeVec n := fun i => α i.fs
 
-/-- take the last value of a `(n+1)-length` vector -/
+/-- take the last value of a `(n + 1)-length` vector -/
 def last (α : TypeVec.{u} (n + 1)) : Type _ :=
   α Fin2.fz
 
@@ -110,7 +110,7 @@ theorem last_append1 {α : TypeVec n} {β : Type*} : last (append1 α β) = β :
 theorem append1_drop_last (α : TypeVec (n + 1)) : append1 (drop α) (last α) = α :=
   funext fun i => by cases i <;> rfl
 
-/-- cases on `(n+1)-length` vectors -/
+/-- cases on `(n + 1)-length` vectors -/
 @[elab_as_elim]
 def append1Cases {C : TypeVec (n + 1) → Sort u} (H : ∀ α β, C (append1 α β)) (γ) : C γ := by
   rw [← @append1_drop_last _ γ]; apply H
@@ -254,7 +254,7 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
 protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v :=
   fun v => cast (by congr; funext i; cases i) f
 
-/-- cases distinction for (n+1)-length type vector -/
+/-- cases distinction for (n + 1)-length type vector -/
 protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort*}
     (f : ∀ (t) (v : TypeVec n), β (v ::: t)) :
     ∀ v, β v :=
@@ -279,7 +279,7 @@ def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort*}
   have eq₃ : fs = nilFun := by funext i; contradiction
   cases eq₁; cases eq₂; cases eq₃; rfl
 
-/-- cases distinction for an arrow in the category of (n+1)-length type vectors -/
+/-- cases distinction for an arrow in the category of (n + 1)-length type vectors -/
 def typevecCasesCons₃ (n : ℕ) {β : ∀ v v' : TypeVec (n + 1), v ⟹ v' → Sort*}
     (F : ∀ (t t') (f : t → t') (v v' : TypeVec n) (fs : v ⟹ v'),
     β (v ::: t) (v' ::: t') (fs ::: f)) :
@@ -296,7 +296,7 @@ def typevecCasesNil₂ {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f : β nilFun
   suffices g = nilFun by rwa [this]
   ext ⟨⟩
 
-/-- specialized cases distinction for an arrow in the category of (n+1)-length type vectors -/
+/-- specialized cases distinction for an arrow in the category of (n + 1)-length type vectors -/
 def typevecCasesCons₂ (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
     {β : (v ::: t) ⟹ (v' ::: t') → Sort*}
     (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs ::: f)) : ∀ fs, β fs := by
@@ -390,7 +390,7 @@ def RelLast' (α : TypeVec n) {β : Type*} (p : β → β → Prop) :
     (α ::: β) ⊗ (α ::: β) ⟹ «repeat» (n + 1) Prop :=
   splitFun (repeatEq α) (uncurry p)
 
-/-- given `F : TypeVec.{u} (n+1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
+/-- given `F : TypeVec.{u} (n + 1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
 i.e. its first argument can be fed in separately from the rest of the vector of arguments -/
 def Curry (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n) : Type _ :=
   F (β ::: α)

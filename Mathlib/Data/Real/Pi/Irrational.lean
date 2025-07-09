@@ -257,7 +257,7 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
 
 /--
 Auxiliary for the proof that `π` is irrational.
-For any real `a`, we have that `a ^ (2n+1) / n!` tends to `0` as `n → ∞`.  This is just a
+For any real `a`, we have that `a ^ (2n + 1) / n!` tends to `0` as `n → ∞`.  This is just a
 reformulation of tendsto_pow_div_factorial_atTop, which asserts the same for `a ^ n / n!`
 -/
 private lemma tendsto_pow_div_factorial_at_top_aux (a : ℝ) :

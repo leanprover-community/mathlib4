@@ -44,7 +44,7 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 For convenience, we work directly with finite types instead of natural numbers. That is, we write
 `α, ι, κ` for (finite) types where one might traditionally use natural numbers `n, H, c`. This
 allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι ⊕ ι'` instead of `Fin n`,
-`Fin (n+1)`, `Fin (c^(n^H))`, and `Fin (H + H')`.
+`Fin (n + 1)`, `Fin (c^(n^H))`, and `Fin (H + H')`.
 
 ## TODO
 

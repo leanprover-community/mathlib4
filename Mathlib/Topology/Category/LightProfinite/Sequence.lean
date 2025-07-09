@@ -17,16 +17,16 @@ open CategoryTheory OnePoint TopologicalSpace Topology
 
 namespace LightProfinite
 
-/-- The continuous map from `ℕ∪{∞}` to `ℝ` sending `n` to `1/(n+1)` and `∞` to `0`. -/
+/-- The continuous map from `ℕ∪{∞}` to `ℝ` sending `n` to `1/(n + 1)` and `∞` to `0`. -/
 noncomputable def natUnionInftyEmbedding : C(OnePoint ℕ, ℝ) where
   toFun
     | ∞ => 0
-    | OnePoint.some n => 1 / (n+1 : ℝ)
+    | OnePoint.some n => 1 / (n + 1 : ℝ)
   continuous_toFun := OnePoint.continuous_iff_from_nat _ |>.mpr
     tendsto_one_div_add_atTop_nhds_zero_nat
 
 /--
-The continuous map from `ℕ∪{∞}` to `ℝ` sending `n` to `1/(n+1)` and `∞` to `0` is a closed
+The continuous map from `ℕ∪{∞}` to `ℝ` sending `n` to `1/(n + 1)` and `∞` to `0` is a closed
 embedding.
 -/
 lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInftyEmbedding := by

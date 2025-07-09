@@ -358,7 +358,7 @@ remains bounded.
 
 
 /-- First technical lemma to control the growth of coefficients of the inverse. Bound the explicit
-expression for `∑_{k<n+1} aᵏ Qₖ` in terms of a sum of powers of the same sum one step before,
+expression for `∑_{k<n + 1} aᵏ Qₖ` in terms of a sum of powers of the same sum one step before,
 in a general abstract setup. -/
 theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp : ∀ k, 0 ≤ p k) {r a : ℝ}
     (hr : 0 ≤ r) (ha : 0 ≤ a) :
@@ -419,7 +419,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
       simp [prod_const, ← mul_sum, mul_pow]
 
 /-- Second technical lemma to control the growth of coefficients of the inverse. Bound the explicit
-expression for `∑_{k<n+1} aᵏ Qₖ` in terms of a sum of powers of the same sum one step before,
+expression for `∑_{k<n + 1} aᵏ Qₖ` in terms of a sum of powers of the same sum one step before,
 in the specific setup we are interesting in, by reducing to the general bound in
 `radius_rightInv_pos_of_radius_pos_aux1`. -/
 theorem radius_rightInv_pos_of_radius_pos_aux2 {x : E} {n : ℕ} (hn : 2 ≤ n + 1)

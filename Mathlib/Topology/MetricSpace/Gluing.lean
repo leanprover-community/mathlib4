@@ -42,7 +42,7 @@ X 0 -----> X 1 -----> X 2 -----> X 3 -----> ...
 ```
 where the `X n` are metric spaces and `f n` isometric embeddings, we define the inductive
 limit of the `X n`, also known as the increasing union of the `X n` in this context, if we
-identify `X n` and `X (n+1)` through `f n`. This is a metric space in which all `X n` embed
+identify `X n` and `X (n + 1)` through `f n`. This is a metric space in which all `X n` embed
 isometrically and in a way compatible with `f n`.
 
 -/

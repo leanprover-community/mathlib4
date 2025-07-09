@@ -34,13 +34,13 @@ namespace DoldKan
 variable {C : Type*} [Category C] [Preadditive C]
 variable {X : SimplicialObject C}
 
-/-- A morphism `φ : Y ⟶ X _⦋n+1⦌` satisfies `HigherFacesVanish q φ`
-when the compositions `φ ≫ X.δ j` are `0` for `j ≥ max 1 (n+2-q)`. When `q ≤ n+1`,
+/-- A morphism `φ : Y ⟶ X _⦋n + 1⦌` satisfies `HigherFacesVanish q φ`
+when the compositions `φ ≫ X.δ j` are `0` for `j ≥ max 1 (n+2-q)`. When `q ≤ n + 1`,
 it basically means that the composition `φ ≫ X.δ j` are `0` for the `q` highest
 possible values of a nonzero `j`. Otherwise, when `q ≥ n+2`, all the compositions
 `φ ≫ X.δ j` for nonzero `j` vanish. See also the lemma `comp_P_eq_self_iff` in
 `Projections.lean` which states that `HigherFacesVanish q φ` is equivalent to
-the identity `φ ≫ (P q).f (n+1) = φ`. -/
+the identity `φ ≫ (P q).f (n + 1) = φ`. -/
 def HigherFacesVanish {Y : C} {n : ℕ} (q : ℕ) (φ : Y ⟶ X _⦋n + 1⦌) : Prop :=
   ∀ j : Fin (n + 1), n + 1 ≤ (j : ℕ) + q → φ ≫ X.δ j.succ = 0
 

@@ -451,7 +451,7 @@ theorem descPochhammer_nonneg {n : ℕ} {s : S} (h : n - 1 ≤ s) :
     positivity
   · exact (descPochhammer_pos h).le
 
-/-- `descPochhammer S n` is at least `(s-n+1)^n` on `[n-1, ∞)`. -/
+/-- `descPochhammer S n` is at least `(s-n + 1)^n` on `[n-1, ∞)`. -/
 theorem pow_le_descPochhammer_eval {n : ℕ} {s : S} (h : n - 1 ≤ s) :
     (s - n + 1)^n ≤ (descPochhammer S n).eval s := by
   induction n with

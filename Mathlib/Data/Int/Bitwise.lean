@@ -148,17 +148,17 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | (n : ℕ) => by
     rw [show (cond (bodd n) 1 0 : ℤ) = (cond (bodd n) 1 0 : ℕ) by cases bodd n <;> rfl]
     exact congr_arg ofNat n.bodd_add_div2
-  | -[n+1] => by
+  | -[n + 1] => by
     refine Eq.trans ?_ (congr_arg negSucc n.bodd_add_div2)
     dsimp [bodd]; cases Nat.bodd n <;> dsimp [cond, not, div2, Int.mul]
-    · change -[2 * Nat.div2 n+1] = _
+    · change -[2 * Nat.div2 n + 1] = _
       rw [zero_add]
     · rw [zero_add, add_comm]
       rfl
 
 theorem div2_val : ∀ n, div2 n = n / 2
   | (n : ℕ) => congr_arg ofNat n.div2_val
-  | -[n+1] => congr_arg negSucc n.div2_val
+  | -[n + 1] => congr_arg negSucc n.div2_val
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
@@ -184,7 +184,7 @@ theorem bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
   cases b <;> rfl
 
 @[simp]
-theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
+theorem bit_negSucc (b) (n : ℕ) : bit b -[n + 1] = -[Nat.bit (not b) n + 1] := by
   rw [bit_val, Nat.bit_val]
   cases b <;> rfl
 
@@ -196,7 +196,7 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 @[simp]
 theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
-  | -[n+1] => by
+  | -[n + 1] => by
     rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero
     cases b <;>
       rfl
@@ -204,7 +204,7 @@ theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
 @[simp]
 theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_succ
-  | -[n+1] => by
+  | -[n + 1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
     cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
@@ -311,7 +311,7 @@ theorem lxor_bit (a m b n) : Int.xor (bit a m) (bit b n) = bit (xor a b) (Int.xo
 @[simp]
 theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
   | (n : ℕ) => by simp [lnot]
-  | -[n+1] => by simp [lnot]
+  | -[n + 1] => by simp [lnot]
 
 @[simp]
 theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
@@ -341,7 +341,7 @@ theorem testBit_lxor (m n k) : testBit (Int.xor m n) k = xor (testBit m k) (test
 @[simp]
 theorem testBit_lnot : ∀ n k, testBit (lnot n) k = not (testBit n k)
   | (n : ℕ), k => by simp [lnot, testBit]
-  | -[n+1], k => by simp [lnot, testBit]
+  | -[n + 1], k => by simp [lnot, testBit]
 
 @[simp]
 theorem shiftLeft_neg (m n : ℤ) : m <<< (-n) = m >>> n :=
@@ -361,11 +361,11 @@ theorem shiftRight_natCast (m n : ℕ) : (m : ℤ) >>> (n : ℤ) = m >>> n := by
 @[deprecated (since := "2025-03-10")] alias shiftRight_coe_nat := shiftRight_natCast
 
 @[simp]
-theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftLeft' true m n+1] :=
+theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftLeft' true m n + 1] :=
   rfl
 
 @[simp]
-theorem shiftRight_negSucc (m n : ℕ) : -[m+1] >>> (n : ℤ) = -[m >>> n+1] := by cases n <;> rfl
+theorem shiftRight_negSucc (m n : ℕ) : -[m+1] >>> (n : ℤ) = -[m >>> n + 1] := by cases n <;> rfl
 
 /-- Compare with `Int.shiftRight_add`, which doesn't have the coercions `ℕ → ℤ`. -/
 theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>> (n : ℤ)) >>> (k : ℤ)

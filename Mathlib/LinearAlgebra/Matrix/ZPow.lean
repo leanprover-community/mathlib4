@@ -74,13 +74,13 @@ open Int
 @[simp]
 theorem one_zpow : ∀ n : ℤ, (1 : M) ^ n = 1
   | (n : ℕ) => by rw [zpow_natCast, one_pow]
-  | -[n+1] => by rw [zpow_negSucc, one_pow, inv_one]
+  | -[n + 1] => by rw [zpow_negSucc, one_pow, inv_one]
 
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : M) ^ z = 0
   | (n : ℕ), h => by
     rw [zpow_natCast, zero_pow]
     exact mod_cast h
-  | -[n+1], _ => by simp [zero_pow n.succ_ne_zero]
+  | -[n + 1], _ => by simp [zero_pow n.succ_ne_zero]
 
 theorem zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
   split_ifs with h
@@ -89,7 +89,7 @@ theorem zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
 
 theorem inv_zpow (A : M) : ∀ n : ℤ, A⁻¹ ^ n = (A ^ n)⁻¹
   | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, inv_pow']
-  | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, inv_pow']
+  | -[n + 1] => by rw [zpow_negSucc, zpow_negSucc, inv_pow']
 
 @[simp]
 theorem zpow_neg_one (A : M) : A ^ (-1 : ℤ) = A⁻¹ := by
@@ -121,7 +121,7 @@ theorem isUnit_det_zpow_iff {A : M} {z : ℤ} : IsUnit (A ^ z).det ↔ IsUnit A.
 
 theorem zpow_neg {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (-n) = (A ^ n)⁻¹
   | (n : ℕ) => zpow_neg_natCast _ _
-  | -[n+1] => by
+  | -[n + 1] => by
     rw [zpow_negSucc, neg_negSucc, zpow_natCast, nonsing_inv_nonsing_inv]
     rw [det_pow]
     exact h.pow _
@@ -131,7 +131,7 @@ theorem inv_zpow' {A : M} (h : IsUnit A.det) (n : ℤ) : A⁻¹ ^ n = A ^ (-n) :
 
 theorem zpow_add_one {A : M} (h : IsUnit A.det) : ∀ n : ℤ, A ^ (n + 1) = A ^ n * A
   | (n : ℕ) => by simp only [← Nat.cast_succ, pow_succ, zpow_natCast]
-  | -[n+1] =>
+  | -[n + 1] =>
     calc
       A ^ (-(n + 1) + 1 : ℤ) = (A ^ n)⁻¹ := by
         rw [neg_add, neg_add_cancel_right, zpow_neg h, zpow_natCast]
@@ -172,7 +172,7 @@ theorem zpow_one_add {A : M} (h : IsUnit A.det) (i : ℤ) : A ^ (1 + i) = A * A 
 theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det)
     (h : SemiconjBy A X Y) : ∀ m : ℤ, SemiconjBy A (X ^ m) (Y ^ m)
   | (n : ℕ) => by simp [h.pow_right n]
-  | -[n+1] => by
+  | -[n + 1] => by
     have hx' : IsUnit (X ^ n.succ).det := by
       rw [det_pow]
       exact hx.pow n.succ
@@ -221,12 +221,12 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
 theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ m) ^ n
   | (m : ℕ), (n : ℕ) => by
     rw [zpow_natCast, zpow_natCast, ← pow_mul, ← zpow_natCast, Int.natCast_mul]
-  | (m : ℕ), -[n+1] => by
+  | (m : ℕ), -[n + 1] => by
     rw [zpow_natCast, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg_natCast]
   | -[m+1], (n : ℕ) => by
     rw [zpow_natCast, zpow_negSucc, ← inv_pow', ← pow_mul, negSucc_mul_ofNat, zpow_neg_natCast,
         inv_pow']
-  | -[m+1], -[n+1] => by
+  | -[m+1], -[n + 1] => by
     rw [zpow_negSucc, zpow_negSucc, negSucc_mul_negSucc, ← Int.natCast_mul, zpow_natCast, inv_pow',
       ← pow_mul, nonsing_inv_nonsing_inv]
     rw [det_pow]
@@ -254,7 +254,7 @@ theorem zpow_sub {A : M} (ha : IsUnit A.det) (z1 z2 : ℤ) : A ^ (z1 - z2) = A ^
 
 theorem Commute.mul_zpow {A B : M} (h : Commute A B) : ∀ i : ℤ, (A * B) ^ i = A ^ i * B ^ i
   | (n : ℕ) => by simp [h.mul_pow n]
-  | -[n+1] => by
+  | -[n + 1] => by
     rw [zpow_negSucc, zpow_negSucc, zpow_negSucc, ← mul_inv_rev,
       h.mul_pow n.succ, (h.pow_pow _ _).eq]
 
@@ -268,12 +268,12 @@ theorem one_div_zpow {A : M} (n : ℤ) : (1 / A) ^ n = 1 / A ^ n := by simp only
 @[simp]
 theorem transpose_zpow (A : M) : ∀ n : ℤ, (A ^ n)ᵀ = Aᵀ ^ n
   | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, transpose_pow]
-  | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, transpose_nonsing_inv, transpose_pow]
+  | -[n + 1] => by rw [zpow_negSucc, zpow_negSucc, transpose_nonsing_inv, transpose_pow]
 
 @[simp]
 theorem conjTranspose_zpow [StarRing R] (A : M) : ∀ n : ℤ, (A ^ n)ᴴ = Aᴴ ^ n
   | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, conjTranspose_pow]
-  | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, conjTranspose_nonsing_inv, conjTranspose_pow]
+  | -[n + 1] => by rw [zpow_negSucc, zpow_negSucc, conjTranspose_nonsing_inv, conjTranspose_pow]
 
 theorem IsSymm.zpow {A : M} (h : A.IsSymm) (k : ℤ) :
     (A ^ k).IsSymm := by

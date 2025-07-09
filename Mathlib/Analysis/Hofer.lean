@@ -40,7 +40,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   haveI : Nonempty X := ⟨x⟩
   choose! F hF using H
   -- Use the axiom of choice
-  -- Now define u by induction starting at x, with u_{n+1} = F(n, u_n)
+  -- Now define u by induction starting at x, with u_{n + 1} = F(n, u_n)
   let u : ℕ → X := fun n => Nat.recOn n x F
   -- The properties of F translate to properties of u
   have hu :
@@ -56,7 +56,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     | hi n IH =>
       have A : d (u (n + 1)) x ≤ 2 * ε := by
         rw [dist_comm]
-        let r := range (n + 1) -- range (n+1) = {0, ..., n}
+        let r := range (n + 1) -- range (n + 1) = {0, ..., n}
         calc
           d (u 0) (u (n + 1)) ≤ ∑ i ∈ r, d (u i) (u <| i + 1) := dist_le_range_sum_dist u (n + 1)
           _ ≤ ∑ i ∈ r, ε / 2 ^ i :=

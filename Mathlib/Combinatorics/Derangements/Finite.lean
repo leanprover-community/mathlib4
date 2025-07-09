@@ -42,7 +42,7 @@ theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α
 theorem card_derangements_fin_add_two (n : ℕ) :
     card (derangements (Fin (n + 2))) =
       (n + 1) * card (derangements (Fin n)) + (n + 1) * card (derangements (Fin (n + 1))) := by
-  -- get some basic results about the size of Fin (n+1) plus or minus an element
+  -- get some basic results about the size of Fin (n + 1) plus or minus an element
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
     simp only

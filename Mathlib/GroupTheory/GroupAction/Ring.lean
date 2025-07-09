@@ -38,4 +38,4 @@ instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
   smul_assoc n x y :=
     match n with
     | (n : ℕ) => by simp_rw [natCast_zsmul, smul_assoc]
-    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]
+    | -[n + 1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]

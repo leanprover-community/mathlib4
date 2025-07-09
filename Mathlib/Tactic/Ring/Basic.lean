@@ -24,7 +24,7 @@ More precisely, expressions of the following form are supported:
 - exponentiation of expressions (the exponent must have type `ℕ`)
 - subtraction and negation of expressions (if the base is a full ring)
 
-The extension to exponents means that something like `2 * 2^n * b = b * 2^(n+1)` can be proved,
+The extension to exponents means that something like `2 * 2^n * b = b * 2^(n + 1)` can be proved,
 even though it is not strictly speaking an equation in the language of commutative rings.
 
 ## Implementation notes
@@ -733,7 +733,7 @@ into a sum of monomials.
 
 * `x ^ 1 = x`
 * `x ^ (2*n) = x ^ n * x ^ n`
-* `x ^ (2*n+1) = x ^ n * x ^ n * x`
+* `x ^ (2*n + 1) = x ^ n * x ^ n * x`
 -/
 partial def evalPowNat {a : Q($α)} (va : ExSum sα a) (n : Q(ℕ)) :
     Lean.Core.CoreM <| Result (ExSum sα) q($a ^ $n) := do

@@ -49,7 +49,7 @@ theorem contDiff_clm_apply_iff {f : D → E →L[𝕜] F} [FiniteDimensional �
   simp_rw [← contDiffOn_univ, contDiffOn_clm_apply]
 
 /-- This is a useful lemma to prove that a certain operation preserves functions being `C^n`.
-When you do induction on `n`, this gives a useful characterization of a function being `C^(n+1)`,
+When you do induction on `n`, this gives a useful characterization of a function being `C^(n + 1)`,
 assuming you have already computed the derivative. The advantage of this version over
 `contDiff_succ_iff_fderiv` is that both occurrences of `ContDiff` are for functions with the same
 domain and codomain (`D` and `E`). This is not the case for `contDiff_succ_iff_fderiv`, which

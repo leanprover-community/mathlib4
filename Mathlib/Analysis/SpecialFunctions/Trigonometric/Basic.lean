@@ -611,7 +611,7 @@ section CosDivSq
 variable (x : ℝ)
 
 /-- the series `sqrtTwoAddSeries x n` is `sqrt(2 + sqrt(2 + ... ))` with `n` square roots,
-  starting with `x`. We define it here because `cos (pi / 2 ^ (n+1)) = sqrtTwoAddSeries 0 n / 2`
+  starting with `x`. We define it here because `cos (pi / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2`
 -/
 @[simp]
 noncomputable def sqrtTwoAddSeries (x : ℝ) : ℕ → ℝ

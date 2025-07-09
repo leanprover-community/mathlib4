@@ -27,11 +27,11 @@ then $x/y$ must be a convergent of the continued fraction expansion of $\xi$.
 
 The main results are three variants of Dirichlet's approximation theorem:
 * `Real.exists_int_int_abs_mul_sub_le`, which states that for all real `ξ` and natural `0 < n`,
-  there are integers `j` and `k` with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`,
+  there are integers `j` and `k` with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n + 1)`,
 * `Real.exists_nat_abs_mul_sub_round_le`, which replaces `j` by `round(k*ξ)` and uses
   a natural number `k`,
 * `Real.exists_rat_abs_sub_le_and_den_le`, which says that there is a rational number `q`
-  satisfying `|ξ - q| ≤ 1/((n+1)*q.den)` and `q.den ≤ n`,
+  satisfying `|ξ - q| ≤ 1/((n + 1)*q.den)` and `q.den ≤ n`,
 
 and
 * `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`, which states that
@@ -77,7 +77,7 @@ section Dirichlet
 ### Dirichlet's approximation theorem
 
 We show that for any real number `ξ` and positive natural `n`, there is a fraction `q`
-such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
+such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n + 1)*q.den)`.
 -/
 
 
@@ -85,7 +85,7 @@ open Finset Int
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there are integers `j` and `k`,
-with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`.
+with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n + 1)`.
 
 See also `Real.exists_nat_abs_mul_sub_round_le`. -/
 theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
@@ -127,7 +127,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a natural number `k`,
-with `0 < k ≤ n` such that `|k*ξ - round(k*ξ)| ≤ 1/(n+1)`.
+with `0 < k ≤ n` such that `|k*ξ - round(k*ξ)| ≤ 1/(n + 1)`.
 -/
 theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ k : ℕ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - round (↑k * ξ)| ≤ 1 / (n + 1) := by
@@ -138,7 +138,7 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
-such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
+such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n + 1)*q.den)`.
 
 See also `AddCircle.exists_norm_nsmul_le`. -/
 theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
@@ -325,7 +325,7 @@ noncomputable def convergent : ℝ → ℕ → ℚ
 theorem convergent_zero (ξ : ℝ) : ξ.convergent 0 = ⌊ξ⌋ :=
   rfl
 
-/-- The `(n+1)`th convergent of `ξ` is the `n`th convergent of `1/(fract ξ)`. -/
+/-- The `(n + 1)`th convergent of `ξ` is the `n`th convergent of `1/(fract ξ)`. -/
 @[simp]
 theorem convergent_succ (ξ : ℝ) (n : ℕ) :
     ξ.convergent (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convergent n)⁻¹ :=

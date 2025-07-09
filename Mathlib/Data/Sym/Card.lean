@@ -71,7 +71,7 @@ protected def e1 {n k : ℕ} : { s : Sym (Fin (n + 1)) (k + 1) // ↑0 ∈ s } �
   right_inv s := by simp
 
 /-- The multisets of size `k` over `Fin n+2` not containing `0`
-are equivalent to those of size `k` over `Fin n+1`,
+are equivalent to those of size `k` over `Fin n + 1`,
 as demonstrated by respectively decrementing or incrementing every element of the multiset.
 -/
 protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃ Sym (Fin n.succ) k where

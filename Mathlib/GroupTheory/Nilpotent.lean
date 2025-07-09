@@ -146,7 +146,7 @@ theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
 
 variable {G}
 
-/-- The `n+1`st term of the upper central series `H i` has underlying set equal to the `x` such
+/-- The `n + 1`st term of the upper central series `H i` has underlying set equal to the `x` such
 that `⁅x,G⁆ ⊆ H n`. -/
 theorem mem_upperCentralSeries_succ_iff {n : ℕ} {x : G} :
     x ∈ upperCentralSeries G (n + 1) ↔ ∀ y : G, x * y * x⁻¹ * y⁻¹ ∈ upperCentralSeries G n :=

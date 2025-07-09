@@ -33,7 +33,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
   /- Translate the density assumption into two functions `center` and `radius` associating
     to any n, x, δ, δpos a center and a positive radius such that
     `closedBall center radius` is included both in `f n` and in `closedBall x δ`.
-    We can also require `radius ≤ (1/2)^(n+1)`, to ensure we get a Cauchy sequence later. -/
+    We can also require `radius ≤ (1/2)^(n + 1)`, to ensure we get a Cauchy sequence later. -/
   have : ∀ n x δ, δ ≠ 0 → ∃ y r, 0 < r ∧ r ≤ B (n + 1) ∧ closedBall y r ⊆ closedBall x δ ∩ f n := by
     intro n x δ δpos
     have : x ∈ closure (f n) := hd n x

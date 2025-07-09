@@ -547,7 +547,7 @@ theorem contMDiff_zero_iff :
 end IsManifold
 
 
-/-! ### `C^(n+1)` functions are `C^n` -/
+/-! ### `C^(n + 1)` functions are `C^n` -/
 
 theorem ContMDiffWithinAt.of_succ (h : ContMDiffWithinAt I I' (n + 1) f s x) :
     ContMDiffWithinAt I I' n f s x :=

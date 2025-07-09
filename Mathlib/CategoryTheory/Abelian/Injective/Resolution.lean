@@ -148,7 +148,7 @@ lemma comp_descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : Injec
     (w : f.f (n + 1) = I.cocomplex.d (n + 1) (n + 2) ≫ g' + g ≫ J.cocomplex.d n (n + 1)) :
     I.cocomplex.d (n+2) (n+3) ≫ descHomotopyZeroSucc f n g g' w =
       f.f (n + 2) - g' ≫ J.cocomplex.d _ _ :=
-  (I.exact_succ (n+1)).comp_descToInjective  _ _
+  (I.exact_succ (n + 1)).comp_descToInjective  _ _
 
 /-- Any descent of the zero morphism is homotopic to zero. -/
 def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -278,7 +278,7 @@ namespace InjectiveResolution
 Our goal is to define `InjectiveResolution.of Z : InjectiveResolution Z`.
 The `0`-th object in this resolution will just be `Injective.under Z`,
 i.e. an arbitrarily chosen injective object with a map from `Z`.
-After that, we build the `n+1`-st object as `Injective.syzygies`
+After that, we build the `n + 1`-st object as `Injective.syzygies`
 applied to the previously constructed morphism,
 and the map from the `n`-th object as `Injective.d`.
 -/
@@ -307,8 +307,8 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
   match n with
   | 0 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ 0).f)
-  | n+1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
-      (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n+1)).f)
+  | n + 1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
+      (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n + 1)).f)
 
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under

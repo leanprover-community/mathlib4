@@ -35,7 +35,7 @@ def antidiagonal (n : ℕ) : Multiset (ℕ × ℕ) :=
 theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_coe, List.Nat.mem_antidiagonal]
 
-/-- The cardinality of the antidiagonal of `n` is `n+1`. -/
+/-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
 theorem card_antidiagonal (n : ℕ) : card (antidiagonal n) = n + 1 := by
   rw [antidiagonal, coe_card, List.Nat.length_antidiagonal]

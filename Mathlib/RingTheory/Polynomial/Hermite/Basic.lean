@@ -18,7 +18,7 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 
 ## Results
 
-* `Polynomial.hermite_succ`: the recursion `hermite (n+1) = (x - d/dx) (hermite n)`
+* `Polynomial.hermite_succ`: the recursion `hermite (n + 1) = (x - d/dx) (hermite n)`
 * `Polynomial.coeff_hermite_explicit`: a closed formula for (nonvanishing) coefficients in terms
   of binomial coefficients and double factorials.
 * `Polynomial.coeff_hermite_of_odd_add`: for `n`,`k` where `n+k` is odd, `(hermite n).coeff k` is
@@ -45,7 +45,7 @@ noncomputable def hermite : ℕ → Polynomial ℤ
   | 0 => 1
   | n + 1 => X * hermite n - derivative (hermite n)
 
-/-- The recursion `hermite (n+1) = (x - d/dx) (hermite n)` -/
+/-- The recursion `hermite (n + 1) = (x - d/dx) (hermite n)` -/
 @[simp]
 theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (hermite n) := by
   rw [hermite]

@@ -70,7 +70,7 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
   /- Since g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e` and
     g lifts f, f ([tₙ, tₙ₊₁] × {a}) is contained in the codomain (`target`) of `q e`. -/
   obtain ⟨e, h_sub⟩ := t_sub n
-  have : Set.Icc (t n) (t (n+1)) ×ˢ {a} ⊆ f ⁻¹' (q e).target := by
+  have : Set.Icc (t n) (t (n + 1)) ×ˢ {a} ⊆ f ⁻¹' (q e).target := by
     rintro ⟨t0, a'⟩ ⟨ht, ha⟩
     rw [Set.mem_singleton_iff] at ha; dsimp only at ha
     rw [← g_lifts, hpq e, ha]

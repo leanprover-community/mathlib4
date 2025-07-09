@@ -40,7 +40,7 @@ def truncateTo [HasZeroObject V] [HasZeroMorphisms V] (C : ChainComplex V ℕ) :
   (toSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 1 0, by simp⟩
 
 -- PROJECT when `V` is abelian (but not generally?)
--- `[∀ n, Exact (C.d (n+2) (n+1)) (C.d (n+1) n)] [Epi (C.d 1 0)]` iff `QuasiIso (C.truncate_to)`
+-- `[∀ n, Exact (C.d (n+2) (n + 1)) (C.d (n + 1) n)] [Epi (C.d 1 0)]` iff `QuasiIso (C.truncate_to)`
 variable [HasZeroMorphisms V]
 
 /-- We can "augment" a chain complex by inserting an arbitrary object in degree zero

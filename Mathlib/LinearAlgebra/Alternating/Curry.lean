@@ -20,9 +20,9 @@ variable {R : Type*} {M M₂ N N₂ : Type*} [CommSemiring R] [AddCommMonoid M]
 
 namespace AlternatingMap
 
-/-- Given an alternating map `f` in `n+1` variables, split the first variable to obtain
+/-- Given an alternating map `f` in `n + 1` variables, split the first variable to obtain
 a linear map into alternating maps in `n` variables, given by `x ↦ (m ↦ f (Matrix.vecCons x m))`.
-It can be thought of as a map $Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))$.
+It can be thought of as a map $Hom(\bigwedge^{n + 1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))$.
 
 This is `MultilinearMap.curryLeft` for `AlternatingMap`. See also
 `AlternatingMap.curryLeftLinearMap`. -/

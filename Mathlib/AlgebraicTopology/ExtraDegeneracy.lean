@@ -16,7 +16,7 @@ import Mathlib.Tactic.FinCases
 In simplicial homotopy theory, in order to prove that the connected components
 of a simplicial set `X` are contractible, it suffices to construct an extra
 degeneracy as it is defined in *Simplicial Homotopy Theory* by Goerss-Jardine p. 190.
-It consists of a series of maps `π₀ X → X _⦋0⦌` and `X _⦋n⦌ → X _⦋n+1⦌` which
+It consists of a series of maps `π₀ X → X _⦋0⦌` and `X _⦋n⦌ → X _⦋n + 1⦌` which
 behave formally like an extra degeneracy `σ (-1)`. It can be thought as a datum
 associated to the augmented simplicial set `X → π₀ X`.
 
@@ -153,7 +153,7 @@ namespace Augmented
 namespace StandardSimplex
 
 /-- When `[Zero X]`, the shift of a map `f : Fin n → X`
-is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
+is a map `Fin (n + 1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
   Matrix.vecCons 0 f i
 

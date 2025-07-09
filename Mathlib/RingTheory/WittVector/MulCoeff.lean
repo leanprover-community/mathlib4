@@ -9,9 +9,9 @@ import Mathlib.RingTheory.WittVector.Truncated
 /-!
 # Leading terms of Witt vector multiplication
 
-The goal of this file is to study the leading terms of the formula for the `n+1`st coefficient
+The goal of this file is to study the leading terms of the formula for the `n + 1`st coefficient
 of a product of Witt vectors `x` and `y` over a ring of characteristic `p`.
-We aim to isolate the `n+1`st coefficients of `x` and `y`, and express the rest of the product
+We aim to isolate the `n + 1`st coefficients of `x` and `y`, and express the rest of the product
 in terms of a function of the lower coefficients.
 
 For most of this file we work with terms of type `MvPolynomial (Fin 2 × ℕ) ℤ`.
@@ -79,7 +79,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
     exact hx
 
 /-- `remainder p n` represents the remainder term from `mul_polyOfInterest_aux3`.
-`wittPolyProd p (n+1)` will have variables up to `n+1`,
+`wittPolyProd p (n + 1)` will have variables up to `n + 1`,
 but `remainder` will only have variables up to `n`.
 -/
 def remainder (n : ℕ) : 𝕄 :=
@@ -274,7 +274,7 @@ theorem nth_mul_coeff (n : ℕ) :
 variable {k}
 
 /--
-Produces the "remainder function" of the `n+1`st coefficient, which does not depend on the `n+1`st
+Produces the "remainder function" of the `n + 1`st coefficient, which does not depend on the `n + 1`st
 coefficients of the inputs. -/
 def nthRemainder (n : ℕ) : (Fin (n + 1) → k) → (Fin (n + 1) → k) → k :=
   Classical.choose (nth_mul_coeff p k n)

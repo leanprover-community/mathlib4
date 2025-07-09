@@ -213,15 +213,15 @@ theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ �
   · refine prod_congr rfl fun i hi ↦ ?_
     rw [choose_symm (this _ hi)]
 
-/-- The sum of `(n+1).choose i * f i (n+1-i)` can be split into two sums at rank `n`,
-respectively of `n.choose i * f i (n+1-i)` and `n.choose i * f (i+1) (n-i)`. -/
+/-- The sum of `(n + 1).choose i * f i (n + 1-i)` can be split into two sums at rank `n`,
+respectively of `n.choose i * f i (n + 1-i)` and `n.choose i * f (i+1) (n-i)`. -/
 theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
     (∑ i ∈ range (n + 2), ((n + 1).choose i : R) * f i (n + 1 - i)) =
       (∑ i ∈ range (n + 1), (n.choose i : R) * f i (n + 1 - i)) +
         ∑ i ∈ range (n + 1), (n.choose i : R) * f (i + 1) (n - i) := by
   simpa only [nsmul_eq_mul] using sum_choose_succ_nsmul f n
 
-/-- The sum along the antidiagonal of `(n+1).choose i * f i j` can be split into two sums along the
+/-- The sum along the antidiagonal of `(n + 1).choose i * f i j` can be split into two sums along the
 antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`. -/
 theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
     (∑ ij ∈ antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =

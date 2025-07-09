@@ -1158,7 +1158,7 @@ theorem contDiff_iff_forall_nat_le {n : ℕ∞} :
     ContDiff 𝕜 n f ↔ ∀ m : ℕ, ↑m ≤ n → ContDiff 𝕜 m f := by
   simp_rw [← contDiffOn_univ]; exact contDiffOn_iff_forall_nat_le
 
-/-- A function is `C^(n+1)` iff it has a `C^n` derivative. -/
+/-- A function is `C^(n + 1)` iff it has a `C^n` derivative. -/
 theorem contDiff_succ_iff_hasFDerivAt {n : ℕ} :
     ContDiff 𝕜 (n + 1) f ↔
       ∃ f' : E → E →L[𝕜] F, ContDiff 𝕜 n f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
