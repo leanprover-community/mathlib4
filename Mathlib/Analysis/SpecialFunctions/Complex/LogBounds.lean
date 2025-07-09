@@ -11,7 +11,7 @@ import Mathlib.Analysis.Calculus.Deriv.Shift
 # Estimates for the complex logarithm
 
 We show that `log (1+z)` differs from its Taylor polynomial up to degree `n` by at most
-`‖z‖^(n+1)/((n+1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.norm_log_sub_logTaylor_le`.
+`‖z‖^(n + 1)/((n + 1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.norm_log_sub_logTaylor_le`.
 
 To this end, we derive the representation of `log (1+z)` as the integral of `1/(1+tz)`
 over the unit interval (`Complex.log_eq_integral`) and introduce notation
@@ -128,7 +128,7 @@ lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ 
   exact ContinuousOn.intervalIntegrable (by fun_prop)
 
 open intervalIntegral in
-/-- The difference of `log (1+z)` and its `(n+1)`st Taylor polynomial can be bounded in
+/-- The difference of `log (1+z)` and its `(n + 1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
 lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - logTaylor (n + 1) z‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by
@@ -216,7 +216,7 @@ lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log 
     IsUnit.div_mul_cancel] at hz4
   linarith
 
-/-- The difference of `log (1-z)⁻¹` and its `(n+1)`st Taylor polynomial can be bounded in
+/-- The difference of `log (1-z)⁻¹` and its `(n + 1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
 lemma norm_log_one_sub_inv_add_logTaylor_neg_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 - z)⁻¹ + logTaylor (n + 1) (-z)‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by

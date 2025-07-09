@@ -16,12 +16,12 @@ Let `m` and `n` be two positive integers.
 Let `a₁, a₂, ..., aₘ` be `m` different numbers from the set `{1, 2, ..., n}`
 such that for any two indices `i` and `j` with `1 ≤ i ≤ j ≤ m` and `aᵢ + aⱼ ≤ n`,
 there exists an index `k` such that `aᵢ + aⱼ = aₖ`.
-Show that `(a₁+a₂+...+aₘ)/m ≥ (n+1)/2`
+Show that `(a₁+a₂+...+aₘ)/m ≥ (n + 1)/2`
 
 # Sketch of solution
 
 We can order the numbers so that `a₁ ≤ a₂ ≤ ... ≤ aₘ`.
-The key idea is to pair the numbers in the sum and show that `aᵢ + aₘ₊₁₋ᵢ ≥ n+1`.
+The key idea is to pair the numbers in the sum and show that `aᵢ + aₘ₊₁₋ᵢ ≥ n + 1`.
 Indeed, if we had `aᵢ + aₘ₊₁₋ᵢ ≤ n`, then `a₁ + aₘ₊₁₋ᵢ, a₂ + aₘ₊₁₋ᵢ, ..., aᵢ + aₘ₊₁₋ᵢ`
 would be `m` elements of the set of `aᵢ`'s all larger than `aₘ₊₁₋ᵢ`, which is impossible.
 -/

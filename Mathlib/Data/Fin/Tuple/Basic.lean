@@ -97,14 +97,14 @@ theorem tuple0_le {α : Fin 0 → Type*} [∀ i, Preorder (α i)] (f g : ∀ i, 
 variable {α : Fin (n + 1) → Sort u} (x : α 0) (q : ∀ i, α i) (p : ∀ i : Fin n, α i.succ) (i : Fin n)
   (y : α i.succ) (z : α 0)
 
-/-- The tail of an `n+1` tuple, i.e., its last `n` entries. -/
+/-- The tail of an `n + 1` tuple, i.e., its last `n` entries. -/
 def tail (q : ∀ i, α i) : ∀ i : Fin n, α i.succ := fun i ↦ q i.succ
 
 theorem tail_def {n : ℕ} {α : Fin (n + 1) → Sort*} {q : ∀ i, α i} :
     (tail fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q k.succ :=
   rfl
 
-/-- Adding an element at the beginning of an `n`-tuple, to get an `n+1`-tuple. -/
+/-- Adding an element at the beginning of an `n`-tuple, to get an `n + 1`-tuple. -/
 def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fin.cases x p j
 
 @[simp]
@@ -172,7 +172,7 @@ def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ �
   left_inv f := by simp
   right_inv f := by simp
 
-/-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
+/-- Recurse on an `n + 1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
 def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
     (x : ∀ i : Fin n.succ, α i) : P x :=
@@ -466,7 +466,7 @@ end Tuple
 section TupleRight
 
 /-! In the previous section, we have discussed inserting or removing elements on the left of a
-tuple. In this section, we do the same on the right. A difference is that `Fin (n+1)` is constructed
+tuple. In this section, we do the same on the right. A difference is that `Fin (n + 1)` is constructed
 inductively from `Fin n` starting from the left, not from the right. This implies that Lean needs
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
@@ -474,7 +474,7 @@ several places. -/
 variable {α : Fin (n + 1) → Sort*} (x : α (last n)) (q : ∀ i, α i)
   (p : ∀ i : Fin n, α i.castSucc) (i : Fin n) (y : α i.castSucc) (z : α (last n))
 
-/-- The beginning of an `n+1` tuple, i.e., its first `n` entries -/
+/-- The beginning of an `n + 1` tuple, i.e., its first `n` entries -/
 def init (q : ∀ i, α i) (i : Fin n) : α i.castSucc :=
   q i.castSucc
 
@@ -482,7 +482,7 @@ theorem init_def {q : ∀ i, α i} :
     (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q k.castSucc :=
   rfl
 
-/-- Adding an element at the end of an `n`-tuple, to get an `n+1`-tuple. The name `snoc` comes from
+/-- Adding an element at the end of an `n`-tuple, to get an `n + 1`-tuple. The name `snoc` comes from
 `cons` (i.e., adding an element to the left of a tuple) read in reverse order. -/
 def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) : α i :=
   if h : i.val < n then _root_.cast (by rw [Fin.castSucc_castLT i h]) (p (castLT i h))
@@ -699,7 +699,7 @@ def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc
   left_inv f := by simp
   right_inv f := by simp
 
-/-- Recurse on an `n+1`-tuple by splitting it its initial `n`-tuple and its last element. -/
+/-- Recurse on an `n + 1`-tuple by splitting it its initial `n`-tuple and its last element. -/
 @[elab_as_elim, inline]
 def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
     (h : ∀ xs x, P (Fin.snoc xs x))
@@ -707,7 +707,7 @@ def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
   _root_.cast (by rw [Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
 
 @[simp] lemma snocCases_snoc
-    {P : (∀ i : Fin (n+1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
+    {P : (∀ i : Fin (n + 1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
     (x : ∀ i : Fin n, (Fin.init α) i) (x₀ : α (Fin.last _)) :
     snocCases h (Fin.snoc x x₀) = h x x₀ := by
   rw [snocCases, cast_eq_iff_heq, Fin.init_snoc, Fin.snoc_last]

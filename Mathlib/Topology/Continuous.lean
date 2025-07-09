@@ -382,7 +382,7 @@ are unary functions from `I`) become binary functions in the continuity lemma.
   form. That means that:
   - The conclusion has a variable `X` as domain (not something like `Y × Z`);
   - Wherever possible, all point arguments `c : Y` are replaced by functions `c : X → Y`;
-  - All `n`-ary function arguments are replaced by `n+1`-ary functions
+  - All `n`-ary function arguments are replaced by `n + 1`-ary functions
     (`f : Y → Z` becomes `f : X → Y → Z`);
   - All (relevant) arguments have continuity assumptions, and perhaps there are additional
     assumptions needed to make the operation continuous;

@@ -19,7 +19,7 @@ generalization, the Monge point of a simplex.
   concurrence of the Monge planes.
 
 * `mongePlane` is a Monge plane of an (n+2)-simplex, which is the
-  (n+1)-dimensional affine subspace of the subspace spanned by the
+  (n + 1)-dimensional affine subspace of the subspace spanned by the
   simplex that passes through the centroid of an n-dimensional face
   and is orthogonal to the opposite edge (in 2 dimensions, this is the
   same as an altitude).
@@ -37,7 +37,7 @@ generalization, the Monge point of a simplex.
 
 * <https://en.wikipedia.org/wiki/Monge_point>
 * <https://en.wikipedia.org/wiki/Orthocentric_system>
-* Małgorzata Buba-Brzozowa, [The Monge Point and the 3(n+1) Point
+* Małgorzata Buba-Brzozowa, [The Monge Point and the 3(n + 1) Point
   Sphere of an
   n-Simplex](https://pdfs.semanticscholar.org/6f8b/0f623459c76dac2e49255737f8f0f4725d16.pdf)
 
@@ -231,7 +231,7 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
   · intro i _ hi
     simp [hfs i hi]
 
-/-- A Monge plane of an (n+2)-simplex is the (n+1)-dimensional affine
+/-- A Monge plane of an (n+2)-simplex is the (n + 1)-dimensional affine
 subspace of the subspace spanned by the simplex that passes through
 the centroid of an n-dimensional face and is orthogonal to the
 opposite edge (in 2 dimensions, this is the same as an altitude).

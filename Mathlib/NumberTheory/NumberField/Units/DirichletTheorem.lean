@@ -232,7 +232,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
 
 /-- An infinite sequence of nonzero algebraic integers of `K` satisfying the following properties:
 • `seq n` is nonzero;
-• for `w : InfinitePlace K`, `w ≠ w₁ → w (seq n+1) < w (seq n)`;
+• for `w : InfinitePlace K`, `w ≠ w₁ → w (seq n + 1) < w (seq n)`;
 • `∣norm (seq n)∣ ≤ B`. -/
 def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
   | 0 => ⟨1, by norm_num⟩

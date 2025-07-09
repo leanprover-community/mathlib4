@@ -15,7 +15,7 @@ import Mathlib.Topology.ContinuousMap.Polynomial
 
 We prove that the Bernstein approximations
 ```
-∑ k : Fin (n+1), (n.choose k * x^k * (1-x)^(n-k)) • f (k/n : ℝ)
+∑ k : Fin (n + 1), (n.choose k * x^k * (1-x)^(n-k)) • f (k/n : ℝ)
 ```
 for a continuous function `f : C([0,1], E)` taking values in a locally convex vector space
 converge uniformly to `f` as `n` tends to infinity.
@@ -90,7 +90,7 @@ We now give a slight reformulation of `bernsteinPolynomial.variance`.
 
 namespace bernstein
 
-/-- Send `k : Fin (n+1)` to the equally spaced points `k/n` in the unit interval.
+/-- Send `k : Fin (n + 1)` to the equally spaced points `k/n` in the unit interval.
 -/
 def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by simp [div_nonneg, div_le_one_of_le₀, k.is_le]⟩
@@ -136,7 +136,7 @@ converge uniformly.
 A key player is the set `S f ε h n x`,
 for some function `f : C(I, E)`, `h : 0 < ε`, `n : ℕ` and `x : I`.
 
-This is the set of points `k` in `Fin (n+1)` such that
+This is the set of points `k` in `Fin (n + 1)` such that
 `k/n` is within `δ` of `x`, where `δ` is the modulus of uniform continuity for `f`,
 chosen so `‖f x - f y‖ < ε/2` when `|x - y| < δ`.
 
@@ -163,7 +163,7 @@ open bernsteinApproximation
 
 /-- The Bernstein approximations
 ```
-∑ k : Fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
+∑ k : Fin (n + 1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)
 ```
 for a continuous function `f : C([0,1], ℝ)` converge uniformly to `f` as `n` tends to infinity.
 
@@ -230,7 +230,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
         refine (hδ _ _ ?_).le
         simpa [S] using hk
       _ = 1 / 2 * ∑ k ∈ S, bernstein n k x := by rw [mul_comm, Finset.sum_mul]
-      -- In this step we increase the sum over `S` back to a sum over all of `Fin (n+1)`,
+      -- In this step we increase the sum over `S` back to a sum over all of `Fin (n + 1)`,
       -- so that we can use `bernstein.probability`.
       _ ≤ 1 / 2 * ∑ k : Fin (n + 1), bernstein n k x := by gcongr; exact S.subset_univ
       _ = 1 / 2 := by rw [bernstein.probability, mul_one]
@@ -249,7 +249,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
         gcongr
         simpa [one_le_div₀, hδ₀, sq_le_sq, S, abs_of_pos, ← Real.dist_eq, dist_comm (x : ℝ)]
           using hk
-      -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
+      -- Again enlarging the sum from `Sᶜ` to all of `Fin (n + 1)`
       _ ≤ C * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 / δ ^ 2 * bernstein n k x := by
         gcongr; exact Sᶜ.subset_univ
       _ = C * (∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x) / δ ^ 2 := by

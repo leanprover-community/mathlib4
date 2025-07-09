@@ -66,8 +66,8 @@ associated increasing parameterizations that show up in the definition
 of `compAlongOrderedFinpartition`.
 
 Then, one has to show that the ordered finpartitions thus
-obtained give exactly all ordered finpartitions of order `n+1`. For this, we define the inverse
-process (shrinking a finpartition of `n+1` by erasing `0`, either as an atom or from the part
+obtained give exactly all ordered finpartitions of order `n + 1`. For this, we define the inverse
+process (shrinking a finpartition of `n + 1` by erasing `0`, either as an atom or from the part
 that contains it), and we show that these processes are inverse to each other, yielding an
 equivalence between `(c : OrderedFinpartition n) × Option (Fin c.length)`
 and `OrderedFinpartition (n + 1)`. This equivalence shows up prominently in the inductive proof
@@ -460,7 +460,7 @@ def extend (c : OrderedFinpartition n) (i : Option (Fin c.length)) : OrderedFinp
 lemma extend_some (c : OrderedFinpartition n) (i : Fin c.length) : c.extend i = c.extendMiddle i :=
   rfl
 
-/-- Given an ordered finpartition of `n+1`, with a leftmost atom equal to `{0}`, remove this
+/-- Given an ordered finpartition of `n + 1`, with a leftmost atom equal to `{0}`, remove this
 atom to form an ordered finpartition of `n`. -/
 def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     OrderedFinpartition n where
@@ -506,7 +506,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     · simp
     · simp [Fin.heq_ext_iff]
 
-/-- Given an ordered finpartition of `n+1`, with a leftmost atom different from `{0}`, remove `{0}`
+/-- Given an ordered finpartition of `n + 1`, with a leftmost atom different from `{0}`, remove `{0}`
 from the atom that contains it, to form an ordered finpartition of `n`. -/
 def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
     OrderedFinpartition n where
@@ -618,7 +618,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
 
 open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
-of `Fin (n+1)`. -/
+of `Fin (n + 1)`. -/
 @[simps apply]
 def extendEquiv (n : ℕ) :
     ((c : OrderedFinpartition n) × Option (Fin c.length)) ≃ OrderedFinpartition (n + 1) where

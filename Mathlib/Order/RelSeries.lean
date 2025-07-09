@@ -474,7 +474,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
-a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
+a series of length `n + 1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 -/
 @[simps! length]
 def cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) : RelSeries r :=
@@ -521,7 +521,7 @@ lemma append_cons {p q : RelSeries r} {x : α} (hx : x ~[r] p.head) (hq : p.last
 
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
-a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
+a series of length `n + 1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
 -/
 @[simps! length]
 def snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) : RelSeries r :=

@@ -211,16 +211,16 @@ theorem bernoulli_generating_function (t : A) :
   -- n = 0 case solved by `simp`
   cases n with | zero => simp | succ n =>
   -- n ≥ 1, the coefficients is a sum to n+2, so use `sum_range_succ` to write as
-  -- last term plus sum to n+1
+  -- last term plus sum to n + 1
   rw [coeff_succ_X_mul, coeff_rescale, coeff_exp, PowerSeries.coeff_mul,
     Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ]
   -- last term is zero so kill with `add_zero`
   simp only [RingHom.map_sub, tsub_self, constantCoeff_one, constantCoeff_exp,
     coeff_zero_eq_constantCoeff, mul_zero, sub_self, add_zero]
-  -- Let's multiply both sides by (n+1)! (OK because it's a unit)
+  -- Let's multiply both sides by (n + 1)! (OK because it's a unit)
   have hnp1 : IsUnit ((n + 1)! : ℚ) := IsUnit.mk0 _ (mod_cast factorial_ne_zero (n + 1))
   rw [← (hnp1.map (algebraMap ℚ A)).mul_right_inj]
-  -- do trivial rearrangements to make RHS (n+1)*t^n
+  -- do trivial rearrangements to make RHS (n + 1)*t^n
   rw [mul_left_comm, ← RingHom.map_mul]
   change _ = t ^ n * algebraMap ℚ A (((n + 1) * n ! : ℕ) * (1 / n !))
   rw [cast_mul, mul_assoc,

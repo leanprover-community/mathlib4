@@ -264,7 +264,7 @@ suggested.
 
 For example:
 ```
-example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
+example (n : ℕ) (m : ℤ) : 2^(n + 1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
 example (x : ℕ) (h : x * 2 > 5): x + x > 5 := by ring; assumption -- suggests ring_nf

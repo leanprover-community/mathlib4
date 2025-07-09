@@ -142,7 +142,7 @@ lemma liftHomotopyZeroSucc_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : Proj
     (w : f.f (n + 1) = P.complex.d (n + 1) n ≫ g + g' ≫ Q.complex.d (n + 2) (n + 1)) :
     liftHomotopyZeroSucc f n g g' w ≫ Q.complex.d (n + 3) (n + 2) =
       f.f (n + 2) - P.complex.d _ _ ≫ g' :=
-  (Q.exact_succ (n+1)).liftFromProjective_comp  _ _
+  (Q.exact_succ (n + 1)).liftFromProjective_comp  _ _
 
 /-- Any lift of the zero morphism is homotopic to zero. -/
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
@@ -272,7 +272,7 @@ namespace ProjectiveResolution
 Our goal is to define `ProjectiveResolution.of Z : ProjectiveResolution Z`.
 The `0`-th object in this resolution will just be `Projective.over Z`,
 i.e. an arbitrarily chosen projective object with a map to `Z`.
-After that, we build the `n+1`-st object as `Projective.syzygies`
+After that, we build the `n + 1`-st object as `Projective.syzygies`
 applied to the previously constructed morphism,
 and the map from the `n`-th object as `Projective.d`.
 -/

@@ -282,8 +282,8 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
 
 /-- **Taylor's theorem** with the general mean value form of the remainder.
 
-We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
-`n+1`-times differentiable on the open set `Ioo x₀ x`, and `g` is a differentiable function on
+We assume that `f` is `n + 1`-times continuously differentiable in the closed set `Icc x₀ x` and
+`n + 1`-times differentiable on the open set `Ioo x₀ x`, and `g` is a differentiable function on
 `Ioo x₀ x` and continuous on `Icc x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such that
 $$f(x) - (P_n f)(x₀, x) = \frac{(x - x')^n}{n!} \frac{g(x) - g(x₀)}{g' x'},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$. -/
@@ -310,10 +310,10 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
 
 /-- **Taylor's theorem** with the Lagrange form of the remainder.
 
-We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
-`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
-that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
+We assume that `f` is `n + 1`-times continuously differentiable in the closed set `Icc x₀ x` and
+`n + 1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n + 1)}(x') (x - x₀)^{n + 1}}{(n + 1)!},$$
+where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n + 1)}$ is the $n + 1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
     (hf : ContDiffOn ℝ n f (Icc x₀ x))
@@ -329,7 +329,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
     exact hy.2.ne'
   have hg' : ∀ y : ℝ, y ∈ Ioo x₀ x → -(↑n + 1) * (x - y) ^ n ≠ 0 := fun y hy =>
     mul_ne_zero (neg_ne_zero.mpr (Nat.cast_add_one_ne_zero n)) (xy_ne y hy)
-  -- We apply the general theorem with g(t) = (x - t)^(n+1)
+  -- We apply the general theorem with g(t) = (x - t)^(n + 1)
   rcases taylor_mean_remainder hx hf hf' gcont (fun y _ => monomial_has_deriv_aux y x _) hg' with
     ⟨y, hy, h⟩
   use y, hy
@@ -339,10 +339,10 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
 
 /-- **Taylor's theorem** with the Cauchy form of the remainder.
 
-We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc x₀ x` and
-`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
-that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
+We assume that `f` is `n + 1`-times continuously differentiable on the closed set `Icc x₀ x` and
+`n + 1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n + 1)}(x') (x - x')^n (x-x₀)}{n!},$$
+where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n + 1)}$ is the $n + 1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
     (hf : ContDiffOn ℝ n f (Icc x₀ x))
@@ -361,9 +361,9 @@ theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} 
 
 /-- **Taylor's theorem** with a polynomial bound on the remainder
 
-We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
+We assume that `f` is `n + 1`-times continuously differentiable on the closed set `Icc a b`.
 The difference of `f` and its `n`-th Taylor polynomial can be estimated by
-`C * (x - a)^(n+1) / n!` where `C` is a bound for the `n+1`-th iterated derivative of `f`. -/
+`C * (x - a)^(n + 1) / n!` where `C` is a bound for the `n + 1`-th iterated derivative of `f`. -/
 theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (hab : a ≤ b)
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) (hx : x ∈ Icc a b)
     (hC : ∀ y ∈ Icc a b, ‖iteratedDerivWithin (n + 1) f (Icc a b) y‖ ≤ C) :
@@ -402,9 +402,9 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
 
 /-- **Taylor's theorem** with a polynomial bound on the remainder
 
-We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
+We assume that `f` is `n + 1`-times continuously differentiable on the closed set `Icc a b`.
 There exists a constant `C` such that for all `x ∈ Icc a b` the difference of `f` and its `n`-th
-Taylor polynomial can be estimated by `C * (x - a)^(n+1)`. -/
+Taylor polynomial can be estimated by `C * (x - a)^(n + 1)`. -/
 theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ} (hab : a ≤ b)
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) :
     ∃ C, ∀ x ∈ Icc a b, ‖f x - taylorWithinEval f n (Icc a b) a x‖ ≤ C * (x - a) ^ (n + 1) := by

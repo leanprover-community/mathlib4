@@ -195,7 +195,7 @@ theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
 end MvPFunctor
 
 /-
-Decomposing an n+1-ary pfunctor.
+Decomposing an n + 1-ary pfunctor.
 -/
 namespace MvPFunctor
 
@@ -204,13 +204,13 @@ open TypeVec
 variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
 /-- Split polynomial functor, get an n-ary functor
-from an `n+1`-ary functor -/
+from an `n + 1`-ary functor -/
 def drop : MvPFunctor n where
   A := P.A
   B a := (P.B a).drop
 
 /-- Split polynomial functor, get a univariate functor
-from an `n+1`-ary functor -/
+from an `n + 1`-ary functor -/
 def last : PFunctor where
   A := P.A
   B a := (P.B a).last

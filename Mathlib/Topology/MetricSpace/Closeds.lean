@@ -81,13 +81,13 @@ theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Se
 Hausdorff edistance. -/
 instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
   /- We will show that, if a sequence of sets `s n` satisfies
-    `edist (s n) (s (n+1)) < 2^{-n}`, then it converges. This is enough to guarantee
+    `edist (s n) (s (n + 1)) < 2^{-n}`, then it converges. This is enough to guarantee
     completeness, by a standard completeness criterion.
     We use the shorthand `B n = 2^{-n}` in ennreal. -/
   let B : ℕ → ℝ≥0∞ := fun n => 2⁻¹ ^ n
   have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [B, ENNReal.pow_pos]
   have B_ne_top : ∀ n, B n ≠ ⊤ := by finiteness
-  /- Consider a sequence of closed sets `s n` with `edist (s n) (s (n+1)) < B n`.
+  /- Consider a sequence of closed sets `s n` with `edist (s n) (s (n + 1)) < B n`.
     We will show that it converges. The limit set is `t0 = ⋂n, closure (⋃m≥n, s m)`.
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
     in `t0` is close to a point in `s n`. The completeness then follows from a

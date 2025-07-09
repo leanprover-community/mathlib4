@@ -161,7 +161,7 @@ instance : CompleteLattice (I.Filtration M) :=
 instance : Inhabited (I.Filtration M) :=
   ⟨⊥⟩
 
-/-- An `I` filtration is stable if `I • F.N n = F.N (n+1)` for large enough `n`. -/
+/-- An `I` filtration is stable if `I • F.N n = F.N (n + 1)` for large enough `n`. -/
 def Stable : Prop :=
   ∃ n₀, ∀ n ≥ n₀, I • F.N n = F.N (n + 1)
 

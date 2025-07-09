@@ -14,7 +14,7 @@ and the bordism groups of a topological space, and prove these are abelian group
 
 The basic notion of bordism theory is that of a bordism between smooth manifolds.
 Two compact smooth `n`-dimensional manifolds `M` and `N` are **bordant** if there exists a smooth
-**bordism** between them: this is a compact `n+1`-dimensional manifold `W` whose boundary is
+**bordism** between them: this is a compact `n + 1`-dimensional manifold `W` whose boundary is
 (diffeomorphic to) the disjoint union `M ⊕ N`. Being bordant is an equivalence relation
 (transitivity follows from the collar neighbourhood theorem). The set of equivalence classes has an
 abelian group structure, with the group operation given as disjoint union of manifolds,
@@ -26,7 +26,7 @@ together with a continuous map `M → F`. (The word *singular* does not refer to
 but is by analogy to singular chains in the definition of singular homology.)
 
 Given two `n`-dimensional singular manifolds `s` and `t`, an (oriented) bordism between `s` and `t`
-is a compact smooth `n+1`-dimensional manifold `W` whose boundary is (diffeomorphic to) the disjoint
+is a compact smooth `n + 1`-dimensional manifold `W` whose boundary is (diffeomorphic to) the disjoint
 union of `s` and `t`, together with a map `W → X` which restricts to the maps on `s` and `t`.
 We call `s` and `t` bordant if there exists a bordism between them: again, this defines an
 equivalence relation. The `n`-th bordism group of `X` is the set of bordism classes of

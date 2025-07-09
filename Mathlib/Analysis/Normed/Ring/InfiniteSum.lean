@@ -76,7 +76,7 @@ theorem tsum_mul_tsum_of_summable_norm' {f : ι → R} {g : ι' → R}
 
 We prove two versions of the Cauchy product formula. The first one is
 `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm`, where the `n`-th term is a sum over
-`Finset.range (n+1)` involving `Nat` subtraction.
+`Finset.range (n + 1)` involving `Nat` subtraction.
 In order to avoid `Nat` subtraction, we also provide
 `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`,
 where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which corresponds to the

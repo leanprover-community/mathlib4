@@ -25,7 +25,7 @@ namespace IsPrimitiveRoot
 open Finset Polynomial
 
 /-- If `μ` is a primitive `n`th root of unity in `R`, then `∏(1≤k<n) (1-μ^k) = n`.
-(Stated with `n+1` in place of `n` to avoid the condition `n ≠ 0`.) -/
+(Stated with `n + 1` in place of `n` to avoid the condition `n ≠ 0`.) -/
 lemma prod_one_sub_pow_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n + 1)) :
     ∏ k ∈ range n, (1 - μ ^ (k + 1)) = n + 1 := by
   have := X_pow_sub_C_eq_prod hμ n.zero_lt_succ (one_pow (n + 1))
@@ -36,7 +36,7 @@ lemma prod_one_sub_pow_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n 
     one_pow, sum_const, card_range, nsmul_eq_mul, Nat.cast_add, Nat.cast_one] using this
 
 /-- If `μ` is a primitive `n`th root of unity in `R`, then `(-1)^(n-1) * ∏(1≤k<n) (μ^k-1) = n`.
-(Stated with `n+1` in place of `n` to avoid the condition `n ≠ 0`.) -/
+(Stated with `n + 1` in place of `n` to avoid the condition `n ≠ 0`.) -/
 lemma prod_pow_sub_one_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n + 1)) :
     (-1) ^ n * ∏ k ∈ range n, (μ ^ (k + 1) - 1) = n + 1 := by
   have : (-1 : R) ^ n = ∏ k ∈ range n, -1 := by rw [prod_const, card_range]

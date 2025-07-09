@@ -10,7 +10,7 @@ import Mathlib.AlgebraicTopology.DoldKan.PInfty
 # Decomposition of the Q endomorphisms
 
 In this file, we obtain a lemma `decomposition_Q` which expresses
-explicitly the projection `(Q q).f (n+1) : X _⦋n+1⦌ ⟶ X _⦋n+1⦌`
+explicitly the projection `(Q q).f (n + 1) : X _⦋n + 1⦌ ⟶ X _⦋n + 1⦌`
 (`X : SimplicialObject C` with `C` a preadditive category) as
 a sum of terms which are postcompositions with degeneracies.
 
@@ -19,7 +19,7 @@ subcomplex of the alternating face map complex of `X` and show
 that it is a complement to the normalized Moore complex.)
 
 Then, we introduce an ad hoc structure `MorphComponents X n Z` which
-can be used in order to define morphisms `X _⦋n+1⦌ ⟶ Z` using the
+can be used in order to define morphisms `X _⦋n + 1⦌ ⟶ Z` using the
 decomposition provided by `decomposition_Q`. This shall play a critical
 role in the proof that the functor
 `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
@@ -44,7 +44,7 @@ variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
 As `Q q` is the complement projection to `P q`, this implies that in the case of
-simplicial abelian groups, any $(n+1)$-simplex $x$ can be decomposed as
+simplicial abelian groups, any $(n + 1)$-simplex $x$ can be decomposed as
 $x = x' + \sum (i=0}^{q-1} σ_{n-i}(y_i)$ where $x'$ is in the image of `P q` and
 the $y_i$ are in degree $n$. -/
 theorem decomposition_Q (n q : ℕ) :
@@ -80,8 +80,8 @@ variable (X)
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
 the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms. The fields are the data that are needed in order to
-construct a morphism `X _⦋n+1⦌ ⟶ Z` (see `φ`) using the decomposition of the
-identity given by `decomposition_Q n (n+1)`. -/
+construct a morphism `X _⦋n + 1⦌ ⟶ Z` (see `φ`) using the decomposition of the
+identity given by `decomposition_Q n (n + 1)`. -/
 @[ext]
 structure MorphComponents (n : ℕ) (Z : C) where
   a : X _⦋n + 1⦌ ⟶ Z
@@ -91,7 +91,7 @@ namespace MorphComponents
 
 variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h : Z ⟶ Z')
 
-/-- The morphism `X _⦋n+1⦌ ⟶ Z` associated to `f : MorphComponents X n Z`. -/
+/-- The morphism `X _⦋n + 1⦌ ⟶ Z` associated to `f : MorphComponents X n Z`. -/
 def φ {Z : C} (f : MorphComponents X n Z) : X _⦋n + 1⦌ ⟶ Z :=
   PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
     f.b (Fin.rev i)
@@ -99,7 +99,7 @@ def φ {Z : C} (f : MorphComponents X n Z) : X _⦋n + 1⦌ ⟶ Z :=
 variable (X n)
 
 /-- the canonical `MorphComponents` whose associated morphism is the identity
-(see `F_id`) thanks to `decomposition_Q n (n+1)` -/
+(see `F_id`) thanks to `decomposition_Q n (n + 1)` -/
 @[simps]
 def id : MorphComponents X n (X _⦋n + 1⦌) where
   a := PInfty.f (n + 1)

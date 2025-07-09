@@ -103,7 +103,7 @@ theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_natCast]
     exact pow_mem hx n
-  | -[n+1] => by
+  | -[n + 1] => by
     rw [zpow_negSucc]
     exact inv_mem (pow_mem hx n.succ)
 

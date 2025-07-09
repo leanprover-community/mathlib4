@@ -33,8 +33,8 @@ variable {C : Type u} [Category.{v} C]
 variable {D : Type u'} [Category.{v'} D]
 
 /--
-Given `n+1` objects of `C`, a fan for the last `n` with point `c₁.pt` and
-a binary fan on `c₁.pt` and `f 0`, we can build a fan for all `n+1`.
+Given `n + 1` objects of `C`, a fan for the last `n` with point `c₁.pt` and
+a binary fan on `c₁.pt` and `f 0`, we can build a fan for all `n + 1`.
 
 In `extendFanIsLimit` we show that if the two given fans are limits, then this fan is also a
 limit.
@@ -164,8 +164,8 @@ lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
 
 end Preserves
 
-/-- Given `n+1` objects of `C`, a cofan for the last `n` with point `c₁.pt`
-and a binary cofan on `c₁.X` and `f 0`, we can build a cofan for all `n+1`.
+/-- Given `n + 1` objects of `C`, a cofan for the last `n` with point `c₁.pt`
+and a binary cofan on `c₁.X` and `f 0`, we can build a cofan for all `n + 1`.
 
 In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.

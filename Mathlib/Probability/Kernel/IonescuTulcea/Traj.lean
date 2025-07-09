@@ -103,7 +103,7 @@ end castLemmas
 section iterateInduction
 
 /-- This function takes as input a tuple `(x_₀, ..., x_ₐ)` and `ind` a function which
-given `(y_₀, ...,y_ₙ)` outputs `x_{n+1} : X (n + 1)`, and it builds an element of `Π n, X n`
+given `(y_₀, ...,y_ₙ)` outputs `x_{n + 1} : X (n + 1)`, and it builds an element of `Π n, X n`
 by starting with `(x_₀, ..., x_ₐ)` and then iterating `ind`. -/
 def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) : Π n, X n

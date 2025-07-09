@@ -51,12 +51,12 @@ output, with enough expressivity to write any partial recursive function. The pr
   a successor (similar to `Nat.casesOn`).
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
-  * `case f g (n+1 :: v) = g (n :: v)`
+  * `case f g (n + 1 :: v) = g (n :: v)`
 * `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether to call `f`
   again or finish:
   * `fix f v = []` if `f v = []`
   * `fix f v = w` if `f v = 0 :: w`
-  * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
+  * `fix f v = fix f w` if `f v = n + 1 :: w` (the exact value of `n` is discarded)
 
 This basis is convenient because it is closer to the Turing machine model - the key operations are
 splitting and merging of lists of unknown length, while the messy `n`-ary composition operation
@@ -99,12 +99,12 @@ we functions that return a single result return a singleton `[n]`, or in some ca
   a successor (similar to `Nat.casesOn`).
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
-  * `case f g (n+1 :: v) = g (n :: v)`
+  * `case f g (n + 1 :: v) = g (n :: v)`
 * `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether to call `f`
   again or finish:
   * `fix f v = []` if `f v = []`
   * `fix f v = w` if `f v = 0 :: w`
-  * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
+  * `fix f v = fix f w` if `f v = n + 1 :: w` (the exact value of `n` is discarded)
 -/
 def Code.eval : Code → List ℕ →. List ℕ
   | Code.zero' => fun v => pure (0 :: v)
@@ -179,7 +179,7 @@ def zero : Code :=
 theorem zero_eval (v) : zero.eval v = pure [0] := by simp [zero]
 
 /-- `pred` returns the predecessor of the head of the input:
-`pred [] = [0]`, `pred (0 :: v) = [0]`, `pred (n+1 :: v) = [n]`. -/
+`pred [] = [0]`, `pred (0 :: v) = [0]`, `pred (n + 1 :: v) = [n]`. -/
 def pred : Code :=
   case zero head
 
@@ -192,11 +192,11 @@ theorem pred_eval (v) : pred.eval v = pure [v.headI.pred] := by
 
 It is implemented as:
 
-    rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
+    rfind f v = pred (fix (fun (n::v) => f (n::v) :: n + 1 :: v) (0 :: v))
 
 The idea is that the initial state is `0 :: v`, and the `fix` keeps `n :: v` as its internal state;
-it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the end we get
-`n+1 :: v` where `n` is the desired output, and `pred (n+1 :: v) = [n]` returns the result.
+it calls `f (n :: v)` as the exit test and `n + 1 :: v` as the next state. At the end we get
+`n + 1 :: v` where `n` is the desired output, and `pred (n + 1 :: v) = [n]` returns the result.
 -/
 def rfind (f : Code) : Code :=
   comp pred <| comp (fix <| cons f <| cons succ tail) zero'
@@ -206,18 +206,18 @@ functions. `prec f g` evaluates as:
 
 * `prec f g [] = [f []]`
 * `prec f g (0 :: v) = [f v]`
-* `prec f g (n+1 :: v) = [g (n :: prec f g (n :: v) :: v)]`
+* `prec f g (n + 1 :: v) = [g (n :: prec f g (n :: v) :: v)]`
 
 It is implemented as:
 
     G (a :: b :: IH :: v) = (b :: a+1 :: b-1 :: g (a :: IH :: v) :: v)
     F (0 :: f_v :: v) = (f_v :: v)
-    F (n+1 :: f_v :: v) = (fix G (0 :: n :: f_v :: v)).tail.tail
+    F (n + 1 :: f_v :: v) = (fix G (0 :: n :: f_v :: v)).tail.tail
     prec f g (a :: v) = [(F (a :: f v :: v)).head]
 
 Because `fix` always evaluates its body at least once, we must special case the `0` case to avoid
 calling `g` more times than necessary (which could be bad if `g` diverges). If the input is
-`0 :: v`, then `F (0 :: f v :: v) = (f v :: v)` so we return `[f v]`. If the input is `n+1 :: v`,
+`0 :: v`, then `F (0 :: f v :: v) = (f v :: v)` so we return `[f v]`. If the input is `n + 1 :: v`,
 we evaluate the function from the bottom up, with initial state `0 :: n :: f v :: v`. The first
 number counts up, providing arguments for the applications to `g`, while the second number counts
 down, providing the exit condition (this is the initial `b` in the return value of `G`, which is

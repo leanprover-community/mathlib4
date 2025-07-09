@@ -49,13 +49,13 @@ lemma cpow_mul_div_cpow_eq_div_div_cpow (m n : ℕ) (z : ℂ) (x : ℝ) :
 
 open Filter Real in
 /-- If the coefficients `f m` of an L-series are zero for `m ≤ n` and the L-series converges
-at some point, then `f (n+1)` is the limit of `(n+1)^x * LSeries f x` as `x → ∞`. -/
+at some point, then `f (n + 1)` is the limit of `(n + 1)^x * LSeries f x` as `x → ∞`. -/
 lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ n, f m = 0)
     (ha : abscissaOfAbsConv f < ⊤) :
     Tendsto (fun x : ℝ ↦ (n + 1) ^ (x : ℂ) * LSeries f x) atTop (nhds (f (n + 1))) := by
   obtain ⟨y, hay, hyt⟩ := exists_between ha
   lift y to ℝ using ⟨hyt.ne, ((OrderBot.bot_le _).trans_lt hay).ne'⟩
-  -- `F x m` is the `m`th term of `(n+1)^x * LSeries f x`, except that `F x (n+1) = 0`
+  -- `F x m` is the `m`th term of `(n + 1)^x * LSeries f x`, except that `F x (n + 1) = 0`
   let F := fun (x : ℝ) ↦ {m | n + 1 < m}.indicator (fun m ↦ f m / (m / (n + 1) : ℂ) ^ (x : ℂ))
   have hF₀ (x : ℝ) {m : ℕ} (hm : m ≤ n + 1) : F x m = 0 := by simp [F, not_lt_of_ge hm]
   have hF (x : ℝ) {m : ℕ} (hm : m ≠ n + 1) : F x m = ((n + 1) ^ (x : ℂ)) * term f x m := by
@@ -67,7 +67,7 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     refine (summable_mul_left_iff <| natCast_add_one_cpow_ne_zero n _).mpr <|
        LSeriesSummable_of_abscissaOfAbsConv_lt_re ?_
     simpa only [ofReal_re] using hay.trans_le <| EReal.coe_le_coe_iff.mpr hx
-  -- we can write `(n+1)^x * LSeries f x` as `f (n+1)` plus the series over `F x`
+  -- we can write `(n + 1)^x * LSeries f x` as `f (n + 1)` plus the series over `F x`
   have key : ∀ x ≥ y, (n + 1) ^ (x : ℂ) * LSeries f x = f (n + 1) + ∑' m : ℕ, F x m := by
     intro x hx
     rw [LSeries, ← tsum_mul_left, (hs hx).tsum_eq_add_tsum_ite (n + 1), pow_mul_term_eq f x n]

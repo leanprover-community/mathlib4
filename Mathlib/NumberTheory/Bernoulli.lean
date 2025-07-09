@@ -22,7 +22,7 @@ of $\coth(x)$, and also show up in the values that the Riemann Zeta function
 takes both at both negative and positive integers (and hence in the
 theory of modular forms). For example, if $1 \leq n$ then
 
-$$\zeta(2n)=\sum_{t\geq1}t^{-2n}=(-1)^{n+1}\frac{(2\pi)^{2n}B_{2n}}{2(2n)!}.$$
+$$\zeta(2n)=\sum_{t\geq1}t^{-2n}=(-1)^{n + 1}\frac{(2\pi)^{2n}B_{2n}}{2(2n)!}.$$
 
 This result is formalised in Lean: `riemannZeta_two_mul_nat`.
 
@@ -59,7 +59,7 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
-$$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
+$$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n + 1-k}$$ -/
 def bernoulli' : ℕ → ℚ :=
   WellFounded.fix Nat.lt_wfRel.wf fun n bernoulli' =>
     1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k k.2

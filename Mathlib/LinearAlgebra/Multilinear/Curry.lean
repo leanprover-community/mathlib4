@@ -9,11 +9,11 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
 /-!
 # Currying of multilinear maps
 We register isomorphisms corresponding to currying or uncurrying variables, transforming a
-multilinear function `f` on `n+1` variables into a linear function taking values in multilinear
+multilinear function `f` on `n + 1` variables into a linear function taking values in multilinear
 functions in `n` variables, and into a multilinear function in `n` variables taking values in linear
 functions. These operations are called `f.curryLeft` and `f.curryRight` respectively
 (with inverses `f.uncurryLeft` and `f.uncurryRight`). These operations induce linear equivalences
-between spaces of multilinear functions in `n+1` variables and spaces of linear functions into
+between spaces of multilinear functions in `n + 1` variables and spaces of linear functions into
 multilinear functions in `n` variables (resp. multilinear functions in `n` variables taking values
 in linear functions), called respectively `multilinearCurryLeftEquiv` and
 `multilinearCurryRightEquiv`.
@@ -30,7 +30,7 @@ variable {R : Type uR} {S : Type uS} {ι : Type uι} {ι' : Type uι'} {n : ℕ}
 /-!
 ### Currying
 
-We associate to a multilinear map in `n+1` variables (i.e., based on `Fin n.succ`) two
+We associate to a multilinear map in `n + 1` variables (i.e., based on `Fin n.succ`) two
 curried functions, named `f.curryLeft` (which is a linear map on `E 0` taking values
 in multilinear maps in `n` variables) and `f.curryRight` (which is a multilinear map in `n`
 variables taking values in linear maps on `E 0`). In both constructions, the variable that is
@@ -51,7 +51,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCo
 
 
 /-- Given a linear map `f` from `M 0` to multilinear maps on `n` variables,
-construct the corresponding multilinear map on `n+1` variables obtained by concatenating
+construct the corresponding multilinear map on `n + 1` variables obtained by concatenating
 the variables, given by `m ↦ f (m 0) (tail m)` -/
 def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) :
     MultilinearMap R M M₂ :=
@@ -64,7 +64,7 @@ theorem LinearMap.uncurryLeft_apply (f : M 0 →ₗ[R] MultilinearMap R (fun i :
     (m : ∀ i, M i) : f.uncurryLeft m = f (m 0) (tail m) :=
   rfl
 
-/-- Given a multilinear map `f` in `n+1` variables, split the first variable to obtain
+/-- Given a multilinear map `f` in `n + 1` variables, split the first variable to obtain
 a linear map into multilinear maps in `n` variables, given by `x ↦ (m ↦ f (cons x m))`. -/
 def MultilinearMap.curryLeft (f : MultilinearMap R M M₂) :
     M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂ where
@@ -96,7 +96,7 @@ theorem MultilinearMap.uncurry_curryLeft (f : MultilinearMap R M M₂) :
 
 variable (R M M₂)
 
-/-- The space of multilinear maps on `Π (i : Fin (n+1)), M i` is canonically isomorphic to
+/-- The space of multilinear maps on `Π (i : Fin (n + 1)), M i` is canonically isomorphic to
 the space of linear maps from `M 0` to the space of multilinear maps on
 `Π (i : Fin n), M i.succ`, by separating the first variable. We register this isomorphism as a
 linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
@@ -118,7 +118,7 @@ variable {R M M₂}
 /-! #### Right currying -/
 
 /-- Given a multilinear map `f` in `n` variables to the space of linear maps from `M (last n)` to
-`M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
+`M₂`, construct the corresponding multilinear map on `n + 1` variables obtained by concatenating
 the variables, given by `m ↦ f (init m) (m (last n))` -/
 def MultilinearMap.uncurryRight
     (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
@@ -133,7 +133,7 @@ theorem MultilinearMap.uncurryRight_apply
     (m : ∀ i, M i) : f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
 
-/-- Given a multilinear map `f` in `n+1` variables, split the last variable to obtain
+/-- Given a multilinear map `f` in `n + 1` variables, split the last variable to obtain
 a multilinear map in `n` variables taking values in linear maps from `M (last n)` to `M₂`, given by
 `m ↦ (x ↦ f (snoc m x))`. -/
 def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
@@ -164,7 +164,7 @@ theorem MultilinearMap.uncurry_curryRight (f : MultilinearMap R M M₂) :
 
 variable (R M M₂)
 
-/-- The space of multilinear maps on `Π (i : Fin (n+1)), M i` is canonically isomorphic to
+/-- The space of multilinear maps on `Π (i : Fin (n + 1)), M i` is canonically isomorphic to
 the space of linear maps from the space of multilinear maps on `Π (i : Fin n), M (castSucc i)` to
 the space of linear maps on `M (last n)`, by separating the last variable. We register this
 isomorphism as a linear isomorphism in `multilinearCurryRightEquiv R M M₂`.

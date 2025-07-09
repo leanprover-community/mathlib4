@@ -1027,7 +1027,7 @@ theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
   induction n with
   | zero =>
     rw [iteratedPDeriv_zero, iteratedPDeriv_one, Fin.last_zero]
-  -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
+  -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n + 1} ∂`
   | succ n IH =>
     have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
     have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by

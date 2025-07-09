@@ -16,7 +16,7 @@ Then there exists a natural number `s` and an injective homomorphism
 from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
 
 ## Strategy of the proof
-Suppose `f` is a nonzero polynomial in `n+1` variables.
+Suppose `f` is a nonzero polynomial in `n + 1` variables.
 First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself such that
 `f` is mapped to a polynomial in `X_0` with invertible leading coefficient.
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
@@ -37,7 +37,7 @@ let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphi
 
 Finally We use induction to prove there is an injective map from `k[X_0,...,X_{s-1}]`
 to `k[X_0,...,X_(n-1)]/I`.The case `n=0` is trivial.
-For `n+1`, if `I = 0` there is nothing to do.
+For `n + 1`, if `I = 0` there is nothing to do.
 Otherwise, `hom2` induces a map `φ` by quotient kernel.
 We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
 Composing `φ` and `g` we get the desired map since both `φ` and `g` are injective and integral.

@@ -52,7 +52,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
 -- Porting note: section about deducing differentiability for `C^n` functions moved to
 -- `Geometry.Manifold.MFDeriv.Basic`
 
-/-! ### The derivative of a `C^(n+1)` function is `C^n` -/
+/-! ### The derivative of a `C^(n + 1)` function is `C^n` -/
 
 section mfderiv
 variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
@@ -205,7 +205,7 @@ theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
 
 /-- The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` applied to `g₂(x)` is
 `C^n` at `x₀`, where the derivative is taken as a continuous linear map.
-We have to assume that `f` is `C^(n+1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
+We have to assume that `f` is `C^(n + 1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
 We have to insert a coordinate change from `x₀` to `g₁(x)` to make the derivative sensible.
 
 This is similar to `ContMDiffWithinAt.mfderivWithin`, but where the continuous linear map is
@@ -256,7 +256,7 @@ theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I 
 
 /-- The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` applied to `g₂(x)` is
 `C^n` at `x₀`, where the derivative is taken as a continuous linear map.
-We have to assume that `f` is `C^(n+1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
+We have to assume that `f` is `C^(n + 1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
 We have to insert a coordinate change from `x₀` to `g₁(x)` to make the derivative sensible.
 
 This is similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is applied to a
@@ -273,7 +273,7 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
 
 end mfderiv
 
-/-! ### The tangent map of a `C^(n+1)` function is `C^n` -/
+/-! ### The tangent map of a `C^(n + 1)` function is `C^n` -/
 
 section tangentMap
 
