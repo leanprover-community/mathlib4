@@ -51,11 +51,32 @@ lemma isCohenMacaulayRing_of_unmixed
     · intro le
       have lt : i < p.height := lt_of_lt_of_le (ENat.coe_lt_coe.mpr (lt_add_one i)) le
       rcases hi (le_of_lt lt) with ⟨rs, mem, reg, len⟩
-      --List.concat
-      have netop : Ideal.ofList rs ≠ ⊤ := sorry
+      have netop : Ideal.ofList rs ≠ ⊤ := ne_top_of_le_ne_top (Ideal.IsPrime.ne_top hp)
+        (Ideal.span_le.mpr mem)
       have ht := (Ideal.ofList_height_eq_length_of_isWeaklyRegular rs reg netop)
-      #check unmix rs ht
-      sorry
+      let _ := Ideal.Quotient.nontrivial netop
+      obtain ⟨r, rmem, hr⟩ : ∃ r ∈ p, IsSMulRegular (R ⧸ Ideal.ofList rs) r := by
+        by_contra! h
+        obtain ⟨q, qass, le⟩ : ∃ q ∈ associatedPrimes R (R ⧸ Ideal.ofList rs), p ≤ q := by
+          rcases associatedPrimes.nonempty R (R ⧸ Ideal.ofList rs) with ⟨Ia, hIa⟩
+          apply (Ideal.subset_union_prime_finite (associatedPrimes.finite R _) Ia Ia _).mp
+          · rw [biUnion_associatedPrimes_eq_compl_regular R (R ⧸ Ideal.ofList rs)]
+            exact fun r hr ↦ h r hr
+          · exact fun I hin _ _ ↦ IsAssociatedPrime.isPrime hin
+        have := Ideal.height_mono le
+        rw [(unmix rs ht).1 qass, ht, len] at this
+        exact this.not_gt lt
+      use rs.concat r
+      simp only [List.concat_eq_append, List.mem_append, List.mem_cons, List.not_mem_nil, or_false,
+        List.length_append, len, List.length_cons, List.length_nil, zero_add, and_true]
+      refine ⟨fun s ↦ or_imp.mpr ⟨fun h ↦ mem s h, fun eq ↦ by simpa [eq]⟩, ⟨fun i hi ↦ ?_⟩⟩
+      simp only [List.length_append, List.length_cons, List.length_nil, zero_add, Nat.lt_succ] at hi
+      rw [List.take_append_of_le_length hi]
+      rcases lt_or_eq_of_le hi with lt|eq
+      · simpa [← List.getElem_append_left' lt [r]] using reg.1 i lt
+      · rw [List.getElem_concat_length eq, Ideal.smul_eq_mul, Ideal.mul_top,
+          List.take_of_length_le (ge_of_eq eq)]
+        exact hr
   apply le_antisymm _ (depth_le_ringKrullDim _)
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, IsLocalRing.depth_eq_sSup_length_regular,
     WithBot.coe_le_coe]
@@ -77,4 +98,6 @@ lemma isCohenMacaulayRing_of_unmixed
 
 theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     ∀ (l : List R), (Ideal.ofList l).height = l.length → (Ideal.ofList l).IsUnmixed := by
+  refine ⟨fun cm l ht ↦ ?_, fun h ↦ isCohenMacaulayRing_of_unmixed h⟩
+
   sorry
