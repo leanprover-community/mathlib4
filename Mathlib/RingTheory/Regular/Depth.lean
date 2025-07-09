@@ -189,9 +189,7 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     rcases ih (ModuleCat.of R M') ntr'
       (Module.Finite.quotient R _) smul_lt' exist_N' with ⟨rs, len, mem, reg⟩
     use x ^ k :: rs
-    simp only [List.length_cons, len, Nat.add_left_inj, List.mem_cons, forall_eq_or_imp, hk,
-      true_and, isRegular_cons_iff]
-    exact ⟨mem, hxk, reg⟩
+    simpa [len, hk] using ⟨mem, hxk, reg⟩
 
 lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
     (f_mono : Mono (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
