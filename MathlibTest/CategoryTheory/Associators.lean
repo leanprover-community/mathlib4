@@ -36,10 +36,10 @@ example : F ⋙ (G ⋙ H) ⟶ (F ⋙ G) ⋙ H :=
   assoc%
 
 /--
-info: Try this: (ρ_ F).inv
+info: Try this: (λ_ F).hom
 -/
 #guard_msgs in
-example : F ⟶ F ⋙ 𝟭 _ :=
+example : 𝟭 _ ⋙ F ⟶ F :=
   assoc%
 
 /--
@@ -50,10 +50,31 @@ example : F ⟶ 𝟭 _ ⋙ F :=
   assoc%
 
 /--
-info: Try this: (α_ (F ⋙ G) H I).hom ≫ (α_ F G (H ⋙ I)).hom ≫ F ◁ (λ_ (G ⋙ H ⋙ I)).inv
+info: Try this: (ρ_ F).hom
 -/
 #guard_msgs in
-example : ((F ⋙ G) ⋙ H) ⋙ I ⟶ F ⋙ 𝟭 _ ⋙ G ⋙ H ⋙ I :=
+example : F ⋙ 𝟭 _ ⟶ F :=
+  assoc%
+
+/--
+info: Try this: (ρ_ F).inv
+-/
+#guard_msgs in
+example : F ⟶ F ⋙ 𝟭 _ :=
+  assoc%
+
+/--
+info: Try this: (ρ_ F).hom ▷ G
+-/
+#guard_msgs in
+example : (F ⋙ 𝟭 B) ⋙ G ⟶ F ⋙ G :=
+  assoc%
+
+/--
+info: Try this: (α_ (F ⋙ G) H I).hom ≫ (α_ F G (H ⋙ I)).hom
+-/
+#guard_msgs in
+example : ((F ⋙ G) ⋙ H) ⋙ I ⟶ F ⋙ G ⋙ H ⋙ I :=
   assoc%
 
 /--
@@ -61,6 +82,13 @@ info: Try this: F ◁ (α_ G H I).hom ≫ (α_ F G (H ⋙ I)).inv
 -/
 #guard_msgs in
 example : F ⋙ (G ⋙ H) ⋙ I ⟶ (F ⋙ G) ⋙ H ⋙ I :=
+  assoc%
+
+/--
+info: Try this: (α_ (F ⋙ G) H I).hom ≫ (α_ F G (H ⋙ I)).hom ≫ F ◁ (λ_ (G ⋙ H ⋙ I)).inv
+-/
+#guard_msgs in
+example : ((F ⋙ G) ⋙ H) ⋙ I ⟶ F ⋙ 𝟭 _ ⋙ G ⋙ H ⋙ I :=
   assoc%
 
 /--

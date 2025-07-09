@@ -181,7 +181,80 @@ partial def associators (f g : Expr) : MetaM Expr := do
       have _instB : Q(Category.{v₂} $B) := _B.inst
       have f : Q($A ⥤ $B) := f
       return q(Iso.refl $f)
-    | none => do
+    | _ => do
+    match ← leftUnitor? f g with
+    | some (f, g) => do
+      let _A ← srcExpr f
+      let _B ← tgtExpr f
+      have u₁ := _A.objLevel
+      have v₁ := _A.morLevel
+      have u₂ := _B.objLevel
+      have v₂ := _B.morLevel
+      have A : Q(Type u₁) := _A.type
+      have B : Q(Type u₂) := _B.type
+      have _instA : Q(Category.{v₁} $A) := _A.inst
+      have _instB : Q(Category.{v₂} $B) := _B.inst
+      have f : Q($A ⥤ $B) := f
+      have g : Q($A ⥤ $B) := g
+      let assoc ← associators f g
+      have assoc : Q($f ≅ $g) := assoc
+      return q(Functor.leftUnitor $f ≪≫ $assoc)
+    | _ => do
+    match ← leftUnitorInv? f g with
+    | some (f, g) => do
+      let _A ← srcExpr f
+      let _B ← tgtExpr f
+      have u₁ := _A.objLevel
+      have v₁ := _A.morLevel
+      have u₂ := _B.objLevel
+      have v₂ := _B.morLevel
+      have A : Q(Type u₁) := _A.type
+      have B : Q(Type u₂) := _B.type
+      have _instA : Q(Category.{v₁} $A) := _A.inst
+      have _instB : Q(Category.{v₂} $B) := _B.inst
+      have f : Q($A ⥤ $B) := f
+      have g : Q($A ⥤ $B) := g
+      let assoc ← associators f g
+      have assoc : Q($f ≅ $g) := assoc
+      return q($assoc ≪≫ (Functor.leftUnitor $g).symm)
+    | _ => do
+    match ← rightUnitor? f g with
+    | some (f, g) => do
+      let _A ← srcExpr f
+      let _B ← tgtExpr f
+      have u₁ := _A.objLevel
+      have v₁ := _A.morLevel
+      have u₂ := _B.objLevel
+      have v₂ := _B.morLevel
+      have A : Q(Type u₁) := _A.type
+      have B : Q(Type u₂) := _B.type
+      have _instA : Q(Category.{v₁} $A) := _A.inst
+      have _instB : Q(Category.{v₂} $B) := _B.inst
+      have f : Q($A ⥤ $B) := f
+      have g : Q($A ⥤ $B) := g
+      let assoc ← associators f g
+      have assoc : Q($f ≅ $g) := assoc
+      return q(Functor.rightUnitor $f ≪≫ $assoc)
+    | _ => do
+    match ← rightUnitorInv? f g with
+    | some (f, g) => do
+      let _A ← srcExpr f
+      let _B ← tgtExpr f
+      have u₁ := _A.objLevel
+      have v₁ := _A.morLevel
+      have u₂ := _B.objLevel
+      have v₂ := _B.morLevel
+      have A : Q(Type u₁) := _A.type
+      have B : Q(Type u₂) := _B.type
+      have _instA : Q(Category.{v₁} $A) := _A.inst
+      have _instB : Q(Category.{v₂} $B) := _B.inst
+      have f : Q($A ⥤ $B) := f
+      have g : Q($A ⥤ $B) := g
+      let assoc ← associators f g
+      have assoc : Q($f ≅ $g) := assoc
+      return q($assoc ≪≫ (Functor.rightUnitor $g).symm)
+
+    | _ => do
     match ← whiskerLeft? f g with
     | some (f, g, h) => do
       let _A ← srcExpr f
@@ -247,7 +320,7 @@ partial def associators (f g : Expr) : MetaM Expr := do
       let assoc ← associators q(𝟭 $B) g
       have assoc : Q(𝟭 $B ≅ $g) := assoc
       return q((Functor.rightUnitor $f).symm ≪≫ (Functor.isoWhiskerLeft $f $assoc))
-    | none => do
+    | _ => do
     match ← postCompSrc? f g with
     | some (f, g) => do
       let _A ← srcExpr f
@@ -265,79 +338,7 @@ partial def associators (f g : Expr) : MetaM Expr := do
       let assoc ← associators g q(𝟭 $B)
       have assoc : Q($g ≅ 𝟭 $B) := assoc
       return q(Functor.isoWhiskerLeft $f $assoc ≪≫ Functor.rightUnitor $f)
-    | none => do
-    match ← leftUnitor? f g with
-    | some (f, g) => do
-      let _A ← srcExpr f
-      let _B ← tgtExpr f
-      have u₁ := _A.objLevel
-      have v₁ := _A.morLevel
-      have u₂ := _B.objLevel
-      have v₂ := _B.morLevel
-      have A : Q(Type u₁) := _A.type
-      have B : Q(Type u₂) := _B.type
-      have _instA : Q(Category.{v₁} $A) := _A.inst
-      have _instB : Q(Category.{v₂} $B) := _B.inst
-      have f : Q($A ⥤ $B) := f
-      have g : Q($A ⥤ $B) := g
-      let assoc ← associators f g
-      have assoc : Q($f ≅ $g) := assoc
-      return q(Functor.leftUnitor $f ≪≫ $assoc)
-    | none => do
-    match ← leftUnitorInv? f g with
-    | some (f, g) => do
-      let _A ← srcExpr f
-      let _B ← tgtExpr f
-      have u₁ := _A.objLevel
-      have v₁ := _A.morLevel
-      have u₂ := _B.objLevel
-      have v₂ := _B.morLevel
-      have A : Q(Type u₁) := _A.type
-      have B : Q(Type u₂) := _B.type
-      have _instA : Q(Category.{v₁} $A) := _A.inst
-      have _instB : Q(Category.{v₂} $B) := _B.inst
-      have f : Q($A ⥤ $B) := f
-      have g : Q($A ⥤ $B) := g
-      let assoc ← associators f g
-      have assoc : Q($f ≅ $g) := assoc
-      return q($assoc ≪≫ (Functor.leftUnitor $g).symm)
-    | none => do
-    match ← rightUnitor? f g with
-    | some (f, g) => do
-      let _A ← srcExpr f
-      let _B ← tgtExpr f
-      have u₁ := _A.objLevel
-      have v₁ := _A.morLevel
-      have u₂ := _B.objLevel
-      have v₂ := _B.morLevel
-      have A : Q(Type u₁) := _A.type
-      have B : Q(Type u₂) := _B.type
-      have _instA : Q(Category.{v₁} $A) := _A.inst
-      have _instB : Q(Category.{v₂} $B) := _B.inst
-      have f : Q($A ⥤ $B) := f
-      have g : Q($A ⥤ $B) := g
-      let assoc ← associators f g
-      have assoc : Q($f ≅ $g) := assoc
-      return q(Functor.rightUnitor $f ≪≫ $assoc)
-    | none => do
-    match ← rightUnitorInv? f g with
-    | some (f, g) => do
-      let _A ← srcExpr f
-      let _B ← tgtExpr f
-      have u₁ := _A.objLevel
-      have v₁ := _A.morLevel
-      have u₂ := _B.objLevel
-      have v₂ := _B.morLevel
-      have A : Q(Type u₁) := _A.type
-      have B : Q(Type u₂) := _B.type
-      have _instA : Q(Category.{v₁} $A) := _A.inst
-      have _instB : Q(Category.{v₂} $B) := _B.inst
-      have f : Q($A ⥤ $B) := f
-      have g : Q($A ⥤ $B) := g
-      let assoc ← associators f g
-      have assoc : Q($f ≅ $g) := assoc
-      return q($assoc ≪≫ (Functor.rightUnitor $g).symm)
-    | none => do
+    | _ => do
     match ← assoc? f g with
     | some (f, g, h, i) => do
       let _A ← srcExpr f
@@ -367,7 +368,7 @@ partial def associators (f g : Expr) : MetaM Expr := do
       let assoc ← associators q($f ⋙ $g ⋙ $h) i
       have assoc : Q($f ⋙ $g ⋙ $h ≅ $i) := assoc
       return q(Functor.associator $f $g $h ≪≫ $assoc)
-    | none => do
+    | _ => do
     match ← assocInv? f g with
     | some (f, g, h, i) => do
       let _A ← srcExpr f
@@ -397,9 +398,9 @@ partial def associators (f g : Expr) : MetaM Expr := do
       let assoc ← associators i q($f ⋙ $g ⋙ $h)
       have assoc : Q($i ≅ $f ⋙ $g ⋙ $h) := assoc
       return q($assoc ≪≫ (Functor.associator $f $g $h).symm)
-    | none => do
+    | _ => do
       throwError
-        m!"Failed to find associators for {f} and {g}."
+        m!"Failed to insert associators between {f} and {g}."
 
 def associatorsHom (f g : Expr) : MetaM Expr := do
   let _A ← srcExpr f
