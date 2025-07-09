@@ -43,7 +43,71 @@ variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT
 
 variable {s : ι → (x : B) → E x} {u : Set B}
 
--- also: monotonicity? will see if useful, at all...
+/-! # Determining smoothness of a section via its local frame coefficients
+
+We show that for any local frame `{s i}` on `u ⊆ B`, a section `t` is smooth on `u` if and only if
+its coefficients in `{s i}` are. This argument crucially depends on the existence of a smooth
+bundle metric on `V` (which always holds in finite dimensions, and in certain important
+infinite-dimensional cases).
+
+See `LocalFrame.lean` for a similar statement, about local frames induced by a local trivialisation
+on finite rank bundles over any complete field.
+-/
+
+section smoothness
+
+namespace IsLocalFrameOn
+
+variable (hs : IsLocalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
+
+set_option linter.style.commandStart false
+
+/-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
+lemma contMDiffAt_repr (hx : x ∈ u) (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
+    CMDiffAt n (hs.repr i t) x := by
+  sorry
+
+/-- If `{s i}` is a local frame on `u` and `t` is `C^k` on `u`,
+so is its coefficient in the local frame `s i` -/
+lemma contMDiffOn_repr
+    (hu : IsOpen u) (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.repr i t) := by
+  intro x' hx
+  apply ContMDiffAt.contMDiffWithinAt
+  apply hs.contMDiffAt_repr hx (hu.mem_nhds hx) (ht.contMDiffAt <| hu.mem_nhds hx)
+
+/-- A section `s` of `V` is `C^k` at `x ∈ u` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma _root_.contMDiffAt_iff_isLocalFrameOn_repr --[Fintype ι]
+    (hx : x ∈ u) : CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.repr i t) x := by
+  refine ⟨fun h i ↦ hs.contMDiffAt_repr hx sorry/-hu-/ h i, fun hi ↦ ?_⟩
+  sorry /-have this (i) : CMDiffAt n (T% (hs.repr i t • s i)) x :=
+    (hi i).smul_section (hs.contMDiffAt sorry/-hu-/ hx i)
+  have almost : CMDiffAt n
+      (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) x :=
+    .sum_section fun i _ ↦ this i
+  apply almost.congr_of_eventuallyEq ?_
+  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (hs.repr_spec (I := I) t hx sorry)
+  exact eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx] -/
+
+-- omit [IsManifold I 0 M] in
+/-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
+coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+lemma contMDiffOn_iff_repr [Fintype ι] :
+    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.repr i t) := by
+--   refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
+--   have this (i) : CMDiff[t] k (T% ((b.localFrame_repr I e i) s • b.localFrame e i)) :=
+--     (hi i).smul_section ((b.contMDiffOn_localFrame_baseSet k e i).mono ht')
+--   let rhs := fun x' ↦ ∑ i, (b.localFrame_repr I e i) s x' • b.localFrame e i x'
+--   have almost : CMDiff[t] k (T% rhs) := .sum_section fun i _ ↦ this i
+--   apply almost.congr
+--   intro y hy
+--   congr
+--   exact b.localFrame_repr_sum_eq s (ht' hy)
+  sorry
+
+end IsLocalFrameOn
+
+end smoothness
 
 /-- Applying the Gram-Schmidt procedure to a local frame yields another local frame. -/
 def IsLocalFrameOn.gramSchmidt (hs : IsLocalFrameOn IB F n s u) :

@@ -18,10 +18,18 @@ i.e. a collection of sections `s_i` of `V` which is smooth on `e.baseSet` such t
 basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquely written as
 `s = ∑ i, f^i s_i` near `x`, and `s` is smooth at `x` iff the functions `f^i` are.
 
+The latter statement holds in many cases, but not for every vector bundle. In this file, we prove
+it for local frames induced by a trivialisation, for finite rank bundles over a complete field.
+In `OrthonormalFrame.lean`, we prove the same for real vector bundles of any rank which admit
+a `C^n` bundle metric. This includes bundles of finite rank, modelled on a Hilbert space or
+on a Banach space which has smooth partitions of unity.
+
 We use this to construct local extensions of a vector to a section which is smooth on the
 trivialisation domain.
 
 ## Main definitions and results
+TODO: this doc-string is outdated, needs to be augmented for the recent refactoring!
+
 * `Basis.localFrame e b`: the local frame on `V` w.r.t. a local trivialisation `e` of `V` and a
   basis `b` of `F`. Use `b.localFrame e i` to access the i-th section in that frame.
 * `b.contMDiffOn_localFrame_baseSet`: each section `b.localFrame e i` is smooth on `e.baseSet`
@@ -79,7 +87,7 @@ section IsLocalFrame
 
 omit [IsManifold I 0 M] [VectorBundle 𝕜 F V]
 
-variable {ι : Type*} {s : ι → (x : M) → V x} {u : Set M} {x : M} {n : WithTop ℕ∞}
+variable {ι : Type*} {s : ι → (x : M) → V x} {u u' : Set M} {x : M} {n : WithTop ℕ∞}
 
 variable (I F n) in
 /-
@@ -93,6 +101,15 @@ structure IsLocalFrameOn (s : ι → (x : M) → V x) (u : Set M) where
   contMDiffOn (i : ι) : CMDiff[u] n (T% (s i))
 
 namespace IsLocalFrameOn
+
+lemma mono (hs : IsLocalFrameOn I F n s u) (hu'u : u' ⊆ u) : IsLocalFrameOn I F n s u' where
+  linearIndependent := by
+    intro x hx
+    exact hs.linearIndependent (hu'u hx)
+  generating := by
+    intro x hx
+    exact hs.generating (hu'u hx)
+  contMDiffOn i := (hs.contMDiffOn i).mono hu'u
 
 lemma contMDiffAt (hs : IsLocalFrameOn I F n s u) (hu : IsOpen u) (hx : x ∈ u) (i : ι) :
     CMDiffAt n (T% s i) x :=
@@ -158,15 +175,6 @@ lemma repr_congr (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M,  V x}
 lemma repr_apply_zero_at (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} (ht : t x = 0) (i : ι) :
     hs.repr i t x = 0 := by
   simp [hs.repr_congr (t' := 0) ht]
-
--- XXX: this statement does not readily transfer, but probably I won't need this particular
--- result in this general setting
--- /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `t` a bundle section.
--- Then the coefficient of `t` w.r.t. a local frame `s i` near `x`
--- equals the cofficient of "`t x` read in the trivialisation `e`" for `b i`. -/
--- lemma localFrame_repr_eq_repr (hs : IsLocalFrameOn I F s u) {t : Π x : M, V x} (hxe : x ∈ u) {i : ι} :
---     hs.repr i t x = b.repr (e (s x)).2 i := by
---   simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
 end IsLocalFrameOn
 
@@ -338,6 +346,13 @@ lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i :
   sorry -- simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
 end Basis
+
+/-! # Determining smoothness of a section via its local frame coefficients
+We show that for finite rank bundles over a complete field, a section is smooth iff its coefficients
+in a local frame induced by a local trivialisation are. In many contexts, this statement holds for
+*any* local frame (e.g., for all real bundles which admit a continuous bundle metric, as is
+proven in `OrthonormalFrame.lean`).
+-/
 
 variable {ι : Type*} {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x : M}
