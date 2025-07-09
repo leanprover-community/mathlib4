@@ -370,14 +370,11 @@ theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv 
   simp
 
 /-- The n-th von Neumann ordinal -/
-@[deprecated "construct `ofNat` by using `Ordinal.toPSet` instead" (since := "2025-06-30")]
 def ofNat : ℕ → PSet
   | 0 => ∅
   | n + 1 => insert (ofNat n) (ofNat n)
 
-set_option linter.deprecated false in
 /-- The von Neumann ordinal ω -/
-@[deprecated "construct `omega` by using `Ordinal.toPSet` instead" (since := "2025-06-30")]
 def omega : PSet :=
   ⟨ULift ℕ, fun n => ofNat n.down⟩
 

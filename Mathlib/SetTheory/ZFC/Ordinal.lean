@@ -234,25 +234,33 @@ theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔
   refine isOrdinal_iff_isTrans.2 ⟨h₁, ?_⟩
   infer_instance
 
-theorem mem_iff_rank_lt {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
-    x ∈ y ↔ rank x < rank y := by
-  refine ⟨rank_lt_of_mem, fun h ↦ ?_⟩
+theorem rank_lt_iff_mem {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
+    rank x < rank y ↔ x ∈ y := by
+  refine ⟨fun h ↦ ?_, rank_lt_of_mem⟩
   rw [← hy.not_subset_iff_mem hx]
   exact fun h' ↦ (rank_mono h').not_gt h
 
-theorem subset_iff_rank_le {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
-    x ⊆ y ↔ rank x ≤ rank y := by
-  rw [← notMem_iff_subset hy hx, mem_iff_rank_lt hy hx, not_lt]
+theorem rank_le_iff_subset {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
+    rank x ≤ rank y ↔ x ⊆ y := by
+  rw [← notMem_iff_subset hy hx, ← rank_lt_iff_mem hy hx, not_lt]
 
 theorem rank_inj {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
     rank x = rank y ↔ x = y := by
-  rw [le_antisymm_iff, subset_antisymm_iff, subset_iff_rank_le hx hy, subset_iff_rank_le hy hx]
+  rw [le_antisymm_iff, subset_antisymm_iff, rank_le_iff_subset hx hy, rank_le_iff_subset hy hx]
 
 end IsOrdinal
 
 @[simp]
 theorem isOrdinal_empty : IsOrdinal ∅ :=
   ⟨isTransitive_empty, fun _ _ H ↦ (notMem_empty _ H).elim⟩
+
+theorem isOrdinal_succ {x : ZFSet} (h : IsOrdinal x) : IsOrdinal (insert x x) := by
+  refine ⟨fun y hy ↦ ?_, @fun y z w hyz hzw hw ↦ ?_⟩
+  · obtain rfl | hy := mem_insert_iff.1 hy
+    on_goal 2 => apply (h.subset_of_mem hy).trans
+    all_goals simp_all [subset_def]
+  · obtain rfl | hw := mem_insert_iff.1 hw
+    exacts [h.mem_trans hyz hzw, h.mem_trans' hyz hzw hw]
 
 end ZFSet
 
@@ -282,9 +290,10 @@ theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, 
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← iSup_succ o]
-  convert (enumIsoToType o).symm.iSup_comp (g := fun ⟨x, _⟩ ↦ Order.succ x.toPSet.rank)
+  convert (enumIsoToType o).symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
+decreasing_by rename_i x; exact x.2
 
 /-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
 
@@ -358,6 +367,14 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
     exact Set.mem_range_self _
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
+
+@[simp]
+theorem toZFSet_zero : toZFSet 0 = ∅ := by
+  ext; simp [mem_toZFSet_iff]
+
+@[simp]
+theorem toZFSet_succ (o : Ordinal) : toZFSet (o + 1) = insert (toZFSet o) (toZFSet o) := by
+  ext; aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
 /-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
 @[simps apply symm_apply]
