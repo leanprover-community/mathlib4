@@ -5,6 +5,7 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 

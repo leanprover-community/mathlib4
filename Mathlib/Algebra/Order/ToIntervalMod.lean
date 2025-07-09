@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Order.Circular
+import Mathlib.Tactic.Abel
 
 /-!
 # Reducing to an interval modulo its length

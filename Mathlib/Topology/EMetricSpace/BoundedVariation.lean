@@ -7,6 +7,7 @@ import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+import Mathlib.Tactic.Abel
 
 /-!
 # Functions of bounded variation

@@ -354,14 +354,14 @@ protected theorem dist_triangle (x y z : Σ i, E i) : dist x z ≤ dist x y + di
         dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z ≤
             dist x y + dist y (Nonempty.some ⟨y⟩) + 1 + dist (Nonempty.some ⟨z⟩) z := by
           apply_rules [add_le_add, le_rfl, dist_triangle]
-        _ = _ := by abel
+        _ = _ := by grind
     · rcases eq_or_ne j k with (rfl | hjk)
       · simp only [Sigma.dist_ne hij, Sigma.dist_same]
         calc
           dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z ≤
               dist x (Nonempty.some ⟨x⟩) + 1 + (dist (Nonempty.some ⟨z⟩) y + dist y z) := by
             apply_rules [add_le_add, le_rfl, dist_triangle]
-          _ = _ := by abel
+          _ = _ := by grind
       · simp only [hik, hij, hjk, Sigma.dist_ne, Ne, not_false_iff]
         calc
           dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z =
@@ -405,7 +405,7 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
     rcases eq_or_ne i j with (rfl | h)
     · simp [Sigma.dist, dist_comm]
     · simp only [Sigma.dist, dist_comm, h, h.symm, not_false_iff, dif_neg]
-      abel
+      grind
   · rintro ⟨i, x⟩ ⟨j, y⟩
     rcases eq_or_ne i j with (rfl | hij)
     · simp [Sigma.dist]

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 
@@ -245,7 +244,7 @@ theorem fract_add (a b : R) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z
   ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
     unfold fract
     simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
-    abel⟩
+    grind⟩
 
 variable [IsStrictOrderedRing R]
 
@@ -412,7 +411,7 @@ theorem fract_mul_natCast (a : R) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
     rw [Int.cast_sub, ← hz, ← hy]
-    abel
+    grind
 
 @[deprecated (since := "2025-04-01")] alias fract_mul_nat := fract_mul_natCast
 
@@ -658,7 +657,7 @@ theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a 
   right
   suffices (⌈a⌉ : R) = ⌊a⌋ + 1 by
     rw [this, ← self_sub_fract]
-    abel
+    grind
   norm_cast
   rw [ceil_eq_iff]
   refine ⟨?_, _root_.le_of_lt <| by simp⟩
@@ -667,11 +666,11 @@ theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a 
 
 theorem ceil_eq_add_one_sub_fract (ha : fract a ≠ 0) : (⌈a⌉ : R) = a + 1 - fract a := by
   rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
-  abel
+  grind
 
 theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : R) - a = 1 - fract a := by
   rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
-  abel
+  grind
 
 end ceil
 

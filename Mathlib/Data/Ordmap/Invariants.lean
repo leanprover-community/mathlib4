@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Ordmap.Ordnode
-import Mathlib.Tactic.Abel
 
 /-!
 # Invariants for the verification of `Ordnode`
@@ -323,8 +322,8 @@ theorem node4L_size {l x m y r} (hm : Sized m) :
     size (@node4L α l x m y r) = size l + size m + size r + 2 := by
   cases m
   · simp [node4L, node3L, node']
-    abel
-  · simp [node4L, node', size, hm.1]; abel
+    grind
+  · simp [node4L, node', size, hm.1]; grind
 
 theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)
   | nil, _ => ⟨⟩
@@ -346,7 +345,7 @@ theorem Sized.rotateL_size {l x r} (hm : Sized r) :
     size (@Ordnode.rotateL α l x r) = size l + size r + 1 := by
   cases r <;> simp [Ordnode.rotateL]
   simp only [hm.1]
-  split_ifs <;> simp [node3L_size, node4L_size hm.2.1] <;> abel
+  split_ifs <;> simp [node3L_size, node4L_size hm.2.1] <;> grind
 
 theorem Sized.rotateR_size {l x r} (hl : Sized l) :
     size (@Ordnode.rotateR α l x r) = size l + size r + 1 := by
@@ -578,8 +577,8 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         all_goals dsimp only [size]; decide
       · symm; rw [zero_add, if_neg, if_pos, rotateL]
         · dsimp only [size_node]; split_ifs
-          · simp [node3L, node']; abel
-          · simp [node4L, node', sr.2.1.1]; abel
+          · simp [node3L, node']; grind
+          · simp [node4L, node', sr.2.1.1]; grind
         · apply Nat.zero_lt_succ
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sr.2.1.pos sr.2.2.pos))
   · obtain - | ⟨rs, rl, rx, rr⟩ := r
@@ -605,8 +604,8 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         all_goals dsimp only [size]; decide
       · symm; rw [if_neg, if_pos, rotateR]
         · dsimp only [size_node]; split_ifs
-          · simp [node3R, node']; abel
-          · simp [node4R, node', sl.2.2.1]; abel
+          · simp [node3R, node']; grind
+          · simp [node4R, node', sl.2.2.1]; grind
         · apply Nat.zero_lt_succ
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
     · simp only [balance, id_eq, balance', size_node, gt_iff_lt]
@@ -621,8 +620,8 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           obtain - | ⟨rrs, rrl, rrx, rrr⟩ := rr
           · exact absurd (le_trans rd (balancedSz_zero.1 hr.1)) (by decide)
           dsimp [rotateL]; split_ifs
-          · simp [node3L, node', sr.1]; abel
-          · simp [node4L, node', sr.1, sr.2.1.1]; abel
+          · simp [node3L, node', sr.1]; grind
+          · simp [node4L, node', sr.1, sr.2.1.1]; grind
         · have ld : delta ≤ size ll + size lr := by
             have := lt_of_le_of_lt (Nat.mul_le_mul_left _ sr.pos) h_1
             rwa [sl.1, Nat.lt_succ_iff] at this
@@ -632,8 +631,8 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr
           · exact absurd (le_trans ld (balancedSz_zero.1 hl.1)) (by decide)
           dsimp [rotateR]; split_ifs
-          · simp [node3R, node', sl.1]; abel
-          · simp [node4R, node', sl.1, sl.2.2.1]; abel
+          · simp [node3R, node', sl.1]; grind
+          · simp [node4R, node', sl.1, sl.2.2.1]; grind
         · simp [node']
       · exact not_le_of_gt (add_le_add (Nat.succ_le_of_lt sl.pos) (Nat.succ_le_of_lt sr.pos))
 

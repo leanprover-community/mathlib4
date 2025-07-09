@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bernhard Reinke
 -/
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Tactic.Abel
 
 /-!
 # Associator in a ring
@@ -38,7 +37,7 @@ theorem associator_cocycle (a b c d : R) :
     a * associator b c d - associator (a * b) c d + associator a (b * c) d - associator a b (c * d)
     + (associator a b c) * d = 0 := by
   simp only [associator, mul_sub, sub_mul]
-  abel1
+  grind
 
 end NonUnitalNonAssocRing
 

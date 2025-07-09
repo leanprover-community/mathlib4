@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.PUnit
 import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 
 /-!
@@ -87,7 +86,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       a + b = (a + b) * (a + b) := by rw [mul_self]
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
       _ = a + a * b + (b * a + b) := by simp only [mul_self]
-      _ = a + b + (a * b + b * a) := by abel
+      _ = a + b + (a * b + b * a) := by grind
   rwa [left_eq_add] at this
 
 @[scoped simp]
