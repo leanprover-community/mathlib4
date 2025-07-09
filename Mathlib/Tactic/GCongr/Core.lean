@@ -331,20 +331,19 @@ open Elab Tactic
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
 these hypotheses. -/
-def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit :=
-  withReducible do
-    let s ← saveState
-    withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
-    -- Iterate over a list of terms
-    let tacs := (forwardExt.getState (← getEnv)).2
-    for h in hs do
-      try
-        tacs.firstM fun (n, tac) =>
-          withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
-            tac.eval h g
-        return
-      catch _ => s.restore
-    throwError "gcongr_forward failed"
+def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit := do
+  let s ← saveState
+  withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
+  -- Iterate over a list of terms
+  let tacs := (forwardExt.getState (← getEnv)).2
+  for h in hs do
+    try
+      tacs.firstM fun (n, tac) =>
+        withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+          tac.eval h g
+      return
+    catch _ => s.restore
+  throwError "gcongr_forward failed"
 
 /--
 This is used as the default main-goal discharger,
@@ -421,7 +420,7 @@ partial def _root_.Lean.MVarId.gcongr
     (grewriteHole : Option MVarId := none)
     (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
-    MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
+    MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext <| withReducible do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
   match template with
   | none =>
@@ -443,7 +442,7 @@ partial def _root_.Lean.MVarId.gcongr
           catch _ => return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
-  let rel ← withReducible g.getType'
+  let rel ← g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwError "gcongr failed, {rel} is not a relation"
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
     | if template.isNone then return (false, names, #[g])
@@ -476,8 +475,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- function differ between the LHS and RHS. We treat always treat proofs as being the same
     -- (even if they have differing types).
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) => do
-      let isSame ← withReducibleAndInstances <|
-        return (← isDefEq lhsArg rhsArg) || ((← isProof lhsArg) && (← isProof rhsArg))
+      let isSame ← isDefEq lhsArg rhsArg <||> (isProof lhsArg <&&> isProof rhsArg)
       return (none, !isSame)
   -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
   -- supposed to vary, according to the template (if there is one), and in the absence of a template
@@ -499,7 +497,7 @@ partial def _root_.Lean.MVarId.gcongr
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       let const ← mkConstWithFreshMVarLevels lem.declName
-      Except.ok <$> withReducible (g.apply const { synthAssignedInstances := false })
+      Except.ok <$> g.apply const { synthAssignedInstances := false }
     catch e => pure (Except.error e)
     match gs with
     | .error e =>
