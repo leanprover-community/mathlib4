@@ -29,6 +29,11 @@ example : True := by {trivial }
 example (h : 0 = 1) : False := by
   rcases(h)
 
+structure X where
+  A : {_ : Nat} → Nat → Nat
+
+example : X where A {a} b := a + b
+
 elab_rules : tactic
 | `(tactic| skip) => do
   return
