@@ -488,6 +488,10 @@ theorem iSup_span {ι : Sort*} (p : ι → Set M) : ⨆ i, span R (p i) = span R
 theorem iSup_eq_span {ι : Sort*} (p : ι → Submodule R M) : ⨆ i, p i = span R (⋃ i, ↑(p i)) := by
   simp_rw [← iSup_span, span_eq]
 
+theorem iSup_eq_span' {ι : Sort*} (p : ι → Submodule R M) (h : ι → Prop) :
+    (⨆ (i : ι) (_ : h i), p i) = Submodule.span R (⋃ (i : ι) (_ : h i), ↑(p i)) := by
+  simp_rw [← Submodule.iSup_span, Submodule.span_eq]
+
 /-- A submodule is equal to the supremum of the spans of the submodule's nonzero elements. -/
 theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :
     p = sSup { T : Submodule R M | ∃ m ∈ p, m ≠ 0 ∧ T = span R {m} } := by

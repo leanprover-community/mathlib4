@@ -322,12 +322,6 @@ instance : Max (SubDPIdeal hI) :=
 
 theorem sup_carrier_def (J J' : SubDPIdeal hI) : (J ⊔ J').carrier = J ⊔ J' := rfl
 
--- TODO: move
-theorem _root_.Submodule.iSup_eq_span' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    {ι : Sort _} (p : ι → Submodule R M) (h : ι → Prop) :
-    (⨆ (i : ι) (_ : h i), p i) = Submodule.span R (⋃ (i : ι) (_ : h i), ↑(p i)) := by
-  simp_rw [← Submodule.iSup_span, Submodule.span_eq]
-
 instance : SupSet (SubDPIdeal hI) :=
   ⟨fun S ↦ SubDPIdeal.mk' (J := sSup ((fun J ↦ J.carrier) '' S)) <| by
       have h : (⋃ (i : Ideal A) (_ : i ∈ (fun J ↦ J.carrier) '' S), ↑i) ⊆ (I : Set A) := by
