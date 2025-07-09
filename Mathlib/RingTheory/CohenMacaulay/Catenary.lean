@@ -24,7 +24,7 @@ lemma Ideal.ofList_height_le_length [IsLocalRing R] (rs : List R)
   have : (Ideal.ofList rs) ≠ ⊤ :=
     (lt_of_le_of_lt (span_le.mpr mem) IsPrime.ne_top'.lt_top).ne_top
   apply le_trans (Ideal.height_le_spanFinrank _ this)
-  simp only [Nat.cast_le, ge_iff_le, Ideal.ofList, ← List.coe_toFinset]
+  simp only [Nat.cast_le, Ideal.ofList, ← List.coe_toFinset]
   apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet rs.toFinset))
   rw [Set.ncard_coe_Finset]
   apply List.toFinset_card_le
@@ -47,7 +47,7 @@ lemma Ideal.ofList_height_eq_length_of_isRegular [IsLocalRing R] (rs : List R)
       apply (isWeaklyRegular_iff R (List.take n rs)).mpr fun i hi ↦ ?_
       have : (rs.take n).take i  = rs.take i := by
         rw [len'] at hi
-        simp [List.take_take, len, le_of_lt hi]
+        simp [List.take_take, le_of_lt hi]
       rw [List.getElem_take, this]
       exact reg.1 i (lt_of_lt_of_le hi (rs.length_take_le' n))
     let _ := hq.1.1
@@ -239,15 +239,13 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
             simpa [R', eqx, ← Submodule.ideal_span_singleton_smul x] using
               Ideal.mem_span_singleton_self x
           · apply Ideal.subset_span
-            simp only [Ideal.Quotient.algebraMap_eq, List.mem_map, Set.mem_setOf_eq]
+            simp only [List.mem_map, Set.mem_setOf_eq]
             use r
         apply maximalIdeal_mem_minimalPrimes_of_surjective (algebraMap R R')
           Ideal.Quotient.mk_surjective le mem
         have mem_max : ∀ r ∈ rs'.map (algebraMap R R'), r ∈ maximalIdeal R' := by
-          simp only [Ideal.Quotient.algebraMap_eq, List.mem_map,
-            forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-          intro r hr
-          exact map_nonunit (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r
+          simpa only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using
+            fun r hr ↦ map_nonunit (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r
             (mem.1.2 (Ideal.subset_span (by simp [hr])))
         exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
       let _ := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp
@@ -274,7 +272,7 @@ lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenM
 lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
     I.depth (ModuleCat.of R R) ≤ I.height := by
   simp only [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop (ModuleCat.of R R), exists_prop,
-    exists_and_left, sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
+    sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
   intro n rs reg mem len
   rw [← len,
     ← ofList_height_eq_length_of_isRegular rs reg.1 (fun r hr ↦ le_maximalIdeal netop (mem r hr))]
