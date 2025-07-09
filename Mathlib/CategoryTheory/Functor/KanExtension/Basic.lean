@@ -693,16 +693,12 @@ section
 variable {L : C ≌ D} {F₀ : C ⥤ H} {F₁ : D ⥤ H}
 
 variable (F₀) in
-instance isLeftKanExtensionId : F₀.IsLeftKanExtension (F₀.leftUnitor.inv) := by
-  constructor
-  refine ⟨?_⟩
-  exact StructuredArrow.mkIdInitial
+instance isLeftKanExtensionId : F₀.IsLeftKanExtension F₀.leftUnitor.inv where
+  nonempty_isUniversal := ⟨StructuredArrow.mkIdInitial⟩
 
 variable (F₀) in
-instance isRightKanExtensionId : F₀.IsRightKanExtension (F₀.leftUnitor.hom) := by
-  constructor
-  refine ⟨?_⟩
-  exact CostructuredArrow.mkIdTerminal
+instance isRightKanExtensionId : F₀.IsRightKanExtension F₀.leftUnitor.hom where
+  nonempty_isUniversal := ⟨CostructuredArrow.mkIdTerminal⟩
 
 instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     F₁.IsLeftKanExtension α.hom := by
