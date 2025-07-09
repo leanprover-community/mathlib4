@@ -441,10 +441,18 @@ theorem dense_of_exists_between [OrderTopology α] [Nontrivial α] {s : Set α}
   obtain ⟨x, xs, hx⟩ : ∃ x ∈ s, a < x ∧ x < b := h hab
   exact ⟨x, ⟨H hx, xs⟩⟩
 
+theorem IsUpperSet.isClosed [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsUpperSet s) :
+    IsClosed s := by
+  obtain ⟨a, rfl⟩ | rfl := h.eq_Ici_or_univ
+  exacts [isClosed_Ici, isClosed_univ]
+
+theorem IsLowerSet.isClosed [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsLowerSet s) :
+    IsClosed s :=
+  h.toDual.isClosed
+
 theorem IsLowerSet.isOpen [OrderTopology α] [WellFoundedLT α] {s : Set α} (h : IsLowerSet s) :
     IsOpen s := by
-  obtain ⟨a, rfl⟩ | rfl := h.eq_Iio_or_univ
-  exacts [isOpen_Iio, isOpen_univ]
+  simpa using h.compl.isClosed
 
 theorem IsUpperSet.isOpen [OrderTopology α] [WellFoundedGT α] {s : Set α} (h : IsUpperSet s) :
     IsOpen s :=
