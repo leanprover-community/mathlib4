@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
+Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.GroupWithZero.Range
@@ -388,28 +388,56 @@ def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
 
-
 open MonoidWithZeroHom in
-def restrict : Valuation R (valueGroup₀ v) := by
-  use restrict₀ v
-  intro x y
-  by_cases H : v (x + y) = 0
-  · simp [H]
-  wlog hx : v x = 0
-  · simp [H, hx]
-    split_ifs with hy
-    · simp only [le_zero_iff, WithZero.coe_ne_zero, or_false]
-      apply map_add_le _ (by rfl)
-      simp [hy]
-    · simp [← Units.val_le_val]
-  · simp [H, hx]
-    split_ifs with hy
-    · simpa only [le_zero_iff, WithZero.coe_ne_zero] using
-        not_lt_zero' <| lt_of_le_of_ne (map_add_le _ (le_of_eq hx) (le_of_eq hy)) H
-    simp [← Units.val_le_val]
-    apply map_add_le
-    · simp [hx]
-    rfl
+/-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
+def restrict : Valuation R (MonoidWithZeroHom.valueGroup₀ v) where
+  __ := restrict₀ v
+  map_add_le_max' x y := by
+    by_cases H : v x ≠ 0 ∨ v y ≠ 0
+    · rcases H with h | h
+      · simp [h]
+        split_ifs with H _ hy
+        · right; rfl
+        · right; simp
+        · simp [← Units.val_le_val]
+          apply map_add_le _ (by rfl)
+          rw [hy]
+          simp
+        · simp [← Units.val_le_val]
+      · simp [h]
+        split_ifs with H _ hy
+        · left; rfl
+        · left; simp
+        · simp [← Units.val_le_val]
+          rw [add_comm]
+          apply map_add_le _ (by rfl)
+          rw [hy]
+          simp
+        · simp [← Units.val_le_val]
+    · simp only [ne_eq, not_or, Decidable.not_not] at H
+      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, H, ↓reduceDIte, max_self,
+        le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
+      simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
+
+
+    -- by_cases H : v (x + y) = 0
+    -- · simp [H]
+    -- by_cases hx : v x ≠ 0
+    -- · simp [H, hx]
+    --   split_ifs with hy
+    --   · simp only [le_zero_iff, WithZero.coe_ne_zero, or_false]
+    --     apply map_add_le _ (by rfl)
+    --     simp [hy]
+    --   · simp [← Units.val_le_val]
+    -- · simp [H/- , hx -/]
+    --   split_ifs with hy
+    --   · sorry
+    --     -- simpa only [le_zero_iff, WithZero.coe_ne_zero] using
+    --     --   not_lt_zero' <| lt_of_le_of_ne (map_add_le _ (le_of_eq hx) (le_of_eq hy)) H
+    --   simp [← Units.val_le_val]
+    --   apply map_add_le
+    --   · sorry--simp [hx]
+    --   rfl
 
 end Group
 

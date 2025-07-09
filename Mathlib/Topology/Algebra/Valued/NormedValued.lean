@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández
+Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Ultra
@@ -88,7 +88,7 @@ theorem norm_nonneg (x : L) : 0 ≤ norm x := by simp only [norm, NNReal.zero_le
 
 theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
   simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
-  exact le_max_iff.mp (Valuation.map_add_le_max' val.v _ _)
+  exact le_max_iff.mp (Valuation.map_add_le_max' val.v.restrict _ _)
 
 theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
   simpa [norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
@@ -96,7 +96,7 @@ theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
 theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) < v x := by
   rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom (v (R := L))),
     StrictMono.lt_iff_lt]
-  exact RankOne.strictMono v
+  exact RankOne.strictMono v.restrict
 
 variable (L) (Γ₀)
 
