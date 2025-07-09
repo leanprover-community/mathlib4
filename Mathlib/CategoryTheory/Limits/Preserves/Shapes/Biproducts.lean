@@ -109,13 +109,12 @@ attribute [instance 100] PreservesBiproductsOfShape.preserves
 
 end Bicone
 
-/-- A functor `F` preserves finite biproducts if it preserves biproducts of shape `J` whenever
-    `J` is a fintype. -/
+/-- A functor `F` preserves finite biproducts if it preserves biproducts of shape `J`
+whenever `J` is a finite type. -/
 class PreservesFiniteBiproducts (F : C ⥤ D) [PreservesZeroMorphisms F] : Prop where
-  preserves : ∀ {J : Type} [Fintype J], PreservesBiproductsOfShape J F
+  preserves : ∀ {J : Type} [Finite J], PreservesBiproductsOfShape J F
 
 attribute [inherit_doc PreservesFiniteBiproducts] PreservesFiniteBiproducts.preserves
-
 attribute [instance 100] PreservesFiniteBiproducts.preserves
 
 /-- A functor `F` preserves biproducts if it preserves biproducts of any shape `J` of size `w`.

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Star
 
@@ -127,7 +127,7 @@ def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α)
   LinearMap.mkContinuous (E := ↥(boundedIntegrableFunctions μ))
     { toFun := fun f => ∫ x, f.1 x ∂μ
       map_add' := fun f g => integral_add f.2 g.2
-      map_smul' := fun c f => integral_smul c f.1 } (μ univ).toReal
+      map_smul' := fun c f => integral_smul c f.1 } (μ.real univ)
     (by
       intro f
       rw [mul_comm]
@@ -419,7 +419,7 @@ theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology �
 
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
-    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = (μ s).toReal := by
+    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = μ.real s := by
   simp only [ContinuousLinearMap.toBoundedAdditiveMeasure]
   rw [extensionToBoundedFunctions_apply]
   · simp [integral_indicator hs]
@@ -432,13 +432,14 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
 
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] [NoAtoms μ] (s : Set α) (hs : MeasurableSet s) :
-    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = (μ s).toReal := by
+    μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure.continuousPart s = μ.real s := by
   let f := μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure
-  change f (univ \ f.discreteSupport ∩ s) = (μ s).toReal
+  change f (univ \ f.discreteSupport ∩ s) = μ.real s
   rw [toFunctions_toMeasure]; swap
   · exact
       MeasurableSet.inter
         (MeasurableSet.univ.diff (Countable.measurableSet f.countable_discreteSupport)) hs
+  simp only [measureReal_def]
   congr 1
   rw [inter_comm, ← inter_diff_assoc, inter_univ]
   exact measure_diff_null (f.countable_discreteSupport.measure_zero _)
@@ -467,7 +468,7 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
         constructor
         · rintro rfl; exact irrefl_of r y h
         · exact asymm h
-      · simp only [true_or, eq_self_iff_true, iff_true]; exact irrefl x
+      · simp only [true_or, iff_true]; exact irrefl x
       · simp only [h, iff_true, or_true]; exact asymm h
     rw [this]
     apply Countable.union _ (countable_singleton _)
@@ -547,11 +548,9 @@ theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ 
 
 theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by
-  have :
-    IntegrableOn (fun _ => φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
-      volume := by
-    simp [integrableOn_const]
-  apply Integrable.congr this (comp_ae_eq_const Hcont φ)
+  have : IntegrableOn (fun _ => φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
+      volume := by simp
+  exact Integrable.congr this (comp_ae_eq_const Hcont φ)
 
 theorem integral_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∫ x in Icc 0 1, φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by

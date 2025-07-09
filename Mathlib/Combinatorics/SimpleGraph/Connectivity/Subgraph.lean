@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.Set.Card
 
 /-!
@@ -142,7 +142,7 @@ theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w �
   | cons h p' ih =>
     rename_i x y z
     have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
-      ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
+      ⟨by rintro (rfl | h) <;> simp [*], by simp +contextual⟩
     simp [ih, or_assoc, this]
 
 lemma not_nil_of_adj_toSubgraph {u v} {x : V} {p : G.Walk u v} (hadj : p.toSubgraph.Adj w x) :
@@ -251,17 +251,14 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
         use 0
         simp only [Walk.getVert_zero, zero_add, getVert_cons_succ]
         refine ⟨?_, by simp only [length_cons, Nat.zero_lt_succ]⟩
-        simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-        cases hl with
-        | inl h1 => left; exact ⟨h1.1, h1.2⟩
-        | inr h2 => right; exact ⟨h2.1, h2.2⟩
+        exact Sym2.eq_iff.mpr hl
       | inr hr =>
         obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
         use i + 1
         simp only [getVert_cons_succ]
         constructor
         · exact hi.1
-        · simp only [Walk.length_cons, add_lt_add_iff_right, Nat.add_lt_add_right hi.2 1]
+        · simp only [Walk.length_cons, Nat.add_lt_add_right hi.2 1]
   · rintro ⟨i, hi⟩
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
@@ -275,7 +272,7 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
     (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet u = {p.snd} := by
   have hadj1 := p.toSubgraph_adj_snd hnp
   ext v
-  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i, hl | hr⟩
@@ -381,7 +378,7 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
     exact Set.ncard_pair hpc.snd_ne_penultimate
   push_neg at he
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
-  exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
+  exact Set.ncard_pair (hpc.getVert_sub_one_ne_getVert_add_one (by omega))
 
 lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toSubgraph.Adj v w) :
     ∃ (p' : G.Walk v v), p'.IsCycle ∧ p'.snd = w ∧ p'.toSubgraph.verts = p.toSubgraph.verts := by
@@ -395,6 +392,47 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
     exact ⟨h.reverse, hr.symm, by rw [toSubgraph_reverse _]⟩
 
 end IsCycle
+
+open Finset
+
+variable [DecidableEq V] {u v : V} {p : G.Walk u v}
+
+/-- This lemma states that given some finite set of vertices, of which at least one is in the
+support of a given walk, one of them is the first to be encountered. This consequence is encoded
+as the set of vertices, restricted to those in the support, except for the first, being empty.
+You could interpret this as being `takeUntilSet`, but defining this is slightly involved due to
+not knowing what the final vertex is. This could be done by defining a function to obtain the
+first encountered vertex and then use that to define `takeUntilSet`. That direction could be
+worthwhile if this concept is used more widely. -/
+lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
+    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
+    ∃ x ∈ s, ∃ hx : x ∈ p.support, {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support} = ∅ := by
+  simp only [← Finset.subset_empty]
+  induction hp : p.length + #s using Nat.strong_induction_on generalizing s v with | _ n ih
+  simp only [Finset.Nonempty, mem_filter] at h
+  obtain ⟨x, hxs, hx⟩ := h
+  obtain h | h := Finset.eq_empty_or_nonempty {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support}
+  · use x, hxs, hx, h.le
+  have : (p.takeUntil x hx).length + #(s.erase x) < n := by
+    rw [← card_erase_add_one hxs] at hp
+    have := p.length_takeUntil_le hx
+    omega
+  obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
+  use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
+  rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h
+  simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
+  rintro hxy -
+  exact notMem_support_takeUntil_support_takeUntil_subset (Ne.symm hxy) hx hyp
+
+lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
+    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
+    ∃ x ∈ s, ∃ (hx : x ∈ p.support),
+      ∀ t ∈ s, t ∈ (p.takeUntil x hx).support → t = x := by
+  obtain ⟨x, hxs, hx, h⟩ := p.exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty s h
+  use x, hxs, hx
+  suffices {t ∈ s | t ∈ (p.takeUntil x hx).support} ⊆ {x} by simpa [Finset.subset_iff] using this
+  rwa [Finset.filter_erase, ← Finset.subset_empty, ← Finset.subset_insert_iff,
+    LawfulSingleton.insert_empty_eq] at h
 
 end Walk
 
@@ -480,11 +518,11 @@ lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (G.induce (s ∪ t)).Connected := by
   rw [connected_induce_iff] at sconn tconn ⊢
   apply (sconn.adj_union tconn hv hw ha).mono
-  · simp only [Set.mem_singleton_iff, sup_le_iff, Subgraph.le_induce_union_left,
+  · simp only [sup_le_iff, Subgraph.le_induce_union_left,
       Subgraph.le_induce_union_right, and_true, ← Subgraph.subgraphOfAdj_eq_induce ha]
     apply subgraphOfAdj_le_of_adj
     simp [hv, hw, ha]
-  · simp only [Set.mem_singleton_iff, sup_le_iff, Subgraph.verts_sup, Subgraph.induce_verts]
+  · simp only [Subgraph.verts_sup, Subgraph.induce_verts]
     rw [Set.union_assoc]
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
 
@@ -505,7 +543,7 @@ lemma induce_sUnion_connected_of_pairwise_not_disjoint {S : Set (Set V)} (Sn : S
   obtain ⟨v, vs⟩ := (Sc sS).nonempty
   apply G.induce_connected_of_patches _ (Set.subset_sUnion_of_mem sS vs)
   rintro w hw
-  simp only [Set.mem_sUnion, exists_prop] at hw
+  simp only [Set.mem_sUnion] at hw
   obtain ⟨t, tS, wt⟩ := hw
   refine ⟨s ∪ t, Set.union_subset (Set.subset_sUnion_of_mem sS) (Set.subset_sUnion_of_mem tS),
           Or.inl vs, Or.inr wt, induce_union_connected (Sc sS) (Sc tS) (Snd sS tS) _ _⟩
@@ -515,14 +553,14 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
   classical
   obtain ⟨u, ut⟩ := tn
   refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
-  · simp only [Finset.mem_biUnion, List.mem_toFinset, exists_prop]
+  · simp only [Finset.mem_biUnion, List.mem_toFinset]
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset, Set.mem_iUnion,
                  Set.mem_setOf_eq, Walk.start_mem_support, exists_prop, and_true]
       exact ⟨u, ut⟩
     intros v hv
-    simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset, exists_prop] at hv
+    simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset] at hv
     obtain ⟨w, wt, hw⟩ := hv
     refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]

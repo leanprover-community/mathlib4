@@ -254,9 +254,7 @@ theorem of_is_product {c : BinaryFan X Y} (h : Limits.IsLimit c) (t : IsTerminal
       (IsLimit.ofIsoLimit h
         (Limits.Cones.ext (Iso.refl c.pt)
           (by
-            rintro ⟨⟨⟩⟩ <;>
-              · dsimp
-                simp))))
+            rintro ⟨⟨⟩⟩ <;> simp))))
 
 /-- A variant of `of_is_product` that is more useful with `apply`. -/
 theorem of_is_product' (h : Limits.IsLimit (BinaryFan.mk fst snd)) (t : IsTerminal Z) :
@@ -478,9 +476,7 @@ theorem of_is_coproduct {c : BinaryCofan X Y} (h : Limits.IsColimit c) (t : IsIn
       (IsColimit.ofIsoColimit h
         (Limits.Cocones.ext (Iso.refl c.pt)
           (by
-            rintro ⟨⟨⟩⟩ <;>
-              · dsimp
-                simp))))
+            rintro ⟨⟨⟩⟩ <;> simp))))
 
 /-- A variant of `of_is_coproduct` that is more useful with `apply`. -/
 theorem of_is_coproduct' (h : Limits.IsColimit (BinaryCofan.mk inl inr)) (t : IsInitial Z) :

@@ -178,14 +178,14 @@ theorem mk_mem_carrier (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers 
     IsLocalization.comap_map_of_isPrime_disjoint (.powers f)]
   · rfl
   · infer_instance
-  · exact (disjoint_powers_iff_not_mem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2
+  · exact (disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2
   · exact isUnit_of_invertible _
 
 theorem isPrime_carrier : Ideal.IsPrime (carrier x) := by
   refine Ideal.IsPrime.comap _ (hK := ?_)
   exact IsLocalization.isPrime_of_isPrime_disjoint
     (Submonoid.powers f) _ _ inferInstance
-    ((disjoint_powers_iff_not_mem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2)
+    ((disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2)
 
 variable (f)
 
@@ -356,7 +356,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
-    rw [← add_smul]; congr; zify [le_of_not_lt h2, le_of_not_le h1]; abel
+    rw [← add_smul]; congr; omega
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
@@ -368,12 +368,12 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   change _ = HomogeneousLocalization.val _
   rw [HomogeneousLocalization.val_smul]
   split_ifs with h2 h1
-  · exact ((Finset.mem_range.1 hj).not_le h2).elim
-  all_goals simp only [HomogeneousLocalization.val_mul, HomogeneousLocalization.val_zero,
-    HomogeneousLocalization.val_mk, Subtype.coe_mk, Localization.mk_mul, ← smul_mk]; congr 2
+  · exact ((Finset.mem_range.1 hj).not_ge h2).elim
+  all_goals simp only [HomogeneousLocalization.val_mul,
+    HomogeneousLocalization.val_mk, Localization.mk_mul, ← smul_mk]; congr 2
   · dsimp; rw [mul_assoc, ← pow_add, add_comm (m - j), Nat.add_sub_assoc h1]
   · simp_rw [pow_add]; rfl
-  · dsimp; rw [← mul_assoc, ← pow_add, Nat.add_sub_of_le (le_of_not_le h1)]
+  · dsimp; rw [← mul_assoc, ← pow_add, Nat.add_sub_of_le (le_of_not_ge h1)]
   · simp_rw [pow_add]; rfl
 
 variable (hm : 0 < m) (q : Spec.T A⁰_ f)
@@ -435,7 +435,7 @@ theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous
 def carrier.asHomogeneousIdeal : HomogeneousIdeal 𝒜 :=
   ⟨carrier.asIdeal f_deg hm q, carrier.asIdeal.homogeneous f_deg hm q⟩
 
-theorem carrier.denom_not_mem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
+theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
   q.isPrime.ne_top <|
     (Ideal.eq_top_iff_one _).mpr
       (by
@@ -446,11 +446,13 @@ theorem carrier.denom_not_mem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
         simp_rw [decompose_of_mem_same _ f_deg]
         simp only [mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self])
 
+@[deprecated (since := "2025-05-23")] alias carrier.denom_not_mem := carrier.denom_notMem
+
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
-  fun rid => carrier.denom_not_mem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'
+  fun rid => carrier.denom_notMem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'
 
 theorem carrier.asIdeal.ne_top : carrier.asIdeal f_deg hm q ≠ ⊤ := fun rid =>
-  carrier.denom_not_mem f_deg hm q (rid.symm ▸ Submodule.mem_top)
+  carrier.denom_notMem f_deg hm q (rid.symm ▸ Submodule.mem_top)
 
 theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
   (carrier.asIdeal.homogeneous f_deg hm q).isPrime_of_homogeneous_mem_or_mem
@@ -477,7 +479,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
 def toFun : (Spec.T A⁰_ f) → Proj.T| pbo f := fun q =>
   ⟨⟨carrier.asHomogeneousIdeal f_deg hm q, carrier.asIdeal.prime f_deg hm q,
       carrier.relevant f_deg hm q⟩,
-    (ProjectiveSpectrum.mem_basicOpen _ f _).mp <| carrier.denom_not_mem f_deg hm q⟩
+    (ProjectiveSpectrum.mem_basicOpen _ f _).mp <| carrier.denom_notMem f_deg hm q⟩
 
 end FromSpec
 
@@ -612,7 +614,7 @@ lemma awayToSection_apply (f : A) (x p) :
       IsLocalization.map (M := Submonoid.powers f) (T := p.1.1.toIdeal.primeCompl) _
         (RingHom.id _) (Submonoid.powers_le.mpr p.2) x.val := by
   obtain ⟨x, rfl⟩ := HomogeneousLocalization.mk_surjective x
-  show (HomogeneousLocalization.mapId 𝒜 _ _).val = _
+  change (HomogeneousLocalization.mapId 𝒜 _ _).val = _
   dsimp [HomogeneousLocalization.mapId, HomogeneousLocalization.map]
   rw [Localization.mk_eq_mk', Localization.mk_eq_mk', IsLocalization.map_mk']
   rfl
@@ -652,7 +654,7 @@ open HomogeneousLocalization IsLocalRing
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
-  show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x).hom
+  change PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x).hom
         (IsLocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
   exact congr(PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint
@@ -754,7 +756,6 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         ← mul_assoc, coe_decompose_mul_add_of_right_mem, coe_decompose_mul_add_of_right_mem,
         mul_assoc, mul_assoc] at hc
       exacts [y.den.2, z.num.2, z.den.2, y.num.2]
-
     refine ⟨⟨HomogeneousLocalization.mk ⟨m * i, ⟨c ^ m, SetLike.pow_mem_graded _ hc⟩,
       ⟨f ^ i, mul_comm m i ▸ SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
       (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hc' _⟩,
@@ -808,7 +809,7 @@ lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
 lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f) := by
   haveI : IsIso (toSpec 𝒜 f).base := toSpec_base_isIso 𝒜 f_deg hm
-  haveI (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
+  haveI _ (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
     rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
   haveI : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) :=
     LocallyRingedSpace.IsOpenImmersion.of_stalk_iso (toSpec 𝒜 f)

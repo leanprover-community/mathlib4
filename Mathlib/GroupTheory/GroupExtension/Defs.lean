@@ -114,7 +114,7 @@ namespace GroupExtension
 variable [Group N] [Group E] [Group G] (S : GroupExtension N E G)
 
 /-- The range of the inclusion map is a normal subgroup. -/
-@[to_additive "The range of the inclusion map is a normal additive subgroup." ]
+@[to_additive "The range of the inclusion map is a normal additive subgroup."]
 instance normal_inl_range : S.inl.range.Normal :=
   S.range_inl_eq_ker_rightHom ▸ S.rightHom.normal_ker
 

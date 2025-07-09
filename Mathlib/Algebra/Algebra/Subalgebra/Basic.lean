@@ -13,7 +13,7 @@ import Mathlib.RingTheory.SimpleRing.Basic
 In this file we define `Subalgebra`s and the usual operations on them (`map`, `comap`).
 
 The `Algebra.adjoin` operation and complete lattice structure can be found in
-`Mathlib.Algebra.Algebra.Subalgebra.Lattice`.
+`Mathlib/Algebra/Algebra/Subalgebra/Lattice.lean`.
 -/
 
 universe u u' v w w'
@@ -623,7 +623,7 @@ open Algebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable (S : Subalgebra R A)
+variable (S T U : Subalgebra R A)
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
@@ -642,30 +642,54 @@ def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
   map_zero' := rfl
   commutes' _ := rfl
 
-theorem inclusion_injective {S T : Subalgebra R A} (h : S ≤ T) : Function.Injective (inclusion h) :=
+variable {S T U} (h : S ≤ T)
+
+theorem inclusion_injective : Function.Injective (inclusion h) :=
   fun _ _ => Subtype.ext ∘ Subtype.mk.inj
 
 @[simp]
-theorem inclusion_self {S : Subalgebra R A} : inclusion (le_refl S) = AlgHom.id R S :=
+theorem inclusion_self : inclusion (le_refl S) = AlgHom.id R S :=
   AlgHom.ext fun _x => Subtype.ext rfl
 
 @[simp]
-theorem inclusion_mk {S T : Subalgebra R A} (h : S ≤ T) (x : A) (hx : x ∈ S) :
-    inclusion h ⟨x, hx⟩ = ⟨x, h hx⟩ :=
+theorem inclusion_mk (x : A) (hx : x ∈ S) : inclusion h ⟨x, hx⟩ = ⟨x, h hx⟩ :=
   rfl
 
-theorem inclusion_right {S T : Subalgebra R A} (h : S ≤ T) (x : T) (m : (x : A) ∈ S) :
-    inclusion h ⟨x, m⟩ = x :=
+theorem inclusion_right (x : T) (m : (x : A) ∈ S) : inclusion h ⟨x, m⟩ = x :=
   Subtype.ext rfl
 
 @[simp]
-theorem inclusion_inclusion {S T U : Subalgebra R A} (hst : S ≤ T) (htu : T ≤ U) (x : S) :
+theorem inclusion_inclusion (hst : S ≤ T) (htu : T ≤ U) (x : S) :
     inclusion htu (inclusion hst x) = inclusion (le_trans hst htu) x :=
   Subtype.ext rfl
 
 @[simp]
-theorem coe_inclusion {S T : Subalgebra R A} (h : S ≤ T) (s : S) : (inclusion h s : A) = s :=
+theorem coe_inclusion (s : S) : (inclusion h s : A) = s :=
   rfl
+
+namespace inclusion
+
+scoped instance isScalarTower_left (X) [SMul X R] [SMul X A] [IsScalarTower X R A] :
+    letI := (inclusion h).toModule; IsScalarTower X S T :=
+  letI := (inclusion h).toModule
+  ⟨fun x s t ↦ Subtype.ext <| by
+    rw [← one_smul R s, ← smul_assoc, one_smul, ← one_smul R (s • t), ← smul_assoc,
+      Algebra.smul_def, Algebra.smul_def]
+    apply mul_assoc⟩
+
+scoped instance isScalarTower_right (X) [MulAction A X] :
+    letI := (inclusion h).toModule; IsScalarTower S T X :=
+  letI := (inclusion h).toModule; ⟨fun _ ↦ mul_smul _⟩
+
+scoped instance faithfulSMul :
+    letI := (inclusion h).toModule; FaithfulSMul S T :=
+  letI := (inclusion h).toModule
+  ⟨fun {x y} h ↦ Subtype.ext <| by
+    convert Subtype.ext_iff.mp (h 1) using 1 <;> exact (mul_one _).symm⟩
+
+end inclusion
+
+variable (S)
 
 /-- Two subalgebras that are equal are also equivalent as algebras.
 

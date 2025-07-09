@@ -39,6 +39,14 @@ theorem ContinuousSMul.of_nhds_zero [IsTopologicalRing R] [IsTopologicalAddGroup
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.smul : R →+ M →+ M) ?_ ?_ ?_ <;>
       simpa [ContinuousAt]
 
+variable (R M) in
+omit [TopologicalSpace R] in
+/-- A topological module over a ring has continuous negation.
+
+This cannot be an instance, because it would cause search for `[Module ?R M]` with unknown `R`. -/
+theorem ContinuousNeg.of_continuousConstSMul [ContinuousConstSMul R M] : ContinuousNeg M where
+  continuous_neg := by simpa using continuous_const_smul (T := M) (-1 : R)
+
 end
 
 section

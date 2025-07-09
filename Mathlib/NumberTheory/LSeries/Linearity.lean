@@ -40,7 +40,7 @@ lemma LSeriesSummable.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f 
 @[simp]
 lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f + g) s = LSeries f s + LSeries g s := by
-  simpa [LSeries, term_add] using tsum_add hf hg
+  simpa [LSeries, term_add] using hf.tsum_add hg
 
 /-!
 ### Negation
@@ -94,7 +94,7 @@ lemma LSeriesSummable.sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f 
 @[simp]
 lemma LSeries_sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f - g) s = LSeries f s - LSeries g s := by
-  simpa [LSeries, term_sub] using tsum_sub hf hg
+  simpa [LSeries, term_sub] using hf.tsum_sub hg
 
 /-!
 ### Scalar multiplication
@@ -158,6 +158,6 @@ lemma LSeriesSummable.sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
 @[simp]
 lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
     LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
-  simpa [LSeries, term_sum] using tsum_finsetSum hf
+  simpa [LSeries, term_sum] using Summable.tsum_finsetSum hf
 
 end sum

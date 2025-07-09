@@ -78,7 +78,7 @@ theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ D
 `α` has empty interior. -/
 theorem interior_compact_eq_empty [T2Space β] (di : IsDenseInducing i) (hd : Dense (range i)ᶜ)
     {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
-  refine eq_empty_iff_forall_not_mem.2 fun x hx => ?_
+  refine eq_empty_iff_forall_notMem.2 fun x hx => ?_
   rw [mem_interior_iff_mem_nhds] at hx
   have := di.closure_image_mem_nhds hx
   rw [(hs.image di.continuous).isClosed.closure_eq] at this
@@ -91,9 +91,6 @@ protected theorem prodMap [TopologicalSpace γ] [TopologicalSpace δ] {e₁ : α
     IsDenseInducing (Prod.map e₁ e₂) where
   toIsInducing := de₁.isInducing.prodMap de₂.isInducing
   dense := de₁.dense.prodMap de₂.dense
-
-@[deprecated (since := "2024-10-06")]
-protected alias prod := IsDenseInducing.prodMap
 
 open TopologicalSpace
 
@@ -291,8 +288,6 @@ protected theorem prodMap {e₁ : α → β} {e₂ : γ → δ} (de₁ : IsDense
     (de₂ : IsDenseEmbedding e₂) : IsDenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) where
   toIsDenseInducing := de₁.isDenseInducing.prodMap de₂.isDenseInducing
   injective := de₁.injective.prodMap de₂.injective
-
-@[deprecated (since := "2024-10-06")] protected alias prod := IsDenseEmbedding.prodMap
 
 /-- The dense embedding of a subtype inside its closure. -/
 @[simps]

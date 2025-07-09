@@ -49,7 +49,7 @@ open CategoryTheory
 
 open TopCat
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits CategoryTheory.Functor
 
 open TopologicalSpace Topology
 
@@ -209,9 +209,6 @@ theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
 
 @[deprecated (since := "2024-10-27")]
 alias stalkPushforward_iso_of_isOpenEmbedding := stalkPushforward_iso_of_isInducing
-@[deprecated (since := "2024-10-18")]
-alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isInducing
-
 end stalkPushforward
 
 section stalkPullback
@@ -365,9 +362,7 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
 
--- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
--- It seems the side condition `h` is not applied by `simpNF`.
-@[reassoc, elementwise, simp, nolint simpNF]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.hom.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
@@ -426,7 +421,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
         h
   exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
 
-theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F ⟶ G)
+theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor C x).map f) := fun s t hst => by
   rcases germ_exist F x s with ⟨U₁, hxU₁, s, rfl⟩
@@ -438,6 +433,42 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
   replace heq := h W heq
   convert congr_arg (F.germ _ x hxW) heq using 1
   exacts [(F.germ_res_apply iWU₁ x hxW s).symm, (F.germ_res_apply iWU₂ x hxW t).symm]
+
+section IsBasis
+
+variable {B : Set (Opens X)} (hB : Opens.IsBasis B)
+
+include hB
+
+lemma germ_exist_of_isBasis (F : X.Presheaf C) (x : X) (t : ToType (F.stalk x)) :
+    ∃ (U : Opens X) (m : x ∈ U) (_ : U ∈ B) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
+  obtain ⟨U, hxU, s, rfl⟩ := F.germ_exist x t
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.2
+  exact ⟨V, hxV, hV, F.map (homOfLE hVU).op s, by rw [← ConcreteCategory.comp_apply, F.germ_res']⟩
+
+lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
+    {s : ToType (F.obj (op U))} {t : ToType (F.obj (op V))}
+    (h : F.germ U x mU s = F.germ V x mV t) :
+    ∃ (W : Opens X) (_ : x ∈ W) (_ : W ∈ B) (hWU : W ≤ U) (hWV : W ≤ V),
+      F.map (homOfLE hWU).op s = F.map (homOfLE hWV).op t := by
+  obtain ⟨W, hxW, hWU, hWV, e⟩ := F.germ_eq x mU mV _ _ h
+  obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.2
+  refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
+  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using
+    DFunLike.congr_arg (ConcreteCategory.hom (F.map (homOfLE hW'W).op)) e
+
+lemma stalkFunctor_map_injective_of_isBasis
+    {F G : X.Presheaf C} {α : F ⟶ G} (hα : ∀ U ∈ B, Function.Injective (α.app (op U))) (x : X) :
+    Function.Injective ((stalkFunctor _ x).map α) := by
+  intro s t hst
+  obtain ⟨U₁, hxU₁, hU₁, s, rfl⟩ := germ_exist_of_isBasis hB _ x s
+  obtain ⟨U₂, hxU₂, hU₂, t, rfl⟩ := germ_exist_of_isBasis hB _ x t
+  rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply] at hst
+  obtain ⟨W, hxW, hW, iWU₁, iWU₂, heq⟩ := germ_eq_of_isBasis hB _ _ hxU₁ hxU₂ hst
+  simp only [← α.naturality_apply, (hα W hW).eq_iff] at heq
+  simpa [germ_res_apply'] using congr(F.germ W x hxW $heq)
+
+end IsBasis
 
 variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
@@ -474,7 +505,7 @@ theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshe
     (∀ x : X, Function.Injective ((stalkFunctor C x).map f)) ↔
       ∀ U : Opens X, Function.Injective (f.app (op U)) :=
   ⟨fun h U => app_injective_of_stalkFunctor_map_injective f U fun x _ => h x,
-    stalkFunctor_map_injective_of_app_injective f⟩
+    stalkFunctor_map_injective_of_app_injective⟩
 
 instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) :=

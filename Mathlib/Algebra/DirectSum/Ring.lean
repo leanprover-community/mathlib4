@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -230,15 +231,13 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
 
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
-  suffices (mulHom A).compHom.comp (mulHom A) =
-      (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
-      simpa only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
-        AddMonoidHom.flipHom_apply]
-        using DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
+  suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
+      simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using
+        DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
-  dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
-    AddMonoidHom.flipHom_apply]
-  simp_rw [mulHom_of_of]
+  dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.mulLeft₃_apply,
+    AddMonoidHom.mulRight₃_apply]
+  simp_rw [of_mul_of]
   exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 
 instance instNatCast : NatCast (⨁ i, A i) where
@@ -547,7 +546,7 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       rw [(toAddMonoid f).map_mul_iff]
       refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
       refine DirectSum.addHom_ext' (fun yi ↦ AddMonoidHom.ext (fun yv ↦ ?_))
-      show
+      change
         toAddMonoid f (of A xi xv * of A yi yv) =
           toAddMonoid f (of A xi xv) * toAddMonoid f (of A yi yv)
       simp_rw [of_mul_of, toAddMonoid_of]
@@ -588,8 +587,7 @@ def liftRingHom :
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
-    simp only [RingHom.coe_addMonoidHom_mk, DirectSum.toAddMonoid_of, AddMonoidHom.mk_coe,
-      AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
+    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
 
 end ToSemiring
 
@@ -643,7 +641,7 @@ instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [Com
   __ := CommMonoid.gCommMonoid ι
 
 /-- A direct sum of copies of a `CommRing` inherits the commutative multiplication structure. -/
-instance CommmRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
+instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
     DirectSum.GCommRing fun _ : ι => R where
   __ := Ring.directSumGRing ι
   __ := CommMonoid.gCommMonoid ι

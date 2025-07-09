@@ -76,10 +76,6 @@ instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace
 
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-10-05"))]
-theorem continuous_smul₁ (x : G ⧸ N) : Continuous fun g : G => g • x :=
-  continuous_id.smul continuous_const
-
 variable (N)
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/

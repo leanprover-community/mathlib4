@@ -37,7 +37,7 @@ only assumes `R` is a commutative semiring.
 
 ## References
 
- * [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
+* [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
 Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
@@ -51,7 +51,7 @@ open scoped TensorProduct
 open LinearMap TensorProduct AlgHom
 
 /-- A polynomial law `M →ₚₗ[R] N` between `R`-modules is a functorial family of maps
-   `S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
+`S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
 
 For universe reasons, `S` has to be restricted to the same universe as `R`. -/
 @[ext]
@@ -177,7 +177,7 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
 instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
   zsmul_zero' f   := by simp only [Int.cast_zero, zero_smul]
-  zsmul_succ' n f := by simp only [Int.ofNat_eq_coe, Nat.cast_succ, Int.cast_add, Int.cast_natCast,
+  zsmul_succ' n f := by simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast,
     Int.cast_one, add_smul, _root_.one_smul]
   zsmul_neg' n f  := by
     ext S _ _ m
@@ -217,7 +217,7 @@ theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : 
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
   convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
-  · simp only [Function.comp_apply, lid_symm_apply, includeRight_lid]
+  · simp only [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
 /-- The map ground assigning a function `M → N` to a polynomial map `f : M →ₚₗ[R] N` as a

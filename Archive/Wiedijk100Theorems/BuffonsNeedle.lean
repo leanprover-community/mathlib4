@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
@@ -77,9 +77,7 @@ namespace BuffonsNeedle
 variable
   /- Probability theory variables. -/
   {Ω : Type*} [MeasureSpace Ω]
-
   /- Buffon's needle variables. -/
-
   /-
     - `d > 0` is the distance between parallel lines.
     - `l > 0` is the length of the needle.
@@ -87,11 +85,9 @@ variable
   (d l : ℝ)
   (hd : 0 < d)
   (hl : 0 < l)
-
   /- `B = (X, Θ)` is the joint random variable for the x-position and angle of the needle. -/
   (B : Ω → ℝ × ℝ)
   (hBₘ : Measurable B)
-
   /- `B` is uniformly distributed on `[-d/2, d/2] × [0, π]`. -/
   (hB : pdf.IsUniform B ((Set.Icc (-d / 2) (d / 2)) ×ˢ (Set.Icc 0 π)) ℙ)
 
@@ -148,14 +144,14 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   refine stronglyMeasurable_iff_measurable_separable.mpr
     ⟨measurable_needleCrossesIndicator l, {0, 1}, ?separable⟩
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
-    simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
+    simp only [Set.finite_singleton, Set.Finite.insert]
   refine ⟨range_finite.countable, ?subset_closure⟩
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
   intro x ⟨p, hxp⟩
   by_cases hp : 0 ∈ needleProjX l p.1 p.2
   · simp_rw [needleCrossesIndicator, Set.indicator_of_mem hp, Pi.one_apply] at hxp
     apply Or.inr hxp.symm
-  · simp_rw [needleCrossesIndicator, Set.indicator_of_not_mem hp] at hxp
+  · simp_rw [needleCrossesIndicator, Set.indicator_of_notMem hp] at hxp
     apply Or.inl hxp.symm
 
 include hd in
@@ -171,7 +167,7 @@ lemma integrable_needleCrossesIndicator :
     unfold needleCrossesIndicator
     by_cases hp : 0 ∈ needleProjX l p.1 p.2
     · simp_rw [Set.indicator_of_mem hp, Pi.one_apply, le_refl]
-    · simp_rw [Set.indicator_of_not_mem hp, zero_le_one]
+    · simp_rw [Set.indicator_of_notMem hp, zero_le_one]
   refine And.intro
     (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable
     ((MeasureTheory.hasFiniteIntegral_iff_norm (needleCrossesIndicator l)).mpr ?_)
@@ -219,7 +215,7 @@ lemma buffon_integral :
     MeasureTheory.integral_integral_swap ?integrable]
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta,
     integrable_needleCrossesIndicator d l hd]
-  simp only [needleCrossesIndicator, needleProjX, Set.mem_Icc]
+  simp only [needleCrossesIndicator, needleProjX]
   have indicator_eq (x θ : ℝ) :
       Set.indicator (Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)) 1 0 =
       Set.indicator (Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)) (1 : ℝ → ℝ) x := by
@@ -258,7 +254,8 @@ equals `(2 * l) / (d * π)`.
 -/
 theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
   simp_rw [buffon_integral d l hd B hBₘ hB, short_needle_inter_eq d l hl h _,
-    MeasureTheory.setIntegral_const, Real.volume_Icc, smul_eq_mul, mul_one, mul_comm (d * π)⁻¹ _,
+    MeasureTheory.setIntegral_const, MeasureTheory.measureReal_def,
+    Real.volume_Icc, smul_eq_mul, mul_one, mul_comm (d * π)⁻¹ _,
     mul_eq_mul_right_iff]
   apply Or.inl
   ring_nf
@@ -340,7 +337,7 @@ theorem buffon_long (h : d ≤ l) :
     MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, Set.Icc_inter_Icc, Real.volume_Icc,
     min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d),
     div_sub_div_same, neg_mul, max_neg_neg, sub_neg_eq_add, ← mul_two,
-    mul_div_cancel_right₀ (min d (Real.sin _ * l)) two_ne_zero
+    mul_div_cancel_right₀ (min d (Real.sin _ * l)) two_ne_zero, MeasureTheory.measureReal_def
   ]
   have : ∀ᵐ θ, θ ∈ Set.Icc 0 π →
       ENNReal.toReal (ENNReal.ofReal (min d (θ.sin * l))) = min d (θ.sin * l) := by

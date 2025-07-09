@@ -75,7 +75,7 @@ variable [One α] {s : Set α} {a : α}
 
 /-- The set `1 : Set α` is defined as `{1}` in locale `Pointwise`. -/
 @[to_additive "The set `0 : Set α` is defined as `{0}` in locale `Pointwise`."]
-protected noncomputable def one : One (Set α) :=
+protected def one : One (Set α) :=
   ⟨{1}⟩
 
 scoped[Pointwise] attribute [instance] Set.one Set.zero
@@ -118,7 +118,7 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
-noncomputable def singletonOneHom : OneHom α (Set α) where
+def singletonOneHom : OneHom α (Set α) where
   toFun := singleton; map_one' := singleton_one
 
 @[to_additive (attr := simp)]
@@ -216,7 +216,7 @@ theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
   rw [← image_inv_eq_inv, image_eq_empty]
 
 @[to_additive (attr := simp)]
-noncomputable instance involutiveInv : InvolutiveInv (Set α) where
+instance involutiveInv : InvolutiveInv (Set α) where
   inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
@@ -370,7 +370,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-noncomputable def singletonMulHom : α →ₙ* Set α where
+def singletonMulHom : α →ₙ* Set α where
   toFun := singleton
   map_mul' _ _ := singleton_mul_singleton.symm
 
@@ -389,7 +389,7 @@ theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
   image_image2_antidistrib op_mul
 
 @[to_additive (attr := simp) prod_add_prod_comm]
-lemma prod_mul_prod_comm [Mul β] (s₁ s₂: Set α) (t₁ t₂ : Set β) :
+lemma prod_mul_prod_comm [Mul β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
    (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
 
 @[deprecated (since := "2025-03-11")]
@@ -538,7 +538,7 @@ scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddSemigroup` under pointwise operations if `α` is."]
-protected noncomputable def semigroup [Semigroup α] : Semigroup (Set α) :=
+protected def semigroup [Semigroup α] : Semigroup (Set α) :=
   { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
 
 section CommSemigroup
@@ -547,7 +547,7 @@ variable [CommSemigroup α] {s t : Set α}
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddCommSemigroup` under pointwise operations if `α` is."]
-protected noncomputable def commSemigroup : CommSemigroup (Set α) :=
+protected def commSemigroup : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
 
 @[to_additive]
@@ -566,7 +566,7 @@ variable [MulOneClass α]
 
 /-- `Set α` is a `MulOneClass` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddZeroClass` under pointwise operations if `α` is."]
-protected noncomputable def mulOneClass : MulOneClass (Set α) :=
+protected def mulOneClass : MulOneClass (Set α) :=
   { Set.one, Set.mul with
     mul_one := image2_right_identity mul_one
     one_mul := image2_left_identity one_mul }
@@ -586,7 +586,7 @@ theorem subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆
 
 /-- The singleton operation as a `MonoidHom`. -/
 @[to_additive "The singleton operation as an `AddMonoidHom`."]
-noncomputable def singletonMonoidHom : α →* Set α :=
+def singletonMonoidHom : α →* Set α :=
   { singletonMulHom, singletonOneHom with }
 
 @[to_additive (attr := simp)]
@@ -605,7 +605,7 @@ variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 /-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddMonoid` under pointwise operations if `α` is."]
-protected noncomputable def monoid : Monoid (Set α) :=
+protected def monoid : Monoid (Set α) :=
   { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
 
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
@@ -643,8 +643,6 @@ lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0)
 
 @[to_additive (attr := simp) nsmul_empty]
 lemma empty_pow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
-
-@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
 
 @[to_additive]
 lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
@@ -741,7 +739,7 @@ end CancelMonoid
 
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddCommMonoid` under pointwise operations if `α` is."]
-protected noncomputable def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
+protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
   { Set.monoid, Set.commSemigroup with }
 
 scoped[Pointwise] attribute [instance] Set.commMonoid Set.addCommMonoid
@@ -769,7 +767,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
     "`Set α` is a subtraction monoid under pointwise operations if `α` is."]
-protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
+protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
     mul_inv_rev := fun s t => by
       simp_rw [← image_inv_eq_inv]
@@ -829,7 +827,7 @@ end DivisionMonoid
 /-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
       "`Set α` is a commutative subtraction monoid under pointwise operations if `α` is."]
-protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
+protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }
 
@@ -851,15 +849,32 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
   aesop (add simp [not_disjoint_iff_nonempty_inter, mem_mul, mul_eq_one_iff_eq_inv, Set.Nonempty])
 
 @[to_additive]
-theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
+theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
+@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_one_mem_div_iff := one_notMem_div_iff
+
 @[to_additive]
-lemma not_one_mem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
+lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
 
-alias ⟨_, _root_.Disjoint.one_not_mem_div_set⟩ := not_one_mem_div_iff
+@[deprecated (since := "2025-05-23")]
+alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
 
-attribute [to_additive] Disjoint.one_not_mem_div_set
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
+
+alias ⟨_, _root_.Disjoint.one_notMem_div_set⟩ := one_notMem_div_iff
+
+attribute [to_additive] Disjoint.one_notMem_div_set
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.zero_not_mem_sub_set := Disjoint.zero_notMem_sub_set
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.one_not_mem_div_set := Disjoint.one_notMem_div_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=

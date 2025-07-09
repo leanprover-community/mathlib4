@@ -44,6 +44,11 @@ lemma untop₀_zero : untop₀ 0 = (0 : α) := by simp [untop₀]
 @[simp]
 lemma untop₀_coe (a : α) : (a : WithTop α).untop₀ = a := rfl
 
+lemma coe_untop₀_of_ne_top {a : WithTop α} (ha : a ≠ ⊤) :
+    a.untop₀ = a := by
+  obtain ⟨b, hb⟩ := WithTop.ne_top_iff_exists.1 ha
+  simp [← hb]
+
 end Zero
 
 /-!
@@ -76,7 +81,7 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
 -/
 @[simp]
-lemma untop₀_nonneg [OrderedAddCommGroup α] {a : WithTop α} :
+lemma untop₀_nonneg [AddCommGroup α] [PartialOrder α] {a : WithTop α} :
     0 ≤ a.untop₀ ↔ 0 ≤ a := by
   cases a with
   | top => tauto
@@ -87,7 +92,7 @@ lemma untop₀_nonneg [OrderedAddCommGroup α] {a : WithTop α} :
 -/
 
 @[simp]
-lemma untop₀_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
+lemma untop₀_neg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] (a : WithTop α) :
     (-a).untop₀ = -a.untop₀ := by
   cases a with
   | top => simp

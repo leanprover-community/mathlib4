@@ -42,7 +42,7 @@ theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R]
   case hmul =>
     refine ((nhds_basis.prod nhds_basis).tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
     refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => ?_⟩
-    simp only [sub_zero] at *
+    simp only at *
     calc norm (x * y) ≤ norm x * norm y := norm_mul_le _ _
     _ < ε := (mul_le_of_le_one_left (norm_nonneg _) hx.le).trans_lt hy
   case hmul_left => exact fun x => h0 _ (norm x) (norm_nonneg _) (norm_mul_le x)
@@ -165,15 +165,21 @@ theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0)
   tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
 
 /-- The function `x ↦ x⁻¹` tends to `-∞` on the left of `0`. -/
-theorem tendsto_inv_zero_atBot : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
+theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
+@[deprecated (since := "2025-04-23")]
+alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero
+
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
-theorem tendsto_inv_atBot_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
+theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
 
+@[deprecated (since := "2025-04-23")]
+alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
+
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
-  tendsto_inv_atBot_zero'.mono_right inf_le_left
+  tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
 
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
@@ -185,11 +191,11 @@ theorem Filter.Tendsto.div_atBot {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Ten
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atBot_zero.comp hg)
 
-lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
+lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜) :
     Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
   tendsto_const_nhds.div_atTop hg
 
-lemma Filter.Tendsto.const_div_atBot (hg : Tendsto g l atBot) (r : 𝕜)  :
+lemma Filter.Tendsto.const_div_atBot (hg : Tendsto g l atBot) (r : 𝕜) :
     Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
   tendsto_const_nhds.div_atBot hg
 
@@ -206,7 +212,7 @@ theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : T
 alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
 
 theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
-  tendsto_inv_zero_atBot.comp h
+  tendsto_inv_nhdsLT_zero.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
   then the product `f * g` tends to zero. -/

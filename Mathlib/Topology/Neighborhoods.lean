@@ -63,7 +63,7 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
     (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
-  mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
+  mem_nhds_iff.trans <| by simp only [subset_def, mem_setOf_eq]
 
 theorem frequently_nhds_iff {p : X → Prop} :
     (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
@@ -137,8 +137,6 @@ theorem frequently_frequently_nhds {p : X → Prop} :
 theorem eventually_mem_nhds_iff : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
   eventually_eventually_nhds
 
-@[deprecated (since := "2024-10-04")] alias eventually_mem_nhds := eventually_mem_nhds_iff
-
 @[simp]
 theorem nhds_bind_nhds : (𝓝 x).bind 𝓝 = 𝓝 x :=
   Filter.ext fun _ => eventually_eventually_nhds
@@ -183,7 +181,7 @@ theorem tendsto_nhds {f : α → X} {l : Filter α} :
 theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
     Tendsto f atTop (𝓝 x) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ N, ∀ n, N ≤ n → f n ∈ U :=
   (atTop_basis.tendsto_iff (nhds_basis_opens x)).trans <| by
-    simp only [and_imp, exists_prop, true_and, mem_Ici]
+    simp only [and_imp, true_and, mem_Ici]
 
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=
   tendsto_nhds.mpr fun _ _ ha => univ_mem' fun _ => ha
