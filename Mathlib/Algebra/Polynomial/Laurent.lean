@@ -142,7 +142,7 @@ theorem C_eq_algebraMap {R : Type*} [CommSemiring R] (r : R) : C r = algebraMap 
 theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
 
 @[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
-  rw [← single_eq_C, Finsupp.single_apply]; aesop
+  rw [← single_eq_C, Finsupp.single_apply]; grind
 
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
