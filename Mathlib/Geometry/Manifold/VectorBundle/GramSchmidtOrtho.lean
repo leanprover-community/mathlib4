@@ -273,14 +273,24 @@ variable {n : WithTop ℕ∞}
 -- TODO: fix pretty-printing of my new elaborators!
 set_option linter.style.commandStart false
 
-def foo {s t : (x : B) → E x} {u : Set B} (x : B)
-    (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) :
+variable [IsContMDiffRiemannianBundle IB n F E]
+
+def contMDiffWithinAt_myproj {s t : (x : B) → E x} {u : Set B} {x : B}
+    (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
     letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).orthogonalProjection (t x);
     CMDiffAt[u] n (T% S) x := by
-  sorry
+  simp_rw [Submodule.orthogonalProjection_singleton]
+  apply ContMDiffWithinAt.smul_section ?_ hs
+  suffices ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (fun x ↦ ⟪s x, t x⟫ / ⟪s x, s x⟫) u x by
+    apply this.congr
+    · intro y hy
+      rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K]
+    · rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K]
+  exact (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
 
-lemma gramSchmidt_contMDiffWithinAt (s : ι → (x : B) → E x) (i : ι) {u : Set B} (x : B)
+lemma gramSchmidt_contMDiffWithinAt [IsContMDiffRiemannianBundle IB n F E]
+    (s : ι → (x : B) → E x) (i : ι) {u : Set B} (x : B)
     (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
   simp_rw [VectorBundle.gramSchmidt_def]
@@ -288,9 +298,8 @@ lemma gramSchmidt_contMDiffWithinAt (s : ι → (x : B) → E x) (i : ι) {u : S
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
   have hproj : CMDiffAt[u] n (T% VectorBundle.gramSchmidt s i') x := sorry -- use recursion!
-  apply foo x hproj (hs i)
-
-  -- challenge 1: do this using (well-founded) induction
+  apply contMDiffWithinAt_myproj hproj (hs i)
+  sorry -- TODO: figure out the right preconditions!
 
 lemma gramSchmidt_contMDiffAt (s : ι → (x : B) → E x) (i : ι) (x : B)
     (hs : ∀ i, CMDiffAt n (T% (s i)) x) : CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
