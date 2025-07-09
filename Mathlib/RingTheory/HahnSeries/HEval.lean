@@ -177,8 +177,7 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
   commutes' r := by
     simp only [algebraMap_eq]
     ext g
-    simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, ↓reduceIte,
-      ite_smul, zero_smul]
+    simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, ite_smul, zero_smul]
     rw [finsum_eq_single _ 0 fun n hn => by simp [hn]]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
 
@@ -222,8 +221,7 @@ theorem coeff_heval_zero (f : PowerSeries R) :
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp_all
   · intro n hn
-    simp_all only [ne_eq, coeff_toFun, smulFamily_toFun, powers_of_orderTop_pos,
-      HahnSeries.coeff_smul, smul_eq_mul]
+    simp only [coeff_toFun, smulFamily_toFun, HahnSeries.coeff_smul, smul_eq_mul]
     refine mul_eq_zero_of_right ((coeff R n) f) (coeff_eq_zero_of_lt_orderTop ?_)
     by_cases h : 0 < x.orderTop
     · refine (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr h) ?_)
