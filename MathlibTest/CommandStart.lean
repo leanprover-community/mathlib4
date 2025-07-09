@@ -16,6 +16,10 @@ example : True = True := by
   conv =>
     ·rfl
 
+-- Ideally, this would complain, but the linter ignores `throwError`
+#eval do
+  if false then throwError"s"
+
 -- Ideally, these would complain, but we silenced the linter for `rcases`.
 example (h : False) : False := by rcases  h
 example (h : False) : False := by rcases(h)

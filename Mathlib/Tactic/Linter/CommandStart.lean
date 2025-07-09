@@ -274,6 +274,9 @@ abbrev unlintedNodes := #[
 
   -- The pretty printer does not place spaces around the braces`{}`.
   ``Parser.Term.structInstField,
+
+  -- `throwError "Sorry"` does not pretty-print the space before the opening `"`.
+  ``Lean.termThrowError__,
   ]
 
 /--
