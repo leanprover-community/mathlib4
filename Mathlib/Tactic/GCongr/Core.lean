@@ -170,16 +170,19 @@ initialize gcongrExt : SimpleScopedEnvExtension (GCongrKeyAndArgs × GCongrLemma
   }
 
 /-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
-def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
+def getCongrAppFnArgs (e : Expr) : MetaM (Option (Name × Array BinderInfo × Array Expr)) :=
   match e.cleanupAnnotations with
   | .forallE n d b bi =>
     -- We determine here whether an arrow is an implication or a forall
     -- this approach only works if LHS and RHS are both dependent or both non-dependent
     if b.hasLooseBVars then
-      some (`_Forall, #[.lam n d b bi])
+      return some (`_Forall, #[.default], #[.lam n d b bi])
     else
-      some (`_Implies, #[d, b])
-  | e => e.withApp fun f args => f.constName?.map (·, args)
+      return some (`_Implies, #[.default, .default], #[d, b])
+  | e => e.withApp fun f args =>
+    f.constName?.mapM fun n => do
+      let info ← getFunInfoNArgs f args.size
+      return (n, info.paramInfo.map (·.binderInfo), args)
 
 /-- If `e` is of the form `r a b`, return `(r, a, b)`. -/
 def getRel (e : Expr) : Option (Name × Expr × Expr) :=
@@ -201,8 +204,8 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps : Nat) :
       {m} in the conclusion of {declTy}"
     -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
     let some (relName, lhs, rhs) := getRel (← whnf targetTy) | fail "No relation found"
-    let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
-    let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
+    let some (head, _, lhsArgs) ← getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
+    let some (head', _, rhsArgs) ← getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
     unless head == head' && lhsArgs.size == rhsArgs.size do
       fail "LHS and RHS do not have the same head function and arity"
     let mut varyingArgs := #[]
@@ -444,16 +447,16 @@ partial def _root_.Lean.MVarId.gcongr
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwError "gcongr failed, {rel} is not a relation"
-  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
+  let some (lhsHead, binfos, lhsArgs) ← getCongrAppFnArgs lhs
     | if template.isNone then return (false, names, #[g])
       throwError "gcongr failed, the head of {lhs} is not a constant"
-  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs
+  let some (rhsHead, _, rhsArgs) ← getCongrAppFnArgs rhs
     | if template.isNone then return (false, names, #[g])
       throwError "gcongr failed, the head of {rhs} is not a constant"
   -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
   -- `tplHead = lhsHead = rhsHead`
   let tplArgs ← if let some tpl := template then
-    let some (tplHead, tplArgs) := getCongrAppFnArgs tpl
+    let some (tplHead, _, tplArgs) ← getCongrAppFnArgs tpl
       | throwError "gcongr failed, the head of {tpl} is not a constant"
     if let some hole := grewriteHole then
       pure <| tplArgs.map fun tpl => (some tpl, (tpl.findMVar? (· == hole)).isSome)
@@ -474,9 +477,15 @@ partial def _root_.Lean.MVarId.gcongr
     -- and also build an array of booleans according to which arguments `_ ... _` to the head
     -- function differ between the LHS and RHS. We treat always treat proofs as being the same
     -- (even if they have differing types).
-    (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) => do
-      let isSame ← isDefEq lhsArg rhsArg <||> (isProof lhsArg <&&> isProof rhsArg)
-      return (none, !isSame)
+    let mut tplArgs := #[]
+    for i in [:lhsArgs.size] do
+      let lhsArg := lhsArgs[i]!
+      let rhsArg := rhsArgs[i]!
+      let isExplicit := binfos[i]? matches none | some BinderInfo.default
+      let isSame ← (if isExplicit then id else withInferTypeConfig) (isDefEq lhsArg rhsArg)
+        <||> (isProof lhsArg <&&> isProof rhsArg)
+      tplArgs := tplArgs.push (none, !isSame)
+    pure tplArgs
   -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
   -- supposed to vary, according to the template (if there is one), and in the absence of a template
   -- to record which arguments to the head function differ between the two sides of the goal.
