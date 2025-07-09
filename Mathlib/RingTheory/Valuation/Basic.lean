@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.GroupWithZero.Range
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
@@ -387,6 +388,29 @@ def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
 
+
+open MonoidWithZeroHom in
+def restrict : Valuation R (valueGroup₀ v) := by
+  use restrict₀ v
+  intro x y
+  by_cases H : v (x + y) = 0
+  · simp [H]
+  wlog hx : v x = 0
+  · simp [H, hx]
+    split_ifs with hy
+    · simp only [le_zero_iff, WithZero.coe_ne_zero, or_false]
+      apply map_add_le _ (by rfl)
+      simp [hy]
+    · simp [← Units.val_le_val]
+  · simp [H, hx]
+    split_ifs with hy
+    · simpa only [le_zero_iff, WithZero.coe_ne_zero] using
+        not_lt_zero' <| lt_of_le_of_ne (map_add_le _ (le_of_eq hx) (le_of_eq hy)) H
+    simp [← Units.val_le_val]
+    apply map_add_le
+    · simp [hx]
+    rfl
+
 end Group
 
 end Basic
@@ -496,8 +520,6 @@ lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
 end IsEquiv
-
--- end of namespace
 section
 
 theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]

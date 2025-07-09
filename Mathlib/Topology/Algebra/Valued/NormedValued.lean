@@ -80,9 +80,9 @@ variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
   [val : Valued L Γ₀] [hv : RankOne val.v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm : L → ℝ := fun x : L => hv.hom (Valued.v x)
+def norm : L → ℝ := fun x : L => hv.hom (restrict₀ Valued.v x)
 
-theorem norm_def {x : L} : Valued.norm x = hv.hom (Valued.v x) := rfl
+theorem norm_def {x : L} : Valued.norm x = hv.hom (restrict₀ Valued.v x) := rfl
 
 theorem norm_nonneg (x : L) : 0 ≤ norm x := by simp only [norm, NNReal.zero_le_coe]
 
