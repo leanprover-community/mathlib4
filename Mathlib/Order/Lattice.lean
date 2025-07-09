@@ -1301,11 +1301,9 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
     (∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
     (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
     (∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) where
-  mp := by
-    intro hlc
+  mp hlc := by
     constructor
-    · constructor
-      · exact hlc.refl
+    · exact ⟨hlc.refl⟩
     · constructor
       · intro x y
         constructor
@@ -1360,34 +1358,29 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
         (by rw [sup_assoc]; exact le_sup_right) (h.2.2.1
         (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h.2.1.mp hyz)) e2)
     {
-    refl _ := h.1.refl _
-    symm := by
-      intro x y hxy
+    refl  := h.1.refl
+    symm hxy := by
       rw [h.2.1, inf_comm, sup_comm, ← h.2.1]
       exact hxy
     trans := transitive
-    inf := by
+    inf h₀ h₁ := by
       have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
         closed_interval ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
           ⟨inf_le_inf_right _ inf_le_left, inf_le_inf_right _ le_sup_left⟩
           ⟨inf_le_inf_right _ inf_le_right, inf_le_inf_right _ le_sup_right⟩
           (h.2.2.2 inf_le_sup (h.2.1.mp hh)).1
-      intro _ _ _ _ h₀ h₁
       exact transitive (by
         conv_lhs => rw [inf_comm]
         conv_rhs => rw [inf_comm]
         exact compatible_left_inf h₁) (compatible_left_inf h₀)
-    sup := by
+    sup h₀ h₁ := by
       have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
-      closed_interval ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
-        ⟨sup_le_sup_right inf_le_left _, sup_le_sup_right le_sup_left _⟩
-        ⟨sup_le_sup_right inf_le_right _, sup_le_sup_right le_sup_right _⟩
-        (h.2.2.2 inf_le_sup (h.2.1.mp hh)).2
-      intro _ _ _ _ h₀ h₁
+        closed_interval ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
+          ⟨sup_le_sup_right inf_le_left _, sup_le_sup_right le_sup_left _⟩
+          ⟨sup_le_sup_right inf_le_right _, sup_le_sup_right le_sup_right _⟩
+          (h.2.2.2 inf_le_sup (h.2.1.mp hh)).2
       exact transitive (by
         conv_lhs => rw [sup_comm]
         conv_rhs => rw [sup_comm]
-        exact compatible_left_sup h₁
-      ) (compatible_left_sup h₀)
-
+        exact compatible_left_sup h₁) (compatible_left_sup h₀)
   } : IsLatticeCon r)
