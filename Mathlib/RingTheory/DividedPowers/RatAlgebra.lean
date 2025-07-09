@@ -78,7 +78,7 @@ theorem dpow_mem {m : ℕ} (hm : m ≠ 0) {x : A} (hx : x ∈ I) : dpow I m x �
   rw [dpow_eq_of_mem hx]
   exact Ideal.mul_mem_left I _ (Ideal.pow_mem_of_mem I hx _ (Nat.pos_of_ne_zero hm))
 
-theorem dpow_add_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) {m : ℕ} (hmn : m < n)
+theorem dpow_add_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m : ℕ} (hmn : m < n)
     {x y : A} (hx : x ∈ I) (hy : y ∈ I) :
     dpow I m (x + y) = (Finset.antidiagonal m).sum (fun k ↦ dpow I k.1 x * dpow I k.2 y) := by
   rw [dpow_eq_of_mem (Ideal.add_mem I hx hy)]
@@ -92,7 +92,7 @@ theorem dpow_add_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) {m : ℕ} (hm
   simp only [mul_assoc]; congr; rw [← mul_assoc]
   exact castChoose_eq (hn_fac.natCast_factorial_of_lt hmn) hk
 
-theorem dpow_add {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) (hnI : I ^ n = 0) {m : ℕ} {x : A}
+theorem dpow_add {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) (hnI : I ^ n = 0) {m : ℕ} {x : A}
     (hx : x ∈ I) {y : A} (hy : y ∈ I) :
     dpow I m (x + y) = (Finset.antidiagonal m).sum fun k ↦ dpow I k.1 x * dpow I k.2 y := by
   by_cases hmn : m < n
@@ -117,7 +117,7 @@ theorem dpow_mul {m : ℕ} {a x : A} (hx : x ∈ I) : dpow I m (a * x) = a ^ m *
   rw [dpow_eq_of_mem (Ideal.mul_mem_left I _ hx), dpow_eq_of_mem hx,
     mul_pow, ← mul_assoc, mul_comm _ (a ^ m), mul_assoc]
 
-theorem dpow_mul_of_add_lt {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) {m k : ℕ}
+theorem dpow_mul_of_add_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m k : ℕ}
     (hkm : m + k < n) {x : A} (hx : x ∈ I) :
     dpow I m x * dpow I k x = ↑((m + k).choose m) * dpow I (m + k) x := by
   have hm : m < n := lt_of_le_of_lt le_self_add hkm
@@ -143,7 +143,7 @@ theorem mul_dpow {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^ 
       mul_assoc, ← mul_assoc (x ^ m), mul_comm (x ^ m), mul_assoc _ (x ^ m), ← pow_add, hxmk,
       mul_zero, mul_zero, mul_zero, mul_zero]
 
-theorem dpow_comp_of_mul_lt {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) {m k : ℕ} (hk : k ≠ 0)
+theorem dpow_comp_of_mul_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m k : ℕ} (hk : k ≠ 0)
     (hkm : m * k < n) {x : A} (hx : x ∈ I) :
     dpow I m (dpow I k x) = ↑(uniformBell m k) * dpow I (m * k) x := by
   have hmn : m < n := lt_of_le_of_lt (Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero hk)) hkm
@@ -296,7 +296,7 @@ theorem dpow_eq_inv_fact_smul (hI : DividedPowers I) {n : ℕ} {x : R} (hx : x �
     rw [this, one_smul]
   apply Rat.inv_mul_cancel
   rw [← cast_zero, ne_eq]
-  simp [cast_zero, cast_eq_zero,factorial_ne_zero, not_false]
+  simp [factorial_ne_zero]
 
 variable {I}
 
