@@ -162,16 +162,16 @@ def gcdA : ℤ → ℤ → ℤ
 /-- The extended GCD `b` value in the equation `gcd x y = x * a + y * b`. -/
 def gcdB : ℤ → ℤ → ℤ
   | m, ofNat n => m.natAbs.gcdB n
-  | m, -[n + 1] => -m.natAbs.gcdB n.succ
+  | m, -[n+1] => -m.natAbs.gcdB n.succ
 
 /-- **Bézout's lemma** -/
 theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB x y
   | (m : ℕ), (n : ℕ) => Nat.gcd_eq_gcd_ab _ _
-  | (m : ℕ), -[n + 1] =>
+  | (m : ℕ), -[n+1] =>
     show (_ : ℤ) = _ + -(n + 1) * -_ by rw [Int.neg_mul_neg]; apply Nat.gcd_eq_gcd_ab
   | -[m+1], (n : ℕ) =>
     show (_ : ℤ) = -(m + 1) * -_ + _ by rw [Int.neg_mul_neg]; apply Nat.gcd_eq_gcd_ab
-  | -[m+1], -[n + 1] =>
+  | -[m+1], -[n+1] =>
     show (_ : ℤ) = -(m + 1) * -_ + -(n + 1) * -_ by
       rw [Int.neg_mul_neg, Int.neg_mul_neg]
       apply Nat.gcd_eq_gcd_ab

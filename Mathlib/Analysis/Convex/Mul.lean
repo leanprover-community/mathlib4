@@ -173,7 +173,7 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
   | (n : ℕ) => by
     simp_rw [zpow_natCast]
     exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
-  | -[n + 1] => by
+  | -[n+1] => by
     simp_rw [zpow_negSucc, ← inv_pow]
     refine (convexOn_iff_forall_pos.2 ⟨convex_Ioi _, ?_⟩).pow (fun x (hx : 0 < x) ↦ by positivity) _
     rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab

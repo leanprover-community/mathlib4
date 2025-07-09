@@ -223,7 +223,7 @@ theorem succ_ofInt' : ∀ n, ZNum.ofInt' (n + 1) = ZNum.ofInt' n + 1
     dsimp only [ZNum.ofInt', ZNum.ofInt']
     rw [ofNat'_succ, ofNat'_zero]; rfl
   | -[(n + 1)+1] => by
-    change ZNum.ofInt' -[n + 1] = ZNum.ofInt' -[(n + 1)+1] + 1
+    change ZNum.ofInt' -[n+1] = ZNum.ofInt' -[(n + 1)+1] + 1
     dsimp only [ZNum.ofInt', ZNum.ofInt']
     rw [@Num.ofNat'_succ (n + 1), Num.add_one, toZNumNeg_succ,
       @ofNat'_succ n, Num.add_one, ZNum.add_one, pred_succ]
@@ -303,7 +303,7 @@ theorem cast_mul [NonAssocRing α] (m n) : ((m * n : ZNum) : α) = m * n := by
   rw [← cast_to_int, mul_to_int, Int.cast_mul, cast_to_int, cast_to_int]
 
 theorem ofInt'_neg : ∀ n : ℤ, ofInt' (-n) = -ofInt' n
-  | -[n + 1] => show ofInt' (n + 1 : ℕ) = _ by simp only [ofInt', Num.zneg_toZNumNeg]
+  | -[n+1] => show ofInt' (n + 1 : ℕ) = _ by simp only [ofInt', Num.zneg_toZNumNeg]
   | 0 => show Num.toZNum (Num.ofNat' 0) = -Num.toZNum (Num.ofNat' 0) by rw [Num.ofNat'_zero]; rfl
   | (n + 1 : ℕ) => show Num.toZNumNeg _ = -Num.toZNum _ by rw [Num.zneg_toZNum]
 
@@ -485,7 +485,7 @@ theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
 @[simp]
 theorem ofInt'_eq : ∀ n : ℤ, ZNum.ofInt' n = n
   | (n : ℕ) => rfl
-  | -[n + 1] => by
+  | -[n+1] => by
     change Num.toZNumNeg (n + 1 : ℕ) = -(n + 1 : ℕ)
     rw [← neg_inj, neg_neg, Nat.cast_succ, Num.add_one, Num.zneg_toZNumNeg, Num.toZNum_succ,
       Nat.cast_succ, ZNum.add_one]
