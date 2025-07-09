@@ -67,7 +67,8 @@ def IsLocalFrameOn.gramSchmidt (hs : IsLocalFrameOn IB F n s u) :
     exact VectorBundle.gramSchmidt_linearIndependent (hs.linearIndependent hx)
   generating := by
     intro x hx
-    sorry -- lemma about Gram-Schmidt...
+    simpa only [VectorBundle.gramSchmidt_apply, InnerProductSpace.span_gramSchmidt ℝ (s · x)]
+      using hs.generating hx
   contMDiffOn i := gramSchmidt_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
       fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
 
@@ -77,6 +78,7 @@ def IsOrthogonalFrameOn.gramSchmidt (hs : IsOrthogonalFrameOn IB F n s u) :
     IsOrthogonalFrameOn IB F n (VectorBundle.gramSchmidt s) u where
   toIsLocalFrameOn := hs.toIsLocalFrameOn.gramSchmidt
   orthogonal {_ _ x} hij _hx := VectorBundle.gramSchmidt_orthogonal s hij x
+
 
 /-! # Determining smoothness of a section via its local frame coefficients
 
@@ -99,6 +101,17 @@ lemma IsOrthogonalFrameOn.repr_eq_inner (hs : IsOrthogonalFrameOn IB F n s u)
   sorry
 
 -- deduce an inductive formula for all frame coefficients for any local frame
+
+variable (t) in
+lemma IsOrthogonalFrameOn.repr_eq (hs : IsLocalFrameOn IB F n s u) {x} (hx : x ∈ u) (i : ι) :
+    hs.repr i t x = sorry := by
+  -- normalise the sections s
+  let s' := VectorBundle.gramSchmidt s
+  have : hs.gramSchmidt.repr i t x = ⟪s' i x, t x⟫ / ‖s' i x‖ ^ 2 := by
+    apply IsOrthogonalFrameOn.repr_eq_inner _ ?_ hx i
+    sorry
+  -- write s' = s - ∑ ... and apply induction? is that sound?
+  sorry
 
 section smoothness
 
