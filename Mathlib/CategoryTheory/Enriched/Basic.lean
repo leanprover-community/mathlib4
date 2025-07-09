@@ -107,6 +107,8 @@ structure EnrichedIso (X Y : C) where
 
 namespace EnrichedIso
 
+variable {V}
+
 /-- The identity isomorphism in a `V`-enriched category. -/
 @[refl, simps]
 def refl (X : C) : EnrichedIso V X X where
