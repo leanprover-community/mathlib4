@@ -23,12 +23,12 @@ namespace Int
 /-- `div2 n = n/2` -/
 def div2 : ℤ → ℤ
   | (n : ℕ) => n.div2
-  | -[n +1] => negSucc n.div2
+  | -[n+1] => negSucc n.div2
 
 /-- `bodd n` returns `true` if `n` is odd -/
 def bodd : ℤ → Bool
   | (n : ℕ) => n.bodd
-  | -[n +1] => not (n.bodd)
+  | -[n+1] => not (n.bodd)
 
 /-- `bit b` appends the digit `b` to the binary representation of
   its integer input. -/
@@ -37,50 +37,50 @@ def bit (b : Bool) : ℤ → ℤ :=
 
 /-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
 def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
-  cond (f false false) -[ Nat.bitwise (fun x y => not (f x y)) m n +1] (Nat.bitwise f m n)
+  cond (f false false) -[Nat.bitwise (fun x y => not (f x y)) m n+1] (Nat.bitwise f m n)
 
 /-- `Int.bitwise` applies the function `f` to pairs of bits in the same position in
   the binary representations of its inputs. -/
 def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => natBitwise f m n
-  | (m : ℕ), -[n +1] => natBitwise (fun x y => f x (not y)) m n
-  | -[m +1], (n : ℕ) => natBitwise (fun x y => f (not x) y) m n
-  | -[m +1], -[n +1] => natBitwise (fun x y => f (not x) (not y)) m n
+  | (m : ℕ), -[n+1] => natBitwise (fun x y => f x (not y)) m n
+  | -[m+1], (n : ℕ) => natBitwise (fun x y => f (not x) y) m n
+  | -[m+1], -[n+1] => natBitwise (fun x y => f (not x) (not y)) m n
 
 /-- `lnot` flips all the bits in the binary representation of its input -/
 def lnot : ℤ → ℤ
-  | (m : ℕ) => -[m +1]
-  | -[m +1] => m
+  | (m : ℕ) => -[m+1]
+  | -[m+1] => m
 
 /-- `lor` takes two integers and returns their bitwise `or` -/
 def lor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m ||| n
-  | (m : ℕ), -[n +1] => -[Nat.ldiff n m +1]
-  | -[m +1], (n : ℕ) => -[Nat.ldiff m n +1]
-  | -[m +1], -[n +1] => -[m &&& n +1]
+  | (m : ℕ), -[n+1] => -[Nat.ldiff n m+1]
+  | -[m+1], (n : ℕ) => -[Nat.ldiff m n+1]
+  | -[m+1], -[n+1] => -[m &&& n+1]
 
 /-- `land` takes two integers and returns their bitwise `and` -/
 def land : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m &&& n
-  | (m : ℕ), -[n +1] => Nat.ldiff m n
-  | -[m +1], (n : ℕ) => Nat.ldiff n m
-  | -[m +1], -[n +1] => -[m ||| n +1]
+  | (m : ℕ), -[n+1] => Nat.ldiff m n
+  | -[m+1], (n : ℕ) => Nat.ldiff n m
+  | -[m+1], -[n+1] => -[m ||| n+1]
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
-  | (m : ℕ), -[n +1] => m &&& n
-  | -[m +1], (n : ℕ) => -[m ||| n +1]
-  | -[m +1], -[n +1] => Nat.ldiff n m
+  | (m : ℕ), -[n+1] => m &&& n
+  | -[m+1], (n : ℕ) => -[m ||| n+1]
+  | -[m+1], -[n+1] => Nat.ldiff n m
 
 /-- `xor` computes the bitwise `xor` of two natural numbers -/
 protected def xor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => (m ^^^ n)
-  | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
-  | -[m +1], (n : ℕ) => -[(m ^^^ n) +1]
-  | -[m +1], -[n +1] => (m ^^^ n)
+  | (m : ℕ), -[n+1] => -[(m ^^^ n)+1]
+  | -[m+1], (n : ℕ) => -[(m ^^^ n)+1]
+  | -[m+1], -[n+1] => (m ^^^ n)
 
 /-- `m <<< n` produces an integer whose binary representation
   is obtained by left-shifting the binary representation of `m` by `n` places -/
@@ -184,7 +184,7 @@ theorem bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
   cases b <;> rfl
 
 @[simp]
-theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n + 1] := by
+theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
   rw [bit_val, Nat.bit_val]
   cases b <;> rfl
 
@@ -385,7 +385,7 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>
-        by simp [← Nat.shiftLeft_sub _ , Nat.add_sub_cancel_left])
+        by simp [← Nat.shiftLeft_sub _, Nat.add_sub_cancel_left])
       fun i n => by
         dsimp
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
