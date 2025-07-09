@@ -104,7 +104,7 @@ where
   | n + 1 => cast (by rw [Int.add_assoc]; rfl) <|
     succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
-  neg : ∀ n : ℕ, motive (b + -[n + 1])
+  neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
   | n + 1 => by
     refine cast (by rw [Int.add_sub_assoc]; rfl) (pred _ (Int.le_of_lt ?_) (neg n))
@@ -124,12 +124,12 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
   · change _ = -1 at hn
     have : z = b := by omega
     subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
-  · have : z = b + -[n + 1] := by rw [Int.negSucc_eq] at hn ⊢; omega
+  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; omega
     subst this
     refine (cast_heq _ _).trans ?_
     congr
     symm
-    rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n + 1] - b = -[n + 1] by omega]
+    rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n+1] - b = -[n+1] by omega]
 
 end inductionOn'
 
@@ -291,7 +291,7 @@ lemma eq_mul_div_of_mul_eq_mul_of_dvd_left (hb : b ≠ 0) (hbc : b ∣ c) (h : b
   rwa [Int.mul_assoc, Int.mul_eq_mul_left_iff hb] at h
 
 lemma ofNat_add_negSucc_of_ge {m n : ℕ} (h : n.succ ≤ m) :
-    ofNat m + -[n + 1] = ofNat (m - n.succ) := by
+    ofNat m + -[n+1] = ofNat (m - n.succ) := by
   rw [negSucc_eq, ofNat_eq_natCast, ofNat_eq_natCast, ← Int.natCast_one, ← Int.natCast_add,
     ← Int.sub_eq_add_neg, ← Int.natCast_sub h]
 
