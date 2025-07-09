@@ -298,8 +298,16 @@ lemma gramSchmidt_contMDiffWithinAt [IsContMDiffRiemannianBundle IB n F E]
   apply (hs i).sub_section
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
+  have aux : { x // x ∈ Set.Iic i' } → { x // x ∈ Set.Iic i } := sorry
+  have : Function.Injective aux := sorry
+  have asdf := hs'.comp aux this
   have : LinearIndependent ℝ ((fun x_1 ↦ s x_1 x) ∘ @Subtype.val ι fun x ↦ x ∈ Set.Iic i') := by
-    sorry -- hs'.mono
+    convert asdf
+    ext ⟨x', hx'⟩
+    -- ext x'
+    simp --only [Function.comp_apply]
+    congr
+    sorry
   apply contMDiffWithinAt_myproj (gramSchmidt_contMDiffWithinAt s i' x hs this) (hs i)
   apply VectorBundle.gramSchmidt_ne_zero_coe _ _ this
 termination_by i
