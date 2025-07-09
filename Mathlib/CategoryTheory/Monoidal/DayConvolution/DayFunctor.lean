@@ -96,9 +96,9 @@ variable
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorRight v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
     [∀ (v : V) (d : C × C),
       Limits.PreservesColimitsOfShape
         (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
@@ -139,9 +139,9 @@ def dayConvolutionFunctorFunctor (F G : C ⊛⥤ V) :
     DayConvolution F.functor G.functor :=
   LawfulDayConvolutionMonoidalCategoryStruct.convolution _ _ _ F G
 
-/-- A shorthand for the unit transformation exhibiting `(F ⊗ G).functor` as a
-left Kan extension of `F.functor ⊠ G.functor` along `tensor C`. -/
-abbrev η (F G : C ⊛⥤ V) :
+/-- The unit transformation exhibiting `(F ⊗ G).functor` as a left Kan extension of
+`F.functor ⊠ G.functor` along `tensor C`. -/
+def η (F G : C ⊛⥤ V) :
     F.functor ⊠ G.functor ⟶ (tensor C) ⋙ (F ⊗ G).functor :=
   LawfulDayConvolutionMonoidalCategoryStruct.convolutionExtensionUnit
     C V F G
@@ -158,7 +158,7 @@ theorem tensor_hom_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
     α = β := by
   ext : 1
   apply Functor.homEquivOfIsLeftKanExtension
-    (F ⊗ G).functor (convolutionExtensionUnit C V F G) _|>.injective
+    (F ⊗ G).functor (η F G) _|>.injective
   ext ⟨x, y⟩
   exact h x y
 
@@ -187,9 +187,7 @@ def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
     (F ⊗ G).functor ≅
     (tensor C).pointwiseLeftKanExtension (F.functor ⊠ G.functor) :=
   Functor.leftKanExtensionUnique
-    (F ⊗ G).functor
-    (convolutionExtensionUnit C V F G)
-    _
+    (F ⊗ G).functor (η F G) _
     ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor))
 
 @[simp]
@@ -200,11 +198,8 @@ lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
         (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) := by
   simpa [η, isoPointwiseLeftKanExtension] using
     Functor.descOfIsLeftKanExtension_fac_app
-      (F ⊗ G).functor
-      (convolutionExtensionUnit C V F G)
-      _
-      ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor))
-      (x, y)
+      (F ⊗ G).functor (η F G) _
+      ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor)) (x, y)
 
 @[simp]
 lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
@@ -216,14 +211,15 @@ lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
   simp [η, isoPointwiseLeftKanExtension]
 
 variable (C V) in
-/-- A shorthand for the canonical map `𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C)`
+/-- The canonical map `𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C)`
 that exhibits `(𝟙_ (C ⊛⥤ V)).functor` as a Day convolution unit. -/
-abbrev ν : 𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C) :=
+def ν : 𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C) :=
   LawfulDayConvolutionMonoidalCategoryStruct.unitUnit C V (C ⊛⥤ V)
 
 variable (C V) in
 /-- The reinterpretation of `ν` as a natural transformation. -/
-abbrev νNatTrans :
+@[simps]
+def νNatTrans :
     Functor.fromPUnit.{0} (𝟙_ V) ⟶
       Functor.fromPUnit.{0} (𝟙_ C) ⋙ (𝟙_ (C ⊛⥤ V)).functor where
   app _ := ν C V
@@ -246,17 +242,42 @@ lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
 def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
     𝟙_ (C ⊛⥤ V) ⟶ F :=
   .mk <| Functor.descOfIsLeftKanExtension (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
-    F.functor ({ app _ := φ })
+    F.functor { app _ := φ }
 
 @[reassoc (attr := simp)]
 lemma ν_comp_unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
     ν C V ≫ (unitDesc φ).natTrans.app (𝟙_ C) = φ :=
   Functor.descOfIsLeftKanExtension_fac_app (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
-    F.functor ({ app _ := φ }) default
+    F.functor { app _ := φ } default
 
 section structureLemmas
 
 open LawfulDayConvolutionMonoidalCategoryStruct
+
+open scoped Prod in
+@[reassoc (attr := simp)]
+lemma η_naturality {F₁ F₂ : C ⊛⥤ V} {x₁ x₂ y₁ y₂ : C}
+    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
+    F₁.functor.map f₁ ▷ F₂.functor.obj x₂ ≫
+      F₁.functor.obj y₁ ◁ F₂.functor.map f₂ ≫ (η F₁ F₂).app (y₁, y₂) =
+    (η F₁ F₂).app (x₁, x₂) ≫ (F₁ ⊗ F₂).functor.map (f₁ ⊗ₘ f₂) := by
+  simpa using η F₁ F₂|>.naturality (f₁ ×ₘ f₂)
+
+open scoped Prod in
+@[reassoc (attr := simp)]
+lemma η_naturality_left {F₁ F₂ : C ⊛⥤ V} {x y : C}
+    (f : x ⟶ y) (z : C) :
+    F₁.functor.map f ▷ F₂.functor.obj z ≫ (η F₁ F₂).app (y, z) =
+    (η F₁ F₂).app (x, z) ≫ (F₁ ⊗ F₂).functor.map (f ▷ z) := by
+  simpa using η F₁ F₂|>.naturality (f ×ₘ (𝟙 z))
+
+open scoped Prod in
+@[reassoc (attr := simp)]
+lemma η_naturality_right {F₁ F₂ : C ⊛⥤ V}
+    (x : C) {y z : C} (f : y ⟶ z) :
+    F₁.functor.obj x ◁ F₂.functor.map f ≫ (η F₁ F₂).app (x, z) =
+    (η F₁ F₂).app (x, y) ≫ (F₁ ⊗ F₂).functor.map (x ◁ f) := by
+  simpa using η F₁ F₂|>.naturality ((𝟙 x) ×ₘ f)
 
 @[reassoc (attr := simp)]
 lemma η_app_comp_tensorHom_natTrans_app_tensor
