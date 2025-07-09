@@ -188,7 +188,7 @@ section Monomial
 def monomial (A : Type uA) (B : Type uB) : PFunctor.{uA, uB} :=
   ⟨A, fun _ => B⟩
 
-@[inherit_doc] scoped infixr:80 " y^" => monomial
+@[inherit_doc] scoped[PFunctor] infixr:80 " y^" => monomial
 
 /-- The constant polynomial functor `P(y) = A` -/
 def C (A : Type uA) : PFunctor.{uA, uB} :=
@@ -265,6 +265,8 @@ def tensor (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) :
     PFunctor.{max uA₁ uA₂, max uB₁ uB₂} :=
   ⟨P.A × Q.A, fun ab => P.B ab.1 × Q.B ab.2⟩
 
+@[inherit_doc] scoped[PFunctor] infixr:80 " ⊗ " => tensor
+
 end Tensor
 
 section Comp
@@ -284,7 +286,7 @@ def comp.get (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {
     P₂ (P₁ α) :=
   ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
 
-@[inherit_doc] scoped infixr:80 " ◃ " => comp
+@[inherit_doc] scoped[PFunctor] infixr:80 " ◃ " => comp
 
 end Comp
 
