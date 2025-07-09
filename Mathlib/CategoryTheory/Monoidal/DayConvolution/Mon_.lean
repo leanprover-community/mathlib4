@@ -13,12 +13,13 @@ Let `C` and `V` be monoidal categories such that we
 have a Day convolution monoidal structure on `C ⊛⥤ V` (the
 type alias `CategoryTheory.MonoidalCategory.DayFunctor` for
 functors endowed with the Day convolution monoidal structure).
-
-In this file, we show that given a lax monoidal functor `F : C ⥤ V`,
+In such a situation, we show that given a lax monoidal functor `F : C ⥤ V`,
 there is a canonical monoid object structure on `F` when the
 latter is interpreted as an object of `C ⊛⥤ V`. Conversely, we
 show that any such object admits a lax monoidal structure on their
-underlying functor.
+underlying functor. We show that this defines an equivalence
+(for `F : C ⊛⥤ V`) between lax monoidal structures on `F.functor` and internal
+monoid structures on `F`.
 -/
 
 noncomputable section
