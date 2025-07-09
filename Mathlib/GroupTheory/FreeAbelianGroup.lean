@@ -27,8 +27,8 @@ file, but the category-theoretic adjunction statement is in
 Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup A]`
 
 * `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
-group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
-many elements get mapped to zero, however this is not how it is implemented.
+  group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
+  many elements get mapped to zero, however this is not how it is implemented.
 
 * `lift f : FreeAbelianGroup α →+ A` : the group homomorphism induced
   by the map `f : α → A`.
@@ -137,11 +137,11 @@ protected theorem ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) =
 
 theorem map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianGroup α) (f : α → β)
     (g : β →+ γ) : g (lift f a) = lift (g ∘ f) a := by
-  show (g.comp (lift f)) a = lift (g ∘ f) a
+  change (g.comp (lift f)) a = lift (g ∘ f) a
   apply lift.unique
   intro a
-  show g ((lift f) (of a)) = g (f a)
-  simp only [(· ∘ ·), lift.of]
+  change g ((lift f) (of a)) = g (f a)
+  simp only [lift.of]
 
 end lift
 
@@ -551,7 +551,7 @@ instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
     rfl)
 
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def punitEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
+def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
   toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
   invFun n := n • of Inhabited.default
   left_inv z := FreeAbelianGroup.induction_on z
@@ -564,6 +564,8 @@ def punitEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
     rw [AddMonoidHom.map_zsmul, lift.of]
     exact zsmul_int_one n
   map_add' := AddMonoidHom.map_add _
+
+@[deprecated (since := "2025-06-16")] alias punitEquiv := uniqueEquiv
 
 /-- Isomorphic types have isomorphic free abelian groups. -/
 def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where

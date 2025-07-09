@@ -39,8 +39,8 @@ instance : QuasiSober X := by
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.map_prop i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
-    exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofIsEmbedding _
-      (X.affineCover.map_prop i).base_open.isEmbedding).symm.isOpenEmbedding
+    exact @IsOpenEmbedding.quasiSober _ _ _ _ _
+      (X.affineCover.map_prop i).base_open.isEmbedding.toHomeomorph.symm.isOpenEmbedding
         PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
@@ -49,7 +49,7 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
     .of_isClosedEmbedding (Y := PrimeSpectrum _) _
       Y.isoSpec.hom.homeomorph.isClosedEmbedding
-  have (i) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
+  have (i : _) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
     this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
 
@@ -64,7 +64,7 @@ theorem isReduced_of_isReduced_stalk [∀ x : X, _root_.IsReduced (X.presheaf.st
   refine ⟨fun U => ⟨fun s hs => ?_⟩⟩
   apply Presheaf.section_ext X.sheaf U s 0
   intro x hx
-  show (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
+  change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
   rw [RingHom.map_zero]
   change X.presheaf.germ U x hx s = 0
   exact (hs.map _).eq_zero
@@ -149,7 +149,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     (s : Γ(X, U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
   intro x hx
-  show (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
+  change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
   rw [RingHom.map_zero]
   induction U using reduce_to_affine_global generalizing hX with
   | h₁ X U H =>

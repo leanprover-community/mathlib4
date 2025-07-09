@@ -91,7 +91,7 @@ section Algebra
 def mFourierSubalgebra (d : Type*) [Fintype d] : StarSubalgebra ℂ C(UnitAddTorus d, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range mFourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
+    change Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
     refine adjoin_le ?_
     rintro _ ⟨n, rfl⟩
     refine subset_adjoin ⟨-n, ?_⟩
@@ -168,7 +168,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   split_ifs with h
   · simpa only [h, add_neg_cancel, mFourier_zero, measureReal_univ_eq_one, one_smul] using
       integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
-  rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_eq_prod]
+  rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_volume_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simpa only [eq_false_intro hi, if_false, ContinuousMap.inner_toLp, ← fourier_neg,
@@ -224,7 +224,7 @@ theorem hasSum_prod_mFourierCoeff (f g : L²(UnitAddTorus d)) :
   simp_rw [mul_comm (conj _)]
   refine HasSum.congr_fun (mFourierBasis.hasSum_inner_mul_inner f g) (fun n ↦ ?_)
   simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm,
-    mul_comm (inner f _)]
+    mul_comm (inner ℂ f _)]
 
 /-- **Parseval's identity** for norms: for an `L²` function `f` on `UnitAddTorus d`, the sum of the
 squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/

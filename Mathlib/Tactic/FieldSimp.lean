@@ -26,7 +26,7 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
@@ -198,18 +198,12 @@ elab_rules : tactic
     (simpTheorems := #[thms, thms0])
     (congrTheorems := ← getSimpCongrTheorems)
 
-  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
-  if r.starArg then
-    r ← do
-      let ctx := r.ctx
-      let mut simpTheorems := ctx.simpTheorems
-      let hs ← getPropHyps
-      for h in hs do
-        unless simpTheorems.isErased (.fvar h) do
-          simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-      let ctx := ctx.setSimpTheorems simpTheorems
-      pure { ctx, simprocs := {} }
-
+  let r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
   _ ← simpLocation r.ctx {} dis loc
 
 end Mathlib.Tactic.FieldSimp
+
+/-!
+ We register `field_simp` with the `hint` tactic.
+ -/
+register_hint field_simp

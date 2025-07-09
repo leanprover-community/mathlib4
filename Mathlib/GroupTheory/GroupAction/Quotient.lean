@@ -151,7 +151,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
   Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
       rw [leftRel_apply]
-      show (g₁⁻¹ * g₂) • x = x
+      change (g₁⁻¹ * g₂) • x = x
       rw [mul_smul, ← H, inv_smul_smul]
 
 /-- **Orbit-stabilizer theorem**. -/
@@ -301,11 +301,8 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
     let f : Quotient (rightRel H) → orbitRel.Quotient H β :=
       fun a ↦ Quotient.liftOn' a (fun g ↦ ⟦g • b⟧) fun g₁ g₂ r ↦ by
         replace r := Setoid.symm' _ r
-        change (rightRel H).r _ _ at r
         rw [rightRel_eq] at r
-        simp only [Quotient.eq]
-        change g₁ • b ∈ orbit H (g₂ • b)
-        rw [mem_orbit_iff]
+        simp only [Quotient.eq, orbitRel_apply, mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
       (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
@@ -322,8 +319,7 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
     rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq,
-                 orbitRel.Quotient.subgroup_quotient_eq_iff] at h
+      simp only [← Quotient.eq, orbitRel.Quotient.subgroup_quotient_eq_iff] at h
       simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
@@ -390,14 +386,14 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
-    induction' y using Quotient.inductionOn' with y
+    cases y using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     convert mem_orbit_self _
-    rw [inv_smul_eq_iff, (exists_smul_eq α y x).choose_spec]
+    rw [inv_smul_eq_iff, (exists_smul_eq α _ x).choose_spec]
   right_inv := fun g ↦ by
-    induction' g using Quotient.inductionOn' with g
-    simp only [Quotient.liftOn'_mk'', Quotient.liftOn'_mk, QuotientGroup.mk]
+    cases g using Quotient.inductionOn' with | _ g
+    simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
     convert one_mem H

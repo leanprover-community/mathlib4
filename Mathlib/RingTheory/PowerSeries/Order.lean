@@ -43,7 +43,7 @@ variable [Semiring R] {φ : R⟦X⟧}
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine not_iff_not.mp ?_
   push_neg
-  simp [(coeff R _).map_zero]
+  simp
 
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
@@ -130,7 +130,7 @@ and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
     order φ = n ↔ (∀ i : ℕ, ↑i = n → coeff R i φ ≠ 0) ∧ ∀ i : ℕ, ↑i < n → coeff R i φ = 0 := by
   cases n with
-  | top => simp [ext_iff]
+  | top => simp
   | coe n => simp [order_eq_nat]
 
 
@@ -162,7 +162,7 @@ is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
   refine le_antisymm ?_ (min_order_le_order_add _ _)
-  rcases h.lt_or_lt with (φ_lt_ψ | ψ_lt_φ)
+  rcases h.lt_or_gt with (φ_lt_ψ | ψ_lt_φ)
   · apply order_add_of_order_eq.aux _ _ φ_lt_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_eq.aux _ _ ψ_lt_φ
 
@@ -230,9 +230,10 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
     (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i ∈ s, (1 - f i)) = coeff R k φ := by
   classical
-  induction' s using Finset.induction_on with a s ha ih t
-  · simp
-  · intro t
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+    intro t
     simp only [Finset.mem_insert, forall_eq_or_imp] at t
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm, coeff_mul_one_sub_of_lt_order _ t.1]
     exact ih t.2

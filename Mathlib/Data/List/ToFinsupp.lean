@@ -81,7 +81,7 @@ theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
 
 theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
-  ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
+  ext ⟨_ | i⟩ <;> simp
 
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
@@ -90,7 +90,7 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
       toFinsupp l₁ + (toFinsupp l₂).embDomain (addLeftEmbedding l₁.length) := by
   ext n
   simp only [toFinsupp_apply, Finsupp.add_apply]
-  cases lt_or_le n l₁.length with
+  cases lt_or_ge n l₁.length with
   | inl h =>
     rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩

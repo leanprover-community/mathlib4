@@ -890,7 +890,7 @@ namespace LeftHomologyMapData
 /-- This left homology map data expresses compatibilities of the left homology data
 constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     LeftHomologyMapData φ h (LeftHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φK := 𝟙 _

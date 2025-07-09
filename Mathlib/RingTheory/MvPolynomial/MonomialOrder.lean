@@ -257,6 +257,10 @@ theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
   m.leadingCoeff_eq_zero_iff
 
+lemma degree_mem_support {p : MvPolynomial σ R} (hp : p ≠ 0) :
+    m.degree p ∈ p.support := by
+  rwa [MvPolynomial.mem_support_iff, coeff_degree_ne_zero_iff]
+
 theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
     m.degree f = 0 ↔ f.totalDegree = 0 := by
   rw [← m.toSyn.injective.eq_iff]
@@ -298,7 +302,7 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     exact m.le_degree hf
   · right
     apply m.le_degree
-    simp only [not_mem_support_iff] at hf
+    simp only [notMem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
 
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
@@ -330,7 +334,7 @@ theorem degree_add_of_ne {f g : MvPolynomial σ R}
     (h : m.degree f ≠ m.degree g) :
     m.toSyn (m.degree (f + g)) = m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   by_cases h' : m.degree g ≺[m] m.degree f
-  · simp [degree_add_of_lt h', left_eq_sup, le_of_lt h']
+  · simp [degree_add_of_lt h', le_of_lt h']
   · rw [not_lt, le_iff_eq_or_lt, Classical.or_iff_not_imp_left, EmbeddingLike.apply_eq_iff_eq] at h'
     rw [add_comm, degree_add_of_lt (h' h), right_eq_sup]
     simp only [le_of_lt (h' h)]
@@ -545,7 +549,7 @@ theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset �
   | empty =>
     simp only [Finset.prod_empty, Finset.sum_empty]
     rw [← C_1, m.degree_C, map_zero]
-  | @insert a s has hrec =>
+  | insert a s has hrec =>
     rw [Finset.prod_insert has, Finset.sum_insert has]
     apply le_trans degree_mul_le
     simp only [map_add, add_le_add_iff_left, hrec]
@@ -555,7 +559,7 @@ theorem coeff_prod_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : F
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert a s has hrec =>
+  | insert a s has hrec =>
     simp only [Finset.prod_insert has, Finset.sum_insert has]
     rw [coeff_mul_of_add_of_degree_le (le_of_eq rfl) degree_prod_le]
     exact congr_arg₂ _ rfl hrec

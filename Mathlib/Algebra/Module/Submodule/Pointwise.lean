@@ -32,10 +32,11 @@ These actions are available in the `Pointwise` locale.
 
 For an `R`-module `M`, the action of a subset of `R` acting on a submodule of `M` introduced in
 section `set_acting_on_submodules` does not have a counterpart in the files
-`Mathlib.Algebra.Group.Submonoid.Pointwise` and `Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise`.
+`Mathlib/Algebra/Group/Submonoid/Pointwise.lean` and
+`Mathlib/Algebra/GroupWithZero/Submonoid/Pointwise.lean`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
+lemmas from the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 -/
 
 assert_not_exists Ideal
@@ -393,7 +394,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
     (hx : x ∈ s • N)
     (smul₀ : ∀ ⦃r : S⦄ ⦃n : M⦄ (mem₁ : r ∈ s) (mem₂ : n ∈ N),
       motive (r • n) (mem_set_smul_of_mem_mem mem₁ mem₂))
-    (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N) ,
+    (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N),
       motive m mem → motive (r • m) (Submodule.smul_mem _ r mem)) --
     (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁ : m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
@@ -473,7 +474,7 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
     | smul₀ => aesop
     | @smul₁ t n mem h =>
       rcases h with ⟨n, hn, rfl⟩
-      exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
+      exact ⟨t • n, by aesop, smul_comm _ _ _⟩
     | add mem₁ mem₂ h₁ h₂ =>
       rcases h₁ with ⟨m₁, h₁, rfl⟩
       rcases h₂ with ⟨m₂, h₂, rfl⟩
@@ -502,7 +503,7 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
 -- should be true.
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
-protected def pointwiseSetMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
@@ -521,7 +522,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 
 -- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/
-protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
+protected noncomputable def pointwiseSetDistribMulAction [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
   smul_zero s := set_smul_bot s
   smul_add s x y := le_antisymm

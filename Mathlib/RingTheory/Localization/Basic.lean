@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
@@ -32,8 +33,8 @@ variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 
 ## Main definitions
 
- * `IsLocalization.algEquiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
-   are isomorphic as `R`-algebras
+* `IsLocalization.algEquiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
+  are isomorphic as `R`-algebras
 
 ## Implementation notes
 
@@ -113,6 +114,13 @@ namespace IsLocalization
 section IsLocalization
 
 variable [IsLocalization M S]
+
+include M in
+variable (R M) in
+protected lemma finite [Finite R] : Finite S := by
+  have : Function.Surjective (Function.uncurry (mk' (M := M) S)) := fun x ↦ by
+    simpa using IsLocalization.mk'_surjective M x
+  exact .of_surjective _ this
 
 variable (M S) in
 include M in
@@ -234,6 +242,22 @@ theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
         Submonoid.comap_map_eq_of_injective (h : R ≃* P).injective]) := rfl
 
 end AlgEquivOfAlgEquiv
+
+section smul
+
+variable {R : Type*} [CommSemiring R] {S : Submonoid R}
+variable {R' : Type*} [CommSemiring R'] [Algebra R R'] [IsLocalization S R']
+variable {M' : Type*} [AddCommMonoid M'] [Module R' M'] [Module R M'] [IsScalarTower R R' M']
+
+/-- If `x` in a `R' = S⁻¹ R`-module `M'`, then for a submodule `N'` of `M'`,
+`s • x ∈ N'` if and only if `x ∈ N'` for some `s` in S. -/
+lemma smul_mem_iff {N' : Submodule R' M'} {x : M'} {s : S} :
+    s • x ∈ N' ↔ x ∈ N' := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Submodule.smul_of_tower_mem N' s h⟩
+  rwa [← Submodule.smul_mem_iff_of_isUnit (r := algebraMap R R' s) N' (map_units R' s),
+    algebraMap_smul]
+
+end smul
 
 section at_units
 

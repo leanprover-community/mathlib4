@@ -167,7 +167,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   refine
     Filter.Frequently.mem_closure
       ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => ?_)
-  simp only [exists_prop, Metric.mem_ball]
+  simp only [Metric.mem_ball]
   -- It will be helpful to assume `X` is nonempty later,
   -- so we get that out of the way here.
   by_cases nX : Nonempty X
@@ -186,7 +186,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- For each `x y`, we define `U x y` to be `{z | f z - ε < g x y z}`,
   -- and observe this is a neighbourhood of `y`.
   let U : X → X → Set X := fun x y => {z | f z - ε < g x y z}
-  have U_nhd_y : ∀ x y, U x y ∈ 𝓝 y := by
+  have U_nhds_y : ∀ x y, U x y ∈ 𝓝 y := by
     intro x y
     refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> fun_prop
@@ -200,9 +200,9 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- and still equal to `f x` at `x`.
   -- Since `X` is compact, for every `x` there is some finset `ys t`
   -- so the union of the `U x y` for `y ∈ ys x` still covers everything.
-  let ys : X → Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
+  let ys : X → Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhds_y x)).choose
   let ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x =>
-    (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose_spec
+    (CompactSpace.elim_nhds_subcover (U x) (U_nhds_y x)).choose_spec
   have ys_nonempty : ∀ x, (ys x).Nonempty := fun x =>
     Set.nonempty_of_union_eq_top_of_nonempty _ _ nX (ys_w x)
   -- Thus for each `x` we have the desired `h x : A` so `f z - ε < h x z` everywhere
@@ -214,13 +214,13 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     intro x z
     obtain ⟨y, ym, zm⟩ := Set.exists_set_mem_of_union_eq_top _ _ (ys_w x) z
     dsimp [h]
-    simp only [Subtype.coe_mk, coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
+    simp only [coe_sup', Finset.sup'_apply, Finset.lt_sup'_iff]
     exact ⟨y, ym, zm⟩
   have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [h, w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
   let W : X → Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
-  have W_nhd : ∀ x, W x ∈ 𝓝 x := by
+  have W_nhds : ∀ x, W x ∈ 𝓝 x := by
     intro x
     refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> fun_prop
@@ -229,8 +229,8 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
       exact lt_add_of_pos_right _ pos
   -- Since `X` is compact, there is some finset `ys t`
   -- so the union of the `W x` for `x ∈ xs` still covers everything.
-  let xs : Finset X := (CompactSpace.elim_nhds_subcover W W_nhd).choose
-  let xs_w : ⋃ x ∈ xs, W x = ⊤ := (CompactSpace.elim_nhds_subcover W W_nhd).choose_spec
+  let xs : Finset X := (CompactSpace.elim_nhds_subcover W W_nhds).choose
+  let xs_w : ⋃ x ∈ xs, W x = ⊤ := (CompactSpace.elim_nhds_subcover W W_nhds).choose_spec
   have xs_nonempty : xs.Nonempty := Set.nonempty_of_union_eq_top_of_nonempty _ _ nX xs_w
   -- Finally our candidate function is the infimum over `x ∈ xs` of the `h x`.
   -- This function is then globally less than `f z + ε`.
@@ -375,7 +375,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   have hFA : F ∈ A := by
     refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ ?_ <| A.smul_mem A.one_mem <| f x₂)
     ext1
-    simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
+    simp only [smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
   refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
@@ -396,7 +396,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     (A : StarSubalgebra 𝕜 C(X, 𝕜)) (hA : A.SeparatesPoints) : A.topologicalClosure = ⊤ := by
   rw [StarSubalgebra.eq_top_iff]
   -- Let `I` be the natural inclusion of `C(X, ℝ)` into `C(X, 𝕜)`
-  let I : C(X, ℝ) →ₗ[ℝ] C(X, 𝕜) := ofRealCLM.compLeftContinuous ℝ X
+  let I : C(X, ℝ) →L[ℝ] C(X, 𝕜) := ofRealCLM.compLeftContinuous ℝ X
   -- The main point of the proof is that its range (i.e., every real-valued function) is contained
   -- in the closure of `A`
   have key : LinearMap.range I ≤ (A.toSubmodule.restrictScalars ℝ).topologicalClosure := by
@@ -411,7 +411,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     rw [← Submodule.map_top, ← SW]
     -- So it suffices to prove that the image under `I` of the closure of `A₀` is contained in the
     -- closure of `A`, which follows by abstract nonsense
-    have h₁ := A₀.topologicalClosure_map ((@ofRealCLM 𝕜 _).compLeftContinuousCompact X)
+    have h₁ := A₀.topologicalClosure_map I
     have h₂ := (A.toSubmodule.restrictScalars ℝ).map_comap_le I
     exact h₁.trans (Submodule.topologicalClosure_mono h₂)
   -- In particular, for a function `f` in `C(X, 𝕜)`, the real and imaginary parts of `f` are in the
