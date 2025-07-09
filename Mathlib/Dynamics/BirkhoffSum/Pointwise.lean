@@ -18,7 +18,19 @@ import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
-# Pointwise Ergodic Theorem (Birkhoff's Ergodic Theorem)
+# Pointwise Ergodic Theorem
+
+The Pointwise Ergodic Theorem, also known as Birkhoff's Ergodic Theorem, is a fundamental result in
+ergodic theory that establishes the convergence of time averages for dynamical systems.
+
+Let `(α, μ)` be a probability space and `f: α → α` be a measure-preserving transformation. The
+result states that, for any integrable function `φ  ∈ L¹(μ)`, the time averages
+`(1/n)∑_{k=0}^{n-1} φ(f^k x)` converge almost everywhere as `n → ∞` to a limit function `φ*`.
+Moreover the limit function `φ*` is essentially `f`-invariant and integrable with `∫φ* dμ = ∫φ dμ`.
+If the system is ergodic, then `φ*` equals the constant `∫f dμ` almost everywhere.
+
+The limit function `φ*` is equal to the conditional expectation of `φ` with respect to the σ-algebra
+of `f`-invariant sets. This is used explicitly during this proof and also in the main statement.
 
 ## Main statements
 
@@ -74,14 +86,6 @@ lemma birkhoffMax_measurable [MeasurableSpace α] {f : α → α} (hf : Measurab
     (hφ : Measurable φ) {n} : Measurable (birkhoffMax f φ n) := by
   induction n <;> unfold birkhoffMax <;> measurability
 
-end BirkhoffMax
-
-section DivergentSet
-
-open MeasureTheory Measure MeasurableSpace Filter Topology
-
-variable {α : Type*}
-
 /-- The supremum of `birkhoffSum f φ (n + 1) x` over `n : ℕ`. -/
 noncomputable def birkhoffSup (f : α → α) (φ : α → ℝ) (x : α) : EReal :=
   iSup fun n ↦ ↑(birkhoffSum f φ (n + 1) x)
@@ -90,11 +94,18 @@ lemma birkhoffSup_measurable [MeasurableSpace α] {f : α → α} (hf : Measurab
     (hφ : Measurable φ) : Measurable (birkhoffSup f φ) :=
   Measurable.iSup (fun _ ↦ Measurable.coe_real_ereal (birkhoffSum_measurable hf hφ))
 
+end BirkhoffMax
+
+section DivergentSet
+
+open MeasureTheory Measure MeasurableSpace Filter Topology
+
+variable {α : Type*}
+
 /-- The set of points `x` for which `birkhoffSup f φ x = ⊤`. -/
 def divergentSet (f : α → α) (φ : α → ℝ) : Set α := (birkhoffSup f φ)⁻¹' {⊤}
 
-lemma divergentSet_invariant {f : α → α} {x φ}:
-    f x ∈ divergentSet f φ ↔ x ∈ divergentSet f φ := by
+lemma divergentSet_invariant {f : α → α} {x φ}: f x ∈ divergentSet f φ ↔ x ∈ divergentSet f φ := by
   constructor
   all_goals
     intro hx
@@ -123,15 +134,13 @@ lemma divergentSet_invariant {f : α → α} {x φ}:
       | N + 1 => exact ⟨N, lt_trans (EReal.coe_lt_coe_iff.mp hN) <| EReal.coe_lt_coe_iff.mp hM⟩
     | N + 1 => exact ⟨N, EReal.coe_lt_coe_iff.mp hN⟩
 
-lemma divergentSet_measurable
-    {f : α → α} [MeasurableSpace α] (hf : Measurable f) {φ : α → ℝ} (hφ : Measurable φ) :
-    MeasurableSet (divergentSet f φ) :=
+lemma divergentSet_measurable {f : α → α} [MeasurableSpace α] (hf : Measurable f) {φ : α → ℝ}
+    (hφ : Measurable φ) : MeasurableSet (divergentSet f φ) :=
   measurableSet_preimage (birkhoffSup_measurable hf hφ) (measurableSet_singleton _)
 
 lemma divergentSet_mem_invalg [MeasurableSpace α]
     {f : α → α} (hf : Measurable f) {φ : α → ℝ} (hφ : Measurable φ) :
     MeasurableSet[invariants f] (divergentSet f φ) :=
-  /- should be `Set.ext divergentSet_invariant` but it is VERY slow -/
   ⟨divergentSet_measurable hf hφ, funext (fun _ ↦ propext divergentSet_invariant)⟩
 
 lemma birkhoffMax_tendsto_top_mem_divergentSet {f : α → α} {x φ} (hx : x ∈ divergentSet f φ) :
