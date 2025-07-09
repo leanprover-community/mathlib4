@@ -358,7 +358,7 @@ theorem IsUpperSet.eq_Ici_or_empty [WellFoundedLT α] (h : IsUpperSet s) :
     (∃ a, s = Set.Ici a) ∨ s = ∅ := by
   refine or_iff_not_imp_right.2 fun ha ↦ ?_
   obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
-  exact ⟨_, Set.ext fun b ↦ ⟨wellFounded_lt.min_le, (h · <| wellFounded_lt.min_mem (h := ⟨a, ha⟩))⟩⟩
+  exact ⟨_, Set.ext fun b ↦ ⟨wellFounded_lt.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
 
 theorem IsLowerSet.eq_Iic_or_empty [WellFoundedGT α] (h : IsLowerSet s) :
     (∃ a, s = Set.Iic a) ∨ s = ∅ :=
@@ -366,9 +366,8 @@ theorem IsLowerSet.eq_Iic_or_empty [WellFoundedGT α] (h : IsLowerSet s) :
 
 theorem IsLowerSet.eq_Iio_or_univ [WellFoundedLT α] (h : IsLowerSet s) :
     (∃ a, s = Set.Iio a) ∨ s = .univ := by
-  convert h.compl.eq_Ici_or_empty using 1
-  · simp_rw [← compl_inj_iff (x := sᶜ), compl_Ici, compl_compl]
-  · simp
+  simp_rw [← @compl_inj_iff _ s]
+  simpa using h.compl.eq_Ici_or_empty
 
 theorem IsUpperSet.eq_Ioi_or_univ [WellFoundedGT α] (h : IsUpperSet s) :
     (∃ a, s = Set.Ioi a) ∨ s = .univ :=
