@@ -19,9 +19,7 @@ formed a basis at the point, so do the normalised sections.
 If the bundle metric is `C^k`, then the procedure preserves regularity of sections:
 if all sections are `C^k`, so are their normalised versions.
 
-This is used in OrthonormalFrame.lean` to convert a local frame to a local orthonormal frame.
-
-TODO: add main results
+This is used in `OrthonormalFrame.lean` to convert a local frame to a local orthonormal frame.
 
 ## Implementation note
 
@@ -186,7 +184,7 @@ theorem gramSchmidt_ne_zero (n : ι) {x} (h₀ : LinearIndependent ℝ (s · x))
   InnerProductSpace.gramSchmidt_ne_zero _ h₀
 
 -- not needed at the moment: I want a point-wise version, along the lines
--- "if s i x is a basis, then gramSchmidgt s i x is a triangular matrix"
+-- "if s i x is a basis, then gramSchmidt s i x is a triangular matrix"
 /-
 /-- `gramSchmidt` produces a triangular matrix of vectors when given a basis. -/
 theorem gramSchmidt_triangular {x} {i j : ι} (hij : i < j) (b : Basis ι ℝ (E x)) :
