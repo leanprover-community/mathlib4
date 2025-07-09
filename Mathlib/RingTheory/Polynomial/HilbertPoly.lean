@@ -82,7 +82,7 @@ lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
     (preHilbertPoly F d k).leadingCoeff = (d ! : F)⁻¹ := by
   rw [leadingCoeff, natDegree_preHilbertPoly, coeff_preHilbertPoly_self]
 
-lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n):
+lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n) :
     (preHilbertPoly F d k).eval (n : F) = (n - k + d).choose d := by
   have : (d ! : F) ≠ 0 := by norm_cast; positivity
   calc
