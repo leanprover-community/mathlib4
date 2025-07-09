@@ -498,7 +498,8 @@ partial def _root_.Lean.MVarId.gcongr
   for lem in lemmas ++ getTransLemma? relName varyingArgs do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
-      Except.ok <$> withReducible (g.apply (← mkConstWithFreshMVarLevels lem.declName))
+      let const ← mkConstWithFreshMVarLevels lem.declName
+      Except.ok <$> withReducible (g.apply const { synthAssignedInstances := false })
     catch e => pure (Except.error e)
     match gs with
     | .error e =>
