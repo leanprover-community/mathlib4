@@ -330,11 +330,7 @@ open Classical in
 @[simps!]
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
-  intro i j hij
-  rw [dite_eq_right_iff]
-  intro hij'
-  exfalso
-  exact hij hij'
+  grind
 
 /-! This lemma and the following ones can be used in order to compute
 the degreewise morphisms induced by the null homotopic maps constructed
