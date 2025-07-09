@@ -184,12 +184,18 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
     (A := A) (D := D) (E := E) (F := F) (h := by simp [this]; sorry)
   sorry -- obvious: if 2 • A = stuff, A = 1/2 stuff
 
-variable [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
--- TODO: should be MDifferentiable.inner_bundle, but fails with an instance synthesis error
--- I do not understand.
+/- XXX: writing `hY.inner_bundle hZ` or writing `by apply MDifferentiable.inner_bundle hY hZ`
+yields an error
+synthesized type class instance is not definitionally equal to expression inferred by typing rules,
+synthesized
+  fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
+inferred
+  fun b ↦ inst✝⁷ -/
 variable {I} in
-lemma foo (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ := sorry
+lemma foo (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
+  MDifferentiable.inner_bundle hY hZ
 
 variable (X Y Z Z') in
 lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
