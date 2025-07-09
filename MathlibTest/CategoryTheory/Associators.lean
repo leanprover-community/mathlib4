@@ -4,12 +4,12 @@ namespace CategoryTheory
 
 open CategoryTheory
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {C : Type u₃} [Category.{v₃} C]
-variable {D : Type u₃} [Category.{v₃} D]
-variable {E : Type u₃} [Category.{v₃} E]
+variable {D : Type u₄} [Category.{v₄} D]
+variable {E : Type u₅} [Category.{v₅} E]
 
 variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (I : D ⥤ E)
 
