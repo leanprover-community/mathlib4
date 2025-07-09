@@ -14,7 +14,7 @@ variable {α : Type*}
 
 namespace Finite
 
-instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
+instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σ a, β a) := by
   letI := Fintype.ofFinite α
   letI := fun a => Fintype.ofFinite (β a)
   infer_instance
