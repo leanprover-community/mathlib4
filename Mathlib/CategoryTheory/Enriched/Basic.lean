@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # Enriched categories
@@ -93,6 +94,70 @@ theorem e_assoc' (W X Y Z : C) :
     (α_ _ _ _).hom ≫ _ ◁ eComp V X Y Z ≫ eComp V W X Z =
       eComp V W X Y ▷ _ ≫ eComp V W Y Z := by
   rw [← e_assoc V W X Y Z, Iso.hom_inv_id_assoc]
+
+/-- Isomorphisms in a `V`-enriched category `C`consist of a morphism
+`𝟙_ V ⟶ X ⟶[V] Y`, an inverse `𝟙_ V ⟶ Y ⟶[V] X`, and proofs that these compose to the identity
+morphism. -/
+@[ext]
+structure EnrichedIso (X Y : C) where
+  hom : 𝟙_ V ⟶ X ⟶[V] Y
+  inv : 𝟙_ V ⟶ Y ⟶[V] X
+  hom_inv : (λ_ _).inv ≫ (hom ⊗ₘ inv) ≫ eComp V X Y X = eId V X := by aesop_cat
+  inv_hom : (λ_ _).inv ≫ (inv ⊗ₘ hom) ≫ eComp V Y X Y = eId V Y := by aesop_cat
+
+namespace EnrichedIso
+
+/-- The identity isomorphism in a `V`-enriched category. -/
+@[refl, simps]
+def refl (X : C) : EnrichedIso V X X where
+  hom := eId V X
+  inv := eId V X
+  hom_inv := by simp [tensorHom_def']
+  inv_hom := by simp [tensorHom_def']
+
+/-- The inverse isomorphism of an isomorphism in a `V`-enriched category. -/
+@[symm, simps]
+def symm {X Y : C} (I : EnrichedIso V X Y) : EnrichedIso V Y X where
+  hom := I.inv
+  inv := I.hom
+  hom_inv := I.inv_hom
+  inv_hom := I.hom_inv
+
+open EnrichedCategory
+
+/-- The composition of to isomorphisms in a `V`-enriched category. -/
+@[trans, simps]
+def trans {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) : EnrichedIso V X Z where
+  hom := (λ_ _).inv ≫ (I.hom ⊗ₘ J.hom) ≫ eComp V X Y Z
+  inv := (λ_ _).inv ≫ (J.inv ⊗ₘ I.inv) ≫ eComp V Z Y X
+  hom_inv := by
+    rw [tensor_comp, tensor_comp, tensorHom_def (eComp V X Y Z), Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, associator_inv_naturality_left_assoc,
+      ← comp_whiskerRight_assoc, ← e_assoc', associator_inv_naturality_assoc,
+      tensorHom_def' (g := I.inv), Category.assoc, ← comp_whiskerRight_assoc,
+      associator_naturality_assoc, tensorHom_def (f := I.hom), Category.assoc,
+      ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp J.hom_inv, ← I.hom_inv,
+      tensorHom_def' I.hom]
+    simp only [tensor_whiskerLeft, id_whiskerLeft, whiskerLeft_comp, Iso.hom_inv_id,
+      Category.comp_id, Iso.hom_inv_id_assoc, Category.assoc, Iso.inv_hom_id_assoc,
+      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id, comp_whiskerRight,
+      triangle_assoc_comp_right_assoc]
+    monoidal
+  inv_hom := by
+    rw [tensor_comp, tensor_comp, tensorHom_def (eComp V Z Y X), Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, associator_inv_naturality_left_assoc,
+      ← comp_whiskerRight_assoc, ← e_assoc', associator_inv_naturality_assoc,
+      tensorHom_def' (g := J.hom), Category.assoc, ← comp_whiskerRight_assoc,
+      associator_naturality_assoc, tensorHom_def (f := J.inv), Category.assoc,
+      ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp I.inv_hom, ← J.inv_hom,
+      tensorHom_def' J.inv]
+    simp only [tensor_whiskerLeft, id_whiskerLeft, whiskerLeft_comp, Iso.hom_inv_id,
+      Category.comp_id, Iso.hom_inv_id_assoc, Category.assoc, Iso.inv_hom_id_assoc,
+      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id, comp_whiskerRight,
+      triangle_assoc_comp_right_assoc]
+    monoidal
+
+end EnrichedIso
 
 section
 
