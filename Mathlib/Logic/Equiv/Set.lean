@@ -150,7 +150,7 @@ theorem prod_assoc_symm_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} 
 
 /-- A set `s` in `α × β` is equivalent to the sigma-type `Σ x, {y | (x, y) ∈ s}`. -/
 def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
-    s ≃ Σx : α, { y : β | (x, y) ∈ s } where
+    s ≃ Σ x : α, { y : β | (x, y) ∈ s } where
   toFun x := ⟨x.1.1, x.1.2, by simp⟩
   invFun x := ⟨(x.1, x.2.1), x.2.2⟩
 
@@ -577,7 +577,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
 /-- `sigmaPreimageEquiv f` for `f : α → β` is the natural equivalence between
 the type of all preimages of points under `f` and the total space `α`. -/
 @[simps!]
-def sigmaPreimageEquiv {α β} (f : α → β) : (Σb, f ⁻¹' {b}) ≃ α :=
+def sigmaPreimageEquiv {α β} (f : α → β) : (Σ b, f ⁻¹' {b}) ≃ α :=
   sigmaFiberEquiv f
 
 -- See also `Equiv.ofFiberEquiv`.
