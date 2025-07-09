@@ -291,26 +291,35 @@ def contMDiffWithinAt_myproj {s t : (x : B) → E x} {u : Set B} {x : B}
 
 lemma gramSchmidt_contMDiffWithinAt [IsContMDiffRiemannianBundle IB n F E]
     (s : ι → (x : B) → E x) (i : ι) {u : Set B} (x : B)
-    (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x) :
+    (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
   simp_rw [VectorBundle.gramSchmidt_def]
   apply (hs i).sub_section
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
-  apply contMDiffWithinAt_myproj (gramSchmidt_contMDiffWithinAt s i' x hs) (hs i)
-  sorry -- TODO: figure out the right preconditions!
+  have : LinearIndependent ℝ ((fun x_1 ↦ s x_1 x) ∘ @Subtype.val ι fun x ↦ x ∈ Set.Iic i') := by
+    sorry -- hs'.mono
+  apply contMDiffWithinAt_myproj (gramSchmidt_contMDiffWithinAt s i' x hs this) (hs i)
+  apply VectorBundle.gramSchmidt_ne_zero_coe _ _ this
 termination_by i
 decreasing_by
   exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
 
 lemma gramSchmidt_contMDiffAt (s : ι → (x : B) → E x) (i : ι) (x : B)
-    (hs : ∀ i, CMDiffAt n (T% (s i)) x) : CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
-  contMDiffWithinAt_univ.mpr <| gramSchmidt_contMDiffWithinAt _ _ _ fun i ↦ hs i
+    (hs : ∀ i, CMDiffAt n (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι)))
+    : CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
+  contMDiffWithinAt_univ.mpr <| gramSchmidt_contMDiffWithinAt _ _ _ (fun i ↦ hs i) hs'
 
 lemma gramSchmidt_contMDiffOn (s : ι → (x : B) → E x) (i : ι) (u : Set B)
-    (hs : ∀ i, CMDiff[u] n (T% (s i))) : CMDiff[u] n (T% (VectorBundle.gramSchmidt s i)) :=
-  fun x hx ↦ gramSchmidt_contMDiffWithinAt _ _ _ fun i ↦ hs i x hx
+    (hs : ∀ i, CMDiff[u] n (T% (s i)))
+    (hs' : ∀ x ∈ u, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiff[u] n (T% (VectorBundle.gramSchmidt s i)) :=
+  fun x hx ↦ gramSchmidt_contMDiffWithinAt _ _ _ (fun i ↦ hs i x hx) (hs' _ hx)
 
 lemma gramSchmidt_contMDiff (s : ι → (x : B) → E x) (i : ι)
-    (hs : ∀ i, CMDiff n (T% (s i))) : CMDiff n (T% (VectorBundle.gramSchmidt s i)) :=
-  fun x ↦ gramSchmidt_contMDiffAt _ _ _ (fun i ↦ hs i x)
+    (hs : ∀ i, CMDiff n (T% (s i)))
+    (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiff n (T% (VectorBundle.gramSchmidt s i)) :=
+  fun x ↦ gramSchmidt_contMDiffAt _ _ _ (fun i ↦ hs i x) (hs' x)
