@@ -275,7 +275,7 @@ lemma rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
     free_of_flat_of_isLocalRing
   simp_rw [rankAtStalk, e.finrank_eq, Module.finrank_pi_fintype, finsum_eq_sum_of_fintype]
 
-lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R):
+lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R) :
     rankAtStalk M p =
       finrank (Localization.AtPrime p.asIdeal) (Localization.AtPrime p.asIdeal ⊗[R] M) := by
   let e : LocalizedModule p.asIdeal.primeCompl M ≃ₗ[Localization.AtPrime p.asIdeal]
