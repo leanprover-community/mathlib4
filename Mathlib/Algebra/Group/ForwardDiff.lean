@@ -195,19 +195,19 @@ lemma fwdDiff_addChar_eq {M R : Type*} [AddCommMonoid M] [Ring R]
     rw [sub_mul, ← AddChar.map_add_eq_mul, add_comm h x, one_mul]
 
 
-/-
-We prove five key formulae about the forward difference operator
+/-!
+## Forward differences of Polynomials
 
-* `fwdDiff_iter_pow_lt` :
-  The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`;
-* `fwdDiff_iter_eq_factorial` :
-  The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
-* `fwdDiff_iter_succ_sum_eq_zero` :
-  The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
-* `fwdDiffTab_0th_diag_poly'` :
-  **Newton's series** for a polynomial function. This is another definition.
-* `sum_of_poly_sequence` :
-  A generalization of **Faulhaber's formula**.
+This section develops the theory of forward differences for polynomial functions `P : R → R`,
+where the step size `h` is `1`. We prove several key results:
+
+* `fwdDiff_iter_pow_eq_zero_of_lt`: The `n`-th difference of `x ↦ x^j` is zero if `j < n`.
+* `fwdDiff_iter_eq_factorial`: The `n`-th difference of `x ↦ x^n` is the constant `n!`.
+* `fwdDiff_iter_succ_sum_eq_zero`: The `(d+1)`-th difference of a polynomial of degree `d` is zero.
+* `fwdDiffTab_0th_diag_poly'`: **Newton's series** for a polynomial, expressing `P(x)` as a sum
+  of its forward differences at `0` weighted by binomial coefficients.
+* `sum_of_poly_sequence`: A formula for the sum of a polynomial sequence `∑_{i=0..p} P(i)`, which
+  generalizes **Faulhaber's formula**.
 -/
 
 open fwdDiff
@@ -339,8 +339,8 @@ theorem fwdDiffTab_0th_diag_poly' {n p : ℕ} (a : ℕ → R):
       Int.cast_natCast]
 
 /--
-A formula for the sum of a polynomial sequence, `∑_{i=0..p} P(i)`, expressed in
-terms of the forward differences of `P` at `0`. This is a generalization of **Faulhaber's formula**.
+A formula for the sum of a polynomial sequence `∑_{i=0..p} P(i)`, which
+generalizes **Faulhaber's formula**.
 -/
 theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R) :
     ∑ i ∈ Finset.range (p + 1), (∑ k ∈ Finset.range (n + 1), a k * i ^ k) =
