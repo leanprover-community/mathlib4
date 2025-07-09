@@ -73,11 +73,42 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
   -- `V` vector bundle
 
-section
+noncomputable section
 
-variable {ι : Type*}
+section IsLocalFrame
+
+omit [IsManifold I 0 M] [VectorBundle 𝕜 F V]
+
+variable {ι : Type*} {s : ι → (x : M) → V x} {u : Set M}
+
+variable (I F) in
+/-
+A family of sections `s i` of `V → M` is called a **C^k local frame** on a set `U ⊆ M` iff
+- the section values `s i x` form a basis for each `x ∈ U`,
+- each section `s i` is `C^k` on `U`.
+-/
+structure IsLocalFrameOn (s : ι → (x : M) → V x) (u : Set M) where
+  linearIndependent {x : M} (hx : x ∈ u) : LinearIndependent 𝕜 (s · x)
+  generating {x : M} (hx : x ∈ u) : ⊤ ≤ Submodule.span 𝕜 (Set.range (s · x))
+  contMDiffOn (i : ι) : CMDiff 1 (T% (s i))
+
+namespace IsLocalFrameOn
+
+/-- Given a local frame `{s i}` on `U ∋ x`, returns the basis `{s i}` of `V x` -/
+def toBasisAt (hs : IsLocalFrameOn I F s u) {x} (hx : x ∈ u) : Basis ι 𝕜 (V x) :=
+  Basis.mk (hs.linearIndependent hx) (hs.generating hx)
+
+lemma toBasisAt_coe (hs : IsLocalFrameOn I F s u) {x} (hx : x ∈ u) (i : ι) :
+    (toBasisAt hs hx) i = s i x := by
+  simpa only [toBasisAt] using Basis.mk_apply (hs.linearIndependent hx) (hs.generating hx) i
+
+end IsLocalFrameOn
+
+end IsLocalFrame
 
 namespace Basis
+
+variable {ι : Type*}
 
 noncomputable def localFrame_toBasis_at
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
@@ -229,7 +260,7 @@ lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i :
 
 end Basis
 
-variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+variable {ι : Type*} {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x : M}
 
 omit [IsManifold I 0 M] in
