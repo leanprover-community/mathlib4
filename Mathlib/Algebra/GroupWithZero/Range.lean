@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E.
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
+import Mathlib.Algebra.Order.GroupWithZero.WithZero
 
 /-! # The range of a MonoidWithZeroHom
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the
@@ -129,6 +130,11 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
 
+open Classical in
+/-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
+def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
+  (withZeroUnitsHom).comp <| WithZero.map' (valueGroup f).subtype
+
 variable (f) in
 open Classical in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. It cannot land
@@ -145,6 +151,24 @@ def restrict₀ : A →*₀ (valueGroup₀ f) where
     any_goals rfl
     all_goals rw [mul_eq_zero] at h ; tauto
   map_zero' := by simp
+
+@[simp]
+lemma restict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
+    restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
+  by simp [restrict₀, h]
+
+@[simp]
+lemma restict₀_of_eq_zero {a : A} (h : f a = 0) :
+    restrict₀ f a = 0 := by simp [restrict₀, h]
+
+lemma zero_restict₀ : restrict₀ f 0 = 0 := by simp
+
+@[simp]
+lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroEmbedding (restrict₀ f a) = f a := by
+  simp [restrict₀]
+  split_ifs with h
+  · simp [h]
+  · rfl
 
 end GroupWithZero
 section CommGroupWithZero
@@ -198,3 +222,5 @@ namespace MonoidHomWithZero
 @[deprecated (since := "2025-07-02")] alias valueGroup₀ := MonoidWithZeroHom.valueGroup₀
 
 end MonoidHomWithZero
+
+#min_imports
