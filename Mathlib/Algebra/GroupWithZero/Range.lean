@@ -99,35 +99,9 @@ lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGrou
 
 end MonoidWithZeroHom
 
-noncomputable section GroupWithZero
+noncomputable section Restrict
 
-variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
-
-/- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
-lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
-  rw [valueGroup_def, Subgroup.closure_toSubmonoid, Eq.comm]
-  apply Submonoid.closure_eq_of_le
-  · simp only [union_subset_iff, subset_refl, true_and]
-    intro _ ⟨y, hy⟩
-    use y⁻¹
-    simp [hy]
-  · simp [Submonoid.closure_union]
-
-variable (f) in
-lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := by
-  rw [valueMonoid_eq_valueGroup, coe_toSubmonoid]
-
-lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
-  ext x
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨y, ⟨hy, rfl⟩⟩ := h
-    simp only [mem_diff, mem_range, mem_singleton_iff, Units.ne_zero, not_false_eq_true, and_true]
-    obtain ⟨a, _⟩ := (valueMonoid_eq_valueGroup' f).symm ▸ hy
-    use a
-  · simp only [mem_diff, mem_range, mem_singleton_iff] at h
-    obtain ⟨⟨y, hy⟩, hx₀⟩ := h
-    refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
-    simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
+variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
 
 open Classical in
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
@@ -168,6 +142,37 @@ lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroEmbedding (restrict₀ f
   split_ifs with h
   · simp [h]
   · rfl
+
+end Restrict
+noncomputable section GroupWithZero
+
+variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+
+/- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
+lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
+  rw [valueGroup_def, Subgroup.closure_toSubmonoid, Eq.comm]
+  apply Submonoid.closure_eq_of_le
+  · simp only [union_subset_iff, subset_refl, true_and]
+    intro _ ⟨y, hy⟩
+    use y⁻¹
+    simp [hy]
+  · simp [Submonoid.closure_union]
+
+variable (f) in
+lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := by
+  rw [valueMonoid_eq_valueGroup, coe_toSubmonoid]
+
+lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨y, ⟨hy, rfl⟩⟩ := h
+    simp only [mem_diff, mem_range, mem_singleton_iff, Units.ne_zero, not_false_eq_true, and_true]
+    obtain ⟨a, _⟩ := (valueMonoid_eq_valueGroup' f).symm ▸ hy
+    use a
+  · simp only [mem_diff, mem_range, mem_singleton_iff] at h
+    obtain ⟨⟨y, hy⟩, hx₀⟩ := h
+    refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
+    simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
 
 end GroupWithZero
 section CommGroupWithZero
