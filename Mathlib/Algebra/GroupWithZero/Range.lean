@@ -166,6 +166,12 @@ theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     · apply mem_valueGroup
       use x
 
+theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
+    y ∈ (valueGroup f) ↔ ∃ a, f a ≠ 0 ∧ ∃ x, y = f x / f a := by
+  rw [mem_valueGroup_iff_of_comm]
+  refine exists_congr fun r ↦ and_congr_right fun hr ↦ exists_congr fun y ↦ ?_
+  rw [eq_div_iff hr, mul_comm]
+
 instance : CommGroupWithZero (valueGroup₀ f) where
   mul_comm _ _ := mul_comm ..
 
