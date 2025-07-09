@@ -226,7 +226,7 @@ noncomputable instance : (coindFunctor k S.subtype).IsLeftAdjoint :=
   (coindResAdjunction k S).isLeftAdjoint
 
 @[simp]
-lemma coindResAdjunction_counit_app (B : Rep k G):
+lemma coindResAdjunction_counit_app (B : Rep k G) :
     (coindResAdjunction k S).counit.app B = (indCoindIso <| (Action.res _ S.subtype).obj B).inv ≫
       (indResAdjunction k S.subtype).counit.app B := by
   simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
