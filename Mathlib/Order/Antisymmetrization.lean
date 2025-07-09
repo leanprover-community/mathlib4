@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Logic.Relation
 import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Tauto
 
 /-!
 # Turning a preorder into a partial order
@@ -148,7 +147,7 @@ variable [Preorder α] [Preorder β]
 
 theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·) a b := by
   rw [lt_iff_le_not_ge, AntisymmRel]
-  tauto
+  grind
 
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
   h₁.trans h₂.le
