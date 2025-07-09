@@ -910,7 +910,7 @@ theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
     rw [algebra_compatible_smul R, MvPowerSeries.smul_eq_C_mul]
 
 theorem _root_.MvPowerSeries.monomial_eq (e : σ →₀ ℕ) (r : σ → R) :
-    MvPowerSeries.monomial R e (e.prod (fun s n => r s ^  n))
+    MvPowerSeries.monomial R e (e.prod (fun s n => r s ^ n))
       = e.prod fun s e => (r s • MvPowerSeries.X s) ^ e := by
   rw [MvPowerSeries.prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
 

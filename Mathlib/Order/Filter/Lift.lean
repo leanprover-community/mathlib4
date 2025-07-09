@@ -328,7 +328,7 @@ theorem lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂,
     (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s := by
   rw [inf_eq_iInf, inf_eq_iInf, lift'_iInf hs]
   refine iInf_congr ?_
-  rintro (_|_) <;> rfl
+  rintro (_ | _) <;> rfl
 
 theorem lift'_inf_le (f g : Filter α) (s : Set α → Set β) :
     (f ⊓ g).lift' s ≤ f.lift' s ⊓ g.lift' s :=

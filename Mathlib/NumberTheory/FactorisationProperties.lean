@@ -151,7 +151,7 @@ theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
           exact ⟨x, Nat.le_of_succ_le hx, rfl⟩
         · rw [← hy]
           exact (Nat.pow_lt_pow_iff_right (Prime.two_le h)).mpr hx
-    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n^i := by
+    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n ^ i := by
       rw [Finset.sum_image]
       rintro x _ y _
       apply pow_injective_of_not_isUnit h.not_isUnit <| Prime.ne_zero h

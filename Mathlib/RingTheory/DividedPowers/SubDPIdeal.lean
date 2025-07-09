@@ -81,7 +81,7 @@ namespace DividedPowers
 structure IsSubDPIdeal {A : Type*} [CommSemiring A] {I : Ideal A} (hI : DividedPowers I)
     (J : Ideal A) : Prop where
   isSubideal : J ≤ I
-  dpow_mem : ∀ (n : ℕ) (_: n ≠ 0) {j : A} (_ : j ∈ J), hI.dpow n j ∈ J
+  dpow_mem : ∀ (n : ℕ) (_ : n ≠ 0) {j : A} (_ : j ∈ J), hI.dpow n j ∈ J
 
 section IsSubDPIdeal
 
@@ -136,8 +136,8 @@ theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : Divide
   refine ⟨fun hIJ n a b ha hb hab ↦ ?_, fun hIJ ↦ ?_⟩
   · have hab' : a - b ∈ I := I.sub_mem ha hb
     rw [← add_sub_cancel b a, hI.dpow_add' hb hab', range_succ, sum_insert notMem_range_self,
-      tsub_self, hI.dpow_zero hab', mul_one,add_sub_cancel_left]
-    exact J.sum_mem (fun i hi ↦  SemilatticeInf.inf_le_left J I ((J ⊓ I).smul_mem _
+      tsub_self, hI.dpow_zero hab', mul_one, add_sub_cancel_left]
+    exact J.sum_mem (fun i hi ↦ SemilatticeInf.inf_le_left J I ((J ⊓ I).smul_mem _
       (hIJ.dpow_mem _ (ne_of_gt (Nat.sub_pos_of_lt (mem_range.mp hi))) ⟨hab, hab'⟩)))
   · refine ⟨SemilatticeInf.inf_le_right J I, fun {n} hn {a} ha ↦ ⟨?_, hI.dpow_mem hn ha.right⟩⟩
     rw [← sub_zero (hI.dpow n a), ← hI.dpow_eval_zero hn]
@@ -164,7 +164,7 @@ theorem span_isSubDPIdeal_iff {S : Set A} (hS : S ⊆ I) :
         apply Submodule.sum_mem (span S)
         intro m _
         by_cases hm0 : m = 0
-        · exact hm0 ▸ mul_mem_left (span S)  _ (hy _ hm)
+        · exact hm0 ▸ mul_mem_left (span S) _ (hy _ hm)
         · exact mul_mem_right _ (span S) (hx _ hm0)
     | smul a x hxI hx =>
         rw [Algebra.id.smul_eq_mul, hI.dpow_mul (hSI hxI)]

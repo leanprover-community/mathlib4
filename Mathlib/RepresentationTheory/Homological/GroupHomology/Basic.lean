@@ -153,8 +153,8 @@ noncomputable abbrev inhomogeneousChains :
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
     simp only [inhomogeneousChains.d_eq]
-    slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, (coinvariantsTensorBarResolution A).d_comp_d] }
+    slice_lhs 3 4 => {rw [Iso.hom_inv_id]}
+    slice_lhs 2 4 => {rw [Category.id_comp, (coinvariantsTensorBarResolution A).d_comp_d]}
     simp
 
 open inhomogeneousChains

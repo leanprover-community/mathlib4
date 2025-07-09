@@ -102,9 +102,9 @@ open Batteries.ExtendedBinder Lean Meta
 /-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
 where `pred` is a `binderPred` like `< 2`.
 Unlike `extBinder`, `x` is a term. -/
-syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
+syntax bigOpBinder := term:max((" : "term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
-syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
+syntax bigOpBinderParenthesized := " ("bigOpBinder")"
 /-- A list of parenthesized binders -/
 syntax bigOpBinderCollection := bigOpBinderParenthesized+
 /-- A single (unparenthesized) binder, or a list of parenthesized binders -/
@@ -184,7 +184,7 @@ syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
+syntax (name := bigprod) "∏ " bigOpBinders (" with " term)? ", " term:67 : term
 
 macro_rules (kind := bigsum)
   | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do

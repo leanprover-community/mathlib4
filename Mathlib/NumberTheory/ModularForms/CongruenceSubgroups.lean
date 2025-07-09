@@ -212,7 +212,7 @@ open Pointwise ConjAct
 def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=
   ((toConjAct g⁻¹) • (Γ.map (SpecialLinearGroup.toGL.comp
     <| SpecialLinearGroup.map (Int.castRingHom ℝ)))).comap
-    (SpecialLinearGroup.toGL.comp  <| SpecialLinearGroup.map (Int.castRingHom ℝ))
+    (SpecialLinearGroup.toGL.comp <| SpecialLinearGroup.map (Int.castRingHom ℝ))
 
 @[simp] lemma mem_conjGL {Γ : Subgroup SL(2, ℤ)} {g : GL (Fin 2) ℝ} {x : SL(2, ℤ)} :
     x ∈ conjGL Γ g ↔ ∃ y ∈ Γ, y = g * x * g⁻¹ := by

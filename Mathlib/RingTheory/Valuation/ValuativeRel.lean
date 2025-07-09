@@ -513,7 +513,7 @@ lemma _root_.Valuation.Compatible.ofValuation
     {S Γ : Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) :
-    letI := ValuativeRel.ofValuation v  -- letI so that instance is inlined directly in declaration
+    letI := ValuativeRel.ofValuation v -- letI so that instance is inlined directly in declaration
     Valuation.Compatible v :=
   letI := ValuativeRel.ofValuation v
   ⟨fun _ _ ↦ Iff.rfl⟩

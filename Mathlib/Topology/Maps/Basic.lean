@@ -227,7 +227,7 @@ alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 @[deprecated (since := "2024-10-26")]
 alias _root_.Function.LeftInverse.embedding := Function.LeftInverse.isEmbedding
 
-lemma map_nhds_eq (hf : IsEmbedding f) (x : X) :     (𝓝 x).map f = 𝓝[range f] f x :=
+lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
 
 @[deprecated (since := "2024-10-26")]

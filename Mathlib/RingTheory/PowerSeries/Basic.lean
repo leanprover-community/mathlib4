@@ -915,7 +915,7 @@ section CommRing
 variable {R : Type*} [CommRing R]
 
 @[simp, norm_cast]
-lemma coe_neg (p : R[X]) : ((- p : R[X]) : PowerSeries R) = - p :=
+lemma coe_neg (p : R[X]) : ((-p : R[X]) : PowerSeries R) = -p :=
   coeToPowerSeries.ringHom.map_neg p
 
 @[simp, norm_cast]
