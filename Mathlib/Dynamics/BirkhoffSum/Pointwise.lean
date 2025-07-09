@@ -20,8 +20,8 @@ import Mathlib.Topology.Separation.CompletelyRegular
 /-!
 # Pointwise Ergodic Theorem
 
-The Pointwise Ergodic Theorem, also known as Birkhoff's Ergodic Theorem, is a fundamental result in
-ergodic theory that establishes the convergence of time averages for dynamical systems.
+The Pointwise Ergodic Theorem, also known as Birkhoff's Ergodic Theorem, establishes the convergence
+of time averages for dynamical systems.
 
 Let `(α, μ)` be a probability space and `f: α → α` be a measure-preserving transformation. The
 result states that, for any integrable function `φ  ∈ L¹(μ)`, the time averages
@@ -292,9 +292,9 @@ lemma divergentSet_zero_meas_of_condexp_neg [hμ : IsProbabilityMeasure μ]
     · exact integrable_condExp.restrict.neg
   exact this.not_ge (int_in_divergentSet_nonneg μ hf hφ hφ')
 
-lemma limsup_birkhoffAverage_nonpos_of_condexp_neg [hμ : IsProbabilityMeasure μ]
-    (hf : MeasurePreserving f μ μ)
-    (hφ : Integrable φ μ) (hφ' : Measurable φ) (h : ∀ᵐ x ∂μ, (μ[φ|invariants f]) x < 0) :
+lemma ae_tendsTo_birkhoffAverage_of_condExp_neg [hμ : IsProbabilityMeasure μ]
+    (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) (hφ' : Measurable φ)
+    (h : ∀ᵐ x ∂μ, (μ[φ|invariants f]) x < 0) :
     ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f φ · x) atTop nonneg := by
   apply Eventually.mono _ fun _ ↦ birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet
   apply ae_iff.mpr
@@ -333,7 +333,7 @@ lemma ae_tendsTo_birkhoffAverage_sub_condExp_nonneg {ε : ℝ} (hε : 0 < ε)
   -- For typical points the time average of `ψ` is eventually non-negative.
   have limsup_nonpos : ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f ψ · x) atTop nonneg := by
     suffices ∀ᵐ x ∂μ, μ[ψ|invariants f] x < 0 from
-      limsup_birkhoffAverage_nonpos_of_condexp_neg μ hf ψ_integrable ψ_measurable this
+      ae_tendsTo_birkhoffAverage_of_condExp_neg μ hf ψ_integrable ψ_measurable this
     exact condexpψ_const.mono fun x hx ↦ by simp [hx, hε]
   -- Transfer the result on `ψ` to the required result on `φ`.
   refine limsup_nonpos.mono fun x hx => ?_
