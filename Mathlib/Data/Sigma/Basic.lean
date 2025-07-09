@@ -54,7 +54,7 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ b₁ ≍ b₂ := by simp
 
 @[simp]
-theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
+theorem eta : ∀ x : Σ a, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 
 protected theorem eq {α : Type*} {β : α → Type*} : ∀ {p₁ p₂ : Σ a, β a} (h₁ : p₁.1 = p₂.1),
@@ -72,7 +72,7 @@ theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]
 theorem subtype_ext {β : Type*} {p : α → β → Prop} :
-    ∀ {x₀ x₁ : Σa, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
+    ∀ {x₀ x₁ : Σ a, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl, rfl => rfl
 
 -- This is not a good simp lemma, as its discrimination tree key is just an arrow.
@@ -174,7 +174,7 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
     · exact ha.symm
 
 /-- Convert a product type to a Σ-type. -/
-def Prod.toSigma {α β} (p : α × β) : Σ_ : α, β :=
+def Prod.toSigma {α β} (p : α × β) : Σ _ : α, β :=
   ⟨p.1, p.2⟩
 
 @[simp]
