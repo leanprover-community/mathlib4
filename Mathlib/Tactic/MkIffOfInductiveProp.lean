@@ -333,7 +333,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
-`r` with the shape `∀ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type parameters, `is` are
+`r` with the shape `∀ ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type parameters, `is` are
 the indices, `j` ranges over all possible constructors, the `cs` are the parameters for each of the
 constructors, and the equalities `is = cs` are the instantiations for each constructor for each of
 the indices to the inductive type `i`.
@@ -374,7 +374,7 @@ syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
 
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.
-The new rule `r` has the shape `∀ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type
+The new rule `r` has the shape `∀ ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type
 parameters, `is` are the indices, `j` ranges over all possible constructors, the `cs` are the
 parameters for each of the constructors, and the equalities `is = cs` are the instantiations for
 each constructor for each of the indices to the inductive type `i`.
