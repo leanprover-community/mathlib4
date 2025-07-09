@@ -362,7 +362,7 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
     (noncommProd s f fun _ _ _ _ _ => Commute.all _ _) = s.prod f := by
   induction' s using Finset.cons_induction_on with a s ha IH
   · simp
-  · simp [ha, IH]
+  · simp [IH]
 
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive "The non-commutative version of `Finset.sum_union`"]
@@ -379,7 +379,7 @@ theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Di
          (by convert comm; simp [Set.ext_iff]) := noncommProd_congr (by ext; simp) (by simp) _
    _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
          noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) := by
-    simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl', h]
+    simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl']
 
 @[to_additive]
 theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → β}
@@ -427,11 +427,11 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j _; dsimp
   · rw [noncommProd_insert_of_notMem _ _ _ _ (notMem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    · simp only [MonoidHom.mulSingle_apply, ne_eq, Pi.mulSingle_eq_same]
+    · simp only [Pi.mulSingle_eq_same]
     · intro j hj
       simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      simp only [MonoidHom.mulSingle_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
-        ne_eq, dite_eq_right_iff]
+      simp only [Pi.mulSingle, Function.update, Pi.one_apply,
+        dite_eq_right_iff]
       intro h
       simp [*] at *
 

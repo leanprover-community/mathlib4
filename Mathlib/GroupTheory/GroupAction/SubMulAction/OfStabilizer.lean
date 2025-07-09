@@ -140,7 +140,7 @@ theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
       (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.inv_def, AddAut.conj, ← add_assoc]
+    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
 
 variable {hg hh hk} in
 @[to_additive existing]
@@ -149,7 +149,7 @@ theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
       (stabilizerEquivStabilizer hh) (stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [stabilizerEquivStabilizer, H, MulAut.inv_def, MulAut.conj, ← mul_assoc]
+    simp [stabilizerEquivStabilizer, H, MulAut.conj, ← mul_assoc]
 
 variable {hg hh hk} in
 @[to_additive]
@@ -208,7 +208,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
     ∃ (g : G) (y : Fin n ↪ ofStabilizer G a), g • x = ofStabilizer.snoc y := by
   obtain ⟨g, hgx⟩ := exists_smul_eq G (x (Fin.last n)) a
   have H : ∀ i, Fin.Embedding.init (g • x) i ∈ ofStabilizer G a := fun i ↦ by
-    simp only [SetLike.mem_coe, mem_ofStabilizer_iff,
+    simp only [mem_ofStabilizer_iff,
       Nat.succ_eq_add_one, ← hgx, ← smul_apply, ne_eq]
     suffices Fin.Embedding.init (g • x) i = (g • x) i.castSucc by
       simp [this]

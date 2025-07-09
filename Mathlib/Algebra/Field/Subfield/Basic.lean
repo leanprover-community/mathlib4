@@ -155,7 +155,7 @@ theorem coe_map : (s.map f : Set L) = f '' s :=
 @[simp]
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
-  simp only [mem_mk, Subring.mem_mk, Subring.mem_toSubsemiring, Subring.mem_map, mem_toSubring]
+  simp only [mem_mk, Subring.mem_map, mem_toSubring]
 
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
@@ -243,12 +243,7 @@ instance : InfSet (Subfield K) :=
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
   show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
-    ext x
-    rw [Subring.coe_sInf, Set.mem_iInter, Set.mem_iInter]
-    exact
-      ⟨fun h s s' ⟨s_mem, s'_eq⟩ => h s.toSubring _ ⟨⟨s, s_mem, rfl⟩, s'_eq⟩,
-        fun h s s' ⟨⟨s'', s''_mem, s_eq⟩, (s'_eq : ↑s = s')⟩ =>
-        h s'' _ ⟨s''_mem, by simp [← s_eq, ← s'_eq]⟩⟩
+    simp
 
 theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Subring.mem_sInf.trans
@@ -446,6 +441,18 @@ theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x
 
 theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (rangeRestrictField f) :=
   (Equiv.ofInjective f f.injective).bijective
+
+/--
+`RingHom.rangeRestrictField` as a `RingEquiv`.
+-/
+@[simps! apply_coe]
+noncomputable def rangeRestrictFieldEquiv (f : K →+* L) : K ≃+* f.fieldRange :=
+  RingEquiv.ofBijective f.rangeRestrictField f.rangeRestrictField_bijective
+
+@[simp]
+theorem rangeRestrictFieldEquiv_apply_symm_apply (f : K →+* L) (x : f.fieldRange) :
+    f (f.rangeRestrictFieldEquiv.symm x) = x := by
+  rw [← rangeRestrictFieldEquiv_apply_coe, RingEquiv.apply_symm_apply]
 
 section eqLocus
 
