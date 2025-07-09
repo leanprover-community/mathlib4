@@ -45,7 +45,7 @@ def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 ## Simple Properties
 -/
 
-lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ preCantorSet n := by
+lemma quarters_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n ∧ 3 / 4 ∈ preCantorSet n := by
   induction n with
   | zero =>
     simp only [preCantorSet_zero]
@@ -59,9 +59,9 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
       -- follows by the inductive hyphothesis, since 1 / 4 ∈ preCantorSet n
       exact Or.inr ⟨1 / 4, ih.1, by norm_num⟩
 
-lemma quarter_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
+lemma quarter_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n := (quarters_mem_preCantorSet n).1
 
-theorem quarter_mem_cantorSet : 1/4 ∈ cantorSet :=
+theorem quarter_mem_cantorSet : 1 / 4 ∈ cantorSet :=
   Set.mem_iInter.mpr quarter_mem_preCantorSet
 
 lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
