@@ -564,7 +564,7 @@ instance : AddGroup (SkewMonoidAlgebra k G) where
   neg_add_cancel a := by cases a; simp [← ofFinsupp_neg, ← ofFinsupp_add]
 
 @[simp]
-theorem toFinsupp_neg  (a : SkewMonoidAlgebra k G) : (-a).toFinsupp = -a.toFinsupp :=
+theorem toFinsupp_neg (a : SkewMonoidAlgebra k G) : (-a).toFinsupp = -a.toFinsupp :=
   toFinsuppAddEquiv.map_neg a
 
 @[simp]
@@ -693,7 +693,7 @@ instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
     | single x a => induction g using induction_on' with
       | single y b => induction h using induction_on' with
         | single z c => simp [mul_assoc, mul_smul, mul_def]
-        | add => simp_all [add_mul, mul_add]
+        | add => simp_all [mul_add]
       | add => simp_all [add_mul, mul_add]
     | add => simp_all [add_mul]
 
@@ -752,7 +752,7 @@ instance {S} [AddMonoid k] [DistribSMul S k] :
   __ := toFinsupp_injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_smul
 
-instance {S} [Monoid S] [AddMonoid k]  [DistribMulAction S k] :
+instance {S} [Monoid S] [AddMonoid k] [DistribMulAction S k] :
     DistribMulAction S (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (k := k)⟩, toFinsupp_add⟩
       toFinsupp_smul
@@ -827,8 +827,7 @@ def comapDistribMulActionSelf [AddCommMonoid k] :
     DistribMulAction G (SkewMonoidAlgebra k G) where
   smul_zero g := by
     ext
-    simp only [comapSMul_def, smul_eq_mul, sum_zero_index, toFinsupp_zero, Finsupp.coe_zero,
-      Pi.zero_apply, mapDomain]
+    simp only [comapSMul_def, smul_eq_mul, sum_zero_index, mapDomain]
   smul_add g f f' := by
     ext
     simp only [comapSMul_def, mapDomain_add]
