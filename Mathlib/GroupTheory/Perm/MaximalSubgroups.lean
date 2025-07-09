@@ -23,8 +23,14 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
   * Appplication to primitivity of the action
     of `Equiv.Perm α` on finite combinations of `α`.
 
-  * Finish the classification
+  * Formalize the other cases of the classification.
+  The next one should be the *imprimitive case*.
 
+## Reference
+
+The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
+*A classification of the maximal subgroups of the finite
+alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
 
 open scoped Pointwise
@@ -38,12 +44,6 @@ theorem Subtype.image_preimage_of_val {α : Type*} {s B : Set α} (h : B ⊆ s) 
 namespace Equiv.Perm
 
 open MulAction
-
-section
-
-variable (G : Type*) [Group G] (X : Type*) [MulAction G X]
-
-end
 
 variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
 
@@ -84,15 +84,6 @@ theorem swap_mem_stabilizer [DecidableEq α]
   by_cases hxb : x = b
   · rwa [hxb, swap_apply_right]
   · rwa [swap_apply_of_ne_of_ne hxa hxb]
-
-theorem swap_isSwap_iff [DecidableEq α] {a b : α} :
-    (swap a b).IsSwap ↔ a ≠ b := by
-  constructor
-  · intro h hab
-    apply h.isCycle.ne_one
-    rw [← hab, swap_self]
-    ext; simp
-  · intro h; use a, b
 
 theorem moves_in
     (G : Subgroup (Perm α)) (t : Set α) (hGt : stabilizer (Perm α) t < G) :
@@ -144,11 +135,10 @@ theorem has_swap_of_lt_stabilizer [DecidableEq α]
     intro t ht
     rw [Set.one_lt_ncard_iff] at ht
     obtain ⟨a, b, ha, hb, h⟩ := ht
-    use swap a b, swap_isSwap_iff.mpr h, swap_mem_stabilizer ha hb
+    use swap a b, Perm.swap_isSwap_iff.mpr h, swap_mem_stabilizer ha hb
   rcases lt_or_ge 1 (s.ncard) with h1 | h1'
   · obtain ⟨g, hg, hg'⟩ := this s h1
-    use g; apply And.intro hg
-    exact le_of_lt hG hg'
+    exact ⟨g, hg, le_of_lt hG hg'⟩
   rcases lt_or_ge 1 sᶜ.ncard with h1c | h1c'
   · obtain ⟨g, hg, hg'⟩ := this sᶜ h1c
     use g, hg
@@ -182,29 +172,6 @@ theorem has_swap_of_lt_stabilizer [DecidableEq α]
     apply this
     rw [Set.ncard_univ, hα]
     norm_num
-
--- Move to Blocks.lean
-theorem _root_.MulAction.isTrivialBlock_or_2_mul_ncard_le_card
-    {G : Type*} [Group G] [MulAction G α] [IsPretransitive G α]
-    {B : Set α} (hB : IsBlock G B) :
-    IsTrivialBlock B ∨ (2 * Set.ncard B ≤ Nat.card α) := by
-  by_cases hBne : Set.Nonempty B
-  · obtain ⟨m, hm⟩ := hB.ncard_dvd_card hBne
-    match m with
-    | 0 =>
-      left; left
-      simp only [mul_zero, Finite.card_eq_zero_iff] at hm
-      exact Set.subsingleton_of_subsingleton
-    | 1 =>
-      left; right
-      rw [Set.eq_univ_iff_ncard, hm, mul_one]
-    | m + 2 =>
-      right
-      rw [hm, mul_comm, add_comm, mul_add]
-      apply Nat.le_add_right
-  · left; left
-    convert Set.subsingleton_empty
-    simpa only [Set.not_nonempty_iff_eq_empty] using hBne
 
 theorem ofSubtype_mem_stabilizer {s : Set α} [DecidablePred fun x ↦ x ∈ s]
     (g : Perm s) :
@@ -260,29 +227,13 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
        of maximal subgroups of the symmetric group -/
   have hB_ne_sc : ∀ (B : Set α) (_ : IsBlock G B), ¬B = sᶜ := by
     intro B hB hBsc
-    cases MulAction.isTrivialBlock_or_2_mul_ncard_le_card hB with
-    | inl hB_triv =>
-      cases hB_triv with
-      | inl hB_subsingleton =>
-        have : Set.ncard B ≤ 1 := by
-          rw [Set.ncard_le_one_iff_eq]
-          apply Set.Subsingleton.eq_empty_or_singleton
-          exact hB_subsingleton
-        apply not_lt.mpr this
-        rw [hBsc]
-        apply lt_of_le_of_lt _ hα
-        rw [Nat.succ_le_iff, Set.ncard_pos]
-        exact h0
-      | inr hB_top =>
-        apply Set.not_nonempty_empty
-        simp only [hBsc, Set.compl_univ_iff] at hB_top
-        rw [← hB_top]
-        exact h0
-    | inr hcard =>
-      apply not_lt.mpr hcard
-      rw [← Set.ncard_add_ncard_compl B, two_mul, add_lt_add_iff_left,
-        hBsc, compl_compl]
-      exact hα
+    rcases lt_or_ge (Nat.card α) (B.ncard * 2) with hB' | hB'
+    · apply h0.ne_empty
+      rw [← compl_univ_iff, ← hBsc]
+      exact hB.eq_univ_of_card_lt hB'
+    · rw [← not_lt] at hB'
+      apply hB'
+      rwa [← Set.ncard_add_ncard_compl B, mul_two, add_lt_add_iff_left, hBsc, compl_compl]
 
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc : ∀ (B : Set α) (_ : IsBlock G B) (_ : B ⊆ sᶜ), B.Subsingleton := by
