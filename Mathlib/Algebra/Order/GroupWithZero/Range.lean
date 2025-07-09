@@ -22,10 +22,6 @@ variable [MonoidWithZeroHomClass F A B] {f : F}
 
 open WithZero
 
-/-- The inclusion of `valueGroup₀ f` into `B` a a multiplicative homomorphism. -/
-def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
-  (withZeroUnitsHom).comp <| WithZero.map' (valueGroup f).subtype
-
 /-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
 def valueGroup₀_OrderEmbedding : valueGroup₀ f ↪o WithZero Bˣ where
   toFun := WithZero.map' (valueGroup f).subtype
