@@ -118,7 +118,7 @@ instance [P.IsVeryGood] : P.symm.IsVeryGood where
 section
 
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
-    (coprod.desc (𝟙 A) (𝟙 A)))
+    (codiag A))
 
 /-- A cylinder object for `A` can be obtained from a factorization of the obvious
 map `A ⨿ A ⟶ A` as a cofibration followed by a trivial fibration. -/
