@@ -121,7 +121,7 @@ lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i
 
 lemma cartanMatrix_eq_neg_chainTopCoeff [Finite ι] [IsDomain R] {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j = - P.chainTopCoeff j i := by
-  rw [cartanMatrix, cartanMatrixIn_def, ← neg_eq_iff_eq_neg, ← b.chainTopCoeff_eq_of_ne hij.symm]
+  rw [cartanMatrix, cartanMatrixIn_def, ← neg_eq_iff_eq_neg, b.chainTopCoeff_eq_of_ne j i hij.symm]
 
 lemma cartanMatrix_apply_eq_zero_iff [Finite ι] [IsDomain R] {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j = 0 ↔ P.root i + P.root j ∉ range P.root := by
@@ -153,7 +153,12 @@ lemma posForm_rootCombination {f g : b.support →₀ ℤ} (B : P.RootPositiveFo
     g.sum fun i m ↦ m • f.sum fun j n ↦ n • B.posForm (P.rootSpanMem ℤ j) (P.rootSpanMem ℤ i) := by
   simp only [rootCombination, LinearMap.map_finsupp_linearCombination,
     Finsupp.linearCombination_embDomain]
-  simp [Finsupp.linearCombination_apply]
+  simp only [Embedding.coe_subtype, Finsupp.linearCombination_apply]
+  refine Finsupp.sum_congr ?_
+  intro i hi
+  congr 1
+  exact LinearMap.finsupp_sum_apply f (fun i a ↦ a • B.posForm (P.rootSpanMem ℤ ↑i))
+      (P.rootSpanMem ℤ ↑i)
 
 -- may be superfluous.
 lemma posForm_rootCombination_add {f₁ f₂ f₃ : b.support →₀ ℤ} (B : P.RootPositiveForm ℤ) :
