@@ -96,9 +96,9 @@ variable
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorRight v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
     [∀ (v : V) (d : C × C),
       Limits.PreservesColimitsOfShape
         (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
