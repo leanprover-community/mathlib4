@@ -240,8 +240,6 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
 local instance : Ord (Nat × Expr) where
   compare x y := compare x.1 y.1
 
-#check trace
-
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
