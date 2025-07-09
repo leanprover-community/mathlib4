@@ -264,6 +264,8 @@ abbrev unlintedNodes := #[
   -- sometimes, where there are multiple fields, it is convenient to end a line with `⟨` and then
   -- align the indented fields on the successive lines, before adding the closing `⟩`.
   ``Parser.Term.anonymousCtor,
+  -- similarly, we ignore lists and arrays
+  ``«term[_]», ``«term#[_,]»,
 
   -- the `{ tacticSeq }` syntax pretty prints without a space on the left and with a space on the
   -- right.
@@ -280,7 +282,9 @@ abbrev unlintedNodes := #[
 
   -- Ignore term-mode `have`, since it does not print a space between `have` and the identifier,
   -- if there is a parenthesis in-between.
-  ``Parser.Term.have
+  ``Parser.Term.have,
+  -- For a similar reason, we also ignore tactic `replace`.
+  ``Parser.Tactic.replace,
   ]
 
 /--

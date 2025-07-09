@@ -54,7 +54,18 @@ example : True :=
   have(h) := trivial
   h
 
+-- Ideally, this would complain, but we silenced the linter for term-mode `replace`.
+example (h : ∀ a : Nat, a = a) : 0 = 0 := by
+  replace(h) := h 0
+  exact h
+
 end Desiderata_and_todos
+
+-- The linter ignores lists and arrays.
+example := [
+  0]
+example := #[
+  0]
 
 /--
 warning: missing space in the source
