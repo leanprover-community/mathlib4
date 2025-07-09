@@ -294,7 +294,7 @@ lemma ContMDiffOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
   exact (hf i).contMDiffAt ((hs i).mem_nhds hxsi) |>.contMDiffWithinAt
 
 /-- A function is `C^k` on a union of open sets `s i` iff it is `C^k` on each `s i`. -/
-lemma contMDiffOn_iUnion_iff_of_isOpen  {ι : Type*} {s : ι → Set M}
+lemma contMDiffOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set M}
     (hs : ∀ i, IsOpen (s i)) :
     ContMDiffOn I I' n f (⋃ i, s i) ↔ ∀ i : ι, ContMDiffOn I I' n f (s i) :=
   ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
