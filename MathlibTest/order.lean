@@ -87,41 +87,41 @@ error: No contradiction found.
 
 Additional diagnostic information may be available using the `set_option trace.order true` command.
 ---
-trace: [order] Working on type α
-    Collected atoms:
-    	#0 := a ⊓ (b ⊔ c)
-    	#1 := a
-    	#2 := b ⊔ c
-    	#3 := b
-    	#4 := c
-    	#5 := a ⊓ b ⊔ a ⊓ c
-    	#6 := a ⊓ b
-    	#7 := a ⊓ c
-    Collected facts:
-    	#3 ≤ #2
-    	#4 ≤ #2
-    	#2 := #3 ⊔ #4
-    	#0 ≤ #1
-    	#0 ≤ #2
-    	#0 := #1 ⊓ #2
-    	#6 ≤ #1
-    	#6 ≤ #3
-    	#6 := #1 ⊓ #3
-    	#7 ≤ #1
-    	#7 ≤ #4
-    	#7 := #1 ⊓ #4
-    	#6 ≤ #5
-    	#7 ≤ #5
-    	#5 := #6 ⊔ #7
-    	#0 ≠ #5
-    	¬ #0 < #5
-[order] Working on type ℕ
-    Collected atoms:
-    	#0 := x
-    	#1 := y
-    Collected facts:
-    	#0 ≠ #1
-    	#0 ≤ #1
+trace: [order] Working on type α (partial order)
+[order] Collected atoms:
+    #0 := a ⊓ (b ⊔ c)
+    #1 := a
+    #2 := b ⊔ c
+    #3 := b
+    #4 := c
+    #5 := a ⊓ b ⊔ a ⊓ c
+    #6 := a ⊓ b
+    #7 := a ⊓ c
+[order] Collected facts:
+    #3 ≤ #2
+    #4 ≤ #2
+    #2 := #3 ⊔ #4
+    #0 ≤ #1
+    #0 ≤ #2
+    #0 := #1 ⊓ #2
+    #6 ≤ #1
+    #6 ≤ #3
+    #6 := #1 ⊓ #3
+    #7 ≤ #1
+    #7 ≤ #4
+    #7 := #1 ⊓ #4
+    #6 ≤ #5
+    #7 ≤ #5
+    #5 := #6 ⊔ #7
+    #0 ≠ #5
+    ¬ #0 < #5
+[order] Working on type ℕ (linear order)
+[order] Collected atoms:
+    #0 := x
+    #1 := y
+[order] Collected facts:
+    #0 ≠ #1
+    #0 ≤ #1
 -/
 #guard_msgs in
 example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by

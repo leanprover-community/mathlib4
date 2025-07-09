@@ -155,9 +155,9 @@ def findContradictionWithNe (graph : Graph) (idxToAtom : Std.HashMap Nat Expr)
     if scc[lhs]! != scc[rhs]! then
       continue
     let some pf1 ← graph.buildTransitiveLeProof idxToAtom lhs rhs
-      | throwError "Bug: Cannot find path in strongly connected component"
+      | panic! "Cannot find path in strongly connected component"
     let some pf2 ← graph.buildTransitiveLeProof idxToAtom rhs lhs
-      | throwError "Bug: Cannot find path in strongly connected component"
+      | panic! "Cannot find path in strongly connected component"
     let pf3 ← mkAppM ``le_antisymm #[pf1, pf2]
     return some <| mkApp neProof pf3
   return none
@@ -189,7 +189,7 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
     for h : i in [:nltFacts.size] do
       if usedNltFacts[i] then
         continue
-      let .nlt lhs rhs proof := nltFacts[i] | throwError "Bug: Non-nlt fact in nltFacts."
+      let .nlt lhs rhs proof := nltFacts[i] | panic! "Non-nlt fact in nltFacts."
       let some pf ← g.buildTransitiveLeProof idxToAtom lhs rhs | continue
       g := g.addEdge ⟨rhs, lhs, ← mkAppM ``le_of_not_lt_le #[proof, pf]⟩
       changed := true
@@ -209,7 +209,7 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
           if (← g.buildTransitiveLeProof idxToAtom idx inf).isNone then
             g := g.addEdge ⟨idx, inf, ← mkAppM ``le_inf #[pf1, pf2]⟩
             changed := true
-        | _ => throwError "Bug: Non-isInf or isSup fact in infSupFacts."
+        | _ => panic! "Non-isInf or isSup fact in infSupFacts."
     if !changed then
       break
   return g
@@ -218,6 +218,12 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
 inductive OrderType
 | lin | part | pre
 deriving BEq
+
+instance : ToString OrderType where
+  toString
+  | .lin => "linear order"
+  | .part => "partial order"
+  | .pre => "preorder"
 
 /-- Find the "best" instance of an order on a given type. A linear order is preferred over a partial
 order, and a partial order is preferred over a preorder. -/
@@ -234,6 +240,8 @@ def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
 local instance : Ord (Nat × Expr) where
   compare x y := compare x.1 y.1
 
+#check trace
+
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
@@ -247,14 +255,13 @@ elab "order" : tactic => focus do
       | .pre => preprocessFactsPreorder facts
       | .part => preprocessFactsPartial facts idxToAtom
       | .lin => preprocessFactsLinear facts idxToAtom
-      let mut msg := m!"Working on type {← ppExpr type}\n"
-      let atomsMsg := String.intercalate "\n\t" <| Array.toList <|
+      trace[order] "Working on type {← ppExpr type} ({orderType})"
+      let atomsMsg := String.intercalate "\n" <| Array.toList <|
         ← idxToAtom.toArray.sortDedup.mapM
           fun ⟨idx, atom⟩ => do return s!"#{idx} := {← ppExpr atom}"
-      msg := msg.compose m!"Collected atoms:\n\t{atomsMsg}\n"
-      let factsMsg := String.intercalate "\n\t" (facts.map toString).toList
-      msg := msg.compose m!"Collected facts:\n\t{factsMsg}"
-      trace[order] msg
+      trace[order] "Collected atoms:\n{atomsMsg}"
+      let factsMsg := String.intercalate "\n" (facts.map toString).toList
+      trace[order] "Collected facts:\n{factsMsg}"
       let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
       graph ← updateGraphWithNltInfSup graph idxToAtom facts
       if orderType == .pre then
