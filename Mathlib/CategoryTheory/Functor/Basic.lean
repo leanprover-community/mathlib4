@@ -49,7 +49,7 @@ end
 /-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
-scoped [CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
+scoped[CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id Functor.map_comp
 
@@ -75,7 +75,7 @@ protected def id : C ⥤ C where
   map f := f
 
 /-- Notation for the identity functor on a category. -/
-scoped [CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
+scoped[CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
 
 instance : Inhabited (C ⥤ C) :=
   ⟨Functor.id C⟩
@@ -104,7 +104,7 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   map_comp := by intros; rw [F.map_comp, G.map_comp]
 
 /-- Notation for composition of functors. -/
-scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
+scoped[CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
 @[simp]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :

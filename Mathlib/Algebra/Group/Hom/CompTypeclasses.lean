@@ -57,7 +57,7 @@ class IsId (σ : M →* M) : Prop where
 instance instIsId {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
   eq_id := rfl
 
-instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ  where
+instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ where
   eq_id := by ext; exact congr_fun h.eq_id _
 
 instance instComp_id {N P : Type*} [Monoid N] [Monoid P]

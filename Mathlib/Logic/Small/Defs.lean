@@ -84,8 +84,8 @@ lemma small_max (α : Type v) : Small.{max w v} α :=
 
 instance small_zero (α : Type) : Small.{w} α := small_max α
 
-instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
-  small_lift.{v, v+1} α
+instance (priority := 100) small_succ (α : Type v) : Small.{v + 1} α :=
+  small_lift.{v, v + 1} α
 
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
@@ -99,13 +99,13 @@ theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 
 instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
-    Small.{w} (Σa, β a) :=
+    Small.{w} (Σ a, β a) :=
   ⟨⟨Σa' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
-    @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
+    @Function.cantor_injective (Σ α, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
       dsimp at e
       injection e with h₁ h₂
       simpa using h₂

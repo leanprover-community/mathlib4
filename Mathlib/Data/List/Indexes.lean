@@ -216,7 +216,7 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       simp only [mapIdxM.go, mapIdxMAuxSpec_cons, map_eq_pure_bind, seq_eq_bind_map,
         LawfulMonad.bind_assoc, pure_bind]
       congr
-      conv => { lhs; intro x; rw [ih _ _ h]; }
+      conv => {lhs; intro x; rw [ih _ _ h]}
       funext x
       simp only [Array.toList_push, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]

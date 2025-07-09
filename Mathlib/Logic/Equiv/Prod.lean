@@ -138,7 +138,7 @@ def sigmaPUnit (α) : (_ : α) × PUnit ≃ α :=
 
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α β) [Unique β] : α × β ≃ α :=
-  ((Equiv.refl α).prodCongr <| equivPUnit.{_,1} β).trans <| prodPUnit α
+  ((Equiv.refl α).prodCongr <| equivPUnit.{_, 1} β).trans <| prodPUnit α
 
 @[simp]
 theorem coe_prodUnique {α β} [Unique β] : (⇑(prodUnique α β) : α × β → α) = Prod.fst :=
@@ -153,7 +153,7 @@ theorem prodUnique_symm_apply {α β} [Unique β] (x : α) : (prodUnique α β).
 
 /-- Any `Unique` type is a left identity for type product up to equivalence. -/
 def uniqueProd (α β) [Unique β] : β × α ≃ α :=
-  ((equivPUnit.{_,1} β).prodCongr <| Equiv.refl α).trans <| punitProd α
+  ((equivPUnit.{_, 1} β).prodCongr <| Equiv.refl α).trans <| punitProd α
 
 @[simp]
 theorem coe_uniqueProd {α β} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
@@ -170,7 +170,7 @@ theorem uniqueProd_symm_apply {α β} [Unique β] (x : α) :
 /-- Any family of `Unique` types is a right identity for dependent type product up to
 equivalence. -/
 def sigmaUnique (α) (β : α → Type*) [∀ a, Unique (β a)] : (a : α) × (β a) ≃ α :=
-  (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_,1} (β a)).trans <| sigmaPUnit α
+  (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_, 1} (β a)).trans <| sigmaPUnit α
 
 @[simp]
 theorem coe_sigmaUnique {α} {β : α → Type*} [∀ a, Unique (β a)] :
@@ -188,7 +188,7 @@ theorem sigmaUnique_symm_apply {α} {β : α → Type*} [∀ a, Unique (β a)] (
 
 /-- Any `Unique` type is a left identity for type sigma up to equivalence. Compare with `uniqueProd`
 which is non-dependent. -/
-def uniqueSigma {α} (β : α → Type*) [Unique α] : (i:α) × β i ≃ β default :=
+def uniqueSigma {α} (β : α → Type*) [Unique α] : (i : α) × β i ≃ β default :=
   ⟨fun p ↦ (Unique.eq_default _).rec p.2,
    fun b ↦ ⟨default, b⟩,
    fun _ ↦ Sigma.ext (Unique.default_eq _) (eqRec_heq _ _),
@@ -451,7 +451,7 @@ def prodSubtypeFstEquivSubtypeProd {α β} {p : α → Prop} :
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
 def subtypeProdEquivSigmaSubtype {α β} (p : α → β → Prop) :
-    { x : α × β // p x.1 x.2 } ≃ Σa, { b : β // p a b } where
+    { x : α × β // p x.1 x.2 } ≃ Σ a, { b : β // p a b } where
   toFun x := ⟨x.1.1, x.1.2, x.property⟩
   invFun x := ⟨⟨x.1, x.2⟩, x.2.property⟩
 

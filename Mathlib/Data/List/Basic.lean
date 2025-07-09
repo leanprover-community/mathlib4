@@ -509,7 +509,7 @@ theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l�
 /-- If the first element of two lists are different, then a sublist relation can be reduced. -/
 theorem Sublist.of_cons_of_ne {a b} (h₁ : a ≠ b) (h₂ : a :: l₁ <+ b :: l₂) : a :: l₁ <+ l₂ :=
   match h₁, h₂ with
-  | _, .cons _ h =>  h
+  | _, .cons _ h => h
 
 /-! ### indexOf -/
 
@@ -994,7 +994,7 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
 /-! ### filter -/
 
 theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
-    l.length = (l.filter f).length + (l.filter (! f ·)).length := by
+    l.length = (l.filter f).length + (l.filter (!f ·)).length := by
   simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
     Bool.decide_eq_false]
 
