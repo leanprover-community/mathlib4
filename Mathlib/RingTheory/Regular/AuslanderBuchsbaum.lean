@@ -137,7 +137,7 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   have h := Ext.addEquivBiproduct N (biconeIsBilimitOfColimitCoconeOfIsColimit <|
     ModuleCat.coproductCoconeIsColimit (fun s : S ↦ ModuleCat.of R (Shrink.{v, u} R))) i
   simp only [ModuleCat.coproductCocone, Bicone.ofColimitCocone_pt, Cofan.mk_pt] at h
-  show Subsingleton ((extFunctorObj N i).obj M) ↔ _
+  change Subsingleton ((extFunctorObj N i).obj M) ↔ _
   let e := B.repr ≪≫ₗ Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R).symm ≪≫ₗ
     finsuppLEquivDirectSum R (Shrink.{v, u} R) ↑S |>.toModuleIso
   rw [((extFunctorObj.{max u v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr]
@@ -164,7 +164,6 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
     ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp
     (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
     (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
-  show Function.Surjective f
   have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
     Classical.choose_spec (Module.projective_lifting_property
     (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
@@ -196,27 +195,25 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
   refine Submodule.smul_induction_on mem ?_ ?_
   · intro r hr f hf
     ext x
-    show (((Ext.homEquiv₀_linearHom R).symm (r • f)).postcompOfLinear R L _) x = 0
+    change (((Ext.homEquiv₀_linearHom R).symm (r • f)).postcompOfLinear R L _) x = 0
     simp only [Ext.postcompOfLinear, LinearMap.flip_apply]
     rw [map_smul, map_smul, ← LinearMap.smul_apply, ← map_smul]
     have : r • x = 0 := by
-      rw [← Ext.mk₀_id_comp x]
-      show r • (Ext.bilinearCompOfLinear R L L M 0 n n (zero_add n)).flip
-        x ((Ext.homEquiv₀_linearHom R).symm (𝟙 L)) = 0
-      have : r • (𝟙 L) = 0 := by
-        ext
-        exact Module.mem_annihilator.mp hr _
-      rw [← map_smul, ← map_smul, this]
-      simp
+      have : r • (Ext.bilinearCompOfLinear R L L M 0 n n (zero_add n)).flip
+        x ((Ext.homEquiv₀_linearHom R).symm (𝟙 L)) = 0 := by
+        have : r • (𝟙 L) = 0 := ModuleCat.hom_ext
+          (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp hr _))
+        rw [← map_smul, ← map_smul, this]
+        simp
+      rwa [← Ext.mk₀_id_comp x]
     simp [this]
   · intro g1 g2 hg1 hg2
     ext x
-    show (((Ext.homEquiv₀_linearHom R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
-    simp only [Ext.postcompOfLinear, LinearMap.flip_apply]
-    rw [map_add, map_add]
-    show AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
-      AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0
-    simp [hg1, hg2]
+    change (((Ext.homEquiv₀_linearHom R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
+    have : AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
+      AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
+    simpa only [Ext.postcompOfLinear, map_add]
+
 
 lemma ENat.add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
   enat_to_nat
@@ -291,15 +288,13 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     apply le_trans (LinearMap.ker_le_ker_comp f (maximalIdeal R • (⊤ : Submodule R M)).mkQ) _
     rw [hf]
     intro x
-    simp only [LinearEquiv.ker_comp, Finsupp.mapRange.linearMap_apply,
-      LinearMap.coe_comp, LinearEquiv.coe_coe, f]
     have : x ∈ LinearMap.ker (Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R) ∘ₗ
       (Shrink.linearEquiv R R))) ↔ ∀ i : ι, x i ∈ (maximalIdeal R).comap (Shrink.ringEquiv R) := by
       simp only [LinearMap.mem_ker, Finsupp.mapRange.linearMap_apply, LinearMap.coe_comp,
         LinearEquiv.coe_coe, mem_comap, Finsupp.ext_iff, Finsupp.zero_apply]
       congr!
       simp [Quotient.eq_zero_iff_mem, Shrink.ringEquiv]
-    simp only [this, mem_comap]
+    simp only [LinearEquiv.ker_comp, this, mem_comap]
     intro h
     rw [← (Finsupp.univ_sum_single x)]
     apply Submodule.sum_mem
@@ -454,10 +449,9 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
         let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
         have depth_pos : IsLocalRing.depth S.X₁ > 0 := by
           apply pos_of_ne_zero
+          have : IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) ≠ 0 := by simp [← h_ker, eq0]
           have : IsLocalRing.depth S.X₂ ≠ 0 := by
-            simp only [IsLocalRing.depth, Ideal.depth, free_depth_eq_ring_depth S.X₂ _]
-            show IsLocalRing.depth _ ≠ 0
-            simp [← h_ker, eq0]
+            simpa only [IsLocalRing.depth, Ideal.depth, free_depth_eq_ring_depth S.X₂ _]
           simp only [IsLocalRing.depth, Ideal.depth, ne_eq,
             moduleDepth_eq_zero_of_hom_nontrivial, not_nontrivial_iff_subsingleton] at this ⊢
           apply subsingleton_of_forall_eq 0 (fun F ↦ LinearMap.ext (fun x ↦ ?_))
