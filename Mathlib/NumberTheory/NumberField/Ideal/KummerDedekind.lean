@@ -22,10 +22,6 @@ splitting of rational primes in number fields.
 * `RingOfIntegers.ZModXQuotSpanEquivQuotSpan`: The isomorphism between `(ℤ / pℤ)[X] / (minpoly θ)`
   and `𝓞 K / p(𝓞 K)` for a prime `p` which doesn't divide the exponent of `θ`.
 
-## Main results
-
-* TODO
-
 -/
 
 noncomputable section
@@ -44,8 +40,7 @@ def exponent (θ : 𝓞 K) : ℕ := absNorm (under ℤ (conductor ℤ θ))
 
 variable {θ : 𝓞 K}
 
-theorem exponent_eq_one_iff :
-    exponent θ = 1 ↔ Algebra.adjoin ℤ {θ} = ⊤ := by
+theorem exponent_eq_one_iff : exponent θ = 1 ↔ Algebra.adjoin ℤ {θ} = ⊤ := by
   rw [exponent, absNorm_eq_one_iff, comap_eq_top_iff, conductor_eq_top_iff_adjoin_eq_top]
 
 theorem not_dvd_exponent_iff {p : ℕ} [Fact (Nat.Prime p)] :
@@ -55,11 +50,10 @@ theorem not_dvd_exponent_iff {p : ℕ} [Fact (Nat.Prime p)] :
     span_singleton_dvd_span_singleton_iff_dvd, Int.natCast_dvd_natCast, exponent]
   exact isMaximal_def.mp <| Int.ideal_span_isMaximal_of_prime p
 
-theorem exponent_eq_sInf :
-    exponent θ = sInf {d : ℕ | 0 < d ∧ (d : 𝓞 K) ∈ conductor ℤ θ} := by
+theorem exponent_eq_sInf : exponent θ = sInf {d : ℕ | 0 < d ∧ (d : 𝓞 K) ∈ conductor ℤ θ} := by
   rw [exponent, Int.absNorm_under_eq_sInf]
 
-variable [NumberField K] {θ : 𝓞 K} {p : ℕ} [Fact (Nat.Prime p)]
+variable [NumberField K] {θ : 𝓞 K} {p : ℕ} [Fact p.Prime]
 
 /--
 If `p` doesn't divide the exponent of `θ`, then `(ℤ / pℤ)[X] / (minpoly θ) ≃+* 𝓞 K / p(𝓞 K)`.
@@ -76,11 +70,10 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
   (ZModXQuotSpanEquivQuotSpan hp)
     (Ideal.Quotient.mk (span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)})
       (map (Int.castRingHom (ZMod p)) Q)) = Ideal.Quotient.mk (span {(p : 𝓞 K)}) (aeval θ Q) := by
-  unfold ZModXQuotSpanEquivQuotSpan
-  simp only [AlgEquiv.toRingEquiv_eq_coe, algebraMap_int_eq, RingEquiv.trans_apply,
-    AlgEquiv.coe_ringEquiv, quotientEquivAlgOfEq_mk, quotientEquiv_symm_apply, quotientMap_mk,
-    RingHom.coe_coe, mapEquiv_symm_apply, Polynomial.map_map,
-    Int.quotientSpanNatEquivZMod_comp_castRingHom]
+  simp only [ZModXQuotSpanEquivQuotSpan, AlgEquiv.toRingEquiv_eq_coe, algebraMap_int_eq,
+    RingEquiv.trans_apply, AlgEquiv.coe_ringEquiv, quotientEquivAlgOfEq_mk,
+    quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe, mapEquiv_symm_apply,
+    Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom]
   exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
     quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp) θ.isIntegral Q
 
@@ -105,7 +98,7 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
       span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ⊔
         span {map (Int.castRingHom (ZMod p)) Q} := by
     rw [← span_insert, span_pair_comm, span_pair_eq_span_singleton_iff_dvd.mpr]
-    simp only [Finset.mem_coe, Multiset.mem_toFinset] at hQ
+    simp only [Multiset.mem_toFinset] at hQ
     exact ((Polynomial.mem_normalizedFactors_iff h₀).mp hQ).2.2
   have h_eq₂ : span {↑p} ⊔ span {(aeval θ) Q} = span {↑p, (aeval θ) Q} := by
     rw [span_insert]
@@ -113,7 +106,7 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (Ideal.quotientEquiv
       (Ideal.map (Ideal.Quotient.mk _) (span {(Polynomial.map (Int.castRingHom (ZMod p)) Q)}))
       (Ideal.map (Ideal.Quotient.mk _) (span {aeval θ Q})) (ZModXQuotSpanEquivQuotSpan hp) (by
-        simp [Ideal.map_map, map_span, ZModXQuotSpanEquivQuotSpan_mk_apply])).trans <|
+        simp [map_span, ZModXQuotSpanEquivQuotSpan_mk_apply])).trans <|
     (DoubleQuot.quotQuotEquivQuotSup _ _).trans (Ideal.quotEquivOfEq h_eq₂)
 
 end RingOfIntegers
