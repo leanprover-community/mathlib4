@@ -438,12 +438,12 @@ theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
 theorem IsClosed.closure_interior_subset {s : Set X} (s_closed : IsClosed s) :
     closure (interior s) ⊆ s := s_closed.closure_subset_iff.mpr interior_subset
 
-theorem closure_interior_idem :
+@[simp] theorem closure_interior_idem :
     closure (interior (closure (interior s))) = closure (interior s) :=
   isClosed_closure.closure_interior_subset.antisymm
     (closure_mono isOpen_interior.subset_interior_closure)
 
-theorem interior_closure_idem :
+@[simp] theorem interior_closure_idem :
     interior (closure (interior (closure s))) = interior (closure s) :=
   (interior_mono isClosed_closure.closure_interior_subset).antisymm
     isOpen_interior.subset_interior_closure
