@@ -5516,6 +5516,7 @@ import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.Depth
+import Mathlib.RingTheory.Regular.Flat
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.Ischebeck
 import Mathlib.RingTheory.Regular.RegularSequence
