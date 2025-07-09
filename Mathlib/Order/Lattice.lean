@@ -1384,10 +1384,9 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
       have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
       closed_interval ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t) (
         ⟨sup_le_iff.mpr ⟨le_trans inf_le_left le_sup_left, le_sup_right⟩,
-            (sup_le_iff.mpr ⟨by rw [sup_assoc]; exact le_sup_left, le_sup_right⟩)⟩) (by
-          simp
-          exact ⟨le_trans inf_le_right le_sup_left,
-            by (rw [sup_comm, ← sup_assoc]; exact le_sup_right)⟩)
+            (sup_le_iff.mpr ⟨by rw [sup_assoc]; exact le_sup_left, le_sup_right⟩)⟩)
+            (⟨sup_le_iff.mpr ⟨le_trans inf_le_right le_sup_left, le_sup_right⟩,
+              sup_le_iff.mpr ⟨by rw [sup_comm, ← sup_assoc]; exact le_sup_right, le_sup_right⟩⟩)
         (h.2.2.2 inf_le_sup (h.2.1.mp hh)).2
       intro _ _ _ _ h₀ h₁
       exact transitive (by
