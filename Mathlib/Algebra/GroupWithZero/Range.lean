@@ -7,7 +7,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E.
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
 
 /-! # The range of a MonoidWithZeroHom
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the
@@ -222,5 +221,3 @@ namespace MonoidHomWithZero
 @[deprecated (since := "2025-07-02")] alias valueGroup₀ := MonoidWithZeroHom.valueGroup₀
 
 end MonoidHomWithZero
-
-#min_imports
