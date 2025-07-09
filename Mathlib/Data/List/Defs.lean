@@ -36,7 +36,7 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
-  | []       => default
+  | [] => default
   | (a :: _) => a
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
@@ -414,7 +414,7 @@ def replaceIf : List α → List Bool → List α → List α
 /-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
 @[simp]
 def iterate (f : α → α) (a : α) : (n : ℕ) → List α
-  | 0     => []
+  | 0 => []
   | n + 1 => a :: iterate f (f a) n
 
 /-- Tail-recursive version of `List.iterate`. -/
@@ -426,7 +426,7 @@ where
   @[simp, specialize]
   loop (a : α) (n : ℕ) (l : List α) : List α :=
     match n with
-    | 0     => reverse l
+    | 0 => reverse l
     | n + 1 => loop (f a) n (a :: l)
 
 theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
