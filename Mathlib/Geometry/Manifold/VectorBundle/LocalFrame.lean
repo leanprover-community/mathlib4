@@ -98,9 +98,71 @@ namespace IsLocalFrameOn
 def toBasisAt (hs : IsLocalFrameOn I F s u) {x} (hx : x ∈ u) : Basis ι 𝕜 (V x) :=
   Basis.mk (hs.linearIndependent hx) (hs.generating hx)
 
+@[simp]
 lemma toBasisAt_coe (hs : IsLocalFrameOn I F s u) {x} (hx : x ∈ u) (i : ι) :
     (toBasisAt hs hx) i = s i x := by
   simpa only [toBasisAt] using Basis.mk_apply (hs.linearIndependent hx) (hs.generating hx) i
+
+open scoped Classical in
+/-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
+Outside of `u`, this returns the junk value 0. -/
+-- NB. We don't use simps here, as we prefer to have dedicated `_apply` lemmas for the separate
+-- cases.
+def repr (hs : IsLocalFrameOn I F s u) (i : ι) : (Π x : M, V x) →ₗ[𝕜] M → 𝕜 where
+  toFun s x := if hx : x ∈ u then (hs.toBasisAt hx).repr (s x) i else 0
+  map_add' s s' := by
+    ext x
+    by_cases hx : x ∈ u <;> simp [hx]
+  map_smul' c s := by
+    ext x
+    by_cases hx : x ∈ u <;> simp [hx]
+
+variable {x : M}
+
+@[simp]
+lemma repr_apply_of_notMem (hs : IsLocalFrameOn I F s u) (hx : x ∉ u) (t : Π x : M, V x) (i : ι) :
+    hs.repr i t x = 0 := by
+  simp [repr, hx]
+
+@[simp]
+lemma repr_apply_of_mem (hs : IsLocalFrameOn I F s u) (hx : x ∈ u) (t : Π x : M, V x) (i : ι) :
+    hs.repr i t x = (hs.toBasisAt hx).repr (t x) i := by
+  simp [repr, hx]
+
+-- TODO: add uniqueness of the decomposition; follows from the IsBasis property in the definition
+
+lemma repr_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F s u) (t : Π x : M,  V x) (hx : x ∈ u) :
+    t x = (∑ i, (hs.repr i t x) • (s i x)) := by
+  simpa [repr, hx] using (Basis.sum_repr (hs.toBasisAt hx) (t x)).symm
+
+/-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
+set `u` around `x`, we have `t = ∑ i, (hs.repr i t) • (s i x)` near `x`. -/
+lemma repr_spec [Fintype ι] (hs : IsLocalFrameOn I F s u)
+    (t : Π x : M,  V x) (hx : x ∈ u) (hu : IsOpen u) :
+    ∀ᶠ x' in 𝓝 x, t x' = ∑ i, (hs.repr i t x') • (s i x') :=
+  eventually_nhds_iff.mpr ⟨u, fun _ h ↦ hs.repr_sum_eq t h, hu, hx⟩
+
+/-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
+lemma repr_congr (hs : IsLocalFrameOn I F s u) {t t' : Π x : M,  V x}-- (hx : x ∈ u)
+    {i : ι} (htt' : t x = t' x) :
+    hs.repr i t x = hs.repr i t' x := by
+  by_cases hxe : x ∈ u
+  · simp [repr, hxe]
+    congr
+  · simp [repr, hxe]
+
+lemma repr_apply_zero_at (hs : IsLocalFrameOn I F s u) {t : Π x : M, V x} (ht : t x = 0) (i : ι) :
+    hs.repr i t x = 0 := by
+  simp [hs.repr_congr (t' := 0) ht]
+
+-- XXX: this statement does not readily transfer, but probably I won't need this particular
+-- result in this general setting
+-- /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `t` a bundle section.
+-- Then the coefficient of `t` w.r.t. a local frame `s i` near `x`
+-- equals the cofficient of "`t x` read in the trivialisation `e`" for `b i`. -/
+-- lemma localFrame_repr_eq_repr (hs : IsLocalFrameOn I F s u) (hxe : x ∈ u) {i : ι} {t : Π x : M, V x} :
+--     hs.repr i t x = b.repr (e (s x)).2 i := by
+--   simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
 end IsLocalFrameOn
 
