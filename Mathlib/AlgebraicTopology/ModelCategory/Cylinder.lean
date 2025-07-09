@@ -108,7 +108,7 @@ variable {A : C} [CategoryWithWeakEquivalences C] (P : Cylinder A)
 /-- The cylinder object obtained by switching the two inclusions. -/
 @[simps!]
 def symm : Cylinder A where
-  toPrecylinder := P.toPrecylinder.symm
+  __ := P.toPrecylinder.symm
   weakEquivalence_π := by dsimp; infer_instance
 
 @[simp, reassoc]
