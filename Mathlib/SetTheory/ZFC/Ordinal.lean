@@ -282,10 +282,9 @@ theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, 
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← iSup_succ o]
-  convert (enumIsoToType o).symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert (enumIsoToType o).symm.iSup_comp (g := fun ⟨x, _⟩ ↦ Order.succ x.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
-decreasing_by rename_i x; exact x.2
 
 /-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
 
