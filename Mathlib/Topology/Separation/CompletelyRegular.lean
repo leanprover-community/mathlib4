@@ -7,7 +7,6 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.Order.Lattice
-import Mathlib.Tactic.Peel
 
 /-!
 # Completely regular topological spaces.
