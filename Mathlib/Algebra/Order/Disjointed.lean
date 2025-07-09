@@ -34,7 +34,7 @@ protected lemma Monotone.disjointed_add_one_sup {f : ι → α} (hf : Monotone f
     disjointed f (i + 1) ⊔ f i = f (i + 1) := by
   simpa only [succ_eq_add_one i] using hf.disjointed_succ_sup i
 
-protected lemma Monotone.disjointed_add_one [NoMaxOrder ι]  {f : ι → α} (hf : Monotone f) (i : ι) :
+protected lemma Monotone.disjointed_add_one [NoMaxOrder ι] {f : ι → α} (hf : Monotone f) (i : ι) :
     disjointed f (i + 1) = f (i + 1) \ f i := by
   rw [← succ_eq_add_one, hf.disjointed_succ]
   exact not_isMax i
