@@ -7,7 +7,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E.
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
 
 /-! # The range of a MonoidWithZeroHom
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the
@@ -143,13 +142,13 @@ in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will n
 def restrict₀ : A →*₀ (valueGroup₀ f) where
   toFun a :=
     if h : f a ≠ 0 then (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) else 0
-  map_one' := by simp ; rfl
+  map_one' := by simp; rfl
   map_mul' := by
     intro a b
     simp only [map_mul, ne_eq, Units.mk0_mul, dite_mul, zero_mul]
     split_ifs with h hb ha
     any_goals rfl
-    all_goals rw [mul_eq_zero] at h ; tauto
+    all_goals rw [mul_eq_zero] at h; tauto
   map_zero' := by simp
 
 @[simp]
@@ -222,5 +221,3 @@ namespace MonoidHomWithZero
 @[deprecated (since := "2025-07-02")] alias valueGroup₀ := MonoidWithZeroHom.valueGroup₀
 
 end MonoidHomWithZero
-
-#min_imports
