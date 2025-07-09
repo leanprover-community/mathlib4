@@ -19,7 +19,7 @@ instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σ a, 
   letI := fun a => Fintype.ofFinite (β a)
   infer_instance
 
-instance {ι : Sort*} {π : ι → Sort*} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
+instance {ι : Sort*} {π : ι → Sort*} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ' i, π i) :=
   of_equiv _ (Equiv.psigmaEquivSigmaPLift π).symm
 
 end Finite

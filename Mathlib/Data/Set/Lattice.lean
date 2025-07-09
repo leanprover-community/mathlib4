@@ -964,7 +964,7 @@ theorem range_sigma_eq_iUnion_range {γ : α → Type*} (f : Sigma γ → β) :
 theorem iUnion_eq_range_sigma (s : α → Set β) : ⋃ i, s i = range fun a : Σ i, s i => a.2 := by
   simp [Set.ext_iff]
 
-theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : Σ'i, s i => a.2 := by
+theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : Σ' i, s i => a.2 := by
   simp [Set.ext_iff]
 
 theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} (s : Set (Sigma σ)) :

@@ -235,7 +235,7 @@ theorem «forall» {p : (Σ' a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p �
 /-- A specialized ext lemma for equality of `PSigma` types over an indexed subtype. -/
 @[ext]
 theorem subtype_ext {β : Sort*} {p : α → β → Prop} :
-    ∀ {x₀ x₁ : Σ'a, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
+    ∀ {x₀ x₁ : Σ' a, Subtype (p a)}, x₀.fst = x₁.fst → (x₀.snd : β) = x₁.snd → x₀ = x₁
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl, rfl => rfl
 
 variable {α₁ : Sort*} {α₂ : Sort*} {β₁ : α₁ → Sort*} {β₂ : α₂ → Sort*}
