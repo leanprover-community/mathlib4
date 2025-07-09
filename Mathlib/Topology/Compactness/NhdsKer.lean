@@ -5,8 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.Exterior
-
+import Mathlib.Topology.NhdsKer
 /-!
 # Compactness of the exterior of a set
 
