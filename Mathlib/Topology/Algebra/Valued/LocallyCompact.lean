@@ -155,9 +155,9 @@ section CompactDVR
 
 open Valued
 
-lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
-    [LinearOrderedCommGroupWithZero Γ₀] [MulArchimedean Γ₀] [hv : Valued F Γ₀] [CompactSpace 𝒪[F]]
-    (h : ∃ x : F, 0 < Valued.v x ∧ Valued.v x < 1) :
+lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
+    [hv : Valued F Γ₀] [MulArchimedean (MonoidHom.mrange (Valued.v : Valuation F Γ₀))]
+    [CompactSpace 𝒪[F]] (h : ∃ x : F, 0 < Valued.v x ∧ Valued.v x < 1) :
     IsPrincipalIdealRing 𝒪[F] := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.

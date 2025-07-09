@@ -60,7 +60,8 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     simp [← Subtype.coe_le_coe, hv.map_le_one]
   · simp [Function.onFun]
 
-lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean Γ₀] (hv : Integers v O) :
+lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
+    (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
   rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs|_
