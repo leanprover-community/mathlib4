@@ -172,7 +172,7 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     obtain ⟨b, hb, hb'⟩ := this
     exact hb'.trans (IH b hb)
   induction l with
-  | nil => use 0; simp [ho.bot_lt]
+  | nil => use 0; simpa using ho.bot_lt
   | cons a l IH =>
     obtain ⟨b, hb, hb'⟩ := IH
     refine ⟨_, ho.succ_lt (max_lt a.2 hb), ((veblenWith_right_strictMono hf _).monotone <|

@@ -184,7 +184,7 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
   exact hc' hb'
 
 @[deprecated (since := "2025-07-08")]
-alias isLimit_of_mem_frontier := isLimit_of_mem_frontier
+alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
 
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{max u v}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
