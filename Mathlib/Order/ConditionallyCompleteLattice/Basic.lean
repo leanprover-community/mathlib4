@@ -636,21 +636,6 @@ theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sS
 
 end ConditionallyCompleteLinearOrderBot
 
-theorem IsLowerSet.eq_Iio_or_univ {α : Type*} [LinearOrder α] [WellFoundedLT α] {s : Set α}
-    (h : IsLowerSet s) : (∃ a, s = Iio a) ∨ s = .univ := by
-  obtain hs | ⟨a, ha⟩ := Set.eq_empty_or_nonempty sᶜ
-  · simp_all
-  · have : Nonempty α := ⟨a⟩
-    let : OrderBot α := WellFoundedLT.toOrderBot
-    let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
-    refine .inl ⟨sInf sᶜ, ext fun b ↦ ?_⟩
-    rw [mem_Iio, ← not_iff_not, not_lt]
-    exact ⟨(csInf_le' ·), fun hb hb' ↦ csInf_mem ⟨a, ha⟩ (h hb hb')⟩
-
-theorem IsUpperSet.eq_Ioi_or_univ {α : Type*} [LinearOrder α] [WellFoundedGT α] {s : Set α}
-    (h : IsUpperSet s) : (∃ a, s = Ioi a) ∨ s = .univ :=
-  IsLowerSet.eq_Iio_or_univ (α := αᵒᵈ) h
-
 namespace WithTop
 
 variable [ConditionallyCompleteLinearOrderBot α]
