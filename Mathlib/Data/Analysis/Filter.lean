@@ -254,7 +254,7 @@ protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
 /-- Construct a realizer for filter bind -/
 protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : ∀ i, (m i).Realizer) :
     (f.bind m).Realizer :=
-  ⟨Σs : F.σ, ∀ i ∈ F.F s, (G i).σ,
+  ⟨Σ s : F.σ, ∀ i ∈ F.F s, (G i).σ,
     { f := fun ⟨s, f⟩ ↦ ⋃ i ∈ F.F s, (G i).F (f i (by assumption))
       pt := ⟨F.F.pt, fun i _ ↦ (G i).F.pt⟩
       inf := fun ⟨a, f⟩ ⟨b, f'⟩ ↦
