@@ -69,6 +69,15 @@ def symm : Precylinder A where
   i₁ := P.i₀
   π := P.π
 
+/-- The gluing of two precylinders. -/
+@[simps]
+noncomputable def trans (P' : Precylinder A) [HasPushout P.i₁ P'.i₀] :
+    Precylinder A where
+  I := pushout P.i₁ P'.i₀
+  i₀ := P.i₀ ≫ pushout.inl _ _
+  i₁ := P'.i₁ ≫ pushout.inr _ _
+  π := pushout.desc P.π P'.π (by simp)
+
 section
 
 variable [HasBinaryCoproduct A A]
@@ -223,19 +232,17 @@ lemma exists_very_good :
 instance : Nonempty (Cylinder A) := ⟨(exists_very_good A).choose⟩
 
 /-- The gluing of two good cylinders. -/
-@[simps]
+@[simps!]
 noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
     Cylinder A where
-  I := pushout P.i₁ P'.i₀
-  i₀ := P.i₀ ≫ pushout.inl _ _
-  i₁ := P'.i₁ ≫ pushout.inr _ _
-  π := pushout.desc P.π P'.π (by simp)
+  __ := P.toPrecylinder.trans P'.toPrecylinder
   weakEquivalence_π := by
     have : WeakEquivalence ((P.i₀ ≫ pushout.inl P.i₁ P'.i₀) ≫
         pushout.desc P.π P'.π (by simp)) := by
       simp only [assoc, colimit.ι_desc, PushoutCocone.mk_ι_app,
         Precylinder.i₀_π]
       infer_instance
+    dsimp
     apply weakEquivalence_of_precomp (P.i₀ ≫ pushout.inl _ _)
 
 instance [IsCofibrant A] (P P' : Cylinder A) [P.IsGood] [P'.IsGood] :
