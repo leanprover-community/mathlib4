@@ -390,16 +390,6 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
     refine ⟨Units.mk0 z hz'.ne', ?_⟩
     simp [← Units.val_lt_val, hz]
 
-/-- Any linearly ordered group with zero is isomorphic to adjoining `0` to the units of itself. -/
-@[simps!]
-def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α]
-    [DecidablePred (fun a : α ↦ a = 0)] :
-    WithZero αˣ ≃*o α where
-  toMulEquiv := WithZero.withZeroUnitsEquiv
-  map_le_map_iff' {a b} := by
-    cases a <;> cases b <;>
-    simp
-
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)

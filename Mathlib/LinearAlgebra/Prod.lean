@@ -775,7 +775,7 @@ def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
   AddEquiv.uniqueProd.toLinearEquiv (by simp [AddEquiv.uniqueProd])
 
 lemma coe_uniqueProd :
-  (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
+    (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
@@ -784,7 +784,7 @@ def prodUnique : (M × M₂) ≃ₗ[R] M :=
   AddEquiv.prodUnique.toLinearEquiv (by simp [AddEquiv.prodUnique])
 
 lemma coe_prodUnique :
-  (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
+    (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
 
 end Unique
 
