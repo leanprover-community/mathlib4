@@ -44,13 +44,13 @@ variable {C : Type u} [Category.{v} C]
 /-- A precylinder for `A : C` is the data of a morphism
 `σ : I ⟶ A` equipped with two sections. -/
 structure Precylinder (A : C) where
-  /-- the underlying object of a cylinder -/
+  /-- the underlying object of a (pre)cylinder -/
   I : C
-  /-- the first "inclusion" in the cylinder -/
+  /-- the first "inclusion" in the (pre)cylinder -/
   i₀ : A ⟶ I
-  /-- the second "inclusion" in the cylinder -/
+  /-- the second "inclusion" in the (pre)cylinder -/
   i₁ : A ⟶ I
-  /-- the weak equivalence of the cylinder -/
+  /-- the codiagonal of the (pre)cylinder -/
   π : I ⟶ A
   i₀_π : i₀ ≫ π = 𝟙 A := by aesop_cat
   i₁_π : i₁ ≫ π = 𝟙 A := by aesop_cat
