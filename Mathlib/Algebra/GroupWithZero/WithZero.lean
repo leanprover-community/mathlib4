@@ -420,7 +420,7 @@ lemma withZeroUnitsHom_inj [DecidablePred (fun a : G₀' ↦ a = 0)] :
     Injective (withZeroUnitsHom (G₀' := G₀')) := MulEquiv.injective WithZero.withZeroUnitsEquiv
 
 protected lemma map_eq_zero_iff {G₀ : Type*} [MulZeroOneClass G₀] [Nontrivial G₀]
-    {f : G₀' →*₀ G₀} {x : G₀'}:
+    {f : G₀' →*₀ G₀} {x : G₀'} :
     f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!
