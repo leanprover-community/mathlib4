@@ -965,7 +965,7 @@ attribute [local instance] convolutionUnit
 open DayConvolutionUnit in
 lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]:
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]:
     (ι C V D).map (λ_ d).hom =
     (DayConvolutionUnit.leftUnitor
       (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by
@@ -981,7 +981,7 @@ lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
 open DayConvolutionUnit in
 lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]:
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]:
     (ι C V D).map (ρ_ d).hom =
     (DayConvolutionUnit.rightUnitor
       (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by
@@ -1011,9 +1011,9 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorRight v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
     [∀ (v : V) (d : C × C),
       Limits.PreservesColimitsOfShape
         (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
@@ -1224,9 +1224,9 @@ variable
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorRight v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
 
 open scoped DayConvolution
 /-- Given a fully faithful functor `ι : C ⥤ V ⥤ D`,
@@ -1393,9 +1393,9 @@ variable {C V}
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (tensor C) d) (tensorRight v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorLeft v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
-      (CostructuredArrow (Functor.fromPUnit <| 𝟙_ C) d) (tensorRight v)]
+      (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)]
     [∀ (v : V) (d : C × C),
       Limits.PreservesColimitsOfShape
         (CostructuredArrow ((𝟭 C).prod <| Functor.fromPUnit.{0} <| 𝟙_ C) d)
