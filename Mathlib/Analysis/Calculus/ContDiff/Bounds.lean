@@ -354,12 +354,14 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     {D : ℝ} (hC : ∀ i, i ≤ n → ‖iteratedFDerivWithin 𝕜 i g t (f x)‖ ≤ C)
     (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDerivWithin 𝕜 i f s x‖ ≤ D ^ i) :
     ‖iteratedFDerivWithin 𝕜 n (g ∘ f) s x‖ ≤ n ! * C * D ^ n := by
-  /- We argue by induction on `n`, using that `D^(n + 1) (g ∘ f) = D^n (g ' ∘ f ⬝ f')`. The successive
-    derivatives of `g' ∘ f` are controlled thanks to the inductive assumption, and those of `f'` are
-    controlled by assumption.
-    As composition of linear maps is a bilinear map, one may use
-    `ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one` to get from these a bound
-    on `D^n (g ' ∘ f ⬝ f')`. -/
+  /-
+  We argue by induction on `n`, using that `D^(n + 1) (g ∘ f) = D^n (g ' ∘ f ⬝ f')`. The successive
+  derivatives of `g' ∘ f` are controlled thanks to the inductive assumption, and those of `f'` are
+  controlled by assumption.
+  As composition of linear maps is a bilinear map, one may use
+  `ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one` to get from these a bound
+  on `D^n (g ' ∘ f ⬝ f')`.
+  -/
   induction' n using Nat.case_strong_induction_on with n IH generalizing Gu
   · simpa [norm_iteratedFDerivWithin_zero, Nat.factorial_zero, algebraMap.coe_one, one_mul,
       pow_zero, mul_one, comp_apply] using hC 0 le_rfl

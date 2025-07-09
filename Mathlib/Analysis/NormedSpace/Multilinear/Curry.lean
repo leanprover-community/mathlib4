@@ -89,10 +89,9 @@ theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 
 
 /-! #### Left currying -/
 
-
 /-- Given a continuous linear map `f` from `E 0` to continuous multilinear maps on `n` variables,
-construct the corresponding continuous multilinear map on `n + 1` variables obtained by concatenating
-the variables, given by `m ↦ f (m 0) (tail m)` -/
+construct the corresponding continuous multilinear map on `n + 1` variables obtained by
+concatenating the variables, given by `m ↦ f (m 0) (tail m)` -/
 def ContinuousLinearMap.uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     ContinuousMultilinearMap 𝕜 Ei G :=
@@ -132,8 +131,8 @@ theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap
 
 variable (𝕜 Ei G)
 
-/-- The space of continuous multilinear maps on `Π(i : Fin (n + 1)), E i` is canonically isomorphic to
-the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
+/-- The space of continuous multilinear maps on `Π(i : Fin (n + 1)), E i` is canonically isomorphic
+to the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
 `Π(i : Fin n), E i.succ`, by separating the first variable. We register this isomorphism in
 `continuousMultilinearCurryLeftEquiv 𝕜 E E₂`. The algebraic version (without topology) is given
 in `multilinearCurryLeftEquiv 𝕜 E E₂`.

@@ -221,8 +221,10 @@ theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
         ∑ i ∈ range (n + 1), (n.choose i : R) * f (i + 1) (n - i) := by
   simpa only [nsmul_eq_mul] using sum_choose_succ_nsmul f n
 
-/-- The sum along the antidiagonal of `(n + 1).choose i * f i j` can be split into two sums along the
-antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`. -/
+/--
+The sum along the antidiagonal of `(n + 1).choose i * f i j` can be split into two sums along the
+antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`.
+-/
 theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
     (∑ ij ∈ antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =
       (∑ ij ∈ antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +

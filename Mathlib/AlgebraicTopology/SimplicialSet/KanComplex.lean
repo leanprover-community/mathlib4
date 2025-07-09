@@ -39,7 +39,7 @@ for every nonzero `n : ℕ` and `0 ≤ i ≤ n`,
 every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`. -/
 lemma KanComplex.hornFilling {S : SSet.{u}} [KanComplex S]
     {n : ℕ} {i : Fin (n + 2)} (σ₀ : (Λ[n + 1, i] : SSet) ⟶ S) :
-    ∃ σ : Δ[n + 1] ⟶ S, σ₀ = Λ[n + 1, i].ι ≫ σ := by
+    ∃ σ : Δ[n+1] ⟶ S, σ₀ = Λ[n + 1, i].ι ≫ σ := by
   have sq' : CommSq σ₀ Λ[n + 1, i].ι (terminal.from S) (terminal.from _) := ⟨by simp⟩
   exact ⟨sq'.lift, by simp⟩
 

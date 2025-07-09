@@ -391,15 +391,15 @@ lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i
 
 end linearDeriv
 
-/-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n + 1)`, where one
-can build an element of `(i : Fin (n + 1)) → M i` using `cons`, one can express directly the
+/-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n + 1)`, where
+one can build an element of `(i : Fin (n + 1)) → M i` using `cons`, one can express directly the
 additivity of a multilinear map along the first variable. -/
 theorem cons_add (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (x y : M 0) :
     f (cons (x + y) m) = f (cons x m) + f (cons y m) :=
   f.toMultilinearMap.cons_add m x y
 
-/-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n + 1)`, where one
-can build an element of `(i : Fin (n + 1)) → M i` using `cons`, one can express directly the
+/-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n + 1)`, where
+one can build an element of `(i : Fin (n + 1)) → M i` using `cons`, one can express directly the
 multiplicativity of a multilinear map along the first variable. -/
 theorem cons_smul (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (c : R)
     (x : M 0) : f (cons (c • x) m) = c • f (cons x m) :=

@@ -274,8 +274,8 @@ theorem nth_mul_coeff (n : ℕ) :
 variable {k}
 
 /--
-Produces the "remainder function" of the `n + 1`st coefficient, which does not depend on the `n + 1`st
-coefficients of the inputs. -/
+Produces the "remainder function" of the `n + 1`st coefficient, which does not depend on the
+`n + 1`st coefficients of the inputs. -/
 def nthRemainder (n : ℕ) : (Fin (n + 1) → k) → (Fin (n + 1) → k) → k :=
   Classical.choose (nth_mul_coeff p k n)
 

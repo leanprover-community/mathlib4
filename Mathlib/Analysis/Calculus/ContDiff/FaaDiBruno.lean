@@ -506,8 +506,10 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     · simp
     · simp [Fin.heq_ext_iff]
 
-/-- Given an ordered finpartition of `n + 1`, with a leftmost atom different from `{0}`, remove `{0}`
-from the atom that contains it, to form an ordered finpartition of `n`. -/
+/--
+Given an ordered finpartition of `n + 1`, with a leftmost atom different from `{0}`, remove `{0}`
+from the atom that contains it, to form an ordered finpartition of `n`.
+-/
 def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
     OrderedFinpartition n where
   length := c.length

@@ -898,7 +898,8 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
 section Complete
 
 /- We will show that a sequence `u n` of compact metric spaces satisfying
-`dist (u n) (u (n + 1)) < 1/2^n` converges, which implies completeness of the Gromov-Hausdorff space.
+`dist (u n) (u (n + 1)) < 1/2^n` converges, which implies completeness of the Gromov-Hausdorff
+space.
 We need to exhibit the limiting compact metric space. For this, start from
 a sequence `X n` of representatives of `u n`, and glue in an optimal way `X n` to `X (n + 1)`
 for all `n`, in a common metric space. Formally, this is done as follows.
