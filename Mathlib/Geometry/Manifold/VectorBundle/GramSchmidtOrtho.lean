@@ -92,10 +92,20 @@ theorem gramSchmidt_def'' (n : ι) (x) :
 
 variable (s) in
 @[simp]
-theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+lemma gramSchmidt_apply (n : ι) (x) :
+    gramSchmidt s n x = InnerProductSpace.gramSchmidt ℝ (s · x) n := rfl
+
+variable (s) in
+@[simp]
+theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     [WellFoundedLT ι] (s : ι → (x : B) → E x) : gramSchmidt s ⊥ = s ⊥ := by
   ext x
-  apply InnerProductSpace.gramSchmidt_zero
+  apply InnerProductSpace.gramSchmidt_bot
+
+@[simp]
+theorem gramSchmidt_zero (n : ι) : gramSchmidt (0 : ι → (x : B) → E x) n = 0 := by
+  ext x
+  simpa using InnerProductSpace.gramSchmidt_zero ..
 
 variable (s) in
 /-- **Gram-Schmidt Orthogonalisation**:
