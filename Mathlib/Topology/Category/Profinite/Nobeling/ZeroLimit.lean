@@ -199,7 +199,7 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
 
 end GoodProducts
 
-variable {o : Ordinal} (ho : IsSuccLimit o)
+variable {o : Ordinal} (ho : Order.IsSuccLimit o)
 include ho
 
 theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) ↔
