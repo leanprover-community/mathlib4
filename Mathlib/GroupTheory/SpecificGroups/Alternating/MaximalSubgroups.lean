@@ -380,7 +380,7 @@ theorem isPreprimitive_of_stabilizer_lt
        of maximal subgroups of the alternating group. -/
   have hB_ne_sc (B : Set α) (hB : IsBlock G B) : ¬B = sᶜ := by
     intro hBsc
-    obtain ⟨b, hb⟩ := h1.nonempty -- ; rw [← hBsc] at hb
+    obtain ⟨b, hb⟩ := h1.nonempty
     obtain ⟨a, ha⟩ := h0.nonempty
     obtain ⟨k, hk⟩ := exists_smul_eq G b a
     suffices B.ncard ≤ s.ncard by
