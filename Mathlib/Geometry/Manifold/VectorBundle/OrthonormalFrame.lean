@@ -31,17 +31,52 @@ open scoped ContDiff Topology
 -- Let `V` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
-  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
+  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E] {n : WithTop ℕ∞}
   [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
 
+local notation "⟪" x ", " y "⟫" => inner ℝ x y
+
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
-variable {s : ι → (x : B) → E x} {u : Set B}
+variable {s : ι → (x : B) → E x} {u u' : Set B}
+
+variable (IB F n) in
+structure IsOrthogonalFrameOn (s : ι → (x : B) → E x) (u : Set B)
+    extends IsLocalFrameOn IB F n s u where
+  /-- Any two distinct sections are point-wise orthogonal on `u`. -/
+  orthogonal {i j : ι} {x : B} : i ≠ j → x ∈ u → ⟪s i x, s j x⟫ = 0
+
+omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsContMDiffRiemannianBundle IB n F E]
+  [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι] in
+lemma IsOrthogonalFrameOn.mono (hs : IsOrthogonalFrameOn IB F n s u) (huu' : u' ⊆ u) :
+    IsOrthogonalFrameOn IB F n s u' where
+  toIsLocalFrameOn := hs.toIsLocalFrameOn.mono huu'
+  orthogonal hij hx := hs.orthogonal hij (huu' hx)
+
+/-- Applying the Gram-Schmidt procedure to a local frame yields another local frame. -/
+def IsLocalFrameOn.gramSchmidt (hs : IsLocalFrameOn IB F n s u) :
+    IsLocalFrameOn IB F n (VectorBundle.gramSchmidt s) u where
+  linearIndependent := by
+    intro x hx
+    exact VectorBundle.gramSchmidt_linearIndependent (hs.linearIndependent hx)
+  generating := by
+    intro x hx
+    sorry -- lemma about Gram-Schmidt...
+  contMDiffOn i := gramSchmidt_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
+      fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
+
+/-- Applying the Gram-Schmidt procedure to an orthogonal local frame yields
+another orthogonal local frame. -/
+def IsOrthogonalFrameOn.gramSchmidt (hs : IsOrthogonalFrameOn IB F n s u) :
+    IsOrthogonalFrameOn IB F n (VectorBundle.gramSchmidt s) u where
+  toIsLocalFrameOn := hs.toIsLocalFrameOn.gramSchmidt
+  orthogonal {_ _ x} hij _hx := VectorBundle.gramSchmidt_orthogonal s hij x
 
 /-! # Determining smoothness of a section via its local frame coefficients
 
@@ -54,6 +89,17 @@ See `LocalFrame.lean` for a similar statement, about local frames induced by a l
 on finite rank bundles over any complete field.
 -/
 
+-- The local frame coefficients take a particularly simple form in orthogonal frames.
+
+variable (t) in
+lemma IsOrthogonalFrameOn.repr_eq_inner (hs : IsOrthogonalFrameOn IB F n s u)
+    {x} (hx : x ∈ u) (i : ι) :
+    hs.toIsLocalFrameOn.repr i t x = inner ℝ (s i x) (t x) / (‖s i x‖ ^ 2) := by
+  -- should be a general lemma: orthogonal basis, have this identity
+  sorry
+
+-- deduce an inductive formula for all frame coefficients for any local frame
+
 section smoothness
 
 namespace IsLocalFrameOn
@@ -62,6 +108,20 @@ variable (hs : IsLocalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
 set_option linter.style.commandStart false
 
+-- include hs in
+-- lemma aux (hx : x ∈ u) (i : ι) :
+--     hs.repr i t x = inner ℝ (s i x) (t x) / (‖s i x‖ ^ 2) := by
+--   -- is this actually true, without Gram-Schmidt-ing everything?
+--   -- there is a version of this which is true (Gram-Schmidt, then it's obvious, then revert)...
+--   -- which is more tedious to state!
+--   sorry --hs.repr i t x = (inner ℝ (s i x) (t x)) / (‖s i x‖ ^ 2) • (s i x) := sorry
+
+--   -- better proof, assuming finiteness
+--   -- let s' be the orthonormalised versions, then hs'.repr i t x is the coefficient of s' i in t
+--   -- that coefficient is the scalar product we want, same for the other intermediate ones
+--   -- then add up, get something with smoothness!
+
+-- XXX: only need one of these hypotheses!
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffAt_repr (hx : x ∈ u) (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
     CMDiffAt n (hs.repr i t) x := by
@@ -108,18 +168,6 @@ lemma contMDiffOn_iff_repr [Fintype ι] :
 end IsLocalFrameOn
 
 end smoothness
-
-/-- Applying the Gram-Schmidt procedure to a local frame yields another local frame. -/
-def IsLocalFrameOn.gramSchmidt (hs : IsLocalFrameOn IB F n s u) :
-    IsLocalFrameOn IB F n (VectorBundle.gramSchmidt s) u where
-  linearIndependent := by
-    intro x hx
-    exact VectorBundle.gramSchmidt_linearIndependent (hs.linearIndependent hx)
-  generating := by
-    intro x hx
-    sorry -- lemma about Gram-Schmidt...
-  contMDiffOn i := gramSchmidt_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
-      fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
 
 namespace Basis
 
