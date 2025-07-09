@@ -141,10 +141,8 @@ def trans {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) : Enriched
       associator_naturality_assoc, tensorHom_def (f := I.hom), Category.assoc,
       ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp J.hom_inv, ← I.hom_inv,
       tensorHom_def' I.hom]
-    simp only [tensor_whiskerLeft, id_whiskerLeft, whiskerLeft_comp, Iso.hom_inv_id,
-      Category.comp_id, Iso.hom_inv_id_assoc, Category.assoc, Iso.inv_hom_id_assoc,
-      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id, comp_whiskerRight,
-      triangle_assoc_comp_right_assoc]
+    simp only [whiskerLeft_comp, Category.comp_id, Category.assoc, Iso.inv_hom_id_assoc,
+      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id]
     monoidal
   inv_hom := by
     rw [tensor_comp, tensor_comp, tensorHom_def (eComp V Z Y X), Category.assoc, Category.assoc,
@@ -154,10 +152,8 @@ def trans {X Y Z : C} (I : EnrichedIso V X Y) (J : EnrichedIso V Y Z) : Enriched
       associator_naturality_assoc, tensorHom_def (f := J.inv), Category.assoc,
       ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp I.inv_hom, ← J.inv_hom,
       tensorHom_def' J.inv]
-    simp only [tensor_whiskerLeft, id_whiskerLeft, whiskerLeft_comp, Iso.hom_inv_id,
-      Category.comp_id, Iso.hom_inv_id_assoc, Category.assoc, Iso.inv_hom_id_assoc,
-      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id, comp_whiskerRight,
-      triangle_assoc_comp_right_assoc]
+    simp only [whiskerLeft_comp, Category.comp_id, Category.assoc, Iso.inv_hom_id_assoc,
+      whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id]
     monoidal
 
 end EnrichedIso
