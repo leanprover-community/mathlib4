@@ -619,16 +619,14 @@ def LeftExtension.isUniversalPrecomp₂
         hα.desc <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom
     refine
-      ⟨⟨StructuredArrow.homMk (hb.desc <| u)
-        (by
+      ⟨⟨StructuredArrow.homMk (hb.desc <| u) <| by
           ext x
           haveI hb_fac_app := congr_app (hb.fac u) (L.obj x)
           haveI hα_fac_app :=
             congr_app (hα.fac <| LeftExtension.mk _ <|
               y.hom ≫ (L.associator L' y.right).hom) x
           dsimp at hα_fac_app hb_fac_app
-          simp [hb_fac_app, u, hα_fac_app])⟩, ?_⟩
-    intro a
+          simp [hb_fac_app, u, hα_fac_app]⟩, fun a => ?_⟩
     dsimp
     ext1
     apply hb.hom_ext
@@ -667,9 +665,7 @@ def LeftExtension.isUniversalOfPrecomp₂
       whiskeringLeft_obj_obj, StructuredArrow.left_eq_id, const_obj_map, id_comp,
       whiskeringLeft_obj_map] at this
     refine
-      ⟨⟨StructuredArrow.homMk
-        u.right
-        (by
+      ⟨⟨StructuredArrow.homMk u.right <| by
           apply hα.hom_ext
           ext t
           have := congr_app u.w t
@@ -677,8 +673,7 @@ def LeftExtension.isUniversalOfPrecomp₂
             whiskeringLeft_obj_obj, comp_obj, StructuredArrow.left_eq_id,
             const_obj_map, id_comp, precomp₂_obj_hom_app, whiskeringLeft_obj_map,
             NatTrans.comp_app, whiskerLeft_app, assoc] at this
-          simp [this])⟩, ?_⟩
-    intro a
+          simp [this]⟩, fun a => ?_⟩
     dsimp
     ext1
     apply hb.hom_ext
@@ -702,8 +697,8 @@ def LeftExtension.isUniversalOfPrecomp₂Equiv
     b.IsUniversal ≃ ((LeftExtension.precomp₂ L' α).obj b).IsUniversal where
   toFun h := LeftExtension.isUniversalPrecomp₂ α hα h
   invFun h := LeftExtension.isUniversalOfPrecomp₂ α hα h
-  left_inv x :=  by subsingleton
-  right_inv x :=  by subsingleton
+  left_inv x := by subsingleton
+  right_inv x := by subsingleton
 
 
 theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
