@@ -112,8 +112,9 @@ def symm : Cylinder A where
   weakEquivalence_π := by dsimp; infer_instance
 
 @[simp, reassoc]
-lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
-  (coprod.braiding A A).hom ≫ P.i := P.toPrecylinder.symm_i
+lemma symm_i [HasBinaryCoproducts C] : 
+    P.symm.i = (coprod.braiding A A).hom ≫ P.i :=
+  P.toPrecylinder.symm_i
 
 section
 
