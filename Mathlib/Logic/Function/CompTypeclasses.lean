@@ -50,7 +50,7 @@ instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
 /-- `φ`, `ψ` and `ψ ∘ φ` for` a `CompTriple` -/
 theorem comp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
-    CompTriple φ ψ  (ψ.comp φ) where
+    CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
 lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}
