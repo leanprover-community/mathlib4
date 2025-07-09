@@ -3,9 +3,9 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.Algebra.Order.GroupWithZero.Range
+import Mathlib.Data.NNReal.Defs
+import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Rank one valuations
