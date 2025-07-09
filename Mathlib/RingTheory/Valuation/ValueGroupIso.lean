@@ -57,6 +57,7 @@ lemma Valuation.IsEquiv.exists_mem_valueGroup {v : Valuation R Γ₀} {v' : Valu
   specialize hy' r 1 (by simp) (by simp)
   simpa using hy'
 
+/-- When two valuations are equivalent, their value groups are isomorphic. -/
 def Valuation.IsEquiv.orderMonoidIso {v : Valuation R Γ₀} {v' : Valuation R Γ₀'}
     (h : v.IsEquiv v') :
     MonoidWithZeroHom.valueGroup₀ v ≃*o MonoidWithZeroHom.valueGroup₀ v' := by
