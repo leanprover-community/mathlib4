@@ -324,6 +324,28 @@ theorem isPreprimitive_of_stabilizer_lt
     (hα : Set.ncard s < Set.ncard (sᶜ : Set α))
     (hG : stabilizer (Equiv.Perm α) s ⊓ alternatingGroup α < G ⊓ alternatingGroup α) :
     IsPreprimitive G α := by
+      /- This will be ultimately be deleted, unless one
+      can avoid proving transitivity first.
+  -- G acts nontrivially
+  have : fixedPoints G α ≠ .univ := by
+    by_contra hG'
+    rw [lt_iff_le_and_ne] at hG
+    apply hG.2
+    apply le_antisymm hG.1
+    intro g hg
+    simp only [Subgroup.mem_inf] at hg
+    simp only [Subgroup.mem_inf, hg.2, and_true]
+    simp only [mem_stabilizer_iff]
+    conv_rhs => rw [← one_smul G s]
+    apply Set.image_congr
+    intro a ha
+    simp only [Equiv.Perm.smul_def, OneMemClass.coe_one, one_smul]
+    have ha' : a ∈ fixedPoints G α := by rw [hG']; trivial
+    simp only [mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, Equiv.Perm.smul_def] at ha'
+    exact ha' g hg.1
+  rw [Set.ne_univ_iff_exists_notMem] at this
+  obtain ⟨a, ha⟩ := this
+  -- apply IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints ha -/
   -- G acts transitively
   have : IsPretransitive G α := by
     have hG' : stabilizer (Equiv.Perm α) s ⊓ alternatingGroup α ≤ G :=
@@ -349,19 +371,20 @@ theorem isPreprimitive_of_stabilizer_lt
       · exact inf_le_right
   apply IsPreprimitive.mk
   -- The proof needs 4 steps
-  /- Step 1 : No block is equal to sᶜ
-       This uses that fintype.card s < fintype.card sᶜ.
-       In the equality case, fintype.card s = fintype.card sᶜ, it is possible that B = sᶜ,
-       then G is the wreath product,
+  /- Step 1 : No block is equal to `sᶜ`
+       This uses that `Nat.card s` < `Nat.card sᶜ`.
+       In the equality case, `Nat.card s = Nat.card sᶜ`,
+       it is possible that `B = sᶜ` is a block:
+       in that case, `G` would be a wreath product,
        this is case (b) of the O'Nan-Scott classification
-       of maximal subgroups of the alternating group -/
-  have hB_ne_sc : ∀ (B : Set α) (_ : IsBlock G B), ¬B = sᶜ := by
-    intro B hB hBsc
-    obtain ⟨b, hb⟩ := h1.nonempty; rw [← hBsc] at hb
+       of maximal subgroups of the alternating group. -/
+  have hB_ne_sc (B : Set α) (hB : IsBlock G B) : ¬B = sᶜ := by
+    intro hBsc
+    obtain ⟨b, hb⟩ := h1.nonempty -- ; rw [← hBsc] at hb
     obtain ⟨a, ha⟩ := h0.nonempty
     obtain ⟨k, hk⟩ := exists_smul_eq G b a
-    suffices Set.ncard (B : Set α) ≤ Set.ncard s by
-      apply Nat.lt_irrefl (Set.ncard B)
+    suffices B.ncard ≤ s.ncard by
+      apply Nat.lt_irrefl B.ncard
       apply lt_of_le_of_lt this
       simp_rw [hBsc]; exact hα
     rw [← Set.ncard_smul_set k B]
@@ -373,12 +396,11 @@ theorem isPreprimitive_of_stabilizer_lt
     rw [← Set.inter_compl_self s]
     constructor
     · exact ha
-    · rw [← hk, ← hBsc, ← h, Set.smul_mem_smul_set_iff]
-      exact hb
+    · rwa [← hk, ← hBsc, ← h, Set.smul_mem_smul_set_iff, hBsc]
 
-  -- Step 2 : A block contained in sᶜ is a subsingleton
-  have hB_not_le_sc : ∀ (B : Set α) (_ : IsBlock G B) (_ : B ⊆ sᶜ), B.Subsingleton := by
-    intro B hB hBsc
+  -- Step 2 : A block contained in `sᶜ` is a subsingleton
+  have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
+      B.Subsingleton := by
     rw [← Subtype.image_preimage_of_val hBsc]
     apply Set.Subsingleton.image
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)) by
@@ -387,7 +409,6 @@ theorem isPreprimitive_of_stabilizer_lt
       apply hB_ne_sc B hB
       simp only [Set.preimage_eq_univ_iff, Subtype.range_coe_subtype] at hB'
       apply Set.Subset.antisymm hBsc hB'
-    -- is_trivial_block (coe ⁻¹' B : set (sᶜ : set α)),
     suffices IsPreprimitive (stabilizer G (sᶜ : Set α)) (sᶜ : Set α) by
       apply this.isTrivialBlock_of_isBlock
       let φ' : stabilizer G (sᶜ : Set α) → G := Subtype.val
@@ -400,17 +421,15 @@ theorem isPreprimitive_of_stabilizer_lt
     · rw [stabilizer_compl]
       convert le_trans (le_of_lt hG) inf_le_left
 
- -- Step 3 : A block contained in s is a subsingleton
-  have hB_not_le_s : ∀ (B : Set α) (_ : IsBlock G B), B ⊆ s → B.Subsingleton := by
-    intro B hB hBs
+ -- Step 3 : A block contained in `s` is a subsingleton
+  have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) :
+      B.Subsingleton := by
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set s) by
       rcases this with hB' | hB'
-      · -- trivial case
-        rw [← Subtype.image_preimage_of_val hBs]
+      · rw [← Subtype.image_preimage_of_val hBs]
         apply Set.Subsingleton.image
         exact hB'
-      · -- coe ⁻¹' B = s
-        have hBs' : B = s := by
+      · have hBs' : B = s := by
           apply Set.Subset.antisymm hBs
           intro x hx
           suffices x = Subtype.val (⟨x, hx⟩ : s) by
@@ -437,10 +456,8 @@ theorem isPreprimitive_of_stabilizer_lt
           apply hB_not_le_sc ((⟨g', hg'⟩ : G) • B) (hB.translate _)
           rw [← hBs']
           exact Disjoint.subset_compl_right h
-    -- is_trivial_block (coe ⁻¹' B : set s),
     suffices IsPreprimitive (stabilizer G s) (s : Set α) by
       apply this.isTrivialBlock_of_isBlock
-      -- IsBlock (stabilizer G s) (Subtype.val ⁻¹' B : Set s)
       let φ' : stabilizer G s → G := Subtype.val
       let f' : s →ₑ[φ'] α := {
         toFun := Subtype.val
@@ -535,32 +552,30 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
         simp only [Subgroup.coe_subtype, SetLike.coe_eq_coe] at hgg'
         rw [← hgg']; exact hg'
       --   apply is_maximal_stab'_temp' s hα,
-      apply le_of_isPreprimitive s hα
+      apply le_of_isPreprimitive hα (s := s) (hG' := ?_)
       · rw [← Subgroup.subgroupOf_map_subtype, Subgroup.map_subtype_le_map_subtype]
         exact le_of_lt hG'
-      · apply isPreprimitive_of_stabilizer_lt s h0' h1' hs (le_of_lt hα)
+      · apply isPreprimitive_of_stabilizer_lt (le_of_lt hα) h0' h1' hs
         rw [lt_iff_le_not_ge]
         constructor
         · intro g
           simp only [Subgroup.mem_inf]
           rintro ⟨hg, hg'⟩
-          refine And.intro ?_ hg'
+          refine ⟨?_, hg'⟩
           simp only [Subgroup.mem_map, Subgroup.coe_subtype]
-          use ⟨g, hg'⟩
-          constructor
-          · apply le_of_lt hG'
-            simpa only [mem_stabilizer_iff] using hg
-          · rfl
+          refine ⟨⟨g, hg'⟩, ?_, rfl⟩
+          apply le_of_lt hG'
+          simpa only [mem_stabilizer_iff] using hg
         · intro h
           rw [lt_iff_le_not_ge] at hG'
           apply hG'.right
           intro g' hg'
           rw [mem_stabilizer_iff]
-          change (g' : Equiv.Perm α) • s = s; rw [← mem_stabilizer_iff]
+          rw [Subgroup.smul_def, ← mem_stabilizer_iff]
           apply inf_le_left (α := Subgroup (Equiv.Perm α))
           apply h
           simp [g'.prop, hg']
-  -- hα : 4 < fintype.card α
+  -- `4 < Nat.card α`
   have h0 : 2 ≤ Set.ncard s := by
     rw [Nat.succ_le_iff, Set.one_lt_ncard_iff]
     obtain ⟨a, ha, b, hb, h⟩ := h0'
