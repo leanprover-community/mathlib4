@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.Tactic.Ring
 
 /-!
 # Set of factors
@@ -561,7 +560,7 @@ theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
   induction' k with n h
   · rw [pow_zero, factors_one, zero_mul, count_zero hp]
   · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]
-    ring
+    grind
 
 theorem dvd_count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) : k ∣ count p (a ^ k).factors := by

@@ -8,7 +8,6 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
@@ -221,7 +220,7 @@ private lemma card_mul_pow_le (hAB : ∀ A' ⊆ A, #(A * B) * #A' ≤ #(A' * B) 
         = #(B ^ n * A * B) * #A := by rw [pow_succ, mul_left_comm, mul_assoc]
       _ ≤ #(A * B) * #(B ^ n * A) := mod_cast pluennecke_petridis_inequality_mul _ hAB
       _ ≤ #(A * B) * ((#(A * B) / #A) ^ n * #A) := by rw [mul_comm _ A]; gcongr
-      _ = (#(A * B) / #A) ^ (n + 1) * #A * #A := by field_simp; ring
+      _ = (#(A * B) / #A) ^ (n + 1) * #A * #A := by field_simp; grind
 
 /-- The **Plünnecke-Ruzsa inequality**. Multiplication version. Note that this is genuinely harder
 than the division version because we cannot use a double counting argument. -/
@@ -241,7 +240,7 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_mul (hA : A.Nonempty) (B : Finse
     _ = #(C * B ^ m) * #(C * B ^ n) := by simp_rw [mul_comm]
     _ ≤ ((#(C * B) / #C) ^ m * #C) * ((#(C * B) / #C : ℚ≥0) ^ n * #C) := by
       gcongr <;> exact card_mul_pow_le (mul_aux hC hCA hCmin) _
-    _ = (#(C * B) / #C) ^ (m + n) * #C * #C := by ring
+    _ = (#(C * B) / #C) ^ (m + n) * #C * #C := by grind
     _ ≤ (#(A * B) / #A) ^ (m + n) * #A * #C := by gcongr (?_ ^ _) * #?_ * _; exact hCmin _ hA'
 
 /-- The **Plünnecke-Ruzsa inequality**. Division version. -/

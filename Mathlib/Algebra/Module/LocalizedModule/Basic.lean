@@ -6,6 +6,7 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.Tactic.Ring
 
 /-!
 # Localized Module

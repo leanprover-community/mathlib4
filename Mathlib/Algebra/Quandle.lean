@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Group.End
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.Ring
 
 /-!
 # Racks and Quandles
@@ -424,14 +423,14 @@ instance (n : ℕ) : Quandle (Dihedral n) where
   self_distrib := by
     intro x y z
     simp only [dihedralAct]
-    ring_nf
+    grind
   invAct := dihedralAct n
   left_inv x := (dihedralAct.inv n x).leftInverse
   right_inv x := (dihedralAct.inv n x).rightInverse
   fix := by
     intro x
     simp only [dihedralAct]
-    ring_nf
+    grind
 
 end Quandle
 

@@ -7,7 +7,6 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
@@ -457,7 +456,7 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
           mul_comm (_ * _), ← mul_assoc, add_comm, ← map_mul, mul_mk'_eq_mk'_of_mul,
           mk'_add_eq_iff_add_mul_eq_mul]
         simp only [map_add, Submonoid.coe_mul, map_mul]
-        ring)
+        grind)
 
 theorem mul_add_inv_left {g : R →+* P} (h : ∀ y : M, IsUnit (g y)) (y : M) (w z₁ z₂ : P) :
     w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ =
@@ -493,7 +492,7 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
       simp_rw [← map_mul g, ← map_add g]
       apply eq_of_eq (S := S) hg
       simp only [sec_spec', toLocalizationMap_sec, map_add, map_mul]
-      ring }
+      grind }
 
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
@@ -812,7 +811,7 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   rw [add_mk, mk_eq_mk_iff, r_eq_r']
   refine (r' M).symm ⟨1, ?_⟩
   simp only [Submonoid.coe_one, Submonoid.coe_mul]
-  ring
+  grind
 
 /-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
   `Localization M`. -/

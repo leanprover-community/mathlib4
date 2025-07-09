@@ -1,5 +1,6 @@
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeDegree
 import Mathlib.Tactic.FieldSimp
@@ -138,6 +139,7 @@ section finiteness
 /--
 info: Try these:
 • finiteness
+• ring_nf
 -/
 #guard_msgs in
 open ENNReal in

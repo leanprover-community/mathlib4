@@ -7,7 +7,6 @@ import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Tactic.Ring
 
 /-!
 # The complex numbers
@@ -320,13 +319,13 @@ instance addCommGroup : AddCommGroup ℂ :=
     zsmul := fun n z => n • z
     zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
     nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    add_assoc := by intros; ext <;> simp <;> ring
+    nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> grind
+    zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> grind
+    zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> grind
+    add_assoc := by intros; ext <;> simp <;> grind
     zero_add := by intros; ext <;> simp
     add_zero := by intros; ext <;> simp
-    add_comm := by intros; ext <;> simp <;> ring
+    add_comm := by intros; ext <;> simp <;> grind
     neg_add_cancel := by intros; ext <;> simp }
 
 /-! ### Casts -/
@@ -368,15 +367,15 @@ instance commRing : CommRing ℂ :=
   { addGroupWithOne with
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
-    add_comm := by intros; ext <;> simp <;> ring
-    left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
-    right_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
+    add_comm := by intros; ext <;> simp <;> grind
+    left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> grind
+    right_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> grind
     zero_mul := by intros; ext <;> simp
     mul_zero := by intros; ext <;> simp
-    mul_assoc := by intros; ext <;> simp <;> ring
+    mul_assoc := by intros; ext <;> simp <;> grind
     one_mul := by intros; ext <;> simp
     mul_one := by intros; ext <;> simp
-    mul_comm := by intros; ext <;> simp <;> ring }
+    mul_comm := by intros; ext <;> simp <;> grind }
 
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
@@ -433,7 +432,7 @@ notation `conj` in the locale `ComplexConjugate`. -/
 instance : StarRing ℂ where
   star z := ⟨z.re, -z.im⟩
   star_involutive x := by simp only [eta, neg_neg]
-  star_mul a b := by ext <;> simp [add_comm] <;> ring
+  star_mul a b := by ext <;> simp [add_comm] <;> grind
   star_add a b := by ext <;> simp [add_comm]
 
 @[simp]
@@ -485,7 +484,7 @@ def normSq : ℂ →*₀ ℝ where
   map_one' := by simp
   map_mul' z w := by
     dsimp
-    ring
+    grind
 
 theorem normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
   rfl
@@ -548,7 +547,7 @@ theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
   normSq.map_mul z w
 
 theorem normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
-  dsimp [normSq]; ring
+  dsimp [normSq]; grind
 
 theorem re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
   le_add_of_nonneg_right (mul_self_nonneg _)
@@ -630,7 +629,7 @@ theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, normSq_add]
   simp only [RingHom.map_neg, mul_neg, neg_re, normSq_neg]
-  ring
+  grind
 
 /-! ### Inversion -/
 

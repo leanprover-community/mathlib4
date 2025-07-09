@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Operations
+import Mathlib.Tactic.Ring
 
 /-!
 # Results about division in extended non-negative reals
@@ -494,7 +495,7 @@ theorem inv_two_add_inv_two : (2 : ℝ≥0∞)⁻¹ + 2⁻¹ = 1 := by
 
 theorem inv_three_add_inv_three : (3 : ℝ≥0∞)⁻¹ + 3⁻¹ + 3⁻¹ = 1 := by
   rw [← ENNReal.mul_inv_cancel three_ne_zero ofNat_ne_top]
-  ring
+  grind
 
 @[simp]
 protected theorem add_halves (a : ℝ≥0∞) : a / 2 + a / 2 = a := by
@@ -515,14 +516,14 @@ protected lemma div_mul (a : ℝ≥0∞) (h0 : b ≠ 0 ∨ c ≠ 0) (htop : b �
     a / b * c = a / (b / c) := by
   simp only [div_eq_mul_inv]
   rw [ENNReal.mul_inv, inv_inv]
-  · ring
+  · grind
   · simpa
   · simpa
 
 protected lemma mul_div_mul_comm (hc : c ≠ 0 ∨ d ≠ ∞) (hd : c ≠ ∞ ∨ d ≠ 0) :
     a * b / (c * d) = a / c * (b / d) := by
   simp only [div_eq_mul_inv, ENNReal.mul_inv hc hd]
-  ring
+  grind
 
 protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 :=
   ENNReal.div_pos h ofNat_ne_top

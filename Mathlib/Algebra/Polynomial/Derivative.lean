@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.Degree.Domain
 import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Algebra.Polynomial.Eval.Coeff
 import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.Tactic.Ring
 
 /-!
 # The derivative map on polynomials
@@ -516,7 +517,7 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
       rw [Nat.sub_succ', Function.iterate_succ_apply', IH, derivative_smul,
         derivative_X_add_C_pow, map_natCast, Nat.descFactorial_succ, nsmul_eq_mul, nsmul_eq_mul,
         Nat.cast_mul]
-      ring
+      grind
 
 theorem derivative_comp (p q : R[X]) :
     derivative (p.comp q) = derivative q * p.derivative.comp q := by
@@ -524,7 +525,7 @@ theorem derivative_comp (p q : R[X]) :
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,
       zero_mul, C_eq_natCast, zero_add, RingHom.map_mul]
-    ring
+    grind
 
 /-- Chain rule for formal derivative of polynomials. -/
 theorem derivative_eval₂_C (p q : R[X]) :

@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Data.Finset.Density
+import Mathlib.Tactic.Ring
 
 /-!
 # Doubling and difference constants
@@ -204,7 +205,7 @@ lemma divConst_le_mulConst_sq : δₘ[A] ≤ σₘ[A] ^ 2 := by
   calc
     _ = #(A / A) * (#A : ℚ≥0) := by rw [← mul_assoc, divConst_mul_card]
     _ ≤ #(A * A) * #(A * A) := by norm_cast; exact ruzsa_triangle_inequality_div_mul_mul ..
-    _ = _ := by rw [← mulConst_mul_card]; ring
+    _ = _ := by rw [← mulConst_mul_card]; grind
 
 end Group
 
@@ -235,7 +236,7 @@ lemma mulConst_le_divConst_sq : σₘ[A] ≤ δₘ[A] ^ 2 := by
   calc
     _ = #(A * A) * (#A : ℚ≥0) := by rw [← mul_assoc, mulConst_mul_card]
     _ ≤ #(A / A) * #(A / A) := by norm_cast; exact ruzsa_triangle_inequality_mul_div_div ..
-    _ = _ := by rw [← divConst_mul_card]; ring
+    _ = _ := by rw [← divConst_mul_card]; grind
 
 end CommGroup
 end Finset

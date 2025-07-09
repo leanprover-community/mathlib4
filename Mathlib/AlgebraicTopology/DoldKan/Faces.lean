@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
-import Mathlib.Tactic.Ring
 
 /-!
 
@@ -126,7 +125,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
     rw [← Fin.succ_mk, ← Fin.castSucc_mk _ i, δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg,
       ← neg_zsmul]
     congr 2
-    ring
+    grind
 
 theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ)
     (hqn : n < q) : φ ≫ (Hσ q).f (n + 1) = 0 := by

@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 import Mathlib.Algebra.Order.Round
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring
 
 /-!
 # Floor Function for Rational Numbers
@@ -214,7 +213,7 @@ theorem num_lt_succ_floor_mul_den (q : ℚ) : q.num < (⌊q⌋ + 1) * q.den := b
   suffices (q.num : ℚ) < q.num + (1 - fract q) * q.den by
     have : (q - fract q + 1) * q.den = q.num + (1 - fract q) * q.den := by
       calc
-        (q - fract q + 1) * q.den = (q + (1 - fract q)) * q.den := by ring
+        (q - fract q + 1) * q.den = (q + (1 - fract q)) * q.den := by grind
         _ = q * q.den + (1 - fract q) * q.den := by rw [add_mul]
         _ = q.num + (1 - fract q) * q.den := by simp
     rwa [this]

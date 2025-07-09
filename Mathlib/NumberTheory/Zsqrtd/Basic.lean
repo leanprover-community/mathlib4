@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Ring.Associated
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
@@ -178,7 +177,7 @@ instance commRing : CommRing (ℤ√d) := by
   intros <;>
   ext <;>
   simp <;>
-  ring
+  grind
 
 instance : AddMonoid (ℤ√d) := by infer_instance
 
@@ -220,7 +219,7 @@ theorem star_im (z : ℤ√d) : (star z).im = -z.im :=
 
 instance : StarRing (ℤ√d) where
   star_involutive _ := Zsqrtd.ext rfl (neg_neg _)
-  star_mul a b := by ext <;> simp <;> ring
+  star_mul a b := by ext <;> simp <;> grind
   star_add _ _ := Zsqrtd.ext rfl (neg_add _ _)
 
 -- Porting note: proof was `by decide`
@@ -392,7 +391,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
       convert this using 1
       simp only [one_mul, Int.natCast_add, Int.natCast_mul]
-      ring
+      grind
 
 open Int in
 /-- "Generalized" `nonneg`. `nonnegg c d x y` means `a √c + b √d ≥ 0`;
@@ -448,7 +447,7 @@ theorem norm_natCast (n : ℕ) : norm (n : ℤ√d) = n * n :=
 @[simp]
 theorem norm_mul (n m : ℤ√d) : norm (n * m) = norm n * norm m := by
   simp only [norm, mul_im, mul_re]
-  ring
+  grind
 
 /-- `norm` as a `MonoidHom`. -/
 def normMonoidHom : ℤ√d →* ℤ where
@@ -758,9 +757,9 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
         -- Porting note: was `simpa [mul_comm, mul_left_comm] using h`
         calc
           g * g * (m * m)
-          _ = m * g * (m * g) := by ring
+          _ = m * g * (m * g) := by grind
           _ = d * (n * g) * (n * g) := h
-          _ = g * g * (d * (n * n)) := by ring
+          _ = g * g * (d * (n * n)) := by grind
       have co2 :=
         let co1 := co.mul_right co
         co1.mul co1
@@ -894,15 +893,15 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
       map_zero' := by simp
       map_add' := fun a b => by
         simp only [add_re, Int.cast_add, add_im]
-        ring
+        grind
       map_one' := by simp
       map_mul' := fun a b => by
         have :
           (a.re + a.im * r : R) * (b.re + b.im * r) =
             a.re * b.re + (a.re * b.im + a.im * b.re) * r + a.im * b.im * (r * r) := by
-          ring
+          grind
         simp only [mul_re, Int.cast_add, Int.cast_mul, mul_im, this, r.prop]
-        ring }
+        grind }
   invFun f := ⟨f sqrtd, by rw [← f.map_mul, dmuld, map_intCast]⟩
   left_inv r := by simp
   right_inv f := by

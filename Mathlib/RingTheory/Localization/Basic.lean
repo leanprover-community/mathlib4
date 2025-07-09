@@ -10,6 +10,7 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Tactic.Ring
 
 /-!
 # Localizations of commutative rings
@@ -354,7 +355,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     convert_to _ = a * (algebraMap S₂ T) ((algebraMap R S₂) n) *
         (algebraMap S₁ T) (((algebraMap R S₁) m) * hunit.unit⁻¹.val)
     · rw [map_mul]
-      ring
+      grind
     simp
   exists_of_eq {x y} hxy := by
     obtain ⟨r, s, d, hr, hs⟩ := IsLocalization.surj₂ M₁ S₁ x y
@@ -369,7 +370,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [mul_assoc, hr, mul_assoc, hs]
     apply (map_units S₁ ⟨c, hmc⟩).mul_right_cancel
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
-    ring
+    grind
 
 end IsLocalization
 

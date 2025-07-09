@@ -510,17 +510,17 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
   clear hm
   push_cast
   rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
-  · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
+  · rw [if_pos (by use k; grind), if_pos (by use -k + (M i i'); grind), mul_comm 2 k, ← sub_mul]
     repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
     rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
     simp
   · have : ¬Even (2 * k + 1) := Int.not_even_iff_odd.2 ⟨k, rfl⟩
     rw [if_neg this]
     have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
-      Int.not_even_iff_odd.2 ⟨↑(M i i') - k - 1, by ring⟩
+      Int.not_even_iff_odd.2 ⟨↑(M i i') - k - 1, by grind⟩
     rw [if_neg this]
-    rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
-      (by ring : 2 * k + 1 = 1 + k * 2)]
+    rw [(by grind : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
+      (by grind : 2 * k + 1 = 1 + k * 2)]
     repeat rw [Int.add_mul_ediv_right _ _ (by norm_num)]
     norm_num
     rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,

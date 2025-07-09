@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Num.ZNum
-import Mathlib.Tactic.Ring
 
 /-!
 # Primality for binary natural numbers

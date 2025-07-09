@@ -8,6 +8,7 @@ import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Ring
 
 /-!
 # The Pochhammer polynomials

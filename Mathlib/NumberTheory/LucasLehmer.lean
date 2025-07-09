@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
 -/
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
 /-!
@@ -253,7 +252,7 @@ theorem one_snd : (1 : X q).2 = 0 :=
 
 instance : Monoid (X q) :=
   { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
-    mul_assoc := fun x y z => by ext <;> dsimp <;> ring
+    mul_assoc := fun x y z => by ext <;> dsimp <;> grind
     one_mul := fun x => by ext <;> simp
     mul_one := fun x => by ext <;> simp }
 
@@ -282,10 +281,10 @@ instance : AddGroupWithOne (X q) :=
     intCast_negSucc := fun n => by ext <;> simp }
 
 theorem left_distrib (x y z : X q) : x * (y + z) = x * y + x * z := by
-  ext <;> dsimp <;> ring
+  ext <;> dsimp <;> grind
 
 theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
-  ext <;> dsimp <;> ring
+  ext <;> dsimp <;> grind
 
 instance : Ring (X q) :=
   { inferInstanceAs (AddGroupWithOne (X q)), inferInstanceAs (AddCommGroup (X q)),
@@ -297,7 +296,7 @@ instance : Ring (X q) :=
 
 instance : CommRing (X q) :=
   { inferInstanceAs (Ring (X q)) with
-    mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
+    mul_comm := fun _ _ ↦ by ext <;> dsimp <;> grind }
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
   ⟨⟨0, 1, ne_of_apply_ne Prod.fst zero_ne_one⟩⟩
@@ -335,7 +334,7 @@ def ωb : X q := (2, -1)
 
 theorem ω_mul_ωb (q : ℕ+) : (ω : X q) * ωb = 1 := by
   dsimp [ω, ωb]
-  ext <;> simp; ring
+  ext <;> simp; grind
 
 theorem ωb_mul_ω (q : ℕ+) : (ωb : X q) * ω = 1 := by
   rw [mul_comm, ω_mul_ωb]
@@ -351,7 +350,7 @@ theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^
       (s (i + 1) : X q) = (s i ^ 2 - 2 : ℤ) := rfl
       _ = (s i : X q) ^ 2 - 2 := by push_cast; rfl
       _ = (ω ^ 2 ^ i + ωb ^ 2 ^ i) ^ 2 - 2 := by rw [ih]
-      _ = (ω ^ 2 ^ i) ^ 2 + (ωb ^ 2 ^ i) ^ 2 + 2 * (ωb ^ 2 ^ i * ω ^ 2 ^ i) - 2 := by ring
+      _ = (ω ^ 2 ^ i) ^ 2 + (ωb ^ 2 ^ i) ^ 2 + 2 * (ωb ^ 2 ^ i * ω ^ 2 ^ i) - 2 := by grind
       _ = (ω ^ 2 ^ i) ^ 2 + (ωb ^ 2 ^ i) ^ 2 := by
         rw [← mul_pow ωb ω, ωb_mul_ω, one_pow, mul_one, add_sub_cancel_right]
       _ = ω ^ 2 ^ (i + 1) + ωb ^ 2 ^ (i + 1) := by rw [← pow_mul, ← pow_mul, _root_.pow_succ]
@@ -388,7 +387,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   rw [closed_form] at h
   replace h := congr_arg (fun x => ω ^ 2 ^ p' * x) h
   dsimp at h
-  have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by ring
+  have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by grind
   rw [mul_add, ← pow_add ω, t, ← mul_pow ω ωb (2 ^ p'), ω_mul_ωb, one_pow] at h
   rw [mul_comm, coe_mul] at h
   rw [mul_comm _ (k : X (q (p' + 2)))] at h

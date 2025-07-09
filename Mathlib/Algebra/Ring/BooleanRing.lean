@@ -8,7 +8,6 @@ import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.PUnit
 import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Ring
 
 /-!
 # Boolean rings
@@ -167,19 +166,19 @@ open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
   dsimp only [(· ⊔ ·)]
-  ring
+  grind
 
 theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := by
   dsimp only [(· ⊓ ·)]
-  ring
+  grind
 
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) := by
   dsimp only [(· ⊔ ·)]
-  ring
+  grind
 
 theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := by
   dsimp only [(· ⊓ ·)]
-  ring
+  grind
 
 theorem sup_inf_self (a b : α) : a ⊔ a ⊓ b = a := by
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
@@ -193,7 +192,7 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
   calc
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
-          (a * b * c + a * a * b * c) := by ring
+          (a * b * c + a * a * b * c) := by grind
     _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
 
 theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = a ⊔ b ⊓ c := by
@@ -266,7 +265,7 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
 
 private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
   calc (a + b + a * b) * (1 + a * b)
-    _ = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) := by ring
+    _ = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) := by grind
     _ = a + b := by simp only [mul_self, add_self, add_zero]
 
 @[simp]

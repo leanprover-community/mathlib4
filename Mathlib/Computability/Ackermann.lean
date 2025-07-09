@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Computability.PartrecCode
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -157,7 +156,7 @@ theorem add_lt_ack : ∀ m n, m + n < ack m n
       m + 1 + n + 1 ≤ m + (m + n + 2) := by omega
       _ < ack m (m + n + 2) := add_lt_ack _ _
       _ ≤ ack m (ack (m + 1) n) :=
-        ack_mono_right m <| le_of_eq_of_le (by rw [succ_eq_add_one]; ring_nf)
+        ack_mono_right m <| le_of_eq_of_le (by rw [succ_eq_add_one]; grind)
         <| succ_le_of_lt <| add_lt_ack (m + 1) n
       _ = ack (m + 1) (n + 1) := (ack_succ_succ m n).symm
 

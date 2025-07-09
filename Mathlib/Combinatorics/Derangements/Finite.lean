@@ -6,7 +6,6 @@ Authors: Henry Swanson
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Tactic.Ring
 
 /-!
 # Derangements on fintypes
@@ -84,7 +83,7 @@ theorem numDerangements_succ (n : ℕ) :
   | zero => rfl
   | succ n hn =>
     simp only [numDerangements_add_two, hn, pow_succ, Int.natCast_mul, Int.natCast_add]
-    ring
+    grind
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by

@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Ring
 
 /-!
 # Theory of univariate polynomials
@@ -40,11 +39,11 @@ def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
     obtain ⟨z, hz⟩ := (powAddExpansion x y (n + 1))
     exists x * z + (n + 1) * x ^ n + z * y
     calc
-      (x + y) ^ (n + 2) = (x + y) * (x + y) ^ (n + 1) := by ring
+      (x + y) ^ (n + 2) = (x + y) * (x + y) ^ (n + 1) := by grind
       _ = (x + y) * (x ^ (n + 1) + ↑(n + 1) * x ^ (n + 1 - 1) * y + z * y ^ 2) := by rw [hz]
       _ = x ^ (n + 2) + ↑(n + 2) * x ^ (n + 1) * y + (x * z + (n + 1) * x ^ n + z * y) * y ^ 2 := by
         push_cast
-        ring!
+        grind
 
 variable [CommRing R]
 

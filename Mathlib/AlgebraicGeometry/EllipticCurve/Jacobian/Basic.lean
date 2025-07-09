@@ -7,6 +7,7 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Tactic.Ring.NamePolyVars
+import Mathlib.Tactic.Ring
 
 /-!
 # Weierstrass equations and the nonsingular condition in Jacobian coordinates
@@ -189,12 +190,12 @@ lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0
 lemma X_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P x * Q z ^ 2 = Q x * P z ^ 2 := by
   rcases h with ⟨u, rfl⟩
   simp only [Units.smul_def, smul_fin3_ext]
-  ring1
+  grind
 
 lemma Y_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P y * Q z ^ 3 = Q y * P z ^ 3 := by
   rcases h with ⟨u, rfl⟩
   simp only [Units.smul_def, smul_fin3_ext]
-  ring1
+  grind
 
 lemma not_equiv_of_Z_eq_zero_left {P Q : Fin 3 → R} (hPz : P z = 0) (hQz : Q z ≠ 0) : ¬P ≈ Q :=
   fun h => hQz <| (Z_eq_zero_of_equiv h).mp hPz
@@ -218,8 +219,8 @@ lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠
 lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     P ≈ ![P x / P z ^ 2, P y / P z ^ 3, 1] :=
   equiv_of_X_eq_of_Y_eq hPz one_ne_zero
-    (by linear_combination (norm := (matrix_simp; ring1)) -P x * div_self (pow_ne_zero 2 hPz))
-    (by linear_combination (norm := (matrix_simp; ring1)) -P y * div_self (pow_ne_zero 3 hPz))
+    (by linear_combination (norm := (matrix_simp; grind)) -P x * div_self (pow_ne_zero 2 hPz))
+    (by linear_combination (norm := (matrix_simp; grind)) -P y * div_self (pow_ne_zero 3 hPz))
 
 lemma X_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P x * Q z ^ 2 = Q x * P z ^ 2 ↔ P x / P z ^ 2 = Q x / Q z ^ 2 :=
@@ -249,7 +250,7 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
 
 lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 6 =
     W.toAffine.polynomial.evalEval (P x / P z ^ 2) (P y / P z ^ 3) := by
-  linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial]; ring1))
+  linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial]; ring))
     W.a₁ * P x * P y / P z ^ 5 * div_self hPz + W.a₃ * P y / P z ^ 3 * div_self (pow_ne_zero 3 hPz)
       - W.a₂ * P x ^ 2 / P z ^ 4 * div_self (pow_ne_zero 2 hPz)
       - W.a₄ * P x / P z ^ 2 * div_self (pow_ne_zero 4 hPz) - W.a₆ * div_self (pow_ne_zero 6 hPz)
@@ -270,7 +271,7 @@ lemma equation_iff (P : Fin 3 → R) : W'.Equation P ↔
 lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u • P) ↔ W'.Equation P :=
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
-    linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 6 * hP
+    linear_combination (norm := (simp only [smul_fin3_ext]; grind)) u ^ 6 * hP
   ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
