@@ -3,7 +3,7 @@ Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.Algebra.Ring.Equiv
 
 /-!

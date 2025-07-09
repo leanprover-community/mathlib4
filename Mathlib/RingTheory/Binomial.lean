@@ -6,10 +6,9 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Data.NNRat.Order
+import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Binomial rings
@@ -145,6 +144,7 @@ theorem multichoose_one (k : ℕ) : multichoose (1 : R) k = 1 := by
     rw [show (1 : R) = 0 + 1 by exact (@zero_add R _ 1).symm, multichoose_succ_succ,
       multichoose_zero_succ, zero_add, zero_add, ih]
 
+@[simp]
 theorem multichoose_two (k : ℕ) : multichoose (2 : R) k = k + 1 := by
   induction k with
   | zero =>
@@ -228,6 +228,8 @@ instance Nat.instBinomialRing : BinomialRing ℕ where
     rw [smul_eq_mul, Nat.multichoose_eq r n, ← Nat.descFactorial_eq_factorial_mul_choose,
       ← eval_eq_smeval r (ascPochhammer ℕ n), ascPochhammer_nat_eq_descFactorial]
 
+theorem multichoose_eq (n k : ℕ) : Ring.multichoose n k = Nat.multichoose n k := rfl
+
 /-- The multichoose function for integers. -/
 def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
   match n with
@@ -257,8 +259,8 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
     simp_all only [smul_assoc, Nat.cast_smul_eq_nsmul]
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
-    simp only [← smul_assoc]
-    field_simp
+    rw [← smul_assoc, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
+      (Nat.factorial_ne_zero n)), one_smul]
 
 end Basic_Instances
 
@@ -429,8 +431,8 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
     choose (r + 1) (k + 1) = choose r k + choose r (k + 1) := by
   rw [← nsmul_right_inj (Nat.factorial_ne_zero (k + 1))]
   simp only [smul_add, ← descPochhammer_eq_factorial_smul_choose]
-  rw [Nat.factorial_succ, mul_smul,
-    ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
+  rw [Nat.factorial_succ, mul_smul, ← descPochhammer_eq_factorial_smul_choose r,
+    descPochhammer_succ_succ_smeval r k]
 
 theorem choose_eq_nat_choose [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
   induction n generalizing k with
@@ -505,6 +507,60 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
     mul_assoc _ (x.2.factorial : R), ← nsmul_eq_mul x.2.factorial]
   simp [mul_assoc, descPochhammer_eq_factorial_smul_choose]
 
+theorem choose_eq_sum_choose_smul [Ring R] [BinomialRing R] {r : R} {n k : ℕ} (h : k ≤ n) :
+    choose r n = ∑ m ∈ range (k + 1), k.choose m • choose (r - k) (n - m) := by
+  nth_rw 1 [← add_sub_cancel (k : R) r]
+  rw [add_choose_eq _ (Nat.cast_commute k (r - ↑k)), Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  refine (sum_of_injOn id (Set.injOn_id (range (k + 1)).toSet) ?_ ?_ ?_).symm
+  · intro m hm
+    simp_all only [coe_range, Set.mem_Iio, Nat.succ_eq_add_one, id_eq]
+    exact lt_add_of_lt_add_right hm h
+  · intro i hi hk
+    simp_all only [Nat.succ_eq_add_one, mem_range, id_eq, Set.image_id', coe_range, Set.mem_Iio,
+      not_lt]
+    rw [choose_eq_nat_choose, Nat.choose_eq_zero_iff.mpr hk, Nat.cast_zero, zero_mul]
+  · intro i hi
+    simp only [nsmul_eq_mul, id_eq]
+    rw [choose_eq_nat_choose]
+
+theorem choose_mul_choose [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k ≤ n) :
+    choose r k * choose r n = ∑ m ∈ range (k+1),
+      k.choose m • (n + k - m).choose k • choose r (n + k - m) := by
+  rw [choose_eq_sum_choose_smul h, mul_sum]
+  refine sum_congr rfl fun i hi => ?_
+  rw [choose_smul_choose r (by simp only [mem_range] at hi; omega),
+    show n + k - i - k = n - i by omega, nsmul_eq_mul, nsmul_eq_mul, ← mul_assoc, ← Nat.cast_comm,
+    mul_assoc]
+
+theorem choose_mul_choose_multinomial [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k ≤ n) :
+    choose r k * choose r n = ∑ m ∈ range (k+1),
+      Nat.multinomial Finset.univ ![n - m, k - m, m] • choose r (n + k - m) := by
+  rw [choose_mul_choose r h]
+  refine sum_congr rfl fun i hi => ?_
+  rw [← smul_assoc]
+  congr 1
+  simp only [mem_range] at hi
+  rw [Nat.multinomial_univ_three, show n - i + (k - i) + i = n + k - i by omega, nsmul_eq_mul]
+  refine Nat.eq_div_of_mul_eq_right (Nat.mul_ne_zero (Nat.mul_ne_zero (Nat.factorial_ne_zero
+    (n - i)) (Nat.factorial_ne_zero (k - i))) (Nat.factorial_ne_zero i)) ?_
+  norm_cast
+  rw [← Nat.choose_mul_factorial_mul_factorial (show k ≤ n + k - i by omega), show
+    n + k - i - k = n - i by omega, ← Nat.choose_mul_factorial_mul_factorial (show i ≤ k by omega)]
+  ring
+
+/-!
+
+theorem mul_choose [BinomialRing R] (r s:R) (n : ℕ) :
+    choose (r*s) n = ∑ j_1 + 2j_2 + \cdots + nj_n = n (fun j ↦ choose (∑ j_i) (j_i) *
+      choose s (∑ j_i) * ∏ choose r j_i := by
+  sorry
+
+theorem binomial_series_smul [BinomialRing R] [AddCommGroup A] [CommAlgebra R A] [Ideal A I]
+    [AdicComplete A I] : [Module R (1+I)] where
+  smul r (1+x) := ∑ (i ∈ ℕ) (fun i => (Ring.choose r i) • x^i)
+
+  etc.  -- Need to define I-adically complete CommRing first, and group structure on 1+I.
+-/
 end Ring
 
 end Choose

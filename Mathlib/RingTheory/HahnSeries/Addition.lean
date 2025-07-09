@@ -76,6 +76,17 @@ theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ
     x.order ≤ (r • x).order :=
   le_of_not_gt (order_smul_not_lt r x h)
 
+@[simp]
+theorem single_smul {g : Γ} {r : R} {s : V} : single g (r • s) = r • single g s := by
+  ext g'
+  by_cases h : g = g'
+  · simp [h]
+  · simp [coeff_single_of_ne (fun a ↦ h a.symm)]
+
+theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) :
+    x.orderTop ≤ (r • x).orderTop :=
+  le_of_not_gt <| orderTop_smul_not_lt r x
+
 end SMulZeroClass
 
 section Addition
@@ -112,12 +123,11 @@ instance : AddMonoid (HahnSeries Γ R) := fast_instance%
 
 theorem coeff_nsmul {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.coeff := coeff_smul' _ _
 
-@[deprecated (since := "2025-01-31")] alias nsmul_coeff := coeff_nsmul
-
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x + y).map f : HahnSeries Γ S) = x.map f + y.map f := by
   ext; simp
+
 /--
 `addOppositeEquiv` is an additive monoid isomorphism between
 Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒᵖ`
@@ -233,12 +243,10 @@ theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x + y).leadingCoeff = x.leadingCoeff := by
   have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
   have ho : (x + y).orderTop = x.orderTop := orderTop_add_eq_left hxy
-  by_cases h : x + y = 0
-  · rw [h, orderTop_zero] at ho
-    rw [h, orderTop_eq_top_iff.mp ho.symm]
-  · rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
-    rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, coeff_add,
-      coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
+  by_cases h : x + y = 0; · simp_all [ne_zero_iff_orderTop]
+  rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
+  rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, coeff_add,
+    coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
 
 theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : y.orderTop < x.orderTop) : (x + y).leadingCoeff = y.leadingCoeff := by
@@ -333,6 +341,12 @@ theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
     (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
   cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, coeff_add, hsum]) s
 
+theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] {α : Type*} {x : α → HahnSeries Γ R}
+    {s : Finset α} : (s.inf fun i => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
+  refine le_orderTop_iff.mpr fun g hg => ?_
+  simp_all only [WithTop.coe_lt_top, Finset.lt_inf_iff, coeff_sum]
+  exact Finset.sum_eq_zero fun i hi ↦ coeff_eq_zero_of_lt_orderTop (hg i hi)
+
 end AddCommMonoid
 
 section AddGroup
@@ -346,13 +360,12 @@ instance : Neg (HahnSeries Γ R) where
         rw [Function.support_neg]
         exact x.isPWO_support }
 
+
 @[simp]
 theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
   rfl
 
-@[deprecated (since := "2025-01-31")] alias neg_coeff' := coeff_neg'
-
-theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
+theorem coeff_neg {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
 
 @[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
@@ -413,6 +426,12 @@ theorem leadingCoeff_neg {x : HahnSeries Γ R} : (-x).leadingCoeff = -x.leadingC
   · simp [← coeff_untop_eq_leadingCoeff hx, ← coeff_untop_eq_leadingCoeff (neg_ne_zero.mpr hx)]
 
 @[simp]
+theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
+  cases n with
+  | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, coeff_nsmul]
+  | negSucc _ => simp_all only [negSucc_zsmul, coeff_neg, coeff_nsmul]
+
+@[simp]
 protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
   ext; simp
@@ -434,6 +453,21 @@ theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   rw [← orderTop_neg (x := y)] at hxy
   exact leadingCoeff_add_eq_left hxy
 
+theorem sub_orderTop_ne_of_leadingCoeff_eq {x y : HahnSeries Γ R} {g : Γ}
+    (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
+    (x - y).orderTop ≠ g := by
+  refine orderTop_ne_of_coeff_zero ?_
+  have hx : x ≠ 0 := by
+    rw [ne_zero_iff_orderTop, hxg]
+    exact WithTop.coe_ne_top
+  rw [orderTop_of_ne hx, WithTop.coe_eq_coe] at hxg
+  have hy : y ≠ 0 := by
+    rw [ne_zero_iff_orderTop, hyg]
+    exact WithTop.coe_ne_top
+  rw [orderTop_of_ne hy, WithTop.coe_eq_coe] at hyg
+  simp only [leadingCoeff, hx, ↓reduceDIte, hy] at hxyc
+  rw [coeff_sub, sub_eq_zero, ← hxg, hxyc, hxg, hyg]
+
 end AddGroup
 
 instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
@@ -444,7 +478,7 @@ end Addition
 
 section DistribMulAction
 
-variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
+variable [PartialOrder Γ] [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
 instance : DistribMulAction R (HahnSeries Γ V) where
   smul := (· • ·)
@@ -501,6 +535,22 @@ def single.linearMap (a : Γ) : V →ₗ[R] HahnSeries Γ V :=
 def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 
+/-- `ofIterate` as a linear map. -/
+@[simps]
+def ofIterate.linearMap [PartialOrder Γ'] :
+    HahnSeries Γ (HahnSeries Γ' V) →ₗ[R] HahnSeries (Γ ×ₗ Γ') V where
+  toFun := ofIterate
+  map_add' _ _ := by ext; simp [ofIterate]
+  map_smul' _ _ := by ext; simp [ofIterate]
+
+/-- `toIterate` as a linear map. -/
+@[simps]
+def toIterate.linearMap [PartialOrder Γ'] :
+    HahnSeries (Γ ×ₗ Γ') V →ₗ[R] HahnSeries Γ (HahnSeries Γ' V) where
+  toFun := toIterate
+  map_add' _ _ := by ext; simp [toIterate]
+  map_smul' _ _ := by ext; simp [toIterate]
+
 @[simp]
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
     {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
@@ -528,5 +578,75 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
 end Domain
 
 end Module
+
+section LeadingTerm
+
+variable [LinearOrder Γ]
+
+theorem orderTop_le_orderTop_add [AddMonoid R] {x y : HahnSeries Γ R}
+    (h : x.orderTop ≤ y.orderTop) : x.orderTop ≤ (x + y).orderTop :=
+  le_of_eq_of_le (min_eq_left h).symm min_orderTop_le_orderTop_add
+
+theorem nonzero_of_nonzero_add_leading [AddMonoid R] {x y : HahnSeries Γ R}
+    (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) : x ≠ 0 := by
+  intro hx
+  rw [hx, leadingTerm_zero, add_zero] at hxy
+  exact hy (id hxy.symm)
+
+variable [AddCancelCommMonoid R] {x y : HahnSeries Γ R}
+
+theorem coeff_add_leading (hxy : x = y + x.leadingTerm) (h : x ≠ 0) :
+    y.coeff (x.isWF_support.min (support_nonempty_iff.2 h)) = 0 := by
+  let xo := x.isWF_support.min (support_nonempty_iff.2 h)
+  have hx : x.coeff xo = y.coeff xo + x.leadingTerm.coeff xo := by
+    nth_rw 1 [hxy, coeff_add]
+  have hxx : (leadingTerm x).coeff xo = x.leadingTerm.leadingCoeff := by
+    rw [leadingCoeff_leadingTerm, leadingTerm_of_ne h, coeff_single_same]
+  rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_leadingTerm, right_eq_add] at hx
+  exact hx
+
+theorem add_leading_orderTop_ne (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
+    x.orderTop ≠ y.orderTop := by
+  intro h
+  have hyne : y.leadingTerm ≠ 0 := leadingTerm_ne_iff.mp hy
+  have hx : x ≠ 0 := nonzero_of_nonzero_add_leading hxy hy
+  simp only [orderTop_of_ne hx, orderTop_of_ne hy,
+    WithTop.coe_eq_coe] at h
+  simp_rw [leadingTerm_of_ne hy, ← h, leadingCoeff_of_ne hy, ← h, coeff_add_leading hxy hx,
+    single_eq_zero] at hyne
+  exact hyne rfl
+
+theorem coeff_eq_of_not_orderTop (hxy : x = y + x.leadingTerm) (g : Γ) (hg : ↑g ≠ x.orderTop) :
+    y.coeff g = x.coeff g := by
+  rw [hxy, coeff_add, leadingTerm]
+  simp only [left_eq_add]
+  split_ifs with hx
+  · simp only [coeff_zero]
+  · simp only [orderTop_of_ne hx, ne_eq, WithTop.coe_eq_coe] at hg
+    exact coeff_single_of_ne hg
+
+theorem support_subset_add_single_support (hxy : x = y + x.leadingTerm) :
+    y.support ⊆ x.support := by
+  intro g hg
+  by_cases hgx : g = orderTop x
+  · intro hx
+    apply (coeff_orderTop_ne hgx.symm) hx
+  · exact fun hxg => hg (Eq.mp (congrArg (fun r ↦ r = 0)
+    (coeff_eq_of_not_orderTop hxy g hgx).symm) hxg)
+
+theorem orderTop_lt_add_single_support_orderTop (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
+    x.orderTop < y.orderTop := by
+  refine lt_of_le_of_ne ?_ (add_leading_orderTop_ne hxy hy)
+  rw [orderTop_of_ne hy, orderTop_of_ne <| nonzero_of_nonzero_add_leading hxy hy]
+  exact WithTop.coe_le_coe.mpr <| Set.IsWF.min_le_min_of_subset <|
+    support_subset_add_single_support hxy
+
+theorem order_lt_add_single_support_order [Zero Γ] (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
+    x.order < y.order := by
+  rw [← WithTop.coe_lt_coe, order_eq_orderTop_of_ne hy, order_eq_orderTop_of_ne <|
+    nonzero_of_nonzero_add_leading hxy hy]
+  exact orderTop_lt_add_single_support_orderTop hxy hy
+
+end LeadingTerm
 
 end HahnSeries
