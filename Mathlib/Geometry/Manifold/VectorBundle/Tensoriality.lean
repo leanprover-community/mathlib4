@@ -86,7 +86,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
-  let c := Basis.localFrame_repr t b
+  let c := Basis.localFrame_repr I t b
   have hs (i) : MDiffAt (T% s i) x:=
     (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
   have hc {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) (i) :
@@ -112,6 +112,7 @@ include I in
 omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in
 lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDimensional ℝ E]
     [FiniteDimensional ℝ F] [FiberBundle F' V'] [VectorBundle ℝ F' V'] [T2Space M]
+    [ContMDiffVectorBundle 1 F V I]
     {φ : (Π x : M, V x) → (Π x, V' x)} {x}
     {σ σ' : Π x : M, V x}
     (hσσ' : σ x = σ' x)
@@ -145,9 +146,9 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
-  let c := Basis.localFrame_repr t b
-  rw [locality (b.localFrame_repr_spec x_mem σ), locality (b.localFrame_repr_spec x_mem σ'),
-      sum_phi, sum_phi]
+  let c := Basis.localFrame_repr (I := I) t b
+  rw [locality (b.localFrame_repr_spec (I := I) x_mem σ),
+    locality (b.localFrame_repr_spec (I := I) x_mem σ'), sum_phi, sum_phi]
   change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
   congr
   ext i
@@ -159,7 +160,7 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
 include I in
 omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in
 lemma tensoriality_criterion₂' [FiberBundle F V] [VectorBundle ℝ F V]
-    [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [T2Space M]
+    [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [T2Space M] [ContMDiffVectorBundle 1 F V I]
     [FiberBundle F' V'] [VectorBundle ℝ F' V']
     {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
     {σ σ' τ τ' : Π x : M, V x}

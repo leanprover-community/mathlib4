@@ -105,6 +105,8 @@ lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product
 
 end product
 
+set_option linter.style.commandStart false -- custom elaborators not handled well yet
+
 namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `TM`.
@@ -348,7 +350,7 @@ lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: Tang
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M)) [MemTrivializationAtlas e] :
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (TangentSpace I) (existence_candidate I M) e.baseSet := by
   sorry
 
