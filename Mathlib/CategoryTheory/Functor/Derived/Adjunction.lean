@@ -40,6 +40,8 @@ variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category
 
 namespace Adjunction
 
+open Functor
+
 /-- Auxiliary definition for `Adjunction.derived`. -/
 @[simps]
 def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
@@ -113,7 +115,7 @@ noncomputable def derivedε : F' ⋙ G' ⟶ 𝟭 D₂ :=
         whiskerRight adj.counit _ ≫ L₂.leftUnitor.hom ≫ L₂.rightUnitor.inv)
 
 @[reassoc (attr := simp)]
-lemma derivedε_fac_app (X₂ : C₂)  :
+lemma derivedε_fac_app (X₂ : C₂) :
     G'.map (β.app X₂) ≫ (adj.derivedε W₂ α β).app (L₂.obj X₂) =
       α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by
   simpa using ((F' ⋙ G').rightDerived_fac_app
