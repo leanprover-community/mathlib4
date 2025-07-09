@@ -291,6 +291,86 @@ lemma ν_η_rightUnitor (F : C ⊛⥤ V) (y : C) :
 
 end structureLemmas
 
+section multiple
+
+/-! In this section, we derive some more extensionality principles for
+working with morphisms out of n-ary day convolutions for `n ≤ 5` by
+registering some more Left Kan extensions instances.
+Note that we are *not* considering every possible form on associativity in the
+domain, instead in practice one should first move associators and unitors in such a way
+shat the morphisms they want to use these principle on are out of
+right-associated convolutions. The characterizing lemmas for associators
+are such that eventually things should work out. -/
+
+
+-- abbrev t2 : (α ≫ whiskerRight e.inv _ ≫ (associator _ _ _).hom)
+
+/-- We expose the "unit left" transformation that exhibits `U ⊛ F` as a
+left Kan extension of `F ⋙ tensorLeft (𝟙_ V)` along `tensorLeft (𝟙_ C)`. -/
+def unitLeft (F : C ⊛⥤ V) :
+    F.functor ⋙ tensorLeft (𝟙_ V) ⟶ tensorLeft (𝟙_ C) ⋙ (𝟙_ (C ⊛⥤ V) ⊗ F).functor :=
+  letI : DayConvolutionUnit (𝟙_ (C ⊛⥤ V)).functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolutionUnit _ _ (C ⊛⥤ V)
+  letI : DayConvolution (𝟙_ (C ⊛⥤ V)).functor F.functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolution _ _ (C ⊛⥤ V) _ _
+  DayConvolutionUnit.unitLeft (𝟙_ (C ⊛⥤ V)).functor F.functor
+
+@[simp]
+lemma unit_left_app (F : C ⊛⥤ V) (c : C) :
+    (unitLeft F).app c =
+    (ν C V) ▷ (F.functor.obj c) ≫ (η (𝟙_ _) F).app (𝟙_ _, c) :=
+  rfl
+
+/-- We expose the "unit right" transformation that exhibits `F ⊛ U` as a
+left Kan extension of `F ⋙ tensorRight (𝟙_ V)` along `tensorRight (𝟙_ C)`. -/
+def unitRight (F : C ⊛⥤ V) :
+    F.functor ⋙ tensorRight (𝟙_ V) ⟶ tensorRight (𝟙_ C) ⋙ (F ⊗ 𝟙_ (C ⊛⥤ V)).functor :=
+  letI : DayConvolutionUnit (𝟙_ (C ⊛⥤ V)).functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolutionUnit _ _ (C ⊛⥤ V)
+  letI : DayConvolution F.functor (𝟙_ (C ⊛⥤ V)).functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolution _ _ (C ⊛⥤ V) _ _
+  DayConvolutionUnit.unitRight (𝟙_ (C ⊛⥤ V)).functor F.functor
+
+@[simp]
+lemma unit_right_app (F : C ⊛⥤ V) (c : C) :
+    (unitRight F).app c =
+    (F.functor.obj c) ◁ (ν C V) ≫ (η F (𝟙_ _)).app (c, 𝟙_ _) :=
+  rfl
+
+open DayConvolution in
+instance isLeftKanExtensionUnitLeft (F : C ⊛⥤ V) :
+    (𝟙_ (C ⊛⥤ V) ⊗ F).functor.IsLeftKanExtension (unitLeft F) :=
+  letI : DayConvolutionUnit (𝟙_ (C ⊛⥤ V)).functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolutionUnit _ _ (C ⊛⥤ V)
+  letI : DayConvolution (𝟙_ (C ⊛⥤ V)).functor F.functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolution _ _ (C ⊛⥤ V) _ _
+  inferInstanceAs <|
+    (_ ⊛ _).IsLeftKanExtension (DayConvolutionUnit.unitLeft (𝟙_ (C ⊛⥤ V)).functor F.functor)
+
+open DayConvolution in
+instance isLeftKanExtensionUnitRight (F : C ⊛⥤ V) :
+    (F ⊗ 𝟙_ (C ⊛⥤ V)).functor.IsLeftKanExtension (unitRight F) :=
+  letI : DayConvolutionUnit (𝟙_ (C ⊛⥤ V)).functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolutionUnit _ _ (C ⊛⥤ V)
+  letI : DayConvolution F.functor (𝟙_ (C ⊛⥤ V)).functor :=
+    LawfulDayConvolutionMonoidalCategoryStruct.convolution _ _ (C ⊛⥤ V) _ _
+  inferInstanceAs <|
+    (_ ⊛ _).IsLeftKanExtension (DayConvolutionUnit.unitRight (𝟙_ (C ⊛⥤ V)).functor F.functor)
+
+/-- A variant of the previous which instead considers `(𝟙_ (C ⊛⥤ V)).functor ⊠ _` -/
+def unitTensorLeft {D : Type*} [Category D] (K : D ⥤ V) :
+
+
+instance unitRightLeftKanExtension
+
+-- abbrev η₂ (F G H : C ⊛⥤ V) :
+--     F.functor ⊠ G.functor ⊠ H.functor ⟶
+--       (𝟭 C).prod (tensor C) ⋙ F.functor ⊠ (G ⊗ H).functor :=
+--   ExternalProduct.extensionUnitRight (G ⊗ H).functor (η G H) F.functor
+--
+--TODO
+end multiple
+
 end DayFunctor
 
 end
