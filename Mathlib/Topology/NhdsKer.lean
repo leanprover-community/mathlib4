@@ -138,9 +138,12 @@ theorem nhdsKer_sInter_subset {s : Set (Set X)} : nhdsKer (⋂₀ s) ⊆ ⋂ x �
 @[deprecated (since := "2025-07-09")] alias exterior_sInter_subset := nhdsKer_sInter_subset
 
 @[simp] lemma nhdsKer_empty : nhdsKer (∅ : Set X) = ∅ := isOpen_empty.nhdsKer_eq
+
+@[deprecated (since := "2025-07-09")] alias exterior_empty := nhdsKer_empty
+
 @[simp] lemma nhdsKer_univ : nhdsKer (univ : Set X) = univ := isOpen_univ.nhdsKer_eq
 
-@[deprecated (since := "2025-07-09")] alias exterior_univ := nhdsKer_empty
+@[deprecated (since := "2025-07-09")] alias exterior_univ := nhdsKer_univ
 
 @[simp] lemma nhdsKer_eq_empty : nhdsKer s = ∅ ↔ s = ∅ :=
   ⟨eq_bot_mono subset_nhdsKer, by rintro rfl; exact nhdsKer_empty⟩
