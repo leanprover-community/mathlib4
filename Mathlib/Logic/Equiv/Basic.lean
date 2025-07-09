@@ -415,6 +415,13 @@ def arrowSigma : (α → Σ i, π i) ≃ Σ i : α → ι, ∀ x, π (i x) where
   toFun f := ⟨Sigma.fst ∘ f, fun x ↦ (f x).2⟩
   invFun f a := .mk _ (f.2 a)
 
+/-- Elements of the `Σ i, π i` with first coordinates equal to `i`
+exactly correspond to elements of `π i`. -/
+def subtypeSigmaFstEq {i : ι} : { f : Σ i, π i // f.1 = i } ≃ π i where
+  toFun x := x.2 ▸ x.1.2
+  invFun x := ⟨.mk _ x, rfl⟩
+  left_inv x := Subtype.ext <| Sigma.ext x.2.symm <| by simp
+
 /-- The `Sigma` type indexed by a subtype can be canonically identified with a subtype of the
 `Sigma` type indexed by the whole type. -/
 def sigmaSubtypeComm : (Σ i : Subtype p, π i) ≃ { f : Σ i, π i // p f.1 } where

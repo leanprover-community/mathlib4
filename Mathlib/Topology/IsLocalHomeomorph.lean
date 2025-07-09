@@ -44,6 +44,7 @@ lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
     IsLocalHomeomorphOn e e.source :=
   fun _ hx ↦ ⟨e, hx, rfl⟩
 
+variable {s} in
 theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
