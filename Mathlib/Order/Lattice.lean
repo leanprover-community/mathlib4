@@ -1324,7 +1324,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
           exact hlc.trans e1 e2
       · exact ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
         ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩
-  mpr h := (
+  mpr h :=
     have closed_interval (a b c d : α) (hb : a ≤ b ∧ b ≤ d) (hc : a ≤ c ∧ c ≤ d) (had : r a d) :
         r b c := by
       rw [h.2.1]
@@ -1355,7 +1355,7 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
         (by rw [sup_assoc]; exact le_sup_right) (h.2.2.1
         (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h.2.1.mp hyz)) e2)
     {
-    refl  := h.1.refl
+    refl := h.1.refl
     symm hxy := by
       rw [h.2.1, inf_comm, sup_comm, ← h.2.1]
       exact hxy
@@ -1380,4 +1380,4 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
         conv_lhs => rw [sup_comm]
         conv_rhs => rw [sup_comm]
         exact compatible_left_sup h₁) (compatible_left_sup h₀)
-  } : IsLatticeCon r)
+  }
