@@ -192,9 +192,7 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     rcases ih (ModuleCat.of R M') ntr'
       (Module.Finite.quotient R _) smul_lt' exist_N' with ⟨rs, len, mem, reg⟩
     use x ^ k :: rs
-    simp only [List.length_cons, len, Nat.add_left_inj, List.mem_cons, forall_eq_or_imp, hk,
-      true_and, isRegular_cons_iff]
-    exact ⟨mem, hxk, reg⟩
+    simpa [len, hk] using ⟨mem, hxk, reg⟩
 
 lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
     (f_mono : Mono (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
@@ -411,14 +409,9 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext.{max u v} N M i)) ↔
     (∀ i < n, Subsingleton (Ext.{max u v} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i)) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · have : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
-        Module.support R N = PrimeSpectrum.zeroLocus I ∧
-        ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
-        use N
-      exact ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 1 2).mpr
-        this
-    · have rees :=
-        ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 0 1).mpr h
+    · apply ((lemma222 I n M ‹_› ‹_› smul_lt).out 1 2).mpr
+      use N
+    · have rees := ((lemma222 I n M ‹_› ‹_› smul_lt).out 0 1).mpr h
       apply rees N
       simp [Nfin, Nntr, hsupp]
   simp [Ideal.depth, moduleDepth_eq_sup_nat]
@@ -508,7 +501,7 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
   rw [moduleDepth_eq_sup_nat]
   congr
   ext m
-  simp only [Set.mem_setOf_eq, exists_prop, exists_and_left]
+  simp only [Set.mem_setOf_eq, exists_prop]
   refine ⟨fun ⟨lt_top, h⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
   · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt_top) with ⟨n, hn⟩
     simp only [← hn, Nat.cast_lt, Nat.cast_inj] at h ⊢
@@ -516,12 +509,10 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
       Module.support R N = PrimeSpectrum.zeroLocus I ∧
       ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
       use N
-    rcases ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 2 3).mp
-      this with ⟨rs, len, mem, reg⟩
+    rcases ((lemma222 I n M ‹_› ‹_› smul_lt).out 2 3).mp this with ⟨rs, len, mem, reg⟩
     use rs
   · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
-    have rees := ((lemma222 I rs.length M (by assumption) (by assumption)
-      smul_lt).out 3 0).mp (by use rs)
+    have rees := ((lemma222 I rs.length M ‹_› ‹_› smul_lt).out 3 0).mp (by use rs)
     apply rees N
     simp [Nntr, Nfin, hsupp]
 
@@ -681,7 +672,7 @@ lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : Mod
   · match rs with
     | [] => simp at len
     | x :: rs' =>
-      simp only [List.length_cons, Nat.cast_add, Nat.cast_one]
+      simp only [Nat.cast_add, Nat.cast_one]
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1
       rw [moduleDepth_eq_of_iso_snd N
@@ -863,8 +854,7 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth  [IsLocalR
       have mem' : ∀ r ∈ List.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))) rs',
         r ∈ maximalIdeal (R ⧸ x • (⊤ : Ideal R)) := by
         intro r hr
-        simp only [Quotient.algebraMap_eq, List.mem_map] at hr
-        rcases hr with ⟨r', hr', eq⟩
+        rcases List.mem_map.mp hr with ⟨r', hr', eq⟩
         simpa [← eq] using mem.2 r' hr'
       simp [← hn (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))
         ((RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff (R ⧸ x • (⊤ : Ideal R))
