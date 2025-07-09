@@ -298,8 +298,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     rw [Nat.cast_le] at hm ⊢
     exact Nat.succ_le_succ hm
 
-/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to `n`
-for `p 1`, which is a derivative of `f`. Version for `n : ℕ`. -/
+/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to
+`n` for `p 1`, which is a derivative of `f`. Version for `n : ℕ`. -/
 theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
@@ -358,8 +358,8 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
     rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
     exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (natCast_le_of_coe_top_le_withTop hN n)⟩
 
-/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to `n`
-for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
+/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to
+`n` for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
 theorem hasFTaylorSeriesUpToOn_succ_iff_right :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
@@ -376,9 +376,9 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right :
 
 variable (𝕜)
 
-/-- The `n`-th derivative of a function along a set, defined inductively by saying that the `n + 1`-th
-derivative of `f` is the derivative of the `n`-th derivative of `f` along this set, together with
-an uncurrying step to see it as a multilinear map in `n + 1` variables..
+/-- The `n`-th derivative of a function along a set, defined inductively by saying that the
+`n + 1`-th derivative of `f` is the derivative of the `n`-th derivative of `f` along this set,
+together with an uncurrying step to see it as a multilinear map in `n + 1` variables..
 -/
 noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E[×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
@@ -754,8 +754,8 @@ theorem HasFTaylorSeriesUpTo.hasFDerivAt (h : HasFTaylorSeriesUpTo n f p) (hn : 
 theorem HasFTaylorSeriesUpTo.differentiable (h : HasFTaylorSeriesUpTo n f p) (hn : 1 ≤ n) :
     Differentiable 𝕜 f := fun x => (h.hasFDerivAt hn x).differentiableAt
 
-/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to `n`
-for `p 1`, which is a derivative of `f`. -/
+/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to
+`n` for `p 1`, which is a derivative of `f`. -/
 theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpTo (n + 1 : ℕ) f p ↔
       (∀ x, (p x 0).curry0 = f x) ∧

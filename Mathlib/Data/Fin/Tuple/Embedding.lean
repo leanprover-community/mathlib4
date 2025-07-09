@@ -37,7 +37,9 @@ def tail {n : ℕ} (x : Fin (n + 1) ↪ α) : Fin n ↪ α :=
 @[simp, norm_cast]
 theorem coe_tail {n : ℕ} (x : Fin (n + 1) ↪ α) : ↑(tail x) = Fin.tail x := rfl
 
-/-- Adding a new element at the beginning of an injective n-tuple, to get an injective n + 1-tuple. -/
+/--
+Adding a new element at the beginning of an injective `n`-tuple, to get an injective `n + 1`-tuple.
+-/
 def cons {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) : Fin (n + 1) ↪ α :=
   ⟨Fin.cons a x, cons_injective_iff.mpr ⟨ha, x.inj'⟩⟩
 

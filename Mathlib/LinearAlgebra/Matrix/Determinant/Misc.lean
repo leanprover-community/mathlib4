@@ -60,8 +60,8 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
   ext
   simp_rw [Finset.sum_apply, transpose_apply, hv, Pi.zero_apply]
 
-/-- Let `M` be a `(n + 1) × (n + 1)` matrix. Assume that all columns, but the `j₀`-column, sums to zero.
-Then its determinant is, up to sign, the sum of the `j₀`-column times the determinant of the
+/-- Let `M` be a `(n + 1) × (n + 1)` matrix. Assume that all columns, but the `j₀`-column, sums to
+zero. Then its determinant is, up to sign, the sum of the `j₀`-column times the determinant of the
 matrix obtained by deleting any row and the `j₀`-column. -/
 theorem det_eq_sum_column_mul_submatrix_succAbove_succAbove_det {n : ℕ}
     (M : Matrix (Fin (n + 1)) (Fin (n + 1)) R) (i₀ j₀ : Fin (n + 1))

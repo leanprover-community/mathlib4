@@ -142,8 +142,8 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
     have hadd : ENNReal.ofReal (∫ ω, f n ω ∂μ) =
       ENNReal.ofReal
         (∫ ω in {ω | ↑ε ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω}, f n ω ∂μ) +
-      ENNReal.ofReal
-        (∫ ω in {ω | ((range (n + 1)).sup' nonempty_range_succ fun k => f k ω) < ↑ε}, f n ω ∂μ) := by
+      ENNReal.ofReal <|
+        ∫ ω in {ω | ((range (n + 1)).sup' nonempty_range_succ fun k => f k ω) < ↑ε}, f n ω ∂μ := by
       rw [← ENNReal.ofReal_add, ← setIntegral_union]
       · rw [← setIntegral_univ]
         convert rfl

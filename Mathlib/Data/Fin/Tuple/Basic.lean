@@ -466,10 +466,10 @@ end Tuple
 section TupleRight
 
 /-! In the previous section, we have discussed inserting or removing elements on the left of a
-tuple. In this section, we do the same on the right. A difference is that `Fin (n + 1)` is constructed
-inductively from `Fin n` starting from the left, not from the right. This implies that Lean needs
-more help to realize that elements belong to the right types, i.e., we need to insert casts at
-several places. -/
+tuple. In this section, we do the same on the right. A difference is that `Fin (n + 1)` is
+constructed inductively from `Fin n` starting from the left, not from the right.
+This implies that Lean needs more help to realize that elements belong to the right types, i.e.,
+we need to insert casts at several places. -/
 
 variable {α : Fin (n + 1) → Sort*} (x : α (last n)) (q : ∀ i, α i)
   (p : ∀ i : Fin n, α i.castSucc) (i : Fin n) (y : α i.castSucc) (z : α (last n))
@@ -482,8 +482,10 @@ theorem init_def {q : ∀ i, α i} :
     (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q k.castSucc :=
   rfl
 
-/-- Adding an element at the end of an `n`-tuple, to get an `n + 1`-tuple. The name `snoc` comes from
-`cons` (i.e., adding an element to the left of a tuple) read in reverse order. -/
+/--
+Adding an element at the end of an `n`-tuple, to get an `n + 1`-tuple. The name `snoc` comes from
+`cons` (i.e., adding an element to the left of a tuple) read in reverse order.
+-/
 def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) : α i :=
   if h : i.val < n then _root_.cast (by rw [Fin.castSucc_castLT i h]) (p (castLT i h))
   else _root_.cast (by rw [eq_last_of_not_lt h]) x
