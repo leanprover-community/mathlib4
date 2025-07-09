@@ -48,6 +48,7 @@ def skipped : Std.HashSet SyntaxNodeKind := Std.HashSet.emptyWithCapacity
   |>.insert ``Parser.Command.moduleDoc
   |>.insert ``Parser.Command.elab_rules
   |>.insert ``Lean.Parser.Command.syntax
+  |>.insert `Aesop.Frontend.Parser.declareRuleSets
 
 /--
 `CommandStart.endPos stx` returns the position up until the `commandStart` linter checks the
@@ -62,12 +63,12 @@ def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
       | none => dbg_trace "unreachable?"; none
-      | some sig => stx.getTailPos? --sig.getTailPos?
+      | some _sig => stx.getTailPos? --sig.getTailPos?
     else
     match cmd.find? (·.isOfKind ``Parser.Term.typeSpec) with
       | some _s => stx.getTailPos? --s[0].getTailPos? -- `s[0]` is the `:` separating hypotheses and the type
       | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
-        | some s => stx.getTailPos? --s.getPos?
+        | some _s => stx.getTailPos? --s.getPos?
         | none => stx.getTailPos? --none
   else if stx.isOfKind ``Parser.Command.variable || stx.isOfKind ``Parser.Command.omit then
     stx.getTailPos?
@@ -255,6 +256,18 @@ abbrev unlintedNodes := #[
 
   -- `{structure}`
   ``Parser.Term.structInst,
+
+  -- `let (a) := 0` pretty-prints as `let(a) := 0`, similarly for `rcases`.
+  ``Parser.Term.let,
+  ``Parser.Tactic.rcases,
+
+  -- sometimes, where there are multiple fields, it is convenient to end a line with `⟨` and then
+  -- align the indented fields on the successive lines, before adding the closing `⟩`.
+  ``Parser.Term.anonymousCtor,
+
+  -- the `{ tacticSeq }` syntax pretty prints without a space on the left and with a space on the
+  -- right.
+  ``Parser.Tactic.tacticSeqBracketed,
   ]
 
 /--
@@ -269,6 +282,7 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
   | curr, s@(.node _ kind args) =>
     let new := args.foldl (init := curr) (·.union <| getUnlintedRanges a curr ·)
     if a.contains kind then
+      --dbg_trace "adding {s} at {s.getRange?.getD default}"
       new.insert (s.getRange?.getD default)
     else
       new
@@ -314,6 +328,13 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if stx.find? (·.isOfKind ``runCmd) |>.isSome then
     return
+  let comps := (← getMainModule).components
+  if comps.contains `Tactic ||
+     comps.contains `Util ||
+     comps.contains `Lean ||
+     comps.contains `Meta
+  then
+    return
   -- If a command does not start on the first column, emit a warning.
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
@@ -344,7 +365,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
+    --dbg_trace forbidden.fold (init := #[]) fun tot ⟨a, b⟩ => tot.push (a, b)
     for s in scan do
+      --logInfo m!"Scanning '{s}'"
       let center := origSubstring.stopPos - s.srcEndPos
       let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
       if s.msg.startsWith "Oh no" then
@@ -353,6 +376,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
           m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
         continue
+      --logInfo m!"Outside '{s}'? {isOutside forbidden rg}"
       unless isOutside forbidden rg do
         continue
       unless rg.stop ≤ upTo do return

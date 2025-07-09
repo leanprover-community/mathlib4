@@ -1,22 +1,34 @@
 import Mathlib.Tactic.Linter.CommandStart
---import Aesop.Frontend.Attribute
-import Mathlib.adomaniLeanUtils.inspect_syntax
---import Mathlib.Tactic.Lemma
+import Aesop.Frontend.Attribute
+import Mathlib.Tactic.Lemma
 
-inspect /-!-/
 set_option linter.style.commandStart true
-
-inspect
-instance : Repr Unit := {reprPrec _ a := f!"{a}"}
-def G  : Repr Unit  :=   {reprPrec _ a := f!"{a}"}
 
 --inspect
 /-- `extend_docs <declName> before <prefix_string> after <suffix_string>` extends the
 docs of `<declName>` by adding `<prefix_string>` before and `<suffix_string>` after. -/
 syntax "extend_docs" ident (colGt &"before" str)? (colGt &"after" str)? : command
 
+#guard_msgs(drop info) in
+-- It would be good if we could inspect `let`s, but the next example should be
+-- fixed first.
+#check let  _ := 0; 0
 
-inspect
+#guard_msgs(drop info) in
+-- This one pretty-prints as `let(_)`, without a space.
+#check let(_) := 0; 0
+
+#guard_msgs(drop info) in
+-- Ignore `⟨...⟩`, since it is convenient to allow a line-break after `⟨` to align multiple fields.
+#check (⟨
+  0⟩ : Inhabited Nat)
+
+example : True := by {trivial }
+
+-- We would like this to emit an error.
+example (h : 0 = 1) : False := by
+  rcases(h)
+
 elab_rules : tactic
 | `(tactic| skip) => do
   return
