@@ -340,8 +340,7 @@ lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
-  · suffices dual A K I * I ≤ dual A K 1 by
-      convert mul_right_monotone I⁻¹ this using 1; simp only [mul_inv_cancel₀ hI, mul_one, mul_assoc]
+  · suffices dual A K I * I ≤ dual A K 1 by grw [← this]; simp [hI]
     rw [← le_dual_iff A K hI]
   rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel₀ hI, mul_one]
 

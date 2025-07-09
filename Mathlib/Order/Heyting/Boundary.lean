@@ -77,8 +77,8 @@ theorem boundary_inf_le : ∂ (a ⊓ b) ≤ ∂ a ⊔ ∂ b :=
 theorem boundary_sup_le : ∂ (a ⊔ b) ≤ ∂ a ⊔ ∂ b := by
   rw [boundary, inf_sup_right]
   exact
-    sup_le_sup (inf_le_inf_left _ <| hnot_anti le_sup_left)
-      (inf_le_inf_left _ <| hnot_anti le_sup_right)
+    sup_le_sup (inf_le_inf_left _ <| hnot_antitone le_sup_left)
+      (inf_le_inf_left _ <| hnot_antitone le_sup_right)
 
 /- The intuitionistic version of `Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left`. Either
 proof can be obtained from the other using the equivalence of Heyting algebras and intuitionistic
@@ -98,7 +98,7 @@ theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b)
     exact codisjoint_hnot_left
   · refine le_sup_of_le_right ?_
     rw [hnot_le_iff_codisjoint_right]
-    exact codisjoint_hnot_right.mono_right (hnot_anti inf_le_left)
+    exact codisjoint_hnot_right.mono_right (hnot_antitone inf_le_left)
 
 theorem boundary_le_boundary_sup_sup_boundary_inf_right : ∂ b ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
   rw [sup_comm a, inf_comm]
