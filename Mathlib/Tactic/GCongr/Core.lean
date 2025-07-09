@@ -147,6 +147,8 @@ structure GCongrLemma where
   - the index of the arguments in the conclusion
   - the number of parameters in the hypothesis -/
   mainSubgoals : Array (Nat × Nat × Nat)
+  /-- The given priority of the lemma, for example as `@[gcongr high]`. -/
+  prio : Nat
   /-- The number of arguments in the application of `head` that are different.
   This is used for sorting the lemmas.
   For example, `a + b ≤ a + c` has `numVarying := 1`. -/
@@ -158,7 +160,7 @@ abbrev GCongrLemmas := Std.HashMap GCongrKey (List GCongrLemma)
 
 /-- Return `true` if the priority of `a` is less than or equal to the priority of `b`. -/
 def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
-  b.numVarying ≤ a.numVarying
+  (compare a.prio b.prio).then (compare b.numVarying a.numVarying) |>.isLE
 
 /-- Insert a `GCongrLemma` in a collection of lemmas, making sure that the lemmas are sorted. -/
 def addGCongrLemmaEntry (m : GCongrLemmas) (l : GCongrLemma) : GCongrLemmas :=
@@ -203,7 +205,7 @@ def getRel (e : Expr) : Option (Name × Expr × Expr) :=
   | _ => none
 
 /-- Construct the `GCongrLemma` data from a given lemma. -/
-def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps : Nat) : MetaM GCongrLemma := do
+def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : MetaM GCongrLemma := do
   withReducible <| forallBoundedTelescope declTy numHyps fun xs targetTy => do
     let fail {α} (m : MessageData) : MetaM α := throwError "\
       @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
@@ -267,7 +269,7 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps : Nat) : MetaM GC
       i := i + 1
     -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
     let key := { relName, head, arity := lhsArgs.size }
-    return { key, declName, mainSubgoals, numVarying }
+    return { key, declName, mainSubgoals, prio, numVarying }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -285,7 +287,8 @@ Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the relat
 initialize registerBuiltinAttribute {
   name := `gcongr
   descr := "generalized congruence"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl stx kind ↦ MetaM.run' do
+    let prio ← getAttrParamOptPrio stx[1]
     let declTy := (← getConstInfo decl).type
     let arity := declTy.getForallArity
     -- We have to determine how many of the hypotheses should be introduced for
@@ -294,14 +297,14 @@ initialize registerBuiltinAttribute {
     -- Since there is only one possible arity at which the `gcongr` lemma will be accepted,
     -- we simply attempt to process the lemmas at the different possible arities.
     try
-      gcongrExt.add (← makeGCongrLemma decl declTy arity) kind
+      gcongrExt.add (← makeGCongrLemma decl declTy arity prio) kind
     catch e => try
       guard (1 ≤ arity)
-      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 1)) kind
+      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 1) prio) kind
     catch _ => try
       -- We need to use `arity - 2` for lemmas such as `imp_imp_imp` and `forall_imp`.
       guard (2 ≤ arity)
-      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 2)) kind
+      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 2) prio) kind
     catch _ =>
       -- If none of the arities work, we throw the error of the first attempt.
       throw e
@@ -402,12 +405,11 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
     declName := ``rel_imp_rel
     mainSubgoals := #[(7, arity - 2, 0), (8, arity - 1, 0)]
-    key := default
-    numVarying := default
+    key := default, prio := default, numVarying := default
   }]
 
 end Trans
-#synth OrElse (MetaM Unit)
+
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
 "main" goals which are generated, and run the discharger on side goals which are generated. If there
