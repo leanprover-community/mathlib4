@@ -226,7 +226,7 @@ include hv
 lemma valuation_aeval_monomial_eq_valuation_pow (w : L) (n : ℕ) {a : K}
      (ha : a ≠ 0) :
     v ((monomial n a).aeval w) = (v w) ^ n := by
-  simp [← C_mul_X_pow_eq_monomial, map_mul, map_pow, one_mul, RatFunc.algebraMap_X, hv a ha]
+  simp [← C_mul_X_pow_eq_monomial, map_mul, map_pow, one_mul, hv a ha]
 
 theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : L) (hpos : 1 < v w)
     {p : Polynomial K} (hp : p ≠ 0) : v (p.aeval w) = v w ^ p.natDegree := by
@@ -240,7 +240,7 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
   by_cases h0 : (p.coeff i) = 0
   · simp [h0, map_zero, zero_mul, one_mul, hv p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
       pow_pos (lt_trans zero_lt_one hpos) p.natDegree]
-  · simp [h0, map_zero, zero_mul, one_mul, hv p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
+  · simp [one_mul, hv p.leadingCoeff ((leadingCoeff_ne_zero).mpr hp),
       hv _ h0, one_mul, pow_lt_pow_right₀ hpos hi]
 
 end Algebra
