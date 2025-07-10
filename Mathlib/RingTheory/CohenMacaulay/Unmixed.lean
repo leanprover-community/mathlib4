@@ -16,7 +16,7 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-open RingTheory.Sequence IsLocalRing
+open RingTheory.Sequence IsLocalRing Module.associatedPrimes
 
 class Ideal.IsUnmixed (I : Ideal R) : Prop where
   height_eq : ∀ {p : Ideal R}, p ∈ associatedPrimes R (R ⧸ I) → p.height = I.height
@@ -29,7 +29,7 @@ lemma associatedPrimes_eq_minimalPrimes_of_isUnmixed [IsNoetherianRing R] {I : I
     apply Ideal.mem_minimalPrimes_of_height_eq _ (le_of_eq (unmix.1 hp))
     rw [← Ideal.annihilator_quotient (I := I), ← Submodule.annihilator_top]
     exact IsAssociatedPrime.annihilator_le hp
-  · convert (Module.associatedPrimes.minimalPrimes_annihilator_mem_associatedPrimes R (R ⧸ I))
+  · convert minimalPrimes_annihilator_mem_associatedPrimes R (R ⧸ I)
     exact Ideal.annihilator_quotient.symm
 
 lemma Ideal.ofList_isUnmixed_of_associatedPrimes_eq_minimalPrimes [IsNoetherianRing R] (l : List R)
@@ -37,8 +37,15 @@ lemma Ideal.ofList_isUnmixed_of_associatedPrimes_eq_minimalPrimes [IsNoetherianR
     (ass : associatedPrimes R (R ⧸ Ideal.ofList l) ⊆ (Ideal.ofList l).minimalPrimes) :
     (Ideal.ofList l).IsUnmixed := by
   refine ⟨fun {p} hp ↦ le_antisymm ?_ (Ideal.height_mono (ass hp).1.2)⟩
-
-  sorry
+  let _ := hp.1
+  rw [h, Ideal.height_le_iff_exists_minimalPrimes]
+  use Ideal.ofList l
+  have fg : (ofList l).FG := by
+    classical
+    simp only [ofList, ← List.coe_toFinset]
+    use l.toFinset
+  refine ⟨ass hp, ?_⟩
+  simpa [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg] using Ideal.ofList_spanFinrank_le_length l
 
 variable [IsNoetherianRing R]
 
@@ -104,11 +111,64 @@ lemma isCohenMacaulayRing_of_unmixed
   simpa only [Ideal.ofList, List.mem_map, Ideal.span_le] using fun b ⟨a, mem, eq⟩ ↦
    (by simpa [← eq] using this a mem)
 
+omit [IsNoetherianRing R] in
+lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type* } [CommRing A] [Algebra R A]
+    [IsLocalization S A] (J : Ideal R) : J.height ≤ (Ideal.map (algebraMap R A) J).height := by
+  apply le_iInf_iff.mpr (fun p ↦ (le_iInf_iff.mpr fun hp ↦ ?_))
+  let _ := hp.1.1
+  rw [← Ideal.height_eq_primeHeight, ← IsLocalization.height_comap S p]
+  exact Ideal.height_mono (Ideal.le_comap_of_map_le hp.1.2)
+
 theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     ∀ (l : List R), (Ideal.ofList l).height = l.length → (Ideal.ofList l).IsUnmixed := by
-  refine ⟨fun cm l ht ↦ ⟨fun {p} hp ↦ ?_⟩, fun h ↦ isCohenMacaulayRing_of_unmixed h⟩
+  refine ⟨fun ⟨cm⟩ l ht ↦ ⟨fun {p} hp ↦ ?_⟩, fun h ↦ isCohenMacaulayRing_of_unmixed h⟩
   have netop : Ideal.ofList l ≠ ⊤ := by
     by_contra eq
     simp [eq] at ht
-
-  sorry
+  let _ := hp.1
+  have le : Ideal.ofList l ≤ p := by
+    convert IsAssociatedPrime.annihilator_le hp
+    rw [Submodule.annihilator_top, Ideal.annihilator_quotient]
+  have ht_eq : (maximalIdeal (Localization.AtPrime p)).height = p.height := by
+    rw [← IsLocalization.height_comap p.primeCompl, Localization.AtPrime.comap_maximalIdeal]
+  have mem : ∀ r ∈ List.map (algebraMap R (Localization.AtPrime p)) l,
+    r ∈ maximalIdeal (Localization.AtPrime p) := by
+    simp only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      ← Ideal.mem_comap, Localization.AtPrime.comap_maximalIdeal]
+    intro a ha
+    apply le (Ideal.subset_span ha)
+  have ht_eq_len : (Ideal.ofList (l.map (algebraMap R (Localization.AtPrime p)))).height =
+    (List.map (⇑(algebraMap R (Localization.AtPrime p))) l).length := by
+    apply le_antisymm (Ideal.ofList_height_le_length' _ mem)
+    simpa only [List.length_map, ← ht, ← Ideal.map_ofList]
+      using IsLocalization.height_le_height_map p.primeCompl _
+  let _ := cm p hp.1
+  have reg :=
+    isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing _ mem ht_eq_len
+  have CM := (quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
+    (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p))
+    (l.map (algebraMap R (Localization.AtPrime p))) reg).mp
+    ((isCohenMacaulayLocalRing_iff _).mp (cm p hp.1))
+  let _ := IsRegular.quot_ofList_smul_nontrivial reg ⊤
+  let S := ((Localization.AtPrime p) ⧸ Ideal.ofList
+    (l.map (algebraMap R (Localization.AtPrime p))) • (⊤ : Ideal (Localization.AtPrime p)))
+  have ann : Module.annihilator (Localization.AtPrime p) S =
+    Ideal.ofList (l.map (algebraMap R (Localization.AtPrime p))) := by
+    simp [S, Ideal.annihilator_quotient]
+  have eqmin : associatedPrimes (Localization.AtPrime p) S =
+    (Module.annihilator (Localization.AtPrime p) S).minimalPrimes :=
+    associated_prime_eq_minimalPrimes_isCohenMacaulay (ModuleCat.of (Localization.AtPrime p) S)
+  have : maximalIdeal (Localization.AtPrime p) ∈ associatedPrimes (Localization.AtPrime p) S := by
+    have := mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes hp
+    simp only [smul_eq_mul, S]
+    rw [Ideal.mul_top, ← Ideal.map_ofList]
+    convert this
+    rw [← Ideal.localized'_eq_map (Localization.AtPrime p) p.primeCompl]
+    let f := Submodule.toLocalizedQuotient' (Localization.AtPrime p) p.primeCompl
+      (Algebra.linearMap R (Localization.AtPrime p)) (Ideal.ofList l)
+    exact LinearEquiv.AssociatedPrimes.eq (IsLocalizedModule.mapEquiv p.primeCompl f
+      (LocalizedModule.mkLinearMap p.primeCompl (R ⧸ Ideal.ofList l)) (Localization.AtPrime p)
+      (LinearEquiv.refl R _))
+  rw [eqmin, ann] at this
+  simp [← ht_eq, ← height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ this, ht,
+    ht_eq_len]
