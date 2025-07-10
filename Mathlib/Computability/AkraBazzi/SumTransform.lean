@@ -105,8 +105,8 @@ lemma isLittleO_self_div_log_id :
                   refine IsLittleO.inv_rev ?main ?zero
                   case zero => simp
                   case main => calc
-                    _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2))     := by simp
-                    _ =o[atTop] (fun (n : ℕ) => (log n)^2) :=
+                    _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2)) := by simp
+                    _ =o[atTop] (fun (n : ℕ) => (log n) ^ 2) :=
                           IsLittleO.pow (IsLittleO.natCast_atTop
                             <| isLittleO_const_log_atTop) (by norm_num)
          _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
@@ -403,7 +403,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   have h₁ := isLittleO_smoothingFn_one
   rw [isLittleO_iff] at h₁
   refine Eventually.natCast_atTop (p := fun n => 0 < 1 + ε n) ?_
-  filter_upwards [h₁ (by norm_num : (0 : ℝ) < 1/2), eventually_gt_atTop 1] with x _ hx'
+  filter_upwards [h₁ (by norm_num : (0 : ℝ) < 1 / 2), eventually_gt_atTop 1] with x _ hx'
   have : 0 < log x := Real.log_pos hx'
   change 0 < 1 + 1 / log x
   positivity
@@ -435,7 +435,7 @@ section
 include R
 
 lemma isEquivalent_smoothingFn_sub_self (i : α) :
-    (fun (n : ℕ) => ε (b i * n) - ε n) ~[atTop] fun n => -log (b i) / (log n)^2 := by
+    (fun (n : ℕ) => ε (b i * n) - ε n) ~[atTop] fun n => -log (b i) / (log n) ^ 2 := by
   calc (fun (n : ℕ) => 1 / log (b i * n) - 1 / log n)
         =ᶠ[atTop] fun (n : ℕ) => (log n - log (b i * n)) / (log (b i * n) * log n) := by
             filter_upwards [eventually_gt_atTop 1, R.eventually_log_b_mul_pos] with n hn hn'
@@ -455,15 +455,15 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
             exact IsEquivalent.add_isLittleO IsEquivalent.refl
               <| IsLittleO.natCast_atTop (f := fun (_ : ℝ) => log (b i))
                 isLittleO_const_log_atTop
-      _ = (fun (n : ℕ) => -log (b i) / (log n)^2) := by ext; congr 1; rw [← pow_two]
+      _ = (fun (n : ℕ) => -log (b i) / (log n) ^ 2) := by ext; congr 1; rw [← pow_two]
 
 lemma isTheta_smoothingFn_sub_self (i : α) :
-    (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => 1 / (log n)^2 := by
-  calc (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => (-log (b i)) / (log n)^2 := by
+    (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => 1 / (log n) ^ 2 := by
+  calc (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => (-log (b i)) / (log n) ^ 2 := by
                   exact (R.isEquivalent_smoothingFn_sub_self i).isTheta
-    _ = fun (n : ℕ) => (-log (b i)) * 1 / (log n)^2 := by simp only [mul_one]
-    _ = fun (n : ℕ) => -log (b i) * (1 / (log n)^2) := by simp_rw [← mul_div_assoc]
-    _ =Θ[atTop] fun (n : ℕ) => 1 / (log n)^2 := by
+    _ = fun (n : ℕ) => (-log (b i)) * 1 / (log n) ^ 2 := by simp only [mul_one]
+    _ = fun (n : ℕ) => -log (b i) * (1 / (log n) ^ 2) := by simp_rw [← mul_div_assoc]
+    _ =Θ[atTop] fun (n : ℕ) => 1 / (log n) ^ 2 := by
                   have : -log (b i) ≠ 0 := by
                     rw [neg_ne_zero]
                     exact Real.log_ne_zero_of_pos_of_ne_one
@@ -544,10 +544,10 @@ Several properties of the sum transform are then proven.
 /-- The transformation which turns a function `g` into
 `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`. -/
 noncomputable def sumTransform (p : ℝ) (g : ℝ → ℝ) (n₀ n : ℕ) :=
-  n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p + 1)
+  n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)
 
 lemma sumTransform_def {p : ℝ} {g : ℝ → ℝ} {n₀ n : ℕ} :
-    sumTransform p g n₀ n = n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p + 1) := rfl
+    sumTransform p g n₀ n = n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1) := rfl
 
 
 variable (g) (a) (b)
@@ -571,7 +571,7 @@ lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
   calc 0 < (n : ℝ) ^ p a b * (1 + 0) := by aesop (add safe Real.rpow_pos_of_pos)
        _ ≤ asympBound g a b n := by
                     simp only [asympBound_def']
-                    gcongr n^p a b * (1 + ?_)
+                    gcongr n ^ p a b * (1 + ?_)
                     have := R.g_nonneg
                     aesop (add safe Real.rpow_nonneg,
                                safe div_nonneg,

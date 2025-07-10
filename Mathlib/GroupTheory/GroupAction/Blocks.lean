@@ -747,7 +747,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
     obtain ⟨b, hb : b ∈ B⟩ := hfB_ne
     obtain ⟨k, hk : k • b = a⟩ := exists_smul_eq G b a
     apply Set.Finite.subset (Set.Finite.map _ hfB) (hB'₀ k ⟨b, hb, hk⟩)
-  have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
+  have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' := by
     intro g hg x hx
     -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
     simp only [B', Set.mem_iInter, Set.mem_smul_set_iff_inv_smul_mem,
