@@ -35,7 +35,7 @@ lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [One β] [Mul β]
 
 /-- Pullback an `IsOrderedMonoid` under a strictly monotone map. -/
 @[to_additive "Pullback an `IsOrderedAddMonoid` under a strictly monotone map."]
-lemma StrictMono.isOrderedMonoid' [IsOrderedMonoid α] [CommMonoid β] [LinearOrder β]
+lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β] [LinearOrder β]
     (f : β → α) (hf : StrictMono f) (mul : ∀ x y, f (x * y) = f x * f y) :
     IsOrderedMonoid β where
   mul_le_mul_left _ _ h _ := by
@@ -59,10 +59,10 @@ lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [One �
 
 /-- Pullback an `IsOrderedCancelMonoid` under a strictly monotone map. -/
 @[to_additive "Pullback an `IsOrderedAddCancelMonoid` under a strictly monotone map."]
-lemma StrictMono.isOrderedCancelMonoid' [IsOrderedCancelMonoid α] [CommMonoid β] [LinearOrder β]
+lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β] [LinearOrder β]
     (f : β → α) (hf : StrictMono f) (mul : ∀ x y, f (x * y) = f x * f y) :
     IsOrderedCancelMonoid β where
-  __ := hf.isOrderedMonoid' f mul
+  __ := hf.isOrderedMonoid f mul
   le_of_mul_le_mul_left a b c h := by simpa [← hf.le_iff_le, mul] using h
 
 @[deprecated (since := "2025-04-10")]
