@@ -190,15 +190,7 @@ theorem mem_snd_of_snd_rel [IsTrans α r'] {x y} (hx : x ∈ c'.snd) (hy : r' x 
   rw [← closure_fst]
   exact fun z hz ↦ _root_.trans (rel_fst_snd hz hx) hy
 
-/-- See `codisjoint_fst_snd'` for a version assuming trichotomy instead of totality. -/
-theorem codisjoint_fst_snd [IsTotal α r'] [IsTrans α r'] : Codisjoint c'.fst c'.snd := by
-  rw [codisjoint_iff_le_sup]
-  refine fun x _ ↦ or_iff_not_imp_left.2 fun hx ↦ ?_
-  rw [← closure_fst]
-  exact fun y hy ↦ (total_of r' x y).resolve_left (hx <| mem_fst_of_rel_fst hy ·)
-
-/-- See `codisjoint_fst_snd` for a version assuming totality instead of trichotomy. -/
-theorem codisjoint_fst_snd' [IsTrichotomous α r'] [IsTrans α r'] : Codisjoint c'.fst c'.snd := by
+theorem codisjoint_fst_snd [IsTrichotomous α r'] [IsTrans α r'] : Codisjoint c'.fst c'.snd := by
   rw [codisjoint_iff_le_sup]
   refine fun x _ ↦ or_iff_not_imp_left.2 fun hx ↦ ?_
   rw [← closure_fst]
