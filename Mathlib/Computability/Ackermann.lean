@@ -91,7 +91,7 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   | succ n IH =>
     rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
-    have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
+    have H : 2 * 3 ≤ 2 * 2 ^ 3 := by grind
     apply H.trans
     rw [_root_.mul_le_mul_left two_pos]
     exact pow_right_mono₀ one_le_two (Nat.le_add_left 3 n)
@@ -223,10 +223,10 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 -- All the inequalities from this point onwards are specific to the main proof.
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction n with
-  | zero => norm_num
+  | zero => grind
   | succ k hk =>
     rcases k with - | k
-    · norm_num
+    · grind
     · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
       · apply Nat.add_le_add hk
@@ -317,7 +317,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         -- If m is the maximum, we get a very weak inequality.
         rcases lt_or_ge _ m with h₁ | h₁
         · rw [max_eq_left h₁.le]
-          exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
+          exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by grind)
                            (self_le_add_right m _)
         rw [max_eq_right h₁]
         -- We get rid of the second `pair`.
@@ -326,7 +326,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         rcases lt_or_ge _ n with h₂ | h₂
         · rw [max_eq_left h₂.le, add_assoc]
           exact
-            ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
+            ack_le_ack (Nat.add_le_add (le_max_right a b) <| by grind)
               ((le_succ n).trans <| self_le_add_left _ _)
         rw [max_eq_right h₂]
         -- We now use the inductive hypothesis, and some simple algebraic manipulation.

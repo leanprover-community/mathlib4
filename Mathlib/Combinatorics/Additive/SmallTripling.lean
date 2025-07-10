@@ -8,7 +8,6 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Tactic.Ring
 
@@ -77,7 +76,7 @@ private lemma small_neg_pos_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * 
     _ ≤ (K * #A) * (K * #A) := by
       gcongr
       calc
-        (#(A ^ 2) : ℝ) ≤ #(A ^ 3) := mod_cast hA₀.card_pow_mono (by norm_num)
+        (#(A ^ 2) : ℝ) ≤ #(A ^ 3) := mod_cast hA₀.card_pow_mono (by grind)
         _ ≤ K * #A := hA
     _ = #A * (K ^ 2 * #A) := by ring
 
@@ -109,7 +108,7 @@ private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * 
       gcongr
       · exact small_pos_pos_neg_mul hA
       calc
-        (#(A ^ 2) : ℝ) ≤ #(A ^ 3) := mod_cast hA₀.card_pow_mono (by norm_num)
+        (#(A ^ 2) : ℝ) ≤ #(A ^ 3) := mod_cast hA₀.card_pow_mono (by grind)
         _ ≤ K * #A := hA
     _ = #A * (K ^ 3 * #A) := by ring
 
@@ -140,7 +139,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
   · simp [hm₀, hε₀]
   have hK₁ : 1 ≤ K :=
     one_le_of_le_mul_right₀ (by positivity)
-      (hA.trans' <| by norm_cast; exact card_le_card_pow (by norm_num))
+      (hA.trans' <| by norm_cast; exact card_le_card_pow (by grind))
   rw [pow_mul]
   refine inductive_claim_mul hm (fun δ hδ ↦ ?_) ε hε
   simp only [finRange_succ_eq_map, Nat.reduceAdd, isValue, finRange_zero, map_nil, List.map_cons,
@@ -151,7 +150,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
   have : K ^ 2 ≤ K ^ 3 := by
     gcongr
     · exact hK₁
-    · norm_num
+    · grind
   obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
   · simp [pow_succ] at hA
     nlinarith

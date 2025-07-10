@@ -283,7 +283,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     rw [integral_gaussian_sq_complex hc, sq]
     conv_lhs => rw [← cpow_one (↑π / c)]
     rw [← cpow_add _ _ (div_ne_zero (ofReal_ne_zero.mpr pi_ne_zero) (nv hc))]
-    norm_num
+    grind
   · -- RHS doesn't vanish
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl (div_ne_zero (ofReal_ne_zero.mpr pi_ne_zero) (nv hc))

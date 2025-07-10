@@ -220,7 +220,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
     obtain ⟨v, ⟨h_vnz, h_vA⟩⟩ := Matrix.exists_vecMul_eq_zero_iff.mpr h2
     wlog h_sup : 0 < Finset.sup' Finset.univ Finset.univ_nonempty v
     · refine this h1 inferInstance h2 (-1 • v) ?_ ?_ ?_
-      · exact smul_ne_zero (by norm_num) h_vnz
+      · exact smul_ne_zero (by grind) h_vnz
       · rw [Matrix.vecMul_smul, h_vA, smul_zero]
       · obtain ⟨i, hi⟩ := Function.ne_iff.mp h_vnz
         simp_rw [Finset.lt_sup'_iff, Finset.mem_univ, true_and] at h_sup ⊢

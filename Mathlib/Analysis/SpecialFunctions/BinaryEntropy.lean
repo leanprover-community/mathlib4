@@ -301,7 +301,7 @@ lemma not_continuousAt_deriv_qaryEntropy_one :
   intros
   apply (deriv_qaryEntropy _ _).symm
   · simp_all only [mem_Ioo, ne_eq]
-    linarith [show (1 : ℝ) = 2⁻¹ + 2⁻¹ by norm_num]
+    linarith [show (1 : ℝ) = 2⁻¹ + 2⁻¹ by grind]
   · simp_all only [mem_Ioo, ne_eq]
     linarith [two_inv_lt_one (α := ℝ)]
 

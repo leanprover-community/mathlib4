@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Part
-import Mathlib.Tactic.NormNum
 
 /-!
 # Natural numbers with infinity

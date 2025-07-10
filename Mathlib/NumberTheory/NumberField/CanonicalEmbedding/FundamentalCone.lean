@@ -133,7 +133,7 @@ theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
 
 theorem logMap_unit_smul (u : (𝓞 K)ˣ) (hx : mixedEmbedding.norm x ≠ 0) :
     logMap (u • x) = logEmbedding K (Additive.ofMul u) + logMap x := by
-  rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; norm_num) hx, logMap_eq_logEmbedding]
+  rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; grind) hx, logMap_eq_logEmbedding]
 
 variable (x) in
 theorem logMap_torsion_smul {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :

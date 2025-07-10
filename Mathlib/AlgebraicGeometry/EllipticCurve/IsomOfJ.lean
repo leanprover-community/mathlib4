@@ -35,7 +35,7 @@ private lemma exists_variableChange_of_char_two_of_j_ne_zero
     [E.IsCharTwoJNeZeroNF] [E'.IsCharTwoJNeZeroNF] (heq : E.a₆ = E'.a₆) :
     ∃ C : VariableChange F, C • E = E' := by
   obtain ⟨s, hs⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 2
-    1 1 (E.a₂ + E'.a₂) (by norm_num) (by norm_num) one_ne_zero
+    1 1 (E.a₂ + E'.a₂) (by grind) (by grind) one_ne_zero
   use ⟨1, 0, s, 0⟩
   ext
   · simp_rw [variableChange_a₁, inv_one, Units.val_one, a₁_of_isCharTwoJNeZeroNF]
@@ -61,9 +61,9 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₃ / E'.a₃) 3
   obtain ⟨s, hs⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 4
-    1 _ (E.a₄ - u ^ 4 * E'.a₄) (by norm_num) (by norm_num) ha₃
+    1 _ (E.a₄ - u ^ 4 * E'.a₄) (by grind) (by grind) ha₃
   obtain ⟨t, ht⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 2
-    1 _ (s ^ 6 + E.a₄ * s ^ 2 + E.a₆ - u ^ 6 * E'.a₆) (by norm_num) (by norm_num) ha₃
+    1 _ (s ^ 6 + E.a₄ * s ^ 2 + E.a₆ - u ^ 6 * E'.a₆) (by grind) (by grind) ha₃
   have hu0 : u ≠ 0 := by
     rw [← pow_ne_zero_iff three_ne_zero, hu, div_ne_zero_iff]
     exact ⟨ha₃, ha₃'⟩
@@ -159,7 +159,7 @@ private lemma exists_variableChange_of_char_three_of_j_eq_zero
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₄ / E'.a₄) 4
   obtain ⟨r, hr⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 3 3
-    1 _ (E.a₆ - u ^ 6 * E'.a₆) (by norm_num) (by norm_num) ha₄
+    1 _ (E.a₆ - u ^ 6 * E'.a₆) (by grind) (by grind) ha₄
   have hu0 : u ≠ 0 := by
     rw [← pow_ne_zero_iff four_ne_zero, hu, div_ne_zero_iff]
     exact ⟨ha₄, ha₄'⟩

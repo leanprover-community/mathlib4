@@ -207,7 +207,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     exact dvd_mul_right 2 (m * n)
   obtain ⟨b', hb2'⟩ := hb2
   have hs : b' ^ 2 = m * (r * s) := by
-    apply (mul_right_inj' (by norm_num : (4 : ℤ) ≠ 0)).mp
+    apply (mul_right_inj' (by grind : (4 : ℤ) ≠ 0)).mp
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
   have hrsz : r * s ≠ 0 := by
     -- because b ^ 2 is not zero and (b / 2) ^ 2 = m * (r * s)

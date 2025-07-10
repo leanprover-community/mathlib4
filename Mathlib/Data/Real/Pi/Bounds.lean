@@ -42,11 +42,11 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
       _ = 1 / (2 ^ n) ^ 3 / 4 := by simp [add_comm n, pow_add, div_mul_eq_div_div]; norm_num
     calc
       π ≤ 4 := pi_le_four
-      _ = 2 ^ (0 + 2) := by norm_num
+      _ = 2 ^ (0 + 2) := by grind
       _ ≤ 2 ^ (n + 2) := by gcongr <;> norm_num
   refine lt_of_lt_of_le this (le_of_eq ?_); rw [add_mul]; congr 1
   · ring
-  simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, ← pow_mul, div_div, ← pow_add]
+  simp only [show (4 : ℝ) = 2 ^ 2 by grind, ← pow_mul, div_div, ← pow_add]
   rw [one_div, one_div, inv_mul_eq_iff_eq_mul₀, eq_comm, mul_inv_eq_iff_eq_mul₀, ← pow_add]
   · rw [add_assoc, Nat.mul_succ, add_comm, add_comm n, add_assoc, mul_comm n]
   all_goals norm_num

@@ -108,7 +108,7 @@ lemma isLittleO_self_div_log_id :
                     _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2))     := by simp
                     _ =o[atTop] (fun (n : ℕ) => (log n)^2) :=
                           IsLittleO.pow (IsLittleO.natCast_atTop
-                            <| isLittleO_const_log_atTop) (by norm_num)
+                            <| isLittleO_const_log_atTop) (by grind)
          _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
@@ -208,7 +208,7 @@ lemma exists_eventually_r_le_const_mul :
                                              _ < 1 * (1 / 2) + 1 / 2 := by
                                                   gcongr
                                                   exact R.b_lt_one _
-                                             _ = 1 := by norm_num
+                                             _ = 1 := by grind
   refine ⟨c, ⟨hc_pos, hc_lt_one⟩, ?_⟩
   have hlo := isLittleO_self_div_log_id
   rw [Asymptotics.isLittleO_iff] at hlo
@@ -367,7 +367,7 @@ lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
                 (by rw [isBigO_neg_right]; aesop (add safe isBigO_refl)) ?_
               rw [isLittleO_one_left_iff]
               exact Tendsto.comp tendsto_norm_atTop_atTop
-                <| Tendsto.comp (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+                <| Tendsto.comp (tendsto_pow_atTop (by grind)) tendsto_log_atTop
             · exact Filter.Eventually.of_forall (fun x hx => by rw [mul_one] at hx; simp [hx])
     _ = fun x => x⁻¹ := by simp
 

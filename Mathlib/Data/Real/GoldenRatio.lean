@@ -41,7 +41,7 @@ open Real goldenRatio
 theorem inv_gold : φ⁻¹ = -ψ := by
   have : 1 + √5 ≠ 0 := ne_of_gt (add_pos (by norm_num) <| Real.sqrt_pos.mpr (by norm_num))
   field_simp [sub_mul, mul_add]
-  norm_num
+  grind
 
 /-- The opposite of the golden ratio is the inverse of its conjugate. -/
 theorem inv_goldConj : ψ⁻¹ = -φ := by
@@ -100,7 +100,7 @@ theorem one_lt_gold : 1 < φ := by
 
 theorem gold_lt_two : φ < 2 := by calc
   (1 + √5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
-  _ = 2 := by norm_num
+  _ = 2 := by grind
 
 theorem goldConj_neg : ψ < 0 := by
   linarith [one_sub_goldConj, one_lt_gold]

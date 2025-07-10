@@ -139,7 +139,7 @@ lemma exp_pi_ne_one : Circle.exp Real.pi ≠ 1 := by
   intro h
   have heq : (Circle.exp Real.pi : ℂ) = 1 := by simp [h]
   rw [Circle.coe_exp, exp_pi_mul_I] at heq
-  norm_num at heq
+  grind
 
 variable {e : AddChar ℝ Circle}
 

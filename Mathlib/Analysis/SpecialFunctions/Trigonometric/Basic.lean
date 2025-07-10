@@ -145,7 +145,7 @@ theorem pi_le_four : π ≤ 4 :=
   (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
     (calc
       π / 2 ≤ 2 := pi_div_two_le_two
-      _ = 4 / 2 := by norm_num)
+      _ = 4 / 2 := by grind)
 
 @[bound]
 theorem pi_pos : 0 < π :=
@@ -209,7 +209,7 @@ theorem sin_pi : sin π = 0 := by
 @[simp]
 theorem cos_pi : cos π = -1 := by
   rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
-  norm_num
+  grind
 
 @[simp]
 theorem sin_two_pi : sin (2 * π) = 0 := by simp [two_mul, sin_add]
@@ -394,7 +394,7 @@ theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
 theorem sin_pos_of_pos_of_lt_pi {x : ℝ} (h0x : 0 < x) (hxp : x < π) : 0 < sin x :=
   if hx2 : x ≤ 2 then sin_pos_of_pos_of_le_two h0x hx2
   else
-    have : (2 : ℝ) + 2 = 4 := by norm_num
+    have : (2 : ℝ) + 2 = 4 := by grind
     have : π - x ≤ 2 :=
       sub_le_iff_le_add.2 (le_trans pi_le_four (this ▸ add_le_add_left (le_of_not_ge hx2) _))
     sin_pi_sub x ▸ sin_pos_of_pos_of_le_two (sub_pos.2 hxp) this
@@ -762,7 +762,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
 /-- The cosine of `π / 6` is `√3 / 2`. -/
 @[simp]
 theorem cos_pi_div_six : cos (π / 6) = √3 / 2 := by
-  rw [show (6 : ℝ) = 3 * 2 by norm_num, div_mul_eq_div_div, cos_half, cos_pi_div_three, one_add_div,
+  rw [show (6 : ℝ) = 3 * 2 by grind, div_mul_eq_div_div, cos_half, cos_pi_div_three, one_add_div,
     ← div_mul_eq_div_div, two_add_one_eq_three, sqrt_div, sqrt_mul_self] <;> linarith [pi_pos]
 
 /-- The square of the cosine of `π / 6` is `3 / 4` (this is sometimes more convenient than the
@@ -828,7 +828,7 @@ theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
     rw [← sq, neg_mul, ← sub_eq_add_neg, ← sub_eq_add_neg]
     exact quadratic_root_cos_pi_div_five
   have hd : discrim 4 (-2) (-1) = (2 * √5) * (2 * √5) := by norm_num [discrim, mul_mul_mul_comm]
-  rcases (quadratic_eq_zero_iff (by norm_num) hd c).mp this with h | h
+  rcases (quadratic_eq_zero_iff (by grind) hd c).mp this with h | h
   · field_simp [h]; linarith
   · absurd (show 0 ≤ c from cos_nonneg_of_mem_Icc <| by constructor <;> linarith [pi_pos.le])
     rw [not_le, h]

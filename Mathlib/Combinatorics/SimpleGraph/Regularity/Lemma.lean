@@ -102,10 +102,10 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
       hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) ?_⟩
     · rw [iterate_succ_apply', stepBound, bound]
       gcongr
-      norm_num
+      grind
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
-        rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; norm_num
+        rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; grind
       _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) :=
         ((mul_lt_mul_left <| by positivity).2 (Nat.lt_floor_add_one _))
       _ ≤ (P.energy G : ℝ) := by rwa [← Nat.cast_add_one]
@@ -140,7 +140,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   have hsize : #P.parts ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
   have hPα : #P.parts * 16 ^ #P.parts ≤ card α :=
-    (Nat.mul_le_mul hsize (Nat.pow_le_pow_right (by norm_num) hsize)).trans hα
+    (Nat.mul_le_mul hsize (Nat.pow_le_pow_right (by grind) hsize)).trans hα
   -- We return the increment equipartition of `P`, which has energy `≥ ε ^ 5 / 4 * (i + 1)`.
   refine ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, ?_, ?_, Or.inr <| le_trans ?_ <|
     energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε.le hε₁⟩

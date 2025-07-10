@@ -331,7 +331,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   rw [ZMod.card, ← hchar, hχ, one_mul, ← hc, ← Nat.cast_pow (ringChar F), ← hc] at h
   -- finally, we change `2` to `8` on the left hand side
   convert_to (8 : F) ^ (Fintype.card F / 2) = _
-  · rw [(by norm_num : (8 : F) = 2 ^ 2 * 2), mul_pow,
+  · rw [(by grind : (8 : F) = 2 ^ 2 * 2), mul_pow,
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective
   simpa only [map_pow, map_ofNat, map_intCast, Nat.cast_ofNat] using h

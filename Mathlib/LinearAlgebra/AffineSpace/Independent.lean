@@ -616,7 +616,7 @@ variable {V}
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [affineIndependent_iff_linearIndependent_vsub k ![p₁, p₂] 0]
-  let i₁ : { x // x ≠ (0 : Fin 2) } := ⟨1, by norm_num⟩
+  let i₁ : { x // x ≠ (0 : Fin 2) } := ⟨1, by grind⟩
   have he' : ∀ i, i = i₁ := by
     rintro ⟨i, hi⟩
     ext

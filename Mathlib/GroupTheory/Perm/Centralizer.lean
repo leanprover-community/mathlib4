@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
 import Mathlib.GroupTheory.Rank
+import Mathlib.Tactic.NormNum
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups

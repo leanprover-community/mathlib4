@@ -232,7 +232,7 @@ theorem bernoulli_spec' (n : ℕ) :
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one ((not_congr (antidiagonal_congr h' h₁)).mp h'')]
   · field_simp [h₃]
-    norm_num
+    grind
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli n`. -/
 def bernoulliPowerSeries :=

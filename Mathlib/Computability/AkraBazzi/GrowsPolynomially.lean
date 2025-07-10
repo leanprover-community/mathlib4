@@ -118,7 +118,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
-        rw [one_div, ← zpow_neg_one, ← mul_assoc, ← zpow_add₀ (by norm_num)]
+        rw [one_div, ← zpow_neg_one, ← mul_assoc, ← zpow_add₀ (by grind)]
         have h₁ : (-1 : ℤ)  + (-k - 1) = -k - 2 := by ring
         have h₂ : -(k + (1 : ℤ)) - 1 = -k - 2 := by ring
         rw [h₁]

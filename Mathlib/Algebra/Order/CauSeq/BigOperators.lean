@@ -78,7 +78,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
       ∑ i ∈ range K, f i * (∑ k ∈ range (K - i), g k - ∑ k ∈ range K, g k) +
         ∑ i ∈ range K, f i * ∑ k ∈ range K, g k := by
     rw [← sum_add_distrib]; simp [(mul_add _ _ _).symm]
-  have two_mul_two : (4 : α) = 2 * 2 := by norm_num
+  have two_mul_two : (4 : α) = 2 * 2 := by grind
   have hQ0 : Q ≠ 0 := fun h ↦ by simp [h] at hQε0
   have h2Q0 : 2 * Q ≠ 0 := mul_ne_zero two_ne_zero hQ0
   have hε : ε / (2 * P) * P + ε / (4 * Q) * (2 * Q) = ε := by

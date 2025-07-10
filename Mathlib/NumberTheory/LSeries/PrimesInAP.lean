@@ -188,7 +188,7 @@ private lemma F''_le (p : Nat.Primes) (k : ℕ) : F'' (p, k) ≤ 2 * (p : ℝ)�
       rw [mul_assoc, ← Real.rpow_natCast,
         ← Real.rpow_add <| by have := p.prop.pos; positivity, Nat.cast_add, Nat.cast_two,
         add_comm, add_assoc]
-      norm_num
+      grind
 
 open Nat.Primes
 
@@ -214,7 +214,7 @@ private lemma summable_F'' : Summable F'' := by
     · rw [Real.inv_rpow p.val.cast_nonneg, Real.rpow_neg p.val.cast_nonneg]
       gcongr
       rw [inv_le_comm₀ (sub_pos.mpr (hp₁ p)) zero_lt_two, le_sub_comm,
-        show (1 : ℝ) - 2⁻¹ = 2⁻¹ by norm_num, inv_le_inv₀ (mod_cast p.prop.pos) zero_lt_two]
+        show (1 : ℝ) - 2⁻¹ = 2⁻¹ by grind, inv_le_inv₀ (mod_cast p.prop.pos) zero_lt_two]
       exact Nat.ofNat_le_cast.mpr p.prop.two_le
 
 /-- The function `n ↦ Λ n / n`, restricted to non-primes in a residue class, is summable.
@@ -443,7 +443,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
   have hq : 0 < (q.totient : ℝ)⁻¹ := inv_pos.mpr (mod_cast q.totient.pos_of_neZero)
   rcases le_or_gt (C + C') 0 with h₀ | h₀
   · have := hq.trans_le (H₁ (Set.right_mem_Ioc.mpr one_lt_two))
-    rw [show (2 : ℝ) - 1 = 1 by norm_num, mul_one] at this
+    rw [show (2 : ℝ) - 1 = 1 by grind, mul_one] at this
     exact (this.trans_le h₀).false
   · obtain ⟨ξ, hξ₁, hξ₂⟩ : ∃ ξ ∈ Set.Ioc 1 2, (C + C') * (ξ - 1) < (q.totient : ℝ)⁻¹ := by
       refine ⟨min (1 + (q.totient : ℝ)⁻¹ / (C + C') / 2) 2, ⟨?_, min_le_right ..⟩, ?_⟩

@@ -761,7 +761,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
         rw [← pow_mul] at h
         rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
         apply orderOf_dvd_of_pow_eq_one h
-      have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by norm_num)
+      have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by grind)
       obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
       refine ⟨g ^ m, ?_⟩
       dsimp

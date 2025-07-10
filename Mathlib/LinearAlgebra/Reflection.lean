@@ -205,7 +205,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     set k : ℤ := m / 2
     set e : ℤ := m % 2
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
-      add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
+      add_mul_ediv_left _ k (by grind : (2 : ℤ) ≠ 0)]
     have he : e = 0 ∨ e = 1 := by omega
     clear_value e
     /- Now, equate the coefficients on both sides. These linear combinations were

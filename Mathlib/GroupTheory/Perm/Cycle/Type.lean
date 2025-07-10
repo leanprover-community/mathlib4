@@ -10,7 +10,6 @@ import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.GroupTheory.Perm.Cycle.Factors
-import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Cycle Types
@@ -634,7 +633,7 @@ theorem orderOf {g : Perm α} (ht : IsThreeCycle g) : orderOf g = 3 := by
 theorem isThreeCycle_sq {g : Perm α} (ht : IsThreeCycle g) : IsThreeCycle (g * g) := by
   rw [← pow_two, ← card_support_eq_three_iff, support_pow_coprime, ht.card_support]
   rw [ht.orderOf]
-  norm_num
+  grind
 
 end IsThreeCycle
 

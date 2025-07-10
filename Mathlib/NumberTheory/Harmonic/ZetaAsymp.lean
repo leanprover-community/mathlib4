@@ -100,9 +100,9 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       exact (hv x hx).le
     _ = log (↑n + 1) - log ↑n - n * (1 / n - 1 / (n + 1)) := by
       rw [integral_rpow]
-      · simp_rw [sub_div, (by norm_num : (-2 : ℝ) + 1 = -1), div_neg, div_one, neg_sub_neg,
+      · simp_rw [sub_div, (by grind : (-2 : ℝ) + 1 = -1), div_neg, div_one, neg_sub_neg,
           rpow_neg_one, ← one_div]
-      · refine Or.inr ⟨by norm_num, notMem_uIcc_of_lt ?_ ?_⟩
+      · refine Or.inr ⟨by grind, notMem_uIcc_of_lt ?_ ?_⟩
         all_goals positivity
     _ = log (↑n + 1) - log ↑n - 1 / (↑n + 1) := by
       congr 1

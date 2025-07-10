@@ -206,7 +206,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
       (tendsto_congr' <| hz.mono fun x hnz ↦ @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
     convert this.add key
     · simp
-    · norm_num
+    · grind
   · exact isEquivalent_of_tendsto_one (hz.mono fun x hnvz hz ↦ (hnvz hz).elim)
 
 end NormedField
@@ -278,7 +278,7 @@ protected theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
-  refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by norm_num), ?_⟩
+  refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by grind), ?_⟩
   convert h.inv
   simp [mul_comm]
 

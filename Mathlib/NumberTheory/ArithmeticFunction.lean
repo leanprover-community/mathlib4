@@ -998,7 +998,7 @@ theorem moebius_sq {n : ℕ} :
   split_ifs with h
   · exact moebius_sq_eq_one_of_squarefree h
   · simp only [moebius_eq_zero_of_not_squarefree h,
-      zero_pow (show 2 ≠ 0 by norm_num)]
+      zero_pow (show 2 ≠ 0 by grind)]
 
 theorem abs_moebius {n : ℕ} :
     |μ n| = if Squarefree n then 1 else 0 := by

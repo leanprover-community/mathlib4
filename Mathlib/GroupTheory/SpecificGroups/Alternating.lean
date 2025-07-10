@@ -225,7 +225,7 @@ open Equiv.Perm
 theorem eq_bot_of_card_le_two (h2 : card α ≤ 2) : alternatingGroup α = ⊥ := by
   nontriviality α
   suffices hα' : card α = 2 by
-    rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by norm_num),
+    rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by grind),
       Nat.card_eq_fintype_card, two_mul_card_alternatingGroup, mul_one, card_perm, hα',
       Nat.factorial_two]
   exact h2.antisymm Fintype.one_lt_card

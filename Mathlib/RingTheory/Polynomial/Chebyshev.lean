@@ -136,8 +136,8 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
   | one => simp
-  | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
-  | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
+  | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; grind
+  | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; grind
 
 @[simp]
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
@@ -226,7 +226,7 @@ theorem U_neg_sub_two (n : ℤ) : U R (-n - 2) = -U R n := by
 theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
-  | one => simp; norm_num
+  | one => simp; grind
   | add_two n ih1 ih2 =>
     simp only [U_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, ih2, Int.cast_ofNat]
@@ -241,7 +241,7 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
-  | one => simp; norm_num
+  | one => simp; grind
   | add_two n ih1 ih2 =>
     simp only [U_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
@@ -357,8 +357,8 @@ theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
   | one => simp
-  | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
-  | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
+  | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; grind
+  | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; grind
 
 @[simp]
 theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
@@ -458,7 +458,7 @@ theorem S_neg_sub_two (n : ℤ) : S R (-n - 2) = -S R n := by
 theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
-  | one => simp; norm_num
+  | one => simp; grind
   | add_two n ih1 ih2 =>
     simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, ih2, Int.cast_ofNat]
@@ -473,7 +473,7 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
 theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
-  | one => simp; norm_num
+  | one => simp; grind
   | add_two n ih1 ih2 =>
     simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,

@@ -532,7 +532,7 @@ This is known as the "braid relation" or "Artin-Tits relation". -/
 theorem wordProd_braidWord_eq (i i' : B) :
     π (braidWord M i i') = π (braidWord M i' i) := by
   have := cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' (M i i')
-    (Nat.le_mul_of_pos_right _ (by norm_num))
+    (Nat.le_mul_of_pos_right _ (by grind))
   rw [tsub_eq_of_eq_add (mul_two (M i i'))] at this
   nth_rw 2 [M.symmetric i i'] at this
   exact this

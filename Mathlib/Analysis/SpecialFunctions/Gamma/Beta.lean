@@ -82,8 +82,8 @@ theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   · ext1 x
     conv_lhs => rw [mul_comm]
     congr 2 <;> · push_cast; ring
-  · norm_num
-  · norm_num
+  · grind
+  · grind
 
 theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
   rw [betaIntegral, betaIntegral]

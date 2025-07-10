@@ -197,7 +197,7 @@ theorem commProb_reciprocal (n : ℕ) :
     rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
     field_simp [h0, h2.two_dvd]
-    norm_num
+    grind
   · have := div_four_lt h0 h1
     rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
     have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)

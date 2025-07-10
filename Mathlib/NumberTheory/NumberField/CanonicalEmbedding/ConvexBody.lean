@@ -209,7 +209,7 @@ theorem convexBodyLT'_volume :
           ext; simp_rw [Set.mem_setOf_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
-        ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
+        ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by grind]
     · refine (MeasurableSet.inter ?_ ?_).nullMeasurableSet
       · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
       · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
@@ -421,7 +421,7 @@ theorem convexBodySum_volume :
         simp_rw [Real.rpow_one]
       _ = (2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K := by
         simp_rw [div_one, one_add_one_eq_two, Gamma_add_one two_ne_zero, Gamma_two, mul_one,
-          mul_assoc, ← Real.rpow_add_one two_ne_zero, show (-2 : ℝ) + 1 = -1 by norm_num,
+          mul_assoc, ← Real.rpow_add_one two_ne_zero, show (-2 : ℝ) + 1 = -1 by grind,
           Real.rpow_neg_one, div_eq_mul_inv]
 
 end convexBodySum

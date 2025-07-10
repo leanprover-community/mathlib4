@@ -113,7 +113,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
   rw [sum_const]
   refine mul_le_mul_right' ?_ _
   have t := card_filter_atomise_le_two_pow (s := U) hX
-  refine t.trans (pow_right_mono₀ (by norm_num) <| tsub_le_tsub_right ?_ _)
+  refine t.trans (pow_right_mono₀ (by grind) <| tsub_le_tsub_right ?_ _)
   exact card_image_le.trans (card_le_card <| filter_subset _ _)
 
 private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
@@ -136,7 +136,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
         refine (one_le_sq_iff₀ <| by positivity).1 ?_
         rw [div_pow, mul_pow, pow_right_comm, ← pow_mul ε, one_le_div (by positivity)]
         calc
-          (↑10 ^ 2) = 100 := by norm_num
+          (↑10 ^ 2) = 100 := by grind
           _ ≤ ↑4 ^ #P.parts * ε ^ 5 := hPε
           _ ≤ ↑4 ^ #P.parts * ε ^ 4 := by
             gcongr _ * ?_
@@ -379,10 +379,10 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
     sub_nonneg_of_le (div_le_one_of_le₀ (hε₁.trans <| by norm_num) <| by norm_num)
   have hε₀ : 0 < ε := by sz_positivity
   calc
-    4 / 5 * ε = (1 - 1 / 10) * (1 - 9⁻¹) * ε := by norm_num
+    4 / 5 * ε = (1 - 1 / 10) * (1 - 9⁻¹) * ε := by grind
     _ ≤ (1 - ε / 10) * (1 - (↑m)⁻¹) * (#(G.nonuniformWitness ε U V) / #U) := by
         gcongr
-        exacts [mod_cast (show 9 ≤ 100 by norm_num).trans (hundred_le_m hPα hPε hε₁),
+        exacts [mod_cast (show 9 ≤ 100 by grind).trans (hundred_le_m hPα hPε hε₁),
           (le_div_iff₀' <| cast_pos.2 (P.nonempty_of_mem_parts hU).card_pos).2 <|
            G.le_card_nonuniformWitness hunif]
     _ = (1 - ε / 10) * #(G.nonuniformWitness ε U V) * ((1 - (↑m)⁻¹) / #U) := by
@@ -421,7 +421,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
       (#(star hP G ε hU V) * #(star hP G ε hV U)) -
         (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
           (G.edgeDensity ab.1 ab.2 : ℝ)) / (16 : ℝ) ^ #P.parts| := by
-  rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _)]
+  rw [show (16 : ℝ) = ↑4 ^ 2 by grind, pow_right_comm, sq ((4 : ℝ) ^ _)]
   set p : ℝ :=
     (∑ ab ∈ (star hP G ε hU V).product (star hP G ε hV U), (G.edgeDensity ab.1 ab.2 : ℝ)) /
       (#(star hP G ε hU V) * #(star hP G ε hV U))
@@ -445,7 +445,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     norm_num at this
     exact this
   have hε' : ε ^ 5 ≤ ε := by
-    simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by norm_num)
+    simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by grind)
   rw [abs_sub_le_iff] at hrs hpr hqt
   rw [le_abs] at hst ⊢
   cases hst
@@ -469,7 +469,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
         eps_le_card_star_div hPα hPε hε₁ hU hV hUVne hUV
       have Vl : 4 / 5 * ε ≤ #(star hP G ε hV U) / _ :=
         eps_le_card_star_div hPα hPε hε₁ hV hU hUVne.symm fun h => hUV h.symm
-      rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _), ←
+      rw [show (16 : ℝ) = ↑4 ^ 2 by grind, pow_right_comm, sq ((4 : ℝ) ^ _), ←
         _root_.div_mul_div_comm, mul_assoc]
       have : 0 < ε := by sz_positivity
       have UVl := mul_le_mul Ul Vl (by positivity) ?_

@@ -88,7 +88,7 @@ theorem dist_eq_iff_eq_sinh :
 theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
   rw [dist_eq_iff_eq_sinh, ← sq_eq_sq₀, div_pow, mul_pow, sq_sqrt, mul_assoc]
-  · norm_num
+  · grind
   all_goals positivity
 
 protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c := by

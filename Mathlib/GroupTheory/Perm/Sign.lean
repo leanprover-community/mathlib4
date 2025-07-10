@@ -276,8 +276,8 @@ private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
       -1 := by
   rcases n with (_ | _ | n)
-  · norm_num at hn
-  · norm_num at hn
+  · grind
+  · grind
   · exact signAux_swap_zero_one' n
 
 theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (swap x y) = -1

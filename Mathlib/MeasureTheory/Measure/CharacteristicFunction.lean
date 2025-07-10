@@ -169,7 +169,7 @@ lemma norm_one_sub_charFun_le_two [IsProbabilityMeasure μ] : ‖1 - charFun μ 
   calc ‖1 - charFun μ t‖
   _ ≤ ‖(1 : ℂ)‖ + ‖charFun μ t‖ := norm_sub_le _ _
   _ ≤ 1 + 1 := by simp [norm_charFun_le_one]
-  _ = 2 := by norm_num
+  _ = 2 := by grind
 
 @[fun_prop, measurability]
 lemma stronglyMeasurable_charFun [OpensMeasurableSpace E] [SecondCountableTopology E] [SFinite μ] :

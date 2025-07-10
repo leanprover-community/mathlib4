@@ -147,7 +147,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
-                        (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+                        (tendsto_pow_atTop (by grind)) tendsto_log_atTop
           _ = fun z => z ^ (p-1) := by ext; simp
           _ =Θ[atTop] fun z => p * z ^ (p-1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _
@@ -171,7 +171,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
-                        (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+                        (tendsto_pow_atTop (by grind)) tendsto_log_atTop
           _ = fun z => z ^ (p-1) := by ext; simp
           _ =Θ[atTop] fun z => p * z ^ (p-1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _

@@ -246,7 +246,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     refine (IsBigO.mul ?_ ?_).mul ?_
     · trans fun n ↦ n / 3
       · simp_rw [div_eq_inv_mul]
-        exact (isBigO_refl ..).const_mul_right (by norm_num)
+        exact (isBigO_refl ..).const_mul_right (by grind)
       refine IsLittleO.right_isBigO_sub ?_
       simpa [div_eq_inv_mul, Function.comp_def] using
         .atTop_of_const_mul₀ zero_lt_three (by simp [tendsto_natCast_atTop_atTop])

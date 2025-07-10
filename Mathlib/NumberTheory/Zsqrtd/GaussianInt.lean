@@ -132,7 +132,7 @@ theorem intCast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x :
   cases x; rw [Zsqrtd.norm, normSq]; simp
 
 theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
-  Zsqrtd.norm_nonneg (by norm_num) _
+  Zsqrtd.norm_nonneg (by grind) _
 
 @[simp]
 theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp

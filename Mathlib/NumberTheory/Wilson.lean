@@ -81,7 +81,7 @@ variable {n : ℕ}
 /-- For `n ≠ 1`, `(n-1)!` is congruent to `-1` modulo `n` only if n is prime. -/
 theorem prime_of_fac_equiv_neg_one (h : ((n - 1)! : ZMod n) = -1) (h1 : n ≠ 1) : Prime n := by
   rcases eq_or_ne n 0 with (rfl | h0)
-  · norm_num at h
+  · grind
   replace h1 : 1 < n := n.two_le_iff.mpr ⟨h0, h1⟩
   by_contra h2
   obtain ⟨m, hm1, hm2 : 1 < m, hm3⟩ := exists_dvd_of_not_prime2 h1 h2

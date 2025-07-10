@@ -46,7 +46,7 @@ theorem harmonic_le_one_add_log (n : ℕ) :
   · exact @AntitoneOn.sum_le_integral_Ico 2 (n + 1) (fun x : ℝ ↦ (x - 1)⁻¹) (by linarith [hn]) <|
       sub_inv_antitoneOn_Icc_right (by norm_num)
   · convert intervalIntegral.integral_comp_sub_right _ 1
-    · norm_num
+    · grind
     · simp only [Nat.cast_add, Nat.cast_one, add_sub_cancel_right]
   · convert integral_inv _
     · rw [div_one]

@@ -39,7 +39,7 @@ def stepBound (n : ℕ) : ℕ :=
   n * 4 ^ n
 
 theorem le_stepBound : id ≤ stepBound := fun n =>
-  Nat.le_mul_of_pos_right _ <| pow_pos (by norm_num) n
+  Nat.le_mul_of_pos_right _ <| pow_pos (by grind) n
 
 theorem stepBound_mono : Monotone stepBound := fun _ _ h => by unfold stepBound; gcongr; decide
 
@@ -69,7 +69,7 @@ private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
 
 private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α) : 0 < m :=
-  Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; norm_num) <|
+  Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; grind) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
@@ -127,7 +127,7 @@ theorem hundred_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)
       (le_div_self (by norm_num) (by sz_positivity) <| pow_le_one₀ (by sz_positivity) hε)
 
 theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ #P.parts := by
-  have h : 1 ≤ 4 ^ #P.parts := one_le_pow₀ (by norm_num)
+  have h : 1 ≤ 4 ^ #P.parts := one_le_pow₀ (by grind)
   rw [stepBound, ← Nat.div_div_eq_div_mul]
   conv_rhs => rw [← Nat.sub_add_cancel h]
   rw [add_le_add_iff_right, tsub_le_iff_left, ← Nat.add_sub_assoc h]

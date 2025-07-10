@@ -319,7 +319,7 @@ lemma tendsto_one_add_cpow_exp_of_tendsto {g : ℝ → ℂ} {t : ℂ}
   apply ((continuous_exp.tendsto _).comp (tendsto_mul_log_one_add_of_tendsto hg)).congr'
   have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
     hg.norm.isBoundedUnder_le (RCLike.tendsto_ofReal_atTop_cobounded ℂ)
-  filter_upwards [hg0.eventually_ne (show 0 ≠ -1 by norm_num)] with x hg1
+  filter_upwards [hg0.eventually_ne (show 0 ≠ -1 by grind)] with x hg1
   dsimp
   rw [cpow_def_of_ne_zero, mul_comm]
   intro hg0

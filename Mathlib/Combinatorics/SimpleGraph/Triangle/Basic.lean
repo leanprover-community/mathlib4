@@ -60,7 +60,7 @@ nonrec lemma EdgeDisjointTriangles.mono (h : G ≤ H) (hH : H.EdgeDisjointTriang
 
 lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
     (G.map f).EdgeDisjointTriangles := by
-  rw [EdgeDisjointTriangles, cliqueSet_map (by norm_num : 3 ≠ 1),
+  rw [EdgeDisjointTriangles, cliqueSet_map (by grind : 3 ≠ 1),
     (Finset.map_injective f).injOn.pairwise_image]
   classical
   rintro s hs t ht hst

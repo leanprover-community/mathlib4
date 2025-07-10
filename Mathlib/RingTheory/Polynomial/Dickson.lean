@@ -96,7 +96,7 @@ theorem map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dicks
 theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
   | 0 => by
     simp only [dickson_zero, pow_zero]
-    norm_num
+    grind
   | 1 => by simp only [dickson_one, pow_one]
   | n + 2 => by
     simp only [dickson_add_two, C_0, zero_mul, sub_zero]

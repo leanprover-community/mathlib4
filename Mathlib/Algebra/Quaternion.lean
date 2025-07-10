@@ -569,7 +569,7 @@ instance : Module.Free R ℍ[R,c₁,c₂,c₃] := .of_basis (basisOneIJK c₁ c�
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂,c₃] = 4 := by
   rw [rank_eq_card_basis (basisOneIJK c₁ c₂ c₃), Fintype.card_fin]
-  norm_num
+  grind
 
 theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c₂,c₃] = 4 := by
   rw [Module.finrank, rank_eq_four, Cardinal.toNat_ofNat]

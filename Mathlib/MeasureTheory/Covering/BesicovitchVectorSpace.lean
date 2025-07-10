@@ -119,13 +119,13 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     apply ball_disjoint_ball
     rw [dist_eq_norm]
     convert h c hc d hd hcd
-    norm_num
+    grind
   have A_subset : A ⊆ ball (0 : E) ρ := by
     refine iUnion₂_subset fun x hx => ?_
     apply ball_subset_ball'
     calc
       δ + dist x 0 ≤ δ + 2 := by rw [dist_zero_right]; exact add_le_add le_rfl (hs x hx)
-      _ = 5 / 2 := by norm_num
+      _ = 5 / 2 := by grind
   have I :
     (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) ≤
       ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) :=

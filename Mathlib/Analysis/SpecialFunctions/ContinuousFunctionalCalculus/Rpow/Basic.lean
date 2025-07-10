@@ -568,7 +568,7 @@ lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
 lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
-      rpow_rpow _ _ _ h (by norm_num), inv_mul_eq_div]
+      rpow_rpow _ _ _ h (by grind), inv_mul_eq_div]
 
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
@@ -604,7 +604,7 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
 
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
-  exact isUnit_rpow_iff a _ (by norm_num) ha
+  exact isUnit_rpow_iff a _ (by grind) ha
 
 @[aesop safe apply]
 lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :

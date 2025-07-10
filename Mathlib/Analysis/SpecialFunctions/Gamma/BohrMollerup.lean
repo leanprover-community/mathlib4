@@ -332,7 +332,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   · rw [Function.comp_apply, Gamma_add_one hy.ne', log_mul hy.ne' (Gamma_pos_of_pos hy).ne',
       add_comm, Function.comp_apply]
   rw [Function.comp_apply, Function.comp_apply, Nat.cast_two, Gamma_two, log_one, zero_add,
-    (by norm_num : (2 : ℝ) + 1 / 2 = 3 / 2 + 1), Gamma_add_one A.ne',
+    (by grind : (2 : ℝ) + 1 / 2 = 3 / 2 + 1), Gamma_add_one A.ne',
     log_mul A.ne' (Gamma_pos_of_pos A).ne', ← le_sub_iff_add_le',
     log_le_iff_le_exp (Gamma_pos_of_pos A)] at this
   refine this.trans_lt (exp_lt_one_iff.mpr ?_)

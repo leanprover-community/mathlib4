@@ -100,7 +100,7 @@ theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r
 @[simp]
 theorem Sphere.secondInter_neg (s : Sphere P) (p : P) (v : V) :
     s.secondInter p (-v) = s.secondInter p v := by
-  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by norm_num : (-1 : ℝ) ≠ 0)]
+  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by grind : (-1 : ℝ) ≠ 0)]
 
 /-- Applying `secondInter` twice returns the original point. -/
 @[simp]

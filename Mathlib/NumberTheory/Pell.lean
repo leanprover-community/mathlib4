@@ -651,7 +651,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
       exact False.elim (ha₁.zpow_ne_neg_zpow hn₁)
   · rw [x_neg, lt_neg] at Hx
     have := (x_zpow_pos (zero_lt_one.trans ha₁.1) n₂).trans Hx
-    norm_num at this
+    grind
 
 /-- A positive solution is a generator (up to sign) of the group of all solutions to the
 Pell equation `x^2 - d*y^2 = 1` if and only if it is a fundamental solution. -/

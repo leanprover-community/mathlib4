@@ -287,9 +287,9 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
     digits b n = (n % b) :: digits b (n / b) := by
   rcases b with (_ | _ | b)
   · rw [digits_zero_succ' w, Nat.mod_zero, Nat.div_zero, Nat.digits_zero_zero]
-  · norm_num at h
+  · grind
   rcases n with (_ | n)
-  · norm_num at w
+  · grind
   · simp only [digits_add_two_add_one]
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :

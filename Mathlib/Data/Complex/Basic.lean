@@ -602,7 +602,7 @@ theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 lemma I_pow_three : I ^ 3 = -I := by rw [pow_succ, I_sq, neg_one_mul]
 
 @[simp]
-theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+theorem I_pow_four : I ^ 4 = 1 := by rw [(by grind : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
 
 lemma I_pow_eq_pow_mod (n : ℕ) : I ^ n = I ^ (n % 4) := by
   conv_lhs => rw [← Nat.div_add_mod n 4]

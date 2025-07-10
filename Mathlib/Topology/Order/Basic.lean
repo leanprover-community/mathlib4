@@ -7,7 +7,6 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Interval.Set.Pi
 import Mathlib.Order.OrdContinuous
 import Mathlib.Tactic.TFAE
-import Mathlib.Tactic.NormNum
 import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Order.OrderClosed
 

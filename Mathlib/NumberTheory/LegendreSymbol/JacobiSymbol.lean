@@ -270,7 +270,7 @@ open jacobiSym
 theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1) :
     ¬IsSquare (a : ZMod b) := fun ⟨r, ha⟩ => by
   rw [← r.coe_valMinAbs, ← Int.cast_mul, intCast_eq_intCast_iff', ← sq] at ha
-  apply (by norm_num : ¬(0 : ℤ) ≤ -1)
+  apply (by grind : ¬(0 : ℤ) ≤ -1)
   rw [← h, mod_left, ha, ← mod_left, pow_left]
   apply sq_nonneg
 
@@ -450,7 +450,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   rcases eq_or_ne a 0 with (rfl | ha₀)
   · rw [mul_zero, mod_zero]
   have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by decide) _)
-  rcases exists_eq_pow_mul_and_not_dvd ha₀ 2 (by norm_num) with ⟨e, a', ha₁', ha₂⟩
+  rcases exists_eq_pow_mul_and_not_dvd ha₀ 2 (by grind) with ⟨e, a', ha₁', ha₂⟩
   have ha₁ := odd_iff.mpr (two_dvd_ne_zero.mp ha₁')
   nth_rw 2 [ha₂]; nth_rw 1 [ha₂]
   rw [Nat.cast_mul, mul_left, mul_left, quadratic_reciprocity' ha₁ hb,
