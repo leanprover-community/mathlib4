@@ -20,6 +20,8 @@ show that any such object admits a lax monoidal structure on their
 underlying functor. We show that this defines an equivalence
 (for `F : C ⊛⥤ V`) between lax monoidal structures on `F.functor` and internal
 monoid structures on `F`.
+We also prove that through this construction, monoidal natural transformations
+of lax monoidal functors correspond to morphisms of internal monoid objects.
 -/
 
 noncomputable section
