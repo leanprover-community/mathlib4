@@ -70,7 +70,7 @@ lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] 
   simp +contextual
 
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
-  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
+  suffices e 1 = 1 ∨ -e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
   simpa [e.surjective, eq_comm] using (e : ℤ →+ ℤ).map_zmultiples 1
 

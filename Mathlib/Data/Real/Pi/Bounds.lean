@@ -148,6 +148,9 @@ bound[a_, Iters -> n_, Rounding -> extra_, Precision -> prec_] := Module[{r0, r,
 ```
 -/
 
+-- We disable the linter, to preserve the original formatting.
+set_option linter.style.commandStart false
+
 theorem pi_gt_three : 3 < π := by
   -- bound[3, Iters -> 1, Rounding -> 2, Precision -> 3]
   pi_lower_bound [23 / 16]

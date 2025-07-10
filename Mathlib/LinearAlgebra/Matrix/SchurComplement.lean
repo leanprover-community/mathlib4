@@ -252,7 +252,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     -- combine into a single block matrix
     simp only [fromBlocks_multiply, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
       Matrix.mul_zero, add_zero, zero_add, neg_zero, Matrix.mul_neg, Matrix.neg_mul, neg_neg, ←
-      Matrix.mul_assoc, add_comm (⅟D)]
+      Matrix.mul_assoc, add_comm (⅟ D)]
 
 /-- A block matrix is invertible if the top left corner and the corresponding schur complement
 is. -/

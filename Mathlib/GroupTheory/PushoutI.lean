@@ -350,7 +350,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     · intro h
       apply_fun (d.compl i).equiv at h
       simp only [Prod.ext_iff, equiv_one (d.compl i) (one_mem _) (d.one_mem _),
-        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead, Subtype.ext_iff,
+        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
         Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
       rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _)] at h₁
@@ -522,7 +522,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
+    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by
   apply ext_smul i
   simp only [cons, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,
