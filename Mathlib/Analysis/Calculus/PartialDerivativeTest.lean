@@ -260,7 +260,7 @@ theorem littleO_of_powerseries.inequality {z : ℝ} (hz : 0 ≤ z) {r : ℝ} (hr
     exact mul_le_mul_of_nonneg (by linarith) this (by positivity) (by linarith)
 
 theorem littleO_of_powerseries.aux
-    {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    {V : Type*} [NormedAddCommGroup V]
     {x₀ : V}
     {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
     {x : V} {D : ℝ} (hD : 0 < D)
@@ -287,8 +287,7 @@ theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [N
   simp only [Metric.mem_ball, lt_inf_iff, dist_zero_right, add_sub_cancel,
     Real.norm_eq_abs] at hx h₃ ⊢
   specialize h₃ (by convert hx.1 using 1;exact mem_sphere_iff_norm.mp rfl)
-  apply h₃.trans <| @aux V _ _ x₀ r hr a ha C hC
-    x D hD (by convert hx.2 using 2)
+  apply h₃.trans <| aux hr ha hC hD (by convert hx.2 using 2)
 
 /-- Having a power series implies quadratic approximation. -/
 lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
