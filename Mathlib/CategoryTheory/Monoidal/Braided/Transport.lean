@@ -47,10 +47,10 @@ This is a def because once we have that both `(e' e).inverse` and `(e' e).functo
 braided, this causes a diamond.
 -/
 attribute [local instance] transportedFunctorCompInverseLaxBraided in
-def transportedInverseCompFunctorLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
+def transportedFunctorCompInverseBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).Braided where
 
-attribute [local instance] transportedInverseCompFunctorLaxBraided in
+attribute [local instance] transportedFunctorCompInverseBraided in
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).functor.Braided where
   braided X Y := by
@@ -63,11 +63,12 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
       simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
         Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, assoc,
         Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
-    simp only [Functor.comp_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
-      Equivalence.symm_inverse, Equivalence.symm_functor,
-      Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, Functor.LaxMonoidal.comp_μ, Functor.comp_map,
-      Equivalence.inv_fun_map, Functor.id_obj, Functor.OplaxMonoidal.comp_δ, assoc] at this
-    simp [← this]
+    simp? [-Adjunction.rightAdjointLaxMonoidal_μ]  at this says
+      simp only [Functor.comp_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
+        Equivalence.symm_inverse, Equivalence.symm_functor,
+        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, comp_μ, Functor.comp_map,
+        Equivalence.inv_fun_map, Functor.id_obj, comp_δ, assoc] at this
+    simp [-Adjunction.rightAdjointLaxMonoidal_μ, ← this]
 
 instance Transported.instSymmetricCategory (e : C ≌ D) [MonoidalCategory C]
     [SymmetricCategory C] : SymmetricCategory (Transported e) :=
