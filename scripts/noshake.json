@@ -408,7 +408,6 @@
   "Mathlib.Geometry.Manifold.PoincareConjecture":
   ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
    "Mathlib.Util.Superscript"],
-  "Mathlib.Geometry.Diffeology.Basic": ["Mathlib.Tactic.FunProp.ContDiff"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
