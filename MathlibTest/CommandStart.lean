@@ -59,6 +59,11 @@ example (h : ∀ a : Nat, a = a) : 0 = 0 := by
   replace(h) := h 0
   exact h
 
+-- Ideally, this would complain, but we silenced the linter for term-mode
+example {c : Bool} : c = c := by
+  induction c with
+  | true| _ =>rfl
+
 end Desiderata_and_todos
 
 -- The linter ignores lists and arrays.

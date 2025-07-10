@@ -288,6 +288,10 @@ abbrev unlintedNodes := #[
   ``Parser.Term.have,
   -- For a similar reason, we also ignore tactic `replace`.
   ``Parser.Tactic.replace,
+
+  -- If two `induction ... with` arms are "merged", then the pretty-printer
+  -- does not put a space before the `|`s
+  ``Lean.Parser.Tactic.inductionAlt,
   ]
 
 /--
