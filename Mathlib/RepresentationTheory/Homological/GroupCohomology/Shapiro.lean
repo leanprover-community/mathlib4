@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Coinduced
+import Mathlib.RepresentationTheory.Induced
 
 /-!
 # Shapiro's lemma for group cohomology
