@@ -1,6 +1,7 @@
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.Algebra.Field.Power
+import Mathlib.Tactic.Have
 
 /-!
 # nth root operations
@@ -11,13 +12,13 @@ The trap this avoids is that using `rpow`, `(-8 : ℝ) ^ (1/3 : ℝ) = 1`.
 
 -/
 
-noncomputable section
+section
 
 namespace Real
 
 section qpow
 
-instance instQPow : Pow ℝ ℚ where
+noncomputable instance instQPow : Pow ℝ ℚ where
   pow r q :=
     if Even q.den then r ^ (q : ℝ) else SignType.sign r ^ q.num * abs r ^ (q : ℝ)
 
@@ -134,6 +135,16 @@ theorem neg_qpow_eq_of_even_of_odd {q : ℚ} (hn : Even q.num) (hn' : Odd q.den)
       qpow_eq_of_nonneg hr, one_mul]
 
 @[simp]
+theorem qpow_pos_of_pow {q : ℚ} {r : ℝ} (hr : 0 < r) : 0 < r ^ q := by
+  by_cases hq : Even q.den
+  · rw [qpow_eq_of_even_den _ hq]
+    apply rpow_pos_of_pos hr
+  · rw [qpow_eq_of_odd_den _ (by rwa [Nat.not_even_iff_odd] at hq),
+      sign_pos hr, SignType.coe_one, one_zpow, one_mul, abs_of_pos hr]
+    apply rpow_pos_of_pos hr
+
+
+@[simp]
 theorem Int.even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
   induction z using Int.wlog_sign with
   | inv => simp
@@ -147,40 +158,44 @@ theorem Int.even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
 theorem Int.odd_sign_iff {z : ℤ} : Odd z.sign ↔ z ≠ 0 := by
   rw [← Int.not_even_iff_odd, Int.even_sign_iff]
 
-theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (hq : q ≠ 0) (h : 0 ≤ r ∨ Odd q.den) : (r ^ q⁻¹) ^ q = r := by
+theorem qpow_inv_qpow {q : ℚ} (r : ℝ) (hq : q ≠ 0) (h : 0 ≤ r ∨ (Odd q.den ∧ Odd q.num)) :
+    (r ^ q⁻¹) ^ q = r := by
+  have hq' : (q : ℝ) ≠ 0 := mod_cast hq
   obtain he | ho := Nat.even_or_odd q.den
-  · obtain hr := h.resolve_right (Nat.not_odd_iff_even.mpr he)
-    rw [qpow_eq_of_even_den _ he, qpow_eq_of_nonneg hr, Rat.cast_inv, rpow_inv_rpow hr]
-    assumption_mod_cast
-  · have : Odd q⁻¹.num := by
-      rw [Rat.num_inv]
-      apply Odd.mul
-      · sorry
-      · assumption_mod_cast
+  · obtain hr := h.resolve_right (by simp [Nat.not_odd_iff_even.mpr he])
+    rw [qpow_eq_of_even_den _ he, qpow_eq_of_nonneg hr, q.cast_inv, rpow_inv_rpow hr hq']
+  · have : Odd q⁻¹.num
+    · rw [Rat.num_inv]
+      apply Odd.mul _ (mod_cast ho)
+      rcases lt_trichotomy q.num 0 with (ht | ht | ht)
+      · simp_rw [Int.sign_eq_neg_one_of_neg ht, odd_neg_one]
+      · exact (mt Rat.num_eq_zero.mp hq ht).elim
+      · exact Int.sign_eq_one_of_pos ht ▸ odd_one
     rw [qpow_eq_of_odd_den _ ho]
     obtain he | ho := Int.even_or_odd q.num
-    · by_cases hr : r = 0
-      · rw [hr, zero_qpow]
-        · simp [hr, zero_qpow hq]
-          rw [zero_rpow]
-          · simp
-          · assumption_mod_cast
-        simpa
-      · have : Even (q⁻¹).den := by
-          rw [Rat.den_inv_of_ne_zero hq]
-          simp [he]
-        rw [qpow_eq_of_even_den _ this]
-        rw [← SignType.coe_zpow, SignType.zpow_even _ he, SignType.coe_one, one_mul]
-        · sorry
-        · rw [sign_ne_zero]
-          sorry
-    rw [←SignType.coe_zpow, SignType.zpow_odd _ _ ho]
-    have : Odd q⁻¹.den := by
-      rw [Rat.den_inv_of_ne_zero hq]
-      simp [ho]
-    rw [qpow_eq_of_odd_den _ this]
-    simp_all [← SignType.coe_zpow,SignType.zpow_odd]
-    sorry
+    · rcases lt_trichotomy r 0 with (hr | rfl | hr)
+      · match h with
+        | Or.inl h => exact (lt_iff_not_ge.mp hr).elim h
+        | Or.inr h => exact absurd h.2 (Int.not_odd_iff_even.2 he)
+      · simp [zero_qpow (inv_ne_zero hq), abs_zero, Real.zero_rpow hq']
+      · rw [sign_pos (qpow_pos_of_pow hr), qpow_eq_of_nonneg (le_of_lt hr), SignType.coe_one,
+          one_zpow, Rat.cast_inv, one_mul, abs_of_nonneg (le_of_lt <| rpow_pos_of_pos hr _),
+          rpow_inv_rpow (le_of_lt hr) hq']
+    have : Odd q⁻¹.den := by simp [Rat.den_inv_of_ne_zero hq, ho]
+    rw [←SignType.coe_zpow, SignType.zpow_odd (hz := ho), qpow_eq_of_odd_den _ this]
+    simp_all only [← SignType.coe_zpow,SignType.zpow_odd]
+    rcases lt_trichotomy r 0 with (hr | hr | hr)
+    · rw [sign_neg hr]
+      suffices |(-1 * |r| ^ (q : ℝ)⁻¹)| ^ (q : ℝ) = |r| by
+        rw [abs_of_neg hr, ← neg_eq_neg_one_mul] at this
+        rw [abs_of_neg hr, ← this, this]
+        field_simp [hr, Real.rpow_pos_of_pos] at this ⊢
+        simp_all only [neg_neg]
+      · rw [abs_mul, abs_neg, abs_one, one_mul, abs_of_nonneg (Real.rpow_nonneg (abs_nonneg _) _),
+          Real.rpow_inv_rpow (abs_nonneg _) (Rat.cast_ne_zero.mpr hq)]
+    · field_simp [hq, hr]
+    · norm_num [*, abs_of_nonneg, rpow_nonneg hr.le, rpow_pos_of_pos, abs_of_pos hr, sign_pos hr,
+        ← rpow_mul hr.le, inv_mul_cancel₀ (G₀ := ℝ) (Rat.cast_ne_zero.2 hq), rpow_one]
 
 theorem qpow_mul_of_even_of_nonneg {q : ℚ} {a b : ℝ} (hn : Even q.den) (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (a * b) ^ q = a ^ q * b ^ q := by
