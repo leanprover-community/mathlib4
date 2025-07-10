@@ -148,8 +148,8 @@ initialize_simps_projections Concept (+toProd, -fst, -snd)
 
 namespace Concept
 
-variable {r α β}
-variable {c d : Concept α β r}
+variable {r r' α β}
+variable {c d : Concept α β r} {c' : Concept α α r'}
 
 attribute [simp] closure_fst closure_snd
 
@@ -171,6 +171,30 @@ theorem ext' (h : c.snd = d.snd) : c = d := by
 theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ => ext
 
 theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
+
+theorem rel_fst_snd {x y} (hx : x ∈ c.fst) (hy : y ∈ c.snd) : r x y := by
+  rw [← c.closure_fst] at hy
+  exact hy hx
+
+/-- Note that if `r'` is the `≤` relation, this theorem will often not be true! -/
+theorem disjoint_fst_snd [IsIrrefl α r'] : Disjoint c'.fst c'.snd := by
+  rw [disjoint_iff_forall_ne]
+  rintro x hx _ hx' rfl
+  exact irrefl x (rel_fst_snd hx hx')
+
+theorem mem_fst_of_rel_fst [IsTrans α r'] {x y} (hx : x ∈ c'.fst) (hy : r' y x) : y ∈ c'.fst := by
+  rw [← closure_snd]
+  exact fun z hz ↦ _root_.trans hy (rel_fst_snd hx hz)
+
+theorem mem_snd_of_snd_rel [IsTrans α r'] {x y} (hx : x ∈ c'.snd) (hy : r' x y) : y ∈ c'.snd := by
+  rw [← closure_fst]
+  exact fun z hz ↦ _root_.trans (rel_fst_snd hz hx) hy
+
+theorem codisjoint_fst_snd [IsTotal α r'] [IsTrans α r'] : Codisjoint c'.fst c'.snd := by
+  rw [codisjoint_iff_le_sup]
+  refine fun x _ ↦ or_iff_not_imp_left.2 fun hx ↦ ?_
+  rw [← closure_fst]
+  exact fun y hy ↦ (total_of r' x y).resolve_left (hx <| mem_fst_of_rel_fst hy ·)
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
