@@ -66,10 +66,11 @@ def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
     IsLocalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
   linearIndependent := by
     intro x hx
-    sorry -- exact VectorBundle.gramSchmidt_linearIndependent (hs.linearIndependent hx)
+    exact VectorBundle.gramSchmidtNormed_linearIndependent <| hs.linearIndependent hx
   generating := by
     intro x hx
-    sorry -- simpa only [VectorBundle.gramSchmidt_apply, InnerProductSpace.span_gramSchmidt ℝ (s · x)]
+    sorry
+    -- simpa only [VectorBundle.gramSchmidt_apply, InnerProductSpace.span_gramSchmidt ℝ (s · x)]
     --  using hs.generating hx
   contMDiffOn i := gramSchmidtNormed_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
       fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
@@ -79,8 +80,12 @@ another orthonormal local frame. -/
 def IsOrthonormalFrameOn.gramSchmidtNormed (hs : IsOrthonormalFrameOn IB F n s u) :
     IsOrthonormalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
   toIsLocalFrameOn := hs.toIsLocalFrameOn.gramSchmidtNormed
-  orthogonal {_ _ x} hij _hx := sorry -- VectorBundle.gramSchmidt_orthogonal s hij x
-  normalised := sorry -- TODO: need to use the normalisation property!
+  -- TODO: combine these two fields into one?
+  orthogonal {_ _ x} hij hx :=
+    (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).inner_eq_zero hij
+  normalised := by
+    intro i x hx
+    exact (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).norm_eq_one i
 
 
 /-! # Determining smoothness of a section via its local frame coefficients
