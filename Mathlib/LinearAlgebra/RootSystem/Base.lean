@@ -46,6 +46,7 @@ noncomputable section
 
 open Function Set Submodule
 open FaithfulSMul (algebraMap_injective)
+open Module.End (invtSubmodule mem_invtSubmodule)
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
@@ -628,6 +629,24 @@ lemma induction''
     b.induction' i h₀ h₁ this
   simp_rw [← root_reflectionPerm]
   simpa [-root_reflectionPerm]
+
+omit [Fintype ι] [IsDomain R] [Nontrivial M] in
+lemma forall_mem_support_invtSubmodule_iff [CharZero R] [Finite ι] (q : Submodule R M) :
+    (∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) ↔
+      (∀ i, q ∈ invtSubmodule (P.reflection i)) := by
+  have : Fintype ι := Fintype.ofFinite ι
+  refine ⟨fun hq i ↦ ?_, fun hq i _ ↦ hq i⟩
+  letI := P.indexNeg
+  have (j : ι) : P.reflection (-j) = P.reflection j := by ext x; simp [reflection_apply, two_smul]
+  have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero _⟩
+  refine b.induction'' i (by aesop) hq ?_
+  clear i
+  intro i j hi hj
+  have : P.reflection (P.reflectionPerm j i) =
+      P.reflection j * P.reflection i * P.reflection j := by
+    ext x; simp [coreflection_apply, reflection_apply]; module -- TODO Is this really missing!?
+  rw [this]
+  exact Module.End.invtSubmodule.comp _ (Module.End.invtSubmodule.comp _ (hq j hj) hi) (hq j hj)
 
 /-- This lemma is included mostly for comparison with the informal literature. Usually
 `RootPairing.Base.induction_on_pos` will be more useful. -/
