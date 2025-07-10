@@ -120,7 +120,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     · rw [Submodule.map_sup, ← Submodule.map_comp, ← Module.End.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
       exact sup_le_sup_left coe_map_toEnd_le _
-    · refine le_trans (mono_lie_right I ?_) (mono_lie_right I hIM)
+    · grw [← hIM]; gcongr
       exact antitone_lowerCentralSeries R L M le_self_add
 
 theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEnd R L M x)

@@ -335,7 +335,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   have hL'U : (L' : Set G) ⊆ U := IsCompact.closure_subset_of_isOpen L.2 hU hL.2
   have hL'U' : (L' : Set G) ⊆ (U' : Set G) := IsCompact.closure_subset_of_isOpen L.2 U'.2 hL.1
   have : ↑U' \ U ⊆ U' \ L' := diff_subset_diff_right hL'U
-  refine le_trans (add_le_add_left (measure_mono this) _) ?_
+  grw [this]
   rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.2 isClosed_closure)]
   simp only [innerContent, iSup_subtype']
   rw [Opens.coe_mk]

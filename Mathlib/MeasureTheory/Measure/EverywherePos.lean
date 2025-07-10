@@ -177,7 +177,7 @@ lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) : IsEverywherePos ν s := by
   intro x hx n hn
   rcases h x hx with ⟨t, t_mem, ht⟩
-  refine lt_of_lt_of_le ?_ (measure_mono (inter_subset_left (t := t)))
+  grw [← inter_subset_left (s := n)]
   rw [ht (n ∩ t) inter_subset_right]
   exact hs x hx _ (inter_mem hn (mem_nhdsWithin_of_mem_nhds t_mem))
 
