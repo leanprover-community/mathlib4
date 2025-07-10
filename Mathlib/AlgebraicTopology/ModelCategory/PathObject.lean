@@ -85,7 +85,7 @@ section
 variable [HasBinaryProduct A A]
 
 /-- the map from `P.P` to the product of two copies of `A`, when `P` is
-a pre-path object object for `A`. `P` shall be a *good* path object
+a pre-path object for `A`. `P` shall be a *good* path object
 when this morphism is a fibration. -/
 noncomputable def p : P.P ⟶ A ⨯ A := prod.lift P.p₀ P.p₁
 
@@ -140,7 +140,7 @@ instance : WeakEquivalence P.p₁ :=
 
 end
 
-/-- A path object object `P` is good if the morphism
+/-- A path object `P` is good if the morphism
 `P.p : P.P ⟶ A ⨯ A` is a fibration. -/
 class IsGood [HasBinaryProduct A A] [CategoryWithFibrations C] : Prop where
   fibration_p : Fibration P.p := by infer_instance
