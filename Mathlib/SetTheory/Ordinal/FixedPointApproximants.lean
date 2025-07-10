@@ -52,7 +52,7 @@ theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
       #(Iio (ord <| succ #α)) = lift.{u + 1} (succ #α) := by
     simpa only [coe_setOf, card_typein, card_ord] using mk_Iio_ordinal (ord <| succ #α)
   rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
-  exact not_le_of_lt (Order.lt_succ #α) h
+  exact not_le_of_gt (Order.lt_succ #α) h
 
 end Cardinal
 
@@ -90,7 +90,7 @@ theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
 theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
-    lfpApprox f x (a+1) = f (lfpApprox f x a) := by
+    lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
   apply le_antisymm
   · conv => left; rw [lfpApprox]
     apply sSup_le
@@ -161,7 +161,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_
       apply lfpApprox_monotone
       simp only [Ordinal.add_one_eq_succ, succ_le_iff]
       exact haa
-    · rw [IH a' ha'b (le_of_not_lt haa), h]
+    · rw [IH a' ha'b (le_of_not_gt haa), h]
   · exact lfpApprox_monotone f x h_ab
 
 /-- There are distinct indices smaller than the successor of the domain's cardinality
@@ -262,7 +262,7 @@ theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
-    gfpApprox f x (a+1) = f (gfpApprox f x a) :=
+    gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
   lfpApprox_add_one f.dual x h a
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by

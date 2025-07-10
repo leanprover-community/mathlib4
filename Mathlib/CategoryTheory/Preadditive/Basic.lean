@@ -54,6 +54,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
     linear in both variables. -/
+@[stacks 00ZY]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
@@ -226,9 +227,17 @@ lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : Is
   obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
   rw [← ha, h.eq_of_tgt a 0, Limits.zero_comp])
 
+lemma mono_iff_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c) :
+    Mono f ↔ IsZero c.pt :=
+  ⟨fun _ ↦ KernelFork.IsLimit.isZero_of_mono hc, mono_of_isZero_kernel' c hc⟩
+
 lemma mono_of_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] (h : IsZero (kernel f)) :
     Mono f :=
   mono_of_isZero_kernel' _ (kernelIsKernel _) h
+
+lemma mono_iff_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] :
+    Mono f ↔ IsZero (kernel f) :=
+  mono_iff_isZero_kernel' _ (limit.isLimit _)
 
 theorem epi_of_cancel_zero {P Q : C} (f : P ⟶ Q) (h : ∀ {R : C} (g : Q ⟶ R), f ≫ g = 0 → g = 0) :
     Epi f :=
@@ -248,9 +257,17 @@ lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc
   obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
   rw [← ha, h.eq_of_src a 0, Limits.comp_zero])
 
+lemma epi_iff_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c) :
+    Epi f ↔ IsZero c.pt :=
+  ⟨fun _ ↦ CokernelCofork.IsColimit.isZero_of_epi hc, epi_of_isZero_cokernel' c hc⟩
+
 lemma epi_of_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (h : IsZero (cokernel f)) :
     Epi f :=
   epi_of_isZero_cokernel' _ (cokernelIsCokernel _) h
+
+lemma epi_iff_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] :
+    Epi f ↔ IsZero (cokernel f) :=
+  epi_iff_isZero_cokernel' _ (colimit.isColimit _)
 
 namespace IsIso
 

@@ -44,7 +44,7 @@ instance [Ring R] [IsDomain R] : IsDomain R⟦X⟧ :=
 variable [CommRing R] [IsDomain R]
 
 /-- The ideal spanned by the variable in the power series ring
- over an integral domain is a prime ideal. -/
+over an integral domain is a prime ideal. -/
 theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
   suffices Ideal.span ({X} : Set R⟦X⟧) = RingHom.ker (constantCoeff R) by
     rw [this]
@@ -68,10 +68,7 @@ theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a
   rw [PowerSeries.ext_iff] at *
   intro n
   specialize h n
-  rw [coeff_rescale, coeff_rescale, mul_eq_mul_left_iff] at h
-  apply h.resolve_right
-  intro h'
-  exact ha (pow_eq_zero h')
+  rwa [coeff_rescale, coeff_rescale, mul_right_inj' <| pow_ne_zero _ ha] at h
 
 end IsDomain
 

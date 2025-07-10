@@ -30,16 +30,17 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
   {n : ℕ∞}
 
-
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
-/-- Characterization of differentiable functions into a vector bundle. -/
+
+/-- Characterization of differentiable functions into a vector bundle.
+Version at a point within a set -/
 theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
       MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
       MDifferentiableWithinAt IM 𝓘(𝕜, F)
         (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
-  simp (config := { singlePass := true }) only [mdifferentiableWithinAt_iff_target]
+  simp +singlePass only [mdifferentiableWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
@@ -55,8 +56,79 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     exact hx
   · simp only [mfld_simps]
 
-end
+/-- Characterization of differentiable functions into a vector bundle.
+Version at a point -/
+theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
+    MDifferentiableAt IM (IB.prod 𝓘(𝕜, F)) f x₀ ↔
+      MDifferentiableAt IM IB (fun x => (f x).proj) x₀ ∧
+      MDifferentiableAt IM 𝓘(𝕜, F)
+        (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f
 
+/-- Characterization of differentiable sections of a vector bundle at a point within a set
+in terms of the preferred trivialization at that point. -/
+theorem mdifferentiableWithinAt_section (s : Π b, E b) {u : Set B} {b₀ : B} :
+    MDifferentiableWithinAt IB (IB.prod 𝓘(𝕜, F)) (fun b ↦ TotalSpace.mk' F b (s b)) u b₀ ↔
+      MDifferentiableWithinAt IB 𝓘(𝕜, F) (fun b ↦ (trivializationAt F E b₀ (s b)).2) u b₀ := by
+  rw [mdifferentiableWithinAt_totalSpace]
+  change MDifferentiableWithinAt _ _ id _ _ ∧ _ ↔ _
+  simp [mdifferentiableWithinAt_id]
+
+/-- Characterization of differentiable sections of a vector bundle at a point within a set
+in terms of the preferred trivialization at that point. -/
+theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
+    MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun b ↦ TotalSpace.mk' F b (s b)) b₀ ↔
+      MDifferentiableAt IB 𝓘(𝕜, F) (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
+
+namespace Bundle
+
+variable (E) {IB}
+
+theorem mdifferentiable_proj : MDifferentiable (IB.prod 𝓘(𝕜, F)) IB (π F E) := fun x ↦ by
+  have : MDifferentiableAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) id x := mdifferentiableAt_id
+  rw [mdifferentiableAt_totalSpace] at this
+  exact this.1
+
+theorem mdifferentiableOn_proj {s : Set (TotalSpace F E)} :
+    MDifferentiableOn (IB.prod 𝓘(𝕜, F)) IB (π F E) s :=
+  (mdifferentiable_proj E).mdifferentiableOn
+
+theorem mdifferentiableAt_proj {p : TotalSpace F E} :
+    MDifferentiableAt (IB.prod 𝓘(𝕜, F)) IB (π F E) p :=
+  (mdifferentiable_proj E).mdifferentiableAt
+
+theorem mdifferentiableWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
+    MDifferentiableWithinAt (IB.prod 𝓘(𝕜, F)) IB (π F E) s p :=
+  (mdifferentiableAt_proj E).mdifferentiableWithinAt
+
+variable (𝕜) [∀ x, AddCommMonoid (E x)]
+variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
+
+theorem mdifferentiable_zeroSection : MDifferentiable IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) := by
+  intro x
+  unfold zeroSection
+  rw [mdifferentiableAt_section]
+  apply (mdifferentiableAt_const (c := 0)).congr_of_eventuallyEq
+  filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
+    (mem_baseSet_trivializationAt F E x)] with y hy
+    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
+
+theorem mdifferentiableOn_zeroSection {t : Set B} :
+    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) t :=
+  (mdifferentiable_zeroSection _ _).mdifferentiableOn
+
+theorem mdifferentiableAt_zeroSection {x : B} :
+    MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) x :=
+  (mdifferentiable_zeroSection _ _).mdifferentiableAt
+
+theorem mdifferentiableWithinAt_zeroSection {t : Set B} {x : B} :
+    MDifferentiableWithinAt IB (IB.prod 𝓘(𝕜, F)) (zeroSection F E) t x :=
+  (mdifferentiable_zeroSection _ _ x).mdifferentiableWithinAt
+
+end Bundle
+
+end
 
 section
 

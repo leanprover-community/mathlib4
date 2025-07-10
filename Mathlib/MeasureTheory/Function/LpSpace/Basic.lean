@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 This file provides the space `Lp E p μ` as the subtype of elements of `α →ₘ[μ] E`
 (see `MeasureTheory.AEEqFun`) such that `eLpNorm f p μ` is finite.
 For `1 ≤ p`, `eLpNorm` defines a norm and `Lp` is a complete metric space
-(the latter is proved at `Mathlib.MeasureTheory.Function.LpSpace.Complete`).
+(the latter is proved at `Mathlib/MeasureTheory/Function/LpSpace/Complete.lean`).
 
 ## Main definitions
 
@@ -172,14 +172,15 @@ theorem toLp_coeFn (f : Lp E p μ) (hf : MemLp f p μ) : hf.toLp f = f := by
 theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
   f.prop
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem eLpNorm_ne_top (f : Lp E p μ) : eLpNorm f p μ ≠ ∞ :=
   (eLpNorm_lt_top f).ne
 
-@[measurability]
+@[fun_prop, measurability]
 protected theorem stronglyMeasurable (f : Lp E p μ) : StronglyMeasurable f :=
   f.val.stronglyMeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 protected theorem aestronglyMeasurable (f : Lp E p μ) : AEStronglyMeasurable f μ :=
   f.val.aestronglyMeasurable
 
@@ -325,12 +326,12 @@ theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp 
   have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h p
   rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
     ENNReal.toNNReal_coe] at this
-  · exact (Lp.memLp _).eLpNorm_ne_top
-  · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (Lp.memLp _).eLpNorm_ne_top
+  · finiteness
+  · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (by finiteness)
 
 theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : ‖f‖ ≤ c * ‖g‖ := by
-  rcases le_or_lt 0 c with hc | hc
+  rcases le_or_gt 0 c with hc | hc
   · lift c to ℝ≥0 using hc
     exact NNReal.coe_le_coe.mpr (nnnorm_le_mul_nnnorm_of_ae_le_mul h)
   · simp only [norm_def]
@@ -340,7 +341,7 @@ theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
 theorem norm_le_norm_of_ae_le {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     ‖f‖ ≤ ‖g‖ := by
   rw [norm_def, norm_def]
-  exact ENNReal.toReal_mono (eLpNorm_ne_top _) (eLpNorm_mono_ae h)
+  exact ENNReal.toReal_mono (by finiteness) (eLpNorm_mono_ae h)
 
 theorem mem_Lp_of_nnnorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Lp E p μ :=
@@ -371,7 +372,7 @@ theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
   by_cases hμ : μ = 0
   · by_cases hp : p.toReal⁻¹ = 0
     · simp [hp, hμ, nnnorm_def]
-    · simp [hμ, nnnorm_def, Real.zero_rpow hp]
+    · simp [hμ, nnnorm_def]
   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
   refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
@@ -414,7 +415,7 @@ variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
   rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_congr_ae (AEEqFun.coeFn_smul _ _)]
-  exact eLpNorm_const_smul_le.trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top f.prop
+  exact eLpNorm_const_smul_le.trans_lt <| (by finiteness)
 
 variable (𝕜 E p μ)
 
@@ -445,11 +446,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
 instance instIsBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp E p μ) :=
-  -- TODO: add `IsBoundedSMul.of_nnnorm_smul_le`
-  IsBoundedSMul.of_norm_smul_le fun r f => by
-    suffices ‖r • f‖ₑ ≤ ‖r‖ₑ * ‖f‖ₑ by
-      -- squeezed for performance reasons
-      simpa only [ge_iff_le, enorm, ←ENNReal.coe_mul, ENNReal.coe_le_coe] using this
+  IsBoundedSMul.of_enorm_smul_le fun r f => by
     simpa only [eLpNorm_congr_ae (coeFn_smul _ _), enorm_def]
       using eLpNorm_const_smul_le (c := r) (f := f) (p := p)
 
@@ -476,6 +473,25 @@ theorem toLp_const_smul {f : α → E} (c : 𝕜) (hf : MemLp f p μ) :
 
 end MemLp
 
+variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+
+theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞) :
+    MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ := by
+  refine ⟨(hf.1.enorm.pow_const q.toReal).aestronglyMeasurable, ?_⟩
+  by_cases q_top : q = ∞
+  · simp [q_top]
+  by_cases q_zero : q = 0
+  · simp only [q_zero, ENNReal.toReal_zero]
+    by_cases p_zero : p = 0
+    · simp [p_zero]
+    rw [ENNReal.div_zero p_zero]
+    simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using (memLp_top_const_enorm (by simp)).2
+  rw [eLpNorm_enorm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
+  apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
+  rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
+    mul_one]
+  exact hf.2.ne
+
 theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) :
     MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ := by
   refine ⟨(hf.1.norm.aemeasurable.pow_const q.toReal).aestronglyMeasurable, ?_⟩
@@ -496,6 +512,18 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.norm_rpow_div := MemLp.norm_rpow_div
 
+theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
+    (q_top : q ≠ ∞) : MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
+  refine ⟨fun h => ?_, fun h => h.enorm_rpow_div q⟩
+  apply (memLp_enorm_iff hf).1
+  convert h.enorm_rpow_div q⁻¹ using 1
+  · ext x
+    have : q.toReal * q.toReal⁻¹ = 1 :=
+      CommGroupWithZero.mul_inv_cancel q.toReal <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
+    simp [← ENNReal.rpow_mul, this, ENNReal.rpow_one]
+  · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
+      mul_one]
+
 theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
     (q_top : q ≠ ∞) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   refine ⟨fun h => ?_, fun h => h.norm_rpow_div q⟩
@@ -504,12 +532,17 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
   · ext x
     rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg (norm_nonneg _), ← Real.rpow_mul (abs_nonneg _),
       ENNReal.toReal_inv, mul_inv_cancel₀, abs_of_nonneg (norm_nonneg _), Real.rpow_one]
-    simp [ENNReal.toReal_eq_zero_iff, not_or, q_zero, q_top]
+    simp [ENNReal.toReal_eq_zero_iff, q_zero, q_top]
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
 
 @[deprecated (since := "2025-02-21")]
 alias memℒp_norm_rpow_iff := memLp_norm_rpow_iff
+
+theorem MemLp.enorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
+  convert hf.enorm_rpow_div p
+  rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 
 theorem MemLp.norm_rpow {f : α → E} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun x : α => ‖f x‖ ^ p.toReal) 1 μ := by
@@ -622,6 +655,12 @@ theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableS
 @[deprecated (since := "2025-02-21")]
 alias MeasureTheory.Memℒp.of_comp_antilipschitzWith := MeasureTheory.MemLp.of_comp_antilipschitzWith
 
+lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜]
+    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E}
+    (h_Lp : MemLp f p μ) (L : E →L[𝕜] F) :
+    MemLp (fun x ↦ L (f x)) p μ :=
+  LipschitzWith.comp_memLp L.lipschitz (by simp) h_Lp
+
 namespace LipschitzWith
 
 theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ : Measure α}
@@ -720,7 +759,7 @@ theorem _root_.MeasureTheory.memLp_re_im_iff {f : α → K} :
       MemLp f p μ := by
   refine ⟨?_, fun hf => ⟨hf.re, hf.im⟩⟩
   rintro ⟨hre, him⟩
-  convert MeasureTheory.MemLp.add (E := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
+  convert MeasureTheory.MemLp.add (ε := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
   ext1 x
   rw [Pi.add_apply, mul_comm, RCLike.re_add_im]
 
@@ -877,7 +916,7 @@ theorem mul_meas_ge_le_pow_enorm' (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_
 theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : μ {x | ε ≤ ‖f x‖₊} ≤ ε⁻¹ ^ p.toReal * ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
-    meas_ge_le_mul_pow_eLpNorm μ hp_ne_zero hp_ne_top (Lp.aestronglyMeasurable f) hε
+    meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top (Lp.aestronglyMeasurable f) hε (by simp)
 
 @[deprecated (since := "2025-01-20")] alias pow_mul_meas_ge_le_norm := pow_mul_meas_ge_le_enorm
 @[deprecated (since := "2025-01-20")] alias mul_meas_ge_le_pow_norm := mul_meas_ge_le_pow_enorm

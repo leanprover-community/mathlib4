@@ -44,7 +44,7 @@ export LeOnePart (leOnePart)
 export PosPart (posPart)
 export NegPart (negPart)
 
-@[inherit_doc] postfix:max "⁺ᵐ " => OneLePart.oneLePart
+@[inherit_doc] postfix:max "⁺ᵐ" => OneLePart.oneLePart
 @[inherit_doc] postfix:max "⁻ᵐ" => LeOnePart.leOnePart
 @[inherit_doc] postfix:max "⁺" => PosPart.posPart
 @[inherit_doc] postfix:max "⁻" => NegPart.negPart

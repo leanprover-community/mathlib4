@@ -170,7 +170,7 @@ on `Set β`. -/
 @[to_additive
 "An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β`"]
-protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
+protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
@@ -357,8 +357,8 @@ variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
 lemma smul_graphOn (x : α × β) (s : Set α) (f : F) :
     x • s.graphOn f = (x.1 • s).graphOn fun a ↦ x.2 / f x.1 * f a := by
   ext ⟨a, b⟩
-  simp [mem_smul_set_iff_inv_smul_mem, Prod.ext_iff, and_comm (a := _ = a), inv_mul_eq_iff_eq_mul,
-    mul_left_comm _ _⁻¹, eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
+  simp [mem_smul_set_iff_inv_smul_mem, inv_mul_eq_iff_eq_mul, mul_left_comm _ _⁻¹,
+    eq_inv_mul_iff_mul_eq, ← mul_div_right_comm, div_eq_iff_eq_mul, mul_comm b]
 
 @[to_additive]
 lemma smul_graphOn_univ (x : α × β) (f : F) :

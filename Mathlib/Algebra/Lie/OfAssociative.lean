@@ -20,12 +20,12 @@ make such a definition in this file.
 
 ## Main definitions
 
- * `LieAlgebra.ofAssociativeAlgebra`
- * `LieAlgebra.ofAssociativeAlgebraHom`
- * `LieModule.toEnd`
- * `LieAlgebra.ad`
- * `LinearEquiv.lieConj`
- * `AlgEquiv.toLieEquiv`
+* `LieAlgebra.ofAssociativeAlgebra`
+* `LieAlgebra.ofAssociativeAlgebraHom`
+* `LieModule.toEnd`
+* `LieAlgebra.ad`
+* `LinearEquiv.lieConj`
+* `AlgEquiv.toLieEquiv`
 
 ## Tags
 
@@ -232,6 +232,14 @@ lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ =
   · rw [← sub_eq_zero]
     refine h _ fun m ↦ ?_
     rw [sub_lie, sub_eq_zero, ← toEnd_apply_apply R, ← toEnd_apply_apply R, hxy]
+
+instance [IsFaithful R L M] {L' : LieSubalgebra R L} :
+    IsFaithful R L' M := by
+  refine ⟨(?_ : Injective (toEnd R L M ∘ ((↑) : L' → L)))⟩
+  exact IsFaithful.injective_toEnd.comp Subtype.val_injective
+
+instance : IsFaithful R (Module.End R M) M where
+  injective_toEnd := by simpa using injective_id
 
 end LieModule
 

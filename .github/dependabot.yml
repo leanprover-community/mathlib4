@@ -8,3 +8,13 @@ updates:
     schedule:
       # Check for updates to GitHub Actions every month
       interval: "monthly"
+    groups:
+      # group updates into single PRs since we want to update both build.in.yml and its outputs at the same time
+      actions-version-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+      actions-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"

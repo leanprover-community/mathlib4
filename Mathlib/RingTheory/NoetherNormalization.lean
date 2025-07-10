@@ -79,8 +79,7 @@ noncomputable abbrev T1 (c : k) :
 private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
   ext i v
-  cases i using Fin.cases <;>
-  simp [Fin.succ_ne_zero]
+  cases i using Fin.cases <;> simp
 
 /- `T1 f 1` leads to an algebra equiv `T f`. -/
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
@@ -106,7 +105,7 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     pow_ne_zero (v i.succ) (leadingCoeff_ne_zero.mp <| by simp [add_comm, leadingCoeff_X_pow_add_C])
   rw [natDegree_mul (by simp [ha]) (mul_ne_zero (by simp) (Finset.prod_ne_zero_iff.mpr
     (fun i _ ↦ h i))), natDegree_mul (by simp) (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h i)),
-    natDegree_prod _  _ (fun i _ ↦ h i), natDegree_finSuccEquiv, degreeOf_C]
+    natDegree_prod _ _ (fun i _ ↦ h i), natDegree_finSuccEquiv, degreeOf_C]
   simpa only [natDegree_pow, zero_add, natDegree_X, mul_one, Fin.val_zero, pow_zero, one_mul,
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
@@ -119,7 +118,7 @@ private lemma degreeOf_t_neq_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support
   refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i)) (by omega)
 
-private lemma leadingCoeff_finSuccEquiv_t  :
+private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
     algebraMap k _ (coeff v f) := by
   rw [monomial_eq, Finsupp.prod_fintype]
@@ -179,7 +178,7 @@ private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (
   (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
 /- `hom1 f I` is integral. -/
-private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
+private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom1 f I).IsIntegral := by
   obtain u := T_leadingcoeff_isUnit f fne
   exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
     Submodule.smul_of_tower_mem _ u.unit⁻¹.val <| mem_map_of_mem _ <| mem_map_of_mem _ fi
@@ -195,7 +194,7 @@ private noncomputable abbrev eqv1 :
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
   calc
     _ = Ideal.map ((RingHom.id _).comp <| T f) I := by rw [id_comp, Ideal.map_coe]
-    _ = (I.map (T f)).map (RingHom.id _)  := by simp only [← Ideal.map_map, Ideal.map_coe]
+    _ = (I.map (T f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
     _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
       congrFun (congrArg Ideal.map this.symm) (I.map (T f))
     _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
@@ -219,7 +218,7 @@ private noncomputable def hom2 : MvPolynomial (Fin n) k →ₐ[k] MvPolynomial (
   (eqv2 f I).toAlgHom.comp ((eqv1 f I).toAlgHom.comp ((hom1 f I).restrictScalars k))
 
 /- `hom2 f I` is integral. -/
-private lemma hom2_isIntegral (fne : f ≠ 0) (fi : f ∈ I): (hom2 f I).IsIntegral :=
+private lemma hom2_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom2 f I).IsIntegral :=
   ((hom1_isIntegral f I fne fi).trans _ _ <| isIntegral_of_surjective _ (eqv1 f I).surjective).trans
     _ _ <| isIntegral_of_surjective _ (eqv2 f I).surjective
 

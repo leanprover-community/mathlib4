@@ -25,7 +25,7 @@ protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Fil
 
 variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_projIcc : Continuous (projIcc a b h) :=
   (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
 
@@ -41,17 +41,19 @@ theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h 
   isQuotientMap_projIcc.continuous_iff.symm
 
 /-- See Note [continuity lemma statement]. -/
+@[fun_prop]
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)
     (hg : Continuous g) : Continuous fun a => IccExtend h (f a) (g a) :=
   show Continuous (↿f ∘ fun x => (x, projIcc a b h (g x)))
   from hf.comp <| continuous_id.prodMk <| continuous_projIcc.comp hg
 
 /-- A useful special case of `Continuous.IccExtend`. -/
-@[continuity]
+@[continuity, fun_prop]
 protected theorem Continuous.Icc_extend' {f : Icc a b → β} (hf : Continuous f) :
     Continuous (IccExtend h f) :=
   hf.comp continuous_projIcc
 
+@[fun_prop]
 theorem ContinuousAt.IccExtend {x : γ} (f : γ → Icc a b → β) {g : γ → α}
     (hf : ContinuousAt (↿f) (x, projIcc a b h (g x))) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => IccExtend h (f a) (g a)) x :=

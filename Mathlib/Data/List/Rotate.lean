@@ -55,8 +55,8 @@ theorem length_rotate' : ∀ (l : List α) (n : ℕ), (l.rotate' n).length = l.l
 
 theorem rotate'_eq_drop_append_take :
     ∀ {l : List α} {n : ℕ}, n ≤ l.length → l.rotate' n = l.drop n ++ l.take n
-  | [], n, h => by simp [drop_append_of_le_length h]
-  | l, 0, h => by simp [take_append_of_le_length h]
+  | [], n, h => by simp
+  | l, 0, h => by simp
   | a :: l, n + 1, h => by
     have hnl : n ≤ l.length := le_of_succ_le_succ h
     have hnl' : n ≤ (l ++ [a]).length := by
@@ -189,7 +189,7 @@ theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : L
 theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     (l.rotate n)[m]? = l[(m + n) % l.length]? := by
   rw [rotate_eq_drop_append_take_mod]
-  rcases lt_or_le m (l.drop (n % l.length)).length with hm | hm
+  rcases lt_or_ge m (l.drop (n % l.length)).length with hm | hm
   · rw [getElem?_append_left hm, getElem?_drop, ← add_mod_mod]
     rw [length_drop, Nat.lt_sub_iff_add_lt] at hm
     rw [mod_eq_of_lt hm, Nat.add_comm]

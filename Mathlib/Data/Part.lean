@@ -114,7 +114,9 @@ instance : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
-theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
+theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
+
+@[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
 
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
@@ -158,7 +160,7 @@ theorem eq_some_iff {a : α} {o : Part α} : o = some a ↔ a ∈ o :=
   ⟨fun e => e.symm ▸ mem_some _, fun ⟨h, e⟩ => e ▸ ext' (iff_true_intro h) fun _ _ => rfl⟩
 
 theorem eq_none_iff {o : Part α} : o = none ↔ ∀ a, a ∉ o :=
-  ⟨fun e => e.symm ▸ not_mem_none, fun h => ext (by simpa)⟩
+  ⟨fun e => e.symm ▸ notMem_none, fun h => ext (by simpa)⟩
 
 theorem eq_none_iff' {o : Part α} : o = none ↔ ¬o.Dom :=
   ⟨fun e => e.symm ▸ id, fun h => eq_none_iff.2 fun _ h' => h h'.fst⟩
@@ -422,7 +424,7 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
 
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
-  simp only [Part.mem_bind_iff, exists_prop]
+  simp only [Part.mem_bind_iff]
   refine ⟨?_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
   rintro ⟨a, ha, hb⟩
   rwa [Part.get_eq_of_mem ha]
@@ -489,13 +491,13 @@ instance : LawfulMonad
     (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   seqRight_eq x y := ext'
-    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
+    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·)])
     (fun _ _ => rfl)
   pure_seq x y := ext'
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
     (fun _ _ => rfl)
   bind_map x y := ext'
-    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, get, (· <$> ·)] )
+    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)] )
     (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
@@ -527,10 +529,10 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
   constructor <;> intro h
   · intro a h' b
     have h := h b
-    simp only [and_imp, exists_prop, bind_eq_bind, mem_bind_iff, exists_imp] at h
+    simp only [and_imp, bind_eq_bind, mem_bind_iff, exists_imp] at h
     apply h _ h'
   · intro b h'
-    simp only [exists_prop, bind_eq_bind, mem_bind_iff] at h'
+    simp only [bind_eq_bind, mem_bind_iff] at h'
     rcases h' with ⟨a, h₀, h₁⟩
     apply h _ h₀ _ h₁
 
@@ -571,7 +573,8 @@ section Instances
 /-!
 We define several instances for constants and operations on `Part α` inherited from `α`.
 
-This section could be moved to a separate file to avoid the import of `Mathlib.Algebra.Group.Defs`.
+This section could be moved to a separate file to avoid the import of
+`Mathlib/Algebra/Notation/Defs.lean`.
 -/
 
 @[to_additive]

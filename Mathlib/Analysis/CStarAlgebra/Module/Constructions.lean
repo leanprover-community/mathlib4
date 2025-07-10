@@ -115,11 +115,11 @@ lemma prod_norm_le_norm_add (x : C⋆ᵐᵒᵈ(A, E × F)) : ‖x‖ ≤ ‖x.1�
 variable [StarOrderedRing A]
 
 noncomputable instance : CStarModule A C⋆ᵐᵒᵈ(A, E × F) where
-  inner x y := inner x.1 y.1 + inner x.2 y.2
+  inner x y := ⟪x.1, y.1⟫_A + ⟪x.2, y.2⟫_A
   inner_add_right {x y z} := by simpa using add_add_add_comm ..
   inner_self_nonneg := add_nonneg CStarModule.inner_self_nonneg CStarModule.inner_self_nonneg
   inner_self {x} := by
-    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h, CStarModule.inner_zero_left]⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     apply equiv A (E × F) |>.injective
     ext
     · refine inner_self.mp <| le_antisymm ?_ (inner_self_nonneg (A := A))
@@ -135,8 +135,8 @@ lemma prod_inner (x y : C⋆ᵐᵒᵈ(A, E × F)) : ⟪x, y⟫_A = ⟪x.1, y.1�
 
 lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ(A, E × F)) : max ‖x.1‖ ‖x.2‖ ≤ ‖x‖ := by
   rw [prod_norm]
-  simp only [equiv_fst, norm_eq_sqrt_norm_inner_self (A := A) (E := E),
-    norm_eq_sqrt_norm_inner_self (A := A) (E := F), equiv_snd, max_le_iff, norm_nonneg,
+  simp only [norm_eq_sqrt_norm_inner_self (A := A) (E := E),
+    norm_eq_sqrt_norm_inner_self (A := A) (E := F), max_le_iff, norm_nonneg,
     Real.sqrt_le_sqrt_iff]
   constructor
   all_goals
@@ -189,7 +189,7 @@ end Aux
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_prod_eq_aux isBounded_prod_iff_aux
 
-instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (normedSpaceCore A)
+noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (normedSpaceCore A)
 
 end Prod
 
@@ -223,11 +223,11 @@ variable [StarOrderedRing A]
 
 open Finset in
 noncomputable instance : CStarModule A C⋆ᵐᵒᵈ(A, Π i, E i) where
-  inner x y := ∑ i, inner (x i) (y i)
-  inner_add_right {x y z} := by simp [inner_sum_right, sum_add_distrib]
+  inner x y := ∑ i, ⟪x i, y i⟫_A
+  inner_add_right {x y z} := by simp [sum_add_distrib]
   inner_self_nonneg := sum_nonneg <| fun _ _ ↦ CStarModule.inner_self_nonneg
   inner_self {x} := by
-    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h, CStarModule.inner_zero_left]⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     ext i
     refine inner_self.mp <| le_antisymm (le_of_le_of_eq ?_ h) inner_self_nonneg
     exact single_le_sum (fun i _ ↦ CStarModule.inner_self_nonneg (A := A) (x := x i)) (mem_univ _)
@@ -313,7 +313,7 @@ end Aux
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_pi_eq_aux isBounded_pi_iff_aux
 
-instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore (normedSpaceCore A)
+noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore (normedSpaceCore A)
 
 end Pi
 
@@ -340,7 +340,7 @@ instance instCStarModuleComplex : CStarModule ℂ E where
     rw [← inner_self_ofReal_re, RCLike.ofReal_nonneg]
     exact inner_self_nonneg
   inner_self := by simp
-  inner_op_smul_right := by simp [inner_smul_right, mul_comm]
+  inner_op_smul_right := by simp [inner_smul_right]
   inner_smul_right_complex := by simp [inner_smul_right, smul_eq_mul]
   star_inner _ _ := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
