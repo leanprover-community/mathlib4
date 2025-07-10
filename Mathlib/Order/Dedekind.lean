@@ -17,18 +17,17 @@ We provide an explicit construction, as the set of "lower cuts" of the order, me
 `lowerBounds (upperBounds s) = s`. The dual construction as upper cuts, or sets with
 `upperBounds (lowerBounds s) = s` would also work; keeping this in mind, we keep the API symmetric.
 
+The construction `DedekindCut.factorEmbedding` and the theorem `DedekindCut.factorEmbedding_factors`
+formalize the notion that `DedekindCut α` is the "smallest" complete lattice containing `α`.
+
 ## Todo
 
-- Prove that any embedding into a complete lattice factors through `DedekindCut α`.
 - Build the order isomorphism `DedekindCut ℚ ≃o ℝ`.
 -/
 
 open Set
 
-variable {α : Type*} {s t : Set α}
-
-section Preorder
-variable [Preorder α]
+variable {α β γ : Type*} {s t : Set α} [Preorder α] [PartialOrder β]
 
 /-! ### Lower cuts and upper cuts -/
 
@@ -164,6 +163,22 @@ theorem lowerCut_ssubset_iff_ssubset_upperCut :
 theorem lowerCut_eq_iff_upperCut_eq : A.lowerCut = B.lowerCut ↔ A.upperCut = B.upperCut := by
   simp [subset_antisymm_iff, lowerCut_subset_iff_subset_upperCut, and_comm]
 
+theorem lowerCut_le_upperCut {x y : α} (hx : x ∈ A.lowerCut) (hy : y ∈ A.upperCut) : x ≤ y := by
+  rw [← upperBounds_lowerCut] at hy
+  exact hy hx
+
+variable (A) in
+theorem image_lowerCut_subset_lowerBounds {β : Type*} [Preorder β] {f : α → β} (hf : Monotone f) :
+    f '' A.lowerCut ⊆ lowerBounds (f '' A.upperCut) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  exact hf <| lowerCut_le_upperCut hx hy
+
+variable (A) in
+theorem image_upperCut_subset_upperBounds {β : Type*} [Preorder β] {f : α → β} (hf : Monotone f) :
+    f '' A.upperCut ⊆ upperBounds (f '' A.lowerCut) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  exact hf <| lowerCut_le_upperCut hy hx
+
 @[ext (iff := false)]
 theorem ext_lowerCut (h : A.lowerCut = B.lowerCut) : A = B := by
   cases A; cases B; simpa
@@ -183,28 +198,24 @@ instance : LE (DedekindCut α) where
   le A B := A.lowerCut ⊆ B.lowerCut
 
 instance : InfSet (DedekindCut α) where
-  sInf X := .of_lowerCuts (⋂₀ (lowerCut '' X)) (by
+  sInf X := .of_lowerCuts (⋂₀ (lowerCut '' X)) <| by
     apply sInter_mem_lowerCuts
     rintro A ⟨B, hB, rfl⟩
     exact lowerCut_mem_lowerCuts B
-  )
 
 instance : Min (DedekindCut α) where
-  min A B := .of_lowerCuts (A.lowerCut ∩ B.lowerCut) (by
+  min A B := .of_lowerCuts (A.lowerCut ∩ B.lowerCut) <| by
     apply inter_mem_lowerCuts <;> exact lowerCut_mem_lowerCuts _
-  )
 
 instance : SupSet (DedekindCut α) where
-  sSup X := .of_upperCuts (⋂₀ (upperCut '' X)) (by
+  sSup X := .of_upperCuts (⋂₀ (upperCut '' X)) <| by
     apply sInter_mem_upperCuts
     rintro A ⟨B, hB, rfl⟩
     exact upperCut_mem_upperCuts B
-  )
 
 instance : Max (DedekindCut α) where
-  max A B := .of_upperCuts (A.upperCut ∩ B.upperCut) (by
+  max A B := .of_upperCuts (A.upperCut ∩ B.upperCut) <| by
     apply inter_mem_upperCuts <;> exact upperCut_mem_upperCuts _
-  )
 
 instance : Bot (DedekindCut α) where
   bot := sInf univ
@@ -255,60 +266,83 @@ instance : CompleteLattice (DedekindCut α) where
     rw [le_iff_upperCut_subset, upperCut_top]
     exact sInter_subset_of_mem (mem_image_of_mem _ ⟨⟩)
 
-end DedekindCut
-
 /-! ### Order embedding -/
 
-namespace Order
-open DedekindCut
-
-/-- Convert an element into its Dedekind cut. -/
-def toDedekindCut (a : α) : DedekindCut α :=
+/-- Convert an element into its Dedekind cut (`Iic a`, `Ici a`). -/
+def ofElement (a : α) : DedekindCut α :=
   .of_lowerCuts _ (Iic_mem_lowerCuts a)
 
 @[simp]
-theorem lowerCut_toDedekindCut (a : α) : (toDedekindCut a).lowerCut = Iic a := rfl
+theorem lowerCut_ofElement (a : α) : (ofElement a).lowerCut = Iic a := rfl
 
 @[simp]
-theorem upperCut_toDedekindCut (a : α) : (toDedekindCut a).upperCut = Ici a := by
-  rw [← upperBounds_lowerCut, lowerCut_toDedekindCut, upperBounds_Iic]
+theorem upperCut_ofElement (a : α) : (ofElement a).upperCut = Ici a := by
+  rw [← upperBounds_lowerCut, lowerCut_ofElement, upperBounds_Iic]
 
 @[simp]
-theorem toDedekindCut_le_toDedekindCut {a b : α} :
-    toDedekindCut a ≤ toDedekindCut b ↔ a ≤ b := by
+theorem ofElement_le_ofElement {a b : α} :
+    ofElement a ≤ ofElement b ↔ a ≤ b := by
   simp [le_iff_lowerCut_subset]
 
-/-- `toDedekindCut` is injective up to antisymmetry. -/
-theorem toDedekindCut_eq_toDedekindCut {a b : α} :
-    toDedekindCut a = toDedekindCut b ↔ AntisymmRel (· ≤ ·) a b := by
+/-- `ofElement` is injective up to antisymmetry. -/
+theorem ofElement_eq_ofElement {a b : α} :
+    ofElement a = ofElement b ↔ AntisymmRel (· ≤ ·) a b := by
   simp [le_antisymm_iff, AntisymmRel]
 
-/-- `Order.toDedekindCutHom` as an `OrderHom`.
+/-- `ofElement` as an `OrderHom`.
 
 In the case of a partial order, this can be strengthened to an `OrderEmbedding`, see
-`Order.toDedekindCutEmbedding`. -/
+`Order.ofElementEmbedding`. -/
 @[simps!]
-def toDedekindCutHom : α →o DedekindCut α where
-  toFun := toDedekindCut
-  monotone' _ _ := toDedekindCut_le_toDedekindCut.2
+def ofElementHom : α →o DedekindCut α where
+  toFun := ofElement
+  monotone' _ _ := ofElement_le_ofElement.2
 
-end Order
-end Preorder
-
-namespace Order
-section PartialOrder
-variable [PartialOrder α]
+@[simp] theorem ofElementHom_coe : ⇑(@ofElementHom α _) = ofElement := rfl
 
 @[simp]
-theorem toDedekindCut_inj {a b : α} : toDedekindCut a = toDedekindCut b ↔ a = b := by
+theorem ofElement_inj {a b : β} : ofElement a = ofElement b ↔ a = b := by
   simp [le_antisymm_iff]
 
-/-- `Order.toDedekindCut` as an `OrderEmbedding`. -/
+/-- `Order.ofElement` as an `OrderEmbedding`. -/
 @[simps!]
-def toDedekindCutEmbedding : α ↪o DedekindCut α where
-  toFun := toDedekindCut
-  inj' _ _ := toDedekindCut_inj.1
-  map_rel_iff' := toDedekindCut_le_toDedekindCut
+def ofElementEmbedding : β ↪o DedekindCut β where
+  toFun := ofElement
+  inj' _ _ := ofElement_inj.1
+  map_rel_iff' := ofElement_le_ofElement
 
-end PartialOrder
-end Order
+@[simp] theorem ofElementEmbedding_coe : ⇑(@ofElementEmbedding β _) = ofElement := rfl
+
+variable [CompleteLattice γ]
+
+/-- Any order embedding `β ↪o γ` into a complete lattice factors through `DedekindCut β`. -/
+def factorEmbedding (f : β ↪o γ) : DedekindCut β ↪o γ :=
+  .ofMapLEIff (fun A ↦ sSup (f '' A.lowerCut)) <| by
+    refine fun A B ↦ ⟨fun h x hx ↦ ?_, fun h ↦ sSup_le_sSup (image_mono h)⟩
+    rw [← lowerBounds_upperCut, lowerBounds]
+    simp_rw [le_sSup_iff, sSup_le_iff, forall_mem_image] at h
+    intro y hy
+    rw [← f.le_iff_le]
+    exact h _ (image_upperCut_subset_upperBounds _ f.monotone (mem_image_of_mem _ hy)) hx
+
+/-- Note that `factorEmbedding f A = sInf (f '' A.upperCut)` is not necessarily true! -/
+theorem factorEmbedding_apply (f : β ↪o γ) (A : DedekindCut β) :
+    factorEmbedding f A = sSup (f '' A.lowerCut) :=
+  rfl
+
+@[simp]
+theorem factorEmbedding_ofElement (f : β ↪o γ) (x : β) : factorEmbedding f (ofElement x) = f x := by
+  rw [factorEmbedding_apply]
+  apply le_antisymm
+  · simp
+  · rw [le_sSup_iff]
+    refine fun y hy ↦ hy ?_
+    simp
+
+/-- The Dedekind-MacNeille completion of a partial order is the smallest complete lattice containing
+it, in the sense that any embedding into any complete lattice factors through it. -/
+theorem factorEmbedding_factors (f : β ↪o γ) :
+    ofElementEmbedding.trans (factorEmbedding f) = f := by
+  ext; simp
+
+end DedekindCut
