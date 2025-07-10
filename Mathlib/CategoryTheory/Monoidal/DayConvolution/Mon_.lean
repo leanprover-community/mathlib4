@@ -118,6 +118,18 @@ lemma ν_comp_one :
     Functor.LaxMonoidal.ε F := by
   simp [Mon_Class.one]
 
+variable {F} {G : C ⥤ V} [G.LaxMonoidal] (α : F ⟶ G)
+
+instance [α.IsMonoidal] :
+    IsMon_Hom (M := mk F) (N := mk G) (DayFunctor.Hom.mk α : mk F ⟶ mk G) where
+  mul_hom := by
+    apply tensor_hom_ext
+    intro x y
+    simp
+  one_hom := by
+    apply unit_hom_ext
+    simp
+
 end asMon_
 
 section toLaxMonoidal
@@ -147,6 +159,18 @@ instance laxMonoidalOfMon_Class : F.functor.LaxMonoidal where
       congrArg (·.natTrans.app _) (Mon_Class.mul_one F)
     dsimp at this
     simpa using this.symm =≫ F.functor.map (ρ_ x).hom
+
+variable {F} {G : C ⊛⥤ V} [Mon_Class G] (α : F ⟶ G)
+
+instance [IsMon_Hom α] : α.natTrans.IsMonoidal where
+  unit := by
+    haveI := congrArg (·.natTrans.app (𝟙_ C)) (IsMon_Hom.one_hom α)
+    dsimp at this
+    simp [this]
+  tensor x y := by
+    haveI := congrArg (·.natTrans.app (x ⊗ y)) (IsMon_Hom.mul_hom α)
+    dsimp at this
+    simp [this]
 
 end toLaxMonoidal
 
