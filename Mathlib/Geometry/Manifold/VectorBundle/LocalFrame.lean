@@ -87,7 +87,7 @@ section IsLocalFrame
 
 omit [IsManifold I 0 M] [VectorBundle 𝕜 F V]
 
-variable {ι : Type*} {s : ι → (x : M) → V x} {u u' : Set M} {x : M} {n : WithTop ℕ∞}
+variable {ι : Type*} {s s' : ι → (x : M) → V x} {u u' : Set M} {x : M} {n : WithTop ℕ∞}
 
 variable (I F n) in
 /-
@@ -101,6 +101,19 @@ structure IsLocalFrameOn (s : ι → (x : M) → V x) (u : Set M) where
   contMDiffOn (i : ι) : CMDiff[u] n (T% (s i))
 
 namespace IsLocalFrameOn
+
+/-- If `s = s'` on `u` and `s i` is a local frame on `u`, then so is `s'`. -/
+lemma congr (hs : IsLocalFrameOn I F n s u) (hs' : ∀ i, ∀ x, x ∈ u → s i x = s' i x) :
+    IsLocalFrameOn I F n s' u where
+  linearIndependent := by
+    intro x hx
+    have := hs.linearIndependent hx
+    simp_all
+  generating := by
+    intro x hx
+    have := hs.generating hx
+    simp_all
+  contMDiffOn i := (hs.contMDiffOn i).congr fun y hy ↦ by simp [hs' i y hy]
 
 lemma mono (hs : IsLocalFrameOn I F n s u) (hu'u : u' ⊆ u) : IsLocalFrameOn I F n s u' where
   linearIndependent := by
@@ -172,9 +185,59 @@ lemma repr_congr (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M,  V x}
     congr
   · simp [repr, hxe]
 
+/-- If `s` and `s'` are local frames which are equal at `x`,
+a section `t` has equal frame coefficients in them. -/
+lemma repr_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n s' u) {x}
+    (hss' : ∀ i, s i x = s' i x) {t : Π x : M,  V x} (i : ι) :
+    hs.repr i t x = hs'.repr i t x := by
+  by_cases hxe : x ∈ u
+  · simp [repr, hxe]
+    simp_all [toBasisAt]
+  · simp [repr, hxe]
+
 lemma repr_apply_zero_at (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} (ht : t x = 0) (i : ι) :
     hs.repr i t x = 0 := by
   simp [hs.repr_congr (t' := 0) ht]
+
+variable (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} [VectorBundle 𝕜 F V]
+
+set_option linter.style.commandStart false
+
+/-- Given a local frame `s i ` on `u`, if a section `t` has `C^k` coefficients on `u` w.r.t. `s i`,
+then `t` is `C^n` on `u`. -/
+lemma contMDiffOn_of_repr [Fintype ι] (h : ∀ i, CMDiff[u] n (hs.repr i t)) :
+    CMDiff[u] n (T% t) := by
+  have this (i) : CMDiff[u] n (T% (hs.repr i t • s i)) :=
+    (h i).smul_section (hs.contMDiffOn i)
+  have almost : CMDiff[u] n (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) :=
+    .sum_section fun i _ ↦ this i
+  apply almost.congr
+  intro y hy
+  simp [hs.repr_sum_eq t hy]
+
+/-- Given a local frame `s i` on `u`, if a section `t` has `C^k` coefficients at `x ∈ u`
+w.r.t. `s i`, then `t` is `C^n` at `x`. -/
+lemma contMDiffAt_of_repr_aux [Fintype ι]
+    (h : ∀ i, CMDiffAt n (hs.repr i t) x) (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x := by
+  have this (i) : CMDiffAt n (T% (hs.repr i t • s i)) x :=
+    (h i).smul_section (hs.contMDiffAt hu hx i)
+  have almost : CMDiffAt n
+      (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) x :=
+    .sum_section fun i _ ↦ this i
+  apply almost.congr_of_eventuallyEq ?_
+  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (hs.repr_spec (I := I) t hx hu)
+  exact Filter.eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx]
+
+/-- Given a local frame `s i` on a neighbourhood `u` of `x`,
+if a section `t` has `C^k` coefficients at `x` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
+lemma contMDiffAt_of_repr [Fintype ι]
+    (h : ∀ i, CMDiffAt n (hs.repr i t) x) (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x := by
+  obtain ⟨u', hu'u, hu', hxu'⟩ := mem_nhds_iff.mp hu
+  apply (hs.mono hu'u).contMDiffAt_of_repr_aux (fun i ↦ ?_) hu' hxu'
+  apply (h i).congr_of_eventuallyEq <| eventually_of_mem (hu'.mem_nhds hxu') (fun x hx ↦ ?_)
+  simp [repr, hx, hu'u hx, toBasisAt]
+
+set_option linter.style.commandStart true
 
 end IsLocalFrameOn
 
@@ -420,16 +483,10 @@ coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
 lemma contMDiffAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
     {x' : M} (hx : x' ∈ e.baseSet) :
-    CMDiffAt k (T% s) x' ↔ ∀ i, CMDiffAt k (b.localFrame_repr I e i s) x' := by
-  refine ⟨fun h i ↦ contMDiffAt_localFrame_repr hx b h i, fun hi ↦ ?_⟩
-  have this (i) : CMDiffAt k (T% ((b.localFrame_repr I e i) s • b.localFrame e i)) x' :=
-    (hi i).smul_section (contMDiffAt_localFrame_of_mem k e b i hx)
-  have almost : CMDiffAt k
-      (T% (fun x ↦ ∑ i, (b.localFrame_repr I e i) s x • b.localFrame e i x)) x' :=
-    .sum_section fun i _ ↦ this i
-  apply almost.congr_of_eventuallyEq ?_
-  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (b.localFrame_repr_spec (I := I) hx s)
-  exact eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx]
+    CMDiffAt k (T% s) x' ↔ ∀ i, CMDiffAt k (b.localFrame_repr I e i s) x' :=
+  ⟨fun h i ↦ contMDiffAt_localFrame_repr hx b h i,
+    fun hi ↦ (b.localFrame_isLocalFrameOn_baseSet I k e).contMDiffAt_of_repr hi
+    (e.open_baseSet.mem_nhds hx)⟩
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
@@ -445,8 +502,7 @@ lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [C
   have almost : CMDiff[t] k (T% rhs) := .sum_section fun i _ ↦ this i
   apply almost.congr
   intro y hy
-  congr
-  exact b.localFrame_repr_sum_eq s (ht' hy)
+  simpa using b.localFrame_repr_sum_eq s (ht' hy)
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
