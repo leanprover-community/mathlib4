@@ -465,7 +465,7 @@ lemma isCohenMacaulayLocalRing_def [IsLocalRing R] : IsCohenMacaulayLocalRing R 
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 --may be able to remove noetherian condition here by modify `IsLocalRing.depth_eq_of_ringEquiv`
-lemma isCohenMacaulayLocalRing_of_ringEquiv (R R' : Type*) [CommRing R] [CommRing R']
+lemma isCohenMacaulayLocalRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
     [IsNoetherianRing R] (e : R ≃+* R') [CM : IsCohenMacaulayLocalRing R] :
     IsCohenMacaulayLocalRing R' := by
   let _ := e.isLocalRing
@@ -535,6 +535,20 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
   exact (isCohenMacaulayLocalRing_iff _).mpr
     (isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay (p.map (algebraMap R Rₘ))
     (ModuleCat.of Rₘ Rₘ) (ModuleCat.of Rₚ Rₚ) (Algebra.linearMap Rₘ Rₚ))
+
+lemma isCohenMacaulayRing_of_ringEquiv (R R' : Type*) [CommRing R] [CommRing R']
+    [IsNoetherianRing R] (e : R ≃+* R') [CM : IsCohenMacaulayRing R] :
+    IsCohenMacaulayRing R' := by
+  apply (isCohenMacaulayRing_def R').mpr (fun p' hp' ↦ ?_)
+  let p := p'.comap e
+  have : Submonoid.map e.toMonoidHom p.primeCompl = p'.primeCompl := by
+    ext x
+    have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ by simpa [← eq],
+      fun h ↦ ⟨e.symm x, by simpa, RingEquiv.apply_symm_apply e x⟩⟩
+    simpa only [Ideal.primeCompl, p]
+  let _ := (isCohenMacaulayRing_def R).mp ‹_› p (Ideal.comap_isPrime e p')
+  exact isCohenMacaulayLocalRing_of_ringEquiv
+    (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
 
 open Ideal
 
