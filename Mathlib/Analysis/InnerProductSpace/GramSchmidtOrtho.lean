@@ -248,7 +248,7 @@ theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidt
 /-- **Gram-Schmidt Orthonormalization**:
 `gramSchmidtNormed` applied to a linearly independent set of vectors produces an orthornormal
 system of vectors. -/
-theorem gramSchmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
+theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
   unfold Orthonormal
   constructor
@@ -259,15 +259,20 @@ theorem gramSchmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f)
     repeat' right
     exact gramSchmidt_orthogonal 𝕜 f hij
 
+@[deprecated (since := "2025-07-10")] alias gramSchmidt_orthonormal := gramSchmidtNormed_orthonormal
+
 /-- **Gram-Schmidt Orthonormalization**:
 `gramSchmidtNormed` produces an orthornormal system of vectors after removing the vectors which
 become zero in the process. -/
-theorem gramSchmidt_orthonormal' (f : ι → E) :
+theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
     Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i := by
   refine ⟨fun i => gramSchmidtNormed_unit_length' i.prop, ?_⟩
   rintro i j (hij : ¬_)
   rw [Subtype.ext_iff] at hij
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
+
+@[deprecated (since := "2025-07-10")]
+alias gramSchmidt_orthonormal' := gramSchmidtNormed_orthonormal'
 
 open Submodule Set Order
 
@@ -296,12 +301,12 @@ size of the index set is the dimension of `E`, produce an orthonormal basis for 
 with the orthonormal set produced by the Gram-Schmidt orthonormalization process on the elements of
 `ι` for which this process gives a nonzero number. -/
 noncomputable def gramSchmidtOrthonormalBasis : OrthonormalBasis ι 𝕜 E :=
-  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
+  ((gramSchmidtNormed_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
     (v := gramSchmidtNormed 𝕜 f) h).choose
 
 theorem gramSchmidtOrthonormalBasis_apply {f : ι → E} {i : ι} (hi : gramSchmidtNormed 𝕜 f i ≠ 0) :
     gramSchmidtOrthonormalBasis h f i = gramSchmidtNormed 𝕜 f i :=
-  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
+  ((gramSchmidtNormed_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
     (v := gramSchmidtNormed 𝕜 f) h).choose_spec i hi
 
 theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
