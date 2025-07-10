@@ -174,7 +174,7 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
-@[to_additive (attr := simp)]
+@[to_additive] -- `(attr := simp)` can not be used here because `a` can not be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
 
@@ -191,7 +191,7 @@ theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).le_iff_eq
+  (one_le a).ge_iff_eq'
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
@@ -205,8 +205,11 @@ theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 
 @[to_additive]
-lemma one_not_mem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
-  bot_eq_one (α := α) ▸ bot_not_mem_iff
+lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+  bot_eq_one (α := α) ▸ bot_notMem_iff
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
+@[to_additive existing, deprecated (since := "2025-05-23")] alias one_not_mem_iff := one_notMem_iff
 
 alias NE.ne.pos := pos_of_ne_zero
 @[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
@@ -216,7 +219,7 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
   refine ⟨c, one_lt_iff_ne_one.2 ?_, hc.symm⟩
   rintro rfl
-  simp [hc, lt_irrefl] at h
+  simp [hc] at h
 
 @[to_additive]
 theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * c := by
@@ -305,6 +308,10 @@ theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
 instance (priority := 10) of_gt' {M : Type*} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     [One M] {y : M}
     [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
+
+theorem of_ge {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
+    {x y : M} [NeZero x] (h : x ≤ y) : NeZero y :=
+  of_pos <| lt_of_lt_of_le (pos x) h
 
 end NeZero
 

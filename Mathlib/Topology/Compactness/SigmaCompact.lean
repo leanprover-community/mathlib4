@@ -254,7 +254,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
         range_inl_union_range_inr]⟩⟩
 
 instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σi, X i) := by
+    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σ i, X i) := by
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩
@@ -418,7 +418,7 @@ def shiftr : CompactExhaustion X where
 @[simp]
 theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
   classical
-  exact Nat.find_comp_succ _ _ (not_mem_empty _)
+  exact Nat.find_comp_succ _ _ (notMem_empty _)
 
 theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,

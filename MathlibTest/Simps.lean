@@ -9,6 +9,9 @@ import Mathlib.Tactic.Common
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
 set_option autoImplicit true
+-- A few times, fields in this file are manually aligned. While there is some consensus this
+-- is not desired, it's not important enough to change right now.
+set_option linter.style.commandStart false
 
 open Lean Meta Elab Term Command Simps
 
@@ -43,7 +46,7 @@ initialize_simps_projections Foo2
 
 
 /--
-info: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
+trace: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
     Generated projections for Foo2:
     Projection elim: fun α x => (x.elim.1, x.elim.2)
 -/
@@ -290,7 +293,7 @@ run_cmd liftTermElabM <| do
     #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
 structure VeryPartiallyAppliedStr where
-  (data : ∀β, ℕ → β → MyProd ℕ β)
+  (data : ∀ β, ℕ → β → MyProd ℕ β)
 
 /- if we have a partially applied constructor, we treat it as if it were eta-expanded.
   (this is not very useful, and we could remove this behavior if convenient) -/
@@ -446,10 +449,20 @@ class CategoryStruct (obj : Type u) : Type (max u (v+1)) extends has_hom.{v} obj
 notation "𝟙" => CategoryStruct.id -- type as \b1
 infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
-@[simps] instance types : CategoryStruct (Type u) :=
+namespace types
+
+@[simps] instance : CategoryStruct (Type u) :=
   { hom  := fun a b ↦ (a → b)
     id   := fun _ ↦ id
     comp := fun f g ↦ g ∘ f }
+
+end types
+
+/--
+info: types.comp_def.{u} {X✝ Y✝ Z✝ : Type u} (f : X✝ → Y✝) (g : Y✝ → Z✝) (a✝ : X✝) : (f ≫ g) a✝ = (g ∘ f) a✝
+-/
+#guard_msgs in
+#check types.comp_def
 
 @[ext] theorem types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
 
@@ -927,17 +940,17 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 -- set_option trace.simps.debug true
 
-@[to_additive (attr := simps) instAddProd]
-instance instMulProd {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
+@[to_additive (attr := simps)]
+instance Prod.instMul {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `instMulProd_mul |>.isSome
-  guard <| env.find? `instAddProd_add |>.isSome
-  -- hasAttribute `to_additive `instMulProd
-  -- hasAttribute `to_additive `instMulProd_mul
-  guard <| hasSimpAttribute env `instMulProd_mul
-  guard <| hasSimpAttribute env `instAddProd_add
+  guard <| env.find? `Prod.mul_def |>.isSome
+  guard <| env.find? `Prod.add_def |>.isSome
+  -- hasAttribute `to_additive `Prod.instMul
+  -- hasAttribute `to_additive `Prod.mul_def
+  guard <| hasSimpAttribute env `Prod.mul_def
+  guard <| hasSimpAttribute env `Prod.add_def
 
 example {M N} [Mul M] [Mul N] (p q : M × N) : p * q = ⟨p.1 * q.1, p.2 * q.2⟩ := by simp
 example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2⟩ := by simp

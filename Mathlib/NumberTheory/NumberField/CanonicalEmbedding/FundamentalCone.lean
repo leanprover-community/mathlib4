@@ -321,7 +321,7 @@ theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (h�
 
 /-- The action of `torsion K` on `integerSet K`. -/
 @[simps]
-instance integerSetTorsionSMul: SMul (torsion K) (integerSet K) where
+instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
 instance : MulAction (torsion K) (integerSet K) where
@@ -458,7 +458,7 @@ theorem integerSetEquivNorm_apply_fst {n : ℕ}
     (a : {a : integerSet K // mixedEmbedding.norm (a : mixedSpace K) = n}) :
     ((integerSetEquivNorm K n a).1 : Ideal (𝓞 K)) =
       span {(preimageOfMemIntegerSet a.val : 𝓞 K)} := by
-  simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
+  simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.trans_def,
     Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
     Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
 
@@ -598,7 +598,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
       _   ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).1 ≤ ⌊s⌋₊} //
             intNorm (idealSetEquiv K J b).1 = i} :=
         (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
-  · simp_rw [lt_iff_not_le.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_le.mp
+  · simp_rw [lt_iff_not_ge.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_ge.mp
       (lt_of_lt_of_le hs (mixedEmbedding.norm_nonneg _)), and_false, Nat.card_of_isEmpty,
       zero_mul]
 

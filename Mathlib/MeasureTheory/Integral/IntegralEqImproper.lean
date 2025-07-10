@@ -5,7 +5,7 @@ Authors: Anatole Dedecker, Bhavik Mehta
 -/
 import Mathlib.Analysis.Calculus.Deriv.Support
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.MeasureTheory.Function.Jacobian
+import Mathlib.MeasureTheory.Function.JacobianOneDim
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.Unique
@@ -660,7 +660,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
       · rcases exists_nat_gt a with ⟨n, hn⟩
         exact ⟨n, IntegrableOn.mono_set f'int.norm (Ici_subset_Ioi.2 hn)⟩
     have B : ⋂ (n : ℕ), Ici (n : ℝ) = ∅ := by
-      apply eq_empty_of_forall_not_mem (fun x ↦ ?_)
+      apply eq_empty_of_forall_notMem (fun x ↦ ?_)
       simpa only [mem_iInter, mem_Ici, not_forall, not_le] using exists_nat_gt x
     simp only [B, Measure.restrict_empty, integral_zero_measure] at L
     exact (tendsto_order.1 L).2 _ εpos
@@ -1045,9 +1045,7 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
     refine
       intervalIntegral.integral_comp_smul_deriv''' (hf.mono i2)
         (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_subset _ ?_)
-        (hg1.mono_set <| image_subset _ ?_) (hg2.mono_set i2)
-    · rw [min_eq_left hb.le]; exact Ioo_subset_Ioi_self
-    · rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
+        (hg1.mono_set <| image_subset _ ?_) (hg2.mono_set i2) <;> assumption
   rw [integrableOn_Ici_iff_integrableOn_Ioi] at hg2
   have t2 := intervalIntegral_tendsto_integral_Ioi _ hg2 tendsto_id
   have : Ioi (f a) ⊆ f '' Ici a :=

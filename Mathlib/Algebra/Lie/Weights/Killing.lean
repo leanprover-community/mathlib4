@@ -197,7 +197,7 @@ Over a perfect field a much stronger result is true, see
 lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
     (hx' : _root_.IsNilpotent (ad K L x)) : x = 0 := by
   suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by
-    simp at this
+    simp only [ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.mem_bot] at this
     exact (AddSubmonoid.mk_eq_zero H.toAddSubmonoid).mp this
   simp only [LinearMap.mem_ker]
   ext y
@@ -396,9 +396,7 @@ lemma coe_corootSpace_eq_span_singleton' (α : Weight K H L) :
     rw [Submodule.span_span] at this
     rw [Submodule.mem_span_singleton] at this ⊢
     obtain ⟨t, rfl⟩ := this
-    use t
-    simp only [Subtype.ext_iff]
-    rw [Submodule.coe_smul_of_tower]
+    solve_by_elim
   · simp only [Submodule.span_singleton_le_iff_mem, LieSubmodule.mem_toSubmodule]
     exact cartanEquivDual_symm_apply_mem_corootSpace α
 
@@ -562,7 +560,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
     simp [← smul_assoc, f, hh, mul_comm _ (2 * (α h)⁻¹)]
 
 lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
-    {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (- α)) :
+    {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (-α)) :
     h = coroot α := by
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
   lift h to H using by simpa only [← ht.lie_e_f, hef] using H.smul_mem _ (Submodule.coe_mem _)
@@ -603,13 +601,12 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
   have P : ht.symm.HasPrimitiveVectorWith y (-2 : K) :=
     { ne_zero := by simpa [LieSubmodule.mk_eq_zero] using hy₀
-      lie_h := by simp only [neg_smul, neg_lie, neg_inj, ht.h_eq_coroot hα heα hfα,
+      lie_h := by simp only [neg_smul, neg_lie, ht.h_eq_coroot hα heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]
       lie_e := by rw [← lie_skew, hy, neg_zero] }
   obtain ⟨n, hn⟩ := P.exists_nat
-  replace hn : -2 = (n : ℤ) := by norm_cast at hn
-  omega
+  assumption_mod_cast
 
 /-- The embedded `sl₂` associated to a root. -/
 noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
@@ -618,7 +615,7 @@ noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
   exact t.toLieSubalgebra K
 
 lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e f : L}
-    (t : IsSl2Triple h e f) (hte : e ∈ rootSpace H α) (htf : f ∈ rootSpace H (- α)) {x : L} :
+    (t : IsSl2Triple h e f) (hte : e ∈ rootSpace H α) (htf : f ∈ rootSpace H (-α)) {x : L} :
     x ∈ sl2SubalgebraOfRoot hα ↔ ∃ c₁ c₂ c₃ : K, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
   simp only [sl2SubalgebraOfRoot, IsSl2Triple.mem_toLieSubalgebra_iff]
   generalize_proofs _ _ _ he hf

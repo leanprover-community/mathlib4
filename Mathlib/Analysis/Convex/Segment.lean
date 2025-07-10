@@ -59,12 +59,12 @@ def openSegment (x y : E) : Set E :=
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [segment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+  simp only [segment, image, Prod.exists, mem_setOf_eq, and_assoc]
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [openSegment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+  simp only [openSegment, image, Prod.exists, mem_setOf_eq, and_assoc]
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=
   Set.ext fun _ =>
@@ -126,7 +126,7 @@ theorem insert_endpoints_openSegment (x y : E) :
   simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
     openSegment_subset_segment, true_and]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
-  refine hb.eq_or_gt.imp ?_ fun hb' => ha.eq_or_gt.imp ?_ fun ha' => ?_
+  refine hb.eq_or_lt.imp ?_ fun hb' => ha.eq_or_lt.imp ?_ fun ha' => ?_
   · rintro rfl
     rw [← add_zero a, hab, one_smul, zero_smul, add_zero]
   · rintro rfl
@@ -503,7 +503,7 @@ theorem segment_eq_Icc' (x y : 𝕜) : [x -[𝕜] y] = Icc (min x y) (max x y) :
   · rw [segment_symm, segment_eq_Icc h, max_eq_left h, min_eq_right h]
 
 theorem openSegment_eq_Ioo' (hxy : x ≠ y) : openSegment 𝕜 x y = Ioo (min x y) (max x y) := by
-  rcases hxy.lt_or_lt with h | h
+  rcases hxy.lt_or_gt with h | h
   · rw [openSegment_eq_Ioo h, max_eq_right h.le, min_eq_left h.le]
   · rw [openSegment_symm, openSegment_eq_Ioo h, max_eq_left h.le, min_eq_right h.le]
 

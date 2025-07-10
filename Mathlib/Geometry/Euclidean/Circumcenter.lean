@@ -56,7 +56,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   simp only at hcc hcr hcccru
   let x := dist cc (orthogonalProjection s p)
   let y := dist p (orthogonalProjection s p)
-  have hy0 : y ≠ 0 := dist_orthogonalProjection_ne_zero_of_not_mem hp
+  have hy0 : y ≠ 0 := dist_orthogonalProjection_ne_zero_of_notMem hp
   let ycc₂ := (x * x + y * y - cr * cr) / (2 * y)
   let cc₂ := (ycc₂ / y) • (p -ᵥ orthogonalProjection s p : V) +ᵥ cc
   let cr₂ := √(cr * cr + ycc₂ * ycc₂)
@@ -150,8 +150,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
   | zero =>
     exfalso
     have h := Fintype.card_pos_iff.2 hne
-    rw [hn] at h
-    exact lt_irrefl 0 h
+    omega
   | succ m hm =>
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
@@ -189,7 +188,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         simp [Classical.em]
       rw [hr, ← affineSpan_insert_affineSpan]
       refine existsUnique_dist_eq_of_insert (Set.range_nonempty _) (subset_affineSpan ℝ _) ?_ hm
-      convert ha.not_mem_affineSpan_diff i Set.univ
+      convert ha.notMem_affineSpan_diff i Set.univ
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
       rw [← Set.image_eq_range]
       congr with j
@@ -269,12 +268,12 @@ theorem eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     p = s.circumcenter := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere, true_and] at h
+  simp only [hp, Sphere.ext_iff,
+    true_and] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere, true_and] at h
+  simp only [hr, forall_const,
+    Set.forall_mem_range, mem_sphere] at h
   exact h.1
 
 /-- Given a point in the affine span from which all the points are
@@ -283,11 +282,10 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     r = s.circumradius := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere] at h
+  simp only [hp, Sphere.ext_iff] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
+  simp only [hr, forall_const,
     Set.forall_mem_range, mem_sphere, true_and] at h
   exact h.2
 
@@ -803,7 +801,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
   by_cases hp : p = s.orthogonalProjectionSpan p
   · rw [Simplex.orthogonalProjectionSpan] at hp
     rw [hp₁, hp₂, ← hp]
-    simp only [true_or, eq_self_iff_true, smul_zero, vsub_self]
+    simp only [true_or, smul_zero, vsub_self]
   · have hz : ⟪p -ᵥ orthogonalProjection span_s p, p -ᵥ orthogonalProjection span_s p⟫ ≠ 0 := by
       simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁

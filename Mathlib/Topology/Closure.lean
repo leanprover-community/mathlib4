@@ -169,8 +169,10 @@ theorem isClosed_closure : IsClosed (closure s) :=
 theorem subset_closure : s ⊆ closure s :=
   subset_sInter fun _ => And.right
 
-theorem not_mem_of_not_mem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
@@ -370,6 +372,10 @@ theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
 theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 
+lemma DenseRange.of_comp {α β : Type*} {f : α → X} {g : β → α}
+    (h : DenseRange (f ∘ g)) : DenseRange f :=
+  Dense.mono (range_comp_subset_range g f) h
+
 /-- Complement to a singleton is dense if and only if the singleton is not an open set. -/
 theorem dense_compl_singleton_iff_not_open :
     Dense ({x}ᶜ : Set X) ↔ ¬IsOpen ({x} : Set X) := by
@@ -446,7 +452,7 @@ theorem frontier_inter_subset (s t : Set X) :
     frontier (s ∩ t) ⊆ frontier s ∩ closure t ∪ closure s ∩ frontier t := by
   simp only [frontier_eq_closure_inter_closure, compl_inter, closure_union]
   refine (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq ?_
-  simp only [inter_union_distrib_left, union_inter_distrib_right, inter_assoc,
+  simp only [inter_union_distrib_left, inter_assoc,
     inter_comm (closure t)]
 
 theorem frontier_union_subset (s t : Set X) :

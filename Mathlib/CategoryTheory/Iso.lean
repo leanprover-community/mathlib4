@@ -398,18 +398,14 @@ theorem of_isIso_comp_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] [I
 theorem of_isIso_fac_left {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso f]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso g := by
   rw [← w] at hh
-  haveI := hh
   exact of_isIso_comp_left f g
 
 theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso g]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso f := by
   rw [← w] at hh
-  haveI := hh
   exact of_isIso_comp_right f g
 
 end IsIso
-
-open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1

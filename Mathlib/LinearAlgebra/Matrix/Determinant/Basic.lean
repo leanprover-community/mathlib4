@@ -157,7 +157,6 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
                 rw [mul_comm, sign_mul (τ * σ⁻¹)]
                 simp only [Int.cast_mul, Units.val_mul]
               _ = ε τ := by simp only [inv_mul_cancel_right]
-
           simp_rw [Equiv.coe_mulRight, h]
           simp only [this])
     _ = det M * det N := by
@@ -238,7 +237,7 @@ theorem abs_det_submatrix_equiv_equiv {R : Type*}
     |(A.submatrix e₁ e₂).det| = |A.det| := by
   have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
   rw [hee]
-  show |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
+  change |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
   rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', abs_mul, abs_unit_intCast, one_mul]
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
@@ -428,7 +427,7 @@ theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j 
 multiplied by the coefficient of that row. -/
 theorem det_updateRow_sum (A : Matrix n n R) (j : n) (c : n → R) :
     (A.updateRow j (∑ k, (c k) • A k)).det = (c j) • A.det := by
-  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.not_mem_erase j) c (c j)
+  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.notMem_erase j) c (c j)
   rw [← Finset.univ.add_sum_erase _ (Finset.mem_univ j)]
 
 /-- If we replace a column of a matrix by a linear combination of its columns, then the determinant
@@ -551,7 +550,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const {A B : Matrix n n R} (c : n → R
       not_imp_comm.mp fun hi =>
         Finset.mem_erase.mpr
           ⟨mt (fun h : i = k => show c i = 0 from h.symm ▸ hk) hi, Finset.mem_univ i⟩)
-    k (Finset.not_mem_erase k Finset.univ) A_eq
+    k (Finset.notMem_erase k Finset.univ) A_eq
 
 theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
     ∀ (c : Fin n → R) (_hc : ∀ i : Fin n, k < i.succ → c i = 0)
@@ -742,7 +741,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   refine Finset.sum_congr rfl fun i _ => Fin.cases ?_ (fun i => ?_) i
   · simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
       Equiv.Perm.decomposeFin_symm_apply_zero, Fin.val_zero, one_mul,
-      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id, eq_self_iff_true,
+      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id,
       Equiv.Perm.decomposeFin_symm_apply_succ, Fin.succAbove_zero, Equiv.coe_refl, pow_zero,
       mul_smul_comm, of_apply]
   -- `univ_perm_fin_succ` gives a different embedding of `Perm (Fin n)` into
@@ -762,7 +761,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
         Equiv.Perm.decomposeFin_symm_apply_zero, Equiv.Perm.decomposeFin_symm_apply_succ]
     _ = -1 * (A (Fin.succ i) 0 * (Perm.sign σ : ℤ) •
         ∏ i', A ((Fin.succ i).succAbove (Fin.cycleRange i (σ i'))) i'.succ) := by
-      simp [mul_assoc, mul_comm, _root_.neg_mul, one_mul, zsmul_eq_mul, neg_inj, neg_smul,
+      simp [_root_.neg_mul, one_mul, zsmul_eq_mul, neg_smul,
         Fin.succAbove_cycleRange, mul_left_comm]
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along row 0. -/

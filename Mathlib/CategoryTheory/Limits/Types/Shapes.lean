@@ -90,9 +90,7 @@ def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
   isLimit :=
     { lift := fun _ _ => PUnit.unit
       fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by
-        funext
-        subsingleton }
+      uniq := fun _ _ _ => by constructor }
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
@@ -307,7 +305,6 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
           else g ((Equiv.ofInjective _ h₂).symm ⟨x, (this x).resolve_left h⟩)
       · intro T f g
         funext x
-        dsimp
         simp [h₁.eq_iff]
       · intro T f g
         funext x
@@ -414,7 +411,7 @@ end Small
 def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
-    { pt := Σj, F j
+    { pt := Σ j, F j
       ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}
   isColimit :=
     { desc := fun s x => s.ι.app ⟨x.1⟩ x.2
@@ -423,18 +420,18 @@ def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
         exact congr_fun (w ⟨j⟩) x }
 
 /-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
-noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σj, F j :=
+noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σ j, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
 @[elementwise (attr := simp)]
 theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type max v u) (j : J) :
-    Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
+    Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σ j, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 
 -- Porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type max v u) (j : J) :
-    (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
+    (↾fun x : F j => (⟨j, x⟩ : Σ j, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 
 section Fork
@@ -669,7 +666,6 @@ noncomputable def isLimitEquivBijective :
   invFun h := IsLimit.ofIsoLimit (Types.pullbackLimitCone f g).isLimit
     (Iso.symm (PullbackCone.ext (Equiv.ofBijective _ h).toIso))
   left_inv _ := Subsingleton.elim _ _
-  right_inv _ := rfl
 
 end PullbackCone
 
@@ -950,7 +946,6 @@ def MulticospanIndex.sectionsEquiv :
   invFun s :=
     { val := fun i ↦ s.val (.left i)
       property := fun r ↦ (s.property (.fst r)).trans (s.property (.snd r)).symm }
-  left_inv _ := rfl
   right_inv s := by
     ext (_|r)
     · rfl

@@ -135,6 +135,6 @@ theorem Set.Countable.dense_compl
   calc
     (ℵ₀ : Cardinal.{u}) < 𝔠 := aleph0_lt_continuum
     _ ≤ #(interior s) :=
-      continuum_le_cardinal_of_isOpen 𝕜 isOpen_interior (nmem_singleton_empty.1 H)
+      continuum_le_cardinal_of_isOpen 𝕜 isOpen_interior (notMem_singleton_empty.1 H)
     _ ≤ #s := mk_le_mk_of_subset interior_subset
     _ ≤ ℵ₀ := le_aleph0 hs

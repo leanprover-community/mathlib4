@@ -46,7 +46,6 @@ variable (rα rβ)
   unchanged.
 
   See `Sym2.GameAdd` for the unordered pair analog. -/
-
 inductive GameAdd : α × β → α × β → Prop
   | fst {a₁ a₂ b} : rα a₁ a₂ → GameAdd (a₁, b) (a₂, b)
   | snd {a b₁ b₂} : rβ b₁ b₂ → GameAdd (a, b₁) (a, b₂)

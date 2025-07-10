@@ -247,7 +247,7 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
     exact hO hij
   · intro hi
     convert zero_mul (M₀ := R) _ using 2
-    exact Finsupp.not_mem_support_iff.mp hi
+    exact Finsupp.notMem_support_iff.mp hi
 
 section
 
@@ -288,7 +288,7 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
   simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coe_subtype]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
-    obtain ⟨x, hx, y, hy, rfl⟩ := Submodule.exists_add_eq_of_codisjoint hpq w
+    obtain ⟨x, y, hx, hy, rfl⟩ := Submodule.codisjoint_iff_exists_add_eq.mp hpq w
     simpa [hB z hz y hy] using LinearMap.congr_fun h ⟨x, hx⟩
   · ext ⟨x, hx⟩
     simpa using LinearMap.congr_fun h x

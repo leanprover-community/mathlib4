@@ -72,7 +72,7 @@ theorem map_subtype_of_cycleType (m : Multiset ℕ) :
       exists_prop, exists_eq_right_right, and_iff_left_iff_imp]
     intro hg
     rw [sign_of_cycleType, hg, Even.neg_one_pow hm]
-  · rw [Finset.eq_empty_iff_forall_not_mem]
+  · rw [Finset.eq_empty_iff_forall_notMem]
     intro g hg
     simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
       Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,

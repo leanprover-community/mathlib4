@@ -85,7 +85,7 @@ def isoClosure : Subcategory C where
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by simp) (by simp) (by
           dsimp
-          simp only [assoc, Iso.cancel_iso_inv_left, ← Functor.map_comp, e₁.hom_inv_id,
+          simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id,
             Functor.map_id, comp_id]))) h₁ h₃)
 
 instance : S.isoClosure.P.IsClosedUnderIsomorphisms := by

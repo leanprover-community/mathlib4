@@ -122,7 +122,7 @@ theorem biUnion_diff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t
 
 /-- Equivalence between a disjoint bounded union and a dependent sum. -/
 noncomputable def biUnionEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h : s.PairwiseDisjoint f) :
-    (⋃ i ∈ s, f i) ≃ Σi : s, f i :=
+    (⋃ i ∈ s, f i) ≃ Σ i : s, f i :=
   (Equiv.setCongr (biUnion_eq_iUnion _ _)).trans <|
     unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => h hi hj fun eq => ne <| Subtype.eq eq
 
@@ -141,7 +141,7 @@ lemma Set.pairwiseDisjoint_pair_insert {s : Set α} {a : α} (ha : a ∉ s) :
     s.powerset.PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Set α)) := by
   rw [pairwiseDisjoint_iff]
   rintro i hi j hj
-  have := insert_erase_invOn.2.injOn (not_mem_subset hi ha) (not_mem_subset hj ha)
+  have := insert_erase_invOn.2.injOn (notMem_subset hi ha) (notMem_subset hj ha)
   aesop (add simp [Set.Nonempty, Set.subset_def])
 
 theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).PairwiseDisjoint f)

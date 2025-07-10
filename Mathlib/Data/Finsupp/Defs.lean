@@ -123,7 +123,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
   rfl
 
 instance instZero : Zero (α →₀ M) :=
-  ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
+  ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (notMem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
 
@@ -145,8 +145,10 @@ theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f 
 theorem fun_support_eq (f : α →₀ M) : Function.support f = f.support :=
   Set.ext fun _x => mem_support_iff.symm
 
-theorem not_mem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
+theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
   not_iff_comm.1 mem_support_iff.symm
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[simp, norm_cast]
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
@@ -156,8 +158,8 @@ theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x
     ext fun a => by
       classical
       exact if h : a ∈ f.support then h₂ a h else by
-        have hf : f a = 0 := not_mem_support_iff.1 h
-        have hg : g a = 0 := by rwa [h₁, not_mem_support_iff] at h
+        have hf : f a = 0 := notMem_support_iff.1 h
+        have hg : g a = 0 := by rwa [h₁, notMem_support_iff] at h
         rw [hf, hg]⟩
 
 @[simp]
@@ -185,8 +187,6 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} :
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
   toFun := (⇑)
   invFun f := mk (Function.support f).toFinite.toFinset f fun _a => Set.Finite.mem_toFinset _
-  left_inv _f := ext fun _x => rfl
-  right_inv _f := rfl
 
 @[simp]
 theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunOnFinite.symm f = f :=
@@ -379,10 +379,10 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff, Ne]
-      rw [← not_mem_support_iff, not_not]
+    · simp only [h, true_iff]
+      rw [← notMem_support_iff, not_not]
       classical apply Finset.choose_mem
-    · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
+    · simp only [h, not_true_eq_false]
 
 @[simp]
 theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).support = v.support.map f :=
@@ -399,7 +399,7 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
     split_ifs with h
     · refine congr_arg (v : α → M) (f.inj' ?_)
       exact Finset.choose_property (fun a₁ => f a₁ = f a) _ _
-    · exact (not_mem_support_iff.1 h).symm
+    · exact (notMem_support_iff.1 h).symm
 
 theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by
