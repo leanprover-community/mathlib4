@@ -11,6 +11,8 @@ import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Qify
+import Mathlib.Data.Real.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Sets with very small doubling
@@ -325,5 +327,81 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     exact_mod_cast A_subset_aH a ha
   · simpa [H, invMulSubgroup_eq_inv_mul, ← coe_inv, ← coe_mul, ← coe_smul_finset]
       using smul_inv_mul_eq_inv_mul_opSMul h ha
+
+
+/-! ### Doubling less than `2-ε` -/
+
+variable (ε : ℝ)
+
+private structure ExpansionMeasure (G : Type*) [Group G] [DecidableEq G] where
+  K : ℝ
+  A : Finset G
+  toFun : Finset G → ℝ
+  left_invariant : ∀ (S : Finset G) (x : G), toFun (x •> S) = toFun S
+  submodularity : ∀ (S : Finset G) (T : Finset G),
+    toFun (S ∩ T) + toFun (S ∪ T) ≤ toFun S + toFun T
+
+private def expansionMeasure {G : Type*} [Group G] [DecidableEq G] (K : ℝ)
+    (A : Finset G) : ExpansionMeasure G := {
+  K := K
+  A := A
+  toFun := fun S => #(S * A) - K * #S
+  left_invariant := fun _ _ => by simp_all only [card_smul_finset, smul_mul_assoc]
+  submodularity := by
+    intro S T
+    have eq1 : K * #(S ∩ T) + K * #(S ∪ T) = K * #S + K * #T := by
+      simpa [← mul_add, ← Nat.cast_add] using Or.inl (card_inter_add_card_union S T)
+    have eq2 : (#((S ∩ T) * A) : ℝ) + #((S ∪ T) * A) ≤ #(S * A) + #(T * A) := by
+      calc
+        (#((S ∩ T) * A) : ℝ) + #((S ∪ T) * A) ≤ #((S * A) ∩ (T * A)) + #((S * A) ∪ (T * A))
+                                        := by gcongr; exact inter_mul_subset; exact union_mul.le
+                                            _ = #(S * A) + #(T * A)
+                                        := ?_
+      · norm_cast
+        exact card_inter_add_card_union (S * A) (T * A)
+    have eq3 : #((S ∩ T) * A) - K * #(S ∩ T) + (#((S ∪ T) * A) - K * #(S ∪ T))
+        = #((S ∩ T) * A) + #((S ∪ T) * A) - (K * #(S ∩ T) + K * #(S ∪ T)) := by ring1
+    have eq4 : #(S * A) - K * #S + (#(T * A) - K * #T)
+        = #(S * A) + #(T * A) - (K * #S + K * #T) := by ring1
+    rw [eq3, eq4, eq1]
+    exact sub_le_sub_right eq2 _
+}
+
+
+-- def expansionMeasure (K : ℝ) (B : Finset G) : Finset G → ℝ := fun S => #(S * B) - K * #S
+
+-- lemma expansionMeasure_left_invariant (K : ℝ) (B : Finset G) (S : Finset G) (x : G) :
+--     expansionMeasure K B (x •> S) = expansionMeasure K B S := sorry
+
+open Real in
+theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 ≤ ε) (hε₁ : ε < 1) (hA : A.Nonempty)
+    (hS : ∃ (S : Finset G) (_ : #S ≥ #A), #(S * A) ≤ 2 * #A) :
+    ∃ (H : Subgroup G) (_ : Fintype H) (_ : Fintype.card H ≤ 2 / ε * #A) (Z : Finset G)
+      (_ : #Z ≤ 2 / ε - 1), (A : Set G) ⊆ (H : Set G) * Z := by
+  let K := 1 - ε / 2
+  let em := expansionMeasure K A
+  have min_em (S : Finset G) : ε / 2 * #S ≤ em.toFun S := by
+    change ε / 2 * #S ≤ #(S * A) - K * #S
+    obtain ⟨a, ha⟩ := hA
+    calc
+      ε / 2 * #S  = #S - (1 - ε / 2) * #S := by ring1
+                _ = #S - K * #S           := by rfl
+                _ = #(S * {a}) - K * #S   := by norm_num
+                _ ≤ #(S * A)  - K * #S    := ?_
+    · apply sub_le_sub_right
+      norm_cast
+      apply card_le_card
+      exact mul_subset_mul_left (singleton_subset_iff.mpr ha)
+  have em_pos (S : Finset G) : 0 ≤ em.toFun S := by
+    calc
+      0 ≤ ε / 2 * #S := by positivity
+      _ ≤ em.toFun S := min_em S
+
+  let im_em := em.toFun '' Set.univ
+  let _ : InfSet ℝ := sorry
+  let κ := sInf im_em
+  --apply sInf_def at κ
+  sorry
+
 
 end Finset
