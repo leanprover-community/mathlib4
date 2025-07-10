@@ -118,7 +118,7 @@ end
 section
 
 variable {M N : CommMon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat)
+  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `CommMon_ C`. -/
 def mkIso : M ≅ N :=
@@ -147,6 +147,12 @@ variable
 
 namespace Functor
 
+open scoped Obj
+
+instance isCommMon_obj {M : C} [Mon_Class M] [IsCommMon M] : IsCommMon (F.obj M) where
+  mul_comm := by
+    dsimp; rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm]
+
 variable (F) in
 /-- A lax braided functor takes commutative monoid objects to commutative monoid objects.
 
@@ -157,7 +163,7 @@ def mapCommMon : CommMon_ C ⥤ CommMon_ D where
   obj A :=
     { F.mapMon.obj A.toMon_ with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
@@ -252,8 +258,6 @@ variable (C) in
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_ C where
   obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit.{u+1}))
   map α := ((Functor.mapCommMonFunctor (Discrete PUnit) C).map α).app _
-
--- variable {C}
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]

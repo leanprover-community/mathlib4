@@ -173,7 +173,7 @@ sum of the weights.
 theorem Orthonormal.inner_left_right_finset {s : Finset ι} {v : ι → E} (hv : Orthonormal 𝕜 v)
     {a : ι → ι → 𝕜} : (∑ i ∈ s, ∑ j ∈ s, a i j • ⟪v j, v i⟫) = ∑ k ∈ s, a k k := by
   classical
-  simp [orthonormal_iff_ite.mp hv, Finset.sum_ite_of_true]
+  simp [orthonormal_iff_ite.mp hv]
 
 /-- An orthonormal set is linearly independent. -/
 theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
@@ -236,7 +236,7 @@ variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
   classical
-  simp [orthonormal_subtype_iff_ite]
+  simp
 
 variable {𝕜 E}
 
@@ -438,7 +438,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     classical exact hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
-    simp only [mul_conj, normSq_eq_def']
+    simp only [mul_conj]
     norm_cast
   suffices hbf : ‖x - ∑ i ∈ s, ⟪v i, x⟫ • v i‖ ^ 2 = ‖x‖ ^ 2 - ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 by
     rw [← sub_nonneg, ← hbf]

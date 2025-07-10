@@ -63,7 +63,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
       rw [pow_two, ← sub_mul]
       apply dvd_mul_left
     · symm
-      simp only [modByMonicHom_apply, Polynomial.modByMonic_eq_self_iff hq_monic, f]
+      simp only [modByMonicHom_apply, Polynomial.modByMonic_eq_self_iff hq_monic]
       rw [show q.degree = 2 by unfold q; compute_degree!]
       rw [show degree _ = 0 by compute_degree!]
       norm_num

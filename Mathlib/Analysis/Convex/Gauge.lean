@@ -95,7 +95,7 @@ theorem gauge_zero' : gauge (0 : Set E) = 0 := by
   ext x
   rw [gauge_def']
   obtain rfl | hx := eq_or_ne x 0
-  · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, eq_self_iff_true, sep_true, smul_zero]
+  · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, sep_true, smul_zero]
   · simp only [mem_zero, Pi.zero_apply, inv_eq_zero, smul_eq_zero]
     convert Real.sInf_empty
     exact eq_empty_iff_forall_notMem.2 fun r hr => hr.2.elim (ne_of_gt hr.1) hx
@@ -340,7 +340,7 @@ theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s
 
 theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     0 < gauge s x ↔ x ≠ 0 := by
-  simp only [(gauge_nonneg _).gt_iff_ne, Ne, gauge_eq_zero hs hb]
+  simp only [(gauge_nonneg _).lt_iff_ne', Ne, gauge_eq_zero hs hb]
 
 end TopologicalSpace
 
@@ -548,7 +548,7 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
 theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦ by
   simp only [← singleton_zero, gauge_def', mem_closure_zero_iff_norm, norm_smul, mul_eq_zero,
     norm_eq_zero, inv_eq_zero]
-  rcases (norm_nonneg x).eq_or_gt with hx | hx
+  rcases (norm_nonneg x).eq_or_lt' with hx | hx
   · convert csInf_Ioi (a := (0 : ℝ))
     exact Set.ext fun r ↦ and_iff_left (.inr hx)
   · convert Real.sInf_empty

@@ -194,7 +194,7 @@ noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
 
 theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
     (X n - ∑ i ∈ range n, C ((p : R) ^ i) *
-      xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
+      xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟ p : R) ^ n) := by
   rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
 
 @[simp]
@@ -223,7 +223,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
   rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
     vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
   on_goal 1 =>
-    simp only [true_and, true_or, eq_self_iff_true, mem_union, mem_singleton]
+    simp only [true_and, true_or, mem_union, mem_singleton]
     intro i
     rw [mem_union, mem_union]
     apply Or.imp id
@@ -259,17 +259,17 @@ theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
 theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
     bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum]
-  simp only [Nat.cast_pow, map_pow, C_pow, map_mul, algHom_C, algebraMap_eq]
+  simp only [map_pow, map_mul, algHom_C, algebraMap_eq]
   rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
     xInTermsOfW_aux]
-  simp only [Nat.cast_pow, C_pow, bind₁_X_right, sub_add_cancel]
+  simp only [C_pow, bind₁_X_right, sub_add_cancel]
 
 @[simp]
 theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
     bind₁ (W_ R) (xInTermsOfW p R n) = X n := by
   induction n using Nat.strongRecOn with | ind n H => ?_
   rw [xInTermsOfW_eq, map_mul, map_sub, bind₁_X_right, algHom_C, map_sum,
-    show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
+    show X n = (X n * C ((p : R) ^ n)) * C ((⅟ p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
   rw [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm,

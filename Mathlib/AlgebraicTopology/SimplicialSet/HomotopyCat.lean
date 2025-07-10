@@ -160,15 +160,14 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
   intro X
   unfold nerveEquiv nerveHomEquiv
   simp only [Cat.of_α, op_obj, ComposableArrows.obj', Fin.zero_eta, Fin.isValue, Equiv.coe_fn_mk,
-    nerveEquiv_apply, Nat.reduceAdd, id_edge, SimplexCategory.len_mk, id_eq, eqToHom_refl, comp_id,
-    id_comp, ReflQuiver.id_eq_id]
+    nerveEquiv_apply, Nat.reduceAdd, id_edge, eqToHom_refl, comp_id, id_comp, ReflQuiver.id_eq_id]
   unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
   -- the following was obtained by `simp?`
   simp only [ObjectProperty.ι_obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
     SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
     Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
     Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
-  show X.map (𝟙 _) = _
+  change X.map (𝟙 _) = _
   rw [X.map_id]
   rfl
 
@@ -186,10 +185,9 @@ def OneTruncation₂.ofNerve₂.natIso :
       unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
         nerveFunctor toReflPrefunctor
       simp only [comp_obj, whiskeringLeft_obj_obj, ReflQuiv.of_val, Functor.comp_map,
-        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, whiskeringRight_obj_obj, ofNerve₂,
-        Cat.of_α, nerveEquiv, ComposableArrows.obj', Fin.zero_eta, Fin.isValue,
-        ReflQuiv.comp_eq_comp, Nat.reduceAdd, SimplexCategory.len_mk, id_eq, op_map,
-        Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
+        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, ofNerve₂, Cat.of_α, nerveEquiv,
+        ComposableArrows.obj', Fin.zero_eta, Fin.isValue, ReflQuiv.comp_eq_comp, Nat.reduceAdd,
+        op_map, Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
       simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
 
@@ -197,7 +195,7 @@ end
 
 section
 
-private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
+private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl

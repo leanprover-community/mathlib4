@@ -172,7 +172,7 @@ theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [Co
     (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
 
-theorem orthogonal_ker (T : E →L[𝕜] E) :
+theorem orthogonal_ker (T : E →L[𝕜] F) :
     (LinearMap.ker T)ᗮ = (LinearMap.range (T†)).topologicalClosure := by
   rw [← Submodule.orthogonal_orthogonal_eq_closure]
   apply le_antisymm
@@ -182,7 +182,7 @@ theorem orthogonal_ker (T : E →L[𝕜] E) :
   · rintro _ ⟨y, rfl⟩
     simp_all [T.adjoint_inner_left]
 
-theorem orthogonal_range (T : E →L[𝕜] E) :
+theorem orthogonal_range (T : E →L[𝕜] F) :
     (LinearMap.range T)ᗮ = LinearMap.ker (T†) := by
   rw [← (LinearMap.ker (T†)).orthogonal_orthogonal, (T†).orthogonal_ker]
   simp
@@ -244,7 +244,7 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
     LinearMap.IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜)
       (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
   intro x y
-  simp only [sesqFormOfInner_apply_apply, adjoint_inner_left, coe_coe]
+  simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
 
 end ContinuousLinearMap
 
@@ -474,21 +474,19 @@ theorem re_inner_adjoint_mul_self_nonneg (T : E →ₗ[𝕜] E) (x : E) :
 @[simp]
 theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
     im ⟪x, LinearMap.adjoint T (T x)⟫ = 0 := by
-  simp only [Module.End.mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
+  simp only [adjoint_inner_right, inner_self_eq_norm_sq_to_K]
   norm_cast
 
 theorem isSelfAdjoint_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
     IsSelfAdjoint T.toContinuousLinearMap ↔ IsSelfAdjoint T := by
-  simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
-      coe_toContinuousLinearMap_symm,
-      ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
-  rfl
+  simp [IsSelfAdjoint, star, adjoint,
+    ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
 
 theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
     IsSelfAdjoint T.toLinearMap ↔ IsSelfAdjoint T := by
   simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
-      coe_toContinuousLinearMap_symm,
-      ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
+    coe_toContinuousLinearMap_symm,
+    ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
   rfl
 
 end LinearMap
