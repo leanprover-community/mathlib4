@@ -42,9 +42,6 @@ theorem sInter_mem_lowerCuts {S : Set (Set α)} (hS : S ⊆ lowerCuts α) : ⋂�
   rw [← mem_lowerCuts_iff_eq.mp (hS ht)]
   exact fun _ hb ↦ ha fun _ hc ↦ hb (hc _ ht)
 
-theorem sInter_lowerCuts_mem_lowerCuts : ⋂₀ lowerCuts α ∈ lowerCuts α :=
-  sInter_mem_lowerCuts (le_refl _)
-
 theorem Iic_mem_lowerCuts (a : α) : Iic a ∈ lowerCuts α := fun _ hb ↦ hb fun _ ↦ id
 
 /-- The set of lower cuts in a preorder is the set of sets with
@@ -64,9 +61,6 @@ theorem inter_mem_upperCuts (hs : s ∈ upperCuts α) (ht : t ∈ upperCuts α) 
 theorem sInter_mem_upperCuts {S : Set (Set α)} (hS : S ⊆ upperCuts α) : ⋂₀ S ∈ upperCuts α :=
   sInter_mem_lowerCuts (α := αᵒᵈ) hS
 
-theorem sInter_upperCuts_mem_upperCuts : ⋂₀ upperCuts α ∈ upperCuts α :=
-  sInter_mem_upperCuts (le_refl _)
-
 theorem Ici_mem_lowerCuts (a : α) : Iic a ∈ lowerCuts α := fun _ hb ↦ hb fun _ ↦ id
 
 theorem upperBounds_mem_upperCuts_of_mem_lowerCuts (H : s ∈ lowerCuts α) :
@@ -81,7 +75,7 @@ theorem lowerBounds_mem_lowerCuts_of_mem_upperCuts (H : s ∈ upperCuts α) :
 
 /-- A Dedekind cut (in the Dedekind-MacNeille completion) is a defined as a member of `lowerCuts α`.
 
-Use `Dedekind.of_lowerCuts` to define a member of this structure. For the dual definition through
+Use `DedekindCut.of_lowerCuts` to define a member of this structure. For the dual definition through
 `upperCuts`, use `DedekindCut.of_upperCuts`. -/
 structure DedekindCut (α : Type*) [Preorder α] where
   carrier : Set α
@@ -169,5 +163,56 @@ theorem ext_upperCut (h : A.upperCut = B.upperCut) : A = B :=
 
 theorem ext_upperCut_iff : A = B ↔ A.upperCut = B.upperCut :=
   ⟨congrArg _, ext_upperCut⟩
+
+/- ### Order instances -/
+
+instance : LE (DedekindCut α) where
+  le A B := A.lowerCut ⊆ B.lowerCut
+
+instance : InfSet (DedekindCut α) where
+  sInf X := .of_lowerCuts (⋂₀ (lowerCut '' X)) (by
+    apply sInter_mem_lowerCuts
+    rintro A ⟨B, hB, rfl⟩
+    exact lowerCut_mem_lowerCuts B
+  )
+
+instance : Min (DedekindCut α) where
+  min A B := .of_lowerCuts (A.lowerCut ∩ B.lowerCut) (by
+    apply inter_mem_lowerCuts <;> exact lowerCut_mem_lowerCuts _
+  )
+
+instance : SupSet (DedekindCut α) where
+  sSup X := .of_upperCuts (⋂₀ (upperCut '' X)) (by
+    apply sInter_mem_upperCuts
+    rintro A ⟨B, hB, rfl⟩
+    exact upperCut_mem_upperCuts B
+  )
+
+instance : Max (DedekindCut α) where
+  max A B := .of_upperCuts (A.upperCut ∩ B.upperCut) (by
+    apply inter_mem_upperCuts <;> exact upperCut_mem_upperCuts _
+  )
+
+instance : Bot (DedekindCut α) where
+  bot := sInf univ
+
+instance : Top (DedekindCut α) where
+  top := sSup univ
+
+theorem le_iff_lowerCut_subset : A ≤ B ↔ A.lowerCut ⊆ B.lowerCut := .rfl
+theorem le_iff_upperCut_subset : A ≤ B ↔ B.upperCut ⊆ A.upperCut := by
+  rw [le_iff_lowerCut_subset, lowerCut_subset_iff_subset_upperCut]
+
+theorem lowerCut_sInf (X : Set (DedekindCut α)) : (sInf X).lowerCut = ⋂₀ (lowerCut '' X) := rfl
+theorem upperCut_sSup (X : Set (DedekindCut α)) : (sSup X).upperCut = ⋂₀ (upperCut '' X) :=
+  upperCut_of_upperCuts ..
+
+theorem lowerCut_inf (A B : DedekindCut α) : (A ⊓ B).lowerCut = A.lowerCut ∩ B.lowerCut := rfl
+theorem upperCut_sup (A B : DedekindCut α) : (A ⊔ B).upperCut = A.upperCut ∩ B.upperCut :=
+  upperCut_of_upperCuts ..
+
+theorem lowerCut_bot : (⊥ : DedekindCut α).lowerCut = ⋂₀ (lowerCut '' univ) := rfl
+theorem lowerCut_top : (⊤ : DedekindCut α).upperCut = ⋂₀ (upperCut '' univ) :=
+  upperCut_of_upperCuts ..
 
 end DedekindCut
