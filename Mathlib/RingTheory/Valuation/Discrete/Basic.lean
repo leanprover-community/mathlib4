@@ -174,7 +174,7 @@ lemma val_ne_zero {π : A} (hπ : v.IsUniformizer π) : v π ≠ 0 := by
   exact (Units.ne_zero _).symm hπ
 
 theorem val_pos {π : A} (hπ : IsUniformizer v π) : 0 < v π := by
-  rw [IsUniformizer.iff] at hπ ; simp [zero_lt_iff, ne_eq, hπ]
+  rw [IsUniformizer.iff] at hπ; simp [zero_lt_iff, ne_eq, hπ]
 
 lemma zpowers_eq_valueGroup {π : A} (hπ : v.IsUniformizer π) :
     valueGroup v = zpowers (Units.mk0 (v π) hπ.val_ne_zero) := by
