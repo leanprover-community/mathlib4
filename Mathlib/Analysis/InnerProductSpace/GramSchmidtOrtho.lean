@@ -296,6 +296,16 @@ theorem span_gramSchmidtNormed_range (f : ι → E) :
     span 𝕜 (range (gramSchmidtNormed 𝕜 f)) = span 𝕜 (range (gramSchmidt 𝕜 f)) := by
   simpa only [image_univ.symm] using span_gramSchmidtNormed f univ
 
+/-- `gramSchmidtNormed` produces linearly independent vectors when given linearly independent
+vectors. -/
+theorem gramSchmidtNormed_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
+    LinearIndependent 𝕜 (gramSchmidtNormed 𝕜 f) := by
+  unfold gramSchmidtNormed
+  have (i : ι) : IsUnit (‖gramSchmidt 𝕜 f i‖⁻¹ : 𝕜) :=
+    isUnit_iff_ne_zero.mpr (by simp [gramSchmidt_ne_zero i h₀])
+  let w : ι → 𝕜ˣ := fun i ↦ (this i).unit
+  apply (gramSchmidt_linearIndependent h₀).units_smul (w := fun i ↦ (this i).unit)
+
 section OrthonormalBasis
 
 variable [Fintype ι] [FiniteDimensional 𝕜 E] (h : finrank 𝕜 E = Fintype.card ι) (f : ι → E)
