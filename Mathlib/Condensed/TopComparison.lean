@@ -77,7 +77,7 @@ theorem equalizerCondition_yonedaPresheaf
       MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
-    congr
+    congr 1
     exact DFunLike.ext'_iff.mp ((hq Z B π).lift_comp a (factorsThrough_of_pullbackCondition G X ha))
 
 /--
