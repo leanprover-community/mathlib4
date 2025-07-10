@@ -56,7 +56,7 @@ theorem isCaratheodory_iff_le' {s : Set α} :
   forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| measure_le_inter_add_diff _ _ _
 
 @[simp]
-theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, m.empty, diff_empty]
+theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, diff_empty]
 
 theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁ᶜ := by
   simp [IsCaratheodory, diff_eq, add_comm]
@@ -90,7 +90,7 @@ theorem measure_inter_union (h : s₁ ∩ s₂ ⊆ ∅) (h₁ : IsCaratheodory m
 
 theorem isCaratheodory_iUnion_lt {s : ℕ → Set α} :
     ∀ {n : ℕ}, (∀ i < n, IsCaratheodory m (s i)) → IsCaratheodory m (⋃ i < n, s i)
-  | 0, _ => by simp [Nat.not_lt_zero]
+  | 0, _ => by simp
   | n + 1, h => by
     rw [biUnion_lt_succ]
     exact isCaratheodory_union m
@@ -119,7 +119,7 @@ lemma isCaratheodory_disjointed {ι : Type*} [Preorder ι] [LocallyFiniteOrderBo
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
     ∀ {n}, (∑ i ∈ Finset.range n, m (t ∩ s i)) = m (t ∩ ⋃ i < n, s i)
-  | 0 => by simp [Nat.not_lt_zero, m.empty]
+  | 0 => by simp
   | Nat.succ n => by
     rw [biUnion_lt_succ, Finset.sum_range_succ, Set.union_comm, isCaratheodory_sum h hd,
       m.measure_inter_union _ (h n), add_comm]
@@ -165,7 +165,7 @@ def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
   has_iUnion_nat _ hf hn := by apply isCaratheodory_iUnion m hf
 
 /-- Given an outer measure `μ`, the Carathéodory-measurable space is
-  defined such that `s` is measurable if `∀t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
+  defined such that `s` is measurable if `∀ t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
 protected def caratheodory : MeasurableSpace α := by
   apply MeasurableSpace.DynkinSystem.toMeasurableSpace (caratheodoryDynkin m)
   intro s₁ s₂

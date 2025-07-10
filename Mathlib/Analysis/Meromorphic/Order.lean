@@ -712,7 +712,7 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
   rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
   · filter_upwards [eventually_eventually_nhdsWithin.2 h₁f] with a h₁a
     suffices ∀ᶠ (z : 𝕜) in 𝓝[≠] a, f z = 0 by
-      simp +contextual [meromorphicOrderAt_eq_top_iff, h₁a, this]
+      simp +contextual [meromorphicOrderAt_eq_top_iff, this]
     obtain rfl | hax := eq_or_ne a x
     · exact h₁a
     rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at h₁a ⊢

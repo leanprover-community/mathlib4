@@ -315,7 +315,7 @@ theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
 neighbourhoods. -/
 theorem discreteTopology_iff_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝 x = pure x := by
-  simp [discreteTopology_iff_singleton_mem_nhds, le_pure_iff]
+  simp [discreteTopology_iff_singleton_mem_nhds]
   apply forall_congr' (fun x ↦ ?_)
   simp [le_antisymm_iff, pure_le_nhds x]
 
@@ -582,7 +582,7 @@ theorem nhds_nhdsAdjoint [DecidableEq α] (a : α) (f : Filter α) :
 theorem le_nhdsAdjoint_iff' {a : α} {f : Filter α} {t : TopologicalSpace α} :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, @nhds α t b = pure b := by
   classical
-  simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).le_iff_eq]
+  simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).ge_iff_eq']
 
 theorem le_nhdsAdjoint_iff {α : Type*} (a : α) (f : Filter α) (t : TopologicalSpace α) :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, IsOpen[t] {b} := by
@@ -804,7 +804,7 @@ theorem nhds_true : 𝓝 True = pure True :=
 
 @[simp]
 theorem nhds_false : 𝓝 False = ⊤ :=
-  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _), iInter_and]
+  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _)]
 
 theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :
     Tendsto p l (𝓝 True) ↔ ∀ᶠ x in l, p x := by simp

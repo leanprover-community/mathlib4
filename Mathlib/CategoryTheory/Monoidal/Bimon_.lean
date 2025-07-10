@@ -38,33 +38,14 @@ A bimonoid object in a braided category `C` is a object that is simultaneously m
 objects, and structure morphisms of them satisfy appropriate consistency conditions.
 -/
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
-  /- For the names of the conditions below, the unprimed names are reserved for the version where
-  the argument `M` is explicit. -/
-  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ₘ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ₘ μ[M]) := by aesop_cat
-  one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
-  mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
-  one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
+  mul_comul (M) : μ[M] ≫ Δ[M] = (Δ[M] ⊗ₘ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ₘ μ[M]) := by aesop_cat
+  one_comul (M) : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
+  mul_counit (M) : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
+  one_counit (M) : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
 
 namespace Bimon_Class
 
-/- The simp attribute is reserved for the unprimed versions. -/
-attribute [reassoc] mul_comul' one_comul' mul_counit' one_counit'
-
-variable (M : C) [Bimon_Class M]
-
-@[reassoc (attr := simp)]
-theorem mul_comul (M : C) [Bimon_Class M] :
-    μ[M] ≫ Δ[M] = (Δ[M] ⊗ₘ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ₘ μ[M]) :=
-  mul_comul'
-
-@[reassoc (attr := simp)]
-theorem one_comul (M : C) [Bimon_Class M] : η[M] ≫ Δ[M] = η[M ⊗ M] := one_comul'
-
-@[reassoc (attr := simp)]
-theorem mul_counit (M : C) [Bimon_Class M] : μ[M] ≫ ε[M] = ε[M ⊗ M] := mul_counit'
-
-@[reassoc (attr := simp)]
-theorem one_counit (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := one_counit'
+attribute [reassoc (attr := simp)] mul_comul one_comul mul_counit one_counit
 
 end Bimon_Class
 
@@ -120,7 +101,7 @@ def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
       mul :=
         { hom := μ[M.X.X]
           is_comon_hom :=
-            { hom_comul := by simp [tensor_μ] } } }
+            { hom_comul := by simp } } }
 
 /-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
@@ -266,11 +247,11 @@ theorem Bimon_ClassAux_comul (M : Bimon_ C) :
 instance (M : Bimon_ C) : Bimon_Class M.X.X where
   counit := ε[M.X].hom
   comul := Δ[M.X].hom
-  counit_comul' := by
+  counit_comul := by
     rw [← Bimon_ClassAux_counit, ← Bimon_ClassAux_comul, Comon_Class.counit_comul]
-  comul_counit' := by
+  comul_counit := by
     rw [← Bimon_ClassAux_counit, ← Bimon_ClassAux_comul, Comon_Class.comul_counit]
-  comul_assoc' := by
+  comul_assoc := by
     simp_rw [← Bimon_ClassAux_comul, Comon_Class.comul_assoc]
 
 attribute [local simp] Mon_Class.tensorObj.one_def in
