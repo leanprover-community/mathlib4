@@ -461,15 +461,15 @@ theorem dimH_univ_eq_finrank : dimH (univ : Set E) = finrank ℝ E :=
 theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
   rw [dimH_univ_eq_finrank ℝ, Module.finrank_self, Nat.cast_one]
 
+variable {E}
+
 /-- The Hausdorff dimension of any set in a finite-dimensional real normed space is finite. -/
 theorem dimH_lt_top (s : Set E) : dimH s < ⊤ := by calc
   dimH s ≤ dimH (univ : Set E) := dimH_mono (subset_univ s)
-  _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
+  _ = finrank ℝ E := dimH_univ_eq_finrank E
   _ < ⊤ := by simp
 
-theorem dimH_ne_top (s : Set E) : dimH s ≠ ⊤ := (dimH_lt_top E s).ne
-
-variable {E}
+theorem dimH_ne_top (s : Set E) : dimH s ≠ ⊤ := (dimH_lt_top s).ne
 
 lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
     (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
