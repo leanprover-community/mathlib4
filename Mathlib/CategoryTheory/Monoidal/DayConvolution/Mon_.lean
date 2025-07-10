@@ -88,7 +88,7 @@ instance mon_ClassOfLaxMonoidal : Mon_Class (mk F) where
   mul_assoc := by
     ext1
     apply Functor.hom_ext_of_isLeftKanExtension
-      (((mk F) ⊗ (mk F)) ⊗ (mk F)).functor
+      ((mk F ⊗ mk F) ⊗ mk F).functor
         (η (_ ⊗ _) _)
     letI :
       ((mk F ⊗ mk F).functor ⊠ (mk F).functor).IsLeftKanExtension
@@ -108,14 +108,14 @@ instance mon_ClassOfLaxMonoidal : Mon_Class (mk F) where
 
 @[reassoc (attr := simp)]
 lemma η_comp_mul (x y : C) :
-    (η (.mk F) (.mk F)).app (x, y) ≫
+    (η (mk F) (mk F)).app (x, y) ≫
       (Mon_Class.mul (X := mk F)).natTrans.app (x ⊗ y) =
-    (Functor.LaxMonoidal.μ F x y) := by
+    Functor.LaxMonoidal.μ F x y := by
   simp [Mon_Class.mul]
 
 @[reassoc (attr := simp)]
 lemma ν_comp_one :
-    (ν C V) ≫ (Mon_Class.one (X := mk F)).natTrans.app (𝟙_ C) =
+    ν C V ≫ (Mon_Class.one (X := mk F)).natTrans.app (𝟙_ C) =
     Functor.LaxMonoidal.ε F := by
   simp [Mon_Class.one]
 
@@ -135,19 +135,19 @@ instance laxMonoidalOfMon_Class : F.functor.LaxMonoidal where
     haveI :=
       ((η F F).app (x, y) ▷ F.functor.obj z ≫
         (η (F ⊗ F) F).app (x ⊗ y, z)) ≫=
-        (congrArg (·.natTrans.app _) <| Mon_Class.mul_assoc F)
+        congrArg (·.natTrans.app _) (Mon_Class.mul_assoc F)
     dsimp at this
     simpa using this =≫ F.functor.map (α_ x y z).hom
   left_unitality x := by
     haveI := ((unitLeft F).app x) ≫=
-      (congrArg (·.natTrans.app _) <| Mon_Class.one_mul F)
+      congrArg (·.natTrans.app _) (Mon_Class.one_mul F)
     dsimp at this
     simpa using this.symm =≫ (F.functor.map (λ_ x).hom)
   right_unitality x := by
     haveI := ((unitRight F).app x) ≫=
-      (congrArg (·.natTrans.app _) <| Mon_Class.mul_one F)
+      congrArg (·.natTrans.app _) (Mon_Class.mul_one F)
     dsimp at this
-    simpa using this.symm =≫ (F.functor.map (ρ_ x).hom)
+    simpa using this.symm =≫ F.functor.map (ρ_ x).hom
 
 end toLaxMonoidal
 
