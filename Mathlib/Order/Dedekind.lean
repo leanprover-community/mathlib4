@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson, Violeta Hernández Palacios
 -/
 import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.CompleteLattice.Defs
 
 /-!
@@ -15,11 +16,19 @@ embeds.
 We provide an explicit construction, as the set of "lower cuts" of the order, meaning sets with
 `lowerBounds (upperBounds s) = s`. The dual construction as upper cuts, or sets with
 `upperBounds (lowerBounds s) = s` would also work; keeping this in mind, we keep the API symmetric.
+
+## Todo
+
+- Prove that any embedding into a complete lattice factors through `DedekindCut α`.
+- Build the order isomorphism `DedekindCut ℚ ≃o ℝ`.
 -/
 
 open Set
 
-variable {α : Type*} {s t : Set α} [Preorder α]
+variable {α : Type*} {s t : Set α}
+
+section Preorder
+variable [Preorder α]
 
 /-! ### Lower cuts and upper cuts -/
 
@@ -247,3 +256,59 @@ instance : CompleteLattice (DedekindCut α) where
     exact sInter_subset_of_mem (mem_image_of_mem _ ⟨⟩)
 
 end DedekindCut
+
+/-! ### Order embedding -/
+
+namespace Order
+open DedekindCut
+
+/-- Convert an element into its Dedekind cut. -/
+def toDedekindCut (a : α) : DedekindCut α :=
+  .of_lowerCuts _ (Iic_mem_lowerCuts a)
+
+@[simp]
+theorem lowerCut_toDedekindCut (a : α) : (toDedekindCut a).lowerCut = Iic a := rfl
+
+@[simp]
+theorem upperCut_toDedekindCut (a : α) : (toDedekindCut a).upperCut = Ici a := by
+  rw [← upperBounds_lowerCut, lowerCut_toDedekindCut, upperBounds_Iic]
+
+@[simp]
+theorem toDedekindCut_le_toDedekindCut {a b : α} :
+    toDedekindCut a ≤ toDedekindCut b ↔ a ≤ b := by
+  simp [le_iff_lowerCut_subset]
+
+/-- `toDedekindCut` is injective up to antisymmetry. -/
+theorem toDedekindCut_eq_toDedekindCut {a b : α} :
+    toDedekindCut a = toDedekindCut b ↔ AntisymmRel (· ≤ ·) a b := by
+  simp [le_antisymm_iff, AntisymmRel]
+
+/-- `Order.toDedekindCutHom` as an `OrderHom`.
+
+In the case of a partial order, this can be strengthened to an `OrderEmbedding`, see
+`Order.toDedekindCutEmbedding`. -/
+@[simps!]
+def toDedekindCutHom : α →o DedekindCut α where
+  toFun := toDedekindCut
+  monotone' _ _ := toDedekindCut_le_toDedekindCut.2
+
+end Order
+end Preorder
+
+namespace Order
+section PartialOrder
+variable [PartialOrder α]
+
+@[simp]
+theorem toDedekindCut_inj {a b : α} : toDedekindCut a = toDedekindCut b ↔ a = b := by
+  simp [le_antisymm_iff]
+
+/-- `Order.toDedekindCut` as an `OrderEmbedding`. -/
+@[simps!]
+def toDedekindCutEmbedding : α ↪o DedekindCut α where
+  toFun := toDedekindCut
+  inj' _ _ := toDedekindCut_inj.1
+  map_rel_iff' := toDedekindCut_le_toDedekindCut
+
+end PartialOrder
+end Order
