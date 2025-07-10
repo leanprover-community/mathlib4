@@ -242,6 +242,9 @@ abbrev unlintedNodes := #[
   -- the pretty-printer prefers `π FE` over `π F E` (which we want)
   `Bundle.termπ__,
 
+  -- notation for `MeasureTheory.condExp`, the spaces around `|` may or may not be present
+  `MeasureTheory.«term__[_|_]»,
+
   -- notation for `Finset.slice`, the pretty-printer prefers `𝒜 #r` over `𝒜 # r` (mathlib style)
   `Finset.«term_#_»,
 
