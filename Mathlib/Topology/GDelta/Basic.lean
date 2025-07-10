@@ -149,7 +149,7 @@ theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) :
 
 end IsGδ
 
-section Residual
+section residual
 
 variable [TopologicalSpace X]
 
@@ -177,7 +177,7 @@ theorem mem_residual_iff {s : Set X} :
       ∃ S : Set (Set X), (∀ t ∈ S, IsOpen t) ∧ (∀ t ∈ S, Dense t) ∧ S.Countable ∧ ⋂₀ S ⊆ s :=
   mem_countableGenerate_iff.trans <| by simp_rw [subset_def, mem_setOf, forall_and, and_assoc]
 
-end Residual
+end residual
 
 section IsMeagre
 open Function TopologicalSpace Set
@@ -232,11 +232,6 @@ lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
 lemma IsMeagre.union {s t : Set X} (hs : IsMeagre s) (ht : IsMeagre t) : IsMeagre (s ∪ t) := by
   rw [IsMeagre, compl_union]
   exact inter_mem hs ht
-
-/-- A union of meagre sets over the naturals is meagre. -/
-lemma isMeagre_iUnionNat {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
-  rw [IsMeagre, compl_iUnion]
-  exact countable_iInter_mem.mpr hs
 
 /-- A countable union of meagre sets is meagre. -/
 lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i))
