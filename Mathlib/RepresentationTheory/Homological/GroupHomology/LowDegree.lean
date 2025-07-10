@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree homology of a `k`-linear `G`-representation
@@ -267,4 +268,166 @@ theorem d₃₂_comp_d₂₁ : d₃₂ A ≫ d₂₁ A = 0 := by
   simp [← cancel_mono (chainsIso₁ A).inv, ← eq_d₂₁_comp_inv, ← eq_d₃₂_comp_inv_assoc]
 
 end Differentials
+
+section Cycles
+
+/-- The 1-cycles `Z₁(G, A)` of `A : Rep k G`, defined as the kernel of the map
+`(G →₀ A) → A` defined by `single g a ↦ ρ_A(g⁻¹)(a) - a`. -/
+def cycles₁ : Submodule k (G →₀ A) := LinearMap.ker (d₁₀ A).hom
+
+/-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
+`(G² →₀ A) → (G →₀ A)` defined by `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
+def cycles₂ : Submodule k (G × G →₀ A) := LinearMap.ker (d₂₁ A).hom
+
+variable {A}
+
+theorem mem_cycles₁_iff (x : G →₀ A) :
+    x ∈ cycles₁ A ↔ x.sum (fun g a => A.ρ g⁻¹ a) = x.sum (fun _ a => a) := by
+  change x.sum (fun g a => A.ρ g⁻¹ a - a) = 0 ↔ _
+  rw [sum_sub, sub_eq_zero]
+
+theorem single_mem_cycles₁_iff (g : G) (a : A) :
+    single g a ∈ cycles₁ A ↔ A.ρ g a = a := by
+  simp [mem_cycles₁_iff, ← (A.ρ.apply_bijective g).1.eq_iff (a := A.ρ g⁻¹ a), eq_comm]
+
+theorem single_mem_cycles₁_of_mem_invariants (g : G) (a : A) (ha : a ∈ A.ρ.invariants) :
+    single g a ∈ cycles₁ A :=
+  (single_mem_cycles₁_iff g a).2 (ha g)
+
+theorem d₂₁_apply_mem_cycles₁ [DecidableEq G] (x : G × G →₀ A) :
+    d₂₁ A x ∈ cycles₁ A :=
+  congr($(d₂₁_comp_d₁₀ A) x)
+
+variable (A) in
+theorem cycles₁_eq_top_of_isTrivial [A.IsTrivial] : cycles₁ A = ⊤ := by
+  rw [cycles₁, d₁₀_eq_zero_of_isTrivial, ModuleCat.hom_zero, LinearMap.ker_zero]
+
+variable (A) in
+/-- The natural inclusion `Z₁(G, A) ⟶ C₁(G, A)` is an isomorphism when the representation
+on `A` is trivial. -/
+abbrev cycles₁IsoOfIsTrivial [A.IsTrivial] :
+    ModuleCat.of k (cycles₁ A) ≅ ModuleCat.of k (G →₀ A) :=
+  (LinearEquiv.ofTop _ (cycles₁_eq_top_of_isTrivial A)).toModuleIso
+
+theorem mem_cycles₂_iff (x : G × G →₀ A) :
+    x ∈ cycles₂ A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
+      x.sum (fun g a => single (g.1 * g.2) a) := by
+  change x.sum (fun g a => _) = 0 ↔ _
+  simp [sub_add_eq_add_sub, sub_eq_zero]
+
+theorem single_mem_cycles₂_iff_inv (g : G × G) (a : A) :
+    single g a ∈ cycles₂ A ↔ single g.2 (A.ρ g.1⁻¹ a) + single g.1 a = single (g.1 * g.2) a := by
+  simp [mem_cycles₂_iff]
+
+theorem single_mem_cycles₂_iff (g : G × G) (a : A) :
+    single g a ∈ cycles₂ A ↔
+      single (g.1 * g.2) (A.ρ g.1 a) = single g.2 a + single g.1 (A.ρ g.1 a) := by
+  rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.apply_bijective g.1⁻¹).1).eq_iff]
+  simp [mem_cycles₂_iff, mapRange_add, eq_comm]
+
+theorem d₃₂_apply_mem_cycles₂ [DecidableEq G] (x : G × G × G →₀ A) :
+    d₃₂ A x ∈ cycles₂ A :=
+  congr($(d₃₂_comp_d₂₁ A) x)
+
+end Cycles
+
+section Boundaries
+
+/-- The 1-boundaries `B₁(G, A)` of `A : Rep k G`, defined as the image of the map
+`(G² →₀ A) → (G →₀ A)` defined by `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
+def boundaries₁ : Submodule k (G →₀ A) :=
+  LinearMap.range (d₂₁ A).hom
+
+/-- The 2-boundaries `B₂(G, A)` of `A : Rep k G`, defined as the image of the map
+`(G³ →₀ A) → (G² →₀ A)` defined by
+`a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
+def boundaries₂ : Submodule k (G × G →₀ A) :=
+  LinearMap.range (d₃₂ A).hom
+
+variable {A}
+
+section
+
+variable [DecidableEq G]
+
+lemma mem_cycles₁_of_mem_boundaries₁ (f : G →₀ A) (h : f ∈ boundaries₁ A) :
+    f ∈ cycles₁ A := by
+  rcases h with ⟨x, rfl⟩
+  exact d₂₁_apply_mem_cycles₁ x
+
+variable (A) in
+lemma boundaries₁_le_cycles₁ : boundaries₁ A ≤ cycles₁ A :=
+  mem_cycles₁_of_mem_boundaries₁
+
+variable (A) in
+/-- The natural inclusion `B₁(G, A) →ₗ[k] Z₁(G, A)`. -/
+abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
+  Submodule.inclusion (boundaries₁_le_cycles₁ A)
+
+@[simp]
+lemma boundariesToCycles₁_apply (x : boundaries₁ A) :
+    (boundariesToCycles₁ A x).1 = x.1 := rfl
+
+end
+
+theorem single_one_mem_boundaries₁ (a : A) :
+    single 1 a ∈ boundaries₁ A := by
+  use single (1, 1) a
+  simp [d₂₁]
+
+theorem single_ρ_self_add_single_inv_mem_boundaries₁ (g : G) (a : A) :
+    single g (A.ρ g a) + single g⁻¹ a ∈ boundaries₁ A := by
+  rw [← d₂₁_single_ρ_add_single_inv_mul g 1]
+  exact Set.mem_range_self _
+
+theorem single_inv_ρ_self_add_single_mem_boundaries₁ (g : G) (a : A) :
+    single g⁻¹ (A.ρ g⁻¹ a) + single g a ∈ boundaries₁ A := by
+  rw [← d₂₁_single_inv_mul_ρ_add_single g 1]
+  exact Set.mem_range_self _
+
+section
+
+variable [DecidableEq G]
+
+lemma mem_cycles₂_of_mem_boundaries₂ (x : G × G →₀ A) (h : x ∈ boundaries₂ A) :
+    x ∈ cycles₂ A := by
+  rcases h with ⟨x, rfl⟩
+  exact d₃₂_apply_mem_cycles₂ x
+
+variable (A) in
+lemma boundaries₂_le_cycles₂ : boundaries₂ A ≤ cycles₂ A :=
+  mem_cycles₂_of_mem_boundaries₂
+
+variable (A) in
+/-- The natural inclusion `B₂(G, A) →ₗ[k] Z₂(G, A)`. -/
+abbrev boundariesToCycles₂ [DecidableEq G] : boundaries₂ A →ₗ[k] cycles₂ A :=
+  Submodule.inclusion (boundaries₂_le_cycles₂ A)
+
+@[simp]
+lemma boundariesToCycles₂_apply (x : boundaries₂ A) :
+    (boundariesToCycles₂ A x).1 = x.1 := rfl
+
+end
+
+lemma single_one_fst_sub_single_one_fst_mem_boundaries₂ (g h : G) (a : A) :
+    single (1, g * h) a - single (1, g) a ∈ boundaries₂ A := by
+  use single (1, g, h) a
+  simp [d₃₂]
+
+lemma single_one_fst_sub_single_one_snd_mem_boundaries₂ (g h : G) (a : A) :
+    single (1, h) (A.ρ g⁻¹ a) - single (g, 1) a ∈ boundaries₂ A := by
+  use single (g, 1, h) a
+  simp [d₃₂]
+
+lemma single_one_snd_sub_single_one_fst_mem_boundaries₂ (g h : G) (a : A) :
+    single (g, 1) (A.ρ g a) - single (1, h) a ∈ boundaries₂ A := by
+  use single (g, 1, h) (A.ρ g (-a))
+  simp [d₃₂_single (G := G)]
+
+lemma single_one_snd_sub_single_one_snd_mem_boundaries₂ (g h : G) (a : A) :
+    single (h, 1) (A.ρ g⁻¹ a) - single (g * h, 1) a ∈ boundaries₂ A := by
+  use single (g, h, 1) a
+  simp [d₃₂]
+
+end Boundaries
 end groupHomology

@@ -58,8 +58,7 @@ def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
 theorem hasseDeriv_apply :
     hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
   dsimp [hasseDeriv]
-  congr; ext; congr
-  apply nsmul_eq_mul
+  simp
 
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by

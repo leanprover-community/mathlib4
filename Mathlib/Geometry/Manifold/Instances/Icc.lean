@@ -60,7 +60,7 @@ instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡�
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
 
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
-lemma contMDiff_subtype_coe_Icc  :
+lemma contMDiff_subtype_coe_Icc :
     ContMDiff (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   rw [contMDiffAt_iff]
