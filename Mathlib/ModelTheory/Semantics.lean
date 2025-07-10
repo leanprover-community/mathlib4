@@ -198,7 +198,7 @@ theorem realize_constantsVarsEquivLeft [L[[α]].Structure M]
   simp only [constantsVarsEquivLeft, realize_relabel, Equiv.coe_trans, Function.comp_apply,
     constantsVarsEquiv_apply, relabelEquiv_symm_apply]
   refine _root_.trans ?_ realize_constantsToVars
-  rcongr x
+  congr 1; funext x -- Note: was previously rcongr x
   rcases x with (a | (b | i)) <;> simp
 
 end Term
