@@ -244,7 +244,7 @@ section RepresentableBy
 
 variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
 
-private def truthSubobject : Subobject 𝒞.Ω :=
+def truth_as_subobject : Subobject 𝒞.Ω :=
   haveI : Mono 𝒞.truth := 𝒞.mt
   Subobject.mk 𝒞.truth
 
@@ -257,13 +257,13 @@ lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
 
 @[simp]
 lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
-    (Subobject.pullback (𝒞.χ i)).obj 𝒞.truthSubobject = .mk i :=
+    (Subobject.pullback (𝒞.χ i)).obj 𝒞.truth_as_subobject = .mk i :=
   haveI : Mono (𝒞.truth) := 𝒞.mt
   Subobject.pullback_obj_mk (𝒞.isPullback i).flip
 
 @[simp]
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
-    𝒞.χ ((Subobject.pullback φ).obj 𝒞.truthSubobject).arrow = φ := by
+    𝒞.χ ((Subobject.pullback φ).obj 𝒞.truth_as_subobject).arrow = φ := by
   obtain ⟨Z, i, _, rfl⟩ := 𝒞.surjective_χ φ
   refine (𝒞.uniq _ _ ?_).symm
   haveI : Mono 𝒞.truth := 𝒞.mt
@@ -279,7 +279,7 @@ lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
 noncomputable def representableBy :
     (Subobject.presheaf C).RepresentableBy 𝒞.Ω where
   homEquiv := {
-    toFun φ := (Subobject.pullback φ).obj 𝒞.truthSubobject
+    toFun φ := (Subobject.pullback φ).obj 𝒞.truth_as_subobject
     invFun x := 𝒞.χ x.arrow
     left_inv φ := by simp
     right_inv x := by simp
