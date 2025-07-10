@@ -301,13 +301,13 @@ variable (M₀)
 
 @[simp]
 lemma unop_nonZeroSMulDivisors_mulOpposite_eq_nonZeroDivisors :
-    (M₀ᵐᵒᵖ ⁰[M₀]).unop = M₀⁰ := rfl
+    ((M₀ᵐᵒᵖ)⁰[M₀]).unop = M₀⁰ := rfl
 
 /-- The non-zero `•`-divisors with `•` as right multiplication correspond with the non-zero
 divisors. Note that the `MulOpposite` is needed because we defined `nonZeroDivisors` with
 multiplication on the right. -/
 lemma nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :
-    M₀ᵐᵒᵖ ⁰[M₀] = M₀⁰.op := rfl
+    (M₀ᵐᵒᵖ)⁰[M₀] = M₀⁰.op := rfl
 
 end nonZeroSMulDivisors
 
