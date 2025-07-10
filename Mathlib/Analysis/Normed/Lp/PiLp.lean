@@ -343,7 +343,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
       · exact iSup_edist_ne_top_aux f g
       · rw [edist_eq_sum (zero_lt_one.trans_le h)]
         exact ENNReal.rpow_ne_top_of_nonneg (by positivity) <| ENNReal.sum_ne_top.2 fun _ _ ↦
-          ENNReal.rpow_ne_top_of_nonneg (by positivity) (edist_ne_top _ _))
+          by finiteness)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
@@ -362,8 +362,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
             -- Porting note: `le_ciSup` needed some help
             exact ENNReal.ofReal_le_ofReal
               (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
-    · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
+    · have A (i) : edist (f i) (g i) ^ p.toReal ≠ ⊤ := by finiteness
       simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
         dist_eq_sum (zero_lt_one.trans_le h), ← ENNReal.toReal_sum fun i _ => A i]
 
@@ -401,7 +400,7 @@ theorem antilipschitzWith_equiv_aux :
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
     have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (ne_of_gt pos)
     rw [edist_eq_sum pos, ENNReal.toReal_div 1 p]
-    simp only [edist, ← one_div, ENNReal.toReal_one]
+    simp only [edist, ENNReal.toReal_one]
     calc
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
           (∑ _i, edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
@@ -435,6 +434,21 @@ end Aux
 
 /-! ### Instances on finite `L^p` products -/
 
+instance topologicalSpace [∀ i, TopologicalSpace (β i)] : TopologicalSpace (PiLp p β) :=
+  inferInstanceAs <| TopologicalSpace (Π i, β i)
+
+@[fun_prop, continuity]
+theorem continuous_equiv [∀ i, TopologicalSpace (β i)] : Continuous (WithLp.equiv p (Π i, β i)) :=
+  continuous_id
+
+@[fun_prop, continuity]
+theorem continuous_equiv_symm [∀ i, TopologicalSpace (β i)] :
+    Continuous (WithLp.equiv p (Π i, β i)).symm :=
+  continuous_id
+
+instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
+    [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
+  inferInstanceAs <| SecondCountableTopology (Π i, β i)
 
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   Pi.uniformSpace _
@@ -447,14 +461,9 @@ theorem uniformContinuous_equiv_symm [∀ i, UniformSpace (β i)] :
     UniformContinuous (WithLp.equiv p (∀ i, β i)).symm :=
   uniformContinuous_id
 
-@[continuity]
-theorem continuous_equiv [∀ i, UniformSpace (β i)] : Continuous (WithLp.equiv p (∀ i, β i)) :=
-  continuous_id
-
-@[continuity]
-theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
-    Continuous (WithLp.equiv p (∀ i, β i)).symm :=
-  continuous_id
+instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
+    CompleteSpace (PiLp p β) :=
+  inferInstanceAs <| CompleteSpace (Π i, β i)
 
 instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology
@@ -601,8 +610,8 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
-  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast, eq_self_iff_true,
-    Finset.sum_congr, norm_eq_sum this]
+  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
+    norm_eq_sum this]
 
 section L1
 variable {β} [∀ i, SeminormedAddCommGroup (β i)]
@@ -673,7 +682,21 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup 
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one,
         Finset.mul_sum]
       simp_rw [← NNReal.mul_rpow, smul_apply]
-      exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
+      gcongr
+      apply nnnorm_smul_le
+
+instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+    [∀ i, Module 𝕜 (β i)] [∀ i, NormSMulClass 𝕜 (β i)] :
+    NormSMulClass 𝕜 (PiLp p β) :=
+  .of_nnnorm_smul fun c f => by
+    rcases p.dichotomy with (rfl | hp)
+    · rw [← nnnorm_equiv, ← nnnorm_equiv, WithLp.equiv_smul, nnnorm_smul]
+    · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
+      have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
+      rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one,
+        Finset.mul_sum]
+      simp_rw [← NNReal.mul_rpow, smul_apply, nnnorm_smul]
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
 instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
@@ -731,7 +754,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
     LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e ((WithLp.equiv p (_ → E)).symm <| Pi.single i v) =
       (WithLp.equiv p (_ → E)).symm (Pi.single (e i) v) := by
   funext x
-  simp [LinearIsometryEquiv.piLpCongrLeft_apply, LinearEquiv.piCongrLeft', Equiv.piCongrLeft',
+  simp [LinearIsometryEquiv.piLpCongrLeft_apply, Equiv.piCongrLeft',
     Pi.single, Function.update, Equiv.symm_apply_eq]
 
 end piLpCongrLeft
@@ -751,7 +774,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
       ≪≫ₗ (LinearEquiv.piCongrRight fun i => (e i).toLinearEquiv)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
-    simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
+    simp only [LinearEquiv.trans_apply,
       Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
     obtain rfl | hp := p.dichotomy
     · simp_rw [PiLp.norm_equiv_symm, Pi.norm_def, LinearEquiv.piCongrRight_apply,

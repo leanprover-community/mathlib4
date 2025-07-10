@@ -24,12 +24,6 @@ note: this linter can be disabled with `set_option linter.style.header false`
 warning: Duplicate imports: 'Mathlib.Tactic.Linter.Header' already imported
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
-warning: Modules starting with MathlibTest.Header are not allowed to import modules starting with Mathlib.Deprecated.
-This module depends on Mathlib.Deprecated.Aliases
-which is imported by this module.
-(Exceptions can be added to `overrideAllowedImportDirs`.)
-note: this linter can be disabled with `set_option linter.directoryDependency false`
----
 warning: The module doc-string for a file should be the first command after the imports.
 Please, add a module doc-string before `/-!# Tests for the `docModule` linter
 -/

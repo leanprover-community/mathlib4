@@ -13,11 +13,11 @@ import Mathlib.LinearAlgebra.Matrix.BaseChange
 We provide API for restricting perfect pairings to submodules and for restricting their scalars.
 
 ## Main definitions
- * `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
- * `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
-   subring.
- * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
-   of a perfect pairing with coefficients in a field.
+* `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
+* `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
+  subring.
+* `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
+  of a perfect pairing with coefficients in a field.
 
 -/
 
@@ -92,7 +92,7 @@ variable {S M' N' : Type*}
 private def restrictScalarsAux
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     M' →ₗ[S] N' →ₗ[S] S :=
- LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
+  LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
     (FaithfulSMul.algebraMap_injective S R) p.toLinearMap hp
 
 private lemma restrictScalarsAux_injective

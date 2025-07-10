@@ -128,12 +128,12 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
     Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
- dsimp only at h
- by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
- · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
- · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
- · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
- · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+  dsimp only at h
+  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
+  · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+  · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+  · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y
@@ -644,6 +644,26 @@ theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β
     update (update f a v) a w = update f a w := by
   funext b
   by_cases h : b = a <;> simp [update, h]
+
+@[simp]
+theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
+    {f : ∀ i, α i → β i}
+    (g : ∀ i, α i) (i : ι) (a : α i) :
+    Pi.map f (Function.update g i a) = Function.update (Pi.map f g) i (f i a) := by
+  ext j
+  obtain rfl | hij := eq_or_ne j i <;> simp [*]
+
+@[simp]
+theorem _root_.Pi.map_injective
+    {ι : Sort*} {α β : ι → Sort*} [∀ i, Nonempty (α i)] {f : ∀ i, α i → β i} :
+    Injective (Pi.map f) ↔ ∀ i, Injective (f i) where
+  mp h i x y hxy := by
+    classical
+    have : Inhabited (∀ i, α i) := ⟨fun _ => Classical.choice inferInstance⟩
+    replace h := @h (Function.update default i x) (Function.update default i y) ?_
+    · simpa using congrFun h i
+    rw [Pi.map_update, Pi.map_update, hxy]
+  mpr := .piMap
 
 end Update
 

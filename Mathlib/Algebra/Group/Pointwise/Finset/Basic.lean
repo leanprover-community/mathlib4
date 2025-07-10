@@ -489,6 +489,28 @@ lemma inf_mul_right {β} [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f 
     inf (s * t) f = inf t fun y ↦ inf s (f <| · * y) :=
   inf_image₂_right ..
 
+/--
+See `card_le_card_mul_left` for a more convenient but less general version for types with a
+left-cancellative multiplication.
+-/
+@[to_additive
+"See `card_le_card_add_left` for a more convenient but less general version for types with a
+left-cancellative addition."]
+lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : Function.Injective (a * ·)) :
+    #t ≤ #(s * t) :=
+  card_le_card_image₂_left _ has ha
+
+/--
+See `card_le_card_mul_right` for a more convenient but less general version for types with a
+right-cancellative multiplication.
+-/
+@[to_additive
+"See `card_le_card_add_right` for a more convenient but less general version for types with a
+right-cancellative addition."]
+lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : Function.Injective (· * a)) :
+    #s ≤ #(s * t) :=
+  card_le_card_image₂_right _ hat ha
+
 end Mul
 
 /-! ### Finset subtraction/division -/
@@ -654,9 +676,6 @@ end Div
 
 /-! ### Instances -/
 
-
-open Pointwise
-
 section Instances
 
 variable [DecidableEq α] [DecidableEq β]
@@ -778,9 +797,15 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   · rw [npowRec, pow_zero, coe_one]
   · rw [npowRec, pow_succ, coe_mul, ih]
 
+#adaptation_note /-- nightly-2025-04-07
+This now needs to be marked as noncomputable because of its dependence on `Set.monoid`.
+We should either find a way to rewrite this definition to avoid this,
+or request via @kim-em and @zwarich that changes in https://github.com/leanprover/lean4/pull/7824
+be revisited to avoid needing as many `noncomputable`s.
+-/
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddMonoid` under pointwise operations if `α` is. "]
-protected def monoid : Monoid (Finset α) :=
+protected noncomputable def monoid : Monoid (Finset α) :=
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
@@ -915,14 +940,12 @@ variable [CommMonoid α]
 
 /-- `Finset α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive "`Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. "]
-protected def commMonoid : CommMonoid (Finset α) :=
+protected noncomputable def commMonoid : CommMonoid (Finset α) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 end CommMonoid
-
-open Pointwise
 
 section DivisionMonoid
 
@@ -942,7 +965,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 /-- `Finset α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
   "`Finset α` is a subtraction monoid under pointwise operations if `α` is."]
-protected def divisionMonoid : DivisionMonoid (Finset α) :=
+protected noncomputable def divisionMonoid : DivisionMonoid (Finset α) :=
   coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionMonoid Finset.subtractionMonoid
@@ -998,7 +1021,8 @@ end DivisionMonoid
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
       "`Finset α` is a commutative subtraction monoid under pointwise operations if `α` is."]
-protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (Finset α) :=
+protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
+    DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid
@@ -1020,11 +1044,21 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
     Finset.Nonempty])
 
 @[to_additive]
-theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
+theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
+@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_one_mem_div_iff := one_notMem_div_iff
+
 @[to_additive]
-lemma not_one_mem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
+lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
+
+@[deprecated (since := "2025-05-23")] alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
@@ -1142,7 +1176,7 @@ theorem singleton_mul_inter (a : α) (s t : Finset α) : {a} * (s ∩ t) = {a} *
 
 @[to_additive]
 theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : #t ≤ #(s * t) :=
-  card_le_card_image₂_left _ hs mul_right_injective
+  have ⟨_, ha⟩ := hs; card_le_card_mul_left_of_injective ha (mul_right_injective _)
 
 /--
 The size of `s * s` is at least the size of `s`, version with left-cancellative multiplication.
@@ -1175,7 +1209,7 @@ theorem inter_mul_singleton (s t : Finset α) (a : α) : s ∩ t * {a} = s * {a}
 
 @[to_additive]
 theorem card_le_card_mul_right (ht : t.Nonempty) : #s ≤ #(s * t) :=
-  card_le_card_image₂_right _ ht mul_left_injective
+  have ⟨_, ha⟩ := ht; card_le_card_mul_right_of_injective ha (mul_left_injective _)
 
 /--
 The size of `s * s` is at least the size of `s`, version with right-cancellative multiplication.
@@ -1219,10 +1253,10 @@ section Group
 variable [Group α] [DecidableEq α] {s t : Finset α}
 
 @[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : #t ≤ #(s / t) :=
-  card_le_card_image₂_left _ hs fun _ ↦ div_right_injective
+  have ⟨_, ha⟩ := hs; card_le_card_image₂_left _ ha div_right_injective
 
 @[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : #s ≤ #(s / t) :=
-  card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
+  have ⟨_, ha⟩ := ht; card_le_card_image₂_right _ ha div_left_injective
 
 @[to_additive] lemma card_le_card_div_self : #s ≤ #(s / s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]

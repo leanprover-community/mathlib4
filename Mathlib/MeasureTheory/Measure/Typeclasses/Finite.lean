@@ -21,7 +21,7 @@ variable {α β δ ι : Type*}
 
 namespace MeasureTheory
 
-variable {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν ν₁ ν₂ : Measure α}
+variable {m0 : MeasurableSpace α} [mβ : MeasurableSpace β] {μ ν ν₁ ν₂ : Measure α}
   {s t : Set α}
 
 section IsFiniteMeasure
@@ -337,6 +337,11 @@ theorem measure_ball_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measur
     [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) < ∞ :=
   Metric.isBounded_ball.measure_lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem measure_ball_ne_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measure α}
+    [IsFiniteMeasureOnCompacts μ] {x : α} {r : ℝ} : μ (Metric.ball x r) ≠ ∞ :=
+  measure_ball_lt_top.ne
+
 protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : IsFiniteMeasureOnCompacts (c • μ) :=
   ⟨fun _K hK => ENNReal.mul_lt_top hc.lt_top hK.measure_lt_top⟩
@@ -348,6 +353,14 @@ instance IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measu
 instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {s : Set α} : IsFiniteMeasureOnCompacts (μ.restrict s) :=
   ⟨fun _k hk ↦ (restrict_apply_le _ _).trans_lt hk.measure_lt_top⟩
+
+variable {mβ} in
+protected theorem IsFiniteMeasureOnCompacts.comap' [TopologicalSpace α] [TopologicalSpace β]
+    (μ : Measure β) [IsFiniteMeasureOnCompacts μ] {f : α → β} (f_cont : Continuous f)
+    (f_me : MeasurableEmbedding f) : IsFiniteMeasureOnCompacts (μ.comap f) where
+  lt_top_of_isCompact K hK := by
+    rw [f_me.comap_apply]
+    exact IsFiniteMeasureOnCompacts.lt_top_of_isCompact (hK.image f_cont)
 
 instance (priority := 100) CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
     [IsFiniteMeasureOnCompacts μ] : IsFiniteMeasure μ :=

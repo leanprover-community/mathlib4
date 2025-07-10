@@ -97,7 +97,7 @@ noncomputable def partialTraj (a b : ℕ) : Kernel (Π i : Iic a, X i) (Π i : I
   if h : b ≤ a then deterministic (frestrictLe₂ h) (measurable_frestrictLe₂ h)
   else @Nat.leRec a (fun b _ ↦ Kernel (Π i : Iic a, X i) (Π i : Iic b, X i)) Kernel.id
     (fun k _ κ_k ↦ ((Kernel.id ×ₖ ((κ k).map (piSingleton k))) ∘ₖ κ_k).map (IicProdIoc k (k + 1)))
-    b (Nat.le_of_not_le h)
+    b (Nat.le_of_not_ge h)
 
 section Basic
 
@@ -220,7 +220,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
       ext x i
       simp only [IicProdIoc_def, MeasurableEquiv.IicProdIoc, MeasurableEquiv.coe_mk,
         Equiv.coe_fn_mk, Function.comp_apply, Prod.map_fst, Prod.map_snd, id_eq,
-        Nat.succ_eq_add_one, Equiv.prodAssoc_apply, Prod.map_apply, IocProdIoc]
+        Nat.succ_eq_add_one, IocProdIoc]
       split_ifs <;> try rfl
       omega
     nth_rw 1 [← partialTraj_comp_partialTraj h k.le_succ, hk, partialTraj_succ_self, comp_map,
@@ -239,7 +239,7 @@ variable [∀ n, IsMarkovKernel (κ n)]
 
 lemma partialTraj_succ_map_frestrictLe₂ (a b : ℕ) :
     (partialTraj κ a (b + 1)).map (frestrictLe₂ b.le_succ) = partialTraj κ a b := by
-  obtain hab | hba := le_or_lt a b
+  obtain hab | hba := le_or_gt a b
   · have := IsMarkovKernel.map (κ b) (piSingleton b).measurable
     rw [partialTraj_succ_eq_comp hab, map_comp, partialTraj_succ_self, ← map_comp_right,
       frestrictLe₂_comp_IicProdIoc, ← fst_eq, fst_prod, id_comp]
@@ -315,8 +315,8 @@ lemma lmarginalPartialTraj_eq_lintegral_map [∀ n, IsSFiniteKernel (κ n)] {f :
       ∂(partialTraj κ a b).map (restrict₂ Ioc_subset_Iic_self) (frestrictLe a x₀) := by
   nth_rw 1 [lmarginalPartialTraj, partialTraj_eq_prod, lintegral_map, lintegral_id_prod]
   · congrm ∫⁻ _, f (fun i ↦ ?_) ∂_
-    simp only [updateFinset, mem_Iic, IicProdIoc_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk,
-      frestrictLe_apply, restrict₂, mem_Ioc]
+    simp only [updateFinset, mem_Iic, IicProdIoc_def,
+      frestrictLe_apply, mem_Ioc]
     split_ifs <;> try rfl
     all_goals omega
   all_goals fun_prop
@@ -391,7 +391,7 @@ theorem lmarginalPartialTraj_const_right [∀ n, IsMarkovKernel (κ n)] {d : ℕ
     (mf : Measurable f) (hf : DependsOn f (Iic a)) (hac : a ≤ c) (had : a ≤ d) :
     lmarginalPartialTraj κ b c f = lmarginalPartialTraj κ b d f := by
   wlog hcd : c ≤ d generalizing c d
-  · rw [this had hac (le_of_not_le hcd)]
+  · rw [this had hac (le_of_not_ge hcd)]
   obtain hbc | hcb := le_total b c
   · rw [← lmarginalPartialTraj_self hbc hcd mf, hf.lmarginalPartialTraj_of_le d mf hac]
   · rw [hf.lmarginalPartialTraj_of_le c mf (hac.trans hcb),

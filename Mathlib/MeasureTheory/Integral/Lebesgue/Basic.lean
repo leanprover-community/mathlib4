@@ -156,7 +156,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     replace h : ψ.map ((↑) : ℝ≥0 → ℝ≥0∞) =ᵐ[μ] φ := h.mono fun a => ENNReal.coe_toNNReal
     have : ∀ x, ↑(ψ x) ≤ f x := fun x => le_trans ENNReal.coe_toNNReal_le_self (hφ x)
     exact le_iSup₂_of_le (φ.map ENNReal.toNNReal) this (ge_of_eq <| lintegral_congr h)
-  · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_nmem.1 h
+  · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_notMem.1 h
     refine le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb => ?_)
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
@@ -208,17 +208,17 @@ theorem le_iInf₂_lintegral {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i
 theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤ g a) :
     ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ := by
   rcases exists_measurable_superset_of_null h with ⟨t, hts, ht, ht0⟩
-  have : ∀ᵐ x ∂μ, x ∉ t := measure_zero_iff_ae_nmem.1 ht0
+  have : ∀ᵐ x ∂μ, x ∉ t := measure_zero_iff_ae_notMem.1 ht0
   rw [lintegral, lintegral]
   refine iSup₂_le fun s hfs ↦ le_iSup₂_of_le (s.restrict tᶜ) ?_ ?_
   · intro a
     by_cases h : a ∈ t <;>
       simp only [restrict_apply s ht.compl, mem_compl_iff, h, not_true, not_false_eq_true,
-        indicator_of_not_mem, zero_le, not_false_eq_true, indicator_of_mem]
+        indicator_of_notMem, zero_le, not_false_eq_true, indicator_of_mem]
     exact le_trans (hfs a) (by_contradiction fun hnfg => h (hts hnfg))
   · refine le_of_eq (SimpleFunc.lintegral_congr <| this.mono fun a hnt => ?_)
     by_cases hat : a ∈ t <;> simp only [restrict_apply s ht.compl, mem_compl_iff, hat, not_true,
-      not_false_eq_true, indicator_of_not_mem, not_false_eq_true, indicator_of_mem]
+      not_false_eq_true, indicator_of_notMem, not_false_eq_true, indicator_of_mem]
     exact (hnt hat).elim
 
 /-- Lebesgue integral over a set is monotone in function.
@@ -261,11 +261,19 @@ theorem lintegral_congr {f g : α → ℝ≥0∞} (h : ∀ a, f a = g a) : ∫�
 theorem setLIntegral_congr {f : α → ℝ≥0∞} {s t : Set α} (h : s =ᵐ[μ] t) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ := by rw [Measure.restrict_congr_set h]
 
-theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
+theorem setLIntegral_congr_fun_ae {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → f x = g x) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ := by
   rw [lintegral_congr_ae]
   rw [EventuallyEq]
   rwa [ae_restrict_iff' hs]
+
+theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
+    (hfg : EqOn f g s) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ :=
+  setLIntegral_congr_fun_ae hs <| Eventually.of_forall hfg
+
+lemma setLIntegral_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s) (h's : EqOn f 0 s) :
+    ∫⁻ x in s, f x ∂μ = 0 := by
+  simp [setLIntegral_congr_fun hs h's]
 
 section
 
@@ -392,7 +400,7 @@ theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
   refine (ENNReal.iSup_add_iSup ?_).symm
   rintro ⟨φ, hφ⟩ ⟨ψ, hψ⟩
   refine ⟨⟨φ ⊔ ψ, sup_le hφ hψ⟩, ?_⟩
-  apply_rules [add_le_add, SimpleFunc.lintegral_mono, le_rfl] -- TODO: use `gcongr`
+  gcongr
   exacts [le_sup_left, le_sup_right]
 
 @[simp]
@@ -506,7 +514,7 @@ lemma setLIntegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hs
 
 theorem setLIntegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : ℝ≥0∞) :
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
-  have : ∀ᵐ x ∂μ, x ∈ { x | f x = r } → f x = r := ae_of_all μ fun _ hx => hx
+  have : ∀ x ∈ { x | f x = r }, f x = r := fun _ hx => hx
   rw [setLIntegral_congr_fun _ this]
   · rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
   · exact hf (measurableSet_singleton r)
@@ -519,10 +527,9 @@ theorem lintegral_indicator_one₀ {s : Set α} (hs : NullMeasurableSet s μ) :
     ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
   (lintegral_indicator_const₀ hs _).trans <| one_mul _
 
-@[simp]
 theorem lintegral_indicator_one {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const hs _).trans <| one_mul _
+    ∫⁻ a, s.indicator 1 a ∂μ = μ s := by
+  simp [hs]
 
 theorem Measure.ext_iff_lintegral (ν : Measure α) :
     μ = ν ↔ ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν := by
@@ -597,8 +604,8 @@ lemma lintegral_piecewise (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ 
     ∫⁻ a, s.piecewise f g a ∂μ = ∫⁻ a in s, f a ∂μ + ∫⁻ a in sᶜ, g a ∂μ := by
   rw [← lintegral_add_compl _ hs]
   congr 1
-  · exact setLIntegral_congr_fun hs <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_mem _ _ _
-  · exact setLIntegral_congr_fun hs.compl <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_not_mem _ _ _
+  · exact setLIntegral_congr_fun hs <| fun _ ↦ Set.piecewise_eq_of_mem _ _ _
+  · exact setLIntegral_congr_fun hs.compl <| fun _ ↦ Set.piecewise_eq_of_notMem _ _ _
 
 theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
@@ -620,8 +627,8 @@ theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measur
   rw [← lintegral_add_compl (fun x => max (f x) (g x)) hm]
   simp only [← compl_setOf, ← not_le]
   refine congr_arg₂ (· + ·) (setLIntegral_congr_fun hm ?_) (setLIntegral_congr_fun hm.compl ?_)
-  exacts [ae_of_all _ fun x => max_eq_right (a := f x) (b := g x),
-    ae_of_all _ fun x (hx : ¬ f x ≤ g x) => max_eq_left (not_le.1 hx).le]
+  exacts [fun x => max_eq_right (a := f x) (b := g x),
+    fun x (hx : ¬ f x ≤ g x) => max_eq_left (not_le.1 hx).le]
 
 theorem setLIntegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) (s : Set α) :
     ∫⁻ x in s, max (f x) (g x) ∂μ =

@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Set.Lattice.Image

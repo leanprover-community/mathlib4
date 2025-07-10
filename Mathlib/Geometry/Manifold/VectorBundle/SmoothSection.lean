@@ -140,9 +140,9 @@ instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
 
 @[simp]
 theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
-  induction' k with k ih
-  · simp_rw [zero_smul]; rfl
-  simp_rw [succ_nsmul, ← ih]; rfl
+  induction k with
+  | zero => simp_rw [zero_smul]; rfl
+  | succ k ih => simp_rw [succ_nsmul, ← ih]; rfl
 
 instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
   ⟨zsmulRec⟩
@@ -153,7 +153,7 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
   · refine (coe_nsmul s n).trans ?_
     simp only [Int.ofNat_eq_coe, natCast_zsmul]
   · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
-    simp only [negSucc_zsmul, neg_inj]
+    simp only [negSucc_zsmul]
 
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul

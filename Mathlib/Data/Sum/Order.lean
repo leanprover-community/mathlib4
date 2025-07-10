@@ -161,14 +161,14 @@ instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
     le_refl := fun _ => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
-    lt_iff_le_not_le := fun a b => by
+    lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩)
-        · exact hba.not_lt (inl_lt_inl_iff.1 hab)
-        · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+        · exact hba.not_gt (inl_lt_inl_iff.1 hab)
+        · exact hba.not_gt (inr_lt_inr_iff.1 hab)
       · rintro ⟨⟨hab⟩ | ⟨hab⟩, hba⟩
-        · exact LiftRel.inl (hab.lt_of_not_le fun h => hba <| LiftRel.inl h)
-        · exact LiftRel.inr (hab.lt_of_not_le fun h => hba <| LiftRel.inr h) }
+        · exact LiftRel.inl (hab.lt_of_not_ge fun h => hba <| LiftRel.inl h)
+        · exact LiftRel.inr (hab.lt_of_not_ge fun h => hba <| LiftRel.inr h) }
 
 theorem inl_mono : Monotone (inl : α → α ⊕ β) := fun _ _ => LiftRel.inl
 
@@ -341,15 +341,15 @@ instance preorder : Preorder (α ⊕ₗ β) :=
   { Lex.LE, Lex.LT with
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
-    lt_iff_le_not_le := fun a b => by
+    lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
-        · exact hba.not_lt (inl_lt_inl_iff.1 hab)
-        · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+        · exact hba.not_gt (inl_lt_inl_iff.1 hab)
+        · exact hba.not_gt (inr_lt_inr_iff.1 hab)
         · exact not_inr_lt_inl hab
       · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
-        · exact Lex.inl (hab.lt_of_not_le fun h => hba <| Lex.inl h)
-        · exact Lex.inr (hab.lt_of_not_le fun h => hba <| Lex.inr h)
+        · exact Lex.inl (hab.lt_of_not_ge fun h => hba <| Lex.inl h)
+        · exact Lex.inr (hab.lt_of_not_ge fun h => hba <| Lex.inr h)
         · exact Lex.sep _ _ }
 
 theorem toLex_mono : Monotone (@toLex (α ⊕ β)) := fun _ _ h => h.lex
@@ -612,7 +612,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
         change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
-        simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff]
+        simp [toDual_le_toDual]
       · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _)
           Lex.not_inr_le_inl
       · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _)
@@ -620,7 +620,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
       · change
           toLex (inl <| toDual a) ≤ toLex (inl <| toDual b) ↔
             toDual (toLex <| inr a) ≤ toDual (toLex <| inr b)
-        simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff] }
+        simp [toDual_le_toDual] }
 
 @[simp]
 theorem sumLexDualAntidistrib_inl :
@@ -655,7 +655,7 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
-    · simp only [elim_inr, lex_inl_inl, bot_le, le_rfl]
+    · simp only [elim_inr, lex_inl_inl, bot_le]
     · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
@@ -690,7 +690,7 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, fun {a b} => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
+      Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
     · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]

@@ -19,14 +19,14 @@ essential image of the constant sheaf functor.
 ## Main results
 
 * `Sheaf.isConstant_iff_isIso_counit_app`: Provided that the constant sheaf functor is fully
-faithful, a sheaf is constant if and only if the counit of the constant sheaf adjunction applied to
-it is an isomorphism.
+  faithful, a sheaf is constant if and only if the counit of the constant sheaf adjunction applied
+  to it is an isomorphism.
 
 * `Sheaf.isConstant_iff_of_equivalence` : The property of a sheaf of being constant is invariant
-under equivalence of sheaf categories.
+  under equivalence of sheaf categories.
 
 * `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
-constant if and only if the sheaf given by postcomposition with `U` is constant.
+  constant if and only if the sheaf given by postcomposition with `U` is constant.
 -/
 
 namespace CategoryTheory
@@ -190,11 +190,11 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
       ((constantSheafAdj J B hT).counit.app ((sheafCompose J U).obj F)) =
         ((sheafCompose J U).map ((constantSheafAdj J D hT).counit.app F)) := by
   apply Sheaf.hom_ext
-  rw [instCategorySheaf_comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
+  rw [comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
   ext
   simp? says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, id_obj,
-      constantSheafAdj_counit_app, instCategorySheaf_comp_val,
+      constantSheafAdj_counit_app, comp_val,
       sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
       toSheafify_sheafifyLift, NatTrans.comp_app, constComp_hom_app,
       constantPresheafAdj_counit_app_app, Functor.comp_map, id_comp, flip_obj_obj,

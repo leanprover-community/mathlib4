@@ -227,6 +227,11 @@ alias orderOf_generator_eq_natCard := orderOf_eq_card_of_forall_mem_zpowers
 alias addOrderOf_generator_eq_natCard := addOrderOf_eq_card_of_forall_mem_zmultiples
 
 @[to_additive]
+theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤) :
+    orderOf g = Nat.card G :=
+  orderOf_eq_card_of_forall_mem_zpowers fun _ ↦ h.ge (Subgroup.mem_top _)
+
+@[to_additive]
 theorem exists_pow_ne_one_of_isCyclic [G_cyclic : IsCyclic G]
     {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Nat.card G) : ∃ a : G, a ^ k ≠ 1 := by
   have : Finite G := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt k_lt_card_G)
@@ -459,7 +464,7 @@ open Nat
 @[to_additive]
 private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.card α)
     (hpos : 0 < #{a : α | orderOf a = d}) : #{a : α | orderOf a = d} = φ d := by
-  induction' d using Nat.strongRec' with d IH
+  induction d using Nat.strongRec' with | _ d IH
   rcases Decidable.eq_or_ne d 0 with (rfl | hd0)
   · cases Fintype.card_ne_zero (eq_zero_of_zero_dvd hd)
   rcases Finset.card_pos.1 hpos with ⟨a, ha'⟩
@@ -468,7 +473,7 @@ private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.car
     (∑ m ∈ d.properDivisors, #{a : α | orderOf a = m}) =
       ∑ m ∈ d.properDivisors, φ m := by
     refine Finset.sum_congr rfl fun m hm => ?_
-    simp only [mem_filter, mem_range, mem_properDivisors] at hm
+    simp only [mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
     simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and,
       Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
@@ -780,6 +785,39 @@ theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
   exact Nat.card_congr (mulAutMulEquiv G)
 
 end ZMod
+
+section powMonoidHom
+
+variable (G)
+
+-- Note. Even though cyclic groups only require `[Group G]`, we need `[CommGroup G]` for
+-- `powMonoidHom` to be defined.
+
+@[to_additive]
+theorem IsCyclic.card_powMonoidHom_range [CommGroup G] [hG : IsCyclic G] [Finite G] (d : ℕ) :
+    Nat.card (powMonoidHom d : G →* G).range = Nat.card G / (Nat.card G).gcd d := by
+  obtain ⟨g, h⟩ := isCyclic_iff_exists_zpowers_eq_top.mp hG
+  rw [MonoidHom.range_eq_map, ← h, MonoidHom.map_zpowers, Nat.card_zpowers, powMonoidHom_apply,
+    orderOf_pow, orderOf_eq_card_of_zpowers_eq_top h]
+
+@[to_additive]
+theorem IsCyclic.index_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    (powMonoidHom d : G →* G).ker.index = Nat.card G / (Nat.card G).gcd d := by
+  rw [Subgroup.index_ker, card_powMonoidHom_range]
+
+@[to_additive]
+theorem IsCyclic.card_powMonoidHom_ker [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    Nat.card (powMonoidHom d : G →* G).ker = (Nat.card G).gcd d := by
+  have h : (powMonoidHom d : G →* G).ker.index ≠ 0 := Subgroup.index_ne_zero_of_finite
+  rw [← mul_left_inj' h, Subgroup.card_mul_index, index_powMonoidHom_ker, Nat.mul_div_cancel']
+  exact Nat.gcd_dvd_left (Nat.card G) d
+
+@[to_additive]
+theorem IsCyclic.index_powMonoidHom_range [CommGroup G] [IsCyclic G] [Finite G] (d : ℕ) :
+    (powMonoidHom d : G →* G).range.index = (Nat.card G).gcd d := by
+  rw [Subgroup.index_range, card_powMonoidHom_ker]
+
+end powMonoidHom
 
 section generator
 

@@ -5,8 +5,11 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.DefView
 import Lean.Util.CollectAxioms
-import Mathlib.Init
 import ImportGraph.Imports
+import ImportGraph.RequiredModules
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -65,12 +68,13 @@ def getSyntaxNodeKinds : Syntax → NameSet
   | .ident _ _ nm _ => NameSet.empty.insert nm
   | _ => {}
 
-/-- extracts the names of the declarations in `env` on which `decl` depends. -/
--- source:
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Counting.20prerequisites.20of.20a.20theorem/near/425370265
-def getVisited (env : Environment) (decl : Name) : NameSet :=
-  let (_, { visited, .. }) := CollectAxioms.collect decl |>.run env |>.run {}
-  visited
+/-- Extracts the names of the declarations in `env` on which `decl` depends. -/
+def getVisited (decl : Name) : CommandElabM NameSet := do
+  unless (← hasConst decl) do
+    return {}
+  -- without resetting the state, the "unused tactics" linter gets confused?
+  let st ← get
+  liftCoreM decl.transitivelyUsedConstants <* set st
 
 /-- `getId stx` takes as input a `Syntax` `stx`.
 If `stx` contains a `declId`, then it returns the `ident`-syntax for the `declId`.
@@ -190,8 +194,8 @@ def getAllDependencies (cmd id : Syntax) :
   let env ← getEnv
   let nm ← getDeclName cmd
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
-  return getVisited env nm
-              |>.append (getVisited env id.getId)
+  return (← getVisited nm)
+              |>.append (← getVisited id.getId)
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
 

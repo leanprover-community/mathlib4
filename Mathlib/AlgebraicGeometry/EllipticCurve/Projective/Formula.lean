@@ -3,7 +3,7 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 
 /-!
@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular projective points on `W` can be
 given negation and addition operations defined by an analogue of the secant-and-tangent process in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, but the polynomials involved are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`, but the polynomials involved are
 homogeneous, so any instances of division become multiplication in the `Z`-coordinate. Most
 computational proofs are immediate from their analogous proofs for affine coordinates.
 
@@ -21,15 +21,15 @@ be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.negY`: the `Y`-coordinate of `-P`.
- * `WeierstrassCurve.Projective.dblZ`: the `Z`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.dblX`: the `X`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.negDblY`: the `Y`-coordinate of `-(2 • P)`.
- * `WeierstrassCurve.Projective.dblY`: the `Y`-coordinate of `2 • P`.
- * `WeierstrassCurve.Projective.addZ`: the `Z`-coordinate of `P + Q`.
- * `WeierstrassCurve.Projective.addX`: the `X`-coordinate of `P + Q`.
- * `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
- * `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.negY`: the `Y`-coordinate of `-P`.
+* `WeierstrassCurve.Projective.dblZ`: the `Z`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.dblX`: the `X`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.negDblY`: the `Y`-coordinate of `-(2 • P)`.
+* `WeierstrassCurve.Projective.dblY`: the `Y`-coordinate of `2 • P`.
+* `WeierstrassCurve.Projective.addZ`: the `Z`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.addX`: the `X`-coordinate of `P + Q`.
+* `WeierstrassCurve.Projective.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+* `WeierstrassCurve.Projective.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Implementation notes
 
@@ -37,7 +37,7 @@ The definitions of `WeierstrassCurve.Projective.dblX`, `WeierstrassCurve.Project
 `WeierstrassCurve.Projective.addZ`, `WeierstrassCurve.Projective.addX`, and
 `WeierstrassCurve.Projective.negAddY` are given explicitly by large polynomials that are homogeneous
 of degree `4`. Clearing the denominators of their corresponding affine rational functions in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` would give polynomials that are
+`Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean` would give polynomials that are
 homogeneous of degrees `5`, `6`, `6`, `8`, and `8` respectively, so their actual definitions are off
 by powers of certain polynomial factors that are homogeneous of degree `1` or `2`. These factors
 divide their corresponding affine polynomials only modulo the homogeneous Weierstrass equation, so
@@ -821,12 +821,12 @@ lemma map_dblZ : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
 
 @[simp]
 lemma map_dblX : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
-  simp only [dblX, map_dblU, map_negY]
+  simp only [dblX]
   map_simp
 
 @[simp]
 lemma map_negDblY : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
-  simp only [negDblY, map_dblU, map_dblX, map_negY]
+  simp only [negDblY]
   map_simp
 
 @[simp]

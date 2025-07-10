@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.MinImports
 import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -25,7 +24,7 @@ open Function
 variable {M G : Type*}
 
 variable (M) in
-/-- A monoid is `R`-torsion-free if scalar multiplication by every non-zero element `a : R` is
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `a : ℕ` is
 injective. -/
 @[mk_iff]
 class IsAddTorsionFree [AddMonoid M] where
@@ -35,12 +34,15 @@ section Monoid
 variable [Monoid M]
 
 variable (M) in
-/-- A monoid is `R`-torsion-free if power by every non-zero element `a : R` is injective. -/
+/-- A monoid is torsion-free if power by every non-zero element `a : ℕ` is injective. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree where
   protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
 
 attribute [to_additive existing] isMulTorsionFree_iff
+
+@[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
+  pow_left_injective _ _ := injective_of_subsingleton _
 
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 

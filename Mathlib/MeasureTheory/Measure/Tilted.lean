@@ -272,7 +272,6 @@ lemma tilted_neg_same' (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = (μ Set.univ)⁻¹ • μ := by
   rw [tilted_tilted hf]; simp
 
-@[simp]
 lemma tilted_neg_same [IsProbabilityMeasure μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = μ := by
   simp [hf]
@@ -335,7 +334,7 @@ lemma toReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFi
       =ᵐ[ν] fun x ↦ exp (- f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
   filter_upwards [rnDeriv_tilted_right μ ν hf] with x hx
   rw [hx]
-  simp only [ENNReal.toReal_mul, gt_iff_lt, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]
+  simp only [ENNReal.toReal_mul, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]
   exact Or.inl (by positivity)
 
 variable (μ) in

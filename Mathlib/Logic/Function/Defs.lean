@@ -51,11 +51,7 @@ abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x
 
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
-@[simp, mfld_simps]
-theorem id_comp (f : α → β) : id ∘ f = f := rfl
-
-@[simp, mfld_simps]
-theorem comp_id (f : α → β) : f ∘ id = f := rfl
+attribute [mfld_simps] id_comp comp_id
 
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl

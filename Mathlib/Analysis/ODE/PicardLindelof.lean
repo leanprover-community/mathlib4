@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
 
@@ -199,7 +199,7 @@ protected theorem mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.
   calc
     dist (f t) v.x₀ = dist (f t) (f.toFun v.t₀) := by rw [f.map_t₀']
     _ ≤ v.C * dist t v.t₀ := f.lipschitz.dist_le_mul _ _
-    _ ≤ v.C * v.tDist := mul_le_mul_of_nonneg_left (v.dist_t₀_le _) v.C.2
+    _ ≤ v.C * v.tDist := by gcongr; apply v.dist_t₀_le
     _ ≤ v.R := v.isPicardLindelof.C_mul_le_R
 
 /-- Given a curve $γ \colon [t_{\min}, t_{\max}] → E$, `PicardLindelof.vComp` is the function
@@ -335,7 +335,7 @@ theorem exists_solution [CompleteSpace E] :
   rcases v.exists_fixed with ⟨f, hf⟩
   refine ⟨f ∘ v.proj, ?_, fun t ht => ?_⟩
   · simp only [(· ∘ ·), proj_coe, f.map_t₀]
-  · simp only [(· ∘ ·), v.proj_of_mem ht]
+  · simp only [(· ∘ ·)]
     lift t to Icc v.tMin v.tMax using ht
     simpa only [hf, v.proj_coe] using f.hasDerivWithinAt_next t
 

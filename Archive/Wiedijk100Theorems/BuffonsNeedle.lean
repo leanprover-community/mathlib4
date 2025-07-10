@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
@@ -77,9 +77,7 @@ namespace BuffonsNeedle
 variable
   /- Probability theory variables. -/
   {Ω : Type*} [MeasureSpace Ω]
-
   /- Buffon's needle variables. -/
-
   /-
     - `d > 0` is the distance between parallel lines.
     - `l > 0` is the length of the needle.
@@ -87,11 +85,9 @@ variable
   (d l : ℝ)
   (hd : 0 < d)
   (hl : 0 < l)
-
   /- `B = (X, Θ)` is the joint random variable for the x-position and angle of the needle. -/
   (B : Ω → ℝ × ℝ)
   (hBₘ : Measurable B)
-
   /- `B` is uniformly distributed on `[-d/2, d/2] × [0, π]`. -/
   (hB : pdf.IsUniform B ((Set.Icc (-d / 2) (d / 2)) ×ˢ (Set.Icc 0 π)) ℙ)
 
@@ -155,7 +151,7 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   by_cases hp : 0 ∈ needleProjX l p.1 p.2
   · simp_rw [needleCrossesIndicator, Set.indicator_of_mem hp, Pi.one_apply] at hxp
     apply Or.inr hxp.symm
-  · simp_rw [needleCrossesIndicator, Set.indicator_of_not_mem hp] at hxp
+  · simp_rw [needleCrossesIndicator, Set.indicator_of_notMem hp] at hxp
     apply Or.inl hxp.symm
 
 include hd in
@@ -171,7 +167,7 @@ lemma integrable_needleCrossesIndicator :
     unfold needleCrossesIndicator
     by_cases hp : 0 ∈ needleProjX l p.1 p.2
     · simp_rw [Set.indicator_of_mem hp, Pi.one_apply, le_refl]
-    · simp_rw [Set.indicator_of_not_mem hp, zero_le_one]
+    · simp_rw [Set.indicator_of_notMem hp, zero_le_one]
   refine And.intro
     (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable
     ((MeasureTheory.hasFiniteIntegral_iff_norm (needleCrossesIndicator l)).mpr ?_)

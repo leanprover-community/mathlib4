@@ -24,12 +24,12 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 ## Main definitions
 
- * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-   on `L` called the trace Form.
- * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
-   representation of a Lie algebra vanishes.
- * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
-   form on `L` via the trace form construction.
+* `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
+  on `L` called the trace Form.
+* `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
+  representation of a Lie algebra vanishes.
+* `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
+  form on `L` via the trace form construction.
 -/
 
 variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -71,7 +71,7 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
     _ = traceForm R L M x ⁅y, z⁆ := ?_
   · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
-  · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
+  · simp only [sub_mul, map_sub, mul_assoc]
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← Module.End.mul_eq_comp]

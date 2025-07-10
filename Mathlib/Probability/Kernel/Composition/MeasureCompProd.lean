@@ -208,13 +208,7 @@ instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (�
 instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
     IsZeroOrProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]
-  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
-  · simp only [Kernel.const_zero, Kernel.compProd_zero_left, Kernel.zero_apply]
-    infer_instance
-  rcases eq_zero_or_isMarkovKernel κ with rfl | hκ
-  · simp only [Kernel.prodMkLeft_zero, Kernel.compProd_zero_right, Kernel.zero_apply]
-    infer_instance
-  · infer_instance
+  exact IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure ()
 
 section AbsolutelyContinuous
 
@@ -286,7 +280,7 @@ lemma AbsolutelyContinuous.compProd_of_compProd [SFinite ν] [IsSFiniteKernel η
   swap; · rw [compProd_of_not_sfinite _ _ hμ]; simp
   refine AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
   suffices (μ ⊗ₘ η) s = 0 from hκη this
-  rw [measure_zero_iff_ae_nmem, ae_compProd_iff hs.compl] at hs_zero ⊢
+  rw [measure_zero_iff_ae_notMem, ae_compProd_iff hs.compl] at hs_zero ⊢
   exact hμν.ae_le hs_zero
 
 end AbsolutelyContinuous

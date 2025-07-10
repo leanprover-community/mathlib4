@@ -85,7 +85,6 @@ theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
 -- this slow simp lemma causes a maxHeartbeats exception
 attribute [-simp] CostructuredArrow.right_eq_id in
-
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -238,7 +237,6 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
       -- is increased, so we replace it by the output of `tidy?`
       intro _; rfl
-
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp

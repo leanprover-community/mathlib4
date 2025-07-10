@@ -134,7 +134,7 @@ theorem isOpenMap_iff_restrictPreimage :
 
 theorem isClosedMap_iff_restrictPreimage :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
-  refine ⟨fun h i => h.restrictPreimage _,  fun H s hs ↦ ?_⟩
+  refine ⟨fun h i => h.restrictPreimage _, fun H s hs ↦ ?_⟩
   rw [hU.isClosed_iff_coe_preimage]
   intro i
   convert H i _ ⟨⟨_, hs.1, eq_compl_comm.mpr rfl⟩⟩

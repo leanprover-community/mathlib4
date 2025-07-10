@@ -201,7 +201,7 @@ lemma mem_fundamentalEntourage (n : ℕ) (P : ℕ × ℕ) : P ∈ fundamentalEnt
       | inr h_le => exact Or.inl ⟨P.1, ⟨h_le, congrArg _ h⟩⟩
 
 /-- The collection `fundamentalEntourage` satisfies the axioms to be a basis for a filter on
- `ℕ × ℕ` and gives rise to a term in the relevant type. -/
+`ℕ × ℕ` and gives rise to a term in the relevant type. -/
 def counterBasis : FilterBasis (ℕ × ℕ) where
   sets := range fundamentalEntourage
   nonempty := range_nonempty _

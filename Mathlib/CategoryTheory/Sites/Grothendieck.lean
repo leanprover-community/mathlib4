@@ -499,19 +499,19 @@ def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bi
     exact h1
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the object `B`. -/
+and `B ⟶ X` is an arrow of `S`. This is the object `B`. -/
 noncomputable def Arrow.middle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : C :=
   I.hf.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`. -/
 noncomputable def Arrow.toMiddleHom {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : I.Y ⟶ I.middle :=
   I.hf.choose_spec.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`. -/
 noncomputable def Arrow.fromMiddleHom {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : I.middle ⟶ X :=
   I.hf.choose_spec.choose_spec.choose
@@ -521,7 +521,7 @@ theorem Arrow.from_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow
   I.hf.choose_spec.choose_spec.choose_spec.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`, as an arrow. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`, as an arrow. -/
 noncomputable def Arrow.fromMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : S.Arrow :=
   ⟨_, I.fromMiddleHom, I.from_middle_condition⟩
@@ -531,7 +531,7 @@ theorem Arrow.to_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.1
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`, as an arrow. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`, as an arrow. -/
 noncomputable def Arrow.toMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : (T I.fromMiddle).Arrow :=
   ⟨_, I.toMiddleHom, I.to_middle_condition⟩

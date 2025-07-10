@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Std.Data.HashMap
 import Batteries.Lean.HashMap
-import Batteries.Data.RBMap.Basic
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
@@ -56,7 +55,7 @@ instance : SDiff (TreeSet α cmp) := ⟨TreeSet.sdiff⟩
 
 end Std.TreeSet
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-!
 ### Datatypes
@@ -225,7 +224,7 @@ instance : ToString PComp :=
   ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
 /-- A collection of comparisons. -/
-abbrev PCompSet := RBSet PComp PComp.cmp
+abbrev PCompSet := TreeSet PComp PComp.cmp
 
 /-! ### Elimination procedure -/
 
@@ -261,7 +260,7 @@ def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
   comps.foldl (fun s pc =>
   match pelimVar p pc a with
   | some pc => if pc.maybeMinimal a then s.insert pc else s
-  | none => s) RBSet.empty
+  | none => s) TreeSet.empty
 
 /--
 The state for the elimination monad.
@@ -320,7 +319,7 @@ def splitSetByVarSign (a : ℕ) (comps : PCompSet) : PCompSet × PCompSet × PCo
     if n > 0 then ⟨pos.insert pc, neg, notPresent⟩
     else if n < 0 then ⟨pos, neg.insert pc, notPresent⟩
     else ⟨pos, neg, notPresent.insert pc⟩)
-    ⟨RBSet.empty, RBSet.empty, RBSet.empty⟩
+    ⟨TreeSet.empty, TreeSet.empty, TreeSet.empty⟩
 
 /--
 `elimVarM a` performs one round of Fourier-Motzkin elimination, eliminating the variable `a`
@@ -362,4 +361,4 @@ def CertificateOracle.fourierMotzkin : CertificateOracle where
     | (Except.ok _) => failure
     | (Except.error contr) => return contr.src.flatten
 
-end Linarith
+end Mathlib.Tactic.Linarith

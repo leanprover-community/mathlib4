@@ -58,7 +58,7 @@ basis, bases
 
 assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
--- (should be possible after splitting `Mathlib.LinearAlgebra.Finsupp.LinearCombination`)
+-- (should be possible after splitting `Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean`)
 
 noncomputable section
 
@@ -423,8 +423,7 @@ def reindexRange : Basis (range b) R M :=
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
   by_cases htr : Nontrivial R
   · letI := htr
-    simp [htr, reindexRange, reindex_apply, Equiv.apply_ofInjective_symm b.injective,
-      Subtype.coe_mk]
+    simp [htr, reindexRange, reindex_apply]
   · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
     letI := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]

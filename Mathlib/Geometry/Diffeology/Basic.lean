@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.Tactic.FunProp.ContDiff
 
 /-!
 # Diffeological spaces
@@ -393,7 +392,7 @@ instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
     [FiniteDimensional ℝ X] : @IsDTopCompatible X _ euclideanDiffeology :=
   let _ := euclideanDiffeology (X := X); ⟨rfl⟩
 
-instance : DiffeologicalSpace ℝ := euclideanDiffeology
+noncomputable instance : DiffeologicalSpace ℝ := euclideanDiffeology
 
 example : IsContDiffCompatible ℝ := inferInstance
 
@@ -438,7 +437,7 @@ protected theorem IsPlot.contDiff {n : ℕ} {p : Eucl n → X} (hp : IsPlot p) :
   isPlot_iff_contDiff.1 hp
 
 @[fun_prop]
-protected theorem ContDiff.dsmooth {f : X → Y} (hf: ContDiff ℝ ∞ f) : DSmooth f :=
+protected theorem ContDiff.dsmooth {f : X → Y} (hf : ContDiff ℝ ∞ f) : DSmooth f :=
   fun _ _ hp ↦ (hf.comp hp.contDiff).isPlot
 
 @[fun_prop]
@@ -455,6 +454,7 @@ theorem dsmooth_iff_contDiff [FiniteDimensional ℝ X] {f : X → Y} : DSmooth f
 example {X Y : Type*} [DiffeologicalSpace X] [DiffeologicalSpace Y] {n m : ℕ} {f : Eucl n → Eucl m}
     {p : Eucl m → X} {g : X → Y} (hf : ContDiff ℝ ∞ f) (hp : IsPlot p) (hg : DSmooth g) :
     IsPlot (g ∘ p ∘ f) := by
+  have : DSmooth p := hp.dsmooth -- `fun_prop` can't even prove this subgoal directly anymore - why?
   fun_prop
 
 end FiniteDimensionalNormedSpace

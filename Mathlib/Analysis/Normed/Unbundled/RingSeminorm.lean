@@ -28,7 +28,7 @@ For a ring `R`:
 
 ## Notes
 
-The corresponding hom classes are defined in `Mathlib.Analysis.Order.Hom.Basic` to be used by
+The corresponding hom classes are defined in `Mathlib/Analysis/Order/Hom/Basic.lean` to be used by
 absolute values.
 
 ## References
@@ -264,7 +264,7 @@ instance [DecidableEq R] : Inhabited (RingNorm R) :=
 
 end NonUnitalRing
 
-/-- The `NormedRing` stucture on a ring `R` determined by a `RingNorm`. -/
+/-- The `NormedRing` structure on a ring `R` determined by a `RingNorm` -/
 -- See note |reducible non instances]
 abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›
@@ -389,7 +389,7 @@ def mulRingNormEquivAbsoluteValue : MulRingNorm R ≃ AbsoluteValue R ℝ where
     map_mul' := v.map_mul'
     eq_zero_of_map_eq_zero' x := (v.eq_zero' x).mp
   }
-  left_inv N := by ext1 x; simp only [MulRingSeminorm.toFun_eq_coe] -- `simp` does not work
+  left_inv N := by constructor
   right_inv v := by ext1 x; simp
 
 lemma mulRingNormEquivAbsoluteValue_apply (N : MulRingNorm R) (x : R) :

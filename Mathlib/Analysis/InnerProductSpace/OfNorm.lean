@@ -105,7 +105,7 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
   fun_prop
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
-  simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add, map_zero, map_mul,
+  simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add,
     ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
   have h₁ : ‖x - x‖ = 0 := by simp
   have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert norm_nsmul 𝕜 2 x using 2; module
