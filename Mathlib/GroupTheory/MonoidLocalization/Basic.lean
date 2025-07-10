@@ -406,7 +406,7 @@ such that `f z' / f d = z` and `f w' / f d = w`. -/
     "Given a localization map `f : M →+ N`, and `z w : N`, there exist `z' w' : M` and `d : S`
 such that `f z' - f d = z` and `f w' - f d = w`."]
 theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
-    (z * f.toMap d = f.toMap z') ∧  (w * f.toMap d = f.toMap w') := by
+    (z * f.toMap d = f.toMap z') ∧ (w * f.toMap d = f.toMap w') := by
   let ⟨a, ha⟩ := surj f z
   let ⟨b, hb⟩ := surj f w
   refine ⟨a.1 * b.2, a.2 * b.1, a.2 * b.2, ?_, ?_⟩

@@ -31,7 +31,7 @@ theorem toMap_injective_iff
     use x
   · intro a b hab
     rw [LocalizationMap.eq_iff_exists] at hab
-    obtain ⟨c,hc⟩ := hab
+    obtain ⟨c, hc⟩ := hab
     apply (fun x a => h a) c (SetLike.coe_mem c) hc
 
 end Submonoid.LocalizationMap
@@ -140,7 +140,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
     exact ha hb
   have main : g (b.1 * (x.2 * y.1)) = g (b.1 * (y.2 * x.1)) :=
     calc
-      g (b.1 * (x.2 * y.1)) = g b.1 * (g x.2 * g y.1) := by rw [map_mul g,map_mul g]
+      g (b.1 * (x.2 * y.1)) = g b.1 * (g x.2 * g y.1) := by rw [map_mul g, map_mul g]
       _ = a * g b.2 * (g x.2 * (w * g y.2)) := by rw [hb, hy]
       _ = a * w * g b.2 * (g x.2 * g y.2) := by
         rw [← mul_assoc, ← mul_assoc _ w, mul_comm _ w, mul_assoc w, mul_assoc,
