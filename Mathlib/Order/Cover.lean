@@ -179,7 +179,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] {a b c : α}
 
 theorem WCovBy.inf_eq (hca : c ⩿ a) (hcb : c ⩿ b) (hab : a ≠ b) : a ⊓ b = c :=
-  (le_inf hca.le hcb.le).eq_of_not_gt fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
+  (le_inf hca.le hcb.le).eq_of_not_lt' fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
 
 end SemilatticeInf
 
