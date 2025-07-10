@@ -259,10 +259,7 @@ theorem gramSchmidtNormed_linearIndependent (h₀ : LinearIndependent ℝ (s · 
 
 end VectorBundle
 
--- When given a local frame, this produces an orthonormal local frame...
--- nothing new to prove; will prove in the frames file
-
--- Continuity and smoothness.
+/-! The Gram-Schmidt process preserves smoothness of sections -/
 
 variable {n : WithTop ℕ∞}
 
@@ -271,25 +268,28 @@ set_option linter.style.commandStart false
 
 variable [IsContMDiffRiemannianBundle IB n F E]
 
+section helper
+
+variable {s t : (x : B) → E x} {u : Set B} {x : B}
+
 -- TODO: give a much better name!
-lemma contMDiffWithinAt_aux {s t : (x : B) → E x} {u : Set B} {x : B}
+lemma contMDiffWithinAt_aux
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     CMDiffAt[u] n (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
-  suffices ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (fun x ↦ ⟪s x, t x⟫ / ⟪s x, s x⟫) u x by
-    apply this.congr
-    · intro y hy
-      simp [inner_self_eq_norm_sq_to_K]
-    · congr
-      rw [← real_inner_self_eq_norm_sq]
-  exact (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
+  have := (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
+  apply this.congr
+  · intro y hy
+    congr
+    simp [inner_self_eq_norm_sq_to_K]
+  · congr
+    rw [← real_inner_self_eq_norm_sq]
 
-lemma contMDiffAt_aux  {s t : (x : B) → E x} {x : B}
-    (hs : CMDiffAt n (T% s) x) (ht : CMDiffAt n (T% t) x) (hs' : s x ≠ 0) :
+lemma contMDiffAt_aux (hs : CMDiffAt n (T% s) x) (ht : CMDiffAt n (T% t) x) (hs' : s x ≠ 0) :
     CMDiffAt n (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
   rw [← contMDiffWithinAt_univ] at hs ht ⊢
   exact contMDiffWithinAt_aux hs ht hs'
 
-def contMDiffWithinAt_myproj {s t : (x : B) → E x} {u : Set B} {x : B}
+def ContMDiffWithinAt.orthogonalProjection
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
     letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).orthogonalProjection (t x);
@@ -297,9 +297,24 @@ def contMDiffWithinAt_myproj {s t : (x : B) → E x} {u : Set B} {x : B}
   simp_rw [Submodule.orthogonalProjection_singleton]
   exact (contMDiffWithinAt_aux hs ht hs').smul_section hs
 
-lemma gramSchmidt_contMDiffWithinAt {s : ι → (x : B) → E x} (i : ι) {u : Set B} {x : B}
-    (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
-    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+lemma contMDiffWithinAt_inner (hs : CMDiffAt[u] n (T% s) x) (hs' : s x ≠ 0) :
+    CMDiffAt[u] n (‖s ·‖) x := by
+  let F (x) := ⟪s x, s x⟫
+  have aux : CMDiffAt[u] n (Real.sqrt ∘ F) x := by
+    have h1 : CMDiffAt[(F '' u)] n (Real.sqrt) (F x) := by
+      apply ContMDiffAt.contMDiffWithinAt
+      rw [contMDiffAt_iff_contDiffAt]
+      exact Real.contDiffAt_sqrt (by simp [F, hs'])
+    exact h1.comp x (hs.inner_bundle hs) (Set.mapsTo_image _ u)
+  convert aux
+  simp [F, ← norm_eq_sqrt_real_inner]
+
+end helper
+
+variable {s : ι → (x : B) → E x} {u : Set B} {x : B} {i : ι}
+
+lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
+    {i : ι} (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
   simp_rw [VectorBundle.gramSchmidt_def]
   apply (hs i).sub_section
@@ -311,70 +326,49 @@ lemma gramSchmidt_contMDiffWithinAt {s : ι → (x : B) → E x} (i : ι) {u : S
     apply hs'.comp aux
     intro ⟨x, hx⟩ ⟨x', hx'⟩ h
     simp_all only [Subtype.mk.injEq, aux]
-  apply contMDiffWithinAt_myproj (gramSchmidt_contMDiffWithinAt i' hs this) (hs i)
+  apply ContMDiffWithinAt.orthogonalProjection (gramSchmidt_contMDiffWithinAt hs this) (hs i)
   apply VectorBundle.gramSchmidt_ne_zero_coe _ _ this
 termination_by i
-decreasing_by
-  exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
+decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
 
-lemma gramSchmidt_contMDiffAt {s : ι → (x : B) → E x} (i : ι) {x : B}
-    (hs : ∀ i, CMDiffAt n (T% (s i)) x)
-    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι)))
-    : CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
-  contMDiffWithinAt_univ.mpr <| gramSchmidt_contMDiffWithinAt _ (fun i ↦ hs i) hs'
+lemma gramSchmidt_contMDiffAt (hs : ∀ i, CMDiffAt n (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
+  contMDiffWithinAt_univ.mpr <| gramSchmidt_contMDiffWithinAt (fun i ↦ hs i) hs'
 
-lemma gramSchmidt_contMDiffOn {s : ι → (x : B) → E x} (i : ι) (u : Set B)
-    (hs : ∀ i, CMDiff[u] n (T% (s i)))
+lemma gramSchmidt_contMDiffOn (hs : ∀ i, CMDiff[u] n (T% (s i)))
     (hs' : ∀ x ∈ u, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiff[u] n (T% (VectorBundle.gramSchmidt s i)) :=
-  fun x hx ↦ gramSchmidt_contMDiffWithinAt _ (fun i ↦ hs i x hx) (hs' _ hx)
+  fun x hx ↦ gramSchmidt_contMDiffWithinAt (fun i ↦ hs i x hx) (hs' _ hx)
 
-lemma gramSchmidt_contMDiff {s : ι → (x : B) → E x} (i : ι)
-    (hs : ∀ i, CMDiff n (T% (s i)))
+lemma gramSchmidt_contMDiff (hs : ∀ i, CMDiff n (T% (s i)))
     (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiff n (T% (VectorBundle.gramSchmidt s i)) :=
-  fun x ↦ gramSchmidt_contMDiffAt _ (fun i ↦ hs i x) (hs' x)
+  fun x ↦ gramSchmidt_contMDiffAt (fun i ↦ hs i x) (hs' x)
 
-lemma contMDiffWithinAt_inner {s : (x : B) → E x} {u : Set B} {x : B}
-    (hs : CMDiffAt[u] n (T% s) x) (hs' : s x ≠ 0) :
-    CMDiffAt[u] n (‖s ·‖) x := by
-  let F (x) := ⟪s x, s x⟫
-  have aux : ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (Real.sqrt ∘ F) u x := by
-    have h1 : CMDiffAt[(F '' u)] n (Real.sqrt) (F x) := by
-      apply ContMDiffAt.contMDiffWithinAt
-      rw [contMDiffAt_iff_contDiffAt]
-      exact Real.contDiffAt_sqrt (by simp [F, hs'])
-    exact h1.comp x (hs.inner_bundle hs) (Set.mapsTo_image _ u)
-  convert aux
-  simp [F, ← norm_eq_sqrt_real_inner]
-
-lemma gramSchmidtNormed_contMDiffWithinAt {s : ι → (x : B) → E x} (i : ι) {u : Set B} {x : B}
-    (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
+lemma gramSchmidtNormed_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidtNormed s i)) x := by
   have : CMDiffAt[u] n (T%
       (fun x ↦ ‖VectorBundle.gramSchmidt s i x‖⁻¹ • VectorBundle.gramSchmidt s i x)) x := by
-    refine ContMDiffWithinAt.smul_section ?_ (gramSchmidt_contMDiffWithinAt i hs hs')
+    refine ContMDiffWithinAt.smul_section ?_ (gramSchmidt_contMDiffWithinAt hs hs')
     refine ContMDiffWithinAt.inv₀ ?_ ?_
-    · refine contMDiffWithinAt_inner (gramSchmidt_contMDiffWithinAt i hs hs') ?_
+    · refine contMDiffWithinAt_inner (gramSchmidt_contMDiffWithinAt hs hs') ?_
       simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
     · simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
   exact this.congr (fun y hy ↦ by congr) (by congr)
 
-lemma gramSchmidtNormed_contMDiffAt {s : ι → (x : B) → E x} (i : ι) {x : B}
-    (hs : ∀ i, CMDiffAt n (T% (s i)) x)
+lemma gramSchmidtNormed_contMDiffAt (hs : ∀ i, CMDiffAt n (T% (s i)) x)
     (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι)))
     : CMDiffAt n (T% (VectorBundle.gramSchmidtNormed s i)) x :=
-  contMDiffWithinAt_univ.mpr <| gramSchmidtNormed_contMDiffWithinAt _ (fun i ↦ hs i) hs'
+  contMDiffWithinAt_univ.mpr <| gramSchmidtNormed_contMDiffWithinAt (fun i ↦ hs i) hs'
 
-lemma gramSchmidtNormed_contMDiffOn {s : ι → (x : B) → E x} (i : ι) (u : Set B)
-    (hs : ∀ i, CMDiff[u] n (T% (s i)))
+lemma gramSchmidtNormed_contMDiffOn (hs : ∀ i, CMDiff[u] n (T% (s i)))
     (hs' : ∀ x ∈ u, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiff[u] n (T% (VectorBundle.gramSchmidtNormed s i)) :=
-  fun x hx ↦ gramSchmidtNormed_contMDiffWithinAt _ (fun i ↦ hs i x hx) (hs' _ hx)
+  fun x hx ↦ gramSchmidtNormed_contMDiffWithinAt (fun i ↦ hs i x hx) (hs' _ hx)
 
-lemma gramSchmidtNormed_contMDiff {s : ι → (x : B) → E x} (i : ι)
-    (hs : ∀ i, CMDiff n (T% (s i)))
+lemma gramSchmidtNormed_contMDiff (hs : ∀ i, CMDiff n (T% (s i)))
     (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiff n (T% (VectorBundle.gramSchmidtNormed s i)) :=
-  fun x ↦ gramSchmidtNormed_contMDiffAt _ (fun i ↦ hs i x) (hs' x)
+  fun x ↦ gramSchmidtNormed_contMDiffAt (fun i ↦ hs i x) (hs' x)

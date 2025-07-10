@@ -72,7 +72,7 @@ def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
     sorry
     -- simpa only [VectorBundle.gramSchmidt_apply, InnerProductSpace.span_gramSchmidt ℝ (s · x)]
     --  using hs.generating hx
-  contMDiffOn i := gramSchmidtNormed_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
+  contMDiffOn i := gramSchmidtNormed_contMDiffOn (fun i ↦ hs.contMDiffOn i) <|
       fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
 
 /-- Applying the normalised Gram-Schmidt procedure to an orthonormal local frame yields
