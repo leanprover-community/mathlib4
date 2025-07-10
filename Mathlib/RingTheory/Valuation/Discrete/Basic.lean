@@ -128,244 +128,24 @@ instance : IsCyclic <| valueGroup v := by
 instance : Nontrivial (valueGroup v) :=
   ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
 
-instance : Nontrivial (valueMonoid v) := by
+instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
   by_contra H
   apply ((valueGroup v).nontrivial_iff_ne_bot).mp (by infer_instance)
   apply Subgroup.closure_eq_bot_iff.mpr
   rw [not_nontrivial_iff_subsingleton, subsingleton_iff] at H
   intro x hx
   specialize H ⟨x, hx⟩ ⟨1, one_mem_valueMonoid v⟩
-  rw [mem_singleton_iff, ← Submonoid.mk_eq_one, H, coe_one]
+  simpa using H
 
-instance : v.IsNontrivial := by
+instance [IsRankOneDiscrete v] : v.IsNontrivial := by
   constructor
-  obtain ⟨⟨γ, γ_mem⟩, hγ⟩ := (nontrivial_iff_exists_ne (1 : valueMonoid v)).mp (by infer_instance)
-  obtain ⟨π, hπ⟩ := γ_mem
+  obtain ⟨⟨γ, π, hπ⟩, hγ⟩ := (nontrivial_iff_exists_ne (1 : valueMonoid v)).mp (by infer_instance)
   use π
   constructor
   · simp [hπ]
   · rw [hπ]
-    simp only [← coe_one, ne_eq, Subtype.mk.injEq] at hγ
+    simp only [← MonoidWithZeroHom.coe_one, ne_eq, Subtype.mk.injEq] at hγ
     simp [hγ, Units.val_eq_one]
-
-open Subgroup
-
-lemma valueGroup_genLTOne_eq_generator : Subgroup.genLTOne (valueGroup v) = generator v :=
-  ((valueGroup v).genLTOne_unique (generator v)
-    ⟨generator_lt_one v, generator_zpowers_eq_valueGroup v⟩).symm
-
-end IsRankOneDiscrete
-
-section IsRankOneDiscrete
-
-variable [hv : IsRankOneDiscrete v]
-
-/-- An element `π : A` is a uniformizer if `v π` is a generator of the value group that is `< 1`. -/
-def IsUniformizer (π : A) : Prop := v π = hv.generator
-
-open Subgroup
-
-variable {v}
-
-namespace IsUniformizer
-
-theorem iff {π : A} : v.IsUniformizer π ↔ v π = hv.generator := refl _
-
-theorem ne_zero {π : A} (hπ : IsUniformizer v π) : π ≠ 0 := by
-  intro h0
-  rw [h0, IsUniformizer, Valuation.map_zero] at hπ
-  exact (Units.ne_zero _).symm hπ
-
-@[simp]
-lemma val {π : A} (hπ : v.IsUniformizer π) : v π = hv.generator := hπ
-
-lemma val_lt_one {π : A} (hπ : v.IsUniformizer π) : v π < 1 :=
-  hπ ▸ hv.generator_lt_one
-
-lemma val_ne_zero {π : A} (hπ : v.IsUniformizer π) : v π ≠ 0 := by
-  by_contra h0
-  simp [IsUniformizer, h0] at hπ
-  exact (Units.ne_zero _).symm hπ
-
-theorem val_pos {π : A} (hπ : IsUniformizer v π) : 0 < v π := by
-  rw [IsUniformizer.iff] at hπ; simp [zero_lt_iff, ne_eq, hπ]
-
-lemma zpowers_eq_valueGroup {π : A} (hπ : v.IsUniformizer π) :
-    valueGroup v = zpowers (Units.mk0 (v π) hπ.val_ne_zero) := by
-  rw [← (valueGroup v).genLTOne_zpowers_eq_top]
-  congr
-  simp_all [IsUniformizer.val, Units.mk0_val]
-  exact IsRankOneDiscrete.valueGroup_genLTOne_eq_generator v
-
-end IsUniformizer
-
-variable (v) in
-/-- The structure `Uniformizer` bundles together the term in the ring and a proof that it is a
-  uniformizer. -/
-@[ext]
-structure Uniformizer where
-  /-- The integer underlying a `Uniformizer` -/
-  val : v.integer
-  valuation_gt_one : v.IsUniformizer val
-
-namespace Uniformizer
-
-/-- A constructor for `Uniformizer`. -/
-def mk' {x : A} (hx : v.IsUniformizer x) : v.Uniformizer where
-  val := ⟨x, le_of_lt hx.val_lt_one⟩
-  valuation_gt_one := hx
-
-@[simp]
-instance : Coe v.Uniformizer v.integer := ⟨fun π ↦ π.val⟩
-
-theorem ne_zero (π : Uniformizer v) : π.1.1 ≠ 0 := π.2.ne_zero
-
-end Uniformizer
-
-end IsRankOneDiscrete
-
-end Ring
-
-section CommRing
-
-variable {R : Type*} [CommRing R] {v : Valuation R Γ} [hv : IsRankOneDiscrete v]
-
-theorem IsUniformizer.not_isUnit {π : v.integer} (hπ : IsUniformizer v π) : ¬ IsUnit π := by
-  intro h
-  have h1 : v ((algebraMap (↥v.integer) R) π) = 1 :=
-    Valuation.Integers.one_of_isUnit (Valuation.integer.integers v)  h
-  exact ne_of_gt hπ.val_lt_one h1.symm
-
-end CommRing
-
-section Ring
-
-variable {R : Type*} [Ring R] (v : Valuation R Γ) [IsCyclic (valueGroup v)]
-  [Nontrivial (valueGroup v)]
-
-instance IsRankOneDiscrete.mk' : IsRankOneDiscrete v :=
-  ⟨(valueGroup v).genLTOne,
-    ⟨(valueGroup v).genLTOne_zpowers_eq_top, (valueGroup v).genLTOne_lt_one⟩⟩
-
-end Ring
-
-section Field
-
-open Ideal IsLocalRing Valuation.IsRankOneDiscrete
-
-variable {K : Type*} [Field K] (v : Valuation K Γ)
-
-/- When the valuation is defined over a field instead that simply on a (commutative) ring, we use
-the notion of `valuationSubring` instead of the weaker one of `integer` to access the
-corresponding API. -/
-local notation "K₀" => v.valuationSubring
-
-section IsNontrivial
-
-variable [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)]
-
-theorem exists_isUniformizer_of_isCyclic_of_nontrivial : ∃ π : K₀, IsUniformizer v (π : K) := by
-  simp only [IsUniformizer.iff, Subtype.exists, mem_valuationSubring_iff, exists_prop]
-  set g := (valueGroup v).genLTOne with hg
-  have hg_mem : g.1 ∈ ((range v) \ {0}) := by
-    rw [← valueGroup_eq_range, hg]
-    exact mem_image_of_mem Units.val (valueGroup v).genLTOne_mem
-  obtain ⟨⟨π, hπ⟩, hγ0⟩ := hg_mem
-  use π
-  rw [hπ, hg]
-  exact ⟨le_of_lt (valueGroup v).genLTOne_lt_one, by rw [valueGroup_genLTOne_eq_generator]⟩
-
-instance : Nonempty (Uniformizer v) :=
-  ⟨⟨(exists_isUniformizer_of_isCyclic_of_nontrivial v).choose,
-    (exists_isUniformizer_of_isCyclic_of_nontrivial v).choose_spec⟩⟩
-
-end IsNontrivial
-
-section IsRankOneDiscrete
-
-section Uniformizer
-
-variable {v} [hv : v.IsRankOneDiscrete]
-
-/-- An element associated to a uniformizer is itself a uniformizer. -/
-theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
-    (H : Associated π₁ π₂) : IsUniformizer v π₂ := by
-  obtain ⟨u, hu⟩ := H
-  have : v (u.1 : K) = 1 :=
-    (Integers.isUnit_iff_valuation_eq_one <|integer.integers v).mp u.isUnit
-  rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, Valuation.map_mul, this, mul_one,
-    ← IsUniformizer.iff]
-
-/-- If two elements of `K₀` are uniformizers, then they are associated. -/
-theorem associated_of_isUniformizer {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
-    (h2 : IsUniformizer v π₂): Associated π₁ π₂ := by
-  have hval : v ((π₁ : K)⁻¹ * π₂) = 1 := by
-    simp [IsUniformizer.iff.mp h1, IsUniformizer.iff.mp h2]
-  set p : v.integer := ⟨(π₁.1 : K)⁻¹ * π₂.1, (v.mem_integer_iff _).mpr (le_of_eq hval)⟩ with hp
-  use ((Integers.isUnit_iff_valuation_eq_one (x := p) <| integer.integers v).mpr hval).unit
-  apply_fun ((↑·) : K₀ → K) using Subtype.val_injective
-  simp [hp, ← mul_assoc, mul_inv_cancel₀ h1.ne_zero]
-
-theorem pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
-    ∃ n : ℕ, ∃ u : K₀ˣ, r = (π.1 ^ n).1 * u.1 := by
-  have hr₀ : v r ≠ 0 := by rw [ne_eq, zero_iff, Subring.coe_eq_zero_iff]; exact hr
-  set vr : Γˣ := Units.mk0 (v r) hr₀ with hvr_def
-  have hvr : vr ∈ (valueGroup v) := by
-    apply mem_valueGroup
-    rw [hvr_def, Units.val_mk0 hr₀]
-    exact mem_range_self _
-  rw [π.2.zpowers_eq_valueGroup, Subgroup.mem_zpowers_iff] at hvr
-  obtain ⟨m, hm⟩ := hvr
-  have hm' : v π.val ^ m = v r := by
-    rw [hvr_def] at hm
-    rw [← Units.val_mk0 hr₀, ← hm]
-    simp [Units.val_zpow_eq_zpow_val, Units.val_mk0]
-  have hm₀ : 0 ≤ m := by
-    rw [← zpow_le_one_iff_right_of_lt_one₀ π.2.val_pos π.2.val_lt_one, hm']
-    exact r.2
-  obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le hm₀
-  use n
-  have hpow : v (π.1.1 ^ (-m) * r) = 1 := by
-    rw [Valuation.map_mul, map_zpow₀, ← hm', zpow_neg, hm', inv_mul_cancel₀ hr₀]
-  set a : K₀ := ⟨π.1.1 ^ (-m) * r, by apply le_of_eq hpow⟩ with ha
-  have ha₀ : (↑a : K) ≠ 0 := by
-    simp only [zpow_neg, ne_eq, mul_eq_zero, inv_eq_zero, ZeroMemClass.coe_eq_zero, not_or, ha]
-    refine ⟨?_, hr⟩
-    rw [hn, zpow_natCast, pow_eq_zero_iff', not_and_or]
-    exact Or.inl π.ne_zero
-  have h_unit_a : IsUnit a :=
-    Integers.isUnit_of_one (integer.integers v) (isUnit_iff_ne_zero.mpr ha₀) hpow
-  use h_unit_a.unit
-  rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
-    mul_inv_cancel₀ (pow_ne_zero _ π.ne_zero), one_mul]
-
-theorem Uniformizer.is_generator (π : Uniformizer v) :
-    maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
-  apply (maximalIdeal.isMaximal _).eq_of_le
-  · intro h
-    rw [Ideal.span_singleton_eq_top] at h
-    apply π.2.not_isUnit h
-  · intro x hx
-    by_cases hx₀ : x = 0
-    · simp only [hx₀, Ideal.zero_mem]
-    · obtain ⟨n, ⟨u, hu⟩⟩ := pow_Uniformizer hx₀ π
-      rw [← Subring.coe_mul, Subtype.coe_inj] at hu
-      have hn : Not (IsUnit x) := fun h ↦
-        (maximalIdeal.isMaximal _).ne_top (eq_top_of_isUnit_mem _ hx h)
-      replace hn : n ≠ 0 := fun h ↦ by
-        simp only [hu, h, pow_zero, one_mul, Units.isUnit, not_true] at hn
-      simp only [Ideal.mem_span_singleton, hu, IsUnit.dvd_mul_right, Units.isUnit,
-        dvd_pow_self _ hn]
-
-theorem IsUniformizer.is_generator {π : v.valuationSubring} (hπ : IsUniformizer v π) :
-    maximalIdeal v.valuationSubring = Ideal.span {π} :=
-  Uniformizer.is_generator ⟨π, hπ⟩
-
-theorem pow_Uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
-    maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
-  rw [← Ideal.span_singleton_pow, Uniformizer.is_generator]
-
-end Uniformizer
 
 end IsRankOneDiscrete
 
