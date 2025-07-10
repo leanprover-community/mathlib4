@@ -22,6 +22,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Monoidal
 
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+
 instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     BraidedCategory (Transported e) :=
   braidedCategoryOfFullyFaithful (equivalenceTransported e).inverse
