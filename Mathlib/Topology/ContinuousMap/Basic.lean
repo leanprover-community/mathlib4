@@ -312,8 +312,7 @@ lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous 
 
 lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
     mkD f g x = f x := by
-  rw [mkD_of_continuous hf]
-  rfl
+  rw [mkD_of_continuous hf, coe_mk]
 
 lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
     (hf : ContinuousOn f s) :
@@ -329,8 +328,7 @@ lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
 lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
     (hf : ContinuousOn f s) :
     mkD (s.restrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf]
-  rfl
+  rw [mkD_of_continuousOn hf, coe_mk, Set.restrict_apply]
 
 lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
   mkD_of_continuous f.continuous
