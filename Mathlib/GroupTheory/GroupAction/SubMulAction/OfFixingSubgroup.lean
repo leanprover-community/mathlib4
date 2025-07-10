@@ -248,7 +248,7 @@ theorem fixingSubgroup_smul_eq_fixingSubgroup_map_conj :
 def fixingSubgroupEquivFixingSubgroup (hg : g • t = s) :
     fixingSubgroup M t ≃* fixingSubgroup M s :=
   ((MulAut.conj g).subgroupMap (fixingSubgroup M t)).trans
-    (MulEquiv.subgroupCongr (fixingSubgroup_map_conj_eq M hg))
+    (MulEquiv.subgroupCongr (fixingSubgroup_map_conj_eq hg))
 
 @[to_additive (attr := simp)]
 theorem fixingSubgroupEquivFixingSubgroup_coe_apply (hg : g • t = s) (x : fixingSubgroup M t) :
