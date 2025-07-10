@@ -273,7 +273,7 @@ theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
   change g₁ ⟦⟨a, f⟩⟧ = g₂ ⟦⟨a, f⟩⟧
   rw [← Fix.ind_aux a f]; apply h
   rw [← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
-  congr with x
+  congr 2 with x
   apply ih
 
 theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)
