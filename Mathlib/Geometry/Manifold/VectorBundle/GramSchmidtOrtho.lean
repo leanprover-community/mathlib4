@@ -251,6 +251,12 @@ open Submodule Set Order
 --     span 𝕜 (range (gramSchmidtNormed 𝕜 f)) = span 𝕜 (range (gramSchmidt 𝕜 f)) := by
 --   simpa only [image_univ.symm] using span_gramSchmidtNormed f univ
 
+/-- `gramSchmidtNormed` applied to linearly independent sections at a point `x` produces
+sections which are linearly independent at `x`. -/
+theorem gramSchmidtNormed_linearIndependent (h₀ : LinearIndependent ℝ (s · x)) :
+    LinearIndependent ℝ (gramSchmidtNormed s · x) := by
+  simp [gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed_linearIndependent h₀]
+
 end VectorBundle
 
 -- When given a local frame, this produces an orthonormal local frame...
