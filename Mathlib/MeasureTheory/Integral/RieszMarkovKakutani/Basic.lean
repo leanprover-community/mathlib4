@@ -57,7 +57,7 @@ lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →�
     simp only [coe_zero, Pi.zero_apply, coe_sub, Pi.sub_apply, sub_nonneg]
     exact h x
   calc Λ f₁ ≤ Λ f₁ + Λ (f₂ - f₁) := by exact (le_add_iff_nonneg_right (Λ f₁)).mpr this
-  _ =  Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
+  _ = Λ (f₁ + (f₂ - f₁)) := by exact Eq.symm (LinearMap.map_add Λ f₁ (f₂ - f₁))
   _ = Λ f₂ := by congr; exact add_sub_cancel f₁ f₂
 
 end Monotone

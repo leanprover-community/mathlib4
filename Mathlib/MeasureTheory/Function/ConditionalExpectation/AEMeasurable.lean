@@ -128,7 +128,7 @@ theorem ae_eq_trim_iff_of_aestronglyMeasurable {α β} [TopologicalSpace β] [Me
     {m m0 : MeasurableSpace α} {μ : Measure α} {f g : α → β} (hm : m ≤ m0)
     (hfm : AEStronglyMeasurable[m] f μ) (hgm : AEStronglyMeasurable[m] g μ) :
     hfm.mk f =ᵐ[μ.trim hm] hgm.mk g ↔ f =ᵐ[μ] g :=
-  (hfm.stronglyMeasurable_mk.ae_eq_trim_iff hm  hgm.stronglyMeasurable_mk).trans
+  (hfm.stronglyMeasurable_mk.ae_eq_trim_iff hm hgm.stronglyMeasurable_mk).trans
     ⟨fun h => hfm.ae_eq_mk.trans (h.trans hgm.ae_eq_mk.symm), fun h =>
       hfm.ae_eq_mk.symm.trans (h.trans hgm.ae_eq_mk)⟩
 
@@ -335,7 +335,7 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
       lpMeasSubgroupToLpTrim F p μ hm f + lpMeasSubgroupToLpTrim F p μ hm g := by
   ext1
   refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
-  refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm  ?_ ?_
+  refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm ?_ ?_
   · exact (Lp.stronglyMeasurable _).add (Lp.stronglyMeasurable _)
   refine (lpMeasSubgroupToLpTrim_ae_eq hm _).trans ?_
   refine
@@ -351,7 +351,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   refine EventuallyEq.trans ?_ (Lp.coeFn_neg _).symm
   refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _).neg
     <| (lpMeasSubgroupToLpTrim_ae_eq hm _).trans <|
-    ((Lp.coeFn_neg _).trans ?_).trans  (lpMeasSubgroupToLpTrim_ae_eq hm f).symm.neg
+    ((Lp.coeFn_neg _).trans ?_).trans (lpMeasSubgroupToLpTrim_ae_eq hm f).symm.neg
   exact Eventually.of_forall fun x => by rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
