@@ -39,7 +39,7 @@ open Function OrderDual Set
 
 variable {ι : Sort*} {α β : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s : Set α} {t : Set β}
 
-/-! ### Intent and extent -/
+/-! ### Lower and upper polars -/
 
 
 /-- The lower polar of `s : Set α` along a relation `r : α → β → Prop` is the set of all elements
@@ -198,184 +198,251 @@ variable (α β)
 /-- The formal concepts of a relation. A concept of `r : α → β → Prop` is a pair of sets `s`, `t`
 such that `s` is the set of all elements that are `r`-related to all of `t` and `t` is the set of
 all elements that are `r`-related to all of `s`. -/
-structure Concept extends Set α × Set β where
+structure Concept where
+  extent : Set α
+  intent : Set β
   /-- The axiom of a `Concept` stating that the lower polar of the first set is the second set. -/
-  lowerPolar_fst : lowerPolar r fst = snd
+  lowerPolar_extent : lowerPolar r extent = intent
   /-- The axiom of a `Concept` stating that the upper polar of the second set is the first set. -/
-  upperPolar_snd : upperPolar r snd = fst
-
-initialize_simps_projections Concept (+toProd, -fst, -snd)
+  upperPolar_intent : upperPolar r intent = extent
 
 namespace Concept
 
 @[deprecated (since := "2025-07-10")]
-alias closure_fst := lowerPolar_fst
+alias fst := extent
 
 @[deprecated (since := "2025-07-10")]
-alias closure_snd := upperPolar_snd
+alias snd := intent
+
+@[deprecated (since := "2025-07-10")]
+alias closure_fst := lowerPolar_extent
+
+@[deprecated (since := "2025-07-10")]
+alias closure_snd := upperPolar_intent
 
 variable {r α β}
 variable {c d : Concept α β r}
 
-attribute [simp] lowerPolar_fst upperPolar_snd
+attribute [simp] lowerPolar_extent upperPolar_intent
 
 @[ext]
-theorem ext (h : c.fst = d.fst) : c = d := by
-  obtain ⟨⟨s₁, t₁⟩, h₁, _⟩ := c
-  obtain ⟨⟨s₂, t₂⟩, h₂, _⟩ := d
+theorem ext (h : c.extent = d.extent) : c = d := by
+  obtain ⟨s₁, t₁, h₁, _⟩ := c
+  obtain ⟨s₂, t₂, h₂, _⟩ := d
   dsimp at h₁ h₂ h
   substs h h₁ h₂
   rfl
 
-theorem ext' (h : c.snd = d.snd) : c = d := by
-  obtain ⟨⟨s₁, t₁⟩, _, h₁⟩ := c
-  obtain ⟨⟨s₂, t₂⟩, _, h₂⟩ := d
+theorem ext' (h : c.intent = d.intent) : c = d := by
+  obtain ⟨s₁, t₁, _, h₁⟩ := c
+  obtain ⟨s₂, t₂, _, h₂⟩ := d
   dsimp at h₁ h₂ h
   substs h h₁ h₂
   rfl
 
-theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ => ext
+theorem extent_injective : Injective (@extent α β r) := fun _ _ => ext
 
-theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
+@[deprecated (since := "2025-07-10")]
+alias fst_injective := extent_injective
+
+theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
+
+@[deprecated (since := "2025-07-10")]
+alias snd_injective := intent_injective
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
-    { fst := upperPolar r (c.snd ∩ d.snd)
-      snd := c.snd ∩ d.snd
-      lowerPolar_fst := by
-        rw [← c.lowerPolar_fst, ← d.lowerPolar_fst, ← lowerPolar_union,
+    { extent := upperPolar r (c.intent ∩ d.intent)
+      intent := c.intent ∩ d.intent
+      lowerPolar_extent := by
+        rw [← c.lowerPolar_extent, ← d.lowerPolar_extent, ← lowerPolar_union,
           lowerPolar_upperPolar_lowerPolar]
-      upperPolar_snd := rfl }⟩
+      upperPolar_intent := rfl }⟩
 
 instance instInfConcept : Min (Concept α β r) :=
   ⟨fun c d =>
-    { fst := c.fst ∩ d.fst
-      snd := lowerPolar r (c.fst ∩ d.fst)
-      lowerPolar_fst := rfl
-      upperPolar_snd := by
-        rw [← c.upperPolar_snd, ← d.upperPolar_snd, ← upperPolar_union,
+    { extent := c.extent ∩ d.extent
+      intent := lowerPolar r (c.extent ∩ d.extent)
+      lowerPolar_extent := rfl
+      upperPolar_intent := by
+        rw [← c.upperPolar_intent, ← d.upperPolar_intent, ← upperPolar_union,
           upperPolar_lowerPolar_upperPolar] }⟩
 
 instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
-  (fst_injective.semilatticeInf _) fun _ _ => rfl
+  (extent_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
-theorem fst_subset_fst_iff : c.fst ⊆ d.fst ↔ c ≤ d :=
+theorem extent_subset_extent_iff : c.extent ⊆ d.extent ↔ c ≤ d :=
   Iff.rfl
 
-@[simp]
-theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
-  Iff.rfl
+@[deprecated (since := "2025-07-10")]
+alias fst_subset_fst_iff := extent_subset_extent_iff
 
 @[simp]
-theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
+theorem extent_ssubset_extent_iff : c.extent ⊂ d.extent ↔ c < d :=
+  Iff.rfl
+
+@[deprecated (since := "2025-07-10")]
+alias fst_ssubset_fst_iff := extent_ssubset_extent_iff
+
+@[simp]
+theorem intent_subset_intent_iff : c.intent ⊆ d.intent ↔ d ≤ c := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [← fst_subset_fst_iff, ← c.upperPolar_snd, ← d.upperPolar_snd]
+  · rw [← extent_subset_extent_iff, ← c.upperPolar_intent, ← d.upperPolar_intent]
     exact upperPolar_anti _ h
-  · rw [← c.lowerPolar_fst, ← d.lowerPolar_fst]
+  · rw [← c.lowerPolar_extent, ← d.lowerPolar_extent]
     exact lowerPolar_anti _ h
 
+@[deprecated (since := "2025-07-10")]
+alias snd_subset_snd_iff := intent_subset_intent_iff
+
 @[simp]
-theorem snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by
-  rw [ssubset_iff_subset_not_subset, lt_iff_le_not_ge, snd_subset_snd_iff, snd_subset_snd_iff]
+theorem intent_ssubset_intent_iff : c.intent ⊂ d.intent ↔ d < c := by
+  rw [ssubset_iff_subset_not_subset, lt_iff_le_not_ge,
+    intent_subset_intent_iff, intent_subset_intent_iff]
 
-theorem strictMono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun _ _ =>
-  fst_ssubset_fst_iff.2
+@[deprecated (since := "2025-07-10")]
+alias snd_ssubset_snd_iff := intent_ssubset_intent_iff
 
-theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → Set β) := fun _ _ =>
-  snd_ssubset_snd_iff.2
+theorem strictMono_extent : StrictMono (@extent α β r) := fun _ _ =>
+  extent_ssubset_extent_iff.2
+
+@[deprecated (since := "2025-07-10")]
+alias strictMono_fst := strictMono_extent
+
+theorem strictAnti_intent : StrictAnti (@intent α β r) := fun _ _ =>
+  intent_ssubset_intent_iff.2
+
+@[deprecated (since := "2025-07-10")]
+alias strictMono_snd := strictAnti_intent
 
 instance instLatticeConcept : Lattice (Concept α β r) :=
   { Concept.instSemilatticeInfConcept with
     sup := (· ⊔ ·)
-    le_sup_left := fun _ _ => snd_subset_snd_iff.1 inter_subset_left
-    le_sup_right := fun _ _ => snd_subset_snd_iff.1 inter_subset_right
+    le_sup_left := fun _ _ => intent_subset_intent_iff.1 inter_subset_left
+    le_sup_right := fun _ _ => intent_subset_intent_iff.1 inter_subset_right
     sup_le := fun c d e => by
-      simp_rw [← snd_subset_snd_iff]
+      simp_rw [← intent_subset_intent_iff]
       exact subset_inter }
 
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
-  top := ⟨⟨univ, lowerPolar r univ⟩, rfl, eq_univ_of_forall fun _ _ hb => hb trivial⟩
+  top := ⟨univ, lowerPolar r univ, rfl, eq_univ_of_forall fun _ _ hb => hb trivial⟩
   le_top _ := subset_univ _
-  bot := ⟨⟨upperPolar r univ, univ⟩, eq_univ_of_forall fun _ _ ha => ha trivial, rfl⟩
-  bot_le _ := snd_subset_snd_iff.1 <| subset_univ _
+  bot := ⟨upperPolar r univ, univ, eq_univ_of_forall fun _ _ ha => ha trivial, rfl⟩
+  bot_le _ := intent_subset_intent_iff.1 <| subset_univ _
 
 instance : SupSet (Concept α β r) :=
   ⟨fun S =>
-    { fst := upperPolar r (⋂ c ∈ S, (c : Concept _ _ _).snd)
-      snd := ⋂ c ∈ S, (c : Concept _ _ _).snd
-      lowerPolar_fst := by
-        simp_rw [← lowerPolar_fst, ← lowerPolar_iUnion₂, lowerPolar_upperPolar_lowerPolar]
-      upperPolar_snd := rfl }⟩
+    { extent := upperPolar r (⋂ c ∈ S, intent c)
+      intent := ⋂ c ∈ S, intent c
+      lowerPolar_extent := by
+        simp_rw [← lowerPolar_extent, ← lowerPolar_iUnion₂, lowerPolar_upperPolar_lowerPolar]
+      upperPolar_intent := rfl }⟩
 
 instance : InfSet (Concept α β r) :=
   ⟨fun S =>
-    { fst := ⋂ c ∈ S, (c : Concept _ _ _).fst
-      snd := lowerPolar r (⋂ c ∈ S, (c : Concept _ _ _).fst)
-      lowerPolar_fst := rfl
-      upperPolar_snd := by
-        simp_rw [← upperPolar_snd, ← upperPolar_iUnion₂, upperPolar_lowerPolar_upperPolar] }⟩
+    { extent := ⋂ c ∈ S, extent c
+      intent := lowerPolar r (⋂ c ∈ S, extent c)
+      lowerPolar_extent := rfl
+      upperPolar_intent := by
+        simp_rw [← upperPolar_intent, ← upperPolar_iUnion₂, upperPolar_lowerPolar_upperPolar] }⟩
 
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
     sup := Concept.instSupConcept.max
-    le_sSup := fun _ _ hc => snd_subset_snd_iff.1 <| biInter_subset_of_mem hc
+    le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
     sSup_le := fun _ _ hc =>
-      snd_subset_snd_iff.1 <| subset_iInter₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
+      intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
     inf := Concept.instInfConcept.min
     sInf_le := fun _ _ => biInter_subset_of_mem
     le_sInf := fun _ _ => subset_iInter₂ }
 
 @[simp]
-theorem top_fst : (⊤ : Concept α β r).fst = univ :=
+theorem extent_top : (⊤ : Concept α β r).extent = univ :=
   rfl
 
-@[simp]
-theorem top_snd : (⊤ : Concept α β r).snd = lowerPolar r univ :=
-  rfl
+@[deprecated (since := "2025-07-10")]
+alias top_fst := extent_top
 
 @[simp]
-theorem bot_fst : (⊥ : Concept α β r).fst = upperPolar r univ :=
+theorem intent_top : (⊤ : Concept α β r).intent = lowerPolar r univ :=
   rfl
 
-@[simp]
-theorem bot_snd : (⊥ : Concept α β r).snd = univ :=
-  rfl
+@[deprecated (since := "2025-07-10")]
+alias top_snd := intent_top
 
 @[simp]
-theorem sup_fst (c d : Concept α β r) : (c ⊔ d).fst = upperPolar r (c.snd ∩ d.snd) :=
+theorem extent_bot : (⊥ : Concept α β r).extent = upperPolar r univ :=
   rfl
 
-@[simp]
-theorem sup_snd (c d : Concept α β r) : (c ⊔ d).snd = c.snd ∩ d.snd :=
-  rfl
+@[deprecated (since := "2025-07-10")]
+alias bot_fst := extent_bot
 
 @[simp]
-theorem inf_fst (c d : Concept α β r) : (c ⊓ d).fst = c.fst ∩ d.fst :=
+theorem intent_bot : (⊥ : Concept α β r).intent = univ :=
   rfl
 
-@[simp]
-theorem inf_snd (c d : Concept α β r) : (c ⊓ d).snd = lowerPolar r (c.fst ∩ d.fst) :=
-  rfl
+@[deprecated (since := "2025-07-10")]
+alias bot_snd := intent_bot
 
 @[simp]
-theorem sSup_fst (S : Set (Concept α β r)) :
-    (sSup S).fst = upperPolar r (⋂ c ∈ S, (c : Concept _ _ _).snd) :=
+theorem extent_sup (c d : Concept α β r) : (c ⊔ d).extent = upperPolar r (c.intent ∩ d.intent) :=
   rfl
 
-@[simp]
-theorem sSup_snd (S : Set (Concept α β r)) : (sSup S).snd = ⋂ c ∈ S, (c : Concept _ _ _).snd :=
-  rfl
+@[deprecated (since := "2025-07-10")]
+alias sup_fst := extent_top
 
 @[simp]
-theorem sInf_fst (S : Set (Concept α β r)) : (sInf S).fst = ⋂ c ∈ S, (c : Concept _ _ _).fst :=
+theorem intent_sup (c d : Concept α β r) : (c ⊔ d).intent = c.intent ∩ d.intent :=
   rfl
 
+@[deprecated (since := "2025-07-10")]
+alias sup_snd := intent_sup
+
 @[simp]
-theorem sInf_snd (S : Set (Concept α β r)) :
-    (sInf S).snd = lowerPolar r (⋂ c ∈ S, (c : Concept _ _ _).fst) :=
+theorem extent_inf (c d : Concept α β r) : (c ⊓ d).extent = c.extent ∩ d.extent :=
   rfl
+
+@[deprecated (since := "2025-07-10")]
+alias inf_fst := extent_inf
+
+@[simp]
+theorem intent_inf (c d : Concept α β r) : (c ⊓ d).intent = lowerPolar r (c.extent ∩ d.extent) :=
+  rfl
+
+@[deprecated (since := "2025-07-10")]
+alias inf_snd := intent_inf
+
+@[simp]
+theorem extent_sSup (S : Set (Concept α β r)) :
+    (sSup S).extent = upperPolar r (⋂ c ∈ S, intent c) :=
+  rfl
+
+@[deprecated (since := "2025-07-10")]
+alias sSup_fst := extent_sSup
+
+@[simp]
+theorem intent_sSup (S : Set (Concept α β r)) : (sSup S).intent = ⋂ c ∈ S, intent c :=
+  rfl
+
+@[deprecated (since := "2025-07-10")]
+alias sSup_snd := intent_sSup
+
+@[simp]
+theorem extent_sInf (S : Set (Concept α β r)) : (sInf S).extent = ⋂ c ∈ S, extent c :=
+  rfl
+
+@[deprecated (since := "2025-07-10")]
+alias sInf_fst := extent_sInf
+
+@[simp]
+theorem intent_sInf (S : Set (Concept α β r)) :
+    (sInf S).intent = lowerPolar r (⋂ c ∈ S, extent c) :=
+  rfl
+
+@[deprecated (since := "2025-07-10")]
+alias sInf_snd := intent_sInf
 
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩
@@ -383,7 +450,7 @@ instance : Inhabited (Concept α β r) :=
 /-- Swap the sets of a concept to make it a concept of the dual context. -/
 @[simps]
 def swap (c : Concept α β r) : Concept β α (swap r) :=
-  ⟨c.toProd.swap, c.upperPolar_snd, c.lowerPolar_fst⟩
+  ⟨c.intent, c.extent, c.upperPolar_intent, c.lowerPolar_extent⟩
 
 @[simp]
 theorem swap_swap (c : Concept α β r) : c.swap.swap = c :=
@@ -391,11 +458,11 @@ theorem swap_swap (c : Concept α β r) : c.swap.swap = c :=
 
 @[simp]
 theorem swap_le_swap_iff : c.swap ≤ d.swap ↔ d ≤ c :=
-  snd_subset_snd_iff
+  intent_subset_intent_iff
 
 @[simp]
 theorem swap_lt_swap_iff : c.swap < d.swap ↔ d < c :=
-  snd_ssubset_snd_iff
+  intent_ssubset_intent_iff
 
 /-- The dual of a concept lattice is isomorphic to the concept lattice of the dual context. -/
 @[simps]
