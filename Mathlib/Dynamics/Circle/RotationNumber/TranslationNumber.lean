@@ -569,7 +569,7 @@ theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
       h.comp (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
-    (h : Tendsto (fun n : ℕ => f^[n+1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
+    (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (mod_cast h)
 
 theorem transnumAuxSeq_zero : f.transnumAuxSeq 0 = f 0 := by simp [transnumAuxSeq]
