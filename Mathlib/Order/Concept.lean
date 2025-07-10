@@ -199,7 +199,9 @@ variable (α β)
 such that `s` is the set of all elements that are `r`-related to all of `t` and `t` is the set of
 all elements that are `r`-related to all of `s`. -/
 structure Concept where
+  /-- The extent of a concept. -/
   extent : Set α
+  /-- The intent of a concept. -/
   intent : Set β
   /-- The axiom of a `Concept` stating that the lower polar of the first set is the second set. -/
   lowerPolar_extent : lowerPolar r extent = intent
