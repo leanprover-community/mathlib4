@@ -142,6 +142,82 @@ lemma cartanMatrix_nondegenerate [Finite ι] [IsDomain R]
   let _i : Fintype ι := Fintype.ofFinite ι
   cartanMatrixIn_nondegenerate ℤ b
 
+open Module.End (invtSubmodule mem_invtSubmodule)
+open MulAction (orbit mem_orbit_self mem_orbit_iff)
+open Submodule (span subset_span)
+open FaithfulSMul (algebraMap_injective)
+
+variable [NoZeroSMulDivisors ℤ M] [Fintype ι] [P.IsReduced]
+
+-- TODO Move (obviously)
+omit [CharZero R] in
+lemma foo [P.IsIrreducible] (q : Submodule R M)
+    (h₁ : ∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) (h₂ : q ≠ ⊥) : q = ⊤ := by
+  nontriviality M
+  suffices ∀ i, q ∈ invtSubmodule (P.reflection i) from
+    IsIrreducible.eq_top_of_invtSubmodule_reflection q this h₂
+  intro i
+  letI := P.indexNeg
+  have (j : ι) : P.reflection (-j) = P.reflection j := by ext x; simp [reflection_apply, two_smul]
+  refine b.induction'' i (by aesop) h₁ ?_
+  clear i
+  intro i j hi hj
+  have : P.reflection (P.reflectionPerm j i) =
+      P.reflection j * P.reflection i * P.reflection j := by
+    ext x; simp [coreflection_apply, reflection_apply]; module -- TODO Is this really missing!?
+  rw [this]
+  exact Module.End.invtSubmodule.comp _ (Module.End.invtSubmodule.comp _ (h₁ j hj) hi) (h₁ j hj)
+
+/- Should we include this stronger statement:
+lemma foo' (q : Submodule R M) :
+    (∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) ↔
+      (∀ i, q ∈ invtSubmodule (P.reflection i)) := by
+  sorry
+-/
+
+/-- A characterisation of the connectedness of the Dynkin diagram for irreducible root pairings. -/
+lemma induction_on [IsDomain R] [P.IsIrreducible]
+    (p : b.support → Prop) {i j : b.support} (hi : p i)
+    (hp : ∀ i j, p i → b.cartanMatrix j i ≠ 0 → p j) :
+    p j := by
+  let q : Submodule R M := span R (P.root ∘ (↑) '' {i | p i})
+  have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by
+    refine ⟨fun hk ↦ ?_, fun hk ↦ subset_span <| by simpa⟩
+    contrapose! hk
+    exact b.linearIndepOn_root.linearIndependent.notMem_span_image hk
+  have hq_mem' {k : b.support} (hk : P.root k ∉ q) : q ≤ LinearMap.ker (P.coroot' k) := by
+    intro x hx
+    rw [LinearMap.mem_ker]
+    contrapose! hk
+    rw [hq_mem]
+    induction hx using Submodule.span_induction with
+    | mem x hx =>
+      obtain ⟨l, hl, rfl⟩ : ∃ l : b.support, p l ∧ P.root l = x := by aesop
+      replace hk : b.cartanMatrix k l ≠ 0 := by
+        -- TODO Should probably break this out as convenience lemma:
+        -- `b.cartanMatrix k l ≠ 0 ↔ b.cartanMatrix l k ≠ 0`
+        rwa [cartanMatrix, cartanMatrixIn_def, ← (algebraMap_injective ℤ R).ne_iff,
+          algebraMap_pairingIn, map_zero, ne_eq, pairing_eq_zero_iff']
+      tauto
+    | zero => aesop
+    | add x y hx hy hx' hy' =>
+      replace hk : P.coroot' k x ≠ 0 ∨ P.coroot' k y ≠ 0 := by by_contra! contra; aesop
+      tauto
+    | smul a x hx hx' =>
+      replace hk : P.coroot' k x ≠ 0 := by contrapose! hk; simp [hk]
+      tauto
+  have hq (k : ι) (hkb : k ∈ b.support) : q ∈ invtSubmodule (P.reflection k) := by
+    rw [mem_invtSubmodule]
+    intro x hx
+    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply]
+    apply q.sub_mem hx
+    by_cases hk : P.root k ∈ q
+    · exact q.smul_mem _ hk
+    · replace hk : P.coroot' k x = 0 := hq_mem' (k := ⟨k, hkb⟩) hk hx
+      simp [hk]
+  have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
+  simp [← hq_mem, b.foo q hq hq₀]
+
 end IsCrystallographic
 
 end RootPairing.Base
