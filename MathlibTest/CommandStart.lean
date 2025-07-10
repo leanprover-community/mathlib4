@@ -64,6 +64,10 @@ example {c : Bool} : c = c := by
   induction c with
   | true| _ =>rfl
 
+-- Ideally, this would complain, but `simp!` requires a trailing space.
+example : 0 = 0 := by
+  simp! ;
+
 end Desiderata_and_todos
 
 -- The linter ignores lists and arrays.

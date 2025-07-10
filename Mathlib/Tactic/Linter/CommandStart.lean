@@ -281,7 +281,7 @@ abbrev unlintedNodes := #[
   ``Parser.Term.structInstField,
 
   -- `throwError "Sorry"` does not pretty-print the space before the opening `"`.
-  ``Lean.termThrowError__,
+  ``termThrowError__,
 
   -- Ignore term-mode `have`, since it does not print a space between `have` and the identifier,
   -- if there is a parenthesis in-between.
@@ -291,7 +291,7 @@ abbrev unlintedNodes := #[
 
   -- If two `induction ... with` arms are "merged", then the pretty-printer
   -- does not put a space before the `|`s
-  ``Lean.Parser.Tactic.inductionAlt,
+  ``Parser.Tactic.inductionAlt,
   ]
 
 /--
