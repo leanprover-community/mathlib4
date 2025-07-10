@@ -160,9 +160,11 @@ The file `Order.Dedekind` proves that if `α` is a partial order and `β` is a c
 embedding `α ↪o β` factors through `DedekindCut α`. -/
 abbrev DedekindCut [Preorder α] := Concept α α (· ≤ ·)
 
+@[simp]
 theorem DedekindCut.upperBounds_fst [Preorder α] (A : DedekindCut α) :
     upperBounds A.fst = A.snd := A.closure_fst
 
+@[simp]
 theorem DedekindCut.lowerBounds_snd [Preorder α] (A : DedekindCut α) :
     lowerBounds A.snd = A.fst := A.closure_snd
 
