@@ -113,19 +113,16 @@ lemma repr_eq_inner (hs : IsOrthogonalFrameOn IB F n s u)
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffWithinAt_repr (ht : CMDiffAt[u] n (T% t) x) (hx : x ∈ u) (i : ι) :
     CMDiffAt[u] n (hs.repr i t) x := by
-  have aux : CMDiffAt[u] n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x := by
-    apply contMDiffWithinAt_aux ((hs.contMDiffOn i) x hx) ht
-    have := hs.linearIndependent hx
-    sorry
+  have aux : CMDiffAt[u] n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x :=
+    contMDiffWithinAt_aux ((hs.contMDiffOn i) x hx) ht <| (hs.linearIndependent hx).ne_zero _
   exact aux.congr_of_mem (fun y hy ↦ hs.repr_eq_inner _ hy _) hx
 
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffAt_repr (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
     CMDiffAt n (hs.repr i t) x := by
-  have aux : CMDiffAt n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x := by
-    apply contMDiffAt_aux ((hs.contMDiffOn i).contMDiffAt hu) ht
-    have := hs.linearIndependent (mem_of_mem_nhds hu)
-    sorry
+  have aux : CMDiffAt n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x :=
+    contMDiffAt_aux ((hs.contMDiffOn i).contMDiffAt hu) ht <|
+      (hs.linearIndependent (mem_of_mem_nhds hu)).ne_zero _
   exact aux.congr_of_eventuallyEq <|
     Filter.eventually_of_mem hu fun x hx ↦ hs.repr_eq_inner _ hx _
 
