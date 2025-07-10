@@ -221,12 +221,6 @@ theorem gramSchmidt_linearIndependent {f : ι → E} (h₀ : LinearIndependent �
   linearIndependent_of_ne_zero_of_inner_eq_zero (fun _ => gramSchmidt_ne_zero _ h₀) fun _ _ =>
     gramSchmidt_orthogonal 𝕜 f
 
-end InnerProductSpace
-
-open InnerProductSpace
-
-variable {𝕜}
-
 /-- When given a basis, `gramSchmidt` produces a basis. -/
 noncomputable def gramSchmidtBasis (b : Basis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.mk (gramSchmidt_linearIndependent b.linearIndependent)
@@ -364,3 +358,5 @@ theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
   exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f _) _).symm
 
 end OrthonormalBasis
+
+end InnerProductSpace
