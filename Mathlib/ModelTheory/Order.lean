@@ -168,17 +168,17 @@ example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
 /-- A sentence indicating that an order has no top element:
 $\forall x, \exists y, \neg y \le x$. -/
 def noTopOrderSentence : L.Sentence :=
-  ∀'∃'∼((&1).le &0)
+  ∀' ∃' ∼((&1).le &0)
 
 /-- A sentence indicating that an order has no bottom element:
 $\forall x, \exists y, \neg x \le y$. -/
 def noBotOrderSentence : L.Sentence :=
-  ∀'∃'∼((&0).le &1)
+  ∀' ∃' ∼((&0).le &1)
 
 /-- A sentence indicating that an order is dense:
 $\forall x, \forall y, x < y \to \exists z, x < z \wedge z < y$. -/
 def denselyOrderedSentence : L.Sentence :=
-  ∀'∀'((&0).lt &1 ⟹ ∃'((&0).lt &2 ⊓ (&2).lt &1))
+  ∀' ∀' ((&0).lt &1 ⟹ ∃' ((&0).lt &2 ⊓ (&2).lt &1))
 
 /-- The theory of dense linear orders without endpoints. -/
 def dlo : L.Theory :=
