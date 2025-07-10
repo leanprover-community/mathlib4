@@ -400,7 +400,7 @@ lemma nonzero_of_dist_one {n : ℕ} (p : {v : Fin n → ℝ // dist v 0 = 1}) :
       exact dist_self 0
 
 /-- List from unit circle to projectivization. -/
-def liftUnitCircle {n:ℕ} (v : {v : Fin n → ℝ // dist v 0 = 1}) : ℙ ℝ (Fin n → ℝ) :=
+def liftUnitCircle {n : ℕ} (v : {v : Fin n → ℝ // dist v 0 = 1}) : ℙ ℝ (Fin n → ℝ) :=
     mk' ℝ ⟨v.1, nonzero_of_dist_one _⟩
 
 
@@ -496,14 +496,14 @@ lemma continuous_liftUnitCircle {n:ℕ} : Continuous (@liftUnitCircle n) := by
   exact Isometry.continuous fun x1 ↦ congrFun rfl
 
 /-- Unit circle is compact. -/
-instance {n:ℕ} : CompactSpace {v : Fin n → ℝ // dist v 0 = 1} := Metric.sphere.compactSpace 0 1
+instance {n : ℕ} : CompactSpace {v : Fin n → ℝ // dist v 0 = 1} := Metric.sphere.compactSpace 0 1
 
-instance {n:ℕ} : T2Space {v : Fin n → ℝ // dist v 0 = 1} := inferInstance
+instance {n : ℕ} : T2Space {v : Fin n → ℝ // dist v 0 = 1} := inferInstance
 
 -- Create an equiv between unit circle and projectivization to show T2ness.
 
 /-- Projectivization is compact. -/
-instance {n:ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
+instance {n : ℕ} : CompactSpace (ℙ ℝ (Fin n → ℝ)) := by
   let Q := IsCompact.image CompactSpace.isCompact_univ (@continuous_liftUnitCircle n)
   have : liftUnitCircle '' Set.univ = Set.univ :=
     Set.image_univ_of_surjective (@surjective_liftUnitCircle n)
