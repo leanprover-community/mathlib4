@@ -33,7 +33,10 @@ is too strong.
 ## Main definitions / results:
 * `RootSystem.Base`: a base of a root pairing.
 * `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
-* `RootSystem.Base.IsPos.IsPos.induction_on`: an induction principle for positive roots.
+* `RootSystem.Base.induction_on_add`: an induction principle for predicates on (co)roots which
+  respect addition of a simple root.
+* `RootSystem.Base.induction_on_reflect`: an induction principle for predicates on (co)roots which
+  respect reflection in a simple root.
 
 ## TODO
 
@@ -512,7 +515,7 @@ lemma IsPos.exists_mem_support_pos_pairingIn [CharZero R] {i : ι} (h₀ : b.IsP
 
 variable [P.IsReduced] [Nontrivial M] [NoZeroSMulDivisors ℤ M] [IsDomain R]
 
-lemma IsPos.induction_on
+lemma IsPos.induction_on_add
     {i : ι} (h₀ : b.IsPos i)
     {p : ι → Prop}
     (h₁ : ∀ i ∈ b.support, p i)
@@ -552,26 +555,51 @@ lemma IsPos.induction_on
         Finset.sum_eq_single_of_mem j (Finset.mem_univ j) aux, Pi.single_eq_same]
     exact h₂ k j i (by simp [hk]) (ih (h₀.sub hj hk) f' hf'₀ hfk hf') hj
 
-lemma induction
-    (i : ι)
-    {p : ι → Prop}
+/-- This lemma is included mostly for comparison with the informal literature. Usually
+`RootPairing.Base.induction_on_pos` will be more useful. -/
+lemma exists_eq_sum_and_forall_sum_mem_of_isPos {i : ι} (hi : b.IsPos i) :
+    ∃ n, ∃ f : Fin n → ι,
+      range f ⊆ b.support ∧
+      P.root i = ∑ m, P.root (f m) ∧
+      ∀ m, ∑ m' ≤ m, P.root (f m') ∈ range P.root := by
+  apply hi.induction_on_add (fun j hj ↦ ⟨1, ![j], by simpa⟩)
+  intro j k l h₁ ⟨n, f, h₂, h₃, h₄⟩ h₅
+  refine ⟨n + 1, Fin.snoc f k, ?_, ?_, fun m ↦ ?_⟩
+  · simpa using insert_subset h₅ h₂
+  · simp [Fin.sum_univ_castSucc, h₁, h₃]
+  · by_cases hm : m < n
+    · have : m = (⟨m, hm⟩ : Fin n).castSucc := rfl
+      rw [this, Fin.sum_Iic_castSucc]
+      simp only [Fin.snoc_castSucc, h₄]
+    · replace hm : m = n := by omega
+      replace hm : Finset.Iic m = Finset.univ := by ext; simp [hm, Fin.le_def, Fin.is_le]
+      simp [hm, Fin.sum_univ_castSucc, ← h₃, ← h₁]
+
+omit [Fintype ι] in
+lemma induction_add [Finite ι] (i : ι) {p : ι → Prop}
     (h₀ : ∀ i, p i → p (P.reflectionPerm i i))
     (h₁ : ∀ i ∈ b.support, p i)
     (h₂ : ∀ i j k, P.root k = P.root i + P.root j → p i → j ∈ b.support → p k) :
     p i := by
+  have : Fintype ι := Fintype.ofFinite ι
   letI := P.indexNeg
   rcases IsPos.or b i with hi | hi
-  · exact hi.induction_on h₁ h₂
+  · exact hi.induction_on_add h₁ h₂
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
-    exact hi.induction_on h₁ h₂
+    exact hi.induction_on_add h₁ h₂
 
-omit [IsDomain R] in
-lemma IsPos.induction_on'
+omit [IsDomain R]
+
+lemma IsPos.induction_on_reflect
     {i : ι} (h₀ : b.IsPos i)
     {p : ι → Prop}
     (h₁ : ∀ i ∈ b.support, p i)
-    (h₂ : ∀ i j k, P.root k = P.reflection j (P.root i) → p i → j ∈ b.support → p k) :
+    (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
     p i := by
+  replace h₂ : ∀ i j k, P.root k = P.reflection j (P.root i) → p i → j ∈ b.support → p k := by
+    -- TODO Obviate need for this by rewriting the proof to use original form of `h₂`
+    simp_rw [← root_reflectionPerm]
+    simpa [-root_reflectionPerm]
   classical
   have _i : CharZero R := CharZero.of_noZeroSMulDivisors R M
   obtain ⟨f, hf₀, hf⟩ := id h₀
@@ -603,35 +631,23 @@ lemma IsPos.induction_on'
       simp [hff', Finset.sum_add_distrib, hj'.le, eq_comm (a := P.pairingIn ℤ i j)]
     exact ih (∑ l, f' l) (by omega) hk₀ f' hf' hfk rfl
 
-omit [IsDomain R] in
-lemma induction'
-    (i : ι)
-    {p : ι → Prop}
-    (h₀ : ∀ i, p i → p (P.reflectionPerm i i))
-    (h₁ : ∀ i ∈ b.support, p i)
-    (h₂ : ∀ i j k, P.root k = P.reflection j (P.root i) → p i → j ∈ b.support → p k) :
-    p i := by
-  letI := P.indexNeg
-  rcases IsPos.or b i with hi | hi
-  · exact hi.induction_on' h₁ h₂
-  · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
-    exact hi.induction_on' h₁ h₂
+omit [Fintype ι]
+variable [Finite ι]
 
-omit [IsDomain R] in
-lemma induction''
-    (i : ι)
-    {p : ι → Prop}
+lemma induction_reflect (i : ι) {p : ι → Prop}
     (h₀ : ∀ i, p i → p (P.reflectionPerm i i))
     (h₁ : ∀ i ∈ b.support, p i)
     (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
     p i := by
-  suffices ∀ i j k, P.root k = P.reflection j (P.root i) → p i → j ∈ b.support → p k from
-    b.induction' i h₀ h₁ this
-  simp_rw [← root_reflectionPerm]
-  simpa [-root_reflectionPerm]
+  have : Fintype ι := Fintype.ofFinite ι
+  letI := P.indexNeg
+  rcases IsPos.or b i with hi | hi
+  · exact hi.induction_on_reflect h₁ h₂
+  · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
+    exact hi.induction_on_reflect h₁ h₂
 
-omit [Fintype ι] [IsDomain R] [Nontrivial M] in
-lemma forall_mem_support_invtSubmodule_iff [CharZero R] [Finite ι] (q : Submodule R M) :
+omit [Nontrivial M] in
+lemma forall_mem_support_invtSubmodule_iff [CharZero R] (q : Submodule R M) :
     (∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) ↔
       (∀ i, q ∈ invtSubmodule (P.reflection i)) := by
   have : Fintype ι := Fintype.ofFinite ι
@@ -639,31 +655,11 @@ lemma forall_mem_support_invtSubmodule_iff [CharZero R] [Finite ι] (q : Submodu
   letI := P.indexNeg
   have (j : ι) : P.reflection (-j) = P.reflection j := by ext x; simp [reflection_apply, two_smul]
   have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero _⟩
-  refine b.induction'' i (by aesop) hq ?_
+  refine b.induction_reflect i (by aesop) hq ?_
   clear i
   intro i j hi hj
   rw [reflection_reflectionPerm]
   exact Module.End.invtSubmodule.comp _ (Module.End.invtSubmodule.comp _ (hq j hj) hi) (hq j hj)
-
-/-- This lemma is included mostly for comparison with the informal literature. Usually
-`RootPairing.Base.induction_on_pos` will be more useful. -/
-lemma exists_eq_sum_and_forall_sum_mem_of_isPos {i : ι} (hi : b.IsPos i) :
-    ∃ n, ∃ f : Fin n → ι,
-      range f ⊆ b.support ∧
-      P.root i = ∑ m, P.root (f m) ∧
-      ∀ m, ∑ m' ≤ m, P.root (f m') ∈ range P.root := by
-  apply hi.induction_on (fun j hj ↦ ⟨1, ![j], by simpa⟩)
-  intro j k l h₁ ⟨n, f, h₂, h₃, h₄⟩ h₅
-  refine ⟨n + 1, Fin.snoc f k, ?_, ?_, fun m ↦ ?_⟩
-  · simpa using insert_subset h₅ h₂
-  · simp [Fin.sum_univ_castSucc, h₁, h₃]
-  · by_cases hm : m < n
-    · have : m = (⟨m, hm⟩ : Fin n).castSucc := rfl
-      rw [this, Fin.sum_Iic_castSucc]
-      simp only [Fin.snoc_castSucc, h₄]
-    · replace hm : m = n := by omega
-      replace hm : Finset.Iic m = Finset.univ := by ext; simp [hm, Fin.le_def, Fin.is_le]
-      simp [hm, Fin.sum_univ_castSucc, ← h₃, ← h₁]
 
 end PositiveRoots
 
