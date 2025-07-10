@@ -571,10 +571,10 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   obtain ⟨i⟩ := nonempty_algEquiv_adjoin_of_isSepClosed S K L (AlgebraicClosure K)
   rw [i.transfer_normal, IntermediateField.normal_iff_forall_map_le]
   intro f x hx
-  change x ∈ IntermediateField.toSubalgebra _ at hx
-  rw [IntermediateField.toSubalgebra_map, Subalgebra.mem_map] at hx
+  rw [← IntermediateField.mem_toSubalgebra, IntermediateField.toSubalgebra_map,
+    Subalgebra.mem_map] at hx
   obtain ⟨y, hy, rfl⟩ := hx
-  change y ∈ IntermediateField.adjoin _ _ at hy
+  rw [IntermediateField.mem_toSubalgebra] at hy
   induction hy using IntermediateField.adjoin_induction with
   | mem x hx =>
     obtain ⟨n, hn, h1, h2⟩ := hx

@@ -84,30 +84,17 @@ variable {α : Type*} [LinearOrderedCommGroupWithZero α]
 
 open WithZero
 
+lemma WithZero.withZeroUnitsEquiv_strictMono :
+    StrictMono (withZeroUnitsEquiv (G := α)) := by
+  intro a b
+  cases a <;> cases b <;>
+  simp
+
 /-- Given any linearly ordered commutative group with zero `α`, this is the order isomorphism
 between `WithZero αˣ` with `α`. -/
 @[simps!]
-def withZeroUnits_OrderIso : WithZero αˣ ≃o α where
+def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
-  map_rel_iff' {a b} := by
-    simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, withZeroUnitsEquiv_apply, recZeroCoe]
-    split
-    · exact ⟨fun _ ↦ WithZero.zero_le b, by simp⟩
-    · rcases b
-      · simpa using compareOfLessAndEq_eq_lt.mp rfl
-      rw [Units.val_le_val, ← WithZero.coe_le_coe]
-      rfl
-
-/-- Given any linearly ordered commutative group with zero `α`, this is the inclusion of
-`WithZero αˣ` into `α` as an ordered embedding. -/
-def withZeroUnits_OrderEmbedding : WithZero αˣ ↪o α := withZeroUnits_OrderIso.toOrderEmbedding
-
-@[simp]
-lemma withZeroUnits_OrderEmbedding_apply (x : WithZero αˣ) :
-    withZeroUnits_OrderEmbedding x = withZeroUnitsEquiv x := rfl
-
-lemma withZeroUnits_OrderEmbedding_mul (x y : WithZero αˣ) :
-    withZeroUnits_OrderEmbedding (x * y) = withZeroUnitsEquiv x * withZeroUnitsEquiv y := by
-  simp [map_mul]
+  map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
 
 end Units
