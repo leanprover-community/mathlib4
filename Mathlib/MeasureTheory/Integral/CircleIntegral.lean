@@ -183,6 +183,23 @@ nonrec theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
     CircleIntegrable (f + g) c R :=
   hf.add hg
 
+/-- Sums of circle integrable functions are circle integrable. -/
+protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    CircleIntegrable (∑ i ∈ s, f i) c R := by
+  rw [CircleIntegrable, (by aesop : (fun θ ↦ (∑ i ∈ s, f i) (circleMap c R θ))
+    = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
+  exact IntervalIntegrable.sum s h
+
+/-- Finsums of circle integrable functions are circle integrable. -/
+protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleIntegrable (f i) c R) :
+    CircleIntegrable (∑ᶠ i, f i) c R := by
+  by_cases h₁ : (Function.support f).Finite
+  · rw [finsum_eq_sum f h₁]
+    exact CircleIntegrable.sum h₁.toFinset (fun i _ ↦ h i)
+  · rw [finsum_of_infinite_support h₁]
+    apply circleIntegrable_const
+
 nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
   hf.neg
 
@@ -203,7 +220,7 @@ theorem circleIntegrable_zero_radius {f : ℂ → E} {c : ℂ} : CircleIntegrabl
   simp [CircleIntegrable]
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
-theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) (hf₁ : CircleIntegrable f₁ c R) :
     CircleIntegrable f₂ c R := by
   by_cases hR : R = 0
@@ -215,7 +232,7 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
     by tauto⟩
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
-theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
+theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : f₁ =ᶠ[codiscreteWithin (Metric.sphere c |R|)] f₂) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   ⟨(CircleIntegrable.congr_codiscreteWithin hf ·),

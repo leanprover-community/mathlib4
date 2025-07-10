@@ -30,8 +30,8 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`, which gives simpler
-expressions for `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`, which provides API
+specialized to `H⁰`, `H¹`, `H²`.
 
 ## Main definitions
 
@@ -54,8 +54,6 @@ possible scalar action diamonds.
 
 ## TODO
 
-* API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
-  the inflation-restriction exact sequence.
 * The long exact sequence in cohomology attached to a short exact sequence of representations.
 * Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.

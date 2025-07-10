@@ -5,6 +5,7 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Pseudofunctors

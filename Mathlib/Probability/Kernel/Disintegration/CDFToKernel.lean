@@ -562,13 +562,13 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by
-      refine setLIntegral_congr_fun ht₁ (Eventually.of_forall fun a ha ↦ ?_)
+      refine setLIntegral_congr_fun ht₁ (fun a ha ↦ ?_)
       rw [mk_preimage_prod_right ha]
     have h_eq2 :
         ∫⁻ x in t₁ᶜ, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a) = 0 := by
       suffices h_eq_zero :
           ∀ x ∈ t₁ᶜ, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) = 0 by
-        rw [setLIntegral_congr_fun ht₁.compl (Eventually.of_forall h_eq_zero)]
+        rw [setLIntegral_congr_fun ht₁.compl h_eq_zero]
         simp only [lintegral_const, zero_mul]
       intro a hat₁
       rw [mem_compl_iff] at hat₁
