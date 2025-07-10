@@ -226,11 +226,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [∀ x : M, TopologicalSpace (V x)]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
 
-/-- The scalar product `f • s` of a `C^k` function `f : M → 𝕜` and a section `s` of a smooth vector
-bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport f` .
+/-- The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a smooth vector
+bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ` .
 
-This is a vector bundle analogue of `contMDiff_of_tsupport`: the total space of `V` has no zero,
-but we only consider sections of the form `f s`. -/
+This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
 lemma contMDiff_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} {u : Set M}
     (hψ : ContMDiffOn I 𝓘(𝕜) n ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
