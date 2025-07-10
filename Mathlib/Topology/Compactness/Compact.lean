@@ -989,7 +989,7 @@ instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X ⊕ Y) :=
     exact (isCompact_range continuous_inl).union (isCompact_range continuous_inr)⟩
 
 instance {X : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (X i)] [∀ i, CompactSpace (X i)] :
-    CompactSpace (Σi, X i) := by
+    CompactSpace (Σ i, X i) := by
   refine ⟨?_⟩
   rw [Sigma.univ]
   exact isCompact_iUnion fun i => isCompact_range continuous_sigmaMk

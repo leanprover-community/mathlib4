@@ -319,14 +319,14 @@ def sum_to : (GoodProducts (π C (ord I · < o))) ⊕ (MaxProducts C ho) → Pro
 
 theorem injective_sum_to : Function.Injective (sum_to C ho) := by
   refine Function.Injective.sumElim Subtype.val_injective Subtype.val_injective
-    (fun ⟨a,ha⟩ ⟨b,hb⟩  ↦ (fun (hab : a = b) ↦ ?_))
+    (fun ⟨a,ha⟩ ⟨b,hb⟩ ↦ (fun (hab : a = b) ↦ ?_))
   rw [← hab] at hb
-  have ha' := Products.prop_of_isGood  C _ ha (term I ho) hb.2
+  have ha' := Products.prop_of_isGood C _ ha (term I ho) hb.2
   simp only [ord_term_aux, lt_self_iff_false] at ha'
 
 theorem sum_to_range :
     Set.range (sum_to C ho) = GoodProducts (π C (ord I · < o)) ∪ MaxProducts C ho := by
-  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
+  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr <;> ext l
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
 
@@ -341,7 +341,7 @@ def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < ·
 theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
     (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
-  ext ⟨_,_⟩ <;> [rfl; rfl]
+  ext ⟨_, _⟩ <;> [rfl; rfl]
 
 /-- Let
 
@@ -390,7 +390,7 @@ theorem square_commutes : SumEval C ho ∘ Sum.inl =
     ModuleCat.ofHom (πs C o) ∘ eval (π C (ord I · < o)) := by
   ext l
   dsimp [SumEval]
-  rw [← Products.eval_πs C (Products.prop_of_isGood  _ _ l.prop)]
+  rw [← Products.eval_πs C (Products.prop_of_isGood _ _ l.prop)]
   simp [eval]
 
 end GoodProducts
