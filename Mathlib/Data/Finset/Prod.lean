@@ -170,7 +170,7 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
     · simp only [h.2, Decidable.em, and_self]
     · revert h
       simp only [and_imp]
-      rintro _ _ (_|_) <;> simp [*]
+      rintro _ _ (_ | _) <;> simp [*]
   · apply Finset.disjoint_filter_filter'
     exact (disjoint_compl_right.inf_left _).inf_right _
 
