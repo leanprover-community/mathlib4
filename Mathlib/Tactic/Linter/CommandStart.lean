@@ -219,8 +219,9 @@ abbrev unlintedNodes := #[
   `«term{_}»,
   -- empty set, the pretty-printer prefers `{ }`
   ``«term{}»,
-  -- set builder notation, the pretty-printer prefers `{ a : X | p a }`
+  -- various set builder notations, the pretty-printer prefers `{ a : X | p a }`
   `Mathlib.Meta.setBuilder,
+  `Mathlib.Meta.«term{_|_}»,
 
   -- # misc exceptions
 

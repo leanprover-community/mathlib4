@@ -69,7 +69,7 @@ example {c : Bool} : c = c := by
 example : 0 = 0 := by
   simp! ;
 
--- `Mathlib.Meta.«term{_|_}» from ``import Mathlib.Data.Set.Defs``
+-- The pretty-printer prefers no spaces inside `{}`.
 example := { Nat.succ n | n < 0 }
 
 
