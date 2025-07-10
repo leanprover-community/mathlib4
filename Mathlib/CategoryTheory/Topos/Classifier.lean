@@ -245,7 +245,7 @@ section RepresentableBy
 variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
 
 private def truthSubobject : Subobject 𝒞.Ω :=
-  have : Mono 𝒞.truth := 𝒞.mt
+  haveI : Mono 𝒞.truth := 𝒞.mt
   Subobject.mk 𝒞.truth
 
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
