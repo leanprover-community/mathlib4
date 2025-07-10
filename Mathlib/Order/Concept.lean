@@ -31,7 +31,7 @@ Prove the fundamental theorem of concept lattices.
 
 ## Tags
 
-concept, formal concept analysis, intent, extend, attribute
+concept, formal concept analysis, intent, extend, attribute, Dedekind-MacNeille completion
 -/
 
 
