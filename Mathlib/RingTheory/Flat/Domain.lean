@@ -70,4 +70,4 @@ This is true over non-domains if one of the modules is flat.
 See `LinearIndepOn.tmul_of_flat_left`. -/
 nonrec lemma LinearIndepOn.tmul_of_isDomain (hv : LinearIndepOn R v s) (hw : LinearIndepOn R w t) :
     LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_isDomain hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_isDomain hw).comp _ (Equiv.Set.prod _ _).injective :)
