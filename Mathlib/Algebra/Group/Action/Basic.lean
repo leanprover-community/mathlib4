@@ -67,14 +67,14 @@ end Group
 section Monoid
 variable [Monoid α] [MulAction α β] (c : α) (x y : β) [Invertible c]
 
-@[simp] lemma invOf_smul_smul : ⅟c • c • x = x := inv_smul_smul (unitOfInvertible c) _
+@[simp] lemma invOf_smul_smul : ⅟ c • c • x = x := inv_smul_smul (unitOfInvertible c) _
 @[simp] lemma smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvertible c) _
 
 variable {c x y}
 
-lemma invOf_smul_eq_iff : ⅟c • x = y ↔ x = c • y := inv_smul_eq_iff (g := unitOfInvertible c)
+lemma invOf_smul_eq_iff : ⅟ c • x = y ↔ x = c • y := inv_smul_eq_iff (g := unitOfInvertible c)
 
-lemma smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
+lemma smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟ c • y :=
   smul_eq_iff_eq_inv_smul (g := unitOfInvertible c)
 
 end Monoid

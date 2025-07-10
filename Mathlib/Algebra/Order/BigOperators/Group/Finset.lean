@@ -385,7 +385,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
     _ ≤ ∏ x ∈ t, f x :=
       mul_le_of_le_one_of_le
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
-        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
+        (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
 
 end CanonicallyOrderedMul
 

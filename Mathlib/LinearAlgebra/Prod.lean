@@ -666,7 +666,7 @@ theorem fst_comp_prodAssoc :
 
 theorem snd_comp_prodAssoc :
     (LinearMap.snd R M₁ (M₂ × M₃)).comp (prodAssoc R M₁ M₂ M₃).toLinearMap =
-    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃):= by
+    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃) := by
   ext <;> simp
 
 end prodAssoc
