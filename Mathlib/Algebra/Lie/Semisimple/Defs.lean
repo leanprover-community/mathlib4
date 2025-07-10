@@ -34,15 +34,6 @@ lemma LieSubmodule.eq_top_of_isIrreducible [LieModule.IsIrreducible R L M]
     N = ⊤ :=
   (IsSimpleOrder.eq_bot_or_eq_top N).resolve_left <| (nontrivial_iff_ne_bot R L M).mp inferInstance
 
-variable {R L M} in
-lemma LieModule.IsIrreducible.mk [Nontrivial (LieSubmodule R L M)]
-    (h : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤) :
-    LieModule.IsIrreducible R L M := by
-  refine ⟨fun N ↦ ?_⟩
-  rcases eq_or_ne N ⊥ with rfl | hN
-  · tauto
-  · exact Or.inr (h N hN)
-
 namespace LieAlgebra
 
 variable [LieAlgebra R L]
