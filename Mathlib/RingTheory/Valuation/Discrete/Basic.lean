@@ -97,7 +97,7 @@ lemma generator_mem_valueGroup :
   rw [← IsRankOneDiscrete.generator_zpowers_eq_valueGroup]
   exact Subgroup.mem_zpowers (IsRankOneDiscrete.generator v)
 
-lemma generator_lt_one: (generator v) < 1 :=
+lemma generator_lt_one : (generator v) < 1 :=
   (exists_generator_lt_one v).choose_spec.2
 
 lemma generator_ne_one : (generator v) ≠ 1 :=
@@ -187,7 +187,7 @@ lemma val_ne_zero {π : A} (hπ : v.IsUniformizer π) : v π ≠ 0 := by
   exact (Units.ne_zero _).symm hπ
 
 theorem val_pos {π : A} (hπ : IsUniformizer v π) : 0 < v π := by
-  rw [IsUniformizer.iff] at hπ ; simp [zero_lt_iff, ne_eq, hπ]
+  rw [IsUniformizer.iff] at hπ; simp [zero_lt_iff, ne_eq, hπ]
 
 lemma zpowers_eq_valueGroup {π : A} (hπ : v.IsUniformizer π) :
     valueGroup v = zpowers (Units.mk0 (v π) hπ.val_ne_zero) := by
