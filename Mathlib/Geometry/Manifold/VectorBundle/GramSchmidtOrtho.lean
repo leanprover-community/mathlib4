@@ -266,7 +266,7 @@ set_option linter.style.commandStart false
 variable [IsContMDiffRiemannianBundle IB n F E]
 
 -- TODO: give a much better name!
-lemma contMDiffWithinAt_aux  {s t : (x : B) → E x} {u : Set B} {x : B}
+lemma contMDiffWithinAt_aux {s t : (x : B) → E x} {u : Set B} {x : B}
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     CMDiffAt[u] n (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
   suffices ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (fun x ↦ ⟪s x, t x⟫ / ⟪s x, s x⟫) u x by
@@ -329,6 +329,19 @@ lemma gramSchmidt_contMDiff {s : ι → (x : B) → E x} (i : ι)
     CMDiff n (T% (VectorBundle.gramSchmidt s i)) :=
   fun x ↦ gramSchmidt_contMDiffAt _ (fun i ↦ hs i x) (hs' x)
 
+lemma contMDiffWithinAt_inner {s : (x : B) → E x} {u : Set B} {x : B}
+    (hs : CMDiffAt[u] n (T% s) x) (hs' : s x ≠ 0) :
+    CMDiffAt[u] n (‖s ·‖) x := by
+  let F (x) := ⟪s x, s x⟫
+  have aux : ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (Real.sqrt ∘ F) u x := by
+    have h1 : CMDiffAt[(F '' u)] n (Real.sqrt) (F x) := by
+      apply ContMDiffAt.contMDiffWithinAt
+      rw [contMDiffAt_iff_contDiffAt]
+      exact Real.contDiffAt_sqrt (by simp [F, hs'])
+    exact h1.comp x (hs.inner_bundle hs) (Set.mapsTo_image _ u)
+  convert aux
+  simp [F, ← norm_eq_sqrt_real_inner]
+
 lemma gramSchmidtNormed_contMDiffWithinAt {s : ι → (x : B) → E x} (i : ι) {u : Set B} {x : B}
     (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
@@ -337,25 +350,9 @@ lemma gramSchmidtNormed_contMDiffWithinAt {s : ι → (x : B) → E x} (i : ι) 
       (fun x ↦ ‖VectorBundle.gramSchmidt s i x‖⁻¹ • VectorBundle.gramSchmidt s i x)) x := by
     refine ContMDiffWithinAt.smul_section ?_ (gramSchmidt_contMDiffWithinAt i hs hs')
     refine ContMDiffWithinAt.inv₀ ?_ ?_
-    · let F (x) := ⟪VectorBundle.gramSchmidt s i x, VectorBundle.gramSchmidt s i x⟫
-      have aux : ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (Real.sqrt ∘ F) u x := by
-        have h1 : CMDiffAt[(F '' u)] n (Real.sqrt)
-            ⟪VectorBundle.gramSchmidt s i x, VectorBundle.gramSchmidt s i x⟫ := by
-          apply ContMDiffAt.contMDiffWithinAt
-          rw [contMDiffAt_iff_contDiffAt]
-          apply Real.contDiffAt_sqrt
-          simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
-        have h2 : CMDiffAt[u] n F x := by
-          unfold F
-          -- have : CMDiffAt[u] n (T% (fun x ↦ VectorBundle.gramSchmidt s i x)) x := by
-          --   sorry -- did this already
-          sorry --apply this.inner_bundle this
-        exact h1.comp x (h2) (Set.mapsTo_image _ u)
-      apply aux.congr
-      · intro x hx
-        sorry
-      sorry
-    simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
+    · refine contMDiffWithinAt_inner (gramSchmidt_contMDiffWithinAt i hs hs') ?_
+      simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
+    · simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
   exact this.congr (fun y hy ↦ by congr) (by congr)
 
 lemma gramSchmidtNormed_contMDiffAt {s : ι → (x : B) → E x} (i : ι) {x : B}
