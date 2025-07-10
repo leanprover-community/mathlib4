@@ -345,18 +345,18 @@ either with such a hypothesis directly or by a limited palette of relational for
 these hypotheses. -/
 def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit :=
   withReducible do
-  let s ← saveState
-  withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
-  -- Iterate over a list of terms
-  let tacs := (forwardExt.getState (← getEnv)).2
-  for h in hs do
-    try
-      tacs.firstM fun (n, tac) =>
-        withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
-          tac.eval h g
-      return
-    catch _ => s.restore
-  throwError "gcongr_forward failed"
+    let s ← saveState
+    withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
+    -- Iterate over a list of terms
+    let tacs := (forwardExt.getState (← getEnv)).2
+    for h in hs do
+      try
+        tacs.firstM fun (n, tac) =>
+          withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+            tac.eval h g
+        return
+      catch _ => s.restore
+    throwError "gcongr_forward failed"
 
 /--
 This is used as the default main-goal discharger,
