@@ -156,6 +156,19 @@ lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f :
 
 alias ⟨_, map'_injective⟩ := map'_injective_iff
 
+lemma map'_surjective_iff {f : α →* β} : Surjective (map' f) ↔ Surjective f := by
+  simp only [Surjective, «forall»]
+  refine ⟨fun h b ↦ ?_, fun h ↦ ⟨⟨0, by simp⟩, fun b ↦ ?_⟩⟩
+  · obtain ⟨a₀, ha₀b⟩ := h.2 b
+    have ha : a₀ ≠ 0 := fun ha ↦ by simp [ha] at ha₀b
+    obtain ⟨a, rfl⟩ := WithZero.ne_zero_iff_exists.mp ha
+    exact ⟨a, by rwa [map'_coe, coe_inj] at ha₀b⟩
+  · obtain ⟨a, ha⟩ := h b
+    use a
+    simp [ha]
+
+alias ⟨_, map'_surjective⟩ := map'_surjective_iff
+
 end MulOneClass
 
 section Pow

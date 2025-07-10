@@ -101,15 +101,42 @@ end MonoidWithZeroHom
 
 noncomputable section Restrict
 
-variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B]
+
+open Function
 
 open Classical in
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
-def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
+def valueGroup₀_MulWithZeroHom : valueGroup₀ f →*₀ B :=
   (withZeroUnitsHom).comp <| WithZero.map' (valueGroup f).subtype
 
+lemma valueGroup₀_MulWithZeroHom_injective : Injective (valueGroup₀_MulWithZeroHom f) := by
+  classical
+  change Injective <| WithZero.withZeroUnitsEquiv.toEquiv ∘ _
+  rw [Equiv.comp_injective]
+  exact WithZero.map'_injective <| subtype_injective (valueGroup f)
 
-variable (f) in
+variable {f} in
+lemma valueGroup₀_MulWithZeroHom_surjective (hf : Surjective f) :
+    Surjective (valueGroup₀_MulWithZeroHom f) := by
+  classical
+  change Surjective <| WithZero.withZeroUnitsEquiv.toEquiv ∘ _
+  rw [Equiv.comp_surjective]
+  apply WithZero.map'_surjective
+  simp
+  refine range_eq_univ.mp ?_
+  simp only [Subtype.range_coe_subtype, SetLike.setOf_mem_eq, coe_eq_univ]
+  rw [Subgroup.eq_top_iff']
+  intro b
+  obtain ⟨a, ha⟩ := hf b
+  apply mem_valueGroup
+  use a
+
+def valueGroup₀_MulEquiv_of_surjective (hf : Surjective f) : valueGroup₀ f ≃* B :=
+  .ofBijective _ ⟨valueGroup₀_MulWithZeroHom_injective f, valueGroup₀_MulWithZeroHom_surjective hf⟩
+
+
+-- variable (f) in
 open Classical in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. It cannot land
 in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will not be in
@@ -127,6 +154,8 @@ def restrict₀ : A →*₀ (valueGroup₀ f) where
     all_goals rw [mul_eq_zero] at h; tauto
   map_zero' := by simp
 
+variable {f}
+
 @[simp]
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
@@ -142,7 +171,7 @@ lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by
   · by_contra H; simp [H] at h
 
 @[simp]
-lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroEmbedding (restrict₀ f a) = f a := by
+lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroHom f (restrict₀ f a) = f a := by
   simp [restrict₀_apply]
   split_ifs with h
   · simp [h]
@@ -163,7 +192,8 @@ lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid :
     simp [hy]
   · simp [Submonoid.closure_union]
 
-variable (f) in
+variable (f)
+
 lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := by
   rw [valueMonoid_eq_valueGroup, coe_toSubmonoid]
 
@@ -179,30 +209,17 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
 
-
-@[simp]
 lemma restrict₀_range_eq_top : range (restrict₀ f) = ⊤ := by
-  -- let g : A →* valueGroup₀ f := restrict₀ f
-  -- show range g = ⊤
   rw [top_eq_univ, range_eq_univ]
   intro x
   match x with
   | 0 => use 0; simp
-  | some a =>
-    rcases a with ⟨u, hu⟩
-    let v : Units.val '' ((valueGroup f) : Set Bˣ) := by
-      use u
-      rw [valueGroup_eq_range]
-      simp
-      change u ∈ (valueGroup f : Set Bˣ) at hu
-      rw [← valueMonoid_eq_valueGroup'] at hu
-      change u ∈ (valueMonoid f : Set Bˣ) at hu
-      rw [mem_valueMonoid_iff] at hu
-
-
-
-
-
+  | some ⟨u, hu⟩ =>
+    change u ∈ (valueGroup f : Set Bˣ) at hu
+    rw [← valueMonoid_eq_valueGroup'] at hu
+    obtain ⟨v, hv⟩ := hu
+    use v
+    simp [restrict₀_apply, hv, Units.ne_zero, WithZero.coe]
 
 
 -- def restrict₀_valueGroup_equiv : valueMonoid (restrict₀ f) ≃ valueMonoid f where
@@ -220,23 +237,17 @@ lemma restrict₀_range_eq_top : range (restrict₀ f) = ⊤ := by
 --   invFun x := by sorry
 --   left_inv x := by sorry
 --   right_inv x := by sorry
+open Function
 
--- def restrict₀_valueGroup₀_equiv : valueGroup₀ (restrict₀ f) ≃ valueGroup₀ f where
---   toFun x := by
---     match x with
---     | 0 => exact 0
---     | some ⟨a, ha⟩ =>
---
---
---   invFun := sorry
---   left_inv := sorry
---   right_inv := sorry
---
--- def restrict₀_valueGroup₀_hom : valueGroup₀ (restrict₀ f) →*₀ valueGroup₀ f where
---   toFun := sorry
---   map_zero' := sorry
---   map_one' := sorry
---   map_mul' := sorry
+def restrict₀_valueGroup₀_MulEquiv : valueGroup₀ (restrict₀ f) ≃* valueGroup₀ f :=
+    valueGroup₀_MulEquiv_of_surjective (restrict₀ f)
+      <| by simpa [← Set.range_eq_univ] using restrict₀_range_eq_top _
+
+
+def restrict₀_valueGroup₀_hom : valueGroup₀ (restrict₀ f) →*₀ valueGroup₀ f where
+  __ := restrict₀_valueGroup₀_MulEquiv f
+  map_zero' := by simp
+  map_one' := by simp
 
 end GroupWithZero
 section CommGroupWithZero
