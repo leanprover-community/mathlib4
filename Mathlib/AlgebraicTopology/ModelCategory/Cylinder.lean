@@ -102,7 +102,7 @@ lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
 end Precylinder
 
 /-- In a category with weak equivalences, a cylinder is the
-data of a weak equivalence `σ : I ⟶ A` equipped with two sections -/
+data of a weak equivalence `π : I ⟶ A` equipped with two sections -/
 structure Cylinder [CategoryWithWeakEquivalences C] (A : C) extends Precylinder A where
   weakEquivalence_π : WeakEquivalence π := by infer_instance
 
