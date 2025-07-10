@@ -536,7 +536,7 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
     (isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay (p.map (algebraMap R Rₘ))
     (ModuleCat.of Rₘ Rₘ) (ModuleCat.of Rₚ Rₚ) (Algebra.linearMap Rₘ Rₚ))
 
-lemma isCohenMacaulayRing_of_ringEquiv (R R' : Type*) [CommRing R] [CommRing R']
+lemma isCohenMacaulayRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
     [IsNoetherianRing R] (e : R ≃+* R') [CM : IsCohenMacaulayRing R] :
     IsCohenMacaulayRing R' := by
   apply (isCohenMacaulayRing_def R').mpr (fun p' hp' ↦ ?_)
