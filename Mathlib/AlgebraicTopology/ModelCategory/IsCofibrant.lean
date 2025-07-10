@@ -96,6 +96,29 @@ lemma isFibrant_of_fibration [(fibrations C).IsStableUnderComposition]
   rw [Subsingleton.elim (terminal.from X) (p ≫ terminal.from Y)]
   infer_instance
 
+section
+
+variable (X Y : C) [(fibrations C).IsStableUnderBaseChange] [HasTerminal C]
+  [HasBinaryProduct X Y]
+
+instance [hY : IsFibrant Y] :
+    Fibration (prod.fst : X ⨯ Y ⟶ X) := by
+  rw [isFibrant_iff] at hY
+  rw [fibration_iff] at hY ⊢
+  exact MorphismProperty.of_isPullback
+    (IsPullback.of_isLimit_binaryFan_of_isTerminal
+      (limit.isLimit (pair X Y)) terminalIsTerminal).flip hY
+
+instance [HasTerminal C] [HasBinaryProduct X Y] [hX : IsFibrant X] :
+    Fibration (prod.snd : X ⨯ Y ⟶ Y) := by
+  rw [isFibrant_iff] at hX
+  rw [fibration_iff] at hX ⊢
+  exact MorphismProperty.of_isPullback
+    (IsPullback.of_isLimit_binaryFan_of_isTerminal
+      (limit.isLimit (pair X Y)) terminalIsTerminal) hX
+
+end
+
 end
 
 end HomotopicalAlgebra
