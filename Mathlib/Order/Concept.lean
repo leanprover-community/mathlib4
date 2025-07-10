@@ -52,6 +52,9 @@ which `r` relates to all elements of `t`. -/
 def extentClosure (t : Set β) : Set α :=
   { a | ∀ ⦃b⦄, b ∈ t → r a b }
 
+theorem upperBounds_eq_intentClosure [LE α] : upperBounds s = intentClosure (· ≤ ·) s := rfl
+theorem lowerBounds_eq_extentClosure [LE β] : lowerBounds t = extentClosure (· ≤ ·) t := rfl
+
 variable {r}
 
 theorem subset_intentClosure_iff_subset_extentClosure :
@@ -146,6 +149,23 @@ structure Concept extends Set α × Set β where
 
 initialize_simps_projections Concept (+toProd, -fst, -snd)
 
+/-- The **Dedekind-MacNeille completion** of a partial order is the smallest complete lattice that
+contains it. We define here the type of Dedekind cuts of `α` as the `Concept` lattice of the `≤`
+relation of `α`.
+
+For `A : DedekindCut α`, the sets `A.fst` and `A.snd` are related by `upperBounds A.fst = A.snd` and
+`lowerBounds A.snd = A.fst`.
+
+The file `Order.Dedekind` proves that if `α` is a partial order and `β` is a complete lattice, any
+embedding `α ↪o β` factors through `DedekindCut α`. -/
+abbrev DedekindCut [Preorder α] := Concept α α (· ≤ ·)
+
+theorem DedekindCut.upperBounds_fst [Preorder α] (A : DedekindCut α) :
+    upperBounds A.fst = A.snd := A.closure_fst
+
+theorem DedekindCut.lowerBounds_snd [Preorder α] (A : DedekindCut α) :
+    lowerBounds A.snd = A.fst := A.closure_snd
+
 namespace Concept
 
 variable {r α β}
@@ -171,6 +191,10 @@ theorem ext' (h : c.snd = d.snd) : c = d := by
 theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ => ext
 
 theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
+
+theorem rel_fst_snd {x y} (hx : x ∈ c.fst) (hy : y ∈ c.snd) : r x y := by
+  rw [← c.closure_fst] at hy
+  exact hy hx
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
