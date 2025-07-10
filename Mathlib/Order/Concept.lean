@@ -168,7 +168,7 @@ theorem upperPolar_lowerPolar_upperPolar (s : Set α) :
   (gc_upperPolar_lowerPolar r).l_u_l_eq_l _
 
 @[deprecated (since := "2025-07-10")]
-alias intentClosure_extentClosure_intentClosure := upperPolar_swap
+alias intentClosure_extentClosure_intentClosure := upperPolar_lowerPolar_upperPolar
 
 @[simp]
 theorem lowerPolar_upperPolar_lowerPolar (t : Set β) :
