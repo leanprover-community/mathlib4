@@ -127,21 +127,17 @@ def restrict₀ : A →*₀ (valueGroup₀ f) where
     all_goals rw [mul_eq_zero] at h; tauto
   map_zero' := by simp
 
-@[simp]
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
   by simp [restrict₀, h]
 
-@[simp]
 lemma restrict₀_of_eq_zero {a : A} (h : f a = 0) :
     restrict₀ f a = 0 := by simp [restrict₀, h]
 
-@[simp]
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by
   refine ⟨fun h ↦ ?_, restrict₀_of_eq_zero⟩
   · by_contra H; simp [H] at h
 
-@[simp]
 lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroEmbedding (restrict₀ f a) = f a := by
   simp [restrict₀]
   split_ifs with h
