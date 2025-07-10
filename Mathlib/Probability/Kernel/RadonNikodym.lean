@@ -143,7 +143,7 @@ lemma setLIntegral_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFini
   · have := hαγ.countableOrCountablyGenerated.resolve_left hα
     rw [setLIntegral_density ((fst_map_id_prod _ measurable_const).trans_le h_le) _
       MeasurableSet.univ hs, map_apply' _ (by fun_prop) _ (hs.prod MeasurableSet.univ)]
-    congr with x
+    congr 1 with x
     simp
 
 lemma withDensity_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
