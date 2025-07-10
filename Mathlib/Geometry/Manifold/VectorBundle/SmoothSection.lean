@@ -155,32 +155,32 @@ lemma ContMDiffAt.smul_section (hf : ContMDiffAt I 𝓘(𝕜) n f x₀)
 lemma ContMDiffOn.smul_section (hf : ContMDiffOn I 𝓘(𝕜) n f u)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) u :=
-  fun x₀ hx₀ ↦ .smul_section (hf x₀ hx₀) (hs x₀ hx₀)
+  fun x₀ hx₀ ↦ (hf x₀ hx₀).smul_section (hs x₀ hx₀)
 
 lemma ContMDiff.smul_section (hf : ContMDiff I 𝓘(𝕜) n f)
     (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) :=
-  fun x₀ ↦ .smul_section (hf x₀) (hs x₀)
+  fun x₀ ↦ (hf x₀).smul_section (hs x₀)
 
 lemma ContMDiffWithinAt.const_smul_section
     (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
     ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u x₀ :=
-  .smul_section contMDiffWithinAt_const hs
+  contMDiffWithinAt_const.smul_section hs
 
 lemma ContMDiffAt.const_smul_section
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
     ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) x₀ :=
-  .smul_section contMDiffAt_const hs
+  contMDiffAt_const.smul_section hs
 
 lemma ContMDiffOn.const_smul_section
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
     ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u :=
-  .smul_section contMDiffOn_const hs
+  contMDiffOn_const.smul_section hs
 
 lemma ContMDiff.const_smul_section
     (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) :=
-  fun x₀ ↦ .const_smul_section (hs x₀)
+  fun x₀ ↦ (hs x₀).const_smul_section
 
 lemma ContMDiffWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) → V x}
     (hs : ∀ i ∈ s,
