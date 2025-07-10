@@ -176,7 +176,7 @@ lemma repr_spec [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V x
   eventually_of_mem hu'' fun _ hx ↦ hs.repr_sum_eq _ hx
 
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
-lemma repr_congr (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M,  V x}
+lemma repr_congr (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M, V x}
     (htt' : t x = t' x) (i : ι) :
     hs.repr i t x = hs.repr i t' x := by
   by_cases hxe : x ∈ u
@@ -193,6 +193,13 @@ lemma repr_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n 
   · simp [repr, hxe]
     simp_all [toBasisAt]
   · simp [repr, hxe]
+
+/-- Two sections `s` and `t` are equal at `x` if and only if their coefficients w.r.t. some local
+frame at `x` agree. -/
+lemma eq_iff_repr [Fintype ι] (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M, V x} (hx : x ∈ u) :
+    t x = t' x ↔ ∀ i, hs.repr i t x = hs.repr i t' x :=
+  ⟨fun h i ↦ hs.repr_congr h i, fun h ↦ by
+    simp +contextual [h, hs.repr_sum_eq t hx, hs.repr_sum_eq t' hx]⟩
 
 lemma repr_apply_zero_at (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} (ht : t x = 0) (i : ι) :
     hs.repr i t x = 0 := by
@@ -431,8 +438,8 @@ Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
 lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i : ι} {s : Π x : M, V x} :
     b.localFrame_repr I e i s x = b.repr (e (s x)).2 i := by
-  simp only [localFrame_repr]
-  sorry -- simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
+  --simp only [localFrame_repr]
+  simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
 end Basis
 
