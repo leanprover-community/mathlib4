@@ -274,7 +274,7 @@ theorem littleO_of_powerseries.aux
       )) using 2
   ring_nf
 
-theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V]
     {f : V → ℝ} {x₀ : V}
     {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
     (α : ℝ) {x : V}
