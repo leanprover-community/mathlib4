@@ -266,8 +266,8 @@ lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
     𝒞.χ ((Subobject.pullback φ).obj 𝒞.truthSubobject).arrow = φ := by
   obtain ⟨Z, i, _, rfl⟩ := 𝒞.surjective_χ φ
   refine (𝒞.uniq _ _ ?_).symm
-  have : Mono 𝒞.truth := 𝒞.mt
-  have : Mono ((MonoOver.forget 𝒞.Ω).obj (MonoOver.mk' 𝒞.truth)).hom := by simp[this]
+  haveI : Mono 𝒞.truth := 𝒞.mt
+  haveI : Mono ((MonoOver.forget 𝒞.Ω).obj (MonoOver.mk' 𝒞.truth)).hom := by simp[this]
   refine (IsPullback.of_hasPullback 𝒞.truth (𝒞.χ i)).flip.of_iso
     (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
     ?_ (𝒞.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
