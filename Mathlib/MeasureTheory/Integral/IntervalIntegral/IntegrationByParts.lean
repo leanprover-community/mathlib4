@@ -16,7 +16,7 @@ We derive additional integration techniques from FTC-2:
 
 Versions of the change of variables formula for monotone and antitone functions, but with much
 weaker assumptions on the integrands and not restricted to intervals,
-can be found in `MeasureTheory.Function.JacobianOneDim`
+can be found in `Mathlib/MeasureTheory/Function/JacobianOneDim.lean`
 
 ## Tags
 

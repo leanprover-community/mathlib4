@@ -19,6 +19,8 @@ and outputs a set of orthogonal vectors which have the same span.
 - `gramSchmidt`: the Gram-Schmidt process
 - `gramSchmidt_orthogonal`: `gramSchmidt` produces an orthogonal system of vectors.
 - `span_gramSchmidt`: `gramSchmidt` preserves span of vectors.
+- `gramSchmidt_linearIndependent`: if the input vectors of `gramSchmidt` are linearly independent,
+  then so are the output vectors.
 - `gramSchmidt_ne_zero`: if the input vectors of `gramSchmidt` are linearly independent,
   then the output vectors are non-zero.
 - `gramSchmidt_basis`: the basis produced by the Gram-Schmidt process when given a basis as input
@@ -170,8 +172,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
     rw [Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
-      rw [mem_orthogonal_singleton_iff_inner_left]
-      rw [← mem_orthogonal_singleton_iff_inner_right]
+      rw [mem_orthogonal_singleton_iff_inner_left, ← mem_orthogonal_singleton_iff_inner_right]
       exact this (gramSchmidt_mem_span 𝕜 f (le_refl j))
     rw [isOrtho_span]
     rintro u ⟨k, hk, rfl⟩ v (rfl : v = f i)
