@@ -233,84 +233,51 @@ section LambdaSquared
 def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
   ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors, if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0
 
-private theorem lambdaSquared_eq_zero_of_not_le_height_aux {w : ℕ → ℝ} {height : ℝ}
-    (hw : ∀ (d : ℕ), ¬d ^ 2 ≤ height → w d = 0) {d : ℕ} (hd : ¬↑d ≤ height) (d1 : ℕ) (d2 : ℕ)
-    (h : d = Nat.lcm d1 d2) (hle : d1 ≤ d2) :
-    w d1 * w d2 = 0 := by
+theorem lambdaSquared_eq_zero_of_not_le_height (w : ℕ → ℝ) (height : ℝ)
+    (hw : ∀ d : ℕ, ¬d ^ 2 ≤ height → w d = 0) (d : ℕ) (hd : ¬d ≤ height) :
+    lambdaSquared w d = 0 := by
+  apply sum_eq_zero; intro d1 hd1; apply sum_eq_zero; intro d2 hd2
+  rw [ite_eq_right_iff]
+  wlog hle : d1 ≤ d2
+  · simpa only [Nat.lcm_comm, mul_comm] using this _ _ hw _ hd d2 hd2 d1 hd1 (le_of_not_ge hle)
   by_cases hd1 : d1 = 0
   · simp_all
   by_cases hd2 : d2 = 0
   · simp_all
-  rw [hw d2]
-  · ring
-  by_contra hyp; apply hd
+  rintro rfl
+  suffices ¬d2 ^ 2 ≤ height by simp_all
+  contrapose! hd with hyp
   apply le_trans _ hyp
   norm_cast
-  calc _ ≤ d1.lcm d2 := by rw [h]
-      _ ≤ d1 * d2 := Nat.lcm_le_mul (by omega) (by omega)
-      _ ≤ _       := ?_
-  · rw [sq]; gcongr
-
-theorem lambdaSquared_eq_zero_of_not_le_height (w : ℕ → ℝ) (height : ℝ)
-    (hw : ∀ d : ℕ, ¬d ^ 2 ≤ height → w d = 0) (d : ℕ) (hd : ¬d ≤ height) :
-    lambdaSquared w d = 0 := by
-  dsimp only [lambdaSquared]
-  by_cases hheight : 0 ≤ height
-  swap
-  · push_neg at hd hheight
-    have : ∀ d' : ℕ, w d' = 0 := by
-      intro d'; apply hw
-      have : (0:ℝ) ≤ (d') ^ 2 := by norm_num
-      linarith
-    apply sum_eq_zero; intro d1 _
-    apply sum_eq_zero; intro d2 _
-    rw [this d1, this d2]
-    simp only [ite_self, MulZeroClass.mul_zero]
-  apply sum_eq_zero; intro d1 _; apply sum_eq_zero; intro d2 _
-  split_ifs with h
-  swap
-  · rfl
-  rcases Nat.le_or_le d1 d2 with hle | hle
-  · apply lambdaSquared_eq_zero_of_not_le_height_aux hw hd d1 d2 h hle
-  · rw [mul_comm]
-    apply lambdaSquared_eq_zero_of_not_le_height_aux hw hd d2 d1 (Nat.lcm_comm d1 d2 ▸ h) hle
+  calc _ ≤ d1 * d2 := Nat.lcm_le_mul (by omega) (by omega)
+       _ ≤ d2 ^ 2  := by rw [sq]; gcongr
 
 private theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
-    (∑ d ∈ n.divisors,
-        ∑ d1 ∈ d.divisors,
-          ∑ d2 ∈ d.divisors, if d = Nat.lcm d1 d2 then f d1 d2 d else 0) =
-      ∑ d ∈ n.divisors,
-        ∑ d1 ∈ n.divisors,
-          ∑ d2 ∈ n.divisors, if d = Nat.lcm d1 d2 then f d1 d2 d else 0 := by
-  apply sum_congr rfl; intro d hd
+    (∑ d ∈ n.divisors, ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors,
+      if d = Nat.lcm d1 d2 then f d1 d2 d else 0) =
+    (∑ d ∈ n.divisors, ∑ d1 ∈ n.divisors, ∑ d2 ∈ n.divisors,
+     if d = Nat.lcm d1 d2 then f d1 d2 d else 0) := by
+  congr! 1 with d hd
   rw [mem_divisors] at hd
-  simp_rw [←Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ite_sum_zero, ← ite_and]
-  congr with d1
-  congr with d2
-  congr
-  simp +contextual [← and_assoc, eq_iff_iff, and_iff_right_iff_imp,
-    Nat.dvd_lcm_left, Nat.dvd_lcm_right]
+  suffices ∀ d1 d2, (d1 ∣ d ∧ d2 ∣ d ∧ d = d1.lcm d2) = (d = d1.lcm d2) by
+    simp_rw [←Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ite_sum_zero, ← ite_and, this]
+  simp +contextual [← and_assoc, Nat.dvd_lcm_left, Nat.dvd_lcm_right]
 
 theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) :
     IsUpperMoebius <| lambdaSquared weights := by
   dsimp [IsUpperMoebius, lambdaSquared]
   intro n
-  have h_sq :
-    (∑ d ∈ n.divisors, ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors,
-      if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0) =
-      (∑ d ∈ n.divisors, weights d) ^ 2 := by
-    rw [sq, mul_sum, conv_lambda_sq_larger_sum _ n, sum_comm]
-    apply sum_congr rfl; intro d1 hd1
-    rw [sum_mul, sum_comm]
-    apply sum_congr rfl; intro d2 hd2
-    rw [sum_ite_eq_of_mem']
-    ring
-    rw [mem_divisors, Nat.lcm_dvd_iff]
-    exact ⟨⟨dvd_of_mem_divisors hd1, dvd_of_mem_divisors hd2⟩, (mem_divisors.mp hd1).2⟩
-  rw [h_sq]
-  split_ifs with hn
-  · rw [hn]; simp [hw]
-  · apply sq_nonneg
+  split_ifs
+  · simp_all
+  convert sq_nonneg (∑ d ∈ n.divisors, weights d)
+  simp_rw [sq, mul_sum, sum_mul]
+  rw [conv_lambda_sq_larger_sum _ n, sum_comm]
+  apply sum_congr rfl; intro d1 hd1
+  rw [sum_comm]
+  apply sum_congr rfl; intro d2 hd2
+  rw [sum_ite_eq_of_mem', mul_comm]
+  rw [mem_divisors, Nat.lcm_dvd_iff]
+  exact ⟨⟨dvd_of_mem_divisors hd1, dvd_of_mem_divisors hd2⟩, (mem_divisors.mp hd1).2⟩
 
 end LambdaSquared
 
@@ -327,8 +294,8 @@ def selbergTerms : ArithmeticFunction ℝ :=
 theorem selbergTerms_apply (d : ℕ) :
     s.selbergTerms d = s.nu d * ∏ p ∈ d.primeFactors, 1 / (1 - s.nu p) := by
   unfold selbergTerms
-  by_cases h : d=0
-  · rw [h]; simp
+  by_cases h : d = 0
+  · simp [h]
   rw [ArithmeticFunction.pmul_apply, ArithmeticFunction.prodPrimeFactors_apply h]
 
 /-! Now follow some important identities involving `g` -/
@@ -349,22 +316,16 @@ theorem selbergTerms_isMultiplicative : ArithmeticFunction.IsMultiplicative s.se
 
 theorem one_div_selbergTerms_eq_conv_moebius_nu (l : ℕ) (hl : Squarefree l)
     (hnu_nonzero : s.nu l ≠ 0) :
-    1 / s.selbergTerms l = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (s.nu e)⁻¹ :=
-  by
+    1 / s.selbergTerms l = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (s.nu e)⁻¹ := by
   simp only [selbergTerms_apply, one_div, mul_inv, inv_inv,
     Finset.prod_inv_distrib, s.nu_mult.prodPrimeFactors_one_sub_of_squarefree _ hl, mul_sum]
-  apply symm
   rw [← Nat.sum_divisorsAntidiagonal fun i _ : ℕ => (s.nu l)⁻¹ * (↑(μ i) * s.nu i)]
   apply sum_congr rfl; intro ⟨d, e⟩ hd
-  simp only [mem_divisorsAntidiagonal, ne_eq] at hd
-  obtain ⟨rfl, _⟩ := hd
-  have : s.nu e ≠ 0 := by
-    revert hnu_nonzero; contrapose!
-    exact s.nu_mult.eq_zero_of_squarefree_of_dvd_eq_zero hl (Nat.dvd_mul_left e d)
-  simp only [squarefree_mul_iff] at hl ⊢
-  field_simp
-  rw [s.nu_mult.map_mul_of_coprime hl.1, mul_comm (s.nu d)]
-  ring
+  obtain ⟨rfl, -⟩ : d * e = l ∧ _ := by simpa using hd
+  obtain ⟨hde, -⟩ : d.Coprime e ∧ _ := by simpa only [squarefree_mul_iff] using hl
+  obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 :=
+    by simp_all [s.nu_mult.map_mul_of_coprime hde]
+  field_simp [s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
 theorem nu_eq_conv_one_div_selbergTerms (d : ℕ) (hdP : d ∣ s.prodPrimes) :
     (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then 1 / s.selbergTerms l else 0 := by
@@ -416,11 +377,7 @@ theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     _ = ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes,
           s.nu d1 * w d1 * s.nu d2 * w d2 * (s.nu (d1.gcd d2))⁻¹ := ?caseB
   case caseA =>
-    dsimp only [mainSum, lambdaSquared]
-    rw [sum_congr rfl]; intro d _
-    rw [sum_mul, sum_congr rfl]; intro d1 _
-    rw [sum_mul, sum_congr rfl]; intro d2 _
-    rw [ite_zero_mul]
+    simp [mainSum, lambdaSquared, sum_mul]
   case caseB =>
     rw [sum_comm, sum_congr rfl]; intro d1 hd1
     rw [sum_comm, sum_congr rfl]; intro d2 hd2
@@ -429,10 +386,8 @@ theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     rw [sum_ite_eq_of_mem' (divisors s.prodPrimes) (d1.lcm d2) _
       (mem_divisors.mpr ⟨h, prodPrimes_ne_zero⟩), s.nu_mult.map_lcm]
     · ring
-    refine _root_.ne_of_gt (nu_pos_of_dvd_prodPrimes ?_)
-    trans d1
-    · exact Nat.gcd_dvd_left d1 d2
-    · exact dvd_of_mem_divisors hd1
+    refine (nu_pos_of_dvd_prodPrimes ?_).ne'
+    exact (Nat.gcd_dvd_left d1 d2).trans (dvd_of_mem_divisors hd1)
 
 /-! The previous quadratic form can be diagonalised with eigenvalues given by `1/g` -/
 theorem lambdaSquared_mainSum_eq_diag_quad_form (w : ℕ → ℝ) :
@@ -460,12 +415,8 @@ theorem lambdaSquared_mainSum_eq_diag_quad_form (w : ℕ → ℝ) :
   case caseB =>
     apply symm; rw [sum_comm, sum_congr rfl]; intro d1 _; rw [sum_comm];
   case caseC =>
-    congr with l
-    simp_rw [← sum_filter, sq, sum_mul, mul_sum, sum_filter, ite_sum_zero, ← ite_and, dvd_gcd_iff]
-    congr with d1
-    congr with d2
-    congr 1
-    ring
+    simp_rw [← sum_filter, sq, sum_mul, mul_sum, sum_filter, ite_sum_zero,
+      ← ite_and, dvd_gcd_iff, mul_assoc]
 
 end QuadForm
 
