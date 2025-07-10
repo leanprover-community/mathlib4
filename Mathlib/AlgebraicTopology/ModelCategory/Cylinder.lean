@@ -42,7 +42,7 @@ namespace HomotopicalAlgebra
 variable {C : Type u} [Category.{v} C]
 
 /-- A precylinder for `A : C` is the data of a morphism
-`σ : I ⟶ A` equipped with two sections. -/
+`π : I ⟶ A` equipped with two sections. -/
 structure Precylinder (A : C) where
   /-- the underlying object of a (pre)cylinder -/
   I : C
