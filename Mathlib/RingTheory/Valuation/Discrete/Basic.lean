@@ -103,8 +103,7 @@ instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
 
 instance [IsRankOneDiscrete v] : v.IsNontrivial := by
   constructor
-  obtain ⟨⟨γ, γ_mem⟩, hγ⟩ := (nontrivial_iff_exists_ne (1 : valueMonoid v)).mp (by infer_instance)
-  obtain ⟨π, hπ⟩ := γ_mem
+  obtain ⟨⟨γ, π, hπ⟩, hγ⟩ := (nontrivial_iff_exists_ne (1 : valueMonoid v)).mp (by infer_instance)
   use π
   constructor
   · simp [hπ]
