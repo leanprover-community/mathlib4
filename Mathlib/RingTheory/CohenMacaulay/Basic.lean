@@ -611,11 +611,8 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
 theorem MvPolynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ):
     IsCohenMacaulayRing (MvPolynomial (Fin n) R) := by
   induction' n with n ih
-  · let e := isEmptyRingEquiv R (Fin 0)
-
-    sorry
-  · let e := (MvPolynomial.finSuccEquiv R n).toRingEquiv
-
-    sorry
+  · exact isCohenMacaulayRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
+  · let _ := Polynomial.isCM_of_isCM (MvPolynomial (Fin n) R)
+    exact isCohenMacaulayRing_of_ringEquiv (MvPolynomial.finSuccEquiv R n).toRingEquiv.symm
 
 end Polynomial
