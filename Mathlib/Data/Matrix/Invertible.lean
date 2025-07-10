@@ -54,7 +54,7 @@ variable [StarRing α] (A : Matrix n n α)
 /-- The conjugate transpose of an invertible matrix is invertible. -/
 instance invertibleConjTranspose [Invertible A] : Invertible Aᴴ := Invertible.star _
 
-lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(Aᴴ) := star_invOf _
+lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟ A)ᴴ = ⅟ (Aᴴ) := star_invOf _
 
 /-- A matrix is invertible if the conjugate transpose is invertible. -/
 def invertibleOfInvertibleConjTranspose [Invertible Aᴴ] : Invertible A := by
@@ -77,9 +77,9 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf_mul_self := by rw [← transpose_mul, mul_invOf_self, transpose_one]
   mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]
 
-lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
+lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟ A)ᵀ = ⅟ (Aᵀ) := by
   letI := invertibleTranspose A
-  convert (rfl : _ = ⅟(Aᵀ))
+  convert (rfl : _ = ⅟ (Aᵀ))
 
 /-- `Aᵀ` is invertible when `A` is. -/
 def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
@@ -111,6 +111,7 @@ variable [Fintype m] [DecidableEq m] [Ring α]
     [Invertible A] [Invertible C] [Invertible (⅟ C + V * ⅟ A * U)]
 
 -- No spaces around multiplication signs for better clarity
+set_option linter.style.commandStart false in
 lemma add_mul_mul_invOf_mul_eq_one :
     (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
   calc
@@ -129,6 +130,8 @@ lemma add_mul_mul_invOf_mul_eq_one :
       rw [Matrix.mul_invOf_cancel_right]
       abel
 
+-- No spaces around multiplication signs for better clarity
+set_option linter.style.commandStart false in
 /-- Like `add_mul_mul_invOf_mul_eq_one`, but with multiplication reversed. -/
 lemma add_mul_mul_invOf_mul_eq_one' :
     (⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)*(A + U*C*V) = 1 := by
@@ -158,9 +161,9 @@ def invertibleAddMulMul : Invertible (A + U * C * V) where
 
 /-- The **Woodbury Identity** (`⅟` version). -/
 theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
-    ⅟(A + U * C * V) = ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A := by
+    ⅟ (A + U * C * V) = ⅟ A - ⅟ A * U * ⅟ (⅟ C + V * ⅟ A * U) * V * ⅟ A := by
   letI := invertibleAddMulMul A U C V
-  convert (rfl : ⅟(A + U * C * V) = _)
+  convert (rfl : ⅟ (A + U * C * V) = _)
 
 end Woodbury
 
