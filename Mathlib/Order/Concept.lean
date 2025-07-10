@@ -203,9 +203,9 @@ structure Concept where
   extent : Set α
   /-- The intent of a concept. -/
   intent : Set β
-  /-- The axiom of a `Concept` stating that the upper polar of the first set is the second set. -/
+  /-- The intent consists of all elements related to all elements of the extent. -/
   upperPolar_extent : upperPolar r extent = intent
-  /-- The axiom of a `Concept` stating that the lower polar of the second set is the first set. -/
+  /-- The extent consists of all elements related to all elements of the intent. -/
   lowerPolar_intent : lowerPolar r intent = extent
 
 namespace Concept
