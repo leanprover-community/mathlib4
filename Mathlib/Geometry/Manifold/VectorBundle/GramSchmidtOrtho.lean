@@ -216,19 +216,25 @@ set_option linter.style.commandStart false
 
 variable [IsContMDiffRiemannianBundle IB n F E]
 
+-- TODO: give a much better name!
+lemma contMDiffWithinAt_aux  {s t : (x : B) → E x} {u : Set B} {x : B}
+    (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
+    CMDiffAt[u] n (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
+  suffices ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (fun x ↦ ⟪s x, t x⟫ / ⟪s x, s x⟫) u x by
+    apply this.congr
+    · intro y hy
+      simp [inner_self_eq_norm_sq_to_K]
+    · congr
+      rw [← real_inner_self_eq_norm_sq]
+  exact (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
+
 def contMDiffWithinAt_myproj {s t : (x : B) → E x} {u : Set B} {x : B}
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
     letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).orthogonalProjection (t x);
     CMDiffAt[u] n (T% S) x := by
   simp_rw [Submodule.orthogonalProjection_singleton]
-  apply ContMDiffWithinAt.smul_section ?_ hs
-  suffices ContMDiffWithinAt IB 𝓘(ℝ, ℝ) n (fun x ↦ ⟪s x, t x⟫ / ⟪s x, s x⟫) u x by
-    apply this.congr
-    · intro y hy
-      rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K]
-    · rw [RCLike.ofReal_pow, ← inner_self_eq_norm_sq_to_K]
-  exact (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
+  exact (contMDiffWithinAt_aux hs ht hs').smul_section hs
 
 lemma gramSchmidt_contMDiffWithinAt {s : ι → (x : B) → E x} (i : ι) {u : Set B} {x : B}
     (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
