@@ -174,6 +174,17 @@ theorem hom_inv_id_app_apply (α : F ≅ G) (X) (x) : α.inv.app X (α.hom.app X
 theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X x) = x :=
   congr_fun (α.inv_hom_id_app X) x
 
+lemma naturality_symm {F G : C ⥤ Type*} (e : ∀ j, F.obj j ≃ G.obj j)
+    (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ F.map f = G.map f ∘ e j) {j j' : C}
+    (f : j ⟶ j') :
+    (e j').symm ∘ G.map f = F.map f ∘ (e j).symm := by
+  ext x
+  obtain ⟨y, rfl⟩ := (e j).surjective x
+  apply (e j').injective
+  dsimp
+  simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
+  exact (congr_fun (naturality f) y).symm
+
 end FunctorToTypes
 
 /-- The isomorphism between a `Type` which has been `ULift`ed to the same universe,

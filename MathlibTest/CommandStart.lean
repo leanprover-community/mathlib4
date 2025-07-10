@@ -1,5 +1,6 @@
 import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
+import Mathlib.Tactic.Lemma
 
 set_option linter.style.commandStart true
 
@@ -169,6 +170,20 @@ example : True := trivial
 -- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
 def Prop.Hello := 0
 def Type.Hello := 0
+
+/--
+warning: extra space in the source
+
+This part of the code
+  'F  : True'
+should be written as
+  'F : True'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+lemma F  : True := trivial
 
 namespace List
 

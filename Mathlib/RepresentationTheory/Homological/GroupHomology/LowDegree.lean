@@ -516,7 +516,7 @@ variable (G) in
 /-- A term `x : A` satisfies the 0-boundary condition if there exists a finsupp
 `∑ aᵢ·gᵢ : G →₀ A` such that `∑ gᵢ⁻¹ • aᵢ - aᵢ = x`. -/
 def IsBoundary₀ (a : A) : Prop :=
-  ∃ (x : G →₀ A), x.sum (fun g a => g⁻¹ • a - a) = a
+  ∃ (x : G →₀ A), x.sum (fun g z => g⁻¹ • z - z) = a
 
 /-- A finsupp `x : G →₀ A` satisfies the 1-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` such that `∑ (gᵢ⁻¹ • aᵢ)·hᵢ - aᵢ·gᵢhᵢ + aᵢ·gᵢ = x`. -/
@@ -538,7 +538,7 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
 
 variable (G) in
 theorem isBoundary₀_iff (a : A) :
-    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g a => g • a - a) = a := by
+    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
   constructor
   · rintro ⟨x, hx⟩
     use x.sum (fun g a => single g (- (g⁻¹ • a)))
