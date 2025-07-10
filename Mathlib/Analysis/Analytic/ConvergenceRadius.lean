@@ -302,7 +302,7 @@ theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.rad
 
 theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c ≠ 0) :
     (c • p).radius = p.radius := by
-  apply eq_of_le_of_le _ radius_le_smul
+  apply eq_of_le_of_ge _ radius_le_smul
   exact radius_le_smul.trans_eq (congr_arg _ <| inv_smul_smul₀ hc p)
 
 lemma norm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (n : ℕ) :
@@ -329,7 +329,7 @@ theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 
       gcongr
       exact nnnorm_compContinuousLinearMap_le p u n
     _ = ‖p n‖ * r ^ n := by
-      simp only [NNReal.coe_div, coe_nnnorm, div_pow, mul_assoc, norm_eq_zero]
+      simp only [NNReal.coe_div, coe_nnnorm, div_pow, mul_assoc]
       rw [mul_div_cancel₀]
       rw [← NNReal.coe_pos] at h_zero
       positivity
@@ -384,7 +384,7 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
   simp only [radius, shift, Nat.succ_eq_add_one, ContinuousMultilinearMap.curryRight_norm]
   congr
   ext r
-  apply eq_of_le_of_le
+  apply eq_of_le_of_ge
   · apply iSup_mono'
     intro C
     use ‖p 0‖ ⊔ (C * r)
