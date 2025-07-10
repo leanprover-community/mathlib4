@@ -61,6 +61,7 @@ lemma IsOrthonormalFrameOn.mono (hs : IsOrthonormalFrameOn IB F n s u) (huu' : u
   orthogonal hij hx := hs.orthogonal hij (huu' hx)
   normalised hx := hs.normalised (huu' hx)
 
+-- TODO: upgrade to an orthonormal frame!
 /-- Applying the Gram-Schmidt procedure to a local frame yields another local frame. -/
 def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
     IsLocalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
@@ -110,6 +111,12 @@ namespace IsOrthonormalFrameOn
 variable (hs : IsOrthonormalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
 set_option linter.style.commandStart false
+
+-- TODO: remove repr_eq_inner in favour of this version!
+variable (t) in
+lemma repr_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u)
+    {x} (hx : x ∈ u) (i : ι) :
+    hs.repr i t x = ⟪s i x, t x⟫ := by sorry
 
 variable (t) in
 lemma repr_eq_inner (hs : IsOrthonormalFrameOn IB F n s u)
@@ -204,6 +211,14 @@ omit [IsManifold IB n B] in
 /-- An orthonormal frame w.r.t. a local trivialisation is a local frame. -/
 lemma orthonormalFrame_isLocalFrameOn : IsLocalFrameOn IB F n (b.orthonormalFrame e) e.baseSet :=
   (b.localFrame_isLocalFrameOn_baseSet IB n e).gramSchmidtNormed
+
+/-- An orthonormal frame w.r.t. a local trivialisation is an orthonormal local frame. -/
+lemma orthonormalFrame_isOrthonormalFrameOn :
+    IsOrthonormalFrameOn IB F n (b.orthonormalFrame e) e.baseSet := by
+  unfold Basis.orthonormalFrame
+  have aux := (b.localFrame_isLocalFrameOn_baseSet IB n e)
+  -- apply aux.gramSchmidtNormed -- need to upgrade that lemma
+  sorry
 
 omit [IsManifold IB n B] in
 variable (b e) in

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative
+import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 
@@ -289,11 +290,33 @@ variable {I} in
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 lemma congr_of_forall_product {X X' : Π x : M, TangentSpace I x}
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
-  -- any vector bundle with a bundle metric has local orthonormal frames (not just a local frame)
-  --  -> apply Gram-Schmidt to a local frame; prove orthonormality w.r.t. bundle metric
-  -- prove: local orthonormal frame is C^k when the bundle metric is
-  -- use this to prove this lemma
-  sorry
+  ext x
+  letI b := Basis.ofVectorSpace ℝ E
+  letI t := trivializationAt E (TangentSpace I : M → Type _) x
+  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  -- TODO: think about this question and solve it somehow!
+  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+  haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+  haveI : WellFoundedLT ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+  haveI : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+  -- choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  let real := b.orthonormalFrame t
+  have hframe := b.orthonormalFrame_isLocalFrameOn (e := t) (F := E) (IB := I) (n := 1)
+  have hframe' := b.orthonormalFrame_isOrthonormalFrameOn (e := t) (F := E) (IB := I) (n := 1)
+  rw [hframe.eq_iff_repr hx]
+  intro i
+
+  have h₁ : ⟪X, real i⟫ x = (hframe.repr i) X x := by
+    rw [hframe'.repr_eq_inner' _ hx]
+    simp [real, real_inner_comm]
+  have h₂ : ⟪X', real i⟫ x = (hframe.repr i) X' x := by
+    rw [hframe'.repr_eq_inner' _ hx]
+    simp [real, real_inner_comm]
+  -- this would work, except that h is unapplied, but my results are applied...
+  --simp_rw [hframe'.repr_eq_inner' _ hx]
+  --specialize h (real i)
+  --simp [real_inner_comm]
+  rw [← h₁, ← h₂, h (real i)]
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
