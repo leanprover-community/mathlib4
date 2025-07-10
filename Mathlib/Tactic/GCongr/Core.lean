@@ -147,6 +147,8 @@ structure GCongrLemma where
   - the index of the arguments in the conclusion
   - the number of parameters in the hypothesis -/
   mainSubgoals : Array (Nat × Nat × Nat)
+  /-- The number of arguments that `declName` takes when applying it. -/
+  numHyps : Nat
   /-- The given priority of the lemma, for example as `@[gcongr high]`. -/
   prio : Nat
   /-- The number of arguments in the application of `head` that are different.
@@ -269,7 +271,7 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
       i := i + 1
     -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
     let key := { relName, head, arity := lhsArgs.size }
-    return { key, declName, mainSubgoals, prio, numVarying }
+    return { key, declName, mainSubgoals, numHyps, prio, numVarying }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -405,10 +407,47 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
     declName := ``rel_imp_rel
     mainSubgoals := #[(7, arity - 2, 0), (8, arity - 1, 0)]
+    numHyps := 9
     key := default, prio := default, numVarying := default
   }]
 
 end Trans
+
+open private isDefEqApply throwApplyError reorderGoals from Lean.Meta.Tactic.Apply in
+/--
+`Lean.MVarId.applyWithArity` is a copy of `Lean.MVarId.apply`, where the arity of the
+applied function is given explicitly instead of being inferred.
+
+TODO: make `Lean.MVarId.apply` take a configuration argument to do this itself
+-/
+def _root_.Lean.MVarId.applyWithArity (mvarId : MVarId) (e : Expr) (arity : Nat)
+    (cfg : ApplyConfig := {}) (term? : Option MessageData := none) : MetaM (List MVarId) :=
+  mvarId.withContext do
+    mvarId.checkNotAssigned `apply
+    let targetType ← mvarId.getType
+    let eType      ← inferType e
+    let (newMVars, binderInfos) ← do
+      let (newMVars, binderInfos, eType) ← forallMetaTelescopeReducing eType arity
+      if (← isDefEqApply cfg.approx eType targetType) then
+        pure (newMVars, binderInfos)
+      else
+        let conclusionType? ← if arity = 0 then
+          pure none
+        else
+          let (_, _, r) ← forallMetaTelescopeReducing eType arity
+          pure (some r)
+        throwApplyError mvarId eType conclusionType? targetType term?
+    postprocessAppMVars `apply mvarId newMVars binderInfos
+      cfg.synthAssignedInstances cfg.allowSynthFailures
+    let e ← instantiateMVars e
+    mvarId.assign (mkAppN e newMVars)
+    let newMVars ← newMVars.filterM fun mvar => not <$> mvar.mvarId!.isAssigned
+    let otherMVarIds ← getMVarsNoDelayed e
+    let newMVarIds ← reorderGoals newMVars cfg.newGoals
+    let otherMVarIds := otherMVarIds.filter fun mvarId => !newMVarIds.contains mvarId
+    let result := newMVarIds ++ otherMVarIds.toList
+    result.forM (·.headBetaType)
+    return result
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
@@ -491,7 +530,8 @@ partial def _root_.Lean.MVarId.gcongr
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       let const ← mkConstWithFreshMVarLevels lem.declName
-      Except.ok <$> withReducible (g.apply const { synthAssignedInstances := false })
+      Except.ok <$> withReducible
+        (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
     catch e => pure (Except.error e)
     match gs with
     | .error e =>
