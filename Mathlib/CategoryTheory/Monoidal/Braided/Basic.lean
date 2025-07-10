@@ -403,7 +403,7 @@ Given two lax monoidal, monoidally isomorphic functors, if one is lax braided, s
 def ofNatIso (F G : C ⥤ D) (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
     [NatTrans.IsMonoidal i.hom] : G.LaxBraided where
   braided X Y := by
-    have (X Y : C) : μ G X Y = (i.inv.app X ⊗ i.inv.app Y) ≫ μ F X Y ≫ i.hom.app _ := by
+    have (X Y : C) : μ G X Y = (i.inv.app X ⊗ₘ i.inv.app Y) ≫ μ F X Y ≫ i.hom.app _ := by
       simp [NatTrans.IsMonoidal.tensor X Y, ← tensor_comp_assoc]
     rw [this X Y, this Y X, ← braiding_naturality_assoc, ← Functor.LaxBraided.braided_assoc]
     simp
