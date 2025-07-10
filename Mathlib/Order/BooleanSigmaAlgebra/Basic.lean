@@ -141,7 +141,7 @@ theorem σiSup₂_le_iff {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f 
   simp_rw [σiSup_le_iff]
 
 theorem le_σiInf₂_iff {f : ∀ i, κ i → α} (hf₁ : ∀ i, (Set.range (f i)).Countable)
-    (hf₂ : {iInf (f i) | i}.Countable)  : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j :=
+    (hf₂ : {iInf (f i) | i}.Countable) : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j :=
   σiSup₂_le_iff (α := αᵒᵈ) hf₁ hf₂
 
 theorem notMem_of_lt_σsInf (h : a < sInf s) (hs : s.Countable) : a ∉ s :=
@@ -249,11 +249,11 @@ theorem σsSup_empty : sSup ∅ = (⊥ : α) :=
 theorem σsInf_empty : sInf ∅ = (⊤ : α) :=
   σsSup_empty (α := αᵒᵈ)
 
-omit [Countable (Set.range f)]
+omit [Countable (Set.range f)] in
 theorem σiSup_empty [IsEmpty ι] : ⨆ i, f i = ⊥ := by
   simp [iSup, Set.range_eq_empty]
 
-omit [Countable (Set.range f)]
+omit [Countable (Set.range f)] in
 theorem σiInf_empty [IsEmpty ι] : ⨅ i, f i = ⊤ :=
   σiSup_empty (α := αᵒᵈ)
 
@@ -345,13 +345,13 @@ theorem σiInf₂_mono {f g : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ g i j)
     ⨅ (i) (j), f i j ≤ ⨅ (i) (j), g i j :=
   σiSup₂_mono (α := αᵒᵈ) h
 
-theorem σiSup_mono' {g : ι' → α} (hg : (Set.range g).Countable)
-    (h : ∀ i, ∃ i', f i ≤ g i') : iSup f ≤ iSup g :=
-  σiSup_le hf fun i => Exists.elim (h i) (le_σiSup_of_le hg)
+theorem σiSup_mono' {g : ι' → α} [Countable (Set.range g)] (h : ∀ i, ∃ i', f i ≤ g i') :
+    iSup f ≤ iSup g :=
+  σiSup_le fun i => Exists.elim (h i) le_σiSup_of_le
 
-theorem σiInf_mono' {g : ι' → α} (hg : (Set.range g).Countable)
-    (h : ∀ i', ∃ i, g i ≤ f i') : iInf g ≤ iInf f :=
-  σiSup_mono' (α := αᵒᵈ) hf hg h
+theorem σiInf_mono' {g : ι' → α} [Countable (Set.range g)] (h : ∀ i', ∃ i, g i ≤ f i') :
+    iInf g ≤ iInf f :=
+  σiSup_mono' (α := αᵒᵈ) h
 
 theorem σiSup₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α}
     (h : ∀ i j, ∃ i' j', f i j ≤ g i' j') : ⨆ (i) (j), f i j ≤ ⨆ (i) (j), g i j :=
