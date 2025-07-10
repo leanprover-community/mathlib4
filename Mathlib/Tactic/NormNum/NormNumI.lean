@@ -3,7 +3,8 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan
 -/
-import Mathlib
+import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Data.Complex.Basic
 
 open Lean Meta Elab Qq Tactic Complex Mathlib.Tactic
 open ComplexConjugate
