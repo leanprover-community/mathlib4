@@ -474,11 +474,9 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
 lemma IsIdempotentElem.ext {p q : E →ₗ[R] E} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
     (hr : range p = range q) (hk : ker p = ker q) : p = q := by
   ext x
-  obtain ⟨v, w, rfl, _⟩ := Submodule.existsUnique_add_of_isCompl (range_isProj hp).isCompl.symm x
-  have hv' : (v : E) ∈ ker q := hk ▸ SetLike.coe_mem v
-  have hw' : (w : E) ∈ range q := hr ▸ SetLike.coe_mem w
-  simp_rw [map_add, mem_ker.mp (SetLike.coe_mem v), (mem_range_iff hp).mp (SetLike.coe_mem w),
-    mem_ker.mp hv', zero_add, (mem_range_iff hq).mp hw']
+  obtain ⟨⟨v, hv⟩, ⟨w, hw⟩, rfl, _⟩ :=
+    (ker p).existsUnique_add_of_isCompl (range_isProj hp).isCompl.symm x
+  simp [mem_ker.mp, hv, (hk ▸ hv), hp.mem_range_iff.mp, hw, hq.mem_range_iff.mp, (hr ▸ hw)]
 
 end LinearMap
 
