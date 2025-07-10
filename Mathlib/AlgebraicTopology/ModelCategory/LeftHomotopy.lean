@@ -139,14 +139,14 @@ noncomputable abbrev trans [IsCofibrant X] {f₀ f₁ f₂ : X ⟶ Y}
 lemma exists_good {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
     ∃ (P' : Cylinder X), P'.IsGood ∧ Nonempty (P'.LeftHomotopy f g) := by
   have d := MorphismProperty.factorizationData (cofibrations C) (trivialFibrations C) P.i
-  exact ⟨{
-    I := d.Z
-    i₀ := coprod.inl ≫ d.i
-    i₁ := coprod.inr ≫ d.i
-    π := d.p ≫ P.π }, ⟨by
-      rw [cofibration_iff]
-      convert d.hi
-      aesop⟩, ⟨{ h := d.p ≫ h.h }⟩⟩
+  exact
+   ⟨{ I := d.Z
+      i₀ := coprod.inl ≫ d.i
+      i₁ := coprod.inr ≫ d.i
+      π := d.p ≫ P.π }, ⟨by
+        rw [cofibration_iff]
+        convert d.hi
+        aesop⟩, ⟨{ h := d.p ≫ h.h }⟩⟩
 
 /-- The covering homotopy theorem: if `p : E ⟶ B` is a fibration,
 `l₀ : A ⟶ E` is a morphism, if there is a left homotopy `h` between
@@ -235,17 +235,16 @@ lemma precomp [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyR
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
   obtain ⟨Q, _⟩ := Cylinder.exists_very_good Z
   have sq : CommSq (coprod.desc (i ≫ P.i₀) (i ≫ P.i₁)) Q.i P.π (Q.π ≫ i) := ⟨by aesop_cat⟩
-  exact ⟨Q, ⟨{
-    h := sq.lift ≫ h.h
-    h₀ := by
-      have := coprod.inl ≫= sq.fac_left
-      simp only [Q.inl_i_assoc, coprod.inl_desc] at this
-      simp [reassoc_of% this]
-    h₁ := by
-      have := coprod.inr ≫= sq.fac_left
-      simp only [Q.inr_i_assoc, coprod.inr_desc] at this
-      simp [reassoc_of% this]
-  }⟩⟩
+  exact ⟨Q,
+   ⟨{ h := sq.lift ≫ h.h
+      h₀ := by
+        have := coprod.inl ≫= sq.fac_left
+        simp only [Q.inl_i_assoc, coprod.inl_desc] at this
+        simp [reassoc_of% this]
+      h₁ := by
+        have := coprod.inr ≫= sq.fac_left
+        simp only [Q.inr_i_assoc, coprod.inr_desc] at this
+        simp [reassoc_of% this] }⟩⟩
 
 end LeftHomotopyRel
 
