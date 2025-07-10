@@ -258,6 +258,10 @@ theorem index_map_eq (hf1 : Surjective f) (hf2 : f.ker ≤ H) : (H.map f).index 
 lemma index_map_of_bijective (hf : Bijective f) (H : Subgroup G) : (H.map f).index = H.index :=
   index_map_eq _ hf.2 (by rw [f.ker_eq_bot_iff.2 hf.1]; exact bot_le)
 
+@[to_additive (attr := simp)]
+theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.index :=
+  index_map_of_bijective e.bijective H
+
 @[to_additive]
 theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
@@ -420,6 +424,10 @@ noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) 
 lemma index_eq_zero_iff_infinite : H.index = 0 ↔ Infinite (G ⧸ H) := by
   simp [index_eq_card, Nat.card_eq_zero]
 
+@[to_additive]
+lemma index_ne_zero_iff_finite : H.index ≠ 0 ↔ Finite (G ⧸ H) := by
+  simp [index_eq_zero_iff_infinite]
+
 @[to_additive one_lt_index_of_ne_top]
 theorem one_lt_index_of_ne_top [Finite (G ⧸ H)] (hH : H ≠ ⊤) : 1 < H.index :=
   Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨index_ne_zero_of_finite, mt index_eq_one.mp hH⟩
@@ -555,13 +563,17 @@ variable (H K) in
 @[to_additive] class IsFiniteRelIndex : Prop where
   protected relindex_ne_zero : H.relindex K ≠ 0
 
-@[to_additive] lemma relindex_ne_zero  [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
+@[to_additive] lemma relindex_ne_zero [H.IsFiniteRelIndex K] : H.relindex K ≠ 0 :=
   IsFiniteRelIndex.relindex_ne_zero
 
 @[to_additive]
 instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
     (H.subgroupOf K).FiniteIndex where
   index_ne_zero := relindex_ne_zero
+
+@[to_additive]
+theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
+  ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
@@ -576,10 +588,27 @@ instance finite_quotient_of_finiteIndex [FiniteIndex H] : Finite (G ⧸ H) :=
 theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
   ⟨index_ne_zero_of_finite⟩
 
+@[to_additive]
+theorem finiteIndex_iff_finite_quotient : FiniteIndex H ↔ Finite (G ⧸ H) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ finiteIndex_of_finite_quotient⟩
+
 -- Porting note: had to manually provide finite instance for quotient when it should be automatic
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)
+
+variable (H) in
+@[to_additive]
+theorem finite_iff_finite_and_finiteIndex : Finite G ↔ Finite H ∧ H.FiniteIndex where
+  mp _ := ⟨inferInstance, inferInstance⟩
+  mpr := fun ⟨_, _⟩ ↦ Nat.finite_of_card_ne_zero <|
+    H.card_mul_index ▸ mul_ne_zero Nat.card_pos.ne' FiniteIndex.index_ne_zero
+
+@[to_additive]
+theorem _root_.MonoidHom.finite_iff_finite_ker_range (f : G →* G') :
+    Finite G ↔ Finite f.ker ∧ Finite f.range := by
+  rw [finite_iff_finite_and_finiteIndex f.ker, ← (QuotientGroup.quotientKerEquivRange f).finite_iff,
+    finiteIndex_iff_finite_quotient]
 
 @[to_additive]
 instance : FiniteIndex (⊤ : Subgroup G) :=
@@ -670,7 +699,7 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 @[to_additive] theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
-    (Set.Nat.card_coe_set_eq (orbit G x))
+    (Nat.card_coe_set_eq (orbit G x))
 
 @[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
@@ -684,7 +713,7 @@ namespace MonoidHom
 lemma surjective_of_card_ker_le_div {G M : Type*} [Group G] [Group M] [Finite G] [Finite M]
     (f : G →* M) (h : Nat.card f.ker ≤ Nat.card G / Nat.card M) : Function.Surjective f := by
   refine range_eq_top.1 <| SetLike.ext' <| Set.eq_of_subset_of_ncard_le (Set.subset_univ _) ?_
-  rw [Subgroup.coe_top, Set.ncard_univ, ← Set.Nat.card_coe_set_eq, SetLike.coe_sort_coe,
+  rw [Subgroup.coe_top, Set.ncard_univ, ← Nat.card_coe_set_eq, SetLike.coe_sort_coe,
     ← Nat.card_congr (QuotientGroup.quotientKerEquivRange f).toEquiv]
   exact Nat.le_of_mul_le_mul_left (f.ker.card_mul_index ▸ Nat.mul_le_of_le_div _ _ _ h) Nat.card_pos
 
@@ -704,7 +733,7 @@ lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy 
   congr 2 with g
   simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
   let f' := MonoidHomClass.toMonoidHom f
-  show f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
+  change f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
   rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 
 end MonoidHom

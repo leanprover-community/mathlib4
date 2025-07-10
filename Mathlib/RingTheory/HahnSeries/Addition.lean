@@ -100,6 +100,10 @@ theorem coeff_add' (x y : HahnSeries Γ R) : (x + y).coeff = x.coeff + y.coeff :
 theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
 
+@[simp] theorem single_add (a : Γ) (r s : R) : single a (r + s) = single a r + single a s := by
+  classical
+  ext : 1; exact Pi.single_add (f := fun _ => R) a r s
+
 @[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
 
 instance : AddMonoid (HahnSeries Γ R) := fast_instance%
@@ -147,9 +151,9 @@ lemma addOppositeEquiv_symm_support (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
   classical
-  simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
-    addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, coeff_zero]
+  simp only [orderTop,
+    addOppositeEquiv_support]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]
 
@@ -162,9 +166,9 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
   classical
-  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
-    addOppositeEquiv_support, ne_eq]
-  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, coeff_zero]
+  simp only [leadingCoeff,
+    addOppositeEquiv_support]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero]
   simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, coeff_zero]
   split <;> rfl
@@ -257,7 +261,7 @@ theorem coeff_order_of_eq_add_single {R} [AddCancelCommMonoid R] [Zero Γ] {x y 
     nth_rw 1 [hxy, coeff_add]
   have hxx :
       (single x.order x.leadingCoeff).coeff xo = (single x.order x.leadingCoeff).leadingCoeff := by
-    simp [leadingCoeff_of_single, coeff_single, this]
+    simp [leadingCoeff_of_single, this]
   rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_of_single, right_eq_add, this] at hx
   exact hx
 
@@ -287,9 +291,7 @@ theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [Add
 @[simps!]
 def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
   { single a with
-    map_add' := fun x y => by
-      ext b
-      by_cases h : b = a <;> simp [h] }
+    map_add' := single_add _ }
 
 /-- `coeff g` as an additive monoid/group homomorphism -/
 @[simps]
@@ -353,6 +355,8 @@ theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
 theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
 
+@[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
+
 instance : Sub (HahnSeries Γ R) where
   sub x y :=
     { coeff := x.coeff - y.coeff
@@ -374,7 +378,13 @@ instance : AddGroup (HahnSeries Γ R) := fast_instance%
     coeff_zero' coeff_add' (coeff_neg') (coeff_sub')
     (fun _ _ => coeff_smul' _ _) (fun _ _ => coeff_smul' _ _)
 
-@[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
+@[simp]
+theorem single_sub (a : Γ) (r s : R) : single a (r - s) = single a r - single a s :=
+  map_sub (single.addMonoidHom a) _ _
+
+@[simp]
+theorem single_neg (a : Γ) (r : R) : single a (-r) = -single a r :=
+  map_neg (single.addMonoidHom a) _
 
 @[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
@@ -386,6 +396,7 @@ protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
     ((-x).map f : HahnSeries Γ S) = -(x.map f) := by
   ext; simp
 
+@[simp]
 theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
   classical simp only [orderTop, support_neg, neg_eq_zero]
 
@@ -395,6 +406,11 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   by_cases hf : f = 0
   · simp only [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]
+
+theorem leadingCoeff_neg {x : HahnSeries Γ R} : (-x).leadingCoeff = -x.leadingCoeff := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  · simp [← coeff_untop_eq_leadingCoeff hx, ← coeff_untop_eq_leadingCoeff (neg_ne_zero.mpr hx)]
 
 @[simp]
 protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :

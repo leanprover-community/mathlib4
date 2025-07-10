@@ -119,18 +119,6 @@ section Preorder
 
 variable [Preorder α] {a b c d : α}
 
-theorem le_trans' : b ≤ c → a ≤ b → a ≤ c :=
-  flip le_trans
-
-theorem lt_trans' : b < c → a < b → a < c :=
-  flip lt_trans
-
-theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
-  flip lt_of_lt_of_le
-
-theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
-  flip lt_of_le_of_lt
-
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]
 
@@ -144,6 +132,8 @@ lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
 
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
+alias le_trans' := ge_trans
+alias lt_trans' := gt_trans
 alias LE.le.trans := le_trans
 alias LE.le.trans' := le_trans'
 alias LT.lt.trans := lt_trans
@@ -196,6 +186,32 @@ theorem forall_le_iff_ge : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
 /-- monotonicity of `≤` with respect to `→` -/
 theorem le_implies_le_of_le_of_le (hca : c ≤ a) (hbd : b ≤ d) : a ≤ b → c ≤ d :=
   fun hab ↦ (hca.trans hab).trans hbd
+
+namespace GCongr
+
+-- The `≤`-transitivity lemmas aren't strictly needed
+-- but it is a very common case, so we tag them anyways
+@[gcongr] theorem le_imp_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
+  fun h => le_trans (le_trans h₁ h) h₂
+
+attribute [gcongr] le_trans ge_trans
+
+@[gcongr] theorem lt_imp_lt (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
+  fun h => lt_of_lt_of_le (lt_of_le_of_lt h₁ h) h₂
+
+attribute [gcongr] lt_of_le_of_lt lt_of_le_of_lt'
+
+@[gcongr] theorem gt_imp_gt (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d := lt_imp_lt h₂ h₁
+
+@[gcongr] theorem gt_imp_gt_left (h : a ≤ b) : c > b → c > a := lt_of_le_of_lt h
+
+@[gcongr] theorem gt_imp_gt_right (h : b ≤ a) : b > c → a > c := lt_of_le_of_lt' h
+
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+@[gcongr_forward] def exactLeOfLt : Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
+
+end GCongr
 
 end Preorder
 
@@ -975,8 +991,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
   split_ifs <;> try (first | rfl | contradiction)
   · have : ¬ f a = f b := by rename_i h; exact inj.ne h
     contradiction
-  · have : f a = f b := by rename_i h; exact congrArg f h
-    contradiction
+  · grind
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
@@ -1084,10 +1099,14 @@ theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) ≤ ⟨y, hy⟩ ↔ x ≤ y :=
   Iff.rfl
 
+@[gcongr] alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
+
 @[simp]
 theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
+
+@[gcongr] alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
 
 @[simp, norm_cast]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=

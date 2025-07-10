@@ -204,7 +204,7 @@ variable [Group α] [LinearOrder α] {a b : α}
   simpa only [← h, eq_comm (a := |a|ₘ), inv_eq_iff_eq_inv] using mabs_choice a
 
 @[to_additive] lemma mabs_eq_mabs : |a|ₘ = |b|ₘ ↔ a = b ∨ a = b⁻¹ := by
-  refine ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
+  refine ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h]⟩
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
     simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
 
@@ -213,11 +213,16 @@ variable [Group α] [LinearOrder α] {a b : α}
 
 @[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
 
+@[to_additive (attr := simp)] lemma map_mabs {β F : Type*} [Group β] [LinearOrder β] [FunLike F α β]
+    [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) (a : α) :
+    f |a|ₘ = |f a|ₘ := by
+  rw [mabs, mabs, (OrderHomClass.mono f).map_max, map_inv]
+
 variable [MulLeftMono α] {a b : α}
 
 @[to_additive (attr := simp) abs_pos] lemma one_lt_mabs : 1 < |a|ₘ ↔ a ≠ 1 := by
   obtain ha | rfl | ha := lt_trichotomy a 1
-  · simp [mabs_of_lt_one ha, neg_pos, ha.ne, ha]
+  · simp [mabs_of_lt_one ha, ha.ne, ha]
   · simp
   · simp [mabs_of_one_lt ha, ha, ha.ne']
 

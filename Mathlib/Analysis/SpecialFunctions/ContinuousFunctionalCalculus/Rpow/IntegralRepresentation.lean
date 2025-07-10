@@ -143,7 +143,7 @@ lemma rpowIntegrand₀₁_le_rpow_sub_one (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (h
     rpowIntegrand₀₁ p t x ≤ t ^ (p - 1) := by
   by_cases hx_zero : x = 0
   case pos =>
-    simp only [rpowIntegrand₀₁, one_div, hx_zero, add_zero, sub_self, mul_zero]
+    simp only [rpowIntegrand₀₁, hx_zero, add_zero, sub_self, mul_zero]
     positivity
   case neg =>
     calc
@@ -232,7 +232,7 @@ lemma integral_rpowIntegrand₀₁_eq_rpow_mul_const (hp : p ∈ Ioo 0 1) (hx : 
     · simpa using fun t _ ↦ hasDerivWithinAt_id t (Ioi t) |>.const_mul x
     · simpa [Set.image_mul_left_Ioi hx] using continuousOn_rpowIntegrand₀₁ hp hx.le
     · simpa [Set.image_mul_left_Ici hx] using integrableOn_rpowIntegrand₀₁_Ici hp hx.le
-    · simp only [Function.comp, rpowIntegrand₀₁_apply_mul' hp hx.le]
+    · simp only [Function.comp]
       rw [integrableOn_congr_fun (rpowIntegrand₀₁_apply_mul_eqOn_Ici hp hx.le) measurableSet_Ici]
       exact Integrable.mul_const (integrableOn_rpowIntegrand₀₁_Ici hp zero_le_one) _
   have heqOn : EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)

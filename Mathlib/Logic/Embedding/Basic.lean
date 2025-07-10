@@ -172,7 +172,7 @@ def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidabl
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y h
     simp only at h
-    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc⟩
+    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> grind⟩
 
 @[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
@@ -239,7 +239,6 @@ def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
     toFun := fun _ ↦ a
     inj' x y h := by simp [Unique.uniq inferInstance] }
   left_inv f := by ext; simp [Unique.uniq]
-  right_inv a := rfl
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
@@ -300,13 +299,13 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 
 /-- `Sigma.mk` as a `Function.Embedding`. -/
 @[simps apply]
-def sigmaMk (a : α) : β a ↪ Σx, β x :=
+def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
-def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σa, β a) ↪ Σa', β' a' :=
+def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σ a, β a) ↪ Σ a', β' a' :=
   ⟨Sigma.map f fun a => g a, f.injective.sigma_map fun a => (g a).injective⟩
 
 end Sigma
@@ -371,8 +370,6 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
     { f : α → β // Injective f } ≃ (α ↪ β) where
   toFun f := ⟨f.val, f.property⟩
   invFun f := ⟨f, f.injective⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/

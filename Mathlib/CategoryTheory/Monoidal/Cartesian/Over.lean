@@ -159,16 +159,16 @@ lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
   (limit.lift_π _ _).trans (Category.comp_id _)
 
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
+    (f ⊗ₘ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
 
 @[reassoc (attr := simp)]
 lemma tensorHom_left_fst {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ g).left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f.left :=
+    (f ⊗ₘ g).left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f.left :=
   limit.lift_π _ _
 
 @[reassoc (attr := simp)]
 lemma tensorHom_left_snd {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ g).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ g.left :=
+    (f ⊗ₘ g).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ g.left :=
   limit.lift_π _ _
 
 @[simp]

@@ -257,7 +257,7 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
 /-! ### Properties about the cast from `ℕ` -/
 
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
-  simp [Pow.pow]
+  simp
 
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
@@ -606,7 +606,7 @@ theorem mk_vector (α : Type u) (n : ℕ) : #(List.Vector α n) = #α ^ n :=
 
 theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
-    #(List α) = #(Σn, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
+    #(List α) = #(Σ n, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
     _ = sum fun n : ℕ => #α ^ n := by simp
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
@@ -623,12 +623,10 @@ theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
 theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ := by
-  constructor
-  · intro h
-    rw [mk_eq_zero_iff] at h
-    exact eq_empty_iff_forall_notMem.2 fun x hx => h.elim' ⟨x, hx⟩
-  · rintro rfl
-    exact mk_emptyCollection _
+  rw [mk_eq_zero_iff, isEmpty_coe_sort]
+
+lemma mk_set_ne_zero_iff {α : Type u} (s : Set α) : #s ≠ 0 ↔ s.Nonempty := by
+  rw [mk_ne_zero_iff, nonempty_coe_sort]
 
 @[simp]
 theorem mk_univ {α : Type u} : #(@univ α) = #α :=
@@ -702,27 +700,27 @@ theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
-    #(⋃ i, f i) ≤ #(Σi, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
+    #(⋃ i, f i) ≤ #(Σ i, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_le_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α} :
     lift.{v} #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
-    lift.{v} #(⋃ i, f i) ≤ #(Σi, f i) :=
+    lift.{v} #(⋃ i, f i) ≤ #(Σ i, f i) :=
       mk_le_of_surjective <| ULift.up_surjective.comp (Set.sigmaToiUnion_surjective f)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
     (h : Pairwise (Disjoint on f)) : #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
-    #(⋃ i, f i) = #(Σi, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
+    #(⋃ i, f i) = #(Σ i, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     (h : Pairwise (Disjoint on f)) :
     lift.{v} #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
-    lift.{v} #(⋃ i, f i) = #(Σi, f i) :=
+    lift.{v} #(⋃ i, f i) = #(Σ i, f i) :=
       mk_congr <| .trans Equiv.ulift (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 
@@ -826,9 +824,18 @@ theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #
   refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [diff_union_of_subset h]
   exact disjoint_sdiff_self_left
 
+lemma diff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
+  rw [← mk_set_ne_zero_iff]
+  intro h'
+  exact h.not_ge ((le_mk_diff_add_mk T S).trans (by simp [h']))
+
+lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := by
+  rw [← mk_univ (α := α)] at h
+  simpa [Set.compl_eq_univ_diff] using diff_nonempty_of_mk_lt_mk h
+
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by
-  simp only [le_aleph0_iff_subtype_countable, mem_union, setOf_mem_eq, Set.union_def,
+  simp only [le_aleph0_iff_subtype_countable, setOf_mem_eq, Set.union_def,
     ← countable_union]
 
 theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.1 } :=
