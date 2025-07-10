@@ -566,6 +566,11 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (K.orthogonalProjection v : E
     simp
   · simp
 
+variable (K) in
+@[simp]
+lemma isIdempotentElem_starProjection : IsIdempotentElem K.starProjection :=
+  ContinuousLinearMap.ext fun x ↦ orthogonalProjection_eq_self_iff.mpr <| by simp
+
 @[simp]
 lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     LinearMap.range U.starProjection = U := by
@@ -591,12 +596,12 @@ theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 
 theorem ker_orthogonalProjection : LinearMap.ker K.orthogonalProjection = Kᗮ := by
   ext; exact orthogonalProjection_eq_zero_iff
 
+open ContinuousLinearMap in
 @[simp]
 lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     LinearMap.ker U.starProjection = Uᗮ := by
-  ext x
-  simp only [starProjection, LinearMap.mem_ker, ContinuousLinearMap.coe_comp', coe_subtypeL',
-    coe_subtype, Function.comp_apply, ZeroMemClass.coe_eq_zero, orthogonalProjection_eq_zero_iff]
+  rw [(isIdempotentElem_starProjection U).ker_eq_range, ← starProjection_orthogonal',
+    range_starProjection]
 
 theorem _root_.LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
@@ -1493,15 +1498,3 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
     rw [← h.span_eq, coe_h, hv_coe]
 
 end OrthonormalBasis
-
-open LinearMap in
-theorem ContinuousLinearMap.IsIdempotentElem.range_eq_ker {p : E →L[𝕜] E}
-    (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
-  have hp' : IsIdempotentElem (LinearMapClass.linearMap p) :=
-    congr(LinearMapClass.linearMap $(hp.eq))
-  hp'.range_eq_ker
-
-open ContinuousLinearMap in
-theorem ContinuousLinearMap.IsIdempotentElem.isClosed_range {p : E →L[𝕜] E}
-    (hp : IsIdempotentElem p) : IsClosed (LinearMap.range p : Set E) :=
-  hp.range_eq_ker ▸ ContinuousLinearMap.isClosed_ker (1 - p)
