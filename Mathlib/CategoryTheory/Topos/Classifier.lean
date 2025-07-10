@@ -244,6 +244,7 @@ section RepresentableBy
 
 variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
 
+/-- The subobject of `𝒞.Ω` corresponding to the `truth` morphism. -/
 def truth_as_subobject : Subobject 𝒞.Ω :=
   haveI : Mono 𝒞.truth := 𝒞.mt
   Subobject.mk 𝒞.truth
