@@ -201,35 +201,25 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
         rw [iteratedFDeriv_two_mul, mul_comm, ← h₂]
         exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
 
-lemma rev_ineq {a b c d : ℝ} (h : a + b ≤ c + d) (h' : d ≤ b) : a ≤ c := by
-    linarith
-
-
-/-- Spelling out a sum of three. -/
-lemma finset_sum_three (t : ℕ → ℝ) :
-     ∑ y ∈ range 3, t y = t 0 + t 1 + t 2 := by
-    repeat rw [range_succ]
-    simp only [range_zero, insert_empty_eq, Finset.mem_insert, OfNat.ofNat_ne_one,
-      Finset.mem_singleton, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, Finset.sum_insert,
-      one_ne_zero, Finset.sum_singleton]
-    linarith
-
-theorem isLocalMin_of_PosDef_of_Littleo.finish {V : Type*}
+theorem le_of_littleO {V : Type*}
   [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-  {f : V → ℝ} {x₀ : V} {C : ℝ}
-  {x : V} (hx : C * (‖x - x₀‖ ^ 2) ≤ iteratedFDeriv ℝ 2 f x₀ fun _ ↦ x - x₀)
+  {f : V → ℝ} {x₀ x : V} {C : ℝ}
+  (hx : C * (‖x - x₀‖ ^ 2) ≤ iteratedFDeriv ℝ 2 f x₀ fun _ ↦ x - x₀)
   (hx₀ : fderiv ℝ f x₀ x = fderiv ℝ f x₀ x₀)
   (h₁ : ‖f x - ∑ i ∈ range 3, 1 / ↑i ! * iteratedFDeriv ℝ i f x₀ fun _ ↦ x - x₀‖
     ≤ C / 2 * ‖x - x₀‖ ^ 2) :
   f x₀ ≤ f x := by
+  have rev_ineq {a b c d : ℝ} (h : a + b ≤ c + d) (h' : d ≤ b) : a ≤ c := by
+    linarith
   refine rev_ineq ?_ <| mul_le_mul_of_nonneg_right (by convert hx using 2) (show 0 ≤ 1/2 by simp)
-  rw [finset_sum_three] at h₁
-  simp only [Real.norm_eq_abs, factorial_zero, cast_one, ne_eq, one_ne_zero,
-    not_false_eq_true, div_self, iteratedFDeriv_zero_apply, one_mul, factorial_one,
-    iteratedFDeriv_one_apply, map_sub, factorial_two, cast_ofNat, one_div] at h₁
+  simp only [range_succ, range_zero, insert_empty_eq, one_div, mem_insert, OfNat.ofNat_ne_one,
+    mem_singleton, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, sum_insert, factorial_two,
+    cast_ofNat, one_ne_zero, factorial_one, cast_one, inv_one, iteratedFDeriv_one_apply, map_sub,
+    one_mul, sum_singleton, factorial_zero, iteratedFDeriv_zero_apply, Real.norm_eq_abs] at h₁
   have := le_of_max_le_right (hx₀ ▸ h₁)
   simp only [neg_sub, tsub_le_iff_right] at hx this
   ring_nf at hx this
+  nth_rw 1 [add_comm] at this
   nth_rw 2 [add_comm] at this
   exact this
 
@@ -254,48 +244,43 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
   simp only [h₀, inner_zero_left, map_sub] at hx₀
   simp only [norm_pow, norm_norm]
   rw [← pow_two] at hx
-  exact isLocalMin_of_PosDef_of_Littleo.finish hx <| sub_eq_zero.mp hx₀.symm
+  exact le_of_littleO hx <| sub_eq_zero.mp hx₀.symm
 
 
-theorem littleO_of_powerseries.inequality {z : ℝ} (hz : 0 ≤ z)
-    {r : ℝ} (hr : 0 < r) {a : ℝ} (ha : 0 < a)
-    {C : ℝ} (hC : 0 < C) {D : ℝ} (hx : z ≤ D / (C * (a * (2 / r)) ^ 3)) :
-             C * (a * (z / (r / 2))) ^ 3 ≤ D * z ^ 2 := by
+theorem littleO_of_powerseries.inequality₀ {z : ℝ} (hz : 0 ≤ z) {r : ℝ} (hr : 0 < r)
+    {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C) {D : ℝ} (hD : 0 < D)
+    (hx : z ≤ D / (C * (a * r) ^ 3)) :
+    C * (a * (z * r)) ^ 3 ≤ D * z ^ 2 := by
   by_cases H : z = 0
   · subst H; simp
-  · have a0 : 0 < z⁻¹ := inv_pos.mpr <| lt_of_le_of_ne hz fun a ↦ H a.symm
-    apply le_of_mul_le_mul_right ?_ a0
-    nth_rewrite 2 [mul_assoc]
-    rw [pow_two]
-    nth_rewrite 2 [mul_assoc]
-    rw [show (z * z⁻¹) = 1 by field_simp]
-    simp only [mul_one]
-    apply le_of_mul_le_mul_right (a := z⁻¹) (a0 := a0)
-    nth_rewrite 3 [mul_assoc]
-    rw [show (z * z⁻¹) = 1 by field_simp]
-    have : C * (a * (z / (r / 2))) ^ 3 * z⁻¹ * z⁻¹
-        =  C * (a * (1 / (r / 2))) ^ 3 * z  := by
-        field_simp
-        ring_nf
-    rw [this]
-    simp only [one_div, inv_div, mul_one, ge_iff_le]
-    have : (C * (a * (2 / r)) ^ 3) * z
-         ≤ (C * (a * (2 / r)) ^ 3) * (D / (C * (a * (2 / r)) ^ 3)) := by
-        refine (mul_le_mul_iff_of_pos_left ?_).mpr <| hx
-        aesop
-    convert this using 2
-    field_simp
-    ring_nf
+  · rw [pow_succ, mul_pow] at hx ⊢
+    rw [mul_pow]
+    have : z * (C * (a ^ 2 * r ^ 2 * (a * r))) ≤ D := (le_div_iff₀ (by positivity)).mp hx;
+    repeat rw [pow_two] at this
+    ring_nf at this ⊢
+    suffices z ^ 2 * (z * C * a ^ 3 * r ^ 3) ≤ z ^ 2 * D by linarith
+    refine mul_le_mul_of_nonneg ?_ this ?_ ?_
+    · linarith
+    · positivity
+    · linarith
+
+theorem littleO_of_powerseries.inequality {z : ℝ} (hz : 0 ≤ z) {r : ℝ} (hr : 0 < r)
+    {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C) {D : ℝ} (hD : 0 < D)
+    (hx : z ≤ D / (C * (a * (2 / r)) ^ 3)) :
+    C * (a * (z / (r / 2))) ^ 3 ≤ D * z ^ 2 := by
+  have : z / (r / 2) = z * (2 / r) := by ring_nf
+  rw [this]
+  apply littleO_of_powerseries.inequality₀ (r := 2/r) (hr := by aesop) <;> tauto
 
 theorem littleO_of_powerseries.aux
     {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {x₀ : V}
     {r : NNReal} (hr : 0 < r) {a : ℝ} (ha : 0 < a) {C : ℝ} (hC : 0 < C)
-    {x : V} {D : ℝ}
+    {x : V} {D : ℝ} (hD : 0 < D)
     (hx : x ∈ Metric.ball x₀ (D / (C * (a * (2 / r)) ^ 3))) :
     C * (a * (‖x - x₀‖ / (r / 2))) ^ 3 ≤ D * ‖x - x₀‖ ^ 2 := by
   exact @inequality ‖x-x₀‖ (show 0 ≤ ‖x - x₀‖ by simp) r
-    hr a ha C hC D (le_of_lt (by
+    hr a ha C hC D hD (le_of_lt (by
       simp at hx
       convert hx using 1
       exact mem_sphere_iff_norm.mp rfl))
@@ -307,14 +292,14 @@ theorem littleO_of_powerseries.calculation {V : Type*} [NormedAddCommGroup V] [N
     (h₃ : x - x₀ ∈ Metric.ball 0 (r / 2) →
         ‖f (x₀ + (x - x₀)) - α‖
         ≤ C * (a * (‖x - x₀‖ / (r / 2))) ^ 3)
-    {D : ℝ}
+    {D : ℝ} (hD : 0 < D)
     (hx : x ∈ Metric.ball x₀ (min (r / 2) (D / (C * (a * (2 / r)) ^ 3)))) :
     |f x - α| ≤ D * ‖x - x₀‖ ^ 2 := by
   simp only [Metric.mem_ball, lt_inf_iff, dist_zero_right, add_sub_cancel,
     Real.norm_eq_abs] at hx h₃ ⊢
   specialize h₃ (by convert hx.1 using 1;exact mem_sphere_iff_norm.mp rfl)
   apply h₃.trans <| @aux V _ _ x₀ r hr a ha C hC
-    x D (by convert hx.2 using 2)
+    x D hD (by convert hx.2 using 2)
 
 /-- Having a power series implies quadratic approximation. -/
 lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -338,7 +323,7 @@ lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
     rw [abs_norm]
     exact littleO_of_powerseries.calculation hr ha.1.1
       hC.1 (p.partialSum 3 (y - x₀)) (fun hy => hC.2 (y-x₀) hy 3)
-        h
+        hD h
   · constructor
     · exact Metric.isOpen_ball
     · simp_all
