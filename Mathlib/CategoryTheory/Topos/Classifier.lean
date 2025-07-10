@@ -250,7 +250,7 @@ private def truthSubobject : Subobject 𝒞.Ω :=
 
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
-  have : Mono (𝒞.truth) := 𝒞.mt
+  haveI : Mono (𝒞.truth) := 𝒞.mt
   ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, (𝒞.uniq _ _) (by
     convert IsPullback.of_hasPullback φ 𝒞.truth
     apply 𝒞.isTerminalΩ₀.hom_ext)⟩
@@ -258,7 +258,7 @@ lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
 @[simp]
 lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
     (Subobject.pullback (𝒞.χ i)).obj 𝒞.truthSubobject = .mk i :=
-  have : Mono (𝒞.truth) := 𝒞.mt
+  haveI : Mono (𝒞.truth) := 𝒞.mt
   Subobject.pullback_obj_mk (𝒞.isPullback i).flip
 
 @[simp]
