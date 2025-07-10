@@ -78,7 +78,7 @@ open scoped Classical in
 theorem volume_preserving_mixedSpaceToRealMixedSpace_symm :
     MeasurePreserving (mixedSpaceToRealMixedSpace K).symm :=
   (MeasurePreserving.id _).prod <|
-    volume_preserving_pi fun _ ↦  Complex.volume_preserving_equiv_real_prod.symm
+    volume_preserving_pi fun _ ↦ Complex.volume_preserving_equiv_real_prod.symm
 
 open scoped Classical in
 instance : IsAddHaarMeasure (volume : Measure (realMixedSpace K)) := prod.instIsAddHaarMeasure _ _
@@ -210,7 +210,7 @@ open scoped Classical in
 protected theorem lintegral_comp_polarCoord_symm (f : mixedSpace K → ℝ≥0∞) :
     ∫⁻ x in (mixedEmbedding.polarCoord K).target, (∏ w : {w // IsComplex w}, .ofReal (x.2 w).1) *
       f ((mixedEmbedding.polarCoord K).symm x) = ∫⁻ x, f x := by
-  rw [← ( volume_preserving_mixedSpaceToRealMixedSpace_symm K).lintegral_comp_emb
+  rw [← (volume_preserving_mixedSpaceToRealMixedSpace_symm K).lintegral_comp_emb
     (mixedSpaceToRealMixedSpace K).symm.measurableEmbedding, ← lintegral_comp_polarCoordReal_symm,
     polarCoord_target_eq_polarCoordReal_target, polarCoord_symm_eq, Function.comp_def]
 
@@ -304,7 +304,7 @@ def polarSpaceCoord [NumberField K] : PartialHomeomorph (mixedSpace K) (polarSpa
 theorem measurable_polarSpaceCoord_symm [NumberField K] :
     Measurable (polarSpaceCoord K).symm := by
   rw [polarSpaceCoord, PartialHomeomorph.transHomeomorph_symm_apply]
-  exact ( measurable_polarCoord_symm K).comp (Homeomorph.measurable _)
+  exact (measurable_polarCoord_symm K).comp (Homeomorph.measurable _)
 
 open scoped Classical in
 theorem polarSpaceCoord_target' [NumberField K] :
@@ -358,7 +358,7 @@ open scoped ComplexOrder Classical in
 private theorem volume_eq_two_pi_pow_mul_integral_aux
     (hA : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A) :
     normAtComplexPlaces '' A =
-      (mixedSpaceOfRealSpace⁻¹' A) ∩
+      (mixedSpaceOfRealSpace ⁻¹' A) ∩
         Set.univ.pi fun w ↦ if w.IsReal then Set.univ else Set.Ici 0 := by
   have h : ∀ (x : mixedSpace K), ∀ w, IsComplex w → 0 ≤ normAtComplexPlaces x w := by
     intro x w hw
