@@ -3,6 +3,7 @@ Copyright (c) 2025 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson, Violeta Hernández Palacios
 -/
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice.Defs
 
 /-!
@@ -154,9 +155,12 @@ theorem lowerCut_ssubset_iff_ssubset_upperCut :
 theorem lowerCut_eq_iff_upperCut_eq : A.lowerCut = B.lowerCut ↔ A.upperCut = B.upperCut := by
   simp [subset_antisymm_iff, lowerCut_subset_iff_subset_upperCut, and_comm]
 
-@[ext]
+@[ext (iff := false)]
 theorem ext_lowerCut (h : A.lowerCut = B.lowerCut) : A = B := by
   cases A; cases B; simpa
+
+theorem ext_lowerCut_iff : A = B ↔ A.lowerCut = B.lowerCut :=
+  ⟨congrArg _, ext_lowerCut⟩
 
 theorem ext_upperCut (h : A.upperCut = B.upperCut) : A = B :=
   ext_lowerCut (lowerCut_eq_iff_upperCut_eq.mpr h)
@@ -212,7 +216,34 @@ theorem upperCut_sup (A B : DedekindCut α) : (A ⊔ B).upperCut = A.upperCut �
   upperCut_of_upperCuts ..
 
 theorem lowerCut_bot : (⊥ : DedekindCut α).lowerCut = ⋂₀ (lowerCut '' univ) := rfl
-theorem lowerCut_top : (⊤ : DedekindCut α).upperCut = ⋂₀ (upperCut '' univ) :=
+theorem upperCut_top : (⊤ : DedekindCut α).upperCut = ⋂₀ (upperCut '' univ) :=
   upperCut_of_upperCuts ..
+
+instance : CompleteLattice (DedekindCut α) where
+  sup := max
+  inf := min
+  le_refl _ := .rfl
+  le_trans _ _ _ := subset_trans
+  le_antisymm _ _:= by simp_all [ext_lowerCut_iff, subset_antisymm_iff, le_iff_lowerCut_subset]
+  le_inf A B C := le_inf (a := A.lowerCut)
+  inf_le_left A B := inf_le_left (a := A.lowerCut)
+  inf_le_right A B := inf_le_right (a := A.lowerCut)
+  sup_le A B C := by simp_rw [le_iff_upperCut_subset, upperCut_sup]; exact le_inf
+  le_sup_left A B := by rw [le_iff_upperCut_subset, upperCut_sup]; exact inf_le_left
+  le_sup_right A B := by rw [le_iff_upperCut_subset, upperCut_sup]; exact inf_le_right
+  sInf_le X A hA := sInter_subset_of_mem (mem_image_of_mem _ hA)
+  le_sInf X A H := by rintro B hB _ ⟨C, hC, rfl⟩; exact H _ hC hB
+  le_sSup X A hA := by
+    rw [le_iff_upperCut_subset, upperCut_sSup]
+    exact sInter_subset_of_mem (mem_image_of_mem _ hA)
+  sSup_le X A H := by
+    rw [le_iff_upperCut_subset, upperCut_sSup]
+    simp_rw [le_iff_upperCut_subset] at H
+    rintro B hB _ ⟨C, hC, rfl⟩
+    exact H _ hC hB
+  bot_le A := sInter_subset_of_mem (mem_image_of_mem _ ⟨⟩)
+  le_top A := by
+    rw [le_iff_upperCut_subset, upperCut_top]
+    exact sInter_subset_of_mem (mem_image_of_mem _ ⟨⟩)
 
 end DedekindCut
