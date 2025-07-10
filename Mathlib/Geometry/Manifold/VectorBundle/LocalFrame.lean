@@ -171,10 +171,9 @@ lemma repr_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V
 
 /-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
 set `u` around `x`, we have `t = ∑ i, (hs.repr i t) • (s i x)` near `x`. -/
-lemma repr_spec [Fintype ι] (hs : IsLocalFrameOn I F n s u)
-    (t : Π x : M,  V x) (hx : x ∈ u) (hu : IsOpen u) :
+lemma repr_spec [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V x) (hu'' : u ∈ 𝓝 x) :
     ∀ᶠ x' in 𝓝 x, t x' = ∑ i, (hs.repr i t x') • (s i x') :=
-  eventually_nhds_iff.mpr ⟨u, fun _ h ↦ hs.repr_sum_eq t h, hu, hx⟩
+  eventually_of_mem hu'' fun _ hx ↦ hs.repr_sum_eq _ hx
 
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma repr_congr (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M,  V x}
@@ -215,27 +214,55 @@ lemma contMDiffOn_of_repr [Fintype ι] (h : ∀ i, CMDiff[u] n (hs.repr i t)) :
   intro y hy
   simp [hs.repr_sum_eq t hy]
 
-/-- Given a local frame `s i` on `u`, if a section `t` has `C^k` coefficients at `x ∈ u`
-w.r.t. `s i`, then `t` is `C^n` at `x`. -/
-lemma contMDiffAt_of_repr_aux [Fintype ι]
-    (h : ∀ i, CMDiffAt n (hs.repr i t) x) (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x := by
-  have this (i) : CMDiffAt n (T% (hs.repr i t • s i)) x :=
-    (h i).smul_section (hs.contMDiffAt hu hx i)
-  have almost : CMDiffAt n
-      (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) x :=
-    .sum_section fun i _ ↦ this i
-  apply almost.congr_of_eventuallyEq ?_
-  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (hs.repr_spec (I := I) t hx hu)
-  exact Filter.eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx]
-
 /-- Given a local frame `s i` on a neighbourhood `u` of `x`,
 if a section `t` has `C^k` coefficients at `x` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
 lemma contMDiffAt_of_repr [Fintype ι]
     (h : ∀ i, CMDiffAt n (hs.repr i t) x) (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x := by
-  obtain ⟨u', hu'u, hu', hxu'⟩ := mem_nhds_iff.mp hu
-  apply (hs.mono hu'u).contMDiffAt_of_repr_aux (fun i ↦ ?_) hu' hxu'
-  apply (h i).congr_of_eventuallyEq <| eventually_of_mem (hu'.mem_nhds hxu') (fun x hx ↦ ?_)
-  simp [repr, hx, hu'u hx, toBasisAt]
+  have this (i) : CMDiffAt n (T% (hs.repr i t • s i)) x :=
+    (h i).smul_section <| (hs.contMDiffOn i).contMDiffAt hu
+  have almost : CMDiffAt n
+    (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) x := .sum_section (fun i _ ↦ this i)
+  exact almost.congr_of_eventuallyEq <| (hs.repr_spec t hu).mono fun x h ↦ by simp [h]
+
+/-- Given a local frame `s i` on an open set `u` containing `x`, if a section `t` has `C^k`
+coefficients at `x ∈ u` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
+lemma contMDiffAt_of_repr_aux [Fintype ι]
+    (h : ∀ i, CMDiffAt n (hs.repr i t) x) (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x :=
+  hs.contMDiffAt_of_repr h (hu.mem_nhds hx)
+
+section
+
+variable (hs : IsLocalFrameOn I F 1 s u)
+
+/-- Given a local frame `s i ` on `u`, if a section `t` has differentiable coefficients on `u`
+w.r.t. `s i`, then `t` is differentiable on `u`. -/
+lemma mdifferentiableOn_of_repr [Fintype ι] (h : ∀ i, MDiff[u] (hs.repr i t)) :
+    MDiff[u] (T% t) := by
+  have this (i) : MDiff[u] (T% (hs.repr i t • s i)) :=
+    (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn le_rfl)
+  have almost : MDiff[u] (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) :=
+    .sum_section (fun i _ hx ↦ this i _ hx)
+  apply almost.congr
+  intro y hy
+  simp [hs.repr_sum_eq t hy]
+
+/-- Given a local frame `s i` on a neighbourhood `u` of `x`, if a section `t` has differentiable
+coefficients at `x` w.r.t. `s i`, then `t` is differentiable at `x`. -/
+lemma mdifferentiableAt_of_repr [Fintype ι]
+    (h : ∀ i, MDiffAt (hs.repr i t) x) (hu : u ∈ 𝓝 x) : MDiffAt (T% t) x := by
+  have this (i) : MDiffAt (T% (hs.repr i t • s i)) x :=
+    (h i).smul_section <| ((hs.contMDiffOn i).mdifferentiableOn le_rfl).mdifferentiableAt hu
+  have almost : MDiffAt
+    (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) x := .sum_section (fun i ↦ this i)
+  exact almost.congr_of_eventuallyEq <| (hs.repr_spec t hu).mono fun x h ↦ by simp [h]
+
+/-- Given a local frame `s i` on open set `u` containing `x`, if a section `t`
+has differentiable coefficients at `x ∈ u` w.r.t. `s i`, then `t` is differentiable at `x`. -/
+lemma mdifferentiableAt_of_repr_aux [Fintype ι]
+    (h : ∀ i, MDiffAt (hs.repr i t) x) (hu : IsOpen u) (hx : x ∈ u) : MDiffAt (T% t) x :=
+  hs.mdifferentiableAt_of_repr h (hu.mem_nhds hx)
+
+end
 
 set_option linter.style.commandStart true
 
@@ -496,6 +523,9 @@ lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [C
     {t : Set M} (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     CMDiff[t] k (T% s) ↔ ∀ i, CMDiff[t] k (b.localFrame_repr I e i s) := by
   refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
+  -- TODO: golf this using the lemmas above
+  -- intro x hx
+  -- let aux := (b.localFrame_isLocalFrameOn_baseSet I k e).contMDiffAt_of_repr (t := s) (x := x)
   have this (i) : CMDiff[t] k (T% ((b.localFrame_repr I e i) s • b.localFrame e i)) :=
     (hi i).smul_section ((b.contMDiffOn_localFrame_baseSet k e i).mono ht')
   let rhs := fun x' ↦ ∑ i, (b.localFrame_repr I e i) s x' • b.localFrame e i x'
@@ -574,17 +604,9 @@ omit [IsManifold I 0 M] in
 coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
 lemma mdifferentiableAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {x' : M} (hx : x' ∈ e.baseSet) :
-    MDiffAt (T% s) x' ↔ ∀ i, MDiffAt (b.localFrame_repr I e i s) x' := by
-  refine ⟨fun h i ↦ mdifferentiableAt_localFrame_repr hx b h i, fun hi ↦ ?_⟩
-  have this (i) : MDiffAt (T% (b.localFrame_repr I e i) s • b.localFrame e i) x' :=
-    mdifferentiableAt_smul_section (hi i)
-      ((contMDiffAt_localFrame_of_mem 1 e b i hx).mdifferentiableAt le_rfl)
-  have almost : MDiffAt
-      (T% (fun x ↦ ∑ i, (b.localFrame_repr I e i) s x • b.localFrame e i x)) x' :=
-    mdifferentiableAt_finsum_section fun i ↦ this i
-  apply almost.congr_of_eventuallyEq ?_
-  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (b.localFrame_repr_spec (I := I) hx s)
-  exact eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx]
+    MDiffAt (T% s) x' ↔ ∀ i, MDiffAt (b.localFrame_repr I e i s) x' :=
+  ⟨fun h i ↦ mdifferentiableAt_localFrame_repr hx b h i, fun hi ↦
+    (b.localFrame_isLocalFrameOn_baseSet I 1 e).mdifferentiableAt_of_repr_aux hi e.open_baseSet hx⟩
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is differentiable on `t ⊆ e.baseSet` iff each of its
@@ -594,15 +616,9 @@ lemma mdifferentiableOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     MDiff[t] (T% s) ↔ ∀ i, MDiff[t] (b.localFrame_repr I e i s) := by
   refine ⟨fun h i ↦ mdifferentiableOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
-  have this (i) : MDiff[t] (T% ((b.localFrame_repr I e i) s • b.localFrame e i)) :=
-    mdifferentiableOn_smul_section (hi i) <|
-      ((b.contMDiffOn_localFrame_baseSet 1 e i).mono ht').mdifferentiableOn le_rfl
-  let rhs := fun x' ↦ ∑ i, (b.localFrame_repr I e i) s x' • b.localFrame e i x'
-  have almost : MDiff[t] (T% rhs) := mdifferentiableOn_finsum_section fun i ↦ this i
-  apply almost.congr
-  intro y hy
-  congr
-  exact b.localFrame_repr_sum_eq s (ht' hy)
+  apply ((b.localFrame_isLocalFrameOn_baseSet I 1 e).mono ht').mdifferentiableOn_of_repr (t := s)
+  convert hi
+  sorry -- should be easy/already done above
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is differentiable on a trivialisation domain `e.baseSet` iff each of its
