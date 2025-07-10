@@ -1192,7 +1192,7 @@ theorem unop {Z X Y P : Cᵒᵖ} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {in
       (Limits.PushoutCocone.isColimitEquivIsLimitUnop h.flip.cocone h.flip.isColimit)
       h.toCommSq.flip.coconeUnop)
 
-theorem of_horiz_isIso [IsIso f] [IsIso inr] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
+theorem of_horiz_isIso_epi [Epi f] [IsIso inr] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
   of_isColimit' sq
     (by
       refine
@@ -1200,8 +1200,14 @@ theorem of_horiz_isIso [IsIso f] [IsIso inr] (sq : CommSq f g inl inr) : IsPusho
           (by simp) (by simp)
       simp only [← cancel_epi f, s.condition, sq.w_assoc, IsIso.hom_inv_id_assoc])
 
+theorem of_horiz_isIso [IsIso f] [IsIso inr] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
+  of_horiz_isIso_epi sq
+
+theorem of_vert_isIso_epi [Epi g] [IsIso inl] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
+  (of_horiz_isIso_epi sq.flip).flip
+
 theorem of_vert_isIso [IsIso g] [IsIso inl] (sq : CommSq f g inl inr) : IsPushout f g inl inr :=
-  (of_horiz_isIso sq.flip).flip
+  of_vert_isIso_epi sq
 
 lemma of_id_fst : IsPushout (𝟙 _) f f (𝟙 _) := IsPushout.of_horiz_isIso ⟨by simp⟩
 
