@@ -182,11 +182,11 @@ theorem disjoint_fst_snd [IsIrrefl α r'] : Disjoint c'.fst c'.snd := by
   rintro x hx _ hx' rfl
   exact irrefl x (rel_fst_snd hx hx')
 
-theorem mem_fst_of_rel_fst [IsTrans α r'] {x y} (hx : x ∈ c'.fst) (hy : r' y x) : y ∈ c'.fst := by
+theorem mem_fst_of_rel_fst [IsTrans α r'] {x y} (hy : r' y x) (hx : x ∈ c'.fst) : y ∈ c'.fst := by
   rw [← closure_snd]
   exact fun z hz ↦ _root_.trans hy (rel_fst_snd hx hz)
 
-theorem mem_snd_of_snd_rel [IsTrans α r'] {x y} (hx : x ∈ c'.snd) (hy : r' x y) : y ∈ c'.snd := by
+theorem mem_snd_of_snd_rel [IsTrans α r'] {x y} (hy : r' x y) (hx : x ∈ c'.snd) : y ∈ c'.snd := by
   rw [← closure_fst]
   exact fun z hz ↦ _root_.trans (rel_fst_snd hz hx) hy
 
@@ -196,7 +196,7 @@ theorem codisjoint_fst_snd [IsTrichotomous α r'] [IsTrans α r'] : Codisjoint c
   rw [← closure_fst]
   intro y hy
   obtain h | rfl | h := trichotomous_of r' x y
-  · cases hx <| mem_fst_of_rel_fst hy h
+  · cases hx <| mem_fst_of_rel_fst h hy
   · contradiction
   · assumption
 
