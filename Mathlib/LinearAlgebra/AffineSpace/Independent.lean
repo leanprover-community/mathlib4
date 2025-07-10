@@ -355,8 +355,7 @@ independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
   rcases isEmpty_or_nonempty ι with h | h
-  · haveI := h
-    apply affineIndependent_of_subsingleton
+  · apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i]
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
@@ -368,8 +367,7 @@ affine-independent. -/
 theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndependent k (f ∘ p) := by
   rcases isEmpty_or_nonempty ι with h | h
-  · haveI := h
-    apply affineIndependent_of_subsingleton
+  · apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i] at hai
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←

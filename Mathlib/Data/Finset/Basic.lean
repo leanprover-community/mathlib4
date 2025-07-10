@@ -677,3 +677,14 @@ lemma toFinset_replicate (n : ℕ) (a : α) :
   split_ifs with hn <;> simp [hn]
 
 end Multiset
+
+namespace Finset
+
+theorem mem_union_of_disjoint {α : Type*} [DecidableEq α]
+    {s t : Finset α} (h : Disjoint s t) {x : α} :
+    x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
+  rw [Finset.mem_union, Xor']
+  have := disjoint_left.1 h
+  tauto
+
+end Finset
