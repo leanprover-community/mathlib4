@@ -20,7 +20,8 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 
 ## Main Definitions
 
-- `Polynomial.SignVariations`: The number of sign changes in a
+- `Polynomial.SignVariations`: The number of sign changes in a polynomial's coefficients,
+where `0` coefficients are ignored.
 
 ## Main theorem
 
@@ -32,7 +33,7 @@ commutative rings.
 
 ## Reference
 
-https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs
+[Wikipedia: Descartes' Rule of Signs](https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs)
 -/
 
 namespace Polynomial
