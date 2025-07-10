@@ -642,10 +642,7 @@ lemma forall_mem_support_invtSubmodule_iff [CharZero R] [Finite ι] (q : Submodu
   refine b.induction'' i (by aesop) hq ?_
   clear i
   intro i j hi hj
-  have : P.reflection (P.reflectionPerm j i) =
-      P.reflection j * P.reflection i * P.reflection j := by
-    ext x; simp [coreflection_apply, reflection_apply]; module -- TODO Is this really missing!?
-  rw [this]
+  rw [reflection_reflectionPerm]
   exact Module.End.invtSubmodule.comp _ (Module.End.invtSubmodule.comp _ (hq j hj) hi) (hq j hj)
 
 /-- This lemma is included mostly for comparison with the informal literature. Usually
