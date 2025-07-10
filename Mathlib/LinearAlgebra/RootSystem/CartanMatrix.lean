@@ -166,6 +166,7 @@ lemma induction_on_cartanMatrix [NoZeroSMulDivisors ℤ M] [P.IsReduced] [P.IsIr
     (p : b.support → Prop) {i j : b.support} (hi : p i)
     (hp : ∀ i j, p i → b.cartanMatrix j i ≠ 0 → p j) :
     p j := by
+  have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero i⟩
   let q : Submodule R M := span R (P.root ∘ (↑) '' {i | p i})
   have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
   have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by
