@@ -81,7 +81,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
     | insert a s ha h =>
         change φ (fun x' : M ↦ ∑ i ∈ (insert a s : Finset ι), σ i x') x = _
         simp [Finset.sum_insert ha, ← h]
-        exact φ_add _ _ (hσ a) (mdifferentiableAt_finsum_section hσ)
+        exact φ_add _ _ (hσ a) (.sum_section hσ)
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
@@ -97,7 +97,7 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
       φ σ x = φ (fun x' ↦ ∑ i, (c i) σ x' • s i x') x := by
     exact
       locality hσ
-        (mdifferentiableAt_finsum_section fun i ↦ mdifferentiableAt_smul_section (hc hσ i) (hs i))
+        (.sum_section fun i ↦ (hc hσ i).smul_section (hs i))
         (Basis.localFrame_repr_spec b x_mem σ)
   rw [hφ hσ, hφ hσ', sum_phi, sum_phi]
   · change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
@@ -105,8 +105,8 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
     ext i
     rw [φ_smul _ _ (hc hσ i) (hs i), φ_smul _ _ (hc hσ' i) (hs i),
         Basis.localFrame_repr_congr b hσσ']
-  · exact fun i ↦ mdifferentiableAt_smul_section (hc hσ' i) (hs i)
-  · exact fun i ↦ mdifferentiableAt_smul_section (hc hσ i) (hs i)
+  · exact fun i ↦ (hc hσ' i).smul_section (hs i)
+  · exact fun i ↦ (hc hσ i).smul_section (hs i)
 
 include I in
 omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in

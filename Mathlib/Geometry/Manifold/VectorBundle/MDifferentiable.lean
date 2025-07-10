@@ -457,7 +457,7 @@ lemma mdifferentiable_sub_section
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x ((s - t) x)) :=
   fun x₀ ↦ mdifferentiableAt_sub_section (hs x₀) (ht x₀)
 
-lemma mdifferentiableWithinAt_smul_section
+lemma MDifferentiableWithinAt.smul_section
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f u x₀)
     (hs : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
     MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (f x • s x)) u x₀ := by
@@ -471,43 +471,43 @@ lemma mdifferentiableWithinAt_smul_section
       apply (e.linear 𝕜 hx).2
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
-lemma mdifferentiableAt_smul_section (hf : MDifferentiableAt I 𝓘(𝕜) f x₀)
+lemma MDifferentiableAt.smul_section (hf : MDifferentiableAt I 𝓘(𝕜) f x₀)
     (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (f x • s x)) x₀ := by
   rw [← mdifferentiableWithinAt_univ] at hs ⊢
-  exact mdifferentiableWithinAt_smul_section hf hs
+  exact .smul_section hf hs
 
-lemma mdifferentiableOn_smul_section (hf : MDifferentiableOn I 𝓘(𝕜) f u)
+lemma MDifferentiableOn.smul_section (hf : MDifferentiableOn I 𝓘(𝕜) f u)
     (hs : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u) :
     MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (f x • s x)) u :=
-  fun x₀ hx₀ ↦ mdifferentiableWithinAt_smul_section (hf x₀ hx₀) (hs x₀ hx₀)
+  fun x₀ hx₀ ↦ .smul_section (hf x₀ hx₀) (hs x₀ hx₀)
 
 lemma mdifferentiable_smul_section (hf : MDifferentiable I 𝓘(𝕜) f)
     (hs : MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x))) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (f x • s x)) :=
-  fun x₀ ↦ mdifferentiableAt_smul_section (hf x₀) (hs x₀)
+  fun x₀ ↦ (hf x₀).smul_section (hs x₀)
 
 lemma mdifferentiableWithinAt_smul_const_section
     (hs : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
     MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • s x)) u x₀ :=
-  mdifferentiableWithinAt_smul_section mdifferentiableWithinAt_const hs
+  .smul_section mdifferentiableWithinAt_const hs
 
-lemma mdifferentiableAt_smul_const_section
+lemma MDifferentiableAt.smul_const_section
     (hs : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • s x)) x₀ :=
-  mdifferentiableAt_smul_section mdifferentiableAt_const hs
+  .smul_section mdifferentiableAt_const hs
 
-lemma mdifferentiableOn_smul_const_section
+lemma MDifferentiableOn.smul_const_section
     (hs : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u) :
     MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • s x)) u :=
-  mdifferentiableOn_smul_section mdifferentiableOn_const hs
+  .smul_section mdifferentiableOn_const hs
 
 lemma mdifferentiable_smul_const_section
     (hs : MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x))) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • s x)) :=
-  fun x₀ ↦ mdifferentiableAt_smul_const_section (hs x₀)
+  fun x₀ ↦ (hs x₀).smul_const_section
 
-lemma mdifferentiableWithinAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
+lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
     (hs : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
                  (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
     MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
@@ -518,21 +518,21 @@ lemma mdifferentiableWithinAt_finsum_section {ι : Type*} {s : Finset ι} {t : �
   | insert i s hi h =>
     simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs i) h
 
-lemma mdifferentiableAt_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x} {x₀ : B}
+lemma MDifferentiableAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x} {x₀ : B}
     (hs : ∀ i, MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ := by
   simp_rw [← mdifferentiableWithinAt_univ] at hs ⊢
-  exact mdifferentiableWithinAt_finsum_section hs
+  exact MDifferentiableWithinAt.sum_section hs
 
-lemma mdifferentiableOn_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
+lemma MDifferentiableOn.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
     (hs : ∀ i, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
     MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u :=
-  fun x₀ hx₀ ↦ mdifferentiableWithinAt_finsum_section fun i ↦ hs i x₀ hx₀
+  fun x₀ hx₀ ↦ .sum_section fun i ↦ hs i x₀ hx₀
 
-lemma mdifferentiable_finsum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
+lemma MDifferentiable.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
     (hs : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
-  fun x₀ ↦ mdifferentiableAt_finsum_section fun i ↦ (hs i) x₀
+  fun x₀ ↦ .sum_section fun i ↦ (hs i) x₀
 
 end operations
 
