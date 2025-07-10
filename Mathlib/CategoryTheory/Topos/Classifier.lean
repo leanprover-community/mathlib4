@@ -57,39 +57,38 @@ namespace CategoryTheory
 
 open Category Limits Functor IsPullback
 
-/-- A morphism `truth : ⊤_ C ⟶ Ω` from the terminal object of a category `C`
-is a subobject classifier if, for every monomorphism `m : U ⟶ X` in `C`,
-there is a unique map `χ : X ⟶ Ω` such that the following square is a pullback square:
+variable (C : Type u) [Category.{v} C]
+
+/-- A monomorphism `truth : Ω₀ ⟶ Ω` is a subobject classifier if, for every monomorphism
+`m : U ⟶ X` in `C`, there is a unique map `χ : X ⟶ Ω` such that for some `χ₀ : U ⟶ Ω₀`
+the following square is a pullback square:
 ```
       U ---------m----------> X
       |                       |
-terminal.from U               χ
+      χ₀                      χ
       |                       |
       v                       v
-    ⊤_ C ------truth--------> Ω
+      Ω₀ ------truth--------> Ω
 ```
-An equivalent formulation replaces the object `⊤_ C` with an arbitrary object, and instead
-includes the assumption that `truth` is a monomorphism.
+An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
-structure Classifier (C : Type u) [Category.{v} C] where
-  /-- Will be shown to be a terminal object -/
+structure Classifier where
   Ω₀ : C
-  /-- The target of the truth morphism -/
   Ω : C
-  /-- the truth morphism for a subobject classifier -/
+  /-- The truth morphism of the subobject classifier -/
   truth : Ω₀ ⟶ Ω
   mt : Mono truth
-  /-- The unique arrow to the terminal object -/
+  /-- The top arrow in the pullback square -/
   χ₀ {U X : C} (m : U ⟶ X) [Mono m] : U ⟶ Ω₀
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
   χ {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
-  /-- `χ m` forms the appropriate pullback square. -/
+  /-- `χ m` and `χ₀ m` form the appropriate pullback square. -/
   isPullback' {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (χ₀ m) (χ m) truth
-  /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square. -/
+  /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square for any `χ₀'`. -/
   uniq' {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
     (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
 
-variable {C : Type u} [Category.{v} C]
+variable {C}
 
 namespace Classifier
 
