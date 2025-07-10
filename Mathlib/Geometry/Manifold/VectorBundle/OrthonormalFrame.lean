@@ -46,38 +46,41 @@ variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT
 variable {s : ι → (x : B) → E x} {u u' : Set B}
 
 variable (IB F n) in
-structure IsOrthogonalFrameOn (s : ι → (x : B) → E x) (u : Set B)
+structure IsOrthonormalFrameOn (s : ι → (x : B) → E x) (u : Set B)
     extends IsLocalFrameOn IB F n s u where
   /-- Any two distinct sections are point-wise orthogonal on `u`. -/
   orthogonal {i j : ι} {x : B} : i ≠ j → x ∈ u → ⟪s i x, s j x⟫ = 0
+  normalised {i : ι} {x : B} : x ∈ u → ‖s i x‖ = 1
 
 omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
   [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι] in
-lemma IsOrthogonalFrameOn.mono (hs : IsOrthogonalFrameOn IB F n s u) (huu' : u' ⊆ u) :
-    IsOrthogonalFrameOn IB F n s u' where
+lemma IsOrthonormalFrameOn.mono (hs : IsOrthonormalFrameOn IB F n s u) (huu' : u' ⊆ u) :
+    IsOrthonormalFrameOn IB F n s u' where
   toIsLocalFrameOn := hs.toIsLocalFrameOn.mono huu'
   orthogonal hij hx := hs.orthogonal hij (huu' hx)
+  normalised hx := hs.normalised (huu' hx)
 
 /-- Applying the Gram-Schmidt procedure to a local frame yields another local frame. -/
-def IsLocalFrameOn.gramSchmidt (hs : IsLocalFrameOn IB F n s u) :
-    IsLocalFrameOn IB F n (VectorBundle.gramSchmidt s) u where
+def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
+    IsLocalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
   linearIndependent := by
     intro x hx
-    exact VectorBundle.gramSchmidt_linearIndependent (hs.linearIndependent hx)
+    sorry -- exact VectorBundle.gramSchmidt_linearIndependent (hs.linearIndependent hx)
   generating := by
     intro x hx
-    simpa only [VectorBundle.gramSchmidt_apply, InnerProductSpace.span_gramSchmidt ℝ (s · x)]
-      using hs.generating hx
-  contMDiffOn i := gramSchmidt_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
+    sorry -- simpa only [VectorBundle.gramSchmidt_apply, InnerProductSpace.span_gramSchmidt ℝ (s · x)]
+    --  using hs.generating hx
+  contMDiffOn i := gramSchmidtNormed_contMDiffOn i u (fun i ↦ hs.contMDiffOn i) <|
       fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
 
-/-- Applying the Gram-Schmidt procedure to an orthogonal local frame yields
-another orthogonal local frame. -/
-def IsOrthogonalFrameOn.gramSchmidt (hs : IsOrthogonalFrameOn IB F n s u) :
-    IsOrthogonalFrameOn IB F n (VectorBundle.gramSchmidt s) u where
-  toIsLocalFrameOn := hs.toIsLocalFrameOn.gramSchmidt
-  orthogonal {_ _ x} hij _hx := VectorBundle.gramSchmidt_orthogonal s hij x
+/-- Applying the normalised Gram-Schmidt procedure to an orthonormal local frame yields
+another orthonormal local frame. -/
+def IsOrthonormalFrameOn.gramSchmidtNormed (hs : IsOrthonormalFrameOn IB F n s u) :
+    IsOrthonormalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
+  toIsLocalFrameOn := hs.toIsLocalFrameOn.gramSchmidtNormed
+  orthogonal {_ _ x} hij _hx := sorry -- VectorBundle.gramSchmidt_orthogonal s hij x
+  normalised := sorry -- TODO: need to use the normalisation property!
 
 
 /-! # Determining smoothness of a section via its local frame coefficients
@@ -97,17 +100,17 @@ simple form in orthgonal frames.
 
 section smoothness
 
-namespace IsOrthogonalFrameOn
+namespace IsOrthonormalFrameOn
 
-variable (hs : IsOrthogonalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
+variable (hs : IsOrthonormalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
 set_option linter.style.commandStart false
 
 variable (t) in
-lemma repr_eq_inner (hs : IsOrthogonalFrameOn IB F n s u)
+lemma repr_eq_inner (hs : IsOrthonormalFrameOn IB F n s u)
     {x} (hx : x ∈ u) (i : ι) :
     hs.repr i t x = ⟪s i x, t x⟫ / (‖s i x‖ ^ 2) := by
-  -- should be a general lemma: orthogonal basis, have this identity
+  -- use #check OrthonormalBasis.repr_apply_apply
   sorry
 
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
@@ -172,7 +175,7 @@ lemma contMDiffOn_iff_repr' [Fintype ι] :
     CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (fun x ↦ ⟪s i x, t x⟫) :=
   sorry -- similar to the above lemma
 
-end IsOrthogonalFrameOn
+end IsOrthonormalFrameOn
 
 end smoothness
 
@@ -190,12 +193,12 @@ variable (b e) in
 this is obtained by applying the Gram-Schmidt orthonormalisation procedure to `b.localFrame e`.
 In particular, if x is outside of `e.baseSet`, this returns the junk value 0. -/
 noncomputable def orthonormalFrame : ι → (x : B) → E x :=
-  VectorBundle.gramSchmidt (b.localFrame e)
+  VectorBundle.gramSchmidtNormed (b.localFrame e)
 
 omit [IsManifold IB n B] in
 /-- An orthonormal frame w.r.t. a local trivialisation is a local frame. -/
 lemma orthonormalFrame_isLocalFrameOn : IsLocalFrameOn IB F n (b.orthonormalFrame e) e.baseSet :=
-  (b.localFrame_isLocalFrameOn_baseSet IB n e).gramSchmidt
+  (b.localFrame_isLocalFrameOn_baseSet IB n e).gramSchmidtNormed
 
 omit [IsManifold IB n B] in
 variable (b e) in
@@ -222,7 +225,8 @@ lemma _root_.contMDiffAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.
 @[simp]
 lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
     b.orthonormalFrame e i x = 0 := by
-  simp only [orthonormalFrame, VectorBundle.gramSchmidt_apply]
+  simp only [orthonormalFrame, VectorBundle.gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed]
+  simp
   convert InnerProductSpace.gramSchmidt_zero ℝ i
   apply localFrame_apply_of_notMem e b hx
 
