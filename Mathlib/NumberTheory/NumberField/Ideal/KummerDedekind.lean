@@ -97,7 +97,7 @@ def ZModXQuotSpanEquivQuotSpanPair (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
   have h_eq₁ : span {map (Int.castRingHom (ZMod p)) Q} =
       span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)} ⊔
         span {map (Int.castRingHom (ZMod p)) Q} := by
-    rw [← span_insert, span_pair_comm, span_pair_eq_span_singleton_iff_dvd.mpr]
+    rw [← span_insert, span_pair_comm, span_pair_eq_span_left_iff_dvd.mpr]
     simp only [Multiset.mem_toFinset] at hQ
     exact ((Polynomial.mem_normalizedFactors_iff h₀).mp hQ).2.2
   have h_eq₂ : span {↑p} ⊔ span {(aeval θ) Q} = span {↑p, (aeval θ) Q} := by
