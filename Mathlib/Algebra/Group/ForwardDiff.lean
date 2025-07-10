@@ -375,17 +375,11 @@ theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R) :
         rw [Nat.choose_eq_zero_of_lt this]
         simp
       nth_rw 1 3 [Finset.range_eq_Ico]
-      have sum_Ico_split : ∑ k ∈ Finset.Ico 0 (p + 1), ↑(x.choose k) *
-          ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 =
-        ∑ k ∈ Finset.Ico 0 (x + 1), ↑(x.choose k) *
-          ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 +
-        ∑ k ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose k) *
-          ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * x ^ m) 0 := by
-        rw [← Finset.sum_Ico_consecutive]
-        · linarith
-        · simp at hx
-          linarith
-      rw [sum_Ico_split, sum_sum_eq_zero, add_zero]
+      have hx' : 0 ≤ (x + 1) := by omega
+      have hxp' : x + 1 ≤ p + 1 := by
+        simp only [mem_range] at hx
+        omega
+      rw [← Finset.sum_Ico_consecutive _ hx' hxp', sum_sum_eq_zero, add_zero]
     rw [sum_extend_inner_range, Finset.sum_comm]
     simp_rw [← Finset.sum_mul]
     apply Finset.sum_congr rfl
