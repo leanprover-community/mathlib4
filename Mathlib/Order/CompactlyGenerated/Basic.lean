@@ -641,10 +641,14 @@ theorem exists_sSupIndep_isCompl_sSup_atoms (b c : α) (hbc : b ≤ c)
 @[deprecated (since := "2024-11-24")]
 alias exists_setIndependent_isCompl_sSup_atoms := exists_sSupIndep_isCompl_sSup_atoms
 
-theorem exists_sSupIndep_of_sSup_atoms_eq_top (b : α) (h : sSup {a ≤ b | IsAtom a} = b) :
+theorem exists_sSupIndep_of_sSup_atoms (b : α) (h : sSup {a ≤ b | IsAtom a} = b) :
     ∃ s : Set α, sSupIndep s ∧ sSup s = b ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
   let ⟨s, s_ind, _, s_atoms⟩ := exists_sSupIndep_isCompl_sSup_atoms ⊥ b bot_le h
   ⟨s, s_ind, by simpa using s_atoms⟩
+
+theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup {a : α | IsAtom a} = ⊤) :
+    ∃ s : Set α, sSupIndep s ∧ sSup s = ⊤ ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
+  exists_sSupIndep_of_sSup_atoms ⊤ (by simpa)
 
 @[deprecated (since := "2024-11-24")]
 alias exists_setIndependent_of_sSup_atoms_eq_top := exists_sSupIndep_of_sSup_atoms_eq_top
