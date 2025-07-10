@@ -449,7 +449,7 @@ theorem submodule_eq_top_iff {f : M →ₗ[S] M} (hf : IsProj m f) :
     m = (⊤ : Submodule S M) ↔ f = LinearMap.id := by
   constructor <;> rintro rfl
   · ext
-    simp only [id_coe, id_eq, hf.2 _ mem_top]
+    simp [hf.map_id]
   · rw [← hf.range, range_id]
 
 end IsProj
