@@ -73,10 +73,13 @@ the following square is a pullback square:
 An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
 structure Classifier where
+  /-- The domain of the truth morphism -/
   Ω₀ : C
+  /-- The codomain of the truth morphism -/
   Ω : C
   /-- The truth morphism of the subobject classifier -/
   truth : Ω₀ ⟶ Ω
+  /-- The truth morphism is a monomorphism -/
   mt : Mono truth
   /-- The top arrow in the pullback square -/
   χ₀ {U X : C} (m : U ⟶ X) [Mono m] : U ⟶ Ω₀
