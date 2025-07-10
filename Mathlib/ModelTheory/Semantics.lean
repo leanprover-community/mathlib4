@@ -634,7 +634,7 @@ theorem realize_equivSentence_symm_con [L[[α]].Structure M]
     BoundedFormula.realize_relabelEquiv, Function.comp]
   refine _root_.trans ?_ BoundedFormula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
-  congr with (_ | a)
+  congr 1 with (_ | a)
   · simp
   · cases a
 

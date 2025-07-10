@@ -134,7 +134,7 @@ variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     ramificationIdx (algebraMap R S) p (P.comap e) = ramificationIdx (algebraMap R S₁) p P := by
   dsimp only [ramificationIdx]
-  congr
+  congr 1
   ext n
   simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
   rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
