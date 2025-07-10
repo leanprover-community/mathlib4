@@ -212,18 +212,11 @@ lemma ContMDiff.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : M) →
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
   fun x₀ ↦ .sum_section fun i hi ↦ (hs i hi) x₀
 
-end operations
-
-section
-
--- Let `V` be a vector bundle over a `C^k` manifold `M`.
-variable [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
-
 /-- The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a vector
 bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ` .
 
 This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
-lemma contMDiff_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} {u : Set M}
+lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} {u : Set M}
     (hψ : ContMDiffOn I 𝓘(𝕜) n ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
     (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
@@ -234,7 +227,7 @@ lemma contMDiff_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} {u :
     simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
   · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
 
-end
+end operations
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle.
 Denoted as `Cₛ^n⟮I; F, V⟯` within the `Manifold` namespace. -/
