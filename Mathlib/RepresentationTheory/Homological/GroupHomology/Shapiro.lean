@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
-import Mathlib.RepresentationTheory.FiniteIndex
 
 /-!
 # Shapiro's lemma for group homology
