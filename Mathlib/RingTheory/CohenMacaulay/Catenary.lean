@@ -18,14 +18,19 @@ variable {R : Type u} [CommRing R] [IsNoetherianRing R]
 
 open RingTheory.Sequence IsLocalRing Ideal
 
-lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
-    (Ideal.ofList rs).height ≤ rs.length := by
+omit [IsNoetherianRing R] in
+lemma Ideal.ofList_spanFinrank_le_length (rs : List R) :
+  Submodule.spanFinrank (ofList rs) ≤ rs.length := by
   classical
-  apply le_trans (Ideal.height_le_spanFinrank _ h)
-  simp only [Nat.cast_le, Ideal.ofList, ← List.coe_toFinset]
+  simp only [Ideal.ofList, ← List.coe_toFinset]
   apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finset.finite_toSet rs.toFinset))
   rw [Set.ncard_coe_Finset]
   apply List.toFinset_card_le
+
+lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
+    (Ideal.ofList rs).height ≤ rs.length := by
+  apply le_trans (Ideal.height_le_spanFinrank _ h)
+  exact (Nat.cast_le.mpr (ofList_spanFinrank_le_length rs))
 
 lemma IsLocalRing.Ideal.ofList_height_le_length' [IsLocalRing R] (rs : List R)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) : (Ideal.ofList rs).height ≤ rs.length :=
