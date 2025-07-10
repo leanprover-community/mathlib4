@@ -255,7 +255,7 @@ section structureLemmas
 open LawfulDayConvolutionMonoidalCategoryStruct
 
 open scoped Prod in
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma η_naturality {F₁ F₂ : C ⊛⥤ V} {x₁ x₂ y₁ y₂ : C}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
     F₁.functor.map f₁ ▷ F₂.functor.obj x₂ ≫
