@@ -201,7 +201,7 @@ variable [DecidableEq ι]
 
 /-- Local notation for the pointwise operation `n • s := {n • a | a ∈ s}` to avoid conflict with the
 pointwise operation `n • s := s + ... + s` (`n` times). -/
-local infixr:73 "•ℕ" => @SMul.smul _ _ Finset.smulFinset
+local infixr:73 " •ℕ " => @SMul.smul _ _ Finset.smulFinset
 
 lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
     piAntidiag univ n = Nat.antidiagonalTuple k n := by
