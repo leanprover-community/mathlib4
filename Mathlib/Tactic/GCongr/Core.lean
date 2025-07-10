@@ -444,7 +444,10 @@ partial def _root_.Lean.MVarId.gcongr
           catch _ => return (false, names, #[g])
     -- B. If the template doesn't contain any `?_`, and the goal wasn't closed by `rfl`,
     -- we report that the provided pattern doesn't apply.
-    unless ← containsHole tpl do
+    let hasHole ← match grewriteHole with
+      | none => containsHole tpl
+      | some hole => pure (tpl.findMVar? (· == hole)).isSome
+    unless hasHole do
       try withDefault g.applyRfl; return (true, names, #[])
       catch ex => throwError "gcongr failed, \
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
