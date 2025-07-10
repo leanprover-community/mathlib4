@@ -443,7 +443,7 @@ protected theorem top : IsProj (⊤ : Submodule S M) (id (R := S)) :=
   ⟨fun _ ↦ trivial, fun _ ↦ congrFun rfl⟩
 
 theorem subtype_comp_codRestrict {U : Submodule S M} {f : M →ₗ[S] M} (hf : IsProj U f) :
-    (Submodule.subtype U).comp hf.codRestrict = f := rfl
+    U.subtype ∘ₗ hf.codRestrict = f := rfl
 
 theorem submodule_eq_top_iff {f : M →ₗ[S] M} (hf : IsProj m f) :
     m = (⊤ : Submodule S M) ↔ f = LinearMap.id := by
