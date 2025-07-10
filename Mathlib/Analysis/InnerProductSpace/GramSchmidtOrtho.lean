@@ -21,7 +21,7 @@ and outputs a set of orthogonal vectors which have the same span.
 - `span_gramSchmidt`: `gramSchmidt` preserves span of vectors.
 - `gramSchmidt_ne_zero`: if the input vectors of `gramSchmidt` are linearly independent,
   then the output vectors are non-zero.
-- `gramSchmidt_basis`: the basis produced by the Gram-Schmidt process when given a basis as input
+- `gramSchmidtBasis`: the basis produced by the Gram-Schmidt process when given a basis as input
 - `gramSchmidtNormed`:
   the normalized `gramSchmidt` (i.e each vector in `gramSchmidtNormed` has unit length.)
 - `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthornormal system of vectors.
