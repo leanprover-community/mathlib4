@@ -515,7 +515,75 @@ lemma IsPos.exists_mem_support_pos_pairingIn [Finite ι] [CharZero R] {i : ι} (
   · exact Left.nsmul_nonpos (contra j (hf hj)) (f j)
   · aesop
 
-variable [P.IsReduced] [Nontrivial M] [NoZeroSMulDivisors ℤ M] [IsDomain R] [Finite ι]
+variable [P.IsReduced] [Nontrivial M] [NoZeroSMulDivisors ℤ M] [Finite ι]
+
+lemma IsPos.induction_on_reflect
+    {i : ι} (h₀ : b.IsPos i)
+    {p : ι → Prop}
+    (h₁ : ∀ i ∈ b.support, p i)
+    (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
+    p i := by
+  replace h₂ : ∀ i j k, P.root k = P.reflection j (P.root i) → p i → j ∈ b.support → p k := by
+    -- TODO Obviate need for this by rewriting the proof to use original form of `h₂`
+    simp_rw [← root_reflectionPerm]
+    simpa [-root_reflectionPerm]
+  classical
+  have _i : CharZero R := CharZero.of_noZeroSMulDivisors R M
+  obtain ⟨f, hf₀, hf⟩ := id h₀
+  generalize hN : ∑ j ∈ b.support, f j = N
+  induction N using Nat.strongRecOn generalizing f i with
+  | ind n ih =>
+    obtain ⟨j, hj, hj'⟩ := h₀.exists_mem_support_pos_pairingIn
+    rcases eq_or_ne i j with rfl | hij; · exact h₁ i hj
+    set k := P.reflectionPerm j i with hk
+    refine h₂ k j i (by simp [hk]) ?_ hj
+    have hk₀ : b.IsPos k := reflectionPerm hij h₀ hj
+    let f' := f - Pi.single j (P.pairingIn ℤ i j).natAbs
+    have hff' : f = f' + Pi.single j (P.pairingIn ℤ i j).natAbs :=
+      RootPairing.Base.IsPos.reflectionPerm.extracted hij hj _ hf₀ hf hj'
+    have hf' : f'.support ⊆ b.support := by
+      intro l hl
+      rcases eq_or_ne j l with rfl | hlj; · assumption
+      apply hf₀
+      simpa [f', hlj] using hl
+    have hfk : P.root k = ∑ l ∈ b.support, f' l • P.root l := by
+      -- TODO Fix up terrible proof
+      replace hj' : (P.pairingIn ℤ i j).natAbs = P.pairingIn ℤ i j := by omega
+      simp_rw [hk, root_reflectionPerm, reflection_apply_root, hf, hff', Pi.add_apply, add_smul,
+        Finset.sum_add_distrib, add_sub_assoc, add_eq_left, sub_eq_zero]
+      rw [Finset.sum_eq_single_of_mem j hj (fun l _ hl ↦ by simp [hl]),
+        Pi.single_eq_same, ← natCast_zsmul, hj', ← Int.cast_smul_eq_zsmul R,
+        ← P.algebraMap_pairingIn ℤ, algebraMap_int_eq, eq_intCast]
+    have hk' : ∑ l ∈ b.support, f' l + P.pairingIn ℤ i j = ∑ l ∈ b.support, f l := by
+      simp [hff', Finset.sum_add_distrib, hj'.le, eq_comm (a := P.pairingIn ℤ i j), hj]
+    exact ih (∑ l ∈ b.support, f' l) (by omega) hk₀ f' hf' hfk rfl
+
+lemma induction_reflect (i : ι) {p : ι → Prop}
+    (h₀ : ∀ i, p i → p (P.reflectionPerm i i))
+    (h₁ : ∀ i ∈ b.support, p i)
+    (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
+    p i := by
+  letI := P.indexNeg
+  rcases IsPos.or b i with hi | hi
+  · exact hi.induction_on_reflect h₁ h₂
+  · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
+    exact hi.induction_on_reflect h₁ h₂
+
+lemma forall_mem_support_invtSubmodule_iff (q : Submodule R M) :
+    (∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) ↔
+      (∀ i, q ∈ invtSubmodule (P.reflection i)) := by
+  have : CharZero R := CharZero.of_noZeroSMulDivisors R M
+  refine ⟨fun hq i ↦ ?_, fun hq i _ ↦ hq i⟩
+  letI := P.indexNeg
+  have (j : ι) : P.reflection (-j) = P.reflection j := by ext x; simp [reflection_apply, two_smul]
+  have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero _⟩
+  refine b.induction_reflect i (by aesop) hq ?_
+  clear i
+  intro i j hi hj
+  rw [reflection_reflectionPerm]
+  exact Module.End.invtSubmodule.comp _ (Module.End.invtSubmodule.comp _ (hq j hj) hi) (hq j hj)
+
+variable [IsDomain R]
 
 lemma IsPos.induction_on_add
     {i : ι} (h₀ : b.IsPos i)
@@ -587,74 +655,6 @@ lemma induction_add (i : ι) {p : ι → Prop}
   · exact hi.induction_on_add h₁ h₂
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
     exact hi.induction_on_add h₁ h₂
-
-omit [IsDomain R]
-
-lemma IsPos.induction_on_reflect
-    {i : ι} (h₀ : b.IsPos i)
-    {p : ι → Prop}
-    (h₁ : ∀ i ∈ b.support, p i)
-    (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
-    p i := by
-  replace h₂ : ∀ i j k, P.root k = P.reflection j (P.root i) → p i → j ∈ b.support → p k := by
-    -- TODO Obviate need for this by rewriting the proof to use original form of `h₂`
-    simp_rw [← root_reflectionPerm]
-    simpa [-root_reflectionPerm]
-  classical
-  have _i : CharZero R := CharZero.of_noZeroSMulDivisors R M
-  obtain ⟨f, hf₀, hf⟩ := id h₀
-  generalize hN : ∑ j ∈ b.support, f j = N
-  induction N using Nat.strongRecOn generalizing f i with
-  | ind n ih =>
-    obtain ⟨j, hj, hj'⟩ := h₀.exists_mem_support_pos_pairingIn
-    rcases eq_or_ne i j with rfl | hij; · exact h₁ i hj
-    set k := P.reflectionPerm j i with hk
-    refine h₂ k j i (by simp [hk]) ?_ hj
-    have hk₀ : b.IsPos k := reflectionPerm hij h₀ hj
-    let f' := f - Pi.single j (P.pairingIn ℤ i j).natAbs
-    have hff' : f = f' + Pi.single j (P.pairingIn ℤ i j).natAbs :=
-      RootPairing.Base.IsPos.reflectionPerm.extracted hij hj _ hf₀ hf hj'
-    have hf' : f'.support ⊆ b.support := by
-      intro l hl
-      rcases eq_or_ne j l with rfl | hlj; · assumption
-      apply hf₀
-      simpa [f', hlj] using hl
-    have hfk : P.root k = ∑ l ∈ b.support, f' l • P.root l := by
-      -- TODO Fix up terrible proof
-      replace hj' : (P.pairingIn ℤ i j).natAbs = P.pairingIn ℤ i j := by omega
-      simp_rw [hk, root_reflectionPerm, reflection_apply_root, hf, hff', Pi.add_apply, add_smul,
-        Finset.sum_add_distrib, add_sub_assoc, add_eq_left, sub_eq_zero]
-      rw [Finset.sum_eq_single_of_mem j hj (fun l _ hl ↦ by simp [hl]),
-        Pi.single_eq_same, ← natCast_zsmul, hj', ← Int.cast_smul_eq_zsmul R,
-        ← P.algebraMap_pairingIn ℤ, algebraMap_int_eq, eq_intCast]
-    have hk' : ∑ l ∈ b.support, f' l + P.pairingIn ℤ i j = ∑ l ∈ b.support, f l := by
-      simp [hff', Finset.sum_add_distrib, hj'.le, eq_comm (a := P.pairingIn ℤ i j), hj]
-    exact ih (∑ l ∈ b.support, f' l) (by omega) hk₀ f' hf' hfk rfl
-
-lemma induction_reflect (i : ι) {p : ι → Prop}
-    (h₀ : ∀ i, p i → p (P.reflectionPerm i i))
-    (h₁ : ∀ i ∈ b.support, p i)
-    (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
-    p i := by
-  letI := P.indexNeg
-  rcases IsPos.or b i with hi | hi
-  · exact hi.induction_on_reflect h₁ h₂
-  · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
-    exact hi.induction_on_reflect h₁ h₂
-
-omit [Nontrivial M] in
-lemma forall_mem_support_invtSubmodule_iff [CharZero R] (q : Submodule R M) :
-    (∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) ↔
-      (∀ i, q ∈ invtSubmodule (P.reflection i)) := by
-  refine ⟨fun hq i ↦ ?_, fun hq i _ ↦ hq i⟩
-  letI := P.indexNeg
-  have (j : ι) : P.reflection (-j) = P.reflection j := by ext x; simp [reflection_apply, two_smul]
-  have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero _⟩
-  refine b.induction_reflect i (by aesop) hq ?_
-  clear i
-  intro i j hi hj
-  rw [reflection_reflectionPerm]
-  exact Module.End.invtSubmodule.comp _ (Module.End.invtSubmodule.comp _ (hq j hj) hi) (hq j hj)
 
 end PositiveRoots
 
