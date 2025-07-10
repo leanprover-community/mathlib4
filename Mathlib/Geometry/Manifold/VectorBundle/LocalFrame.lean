@@ -421,7 +421,6 @@ omit [IsManifold I 0 M] in
 lemma localFrame_repr_apply_zero_at
     (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
     b.localFrame_repr I e i s x = 0 := by
-  --rw [b.localFrame_repr_congr (s' := 0) (by simp [hs])]
   simp only [localFrame_repr]
   exact (localFrame_isLocalFrameOn_baseSet I 1 e b).repr_apply_zero_at hs i
 

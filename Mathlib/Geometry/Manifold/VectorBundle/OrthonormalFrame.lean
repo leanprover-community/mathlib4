@@ -82,103 +82,111 @@ def IsOrthogonalFrameOn.gramSchmidt (hs : IsOrthogonalFrameOn IB F n s u) :
 
 /-! # Determining smoothness of a section via its local frame coefficients
 
-We show that for any local frame `{s i}` on `u ⊆ B`, a section `t` is smooth on `u` if and only if
-its coefficients in `{s i}` are. This argument crucially depends on the existence of a smooth
-bundle metric on `V` (which always holds in finite dimensions, and in certain important
+We show that for any orthogonal local frame `{s i}` on `u ⊆ B`, a section `t` is smooth on `u`
+if and only if its coefficients in `{s i}` are. This argument crucially depends on the existence of
+a smooth bundle metric on `V` (which always holds in finite dimensions, and in certain important
 infinite-dimensional cases).
 
 See `LocalFrame.lean` for a similar statement, about local frames induced by a local trivialisation
 on finite rank bundles over any complete field.
+
+The orthogonality requirement can be removed, with additional technical effort: see the comment
+below for details. It simplifies the proofs as the local frame coefficients take a particularly
+simple form in orthgonal frames.
 -/
-
--- The local frame coefficients take a particularly simple form in orthogonal frames.
-
-variable (t) in
-lemma IsOrthogonalFrameOn.repr_eq_inner (hs : IsOrthogonalFrameOn IB F n s u)
-    {x} (hx : x ∈ u) (i : ι) :
-    hs.toIsLocalFrameOn.repr i t x = inner ℝ (s i x) (t x) / (‖s i x‖ ^ 2) := by
-  -- should be a general lemma: orthogonal basis, have this identity
-  sorry
-
--- deduce an inductive formula for all frame coefficients for any local frame
-
-variable (t) in
-lemma IsOrthogonalFrameOn.repr_eq (hs : IsLocalFrameOn IB F n s u) {x} (hx : x ∈ u) (i : ι) :
-    hs.repr i t x = sorry := by
-  -- normalise the sections s
-  let s' := VectorBundle.gramSchmidt s
-  have : hs.gramSchmidt.repr i t x = ⟪s' i x, t x⟫ / ‖s' i x‖ ^ 2 := by
-    apply IsOrthogonalFrameOn.repr_eq_inner _ ?_ hx i
-    sorry
-  -- write s' = s - ∑ ... and apply induction? is that sound?
-  sorry
 
 section smoothness
 
-namespace IsLocalFrameOn
+namespace IsOrthogonalFrameOn
 
-variable (hs : IsLocalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
+variable (hs : IsOrthogonalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
 set_option linter.style.commandStart false
 
--- include hs in
--- lemma aux (hx : x ∈ u) (i : ι) :
---     hs.repr i t x = inner ℝ (s i x) (t x) / (‖s i x‖ ^ 2) := by
---   -- is this actually true, without Gram-Schmidt-ing everything?
---   -- there is a version of this which is true (Gram-Schmidt, then it's obvious, then revert)...
---   -- which is more tedious to state!
---   sorry --hs.repr i t x = (inner ℝ (s i x) (t x)) / (‖s i x‖ ^ 2) • (s i x) := sorry
+variable (t) in
+lemma repr_eq_inner (hs : IsOrthogonalFrameOn IB F n s u)
+    {x} (hx : x ∈ u) (i : ι) :
+    hs.repr i t x = ⟪s i x, t x⟫ / (‖s i x‖ ^ 2) := by
+  -- should be a general lemma: orthogonal basis, have this identity
+  sorry
 
---   -- better proof, assuming finiteness
---   -- let s' be the orthonormalised versions, then hs'.repr i t x is the coefficient of s' i in t
---   -- that coefficient is the scalar product we want, same for the other intermediate ones
---   -- then add up, get something with smoothness!
-
--- XXX: only need one of these hypotheses!
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
-lemma contMDiffAt_repr (hx : x ∈ u) (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
+lemma contMDiffWithinAt_repr (ht : CMDiffAt[u] n (T% t) x) (hx : x ∈ u) (i : ι) :
+    CMDiffAt[u] n (hs.repr i t) x := by
+  have aux : CMDiffAt[u] n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x := by
+    refine ContMDiffWithinAt.smul ?_ ?_
+    · sorry -- same for Gram-Schmidt
+    refine ContMDiffWithinAt.inv₀ ?_ ?_
+    · sorry -- likewise
+    have : s i x ≠ 0 := by
+      have := hs.linearIndependent hx
+      sorry -- lemma: linearly independent => all non-zero
+    simp [this]
+  exact aux.congr_of_mem (fun y hy ↦ hs.repr_eq_inner _ hy _) hx
+
+/-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
+lemma contMDiffAt_repr (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
     CMDiffAt n (hs.repr i t) x := by
-  sorry
+  sorry -- easy...
+  -- have aux : CMDiffAt n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x := by
+  --   refine ContMDiffAt.smul ?_ ?_
+  --   · sorry -- same for Gram-Schmidt
+  --   refine ContMDiffAt.inv₀ ?_ ?_
+  --   · sorry --refine ContMDiffAt.smul ?_ ?_
+  --   · have : s i x ≠ 0 := by
+  --       have := hs.linearIndependent (x := x) (mem_of_mem_nhds hu)
+  --       sorry -- lemma: linearly independent => all non-zero
+  --     simp [this]
+  -- apply aux.congr_of_eventuallyEq
+  -- apply Filter.eventually_of_mem hu fun y hy ↦ hs.repr_eq_inner t hy i
 
-/-- If `{s i}` is a local frame on `u` and `t` is `C^k` on `u`,
-so is its coefficient in the local frame `s i` -/
-lemma contMDiffOn_repr
-    (hu : IsOpen u) (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.repr i t) := by
-  intro x' hx
-  apply ContMDiffAt.contMDiffWithinAt
-  apply hs.contMDiffAt_repr hx (hu.mem_nhds hx) (ht.contMDiffAt <| hu.mem_nhds hx)
+-- Future: prove the same result for all local frames
+-- if `{s i}` is a local frame on `u`, and `{s' i}` are the corresponding orthogonalised frame,
+-- for each `x ∈ u` the vectors `{s i x}` and `{s' i x}` are bases of `E x`,
+-- and the coefficients w.r.t. `s i` and `s' i x` are related by the base change matrix.
+-- This matrix depends smoothly on `x`, hence the frame coefficients w.r.t. `{s i}` are smooth iff
+-- those w.r.t. `{s' i}` are.
 
-/-- A section `s` of `V` is `C^k` at `x ∈ u` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma _root_.contMDiffAt_iff_isLocalFrameOn_repr --[Fintype ι]
-    (hx : x ∈ u) : CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.repr i t) x := by
-  refine ⟨fun h i ↦ hs.contMDiffAt_repr hx sorry/-hu-/ h i, fun hi ↦ ?_⟩
-  sorry /-have this (i) : CMDiffAt n (T% (hs.repr i t • s i)) x :=
-    (hi i).smul_section (hs.contMDiffAt sorry/-hu-/ hx i)
-  have almost : CMDiffAt n
-      (T% (fun x ↦ ∑ i, (hs.repr i t) x • s i x)) x :=
-    .sum_section fun i _ ↦ this i
-  apply almost.congr_of_eventuallyEq ?_
-  obtain ⟨u, heq, hu, hxu⟩ := eventually_nhds_iff.mp (hs.repr_spec (I := I) t hx sorry)
-  exact eventually_of_mem (hu.mem_nhds hxu) fun x hx ↦ by simp [heq x hx] -/
+/-- If `{s i}` is an orthogonal local frame on a neighbourhood `u` of `x` and `t` is `C^k` on `u`,
+so is its coefficient in the frame `{s i}`. -/
+lemma contMDiffOn_repr (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.repr i t) :=
+  fun x' hx ↦ hs.contMDiffWithinAt_repr (ht x' hx) hx _
 
--- omit [IsManifold I 0 M] in
-/-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
+/-- A section `s` of `V` is `C^k` at `x` iff each of its coefficients in an orthogonal
+local frame near `x` is. -/
+lemma contMDiffAt_iff_repr [Fintype ι]
+    (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.repr i t) x :=
+  ⟨fun h i ↦ hs.contMDiffAt_repr hu h i, fun h ↦ hs.contMDiffAt_of_repr h hu⟩
+
+/-- If `{s i}` is an orthogonal local frame on `s`, a section `s` of `V` is `C^k` on `u` iff
+each of its coefficients `hs.repr i s` w.r.t. the local frame `{s i}` is. -/
 lemma contMDiffOn_iff_repr [Fintype ι] :
-    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.repr i t) := by
---   refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
---   have this (i) : CMDiff[t] k (T% ((b.localFrame_repr I e i) s • b.localFrame e i)) :=
---     (hi i).smul_section ((b.contMDiffOn_localFrame_baseSet k e i).mono ht')
---   let rhs := fun x' ↦ ∑ i, (b.localFrame_repr I e i) s x' • b.localFrame e i x'
---   have almost : CMDiff[t] k (T% rhs) := .sum_section fun i _ ↦ this i
---   apply almost.congr
---   intro y hy
---   congr
---   exact b.localFrame_repr_sum_eq s (ht' hy)
-  sorry
+    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.repr i t) :=
+  ⟨fun h i ↦ hs.contMDiffOn_repr h i, fun hi ↦ hs.contMDiffOn_of_repr hi⟩
 
-end IsLocalFrameOn
+-- unused, just stating for convenience/nice API
+include hs in
+lemma contMDiffAt_iff_repr' [Fintype ι]
+    (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (fun x ↦ ⟪s i x, t x⟫) x := by
+  trans ∀ i, CMDiffAt n (fun x ↦ ⟪s i x, t x⟫/ (‖s i x‖ ^ 2)) x
+  · rw [hs.contMDiffAt_iff_repr hu]
+    have (i : ι) := Filter.eventually_of_mem hu fun x hx ↦ (hs.repr_eq_inner t hx i)
+    exact ⟨fun h i ↦ (h i).congr_of_eventuallyEq <| Filter.EventuallyEq.symm (this i),
+      fun h i ↦ (h i).congr_of_eventuallyEq (this i)⟩
+  · peel with i
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · sorry -- similar to other direction below
+    · apply h.smul
+      refine ContMDiffAt.inv₀ ?_ ?_
+      · sorry -- rewrite ‖ ‖² = ⟨s, s⟩
+      · sorry -- neq 0
+
+-- unused, just stating for convenience/nice API
+lemma contMDiffOn_iff_repr' [Fintype ι] :
+    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (fun x ↦ ⟪s i x, t x⟫) :=
+  sorry -- similar to the above lemma
+
+end IsOrthogonalFrameOn
 
 end smoothness
 
@@ -234,15 +242,4 @@ lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
 
 end Basis
 
-/- next steps:
-
-lemma: local frame coefficients (in the same way),
-a section is C^k iff its coefficients are
-(prove for IsLocalFrameOn first!)
-
-lemma: frame coefficient of s_i is the product with that local section
-  (only true here, by orthogonality)
-
-cor: section t is smooth iff each product <t, si> is (just rewrite twice)
-
-lemma: uniqueness (what I need for torsion) -/
+/- next lemma: uniqueness (what I need for torsion) -/
