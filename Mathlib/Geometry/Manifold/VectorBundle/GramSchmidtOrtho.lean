@@ -106,8 +106,8 @@ theorem gramSchmidt_zero (n : ι) : gramSchmidt (0 : ι → (x : B) → E x) n =
   simpa using InnerProductSpace.gramSchmidt_zero ..
 
 variable (s) in
-/-- **Gram-Schmidt Orthogonalisation**:
-`gramSchmidt` produces an orthogonal system of vectors. -/
+/-- **Gram-Schmidt Orthogonalisation**: `gramSchmidt` produces a point-wise orthogonal system
+of sections. -/
 theorem gramSchmidt_orthogonal {a b : ι} (h₀ : a ≠ b) (x) :
     ⟪gramSchmidt s a x, gramSchmidt s b x⟫ = 0 :=
   InnerProductSpace.gramSchmidt_orthogonal _ _ h₀
@@ -146,7 +146,7 @@ theorem span_gramSchmidt_Iio (c : ι) (x) :
   InnerProductSpace.span_gramSchmidt_Iio _ _ _
 
 -- variable (s) in
--- /-- `gramSchmidt` preserves span of vectors. -/
+-- /-- `gramSchmidt` preserves the point-wise span of sections. -/
 -- theorem span_gramSchmidt (x) : span ℝ (range (gramSchmidt ℝ (s · x))) = span ℝ (range (s · x)) :=
 --   span_eq_span (range_subset_iff.2 fun _ ↦
 --     span_mono (image_subset_range _ _) <| gramSchmidt_mem_span _ _ le_rfl) <|
@@ -177,8 +177,8 @@ theorem gramSchmidt_ne_zero_coe (n : ι) (x)
   InnerProductSpace.gramSchmidt_ne_zero_coe _ h₀
 
 variable (s) in
-/-- If the input vectors of `gramSchmidt` are linearly independent,
-then the output vectors are non-zero. -/
+/-- If the input sections of `gramSchmidt` are point-wise linearly independent,
+the resulting sections are non-zero. -/
 theorem gramSchmidt_ne_zero (n : ι) {x} (h₀ : LinearIndependent ℝ (s · x)) :
     gramSchmidt s n x ≠ 0 :=
   InnerProductSpace.gramSchmidt_ne_zero _ h₀
@@ -186,7 +186,8 @@ theorem gramSchmidt_ne_zero (n : ι) {x} (h₀ : LinearIndependent ℝ (s · x))
 -- not needed at the moment: I want a point-wise version, along the lines
 -- "if s i x is a basis, then gramSchmidt s i x is a triangular matrix"
 /-
-/-- `gramSchmidt` produces a triangular matrix of vectors when given a basis. -/
+/-- At each point, when given a basis, `gramSchmidt` produces a triangular matrix of section
+values. -/
 theorem gramSchmidt_triangular {x} {i j : ι} (hij : i < j) (b : Basis ι ℝ (E x)) :
     b.repr (gramSchmidt b i x) j = 0 := sorry
      b.repr (gramSchmidt b i) j = 0 := by
@@ -197,10 +198,54 @@ theorem gramSchmidt_triangular {x} {i j : ι} (hij : i < j) (b : Basis ι ℝ (E
      Basis.repr_support_subset_of_mem_span b (Set.Iio j) this
    exact (Finsupp.mem_supported' _ _).1 ((Finsupp.mem_supported ℝ _).2 this) j Set.notMem_Iio_self-/
 
-/-- `gramSchmidt` produces linearly independent vectors when given linearly independent vectors. -/
+/-- `gramSchmidt` produces point-wise linearly independent sections when given linearly
+independent sections. -/
 theorem gramSchmidt_linearIndependent {x} (h₀ : LinearIndependent ℝ (s · x)) :
     LinearIndependent ℝ (gramSchmidt s · x) :=
   InnerProductSpace.gramSchmidt_linearIndependent h₀
+
+noncomputable def gramSchmidtNormed [WellFoundedLT ι]
+    (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
+  InnerProductSpace.gramSchmidtNormed ℝ (s · x) n
+
+variable {x}
+
+theorem gramSchmidtNormed_unit_length_coe (n : ι)
+    (h₀ : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic n → ι))) :
+    ‖gramSchmidtNormed s n x‖ = 1 :=
+  InnerProductSpace.gramSchmidtNormed_unit_length_coe n h₀
+
+theorem gramSchmidtNormed_unit_length (n : ι) (h₀ : LinearIndependent ℝ (s · x)) :
+    ‖gramSchmidtNormed s n x‖ = 1 :=
+  InnerProductSpace.gramSchmidtNormed_unit_length n h₀
+
+theorem gramSchmidtNormed_unit_length' {n : ι} (hn : gramSchmidtNormed s n x ≠ 0) :
+    ‖gramSchmidtNormed s n x‖ = 1 :=
+  InnerProductSpace.gramSchmidtNormed_unit_length' hn
+
+/-- **Gram-Schmidt Orthonormalization**: `gramSchmidtNormed` applied to a point-wise linearly
+independent set of sections produces a point-wise orthornormal system of sections. -/
+theorem gramSchmidtNormed_orthonormal (h₀ : LinearIndependent ℝ (s · x)) :
+    Orthonormal ℝ (gramSchmidtNormed s · x) :=
+  InnerProductSpace.gramSchmidtNormed_orthonormal h₀
+
+variable (s) in
+/-- **Gram-Schmidt Orthonormalization**: `gramSchmidtNormed` produces a point-wise orthornormal
+system of sections after removing the sections which become zero in the process. -/
+theorem gramSchmidtNormed_orthonormal' (x) :
+    Orthonormal ℝ fun i : { i | gramSchmidtNormed s i x ≠ 0 } => gramSchmidtNormed s i x :=
+  InnerProductSpace.gramSchmidtNormed_orthonormal' _
+
+open Submodule Set Order
+
+-- Statement needs to be changed a bit to make it type-check.
+-- variable (s) in
+-- theorem span_gramSchmidtNormed (t : Set ι) :
+--     span ℝ (gramSchmidtNormed s '' t) = span ℝ (gramSchmidt s '' t) := sorry
+
+-- theorem span_gramSchmidtNormed_range (f : ι → E) :
+--     span 𝕜 (range (gramSchmidtNormed 𝕜 f)) = span 𝕜 (range (gramSchmidt 𝕜 f)) := by
+--   simpa only [image_univ.symm] using span_gramSchmidtNormed f univ
 
 end VectorBundle
 
