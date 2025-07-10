@@ -83,7 +83,7 @@ noncomputable def dividedPowers_of_injective (f : A →+* B) (hf : Injective f)
     simp only [dif_pos hx]
     obtain ⟨y, hy, h⟩ := hmem 1 hx
     rw [hJ.dpow_one (hIJ ▸ Ideal.mem_map_of_mem f hx)] at h ⊢
-    simp [← h, Function.leftInverse_invFun hf y, hy, hf h]
+    simp [← h, Function.leftInverse_invFun hf y, hf h]
   dpow_mem {n x} hn hx := by
     obtain ⟨y, hy, h⟩ := hmem n hx
     simp [dif_pos hx, ← h, Function.leftInverse_invFun hf y, hy hn]
@@ -194,7 +194,7 @@ theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ideal.span 
   have hiff := PadicInt.norm_le_pow_iff_mem_span_pow ⟨dpow' p n x, dpow'_int p n hx⟩ 1
   rw [pow_one] at hiff
   rw [← hiff]
-  simp only [dif_pos hx, cast_one, zpow_neg_one]
+  simp only [cast_one, zpow_neg_one]
   exact dpow'_norm_le_of_ne_zero p hm hx
 
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
