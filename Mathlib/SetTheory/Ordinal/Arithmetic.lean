@@ -370,7 +370,7 @@ theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a := by
   simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_lt_iff_not_isSuccPrelimit
 
 theorem succ_pred_eq_iff_not_isSuccPrelimit {o} : succ (pred o) = o ↔ ¬ IsSuccPrelimit o := by
-  rw [← (self_le_succ_pred o).le_iff_eq, succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
+  rw [← (self_le_succ_pred o).ge_iff_eq', succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
 
 @[deprecated succ_pred_iff_is_succ (since := "2025-02-11")]
 theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a := by
