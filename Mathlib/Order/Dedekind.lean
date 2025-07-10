@@ -315,7 +315,11 @@ def ofElementEmbedding : β ↪o DedekindCut β where
 
 variable [CompleteLattice γ]
 
-/-- Any order embedding `β ↪o γ` into a complete lattice factors through `DedekindCut β`. -/
+/-- Any order embedding `β ↪o γ` into a complete lattice factors through `DedekindCut β`.
+
+This map is defined so that `factorEmbedding f A = sSup (f '' A.lowerCut)`. Although the
+construction `factorEmbedding f A = sInf (f '' A.upperCut)` would also work, these do **not** in
+general give equal embeddings. -/
 def factorEmbedding (f : β ↪o γ) : DedekindCut β ↪o γ :=
   .ofMapLEIff (fun A ↦ sSup (f '' A.lowerCut)) <| by
     refine fun A B ↦ ⟨fun h x hx ↦ ?_, fun h ↦ sSup_le_sSup (image_mono h)⟩
@@ -325,7 +329,6 @@ def factorEmbedding (f : β ↪o γ) : DedekindCut β ↪o γ :=
     rw [← f.le_iff_le]
     exact h _ (image_upperCut_subset_upperBounds _ f.monotone (mem_image_of_mem _ hy)) hx
 
-/-- Note that `factorEmbedding f A = sInf (f '' A.upperCut)` is not necessarily true! -/
 theorem factorEmbedding_apply (f : β ↪o γ) (A : DedekindCut β) :
     factorEmbedding f A = sSup (f '' A.lowerCut) :=
   rfl
