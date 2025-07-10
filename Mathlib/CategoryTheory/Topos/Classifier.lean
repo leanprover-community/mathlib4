@@ -93,6 +93,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Classifier
 
+/-- `Ω₀` is a terminal object. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ :=
     have : Mono c.truth := c.mt
     have : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y => {
@@ -114,13 +115,13 @@ def uniqueToΩ₀ {c : Classifier C} (U : C) : U ⟶ c.Ω₀ :=
   isTerminalΩ₀.from U
 
 /-- The more practical version of `uniq'` without the argument `χ₀` -/
-def uniq {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ c.Ω)
+lemma uniq {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ c.Ω)
     (hχ' : IsPullback m (uniqueToΩ₀ _) χ' (c.truth)) : χ' = c.χ m :=
   c.uniq' m (uniqueToΩ₀ _) χ' hχ'
 
 /-- The more practical version of `isPullback'` where the top arrow in the pullback square is
 `uniqueToΩ₀` instead of `χ₀ m`. -/
-def isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
+lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
     IsPullback m (uniqueToΩ₀ _) (c.χ m) c.truth :=
   (isTerminalΩ₀.hom_ext (c.χ₀ m) (uniqueToΩ₀ U)) ▸ c.isPullback' m
 
@@ -137,9 +138,9 @@ variable (C) [HasClassifier C]
 
 noncomputable section
 
-/-- Notation for the objects in an arbitrary choice of a subobject classifier -/
-
+/-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
 abbrev Ω₀ : C := HasClassifier.exists_classifier.some.Ω₀
+/-- Notation for the `Ω` in an arbitrary choice of a subobject classifier -/
 abbrev Ω : C := HasClassifier.exists_classifier.some.Ω
 
 /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
