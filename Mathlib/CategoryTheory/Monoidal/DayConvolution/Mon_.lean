@@ -88,8 +88,7 @@ instance mon_ClassOfLaxMonoidal : Mon_Class (mk F) where
   mul_assoc := by
     ext1
     apply Functor.hom_ext_of_isLeftKanExtension
-      ((mk F ⊗ mk F) ⊗ mk F).functor
-        (η (_ ⊗ _) _)
+      ((mk F ⊗ mk F) ⊗ mk F).functor (η (_ ⊗ _) _)
     letI :
       ((mk F ⊗ mk F).functor ⊠ (mk F).functor).IsLeftKanExtension
         (ExternalProduct.extensionUnitLeft _ (η _ _) _) :=
