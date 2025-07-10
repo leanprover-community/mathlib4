@@ -33,9 +33,9 @@ is too strong.
 ## Main definitions / results:
 * `RootSystem.Base`: a base of a root pairing.
 * `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
-* `RootSystem.Base.induction_on_add`: an induction principle for predicates on (co)roots which
+* `RootSystem.Base.induction_add`: an induction principle for predicates on (co)roots which
   respect addition of a simple root.
-* `RootSystem.Base.induction_on_reflect`: an induction principle for predicates on (co)roots which
+* `RootSystem.Base.induction_reflect`: an induction principle for predicates on (co)roots which
   respect reflection in a simple root.
 
 ## TODO
