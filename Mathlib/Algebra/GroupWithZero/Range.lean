@@ -130,11 +130,11 @@ def restrict₀ : A →*₀ (valueGroup₀ f) where
 @[simp]
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
-  by simp [restrict₀, h]
+  by simp [restrict₀_apply, h]
 
 @[simp]
 lemma restrict₀_of_eq_zero {a : A} (h : f a = 0) :
-    restrict₀ f a = 0 := by simp [restrict₀, h]
+    restrict₀ f a = 0 := by simp [restrict₀_apply, h]
 
 @[simp]
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by
@@ -143,7 +143,7 @@ lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by
 
 @[simp]
 lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroEmbedding (restrict₀ f a) = f a := by
-  simp [restrict₀]
+  simp [restrict₀_apply]
   split_ifs with h
   · simp [h]
   · rfl
@@ -178,6 +178,65 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     obtain ⟨⟨y, hy⟩, hx₀⟩ := h
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
+
+
+@[simp]
+lemma restrict₀_range_eq_top : range (restrict₀ f) = ⊤ := by
+  -- let g : A →* valueGroup₀ f := restrict₀ f
+  -- show range g = ⊤
+  rw [top_eq_univ, range_eq_univ]
+  intro x
+  match x with
+  | 0 => use 0; simp
+  | some a =>
+    rcases a with ⟨u, hu⟩
+    let v : Units.val '' ((valueGroup f) : Set Bˣ) := by
+      use u
+      rw [valueGroup_eq_range]
+      simp
+      change u ∈ (valueGroup f : Set Bˣ) at hu
+      rw [← valueMonoid_eq_valueGroup'] at hu
+      change u ∈ (valueMonoid f : Set Bˣ) at hu
+      rw [mem_valueMonoid_iff] at hu
+
+
+
+
+
+
+
+-- def restrict₀_valueGroup_equiv : valueMonoid (restrict₀ f) ≃ valueMonoid f where
+--   toFun z := by
+--     rcases z with ⟨x, hx⟩
+--     rw [mem_valueMonoid_iff] at hx
+--
+--   invFun x := by sorry
+--   left_inv x := by sorry
+--   right_inv x := by sorry
+
+--
+-- def restrict₀_valueGroup_equiv : valueGroup (restrict₀ f) ≃ valueGroup f where
+--   toFun x := by
+--   invFun x := by sorry
+--   left_inv x := by sorry
+--   right_inv x := by sorry
+
+-- def restrict₀_valueGroup₀_equiv : valueGroup₀ (restrict₀ f) ≃ valueGroup₀ f where
+--   toFun x := by
+--     match x with
+--     | 0 => exact 0
+--     | some ⟨a, ha⟩ =>
+--
+--
+--   invFun := sorry
+--   left_inv := sorry
+--   right_inv := sorry
+--
+-- def restrict₀_valueGroup₀_hom : valueGroup₀ (restrict₀ f) →*₀ valueGroup₀ f where
+--   toFun := sorry
+--   map_zero' := sorry
+--   map_one' := sorry
+--   map_mul' := sorry
 
 end GroupWithZero
 section CommGroupWithZero
