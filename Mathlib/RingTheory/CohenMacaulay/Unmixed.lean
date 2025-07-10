@@ -32,6 +32,14 @@ lemma associatedPrimes_eq_minimalPrimes_of_isUnmixed [IsNoetherianRing R] {I : I
   · convert (Module.associatedPrimes.minimalPrimes_annihilator_mem_associatedPrimes R (R ⧸ I))
     exact Ideal.annihilator_quotient.symm
 
+lemma Ideal.ofList_isUnmixed_of_associatedPrimes_eq_minimalPrimes [IsNoetherianRing R] (l : List R)
+    (h : (Ideal.ofList l).height = l.length)
+    (ass : associatedPrimes R (R ⧸ Ideal.ofList l) ⊆ (Ideal.ofList l).minimalPrimes) :
+    (Ideal.ofList l).IsUnmixed := by
+  refine ⟨fun {p} hp ↦ le_antisymm ?_ (Ideal.height_mono (ass hp).1.2)⟩
+
+  sorry
+
 variable [IsNoetherianRing R]
 
 lemma isCohenMacaulayRing_of_unmixed
@@ -98,6 +106,9 @@ lemma isCohenMacaulayRing_of_unmixed
 
 theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     ∀ (l : List R), (Ideal.ofList l).height = l.length → (Ideal.ofList l).IsUnmixed := by
-  refine ⟨fun cm l ht ↦ ?_, fun h ↦ isCohenMacaulayRing_of_unmixed h⟩
+  refine ⟨fun cm l ht ↦ ⟨fun {p} hp ↦ ?_⟩, fun h ↦ isCohenMacaulayRing_of_unmixed h⟩
+  have netop : Ideal.ofList l ≠ ⊤ := by
+    by_contra eq
+    simp [eq] at ht
 
   sorry
