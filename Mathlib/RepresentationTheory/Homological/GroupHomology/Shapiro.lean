@@ -27,8 +27,7 @@ group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)
 ## Main definitions
 
 * `groupHomology.indIso A n`: Shapiro's lemma for group homology: an isomorphism
-  `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)`, given a finite index subgroup `S ≤ G` and an
-  `S`-representation `A`.
+  `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)`, given a subgroup `S ≤ G` and an `S`-representation `A`.
 
 -/
 
@@ -40,8 +39,8 @@ open CategoryTheory Finsupp TensorProduct Rep Representation
 
 variable {k G : Type u} [CommRing k] [Group G] (S : Subgroup G) (A : Rep k S)
 
-/-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a finite index
-subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
+/-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a subgroup
+`S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
 `(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
 noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
     (P : ProjectiveResolution (Rep.trivial k G k)) :
@@ -49,7 +48,7 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
       P.complex.coinvariantsTensorObj (ind S.subtype A) :=
   (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
 
-/-- Shapiro's lemma: given a finite index subgroup `S ≤ G` and an `S`-representation `A`, we have
+/-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
 noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
     groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
