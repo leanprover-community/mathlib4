@@ -2,6 +2,7 @@ import Mathlib.Tactic.Linter.CommandStart
 import Aesop.Frontend.Attribute
 import Aesop.Frontend.Command
 import Mathlib.Tactic.Lemma
+import Mathlib.Data.Set.Defs
 
 set_option linter.style.commandStart true
 
@@ -67,6 +68,10 @@ example {c : Bool} : c = c := by
 -- Ideally, this would complain, but `simp!` requires a trailing space.
 example : 0 = 0 := by
   simp! ;
+
+-- `Mathlib.Meta.«term{_|_}» from ``import Mathlib.Data.Set.Defs``
+example := { Nat.succ n | n < 0 }
+
 
 end Desiderata_and_todos
 

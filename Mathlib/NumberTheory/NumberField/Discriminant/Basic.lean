@@ -78,7 +78,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
-      (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+      (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
     measureReal_def,
     volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
@@ -89,7 +89,7 @@ open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ZLattice.covolume (mixedEmbedding.idealLattice K I) =
       (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
-        (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+        (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
     measureReal_def,
     volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,

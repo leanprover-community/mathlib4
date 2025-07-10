@@ -804,7 +804,7 @@ theorem coe_monomial (n : σ →₀ ℕ) (a : R) :
   MvPowerSeries.ext fun m => by
     classical
     rw [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial]
-    split_ifs with h₁ h₂ <;> first |rfl|subst m; contradiction
+    split_ifs with h₁ h₂ <;> first | rfl | subst m; contradiction
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : MvPolynomial σ R) : MvPowerSeries σ R) = 0 :=
@@ -904,7 +904,7 @@ theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
   · have (a : A) (f : MvPowerSeries σ R) : a • f =
       (MvPowerSeries.C σ R) ((algebraMap A R) a) * f := by
       rw [← MvPowerSeries.smul_eq_C_mul, IsScalarTower.algebraMap_smul]
-    simp only [mul_pow, Finsupp.prod_mul, ← map_pow , ← MvPowerSeries.monomial_one_eq, this]
+    simp only [mul_pow, Finsupp.prod_mul, ← map_pow, ← MvPowerSeries.monomial_one_eq, this]
     simp only [map_finsuppProd, map_pow]
   · intro x _
     rw [algebra_compatible_smul R, MvPowerSeries.smul_eq_C_mul]

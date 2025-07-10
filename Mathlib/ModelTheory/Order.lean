@@ -424,7 +424,7 @@ variable [L.IsOrdered] [L.Structure M] {N : Type*} [L.Structure N]
 
 lemma monotone [Preorder M] [L.OrderedStructure M] [Preorder N] [L.OrderedStructure N] (f : F) :
     Monotone f := fun a b => by
-  have h := HomClass.map_rel f leSymb ![a,b]
+  have h := HomClass.map_rel f leSymb ![a, b]
   simp only [relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     Function.comp_apply] at h
   exact h

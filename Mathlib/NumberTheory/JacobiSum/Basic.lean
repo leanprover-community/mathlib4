@@ -200,7 +200,7 @@ lemma jacobiSum_mul_jacobiSum_inv (h : ringChar F' ≠ ringChar F) {χ φ : MulC
     (hφ : φ ≠ 1) (hχφ : χ * φ ≠ 1) :
     jacobiSum χ φ * jacobiSum χ⁻¹ φ⁻¹ = Fintype.card F := by
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
-  let ψ := FiniteField.primitiveChar F F' h   -- obtain primitive additive character `ψ : F → FF'`
+  let ψ := FiniteField.primitiveChar F F' h -- obtain primitive additive character `ψ : F → FF'`
   let FF' := CyclotomicField ψ.n F'           -- the target field of `ψ`
   let χ' := χ.ringHomComp (algebraMap F' FF') -- consider `χ` and `φ` as characters `F → FF'`
   let φ' := φ.ringHomComp (algebraMap F' FF')
