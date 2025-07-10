@@ -6,6 +6,14 @@ Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan
 import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Data.Complex.Basic
 
+/-!
+## `norm_num` extension for complex numbers
+
+This file provides a `norm_num` extension for complex numbers, allowing the computation of
+additions, multiplications, inversions, conjugates, and powers of complex numbers.
+
+-/
+
 open Lean Meta Elab Qq Tactic Complex Mathlib.Tactic
 open ComplexConjugate
 
