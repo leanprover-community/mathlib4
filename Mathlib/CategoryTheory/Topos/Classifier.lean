@@ -88,9 +88,9 @@ structure Classifier where
   uniq' {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
     (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
 
-namespace Classifier
-
 variable {C}
+
+namespace Classifier
 
 /-- `Ω₀` is a terminal object. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ :=
