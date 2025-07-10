@@ -26,7 +26,7 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 
 - `Polynomial.roots_countP_pos_le_SignVariations`. States that
 `P.roots.countP (0 < ·) ≤ P.SignVariations`, so that positive roots are counted with multiplicity.
-It's currently roved for any `CommRing` with `IsStrictOrderedRing`. There is likely some correct
+It's currently proved for any `CommRing` with `IsStrictOrderedRing`. There is likely some correct
 statement in terms of a (noncommutative) `Ring`, but `Polynomial.roots` is only defined for
 commutative rings.
 
@@ -49,8 +49,8 @@ def SignVariations : ℕ :=
 
 variable (R) in
 @[simp]
-theorem signvar_zero : SignVariations (0 : R[X]) = 0 :=
-  by simp [SignVariations]
+theorem signvar_zero : SignVariations (0 : R[X]) = 0 := by
+  simp [SignVariations]
 
 /-- Sign variations of a monomial are always zero. -/
 @[simp]
