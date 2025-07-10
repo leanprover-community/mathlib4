@@ -445,15 +445,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     ω.length = ℓ (π ω)                                    := rω.symm
     _        = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1)))   := congrArg cs.length h₅
     _        ≤ ((ω.eraseIdx j).eraseIdx (j' - 1)).length  := cs.length_wordProd_le _
-  have h₇ := add_le_add_right (add_le_add_right h₆ 1) 1
-  have h₈ : j' - 1 < List.length (eraseIdx ω j)           := by
-    apply (@Nat.add_lt_add_iff_right 1).mp
-    rw [Nat.sub_add_cancel (by omega)]
-    rw [length_eraseIdx_add_one (by omega)]
-    omega
-  rw [length_eraseIdx_add_one h₈] at h₇
-  rw [length_eraseIdx_add_one (by omega)] at h₇
-  omega
+  grind
 
 theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, nodup_reverse]

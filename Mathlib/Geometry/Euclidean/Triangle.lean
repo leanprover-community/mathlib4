@@ -59,18 +59,15 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
     real_inner_self_eq_norm_mul_norm, ← real_inner_self_eq_norm_mul_norm, real_inner_sub_sub_self,
     sub_add_eq_add_sub]
 
-/-- **Law of sines** (sine rule), vector form. -/
+/-- **Law of sines** (sine rule), vector angle form. -/
 theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
     Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖ := by
-  wlog h : x ≠ 0 ∧ y ≠ 0 ∧ x ≠ y
-  · obtain rfl | hy := eq_or_ne y 0
-    · simp
-    obtain rfl | hx := eq_or_ne x 0
-    · simp [angle_neg_right, angle_self hy]
-    obtain rfl | hxy := eq_or_ne x y
-    · simp [angle_self hx]
-    cases h ⟨hx, hy, hxy⟩
-  obtain ⟨hx, hy, hxy⟩ := h
+  obtain rfl | hy := eq_or_ne y 0
+  · norm_num
+  obtain rfl | hx := eq_or_ne x 0
+  · simp [angle_neg_right, angle_self hy]
+  obtain rfl | hxy := eq_or_ne x y
+  · simp [angle_self hx]
   have h_sin (x y : V) (hx : x ≠ 0) (hy : y ≠ 0) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
     field_simp [sin_angle_mul_norm_mul_norm]
@@ -290,7 +287,7 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (
 alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 
 /-- **Law of sines** (sine rule), angle-at-point form. -/
-theorem sin_angle_mul_dist_eq_sin_angle_mul_dist {p₁ p₂ p₃ : P} :
+theorem sin_angle_mul_dist_eq_sin_angle_mul_dist (p₁ p₂ p₃ : P) :
     Real.sin (∠ p₁ p₂ p₃) * dist p₂ p₃ = Real.sin (∠ p₃ p₁ p₂) * dist p₃ p₁ := by
   simp only [dist_comm p₂ p₃, angle]
   rw [dist_eq_norm_vsub V p₃ p₂, dist_eq_norm_vsub V p₃ p₁, InnerProductGeometry.angle_comm,
@@ -302,10 +299,10 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist {p₁ p₂ p₃ : P} :
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
 /-- A variant of the law of sines, angle-at-point form. -/
-theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁):
+theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁) :
     Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
   field_simp [dist_ne_zero.mpr h23, dist_ne_zero.mpr h31]
-  exact law_sin
+  exact law_sin _ _ _
 
 /-- A variant of the law of sines, requiring that the points not be collinear. -/
 theorem dist_eq_dist_mul_sin_angle_div_sin_angle {p₁ p₂ p₃ : P}

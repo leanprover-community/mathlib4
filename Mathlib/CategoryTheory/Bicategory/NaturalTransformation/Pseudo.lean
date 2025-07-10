@@ -204,7 +204,7 @@ lemma naturality_id_inv (α : F ⟶ G) (a : B) :
   simp [naturality_id_iso]
 
 @[reassoc, to_app]
-lemma naturality_naturality_hom (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g):
+lemma naturality_naturality_hom (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
     (α.naturality g).hom =
      (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
   simp [← IsIso.inv_comp_eq, ← G.map₂_inv η.inv]
@@ -216,7 +216,7 @@ lemma naturality_naturality_iso (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f
   rw [naturality_naturality_hom α η]
   simp
 
-lemma naturality_naturality_inv (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g):
+lemma naturality_naturality_inv (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
     (α.naturality g).inv =
       α.app a ◁ G.map₂ η.inv ≫ (α.naturality f).inv ≫ F.map₂ η.hom ▷ α.app b := by
   simp [naturality_naturality_iso α η]
