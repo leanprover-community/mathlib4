@@ -330,7 +330,8 @@ instance : (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
   δ_μ X Y := Category.comp_id _
 
 @[simps!]
-instance : (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
+instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
+    (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
   ε := 𝟙 _
   δ X Y := 𝟙 _
   μ X Y := 𝟙 _
