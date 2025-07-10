@@ -17,7 +17,7 @@ This file contains definitions and basic results about Cartan matrices of root p
 * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
   respect to a base `b`.
 * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
-* `RootPairing.Base.induction_on_cartanMatrix`: an induction principle capture the connectedness
+* `RootPairing.Base.induction_on_cartanMatrix`: an induction principle expressing the connectedness
   of the Dynkin diagram of an irreducible root pairing.
 
 -/
