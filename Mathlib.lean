@@ -4675,6 +4675,7 @@ import Mathlib.NumberTheory.NumberField.House
 import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 import Mathlib.NumberTheory.NumberField.Ideal.Basic
+import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
