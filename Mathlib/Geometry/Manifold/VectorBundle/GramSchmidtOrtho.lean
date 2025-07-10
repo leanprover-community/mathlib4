@@ -228,6 +228,12 @@ lemma contMDiffWithinAt_aux  {s t : (x : B) → E x} {u : Set B} {x : B}
       rw [← real_inner_self_eq_norm_sq]
   exact (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
 
+lemma contMDiffAt_aux  {s t : (x : B) → E x} {x : B}
+    (hs : CMDiffAt n (T% s) x) (ht : CMDiffAt n (T% t) x) (hs' : s x ≠ 0) :
+    CMDiffAt n (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
+  rw [← contMDiffWithinAt_univ] at hs ht ⊢
+  exact contMDiffWithinAt_aux hs ht hs'
+
 def contMDiffWithinAt_myproj {s t : (x : B) → E x} {u : Set B} {x : B}
     (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
     -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!

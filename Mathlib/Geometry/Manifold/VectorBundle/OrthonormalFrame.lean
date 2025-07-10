@@ -114,31 +114,20 @@ lemma repr_eq_inner (hs : IsOrthogonalFrameOn IB F n s u)
 lemma contMDiffWithinAt_repr (ht : CMDiffAt[u] n (T% t) x) (hx : x ∈ u) (i : ι) :
     CMDiffAt[u] n (hs.repr i t) x := by
   have aux : CMDiffAt[u] n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x := by
-    refine ContMDiffWithinAt.smul ?_ ?_
-    · sorry -- same for Gram-Schmidt
-    refine ContMDiffWithinAt.inv₀ ?_ ?_
-    · sorry -- likewise
-    have : s i x ≠ 0 := by
-      have := hs.linearIndependent hx
-      sorry -- lemma: linearly independent => all non-zero
-    simp [this]
+    apply contMDiffWithinAt_aux ((hs.contMDiffOn i) x hx) ht
+    have := hs.linearIndependent hx
+    sorry
   exact aux.congr_of_mem (fun y hy ↦ hs.repr_eq_inner _ hy _) hx
 
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffAt_repr (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
     CMDiffAt n (hs.repr i t) x := by
-  sorry -- easy...
-  -- have aux : CMDiffAt n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x := by
-  --   refine ContMDiffAt.smul ?_ ?_
-  --   · sorry -- same for Gram-Schmidt
-  --   refine ContMDiffAt.inv₀ ?_ ?_
-  --   · sorry --refine ContMDiffAt.smul ?_ ?_
-  --   · have : s i x ≠ 0 := by
-  --       have := hs.linearIndependent (x := x) (mem_of_mem_nhds hu)
-  --       sorry -- lemma: linearly independent => all non-zero
-  --     simp [this]
-  -- apply aux.congr_of_eventuallyEq
-  -- apply Filter.eventually_of_mem hu fun y hy ↦ hs.repr_eq_inner t hy i
+  have aux : CMDiffAt n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x := by
+    apply contMDiffAt_aux ((hs.contMDiffOn i).contMDiffAt hu) ht
+    have := hs.linearIndependent (mem_of_mem_nhds hu)
+    sorry
+  exact aux.congr_of_eventuallyEq <|
+    Filter.eventually_of_mem hu fun x hx ↦ hs.repr_eq_inner _ hx _
 
 -- Future: prove the same result for all local frames
 -- if `{s i}` is a local frame on `u`, and `{s' i}` are the corresponding orthogonalised frame,
