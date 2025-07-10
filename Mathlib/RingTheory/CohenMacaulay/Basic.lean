@@ -585,3 +585,23 @@ lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
     ← ringKrullDim_regular_sequence_add_length_eq_ringKrullDim rs reg',
     ← depth_quotient_regular_sequence_add_length_eq_depth rs reg mem, WithBot.coe_add]
   exact withBotENat_add_coe_cancel _ _ rs.length
+
+section Polynomial
+
+open Polynomial
+
+theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
+    IsCohenMacaulayRing R[X] := by
+  sorry
+
+theorem MvPolynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ):
+    IsCohenMacaulayRing (MvPolynomial (Fin n) R) := by
+  induction' n with n ih
+  · let e := isEmptyRingEquiv R (Fin 0)
+
+    sorry
+  · let e := (MvPolynomial.finSuccEquiv R n).toRingEquiv
+
+    sorry
+
+end Polynomial
