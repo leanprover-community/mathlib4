@@ -217,16 +217,9 @@ end operations
 section
 
 -- Let `V` be a vector bundle over a `C^k` manifold `M`.
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : WithTop ℕ∞)
-  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [∀ x : M, TopologicalSpace (V x)]
-  [FiberBundle F V] [VectorBundle 𝕜 F V]
+variable [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
 
-/-- The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a smooth vector
+/-- The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a vector
 bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ` .
 
 This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
