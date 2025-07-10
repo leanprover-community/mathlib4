@@ -92,18 +92,13 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     have had₁ := had ![x,x] 1 x y
     have had₂ := had ![y,x] 1 x y
     repeat rw [update₀] at had₀; rw [update₁] at had₁ had₂
-    simp only [succ_eq_add_one, reduceAdd, MultilinearMap.toFun_eq_coe,
-    coe_coe, hessianBilinearCompanion, LinearMap.coe_mk, AddHom.coe_mk,
-    hessianLinearCompanion] at had₀ had₁ had₂ ⊢
+    simp only [MultilinearMap.toFun_eq_coe, coe_coe, hessianBilinearCompanion, LinearMap.coe_mk,
+      AddHom.coe_mk, hessianLinearCompanion] at had₀ had₁ had₂ ⊢
     linarith
   toFun_smul := fun u v => by
-    have hsm := (iteratedFDeriv ℝ 2 f x₀).map_update_smul'
-    have hsm₀ := hsm ![v, v] 0 u v
-    have hsm₁ := hsm ![u • v,v] 1 u v
-    repeat (
-    simp only [Fin.isValue, update₀, succ_eq_add_one, reduceAdd,
-    MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at hsm₀ hsm₁
-    simp only [Fin.isValue, update₁, succ_eq_add_one, reduceAdd] at hsm₁)
+    have hsm₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![v, v] 0 u v
+    have hsm₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![u • v,v] 1 u v
+    simp only [update₀, update₁, MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at hsm₀ hsm₁
     rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]}
 
 /-- An everywhere positive function `f:ℝⁿ → ℝ` (`n > 0`) achieves its minimum on the sphere. -/
@@ -123,10 +118,9 @@ lemma sphere_min_of_pos_of_nonzero {V : Type*} [NormedAddCommGroup V] [NormedSpa
     rw [this]
     simp only [isClosed_univ, IsClosed.closure_eq]
     exact CompactSpace.isCompact_univ
-  have ⟨m,hm⟩ := @Continuous.exists_forall_le_of_hasCompactSupport _
-    (β := Metric.sphere (0:V) 1) _ _ _ _
-    (Set.Nonempty.to_subtype (NormedSpace.sphere_nonempty.mpr (by simp))) _
-        (fun x => f x) (Continuous.comp' hf continuous_subtype_val) h₀
+  have : Nonempty (Metric.sphere (0:V) 1) :=
+    (NormedSpace.sphere_nonempty.mpr (by simp)).to_subtype
+  have ⟨m,hm⟩ := (hf.comp' continuous_subtype_val).exists_forall_le_of_hasCompactSupport h₀
   use m
 
 /-- A continuous multilinear map is bilinear. -/
@@ -135,23 +129,13 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap {V : Type*}
     (g : ContinuousMultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) : V →L[ℝ] V →L[ℝ] ℝ := {
   toFun := fun x => {
     toFun := fun y => g.toFun ![x,y]
-    map_add' := fun a b => by
-      have := g.map_update_add ![x,b] 1 a b
-      simpa [update₁] using this
-    map_smul' := fun m a => by
-      have := g.map_update_smul ![x,a] 1 m a
-      simpa [update₁] using this
-    cont := Continuous.comp' g.cont <| Continuous.matrixVecCons continuous_const
-            <| Continuous.matrixVecCons continuous_id' continuous_const}
-  map_add' := fun a b => by
-    ext c
-    have := g.map_update_add ![a,c] 0 a b
-    simpa [update₀] using this
-  map_smul' := fun c x => by
-    ext y
-    have := g.map_update_smul ![x,y] 0 c x
-    simpa [update₀] using this
-  cont := continuous_clm_apply.mpr fun x => Continuous.comp' g.cont
+    map_add' := fun a b => by simpa [update₁] using g.map_update_add ![x,b] 1 a b
+    map_smul' := fun m a => by simpa [update₁] using g.map_update_smul ![x,a] 1 m a
+    cont := g.cont.comp' <| continuous_const.matrixVecCons
+            <| continuous_id'.matrixVecCons continuous_const}
+  map_add' := fun a b => by ext c; simpa [update₀] using g.map_update_add ![a,c] 0 a b
+  map_smul' := fun c x => by ext y; simpa [update₀] using g.map_update_smul ![x,y] 0 c x
+  cont := continuous_clm_apply.mpr fun x => g.cont.comp'
     <| Continuous.matrixVecCons continuous_id' continuous_const}
 
 /-- The iterated Frechet derivative is continuous. -/
@@ -217,6 +201,10 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
         rw [iteratedFDeriv_two_mul, mul_comm, ← h₂]
         exact hm.2 (‖u‖⁻¹ • u) (by rw [norm_smul];field_simp)
 
+lemma rev_ineq {a b c d : ℝ} (h : a + b ≤ c + d) (h' : d ≤ b) : a ≤ c := by
+    linarith
+
+
 /-- Spelling out a sum of three. -/
 lemma finset_sum_three (t : ℕ → ℝ) :
      ∑ y ∈ range 3, t y = t 0 + t 1 + t 2 := by
@@ -225,7 +213,28 @@ lemma finset_sum_three (t : ℕ → ℝ) :
       Finset.mem_singleton, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, Finset.sum_insert,
       one_ne_zero, Finset.sum_singleton]
     linarith
-/-- Second partial derivative test in terms of `taylor_term`. -/
+
+theorem isLocalMin_of_PosDef_of_Littleo.finish {V : Type*}
+  [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+  {f : V → ℝ} {x₀ : V} {C : ℝ}
+  {x : V} (hx : C * (‖x - x₀‖ ^ 2) ≤ iteratedFDeriv ℝ 2 f x₀ fun _ ↦ x - x₀)
+  (hx₀ : fderiv ℝ f x₀ x = fderiv ℝ f x₀ x₀)
+  (h₁ : ‖f x - ∑ i ∈ range 3, 1 / ↑i ! * iteratedFDeriv ℝ i f x₀ fun _ ↦ x - x₀‖
+    ≤ C / 2 * ‖x - x₀‖ ^ 2) :
+  f x₀ ≤ f x := by
+  refine rev_ineq ?_ <| mul_le_mul_of_nonneg_right (by convert hx using 2) (show 0 ≤ 1/2 by simp)
+  rw [finset_sum_three] at h₁
+  simp only [Real.norm_eq_abs, factorial_zero, cast_one, ne_eq, one_ne_zero,
+    not_false_eq_true, div_self, iteratedFDeriv_zero_apply, one_mul, factorial_one,
+    iteratedFDeriv_one_apply, map_sub, factorial_two, cast_ofNat, one_div] at h₁
+  have := le_of_max_le_right (hx₀ ▸ h₁)
+  simp only [neg_sub, tsub_le_iff_right] at hx this
+  ring_nf at hx this
+  nth_rw 2 [add_comm] at this
+  exact this
+
+
+/-- Second partial derivative test, "little oh" form. -/
 theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
     [InnerProductSpace ℝ V] [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
     (h : (fun x => f x - ∑ i ∈ range 3, 1 / (i)! * iteratedFDeriv ℝ i f x₀ fun _ => x - x₀)
@@ -233,23 +242,20 @@ theorem isLocalMin_of_PosDef_of_Littleo {V : Type*} [NormedAddCommGroup V]
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
   have ⟨C,hC⟩ := coercive_of_posdef hf
   simp only [Asymptotics.IsLittleO, Asymptotics.IsBigOWith] at h
-  apply Filter.Eventually.mono <| h (half_pos hC.1)
+  apply (h (half_pos hC.1)).mono
   intro x
-  have h₄ := hC.2 (x - x₀)
+  have hx := hC.2 (x - x₀)
   simp only [continuousBilinearMap_of_continuousMultilinearMap, MultilinearMap.toFun_eq_coe,
     coe_coe, ContinuousLinearMap.coe_mk', LinearMap.coe_mk,
-    AddHom.coe_mk] at h₄
-  intro h₁
-  rw [finset_sum_three] at h₁
-  simp only [Real.norm_eq_abs, norm_pow, factorial_zero, cast_one, ne_eq, one_ne_zero,
-    not_false_eq_true, div_self, iteratedFDeriv_zero_apply, one_mul, factorial_one,
-    iteratedFDeriv_one_apply, map_sub, factorial_two, cast_ofNat, one_div, abs_norm] at h₁
-  have h₂ : inner ℝ (gradient f x₀) (x - x₀) = (fderiv ℝ f x₀) (x - x₀) := by simp [gradient]
-  rw [h₀] at h₂
-  simp only [inner_zero_left, map_sub] at h₂
+    AddHom.coe_mk] at hx
   rw [mul_assoc,show ![x - x₀, x - x₀] = fun _ => x - x₀ by
-    ext i; fin_cases i <;> simp] at h₄
-  linarith [le_of_max_le_right (h₂ ▸ h₁)]
+    ext i; fin_cases i <;> simp] at hx
+  have hx₀ : inner ℝ (gradient f x₀) (x - x₀) = fderiv ℝ f x₀ (x - x₀) := by simp [gradient]
+  simp only [h₀, inner_zero_left, map_sub] at hx₀
+  simp only [norm_pow, norm_norm]
+  rw [← pow_two] at hx
+  exact isLocalMin_of_PosDef_of_Littleo.finish hx <| sub_eq_zero.mp hx₀.symm
+
 
 theorem littleO_of_powerseries.inequality {z : ℝ} (hz : 0 ≤ z)
     {r : ℝ} (hr : 0 < r) {a : ℝ} (ha : 0 < a)
@@ -317,31 +323,25 @@ lemma littleO_of_powerseries {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
     (fun x => f x - p.partialSum 3 (x - x₀)) =o[nhds x₀] fun x => ‖x - x₀‖ ^ 2 := by
   rw [Asymptotics.IsLittleO]
   intro D hD
-  obtain ⟨a,ha⟩ := HasFPowerSeriesOnBall.uniform_geometric_approx' h (by
-      change ENNReal.ofNNReal ((r / 2)) < r
-      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENNReal.coe_div, ENNReal.coe_ofNat]
-      refine ENNReal.half_lt_self ?_ ?_
-      · simp only [ne_eq, ENNReal.coe_eq_zero]
-        intro hc
-        simp [hc] at hr
-      · simp)
+  have : ENNReal.ofNNReal ((r / 2)) < r := by
+    norm_num
+    exact ENNReal.half_lt_self (fun hc => (lt_self_iff_false _).mp
+      (ENNReal.coe_eq_zero.mp hc ▸ hr)) (by simp)
+  obtain ⟨a,ha⟩ := HasFPowerSeriesOnBall.uniform_geometric_approx' h this
   rw [Asymptotics.IsBigOWith]
   apply eventually_nhds_iff.mpr
   simp only [Real.norm_eq_abs, norm_pow]
   obtain ⟨C,hC⟩ := ha.2
   use Metric.ball x₀ (min (r/2) (D / (C * (a * (2/r))^3)))
   constructor
-  · intro y
+  · intro y h
     rw [abs_norm]
-    intro h
-    exact @littleO_of_powerseries.calculation V _ _ f x₀ r hr a ha.1.1 C
-      hC.1 (p.partialSum 3 (y - x₀)) y (fun hy => hC.2 (y-x₀) hy 3) D
+    exact littleO_of_powerseries.calculation hr ha.1.1
+      hC.1 (p.partialSum 3 (y - x₀)) (fun hy => hC.2 (y-x₀) hy 3)
         h
   · constructor
     · exact Metric.isOpen_ball
-    · simp only [Metric.mem_ball, dist_self, lt_inf_iff, ofNat_pos, div_pos_iff_of_pos_right,
-      NNReal.coe_pos]
-      simp_all
+    · simp_all
 
 @[nontriviality]
 lemma isLocalMin.of_subsingleton {V : Type*} [TopologicalSpace V]
