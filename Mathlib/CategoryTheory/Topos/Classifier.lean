@@ -100,7 +100,7 @@ def fromTerminalΩ₀
     (Ω₀ : C)
     (t : IsTerminal Ω₀)
     (Ω : C)
-    (truth : Ω₀ ⟶ Ω) [Mono truth]
+    (truth : Ω₀ ⟶ Ω)
     (χ : ∀ {U X : C} (m : U ⟶ X) [Mono m], X ⟶ Ω)
     (isPullback : ∀ {U X : C} (m : U ⟶ X) [Mono m],
       IsPullback m (t.from U) (χ m) truth)
