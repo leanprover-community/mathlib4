@@ -89,7 +89,7 @@ set_option linter.deprecated false
 
 @[simp, deprecated mem_attachFin (since := "2025-04-08")]
 theorem mem_fin {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
-  | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
+  | ⟨a, ha⟩ => by simp [Finset.fin]
 
 @[simp, deprecated coe_attachFin (since := "2025-04-08")]
 theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp

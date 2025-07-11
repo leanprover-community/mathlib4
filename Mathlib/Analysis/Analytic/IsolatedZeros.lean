@@ -74,7 +74,7 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
     HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
   have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
   have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
-  simp only [hasFPowerSeriesAt_iff, apply_eq_pow_smul_coeff, coeff_fslope] at hp ⊢
+  simp only [hasFPowerSeriesAt_iff, coeff_fslope] at hp ⊢
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
   · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]

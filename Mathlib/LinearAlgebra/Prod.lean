@@ -262,7 +262,7 @@ def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
   map_smul' r a := by
     dsimp
     ext
-    simp only [smul_add, smul_apply, Prod.smul_snd, Prod.smul_fst, coprod_apply]
+    simp only [smul_add, smul_apply, coprod_apply]
 
 theorem prod_ext_iff {f g : M × M₂ →ₗ[R] M₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
@@ -398,11 +398,11 @@ theorem isCompl_range_inl_inr : IsCompl (range <| inl R M M₂) (range <| inr R 
   constructor
   · rw [disjoint_def]
     rintro ⟨_, _⟩ ⟨x, hx⟩ ⟨y, hy⟩
-    simp only [Prod.ext_iff, inl_apply, inr_apply, mem_bot] at hx hy ⊢
+    simp only [Prod.ext_iff, inl_apply, inr_apply] at hx hy ⊢
     exact ⟨hy.1.symm, hx.2.symm⟩
   · rw [codisjoint_iff_le_sup]
     rintro ⟨x, y⟩ -
-    simp only [mem_sup, mem_range, exists_prop]
+    simp only [mem_sup, mem_range]
     refine ⟨(x, 0), ⟨x, rfl⟩, (0, y), ⟨y, rfl⟩, ?_⟩
     simp
 
@@ -410,7 +410,7 @@ theorem sup_range_inl_inr : (range <| inl R M M₂) ⊔ (range <| inr R M M₂) 
   IsCompl.sup_eq_top isCompl_range_inl_inr
 
 theorem disjoint_inl_inr : Disjoint (range <| inl R M M₂) (range <| inr R M M₂) := by
-  simp +contextual [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0]
+  simp +contextual [disjoint_def, @eq_comm M 0]
 
 theorem map_coprod_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (p : Submodule R M)
     (q : Submodule R M₂) : map (coprod f g) (p.prod q) = map f p ⊔ map g q :=
@@ -438,7 +438,7 @@ theorem ker_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ker (prod f g) 
 
 theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
     range (prod f g) ≤ (range f).prod (range g) := by
-  simp only [SetLike.le_def, prod_apply, mem_range, SetLike.mem_coe, mem_prod, exists_imp]
+  simp only [SetLike.le_def, prod_apply, mem_range, mem_prod, exists_imp]
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
@@ -473,7 +473,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂]
 
 theorem sup_eq_range (p q : Submodule R M) : p ⊔ q = range (p.subtype.coprod q.subtype) :=
-  Submodule.ext fun x => by simp [Submodule.mem_sup, SetLike.exists]
+  Submodule.ext fun x => by simp [Submodule.mem_sup]
 
 variable (p : Submodule R M) (q : Submodule R M₂)
 
@@ -617,7 +617,7 @@ theorem prod_eq_bot_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
 
 theorem prod_eq_top_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
     p₁.prod p₂ = ⊤ ↔ p₁ = ⊤ ∧ p₂ = ⊤ := by
-  simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, map_top, range_fst, range_snd]
+  simp only [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
 
 end Submodule
 
@@ -666,7 +666,7 @@ theorem fst_comp_prodAssoc :
 
 theorem snd_comp_prodAssoc :
     (LinearMap.snd R M₁ (M₂ × M₃)).comp (prodAssoc R M₁ M₂ M₃).toLinearMap =
-    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃):= by
+    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃) := by
   ext <;> simp
 
 end prodAssoc
@@ -775,7 +775,7 @@ def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
   AddEquiv.uniqueProd.toLinearEquiv (by simp [AddEquiv.uniqueProd])
 
 lemma coe_uniqueProd :
-  (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
+    (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
@@ -784,7 +784,7 @@ def prodUnique : (M × M₂) ≃ₗ[R] M :=
   AddEquiv.prodUnique.toLinearEquiv (by simp [AddEquiv.prodUnique])
 
 lemma coe_prodUnique :
-  (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
+    (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
 
 end Unique
 
@@ -803,7 +803,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
   refine le_antisymm (f.range_prod_le g) ?_
-  simp only [SetLike.le_def, prod_apply, mem_range, SetLike.mem_coe, mem_prod, exists_imp, and_imp,
+  simp only [SetLike.le_def, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
     Prod.forall, Pi.prod]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
@@ -812,7 +812,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
   refine ⟨x' + x, ?_, ?_⟩
   · rwa [add_sub_cancel_right]
-  · simp [← eq_sub_iff_add_eq.1 H, map_add, add_left_inj, left_eq_add, mem_ker.mp hy']
+  · simp [← eq_sub_iff_add_eq.1 H, map_add, mem_ker.mp hy']
 
 end LinearMap
 
@@ -833,10 +833,10 @@ we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
 and sitting beside these, an infinite sequence of copies of `N`.
 
 We picturesquely name these as `tailing f i n` for each individual copy of `N`,
-and `tailings f i n` for the supremum of the first `n+1` copies:
+and `tailings f i n` for the supremum of the first `n + 1` copies:
 they are the pieces left behind, sitting inside the tunnel.
 
-By construction, each `tailing f i (n+1)` is disjoint from `tailings f i n`;
+By construction, each `tailing f i (n + 1)` is disjoint from `tailings f i n`;
 later, when we assume `M` is noetherian, this implies that `N` must be trivial,
 and establishes the strong rank condition for any left-noetherian ring.
 -/

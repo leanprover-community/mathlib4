@@ -69,10 +69,11 @@ lemma isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsIntegralCurveOn (γ a) v (Ioo (-a) a)) :
     IsIntegralCurve (fun t ↦ γ (|t| + 1) t) v := by
   intro t
-  apply HasMFDerivAt.congr_of_eventuallyEq (f := γ (|t| + 1))
-  · apply hγ (|t| + 1) (by positivity)
+  have ht : t ∈ Ioo (-(|t| + 1)) (|t| + 1) := by
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
+  apply HasMFDerivAt.congr_of_eventuallyEq (f := γ (|t| + 1))
+  · exact hγ (|t| + 1) (by positivity) _ ht |>.hasMFDerivAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_,
       eqOn_abs_add_one_of_isIntegralCurveOn_Ioo hv γ hγx hγ⟩
@@ -131,17 +132,23 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
   intros t ht
   by_cases hmem : t ∈ Ioo a b
   · rw [piecewise, if_pos hmem]
-    apply (hγ t hmem).congr_of_eventuallyEq
+    apply hγ t hmem |>.hasMFDerivAt (Ioo_mem_nhds hmem.1 hmem.2) |>.hasMFDerivWithinAt
+      (s := Ioo a b ∪ Ioo a' b') |>.congr_of_eventuallyEq _ (by rw [piecewise, if_pos hmem])
     rw [Filter.eventuallyEq_iff_exists_mem]
-    refine ⟨Ioo a b, isOpen_Ioo.mem_nhds hmem, ?_⟩
-    intros t' ht'
-    rw [piecewise, if_pos ht']
-  · rw [mem_union, or_iff_not_imp_left] at ht
+    refine ⟨Ioo a b, ?_, fun _ ht' ↦ by rw [piecewise, if_pos ht']⟩
+    rw [(isOpen_Ioo.union isOpen_Ioo).nhdsWithin_eq ht]
+    exact Ioo_mem_nhds hmem.1 hmem.2
+  · have ht' := ht
+    rw [mem_union, or_iff_not_imp_left] at ht
     rw [piecewise, if_neg hmem]
-    apply (hγ' t <| ht hmem).congr_of_eventuallyEq
+    apply hγ' t (ht hmem) |>.hasMFDerivAt (Ioo_mem_nhds (ht hmem).1 (ht hmem).2)
+      |>.hasMFDerivWithinAt (s := Ioo a b ∪ Ioo a' b')
+      |>.congr_of_eventuallyEq _ (by rw [piecewise, if_neg hmem])
     rw [Filter.eventuallyEq_iff_exists_mem]
-    exact ⟨Ioo a' b', isOpen_Ioo.mem_nhds <| ht hmem,
+    refine ⟨Ioo a' b', ?_,
       eqOn_piecewise_of_isIntegralCurveOn_Ioo hv hγ hγ' ht₀ h⟩
+    rw [(isOpen_Ioo.union isOpen_Ioo).nhdsWithin_eq ht']
+    exact Ioo_mem_nhds (ht hmem).1 (ht hmem).2
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
 least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral curve
@@ -182,9 +189,8 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   set γ2 := γ2_aux ∘ (· - (asup - ε / 2)) with γ2_def
   have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [γ2_def, h2_aux]
   -- rewrite shifted Ioo as Ioo
-  rw [neg_sub] at hγ1
-  rw [Real.Ioo_eq_ball, neg_add_cancel, zero_div, sub_neg_eq_add, add_self_div_two,
-    Metric.vadd_ball, vadd_eq_add, add_zero, Real.ball_eq_Ioo] at hγ1 hγ2
+  simp_rw [Set.mem_Ioo, ← sub_lt_iff_lt_add, ← lt_sub_iff_add_lt, ← Set.mem_Ioo] at hγ1
+  simp_rw [Set.mem_Ioo, lt_sub_iff_add_lt, sub_lt_iff_lt_add, ← Set.mem_Ioo] at hγ2
   -- to help `linarith`
   have hεle : ε ≤ asup := le_csSup hbdd (h x)
   -- extend `γ` on the left by `γ1` and on the right by `γ2`

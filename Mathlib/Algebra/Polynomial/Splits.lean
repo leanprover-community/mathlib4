@@ -173,7 +173,7 @@ theorem splits_iff_comp_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.m
     (le_of_eq (map_id (R := L) ▸ hd)) h, fun h => ?_⟩
   let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
       (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
-  have : (map i f) = ((map i f).comp (map i p)).comp ((C ⅟ (map i p).leadingCoeff *
+  have : (map i f) = ((map i f).comp (map i p)).comp ((C ⅟(map i p).leadingCoeff *
       (X - C ((map i p).coeff 0)))) := by
     rw [comp_assoc]
     nth_rw 1 [eq_X_add_C_of_degree_eq_one hd]

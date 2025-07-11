@@ -179,7 +179,7 @@ lemma rpow_inv_log_le_exp_one : x ^ (log x)⁻¹ ≤ exp 1 := by
     _ ≤ |x ^ (log x)⁻¹| := le_abs_self _
     _ ≤ |x| ^ (log x)⁻¹ := abs_rpow_le_abs_rpow ..
   rw [← log_abs]
-  obtain hx | hx := (abs_nonneg x).eq_or_gt
+  obtain hx | hx := (abs_nonneg x).eq_or_lt'
   · simp [hx]
   · rw [rpow_def_of_pos hx]
     gcongr
@@ -297,7 +297,7 @@ theorem norm_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
     ‖z ^ w‖ = ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
   rcases ne_or_eq z 0 with (hz | rfl) <;> [exact norm_cpow_of_ne_zero hz w; rw [norm_zero]]
   rcases eq_or_ne w.re 0 with hw | hw
-  · simp [hw, h rfl hw]
+  · simp [h rfl hw]
   · rw [Real.zero_rpow hw, zero_div, zero_cpow, norm_zero]
     exact ne_of_apply_ne re hw
 
@@ -697,7 +697,7 @@ theorem rpow_lt_one_iff_of_pos (hx : 0 < x) : x ^ y < 1 ↔ 1 < x ∧ y < 0 ∨ 
 theorem rpow_lt_one_iff (hx : 0 ≤ x) :
     x ^ y < 1 ↔ x = 0 ∧ y ≠ 0 ∨ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, zero_lt_one]
+  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, zero_lt_one]
   · simp [rpow_lt_one_iff_of_pos hx, hx.ne.symm]
 
 theorem rpow_lt_one_iff' {x y : ℝ} (hx : 0 ≤ x) (hy : 0 < y) :
@@ -709,7 +709,7 @@ theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 
 
 theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x ∧ x < 1 ∧ y < 0 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_gt]
+  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, (zero_lt_one' ℝ).not_gt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 
 /-- This is a more general but less convenient version of `rpow_le_rpow_of_exponent_ge`.

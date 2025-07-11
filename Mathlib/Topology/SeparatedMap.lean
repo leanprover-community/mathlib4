@@ -73,7 +73,7 @@ lemma Function.Injective.isSeparatedMap {f : X → Y} (inj : f.Injective) : IsSe
 lemma isSeparatedMap_iff_disjoint_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → Disjoint (𝓝 x₁) (𝓝 x₂) :=
   forall₃_congr fun x x' _ ↦ by simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens x'),
-    exists_prop, ← exists_and_left, and_assoc, and_comm, and_left_comm]
+    ← exists_and_left, and_assoc, and_comm, and_left_comm]
 
 lemma isSeparatedMap_iff_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → ∃ s₁ ∈ 𝓝 x₁, ∃ s₂ ∈ 𝓝 x₂, Disjoint s₁ s₂ := by

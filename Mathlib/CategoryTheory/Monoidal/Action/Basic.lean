@@ -27,10 +27,8 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 ## TODOs/Projects
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
-* Functors that respects left/right actions.
 * Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
 * Right actions as monoidal functors C ⥤ D ⥤ D.
-* Left actions of `C` as right `Cᴹᵒᵖ`-actions, and vice-versa.
 * (Right) Action of `(C ⥤ C)` on `C`.
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.
@@ -116,7 +114,7 @@ open scoped MonoidalLeftAction in
 - A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
 - A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
 Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
-ensure naturality of `αₗ` and `λₗ`, and ensure compatibilies with
+ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
 class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
@@ -215,7 +213,7 @@ theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
 @[reassoc, simp]
 theorem tensor_actionHomRight (x y : C) {z z' : D} (f : z ⟶ z') :
     (x ⊗ y) ⊴ₗ f = (αₗ x y z).hom ≫ x ⊴ₗ y ⊴ₗ f ≫ (αₗ x y z').inv := by
-  simp only [← id_actionHom, ← actionHom_id]
+  simp only [← id_actionHom]
   rw [← Category.assoc, ← actionAssocIso_hom_naturality]
   simp
 
@@ -430,7 +428,7 @@ open scoped MonoidalRightAction in
 - A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
 - A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
 Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
-ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilies with
+ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
 class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where
@@ -506,7 +504,7 @@ lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :
   simp [actionHom_def]
 
 @[simp]
-lemma id_actionHom  (d : D) {c c' : C} (f : c ⟶ c') :
+lemma id_actionHom (d : D) {c c' : C} (f : c ⟶ c') :
     (𝟙 d) ⊙ᵣₘ f = d ⊴ᵣ f := by
   simp [actionHom_def]
 
@@ -524,7 +522,7 @@ theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
 @[reassoc, simp]
 theorem actionHomLeft_tensor {z z' : D} (f : z ⟶ z') (x y : C) :
     (f ⊵ᵣ (x ⊗ y)) = (αᵣ z x y).hom ≫ (f ⊵ᵣ x) ⊵ᵣ y ≫ (αᵣ z' x y).inv := by
-  simp only [← id_actionHom, ← actionHom_id]
+  simp only [← actionHom_id]
   rw [← Category.assoc, ← actionAssocIso_hom_naturality]
   simp
 

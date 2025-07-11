@@ -100,6 +100,12 @@ a context with the stronger assumption that `f'` is continuous, one can use
 `ContinuousOn.intervalIntegrable` or `ContinuousOn.integrableOn_Icc` or
 `ContinuousOn.integrableOn_uIcc`.
 
+Versions of FTC-2 under the simpler assumption that the function is `C^1` are given in the
+file `Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff`.
+
+Applications to integration by parts are in the file
+`Mathlib.MeasureTheory.Integral.IntegrationByParts`.
+
 ### `intervalIntegral.FTCFilter` class
 
 As explained above, many theorems in this file rely on the typeclass
@@ -919,11 +925,15 @@ theorem derivWithin_integral_left (hf : IntervalIntegrable f volume a b) {s t : 
   (integral_hasDerivWithinAt_left hf hmeas ha).derivWithin hs
 
 /-- The integral of a continuous function is differentiable on a real set `s`. -/
-theorem differentiableOn_integral_of_continuous {s : Set ℝ}
-    (hintg : ∀ x ∈ s, IntervalIntegrable f volume a x) (hcont : Continuous f) :
-    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s := fun y hy =>
-  (integral_hasDerivAt_right (hintg y hy) hcont.aestronglyMeasurable.stronglyMeasurableAtFilter
-        hcont.continuousAt).differentiableAt.differentiableWithinAt
+theorem differentiable_integral_of_continuous (hcont : Continuous f) :
+    Differentiable ℝ (fun u => ∫ x in a..u, f x) := fun _ ↦
+  (integral_hasDerivAt_right (hcont.intervalIntegrable _ _)
+    hcont.aestronglyMeasurable.stronglyMeasurableAtFilter hcont.continuousAt).differentiableAt
+
+/-- The integral of a continuous function is differentiable on a real set `s`. -/
+theorem differentiableOn_integral_of_continuous {s : Set ℝ} (hcont : Continuous f) :
+    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s :=
+  (differentiable_integral_of_continuous hcont).differentiableOn
 
 end FTC1
 
@@ -994,7 +1004,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       calc
         (u - t) * y = ∫ _ in Icc t u, y := by
           simp only [MeasureTheory.integral_const, MeasurableSet.univ, measureReal_restrict_apply,
-            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul, s]
+            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul]
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
@@ -1156,7 +1166,9 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
-  its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`. -/
+its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`.
+
+See also `integral_deriv_of_contDiffOn_Icc` for a similar theorem assuming that `f` is `C^1`. -/
 theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableAt ℝ f x)
     (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a :=
   integral_eq_sub_of_hasDerivAt (fun x hx => (hderiv x hx).hasDerivAt) hint
@@ -1236,7 +1248,7 @@ theorem intervalIntegrable_deriv_of_nonneg (hcont : ContinuousOn g (uIcc a b))
     (hderiv : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt g (g' x) x)
     (hpos : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ g' x) : IntervalIntegrable g' volume a b := by
   rcases le_total a b with hab | hab
-  · simp only [uIcc_of_le, min_eq_left, max_eq_right, hab, IntervalIntegrable, hab,
+  · simp only [uIcc_of_le, min_eq_left, max_eq_right, IntervalIntegrable, hab,
       Ioc_eq_empty_of_le, integrableOn_empty, and_true] at hcont hderiv hpos ⊢
     exact integrableOn_deriv_of_nonneg hcont hderiv hpos
   · simp only [uIcc_of_ge, min_eq_right, max_eq_left, hab, IntervalIntegrable, Ioc_eq_empty_of_le,
