@@ -187,10 +187,7 @@ such that `norm_num` successfully recognises both the real and imaginary parts o
 -/
 @[norm_num (_ : ℂ) = _] def evalComplexEq : NormNumExt where eval {v β} e := do
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
-  let .app (.app f z) w ← whnfR e | failure
-  guard <| ← withNewMCtxDepth <| isDefEq f q(Eq (α := ℂ))
-  have z : Q(ℂ) := z
-  have w : Q(ℂ) := w
+  let ~q(($z : ℂ) = $w) := e | failure
   haveI' : $e =Q ($z = $w) := ⟨⟩
   let ⟨az, bz, pfz⟩ ← NormNumI.parse z
   let ⟨aw, bw, pfw⟩ ← NormNumI.parse w
@@ -211,9 +208,7 @@ such that `norm_num` successfully recognises the real part of `z`.
 -/
 @[norm_num Complex.re _] def evalRe : NormNumExt where eval {v β} e := do
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q ℝ := ⟨⟩
-  let .proj ``Complex 0 z ← whnfR e | failure
-  have z : Q(ℂ) := z
-  haveI' : $e =Q (Complex.re $z) := ⟨⟩
+  let ~q(Complex.re $z) := e | failure
   let ⟨a, _, pf⟩ ← NormNumI.parse z
   let r ← derive q($a)
   return r.eqTrans q(($pf).re_eq)
@@ -223,9 +218,7 @@ such that `norm_num` successfully recognises the imaginary part of `z`.
 -/
 @[norm_num Complex.im _] def evalIm : NormNumExt where eval {v β} e := do
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q ℝ := ⟨⟩
-  let .proj ``Complex 1 z ← whnfR e | failure
-  have z : Q(ℂ) := z
-  haveI' : $e =Q (Complex.im $z) := ⟨⟩
+  let ~q(Complex.im $z) := e | failure
   let ⟨_, b, pf⟩ ← NormNumI.parse z
   let r ← derive q($b)
   return r.eqTrans q(($pf).im_eq)
