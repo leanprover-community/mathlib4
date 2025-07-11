@@ -114,11 +114,14 @@ protected def gci : GaloisCoinsertion ideal (ofIdeals (X := X)) where
   choice_eq I hI := IdealSheafData.ext (hI.antisymm (ideal_ofIdeals_le I))
 
 lemma strictMono_ideal : StrictMono (ideal (X := X)) := IdealSheafData.gci.strictMono_l
-lemma ideal_mono : Monotone (ideal (X := X)) := strictMono_ideal.monotone
-lemma ofIdeals_mono : Monotone (ofIdeals (X := X)) := IdealSheafData.gci.gc.monotone_u
+lemma ideal_monotone : Monotone (ideal (X := X)) := strictMono_ideal.monotone
+lemma ofIdeals_monotone : Monotone (ofIdeals (X := X)) := IdealSheafData.gci.gc.monotone_u
 lemma ofIdeals_ideal (I : IdealSheafData X) : ofIdeals I.ideal = I := IdealSheafData.gci.u_l_eq _
 lemma le_ofIdeals_iff {I : IdealSheafData X} {J} : I ≤ ofIdeals J ↔ I.ideal ≤ J :=
   IdealSheafData.gci.gc.le_iff_le.symm
+
+@[deprecated (since := "2025-07-11")] alias ideal_mono := ideal_monotone
+@[deprecated (since := "2025-07-11")] alias ofIdeals_mono := ofIdeals_monotone
 
 instance : OrderTop (IdealSheafData X) where
   top.ideal := ⊤
@@ -609,7 +612,7 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
     rwa [f.naturality] at hx
 
 lemma Hom.le_ker_comp (f : X ⟶ Y) (g : Y.Hom Z) : g.ker ≤ (f ≫ g).ker := by
-  refine ofIdeals_mono fun U ↦ ?_
+  refine ofIdeals_monotone fun U ↦ ?_
   rw [Scheme.comp_app f g U, CommRingCat.hom_comp, ← RingHom.comap_ker]
   exact Ideal.ker_le_comap _
 
