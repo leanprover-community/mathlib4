@@ -592,7 +592,7 @@ theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_pair := linearIndepOn_id_pair
 
 /-- `LinearIndepOn.pair_iff` is a version that works over arbitrary rings. -/
-theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0):
+theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
     LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
   rw [pair_comm]
   convert linearIndepOn_insert (s := {i}) (a := j) hij.symm

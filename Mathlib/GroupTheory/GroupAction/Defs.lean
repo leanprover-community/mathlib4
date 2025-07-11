@@ -457,11 +457,11 @@ This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instea
 
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
       `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
-def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
+def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
-    α ≃ Σω : Ω, { a // Quotient.mk' a = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
-    _ ≃ Σω : Ω, ω.orbit :=
+    α ≃ Σ ω : Ω, { a // Quotient.mk' a = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
+    _ ≃ Σ ω : Ω, ω.orbit :=
       Equiv.sigmaCongrRight fun _ =>
         Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
 
@@ -469,7 +469,7 @@ def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
       action."]
-def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out :=
+def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
@@ -532,7 +532,7 @@ lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass 
     rw [inv_smul_smul]
 
 @[to_additive (attr := simp)]
-lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
+lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α) :
     stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ <| mul_left_injective _
 
 @[to_additive (attr := simp)]

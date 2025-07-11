@@ -19,8 +19,8 @@ We define and prove basic results about the regulator of a number field `K`.
 * `NumberField.Units.regulator`: the regulator of the number field `K`.
 
 * `Number.Field.Units.regOfFamily_eq_det`: For any infinite place `w'`, the regulator of the
-family `u` is equal to the absolute value of the determinant of the matrix
-`(mult w * log w (u i)))_i, w` where `w` runs through the infinite places distinct from `w'`.
+  family `u` is equal to the absolute value of the determinant of the matrix
+  `(mult w * log w (u i)))_i, w` where `w` runs through the infinite places distinct from `w'`.
 
 
 ## Tags
