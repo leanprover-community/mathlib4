@@ -180,7 +180,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
   simp only [diff_subset_iff, iUnion_subset_iff]
   intro i x hx
-  have : ∃i, x ∈ s i := by exists i
+  have : ∃ i, x ∈ s i := by exists i
   rcases Nat.findX this with ⟨j, hj, hlt⟩
   clear hx i
   rcases le_or_gt j n with hjn | hnj

@@ -187,7 +187,7 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   | @cons _ w => exact ⟨w, ‹_›⟩
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
-    (hx : x ∈ p.support) : ∃y ∈ p.support, G.Adj x y := by
+    (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
   induction p with
   | nil =>
     exact (hp Walk.Nil.nil).elim
