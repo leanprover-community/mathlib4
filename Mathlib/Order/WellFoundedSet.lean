@@ -454,6 +454,16 @@ theorem isWF_insert {a} : IsWF (insert a s) ↔ IsWF s := by
 protected theorem IsWF.insert (h : IsWF s) (a : α) : IsWF (insert a s) :=
   isWF_insert.2 h
 
+theorem _root_.exists_minimal_le_of_isPWO {a} (hs : s.IsPWO) (ha : a ∈ s) :
+    ∃ b ≤ a, Minimal s b := by
+  let t : Set s := {x | x ≤ a}
+  let h : t.Nonempty := ⟨⟨a, ha⟩, le_rfl⟩
+  refine ⟨hs.wellFounded.min t h, hs.wellFounded.min_mem t h,
+    (hs.wellFounded.min t h).2, fun y hy hle => ?_⟩
+  by_contra hnle
+  exact hs.wellFounded.not_lt_min t h (x := ⟨y, hy⟩) (hle.trans (hs.wellFounded.min_mem t h))
+    ⟨hle, hnle⟩
+
 end IsPWO
 
 section WellFoundedOn
