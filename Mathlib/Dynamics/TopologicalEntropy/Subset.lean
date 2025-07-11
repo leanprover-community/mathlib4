@@ -48,7 +48,7 @@ lemma IsDynCoverOf.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G) {
     IsDynCoverOf T F U n s :=
   F_G.trans h
 
-lemma IsDynNetIn.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G ) {U : Set (X × X)} {n : ℕ}
+lemma IsDynNetIn.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G) {U : Set (X × X)} {n : ℕ}
     {s : Set X} (h : IsDynNetIn T F U n s) :
     IsDynNetIn T G U n s :=
   ⟨h.1.trans F_G, h.2⟩
@@ -180,7 +180,7 @@ variable {ι : Type*} [UniformSpace X]
 
 lemma coverEntropy_union {T : X → X} {F G : Set X} :
     coverEntropy T (F ∪ G) = max (coverEntropy T F) (coverEntropy T G) := by
-  simp only [coverEntropy, ← iSup_sup_eq, ← iSup_subtype']
+  simp only [coverEntropy, ← iSup_sup_eq]
   exact biSup_congr fun _ _ ↦ coverEntropyEntourage_union
 
 lemma coverEntropyInf_iUnion_le (T : X → X) (F : ι → Set X) :

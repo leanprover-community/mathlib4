@@ -26,6 +26,11 @@ between a pair of `V`-functors (this requires limits in `V`),
 but we do provide a presheaf isomorphic to the Yoneda embedding of this object.
 
 We verify that when `V = Type v`, all these notion reduce to the usual ones.
+
+## References
+
+* [Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
+  [morrison-penney-enriched]
 -/
 
 
@@ -254,7 +259,7 @@ theorem forgetEnrichment_id' (X : C) :
 @[simp]
 theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ForgetEnrichment.homTo W (f ≫ g) =
-      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ ForgetEnrichment.homTo W g)) ≫
+      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ₘ ForgetEnrichment.homTo W g)) ≫
         eComp W _ _ _ :=
   rfl
 
@@ -273,7 +278,7 @@ structure EnrichedFunctor (C : Type u₁) [EnrichedCategory V C] (D : Type u₂)
   map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by aesop_cat
   map_comp :
     ∀ X Y Z : C,
-      eComp V X Y Z ≫ map X Z = (map X Y ⊗ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
+      eComp V X Y Z ≫ map X Z = (map X Y ⊗ₘ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
     aesop_cat
 
 attribute [reassoc (attr := simp)] EnrichedFunctor.map_id
@@ -390,8 +395,94 @@ structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
   /-- `app` is a natural transformation. -/
   naturality :
     ∀ X Y : C,
-      (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ app Y) ≫ eComp V _ _ _ =
-        (app X ⊗ G.map X Y) ≫ eComp V _ _ _
+      (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ₘ app Y) ≫ eComp V _ _ _ =
+        (app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _
+
+attribute [reassoc] GradedNatTrans.naturality
+
+/-- A natural transformation between two enriched functors is a `𝟙_ V`-graded natural
+transformation. -/
+abbrev EnrichedNatTrans (F G : EnrichedFunctor V C D) := GradedNatTrans Center.tensorUnit F G
+
+namespace EnrichedNatTrans
+
+open EnrichedCategory
+
+variable (F : EnrichedFunctor V C D)
+
+/-- The identity natural transformation on an enriched functor. -/
+@[simps]
+def id : EnrichedNatTrans F F where
+  app X := eId V (F.obj X)
+  naturality X Y := by
+    rw [tensorHom_def, tensorHom_def']
+    simp
+
+variable {F} {G H : EnrichedFunctor V C D}
+
+/-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
+of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
+@[reassoc]
+theorem naturality (α : EnrichedNatTrans F G) (X Y : C) :
+    (ρ_ _).inv ≫ (F.map X Y ⊗ₘ α.app Y) ≫ eComp V _ _ _ =
+    (λ_ _).inv ≫ (α.app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _ := by
+  have := GradedNatTrans.naturality α X Y
+  simp only [Center.tensorUnit_fst, Center.tensorUnit_snd_β, Iso.trans_hom, Iso.symm_hom,
+    Category.assoc] at this
+  rwa [Iso.eq_inv_comp]
+
+/-- The composition of enriched natural transformations. -/
+@[simps]
+def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTrans F H where
+  app X := (ρ_ (𝟙_ V)).inv ≫ (α.app X ⊗ₘ β.app X) ≫ eComp _ _ _ _
+  naturality X Y := by
+    rw [tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, tensorHom_def, whiskerLeft_comp, Category.assoc,
+      associator_inv_naturality_right_assoc, associator_inv_naturality_middle_assoc,
+      whisker_exchange_assoc _ (β.app Y)]
+    simp only [Center.tensorUnit_fst]
+    rw [whiskerLeft_rightUnitor_inv, Category.assoc, Iso.hom_inv_id_assoc,
+      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ 𝟙_ V),
+      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ (F.obj Y ⟶[V] G.obj Y)),
+      ← tensorHom_def_assoc, GradedNatTrans.naturality_assoc α]
+    simp only [Center.tensorUnit_fst]
+    rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
+      rightUnitor_tensor_inv, tensorHom_def', Category.assoc, comp_whiskerRight, Category.assoc,
+      ← associator_inv_naturality_middle_assoc, ← associator_inv_naturality_left_assoc,
+      ← whisker_exchange_assoc, ← associator_inv_naturality_right_assoc,
+      ← whisker_exchange_assoc, e_assoc, ← whisker_exchange_assoc,
+      ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, Category.assoc,
+      Category.assoc, ← tensorHom_def_assoc, β.naturality, ← tensorHom_def'_assoc,
+      tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, ← whisker_exchange_assoc, ← tensorHom_def_assoc]
+    monoidal
+
+instance category : Category (EnrichedFunctor V C D) where
+  Hom F G := EnrichedNatTrans F G
+  id F := id F
+  comp α β := comp α β
+  comp_id α := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, id_app]
+    rw [tensorHom_def, Category.assoc, ← rightUnitor_inv_naturality_assoc]
+    simp
+  id_comp α := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, id_app]
+    rw [tensorHom_def', Category.assoc]
+    simp only [id_whiskerLeft, Category.assoc, e_id_comp, Category.comp_id]
+    monoidal
+  assoc α β γ := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, Iso.cancel_iso_inv_left]
+    rw [tensorHom_def', tensorHom_def', comp_whiskerRight, comp_whiskerRight,
+      Category.assoc, Category.assoc, Category.assoc, ← e_assoc', comp_whiskerRight,
+      Category.assoc, associator_naturality_left_assoc, associator_naturality_middle_assoc,
+      whisker_exchange_assoc, associator_naturality_right_assoc, ← whiskerLeft_comp_assoc,
+      ← tensorHom_def', whisker_exchange_assoc, ← whiskerLeft_comp_assoc, ← tensorHom_def_assoc]
+    monoidal
+
+end EnrichedNatTrans
 
 variable [BraidedCategory V]
 
