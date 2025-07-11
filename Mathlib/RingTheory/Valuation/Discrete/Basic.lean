@@ -137,8 +137,7 @@ instance [IsRankOneDiscrete v] : v.IsNontrivial := by
 open Subgroup
 
 lemma valueGroup_genLTOne_eq_generator : Subgroup.genLTOne (valueGroup v) = generator v :=
-  ((valueGroup v).genLTOne_unique (generator v)
-    ⟨generator_lt_one v, generator_zpowers_eq_valueGroup v⟩).symm
+  ((valueGroup v).genLTOne_unique (generator_lt_one v) (generator_zpowers_eq_valueGroup v)).symm
 
 end IsRankOneDiscrete
 
