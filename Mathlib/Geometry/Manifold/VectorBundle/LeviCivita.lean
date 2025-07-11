@@ -408,21 +408,25 @@ lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
 
 end
 
--- deduce: this defines a covariant derivative
-
 -- TODO: make g part of the notation!
 variable (M) in
 /-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
 this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
-def LeviCivitaConnection : CovariantDerivative I E (TangentSpace I : M → Type _) :=
+noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
+    CovariantDerivative I E (TangentSpace I : M → Type _) where
   -- This is the existence part of the proof: take the formula derived above
   -- and prove it satisfies all the conditions.
+  toFun := existence_candidate I M
+  isCovariantDerivativeOn := by
+    rw [← iUnion_source_chartAt H M]
+    let t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x
+    apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
+    apply isCovariantDerivativeOn_existence_candidate I _
 
-  -- use isCovariantDerivativeOn_existence_candidate plus (future) API lemmas about
-  -- IsCovariantDerivativeOn
-  sorry
-
-lemma baz : (LeviCivitaConnection I M).IsLeviCivitaConnection := sorry
+lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection := by
+  refine ⟨?_, ?_⟩
+  · sorry -- compatible
+  · sorry -- torsion-free
 
 end CovariantDerivative
