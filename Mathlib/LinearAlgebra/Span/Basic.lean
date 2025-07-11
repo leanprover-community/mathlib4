@@ -44,6 +44,11 @@ variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 variable {s t : Set M}
 
+lemma _root_.AddSubmonoid.toNatSubmodule_closure (s : Set M) :
+    (AddSubmonoid.closure s).toNatSubmodule = .span ℕ s :=
+  (Submodule.span_le.mpr AddSubmonoid.subset_closure).antisymm'
+    ((Submodule.span ℕ s).toAddSubmonoid.closure_le.mpr Submodule.subset_span)
+
 /-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
@@ -429,6 +434,11 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
+lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
+    (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
+  (Submodule.span_le.mpr AddSubgroup.subset_closure).antisymm'
+    ((Submodule.span ℤ s).toAddSubgroup.closure_le.mpr Submodule.subset_span)
+
 @[simp]
 theorem span_neg (s : Set M) : span R (-s) = span R s :=
   calc
@@ -538,7 +548,7 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   suffices (⨆ i ∈ s, (p i).comap f) ⊔ LinearMap.ker f = ⊤ by
     rw [← this, left_eq_sup]; exact le_trans f.ker_le_comap (le_biSup (fun i ↦ (p i).comap f) hk)
   rw [iSup_subtype'] at hp ⊢
-  rw [← comap_map_eq, map_iSup_comap_of_sujective hf, hp, comap_top]
+  rw [← comap_map_eq, map_iSup_comap_of_surjective hf, hp, comap_top]
 
 lemma biSup_comap_eq_top_of_range_eq_biSup
     {R R₂ : Type*} [Semiring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]

@@ -260,7 +260,7 @@ lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂) :
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
 
 @[simp]
-lemma currySum_smul (r : R) (f : MultilinearMap R N M₂):
+lemma currySum_smul (r : R) (f : MultilinearMap R N M₂) :
     currySum (r • f) = r • currySum f := rfl
 
 /-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map on
@@ -328,7 +328,6 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
   toFun := currySum
   invFun := uncurrySum
   left_inv _ := by simp
-  right_inv _ := rfl
   map_add' := by aesop
   map_smul' := by aesop
 

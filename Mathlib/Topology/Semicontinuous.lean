@@ -348,7 +348,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
       exists_Ioc_subset_of_mem_nhds (hg (Ioi_mem_nhds hy)) h
     filter_upwards [hf z zlt] with a ha
     calc
-      y < g (min (f x) (f a)) := hz (by simp [zlt, ha, le_refl])
+      y < g (min (f x) (f a)) := hz (by simp [zlt, ha])
       _ ≤ g (f a) := gmon (min_le_right _ _)
   · simp only [not_exists, not_lt] at h
     exact Filter.Eventually.of_forall fun a => hy.trans_le (gmon (h (f a)))
@@ -1105,7 +1105,7 @@ theorem continuousOn_iff_lower_upperSemicontinuousOn {f : α → γ} :
 
 theorem continuous_iff_lower_upperSemicontinuous {f : α → γ} :
     Continuous f ↔ LowerSemicontinuous f ∧ UpperSemicontinuous f := by
-  simp_rw [continuous_iff_continuousOn_univ, continuousOn_iff_lower_upperSemicontinuousOn,
+  simp_rw [← continuousOn_univ, continuousOn_iff_lower_upperSemicontinuousOn,
     lowerSemicontinuousOn_univ_iff, upperSemicontinuousOn_univ_iff]
 
 end

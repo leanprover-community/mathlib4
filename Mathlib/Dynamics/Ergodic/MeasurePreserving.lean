@@ -179,7 +179,7 @@ lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
   induction' n with n ih; · simp
-  simp only [add_smul, one_smul, ← n.add_one]
+  simp only [add_smul, one_smul]
   refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih ?_)
   replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
     hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
