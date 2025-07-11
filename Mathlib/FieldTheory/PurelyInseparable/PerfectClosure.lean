@@ -414,7 +414,7 @@ theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfect
     obtain ⟨y, h⟩ := surjective_frobenius E p (algebraMap F E x)
     have : y ∈ perfectClosure F E := ⟨1, x, by rw [← h, pow_one, frobenius_def, ringExpChar.eq F p]⟩
     obtain ⟨z, rfl⟩ := eq ▸ this
-    simp only [Algebra.ofId, AlgHom.coe_ringHom_mk] at h
+    simp only [Algebra.ofId] at h
     exact ⟨z, (algebraMap F E).injective (by rw [RingHom.map_frobenius]; rw [h])⟩
   exact PerfectRing.toPerfectField F p
 

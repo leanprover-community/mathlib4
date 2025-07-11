@@ -160,7 +160,7 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
       ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
     exact congr_fun (α.naturality i.op).symm x
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
-  simp only [comp_obj, types_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← e, this]
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, ← e, this]
 
 @[reassoc]
 theorem naturality [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) :
@@ -203,7 +203,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     exact this _ _ _ _ (by simpa only [Category.assoc] using e)
   introv e
   refine ext G _ _ fun V iVZ ↦ ?_
-  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, ← Functor.map_comp, naturality_apply,
+  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, naturality_apply,
     Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
@@ -310,7 +310,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     intro Y' f' hf'
     change unop X ⟶ ℱ.obj (op (unop _)) at x
     dsimp
-    simp only [pushforwardFamily, Functor.comp_map, coyoneda_obj_map, homOver_app, Category.assoc]
+    simp only [Category.assoc]
     congr 1
     conv_lhs => rw [← hf'.some.fac]
     simp only [← Category.assoc, op_comp, Functor.map_comp]
@@ -390,7 +390,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
   simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, coyoneda_obj_map, op_comp,
-    FunctorToTypes.map_comp_apply, homOver_app, ← Category.assoc]
+    FunctorToTypes.map_comp_apply, homOver_app]
   congr 1
   simp only [Category.assoc]
   congr 1
@@ -491,7 +491,7 @@ class IsDenseSubsite : Prop where
   isLocallyFaithful' : G.IsLocallyFaithful K := by infer_instance
   functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
 
-lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K]:
+lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K] :
     S.functorPushforward G ∈ K _ ↔ S ∈ J _ := IsDenseSubsite.functorPushforward_mem_iff
 
 namespace IsDenseSubsite

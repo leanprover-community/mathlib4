@@ -77,7 +77,7 @@ local notation "v" => multiplicity
 This makes it easy to show that `frobeniusPoly p n` is congruent to `X n ^ p`
 modulo `p`. -/
 noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
-  | n => X (n + 1) -  ∑ i : Fin n, have _ := i.is_lt
+  | n => X (n + 1) - ∑ i : Fin n, have _ := i.is_lt
       ∑ j ∈ range (p ^ (n - i)),
         (((X (i : ℕ) ^ p) ^ (p ^ (n - (i : ℕ)) - (j + 1)) : MvPolynomial ℕ ℤ) *
         (frobeniusPolyAux i) ^ (j + 1)) *
@@ -171,7 +171,7 @@ theorem map_frobeniusPoly (n : ℕ) :
     (((p ^ (n - i)).choose (j + 1) : ℚ) * (p : ℚ) ^ (j - v p (j + 1)) * p * (p ^ n : ℚ))
       = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
         (p : ℚ) ^ (n - i - v p (j + 1)) by
-    have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by
+    have aux : ∀ k : ℕ, (p : ℚ) ^ k ≠ 0 := by
       intro; apply pow_ne_zero; exact mod_cast hp.1.ne_zero
     simpa [aux, -one_div, -pow_eq_zero_iff', field_simps] using this.symm
   rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
@@ -282,7 +282,7 @@ theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius 
 
 @[simp]
 theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
-  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card, eq_self_iff_true,
+  simp only [WittVector.ext_iff, coeff_frobenius_charP, ZMod.pow_card,
     forall_const]
 
 variable (R)
