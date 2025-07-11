@@ -401,6 +401,7 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     A * A⁻¹ = (H : Set G) * Z := by
   classical
 
+  -- some useful initial calculations
   have K_pos : 0 < K := by positivity
   have hK₀ : 0 < K := by positivity
   have hKφ' : 0 < φ - K := by linarith
@@ -414,9 +415,11 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     ring_nf
   rw [calc1]
 
+  -- we need to consider the trivial case A = ∅ separately
   obtain rfl | emptyA := A.eq_empty_or_nonempty
   · exact ⟨⊥, inferInstance, ∅, by simp [const_pos.le]⟩
 
+  -- the main case A ≠ ∅
   let S := A * A⁻¹
   have id_in_S : 1 ∈ S := by obtain ⟨a, ha⟩ := emptyA; simpa using mul_mem_mul ha (inv_mem_inv ha)
 
@@ -426,8 +429,14 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     simpa [H, ← stabilizer_coe_finset] using stabilizer_finite (by simpa [S]) S.finite_toSet
   cases nonempty_fintype H
 
+  -- we define Z: we first take all right cosets
+  --  that intersect S, show that there is finitely many of them
+  --  and take for Z a set of representatives of all these cosets
   let preZ := {cH ∈ orbit Gᵐᵒᵖ (H : Set G) | (cH ∩ S : Set G).Nonempty}
 
+  -- to show finiteness of preZ, we show that the function that
+  --  maps a coset from preZ to its arbitrary element is injective
+  --  with image in a finite set S
   have fin_preZ : preZ.Finite := by
     let f_preZ : Set G → S := fun cH =>
       if h: cH ∈ preZ
@@ -458,6 +467,9 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
 
     exact Finite.Set.finite_of_finite_image preZ inj_f_preZ
 
+  -- we take the Finset given by preZ and show explicitely that its
+  --  elements are nonempty, which allows us to define the choice function
+  --  that will give us Z
   let preZ' := fin_preZ.toFinset
   have elts_preZ'_nonempty (cH : Set G) (hcH : cH ∈ preZ') : (cH ∩ S).Nonempty := by
     rw [Set.Finite.mem_toFinset, Set.mem_setOf] at hcH
@@ -466,6 +478,7 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
   choose! chooseZ chooseZ_spec using elts_preZ'_nonempty
   let Z := Finset.image chooseZ preZ'
 
+  -- some claims about Z
   have Z_subset_S : Z ⊆ S := by
     simpa [Z, Finset.image_subset_iff] using fun x hx ↦ (chooseZ_spec _ hx).2
 
@@ -499,6 +512,7 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
         (H: Set G) * Z  ⊆ H * S   := by gcongr
                       _ ⊆ S       := by exact Eq.subset HS_eq_S
 
+  -- this is only the Finset version of the previous claim
   have S_eq_HZ_finsets : S = Set.toFinset H * Z := by
     apply Subset.antisymm
     · intro s hs
@@ -514,30 +528,31 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
       rw [← mem_coe, S_eq_HZ, ← hyz]
       exact Set.mul_mem_mul (Set.mem_toFinset.mp hy) (mem_coe.mpr hz)
 
+  -- it remains to prove that Z is not "too big"
   refine ⟨H, inferInstance, Z, ?_, mod_cast S_eq_HZ⟩
+
+  -- function r counts the number of representations of z ∈ S as xy⁻¹ for x, y ∈ A
   let r : G → ℕ := fun z => #{xy ∈ A ×ˢ A | xy.1 * (xy.2 : G)⁻¹ = z}
 
+  -- first we show that "a lot of" z ∈ S have many representations as given by r
   have many_big_z : #{z ∈ S | (K - 1) * #A < r z} ≥ (φ - K) * (K - ψ) / (2 - K) * #A := by
     let k := #{z ∈ S | (K - 1) * #A < r z}
 
     have ineq1 : #A * #A ≤ ((2 - K) * k + K * (K - 1) * #A) * #A := by
       calc
-        (#A : ℝ) * #A = #(A ×ˢ A) := by simp only [card_product, Nat.cast_mul]
-                    _ = ∑ z ∈ S, r z                                            := ?eq1
-                    _ = ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
-                          + ∑ z ∈ {z ∈ S | ¬ (K - 1) * #A < r z}, r z           := ?eq2
-                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
-                          + ∑ z ∈ {z ∈ S | ¬ (K - 1) * #A < r z}, (K - 1) * #A  := ?eq3
-                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
-                          + (K - 1) * #A * #{z ∈ S | ¬ (K - 1) * #A < r z}      := ?eq4
-                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
-                          + (K - 1) * #A * (K * #A - k)                         := ?eq5
-                    _ = ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, r z
-                          + (K * (K - 1) * #A - (K - 1) * k) * #A               := by ring
-                    _ ≤ ∑ z ∈ {z ∈ S | (K - 1) * #A < r z}, #A
-                          + (K * (K - 1) * #A - (K - 1) * k) * #A               := ?eq6
-                    _ = k * #A + (K * (K - 1) * #A - (K - 1) * k) * #A          := ?eq7
-                    _ = ((2 - K) * k + K * (K - 1) * #A) * #A                   := by ring
+            (#A : ℝ) * #A
+        _ = #(A ×ˢ A) := by simp only [card_product, Nat.cast_mul]
+        _ = ∑ z ∈ S, r z                                            := ?eq1
+        _ = ∑ z ∈ S with (K - 1) * #A < r z, r z + ∑ z ∈ S with ¬ (K - 1) * #A < r z, r z := ?eq2
+        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, r z
+              + ∑ z ∈ S with ¬ (K - 1) * #A < r z, (K - 1) * #A     := ?eq3
+        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, r z
+              + (K - 1) * #A * #{z ∈ S | ¬ (K - 1) * #A < r z}      := ?eq4
+        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, r z + (K - 1) * #A * (K * #A - k)  := ?eq5
+        _ = ∑ z ∈ S with (K - 1) * #A < r z, r z + (K * (K - 1) * #A - (K - 1) * k) * #A := by ring
+        _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, #A + (K * (K - 1) * #A - (K - 1) * k) * #A := ?eq6
+        _ = k * #A + (K * (K - 1) * #A - (K - 1) * k) * #A          := ?eq7
+        _ = ((2 - K) * k + K * (K - 1) * #A) * #A                   := by ring
       case eq1 =>
         unfold r
         rw [Nat.cast_inj]
@@ -600,7 +615,8 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     rw [this]
     exact ineq3
 
-
+  -- here we show that those z ∈ S that have "a lot of" representations
+  --  are actually in H
   have mem_H_of_big_z {z : G} : z ∈ S ∧ (r z) > (K - 1) * #A → (z : G) ∈ H := by
     intro hz
     obtain ⟨hz, hrz⟩ := hz
@@ -648,7 +664,10 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     rw [mem_mul]
     exact ⟨x * y⁻¹ * t, by simp [ht, mul_assoc], ((a * b⁻¹)⁻¹ * t)⁻¹, by simp [ht, mul_assoc]⟩
 
-
+  -- now we show that H is relatively big, which will then
+  --  make Z relatively small once we show that #S = #H * #Z
+  --  (which is already clear because Hz for z ∈ Z are all different
+  --  and hence disjoint cosets)
   have big_H : Fintype.card H ≥ (φ - K) * (K - ψ) / (2 - K) * #A := by
     change Fintype.card (H: Set G) ≥ (φ - K) * (K - ψ) / (2 - K) * #A
     rw [← Set.toFinset_card]
@@ -704,7 +723,9 @@ theorem doubling_lt_golden_ratio {K : ℝ} (hK₁ : 1 < K) (hKφ : K < φ)
     rw [hcw2, mul_eq_right, inv_mul_eq_one] at hxywt
     exact ⟨(Eq.symm hxywt), hcw2⟩
 
-
+  -- we have all the claims that we need in order to prove that
+  --  Z is not too large, we will just multiply both sides with #H
+  --  and use the claims
   apply le_of_mul_le_mul_of_pos_left ?_ (by
     change (0 : ℝ) < Fintype.card H
     rw [← Nat.cast_zero, Nat.cast_lt]
