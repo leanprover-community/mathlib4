@@ -106,7 +106,7 @@ lemma birkhoffSup_measurable [MeasurableSpace α] {f : α → α} (hf : Measurab
 /-- The set of points `x` for which `birkhoffSup f φ x = ⊤`. -/
 def divergentSet (f : α → α) (φ : α → ℝ) : Set α := (birkhoffSup f φ)⁻¹' {⊤}
 
-lemma divergentSet_invariant {f : α → α} {x φ}: f x ∈ divergentSet f φ ↔ x ∈ divergentSet f φ := by
+lemma divergentSet_invariant {f : α → α} {x φ} : f x ∈ divergentSet f φ ↔ x ∈ divergentSet f φ := by
   constructor
   all_goals
     intro hx
