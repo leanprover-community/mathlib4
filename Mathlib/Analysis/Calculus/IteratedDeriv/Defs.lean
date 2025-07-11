@@ -35,7 +35,7 @@ The results are deduced from the corresponding results for the more general (mul
 Fréchet derivative. For this, we write `iteratedDeriv n f` as the composition of
 `iteratedFDeriv 𝕜 n f` and a continuous linear equiv. As continuous linear equivs respect
 differentiability and commute with differentiation, this makes it possible to prove readily that
-the derivative of the `n`-th derivative is the `n + 1`-th derivative in `iteratedDerivWithin_succ`,
+the derivative of the `n`-th derivative is the `n+1`-th derivative in `iteratedDerivWithin_succ`,
 by translating the corresponding result `iteratedFDerivWithin_succ_apply_left` for the
 iterated Fréchet derivative.
 -/
@@ -172,7 +172,7 @@ theorem contDiffOn_nat_iff_continuousOn_differentiableOn_deriv {n : ℕ} (hs : U
     contDiffOn_iff_continuousOn_differentiableOn_deriv hs]
   simp
 
-/-- The `n + 1`-th iterated derivative within a set with unique derivatives can be obtained by
+/-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
 differentiating the `n`-th iterated derivative. -/
 theorem iteratedDerivWithin_succ {x : 𝕜} :
     iteratedDerivWithin (n + 1) f s x = derivWithin (iteratedDerivWithin n f s) s x := by
@@ -197,7 +197,7 @@ theorem iteratedDerivWithin_eq_iterate {x : 𝕜} :
     rw [iteratedDerivWithin_succ, Function.iterate_succ']
     exact derivWithin_congr (fun y hy => IH) IH
 
-/-- The `n + 1`-th iterated derivative within a set with unique derivatives can be obtained by
+/-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
 taking the `n`-th derivative of the derivative. -/
 theorem iteratedDerivWithin_succ' {x : 𝕜} :
     iteratedDerivWithin (n + 1) f s x = (iteratedDerivWithin n (derivWithin f s) s) x := by
@@ -283,7 +283,7 @@ theorem ContDiff.differentiable_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 (m +
     Differentiable 𝕜 (iteratedDeriv m f) :=
   h.differentiable_iteratedDeriv m (Nat.cast_lt.mpr m.lt_succ_self)
 
-/-- The `n + 1`-th iterated derivative can be obtained by differentiating the `n`-th
+/-- The `n+1`-th iterated derivative can be obtained by differentiating the `n`-th
 iterated derivative. -/
 theorem iteratedDeriv_succ : iteratedDeriv (n + 1) f = deriv (iteratedDeriv n f) := by
   ext x
@@ -298,7 +298,7 @@ theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
   convert iteratedDerivWithin_eq_iterate (F := F)
   simp [derivWithin_univ]
 
-/-- The `n + 1`-th iterated derivative can be obtained by taking the `n`-th derivative of the
+/-- The `n+1`-th iterated derivative can be obtained by taking the `n`-th derivative of the
 derivative. -/
 theorem iteratedDeriv_succ' : iteratedDeriv (n + 1) f = iteratedDeriv n (deriv f) := by
   rw [iteratedDeriv_eq_iterate, iteratedDeriv_eq_iterate]; rfl

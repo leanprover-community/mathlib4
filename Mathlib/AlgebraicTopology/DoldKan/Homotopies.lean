@@ -69,12 +69,12 @@ variable {C : Type*} [Category C] [Preadditive C]
 variable {X : SimplicialObject C}
 
 /-- As we are using chain complexes indexed by `ℕ`, we shall need the relation
-`c` such `c m n` if and only if `n + 1=m`. -/
+`c` such `c m n` if and only if `n+1=m`. -/
 abbrev c :=
   ComplexShape.down ℕ
 
 /-- Helper when we need some `c.rel i j` (i.e. `ComplexShape.down ℕ`),
-e.g. `c_mk n (n + 1) rfl` -/
+e.g. `c_mk n (n+1) rfl` -/
 theorem c_mk (i j : ℕ) (h : j + 1 = i) : c.Rel i j :=
   ComplexShape.down_mk i j h
 

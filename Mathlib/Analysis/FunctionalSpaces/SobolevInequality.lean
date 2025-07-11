@@ -19,7 +19,7 @@ The bound is up to a constant that is independent of the function `u`.
 Let `n` be the dimension of the domain.
 
 The main step in the proof, which we dubbed the "grid-lines lemma" below, is a complicated
-inductive argument that involves manipulating an `n + 1`-fold iterated integral and a product of
+inductive argument that involves manipulating an `n+1`-fold iterated integral and a product of
 `n+2` factors. In each step, one pushes one of the integral inside (all but one of)
 the factors of the product using Hölder's inequality. The precise formulation of the induction
 hypothesis (`MeasureTheory.GridLines.T_insert_le_T_lmarginal_singleton`) is tricky,

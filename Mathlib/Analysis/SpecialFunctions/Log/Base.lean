@@ -589,7 +589,7 @@ end TendstoCompAddSub
 section Induction
 
 /-- Induction principle for intervals of real numbers: if a proposition `P` is true
-on `[x₀, r * x₀)` and if `P` for `[x₀, r^n * x₀)` implies `P` for `[r^n * x₀, r^(n + 1) * x₀)`,
+on `[x₀, r * x₀)` and if `P` for `[x₀, r^n * x₀)` implies `P` for `[r^n * x₀, r^(n+1) * x₀)`,
 then `P` is true for all `x ≥ x₀`. -/
 lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
     (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)

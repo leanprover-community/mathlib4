@@ -197,7 +197,7 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simp] theorem finSuccEquivLast_symm_none : finSuccEquivLast.symm none = Fin.last n :=
   finSuccEquiv'_symm_none _
 
-/-- An embedding `e : Fin (n + 1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
+/-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
 the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
 def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
     (Fin (n + 1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=

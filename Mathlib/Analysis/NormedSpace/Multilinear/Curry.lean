@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Multilinear.Curry
 /-!
 # Currying and uncurrying continuous multilinear maps
 
-We associate to a continuous multilinear map in `n + 1` variables (i.e., based on `Fin n.succ`) two
+We associate to a continuous multilinear map in `n+1` variables (i.e., based on `Fin n.succ`) two
 curried functions, named `f.curryLeft` (which is a continuous linear map on `E 0` taking values
 in continuous multilinear maps in `n` variables) and `f.curryRight` (which is a continuous
 multilinear map in `n` variables taking values in continuous linear maps on `E (last n)`).
@@ -89,9 +89,10 @@ theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 
 
 /-! #### Left currying -/
 
+
 /-- Given a continuous linear map `f` from `E 0` to continuous multilinear maps on `n` variables,
-construct the corresponding continuous multilinear map on `n + 1` variables obtained by
-concatenating the variables, given by `m ↦ f (m 0) (tail m)` -/
+construct the corresponding continuous multilinear map on `n+1` variables obtained by concatenating
+the variables, given by `m ↦ f (m 0) (tail m)` -/
 def ContinuousLinearMap.uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
     ContinuousMultilinearMap 𝕜 Ei G :=
@@ -104,7 +105,7 @@ theorem ContinuousLinearMap.uncurryLeft_apply
     f.uncurryLeft m = f (m 0) (tail m) :=
   rfl
 
-/-- Given a continuous multilinear map `f` in `n + 1` variables, split the first variable to obtain
+/-- Given a continuous multilinear map `f` in `n+1` variables, split the first variable to obtain
 a continuous linear map into continuous multilinear maps in `n` variables, given by
 `x ↦ (m ↦ f (cons x m))`. -/
 def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
@@ -131,8 +132,8 @@ theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap
 
 variable (𝕜 Ei G)
 
-/-- The space of continuous multilinear maps on `Π(i : Fin (n + 1)), E i` is canonically isomorphic
-to the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
+/-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), E i` is canonically isomorphic to
+the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
 `Π(i : Fin n), E i.succ`, by separating the first variable. We register this isomorphism in
 `continuousMultilinearCurryLeftEquiv 𝕜 E E₂`. The algebraic version (without topology) is given
 in `multilinearCurryLeftEquiv 𝕜 E E₂`.
@@ -183,7 +184,7 @@ theorem ContinuousLinearMap.uncurryLeft_norm
 
 
 /-- Given a continuous linear map `f` from continuous multilinear maps on `n` variables to
-continuous linear maps on `E 0`, construct the corresponding continuous multilinear map on `n + 1`
+continuous linear maps on `E 0`, construct the corresponding continuous multilinear map on `n+1`
 variables obtained by concatenating the variables, given by `m ↦ f (init m) (m (last n))`. -/
 def ContinuousMultilinearMap.uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
@@ -198,7 +199,7 @@ theorem ContinuousMultilinearMap.uncurryRight_apply
     (m : ∀ i, Ei i) : f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
 
-/-- Given a continuous multilinear map `f` in `n + 1` variables, split the last variable to obtain
+/-- Given a continuous multilinear map `f` in `n+1` variables, split the last variable to obtain
 a continuous multilinear map in `n` variables into continuous linear maps, given by
 `m ↦ (x ↦ f (snoc m x))`. -/
 def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G) :
@@ -239,7 +240,7 @@ theorem ContinuousMultilinearMap.uncurry_curryRight (f : ContinuousMultilinearMa
 variable (𝕜 Ei G)
 
 /--
-The space of continuous multilinear maps on `Π(i : Fin (n + 1)), Ei i` is canonically isomorphic to
+The space of continuous multilinear maps on `Π(i : Fin (n+1)), Ei i` is canonically isomorphic to
 the space of continuous multilinear maps on `Π(i : Fin n), Ei <| castSucc i` with values in the
 space of continuous linear maps on `Ei (last n)`, by separating the last variable. We register this
 isomorphism as a continuous linear equiv in `continuousMultilinearCurryRightEquiv 𝕜 Ei G`.
@@ -267,7 +268,7 @@ def continuousMultilinearCurryRightEquiv :
 
 variable (n G')
 
-/-- The space of continuous multilinear maps on `Π(i : Fin (n + 1)), G` is canonically isomorphic to
+/-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), G` is canonically isomorphic to
 the space of continuous multilinear maps on `Π(i : Fin n), G` with values in the space
 of continuous linear maps on `G`, by separating the last variable. We register this
 isomorphism as a continuous linear equiv in `continuousMultilinearCurryRightEquiv' 𝕜 n G G'`.

@@ -112,7 +112,7 @@ def benchOutput (jsonInput : String) : IO String := do
   -- each filename is prefixed by `~`.
   let (head, data) := data.partition (·.file.take 1 != "~")
   -- Partition the `Bench`es into "bins", i.e. the subsets of all `Bench`es whose difference
-  -- in instructions lies in an interval `[n·10⁹, (n + 1)·10⁹)`.
+  -- in instructions lies in an interval `[n·10⁹, (n+1)·10⁹)`.
   -- The values `n` need not be consecutive: we only retain non-empty bins.
   let grouped := ((data.groupByKey (·.diff / (10 ^ 9))).toArray.qsort (·.1 > ·.1)).toList
   -- We consider `build` and `lint` as their own groups, in this order.

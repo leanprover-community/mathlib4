@@ -76,7 +76,7 @@ converges to `a`.
 
 The `atTop` filter on `Finset β` is the limit of all finite sets towards the entire type. So we sum
 up bigger and bigger sets. This sum operation is invariant under reordering. In particular,
-the function `ℕ → ℝ` sending `n` to `(-1)^n / (n + 1)` does not have a
+the function `ℕ → ℝ` sending `n` to `(-1)^n / (n+1)` does not have a
 sum for this definition, but a series which is absolutely convergent will have the correct sum.
 
 This is based on Mario Carneiro's

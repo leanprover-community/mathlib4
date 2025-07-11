@@ -28,7 +28,7 @@ $n$, $P^n(t)-t$ must always have the same sign as $P(t)-t$. Substituting $n=k$ g
 in particular $P(P(t))=t$.
 
 Otherwise, there must be two consecutive entries that are opposites of one another. This means
-$P^{n+2}(t)-P^{n + 1}(t)=P^n(t)-P^{n + 1}(t)$, which implies $P^{n+2}(t)=P^n(t)$ and $P(P(t))=t$.
+$P^{n+2}(t)-P^{n+1}(t)=P^n(t)-P^{n+1}(t)$, which implies $P^{n+2}(t)=P^n(t)$ and $P(P(t))=t$.
 
 With this lemma, we can reduce the problem to the case $k=2$. If every root of $P(P(t))-t$ is also a
 root of $P(t)-t$, then we're done. Otherwise, there exist $a$ and $b$ with $a\ne b$ and $P(a)=b$,

@@ -921,7 +921,7 @@ end BorelSpace
 
 section ENNReal
 
-/-- One can cut out `ℝ≥0∞` into the sets `{0}`, `Ico (t^n) (t^(n + 1))` for `n : ℤ` and `{∞}`. This
+/-- One can cut out `ℝ≥0∞` into the sets `{0}`, `Ico (t^n) (t^(n+1))` for `n : ℤ` and `{∞}`. This
 gives a way to compute the measure of a set in terms of sets on which a given function `f` does not
 fluctuate by more than `t`. -/
 theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα : MeasurableSpace α}

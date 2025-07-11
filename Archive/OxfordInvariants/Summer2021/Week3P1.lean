@@ -56,12 +56,12 @@ natural.
   * Divisibility condition:
     `a₀ * 1 - a₀ = 0` is clearly divisible by `a₁`.
 * Induction step:
-  * $\sum_{i=0}^n (a_0 a_{n + 1}) / (a_i a_{i+1})$ is a natural:
-    $$\sum_{i=0}^{n + 1} (a_0 a_{n+2}) / (a_i a_{i+1})
-      = \sum_{i=0}^n\ (a_0 a_{n+2}) / (a_i a_{i+1}) + (a_0 a_{n+2}) / (a_{n + 1} a_{n+2})
-      = a_{n+2} / a_{n + 1} × \sum_{i=0}^n (a_0 a_{n + 1}) / (a_i a_{i+1}) + a_0 / a_{n + 1}
-      = a_{n+2} / a_{n + 1} × b + a_0 / a_{n + 1}
-      = (a_n + a_{n+2}) / a_{n + 1} × b - (a_n b - a_0)(a_{n + 1})$$
+  * $\sum_{i=0}^n (a_0 a_{n+1}) / (a_i a_{i+1})$ is a natural:
+    $$\sum_{i=0}^{n+1} (a_0 a_{n+2}) / (a_i a_{i+1})
+      = \sum_{i=0}^n\ (a_0 a_{n+2}) / (a_i a_{i+1}) + (a_0 a_{n+2}) / (a_{n+1} a_{n+2})
+      = a_{n+2} / a_{n+1} × \sum_{i=0}^n (a_0 a_{n+1}) / (a_i a_{i+1}) + a_0 / a_{n+1}
+      = a_{n+2} / a_{n+1} × b + a_0 / a_{n+1}
+      = (a_n + a_{n+2}) / a_{n+1} × b - (a_n b - a_0)(a_{n+1})$$
     which is a natural because `(aₙ + aₙ₊₂)/aₙ₊₁`, `b` and `(aₙ * b - a₀)/aₙ₊₁` are (plus an
     annoying inequality, or the fact that the original sum is positive because its terms are).
   * Divisibility condition:

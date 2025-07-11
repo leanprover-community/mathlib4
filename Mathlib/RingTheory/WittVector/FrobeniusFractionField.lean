@@ -24,7 +24,7 @@ polynomial equation in `k`. We must define these as generic polynomials using Wi
 (`WittVector.wittMul`, `wittPolynomial`) to show that they satisfy the desired equation.
 
 Preliminary work is done in the dependency `RingTheory.WittVector.MulCoeff`
-to isolate the `n + 1`st coefficients of `x` and `y` in the `n + 1`st coefficient of `x*y`.
+to isolate the `n+1`st coefficients of `x` and `y` in the `n+1`st coefficient of `x*y`.
 
 This construction is described in Dupuis, Lewis, and Macbeth,
 [Formalized functional analysis via semilinear maps][dupuis-lewis-macbeth2022].
@@ -64,7 +64,7 @@ variable {k : Type*} [CommRing k] [CharP k p]
 
 open Polynomial
 
-/-- The root of this polynomial determines the `n + 1`st coefficient of our solution. -/
+/-- The root of this polynomial determines the `n+1`st coefficient of our solution. -/
 def succNthDefiningPoly (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) : Polynomial k :=
   X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1)) +
     C
@@ -103,7 +103,7 @@ theorem root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha�
     simp only [succNthDefiningPoly_degree p n a₁ a₂ bs ha₁ ha₂, ne_eq, Nat.cast_eq_zero,
       hp.out.ne_zero, not_false_eq_true]
 
-/-- This is the `n + 1`st coefficient of our solution, projected from `root_exists`. -/
+/-- This is the `n+1`st coefficient of our solution, projected from `root_exists`. -/
 def succNthVal (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : k :=
   Classical.choose (root_exists p n a₁ a₂ bs ha₁ ha₂)

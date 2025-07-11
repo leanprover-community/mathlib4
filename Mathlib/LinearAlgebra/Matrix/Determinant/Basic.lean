@@ -733,7 +733,7 @@ theorem det_fromBlocks_zero₁₂ (A : Matrix m m R) (C : Matrix n m R) (D : Mat
   rw [← det_transpose, fromBlocks_transpose, transpose_zero, det_fromBlocks_zero₂₁, det_transpose,
     det_transpose]
 
-/-- Laplacian expansion of the determinant of an `n + 1 × n + 1` matrix along column 0. -/
+/-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column 0. -/
 theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :
     det A = ∑ i : Fin n.succ, (-1) ^ (i : ℕ) * A i 0 * det (A.submatrix i.succAbove Fin.succ) := by
   rw [Matrix.det_apply, Finset.univ_perm_fin_succ, ← Finset.univ_product_univ]
@@ -764,7 +764,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
       simp [_root_.neg_mul, one_mul, zsmul_eq_mul, neg_smul,
         Fin.succAbove_cycleRange, mul_left_comm]
 
-/-- Laplacian expansion of the determinant of an `n + 1 × n + 1` matrix along row 0. -/
+/-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along row 0. -/
 theorem det_succ_row_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :
     det A = ∑ j : Fin n.succ, (-1) ^ (j : ℕ) * A 0 j * det (A.submatrix Fin.succ j.succAbove) := by
   rw [← det_transpose A, det_succ_column_zero]
@@ -772,7 +772,7 @@ theorem det_succ_row_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :
   rw [← det_transpose]
   simp only [transpose_apply, transpose_submatrix, transpose_transpose]
 
-/-- Laplacian expansion of the determinant of an `n + 1 × n + 1` matrix along row `i`. -/
+/-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along row `i`. -/
 theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin n.succ) :
     det A =
       ∑ j : Fin n.succ, (-1) ^ (i + j : ℕ) * A i j * det (A.submatrix i.succAbove j.succAbove) := by
@@ -792,7 +792,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
     rw [Equiv.Perm.inv_def, Matrix.submatrix_apply, Matrix.submatrix_apply,
       Fin.cycleRange_symm_succ]
 
-/-- Laplacian expansion of the determinant of an `n + 1 × n + 1` matrix along column `j`. -/
+/-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column `j`. -/
 theorem det_succ_column {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (j : Fin n.succ) :
     det A =
       ∑ i : Fin n.succ, (-1) ^ (i + j : ℕ) * A i j * det (A.submatrix i.succAbove j.succAbove) := by

@@ -114,12 +114,12 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
   | succ _, 0, _ => fz
   | succ n, succ m, h => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h.h⟩)
 
-/-- `castSucc i` embeds `i : Fin2 n` in `Fin2 (n + 1)`. -/
+/-- `castSucc i` embeds `i : Fin2 n` in `Fin2 (n+1)`. -/
 def castSucc {n} : Fin2 n → Fin2 (n + 1)
   | fz => fz
   | fs k => fs <| castSucc k
 
-/-- The greatest value of `Fin2 (n + 1)`. -/
+/-- The greatest value of `Fin2 (n+1)`. -/
 def last : {n : Nat} → Fin2 (n + 1)
   | 0 => fz
   | n + 1 => fs (@last n)

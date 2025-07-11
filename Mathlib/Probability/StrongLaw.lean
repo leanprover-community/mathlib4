@@ -574,7 +574,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
 include hint hindep hident hnonneg in
 /-- `Xᵢ` satisfies the strong law of large numbers along all integers. This follows from the
 corresponding fact along the sequences `c^n`, and the fact that any integer can be sandwiched
-between `c^n` and `c^(n + 1)` with comparably small error if `c` is close enough to `1`
+between `c^n` and `c^(n+1)` with comparably small error if `c` is close enough to `1`
 (which is formalized in `tendsto_div_of_monotone_of_tendsto_div_floor_pow`). -/
 theorem strong_law_aux7 :
     ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, X i ω) / n) atTop (𝓝 𝔼[X 0]) := by

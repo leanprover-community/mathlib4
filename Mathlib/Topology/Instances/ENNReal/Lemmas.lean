@@ -1258,7 +1258,7 @@ theorem diam_Ioo {a b : ℝ} (h : a ≤ b) : Metric.diam (Ioo a b) = b - a := by
 
 end Real
 
-/-- If `edist (f n) (f (n + 1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
+/-- If `edist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
 then the distance from `f n` to the limit is bounded by `∑'_{k=n}^∞ d k`. -/
 theorem edist_le_tsum_of_edist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
@@ -1269,7 +1269,7 @@ theorem edist_le_tsum_of_edist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ�
   rw [Finset.sum_Ico_eq_sum_range]
   exact ENNReal.summable.sum_le_tsum _ (fun _ _ => zero_le _)
 
-/-- If `edist (f n) (f (n + 1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
+/-- If `edist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
 then the distance from `f 0` to the limit is bounded by `∑'_{k=0}^∞ d k`. -/
 theorem edist_le_tsum_of_edist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) :

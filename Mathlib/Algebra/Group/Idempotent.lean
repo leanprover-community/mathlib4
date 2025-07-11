@@ -18,7 +18,7 @@ including:
 
 * `IsIdempotentElem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is
   an idempotent;
-* `IsIdempotentElem.pow_succ_eq`: In a monoid `a ^ (n + 1) = a` for `a` an idempotent and `n` a
+* `IsIdempotentElem.pow_succ_eq`: In a monoid `a ^ (n+1) = a` for `a` an idempotent and `n` a
   natural number.
 
 ## Tags

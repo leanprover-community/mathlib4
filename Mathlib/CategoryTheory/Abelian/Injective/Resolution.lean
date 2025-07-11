@@ -278,7 +278,7 @@ namespace InjectiveResolution
 Our goal is to define `InjectiveResolution.of Z : InjectiveResolution Z`.
 The `0`-th object in this resolution will just be `Injective.under Z`,
 i.e. an arbitrarily chosen injective object with a map from `Z`.
-After that, we build the `n + 1`-st object as `Injective.syzygies`
+After that, we build the `n+1`-st object as `Injective.syzygies`
 applied to the previously constructed morphism,
 and the map from the `n`-th object as `Injective.d`.
 -/

@@ -51,7 +51,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
   · rw [add_assoc, Nat.mul_succ, add_comm, add_comm n, add_assoc, mul_comm n]
   all_goals norm_num
 
-/-- From an upper bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n + 1))` of the form
+/-- From an upper bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
 `sqrtTwoAddSeries 0 n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2)`, one can deduce the lower bound `a < π`
 thanks to basic trigonometric inequalities as expressed in `pi_gt_sqrtTwoAddSeries`. -/
 theorem pi_lower_bound_start (n : ℕ) {a}
@@ -71,7 +71,7 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
     add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff₀ hb' (pow_pos hd' _)]
   exact mod_cast h
 
-/-- From a lower bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n + 1))` of the form
+/-- From a lower bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
 `2 - ((a - 1 / 4 ^ n) / 2 ^ (n + 1)) ^ 2 ≤ sqrtTwoAddSeries 0 n`, one can deduce the upper bound
 `π < a` thanks to basic trigonometric formulas as expressed in `pi_lt_sqrtTwoAddSeries`. -/
 theorem pi_upper_bound_start (n : ℕ) {a}
@@ -100,7 +100,7 @@ open Lean Elab Tactic Qq
 
 /-- Create a proof of `a < π` for a fixed rational number `a`, given a witness, which is a
 sequence of rational numbers `√2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
-`√(2 + r i) ≤ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≥ a/2^(n + 1)`. -/
+`√(2 + r i) ≤ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≥ a/2^(n+1)`. -/
 elab "pi_lower_bound " "[" l:term,* "]" : tactic => do
   have els := l.getElems
   let n := quote els.size
@@ -113,7 +113,7 @@ elab "pi_lower_bound " "[" l:term,* "]" : tactic => do
 
 /-- Create a proof of `π < a` for a fixed rational number `a`, given a witness, which is a
 sequence of rational numbers `√2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
-`√(2 + r i) ≥ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≤ (a - 1/4^n) / 2^(n + 1)`. -/
+`√(2 + r i) ≥ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≤ (a - 1/4^n) / 2^(n+1)`. -/
 elab "pi_upper_bound " "[" l:term,* "]" : tactic => do
   have els := l.getElems
   let n := quote els.size

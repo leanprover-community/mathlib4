@@ -266,7 +266,7 @@ theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 
 /-- A sequence `f` of submodules of a noetherian module,
-with `f (n + 1)` disjoint from the supremum of `f 0`, ..., `f n`,
+with `f (n+1)` disjoint from the supremum of `f 0`, ..., `f n`,
 is eventually zero. -/
 theorem IsNoetherian.disjoint_partialSups_eventually_bot
     (f : ℕ → Submodule R M) (h : ∀ n, Disjoint (partialSups f n) (f (n + 1))) :

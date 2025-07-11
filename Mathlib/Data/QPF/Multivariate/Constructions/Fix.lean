@@ -9,7 +9,7 @@ import Mathlib.Data.QPF.Multivariate.Basic
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.
 
-For an `(n + 1)`-ary QPF `F (α₀,..,αₙ)`, we take the least fixed point of `F` with
+For an `(n+1)`-ary QPF `F (α₀,..,αₙ)`, we take the least fixed point of `F` with
 regards to its last argument `αₙ`. The result is an `n`-ary functor: `Fix F (α₀,..,αₙ₋₁)`.
 Making `Fix F` into a functor allows us to take the fixed point, compose with other functors
 and take a fixed point again.

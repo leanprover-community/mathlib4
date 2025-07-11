@@ -95,7 +95,7 @@ lemma objMk_apply {n m : ℕ} (f : Fin (m + 1) →o Fin (n + 1)) (i : Fin (m + 1
   rfl
 
 /-- The `m`-simplices of the `n`-th standard simplex are
-the monotone maps from `Fin (m+1)` to `Fin (n + 1)`. -/
+the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
   α.down.toOrderHom
 

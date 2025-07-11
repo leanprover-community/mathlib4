@@ -22,7 +22,7 @@ From a process `f`, a filtration `ℱ` and a measure `μ`, we define two process
 
 ## Main statements
 
-* `MeasureTheory.adapted_predictablePart`: `(fun n => predictablePart f ℱ μ (n + 1))` is adapted.
+* `MeasureTheory.adapted_predictablePart`: `(fun n => predictablePart f ℱ μ (n+1))` is adapted.
   That is, `predictablePart` is predictable.
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
 

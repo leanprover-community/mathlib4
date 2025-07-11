@@ -272,7 +272,7 @@ namespace ProjectiveResolution
 Our goal is to define `ProjectiveResolution.of Z : ProjectiveResolution Z`.
 The `0`-th object in this resolution will just be `Projective.over Z`,
 i.e. an arbitrarily chosen projective object with a map to `Z`.
-After that, we build the `n + 1`-st object as `Projective.syzygies`
+After that, we build the `n+1`-st object as `Projective.syzygies`
 applied to the previously constructed morphism,
 and the map from the `n`-th object as `Projective.d`.
 -/
