@@ -416,7 +416,7 @@ def withZeroUnitsHom [DecidablePred (fun a : G₀' ↦ a = 0)] :
   map_zero' := rfl
   map_one' := rfl
 
-lemma withZeroUnitsHom_inj [DecidablePred (fun a : G₀' ↦ a = 0)] :
+lemma withZeroUnitsHom_injective [DecidablePred (fun a : G₀' ↦ a = 0)] :
     Injective (withZeroUnitsHom (G₀' := G₀')) := MulEquiv.injective WithZero.withZeroUnitsEquiv
 
 protected lemma map_eq_zero_iff {G₀ : Type*} [MulZeroOneClass G₀] [Nontrivial G₀]
