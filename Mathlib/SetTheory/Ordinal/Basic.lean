@@ -1088,9 +1088,9 @@ theorem ord_zero : ord 0 = 0 :=
 @[simp]
 theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
-  induction' n with n IH
-  · exact Ordinal.zero_le _
-  · exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n))
+  induction n with
+  | zero => exact Ordinal.zero_le _
+  | succ n IH => exact (IH.trans_lt <| by simpa using Nat.cast_lt.2 n.lt_succ_self).succ_le
 
 @[simp]
 theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
