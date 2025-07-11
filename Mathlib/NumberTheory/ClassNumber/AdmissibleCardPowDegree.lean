@@ -23,8 +23,6 @@ use to show the class number of the ring of integers of a function field is fini
 
 namespace Polynomial
 
-open Polynomial
-
 open AbsoluteValue Real
 
 variable {Fq : Type*} [Fintype Fq]
@@ -64,7 +62,7 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
     rintro rfl
     specialize hA 0
     rw [degree_zero] at hA
-    exact not_lt_of_le bot_le hA
+    exact not_lt_of_ge bot_le hA
   -- Since there are > q^d elements of A, and only q^d choices for the highest `d` coefficients,
   -- there must be two elements of A with the same coefficients at
   -- `degree b - 1`, ... `degree b - d`.
@@ -131,7 +129,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
       cardPowDegree_nonzero _ h', cardPowDegree_nonzero _ hb, Algebra.smul_def, eq_intCast,
       Int.cast_pow, Int.cast_natCast, Int.cast_pow, Int.cast_natCast,
       log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_natCast, ← rpow_natCast, log_rpow q_pos',
-      log_rpow q_pos', ← lt_div_iff (log_pos one_lt_q'), add_div,
+      log_rpow q_pos', ← lt_div_iff₀ (log_pos one_lt_q'), add_div,
       mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
@@ -159,8 +157,8 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
     cardPowDegree_nonzero _ hyz']
   have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
-  simp only [Int.cast_pow, Int.cast_natCast, le_max_iff]
-  refine Or.imp (pow_le_pow_right this) (pow_le_pow_right this) ?_
+  simp only [le_max_iff]
+  refine Or.imp (pow_le_pow_right₀ this) (pow_le_pow_right₀ this) ?_
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
   convert degree_add_le (x - y) (y - z) using 2
@@ -177,8 +175,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     rw [Algebra.smul_def, eq_intCast]
     exact mul_pos (Int.cast_pos.mpr (AbsoluteValue.pos _ hb)) hε
   -- We go by induction on the size `A`.
-  induction' n with n ih
-  · refine ⟨finZeroElim, finZeroElim⟩
+  induction n with | zero => refine ⟨finZeroElim, finZeroElim⟩ | succ n ih =>
   -- Show `anti_archimedean` also holds for real distances.
   have anti_archim' : ∀ {i j k} {ε : ℝ},
     (cardPowDegree (A i % b - A j % b) : ℝ) < ε →

@@ -39,15 +39,9 @@ def centralizer : Submonoid M where
 theorem coe_centralizer : ↑(centralizer S) = S.centralizer :=
   rfl
 
+@[to_additive AddSubmonoid.centralizer_toAddSubsemigroup]
 theorem centralizer_toSubsemigroup : (centralizer S).toSubsemigroup = Subsemigroup.centralizer S :=
   rfl
-
-theorem _root_.AddSubmonoid.centralizer_toAddSubsemigroup {M} [AddMonoid M] (S : Set M) :
-    (AddSubmonoid.centralizer S).toAddSubsemigroup = AddSubsemigroup.centralizer S :=
-  rfl
-
-attribute [to_additive existing AddSubmonoid.centralizer_toAddSubsemigroup]
-  Submonoid.centralizer_toSubsemigroup
 
 variable {S}
 
@@ -87,6 +81,23 @@ lemma centralizer_centralizer_centralizer {s : Set M} :
     centralizer s.centralizer.centralizer = centralizer s := by
   apply SetLike.coe_injective
   simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
+
+variable {M} in
+@[to_additive]
+lemma closure_le_centralizer_centralizer (s : Set M) :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
+/-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
+@[to_additive
+      "If all the elements of a set `s` commute, then `closure s` forms an additive
+      commutative monoid."]
+abbrev closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+    CommMonoid (closure s) :=
+  { (closure s).toMonoid with
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := closure_le_centralizer_centralizer s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
 end
 

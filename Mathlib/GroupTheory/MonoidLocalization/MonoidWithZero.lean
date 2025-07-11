@@ -3,8 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
@@ -51,14 +54,8 @@ theorem LocalizationMap.subsingleton (f : Submonoid.LocalizationMap S N) (h : 0 
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
-
--- Porting note: no docstrings for LocalizationWithZeroMap.map_zero'
-attribute [nolint docBlame] LocalizationWithZeroMap.toLocalizationMap
-  LocalizationWithZeroMap.map_zero'
 
 variable {S N}
 
@@ -78,7 +75,7 @@ instance : CommMonoidWithZero (Localization S) where
   zero_mul := fun x ↦ Localization.induction_on x fun y => by
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
   mul_zero := fun x ↦ Localization.induction_on x fun y => by
-    simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
+    simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, r_of_eq]
 
 theorem liftOn_zero {p : Type*} (f : M → S → p) (H) : liftOn 0 f H = f 0 1 := by
   rw [← mk_zero 1, liftOn_mk]
@@ -103,11 +100,18 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
     (hg : ∀ y : S, IsUnit (g y)) : N →*₀ P :=
   { @LocalizationMap.lift _ _ _ _ _ _ _ f.toLocalizationMap g.toMonoidHom hg with
     map_zero' := by
-      erw [LocalizationMap.lift_spec f.toLocalizationMap hg 0 0]
-      rw [mul_zero, ← map_zero g, ← g.toMonoidHom_coe]
+      dsimp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
+      rw [LocalizationMap.lift_spec f.toLocalizationMap hg 0 0, mul_zero, ← map_zero g,
+        ← g.toMonoidHom_coe]
       refine f.toLocalizationMap.eq_of_eq hg ?_
       rw [LocalizationMap.sec_zero_fst]
       exact f.toMonoidWithZeroHom.map_zero.symm }
+
+lemma lift_def (f : LocalizationWithZeroMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) :
+    ⇑(f.lift g hg) = f.toLocalizationMap.lift (g := ↑g) hg := rfl
+
+lemma lift_apply (f : LocalizationWithZeroMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
+    (f.lift g hg) x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is left cancellative monoid with zero, and all elements of `S` are
@@ -146,7 +150,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
         rw [mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
       _ = g b.1 * g (y.2 * x.1) := by rw [hx, hb, mul_comm (g x.1), ← map_mul g]
       _ = g (b.1 * (y.2 * x.1)) := by rw [← map_mul g]
- -- The hypothesis `h` gives that `f` (so, `g`) is injective, and we can cancel out `b.1`.
+  -- The hypothesis `h` gives that `f` (so, `g`) is injective, and we can cancel out `b.1`.
   exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0
       ((LocalizationMap.toMap_injective_iff fl).mpr h main)).symm
 
@@ -158,9 +162,6 @@ theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
   have : IsLeftCancelMulZero N :=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
-
-@[deprecated isLeftRegular_of_le_isCancelMulZero (since := "2024-01-16")]
-alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
 
 end LocalizationWithZeroMap
 

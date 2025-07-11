@@ -41,8 +41,6 @@ namespace CategoryTheory
 
 open Category Bicategory
 
-open Bicategory
-
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section
@@ -75,12 +73,6 @@ def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a
   obj := F
   map {a b} := (F' a b).obj
   map₂ {a b} := (F' a b).map
-
-variable (F : PrelaxFunctorStruct B C)
-
--- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
--- and `to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj`
--- and `to_prefunctor_map`
 
 /-- The identity lax prefunctor. -/
 @[simps]

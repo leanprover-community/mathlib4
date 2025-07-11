@@ -21,12 +21,12 @@ git rev-parse --verify --quiet "refs/remotes/${remote_name}/${branch_name}" && e
 # Exit if there are no changes relative to master
 git diff-index --quiet "refs/remotes/${remote_name}/master" -- scripts/nolints.json && exit 0
 
-pr_title='chore(scripts): update nolints.json
+pr_title='chore(scripts): update nolints.json'
 pr_body='I am happy to remove some nolints for you!'
 
 git checkout -b "$branch_name"
 git add scripts/nolints.json
-git commit -m "$pr_title"
+git commit -m "$pr_title" || { echo "No changes to commit" && exit 0; }
 
 gh_api() {
   local url="$1"

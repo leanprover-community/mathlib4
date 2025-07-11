@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.FiniteType
 
 /-!
@@ -29,8 +30,6 @@ variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 open Polynomial
 
-open Polynomial
-
 /-- The Rees algebra of an ideal `I`, defined as the subalgebra of `R[X]` whose `i`-th coefficient
 falls in `I ^ i`. -/
 def reesAlgebra : Subalgebra R R[X] where
@@ -50,7 +49,7 @@ def reesAlgebra : Subalgebra R R[X] where
   add_mem' hf hg i := by
     rw [coeff_add]
     exact Ideal.add_mem _ (hf i) (hg i)
-  zero_mem' i := Ideal.zero_mem _
+  zero_mem' _ := Ideal.zero_mem _
   algebraMap_mem' r i := by
     rw [algebraMap_apply, coeff_C]
     split_ifs with h
@@ -70,7 +69,7 @@ theorem mem_reesAlgebra_iff_support (f : R[X]) :
 
 theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     monomial i r ∈ reesAlgebra I ↔ r ∈ I ^ i := by
-  simp (config := { contextual := true }) [mem_reesAlgebra_iff_support, coeff_monomial, ←
+  simp +contextual [mem_reesAlgebra_iff_support, coeff_monomial, ←
     imp_iff_not_or]
 
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :

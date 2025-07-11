@@ -1,6 +1,6 @@
 # mathlib4
 
-![GitHub CI](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
+![GitHub CI](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml/badge.svg?branch=master)
 [![Bors enabled](https://bors.tech/images/badge_small.svg)](https://mathlib-bors-ca18eefec4cb.herokuapp.com/repositories/16)
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://leanprover.zulipchat.com)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/leanprover-community/mathlib4)
@@ -12,7 +12,9 @@ as well as tactics that use the former and allow to develop the latter.
 ## Installation
 
 You can find detailed instructions to install Lean, mathlib, and supporting tools on [our website](https://leanprover-community.github.io/get_started.html).
-Alternatively, click on the button below to open a Gitpod workspace containing the project.
+Alternatively, click on one of the buttons below to open a GitHub Codespace or a Gitpod workspace containing the project.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/leanprover-community/mathlib4)
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/leanprover-community/mathlib4)
 
@@ -30,7 +32,7 @@ For more pointers, see [Learning Lean](https://leanprover-community.github.io/le
 ## Documentation
 
 Besides the installation guides above and [Lean's general
-documentation](https://leanprover.github.io/documentation/), the documentation
+documentation](https://docs.lean-lang.org/lean4/doc/), the documentation
 of mathlib consists of:
 
 - [The mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html): documentation [generated
@@ -52,10 +54,9 @@ for quick reference.
 The complete documentation for contributing to ``mathlib`` is located
 [on the community guide contribute to mathlib](https://leanprover-community.github.io/contribute/index.html)
 
-The process is different from other projects where one should not fork the repository.
-Instead write permission for non-master branches should be requested on [Zulip](https://leanprover.zulipchat.com)
-by introducing yourself, providing your GitHub handle and what contribution you are planning on doing.
-You may want to subscribe to the `mathlib4` stream
+You may want to subscribe to the `mathlib4` channel on [Zulip](https://leanprover.zulipchat.com/) to introduce yourself and your plan to the community.
+Often you can find community members willing to help you get started and advise you on the fit and
+feasibility of your project.
 
 * To obtain precompiled `olean` files, run `lake exe cache get`. (Skipping this step means the next step will be very slow.)
 * To build `mathlib4` run `lake build`.
@@ -88,17 +89,20 @@ Call `lake exe cache` to see its help menu.
 
 ### Building HTML documentation
 
-Building HTML documentation locally is straightforward, but it may take a while (>20 minutes):
+The [mathlib4_docs repository](https://github.com/leanprover-community/mathlib4_docs)
+is responsible for generating and publishing the
+[mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html).
 
+That repo can be used to build the docs locally:
 ```shell
-lake -R -Kdoc=on update doc-gen4
+git clone https://github.com/leanprover-community/mathlib4_docs.git
+cd mathlib4_docs
+cp ../mathlib4/lean-toolchain .
+lake exe cache get
 lake build Mathlib:docs
 ```
-
-The HTML files can then be found in `build/doc`.
-
-Warning: these commands will make a change to `lake-manifest.json`
-which should *not* be committed to Mathlib.
+The last step may take a while (>20 minutes).
+The HTML files can then be found in `.lake/build/doc`.
 
 ## Transitioning from Lean 3
 
@@ -126,8 +130,7 @@ dependencies should only be included when CI is building documentation.
 For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
 
 * Anne Baanen (@Vierkantor): algebra, number theory, tactics
-* Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory, performance
-* Reid Barton (@rwbarton): category theory, topology
+* Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
 * Kevin Buzzard (@kbuzzard): algebra, number theory, algebraic geometry, category theory
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
@@ -137,7 +140,6 @@ For a list containing more detailed information, see https://leanprover-communit
 * Rémy Degenne (@RemyDegenne): probability, measure theory, analysis
 * Floris van Doorn (@fpvandoorn): measure theory, model theory, tactics
 * Frédéric Dupuis (@dupuisf): linear algebra, functional analysis
-* Gabriel Ebner (@gebner): tactics, infrastructure, core, formal languages
 * Sébastien Gouëzel (@sgouezel): topology, calculus, geometry, analysis, measure theory
 * Markus Himmel (@TwoFX): category theory
 * Yury G. Kudryashov (@urkud): analysis, topology, measure theory
@@ -147,15 +149,18 @@ For a list containing more detailed information, see https://leanprover-communit
 * Patrick Massot (@patrickmassot): documentation, topology, geometry
 * Bhavik Mehta (@b-mehta): category theory, combinatorics
 * Kyle Miller (@kmill): combinatorics, tactics, metaprogramming
-* Kim Morrison (@semorrison): category theory, tactics
+* Kim Morrison (@kim-em): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry
+* Damiano Testa (@adomani): algebra, algebraic geometry, number theory, tactics
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 
 ## Past maintainers:
 
 * Jeremy Avigad (@avigad): analysis
+* Reid Barton (@rwbarton): category theory, topology
+* Gabriel Ebner (@gebner): tactics, infrastructure, core, formal languages
 * Johannes Hölzl (@johoelzl): measure theory, topology
 * Simon Hudon (@cipher1024): tactics
 * Chris Hughes (@ChrisHughes24): algebra

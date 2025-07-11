@@ -3,6 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 /-!
@@ -58,7 +59,7 @@ theorem AffineEquiv.pointReflection_midpoint_left (x y : P) :
   rw [midpoint, pointReflection_apply, lineMap_apply, vadd_vsub, vadd_vadd, ← add_smul, ← two_mul,
     mul_invOf_self, one_smul, vsub_vadd]
 
-@[simp] -- Porting note: added variant with `Equiv.pointReflection` for `simp`
+@[simp]
 theorem Equiv.pointReflection_midpoint_left (x y : P) :
     (Equiv.pointReflection (midpoint R x y)) x = y := by
   rw [midpoint, pointReflection_apply, lineMap_apply, vadd_vsub, vadd_vadd, ← add_smul, ← two_mul,
@@ -71,7 +72,7 @@ theorem AffineEquiv.pointReflection_midpoint_right (x y : P) :
     pointReflection R (midpoint R x y) y = x := by
   rw [midpoint_comm, AffineEquiv.pointReflection_midpoint_left]
 
-@[simp] -- Porting note: added variant with `Equiv.pointReflection` for `simp`
+@[simp]
 theorem Equiv.pointReflection_midpoint_right (x y : P) :
     (Equiv.pointReflection (midpoint R x y)) y = x := by
   rw [midpoint_comm, Equiv.pointReflection_midpoint_left]
@@ -98,6 +99,14 @@ theorem midpoint_pointReflection_left (x y : P) :
 theorem midpoint_pointReflection_right (x y : P) :
     midpoint R y (Equiv.pointReflection x y) = x :=
   midpoint_eq_iff.2 rfl
+
+nonrec lemma AffineEquiv.midpoint_pointReflection_left (x y : P) :
+    midpoint R (pointReflection R x y) y = x :=
+  midpoint_pointReflection_left x y
+
+nonrec lemma AffineEquiv.midpoint_pointReflection_right (x y : P) :
+    midpoint R y (pointReflection R x y) = x :=
+  midpoint_pointReflection_right x y
 
 @[simp]
 theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟ 2 : R) • (p₂ -ᵥ p₁) :=
@@ -184,7 +193,7 @@ theorem midpoint_add_self (x y : V) : midpoint R x y + midpoint R x y = x + y :=
     _ = x + y := by rw [midpoint_vadd_midpoint, vadd_eq_add, vadd_eq_add, add_comm, midpoint_self]
 
 theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
-  (midpoint_eq_midpoint_iff_vsub_eq_vsub R).2 <| by simp [sub_add_eq_sub_sub_swap]
+  (midpoint_eq_midpoint_iff_vsub_eq_vsub R).2 <| by simp
 
 theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y) := by
   rw [midpoint_eq_iff, pointReflection_apply, vsub_eq_sub, vadd_eq_add, sub_add_eq_add_sub, ←

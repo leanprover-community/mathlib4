@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Topology.Bases
 import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Compactness.LocallyFinite
+
 /-!
 # Sigma-compactness in topological spaces
 
@@ -97,10 +100,10 @@ lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSig
 lemma IsSigmaCompact.image {f : X → Y} (hf : Continuous f) {s : Set X} (hs : IsSigmaCompact s) :
     IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
-/-- If `f : X → Y` is `Inducing`, the image `f '' s` of a set `s` is σ-compact
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
-    (hf : Inducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
+lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : IsInducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
   · exact fun h ↦ h.image hf.continuous
   · rintro ⟨L, hcomp, hcov⟩
@@ -118,16 +121,22 @@ lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
-/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
-  if and only `s` is σ-compact. -/
-lemma Embedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
-    (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
-  hf.toInducing.isSigmaCompact_iff
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
+
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is σ-compact
+if and only `s` is σ-compact. -/
+lemma Topology.IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
+  hf.isInducing.isSigmaCompact_iff
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isSigmaCompact_iff := IsEmbedding.isSigmaCompact_iff
 
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
 lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
     IsSigmaCompact s ↔ IsSigmaCompact ((↑) '' s : Set X) :=
-  embedding_subtype_val.isSigmaCompact_iff
+  IsEmbedding.subtypeVal.isSigmaCompact_iff
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
@@ -169,23 +178,32 @@ lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set X} :
   isSigmaCompact_iff_isSigmaCompact_univ.trans isSigmaCompact_univ_iff
 
 -- see Note [lower instance priority]
-instance (priority := 200) CompactSpace.sigma_compact [CompactSpace X] : SigmaCompactSpace X :=
+instance (priority := 200) CompactSpace.sigmaCompact [CompactSpace X] : SigmaCompactSpace X :=
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
+
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")] alias
+CompactSpace.sigma_compact := CompactSpace.sigmaCompact
 
 theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace X :=
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
+instance (priority := 100) sigmaCompactSpace_of_locallyCompact_secondCountable
     [LocallyCompactSpace X] [SecondCountableTopology X] : SigmaCompactSpace X := by
   choose K hKc hxK using fun x : X => exists_compact_mem_nhds x
   rcases countable_cover_nhds hxK with ⟨s, hsc, hsU⟩
   refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
 
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")]
+alias sigmaCompactSpace_of_locally_compact_second_countable :=
+  sigmaCompactSpace_of_locallyCompact_secondCountable
+
 section
--- Porting note: doesn't work on the same line
+
 variable (X)
 variable [SigmaCompactSpace X]
 
@@ -236,7 +254,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
         range_inl_union_range_inr]⟩⟩
 
 instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σi, X i) := by
+    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σ i, X i) := by
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩
@@ -249,17 +267,17 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
       refine ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ ?_⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
-protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
-    SigmaCompactSpace Y :=
-  ⟨⟨fun n => e ⁻¹' compactCovering X n, fun n =>
+protected lemma Topology.IsClosedEmbedding.sigmaCompactSpace {e : Y → X}
+    (he : IsClosedEmbedding e) : SigmaCompactSpace Y :=
+  ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
-  (closedEmbedding_subtype_val hs).sigmaCompactSpace
+  hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
-  ULift.closedEmbedding_down.sigmaCompactSpace
+  IsClosedEmbedding.uliftDown.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
 only countably many elements, `Set.Countable` version. -/
@@ -280,7 +298,7 @@ protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each point
 `x` of a closed set `s` to a neighborhood of `x` within `s`, then for some countable set `t ⊆ s`,
 the neighborhoods `f x`, `x ∈ t`, cover the whole set `s`. -/
-theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X} (hs : IsClosed s)
+theorem countable_cover_nhdsWithin_of_sigmaCompact {f : X → Set X} {s : Set X} (hs : IsClosed s)
     (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   simp only [nhdsWithin, mem_inf_principal] at hf
   choose t ht hsub using fun n =>
@@ -292,17 +310,22 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
 
+@[deprecated (since := "2024-11-13")] alias
+countable_cover_nhdsWithin_of_sigma_compact := countable_cover_nhdsWithin_of_sigmaCompact
+
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each
 point `x` to a neighborhood of `x`, then for some countable set `s`, the neighborhoods `f x`,
 `x ∈ s`, cover the whole space. -/
-theorem countable_cover_nhds_of_sigma_compact {f : X → Set X} (hf : ∀ x, f x ∈ 𝓝 x) :
+theorem countable_cover_nhds_of_sigmaCompact {f : X → Set X} (hf : ∀ x, f x ∈ 𝓝 x) :
     ∃ s : Set X, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
   simp only [← nhdsWithin_univ] at hf
-  rcases countable_cover_nhdsWithin_of_sigma_compact isClosed_univ fun x _ => hf x with
+  rcases countable_cover_nhdsWithin_of_sigmaCompact isClosed_univ fun x _ => hf x with
     ⟨s, -, hsc, hsU⟩
   exact ⟨s, hsc, univ_subset_iff.1 hsU⟩
 end
 
+@[deprecated (since := "2024-11-13")] alias
+countable_cover_nhds_of_sigma_compact := countable_cover_nhds_of_sigmaCompact
 
 
 /-- An [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets) of a
@@ -359,6 +382,10 @@ theorem iUnion_eq : ⋃ n, K n = univ :=
 theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
   iUnion_eq_univ_iff.1 K.iUnion_eq x
 
+theorem exists_mem_nhds (x : X) : ∃ n, K n ∈ 𝓝 x := by
+  rcases K.exists_mem x with ⟨n, hn⟩
+  exact ⟨n + 1, mem_interior_iff_mem_nhds.mp <| K.subset_interior_succ n hn⟩
+
 /-- A compact exhaustion eventually covers any compact set. -/
 theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
   suffices ∃ n, s ⊆ interior (K n) from this.imp fun _ ↦ (Subset.trans · interior_subset)
@@ -391,7 +418,7 @@ def shiftr : CompactExhaustion X where
 @[simp]
 theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
   classical
-  exact Nat.find_comp_succ _ _ (not_mem_empty _)
+  exact Nat.find_comp_succ _ _ (notMem_empty _)
 
 theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,
@@ -413,7 +440,7 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩
 
-noncomputable instance [SigmaCompactSpace X] [LocallyCompactSpace X] :
+noncomputable instance [SigmaCompactSpace X] [WeaklyLocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
   ⟨CompactExhaustion.choice X⟩
 

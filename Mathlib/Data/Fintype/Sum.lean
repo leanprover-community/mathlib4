@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Sum
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Logic.Embedding.Set
 
 /-!
@@ -24,10 +24,36 @@ instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (α ⊕
   elems := univ.disjSum univ
   complete := by rintro (_ | _) <;> simp
 
-@[simp]
-theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
-    univ.disjSum univ = (univ : Finset (α ⊕ β)) :=
-  rfl
+namespace Finset
+variable {α β : Type*} {u : Finset (α ⊕ β)} {s : Finset α} {t : Finset β}
+
+section left
+variable [Fintype α] {u : Finset (α ⊕ β)}
+
+lemma toLeft_eq_univ : u.toLeft = univ ↔ univ.map .inl ⊆ u := by
+  simp [map_inl_subset_iff_subset_toLeft]
+
+lemma toRight_eq_empty : u.toRight = ∅ ↔ u ⊆ univ.map .inl := by simp [subset_map_inl]
+
+end left
+
+section right
+variable [Fintype β] {u : Finset (α ⊕ β)}
+
+lemma toRight_eq_univ : u.toRight = univ ↔ univ.map .inr ⊆ u := by
+  simp [map_inr_subset_iff_subset_toRight]
+
+lemma toLeft_eq_empty : u.toLeft = ∅ ↔ u ⊆ univ.map .inr := by simp [subset_map_inr]
+
+end right
+
+variable [Fintype α] [Fintype β]
+
+@[simp] lemma univ_disjSum_univ : univ.disjSum univ = (univ : Finset (α ⊕ β)) := rfl
+@[simp] lemma toLeft_univ : (univ : Finset (α ⊕ β)).toLeft = univ := by ext; simp
+@[simp] lemma toRight_univ : (univ : Finset (α ⊕ β)).toRight = univ := by ext; simp
+
+end Finset
 
 @[simp]
 theorem Fintype.card_sum [Fintype α] [Fintype β] :
@@ -35,7 +61,7 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
-def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
+def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
 
@@ -70,7 +96,7 @@ theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k :
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
 theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t : Finset β}
-    (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
+    (hαt : Fintype.card α = #t) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     induction' s using Finset.induction with a s has H generalizing f
@@ -95,7 +121,7 @@ theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t :
 /-- Any injection from a set `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
 theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
-    (hαt : Fintype.card α = t.card) {s : Set α} {f : α → β} (hfst : s.MapsTo f t)
+    (hαt : Fintype.card α = #t) {s : Set α} {f : α → β} (hfst : s.MapsTo f t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     let s' : Finset α := s.toFinset
@@ -121,8 +147,6 @@ theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) 
     simp
 
 section
-
-open scoped Classical
 
 @[simp]
 theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.Linear.Basic
@@ -21,16 +21,13 @@ TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 
 universe w v u
 
-open Opposite
+open Opposite CategoryTheory.Functor
 
 namespace CategoryTheory
 
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
 variable (C)
 
--- Porting note: inserted specific `ModuleCat.ofHom` in the definition of `linearYoneda`
--- and similarly in `linearCoyoneda`, otherwise many simp lemmas are not triggered automatically.
--- Eventually, doing so allows more proofs to be automatic!
 /-- The Yoneda embedding for `R`-linear categories `C`,
 sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/

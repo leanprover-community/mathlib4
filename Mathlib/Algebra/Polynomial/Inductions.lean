@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Damiano Testa, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Induction
+import Mathlib.Algebra.Polynomial.Degree.Operations
 import Mathlib.Algebra.Polynomial.EraseLead
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -42,15 +41,15 @@ theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   rw [add_comm]; cases p; rfl
 
 theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
+  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, coeff_mul_X]
 
 @[simp]
 theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
+  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C]
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
-  ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
+  ext fun n => by simp [coeff_divX]
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
   ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
@@ -157,7 +156,7 @@ if it holds for
 with appropriate restrictions on each term.
 
 See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
- -/
+-/
 @[elab_as_elim]
 theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree p)
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
@@ -173,7 +172,7 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
       if h0 : 0 < degree p then hX h0 (ih h0)
       else by
         rw [eq_C_of_degree_le_zero (le_of_not_gt h0)] at h0' ⊢
-        exact hC fun h : coeff p 0 = 0 => by simp [h, Nat.not_lt_zero] at h0')
+        exact hC fun h : coeff p 0 = 0 => by simp [h] at h0')
     h0
 
 /-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
@@ -185,7 +184,7 @@ with appropriate restrictions on each term.
 Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
 multiplication in the statement.
 See `degree_pos_induction_on` for a similar statement involving more explicit multiplications.
- -/
+-/
 @[elab_as_elim]
 theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.natDegree ≠ 0)
     (h_C_add : ∀ {a p}, M p → M (C a + p)) (h_add : ∀ {p q}, M p → M q → M (p + q))

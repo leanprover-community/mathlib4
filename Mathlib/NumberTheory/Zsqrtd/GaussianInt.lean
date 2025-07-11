@@ -3,10 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.NumberTheory.Zsqrtd.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Real.Archimedean
+import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Gaussian integers
@@ -89,27 +89,21 @@ theorem toComplex_re (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by si
 @[simp]
 theorem toComplex_im (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
   toComplex.map_add _ _
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_mul (x y : ℤ[i]) : ((x * y : ℤ[i]) : ℂ) = x * y :=
   toComplex.map_mul _ _
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
   toComplex.map_one
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
   toComplex.map_zero
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_neg (x : ℤ[i]) : ((-x : ℤ[i]) : ℂ) = -x :=
   toComplex.map_neg _
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_sub (x y : ℤ[i]) : ((x - y : ℤ[i]) : ℂ) = x - y :=
   toComplex.map_sub _ _
 
@@ -133,15 +127,9 @@ theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
 theorem intCast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : ℂ) := by
   rw [Zsqrtd.norm, normSq]; simp
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_real_norm := intCast_real_norm
-
 @[simp]
 theorem intCast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
   cases x; rw [Zsqrtd.norm, normSq]; simp
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_complex_norm := intCast_complex_norm
 
 theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by norm_num) _
@@ -155,14 +143,10 @@ theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
 theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
 
-@[deprecated (since := "2024-04-05")] alias abs_coe_nat_norm := abs_natCast_norm
-
 @[simp]
-theorem natCast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
+theorem natCast_natAbs_norm {α : Type*} [AddGroupWithOne α] (x : ℤ[i]) :
+    (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_natCast, abs_natCast_norm]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_natAbs_norm := natCast_natAbs_norm
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
     x.norm.natAbs = x.re.natAbs * x.re.natAbs + x.im.natAbs * x.im.natAbs :=
@@ -180,11 +164,11 @@ theorem div_def (x y : ℤ[i]) :
 
 theorem toComplex_div_re (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).re = round (x / y : ℂ).re := by
   rw [div_def, ← @Rat.round_cast ℝ _ _]
-  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, mul_add, add_mul]
+  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
 theorem toComplex_div_im (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x / y : ℂ).im := by
   rw [div_def, ← @Rat.round_cast ℝ _ _, ← @Rat.round_cast ℝ _ _]
-  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, mul_add, add_mul]
+  simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
 theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
     (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
@@ -250,7 +234,7 @@ instance : EuclideanDomain ℤ[i] :=
     r := _
     r_wellFounded := (measure (Int.natAbs ∘ norm)).wf
     remainder_lt := natAbs_norm_mod_lt
-    mul_left_not_lt := fun a b hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
+    mul_left_not_lt := fun a _ hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
 
 open PrincipalIdealRing
 
@@ -261,10 +245,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
       rw [norm_natCast, Int.natAbs_mul, mul_eq_one]
       exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
-    -- Porting note: was
-    -- simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
-    simpa only [true_and, not_false_iff, exists_prop, irreducible_iff, hpu, not_forall, not_or]
-      using hpi
+    simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
   let ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
     ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by

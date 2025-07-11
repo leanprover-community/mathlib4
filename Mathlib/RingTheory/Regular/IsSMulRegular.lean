@@ -5,7 +5,7 @@ Authors: Brendan Murphy
 -/
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Ideal.AssociatedPrime
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.QuotSMulTop
 
 /-!
@@ -16,7 +16,7 @@ For modules over a ring the proposition `IsSMulRegular r M` is equivalent to
 This specific result is `isSMulRegular_iff_smul_eq_zero_imp_eq_zero`.
 Lots of results starting from this, especially ones about quotients (which
 don't make sense without some algebraic assumptions), are in this file.
-We don't pollute the `Mathlib.Algebra.Regular.SMul` file with these because
+We don't pollute the `Mathlib/Algebra/Regular/SMul.lean` file with these because
 it's supposed to import a minimal amount of the algebraic hierarchy.
 
 ## Tags
@@ -136,7 +136,7 @@ open Submodule Pointwise
 
 variable (M) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
-    (I : Ideal R) (N : Submodule R M) (r : R)
+    (N : Submodule R M) (r : R)
 
 variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
@@ -163,7 +163,7 @@ lemma isSMulRegular_on_quot_iff_lsmul_comap_le :
 lemma isSMulRegular_on_quot_iff_lsmul_comap_eq :
     IsSMulRegular (M ⧸ N) r ↔ N.comap (LinearMap.lsmul R M r) = N :=
   Iff.trans (isSMulRegular_on_quot_iff_lsmul_comap_le N r) <|
-    LE.le.le_iff_eq (fun _ => N.smul_mem r)
+    LE.le.ge_iff_eq' (fun _ => N.smul_mem r)
 
 variable {r}
 

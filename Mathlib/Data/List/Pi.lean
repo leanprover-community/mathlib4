@@ -26,7 +26,7 @@ variable {i : ι} {l : List ι}
 
 /-- Given `f` a function whose domain is `i :: l`, get its value at `i`. -/
 def head (f : ∀ j ∈ i :: l, α j) : α i :=
-  f i (mem_cons_self _ _)
+  f i mem_cons_self
 
 /-- Given `f` a function whose domain is `i :: l`, produce a function whose domain
 is restricted to `l`. -/
@@ -72,14 +72,14 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Type*}
 /-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
 def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i)
   |     [],  _ => [List.Pi.nil α]
-  | i :: l, fs => (fs i).bind (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
+  | i :: l, fs => (fs i).flatMap (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
 
 @[simp] lemma pi_nil (t : ∀ i, List (α i)) :
     pi [] t = [Pi.nil α] :=
   rfl
 
 @[simp] lemma pi_cons (i : ι) (l : List ι) (t : ∀ j, List (α j)) :
-    pi (i :: l) t = ((t i).bind fun b ↦ (pi l t).map <| Pi.cons _ _ b) :=
+    pi (i :: l) t = ((t i).flatMap fun b ↦ (pi l t).map <| Pi.cons _ _ b) :=
   rfl
 
 lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :

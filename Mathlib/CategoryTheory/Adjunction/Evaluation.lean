@@ -19,7 +19,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
@@ -36,7 +36,7 @@ def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
     { obj := fun t => ∐ fun _ : c ⟶ t => d
       map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f}
   map {_ d₂} f :=
-    { app := fun e => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
+    { app := fun _ => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
       naturality := by
         intros
         dsimp
@@ -50,7 +50,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
     { homEquiv := fun d F =>
         { toFun := fun f => Sigma.ι (fun _ => d) (𝟙 _) ≫ f.app c
           invFun := fun f =>
-            { app := fun e => Sigma.desc fun h => f ≫ F.map h
+            { app := fun _ => Sigma.desc fun h => f ≫ F.map h
               naturality := by
                 intros
                 dsimp
@@ -63,17 +63,16 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             ext g
             simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
-              Discrete.functor_obj, Cofan.mk_pt, Discrete.natTrans_app, Category.id_comp]
+              Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
           right_inv := fun f => by
-            dsimp
             simp }
-      -- This used to be automatic before leanprover/lean4#2644
-      homEquiv_naturality_right := by intros; dsimp; simp }
+      -- This used to be automatic before https://github.com/leanprover/lean4/pull/2644
+      homEquiv_naturality_right := by intros; simp }
 
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
 
-/-- See also the file `CategoryTheory.Limits.FunctorCategoryEpiMono`
+/-- See also the file `CategoryTheory.Limits.FunctorCategory.EpiMono`
 for a similar result under a `HasPullbacks` assumption. -/
 theorem NatTrans.mono_iff_mono_app' {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
   constructor
@@ -95,7 +94,7 @@ def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
     { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
   map f :=
-    { app := fun t => Pi.lift fun g => Pi.π _ g ≫ f
+    { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f
       naturality := by
         intros
         dsimp
@@ -108,30 +107,27 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F d =>
         { toFun := fun f =>
-            { app := fun t => Pi.lift fun g => F.map g ≫ f
+            { app := fun _ => Pi.lift fun g => F.map g ≫ f
               naturality := by
                 intros
                 dsimp
                 ext
                 simp }
           invFun := fun f => f.app _ ≫ Pi.π _ (𝟙 _)
-          left_inv := fun f => by
-            dsimp
-            simp
+          left_inv := fun f => by simp
           right_inv := by
             intro f
             ext x
             dsimp
             ext g
-            simp only [Discrete.functor_obj, NatTrans.naturality_assoc,
+            simp only [NatTrans.naturality_assoc,
               evaluationRightAdjoint_obj_obj, evaluationRightAdjoint_obj_map, limit.lift_π,
-              Fan.mk_pt, Fan.mk_π_app, Discrete.natTrans_app, Category.comp_id] } }
+              Fan.mk_pt, Fan.mk_π_app, Category.comp_id] } }
 
 instance evaluationIsLeftAdjoint (c : C) : ((evaluation _ D).obj c).IsLeftAdjoint :=
   ⟨_, ⟨evaluationAdjunctionLeft _ _⟩⟩
 
-
-/-- See also the file `CategoryTheory.Limits.FunctorCategoryEpiMono`
+/-- See also the file `CategoryTheory.Limits.FunctorCategory.EpiMono`
 for a similar result under a `HasPushouts` assumption. -/
 theorem NatTrans.epi_iff_epi_app' {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by
   constructor

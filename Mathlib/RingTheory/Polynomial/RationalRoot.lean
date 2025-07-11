@@ -11,7 +11,8 @@ import Mathlib.RingTheory.Polynomial.ScaleRoots
 # Rational root theorem and integral root theorem
 
 This file contains the rational root theorem and integral root theorem.
-The rational root theorem for a unique factorization domain `A`
+The rational root theorem (`num_dvd_of_is_root` and `den_dvd_of_is_root`)
+for a unique factorization domain `A`
 with localization `S`, states that the roots of `p : A[X]` in `A`'s
 field of fractions are of the form `x / y` with `x y : A`, `x ∣ p.coeff 0` and
 `y ∣ p.leadingCoeff`.
@@ -21,7 +22,7 @@ Finally, we use this to show unique factorization domains are integrally closed.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Rational_root_theorem
+* https://en.wikipedia.org/wiki/Rational_root_theorem
 -/
 
 

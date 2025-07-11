@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Multiset.Powerset
+import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # The powerset of a finset
@@ -30,7 +32,7 @@ def powerset (s : Finset α) : Finset (Finset α) :=
 @[simp]
 theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   cases s
-  simp [powerset, mem_mk, mem_pmap, mk.injEq, mem_powerset, exists_prop, exists_eq_right,
+  simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
     ← val_le_iff]
 
 @[simp, norm_cast]
@@ -39,13 +41,9 @@ theorem coe_powerset (s : Finset α) :
   ext
   simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
-  mem_powerset.2 (empty_subset _)
+theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s := by simp
 
--- Porting note: remove @[simp], simp can prove it
-theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
-  mem_powerset.2 Subset.rfl
+theorem mem_powerset_self (s : Finset α) : s ∈ powerset s := by simp
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
@@ -76,26 +74,39 @@ theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
 theorem card_powerset (s : Finset α) : card (powerset s) = 2 ^ card s :=
   (card_pmap _ _ _).trans (Multiset.card_powerset s.1)
 
-theorem not_mem_of_mem_powerset_of_not_mem {s t : Finset α} {a : α} (ht : t ∈ s.powerset)
+theorem notMem_of_mem_powerset_of_notMem {s t : Finset α} {a : α} (ht : t ∈ s.powerset)
     (h : a ∉ s) : a ∉ t := by
   apply mt _ h
   apply mem_powerset.1 ht
 
+@[deprecated (since := "2025-05-23")]
+alias not_mem_of_mem_powerset_of_not_mem := notMem_of_mem_powerset_of_notMem
+
 theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by
   ext t
-  simp only [exists_prop, mem_powerset, mem_image, mem_union, subset_insert_iff]
+  simp only [mem_powerset, mem_image, mem_union, subset_insert_iff]
   by_cases h : a ∈ t
   · constructor
     · exact fun H => Or.inr ⟨_, H, insert_erase h⟩
     · intro H
-      cases' H with H H
+      rcases H with H | H
       · exact Subset.trans (erase_subset a t) H
       · rcases H with ⟨u, hu⟩
         rw [← hu.2]
         exact Subset.trans (erase_insert_subset a u) hu.1
-  · have : ¬∃ u : Finset α, u ⊆ s ∧ insert a u = t := by simp [Ne.symm (ne_insert_of_not_mem _ _ h)]
-    simp [Finset.erase_eq_of_not_mem h, this]
+  · have : ¬∃ u : Finset α, u ⊆ s ∧ insert a u = t := by simp [Ne.symm (ne_insert_of_notMem _ _ h)]
+    simp [Finset.erase_eq_of_notMem h, this]
+
+lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
+    (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
+  simp_rw [Set.pairwiseDisjoint_iff, mem_coe, mem_powerset]
+  rintro i hi j hj
+  simp only [Set.Nonempty, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    exists_eq_or_imp, exists_eq_left, or_imp, imp_self, true_and]
+  refine ⟨?_, ?_, insert_erase_invOn.2.injOn (notMem_mono hi ha) (notMem_mono hj ha)⟩ <;>
+    rintro rfl <;>
+    cases Finset.notMem_mono ‹_› ha (Finset.mem_insert_self _ _)
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
 instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
@@ -229,14 +240,17 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   rw [powersetCard_eq_filter, filter_image]
   congr 1
   ext t
-  simp only [mem_powerset, mem_filter, Function.comp_apply, and_congr_right_iff]
+  simp only [mem_powerset, mem_filter, and_congr_right_iff]
   intro ht
   have : x ∉ t := fun H => h (ht H)
-  simp [card_insert_of_not_mem this, Nat.succ_inj']
+  simp [card_insert_of_notMem this]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
   aesop (add simp [Finset.Nonempty, exists_subset_card_eq, card_le_card])
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, powersetCard_nonempty_of_le⟩ := powersetCard_nonempty
 
 @[simp]
 theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
@@ -276,32 +290,31 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     exact h
   · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
     intro x hx
-    simp only [mem_biUnion, exists_prop, id]
+    simp only [mem_biUnion, id]
     obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
       (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
     refine ⟨insert x t, ?_, mem_insert_self _ _⟩
-    rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
+    rw [← insert_erase hx, powersetCard_succ_insert (notMem_erase _ _)]
     exact mem_union_right _ (mem_image_of_mem _ ht)
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext fun t => by
-    simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
+    -- `le_eq_subset` is a dangerous lemma since it turns the type `↪o` into `(· ⊆ ·) ↪r (· ⊆ ·)`,
+    -- which makes `simp` have trouble working with `mapEmbedding_apply`.
+    simp only [mem_powersetCard, mem_map, RelEmbedding.coe_toEmbedding, mapEmbedding_apply]
     constructor
     · classical
       intro h
       have : map f (filter (fun x => (f x ∈ t)) s) = t := by
         ext x
-        simp only [mem_map, mem_filter, decide_eq_true_eq]
+        simp only [mem_map, mem_filter]
         exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,
           fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
-      dsimp [RelEmbedding.coe_toEmbedding]
-      -- Porting note: Why is `rw` required here and not `simp`?
-      rw [mapEmbedding_apply]
-      simp [has]
+      simp only [map_subset_map, has, card_map, and_self]
 
 end powersetCard
 

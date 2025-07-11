@@ -22,28 +22,22 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
   /-- the underlying type -/
-  X : Type u
+  protected X : Type u
   /-- the distinguished element -/
   point : X
 
 namespace Pointed
 
 instance : CoeSort Pointed Type* :=
-  ⟨X⟩
-
--- Porting note: protected attribute does not work
---attribute [protected] Pointed.X
+  ⟨Pointed.X⟩
 
 /-- Turns a point into a pointed type. -/
-def of {X : Type*} (point : X) : Pointed :=
+abbrev of {X : Type*} (point : X) : Pointed :=
   ⟨X, point⟩
 
-@[simp]
 theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=
   rfl
 
@@ -87,11 +81,13 @@ instance largeCategory : LargeCategory Pointed where
 @[simp] lemma Hom.comp_toFun' {X Y Z : Pointed.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toFun = g.toFun ∘ f.toFun := rfl
 
-instance concreteCategory : ConcreteCategory Pointed where
-  forget :=
-    { obj := Pointed.X
-      map := @Hom.toFun }
-  forget_faithful := ⟨@Hom.ext⟩
+instance (X Y : Pointed) : FunLike { f : X → Y // f X.point = Y.point } X Y where
+  coe f := f
+  coe_injective' _ _ := Subtype.ext
+
+instance hasForget : ConcreteCategory Pointed fun X Y => { f : X → Y // f X.point = Y.point } where
+  hom f := ⟨f.1, f.2⟩
+  ofHom f := ⟨f.1, f.2⟩
 
 /-- Constructs an isomorphism between pointed types from an equivalence that preserves the point
 between them. -/
@@ -123,8 +119,7 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             funext x
             cases x
             · exact f.map_point.symm
-            · rfl
-          right_inv := fun f => funext fun _ => rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext
         funext x

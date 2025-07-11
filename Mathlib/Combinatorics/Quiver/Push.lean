@@ -3,7 +3,7 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.Prefunctor
 
 /-!
 
@@ -74,7 +74,7 @@ theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
     iterate 2 apply (cast_heq _ _).trans
     apply HEq.symm
     apply (eqRec_heq _ _).trans
-    have : ∀ {α γ} {β : α → γ → Sort _} {a a'} (p : a = a') g (b : β a g), HEq (p ▸ b) b := by
+    have : ∀ {α γ} {β : α → γ → Sort _} {a a'} (p : a = a') g (b : β a g), p ▸ b ≍ b := by
       intros
       subst_vars
       rfl
@@ -89,7 +89,7 @@ theorem lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of �
     rw [Φ₀]
   · rintro _ _ ⟨⟩
     subst_vars
-    simp only [Prefunctor.comp_map, cast_eq]
+    simp only [Prefunctor.comp_map]
     rfl
 
 end Push

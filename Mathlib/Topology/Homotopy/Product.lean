@@ -30,9 +30,9 @@ of products.
   all homotopies are done relative to some set S ⊆ A.
 
 - `ContinuousMap.Homotopy.prod F G` is the product of homotopies F and G,
-   where F is a homotopy between f₀ and f₁, G is a homotopy between g₀ and g₁.
-   The result F × G is a homotopy between (f₀ × g₀) and (f₁ × g₁).
-   Again, all homotopies are done relative to S.
+  where F is a homotopy between f₀ and f₁, G is a homotopy between g₀ and g₁.
+  The result F × G is a homotopy between (f₀ × g₀) and (f₁ × g₁).
+  Again, all homotopies are done relative to S.
 
 - `ContinuousMap.HomotopyRel.prod F G`: Same as `ContinuousMap.Homotopy.prod`, but
   all homotopies are done relative to some set S ⊆ A.
@@ -56,14 +56,6 @@ section Pi
 variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
   {f g : ∀ i, C(A, X i)} {S : Set A}
 
--- Porting note: this definition is already in `Topology.Homotopy.Basic`
--- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
--- @[simps]
--- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
---   toFun t i := homotopies i t
---   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
---   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
-
 /-- The relative product homotopy of `homotopies` between functions `f` and `g` -/
 @[simps!]
 def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
@@ -72,7 +64,7 @@ def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
     prop' := by
       intro t x hx
       dsimp only [coe_mk, pi_eval, toFun_eq_coe, HomotopyWith.coe_toContinuousMap]
-      simp only [Function.funext_iff, ← forall_and]
+      simp only [funext_iff]
       intro i
       exact (homotopies i).prop' t x hx }
 
@@ -216,7 +208,7 @@ theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
 theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
     prod (projLeft p) (projRight p) = p := by
   induction p using Quotient.inductionOn
-  simp only [projLeft, projRight, ← Path.Homotopic.map_lift, prod_lift]
+  simp only [projLeft, projRight, ← Path.Homotopic.map_lift]
   congr
 
 end Prod

@@ -65,31 +65,11 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
     { hom := 𝟙 _
       inv := 𝟙 _ }
   counitIso :=
-    { hom :=
-        { app := fun X => 𝟙 _
-          naturality := fun X Y f => by
-            change f ≫ 𝟙 _ = 𝟙 _ ≫ f
-            simp }
-      inv :=
-        { app := fun X => 𝟙 _
-          naturality := fun X Y f => by
-            change f ≫ 𝟙 _ = 𝟙 _ ≫ f
-            simp }
-      hom_inv_id := by
-        ext
-        change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
-        simp
-      inv_hom_id := by
-        ext
-        change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
-        simp }
-  functor_unitIso_comp X := by
-    change 𝟙 X ≫ 𝟙 X = 𝟙 X
-    simp
+    { hom := { app := fun _ => 𝟙 _ }
+      inv := { app := fun _ => 𝟙 _ } }
 
 section ULiftHom
-/- Porting note: obviously we don't want code that looks like this long term
-the ability to turn off unused universe parameter error is desirable -/
+
 /-- `ULiftHom.{w} C` is an alias for `C`, which is endowed with a category instance
   whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 -/
@@ -118,16 +98,16 @@ theorem objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
 
 instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   Hom A B := ULift.{v₂} <| A.objDown ⟶ B.objDown
-  id A := ⟨𝟙 _⟩
+  id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.up : C ⥤ ULiftHom C where
   obj := ULiftHom.objUp
   map f := ⟨f⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
@@ -137,13 +117,11 @@ def ULiftHom.down : ULiftHom C ⥤ C where
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
   inverse := ULiftHom.down
-  unitIso := NatIso.ofComponents fun A => eqToIso rfl
-  counitIso := NatIso.ofComponents fun A => eqToIso rfl
+  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
+  counitIso := NatIso.ofComponents fun _ => eqToIso rfl
 
 end ULiftHom
-/- Porting note: we want to keep around the category instance on `D`
-so Lean can figure out things further down. So `AsSmall` has been
-nolinted. -/
+
 /-- `AsSmall C` is a small category equivalent to `C`.
   More specifically, if `C : Type u` is endowed with `Category.{v} C`, then
   `AsSmall.{w} C : Type (max w v u)` is endowed with an instance of a small category.
@@ -159,7 +137,7 @@ def AsSmall.{w, v, u} (D : Type u) [Category.{v} D] := ULift.{max w v} D
 
 instance : SmallCategory (AsSmall.{w₁} C) where
   Hom X Y := ULift.{max w₁ u₁} <| X.down ⟶ Y.down
-  id X := ⟨𝟙 _⟩
+  id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the equivalence between `C` and `AsSmall C`. -/
@@ -174,13 +152,23 @@ def AsSmall.down : AsSmall C ⥤ C where
   obj X := ULift.down X
   map f := f.down
 
+@[reassoc]
+theorem down_comp {X Y Z : AsSmall C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).down = f.down ≫ g.down :=
+  rfl
+
+@[simp]
+theorem eqToHom_down {X Y : AsSmall C} (h : X = Y) :
+    (eqToHom h).down = eqToHom (congrArg ULift.down h) := by
+  subst h
+  rfl
+
 /-- The equivalence between `C` and `AsSmall C`. -/
 @[simps]
 def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
-  unitIso := NatIso.ofComponents fun X => eqToIso rfl
-  counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
+  unitIso := NatIso.ofComponents fun _ => eqToIso rfl
+  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext _ _ rfl
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩

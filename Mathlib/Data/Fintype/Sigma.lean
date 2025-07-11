@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Fintype.OfMap
 
 /-!
 # fintype instances for sigma types
@@ -17,9 +17,9 @@ open Nat
 
 universe u v
 
-variable {ι α β γ : Type*} {κ : ι → Type*} [Π i, Fintype (κ i)]
+variable {ι α : Type*} {κ : ι → Type*} [Π i, Fintype (κ i)]
 
-open Finset Function
+open Finset
 
 lemma Set.biUnion_finsetSigma_univ (s : Finset ι) (f : Sigma κ → Set α) :
     ⋃ ij ∈ s.sigma fun _ ↦ Finset.univ, f ij = ⋃ i ∈ s, ⋃ j, f ⟨i, j⟩ := by aesop

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Ordering.Basic
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Some `Ordering` lemmas
@@ -28,6 +28,10 @@ theorem ite_eq_eq_distrib (c : Prop) [Decidable c] (a b : Ordering) :
 theorem ite_eq_gt_distrib (c : Prop) [Decidable c] (a b : Ordering) :
     ((if c then a else b) = Ordering.gt) = if c then a = Ordering.gt else b = Ordering.gt := by
   by_cases c <;> simp [*]
+
+@[simp]
+lemma dthen_eq_then (o₁ o₂ : Ordering) : o₁.dthen (fun _ => o₂) = o₁.then o₂ := by
+  cases o₁ <;> rfl
 
 end Ordering
 

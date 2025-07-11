@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Defs
-import Mathlib.Order.Defs
+import Mathlib.Data.Nat.Basic
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # More `Char` instances
@@ -20,10 +20,12 @@ Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scala
 instance : LinearOrder Char where
   le_refl := fun _ => @le_refl ℕ _ _
   le_trans := fun _ _ _ => @le_trans ℕ _ _ _ _
-  le_antisymm := fun _ _ h₁ h₂ => Char.eq_of_val_eq <| UInt32.eq_of_val_eq <| Fin.ext <|
-    @le_antisymm ℕ _ _ _ h₁ h₂
-  lt_iff_le_not_le := fun _ _ => @lt_iff_le_not_le ℕ _ _ _
+  le_antisymm := fun _ _ h₁ h₂ => Char.eq_of_val_eq <| UInt32.eq_of_toBitVec_eq <|
+    BitVec.le_antisymm h₁ h₂
+  lt_iff_le_not_ge := fun _ _ => @lt_iff_le_not_ge ℕ _ _ _
   le_total := fun _ _ => @le_total ℕ _ _ _
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
-  decidableLE := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLT := inferInstance

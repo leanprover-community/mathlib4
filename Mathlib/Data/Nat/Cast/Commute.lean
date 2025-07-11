@@ -11,7 +11,7 @@ import Mathlib.Algebra.Ring.Commute
 
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Nat
 
@@ -50,10 +50,9 @@ lemma natCast_mul_right (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (n * x) 
 lemma natCast_mul_left (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Nat.cast_commute _ _) h
 
-@[simp]
 lemma natCast_mul_natCast_mul (h : SemiconjBy a x y) (m n : ℕ) :
-    SemiconjBy (m * a) (n * x) (n * y) :=
-  (h.natCast_mul_left m).natCast_mul_right n
+    SemiconjBy (m * a) (n * x) (n * y) := by
+  simp [h]
 
 end SemiconjBy
 
@@ -66,31 +65,16 @@ variable [Semiring α] {a b : α}
 @[simp] lemma natCast_mul_left (h : Commute a b) (n : ℕ) : Commute (n * a) b :=
   SemiconjBy.natCast_mul_left h n
 
-@[simp] lemma natCast_mul_natCast_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) :=
-  SemiconjBy.natCast_mul_natCast_mul h m n
+lemma natCast_mul_natCast_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) := by
+  simp [h]
 
 variable (a) (m n : ℕ)
 
--- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.natCast_mul_right`
--- @[simp]
 lemma self_natCast_mul : Commute a (n * a) := (Commute.refl a).natCast_mul_right n
 
--- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.natCast_mul_left`
--- @[simp]
 lemma natCast_mul_self : Commute (n * a) a := (Commute.refl a).natCast_mul_left n
 
--- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.natCast_mul_left`,
--- `Commute.natCast_mul_right`
--- @[simp]
 lemma self_natCast_mul_natCast_mul : Commute (m * a) (n * a) :=
   (Commute.refl a).natCast_mul_natCast_mul m n
-
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_right := natCast_mul_right
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_left := natCast_mul_left
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_cast_nat_mul := natCast_mul_natCast_mul
-@[deprecated (since := "2024-05-27")] alias self_cast_nat_mul := self_natCast_mul
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_self := natCast_mul_self
-@[deprecated (since := "2024-05-27")]
-alias self_cast_nat_mul_cast_nat_mul := self_natCast_mul_natCast_mul
 
 end Commute

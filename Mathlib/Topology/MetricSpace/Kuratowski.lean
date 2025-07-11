@@ -19,16 +19,16 @@ noncomputable section
 
 open Set Metric TopologicalSpace NNReal ENNReal lp Function
 
-universe u v w
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 namespace KuratowskiEmbedding
 
 /-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
 
 
-variable {f g : ℓ^∞(ℕ)} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ → α) (a b : α)
+variable {n : ℕ} [MetricSpace α] (x : ℕ → α) (a : α)
 
 /-- A metric space can be embedded in `l^∞(ℝ)` via the distances to points in
 a fixed countable set, if this set is dense. This map is given in `kuratowskiEmbedding`,
@@ -47,7 +47,7 @@ theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x
 theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
   refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
-  simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe, Real.dist_eq]
+  simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe]
   convert abs_dist_sub_le a b (x n) using 2
   ring
 
@@ -68,15 +68,12 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
         apply_rules [add_le_add_left, le_abs_self]
       _ ≤ 2 * (e / 2) + |embeddingOfSubset x b n - embeddingOfSubset x a n| := by
         rw [C]
-        apply_rules [add_le_add, mul_le_mul_of_nonneg_left, hn.le, le_refl]
-        norm_num
+        gcongr
       _ ≤ 2 * (e / 2) + dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by
-        have : |embeddingOfSubset x b n - embeddingOfSubset x a n| ≤
-            dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by
-          simp only [dist_eq_norm]
-          exact lp.norm_apply_le_norm ENNReal.top_ne_zero
-            (embeddingOfSubset x b - embeddingOfSubset x a) n
-        nlinarith
+        gcongr
+        simp only [dist_eq_norm]
+        exact lp.norm_apply_le_norm ENNReal.top_ne_zero
+          (embeddingOfSubset x b - embeddingOfSubset x a) n
       _ = dist (embeddingOfSubset x b) (embeddingOfSubset x a) + e := by ring
   simpa [dist_comm] using this
 
@@ -96,7 +93,7 @@ theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpac
 
 end KuratowskiEmbedding
 
-open TopologicalSpace KuratowskiEmbedding
+open KuratowskiEmbedding
 
 /-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`.
 -/

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.RingTheory.Polynomial.Basic
@@ -60,6 +61,6 @@ theorem funext {σ : Type*} {p q : MvPolynomial σ R} (h : ∀ x : σ → R, eva
 
 theorem funext_iff {σ : Type*} {p q : MvPolynomial σ R} :
     p = q ↔ ∀ x : σ → R, eval x p = eval x q :=
-  ⟨by rintro rfl; simp only [forall_const, eq_self_iff_true], funext⟩
+  ⟨by rintro rfl; simp only [forall_const], funext⟩
 
 end MvPolynomial

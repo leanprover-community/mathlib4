@@ -9,24 +9,24 @@ import Mathlib.Init
 # Monad instances for `List`
 -/
 
-universe u v w
+universe u
 
 namespace List
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 instance instMonad : Monad List.{u} where
-  pure := @List.pure
-  bind := @List.bind
-  map := @List.map
+  pure x := [x]
+  bind l f := l.flatMap f
+  map f l := l.map f
 
 @[simp] theorem pure_def (a : α) : pure a = [a] := rfl
 
 instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
   (id_map := map_id)
   (pure_bind := fun _ _ => List.append_nil _)
-  (bind_assoc := List.bind_assoc)
-  (bind_pure_comp := fun _ _ => (map_eq_bind _ _).symm)
+  (bind_assoc := fun _ _ _ => List.flatMap_assoc)
+  (bind_pure_comp := fun _ _ => map_eq_flatMap.symm)
 
 instance instAlternative : Alternative List.{u} where
   failure := @List.nil

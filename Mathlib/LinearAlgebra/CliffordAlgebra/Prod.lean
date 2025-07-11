@@ -116,7 +116,7 @@ def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] 
           ∘ₗ (evenOdd Q₂ 1).subtype ∘ₗ (ι Q₂).codRestrict _ (ι_mem_evenOdd_one Q₂)),
     fun m => by
       simp_rw [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply,
-        AlgHom.toLinearMap_apply, QuadraticMap.prod_apply, Submodule.coeSubtype,
+        AlgHom.toLinearMap_apply, QuadraticMap.prod_apply, Submodule.coe_subtype,
         GradedTensorProduct.includeLeft_apply, GradedTensorProduct.includeRight_apply, map_add,
         add_mul, mul_add, GradedTensorProduct.algebraMap_def,
         GradedTensorProduct.tmul_one_mul_one_tmul, GradedTensorProduct.tmul_one_mul_coe_tmul,
@@ -157,7 +157,7 @@ lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.i
       LinearMap.map_zero, zero_add]
 
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
-  ext <;> (dsimp; simp)
+  ext <;> simp
 
 /-- The Clifford algebra over an orthogonal direct sum of quadratic vector spaces is isomorphic
 as an algebra to the graded tensor product of the Clifford algebras of each space.

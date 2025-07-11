@@ -143,7 +143,7 @@ end SemilatticeInf
 
 section CompleteSemilatticeInf
 
-variable [CompleteSemilatticeInf P] {F : PFilter P}
+variable [CompleteSemilatticeInf P]
 
 theorem sInf_gc :
     GaloisConnection (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=

@@ -3,8 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Data.Finset.Pointwise.Basic
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.LinearAlgebra.Finsupp.Supported
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 #  Lemmas about the support of a finitely supported function
@@ -53,7 +55,7 @@ theorem support_mul_single_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
   simp only [mul_apply, mem_support_iff.mp yf, hr, mem_support_iff, sum_single_index,
-    Finsupp.sum_ite_eq', Ne, not_false_iff, if_true, mul_zero, ite_self, sum_zero, rx.eq_iff]
+    Finsupp.sum_ite_eq', Ne, not_false_iff, if_true, mul_zero, ite_self, rx.eq_iff]
 
 theorem support_mul_single [Mul G] [IsRightCancelMul G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :

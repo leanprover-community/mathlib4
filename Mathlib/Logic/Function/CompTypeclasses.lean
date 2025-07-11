@@ -24,7 +24,7 @@ TODO :
 section CompTriple
 
 /-- Class of composing triples -/
-class CompTriple  {M N P : Type*} (φ : M → N) (ψ : N → P) (χ : outParam (M → P)) : Prop where
+class CompTriple {M N P : Type*} (φ : M → N) (ψ : N → P) (χ : outParam (M → P)) : Prop where
   /-- The maps form a commuting triangle -/
   comp_eq : ψ.comp φ = χ
 
@@ -50,7 +50,7 @@ instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
 /-- `φ`, `ψ` and `ψ ∘ φ` for` a `CompTriple` -/
 theorem comp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
-    CompTriple φ ψ  (ψ.comp φ) where
+    CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
 lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}

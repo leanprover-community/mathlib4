@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The monoidal coherence theorem
@@ -29,7 +29,7 @@ is thin.
 ## References
 
 * [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
-   proof of normalization for monoids][beylin1996]
+  proof of normalization for monoids][beylin1996]
 
 -/
 
@@ -38,7 +38,7 @@ universe u
 
 namespace CategoryTheory
 
-open MonoidalCategory
+open MonoidalCategory Functor
 
 namespace FreeMonoidalCategory
 
@@ -50,7 +50,6 @@ variable (C)
 
 /-- We say an object in the free monoidal category is in normal form if it is of the form
     `(((𝟙_ C) ⊗ X₁) ⊗ X₂) ⊗ ⋯`. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 inductive NormalMonoidalObject : Type u
   | unit : NormalMonoidalObject
   | tensor : NormalMonoidalObject → C → NormalMonoidalObject
@@ -121,7 +120,7 @@ def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ nor
   | _, _, l_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, ρ_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
+  | _, _, (@Hom.comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) =>
     Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
       (normalizeObj' W).map ((normalizeMapAux f).app ⟨X⟩)
@@ -161,7 +160,7 @@ def fullNormalize : F C ⥤ N C where
 @[simp]
 def tensorFunc : F C ⥤ N C ⥤ F C where
   obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
-  map f := Discrete.natTrans (fun n => _ ◁ f)
+  map f := Discrete.natTrans (fun _ => _ ◁ f)
 
 theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = _ ◁ f :=
   rfl
@@ -197,7 +196,7 @@ def normalizeIsoApp' :
 
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
-  | of X, _ => rfl
+  | of _, _ => rfl
   | unit, _ => rfl
   | tensor X Y, n => by
       rw [normalizeIsoApp, normalizeIsoApp']
@@ -216,7 +215,7 @@ theorem normalizeIsoApp_unitor (n : N C) : normalizeIsoApp C (𝟙_ (F C)) n = �
   rfl
 
 /-- Auxiliary definition for `normalizeIso`. -/
-@[simp]
+@[simps!]
 def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
   NatIso.ofComponents (normalizeIsoApp C X)
     (by
@@ -269,7 +268,6 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
-set_option tactic.skipAssignedInstances false in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
     naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
     of our proof of the coherence theorem. -/
@@ -278,7 +276,8 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     intro X Y f
     ext ⟨n⟩
     convert normalize_naturality n f using 1
-    any_goals dsimp [NatIso.ofComponents]; congr; apply normalizeIsoApp_eq
+    any_goals dsimp; rw [normalizeIsoApp_eq]
+    rfl
 
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
@@ -318,7 +317,7 @@ def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
   | _, _, ρ_inv _ => ρ_hom _
   | _, _, l_hom _ => l_inv _
   | _, _, l_inv _ => l_hom _
-  | _, _, comp f g => (inverseAux g).comp (inverseAux f)
+  | _, _, Hom.comp f g => (inverseAux g).comp (inverseAux f)
   | _, _, Hom.whiskerLeft X f => (inverseAux f).whiskerLeft X
   | _, _, Hom.whiskerRight f X => (inverseAux f).whiskerRight X
   | _, _, Hom.tensor f g => (inverseAux f).tensor (inverseAux g)

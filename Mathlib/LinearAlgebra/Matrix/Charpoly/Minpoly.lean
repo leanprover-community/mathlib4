@@ -28,8 +28,6 @@ open Finset
 
 namespace Matrix
 
-open Matrix
-
 variable (M : Matrix n n R)
 
 @[simp]

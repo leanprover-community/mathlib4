@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.NAry
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.SupClosed
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Set family operations
@@ -62,8 +62,7 @@ protected def hasSups : HasSups (Set α) :=
   ⟨image2 (· ⊔ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasSups
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
@@ -90,7 +89,7 @@ theorem image_subset_sups_right : a ∈ s → (· ⊔ ·) a '' t ⊆ s ⊻ t :=
   image_subset_image2_right
 
 theorem forall_sups_iff {p : α → Prop} : (∀ c ∈ s ⊻ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊔ b) :=
-  forall_image2_iff
+  forall_mem_image2
 
 @[simp]
 theorem sups_subset_iff : s ⊻ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊔ b ∈ u :=
@@ -151,7 +150,7 @@ lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, 
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
 
 @[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed s :=
-  subset_sups_self.le.le_iff_eq.symm.trans sups_subset_self
+  subset_sups_self.le.ge_iff_eq'.symm.trans sups_subset_self
 
 lemma sep_sups_le (s t : Set α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
@@ -192,8 +191,7 @@ protected def hasInfs : HasInfs (Set α) :=
   ⟨image2 (· ⊓ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
@@ -220,7 +218,7 @@ theorem image_subset_infs_right : a ∈ s → (a ⊓ ·) '' t ⊆ s ⊼ t :=
   image_subset_image2_right
 
 theorem forall_infs_iff {p : α → Prop} : (∀ c ∈ s ⊼ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊓ b) :=
-  forall_image2_iff
+  forall_mem_image2
 
 @[simp]
 theorem infs_subset_iff : s ⊼ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊓ b ∈ u :=
@@ -281,7 +279,7 @@ lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, 
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
 
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed s :=
-  subset_infs_self.le.le_iff_eq.symm.trans infs_self_subset
+  subset_infs_self.le.ge_iff_eq'.symm.trans infs_self_subset
 
 lemma sep_infs_le (s t : Set α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by ext; aesop
@@ -344,7 +342,7 @@ open SetFamily
 theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
     upperClosure (s ⊻ t) = upperClosure s ⊔ upperClosure t := by
   ext a
-  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups, exists_and_left, exists_prop,
+  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups,
     UpperSet.coe_sup, Set.mem_inter_iff]
   constructor
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
@@ -356,8 +354,7 @@ theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
 theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
     lowerClosure (s ⊼ t) = lowerClosure s ⊓ lowerClosure t := by
   ext a
-  simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs, exists_and_left, exists_prop,
-    LowerSet.coe_sup, Set.mem_inter_iff]
+  simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs]
   constructor
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
     exact ⟨⟨b, hb, ha.trans inf_le_left⟩, c, hc, ha.trans inf_le_right⟩

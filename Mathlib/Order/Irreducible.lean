@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Irreducible and prime elements in an order
@@ -65,7 +65,7 @@ theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b <
   rw [SupIrred, not_and_or]
   push_neg
   rw [exists₂_congr]
-  simp (config := { contextual := true }) [@eq_comm _ _ a]
+  simp +contextual [@eq_comm _ _ a]
 
 @[simp]
 theorem not_supPrime : ¬SupPrime a ↔ IsMin a ∨ ∃ b c, a ≤ b ⊔ c ∧ ¬a ≤ b ∧ ¬a ≤ c := by
@@ -93,17 +93,18 @@ theorem SupPrime.ne_bot (ha : SupPrime a) : a ≠ ⊥ := by rintro rfl; exact no
 
 theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s, f i = a := by
   classical
-  induction' s using Finset.induction with i s _ ih
-  · simpa [ha.ne_bot] using h.symm
-  simp only [exists_prop, exists_mem_insert] at ih ⊢
-  rw [sup_insert] at h
-  exact (ha.2 h).imp_right ih
+  induction s using Finset.induction with
+  | empty => simpa [ha.ne_bot] using h.symm
+  | insert i s _ ih =>
+    simp only [exists_mem_insert] at ih ⊢
+    rw [sup_insert] at h
+    exact (ha.2 h).imp_right ih
 
 theorem SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s, a ≤ f i := by
   classical
-  induction' s using Finset.induction with i s _ ih
-  · simp [ha.ne_bot]
-  · simp only [exists_prop, exists_mem_insert, sup_insert, ha.le_sup, ih]
+  induction s using Finset.induction with
+  | empty => simp [ha.ne_bot]
+  | insert i s _ ih => simp only [exists_mem_insert, sup_insert, ha.le_sup, ih]
 
 variable [WellFoundedLT α]
 
@@ -161,11 +162,9 @@ theorem InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ 
 
 variable [OrderTop α] {s : Finset ι} {f : ι → α}
 
--- @[simp] Porting note (#10618): simp can prove this.
 theorem not_infIrred_top : ¬InfIrred (⊤ : α) :=
   isMax_top.not_infIrred
 
--- @[simp] Porting note (#10618): simp can prove this.
 theorem not_infPrime_top : ¬InfPrime (⊤ : α) :=
   isMax_top.not_infPrime
 
@@ -251,7 +250,7 @@ end SemilatticeInf
 
 section DistribLattice
 
-variable [DistribLattice α] {a b c : α}
+variable [DistribLattice α] {a : α}
 
 @[simp]
 theorem supPrime_iff_supIrred : SupPrime a ↔ SupIrred a :=
@@ -263,11 +262,8 @@ theorem infPrime_iff_infIrred : InfPrime a ↔ InfIrred a :=
   ⟨InfPrime.infIrred,
     And.imp_right fun h b c => by simp_rw [← sup_eq_left, sup_inf_left]; exact @h _ _⟩
 
-alias ⟨_, SupIrred.supPrime⟩ := supPrime_iff_supIrred
-
-alias ⟨_, InfIrred.infPrime⟩ := infPrime_iff_infIrred
-
--- Porting note: was attribute [protected] SupIrred.supPrime InfIrred.infPrime
+protected alias ⟨_, SupIrred.supPrime⟩ := supPrime_iff_supIrred
+protected alias ⟨_, InfIrred.infPrime⟩ := infPrime_iff_infIrred
 
 end DistribLattice
 
@@ -275,20 +271,18 @@ section LinearOrder
 
 variable [LinearOrder α] {a : α}
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem supPrime_iff_not_isMin : SupPrime a ↔ ¬IsMin a :=
   and_iff_left <| by simp
 
--- @[simp] Porting note (#10618): simp can prove thisrove this
 theorem infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
   and_iff_left <| by simp
 
 @[simp]
 theorem supIrred_iff_not_isMin : SupIrred a ↔ ¬IsMin a :=
-  and_iff_left fun _ _ => by simpa only [sup_eq_max, max_eq_iff] using Or.imp And.left And.left
+  and_iff_left fun _ _ => by simpa only [max_eq_iff] using Or.imp And.left And.left
 
 @[simp]
 theorem infIrred_iff_not_isMax : InfIrred a ↔ ¬IsMax a :=
-  and_iff_left fun _ _ => by simpa only [inf_eq_min, min_eq_iff] using Or.imp And.left And.left
+  and_iff_left fun _ _ => by simpa only [min_eq_iff] using Or.imp And.left And.left
 
 end LinearOrder

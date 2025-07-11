@@ -11,9 +11,9 @@ import Mathlib.Algebra.Group.Semiconj.Units
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {G₀ : Type*}
 
 namespace SemiconjBy
 
