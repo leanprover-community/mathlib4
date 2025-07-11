@@ -124,7 +124,7 @@ def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ :=
         uniq f :=
           have : f ≫ c.truth = c.χ₀ (𝟙 Y) ≫ c.truth :=
             by calc
-              _ = c.χ (𝟙 Y) := c.uniq' (𝟙 Y) f (f ≫ c.truth) (of_horiz_isIso_mono (by simp))
+              _ = c.χ (𝟙 Y) := c.uniq' (𝟙 Y) f (f ≫ c.truth) (of_horiz_isIso_mono { })
               _ = c.χ₀ (𝟙 Y) ≫ c.truth := by simp [← (c.isPullback' (𝟙 Y)).w]
           Mono.right_cancellation _ _ this }
     IsTerminal.ofUnique c.Ω₀
