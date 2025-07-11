@@ -21,4 +21,24 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
     LieIdeal K L where
   __ := ⨆ α : {α : Weight K H L // α.toLinear ∈ q ∧ α.IsNonZero}, sl2SubalgebraOfRoot α.2.2
-  lie_mem := by sorry
+  lie_mem := by
+    intro x m hm
+    -- Cartan decomposition: L = ⨆ χ : Weight K H L, genWeightSpace L χ
+    have hx : x ∈ ⨆ χ : Weight K H L, genWeightSpace L χ := by
+      simp [LieModule.iSup_genWeightSpace_eq_top']
+
+    -- APPLY INDUCTION using LieSubmodule.iSup_induction' (following Killing.lean:129)
+    induction hx using LieSubmodule.iSup_induction' with
+    | mem χ x_χ hx_χ =>
+      -- CASE: x_χ ∈ genWeightSpace L χ for some weight χ
+      by_cases h_zero : χ.IsZero
+      · -- SUBCASE 1: χ = 0, so x_χ ∈ H (Cartan subalgebra)
+        sorry -- Use: H preserves sl₂ subalgebras
+      · -- SUBCASE 2: χ ≠ 0, so x_χ ∈ rootSpace H χ (nonzero root)
+        sorry -- Use: invariance hq + root system reflections
+    | zero =>
+      -- BASE CASE: x = 0
+      simp [zero_lie]
+    | add x₁ x₂ _ _ ih₁ ih₂ =>
+      -- INDUCTIVE CASE: x = x₁ + x₂
+      sorry -- rw [add_lie]; apply add_mem ih₁ ih₂
