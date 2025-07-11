@@ -370,7 +370,7 @@ theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a := by
   simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_lt_iff_not_isSuccPrelimit
 
 theorem succ_pred_eq_iff_not_isSuccPrelimit {o} : succ (pred o) = o ↔ ¬ IsSuccPrelimit o := by
-  rw [← (self_le_succ_pred o).le_iff_eq, succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
+  rw [← (self_le_succ_pred o).ge_iff_eq', succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
 
 @[deprecated succ_pred_iff_is_succ (since := "2025-02-11")]
 theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a := by
@@ -439,7 +439,7 @@ theorem IsNormal.le_apply {f} (H : IsNormal f) {a} : a ≤ f a :=
   H.strictMono.le_apply
 
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
-  H.le_apply.le_iff_eq
+  H.le_apply.ge_iff_eq'
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=

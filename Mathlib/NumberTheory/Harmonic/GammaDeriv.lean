@@ -106,7 +106,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = (deriv (fun s ↦ Gamma s * Gamma (s + 1 / 2)) (1 / 2)) + √π * γ := by
     rw [deriv_fun_mul, Gamma_one_half_eq,
       add_assoc, ← mul_add, deriv_comp_add_const,
-      (by norm_num : 1/2 + 1/2 = (1 : ℝ)), Gamma_one, mul_one,
+      (by norm_num : 1 / 2 + 1 / 2 = (1 : ℝ)), Gamma_one, mul_one,
       eulerMascheroniConstant_eq_neg_deriv, add_neg_cancel, mul_zero, add_zero]
     · apply h_diff; norm_num -- s = 1
     · exact ((h_diff (by norm_num)).hasDerivAt.comp_add_const).differentiableAt -- s = 1

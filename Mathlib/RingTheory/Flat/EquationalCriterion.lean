@@ -130,11 +130,10 @@ theorem tfae_equational_criterion : List.TFAE [
     let x' : Fin l → M := fun i ↦ x (single i 1)
     have := calc
       ∑ i, f' i • x' i
-      _ = ∑ i, f i • x (single i 1)         := rfl
+      _ = ∑ i, f i • x (single i 1) := rfl
       _ = x (∑ i, f i • Finsupp.single i 1) := by simp_rw [map_sum, map_smul]
-      _ = x f                               := by
-        simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
-      _ = 0                                 := hfx
+      _ = x f := by simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
+      _ = 0 := hfx
     obtain ⟨k, a', y', ⟨ha'y', ha'⟩⟩ := h₄ this
     use k
     use Finsupp.linearCombination R (fun i ↦ equivFunOnFinite.symm (a' i))

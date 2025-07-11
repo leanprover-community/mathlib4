@@ -93,6 +93,7 @@ import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
 import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.CommAlgCat.FiniteType
+import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
@@ -2352,6 +2353,7 @@ import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -4675,6 +4677,7 @@ import Mathlib.NumberTheory.NumberField.House
 import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 import Mathlib.NumberTheory.NumberField.Ideal.Basic
+import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
@@ -5113,6 +5116,7 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.RepresentationTheory.Induced
 import Mathlib.RepresentationTheory.Invariants
@@ -5627,6 +5631,7 @@ import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
+import Mathlib.RingTheory.Valuation.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.LocalSubring
 import Mathlib.RingTheory.Valuation.Minpoly
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
@@ -6239,6 +6244,7 @@ import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 import Mathlib.Topology.Compactness.DeltaGeneratedSpace
+import Mathlib.Topology.Compactness.Exterior
 import Mathlib.Topology.Compactness.HilbertCubeEmbedding
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.LocallyCompact
@@ -6308,6 +6314,7 @@ import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.EMetricSpace.Pi
 import Mathlib.Topology.ExtendFrom
+import Mathlib.Topology.Exterior
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
 import Mathlib.Topology.FiberBundle.Constructions
