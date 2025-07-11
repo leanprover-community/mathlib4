@@ -155,8 +155,8 @@ theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb
 /-- Another characterization of the addition on the Ore localization, bundling up all witnesses
 and conditions into a sigma type. -/
 def oreDivAddChar' (r r' : X) (s s' : S) :
-    Σ'r'' : R,
-      Σ's'' : S, s'' * s = r'' * s' ∧ r /ₒ s + r' /ₒ s' = (s'' • r + r'' • r') /ₒ (s'' * s) :=
+    Σ' r'' : R,
+      Σ' s'' : S, s'' * s = r'' * s' ∧ r /ₒ s + r' /ₒ s' = (s'' • r + r'' • r') /ₒ (s'' * s) :=
   ⟨oreNum (s : R) s', oreDenom (s : R) s', ore_eq (s : R) s', oreDiv_add_oreDiv⟩
 
 @[simp]
