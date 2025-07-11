@@ -299,13 +299,13 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 
 /-- `Sigma.mk` as a `Function.Embedding`. -/
 @[simps apply]
-def sigmaMk (a : α) : β a ↪ Σx, β x :=
+def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
-def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σa, β a) ↪ Σa', β' a' :=
+def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σ a, β a) ↪ Σ a', β' a' :=
   ⟨Sigma.map f fun a => g a, f.injective.sigma_map fun a => (g a).injective⟩
 
 end Sigma

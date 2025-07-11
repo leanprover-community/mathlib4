@@ -976,7 +976,7 @@ lemma opcyclesOpIso_hom_toCycles_op [S.HasLeftHomology] :
     LeftHomologyData.op_p, ← op_comp, LeftHomologyData.f'_i, op_g]
 
 @[reassoc (attr := simp)]
-lemma fromOpcycles_op_cyclesOpIso_inv [S.HasRightHomology]:
+lemma fromOpcycles_op_cyclesOpIso_inv [S.HasRightHomology] :
     S.fromOpcycles.op ≫ S.cyclesOpIso.inv = S.op.toCycles := by
   dsimp [cyclesOpIso, fromOpcycles]
   rw [← cancel_mono S.op.iCycles, assoc, toCycles_i,

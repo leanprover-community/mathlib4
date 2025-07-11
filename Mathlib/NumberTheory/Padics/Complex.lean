@@ -95,7 +95,7 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
 instance : RankOne (PadicAlgCl.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
   strictMono' := strictMono_id
-  nontrivial' := by
+  exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
@@ -140,7 +140,7 @@ instance : Algebra ℚ_[p] ℂ_[p] where
 instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
 @[simp, norm_cast]
-lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p])  := by
+lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p]) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]) n, coe_eq]
 
 /-- The valuation of `p : ℂ_[p]` is `1/p`. -/
@@ -152,7 +152,7 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
 instance : RankOne (PadicComplex.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
   strictMono' := strictMono_id
-  nontrivial' := by
+  exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
@@ -164,7 +164,7 @@ lemma rankOne_hom_eq :
 
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation. -/
-instance : NormedField ℂ_[p] :=  Valued.toNormedField _ _
+instance : NormedField ℂ_[p] := Valued.toNormedField _ _
 
 theorem norm_def : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
 
