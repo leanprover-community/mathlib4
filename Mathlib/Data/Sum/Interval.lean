@@ -409,7 +409,7 @@ end LocallyFiniteOrder
 section LocallyFiniteOrderBot
 variable [Preorder α] [Preorder β] [Fintype α] [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β]
 
-instance locallyFiniteOrderBot : LocallyFiniteOrderBot (α ⊕ₗ β) where
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (α ⊕ₗ β) where
   finsetIic := Sum.elim
     (Iic · |>.map (.trans .inl toLex.toEmbedding))
     (fun x => Finset.univ.disjSum (Iic x) |>.map toLex.toEmbedding) ∘ ofLex
@@ -429,10 +429,18 @@ lemma Iio_inr : Iio (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iio b)).ma
 
 end LocallyFiniteOrderBot
 
+-- TODO: there is a diamond here
+example [Fintype α] [Preorder α] [Preorder β] [OrderBot α] [OrderBot β] [OrderTop α]
+    [LocallyFiniteOrder α] [LocallyFiniteOrder β] :
+    LocallyFiniteOrder.toLocallyFiniteOrderBot = instLocallyFiniteOrderBot (α := α) (β := β) := by
+  try with_reducible_and_instances rfl -- fails
+  try rfl -- fails
+  exact Subsingleton.elim _ _
+
 section LocallyFiniteOrderTop
 variable [Preorder α] [Preorder β] [LocallyFiniteOrderTop α] [Fintype β] [LocallyFiniteOrderTop β]
 
-instance locallyFiniteOrderTop : LocallyFiniteOrderTop (α ⊕ₗ β) where
+instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (α ⊕ₗ β) where
   finsetIci := Sum.elim
     (fun x => (Ici x).disjSum Finset.univ |>.map toLex.toEmbedding)
     (Ici · |>.map (.trans .inr toLex.toEmbedding)) ∘ ofLex
