@@ -112,7 +112,7 @@ lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis 
   choose Us UsB hUsf hUs using fun i : s ↦ (hB i.1).exists_finite_of_isCompact (hc i i.2)
   let σ := Σ i : s, Us i
   have : Finite s := hs
-  have (i) : Finite (Us i) := hUsf i
+  have (i : _) : Finite (Us i) := hUsf i
   refine ⟨σ, inferInstance, fun i ↦ i.1.1, fun i ↦ i.2.1, fun i ↦ UsB _ (by simp),
       fun _ ↦ hBc _ _ (UsB _ (by simp)), ?_⟩
   rw [← hunion]

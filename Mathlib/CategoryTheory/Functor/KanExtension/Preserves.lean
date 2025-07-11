@@ -41,7 +41,7 @@ class PreservesLeftKanExtension where
 for a similar constructor taking as input a single `LeftExtension`. -/
 lemma PreservesLeftKanExtension.mk'
     (preserves : ∀ {E : LeftExtension L F}, E.IsUniversal →
-      Nonempty (LeftExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
+      Nonempty (LeftExtension.postcompose₂ L F G |>.obj E).IsUniversal) :
     G.PreservesLeftKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsInitial.equivOfIso
@@ -63,7 +63,7 @@ lemma PreservesLeftKanExtension.mk_of_preserves_isLeftKanExtension
 /-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
 Kan extension, phrased in terms of `IsUniversal`. -/
 lemma PreservesLeftKanExtension.mk_of_preserves_isUniversal (E : LeftExtension L F)
-    (hE : E.IsUniversal) (h : Nonempty (LeftExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
+    (hE : E.IsUniversal) (h : Nonempty (LeftExtension.postcompose₂ L F G |>.obj E).IsUniversal) :
     G.PreservesLeftKanExtension F L :=
   .mk' G F L fun hE' ↦
     ⟨Limits.IsInitial.equivOfIso
@@ -113,7 +113,7 @@ def LeftExtension.coconeAtWhiskerRightIso (E : LeftExtension L F) (c : C) :
 all of them. -/
 lemma PreservesPointwiseLeftKanExtensionAt.mk' (c : C) {E : LeftExtension L F}
   (hE : E.IsPointwiseLeftKanExtensionAt c)
-  (hGE : (LeftExtension.postcompose₂ L F G|>.obj E).IsPointwiseLeftKanExtensionAt c) :
+  (hGE : (LeftExtension.postcompose₂ L F G |>.obj E).IsPointwiseLeftKanExtensionAt c) :
     G.PreservesPointwiseLeftKanExtensionAt F L c where
   preserves E' hE' :=
     ⟨Limits.IsColimit.ofIsoColimit hGE <|
@@ -293,7 +293,7 @@ class PreservesRightKanExtension where
 for a similar constructor taking as input a single `RightExtension`. -/
 lemma PreservesRightKanExtension.mk'
     (preserves : ∀ {E : RightExtension L F}, E.IsUniversal →
-      Nonempty (RightExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
+      Nonempty (RightExtension.postcompose₂ L F G |>.obj E).IsUniversal) :
     G.PreservesRightKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsTerminal.equivOfIso
@@ -303,7 +303,7 @@ lemma PreservesRightKanExtension.mk'
 Kan extension. -/
 lemma PreservesRightKanExtension.mk_of_preserves_isRightKanExtension
     (F' : C ⥤ B) (α : L ⋙ F' ⟶ F) [IsRightKanExtension F' α]
-    (h : IsRightKanExtension (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫ whiskerRight α G ) :
+    (h : IsRightKanExtension (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫ whiskerRight α G) :
     G.PreservesRightKanExtension F L :=
   .mk fun F'' α' h ↦
     isRightKanExtension_of_iso
@@ -315,7 +315,7 @@ lemma PreservesRightKanExtension.mk_of_preserves_isRightKanExtension
 /-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a left
 Kan extension, phrased in terms of `IsUniversal`. -/
 lemma PreservesRightKanExtension.mk_of_preserves_isUniversal (E : RightExtension L F)
-    (hE : E.IsUniversal) (h : Nonempty (RightExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
+    (hE : E.IsUniversal) (h : Nonempty (RightExtension.postcompose₂ L F G |>.obj E).IsUniversal) :
     G.PreservesRightKanExtension F L :=
   .mk' G F L fun hE' ↦
     ⟨Limits.IsTerminal.equivOfIso
@@ -364,7 +364,7 @@ def RightExtension.coneAtWhiskerRightIso (E : RightExtension L F) (c : C) :
 all of them. -/
 lemma PreservesPointwiseRightKanExtensionAt.mk' (c : C) {E : RightExtension L F}
   (hE : E.IsPointwiseRightKanExtensionAt c)
-  (hGE : (RightExtension.postcompose₂ L F G|>.obj E).IsPointwiseRightKanExtensionAt c) :
+  (hGE : (RightExtension.postcompose₂ L F G |>.obj E).IsPointwiseRightKanExtensionAt c) :
     G.PreservesPointwiseRightKanExtensionAt F L c where
   preserves E' hE' :=
     ⟨Limits.IsLimit.ofIsoLimit hGE <|
