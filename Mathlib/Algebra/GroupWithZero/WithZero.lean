@@ -167,7 +167,8 @@ lemma map'_surjective_iff {f : α →* β} : Surjective (map' f) ↔ Surjective 
   refine ⟨fun h b ↦ ?_, fun h ↦ ⟨⟨0, by simp⟩, fun b ↦ ?_⟩⟩
   · obtain ⟨a, hab⟩ := h.2 b
     induction a using WithZero.recZeroCoe <;>
-    simp_all; try grind
+    simp at hab
+    grind
   · obtain ⟨a, ha⟩ := h b
     use a
     simp [ha]
