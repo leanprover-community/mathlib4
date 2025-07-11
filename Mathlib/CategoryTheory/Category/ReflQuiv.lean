@@ -140,7 +140,7 @@ theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : F
   Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
 
 @[simp]
-lemma FreeRefl.quotientFunctor_id (V) [ReflQuiver V] (X : V) :
+lemma FreeRefl.quotientFunctor_map_id (V) [ReflQuiver V] (X : V) :
     (FreeRefl.quotientFunctor V).map (𝟙rq X).toPath = 𝟙 _ := by
   apply Quotient.sound
   exact .mk
@@ -169,7 +169,7 @@ instance (V : Type*) [ReflQuiver V] [Unique V]
         obtain rfl : x = y := by subsingleton
         obtain rfl : g = 𝟙rq _ := by subsingleton
         simp only [Paths.of_obj, ↓hrec, Paths.of_map, Functor.map_comp,
-          FreeRefl.quotientFunctor_id, Category.comp_id]
+          FreeRefl.quotientFunctor_map_id, Category.comp_id]
 
 
 /-- A refl prefunctor `V ⥤rq W` induces a functor `FreeRefl V ⥤ FreeRefl W` defined using
