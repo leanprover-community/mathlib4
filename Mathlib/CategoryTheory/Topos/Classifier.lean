@@ -95,6 +95,26 @@ variable {C}
 
 namespace Classifier
 
+/-- More explicit constructor in case already know that `Ω₀` is a terminal object. -/
+def fromTerminalΩ₀
+    (Ω₀ : C)
+    (t : IsTerminal Ω₀)
+    (Ω : C)
+    (truth : Ω₀ ⟶ Ω) [Mono truth]
+    (χ : ∀ {U X : C} (m : U ⟶ X) [Mono m], X ⟶ Ω)
+    (isPullback : ∀ {U X : C} (m : U ⟶ X) [Mono m],
+      IsPullback m (t.from U) (χ m) truth)
+    (uniq : ∀ {U X : C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ Ω)
+      (_ : IsPullback m (t.from U) χ' truth), χ' = χ m) : Classifier C where
+  Ω₀ := Ω₀
+  Ω := Ω
+  truth := truth
+  mt := t.mono_from _
+  χ₀ _ _ := t.from _
+  χ m _ := χ m
+  isPullback' m _ := isPullback m
+  uniq' m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
+
 /-- `Ω₀` is a terminal object. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ :=
     have : Mono c.truth := c.mt
