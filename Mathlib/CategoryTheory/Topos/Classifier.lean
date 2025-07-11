@@ -132,20 +132,16 @@ def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ :=
     }
     IsTerminal.ofUnique c.Ω₀
 
-/-- The unique arrow from any object to the terminal object `Ω₀` of a classifier `c` -/
-def uniqueToΩ₀ {c : Classifier C} (U : C) : U ⟶ c.Ω₀ :=
-  isTerminalΩ₀.from U
+/-- The more practical version of `isPullback'` where we don't need to supply the to arrow,
+since there is a unique morphism to the terminal object -/
+lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
+    IsPullback m (isTerminalΩ₀.from _) (c.χ m) c.truth :=
+  (isTerminalΩ₀.hom_ext (c.χ₀ m) (isTerminalΩ₀.from U)) ▸ c.isPullback' m
 
 /-- The more practical version of `uniq'` without the argument `χ₀` -/
 lemma uniq {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ c.Ω)
-    (hχ' : IsPullback m (uniqueToΩ₀ _) χ' (c.truth)) : χ' = c.χ m :=
-  c.uniq' m (uniqueToΩ₀ _) χ' hχ'
-
-/-- The more practical version of `isPullback'` where the top arrow in the pullback square is
-`uniqueToΩ₀` instead of `χ₀ m`. -/
-lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
-    IsPullback m (uniqueToΩ₀ _) (c.χ m) c.truth :=
-  (isTerminalΩ₀.hom_ext (c.χ₀ m) (uniqueToΩ₀ U)) ▸ c.isPullback' m
+    (hχ' : IsPullback m (isTerminalΩ₀.from _) χ' (c.truth)) : χ' = c.χ m :=
+  c.uniq' m (isTerminalΩ₀.from _) χ' hχ'
 
 end Classifier
 
@@ -185,7 +181,7 @@ terminal.from U              χ m
 ```
 is a pullback square.
 -/
-lemma isPullback_χ : IsPullback m (Classifier.uniqueToΩ₀ U) (χ m) (truth C) :=
+lemma isPullback_χ : IsPullback m (Classifier.isTerminalΩ₀.from U) (χ m) (truth C) :=
   Classifier.isPullback m
 
 /-- The diagram
@@ -200,12 +196,12 @@ terminal.from U              χ m
 commutes.
 -/
 @[reassoc]
-lemma comm : m ≫ χ m =  Classifier.uniqueToΩ₀ U ≫ truth C := (isPullback_χ m).w
+lemma comm : m ≫ χ m = Classifier.isTerminalΩ₀.from U ≫ truth C := (isPullback_χ m).w
 
 /-- `χ m` is the only map for which the associated square
 is a pullback square.
 -/
-lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.uniqueToΩ₀ U) χ' (truth C)) :
+lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.isTerminalΩ₀.from U) χ' (truth C)) :
   χ' = χ m := Classifier.uniq m χ' hχ'
 
 noncomputable instance truthIsSplitMono : IsSplitMono (truth C) :=
