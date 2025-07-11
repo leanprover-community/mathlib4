@@ -12,7 +12,8 @@ import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Qify
 import Mathlib.Data.Real.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Data.Real.Archimedean
+import Mathlib.Order.WellFounded
 
 /-!
 # Sets with very small doubling
@@ -339,7 +340,7 @@ private structure ExpansionMeasure (G : Type*) [Group G] [DecidableEq G] where
   toFun : Finset G → ℝ
   left_invariant : ∀ (S : Finset G) (x : G), toFun (x •> S) = toFun S
   submodularity : ∀ (S : Finset G) (T : Finset G),
-    toFun (S ∩ T) + toFun (S ∪ T) ≤ toFun S + toFun T
+      toFun (S ∩ T) + toFun (S ∪ T) ≤ toFun S + toFun T
 
 private def expansionMeasure {G : Type*} [Group G] [DecidableEq G] (K : ℝ)
     (A : Finset G) : ExpansionMeasure G := {
@@ -373,8 +374,7 @@ private def expansionMeasure {G : Type*} [Group G] [DecidableEq G] (K : ℝ)
 -- lemma expansionMeasure_left_invariant (K : ℝ) (B : Finset G) (S : Finset G) (x : G) :
 --     expansionMeasure K B (x •> S) = expansionMeasure K B S := sorry
 
-open Real in
-theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 ≤ ε) (hε₁ : ε < 1) (hA : A.Nonempty)
+theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA : A.Nonempty)
     (hS : ∃ (S : Finset G) (_ : #S ≥ #A), #(S * A) ≤ 2 * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H) (_ : Fintype.card H ≤ 2 / ε * #A) (Z : Finset G)
       (_ : #Z ≤ 2 / ε - 1), (A : Set G) ⊆ (H : Set G) * Z := by
@@ -392,16 +392,52 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 ≤ ε) (hε₁ : ε < 1) (hA : A
       norm_cast
       apply card_le_card
       exact mul_subset_mul_left (singleton_subset_iff.mpr ha)
-  have em_pos (S : Finset G) : 0 ≤ em.toFun S := by
+  have em_pos {S : Finset G} (hS : S.Nonempty) : 0 < em.toFun S := by
     calc
-      0 ≤ ε / 2 * #S := by positivity
+      0 < ε / 2 * #S := ?_
       _ ≤ em.toFun S := min_em S
+    · simp_all only [ge_iff_le, exists_prop, div_pos_iff_of_pos_left, Nat.ofNat_pos,
+        mul_pos_iff_of_pos_left, Nat.cast_pos, card_pos]
 
-  let im_em := em.toFun '' Set.univ
-  let _ : InfSet ℝ := sorry
+  let im_em := em.toFun '' {S : Finset G | S.Nonempty}
   let κ := sInf im_em
-  --apply sInf_def at κ
-  sorry
+  have κ_in_im_em : κ ∈ im_em := sorry
+
+  let isFragment (S : Finset G) : Prop := em.toFun S = κ
+  have fragment_inter {S T : Finset G} (hS : isFragment S) (hT : isFragment T)
+      (hST : (S ∩ T).Nonempty) : isFragment (S ∩ T) := by
+
+    sorry
+  have fragment_left_invariance {S : Finset G} (hS : isFragment S) (x : G) : isFragment (x •> S) := sorry
+
+  let isAtom (S : Finset G) : Prop := isFragment S ∧ ∀ (T : Finset G), isFragment T → #S ≤ #T
+  have atom_partition {S T : Finset G} (hS : isAtom S) (hT : isAtom T) : S ∩ T = ∅ ∨ S = T := sorry
+  have atom_left_invariance {S : Finset G} (hS : isAtom S) (x : G) : isAtom (x •> S) := sorry
+
+  let fragments := {S : Finset G | isFragment S}
+  have fragments_nonempty : fragments.Nonempty := sorry
+  let K := Function.argminOn card fragments fragments_nonempty
+  have K_atom : isAtom K := sorry
+  have K_nonempty : K.Nonempty := sorry
+  obtain ⟨k, hk⟩ := K_nonempty
+
+  let H : Subgroup G :=
+   {
+    carrier := k⁻¹ •> K
+    one_mem' := sorry
+    mul_mem' := sorry
+    inv_mem' := sorry
+  }
+  have fintypeH : Fintype H := sorry
+
+  obtain ⟨S, hS₁, hS₂⟩ := hS
+
+  refine ⟨H, fintypeH, ?_, S, ?_, ?_⟩
+
+  · sorry
+  · sorry
+  · sorry
+
 
 
 end Finset
