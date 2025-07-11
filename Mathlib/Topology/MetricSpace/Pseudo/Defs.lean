@@ -773,6 +773,15 @@ theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
 theorem ball_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
   isOpen_ball.mem_nhds (mem_ball_self ε0)
 
+/-- `Metric.isOpen_iff`, but for closed balls. -/
+theorem isOpen_iff' {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, Metric.closedBall x ε ⊆ s := by
+  rw [Metric.isOpen_iff]
+  refine ⟨fun H x hx => ?_, fun H x hx => ?_⟩
+  · obtain ⟨ε, hε, hxε⟩ := H x hx
+    use ε / 2, by linarith, subset_trans (closedBall_subset_ball (by linarith)) hxε
+  · obtain ⟨ε, hε, hxε⟩ := H x hx
+    use ε, hε, subset_trans (ball_subset_closedBall) hxε
+
 theorem closedBall_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : closedBall x ε ∈ 𝓝 x :=
   mem_of_superset (ball_mem_nhds x ε0) ball_subset_closedBall
 
