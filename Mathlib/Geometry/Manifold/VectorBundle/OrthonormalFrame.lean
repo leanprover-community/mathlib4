@@ -112,9 +112,22 @@ set_option linter.style.commandStart false
 
 -- TODO: remove repr_eq_inner in favour of this version!
 variable (t) in
-lemma repr_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u)
+lemma repr_eq_inner' [Fintype ι] (hs : IsOrthonormalFrameOn IB F n s u)
     {x} (hx : x ∈ u) (i : ι) :
-    hs.repr i t x = ⟪s i x, t x⟫ := by sorry
+    hs.repr i t x = ⟪s i x, t x⟫ := by
+  let b := VectorBundle.gramSchmidtOrthonormalBasis (hs.linearIndependent hx) (hs.generating hx)
+  --have : hs.repr i t x = b.repr (t x) := sorry
+  have beq (i : ι) : b i = s i x := sorry
+  have aux := b.repr_apply_apply (t x) i
+  rw [beq] at aux
+  rw [← aux]
+  simp only [IsLocalFrameOn.repr]
+  dsimp
+  simp only [hx, ↓reduceDIte]
+  --congr 3
+  --simp [beq]
+  -- missing API lemma about these basis...
+  sorry
 
 variable (t) in
 lemma repr_eq_inner (hs : IsOrthonormalFrameOn IB F n s u)
