@@ -181,7 +181,8 @@ def homEquiv {a b : CatEnrichedOrdinary C} : (a ⟶ b) ≃ (a.toBase ⟶ b.toBas
 theorem homEquiv_id {a : CatEnrichedOrdinary C} : homEquiv (𝟙 a) = 𝟙 a.toBase := by
   unfold homEquiv
   simp only [Equiv.trans_apply]
-  rw [eHomEquiv_id]; rfl
+  rw [eHomEquiv_id]
+  rfl
 
 theorem homEquiv_comp {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) :
     homEquiv (f ≫ g) = homEquiv f ≫ homEquiv g := by
