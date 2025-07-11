@@ -5631,6 +5631,7 @@ import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
+import Mathlib.RingTheory.Valuation.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.LocalSubring
 import Mathlib.RingTheory.Valuation.Minpoly
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
