@@ -144,9 +144,6 @@ lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
     ContMDiff IM I ∞ f :=
   (contDiffWithinAt_localInvariantProp ∞).section_spec _ _ _ _
 
-@[deprecated (since := "2024-11-21")]
-alias smoothSheaf.smooth_section := smoothSheaf.contMDiff_section
-
 end TypeCat
 
 section LieGroup
@@ -351,7 +348,7 @@ def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.s
     smoothSheaf.evalHom _ _ _ _ := by
   apply Limits.colimit.hom_ext
   intro U
-  show (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
+  change (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
   rw [smoothSheafCommRing.ι_forgetStalk_inv_assoc, smoothSheaf.ι_evalHom]
   ext x
   exact CategoryTheory.congr_fun (smoothSheafCommRing.ι_evalHom ..) x

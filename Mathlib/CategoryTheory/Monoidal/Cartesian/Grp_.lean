@@ -75,7 +75,7 @@ def yonedaGrpObjRepresentableBy : (yonedaGrpObj G ⋙ forget _).RepresentableBy 
 variable (G) in
 lemma Grp_Class.ofRepresentableBy_yonedaGrpObjRepresentableBy :
     ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹Grp_Class G› := by
-  ext; show lift (fst G G) (snd G G) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
+  ext; change lift (fst G G) (snd G G) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
 variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
@@ -108,7 +108,7 @@ def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
   map_preimage {G H} α := by
     ext X : 3
     exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon_) (Y := H.toMon_)
-      (whiskerRight α (forget₂ Grp MonCat))).app X).hom)
+      (Functor.whiskerRight α (forget₂ Grp MonCat))).app X).hom)
   preimage_map f := by
     ext
     congr
@@ -122,7 +122,7 @@ lemma essImage_yonedaGrp :
   ext F
   constructor
   · rintro ⟨G, ⟨α⟩⟩
-    exact ⟨G.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
+    exact ⟨G.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     letI := Grp_Class.ofRepresentableBy X F e
     exact ⟨⟨X⟩, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩

@@ -29,7 +29,7 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 end monoid, aut group
 -/
 
-assert_not_exists MonoidWithZero MulAction RelIso
+assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
 variable {A M G α β : Type*}
 
@@ -93,7 +93,7 @@ def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
-  Equiv.trans_apply _ _ _
+  rfl
 
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
@@ -149,19 +149,19 @@ theorem mul_refl (e : Perm α) : e * Equiv.refl α = e :=
 
 @[simp]
 theorem one_symm : (1 : Perm α).symm = 1 :=
-  Equiv.refl_symm
+  rfl
 
 @[simp]
 theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
-  Equiv.refl_symm
+  rfl
 
 @[simp]
 theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
-  Equiv.refl_trans e
+  rfl
 
 @[simp]
 theorem refl_mul (e : Perm α) : Equiv.refl α * e = e :=
-  Equiv.refl_trans e
+  rfl
 
 @[simp]
 theorem inv_trans_self (e : Perm α) : e⁻¹.trans e = 1 :=
@@ -198,7 +198,7 @@ theorem sumCongr_mul {α β : Type*} (e : Perm α) (f : Perm β) (g : Perm α) (
 @[simp]
 theorem sumCongr_inv {α β : Type*} (e : Perm α) (f : Perm β) :
     (sumCongr e f)⁻¹ = sumCongr e⁻¹ f⁻¹ :=
-  sumCongr_symm e f
+  rfl
 
 @[simp]
 theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 :=
@@ -237,24 +237,24 @@ theorem sumCongr_one_swap {α β : Type*} [DecidableEq α] [DecidableEq β] (i j
 @[simp]
 theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a))
     (G : ∀ a, Perm (β a)) : sigmaCongrRight F * sigmaCongrRight G = sigmaCongrRight (F * G) :=
-  sigmaCongrRight_trans G F
+  rfl
 
 @[simp]
 theorem sigmaCongrRight_inv {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a => (F a)⁻¹ :=
-  sigmaCongrRight_symm F
+  rfl
 
 @[simp]
 theorem sigmaCongrRight_one {α : Type*} {β : α → Type*} :
     sigmaCongrRight (1 : ∀ a, Equiv.Perm <| β a) = 1 :=
-  sigmaCongrRight_refl
+  rfl
 
 /-- `Equiv.Perm.sigmaCongrRight` as a `MonoidHom`.
 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between fibers. -/
 @[simps]
-def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σa, β a) where
+def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σ a, β a) where
   toFun := sigmaCongrRight
   map_one' := sigmaCongrRight_one
   map_mul' _ _ := (sigmaCongrRight_mul _ _).symm
@@ -705,7 +705,7 @@ def conj [Group G] : G →* MulAut G where
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
   map_mul' g₁ g₂ := by
     ext h
-    show g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
+    change g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
     simp only [mul_assoc, mul_inv_rev]
   map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
 
@@ -818,7 +818,7 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
-    show g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
+    change g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
     simp only [add_assoc, neg_add_rev]
   map_zero' := by
     apply Additive.toMul.injective; ext

@@ -235,7 +235,7 @@ noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
     simp
   map_comp f g := by
     ext x
-    simp only [comp_hom, ConcreteCategory.comp_apply, ULift.down_inj]
+    simp only [comp_hom, ConcreteCategory.comp_apply]
     rw [homMk_apply, homMk_apply, homMk_apply]
     simp
 
@@ -249,7 +249,7 @@ noncomputable def uSwitchEquiv (X : FintypeCat.{u}) :
 lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
     (x : uSwitch.{u, v}.obj X) :
     f (X.uSwitchEquiv x) = Y.uSwitchEquiv (uSwitch.map f x) := by
-  simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply, Equiv.ulift_apply, Equiv.symm_apply_apply]
+  simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply, Equiv.ulift_apply]
   rw [homMk_apply]
   aesop
 
