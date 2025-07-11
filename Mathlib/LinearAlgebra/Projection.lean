@@ -539,6 +539,20 @@ open Submodule LinearMap
 
 variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E] {T f : E →ₗ[R] E}
 
+lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
+    (range f).subtype.comp (Submodule.linearProjOfIsCompl _ _ hf.isProj_range.isCompl) = f := by
+  ext x
+  obtain ⟨⟨u, hu⟩, ⟨v, hv⟩, rfl, _⟩ :=
+    Submodule.existsUnique_add_of_isCompl hf.isProj_range.isCompl x
+  simp [linearProjOfIsCompl_apply_right',
+    (linearProjOfIsCompl_eq_self_iff _ _).mpr hu, hv, mem_ker.mp hv]
+  exact (hf.mem_range_iff.mp hu).symm
+
+/-- `U` is `⅟T` invariant if and only if `U ⊆ T(U)`. -/
+lemma _root_.Module.End.mem_invtSubmodule_invOf_iff_le_map [Invertible T] (U : Submodule R E) :
+    U ∈ Module.End.invtSubmodule (⅟T) ↔ U ≤ U.map T :=
+  Module.End.mem_invtSubmodule_symm_iff_le_map (LinearEquiv.ofInvertible T)
+
 lemma conj_eq_of_range_mem_invtSubmodule (hf : IsIdempotentElem f)
     (h : range f ∈ Module.End.invtSubmodule T) : f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
   ext x
@@ -557,15 +571,6 @@ lemma range_mem_invtSubmodule_iff_conj_eq (hf : IsIdempotentElem f) :
 lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff_isProj_conj_eq {U : Submodule R E}
     (hf : IsProj U f) : U ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
   hf.range ▸ hf.isIdempotentElem.range_mem_invtSubmodule_iff_conj_eq
-
-lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
-    (range f).subtype.comp (Submodule.linearProjOfIsCompl _ _ hf.isProj_range.isCompl) = f := by
-  ext x
-  obtain ⟨⟨u, hu⟩, ⟨v, hv⟩, rfl, _⟩ :=
-    Submodule.existsUnique_add_of_isCompl hf.isProj_range.isCompl x
-  simp [linearProjOfIsCompl_apply_right',
-    (linearProjOfIsCompl_eq_self_iff _ _).mpr hu, hv, mem_ker.mp hv]
-  exact (hf.mem_range_iff.mp hu).symm
 
 open LinearMap in
 /-- `ker f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = f ∘ₗ T`,
@@ -595,11 +600,6 @@ lemma range_and_ker_mem_invtSubmodule_iff_commute
   · intro h
     simp [h, ← mul_assoc]
     rw [mul_assoc, hf.eq]
-
-/-- `U` is `⅟T` invariant if and only if `U ⊆ T(U)`. -/
-lemma _root_.Module.End.mem_invtSubmodule_invOf_iff_le_map [Invertible T] (U : Submodule R E) :
-    U ∈ Module.End.invtSubmodule (⅟T) ↔ U ≤ U.map T :=
-  Module.End.mem_invtSubmodule_symm_iff_le_map (LinearEquiv.ofInvertible T)
 
 /-- `⅟T ∘ₗ f ∘ₗ T = f` if and only if `T (range f) = range f` and `T (ker f) = ker f`,
 for idempotent `f`. -/
