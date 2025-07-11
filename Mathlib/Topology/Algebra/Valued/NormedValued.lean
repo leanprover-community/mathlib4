@@ -81,9 +81,9 @@ variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
   [val : Valued L Γ₀] [hv : RankOne val.v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm : L → ℝ := fun x : L => hv.hom (restrict₀ Valued.v x)
+def norm : L → ℝ := fun x : L => hv.hom (Valued.v.restrict x)
 
-theorem norm_def {x : L} : Valued.norm x = hv.hom (restrict₀ Valued.v x) := rfl
+theorem norm_def {x : L} : Valued.norm x = hv.hom (Valued.v.restrict x) := rfl
 
 theorem norm_nonneg (x : L) : 0 ≤ norm x := by simp only [norm, NNReal.zero_le_coe]
 
@@ -97,7 +97,16 @@ theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
 theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) < v x := by
   rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom (v (R := L))),
     StrictMono.lt_iff_lt]
-  exact RankOne.strictMono v.restrict
+  have : v.restrict.RankOne := RankOne.restrict_RankOne v (K := L)
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ -- wrong way of doing it
+  · have H : v.restrict x ≠ 0 := (ne_of_lt h).symm
+    sorry
+  · sorry
+  · exact RankOne.strictMono'
+
+
+
+
 
 variable (L) (Γ₀)
 
@@ -179,7 +188,7 @@ variable {x x' : L}
 
 @[simp]
 theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' :=
-  (Valuation.RankOne.strictMono val.v).le_iff_le
+  (Valuation.RankOne.strictMono val.v.restrict).le_iff_le
 
 @[simp]
 theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' :=
