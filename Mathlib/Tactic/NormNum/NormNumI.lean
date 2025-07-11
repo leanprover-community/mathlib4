@@ -174,10 +174,10 @@ def normalize (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) := d
 /-- Create the `NormNumI` tactic in `conv` mode. -/
 elab "norm_numI" : conv => do
   let z ← Conv.getLhs
-  unless (q(ℂ) == (← inferType z)) do throwError "{z} is not a complex number"
-  have z : Q(ℂ) := z
-  let ⟨a, b, pf⟩ ← normalize z
-  Conv.applySimpResult { expr := q(Complex.mk $a $b), proof? := some q(($pf).out) }
+  let ⟨1, ~q(ℂ), z⟩ ← inferTypeQ z | throwError "{z} is not a complex number"
+  let ⟨_, _, pf⟩ ← normalize z
+  let r : Simp.ResultQ q($z) := .mk _ <| .some q(($pf).out)
+  Conv.applySimpResult r
 
 end NormNumI
 namespace NormNum
