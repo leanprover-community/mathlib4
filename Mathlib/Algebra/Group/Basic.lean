@@ -1093,6 +1093,6 @@ instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
     zsmul_add n a b := zsmul_add a b n
     zsmul_natCast_eq_nsmul n a := by simp }
 
-instance AddRightCancelSemigroup.toGrindAddRightCancel [AddRightCancelSemigroup α] :
+instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :
     Grind.AddRightCancel α where
   add_right_cancel _ _ _ := add_right_cancel
