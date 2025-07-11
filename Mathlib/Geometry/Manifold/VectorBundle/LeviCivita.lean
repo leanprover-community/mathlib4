@@ -183,6 +183,8 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   -- solve for ⟪cov X Y, Z⟫ and obtain the claim
   simp only [leviCivita_rhs] -- - D - E + F
   ext x
+  -- sorry is because there are different "2"s here;
+  -- the first is a function M → ℝ, the second a natural number
   have almost := isolate_aux (X := rhs_aux I X Y Z) (Y := rhs_aux I Y Z X) (Z := rhs_aux I Z X Y)
     (A := A) (D := D) (E := E) (F := F) (h := by simp [this]; sorry)
   sorry -- obvious: if 2 • A = stuff, A = 1/2 stuff
@@ -304,7 +306,6 @@ lemma congr_of_forall_product {X X' : Π x : M, TangentSpace I x}
   have hframe := b.orthonormalFrame_isOrthonormalFrameOn (e := t) (F := E) (IB := I) (n := 1)
   rw [hframe.eq_iff_repr hx]
   intro i
-
   have h₁ : ⟪X, real i⟫ x = (hframe.repr i) X x := by
     rw [hframe.repr_eq_inner' _ hx]
     simp [real, real_inner_comm]
