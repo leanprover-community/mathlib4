@@ -387,10 +387,6 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
 
 @[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
-theorem IsIdempotentElem.range_isProj {f : M →ₗ[S] M} (hf : IsIdempotentElem f) :
-    IsProj (range f) f :=
-  ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩
-
 namespace IsProj
 
 variable {p m}
@@ -524,10 +520,3 @@ theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
 end LinearMap
 
 end CommRing
-
-theorem LinearMap.IsIdempotentElem.range_eq_ker
-    {R E : Type*} [Semiring R] [AddCommGroup E] [Module R E]
-    {p : E →ₗ[R] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
-  le_antisymm
-    (LinearMap.range_le_ker_iff.mpr hp.one_sub_mul_self)
-    fun x hx ↦ ⟨x, by simpa [sub_eq_zero, eq_comm (a := x)] using hx⟩
