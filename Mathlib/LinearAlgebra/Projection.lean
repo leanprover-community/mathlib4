@@ -533,77 +533,86 @@ end LinearMap
 
 end CommRing
 
-namespace Module.End
+namespace LinearMap.IsIdempotentElem
 
-open Submodule
+open Submodule LinearMap
 
-variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E]
-  {U V : Submodule R E} (hUV : IsCompl U V) (T : E →ₗ[R] E)
+variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E] {T f : E →ₗ[R] E}
 
-local notation "pᵤ" => linearProjOfIsCompl U V hUV
-local notation "pᵥ" => linearProjOfIsCompl V U hUV.symm
+lemma conj_eq_of_range_mem_invtSubmodule (hf : IsIdempotentElem f)
+    (h : range f ∈ Module.End.invtSubmodule T) : f ∘ₗ T ∘ₗ f = T ∘ₗ f := by
+  ext x
+  exact hf.mem_range_iff.mp (h (mem_range_self f x))
 
-lemma mem_invtSubmodule_linearProjOfIsCompl_comp_self_eq (h : U ∈ invtSubmodule T) (x : U) :
-    (pᵤ (T x) : E) = T x := (linearProjOfIsCompl_eq_self_iff _ _).mpr <| h (coe_mem _)
+lemma range_mem_invtSubmodule_of_conj_eq (hf : IsIdempotentElem f) (h : f ∘ₗ T ∘ₗ f = T ∘ₗ f) :
+    range f ∈ Module.End.invtSubmodule T := fun u hu => by
+  simpa [mem_comap, hf.mem_range_iff, hf.mem_range_iff.mp hu] using congr($h u)
 
-lemma mem_invtSubmodule_of_linearProjOfIsCompl_comp_self_eq (h : ∀ x : U, (pᵤ (T x) : E) = T x) :
-    U ∈ Module.End.invtSubmodule T := fun u hu => by
-  rw [mem_comap, ← linearProjOfIsCompl_eq_self_iff hUV _,
-    ← (linearProjOfIsCompl_eq_self_iff hUV u).mpr hu, h]
+/-- `range f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = T ∘ₗ f`,
+for idempotent `f`. -/
+lemma range_mem_invtSubmodule_iff_conj_eq (hf : IsIdempotentElem f) :
+    range f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
+  ⟨hf.conj_eq_of_range_mem_invtSubmodule, hf.range_mem_invtSubmodule_of_conj_eq⟩
 
-/-- `U` is invariant under `T` if and only if `pᵤ ∘ₗ T ∘ₗ pᵤ = T ∘ₗ pᵤ`,
-where `pᵤ` denotes the linear projection to `U` along `V`. -/
-lemma mem_invtSubmodule_iff_linearProjOfIsCompl_comp_self_eq :
-    U ∈ Module.End.invtSubmodule T ↔ (∀ x : U, (pᵤ (T x) : E) = T x) :=
-  ⟨mem_invtSubmodule_linearProjOfIsCompl_comp_self_eq hUV T,
-    mem_invtSubmodule_of_linearProjOfIsCompl_comp_self_eq hUV T⟩
+lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff_isProj_conj_eq {U : Submodule R E}
+    (hf : IsProj U f) : U ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
+  hf.range ▸ hf.isIdempotentElem.range_mem_invtSubmodule_iff_conj_eq
 
-/-- `V` is invariant under `T` if and only if `pᵤ ∘ₗ (T ∘ₗ pᵤ) = pᵤ ∘ₗ T`,
-where `pᵤ` denotes the linear projection to `U` along `V`. -/
-lemma mem_invtSubmodule'_iff_linearProjOfIsCompl_comp_self_comp_linearProjOfIsCompl_eq :
-    V ∈ Module.End.invtSubmodule T ↔ (∀ x : E, (pᵤ (T (pᵤ x)) : E) = pᵤ (T x)) := by
-  simp_rw [mem_invtSubmodule_iff_linearProjOfIsCompl_comp_self_eq hUV.symm,
-    (LinearMap.range_eq_top.1 (linearProjOfIsCompl_range hUV.symm)).forall,
-    linearProjOfIsCompl_eq_self_sub_linear_proj hUV, map_sub,
-    sub_eq_self, Submodule.coe_sub, sub_eq_zero, eq_comm]
+lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
+    (range f).subtype.comp (Submodule.linearProjOfIsCompl _ _ hf.isProj_range.isCompl) = f := by
+  ext x
+  obtain ⟨⟨u, hu⟩, ⟨v, hv⟩, rfl, _⟩ :=
+    Submodule.existsUnique_add_of_isCompl hf.isProj_range.isCompl x
+  simp [linearProjOfIsCompl_apply_right',
+    (linearProjOfIsCompl_eq_self_iff _ _).mpr hu, hv, mem_ker.mp hv]
+  exact (hf.mem_range_iff.mp hu).symm
 
-/-- Both `U` and `V` are invariant under `T` if and only if `T` commutes with
-the linear projection to `U` along `V`. -/
-lemma isCompl_mem_invtSubmodule_iff_linearProjOfIsCompl_and_self_commute :
-    (U ∈ Module.End.invtSubmodule T ∧ V ∈ Module.End.invtSubmodule T)
-      ↔ Commute (U.subtype ∘ₗ pᵤ) T := by
-  simp_rw [Commute, SemiconjBy, LinearMap.ext_iff, Module.End.mul_apply,
-    LinearMap.comp_apply, U.subtype_apply]
+open LinearMap in
+/-- `ker f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = f ∘ₗ T`,
+for idempotent `f`. -/
+lemma ker_mem_invtSubmodule_iff_conj_eq
+    (hf : IsIdempotentElem f) :
+    ker f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = f ∘ₗ T := by
+  rw [← hf.subtype_comp_linearProjOfIsCompl_range_eq]
+  nth_rw 1 [hf.subtype_comp_linearProjOfIsCompl_range_eq]
+  rw [IsProj.mem_invtSubmodule_iff_isProj_conj_eq
+    (f := (ker f).subtype.comp (Submodule.linearProjOfIsCompl _ _ (hf.isProj_range.isCompl.symm)))
+    ⟨by simp, by simp⟩]
+  simp [LinearMap.ext_iff, LinearMap.comp_apply]
+  simp [linearProjOfIsCompl_eq_self_sub_linear_proj hf.isProj_range.isCompl.symm]
+
+/-- Both `range f` and `ker f` are invariant under `T` if and only if `T` commutes with
+the idempotent operator `f`. -/
+lemma range_and_ker_mem_invtSubmodule_iff_commute
+    (hf : IsIdempotentElem f) :
+    (range f ∈ Module.End.invtSubmodule T ∧ ker f ∈ Module.End.invtSubmodule T)
+      ↔ Commute f T := by
+  simp_rw [Commute, SemiconjBy, hf.range_mem_invtSubmodule_iff_conj_eq,
+    hf.ker_mem_invtSubmodule_iff_conj_eq, ← Module.End.mul_eq_comp]
   constructor
-  · rintro ⟨h1, h2⟩ x
-    rw [← (mem_invtSubmodule'_iff_linearProjOfIsCompl_comp_self_comp_linearProjOfIsCompl_eq _ _).mp
-      h2 x]
-    exact (linearProjOfIsCompl_eq_self_iff hUV _).mpr (h1 (coe_mem (pᵤ x)))
+  · rintro ⟨h1, h2⟩
+    rw [← h1, ← h2]
   · intro h
-    simp_rw [mem_invtSubmodule_iff_linearProjOfIsCompl_comp_self_eq hUV,
-      (LinearMap.range_eq_top.1 (linearProjOfIsCompl_range hUV)).forall,
-      mem_invtSubmodule'_iff_linearProjOfIsCompl_comp_self_comp_linearProjOfIsCompl_eq hUV, h,
-      linearProjOfIsCompl_idempotent hUV, ← forall_and, and_self_iff,
-      forall_const]
+    simp [h, ← mul_assoc]
+    rw [mul_assoc, hf.eq]
 
 /-- `U` is `⅟T` invariant if and only if `U ⊆ T(U)`. -/
-lemma mem_invtSubmodule_invOf_iff_le_map [Invertible T] :
+lemma _root_.Module.End.mem_invtSubmodule_invOf_iff_le_map [Invertible T] (U : Submodule R E) :
     U ∈ Module.End.invtSubmodule (⅟T) ↔ U ≤ U.map T :=
-  mem_invtSubmodule_symm_iff_le_map (LinearEquiv.ofInvertible T)
+  Module.End.mem_invtSubmodule_symm_iff_le_map (LinearEquiv.ofInvertible T)
 
-/-- `⅟T ∘ₗ pᵤ ∘ₗ T = pᵤ` if and only if `T(U) = U` and `T(V) = V`,
-where `pᵤ` denotes the linear projection to `U` along `V`. -/
+/-- `⅟T ∘ₗ f ∘ₗ T = f` if and only if `T (range f) = range f` and `T (ker f) = ker f`,
+for idempotent `f`. -/
 theorem _root_.Submodule.invOf_comp_linearProjOfIsCompl_comp_self_eq_linearProjOfIsCompl_iff_map_eq
-    [Invertible T] :
-    ⅟T ∘ₗ (U.subtype ∘ₗ pᵤ) ∘ₗ T = U.subtype ∘ₗ pᵤ ↔ U.map T = U ∧ V.map T = V := by
+    [Invertible T] (hf : IsIdempotentElem f) :
+    ⅟T ∘ₗ f ∘ₗ T = f ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
   have : ∀ f, Commute f T ↔ ⅟T ∘ₗ f ∘ₗ T = f :=
     fun f => Commute.symm_iff.trans ((unitOfInvertible T).commute_iff_inv_mul_cancel f)
-  simp_rw [← this,
-    ← isCompl_mem_invtSubmodule_iff_linearProjOfIsCompl_and_self_commute, le_antisymm_iff,
-    ← Module.End.mem_invtSubmodule_iff_map, and_and_and_comm
-      (c := (V ∈ Module.End.invtSubmodule T)), iff_self_and,
-    ← mem_invtSubmodule_invOf_iff_le_map,
-    isCompl_mem_invtSubmodule_iff_linearProjOfIsCompl_and_self_commute hUV]
+  rw [← this, ← hf.range_and_ker_mem_invtSubmodule_iff_commute]
+  simp_rw [le_antisymm_iff, ← Module.End.mem_invtSubmodule_iff_map,
+    and_and_and_comm (c := (ker f ∈ Module.End.invtSubmodule T)),
+    iff_self_and, ← Module.End.mem_invtSubmodule_invOf_iff_le_map,
+    hf.range_and_ker_mem_invtSubmodule_iff_commute]
   exact @Commute.units_inv_right _ _ _ (unitOfInvertible T)
 
-end Module.End
+end LinearMap.IsIdempotentElem
