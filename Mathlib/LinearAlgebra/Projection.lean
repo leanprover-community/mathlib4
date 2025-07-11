@@ -468,9 +468,8 @@ end IsProj
 /-- Given an idempotent linear operator `p`, we have
 `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
 theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
-    x ∈ range p ↔ p x = x := by
-  refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
-  rw [← hy, ← Module.End.mul_apply, hp.eq]
+    x ∈ range p ↔ p x = x :=
+  hp.isProj_range.mem_iff_map_id
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,
