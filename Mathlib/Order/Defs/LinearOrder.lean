@@ -246,7 +246,7 @@ lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> try simp only
-  case _ h   => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
+  case _ h => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => rwa [true_iff]
   case _ _ h => rwa [false_iff]
 

@@ -296,8 +296,8 @@ lemma rankAtStalk_eq_zero_iff_notMem_support (p : PrimeSpectrum R) :
   simp [← finrank_eq_rank, h]
 
 lemma rankAtStalk_pos_iff_mem_support (p : PrimeSpectrum R) :
-    0 < rankAtStalk M p ↔ p ∈ support R M := by
-  rw [← not_iff_not, Nat.pos_iff_ne_zero, not_not, rankAtStalk_eq_zero_iff_notMem_support]
+    0 < rankAtStalk M p ↔ p ∈ support R M :=
+  Nat.pos_iff_ne_zero.trans (rankAtStalk_eq_zero_iff_notMem_support _).not_left
 
 lemma rankAtStalk_eq_zero_iff_subsingleton :
     rankAtStalk (R := R) M = 0 ↔ Subsingleton M := by

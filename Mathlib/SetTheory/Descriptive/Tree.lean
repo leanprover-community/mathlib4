@@ -102,7 +102,7 @@ lemma mem_pullSub_long (hl : x.length ≤ y.length) :
   mp := by
     intro ⟨h1, h2⟩; use y.drop x.length, h2
     nth_rw 1 [← List.take_append_drop x.length y]
-    simpa [- List.take_append_drop, List.prefix_iff_eq_take, hl] using h1
+    simpa [-List.take_append_drop, List.prefix_iff_eq_take, hl] using h1
   mpr := by simp +contextual [pullSub]
 
 @[simp] lemma mem_pullSub_append : x ++ y ∈ pullSub T x ↔ y ∈ T := by simp [mem_pullSub_long]

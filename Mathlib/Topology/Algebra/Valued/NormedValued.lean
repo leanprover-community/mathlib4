@@ -63,7 +63,7 @@ instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
   hom := .id _
   strictMono' := strictMono_id
-  nontrivial' := (exists_one_lt_norm K).imp fun x h ↦ by
+  exists_val_nontrivial := (exists_one_lt_norm K).imp fun x h ↦ by
     have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
     simp [valuation_apply, ← NNReal.coe_inj, h.ne', h']
 

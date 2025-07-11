@@ -67,7 +67,7 @@ find_remote() {
   local repo_pattern="$1"
   # Use || true to prevent script exit if any command in the pipeline fails
   # This handles cases where git remote fails or grep doesn't find matches
-  git remote -v | grep "$repo_pattern· | grep "(fetch)" | head -n1 | cut -f1 || true
+  git remote -v | grep -E "$repo_pattern(\.git)? \(fetch\)" | head -n1 | cut -f1 || true
 }
 
 # Parse arguments

@@ -254,7 +254,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
         range_inl_union_range_inr]⟩⟩
 
 instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σi, X i) := by
+    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σ i, X i) := by
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩

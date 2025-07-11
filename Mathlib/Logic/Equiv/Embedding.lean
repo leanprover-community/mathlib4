@@ -60,7 +60,7 @@ def codRestrict (α : Type*) {β : Type*} (bs : Set β) :
 in which the second embedding cannot take values in the range of the first. -/
 def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type*} :
     { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } ≃
-      Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
+      Σ f : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   (subtypeProdEquivSigmaSubtype fun (a : α ↪ γ) (b : β ↪ _) =>
         Disjoint (Set.range a) (Set.range b)).trans <|
     Equiv.sigmaCongrRight fun a =>
@@ -73,7 +73,7 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type*} :
 into two dependent embeddings, the second of which avoids any members of the range
 of the first. This is helpful for constructing larger embeddings out of smaller ones. -/
 def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
-    (α ⊕ β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
+    (α ⊕ β ↪ γ) ≃ Σ f : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 

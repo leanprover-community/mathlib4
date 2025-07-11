@@ -38,7 +38,7 @@ noncomputable section
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-open Module
+open Module InnerProductSpace
 
 open scoped RealInnerProductSpace
 

@@ -166,13 +166,13 @@ lemma card_preimage_of_injOn {f : α → β} {s : Set β} (hf : (f ⁻¹' s).Inj
 lemma card_preimage_of_injective {f : α → β} {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
-@[simp] lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
+lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
   card_congr (Equiv.Set.univ α)
 
 lemma card_range_of_injective {f : α → β} (hf : Injective f) :
     Nat.card (range f) = Nat.card α := by
   rw [← Nat.card_preimage_of_injective hf le_rfl]
-  simp
+  simp [Nat.card_univ]
 
 end Set
 
@@ -260,7 +260,7 @@ theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
 
 protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
 
-@[simp] lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
+lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
   rw [← Nat.card_image_of_injOn fst_injOn_graph, image_fst_graphOn]
 
 end Set

@@ -17,8 +17,8 @@ We also give more specific versions of these theorems for monotone and antitone 
 makes it possible to drop the injectivity assumption of the general theorems, as the derivative
 is zero on the set of non-injectivity, which means that it can be discarded.
 
-See also `Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts` for versions of the
-change of variables formula in dimension 1 for non-monotone functions, formulated with
+See also `Mathlib/MeasureTheory/Integral/IntervalIntegral/IntegrationByParts.lean` for versions of
+the change of variables formula in dimension 1 for non-monotone functions, formulated with
 the interval integral and with stronger requirements on the integrand.
 -/
 
@@ -40,7 +40,7 @@ of `|(f' x)| * g ∘ f` on `s`. -/
 theorem lintegral_image_eq_lintegral_abs_deriv_mul
     (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : InjOn f s)
     (g : ℝ → ℝ≥0∞) :
-    ∫⁻ x in f '' s, g x = ∫⁻ x in s, ENNReal.ofReal (|f' x|) * g (f x)  := by
+    ∫⁻ x in f '' s, g x = ∫⁻ x in s, ENNReal.ofReal (|f' x|) * g (f x) := by
   simpa only [det_one_smulRight] using
     lintegral_image_eq_lintegral_abs_det_fderiv_mul volume hs
       (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g

@@ -384,7 +384,7 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
   inferInstance
 
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
-    T2Space (Σi, X i) := by
+    T2Space (Σ i, X i) := by
   constructor
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)

@@ -676,7 +676,7 @@ instance [LindelofSpace X] [LindelofSpace Y] : LindelofSpace (X ⊕ Y) where
     exact (isLindelof_range continuous_inl).union (isLindelof_range continuous_inr)
 
 instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ i, LindelofSpace (X i)] :
-    LindelofSpace (Σi, X i) where
+    LindelofSpace (Σ i, X i) where
   isLindelof_univ := by
     rw [Sigma.univ]
     exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk

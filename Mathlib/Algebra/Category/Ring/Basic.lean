@@ -307,6 +307,14 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
+/-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ RingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ RingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
+
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   forget₂ :=
     { obj := fun R ↦ AddCommGrp.of R
@@ -457,6 +465,14 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
       map := fun f ↦ ⟨f.hom⟩ }
+
+/-- The forgetful functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ CommSemiRingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
@@ -613,6 +629,14 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
+
+/-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToRingCat :
+    (forget₂ CommRingCat RingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommRingCat RingCat).Full :=
+  fullyFaithfulForget₂ToRingCat.full
 
 @[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
     ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=

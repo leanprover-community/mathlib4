@@ -122,7 +122,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
   -- Take the minimal possible `m`
   rcases Nat.findX hm with ⟨m, ⟨hmp, hm₀, a, b, c, d, habcd⟩, hmin⟩
   -- If `m = 1`, then we are done
-  rcases (Nat.one_le_iff_ne_zero.2 hm₀.ne').eq_or_gt with rfl | hm₁
+  rcases (Nat.one_le_iff_ne_zero.2 hm₀.ne').eq_or_lt with rfl | hm₁
   · use a, b, c, d; simpa using habcd
   -- Otherwise, let us find a contradiction
   exfalso
@@ -153,7 +153,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
       simp [habcd]
     -- The quotient `r` is not zero, because otherwise `f a = f b = f c = f d = 0`, hence
     -- `m` divides each `a`, `b`, `c`, `d`, thus `m ∣ p` which is impossible.
-    rcases (zero_le r).eq_or_gt with rfl | hr₀
+    rcases (zero_le r).eq_or_lt with rfl | hr₀
     · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0 := by simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d := by
         simp only [← ZMod.natCast_eq_zero_iff, ← hf_mod, hr, Int.cast_zero, and_self]

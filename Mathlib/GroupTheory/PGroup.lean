@@ -157,7 +157,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
   rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   classical
     calc
-      card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
+      card α = card (Σ y : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
         card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
       _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_

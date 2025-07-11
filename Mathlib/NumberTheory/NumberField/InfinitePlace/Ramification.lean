@@ -275,12 +275,16 @@ lemma IsUnramified.stabilizer_eq_bot (h : IsUnramified k w) : Stab w = ⊥ := by
   simp only [mem_stabilizer_mk_iff, Subgroup.mem_bot, forall_eq_or_imp, true_and]
   exact fun σ hσ ↦ hσ.isUnramified_mk_iff.mp ((mk_embedding w).symm ▸ h)
 
-lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk
+lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
     {φ : K →+* ℂ} (h : ComplexEmbedding.IsConj φ σ) :
     (Stab (mk φ) : Set (K ≃ₐ[k] K)) = {1, σ} := by
   ext
   rw [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     ← h.ext_iff, eq_comm (a := σ)]
+
+@[deprecated (since := "2025-07-08")]
+alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk :=
+NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
 
 variable (k w)
 
@@ -290,7 +294,8 @@ lemma nat_card_stabilizer_eq_one_or_two :
   rw [← SetLike.coe_sort_coe, ← mk_embedding w]
   by_cases h : ∃ σ, ComplexEmbedding.IsConj (k := k) (embedding w) σ
   · obtain ⟨σ, hσ⟩ := h
-    simp only [hσ.coe_stabilzer_mk, Nat.card_eq_fintype_card, card_ofFinset, Set.toFinset_singleton]
+    simp only [hσ.coe_stabilizer_mk, Nat.card_eq_fintype_card, card_ofFinset,
+      Set.toFinset_singleton]
     by_cases 1 = σ
     · left; simp [*]
     · right; simp [*]

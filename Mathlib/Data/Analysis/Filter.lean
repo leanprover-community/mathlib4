@@ -254,7 +254,7 @@ protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
 /-- Construct a realizer for filter bind -/
 protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : ∀ i, (m i).Realizer) :
     (f.bind m).Realizer :=
-  ⟨Σs : F.σ, ∀ i ∈ F.F s, (G i).σ,
+  ⟨Σ s : F.σ, ∀ i ∈ F.F s, (G i).σ,
     { f := fun ⟨s, f⟩ ↦ ⋃ i ∈ F.F s, (G i).F (f i (by assumption))
       pt := ⟨F.F.pt, fun i _ ↦ (G i).F.pt⟩
       inf := fun ⟨a, f⟩ ⟨b, f'⟩ ↦
@@ -282,7 +282,7 @@ protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, 
     (Realizer.bind Realizer.top F).ofEq <|
       filter_eq <| Set.ext <| by simp [Filter.bind, iSup_sets_eq]
   F'.ofEquiv <|
-    show (Σ_ : Unit, ∀ i : α, True → (F i).σ) ≃ ∀ i, (F i).σ from
+    show (Σ _ : Unit, ∀ i : α, True → (F i).σ) ≃ ∀ i, (F i).σ from
       ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Construct a realizer for the product of filters -/

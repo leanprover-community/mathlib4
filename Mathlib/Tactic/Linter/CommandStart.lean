@@ -51,7 +51,7 @@ This is every declaration until the type-specification, if there is one, or the 
 as well as all `variable` commands.
 -/
 def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
-  if let some cmd := stx.find? (·.isOfKind ``Parser.Command.declaration) then
+  if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
       | none => dbg_trace "unreachable?"; none

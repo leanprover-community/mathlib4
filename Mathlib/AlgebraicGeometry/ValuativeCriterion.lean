@@ -290,11 +290,11 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
     refine (HasAffineProperty.iff_of_isAffine (P := MorphismProperty.isomorphisms Scheme)).mpr ?_
     exact ⟨hZ, (ConcreteCategory.isIso_iff_bijective _).mpr h⟩
   constructor
-  · let l : Spec (.of S.K) ⟶ Z := by
-      apply pullback.lift S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)))
-      apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
-      simpa using hl₁.symm
-      simpa using hl₂.symm
+  · let l : Spec (.of S.K) ⟶ Z :=
+      pullback.lift S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K))) (by
+        apply IsPullback.hom_ext (IsPullback.of_hasPullback _ _)
+        · simpa using hl₁.symm
+        · simpa using hl₂.symm)
     have hg : l ≫ g = Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)) :=
       pullback.lift_snd _ _ _
     have : Function.Injective ((l ≫ g).appTop) := by

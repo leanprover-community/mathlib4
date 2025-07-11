@@ -224,7 +224,8 @@ end const
 /-- `f` is continuously differentiable if it is cont. differentiable at
 each `x ∈ mulTSupport f`. -/
 @[to_additive "`f` is continuously differentiable if it is continuously
-differentiable at each `x ∈ tsupport f`."]
+differentiable at each `x ∈ tsupport f`. See also `contMDiff_section_of_tsupport`
+for a similar result for sections of vector bundles."]
 theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
     (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
   intro x

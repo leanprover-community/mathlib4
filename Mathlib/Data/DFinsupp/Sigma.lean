@@ -98,7 +98,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), δ i j) :
-    Π₀ i : Σ_, _, δ i.1 i.2 where
+    Π₀ i : Σ _, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
   support' :=
     f.support'.bind fun s =>
@@ -159,7 +159,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
 def sigmaCurryEquiv [∀ i j, Zero (δ i j)] [DecidableEq ι] :
-    (Π₀ i : Σ_, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
+    (Π₀ i : Σ _, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry
   left_inv f := by

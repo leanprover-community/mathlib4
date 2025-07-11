@@ -118,3 +118,12 @@ theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : 
   hab.left_le_of_le_sup_left h
 
 end Disjoint
+
+namespace Set
+
+theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
+  rw [Set.mem_union, Xor']
+  have := Set.disjoint_left.1 h
+  tauto
+
+end Set

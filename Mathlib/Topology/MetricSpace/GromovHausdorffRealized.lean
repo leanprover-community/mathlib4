@@ -221,9 +221,10 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
   rw [this]
   repeat'
     first
-      |apply IsClosed.inter _ _
-      |apply isClosed_iInter _
-      |apply I1 _ _|apply I2 _ _|apply I3 _ _|apply I4 _ _ _|apply I5 _|apply I6 _ _|intro x
+      | apply IsClosed.inter _ _
+      | apply isClosed_iInter _
+      | apply I1 _ _ | apply I2 _ _ | apply I3 _ _ | apply I4 _ _ _ | apply I5 _ | apply I6 _ _
+      | intro x
 
 /-- We will then choose the candidate minimizing the Hausdorff distance. Except that we are not
 in a metric space setting, so we need to define our custom version of Hausdorff distance,

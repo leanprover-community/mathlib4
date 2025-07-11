@@ -15,6 +15,11 @@ In `RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n
 of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
 `(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
 
+Given an additive abelian group `A` with an appropriate scalar action of `G`, we provide support
+for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an element of the
+`cycles₁` of the representation on `A` corresponding to the scalar action. We also do this for
+0-boundaries, 1-boundaries, 2-cycles and 2-boundaries.
+
 ## TODO
   * Define the one and two cycles and boundaries as submodules of `G →₀ A` and `G × G →₀ A`, and
   provide maps to `H1` and `H2`.
@@ -60,7 +65,7 @@ end Chains
 section Differentials
 
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
-`k`-linear map `(G →₀ A) → A`. It sends `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
+`k`-linear map `(G →₀ A) → A`. It is defined by `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
 def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ A.V :=
   ModuleCat.ofHom <| lsum k fun g => A.ρ g⁻¹ - LinearMap.id
 
@@ -107,7 +112,8 @@ theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
   simp [d₁₀]
 
 /-- The 1st differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
-`k`-linear map `(G² →₀ A) → (G →₀ A)`. It sends `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
+`k`-linear map `(G² →₀ A) → (G →₀ A)`. It is defined by
+`a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def d₂₁ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (G →₀ A) :=
   ModuleCat.ofHom <| lsum k fun g => lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
 
@@ -154,7 +160,7 @@ lemma d₂₁_single_inv_mul_ρ_add_single (g h : G) (a : A) :
 
 variable (A) in
 /-- The 2nd differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
-`k`-linear map `(G³ →₀ A) → (G² →₀ A)`. It sends
+`k`-linear map `(G³ →₀ A) → (G² →₀ A)`. It is defined by
 `a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
 def d₃₂ : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (G × G →₀ A) :=
   ModuleCat.ofHom <| lsum k fun g =>
@@ -430,4 +436,193 @@ lemma single_one_snd_sub_single_one_snd_mem_boundaries₂ (g h : G) (a : A) :
   simp [d₃₂]
 
 end Boundaries
+
+section IsCycle
+
+section
+
+variable {G A : Type*} [Mul G] [Inv G] [AddCommGroup A] [SMul G A]
+
+/-- A finsupp `∑ aᵢ·gᵢ : G →₀ A` satisfies the 1-cycle condition if `∑ gᵢ⁻¹ • aᵢ = ∑ aᵢ`. -/
+def IsCycle₁ (x : G →₀ A) : Prop := x.sum (fun g a => g⁻¹ • a) = x.sum (fun _ a => a)
+
+/-- A finsupp `∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` satisfies the 2-cycle condition if
+`∑ (gᵢ⁻¹ • aᵢ)·hᵢ + aᵢ·gᵢ = ∑ aᵢ·gᵢhᵢ`. -/
+def IsCycle₂ (x : G × G →₀ A) : Prop :=
+  x.sum (fun g a => single g.2 (g.1⁻¹ • a) + single g.1 a) =
+    x.sum (fun g a => single (g.1 * g.2) a)
+
+end
+
+section
+
+variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+
+@[simp]
+theorem single_isCycle₁_iff (g : G) (a : A) :
+    IsCycle₁ (single g a) ↔ g • a = a := by
+  rw [← (MulAction.bijective g⁻¹).1.eq_iff]
+  simp [IsCycle₁, eq_comm]
+
+theorem single_isCycle₁_of_mem_fixedPoints
+    (g : G) (a : A) (ha : a ∈ MulAction.fixedPoints G A) :
+    IsCycle₁ (single g a) := by
+  simp_all [IsCycle₁]
+
+theorem single_isCycle₂_iff_inv (g : G × G) (a : A) :
+    IsCycle₂ (single g a) ↔
+      single g.2 (g.1⁻¹ • a) + single g.1 a = single (g.1 * g.2) a := by
+  simp [IsCycle₂]
+
+@[simp]
+theorem single_isCycle₂_iff (g : G × G) (a : A) :
+    IsCycle₂ (single g a) ↔
+      single g.2 a + single g.1 (g.1 • a) = single (g.1 * g.2) (g.1 • a) := by
+  rw [← (Finsupp.mapRange_injective (α := G) _ (smul_zero _) (MulAction.bijective g.1⁻¹).1).eq_iff]
+  simp [mapRange_add, IsCycle₂]
+
+end
+
+end IsCycle
+
+section IsBoundary
+
+section
+
+variable {G A : Type*} [Mul G] [Inv G] [AddCommGroup A] [SMul G A]
+
+variable (G) in
+/-- A term `x : A` satisfies the 0-boundary condition if there exists a finsupp
+`∑ aᵢ·gᵢ : G →₀ A` such that `∑ gᵢ⁻¹ • aᵢ - aᵢ = x`. -/
+def IsBoundary₀ (a : A) : Prop :=
+  ∃ (x : G →₀ A), x.sum (fun g z => g⁻¹ • z - z) = a
+
+/-- A finsupp `x : G →₀ A` satisfies the 1-boundary condition if there's a finsupp
+`∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` such that `∑ (gᵢ⁻¹ • aᵢ)·hᵢ - aᵢ·gᵢhᵢ + aᵢ·gᵢ = x`. -/
+def IsBoundary₁ (x : G →₀ A) : Prop :=
+  ∃ y : G × G →₀ A, y.sum
+    (fun g a => single g.2 (g.1⁻¹ • a) - single (g.1 * g.2) a + single g.1 a) = x
+
+/-- A finsupp `x : G × G →₀ A` satsfies the 2-boundary condition if there's a finsupp
+`∑ aᵢ·(gᵢ, hᵢ, jᵢ) : G × G × G →₀ A` such that
+`∑ (gᵢ⁻¹ • aᵢ)·(hᵢ, jᵢ) - aᵢ·(gᵢhᵢ, jᵢ) + aᵢ·(gᵢ, hᵢjᵢ) - aᵢ·(gᵢ, hᵢ) = x.` -/
+def IsBoundary₂ (x : G × G →₀ A) : Prop :=
+  ∃ y : G × G × G →₀ A, y.sum (fun g a => single (g.2.1, g.2.2) (g.1⁻¹ • a) -
+    single (g.1 * g.2.1, g.2.2) a + single (g.1, g.2.1 * g.2.2) a - single (g.1, g.2.1) a) = x
+
+end
+section
+
+variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
+
+variable (G) in
+theorem isBoundary₀_iff (a : A) :
+    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
+  constructor
+  · rintro ⟨x, hx⟩
+    use x.sum (fun g a => single g (- (g⁻¹ • a)))
+    simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
+  · rintro ⟨x, hx⟩
+    use x.sum (fun g a => single g (- (g • a)))
+    simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
+
+theorem isBoundary₁_iff (x : G →₀ A) :
+    IsBoundary₁ x ↔ ∃ y : G × G →₀ A, y.sum
+      (fun g a => single g.2 a - single (g.1 * g.2) (g.1 • a) + single g.1 (g.1 • a)) = x := by
+  constructor
+  · rintro ⟨y, hy⟩
+    use y.sum (fun g a => single g (g.1⁻¹ • a))
+    simp_all [sum_sum_index]
+  · rintro ⟨x, hx⟩
+    use x.sum (fun g a => single g (g.1 • a))
+    simp_all [sum_sum_index]
+
+theorem isBoundary₂_iff (x : G × G →₀ A) :
+    IsBoundary₂ x ↔ ∃ y : G × G × G →₀ A, y.sum
+      (fun g a => single (g.2.1, g.2.2) a - single (g.1 * g.2.1, g.2.2) (g.1 • a) +
+        single (g.1, g.2.1 * g.2.2) (g.1 • a) - single (g.1, g.2.1) (g.1 • a)) = x := by
+  constructor
+  · rintro ⟨y, hy⟩
+    use y.sum (fun g a => single g (g.1⁻¹ • a))
+    simp_all [sum_sum_index]
+  · rintro ⟨x, hx⟩
+    use x.sum (fun g a => single g (g.1 • a))
+    simp_all [sum_sum_index]
+
+end
+end IsBoundary
+
+section ofDistribMulAction
+
+variable {k G A : Type u} [CommRing k] [Group G] [AddCommGroup A] [Module k A]
+  [DistribMulAction G A] [SMulCommClass G k A]
+
+/-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a term
+`x : A` satisfying the 0-boundary condition, this produces an element of the kernel of the quotient
+map `A → A_G` for the representation on `A` induced by the `DistribMulAction`. -/
+@[simps]
+def coinvariantsKerOfIsBoundary₀ (x : A) (hx : IsBoundary₀ G x) :
+    Coinvariants.ker (Representation.ofDistribMulAction k G A) :=
+  ⟨x, by
+    rcases (isBoundary₀_iff G x).1 hx with ⟨y, rfl⟩
+    exact Submodule.finsuppSum_mem _ _ _ _ fun g _ => Coinvariants.mem_ker_of_eq g (y g) _ rfl⟩
+
+theorem isBoundary₀_of_mem_coinvariantsKer [DecidableEq G]
+    (x : A) (hx : x ∈ Coinvariants.ker (Representation.ofDistribMulAction k G A)) :
+    IsBoundary₀ G x :=
+  Submodule.span_induction (fun _ ⟨g, hg⟩ => ⟨single g.1⁻¹ g.2, by simp_all⟩) ⟨0, by simp⟩
+    (fun _ _ _ _ ⟨X, hX⟩ ⟨Y, hY⟩ => ⟨X + Y, by simp_all [sum_add_index, add_sub_add_comm]⟩)
+    (fun r _ _ ⟨X, hX⟩ => ⟨r • X, by simp [← hX, sum_smul_index', smul_comm, smul_sub, smul_sum]⟩)
+    hx
+
+/-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a finsupp
+`x : G →₀ A` satisfying the 1-cycle condition, produces a 1-cycle for the representation on
+`A` induced by the `DistribMulAction`. -/
+@[simps]
+def cyclesOfIsCycle₁ (x : G →₀ A) (hx : IsCycle₁ x) :
+    cycles₁ (Rep.ofDistribMulAction k G A) :=
+  ⟨x, (mem_cycles₁_iff (A := Rep.ofDistribMulAction k G A) x).2 hx⟩
+
+theorem isCycle₁_of_mem_cycles₁
+    (x : G →₀ A) (hx : x ∈ cycles₁ (Rep.ofDistribMulAction k G A)) :
+    IsCycle₁ x := by
+  simpa using (mem_cycles₁_iff (A := Rep.ofDistribMulAction k G A) x).1 hx
+
+/-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a finsupp
+`x : G →₀ A` satisfying the 1-boundary condition, produces a 1-boundary for the representation
+on `A` induced by the `DistribMulAction`. -/
+@[simps]
+def boundariesOfIsBoundary₁ (x : G →₀ A) (hx : IsBoundary₁ x) :
+    boundaries₁ (Rep.ofDistribMulAction k G A) :=
+  ⟨x, hx⟩
+
+theorem isBoundary₁_of_mem_boundaries₁
+    (x : G →₀ A) (hx : x ∈ boundaries₁ (Rep.ofDistribMulAction k G A)) :
+    IsBoundary₁ x := hx
+
+/-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a finsupp
+`x : G × G →₀ A` satisfying the 2-cycle condition, produces a 2-cycle for the representation on
+`A` induced by the `DistribMulAction`. -/
+@[simps]
+def cyclesOfIsCycle₂ (x : G × G →₀ A) (hx : IsCycle₂ x) :
+    cycles₂ (Rep.ofDistribMulAction k G A) :=
+  ⟨x, (mem_cycles₂_iff (A := Rep.ofDistribMulAction k G A) x).2 hx⟩
+
+theorem isCycle₂_of_mem_cycles₂
+    (x : G × G →₀ A) (hx : x ∈ cycles₂ (Rep.ofDistribMulAction k G A)) :
+    IsCycle₂ x := (mem_cycles₂_iff (A := Rep.ofDistribMulAction k G A) x).1 hx
+
+/-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a finsupp
+`x : G × G →₀ A` satisfying the 2-boundary condition, produces a 2-boundary for the
+representation on `A` induced by the `DistribMulAction`. -/
+@[simps]
+def boundariesOfIsBoundary₂ (x : G × G →₀ A) (hx : IsBoundary₂ x) :
+    boundaries₂ (Rep.ofDistribMulAction k G A) :=
+  ⟨x, hx⟩
+
+theorem isBoundary₂_of_mem_boundaries₂
+    (x : G × G →₀ A) (hx : x ∈ boundaries₂ (Rep.ofDistribMulAction k G A)) :
+    IsBoundary₂ x := hx
+
+end ofDistribMulAction
 end groupHomology

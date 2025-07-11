@@ -211,6 +211,14 @@ theorem span_singleton_eq_span_singleton {α : Type u} [CommSemiring α] [IsDoma
   rw [← dvd_dvd_iff_associated, le_antisymm_iff, and_comm]
   apply and_congr <;> rw [span_singleton_le_span_singleton]
 
+@[simp]
+theorem span_pair_eq_span_left_iff_dvd : span {a, b} = span {a} ↔ a ∣ b := by
+  rw [Ideal.span_insert, sup_eq_left, span_singleton_le_span_singleton]
+
+@[simp]
+theorem span_pair_eq_span_right_iff_dvd : span {a, b} = span {b} ↔ b ∣ a := by
+  rw [Ideal.span_insert, sup_eq_right, span_singleton_le_span_singleton]
+
 theorem span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({x * a} : Set α) = span {x} := by rw [mul_comm, span_singleton_mul_left_unit h2]
 

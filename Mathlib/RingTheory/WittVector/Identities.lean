@@ -122,7 +122,7 @@ theorem mul_pow_charP_coeff_succ [CharP R p] (x : 𝕎 R) {m n : ℕ} :
     (x * p ^ n).coeff (m + n) = x.coeff m ^ (p ^ n) := by
   induction' n with n ih generalizing m
   · simp
-  · rw [pow_succ, ← mul_assoc, ← add_assoc,mul_charP_coeff_succ, pow_succ, pow_mul]
+  · rw [pow_succ, ← mul_assoc, ← add_assoc, mul_charP_coeff_succ, pow_succ, pow_mul]
     congr
     exact ih
 

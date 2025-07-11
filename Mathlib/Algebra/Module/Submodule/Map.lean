@@ -300,9 +300,12 @@ theorem map_sup_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊔ q.comap f).map f = p ⊔ q :=
   (giMapComap hf).l_sup_u _ _
 
-theorem map_iSup_comap_of_sujective {ι : Sort*} (S : ι → Submodule R₂ M₂) :
+theorem map_iSup_comap_of_surjective {ι : Sort*} (S : ι → Submodule R₂ M₂) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
+
+@[deprecated (since := "2025-07-08")]
+alias map_iSup_comap_of_sujective := map_iSup_comap_of_surjective
 
 theorem map_inf_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊓ q.comap f).map f = p ⊓ q :=

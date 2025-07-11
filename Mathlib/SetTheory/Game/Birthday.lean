@@ -188,7 +188,7 @@ theorem birthday_quot_le_pGameBirthday (x : PGame) : birthday ⟦x⟧ ≤ x.birt
 @[simp]
 theorem birthday_zero : birthday 0 = 0 := by
   rw [← Ordinal.le_zero, ← PGame.birthday_zero]
-  exact birthday_quot_le_pGameBirthday  _
+  exact birthday_quot_le_pGameBirthday _
 
 @[simp]
 theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
@@ -229,7 +229,7 @@ theorem birthday_one : birthday 1 = 1 := by
 theorem birthday_star : birthday ⟦PGame.star⟧ = 1 := by
   apply le_antisymm
   · rw [← PGame.birthday_star]
-    exact birthday_quot_le_pGameBirthday  _
+    exact birthday_quot_le_pGameBirthday _
   · rw [Ordinal.one_le_iff_ne_zero, ne_eq, birthday_eq_zero, Game.zero_def,
       ← PGame.equiv_iff_game_eq]
     exact PGame.star_fuzzy_zero.not_equiv
@@ -260,7 +260,7 @@ theorem birthday_add_le (x y : Game) : (x + y).birthday ≤ x.birthday ♯ y.bir
   let ⟨a, ha₁, ha₂⟩ := birthday_eq_pGameBirthday x
   let ⟨b, hb₁, hb₂⟩ := birthday_eq_pGameBirthday y
   rw [← ha₂, ← hb₂, ← ha₁, ← hb₁, ← PGame.birthday_add]
-  exact birthday_quot_le_pGameBirthday  _
+  exact birthday_quot_le_pGameBirthday _
 
 theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.birthday := by
   apply (birthday_add_le x _).trans_eq

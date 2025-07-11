@@ -218,7 +218,7 @@ theorem subst_mul (ha : HasSubst a) (f g : MvPowerSeries σ R) :
   simp only [← substAlgHom_apply ha, map_mul]
 
 theorem subst_pow (ha : HasSubst a) (f : MvPowerSeries σ R) (n : ℕ) :
-    subst a (f ^ n) = (subst a f ) ^ n := by
+    subst a (f ^ n) = (subst a f) ^ n := by
   simp only [← substAlgHom_apply ha, map_pow]
 
 theorem subst_smul (ha : HasSubst a) (r : A) (f : MvPowerSeries σ R) :
@@ -483,7 +483,7 @@ noncomputable def rescaleMonoidHom :
     (σ → R) →* MvPowerSeries σ R →+* MvPowerSeries σ R where
   toFun := rescale
   map_one' := rescale_one
-  map_mul' a b := by ext; simp  [mul_comm, rescale_rescale]
+  map_mul' a b := by ext; simp [mul_comm, rescale_rescale]
 
 end CommSemiring
 
@@ -520,7 +520,7 @@ theorem rescaleAlgHom_mul (a b : σ → R) :
   simp [rescaleAlgHom_apply, rescale_rescale]
 
 theorem rescaleAlgHom_one :
-    rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R):= by
+    rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R) := by
   ext1 f
   simp [rescaleAlgHom, subst_self]
 

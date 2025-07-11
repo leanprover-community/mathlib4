@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.Exterior
+import Mathlib.Topology.Compactness.NhdsKer
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -15,17 +15,11 @@ This file defines Alexandrov-discrete spaces, aka finitely generated spaces.
 
 A space is Alexandrov-discrete if the (arbitrary) intersection of open sets is open. As such,
 the intersection of all neighborhoods of a set is a neighborhood itself. Hence every set has a
-minimal neighborhood, which we call the *exterior* of the set.
+minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 
 ## Main declarations
 
 * `AlexandrovDiscrete`: Prop-valued typeclass for a topological space to be Alexandrov-discrete
-
-## Notes
-
-The "minimal neighborhood of a set" construction is not named in the literature. We chose the name
-"exterior" with analogy to the interior. `interior` and `exterior` have the same properties up to
-
 
 ## TODO
 
@@ -143,35 +137,55 @@ section
 variable [TopologicalSpace α] [TopologicalSpace β] [AlexandrovDiscrete α] [AlexandrovDiscrete β]
   {s t : Set α} {a : α}
 
-@[simp] lemma isOpen_exterior : IsOpen (exterior s) := by
-  rw [exterior_def]; exact isOpen_sInter fun _ ↦ And.left
+@[simp] lemma isOpen_nhdsKer : IsOpen (nhdsKer s) := by
+  rw [nhdsKer_def]; exact isOpen_sInter fun _ ↦ And.left
 
-lemma exterior_mem_nhdsSet : exterior s ∈ 𝓝ˢ s := isOpen_exterior.mem_nhdsSet.2 subset_exterior
+@[deprecated (since := "2025-07-09")] alias isOpen_exterior := isOpen_nhdsKer
 
-@[simp] lemma exterior_eq_iff_isOpen : exterior s = s ↔ IsOpen s :=
-  ⟨fun h ↦ h ▸ isOpen_exterior, IsOpen.exterior_eq⟩
+lemma nhdsKer_mem_nhdsSet : nhdsKer s ∈ 𝓝ˢ s := isOpen_nhdsKer.mem_nhdsSet.2 subset_nhdsKer
 
-@[simp] lemma exterior_subset_iff_isOpen : exterior s ⊆ s ↔ IsOpen s := by
-  simp only [exterior_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_exterior, and_true]
+@[deprecated (since := "2025-07-09")] alias exterior_mem_nhdsSet := nhdsKer_mem_nhdsSet
 
-lemma exterior_subset_iff : exterior s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
-  ⟨fun h ↦ ⟨exterior s, isOpen_exterior, subset_exterior, h⟩,
-    fun ⟨_U, hU, hsU, hUt⟩ ↦ (exterior_minimal hsU hU).trans hUt⟩
+@[simp] lemma nhdsKer_eq_iff_isOpen : nhdsKer s = s ↔ IsOpen s :=
+  ⟨fun h ↦ h ▸ isOpen_nhdsKer, IsOpen.nhdsKer_eq⟩
 
-lemma exterior_subset_iff_mem_nhdsSet : exterior s ⊆ t ↔ t ∈ 𝓝ˢ s :=
-  exterior_subset_iff.trans mem_nhdsSet_iff_exists.symm
+@[deprecated (since := "2025-07-09")] alias exterior_eq_iff_isOpen := nhdsKer_eq_iff_isOpen
 
-lemma exterior_singleton_subset_iff_mem_nhds : exterior {a} ⊆ t ↔ t ∈ 𝓝 a := by
-  simp [exterior_subset_iff_mem_nhdsSet]
+@[simp] lemma nhdsKer_subset_iff_isOpen : nhdsKer s ⊆ s ↔ IsOpen s := by
+  simp only [nhdsKer_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_nhdsKer, and_true]
 
-lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) interior :=
-  fun s t ↦ by simp [exterior_subset_iff, subset_interior_iff]
+@[deprecated (since := "2025-07-09")] alias exterior_subset_iff_isOpen := nhdsKer_subset_iff_isOpen
 
-@[simp] lemma principal_exterior (s : Set α) : 𝓟 (exterior s) = 𝓝ˢ s := by
-  rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
+lemma nhdsKer_subset_iff : nhdsKer s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
+  ⟨fun h ↦ ⟨nhdsKer s, isOpen_nhdsKer, subset_nhdsKer, h⟩,
+    fun ⟨_U, hU, hsU, hUt⟩ ↦ (nhdsKer_minimal hsU hU).trans hUt⟩
+
+@[deprecated (since := "2025-07-09")] alias exterior_subset_iff := nhdsKer_subset_iff
+
+lemma nhdsKer_subset_iff_mem_nhdsSet : nhdsKer s ⊆ t ↔ t ∈ 𝓝ˢ s :=
+  nhdsKer_subset_iff.trans mem_nhdsSet_iff_exists.symm
+
+@[deprecated (since := "2025-07-09")]
+alias exterior_subset_iff_mem_nhdsSet := nhdsKer_subset_iff_mem_nhdsSet
+
+lemma nhdsKer_singleton_subset_iff_mem_nhds : nhdsKer {a} ⊆ t ↔ t ∈ 𝓝 a := by
+  simp [nhdsKer_subset_iff_mem_nhdsSet]
+
+@[deprecated (since := "2025-07-09")]
+alias exterior_singleton_subset_iff_mem_nhds := nhdsKer_singleton_subset_iff_mem_nhds
+
+lemma gc_nhdsKer_interior : GaloisConnection (nhdsKer : Set α → Set α) interior :=
+  fun s t ↦ by simp [nhdsKer_subset_iff, subset_interior_iff]
+
+@[deprecated (since := "2025-07-09")] alias gc_exterior_interior := gc_nhdsKer_interior
+
+@[simp] lemma principal_nhdsKer (s : Set α) : 𝓟 (nhdsKer s) = 𝓝ˢ s := by
+  rw [← nhdsSet_nhdsKer, isOpen_nhdsKer.nhdsSet_eq]
+
+@[deprecated (since := "2025-07-09")] alias principal_exterior := principal_nhdsKer
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  simp only [← exterior_subset_iff_isOpen, Set.subset_def, mem_exterior_iff_specializes, exists_imp,
+  simp only [← nhdsKer_subset_iff_isOpen, Set.subset_def, mem_nhdsKer_iff_specializes, exists_imp,
     and_imp, @forall_swap (_ ⤳ _)]
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
@@ -180,12 +194,12 @@ lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
 
 instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
-  nhds_generated_countable a := ⟨{exterior {a}}, countable_singleton _, by simp⟩
+  nhds_generated_countable a := ⟨{nhdsKer {a}}, countable_singleton _, by simp⟩
 
 instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
-  local_compact_nhds a _U hU := ⟨exterior {a},
-    isOpen_exterior.mem_nhds <| subset_exterior <| mem_singleton _,
-      exterior_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.exterior⟩
+  local_compact_nhds a _U hU := ⟨nhdsKer {a},
+    isOpen_nhdsKer.mem_nhds <| subset_nhdsKer <| mem_singleton _,
+      nhdsKer_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.nhdsKer⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
   IsInducing.subtypeVal.alexandrovDiscrete

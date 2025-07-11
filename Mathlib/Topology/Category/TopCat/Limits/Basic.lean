@@ -262,17 +262,20 @@ theorem colimit_isOpen_iff (F : J ⥤ TopCat.{u}) [HasColimit F]
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   apply isOpen_iff_of_isColimit _ (colimit.isColimit _)
 
-lemma hasColimit_iff_small_quot :
-    HasColimit F ↔ Small.{u} (Types.Quot (F ⋙ forget)) := by
-  rw [← Types.hasColimit_iff_small_quot]
+lemma hasColimit_iff_small_colimitType :
+    HasColimit F ↔ Small.{u} (F ⋙ forget).ColimitType := by
+  rw [← Types.hasColimit_iff_small_colimitType]
   constructor <;> intro
   · infer_instance
   · exact ⟨⟨_, isColimitCoconeOfForget _ (colimit.isColimit _)⟩⟩
 
+@[deprecated (since := "2025-04-01")] alias hasColimit_iff_small_quot :=
+  hasColimit_iff_small_colimitType
+
 instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
     HasColimitsOfShape J TopCat.{u} where
   has_colimit := fun F => by
-    rw [hasColimit_iff_small_quot]
+    rw [hasColimit_iff_small_colimitType]
     infer_instance
 
 instance topCat_hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{w, v} TopCat.{u} where

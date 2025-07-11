@@ -236,22 +236,26 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
     (c.lift (f.comp c.mk') fun x y h => show f ↑x = f ↑y by rw [c.eq.2 h]) = f := by
   ext x; rcases x with ⟨⟩; rfl
 
+/-- Homomorphisms on the quotient of a monoid by a congruence relation `c` are equal if their
+compositions with `c.mk'` are equal. -/
+@[to_additive (attr := ext) "Homomorphisms on the quotient of an `AddMonoid` by an additive
+congruence relation `c` are equal if their compositions with `c.mk'` are equal."]
+lemma hom_ext {f g : c.Quotient →* P} (h : f.comp c.mk' = g.comp c.mk') : f = g := by
+  rw [← lift_apply_mk' f, ← lift_apply_mk' g]
+  congr 1
+
 /-- Homomorphisms on the quotient of a monoid by a congruence relation are equal if they
     are equal on elements that are coercions from the monoid. -/
 @[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
-theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
-  rw [← lift_apply_mk' f, ← lift_apply_mk' g]
-  congr 1
-  exact DFunLike.ext_iff.2 h
+theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g :=
+  hom_ext <| DFunLike.ext _ _ h
 
 /-- The uniqueness part of the universal property for quotients of monoids. -/
 @[to_additive "The uniqueness part of the universal property for quotients of `AddMonoid`s."]
 theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk' = f) :
     g = c.lift f H :=
-  (lift_funext g (c.lift f H)) fun x => by
-    subst f
-    rfl
+  hom_ext Hg
 
 /-- Surjective monoid homomorphisms constant on a congruence relation `c`'s equivalence classes
     induce a surjective homomorphism on `c`'s quotient. -/

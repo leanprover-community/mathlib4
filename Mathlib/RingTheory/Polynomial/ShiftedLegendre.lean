@@ -45,7 +45,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
   calc
   _ = derivative^[n] (((X : ℤ[X]) - X ^ 2) ^ n) := by
     rw [← mul_pow, mul_one_sub, ← pow_two]
-  _ = derivative^[n] (∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m)) := by
+  _ = derivative^[n] (∑ m ∈ range (n + 1), n.choose m • (-1) ^ m * X ^ (n + m)) := by
     congr
     rw [sub_eq_add_neg, add_comm, add_pow]
     congr! 1 with m hm

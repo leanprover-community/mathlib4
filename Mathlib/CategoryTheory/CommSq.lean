@@ -41,7 +41,7 @@ is a commuting square.
 -/
 structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop where
   /-- The square commutes. -/
-  w : f ≫ h = g ≫ i
+  w : f ≫ h = g ≫ i := by aesop_cat
 
 attribute [reassoc] CommSq.w
 

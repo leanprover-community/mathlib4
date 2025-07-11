@@ -1137,3 +1137,24 @@ theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [
     [AddCommGroup M₂] [Module R M] [Module R M₂] [IsTopologicalAddGroup M] (f₁ : M →L[R] M₂)
     (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) : (ker f₁).ClosedComplemented :=
   ⟨f₁.projKerOfRightInverse f₂ h, f₁.projKerOfRightInverse_apply_idem f₂ h⟩
+
+namespace ContinuousLinearMap
+variable {R M : Type*} [Ring R] [TopologicalSpace M]
+  [AddCommGroup M] [Module R M] [IsTopologicalAddGroup M]
+
+theorem IsIdempotentElem.range_eq_ker
+    {p : M →L[R] M} (hp : IsIdempotentElem p) :
+    LinearMap.range p = LinearMap.ker (1 - p) :=
+  LinearMap.IsIdempotentElem.range_eq_ker congr(LinearMapClass.linearMap $hp.eq)
+
+theorem IsIdempotentElem.ker_eq_range
+    {p : M →L[R] M} (hp : IsIdempotentElem p) :
+    LinearMap.ker p = LinearMap.range (1 - p) :=
+  LinearMap.IsIdempotentElem.ker_eq_range congr(LinearMapClass.linearMap $hp.eq)
+
+open ContinuousLinearMap in
+theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
+    (hp : IsIdempotentElem p) : IsClosed (LinearMap.range p : Set M) :=
+  hp.range_eq_ker ▸ isClosed_ker (1 - p)
+
+end ContinuousLinearMap
