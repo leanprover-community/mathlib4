@@ -483,7 +483,7 @@ theorem abs_sub_convergents_le' {b : K}
   refine (abs_sub_convs_le not_terminatedAt_n).trans ?_
   -- One can show that `0 < (GenContFract.of v).dens n` but it's easier
   -- to consider the case `(GenContFract.of v).dens n = 0`.
-  rcases (zero_le_of_den (K := K)).eq_or_gt with
+  rcases (zero_le_of_den (K := K)).eq_or_lt' with
     ((hB : (GenContFract.of v).dens n = 0) | hB)
   · simp only [hB, mul_zero, zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le

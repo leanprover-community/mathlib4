@@ -315,20 +315,26 @@ notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
     RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids
     RingHomInvPair.ids e₁ e₂
 
+/-- `LinearEquiv.symm` defines an equivalence between `α ≃ₛₗ[σ] β` and `β ≃ₛₗ[σ] α`. -/
+@[simps!]
+def symmEquiv : (M ≃ₛₗ[σ] M₂) ≃ (M₂ ≃ₛₗ[σ'] M) where
+  toFun := .symm
+  invFun := .symm
+
 variable {e₁₂} {e₂₃}
 
 theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 
 @[simp]
-lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := by
+lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x :=
   rfl
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
   rfl
 
-lemma coe_toAddEquiv_symm : (e₁₂.symm : M₂ ≃+ M₁) = (e₁₂ : M₁ ≃+ M₂).symm := by
+lemma coe_toAddEquiv_symm : (e₁₂.symm : M₂ ≃+ M₁) = (e₁₂ : M₁ ≃+ M₂).symm :=
   rfl
 
 @[simp]
@@ -352,7 +358,7 @@ theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
   LinearMap.ext e.apply_symm_apply
 
 @[simp]
-theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap= LinearMap.id :=
+theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
 
 @[simp]

@@ -87,7 +87,7 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     rw [List.count_map_of_injective _ _ hf.injective, ← support_copy, ← tail_cons_eq]
     exact hp.isHamiltonian_tail _
 
-lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
+lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.tail.IsHamiltonian :=
   ⟨fun ⟨h, h'⟩ ↦ ⟨h, h'⟩, fun ⟨h, h'⟩ ↦ ⟨h, h'⟩⟩
 
