@@ -487,8 +487,8 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     simp only [← smul_apply _ _ i, hgy, hgx]
     simp [smul_apply]
     rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-    · simp [snoc_castSucc, ← hg, subgroup_smul_def]
-    · simpa only [snoc_last, ← hg, subgroup_smul_def] using g.prop
+    · simp [snoc_castSucc, ← hg]
+    · simpa only [snoc_last, ← hg] using g.prop
 
 end SubMulAction.ofStabilizer
 
