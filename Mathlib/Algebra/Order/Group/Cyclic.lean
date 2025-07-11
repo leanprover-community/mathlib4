@@ -54,6 +54,10 @@ lemma genLTOne_lt_one : H.genLTOne < 1 :=
 lemma genLTOne_zpowers_eq_top : Subgroup.zpowers H.genLTOne = H :=
   H.exists_generator_lt_one.choose_spec.2
 
+lemma genLTOne_mem : H.genLTOne ∈ H := by
+  nth_rewrite 1 [← H.genLTOne_zpowers_eq_top]
+  exact Subgroup.mem_zpowers (Subgroup.genLTOne H)
+
 lemma genLTOne_unique {g : G} (hg : g < 1) (hH : Subgroup.zpowers g = H) : g = H.genLTOne := by
   have hg' : ¬ IsOfFinOrder g := not_isOfFinOrder_of_isMulTorsionFree (ne_of_lt hg)
   rw [← H.genLTOne_zpowers_eq_top] at hH
