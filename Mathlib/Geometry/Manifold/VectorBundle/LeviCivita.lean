@@ -108,6 +108,17 @@ end product
 
 set_option linter.style.commandStart false -- custom elaborators not handled well yet
 
+/- XXX: writing `hY.inner_bundle hZ` or writing `by apply MDifferentiable.inner_bundle hY hZ`
+yields an error
+synthesized type class instance is not definitionally equal to expression inferred by typing rules,
+synthesized
+  fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
+inferred
+  fun b ↦ inst✝⁷ -/
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+lemma foo (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
+  MDifferentiable.inner_bundle hY hZ
+
 namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `TM`.
@@ -128,6 +139,52 @@ def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 -- This is mild defeq abuse, right?
 variable (X Y Z) in
 noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) ⟪Y, Z⟫ x (X x))
+
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
+
+variable (X Y Z Z') in
+lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
+  rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
+  unfold rhs_aux
+  ext x
+  rw [product_add_right, mfderiv_add ((foo hY hZ) x) ((foo hY hZ') x)]; simp; congr
+
+omit [IsManifold I ∞ M] in
+variable (X X' Y Z) in
+lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
+  ext x
+  simp [rhs_aux]
+
+variable (X Y Y' Z) in
+lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
+    rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
+  ext x
+  simp only [rhs_aux]
+  rw [product_add_left, mfderiv_add ((foo hY hZ) x) ((foo hY' hZ) x)]
+  simp; congr
+
+variable (X Y Z) in
+lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
+  ext x
+  simp [rhs_aux]
+
+variable (X Y Z) in
+lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
+  ext x
+  simp only [rhs_aux]
+  rw [product_smul_right]
+  -- XXX: not true, the product rule gives us two terms
+  -- and there is missing API in mathlib!
+  -- only holds given enough smoothness!
+  sorry
+
+variable (X Y Z Z') in
+lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z := by
+  ext x
+  simp [rhs_aux]
+  rw [product_smul_left]
+  -- TODO: get a second term from the product rule!
+  sorry
 
 -- XXX: inlining rhs_aux makes things not typecheck any more!
 
@@ -190,61 +247,6 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   sorry -- obvious: if 2 • A = stuff, A = 1/2 stuff
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
-
-/- XXX: writing `hY.inner_bundle hZ` or writing `by apply MDifferentiable.inner_bundle hY hZ`
-yields an error
-synthesized type class instance is not definitionally equal to expression inferred by typing rules,
-synthesized
-  fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
-inferred
-  fun b ↦ inst✝⁷ -/
-variable {I} in
-lemma foo (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
-  MDifferentiable.inner_bundle hY hZ
-
-variable (X Y Z Z') in
-lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
-  rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
-  unfold rhs_aux
-  ext x
-  rw [product_add_right, mfderiv_add ((foo hY hZ) x) ((foo hY hZ') x)]; simp; congr
-
-omit [IsManifold I ∞ M] in
-variable (X X' Y Z) in
-lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
-  ext x
-  simp [rhs_aux]
-
-variable (X Y Y' Z) in
-lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
-    rhs_aux I X (Y + Y') Z = rhs_aux I X Y Z + rhs_aux I X Y' Z := by
-  ext x
-  simp only [rhs_aux]
-  rw [product_add_left, mfderiv_add ((foo hY hZ) x) ((foo hY' hZ) x)]
-  simp; congr
-
-variable (X Y Z) in
-lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
-  ext x
-  simp only [rhs_aux]
-  rw [product_smul_right]
-  -- XXX: not true, the product rule gives us two terms
-  -- and there is missing API in mathlib!
-  -- only holds given enough smoothness!
-  sorry
-
-variable (X Y Z) in
-lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
-  ext x
-  simp [rhs_aux]
-
-variable (X Y Z Z') in
-lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z := by
-  ext x
-  simp [rhs_aux]
-  rw [product_smul_left]
-  -- TODO: get a second term from the product rule!
-  sorry
 
 lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
     (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
