@@ -528,7 +528,7 @@ theorem contMDiff_iff :
           ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
               (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
-  simp [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ]
+  simp [← contMDiffOn_univ, contMDiffOn_iff, continuousOn_univ]
 
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart in the
 target. -/
@@ -537,12 +537,12 @@ theorem contMDiff_iff_target :
       Continuous f ∧ ∀ y : M',
         ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
   rw [← contMDiffOn_univ, contMDiffOn_iff_target]
-  simp [continuous_iff_continuousOn_univ]
+  simp [continuousOn_univ]
 
 /-- zero-smoothness is equivalent to continuity. -/
 theorem contMDiff_zero_iff :
     ContMDiff I I' 0 f ↔ Continuous f := by
-  rw [← contMDiffOn_univ, continuous_iff_continuousOn_univ, contMDiffOn_zero_iff]
+  rw [← contMDiffOn_univ, ← continuousOn_univ, contMDiffOn_zero_iff]
 
 end IsManifold
 

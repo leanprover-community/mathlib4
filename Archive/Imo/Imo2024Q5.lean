@@ -260,7 +260,7 @@ lemma Path.firstMonster_eq_none {p : Path N} {m : MonsterData N} :
   convert List.find?_eq_none
   simp
 
-lemma Path.one_lt_length_cells (p : Path N): 1 < p.cells.length := by
+lemma Path.one_lt_length_cells (p : Path N) : 1 < p.cells.length := by
   by_contra hl
   have h : p.cells.length = 0 ∨ p.cells.length = 1 := by omega
   rcases h with h | h

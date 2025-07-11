@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Small.Group
+import Mathlib.Algebra.Group.Shrink
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types.Limits
 
@@ -95,7 +96,7 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone F) := by
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_mul, Functor.comp_obj, Equiv.toFun_as_coe]
+    simp only [EquivLike.coe_apply, Functor.mapCone_π_app, forget_map, map_mul]
     rw [← equivShrink_mul]
     rfl
 

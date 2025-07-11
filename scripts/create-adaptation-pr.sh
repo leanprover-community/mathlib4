@@ -65,7 +65,9 @@ usage() {
 # Function to find remote for a given repository
 find_remote() {
   local repo_pattern="$1"
-  git remote -v | grep "$repo_pattern\.git" | grep "(fetch)" | head -n1 | cut -f1
+  # Use || true to prevent script exit if any command in the pipeline fails
+  # This handles cases where git remote fails or grep doesn't find matches
+  git remote -v | grep -E "$repo_pattern(\.git)? \(fetch\)" | head -n1 | cut -f1 || true
 }
 
 # Parse arguments

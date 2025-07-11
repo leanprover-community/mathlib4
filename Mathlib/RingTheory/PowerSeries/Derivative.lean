@@ -69,7 +69,7 @@ theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
 
 --A special case of `derivativeFun_mul`, used in its proof.
 private theorem derivativeFun_coe_mul_coe (f g : R[X]) : derivativeFun (f * g : R⟦X⟧) =
-    f * derivative g + g * derivative f  := by
+    f * derivative g + g * derivative f := by
   rw [← coe_mul, derivativeFun_coe, derivative_mul,
     add_comm, mul_comm _ g, ← coe_mul, ← coe_mul, Polynomial.coe_add]
 
@@ -95,11 +95,11 @@ variable (R)
 
 /-- The formal derivative of a formal power series -/
 noncomputable def derivative : Derivation R R⟦X⟧ R⟦X⟧ where
-  toFun             := derivativeFun
-  map_add'          := derivativeFun_add
-  map_smul'         := derivativeFun_smul
-  map_one_eq_zero'  := derivativeFun_one
-  leibniz'          := derivativeFun_mul
+  toFun := derivativeFun
+  map_add' := derivativeFun_add
+  map_smul' := derivativeFun_smul
+  map_one_eq_zero' := derivativeFun_one
+  leibniz' := derivativeFun_mul
 /-- Abbreviation of `PowerSeries.derivative`, the formal derivative on `R⟦X⟧` -/
 scoped notation "d⁄dX" => derivative
 
@@ -125,7 +125,7 @@ theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
   trunc_derivativeFun ..
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
-    trunc (n-1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
+    trunc (n - 1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
   cases n with
   | zero =>
     simp
@@ -156,7 +156,7 @@ theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d
   simp
 
 @[simp] theorem derivative_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
-    d⁄dX R ⅟f = - ⅟f ^ 2 * d⁄dX R f := by
+    d⁄dX R ⅟f = -⅟f ^ 2 * d⁄dX R f := by
   rw [Derivation.leibniz_invOf, smul_eq_mul]
 
 /-

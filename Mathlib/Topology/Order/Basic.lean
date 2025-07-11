@@ -708,15 +708,15 @@ instance instIsCountablyGenerated_atBot [OrderTopology α] [SecondCountableTopol
 section Pi
 
 /-!
-### Intervals in `Π i, π i` belong to `𝓝 x`
+### Intervals in `Π i, X i` belong to `𝓝 x`
 
 For each lemma `pi_Ixx_mem_nhds` we add a non-dependent version `pi_Ixx_mem_nhds'` because
 sometimes Lean fails to unify different instances while trying to apply the dependent version to,
 e.g., `ι → ℝ`.
 -/
 
-variable [OrderTopology α] {ι : Type*} {π : ι → Type*} [Finite ι] [∀ i, LinearOrder (π i)]
-  [∀ i, TopologicalSpace (π i)] [∀ i, OrderTopology (π i)] {a b x : ∀ i, π i} {a' b' x' : ι → α}
+variable [OrderTopology α] {ι : Type*} {X : ι → Type*} [Finite ι] [∀ i, LinearOrder (X i)]
+  [∀ i, TopologicalSpace (X i)] [∀ i, OrderTopology (X i)] {a b x : ∀ i, X i} {a' b' x' : ι → α}
 
 theorem pi_Iic_mem_nhds (ha : ∀ i, x i < a i) : Iic a ∈ 𝓝 x :=
   pi_univ_Iic a ▸ set_pi_mem_nhds (Set.toFinite _) fun _ _ => Iic_mem_nhds (ha _)
@@ -745,7 +745,7 @@ theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
   pi_Iio_mem_nhds ha
 
 theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
-  pi_Iio_mem_nhds (π := fun i => (π i)ᵒᵈ) ha
+  pi_Iio_mem_nhds (X := fun i => (X i)ᵒᵈ) ha
 
 theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
   pi_Ioi_mem_nhds ha
