@@ -97,7 +97,7 @@ namespace Classifier
 
 attribute [instance] mono_truth
 
-/-- More explicit constructor in case already know that `Ω₀` is a terminal object. -/
+/-- More explicit constructor in case `Ω₀` is already known to be a terminal object. -/
 def fromTerminalΩ₀
     (Ω₀ : C)
     (t : IsTerminal Ω₀)
