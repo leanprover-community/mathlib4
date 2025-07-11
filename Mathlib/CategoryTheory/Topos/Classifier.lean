@@ -401,8 +401,7 @@ end
 noncomputable def isTerminalΩ₀ : IsTerminal (h.Ω₀ : C) :=
   IsTerminal.ofUniqueHom (fun X ↦ h.π (𝟙 X)) (fun X π' ↦ by
     have : IsPullback (𝟙 X) π' (π' ≫ h.Ω₀.arrow) h.Ω₀.arrow :=
-      { w := by simp
-        isLimit' := ⟨PullbackCone.IsLimit.mk _ (fun s ↦ s.fst) (by simp)
+      { isLimit' := ⟨PullbackCone.IsLimit.mk _ (fun s ↦ s.fst) (by simp)
           (fun s ↦ by rw [← cancel_mono h.Ω₀.arrow, ← s.condition, Category.assoc])
           (fun s m hm _ ↦ by simpa using hm) ⟩ }
     rw [← cancel_mono h.Ω₀.arrow, h.uniq this,
