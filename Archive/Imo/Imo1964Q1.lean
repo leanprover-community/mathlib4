@@ -11,7 +11,7 @@ import Mathlib.Tactic.Ring
 # IMO 1964 Q1
 
 (a) Find all positive integers $n$ for which $2^n-1$ is divisible by $7$.
-(b) Prove that there is no positive integer $n$ for which $2^n + 1$ is divisible by $7$.
+(b) Prove that there is no positive integer $n$ for which $2^n+1$ is divisible by $7$.
 
 For (a), we find that the order of $2$ mod $7$ is $3$. Therefore for (b), it suffices to check
 $n = 0, 1, 2$.

@@ -10,8 +10,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # IMO 2021 Q1
 
-Let `n ≥ 100` be an integer. Ivan writes the numbers `n, n + 1, ..., 2*n` each on different cards.
-He then shuffles these `n + 1` cards, and divides them into two piles. Prove that at least one
+Let `n ≥ 100` be an integer. Ivan writes the numbers `n, n+1, ..., 2*n` each on different cards.
+He then shuffles these `n+1` cards, and divides them into two piles. Prove that at least one
 of the piles contains two cards such that the sum of their numbers is a perfect square.
 
 # Solution

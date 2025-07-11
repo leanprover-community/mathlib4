@@ -206,7 +206,7 @@ theorem bijective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f
   ⟨s, surjective_of_injective_endomorphism f s⟩
 
 /-- A sequence `f` of submodules of an artinian module,
-with the supremum `f (n + 1)` and the infimum of `f 0`, ..., `f n` being ⊤,
+with the supremum `f (n+1)` and the infimum of `f 0`, ..., `f n` being ⊤,
 is eventually ⊤. -/
 theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
     (h : ∀ n, Disjoint (partialSups (OrderDual.toDual ∘ f) n) (OrderDual.toDual (f (n + 1)))) :

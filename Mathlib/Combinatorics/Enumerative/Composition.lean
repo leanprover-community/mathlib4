@@ -56,8 +56,8 @@ of `n`.
 * `splitWrtComposition_join` states that joining a list of lists, and then splitting it back
   according to the right composition, gives back the original list of lists.
 
-We turn to the second viewpoint on compositions, that we realize as a finset of `Fin (n + 1)`.
-`c : CompositionAsSet n` is a structure made of a finset of `Fin (n + 1)` called `c.boundaries`
+We turn to the second viewpoint on compositions, that we realize as a finset of `Fin (n+1)`.
+`c : CompositionAsSet n` is a structure made of a finset of `Fin (n+1)` called `c.boundaries`
 and proofs that it contains `0` and `n`. (Taking a finset of `Fin n` containing `0` would not
 make sense in the edge case `n = 0`, while the previous description works in all cases).
 The elements of this set (other than `n`) correspond to leftmost points of blocks.
@@ -806,7 +806,7 @@ end List
 /-!
 ### Compositions as sets
 
-Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n + 1)` containing `0` and
+Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` containing `0` and
 `n`, where the points of the set (other than `n`) correspond to the leftmost points of each block.
 -/
 

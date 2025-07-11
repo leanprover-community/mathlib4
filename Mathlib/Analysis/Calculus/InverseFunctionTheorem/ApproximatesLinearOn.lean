@@ -154,7 +154,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     to the desired point `x`. Instead of appealing to general results, we check this by hand.
 
     The main point is that `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n + 1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` stays in the ball on which one has a
     control. Therefore, the bound can be checked at the next step, and so on inductively.
     -/
@@ -206,7 +206,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         exact mem_closedBall'.1 hy
       _ = ε * (1 - c * f'symm.nnnorm) := by field_simp; ring
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n + 1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
     have estimates. -/
   have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧

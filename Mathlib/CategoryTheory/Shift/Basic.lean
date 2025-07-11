@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Monoidal.Discrete
 
 A `Shift` on a category `C` indexed by a monoid `A` is nothing more than a monoidal functor
 from `A` to `C ⥤ C`. A typical example to keep in mind might be the category of
-complexes `⋯ → C_{n-1} → C_n → C_{n + 1} → ⋯`. It has a shift indexed by `ℤ`, where we assign to
+complexes `⋯ → C_{n-1} → C_n → C_{n+1} → ⋯`. It has a shift indexed by `ℤ`, where we assign to
 each `n : ℤ` the functor `C ⥤ C` that re-indexes the terms, so the degree `i` term of `Shift n C`
 would be the degree `i+n`-th term of `C`.
 

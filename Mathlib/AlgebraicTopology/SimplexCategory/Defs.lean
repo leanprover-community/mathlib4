@@ -42,7 +42,7 @@ open CategoryTheory
 
 /-- The simplex category:
 * objects are natural numbers `n : ℕ`
-* morphisms from `n` to `m` are monotone functions `Fin (n + 1) → Fin (m+1)`
+* morphisms from `n` to `m` are monotone functions `Fin (n+1) → Fin (m+1)`
 -/
 def SimplexCategory :=
   ℕ

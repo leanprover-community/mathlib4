@@ -18,7 +18,7 @@ namespace Matrix
 
 variable {R : Type*} [CommRing R]
 
-/-- Let `M` be a `(n + 1) × n` matrix whose row sums to zero. Then all the matrices obtained by
+/-- Let `M` be a `(n+1) × n` matrix whose row sums to zero. Then all the matrices obtained by
 deleting one row have the same determinant up to a sign. -/
 theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
     (M : Matrix (Fin (n + 1)) (Fin n) R) (hv : ∑ j, M j = 0) (j₁ j₂ : Fin (n + 1)) :
@@ -48,7 +48,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
             Fin.succAbove_of_succ_le _ _ (Fin.succ_lt_succ_iff.mpr h).le]
         · rw [Fin.succAbove_succ_of_lt _ _ h, Fin.succAbove_castSucc_of_le _ _ h.le]
 
-/-- Let `M` be a `(n + 1) × n` matrix whose column sums to zero. Then all the matrices obtained by
+/-- Let `M` be a `(n+1) × n` matrix whose column sums to zero. Then all the matrices obtained by
 deleting one column have the same determinant up to a sign. -/
 theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
     (M : Matrix (Fin n) (Fin (n + 1)) R) (hv : ∀ i, ∑ j, M i j = 0) (j₁ j₂ : Fin (n + 1)) :
@@ -60,8 +60,8 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
   ext
   simp_rw [Finset.sum_apply, transpose_apply, hv, Pi.zero_apply]
 
-/-- Let `M` be a `(n + 1) × (n + 1)` matrix. Assume that all columns, but the `j₀`-column, sums to
-zero. Then its determinant is, up to sign, the sum of the `j₀`-column times the determinant of the
+/-- Let `M` be a `(n+1) × (n+1)` matrix. Assume that all columns, but the `j₀`-column, sums to zero.
+Then its determinant is, up to sign, the sum of the `j₀`-column times the determinant of the
 matrix obtained by deleting any row and the `j₀`-column. -/
 theorem det_eq_sum_column_mul_submatrix_succAbove_succAbove_det {n : ℕ}
     (M : Matrix (Fin (n + 1)) (Fin (n + 1)) R) (i₀ j₀ : Fin (n + 1))
@@ -76,7 +76,7 @@ theorem det_eq_sum_column_mul_submatrix_succAbove_succAbove_det {n : ℕ}
     rw [hv _ i.prop, mul_zero, zero_mul]
   simp [Finset.sum_const_zero, add_zero]
 
-/-- Let `M` be a `(n + 1) × (n + 1)` matrix. Assume that all rows, but the `i₀`-row, sums to zero.
+/-- Let `M` be a `(n+1) × (n+1)` matrix. Assume that all rows, but the `i₀`-row, sums to zero.
 Then its determinant is, up to sign, the sum of the `i₀`-row times the determinant of the
 matrix obtained by deleting the `i₀`-row and any column. -/
 theorem det_eq_sum_row_mul_submatrix_succAbove_succAbove_det {n : ℕ}

@@ -306,30 +306,30 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
 
-/-- In the specific case of multilinear maps on spaces indexed by `Fin (n + 1)`, where one can build
-an element of `∀ (i : Fin (n + 1)), M i` using `cons`, one can express directly the additivity of a
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `∀ (i : Fin (n+1)), M i` using `cons`, one can express directly the additivity of a
 multilinear map along the first variable. -/
 theorem cons_add (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (x y : M 0) :
     f (cons (x + y) m) = f (cons x m) + f (cons y m) := by
   simp_rw [← update_cons_zero x m (x + y), f.map_update_add, update_cons_zero]
 
-/-- In the specific case of multilinear maps on spaces indexed by `Fin (n + 1)`, where one can build
-an element of `∀ (i : Fin (n + 1)), M i` using `cons`, one can express directly the multiplicativity
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `∀ (i : Fin (n+1)), M i` using `cons`, one can express directly the multiplicativity
 of a multilinear map along the first variable. -/
 theorem cons_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (c : R) (x : M 0) :
     f (cons (c • x) m) = c • f (cons x m) := by
   simp_rw [← update_cons_zero x m (c • x), f.map_update_smul, update_cons_zero]
 
-/-- In the specific case of multilinear maps on spaces indexed by `Fin (n + 1)`, where one can build
-an element of `∀ (i : Fin (n + 1)), M i` using `snoc`, one can express directly the additivity of a
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `∀ (i : Fin (n+1)), M i` using `snoc`, one can express directly the additivity of a
 multilinear map along the first variable. -/
 theorem snoc_add (f : MultilinearMap R M M₂)
     (m : ∀ i : Fin n, M (castSucc i)) (x y : M (last n)) :
     f (snoc m (x + y)) = f (snoc m x) + f (snoc m y) := by
   simp_rw [← update_snoc_last x m (x + y), f.map_update_add, update_snoc_last]
 
-/-- In the specific case of multilinear maps on spaces indexed by `Fin (n + 1)`, where one can build
-an element of `∀ (i : Fin (n + 1)), M i` using `cons`, one can express directly the multiplicativity
+/-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
+an element of `∀ (i : Fin (n+1)), M i` using `cons`, one can express directly the multiplicativity
 of a multilinear map along the first variable. -/
 theorem snoc_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc i)) (c : R)
     (x : M (last n)) : f (snoc m (c • x)) = c • f (snoc m x) := by

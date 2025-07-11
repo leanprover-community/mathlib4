@@ -104,7 +104,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
       refine _root_.trans ?_ h
       rintro y ⟨x, hx, hy⟩
-      -- Since `b (n + 1)` is balanced `(n + 1)⁻¹ b (n + 1) ⊆ b (n + 1)`
+      -- Since `b (n + 1)` is balanced `(n+1)⁻¹ b (n + 1) ⊆ b (n + 1)`
       rw [← hy]
       refine (bE1 (n + 1)).2.smul_mem ?_ hx
       have h' : 0 < (n : ℝ) + 1 := n.cast_add_one_pos

@@ -26,7 +26,7 @@ This file expands on the development in the core library.
 * `Fin.castOrderIso` : `Fin.cast` as an `OrderIso`, order isomorphism between `Fin n` and `Fin m`
   provided that `n = m`, see also `Equiv.finCongr`;
 * `Fin.castAddOrderEmb m` : `Fin.castAdd` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+m)`;
-* `Fin.castSuccOrderEmb` : `Fin.castSucc` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`;
+* `Fin.castSuccOrderEmb` : `Fin.castSucc` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+1)`;
 * `Fin.addNatOrderEmb m i` : `Fin.addNat` as an `OrderEmbedding`, add `m` on `i` on the right,
   generalizes `Fin.succ`;
 * `Fin.natAddOrderEmb n i` : `Fin.natAdd` as an `OrderEmbedding`, adds `n` on `i` on the left;
@@ -361,7 +361,7 @@ def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (s
 
 /-- `Fin.castSucc` as an `OrderEmbedding`.
 
-`castSuccOrderEmb i` embeds `i : Fin n` in `Fin (n + 1)`. -/
+`castSuccOrderEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
 @[simps! apply toEmbedding]
 def castSuccOrderEmb : Fin n ↪o Fin (n + 1) := .ofStrictMono castSucc strictMono_castSucc
 

@@ -65,7 +65,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.eq <| succ_pred_eq_of_pos n.2
 
-/-- Convert a natural number to a `PNat`. `n + 1` is mapped to itself,
+/-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
 def toPNat' (n : ℕ) : ℕ+ :=
   succPNat (pred n)

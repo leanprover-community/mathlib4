@@ -898,10 +898,9 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
 section Complete
 
 /- We will show that a sequence `u n` of compact metric spaces satisfying
-`dist (u n) (u (n + 1)) < 1/2^n` converges, which implies completeness of the Gromov-Hausdorff
-space.
+`dist (u n) (u (n+1)) < 1/2^n` converges, which implies completeness of the Gromov-Hausdorff space.
 We need to exhibit the limiting compact metric space. For this, start from
-a sequence `X n` of representatives of `u n`, and glue in an optimal way `X n` to `X (n + 1)`
+a sequence `X n` of representatives of `u n`, and glue in an optimal way `X n` to `X (n+1)`
 for all `n`, in a common metric space. Formally, this is done as follows.
 Start from `Y 0 = X 0`. Then, glue `X 0` to `X 1` in an optimal way, yielding a space
 `Y 1` (with an embedding of `X 1`). Then, consider an optimal gluing of `X 1` and `X 2`, and
@@ -931,8 +930,8 @@ instance (A : Type) [MetricSpace A] : Inhabited (AuxGluingStruct A) :=
       isom _ _ := rfl }⟩
 
 /-- Auxiliary sequence of metric spaces, containing copies of `X 0`, ..., `X n`, where each
-`X i` is glued to `X (i+1)` in an optimal way. The space at step `n + 1` is obtained from the space
-at step `n` by adding `X (n + 1)`, glued in an optimal way to the `X n` already sitting there. -/
+`X i` is glued to `X (i+1)` in an optimal way. The space at step `n+1` is obtained from the space
+at step `n` by adding `X (n+1)`, glued in an optimal way to the `X n` already sitting there. -/
 def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
   Nat.recOn n default fun n Y =>
     { Space := GlueSpace Y.isom (isometry_optimalGHInjl (X n) (X (n + 1)))
@@ -958,7 +957,7 @@ instance : CompleteSpace GHSpace := by
     fun n => by dsimp only [Y, auxGluing]
   let c n := cast (E n)
   have ic : ∀ n, Isometry (c n) := fun n x y => by dsimp only [Y, auxGluing]; exact rfl
-  -- there is a canonical embedding of `Y n` in `Y (n + 1)`, by construction
+  -- there is a canonical embedding of `Y n` in `Y (n+1)`, by construction
   let f : ∀ n, (Y n).Space → (Y (n + 1)).Space := fun n =>
     c n ∘ toGlueL (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ))
   have I : ∀ n, Isometry (f n) := fun n => (ic n).comp (toGlueL_isometry _ _)
@@ -973,8 +972,8 @@ instance : CompleteSpace GHSpace := by
     intro n
     refine UniformSpace.Completion.coe_isometry.comp ?_
     exact (toInductiveLimit_isometry _ _).comp (Y n).isom
-  -- The Hausdorff distance of `X2 n` and `X2 (n + 1)` is by construction the distance between
-  -- `u n` and `u (n + 1)`, therefore bounded by `1/2^n`
+  -- The Hausdorff distance of `X2 n` and `X2 (n+1)` is by construction the distance between
+  -- `u n` and `u (n+1)`, therefore bounded by `1/2^n`
   have X2n : ∀ n, X2 n =
     range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
       (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjl (X n) (X n.succ)) := by

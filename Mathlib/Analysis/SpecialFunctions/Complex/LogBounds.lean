@@ -11,7 +11,7 @@ import Mathlib.Analysis.Calculus.Deriv.Shift
 # Estimates for the complex logarithm
 
 We show that `log (1+z)` differs from its Taylor polynomial up to degree `n` by at most
-`‖z‖^(n + 1)/((n + 1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.norm_log_sub_logTaylor_le`.
+`‖z‖^(n+1)/((n+1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.norm_log_sub_logTaylor_le`.
 
 To this end, we derive the representation of `log (1+z)` as the integral of `1/(1+tz)`
 over the unit interval (`Complex.log_eq_integral`) and introduce notation
@@ -128,7 +128,7 @@ lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ 
   exact ContinuousOn.intervalIntegrable (by fun_prop)
 
 open intervalIntegral in
-/-- The difference of `log (1+z)` and its `(n + 1)`st Taylor polynomial can be bounded in
+/-- The difference of `log (1+z)` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
 lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - logTaylor (n + 1) z‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by
@@ -216,7 +216,7 @@ lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log 
     IsUnit.div_mul_cancel] at hz4
   linarith
 
-/-- The difference of `log (1 - z)⁻¹` and its `(n + 1)`st Taylor polynomial can be bounded in
+/-- The difference of `log (1-z)⁻¹` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
 lemma norm_log_one_sub_inv_add_logTaylor_neg_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 - z)⁻¹ + logTaylor (n + 1) (-z)‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by
@@ -225,7 +225,7 @@ lemma norm_log_one_sub_inv_add_logTaylor_neg_le (n : ℕ) {z : ℂ} (hz : ‖z�
     ← sub_neg_eq_add, ← neg_sub', norm_neg]
   convert norm_log_sub_logTaylor_le n <| (norm_neg z).symm ▸ hz using 4 <;> rw [norm_neg]
 
-/-- The difference `log (1 - z)⁻¹ - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
+/-- The difference `log (1-z)⁻¹ - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
 lemma norm_log_one_sub_inv_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 - z)⁻¹ - z‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 := by
   convert norm_log_one_sub_inv_add_logTaylor_neg_le 1 hz using 2
@@ -267,7 +267,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
     convert isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz
     exact (one_pow _).symm
 
-/-- The series `∑ z^n/n` converges to `-log (1 - z)` on the open unit disk. -/
+/-- The series `∑ z^n/n` converges to `-log (1-z)` on the open unit disk. -/
 lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ z ^ n / n) (-log (1 - z)) := by
   conv => enter [1, n]; rw [← neg_neg (z ^ n / n)]

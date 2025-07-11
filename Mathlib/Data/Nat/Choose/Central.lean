@@ -20,7 +20,7 @@ This file proves properties of the central binomial coefficients (that is, `Nat.
   coefficients.
 * `Nat.four_pow_lt_mul_centralBinom`: an exponential lower bound on the central binomial
   coefficient.
-* `succ_dvd_centralBinom`: The result that `n + 1 ∣ n.centralBinom`, ensuring that the explicit
+* `succ_dvd_centralBinom`: The result that `n+1 ∣ n.centralBinom`, ensuring that the explicit
   definition of the Catalan numbers is integer-valued.
 -/
 

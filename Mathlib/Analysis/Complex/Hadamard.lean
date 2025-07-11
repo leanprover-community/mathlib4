@@ -82,7 +82,7 @@ variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E) (z : ℂ)
 /--
 The inverse of the interpolation of `sSupNormIm` on the two boundaries.
 In other words, this is the inverse of the right side of the target inequality:
-`|f(z)| ≤ |M(0) ^ (1 - z)| * |M(1) ^ z|`.
+`|f(z)| ≤ |M(0) ^ (1-z)| * |M(1) ^ z|`.
 
 Shifting this by a positive epsilon allows us to prove the case when either of the boundaries
 is zero. -/
@@ -239,7 +239,7 @@ variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E)
 /--
 The interpolation of `sSupNormIm` on the two boundaries.
 In other words, this is the right side of the target inequality:
-`|f(z)| ≤ |M(0) ^ (1 - z)| * |M(1) ^ z|`.
+`|f(z)| ≤ |M(0) ^ (1-z)| * |M(1) ^ z|`.
 
 Note that if `sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0` then the power is not continuous
 since `0 ^ 0 = 1`. Hence the use of `ite`. -/

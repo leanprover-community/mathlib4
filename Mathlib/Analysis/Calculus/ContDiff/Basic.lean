@@ -624,7 +624,7 @@ section comp
 
 We show that the composition of `C^n` functions is `C^n`. One way to do this would be to
 use the following simple inductive proof. Assume it is done for `n`.
-Then, to check it for `n + 1`, one needs to check that the derivative of `g ∘ f` is `C^n`, i.e.,
+Then, to check it for `n+1`, one needs to check that the derivative of `g ∘ f` is `C^n`, i.e.,
 that `Dg(f x) ⬝ Df(x)` is `C^n`. The term `Dg (f x)` is the composition of two `C^n` functions, so
 it is `C^n` by the inductive assumption. The term `Df(x)` is also `C^n`. Then, the matrix
 multiplication is the application of a bilinear map (which is `C^∞`, and therefore `C^n`) to
@@ -1146,15 +1146,15 @@ section bundled
 
 /-- One direction of `contDiffWithinAt_succ_iff_hasFDerivWithinAt`, but where all derivatives are
 taken within the same set. Version for partial derivatives / functions with parameters. If `f x` is
-a `C^{n + 1}` family of functions and `g x` is a `C^n` family of points, then the derivative of
-`f x` at `g x` depends in a `C^n` way on `x`. We give a general version of this fact relative to
-sets which may not have unique derivatives, in the following form.  If `f : E × F → G` is
-`C^{n + 1}` at `(x₀, g(x₀))` in `(s ∪ {x₀}) × t ⊆ E × F` and `g : E → F` is `C^n` at `x₀` within
-some set `s ⊆ E`, then there is a function `f' : E → F →L[𝕜] G` that is `C^n` at `x₀` within `s`
-such that for all `x` sufficiently close to `x₀` within `s ∪ {x₀}` the function `y ↦ f x y` has
-derivative `f' x` at `g x` within `t ⊆ F`.  For convenience, we return an explicit set of `x`'s
-where this holds that is a subset of `s ∪ {x₀}`.  We need one additional condition, namely that
-`t` is a neighborhood of `g(x₀)` within `g '' s`. -/
+a `C^n+1` family of functions and `g x` is a `C^n` family of points, then the derivative of `f x` at
+`g x` depends in a `C^n` way on `x`. We give a general version of this fact relative to sets which
+may not have unique derivatives, in the following form.  If `f : E × F → G` is `C^n+1` at
+`(x₀, g(x₀))` in `(s ∪ {x₀}) × t ⊆ E × F` and `g : E → F` is `C^n` at `x₀` within some set `s ⊆ E`,
+then there is a function `f' : E → F →L[𝕜] G` that is `C^n` at `x₀` within `s` such that for all `x`
+sufficiently close to `x₀` within `s ∪ {x₀}` the function `y ↦ f x y` has derivative `f' x` at `g x`
+within `t ⊆ F`.  For convenience, we return an explicit set of `x`'s where this holds that is a
+subset of `s ∪ {x₀}`.  We need one additional condition, namely that `t` is a neighborhood of
+`g(x₀)` within `g '' s`. -/
 theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F} {t : Set F} (hn : n ≠ ∞)
     {x₀ : E} (hf : ContDiffWithinAt 𝕜 (n + 1) (uncurry f) (insert x₀ s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 n g s x₀) (hgt : t ∈ 𝓝[g '' s] g x₀) :
@@ -1360,7 +1360,7 @@ theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
     (hnm : n + 1 ≤ m) : ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) (k x) :=
   (hf.fderiv hg hnm).clm_apply hk
 
-/-- The bundled derivative of a `C^{n + 1}` function is `C^n`. -/
+/-- The bundled derivative of a `C^{n+1}` function is `C^n`. -/
 theorem contDiffOn_fderivWithin_apply {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (fun p : E × E => (fderivWithin 𝕜 f s p.1 : E →L[𝕜] F) p.2) (s ×ˢ univ) :=
@@ -1374,7 +1374,7 @@ theorem ContDiffOn.continuousOn_fderivWithin_apply (hf : ContDiffOn 𝕜 n f s) 
     ContinuousOn (fun p : E × E => (fderivWithin 𝕜 f s p.1 : E → F) p.2) (s ×ˢ univ) :=
   (contDiffOn_fderivWithin_apply (m := 0) hf hs hn).continuousOn
 
-/-- The bundled derivative of a `C^{n + 1}` function is `C^n`. -/
+/-- The bundled derivative of a `C^{n+1}` function is `C^n`. -/
 theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :
     ContDiff 𝕜 m fun p : E × E => (fderiv 𝕜 f p.1 : E →L[𝕜] F) p.2 := by
   rw [← contDiffOn_univ] at hf ⊢

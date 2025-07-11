@@ -235,7 +235,7 @@ theorem le_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k 
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ <;>
     simp [_root_.pow_succ', mul_assoc, le_refl]
 
-/-- If a sequence `v` of real numbers satisfies `k * v n ≤ v (n + 1)` with `1 < k`,
+/-- If a sequence `v` of real numbers satisfies `k * v n ≤ v (n+1)` with `1 < k`,
 then it goes to +∞. -/
 theorem tendsto_atTop_of_geom_le {v : ℕ → ℝ} {c : ℝ} (h₀ : 0 < v 0) (hc : 1 < c)
     (hu : ∀ n, c * v n ≤ v (n + 1)) : Tendsto v atTop atTop :=
@@ -414,7 +414,7 @@ variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
 
 include hr hC hu in
-/-- If `edist (f n) (f (n + 1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
+/-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
 then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine cauchySeq_of_edist_le_of_tsum_ne_top _ hu ?_
@@ -423,7 +423,7 @@ theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   finiteness
 
 include hu in
-/-- If `edist (f n) (f (n + 1))` is bounded by `C * r^n`, then the distance from
+/-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f n` to the limit of `f` is bounded above by `C * r^n / (1 - r)`. -/
 theorem edist_le_of_edist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     edist (f n) a ≤ C * r ^ n / (1 - r) := by
@@ -431,7 +431,7 @@ theorem edist_le_of_edist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop
   simp only [pow_add, ENNReal.tsum_mul_left, ENNReal.tsum_geometric, div_eq_mul_inv, mul_assoc]
 
 include hu in
-/-- If `edist (f n) (f (n + 1))` is bounded by `C * r^n`, then the distance from
+/-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C / (1 - r)`. -/
 theorem edist_le_of_edist_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f atTop (𝓝 a)) :
     edist (f 0) a ≤ C / (1 - r) := by
@@ -445,14 +445,14 @@ variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → 
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
 
 include hC hu in
-/-- If `edist (f n) (f (n + 1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
+/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
   refine cauchySeq_of_edist_le_geometric 2⁻¹ C ?_ hC hu
   simp
 
 include hu ha in
-/-- If `edist (f n) (f (n + 1))` is bounded by `C * 2^-n`, then the distance from
+/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f n` to the limit of `f` is bounded above by `2 * C * 2^-n`. -/
 theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a ≤ 2 * C / 2 ^ n := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at *
@@ -461,7 +461,7 @@ theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a 
   rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, inv_inv]
 
 include hu ha in
-/-- If `edist (f n) (f (n + 1))` is bounded by `C * 2^-n`, then the distance from
+/-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `2 * C`. -/
 theorem edist_le_of_edist_le_geometric_two_of_tendsto₀ : edist (f 0) a ≤ 2 * C := by
   simpa only [_root_.pow_zero, div_eq_mul_inv, inv_one, mul_one] using
@@ -477,7 +477,7 @@ section
 variable (hr : r < 1) (hu : ∀ n, dist (f n) (f (n + 1)) ≤ C * r ^ n)
 include hr hu
 
-/-- If `dist (f n) (f (n + 1))` is bounded by `C * r^n`, `r < 1`, then `f` is a Cauchy sequence. -/
+/-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then `f` is a Cauchy sequence. -/
 theorem aux_hasSum_of_le_geometric : HasSum (fun n : ℕ ↦ C * r ^ n) (C / (1 - r)) := by
   rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ dist_nonneg.trans (hu n) with (rfl | ⟨_, r₀⟩)
   · simp [hasSum_zero]
@@ -486,19 +486,19 @@ theorem aux_hasSum_of_le_geometric : HasSum (fun n : ℕ ↦ C * r ^ n) (C / (1 
 
 variable (r C)
 
-/-- If `dist (f n) (f (n + 1))` is bounded by `C * r^n`, `r < 1`, then `f` is a Cauchy sequence.
+/-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then `f` is a Cauchy sequence.
 Note that this lemma does not assume `0 ≤ C` or `0 ≤ r`. -/
 theorem cauchySeq_of_le_geometric : CauchySeq f :=
   cauchySeq_of_dist_le_of_summable _ hu ⟨_, aux_hasSum_of_le_geometric hr hu⟩
 
-/-- If `dist (f n) (f (n + 1))` is bounded by `C * r^n`, `r < 1`, then the distance from
+/-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then the distance from
 `f n` to the limit of `f` is bounded above by `C * r^n / (1 - r)`. -/
 theorem dist_le_of_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f atTop (𝓝 a)) :
     dist (f 0) a ≤ C / (1 - r) :=
   (aux_hasSum_of_le_geometric hr hu).tsum_eq ▸
     dist_le_tsum_of_dist_le_of_tendsto₀ _ hu ⟨_, aux_hasSum_of_le_geometric hr hu⟩ ha
 
-/-- If `dist (f n) (f (n + 1))` is bounded by `C * r^n`, `r < 1`, then the distance from
+/-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C / (1 - r)`. -/
 theorem dist_le_of_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ C * r ^ n / (1 - r) := by
@@ -513,17 +513,17 @@ end
 variable (hu₂ : ∀ n, dist (f n) (f (n + 1)) ≤ C / 2 / 2 ^ n)
 include hu₂
 
-/-- If `dist (f n) (f (n + 1))` is bounded by `(C / 2) / 2^n`, then `f` is a Cauchy sequence. -/
+/-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_geometric_two : CauchySeq f :=
   cauchySeq_of_dist_le_of_summable _ hu₂ <| ⟨_, hasSum_geometric_two' C⟩
 
-/-- If `dist (f n) (f (n + 1))` is bounded by `(C / 2) / 2^n`, then the distance from
+/-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C`. -/
 theorem dist_le_of_le_geometric_two_of_tendsto₀ {a : α} (ha : Tendsto f atTop (𝓝 a)) :
     dist (f 0) a ≤ C :=
   tsum_geometric_two' C ▸ dist_le_tsum_of_dist_le_of_tendsto₀ _ hu₂ (summable_geometric_two' C) ha
 
-/-- If `dist (f n) (f (n + 1))` is bounded by `(C / 2) / 2^n`, then the distance from
+/-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then the distance from
 `f n` to the limit of `f` is bounded above by `C / 2^n`. -/
 theorem dist_le_of_le_geometric_two_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ C / 2 ^ n := by

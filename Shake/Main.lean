@@ -306,7 +306,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
       for stx in imports do
         if toRemove.any fun i => s.modNames[i]! == importId stx then
           let pos := inputCtx.fileMap.toPosition stx.raw.getPos?.get!
-          println! "{path}:{pos.line}:{pos.column + 1}: warning: unused import \
+          println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
             (use `lake exe shake --fix` to fix this, or `lake exe shake --update` to ignore)"
       if !toAdd.isEmpty then
         -- we put the insert message on the beginning of the last import line

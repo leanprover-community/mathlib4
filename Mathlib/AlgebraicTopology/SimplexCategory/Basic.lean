@@ -101,7 +101,7 @@ without identifying `n` with `⦋n⦌.len`.
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ⦋n⦌ ⟶ ⦋m⦌ :=
   SimplexCategory.Hom.mk f
 
-/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out a specified `h : i ≤ j` in `Fin (n + 1)`. -/
+/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out a specified `h : i ≤ j` in `Fin (n+1)`. -/
 def mkOfLe {n} (i j : Fin (n + 1)) (h : i ≤ j) : ⦋1⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j
@@ -122,7 +122,7 @@ def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
   mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)
 
-/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the arrow `i ⟶ i+1` in `Fin (n + 1)`. -/
+/-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`. -/
 def mkOfSucc {n} (i : Fin n) : ⦋1⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i.castSucc | 1 => i.succ
@@ -140,7 +140,7 @@ lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
     DFunLike.coe (F := Fin 2 →o Fin (n + 1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
 
 
-/-- The morphism `⦋2⦌ ⟶ ⦋n⦌` that picks out a specified composite of morphisms in `Fin (n + 1)`. -/
+/-- The morphism `⦋2⦌ ⟶ ⦋n⦌` that picks out a specified composite of morphisms in `Fin (n+1)`. -/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
     ⦋2⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
@@ -152,7 +152,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
       | 0, 2, _ => Fin.le_trans h₁ h₂
   }
 
-/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n + 1)`. -/
+/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n+1)`. -/
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
@@ -224,11 +224,11 @@ TODO: prove that the simplex category is equivalent to
 one given by the following generators and relations.
 -/
 
-/-- The `i`-th face map from `⦋n⦌` to `⦋n + 1⦌` -/
+/-- The `i`-th face map from `⦋n⦌` to `⦋n+1⦌` -/
 def δ {n} (i : Fin (n + 2)) : ⦋n⦌ ⟶ ⦋n + 1⦌ :=
   mkHom (Fin.succAboveOrderEmb i).toOrderHom
 
-/-- The `i`-th degeneracy map from `⦋n + 1⦌` to `⦋n⦌` -/
+/-- The `i`-th degeneracy map from `⦋n+1⦌` to `⦋n⦌` -/
 def σ {n} (i : Fin (n + 1)) : ⦋n + 1⦌ ⟶ ⦋n⦌ :=
   mkHom i.predAboveOrderHom
 
@@ -394,7 +394,7 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
         (Fin.succ_le_castSucc_iff.mpr h)]
 
 /--
-If `f : ⦋m⦌ ⟶ ⦋n + 1⦌` is a morphism and `j` is not in the range of `f`,
+If `f : ⦋m⦌ ⟶ ⦋n+1⦌` is a morphism and `j` is not in the range of `f`,
 then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that
 `factor_δ f j ≫ δ j = f` (as witnessed by `factor_δ_spec`).
 -/

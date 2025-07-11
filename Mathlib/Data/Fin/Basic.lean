@@ -27,7 +27,7 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.castLEEmb h` : `Fin.castLE` as an `Embedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
 * `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `Embedding`, embed `Fin n` into `Fin (n+m)`;
-* `Fin.castSuccEmb` : `Fin.castSucc` as an `Embedding`, embed `Fin n` into `Fin (n + 1)`;
+* `Fin.castSuccEmb` : `Fin.castSucc` as an `Embedding`, embed `Fin n` into `Fin (n+1)`;
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `Embedding`, add `m` on `i` on the right,
   generalizes `Fin.succ`;
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
@@ -198,7 +198,7 @@ theorem val_pos_iff [NeZero n] {a : Fin n} : 0 < a.val ↔ 0 < a := by
   rw [← val_fin_lt, val_zero]
 
 /--
-The `Fin.pos_iff_ne_zero` in `Lean` only applies in `Fin (n + 1)`.
+The `Fin.pos_iff_ne_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
@@ -455,7 +455,7 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 -- Note the `'` swapped around due to a move to std4.
 
 /--
-The `Fin.le_zero_iff` in `Lean` only applies in `Fin (n + 1)`.
+The `Fin.le_zero_iff` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -592,7 +592,7 @@ theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
    fun h => h.elim (fun ⟨i, hi⟩ => ⟨i.castSucc, hi⟩) (fun h => ⟨.last _, h⟩)⟩
 
 /--
-The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n + 1)`.
+The `Fin.castSucc_zero` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
@@ -603,7 +603,7 @@ theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by
 
 /-- `castSucc i` is positive when `i` is positive.
 
-The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n + 1)`.
+The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
@@ -1098,7 +1098,7 @@ end SuccAbove
 
 section PredAbove
 
-/-- `predAbove p i` surjects `i : Fin (n + 1)` into `Fin n` by subtracting one if `p < i`. -/
+/-- `predAbove p i` surjects `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`. -/
 def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
   if h : castSucc p < i
   then pred i (Fin.ne_zero_of_lt h)
@@ -1202,8 +1202,8 @@ lemma predAbove_last_apply {i : Fin (n + 2)} :
   · rw [hi, predAbove_right_last]
   · rw [predAbove_last_of_ne_last hi]
 
-/-- Sending `Fin (n + 1)` to `Fin n` by subtracting one from anything above `p`
-then back to `Fin (n + 1)` with a gap around `p` is the identity away from `p`. -/
+/-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
+then back to `Fin (n+1)` with a gap around `p` is the identity away from `p`. -/
 @[simp]
 lemma succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
     p.castSucc.succAbove (p.predAbove i) = i := by
@@ -1211,8 +1211,8 @@ lemma succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
   · rw [predAbove_of_le_castSucc _ _ (Fin.le_of_lt h), succAbove_castPred_of_lt _ _ h]
   · rw [predAbove_of_castSucc_lt _ _ h, succAbove_pred_of_lt _ _ h]
 
-/-- Sending `Fin (n + 1)` to `Fin n` by subtracting one from anything above `p`
-then back to `Fin (n + 1)` with a gap around `p.succ` is the identity away from `p.succ`. -/
+/-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
+then back to `Fin (n+1)` with a gap around `p.succ` is the identity away from `p.succ`. -/
 @[simp]
 lemma succ_succAbove_predAbove {n : ℕ} {p : Fin n} {i : Fin (n + 1)} (h : i ≠ p.succ) :
     p.succ.succAbove (p.predAbove i) = i := by

@@ -144,7 +144,7 @@ example (a b : ℕ) (h : a ≠ b) : a + 1 ≠ b + 1 := by
 -- TODO
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 := by
---   apply_fun (fun n ↦ n + 1) at h
+--   apply_fun (fun n ↦ n+1) at h
 --   exact h
 
 example {n : Type} [Fintype n] {X : Type} [Semiring X]

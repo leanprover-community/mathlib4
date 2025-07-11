@@ -11,7 +11,7 @@ import Mathlib.Data.ENat.Lattice
 /-!
 # Iterated derivatives of a function
 
-In this file, we define iteratively the `n + 1`-th derivative of a function as the
+In this file, we define iteratively the `n+1`-th derivative of a function as the
 derivative of the `n`-th derivative. It is called `iteratedFDeriv 𝕜 n f x` where `𝕜` is the
 field, `n` is the number of iterations, `f` is the function and `x` is the point, and it is given
 as an `n`-multilinear map. We also define a version `iteratedFDerivWithin` relative to a domain.
@@ -48,12 +48,12 @@ may also be seen as the space of continuous multilinear functions on `n` copies 
 values in `F`, by uncurrying. This is the point of view that is usually adopted in textbooks,
 and that we also use. This means that the definition and the first proofs are slightly involved,
 as one has to keep track of the uncurrying operation. The uncurrying can be done from the
-left or from the right, amounting to defining the `n + 1`-th derivative either as the derivative of
+left or from the right, amounting to defining the `n+1`-th derivative either as the derivative of
 the `n`-th derivative, or as the `n`-th derivative of the derivative.
 For proofs, it would be more convenient to use the latter approach (from the right),
-as it means to prove things at the `n + 1`-th step we only need to understand well enough the
+as it means to prove things at the `n+1`-th step we only need to understand well enough the
 derivative in `E →L[𝕜] F` (contrary to the approach from the left, where one would need to know
-enough on the `n`-th derivative to deduce things on the `n + 1`-th derivative).
+enough on the `n`-th derivative to deduce things on the `n+1`-th derivative).
 
 However, the definition from the right leads to a universe polymorphism problem: if we define
 `iteratedFDeriv 𝕜 (n + 1) f x = iteratedFDeriv 𝕜 n (fderiv 𝕜 f) x` by induction, we need to
@@ -247,7 +247,7 @@ theorem HasFTaylorSeriesUpToOn.differentiableAt (h : HasFTaylorSeriesUpToOn n f 
     (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
   (h.hasFDerivAt hn hx).differentiableAt
 
-/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p` is a Taylor series up to `n`, and
+/-- `p` is a Taylor series of `f` up to `n+1` if and only if `p` is a Taylor series up to `n`, and
 `p (n + 1)` is a derivative of `p n`. -/
 theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
@@ -298,8 +298,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     rw [Nat.cast_le] at hm ⊢
     exact Nat.succ_le_succ hm
 
-/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to
-`n` for `p 1`, which is a derivative of `f`. Version for `n : ℕ`. -/
+/-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
+for `p 1`, which is a derivative of `f`. Version for `n : ℕ`. -/
 theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
@@ -358,8 +358,8 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
     rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
     exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (natCast_le_of_coe_top_le_withTop hN n)⟩
 
-/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to
-`n` for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
+/-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
+for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
 theorem hasFTaylorSeriesUpToOn_succ_iff_right :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
@@ -376,9 +376,9 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right :
 
 variable (𝕜)
 
-/-- The `n`-th derivative of a function along a set, defined inductively by saying that the
-`n + 1`-th derivative of `f` is the derivative of the `n`-th derivative of `f` along this set,
-together with an uncurrying step to see it as a multilinear map in `n + 1` variables..
+/-- The `n`-th derivative of a function along a set, defined inductively by saying that the `n+1`-th
+derivative of `f` is the derivative of the `n`-th derivative of `f` along this set, together with
+an uncurrying step to see it as a multilinear map in `n+1` variables..
 -/
 noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E[×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
@@ -414,7 +414,7 @@ theorem iteratedFDerivWithin_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
       (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x : E → E[×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
 
-/-- Writing explicitly the `n + 1`-th derivative as the composition of a currying linear equiv,
+/-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the derivative of the `n`-th derivative. -/
 theorem iteratedFDerivWithin_succ_eq_comp_left {n : ℕ} :
     iteratedFDerivWithin 𝕜 (n + 1) f s =
@@ -484,7 +484,7 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         rw [iteratedFDerivWithin_succ_apply_left, tail_init_eq_init_tail]
         rfl
 
-/-- Writing explicitly the `n + 1`-th derivative as the composition of a currying linear equiv,
+/-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the `n`-th derivative of the derivative. -/
 theorem iteratedFDerivWithin_succ_eq_comp_right {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 (n + 1) f s x =
@@ -754,8 +754,8 @@ theorem HasFTaylorSeriesUpTo.hasFDerivAt (h : HasFTaylorSeriesUpTo n f p) (hn : 
 theorem HasFTaylorSeriesUpTo.differentiable (h : HasFTaylorSeriesUpTo n f p) (hn : 1 ≤ n) :
     Differentiable 𝕜 f := fun x => (h.hasFDerivAt hn x).differentiableAt
 
-/-- `p` is a Taylor series of `f` up to `n + 1` if and only if `p.shift` is a Taylor series up to
-`n` for `p 1`, which is a derivative of `f`. -/
+/-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
+for `p 1`, which is a derivative of `f`. -/
 theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpTo (n + 1 : ℕ) f p ↔
       (∀ x, (p x 0).curry0 = f x) ∧
@@ -804,7 +804,7 @@ theorem iteratedFDeriv_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
       (fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x : E → E[×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
 
-/-- Writing explicitly the `n + 1`-th derivative as the composition of a currying linear equiv,
+/-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the derivative of the `n`-th derivative. -/
 theorem iteratedFDeriv_succ_eq_comp_left {n : ℕ} :
     iteratedFDeriv 𝕜 (n + 1) f =
@@ -895,7 +895,7 @@ theorem iteratedFDeriv_succ_apply_right {n : ℕ} (m : Fin (n + 1) → E) :
   rw [← iteratedFDerivWithin_univ, ← iteratedFDerivWithin_univ, ← fderivWithin_univ]
   exact iteratedFDerivWithin_succ_apply_right uniqueDiffOn_univ (mem_univ _) _
 
-/-- Writing explicitly the `n + 1`-th derivative as the composition of a currying linear equiv,
+/-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the `n`-th derivative of the derivative. -/
 theorem iteratedFDeriv_succ_eq_comp_right {n : ℕ} :
     iteratedFDeriv 𝕜 (n + 1) f x =

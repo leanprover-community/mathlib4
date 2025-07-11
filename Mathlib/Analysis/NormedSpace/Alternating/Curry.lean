@@ -24,10 +24,10 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
 namespace ContinuousAlternatingMap
 
-/-- Given a continuous alternating map `f` in `n + 1` variables, split the first variable to obtain
+/-- Given a continuous alternating map `f` in `n+1` variables, split the first variable to obtain
 a continuous linear map into continuous alternating maps in `n` variables,
 given by `x ↦ (m ↦ f (Matrix.vecCons x m))`.
-It can be thought of as a map $Hom(\bigwedge^{n + 1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))$.
+It can be thought of as a map $Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedge^n M, N))$.
 
 This is `ContinuousMultilinearMap.curryLeft` for `AlternatingMap`. See also
 `ContinuousAlternatingMap.curryLeftLI`. -/

@@ -21,7 +21,7 @@ Fix a base value `p : ℕ`.
 The `p`-adic Witt polynomials are an infinite family of polynomials
 indexed by a natural number `n`, taking values in an arbitrary ring `R`.
 The variables of these polynomials are represented by natural numbers.
-The variable set of the `n`th Witt polynomial contains at most `n + 1` elements `{0, ..., n}`,
+The variable set of the `n`th Witt polynomial contains at most `n+1` elements `{0, ..., n}`,
 with exactly these variables when `R` has characteristic `0`.
 
 These polynomials are used to define the addition and multiplication operators
@@ -137,7 +137,7 @@ theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ →
     aeval f (W_ R n) = ∑ i ∈ range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
   simp [wittPolynomial, map_sum, aeval_monomial, Finsupp.prod_single_index]
 
-/-- Over the ring `ZMod (p^(n + 1))`, we produce the `n + 1`st Witt polynomial
+/-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
 by expanding the `n`th Witt polynomial by `p`. -/
 @[simp]
 theorem wittPolynomial_zmod_self (n : ℕ) :

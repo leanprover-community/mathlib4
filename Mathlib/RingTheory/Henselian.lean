@@ -179,7 +179,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit
-      -- `hfcI`  : for every `n`, `f.eval (c n)` is contained in `I ^ (n + 1)`
+      -- `hfcI`  : for every `n`, `f.eval (c n)` is contained in `I ^ (n+1)`
       have hc_mod : ∀ n, c n ≡ a₀ [SMOD I] := by
         intro n
         induction' n with n ih

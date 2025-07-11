@@ -115,7 +115,7 @@ theorem exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
   refine ⟨ifp_n, seq_nth_eq, ?_⟩
   simpa only [IntFractPair.of, Int.fract, sub_eq_zero] using succ_nth_fr_eq_zero
 
-/-- A recurrence relation that expresses the `(n + 1)`th term of the stream of `IntFractPair`s
+/-- A recurrence relation that expresses the `(n+1)`th term of the stream of `IntFractPair`s
 of `v` for non-integer `v` in terms of the `n`th term of the stream associated to
 the inverse of the fractional part of `v`.
 -/
