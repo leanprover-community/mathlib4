@@ -106,7 +106,8 @@ variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
 open Classical in
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
 def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
-  (withZeroUnitsHom).comp <| WithZero.map' (valueGroup f).subtype
+  MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
+    <| WithZero.map' (valueGroup f).subtype
 
 
 variable (f) in
