@@ -325,7 +325,6 @@ protected noncomputable abbrev _root_.Equiv.linearOrder [instβ: LinearOrder β]
   toDecidableEq a b := by
     rw [← e.left_inv a, ← e.left_inv b]
     apply foo e.symm (instβ.toDecidableEq ..)
-    -- exact Classical.propDecidable (e.invFun (
   toDecidableLE a b := instβ.toDecidableLE ..
 
 end order
@@ -336,16 +335,21 @@ vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 -- TODO: is this true if E is infinite-dimensional? trace the origin of the `Fintype` assumptions!
 lemma congr_of_forall_product [FiniteDimensional ℝ E] {X X' : Π x : M, TangentSpace I x}
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
-  classical
+  by_cases hE : Subsingleton E
+  · sorry
   ext x
   letI b := Basis.ofVectorSpace ℝ E
   letI t := trivializationAt E (TangentSpace I : M → Type _) x
   have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   have : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := by infer_instance
-  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry -- need to impose!
-  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-    -- use Fin.instLinearOrder
-    sorry
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    by_contra!
+    have : IsEmpty ↑(Basis.ofVectorSpaceIndex ℝ E) := not_nonempty_iff.mp this
+    have : Subsingleton E := by
+      sorry
+    apply hE this
+  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) :=
+    Equiv.linearOrder (e := Fintype.equivFin ↑(Basis.ofVectorSpaceIndex ℝ E))
   haveI : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toOrderBot _
   haveI : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
     apply Fintype.toLocallyFiniteOrder
