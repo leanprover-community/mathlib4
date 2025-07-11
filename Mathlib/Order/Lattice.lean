@@ -1337,47 +1337,40 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
       intro x y z hxy hyz
       have e2 : r ((x ⊓ y) ⊔ (y ⊔ z)) ((x ⊔ y) ⊔ (y ⊔ z)) :=
         (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).2
-      have e3 : (x ⊔ y) ⊔ (y ⊔ z) = x ⊔ y ⊔ z := by
-        rw [sup_comm x y, ← sup_sup_distrib_left, sup_assoc]
-      rw [e3, sup_eq_right.mpr (le_trans inf_le_right le_sup_left)] at e2
+      rw [sup_comm x y, ← sup_sup_distrib_left,
+        sup_eq_right.mpr (le_trans inf_le_right le_sup_left), ← sup_assoc, sup_comm y x] at e2
       have e2' : r ((x ⊓ y) ⊓ (y ⊓ z)) ((x ⊔ y) ⊓ (y ⊓ z))  :=
         (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).1
-      have e3' : (x ⊓ y) ⊓ (y ⊓ z) = x ⊓ y ⊓ z := by
-        rw [inf_comm x y, ← inf_inf_distrib_left, inf_assoc]
-      rw [e3', inf_eq_right.mpr (le_trans inf_le_left le_sup_right)] at e2'
-      exact closed_interval (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) (by
-          constructor
-          · rw [inf_assoc]
-            exact inf_le_left
-          · rw [sup_assoc]
-            exact le_sup_left) (by simp only [ inf_le_right, le_sup_right, and_self])
+      rw [inf_comm y z, ← inf_inf_distrib_right, inf_comm z y,
+        inf_eq_right.mpr (le_trans inf_le_left le_sup_right), inf_assoc, inf_comm z y,
+        ← inf_assoc] at e2'
+      exact closed_interval (x ⊓ y ⊓ z) _ _ (x ⊔ y ⊔ z) ⟨by rw [inf_assoc]; exact inf_le_left,
+        by rw [sup_assoc]; exact le_sup_left⟩ (⟨inf_le_right, le_sup_right⟩)
         (h.2.2.1 (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
         (by rw [sup_assoc]; exact le_sup_right) (h.2.2.1
         (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h.2.1.mp hyz)) e2)
-    {
-    refl := h.1.refl
-    symm hxy := by
-      rw [h.2.1, inf_comm, sup_comm, ← h.2.1]
-      exact hxy
-    trans := transitive
-    inf h₀ h₁ := by
-      have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
-        closed_interval ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
-          ⟨inf_le_inf_right _ inf_le_left, inf_le_inf_right _ le_sup_left⟩
-          ⟨inf_le_inf_right _ inf_le_right, inf_le_inf_right _ le_sup_right⟩
-          (h.2.2.2 inf_le_sup (h.2.1.mp hh)).1
-      exact transitive (by
-        conv_lhs => rw [inf_comm]
-        conv_rhs => rw [inf_comm]
-        exact compatible_left_inf h₁) (compatible_left_inf h₀)
-    sup h₀ h₁ := by
-      have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
-        closed_interval ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
-          ⟨sup_le_sup_right inf_le_left _, sup_le_sup_right le_sup_left _⟩
-          ⟨sup_le_sup_right inf_le_right _, sup_le_sup_right le_sup_right _⟩
-          (h.2.2.2 inf_le_sup (h.2.1.mp hh)).2
-      exact transitive (by
-        conv_lhs => rw [sup_comm]
-        conv_rhs => rw [sup_comm]
-        exact compatible_left_sup h₁) (compatible_left_sup h₀)
-  }
+    { refl := h.1.refl
+      symm hxy := by
+        rw [h.2.1, inf_comm, sup_comm, ← h.2.1]
+        exact hxy
+      trans := transitive
+      inf h₀ h₁ := by
+        have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
+          closed_interval ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
+            ⟨inf_le_inf_right _ inf_le_left, inf_le_inf_right _ le_sup_left⟩
+            ⟨inf_le_inf_right _ inf_le_right, inf_le_inf_right _ le_sup_right⟩
+            (h.2.2.2 inf_le_sup (h.2.1.mp hh)).1
+        exact transitive (by
+          conv_lhs => rw [inf_comm]
+          conv_rhs => rw [inf_comm]
+          exact compatible_left_inf h₁) (compatible_left_inf h₀)
+      sup h₀ h₁ := by
+        have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
+          closed_interval ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
+            ⟨sup_le_sup_right inf_le_left _, sup_le_sup_right le_sup_left _⟩
+            ⟨sup_le_sup_right inf_le_right _, sup_le_sup_right le_sup_right _⟩
+            (h.2.2.2 inf_le_sup (h.2.1.mp hh)).2
+        exact transitive (by
+          conv_lhs => rw [sup_comm]
+          conv_rhs => rw [sup_comm]
+          exact compatible_left_sup h₁) (compatible_left_sup h₀) }
