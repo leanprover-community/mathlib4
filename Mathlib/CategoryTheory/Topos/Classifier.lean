@@ -178,10 +178,10 @@ def χ : X ⟶ Ω C :=
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ m
+      χ₀                      χ
       |                       |
       v                       v
-    ⊤_ C -----truth C-------> Ω
+      Ω₀ ------truth--------> Ω
 ```
 is a pullback square.
 -/
@@ -192,10 +192,10 @@ lemma isPullback_χ : IsPullback m (Classifier.uniqueToΩ₀ U) (χ m) (truth C)
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ m
+      χ₀                      χ
       |                       |
       v                       v
-    ⊤_ C -----truth C-------> Ω
+      Ω₀ ------truth--------> Ω
 ```
 commutes.
 -/
@@ -219,10 +219,10 @@ noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ m
+      χ₀                      χ
       |                       |
       v                       v
-    ⊤_ C -----truth C-------> Ω
+      Ω₀ ------truth--------> Ω
 ```
 being a pullback for any monic `m` means that every monomorphism
 in `C` is the pullback of a regular monomorphism; since regularity
