@@ -3,12 +3,10 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
+import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Archimedean groups are either discrete or densely ordered
@@ -46,33 +44,13 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     · exact (zpow_right_strictMono ha).injective
   · exact fun h ↦ h.exists
 
-@[to_additive]
-lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
-    {x y : G} : Subgroup.zpowers x = Subgroup.zpowers y ↔ x = y ∨ x⁻¹ = y := by
-  rw [iff_comm]
-  constructor
-  · rintro (rfl | rfl) <;>
-    simp
-  intro h
-  have hx : x ∈ Subgroup.zpowers y := by
-    simp [← h]
-  have hy : y ∈ Subgroup.zpowers x := by
-    simp [h]
-  obtain ⟨⟨k, rfl⟩, ⟨l, hl⟩⟩ := hy, hx
-  wlog hx1 : 1 < x
-  · push_neg at hx1
-    rcases hx1.eq_or_lt with rfl | hx1
-    · simp
-    · simpa [or_comm] using this (x := x⁻¹) (-k) (by simp [h]) (-l) (by simp [hl]) (by simp [hx1])
-  replace hl : x ^ (k * l) = x ^ (1 : ℤ) := by simp [zpow_mul, hl]
-  rw [zpow_right_inj hx1, Int.mul_eq_one_iff_eq_one_or_neg_one] at hl
-  refine hl.imp ?_ ?_ <;>
-  simp +contextual
-
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
   suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
-  rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
+  have he : ¬IsOfFinAddOrder (e 1) :=
+    not_isOfFinAddOrder_of_isAddTorsionFree ((AddEquiv.map_ne_zero_iff e).mpr Int.one_ne_zero)
+  rw [← AddSubgroup.zmultiples_eq_zmultiples_iff he]
   simpa [e.surjective, eq_comm] using (e : ℤ →+ ℤ).map_zmultiples 1
+
 
 instance : Fintype (ℤ ≃+ ℤ) where
   elems := .cons (.neg _) ({.refl _}) (by simp [AddEquiv.ext_int_iff])
