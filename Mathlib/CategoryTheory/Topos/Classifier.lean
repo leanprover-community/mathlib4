@@ -85,10 +85,10 @@ structure Classifier where
   χ₀ (U : C) : U ⟶ Ω₀
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
   χ {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
-  /-- `χ m` and `χ₀ m` form the appropriate pullback square. -/
-  isPullback' {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (χ₀ U) (χ m) truth
+  /-- `χ₀ U` and `χ m` form the appropriate pullback square. -/
+  isPullback {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (χ₀ U) (χ m) truth
   /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square for any `χ₀'`. -/
-  uniq' {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
+  uniq {U X : C} (m : U ⟶ X) [Mono m] {χ₀' : U ⟶ Ω₀} (χ' : X ⟶ Ω)
     (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
 
 variable {C}
@@ -115,32 +115,20 @@ def mkOfTerminalΩ
   mono_truth := t.mono_from _
   χ₀ := t.from
   χ m _ := χ m
-  isPullback' m _ := isPullback m
-  uniq' m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
+  isPullback m _ := isPullback m
+  uniq m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
 
 instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
   { default := c.χ₀ Y,
     uniq f :=
       have : f ≫ c.truth = c.χ₀ Y ≫ c.truth :=
         by calc
-          _ = c.χ (𝟙 Y) := c.uniq' (𝟙 Y) f (f ≫ c.truth) (of_horiz_isIso_mono { })
-          _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback' (𝟙 Y)).w]
+          _ = c.χ (𝟙 Y) := c.uniq (𝟙 Y) (f ≫ c.truth) (of_horiz_isIso_mono { })
+          _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback (𝟙 Y)).w]
       Mono.right_cancellation _ _ this }
 
 /-- `Ω₀` is a terminal object. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
-
-/-- Version of `isPullback'` where the classifier argument is implicit and we use
-`isTerminalΩ₀.from` instead of `χ₀` -/
-lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
-    IsPullback m (isTerminalΩ₀.from _) (c.χ m) c.truth :=
-  (isTerminalΩ₀.hom_ext (c.χ₀ U) (isTerminalΩ₀.from U)) ▸ c.isPullback' m
-
-/-- Version of `uniq'` where the classifier argument is implicit and we use
-`isTerminalΩ₀.from` instead of `χ₀` -/
-lemma uniq {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ c.Ω)
-    (hχ' : IsPullback m (isTerminalΩ₀.from U) χ' (c.truth)) : χ' = c.χ m :=
-  c.uniq' m (χ₀ _ U) χ' hχ'
 
 end Classifier
 
@@ -181,7 +169,7 @@ def χ : X ⟶ Ω C :=
 is a pullback square.
 -/
 lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
-  Classifier.isPullback m
+  Classifier.isPullback _ m
 
 /-- The diagram
 ```
@@ -201,7 +189,7 @@ lemma comm : m ≫ χ m = Classifier.χ₀ _ U ≫ truth C := (isPullback_χ m).
 is a pullback square.
 -/
 lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) :
-  χ' = χ m := Classifier.uniq m χ' hχ'
+  χ' = χ m := Classifier.uniq _ m χ' hχ'
 
 instance truthIsSplitMono : IsSplitMono (truth C) :=
   Classifier.isTerminalΩ₀.isSplitMono_from _
@@ -268,8 +256,7 @@ abbrev truth_as_subobject : Subobject 𝒞.Ω :=
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
   ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ _ (by
-    convert IsPullback.of_hasPullback φ 𝒞.truth
-    apply 𝒞.isTerminalΩ₀.hom_ext)⟩
+    convert IsPullback.of_hasPullback φ 𝒞.truth)⟩
 
 @[simp]
 lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
@@ -280,7 +267,7 @@ lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
     𝒞.χ ((Subobject.pullback φ).obj 𝒞.truth_as_subobject).arrow = φ := by
   obtain ⟨Z, i, _, rfl⟩ := 𝒞.surjective_χ φ
-  refine (𝒞.uniq _ _ ?_).symm
+  refine (𝒞.uniq _ _ (?_ : IsPullback _ (𝒞.χ₀ _) _ _)).symm
   refine (IsPullback.of_hasPullback 𝒞.truth (𝒞.χ i)).flip.of_iso
     (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
     ?_ (𝒞.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
@@ -417,10 +404,10 @@ noncomputable def classifier : Classifier C where
   mono_truth := terminalIsTerminal.mono_from _
   χ₀ := terminalIsTerminal.from
   χ m _ := h.χ m
-  isPullback' m _ :=
+  isPullback m _ :=
     (h.isPullback m).of_iso (Iso.refl _) (Iso.refl _) h.isoΩ₀ (Iso.refl _)
       (by simp) (Subsingleton.elim _ _) (by simp) (by simp)
-  uniq' {U X} m _ χ₀ χ' sq := by
+  uniq {U X} m _ χ₀ χ' sq := by
     have : IsPullback m (h.isTerminalΩ₀.from U) χ' h.Ω₀.arrow :=
       sq.of_iso (Iso.refl _) (Iso.refl _) (h.isoΩ₀.symm) (Iso.refl _)
         (by simp) (h.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
