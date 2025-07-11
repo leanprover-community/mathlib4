@@ -576,8 +576,8 @@ end SeparatedFinset
 /-- In a `T2Space`, every compact set is closed. -/
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
   isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
-    (hs.exists_clusterPt hfs).elim fun _y ⟨hy, hfy⟩ =>
-      mem_of_eq_of_mem (eq_of_nhds_neBot (hfy.mono hfx)).symm hy
+    let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs
+    mem_of_eq_of_mem (eq_of_nhds_neBot (hfy.mono hfx)).symm hy
 
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
