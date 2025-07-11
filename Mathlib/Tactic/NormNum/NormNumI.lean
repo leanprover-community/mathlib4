@@ -97,35 +97,27 @@ theorem IsComplex.of_pow_ofNat {z w : ℂ} {k k' : ℤ} {n : ℕ} {a b : ℝ} (h
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) := do
   match z with
-  /- parse an addition: `z₁ + z₂` -/
   | ~q($z₁ + $z₂) =>
     let ⟨_a₁, _b₁, pf₁⟩ ← parse z₁
     let ⟨_a₂, _b₂, pf₂⟩ ← parse z₂
     pure ⟨_, _, q(.add $pf₁ $pf₂)⟩
-  /- parse a multiplication: `z₁ * z₂` -/
   | ~q($z₁ * $z₂) =>
     let ⟨_a₁, _b₁, pf₁⟩ ← parse z₁
     let ⟨_a₂, _b₂, pf₂⟩ ← parse z₂
     pure ⟨_, _, q(.mul $pf₁ $pf₂)⟩
-  /- parse an inversion: `z⁻¹` -/
   | ~q($z⁻¹) =>
     let ⟨_x, _y, pf⟩ ← parse z
     pure ⟨_, _, q(.inv $pf)⟩
-  /- parse `z₁/z₂` -/
   | ~q($z₁ / $z₂) => do
     let ⟨_a, _b, pf⟩ ← parse q($z₁ * $z₂⁻¹)
     return ⟨_, _, q($pf)⟩
-  /- parse `-z` -/
   | ~q(-$w) => do
     let ⟨_a, _b, pf⟩ ← parse w
     return ⟨_, _, q(.neg $pf)⟩
-  /- parse a subtraction `z₁ - z₂` -/
   | ~q($z₁ - $z₂) => parse q($z₁ + -$z₂)
-  /- parse conjugate `conj z` -/
   | ~q(conj $w) =>
     let ⟨_a, _b, pf⟩ ← parse w
     return ⟨_, _, q(.conj $pf)⟩
-  /- parse natural number power -/
   | ~q($w ^ ($n' : ℕ)) =>
     let ⟨n, hn⟩ ← NormNum.deriveNat q($n') q(inferInstance)
     match n.natLit! with
@@ -134,7 +126,6 @@ partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) 
       return ⟨q(1), q(0), q(⟨show $w ^ $n' = _ from $(hn).out ▸ pow_zero _⟩)⟩
     | n + 1 =>
       parse q($w^$n * $w)
-  /- parse integer power -/
   | ~q($w ^ ($k : ℤ)) =>
     let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
     match k'.intLit! with
@@ -146,16 +137,12 @@ partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) 
       let ⟨a, b, pf⟩ ← parse q(($w ^ ($n + 1))⁻¹)
       let _i : $k' =Q Int.negSucc $n := ⟨⟩
       return ⟨a, b, q(.of_pow_negSucc rfl $hm $pf rfl)⟩
-  /- parse `(I:ℂ)` -/
   | ~q(Complex.I) =>
     pure ⟨_, _, q(.I)⟩
-  /- parse `(0:ℂ)` -/
   | ~q(0) =>
     pure ⟨_, _, q(.zero)⟩
-  /- parse `(1:ℂ)` -/
   | ~q(1) =>
     pure ⟨_, _, q(.one)⟩
-  /- anything else needs to be on the list of atoms -/
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
     return ⟨_, _, q(.ofNat $en)⟩
   | ~q(OfScientific.ofScientific $m $x $exp) =>
