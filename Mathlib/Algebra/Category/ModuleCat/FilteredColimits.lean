@@ -175,8 +175,7 @@ lemma ι_colimitDesc (t : Cocone F) (j : J) :
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
-  fac t j := by
-    simp
+  fac t j := by simp
   uniq t _ h := by
     ext ⟨j, x⟩
     exact (congr_fun ((forget _).congr_map (h j)) x).trans

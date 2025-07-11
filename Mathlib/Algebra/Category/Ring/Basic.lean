@@ -307,7 +307,7 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
-/-- The forget functor from `RingCat` to `SemiRingCat` is fully faithful. -/
+/-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToSemiRingCat :
     (forget₂ RingCat SemiRingCat).FullyFaithful where
   preimage f := ofHom f.hom
@@ -466,7 +466,7 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
     { obj := fun R ↦ ⟨R⟩
       map := fun f ↦ ⟨f.hom⟩ }
 
-/-- The forget functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
+/-- The forgetful functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToSemiRingCat :
     (forget₂ CommSemiRingCat SemiRingCat).FullyFaithful where
   preimage f := ofHom f.hom
@@ -630,7 +630,7 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
 
-/-- The forget functor from `CommRingCat` to `RingCat` is fully faithful. -/
+/-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToRingCat :
     (forget₂ CommRingCat RingCat).FullyFaithful where
   preimage f := ofHom f.hom
