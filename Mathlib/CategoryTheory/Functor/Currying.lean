@@ -98,6 +98,10 @@ instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
 instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
   fullyFaithfulUncurry.faithful
 
+/-- The functor `curry : (C × D ⥤ E) ⥤ (C ⥤ D ⥤ E)` is fully faithful. -/
+def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ (C ⥤ D ⥤ E)).FullyFaithful :=
+  currying.fullyFaithfulInverse
+
 /-- Given functors `F₁ : C ⥤ D`, `F₂ : C' ⥤ D'` and `G : D × D' ⥤ E`, this is the isomorphism
 between `curry.obj ((F₁.prod F₂).comp G)` and
 `F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂` in the category `C ⥤ C' ⥤ E`. -/

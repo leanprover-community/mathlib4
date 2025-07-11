@@ -59,6 +59,36 @@ def shiftMkCore : ShiftMkCore (TwistShift t) A where
 
 instance : HasShift (TwistShift t) A := hasShiftMk _ _ (shiftMkCore t)
 
+@[simp]
+lemma shiftFunctor_obj (X : TwistShift t) (a : A):
+    (shiftFunctor (TwistShift t) a).obj X = (shiftFunctor C a).obj X := rfl
+
+@[simp]
+lemma shiftFunctorZero_hom_app (X : TwistShift t) :
+    (shiftFunctorZero (TwistShift t) A).hom.app X = (shiftFunctorZero C A).hom.app X := rfl
+
+@[simp]
+lemma shiftFunctorZero_inv_app (X : TwistShift t) :
+    (shiftFunctorZero (TwistShift t) A).inv.app X = (shiftFunctorZero C A).inv.app X := rfl
+
+@[simp]
+lemma shiftFunctorAdd'_hom_app (i j k : A) (h : i + j = k) (X : TwistShift t) :
+    (shiftFunctorAdd' (TwistShift t) i j k h).hom.app X =
+      (t.z i j).1 • (shiftFunctorAdd' C i j k h).hom.app X := by
+  subst h
+  simp only [Functor.comp_obj, shiftFunctorAdd', eqToIso_refl, Iso.refl_trans,
+    CatCenter.smul_eq, Functor.id_obj]
+  rfl
+
+@[simp]
+lemma shiftFunctorAdd'_inv_app (i j k : A) (h : i + j = k) (X : TwistShift t) :
+    (shiftFunctorAdd' (TwistShift t) i j k h).inv.app X =
+      ((t.z i j)⁻¹).1 • (shiftFunctorAdd' C i j k h).inv.app X := by
+  subst h
+  simp only [Functor.comp_obj, shiftFunctorAdd', eqToIso_refl, Iso.refl_trans,
+    CatCenter.smul_eq, Functor.id_obj]
+  rfl
+
 end TwistShift
 
 end CategoryTheory

@@ -38,4 +38,29 @@ instance HasShift.prod : HasShift (C₁ × C₂) (A₁ × A₂) :=
       add := fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ↦
         NatIso.prod (shiftFunctorAdd C₁ x₁ y₁) (shiftFunctorAdd C₂ x₂ y₂) }
 
+variable {A₁ A₂}
+
+@[simp]
+lemma shiftFunctor_prod (a : A₁ × A₂) :
+    shiftFunctor (C₁ × C₂) a = (shiftFunctor C₁ a.1).prod (shiftFunctor C₂ a.2) := rfl
+
+variable (A₁ A₂) in
+@[simp]
+lemma shiftFunctorZero_prod :
+    shiftFunctorZero (C₁ × C₂) (A₁ × A₂) =
+      NatIso.prod (shiftFunctorZero C₁ A₁) (shiftFunctorZero C₂ A₂) := rfl
+
+@[simp]
+lemma shiftFunctorAdd_prod (a b : A₁ × A₂) :
+    shiftFunctorAdd (C₁ × C₂) a b =
+      NatIso.prod (shiftFunctorAdd C₁ a.1 b.1) (shiftFunctorAdd C₂ a.2 b.2) := rfl
+
+@[simp]
+lemma shiftFunctorAdd'_prod (a b c : A₁ × A₂) (h : a + b = c) :
+    shiftFunctorAdd' (C₁ × C₂) a b c h =
+      NatIso.prod (shiftFunctorAdd' C₁ a.1 b.1 c.1 (by aesop))
+        (shiftFunctorAdd' C₂ a.2 b.2 c.2 (by aesop)) := by
+  subst h
+  rfl
+
 end CategoryTheory
