@@ -1301,28 +1301,22 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
     (∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y)) ∧
     (∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z) ∧
     (∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) where
-  mp hlc := by
-    constructor
-    · exact ⟨hlc.refl⟩
-    · constructor
-      · intro x y
-        constructor
-        · exact fun h => hlc.trans (y := y) (by
-            conv_rhs => rw [← inf_idem y]
-            exact hlc.inf h (hlc.refl y)) (by
-            conv_lhs => rw [← sup_idem y]
-            exact hlc.sup (hlc.symm h) (hlc.refl y))
-        · intro h
-          exact hlc.trans (y := x ⊓ y) (by
-            conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
-            conv_rhs => rw [← inf_idem x, inf_assoc]
-            exact hlc.inf (hlc.refl x) (hlc.symm h)) (by
-            conv_rhs => rw [← inf_sup_self (a := y) (b := x), inf_comm, sup_comm]
-            conv_lhs => rw [← inf_idem y, ← inf_assoc]
-            exact hlc.inf h (hlc.refl y)
-          )
-      · exact ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
-        ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩
+  mp hlc := ⟨
+    ⟨hlc.refl⟩,
+    ⟨fun x y => ⟨fun h => hlc.trans (y := y) (by
+        conv_rhs => rw [← inf_idem y]
+        exact hlc.inf h (hlc.refl y)) (by
+        conv_lhs => rw [← sup_idem y]
+        exact hlc.sup (hlc.symm h) (hlc.refl y)),
+      fun h => hlc.trans (y := x ⊓ y) (by
+        conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
+        conv_rhs => rw [← inf_idem x, inf_assoc]
+        exact hlc.inf (hlc.refl x) (hlc.symm h)) (by
+        conv_rhs => rw [← inf_sup_self (a := y) (b := x), inf_comm, sup_comm]
+        conv_lhs => rw [← inf_idem y, ← inf_assoc]
+        exact hlc.inf h (hlc.refl y))⟩,
+      ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
+          ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩⟩⟩
   mpr h :=
     have closed_interval (a b c d : α) (hb : a ≤ b ∧ b ≤ d) (hc : a ≤ c ∧ c ≤ d) (had : r a d) :
         r b c := by
