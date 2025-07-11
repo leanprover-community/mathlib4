@@ -235,7 +235,7 @@ theorem closure_sup_closure_le (x y : α) : c x ⊔ c y ≤ c (x ⊔ y) :=
 theorem closure_sup_closure_left (x y : α) : c (c x ⊔ y) = c (x ⊔ y) :=
   le_antisymm
     (le_closure_iff.1 (sup_le (c.monotone le_sup_left) (le_sup_right.trans (c.le_closure _))))
-    (by grw [← c.le_closure])
+    (by grw [← c.le_closure x])
 
 theorem closure_sup_closure_right (x y : α) : c (x ⊔ c y) = c (x ⊔ y) := by
   rw [sup_comm, closure_sup_closure_left, sup_comm (a := x)]
