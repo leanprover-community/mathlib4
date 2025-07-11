@@ -93,6 +93,7 @@ import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
 import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.CommAlgCat.FiniteType
+import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
@@ -2353,6 +2354,7 @@ import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -5630,6 +5632,7 @@ import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
+import Mathlib.RingTheory.Valuation.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.LocalSubring
 import Mathlib.RingTheory.Valuation.Minpoly
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
