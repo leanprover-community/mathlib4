@@ -75,14 +75,17 @@ scoped[FirstOrder] notation:130 a:130 " ∈' " b:130 =>
 /-- The formal statement saying `a` is not a member of `b`. Negation of `memRel`. -/
 scoped[FirstOrder] notation:130 a:130 " ∉' " b:130 => ∼(a ∈' b)
 
+instance : Unique set.Symbols where
+  default := Sum.inr ⟨2, .mem⟩
+  uniq := by rintro (⟨_, ⟨⟩⟩ | ⟨_, ⟨⟩⟩); rfl
+
 instance : Fintype set.Symbols :=
-  ⟨⟨Multiset.ofList [Sum.inr ⟨2, .mem⟩], by decide⟩,
-  by rintro (⟨_, ⟨⟩⟩ | ⟨_, ⟨⟩⟩); decide ⟩
+  Unique.fintype
 
 @[simp] theorem card_set_symbols : Fintype.card set.Symbols = 1 := rfl
 
-@[simp] theorem card_set : card set = 1 := by
-  simp [card]
+@[simp] theorem card_set : card set = 1 :=
+  Cardinal.mk_fintype _
 
 /-- A class with parameters indexed by `α` is a formula `C` with `n + 1` free variables, which
 intuitively inherently represents "`&n ∈ C`", i.e. `C` itself as a formula means that the last free
