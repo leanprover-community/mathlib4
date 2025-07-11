@@ -37,7 +37,7 @@ variable {x A : ℝ}
 
 theorem isGood_iff : IsGood x A ↔
     sqrt (2 * x - 1) + 1 + |sqrt (2 * x - 1) - 1| = A * sqrt 2 ∧ 1 / 2 ≤ x := by
-  cases le_or_lt (1 / 2) x with
+  cases le_or_gt (1 / 2) x with
   | inl hx =>
     have hx' : 0 ≤ 2 * x - 1 := by linarith
     have h₁ : x + sqrt (2 * x - 1) = (sqrt (2 * x - 1) + 1) ^ 2 / 2 := by
@@ -50,7 +50,7 @@ theorem isGood_iff : IsGood x A ↔
     field_simp
   | inr hx =>
     have : 2 * x - 1 < 0 := by linarith
-    simp only [IsGood, this.not_le, hx.not_le]; simp
+    simp only [IsGood, this.not_ge, hx.not_ge]; simp
 
 theorem IsGood.one_half_le (h : IsGood x A) : 1 / 2 ≤ x := (isGood_iff.1 h).2
 
@@ -85,7 +85,7 @@ theorem IsGood.sqrt_two_lt_iff_one_lt (h : IsGood x A) : sqrt 2 < A ↔ 1 < x :=
   ⟨fun hA ↦ not_le.1 fun hx ↦ hA.ne' <| h.eq_sqrt_two_iff_le_one.2 hx, h.sqrt_two_lt_of_one_lt⟩
 
 theorem IsGood.sqrt_two_le (h : IsGood x A) : sqrt 2 ≤ A :=
-  (le_or_lt x 1).elim (fun hx ↦ (h.eq_sqrt_two_iff_le_one.2 hx).ge) fun hx ↦
+  (le_or_gt x 1).elim (fun hx ↦ (h.eq_sqrt_two_iff_le_one.2 hx).ge) fun hx ↦
     (h.sqrt_two_lt_of_one_lt hx).le
 
 theorem isGood_iff_of_sqrt_two_lt (hA : sqrt 2 < A) : IsGood x A ↔ x = (A / 2) ^ 2 + 1 / 2 := by
@@ -106,7 +106,7 @@ theorem isGood_sqrt2_iff : IsGood x (sqrt 2) ↔ x ∈ Icc (1 / 2) 1 := by
   exact ⟨h.one_half_le, not_lt.1 fun h₁ ↦ (h.sqrt_two_lt_of_one_lt h₁).false⟩
 
 theorem not_isGood_one : ¬IsGood x 1 := fun h ↦
-  h.sqrt_two_le.not_lt <| (lt_sqrt zero_le_one).2 (by norm_num)
+  h.sqrt_two_le.not_gt <| (lt_sqrt zero_le_one).2 (by norm_num)
 
 theorem isGood_two_iff : IsGood x 2 ↔ x = 3 / 2 :=
   (isGood_iff_of_sqrt_two_lt <| (sqrt_lt' two_pos).2 (by norm_num)).trans <| by norm_num

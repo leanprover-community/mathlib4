@@ -397,7 +397,7 @@ variable (G) [CommGroup G]
 "Quotienting a group by its additive torsion subgroup yields an additive torsion-free group."]
 instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
-  induction' g using QuotientGroup.induction_on with g
+  obtain ⟨g⟩ := g
   obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
   obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
   exact (QuotientGroup.eq_one_iff g).mpr
@@ -408,7 +408,7 @@ instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ t
 "Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
 theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun g hne hfin =>
   hne <| by
-    induction' g using QuotientGroup.induction_on with g
+    obtain ⟨g⟩ := g
     obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
     obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
     exact
@@ -446,7 +446,7 @@ instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
   letI : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
     ⟨n, hn, by { simp only [Function.IsPeriodicPt, Function.IsFixedPt, add_left_iterate, add_zero,
-      Nat.isUnit_iff, smul_comm n] at hn' ⊢; simp only [hn', smul_zero] }⟩ }
+      smul_comm n] at hn' ⊢; simp only [hn', smul_zero] }⟩ }
   inferInstanceAs (Module R (M ⧸ this))
 
 end AddCommGroup

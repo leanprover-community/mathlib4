@@ -142,7 +142,7 @@ variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCan
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
   refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
-  rcases hxy.lt_or_lt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
+  rcases hxy.lt_or_gt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
         (isOpen_Ioo.subset_interior_iff.2 <| Ioo_subset_Icc_self.trans <| hs.out ‹_› ‹_›)

@@ -62,7 +62,7 @@ theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a�
 
 @[to_additive (attr := simp)]
 theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
-  ⟨1, by simp [MulAction.one_smul]⟩
+  ⟨1, by simp⟩
 
 @[to_additive]
 theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
@@ -273,7 +273,7 @@ def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv :=
     ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
-      simp +contextual [orbit_eq_iff.symm, eq_comm]⟩
+      simp +contextual [orbit_eq_iff.symm]⟩
 
 variable {G α}
 
@@ -532,7 +532,7 @@ lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass 
     rw [inv_smul_smul]
 
 @[to_additive (attr := simp)]
-lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
+lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α) :
     stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ <| mul_left_injective _
 
 @[to_additive (attr := simp)]

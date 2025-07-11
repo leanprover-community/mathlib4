@@ -430,7 +430,7 @@ theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt (exp 𝕂) (expSeries �
 
 @[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
-  rw [continuous_iff_continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
+  rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]
   exact continuousOn_exp
 

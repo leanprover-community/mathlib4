@@ -128,7 +128,7 @@ protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
   obtain ⟨s, hμs, hfε⟩ := hf hε
   refine ⟨s, hμs, fun n => (le_of_eq <| eLpNorm_congr_ae ?_).trans (hfε n)⟩
   filter_upwards [hfg n] with x hx
-  simp only [indicator, mem_compl_iff, ite_not, hx]
+  simp only [indicator, mem_compl_iff, hx]
 
 end UnifTight
 
@@ -158,6 +158,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
 
+open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
 private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}

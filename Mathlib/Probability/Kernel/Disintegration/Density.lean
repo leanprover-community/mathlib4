@@ -221,7 +221,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   congr
   have : ∫⁻ x in u, κ a (countablePartitionSet n x ×ˢ s) / ν a (countablePartitionSet n x) ∂(ν a)
       = ∫⁻ _ in u, κ a (u ×ˢ s) / ν a u ∂(ν a) := by
-    refine setLIntegral_congr_fun hu_meas (ae_of_all _ (fun t ht ↦ ?_))
+    refine setLIntegral_congr_fun hu_meas (fun t ht ↦ ?_)
     rw [countablePartitionSet_of_mem hu ht]
   rw [this]
   simp only [MeasureTheory.lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]

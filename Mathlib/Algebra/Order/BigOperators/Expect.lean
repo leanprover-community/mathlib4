@@ -6,7 +6,9 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Order.Module.Rat
+import Mathlib.Tactic.GCongr
 
 /-!
 # Order properties of the average over a finset
@@ -161,10 +163,10 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] {f : ι → α}
 
 lemma expect_eq_zero_iff_of_nonneg [Nonempty ι] (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonneg hf, univ_nonempty.ne_empty]
+  simp [expect, sum_eq_zero_iff_of_nonneg hf]
 
 lemma expect_eq_zero_iff_of_nonpos [Nonempty ι] (hf : f ≤ 0) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonpos hf, univ_nonempty.ne_empty]
+  simp [expect, sum_eq_zero_iff_of_nonpos hf]
 
 end OrderedAddCommMonoid
 end Fintype

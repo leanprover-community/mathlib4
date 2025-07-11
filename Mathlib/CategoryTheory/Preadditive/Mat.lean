@@ -192,11 +192,11 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               dsimp
               simp_rw [dite_comp, comp_dite]
               simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
-                eqToHom_trans, Finset.sum_congr]
+                eqToHom_trans]
               erw [Finset.sum_sigma]
               dsimp
               simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
-                Finset.sum_const_zero, Finset.sum_congr, Finset.sum_dite_eq']
+                Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
               · substs h h'
                 simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
@@ -223,8 +223,8 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               tauto
             · intro hj
               simp at hj
-            simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
-              Sigma.mk.inj_iff, not_and, id_def]
+            simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp,
+              Sigma.mk.inj_iff, id_def]
             by_cases h : i' = i
             · subst h
               rw [dif_pos rfl]
@@ -434,7 +434,7 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
       simp only [additiveObjIsoBiproduct_naturality_assoc]
       simp only [biproduct.matrix_map_assoc, Category.assoc]
       simp only [additiveObjIsoBiproduct_naturality']
-      simp only [biproduct.map_matrix_assoc, Category.assoc]
+      simp only [biproduct.map_matrix_assoc]
       congr 3
       ext j k
       apply biproduct.hom_ext
@@ -455,7 +455,7 @@ def equivalenceSelfOfHasFiniteBiproductsAux [HasFiniteBiproducts C] :
     embedding C ⋙ 𝟭 (Mat_ C) ≅ embedding C ⋙ lift (𝟭 C) ⋙ embedding C :=
   Functor.rightUnitor _ ≪≫
     (Functor.leftUnitor _).symm ≪≫
-      isoWhiskerRight (embeddingLiftIso _).symm _ ≪≫ Functor.associator _ _ _
+      Functor.isoWhiskerRight (embeddingLiftIso _).symm _ ≪≫ Functor.associator _ _ _
 
 /--
 A preadditive category that already has finite biproducts is equivalent to its additive envelope.

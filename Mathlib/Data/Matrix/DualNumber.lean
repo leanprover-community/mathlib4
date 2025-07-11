@@ -23,8 +23,6 @@ open Matrix TrivSqZeroExt
 def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Matrix n n R) where
   toFun A := ⟨of fun i j => (A i j).fst, of fun i j => (A i j).snd⟩
   invFun d := of fun i j => (d.fst i j, d.snd i j)
-  left_inv _ := Matrix.ext fun _ _ => TrivSqZeroExt.ext rfl rfl
-  right_inv _ := TrivSqZeroExt.ext (Matrix.ext fun _ _ => rfl) (Matrix.ext fun _ _ => rfl)
   map_mul' A B := by
     ext
     · dsimp [mul_apply]

@@ -64,7 +64,7 @@ theorem induction {motive : SymmetricAlgebra R M → Prop}
 open TensorAlgebra in
 instance : CommSemiring (SymmetricAlgebra R M) where
   mul_comm a b := by
-    show Commute a b
+    change Commute a b
     induction b using SymmetricAlgebra.induction with
     | algebraMap r => exact Algebra.commute_algebraMap_right _ _
     | ι x => induction a using SymmetricAlgebra.induction with

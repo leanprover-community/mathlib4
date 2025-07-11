@@ -62,8 +62,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : A
       LinearMap.toFun_eq_coe]
     simp only [map_mul, sub_mul, mul_sub, Algebra.smul_def] at this ⊢
     rw [sub_eq_iff_eq_add, sub_eq_iff_eq_add] at this
-    simp only [LinearMap.coe_toAddHom, diffToIdealOfQuotientCompEq_apply, map_mul, this,
-      IsScalarTower.coe_toAlgHom']
+    simp only [this]
     ring
 
 variable (hI : I ^ 2 = ⊥)
@@ -92,7 +91,7 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
         Submodule.coe_smul_of_tower, Algebra.smul_def, this]
       ring
     commutes' := fun r => by
-      simp only [Derivation.map_algebraMap, eq_self_iff_true, zero_add, Submodule.coe_zero, ←
+      simp only [Derivation.map_algebraMap, zero_add, Submodule.coe_zero, ←
         IsScalarTower.algebraMap_apply R A B r]
     map_zero' := ((I.restrictScalars R).subtype.comp f.toLinearMap +
       (IsScalarTower.toAlgHom R A B).toLinearMap).map_zero }

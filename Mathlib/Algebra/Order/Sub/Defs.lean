@@ -300,7 +300,7 @@ protected theorem lt_add_of_tsub_lt_right (hc : AddLECancellable c) (h : a - c <
 protected theorem lt_tsub_of_add_lt_right (hc : AddLECancellable c) (h : a + c < b) : a < b - c :=
   (hc.le_tsub_of_add_le_right h.le).lt_of_ne <| by
     rintro rfl
-    exact h.not_le le_tsub_add
+    exact h.not_ge le_tsub_add
 
 protected theorem lt_tsub_of_add_lt_left (ha : AddLECancellable a) (h : a + c < b) : c < b - a :=
   ha.lt_tsub_of_add_lt_right <| by rwa [add_comm]

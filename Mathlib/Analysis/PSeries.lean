@@ -59,13 +59,13 @@ theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
     have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
       hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
     convert sum_le_sum this
-    simp [pow_succ, mul_two]
+    simp
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ Ico 1 (2 ^ n), f k) ≤ ∑ k ∈ range n, 2 ^ k • f (2 ^ k) := by
   convert le_sum_schlomilch' hf (fun n => pow_pos zero_lt_two n)
     (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
-  simp [pow_succ, mul_two, two_mul]
+  simp [pow_succ, mul_two]
 
 theorem le_sum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) :
@@ -94,13 +94,13 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
       hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
         (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
     convert sum_le_sum this
-    simp [pow_succ, mul_two]
+    simp
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k ∈ Ico 2 (2 ^ n + 1), f k := by
   convert sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
     (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
-  simp [pow_succ, mul_two, two_mul]
+  simp [pow_succ, mul_two]
 
 theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (h_nonneg : ∀ n, 0 ≤ f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) (n : ℕ) :
@@ -143,7 +143,7 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   refine iSup_le fun n =>
     (Finset.le_sum_schlomilch hf h_pos hu.monotone n).trans (add_le_add_left ?_ _)
   have (k : ℕ) : (u (k + 1) - u k : ℝ≥0∞) = (u (k + 1) - (u k : ℕ) : ℕ) := by
-    simp [NNReal.coe_sub (Nat.cast_le (α := ℝ≥0).mpr <| (hu k.lt_succ_self).le)]
+    simp
   simp only [nsmul_eq_mul, this]
   apply ENNReal.sum_le_tsum
 
@@ -210,7 +210,7 @@ theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m 
     simp [pow_succ, mul_two, two_mul]
   convert summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono₀ _root_.one_lt_two)
     two_ne_zero h_succ_diff
-  simp [pow_succ, mul_two, two_mul]
+  simp [pow_succ, mul_two]
 
 end NNReal
 
@@ -237,7 +237,7 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
     simp [pow_succ, mul_two, two_mul]
   convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
     (pow_right_strictMono₀ one_lt_two) two_ne_zero h_succ_diff
-  simp [pow_succ, mul_two, two_mul]
+  simp [pow_succ, mul_two]
 
 section p_series
 
@@ -259,7 +259,7 @@ if and only if `1 < p`. -/
 @[simp]
 theorem summable_nat_rpow_inv {p : ℝ} :
     Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
-  rcases le_or_lt 0 p with hp | hp
+  rcases le_or_gt 0 p with hp | hp
   /- Cauchy condensation test applies only to antitone sequences, so we consider the
     cases `0 ≤ p` and `p < 0` separately. -/
   · rw [← summable_condensed_iff_of_nonneg]
@@ -276,7 +276,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
       gcongr
   -- If `p < 0`, then `1 / n ^ p` tends to infinity, thus the series diverges.
   · suffices ¬Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) by
-      have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
+      have : ¬1 < p := fun hp₁ => hp.not_ge (zero_le_one.trans hp₁.le)
       simpa only [this, iff_false]
     intro h
     obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=
@@ -285,7 +285,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
     apply hk₀
     rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
     simpa [inv_lt_one₀ (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
-      hp.not_lt, hk₀] using hk₁
+      hp.not_gt, hk₀] using hk₁
 
 @[simp]
 theorem summable_nat_rpow {p : ℝ} : Summable (fun n => (n : ℝ) ^ p : ℕ → ℝ) ↔ p < -1 := by
@@ -403,7 +403,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) �
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + (k + 1 : α)⁻¹ := by
       refine add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub ?_ (le_max_left _ _)).trans ?_)
       · simp only [Ne, Nat.succ_ne_zero, not_false_iff]
-      · simp only [Nat.cast_succ, one_div, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
+      · simp only [Nat.cast_succ, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
       have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
       simp_rw [← one_div]

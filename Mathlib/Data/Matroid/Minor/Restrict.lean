@@ -462,7 +462,7 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
     exact fun e heJ heI ↦ ⟨he e ⟨heJ, heI⟩, hJ.subset_ground heJ⟩
   obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_isBasis_of_subset I.subset_union_right
   rw [← hJ'.encard_eq_encard hb] at hIJ
-  exact hIJ.not_le (encard_mono hJJ')
+  exact hIJ.not_ge (encard_mono hJJ')
 
 lemma Indep.augment_finset {I J : Finset α} (hI : M.Indep I) (hJ : M.Indep J)
     (hIJ : I.card < J.card) : ∃ e ∈ J, e ∉ I ∧ M.Indep (insert e I) := by

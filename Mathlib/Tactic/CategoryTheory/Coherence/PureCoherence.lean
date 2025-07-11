@@ -44,7 +44,7 @@ open Mor₂Iso MonadMor₂Iso
 variable {ρ : Type} [Context ρ] [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
 
 /-- Meta version of `CategoryTheory.FreeBicategory.normalizeIso`. -/
-def normalize  (p : NormalizedHom) (f : Mor₁) :
+def normalize (p : NormalizedHom) (f : Mor₁) :
     CoherenceM ρ Normalize.Result := do
   match f with
   | .id _ _ =>

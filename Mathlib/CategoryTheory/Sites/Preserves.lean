@@ -73,7 +73,7 @@ section Product
 variable (hI : IsInitial I)
 
 -- This is the data of a particular disjoint coproduct in `C`.
-variable {α : Type} {X : α → C} (c : Cofan X) (hc : IsColimit c)
+variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩

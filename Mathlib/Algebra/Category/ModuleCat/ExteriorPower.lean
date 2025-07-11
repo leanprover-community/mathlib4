@@ -40,7 +40,7 @@ namespace AlternatingMap
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{max u v} R} {n : ℕ}
 
 @[ext]
-lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x ) :
+lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x) :
     φ = φ' :=
   _root_.AlternatingMap.ext h
 

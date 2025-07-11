@@ -61,7 +61,7 @@ theorem norm_repr_le_norm {x : L} (i : ι) : ‖B.repr x i‖ ≤ B.norm x :=
 
 /-- For any `K`-basis of `L`, we have `B.norm 0 = 0`. -/
 protected theorem norm_zero : B.norm 0 = 0 := by
-  simp [norm, map_zero, Pi.zero_apply, norm_zero]
+  simp [norm, map_zero, norm_zero]
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `B.norm (-x) = B.norm x`. -/
 protected theorem norm_neg (x : L) : B.norm (-x) = B.norm x := by
@@ -121,7 +121,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
     simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, sum_apply, smul_eq_mul,
-      norm_mul, sup'_le_iff, mem_univ, forall_const] at hk ⊢
+      norm_mul] at hk ⊢
     apply le_trans hk
     -- We use the above property again.
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),

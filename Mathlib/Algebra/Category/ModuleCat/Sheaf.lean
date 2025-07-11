@@ -119,7 +119,7 @@ lemma add_val {M N : SheafOfModules.{v} R} (f g : M ⟶ N) :
 
 instance : Preadditive (SheafOfModules.{v} R) where
   add_comp := by intros; ext1; dsimp; simp only [Preadditive.add_comp]
-  comp_add := by intros; ext1; dsimp; simp only [Preadditive.comp_add]
+  comp_add := by tauto
 
 instance : (forget R).Additive where
 

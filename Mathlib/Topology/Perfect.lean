@@ -201,7 +201,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   let V := ⋃ U ∈ v, U
   let D := C \ V
   have Vct : (V ∩ C).Countable := by
-    simp only [V, iUnion_inter, mem_sep_iff]
+    simp only [V, iUnion_inter]
     apply Countable.biUnion
     · exact Countable.mono inter_subset_left bct
     · exact inter_subset_right

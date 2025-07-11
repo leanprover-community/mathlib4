@@ -75,7 +75,7 @@ lemma Gammaℝ_eq_zero_iff {s : ℂ} : Gammaℝ s = 0 ↔ ∃ n : ℕ, s = -(2 *
 @[simp]
 lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
   rw [Gammaℝ_def, Complex.Gamma_one_half_eq]
-  simp [neg_div, cpow_neg, inv_mul_cancel, pi_ne_zero]
+  simp [neg_div, cpow_neg, pi_ne_zero]
 
 @[simp]
 lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by

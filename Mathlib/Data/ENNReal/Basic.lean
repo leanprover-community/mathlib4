@@ -662,7 +662,7 @@ theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b =
   by_contra! hlt
   lift b to ℝ≥0 using hlt.ne_top
   lift a to ℝ≥0 using mt h coe_ne_top
-  refine hlt.not_le ?_
+  refine hlt.not_ge ?_
   simpa using h_nnreal
 
 @[simp]

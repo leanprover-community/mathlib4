@@ -50,7 +50,7 @@ theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
     ext1 ⟨b, i⟩
     fin_cases b
     · simp [Function.uncurry, Matrix.cons_val_zero, ih]
-    · simp [Function.uncurry, Matrix.cons_val_one, Matrix.head_cons, aeval_X]
+    · simp [Function.uncurry, Matrix.cons_val_one, aeval_X]
 
 variable (p)
 
@@ -63,12 +63,12 @@ theorem mulN_isPoly (n : ℕ) : IsPoly p fun _ _Rcr x => x * n :=
 theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
     bind₁ (wittMulN p n) (wittPolynomial p ℤ k) = n * wittPolynomial p ℤ k := by
   induction' n with n ih
-  · simp [wittMulN, Nat.cast_zero, zero_mul, bind₁_zero_wittPolynomial]
+  · simp [wittMulN, zero_mul, bind₁_zero_wittPolynomial]
   · rw [wittMulN, ← bind₁_bind₁, wittAdd, wittStructureInt_prop]
     simp only [map_add, Nat.cast_succ, bind₁_X_right]
     rw [add_mul, one_mul, bind₁_rename, bind₁_rename]
     simp only [ih, Function.uncurry, Function.comp_def, bind₁_X_left, AlgHom.id_apply,
-      Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
+      Matrix.cons_val_zero, Matrix.cons_val_one]
 
 end
 

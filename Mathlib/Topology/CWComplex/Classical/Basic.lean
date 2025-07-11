@@ -270,6 +270,37 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
     map n i 0 ∈ closedCell n i :=
   openCell_subset_closedCell _ _ (map_zero_mem_openCell _ _)
 
+/-- This is an auxiliary lemma used to prove `RelCWComplex.eq_of_eq_union_iUnion`. -/
+private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
+    (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
+      D ∪ ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) (n : ℕ) :
+    I n ⊆ J n := by
+  intro i hi
+  by_contra hJ
+  have h : openCell n i ⊆ D ∪ ⋃ n, ⋃ (j : J n), openCell (C := C) n j :=
+    hIJ.symm ▸ subset_union_of_subset_right
+      (subset_iUnion_of_subset n (subset_iUnion_of_subset ⟨i, hi⟩ (subset_refl (openCell n i)))) D
+  have h' : Disjoint (openCell n i) (D ∪ ⋃ n, ⋃ (j : J n), openCell (C := C) n j) := by
+    simp_rw [disjoint_union_right, disjoint_iUnion_right]
+    exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by aesop)⟩
+  rw [disjoint_of_subset_iff_left_eq_empty h] at h'
+  exact notMem_empty _ (h' ▸ map_zero_mem_openCell n i)
+
+lemma RelCWComplex.eq_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
+    (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
+      D ∪ ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) :
+    I = J := by
+  ext n x
+  exact ⟨fun h ↦ subset_of_eq_union_iUnion I J hIJ n h,
+    fun h ↦ subset_of_eq_union_iUnion J I hIJ.symm n h⟩
+
+lemma CWComplex.eq_of_eq_union_iUnion [CWComplex C] (I J : Π n, Set (cell C n))
+    (hIJ : ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
+      ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) :
+    I = J := by
+  apply RelCWComplex.eq_of_eq_union_iUnion
+  simp_rw [empty_union, hIJ]
+
 lemma RelCWComplex.isCompact_closedCell [RelCWComplex C D] {n : ℕ} {i : cell C n} :
     IsCompact (closedCell n i) :=
   (isCompact_closedBall _ _).image_of_continuousOn (continuousOn n i)
@@ -623,6 +654,20 @@ lemma CWComplex.iUnion_openCell_eq_skeleton [CWComplex C] (n : ℕ∞) :
     ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j = skeleton C n :=
   iUnion_openCell_eq_skeletonLT _
 
+lemma RelCWComplex.iUnion_skeletonLT_eq_complex [RelCWComplex C D] :
+    ⋃ (n : ℕ), skeletonLT C n = C := by
+  apply subset_antisymm (iUnion_subset_iff.2 fun _ ↦ skeletonLT_subset_complex)
+  simp_rw [← union_iUnion_openCell_eq_complex , union_subset_iff, iUnion₂_subset_iff]
+  exact ⟨subset_iUnion_of_subset 0 (base_subset_skeletonLT ↑0),
+    fun n i ↦ subset_iUnion_of_subset _ (openCell_subset_skeletonLT n i)⟩
+
+lemma RelCWComplex.iUnion_skeleton_eq_complex [RelCWComplex C D] :
+    ⋃ (n : ℕ), skeleton C n = C := by
+  apply subset_antisymm (iUnion_subset_iff.2 fun _ ↦ skeleton_subset_complex)
+  simp_rw [← union_iUnion_openCell_eq_complex , union_subset_iff, iUnion₂_subset_iff]
+  exact ⟨subset_iUnion_of_subset 0 (base_subset_skeleton ↑0),
+    fun n i ↦ subset_iUnion_of_subset _ (openCell_subset_skeleton n i)⟩
+
 lemma RelCWComplex.mem_skeletonLT_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
   simp [← iUnion_openCell_eq_skeletonLT]
@@ -708,8 +753,8 @@ export RelCWComplex (pairwiseDisjoint disjoint_openCell_of_ne openCell_subset_cl
   cellFrontier_subset_complex iUnion_cellFrontier_subset_skeletonLT
   iUnion_cellFrontier_subset_skeleton closedCell_zero_eq_singleton openCell_zero_eq_singleton
   cellFrontier_zero_eq_empty isClosed skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ
-  skeleton_union_iUnion_closedCell_eq_skeleton_succ
-  eq_of_not_disjoint_openCell disjoint_skeletonLT_openCell
+  skeleton_union_iUnion_closedCell_eq_skeleton_succ iUnion_skeletonLT_eq_complex
+  iUnion_skeleton_eq_complex eq_of_not_disjoint_openCell disjoint_skeletonLT_openCell
   disjoint_skeleton_openCell skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier
   skeleton_inter_closedCell_eq_skeleton_inter_cellFrontier)
 

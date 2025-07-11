@@ -13,8 +13,8 @@ import Mathlib.Tactic.Ring
 # The complex numbers
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
-of characteristic zero. The result that the complex numbers are algebraically closed, see
-`FieldTheory.AlgebraicClosure`.
+of characteristic zero. For the result that the complex numbers are algebraically closed, see
+`Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
 
 assert_not_exists Multiset Algebra
@@ -45,8 +45,6 @@ noncomputable instance : DecidableEq ℂ :=
 def equivRealProd : ℂ ≃ ℝ × ℝ where
   toFun z := ⟨z.re, z.im⟩
   invFun p := ⟨p.1, p.2⟩
-  left_inv := fun ⟨_, _⟩ => rfl
-  right_inv := fun ⟨_, _⟩ => rfl
 
 @[simp]
 theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z
@@ -331,23 +329,39 @@ instance addCommGroup : AddCommGroup ℂ :=
     add_comm := by intros; ext <;> simp <;> ring
     neg_add_cancel := by intros; ext <;> simp }
 
+/-! ### Casts -/
+
+instance instNatCast : NatCast ℂ where natCast n := ofReal n
+instance instIntCast : IntCast ℂ where intCast n := ofReal n
+instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
+instance instRatCast : RatCast ℂ where ratCast q := ofReal q
+
+@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
+@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
+
+@[simp] lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
+@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+
+
+/-! ### Ring structure -/
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
-    natCast := fun n => ⟨n, 0⟩
-    natCast_zero := by
-      ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_zero]
-    natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
-    intCast := fun n => ⟨n, 0⟩
-    intCast_ofNat := fun _ => by ext <;> rfl
-    intCast_negSucc := fun n => by
-      ext
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show -(1 : ℝ) + (-n) = -(↑(n + 1))
-        simp [Nat.cast_add, add_comm]
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show im ⟨n, 0⟩ = 0
-        rfl
+    natCast_zero := by ext <;> simp
+    natCast_succ _ := by ext <;> simp
+    intCast_ofNat _ := by ext <;> simp
+    intCast_negSucc _ := by ext <;> simp
     one := 1 }
 
 instance commRing : CommRing ℂ :=
@@ -398,29 +412,6 @@ def imAddGroupHom : ℂ →+ ℝ where
 theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 
-/-! ### Cast lemmas -/
-
-instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
-instance instRatCast : RatCast ℂ where ratCast q := ofReal q
-
-@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
-@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
-@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
-@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
-@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
-
-@[simp]
-lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
-@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
-@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
-@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
-
 lemma re_nsmul (n : ℕ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
 lemma im_nsmul (n : ℕ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 lemma re_zsmul (n : ℤ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
@@ -455,7 +446,7 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
 
 @[simp]
 theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
-  Complex.ext_iff.2 <| by simp [star]
+  Complex.ext_iff.2 <| by simp
 
 @[simp]
 theorem conj_I : conj I = -I :=

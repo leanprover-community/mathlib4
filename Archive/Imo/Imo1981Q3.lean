@@ -151,7 +151,7 @@ theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤
         _ ≤ fib (k + 1) := fib_mono h8
         _ = n := hn.symm
     have h9 : n ≤ N := h1.n_le_N
-    exact absurd h7 h9.not_lt
+    exact absurd h7 h9.not_gt
 
 /-
 We spell out the consequences of this result for `specifiedSet N` here.

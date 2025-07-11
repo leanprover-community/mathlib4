@@ -62,7 +62,5 @@ noncomputable def restrictHomEquivOfIsLocallySurjective
     erw [← (g.app _).hom.map_smul]
     rw [M₁.map_smul, ← hr]
     rfl)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end PresheafOfModules

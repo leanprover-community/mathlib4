@@ -101,7 +101,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ = (∑ k ∈ range (n + 1), C * b k) + C * ‖h‖ := by rw [← add_assoc, sum_range_succ']
       _ ≤ (C + ε) * ‖h‖ := by
         rw [add_comm, add_mul]
-        apply add_le_add_left this
+        gcongr
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G`, if every element `x` of the image of
 an isometric immersion `j : NormedAddGroupHom K H` has a preimage under `f` whose norm is at most

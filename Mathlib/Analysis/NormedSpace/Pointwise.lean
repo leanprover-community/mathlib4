@@ -140,7 +140,7 @@ theorem smul_unitBall_of_pos {r : ℝ} (hr : 0 < r) : r • ball (0 : E) 1 = bal
 lemma Ioo_smul_sphere_zero {a b r : ℝ} (ha : 0 ≤ a) (hr : 0 < r) :
     Ioo a b • sphere (0 : E) r = ball 0 (b * r) \ closedBall 0 (a * r) := by
   have : EqOn (‖·‖) id (Ioo a b) := fun x hx ↦ abs_of_pos (ha.trans_lt hx.1)
-  rw [set_smul_sphere_zero (by simp [ha.not_lt]), ← image_image (· * r), this.image_eq, image_id,
+  rw [set_smul_sphere_zero (by simp [ha.not_gt]), ← image_image (· * r), this.image_eq, image_id,
     image_mul_right_Ioo _ _ hr]
   ext x; simp [and_comm]
 
@@ -197,7 +197,7 @@ theorem exists_dist_lt_lt (hδ : 0 < δ) (hε : 0 < ε) (h : dist x z < ε + δ)
 -- This is also true for `ℚ`-normed spaces
 theorem disjoint_ball_ball_iff (hδ : 0 < δ) (hε : 0 < ε) :
     Disjoint (ball x δ) (ball y ε) ↔ δ + ε ≤ dist x y := by
-  refine ⟨fun h => le_of_not_lt fun hxy => ?_, ball_disjoint_ball⟩
+  refine ⟨fun h => le_of_not_gt fun hxy => ?_, ball_disjoint_ball⟩
   rw [add_comm] at hxy
   obtain ⟨z, hxz, hzy⟩ := exists_dist_lt_lt hδ hε hxy
   rw [dist_comm] at hxz
@@ -206,7 +206,7 @@ theorem disjoint_ball_ball_iff (hδ : 0 < δ) (hε : 0 < ε) :
 -- This is also true for `ℚ`-normed spaces
 theorem disjoint_ball_closedBall_iff (hδ : 0 < δ) (hε : 0 ≤ ε) :
     Disjoint (ball x δ) (closedBall y ε) ↔ δ + ε ≤ dist x y := by
-  refine ⟨fun h => le_of_not_lt fun hxy => ?_, ball_disjoint_closedBall⟩
+  refine ⟨fun h => le_of_not_gt fun hxy => ?_, ball_disjoint_closedBall⟩
   rw [add_comm] at hxy
   obtain ⟨z, hxz, hzy⟩ := exists_dist_lt_le hδ hε hxy
   rw [dist_comm] at hxz
@@ -230,12 +230,12 @@ open EMetric ENNReal
 @[simp]
 theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
     infEdist x (thickening δ s) = infEdist x s - ENNReal.ofReal δ := by
-  obtain hs | hs := lt_or_le (infEdist x s) (ENNReal.ofReal δ)
+  obtain hs | hs := lt_or_ge (infEdist x s) (ENNReal.ofReal δ)
   · rw [infEdist_zero_of_mem, tsub_eq_zero_of_le hs.le]
     exact hs
   refine (tsub_le_iff_right.2 infEdist_le_infEdist_thickening_add).antisymm' ?_
   refine le_sub_of_add_le_right ofReal_ne_top ?_
-  refine le_infEdist.2 fun z hz => le_of_forall_lt' fun r h => ?_
+  refine le_infEdist.2 fun z hz => le_of_forall_gt fun r h => ?_
   cases r with
   | top =>
     exact add_lt_top.2 ⟨lt_top_iff_ne_top.2 <| infEdist_ne_top ⟨z, self_subset_thickening hδ _ hz⟩,
@@ -278,7 +278,7 @@ theorem closure_thickening (hδ : 0 < δ) (s : Set E) :
 @[simp]
 theorem infEdist_cthickening (δ : ℝ) (s : Set E) (x : E) :
     infEdist x (cthickening δ s) = infEdist x s - ENNReal.ofReal δ := by
-  obtain hδ | hδ := le_or_lt δ 0
+  obtain hδ | hδ := le_or_gt δ 0
   · rw [cthickening_of_nonpos hδ, infEdist_closure, ofReal_of_nonpos hδ, tsub_zero]
   · rw [← closure_thickening hδ, infEdist_closure, infEdist_thickening hδ]
 
@@ -388,9 +388,8 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   refine ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
     ⟨r • ‖y - x‖⁻¹ • (y - x) + x, ?_⟩⟩
   have : ‖y - x‖ ≠ 0 := by simpa [sub_eq_zero]
-  simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv,
-    norm_norm, ne_eq, norm_eq_zero]
-  simp only [abs_norm, ne_eq, norm_eq_zero]
+  simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv]
+  simp only [abs_norm]
   rw [inv_mul_cancel₀ this, mul_one, abs_eq_self.mpr hr]
 
 theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :

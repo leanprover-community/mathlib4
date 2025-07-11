@@ -64,7 +64,7 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
 
 /-- The Poisson pmf is measurable. -/
 @[fun_prop, measurability]
-lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by measurability
+lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
 
 @[fun_prop, measurability]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=

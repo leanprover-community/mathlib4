@@ -123,12 +123,12 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   left_inv g :=
     Quotient.inductionOn' g fun g =>
@@ -217,7 +217,7 @@ theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
     mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) ⁻¹' s := by
   ext x
   simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_iUnion,
-    Set.mem_image, ← eq_inv_mul_iff_mul_eq]
+    Set.mem_image]
   exact
     ⟨fun ⟨y, hs, hN⟩ => ⟨_, N.inv_mem hN, by simpa using hs⟩, fun ⟨z, hz, hxz⟩ =>
       ⟨x * z, hxz, by simpa using hz⟩⟩

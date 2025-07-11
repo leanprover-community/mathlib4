@@ -53,7 +53,7 @@ theorem pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → �
     Pairwise (Disjoint on fun n => Ioc (f n) (f (succ n))) :=
   (pairwise_disjoint_on _).2 fun _ _ hmn =>
     disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
-      h₂.not_le <| h₁.trans <| hf <| succ_le_of_lt hmn
+      h₂.not_ge <| h₁.trans <| hf <| succ_le_of_lt hmn
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ico (f n) (f (Order.succ n))` are pairwise disjoint. -/
@@ -61,7 +61,7 @@ theorem pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → �
     Pairwise (Disjoint on fun n => Ico (f n) (f (succ n))) :=
   (pairwise_disjoint_on _).2 fun _ _ hmn =>
     disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
-      h₁.not_le <| (hf <| succ_le_of_lt hmn).trans h₂
+      h₁.not_ge <| (hf <| succ_le_of_lt hmn).trans h₂
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioo (f n) (f (Order.succ n))` are pairwise disjoint. -/

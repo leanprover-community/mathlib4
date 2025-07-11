@@ -98,7 +98,7 @@ theorem biInter_gt_closedBall (x : α) (r : ℝ) : ⋂ r' > r, closedBall x r' =
 
 theorem biInter_gt_ball (x : α) (r : ℝ) : ⋂ r' > r, ball x r' = closedBall x r := by
   ext
-  simp [forall_lt_iff_le']
+  simp [forall_gt_iff_le]
 
 theorem biUnion_lt_ball (x : α) (r : ℝ) : ⋃ r' < r, ball x r' = ball x r := by
   ext

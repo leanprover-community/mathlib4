@@ -26,14 +26,14 @@ This file defines the group law on nonsingular projective points.
 * `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
 * `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
 * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
-    nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
+  nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
 * `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
 * `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
 * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
-    forms an abelian group under addition.
+  forms an abelian group under addition.
 
 ## Implementation notes
 
@@ -445,7 +445,7 @@ lemma toAffine_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
 
 lemma toAffine_some {X Y : F} (h : W.Nonsingular ![X, Y, 1]) :
     toAffine W ![X, Y, 1] = .some ((nonsingular_some ..).mp h) := by
-  simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, one_pow, div_one]
+  simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, div_one]
 
 lemma toAffine_smul (P : Fin 3 → F) {u : F} (hu : IsUnit u) :
     toAffine W (u • P) = toAffine W P := by

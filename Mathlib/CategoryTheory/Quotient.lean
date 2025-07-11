@@ -29,6 +29,8 @@ instance (C) [Quiver C] : Inhabited (HomRel C) where
 
 namespace CategoryTheory
 
+open Functor
+
 section
 
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)

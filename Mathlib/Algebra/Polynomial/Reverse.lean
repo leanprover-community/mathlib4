@@ -35,12 +35,7 @@ def revAtFun (N i : ℕ) : ℕ :=
 
 theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   unfold revAtFun
-  split_ifs with h j
-  · exact tsub_tsub_cancel_of_le h
-  · exfalso
-    apply j
-    exact Nat.sub_le N i
-  · rfl
+  grind
 
 theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
   intro a b hab
@@ -175,7 +170,7 @@ theorem reflect_mul_induction (cf cg : ℕ) :
         try assumption
       · exact le_add_left card_support_C_mul_X_pow_le_one
       · exact le_trans (natDegree_C_mul_X_pow_le g.leadingCoeff g.natDegree) Og
-      · exact Nat.lt_succ_iff.mp (gt_of_ge_of_gt Cg (eraseLead_support_card_lt g0))
+      · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt g0) Cg)
       · exact le_trans eraseLead_natDegree_le_aux Og
   --first induction (left): induction step
   · intro N O f g Cf Cg Nf Og
@@ -185,7 +180,7 @@ theorem reflect_mul_induction (cf cg : ℕ) :
       try assumption
     · exact le_add_left card_support_C_mul_X_pow_le_one
     · exact le_trans (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree) Nf
-    · exact Nat.lt_succ_iff.mp (gt_of_ge_of_gt Cf (eraseLead_support_card_lt f0))
+    · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt f0) Cf)
     · exact le_trans eraseLead_natDegree_le_aux Nf
 
 @[simp]

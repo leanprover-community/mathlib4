@@ -171,7 +171,7 @@ lemma sigmaFinite_restrict_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeas
     this.sigmaFinite
   let e : ℕ ≃ ℕ × ℕ := Nat.pairEquiv.symm
   refine ⟨fun n ↦ f (e n), fun _ ↦ by simp, fun n ↦ ?_, ?_⟩
-  · simp only [Nat.pairEquiv_symm_apply, gt_iff_lt, measure_union_lt_top_iff, f, e]
+  · simp only [Nat.pairEquiv_symm_apply, measure_union_lt_top_iff, f, e]
     rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT', Set.compl_inter_self,
       Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT']
     simp only [measure_empty, ENNReal.zero_lt_top, true_and]
@@ -228,7 +228,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT'_of_measurableSet [IsFini
       infer_instance
     · exact le_iSup₂ (f := fun s _ ↦ ⨆ (_ : SigmaFinite (μ.restrict _)), ν s)
         (μ.sigmaFiniteSetWRT' ν ∪ s) (measurableSet_sigmaFiniteSetWRT'.union hs)
-  exact h_lt.not_le h_le
+  exact h_lt.not_ge h_le
 
 /-- For all sets `s` in `(μ.sigmaFiniteSetWRT ν)ᶜ`, if `ν s ≠ 0` then `μ s = ∞`. -/
 lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' [IsFiniteMeasure ν]

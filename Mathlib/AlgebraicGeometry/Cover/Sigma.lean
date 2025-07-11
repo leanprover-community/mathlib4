@@ -52,10 +52,11 @@ noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma wher
   w _ := Sigma.hom_ext _ _ (by simp)
   app_prop _ := by
     simp only [sigma_obj, sigma_J, PUnit.default_eq_unit,
-      IsLocalAtSource.iff_of_openCover (sigmaOpenCover _), sigmaOpenCover_obj, sigmaOpenCover_map,
-      colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+      IsLocalAtSource.iff_of_openCover (Scheme.IsLocallyDirected.openCover _),
+      Discrete.functor_obj_eq_as, IsLocallyDirected.openCover_J, IsLocallyDirected.openCover_obj,
+      IsLocallyDirected.openCover_map, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
     intro i
-    exact P.comp_mem _ _ (f.app_prop i) (IsLocalAtSource.of_isOpenImmersion _)
+    exact P.comp_mem _ _ (f.app_prop i.1) (IsLocalAtSource.of_isOpenImmersion _)
 
 /-- Collapsing a cover to a single object cover is functorial. -/
 @[simps]

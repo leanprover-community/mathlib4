@@ -33,6 +33,9 @@ abbrev Ring.KrullDimLE (n : ℕ) (R : Type*) [CommSemiring R] : Prop :=
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
+lemma Ring.krullDimLE_iff {n : ℕ} :
+    KrullDimLE n R ↔ ringKrullDim R ≤ n := Order.krullDimLE_iff n (PrimeSpectrum R)
+
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
     ringKrullDim R = ⊥ :=
@@ -79,9 +82,6 @@ lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
 
-proof_wanted Polynomial.ringKrullDim_le :
-    ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
-
 proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
     [IsNoetherianRing R] (n : ℕ) :
     ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
@@ -125,10 +125,9 @@ theorem nilradical_le_jacobson (R) [CommRing R] : nilradical R ≤ Ring.jacobson
   nilradical_eq_sInf R ▸ le_sInf fun _I hI ↦ sInf_le (Ideal.IsMaximal.isPrime ⟨hI⟩)
 
 theorem Ring.jacobson_eq_nilradical_of_krullDimLE_zero (R) [CommRing R] [KrullDimLE 0 R] :
-    jacobson R = nilradical R := by
-  refine (nilradical_le_jacobson R).antisymm' (nilradical_eq_sInf R ▸ le_sInf fun I hI ↦ sInf_le ?_)
-  rw [Set.mem_def, Set.setOf_app_iff] at hI
-  exact Ideal.IsMaximal.out
+    jacobson R = nilradical R :=
+  (nilradical_le_jacobson R).antisymm' <| nilradical_eq_sInf R ▸ le_sInf fun I (_ : I.IsPrime) ↦
+    sInf_le Ideal.IsMaximal.out
 
 end Zero
 

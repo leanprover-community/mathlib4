@@ -191,7 +191,7 @@ def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _
 
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
-lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : (Λ[n+1, i] : SSet.{u}) ⟶ S)
+lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i] : SSet.{u}) ⟶ S)
     (h : ∀ (j) (h : j ≠ i), σ₁.app _ (face i j h) = σ₂.app _ (face i j h)) :
     σ₁ = σ₂ := by
   rw [← Subpresheaf.equalizer_eq_iff]

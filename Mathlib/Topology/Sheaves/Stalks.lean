@@ -49,7 +49,7 @@ open CategoryTheory
 
 open TopCat
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits CategoryTheory.Functor
 
 open TopologicalSpace Topology
 
@@ -362,9 +362,7 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
 
--- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
--- It seems the side condition `h` is not applied by `simpNF`.
-@[reassoc, elementwise, simp, nolint simpNF]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.hom.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by

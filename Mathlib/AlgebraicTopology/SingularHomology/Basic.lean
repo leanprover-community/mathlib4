@@ -37,12 +37,12 @@ def SSet.singularChainComplexFunctor [Limits.HasCoproducts.{w} C] :
 /-- The singular chain complex functor with coefficients in `C`. -/
 def singularChainComplexFunctor :
     C ⥤ TopCat.{0} ⥤ ChainComplex C ℕ :=
-  SSet.singularChainComplexFunctor.{0} C ⋙ (whiskeringLeft _ _ _).obj TopCat.toSSet
+  SSet.singularChainComplexFunctor.{0} C ⋙ (Functor.whiskeringLeft _ _ _).obj TopCat.toSSet
 
 /-- The `n`-th singular homology functor with coefficients in `C`. -/
 def singularHomologyFunctor : C ⥤ TopCat.{0} ⥤ C :=
   singularChainComplexFunctor C ⋙
-    (whiskeringRight _ _ _).obj (HomologicalComplex.homologyFunctor _ _ n)
+    (Functor.whiskeringRight _ _ _).obj (HomologicalComplex.homologyFunctor _ _ n)
 
 section TotallyDisconnectedSpace
 

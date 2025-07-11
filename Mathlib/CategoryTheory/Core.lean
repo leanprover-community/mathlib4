@@ -23,6 +23,8 @@ but this is not functorial with respect to `F`.
 
 namespace CategoryTheory
 
+open Functor
+
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 -- morphism levels before object levels. See note [CategoryTheory universes].

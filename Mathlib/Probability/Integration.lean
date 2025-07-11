@@ -53,7 +53,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     simp_rw [← inter_indicator_mul]
     rw [lintegral_indicator (MeasurableSet.inter (hMf _ h_meas_s') h_meas_T),
       lintegral_indicator (hMf _ h_meas_s'), lintegral_indicator h_meas_T]
-    simp only [measurable_const, lintegral_const, univ_inter, lintegral_const_mul,
+    simp only [lintegral_const, univ_inter,
       MeasurableSet.univ, Measure.restrict_apply]
     rw [IndepSets_iff] at h_ind
     rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (Set.mem_singleton _)]
@@ -173,7 +173,7 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
   refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
   have J : IndepFun (‖X ·‖ₑ) (‖Y ·‖ₑ) μ := hXY.comp measurable_enorm measurable_enorm
   have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
-  simp only [enorm_mul, ENNReal.coe_mul] at A
+  simp only [enorm_mul] at A
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
   simp only [ENNReal.top_mul I, lt_self_iff_false] at A
 
@@ -194,7 +194,7 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
   have J : IndepFun (fun ω => ‖X ω‖ₑ : Ω → ℝ≥0∞) (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) μ :=
     IndepFun.comp hXY measurable_enorm measurable_enorm
   have A : ∫⁻ ω, ‖X ω * Y ω‖ₑ ∂μ < ∞ := h'XY.2
-  simp only [enorm_mul, ENNReal.coe_mul] at A
+  simp only [enorm_mul] at A
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
   simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
@@ -279,7 +279,7 @@ theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable
       filter_upwards [h'Y] with ω hω
       simp [hω]
     simp only [integral_congr_ae h'Y, integral_congr_ae h', Pi.zero_apply, integral_const,
-      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
+      Algebra.id.smul_eq_mul, mul_zero]
   by_cases h : Integrable (X * Y) μ
   · have HX : Integrable X μ := hXY.integrable_left_of_integrable_mul h hX hY h'Y
     have HY : Integrable Y μ := hXY.integrable_right_of_integrable_mul h hX hY h'X

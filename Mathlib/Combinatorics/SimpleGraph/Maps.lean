@@ -412,8 +412,6 @@ def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
     obtain rfl | hvw := eq_or_ne v w
     · simp
     · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
-  left_inv f := rfl
-  right_inv f := rfl
 
 end Embedding
 
@@ -593,7 +591,7 @@ end Iso
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
-                                Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
+                                implies_true]
 
 section Finite
 

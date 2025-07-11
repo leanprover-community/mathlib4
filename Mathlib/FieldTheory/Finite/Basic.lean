@@ -370,7 +370,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
       simpa [if_neg (Nat.one_lt_pow pos.ne' Fintype.one_lt_card).ne] using congr_arg (coeff · 1) h
-    refine this.not_lt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
+    refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
 
@@ -707,7 +707,7 @@ variable [Finite F]
 
 /-- In a finite field of characteristic `2`, all elements are squares. -/
 theorem isSquare_of_char_two (hF : ringChar F = 2) (a : F) : IsSquare a :=
-  haveI hF' : CharP F 2 := ringChar.of_eq hF
+  have : CharP F 2 := ringChar.of_eq hF
   isSquare_of_charTwo' a
 
 /-- In a finite field of odd characteristic, not every element is a square. -/

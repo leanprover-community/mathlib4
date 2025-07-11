@@ -127,6 +127,26 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
     (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 
+@[simp]
+theorem IsSymmetric.im_inner_apply_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    im ⟪T x, x⟫ = 0 :=
+  conj_eq_iff_im.mp <| hT.conj_inner_sym x x
+
+@[simp]
+theorem IsSymmetric.im_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    im ⟪x, T x⟫ = 0 := by
+  simp [← hT x x, hT]
+
+@[simp]
+theorem IsSymmetric.coe_re_inner_apply_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    re ⟪T x, x⟫ = ⟪T x, x⟫ :=
+  conj_eq_iff_re.mp <| hT.conj_inner_sym x x
+
+@[simp]
+theorem IsSymmetric.coe_re_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    re ⟪x, T x⟫ = ⟪x, T x⟫ := by
+  simp [← hT x x, hT]
+
 section Complex
 
 variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
@@ -213,6 +233,13 @@ theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
   simp_rw [h _]
   ring
+
+theorem ker_le_ker_of_range {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
+    (h : range S ≤ range T) : ker T ≤ ker S := by
+  intro v hv
+  rw [mem_ker] at hv ⊢
+  obtain ⟨y, hy⟩ : ∃ y, T y = S (S v) := by simpa using @h (S (S v))
+  rw [← inner_self_eq_zero (𝕜 := 𝕜), ← hS, ← hy, hT, hv, inner_zero_right]
 
 end LinearMap
 

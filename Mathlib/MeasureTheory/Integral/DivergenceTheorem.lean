@@ -517,12 +517,12 @@ theorem integral2_divergence_prod_of_hasFDerivAt_off_countable (f g : ℝ × ℝ
   · specialize this b₁ a₁
     rw [uIcc_comm b₁ a₁, min_comm b₁ a₁, max_comm b₁ a₁] at this
     simp only [intervalIntegral.integral_symm b₁ a₁]
-    refine (congr_arg Neg.neg (this Hcf Hcg Hdf Hdg Hi (le_of_not_le h₁))).trans ?_; abel
+    refine (congr_arg Neg.neg (this Hcf Hcg Hdf Hdg Hi (le_of_not_ge h₁))).trans ?_; abel
   wlog h₂ : a₂ ≤ b₂ generalizing a₂ b₂
   · specialize this b₂ a₂
     rw [uIcc_comm b₂ a₂, min_comm b₂ a₂, max_comm b₂ a₂] at this
     simp only [intervalIntegral.integral_symm b₂ a₂, intervalIntegral.integral_neg]
-    refine (congr_arg Neg.neg (this Hcf Hcg Hdf Hdg Hi (le_of_not_le h₂))).trans ?_; abel
+    refine (congr_arg Neg.neg (this Hcf Hcg Hdf Hdg Hi (le_of_not_ge h₂))).trans ?_; abel
   simp only [uIcc_of_le h₁, uIcc_of_le h₂, min_eq_left, max_eq_right, h₁, h₂] at Hcf Hcg Hdf Hdg Hi
   calc
     (∫ x in a₁..b₁, ∫ y in a₂..b₂, f' (x, y) (1, 0) + g' (x, y) (0, 1)) =

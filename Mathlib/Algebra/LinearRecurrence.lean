@@ -84,7 +84,7 @@ theorem is_sol_mkSol (init : Fin E.order → R) : E.IsSolution (E.mkSol init) :=
 theorem mkSol_eq_init (init : Fin E.order → R) : ∀ n : Fin E.order, E.mkSol init n = init n := by
   intro n
   rw [mkSol]
-  simp only [n.is_lt, dif_pos, Fin.mk_val, Fin.eta]
+  simp only [n.is_lt, dif_pos, Fin.mk_val]
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `∀ n, u n = E.mkSol init n`. -/
@@ -95,7 +95,7 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → R} {init : Fin E.order → R} (h
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
   · dsimp only
-    rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
+    rw [← tsub_add_cancel_of_le (le_of_not_gt h'), h (n - E.order)]
     congr with k
     have : n - E.order + k < n := by omega
     rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]

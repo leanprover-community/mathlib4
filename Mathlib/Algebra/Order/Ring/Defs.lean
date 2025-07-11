@@ -215,7 +215,7 @@ variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
 instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
     contrapose! hab
-    obtain ha | ha := hab.1.lt_or_lt <;> obtain hb | hb := hab.2.lt_or_lt
+    obtain ha | ha := hab.1.lt_or_gt <;> obtain hb | hb := hab.2.lt_or_gt
     exacts [(mul_pos_of_neg_of_neg ha hb).ne', (mul_neg_of_neg_of_pos ha hb).ne,
       (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
 
@@ -223,10 +223,10 @@ instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain R where
   mul_left_cancel_of_ne_zero {a b c} ha h := by
-    obtain ha | ha := ha.lt_or_lt
+    obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
   mul_right_cancel_of_ne_zero {b a c} ha h := by
-    obtain ha | ha := ha.lt_or_lt
+    obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 
 end LinearOrder

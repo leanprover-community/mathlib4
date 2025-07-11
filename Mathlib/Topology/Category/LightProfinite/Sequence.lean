@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.Category.LightProfinite.Basic
 /-!
 
@@ -35,11 +35,9 @@ lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInfty
   · rintro (_|n) (_|m) h
     · rfl
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, zero_eq_inv] at h
-      rw [← Nat.cast_one, ← Nat.cast_add, eq_comm, Nat.cast_eq_zero] at h
-      simp at h
+      assumption_mod_cast
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, inv_eq_zero] at h
-      rw [← Nat.cast_one, ← Nat.cast_add, Nat.cast_eq_zero] at h
-      simp at h
+      assumption_mod_cast
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, inv_inj, add_left_inj,
         Nat.cast_inj] at h
       rw [h]

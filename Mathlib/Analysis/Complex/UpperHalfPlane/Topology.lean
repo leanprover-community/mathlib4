@@ -117,7 +117,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   refine ⟨?_, (by simp only [mul_neg, Int.cast_neg, Int.cast_mul, Int.cast_natCast, vadd_im,
     le_refl])⟩
   have h : (N * (-n : ℝ) +ᵥ z).re = -N * Int.floor (z.re / N) + z.re := by
-    simp only [n, Int.cast_natCast, mul_neg, vadd_re, neg_mul]
+    simp only [n, mul_neg, vadd_re, neg_mul]
   norm_cast at *
   rw [h, add_comm]
   simp only [neg_mul, Int.cast_neg, Int.cast_mul, Int.cast_natCast]
@@ -147,7 +147,7 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
   · change (Function.invFunOn UpperHalfPlane.coe Set.univ w) = _
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
-    exact (a.prop.not_le (by simpa using hw)).elim
+    exact (a.prop.not_ge (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
     ofComplex z = ⟨z, hz⟩ := by
@@ -167,7 +167,7 @@ lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z :=
 lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕ f) z = f ⟨z, hz⟩ :=
   congrArg _ <| ofComplex_apply ⟨z, hz⟩
 
-lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0)  :
+lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0) :
     (↑ₕ f) z = (↑ₕ f) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 

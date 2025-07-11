@@ -7,7 +7,6 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Sum
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.CC
 import Mathlib.Tactic.Lift
 
 /-!
@@ -42,7 +41,6 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
   toFun f := (f none, fun a => f (some a))
   invFun x a := Option.casesOn a x.fst x.snd
   left_inv f := funext fun a => by cases a <;> rfl
-  right_inv x := by simp
 
 section subtypeCongr
 
@@ -91,9 +89,9 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
   ext x
   by_cases h : p x
   · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, symm_apply_eq, this]
   · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, symm_apply_eq, this]
 
 @[simp]
 theorem Perm.subtypeCongr.trans :
@@ -102,9 +100,9 @@ theorem Perm.subtypeCongr.trans :
   ext x
   by_cases h : p x
   · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, this]
+    simp [h, this]
   · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
+    simp [h, this]
 
 end subtypeCongr
 
@@ -414,7 +412,6 @@ def piEquivSubtypeSigma (ι) (π : ι → Type*) :
     (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
   toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
   invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
-  left_inv := fun _ => funext fun _ => rfl
   right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
       Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
@@ -486,7 +483,7 @@ def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b :
 
 @[simp]
 lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
-    (s: {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
+    (s : {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
     sigmaSigmaSubtypeEq a b s = cast (congrArg₂ γ s.2.1 s.2.2) s.1.2.2 := by
   simp [sigmaSigmaSubtypeEq]
 
@@ -638,10 +635,10 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
   split_ifs <;> simp [*]
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 /-- `swap a b` is the permutation that swaps `a` and `b` and
   leaves other values as is. -/
@@ -967,8 +964,6 @@ end
     (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
   toFun f i := f ⟨i, h ▸ i.2⟩
   invFun f i := f ⟨i, h.symm ▸ i.2⟩
-  left_inv f := rfl
-  right_inv f := rfl
 
 lemma eq_conj {α α' β β' : Sort*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
     (f : α → β) (f' : α' → β') : ε₂.symm ∘ f ∘ ε₁.symm = f' ↔ f = ε₂ ∘ f' ∘ ε₁ := by
@@ -1002,12 +997,8 @@ end Equiv
 
 theorem Function.Injective.swap_apply
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y z : α) :
-    Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) := by
-  by_cases hx : z = x
-  · simp [hx]
-  by_cases hy : z = y
-  · simp [hy]
-  rw [Equiv.swap_apply_of_ne_of_ne hx hy, Equiv.swap_apply_of_ne_of_ne (hf.ne hx) (hf.ne hy)]
+    Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) :=
+  Eq.symm (map_swap hf x y z)
 
 theorem Function.Injective.swap_comp
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y : α) :

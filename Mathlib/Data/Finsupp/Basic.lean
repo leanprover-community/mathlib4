@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Rat.BigOperators
 
 /-!
@@ -18,8 +17,6 @@ import Mathlib.Data.Rat.BigOperators
 * `Finsupp.mapDomain`: maps the domain of a `Finsupp` by a function and by summing.
 * `Finsupp.comapDomain`: postcomposition of a `Finsupp` with a function injective on the preimage
   of its support.
-* `Finsupp.some`: restrict a finitely supported function on `Option α` to a finitely supported
-  function on `α`.
 * `Finsupp.filter`: `filter p f` is the finitely supported function that is `f a` if `p a` is true
   and 0 otherwise.
 * `Finsupp.frange`: the image of a finitely supported function on its support.
@@ -30,9 +27,6 @@ import Mathlib.Data.Rat.BigOperators
 This file is a `noncomputable theory` and uses classical logic throughout.
 
 ## TODO
-
-* This file is currently ~1600 lines long and is quite a miscellany of definitions and lemmas,
-  so it should be divided into smaller pieces.
 
 * Expand the list of definitions and important lemmas to the module docstring.
 
@@ -501,7 +495,7 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →�
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
   Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
-    simp only [mem_image, exists_prop, mem_support_iff, Ne] at hx
+    simp only [mem_image, mem_support_iff, Ne] at hx
     rcases hx with ⟨hx_w, hx_h_left, rfl⟩
     simp only [mem_support_iff, Ne]
     rw [mapDomain_apply' (↑s.support : Set _) _ _ hf]
@@ -565,7 +559,7 @@ theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
   ext
   simp only [AddMonoidHom.coe_comp, Finsupp.mapRange_single, Finsupp.mapDomain.addMonoidHom_apply,
-    Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
+    Finsupp.singleAddHom_apply, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
@@ -620,7 +614,7 @@ def comapDomain [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.InjOn f (f 
   toFun a := l (f a)
   mem_support_toFun := by
     intro a
-    simp only [Finset.mem_def.symm, Finset.mem_preimage]
+    simp only [Finset.mem_preimage]
     exact l.mem_support_toFun (f a)
 
 @[simp]
@@ -631,7 +625,7 @@ theorem comapDomain_apply [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.I
 theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) :
     (comapDomain f l hf.injOn).sum (g ∘ f) = l.sum g := by
-  simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
+  simp only [sum, (· ∘ ·), comapDomain]
   exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 
 theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
@@ -719,80 +713,6 @@ end FInjective
 
 end ComapDomain
 
-/-! ### Declarations about finitely supported functions whose support is an `Option` type -/
-
-
-section Option
-
-/-- Restrict a finitely supported function on `Option α` to a finitely supported function on `α`. -/
-def some [Zero M] (f : Option α →₀ M) : α →₀ M :=
-  f.comapDomain Option.some fun _ => by simp
-
-@[simp]
-theorem some_apply [Zero M] (f : Option α →₀ M) (a : α) : f.some a = f (Option.some a) :=
-  rfl
-
-@[simp]
-theorem some_zero [Zero M] : (0 : Option α →₀ M).some = 0 := by
-  ext
-  simp
-
-@[simp]
-theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
-  ext
-  simp
-
-@[simp]
-theorem some_single_none [Zero M] (m : M) : (single none m : Option α →₀ M).some = 0 := by
-  ext
-  simp
-
-@[simp]
-theorem some_single_some [Zero M] (a : α) (m : M) :
-    (single (Option.some a) m : Option α →₀ M).some = single a m := by
-  classical
-    ext b
-    simp [single_apply]
-
-@[to_additive]
-theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
-    (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
-    (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
-    f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
-  classical
-    induction f using induction_linear with
-    | zero => simp [some_zero, h_zero]
-    | add f₁ f₂ h₁ h₂ =>
-      rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
-      · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
-        rw [mul_mul_mul_comm]
-      all_goals simp [h_zero, h_add]
-    | single a m => cases a <;> simp [h_zero, h_add]
-
-theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
-    (b : Option α → M) :
-    (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
-  f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
-
-theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
-    (n = (embDomain Embedding.some m).update none i) ↔
-      n none = i ∧ n.some = m := by
-  classical
-  rw [Finsupp.ext_iff, Option.forall, Finsupp.ext_iff]
-  apply and_congr
-  · simp
-  · apply forall_congr'
-    intro
-    simp only [coe_update, ne_eq, reduceCtorEq, not_false_eq_true, update_of_ne, some_apply]
-    rw [← Embedding.some_apply, embDomain_apply, Embedding.some_apply]
-
-@[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
-  ext; rw [some_apply]; exact embDomain_apply _ _ _
-
-@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
-  embDomain_notin_range _ _ _ (by simp)
-
-end Option
 
 /-! ### Declarations about `Finsupp.filter` -/
 
@@ -1194,7 +1114,7 @@ theorem sumElim_inr {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →�
 lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
     (f₁ : ι₁ →₀ α) (f₂ : ι₂ →₀ α) (g : ι₁ ⊕ ι₂ → α → M) :
     (f₁.sumElim f₂).prod g = f₁.prod (g ∘ Sum.inl) * f₂.prod (g ∘ Sum.inr) := by
-  simp [Finsupp.prod, Finset.prod_disj_sum]
+  simp [Finsupp.prod, Finset.prod_disjSum]
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
@@ -1351,13 +1271,23 @@ end
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
 -- TODO: add [DecidablePred (· ∈ s)] as an assumption
-@[simps] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
+@[simps apply] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
   toFun f := subtypeDomain (· ∈ s) f.1
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
   left_inv f :=
     letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
+
+@[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
+    [DecidablePred (· ∈ s)] (f : s →₀ M) :
+    (restrictSupportEquiv s M).symm f = f.extendDomain := by
+  rw [restrictSupportEquiv, Equiv.coe_fn_symm_mk, Subtype.coe_mk]; congr
+
+@[simp] lemma restrictSupportEquiv_symm_single (s : Set α) (M : Type*) [AddCommMonoid M]
+    (a : s) (x : M) :
+    (restrictSupportEquiv s M).symm (single a x) = single (a : α) x := by
+  classical simp
 
 /-- Given `AddCommMonoid M` and `e : α ≃ β`, `domCongr e` is the corresponding `Equiv` between
 `α →₀ M` and `β →₀ M`.
@@ -1425,7 +1355,7 @@ def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
     ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
-  simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
+  simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and

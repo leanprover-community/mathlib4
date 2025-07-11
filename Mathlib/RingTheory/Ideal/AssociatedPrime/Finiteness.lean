@@ -50,7 +50,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
     N₁.IsQuotientEquivQuotientPrime N₂ ↔
       ∃ x, Ideal.IsPrime (ker (toSpanSingleton A _ (N₁.mkQ x))) ∧ N₂ = N₁ ⊔ span A {x} := by
   let f := mapQ (N₁.submoduleOf N₂) N₁ N₂.subtype le_rfl
-  have hf₁ : ker f = ⊥ := ker_liftQ_eq_bot _ _ _ (by simp [f, ker_comp, submoduleOf])
+  have hf₁ : ker f = ⊥ := ker_liftQ_eq_bot _ _ _ (by simp [ker_comp, submoduleOf])
   have hf₂ : range f = N₂.map N₁.mkQ := by simp [f, mapQ, range_liftQ, range_comp]
   refine ⟨fun ⟨h, p, ⟨e⟩⟩ ↦ ?_, fun ⟨x, hx, hx'⟩ ↦ ⟨le_sup_left.trans_eq hx'.symm, ⟨_, hx⟩, ?_⟩⟩
   · obtain ⟨⟨x, hx⟩, hx'⟩ := Submodule.mkQ_surjective _ (e.symm 1)
@@ -64,7 +64,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
       have : (span A {x}).map N₁.mkQ = ((span A {1}).map e.symm).map f := by
         simp only [map_span, Set.image_singleton, hx'']
       rw [← N₁.ker_mkQ, sup_comm, ← comap_map_eq, ← map_le_iff_le_comap, this]
-      simp [← map_span, hf₂, Ideal.Quotient.span_singleton_one]
+      simp [hf₂, Ideal.Quotient.span_singleton_one]
   · have hxN₂ : x ∈ N₂ := (le_sup_right.trans_eq hx'.symm) (mem_span_singleton_self x)
     refine ⟨.symm (.ofBijective (Submodule.mapQ _ _ (toSpanSingleton A _ ⟨x, hxN₂⟩) ?_) ⟨?_, ?_⟩)⟩
     · simp [SetLike.le_def, ← Quotient.mk_smul, submoduleOf]
@@ -83,7 +83,7 @@ a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, 
 `Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`. -/
 @[stacks 00L0]
 theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
-    ∃ s : RelSeries (Submodule.IsQuotientEquivQuotientPrime (A := A) (M := M)),
+    ∃ s : RelSeries {(N₁, N₂) | Submodule.IsQuotientEquivQuotientPrime (A := A) (M := M) N₁ N₂},
       s.head = ⊥ ∧ s.last = ⊤ := by
   refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
   rintro N hN ⟨s, hs₁, hs₂⟩

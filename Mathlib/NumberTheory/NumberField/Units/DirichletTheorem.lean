@@ -164,7 +164,7 @@ noncomputable def _root_.NumberField.Units.unitLattice :
 open scoped Classical in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set (logSpace K)) ∩ Metric.closedBall 0 r).Finite := by
-  obtain hr | hr := lt_or_le r 0
+  obtain hr | hr := lt_or_ge r 0
   · convert Set.finite_empty
     rw [Metric.closedBall_eq_empty.mpr hr]
     exact Set.inter_empty _

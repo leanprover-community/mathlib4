@@ -59,7 +59,7 @@ lemma inv_mk (m : M) (s : (⊤ : Submonoid M)) : (mk m s)⁻¹ = .mk s ⟨m, Sub
 instance instCommGroup : CommGroup (GrothendieckGroup M) where
   __ : CommMonoid (GrothendieckGroup M) := inferInstance
   inv_mul_cancel a := by
-    induction' a using ind
+    cases a using ind
     rw [inv_mk, mk_eq_monoidOf_mk', ←Submonoid.LocalizationMap.mk'_mul]
     convert Submonoid.LocalizationMap.mk'_self' _ _
     rw [mul_comm, Submonoid.coe_mul]

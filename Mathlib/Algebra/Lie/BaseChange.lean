@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Lie.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Extension and restriction of scalars for Lie algebras and Lie modules
@@ -24,8 +22,6 @@ scalars.
 
 lie ring, lie algebra, extension of scalars, restriction of scalars, base change
 -/
-
-suppress_compilation
 
 open scoped TensorProduct
 
@@ -60,9 +56,9 @@ theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
   refine x.induction_on ?_ ?_ ?_
-  · simp only [LinearMap.map_zero, eq_self_iff_true, LinearMap.zero_apply]
+  · simp only [LinearMap.map_zero]
   · intro a l
-    simp only [bracket'_tmul, TensorProduct.tmul_zero, eq_self_iff_true, lie_self]
+    simp only [bracket'_tmul, TensorProduct.tmul_zero, lie_self]
   · intro z₁ z₂ h₁ h₂
     suffices bracket' R A L L z₁ z₂ + bracket' R A L L z₂ z₁ = 0 by
       rw [LinearMap.map_add, LinearMap.map_add, LinearMap.add_apply, LinearMap.add_apply, h₁, h₂,
@@ -165,16 +161,14 @@ def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
   { (N : Submodule R M).baseChange A with
     lie_mem := by
       intro x m hm
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid] at hm ⊢
+      rw [Submodule.mem_carrier, SetLike.mem_coe] at hm ⊢
+      rw [Submodule.baseChange_eq_span] at hm
       obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp hm
       refine x.induction_on (by simp) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
       · change toEnd A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
         simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, map_smul, toEnd_apply_apply]
-        suffices ∀ n : (N : Submodule R M).map (TensorProduct.mk R A M 1),
-            ⁅a ⊗ₜ[R] y, (n : A ⊗[R] M)⁆ ∈ (N : Submodule R M).baseChange A by
-          exact Submodule.sum_mem _ fun n _ ↦ Submodule.smul_mem _ _ (this n)
-        rintro ⟨-, ⟨n : M, hn : n ∈ N, rfl⟩⟩
+        refine Submodule.sum_mem _ fun ⟨_, n, hn, h⟩ _ ↦ Submodule.smul_mem _ _ ?_
+        rw [Subtype.coe_mk, ← h]
         exact Submodule.tmul_mem_baseChange_of_mem _ (N.lie_mem hn)
       · rw [add_lie]
         exact ((N : Submodule R M).baseChange A).add_mem hy hz }
@@ -193,19 +187,17 @@ lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ N) :
 
 lemma mem_baseChange_iff {m : A ⊗[R] M} :
     m ∈ N.baseChange A ↔
-    m ∈ Submodule.span A ((N : Submodule R M).map (TensorProduct.mk R A M 1)) :=
-  Iff.rfl
+    m ∈ Submodule.span A ((N : Submodule R M).map (TensorProduct.mk R A M 1)) := by
+  rw [← Submodule.baseChange_eq_span]; rfl
 
 @[simp]
 lemma baseChange_bot : (⊥ : LieSubmodule R L M).baseChange A = ⊥ := by
-  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot,
-    Submodule.bot_toAddSubmonoid]
+  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot]
   rfl
 
 @[simp]
 lemma baseChange_top : (⊤ : LieSubmodule R L M).baseChange A = ⊤ := by
-  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top,
-    Submodule.bot_toAddSubmonoid]
+  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top]
   rfl
 
 lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
@@ -219,30 +211,11 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
     exact ⟨1 ⊗ₜ x, tmul_mem_baseChange_of_mem 1 hx,
            1 ⊗ₜ m, tmul_mem_baseChange_of_mem 1 hm, by simp⟩
   · rintro - ⟨x, hx, m, hm, rfl⟩
-    revert m
-    apply Submodule.span_induction
-      (p := fun x' _ ↦ ∀ m' ∈ N.baseChange A, ⁅x', m'⁆ ∈ Submodule.span A s) (hx := hx)
-    · rintro _ ⟨y : L, hy : y ∈ I, rfl⟩ m hm
-      apply Submodule.span_induction
-        (p := fun m' _ ↦ ⁅(1 : A) ⊗ₜ[R] y, m'⁆ ∈ Submodule.span A s) (hx := hm)
-      · rintro - ⟨m', hm' : m' ∈ N, rfl⟩
-        rw [TensorProduct.mk_apply, LieAlgebra.ExtendScalars.bracket_tmul, mul_one]
-        apply Submodule.subset_span
-        exact ⟨y, hy, m', hm', rfl⟩
-      · simp
-      · intro u v _ _ hu hv
-        rw [lie_add]
-        exact Submodule.add_mem _ hu hv
-      · intro a u _ hu
-        rw [lie_smul]
-        exact Submodule.smul_mem _ a hu
-    · simp
-    · intro x y _ _ hx hy m' hm'
-      rw [add_lie]
-      exact Submodule.add_mem _ (hx _ hm') (hy _ hm')
-    · intro a x _ hx m' hm'
-      rw [smul_lie]
-      exact Submodule.smul_mem _ a (hx _ hm')
+    rw [mem_baseChange_iff] at hx hm
+    refine Submodule.span_induction₂ (p := fun x m _ _ ↦ ⁅x, m⁆ ∈ Submodule.span A s)
+      ?_ (by simp) (by simp) ?_ ?_ ?_ ?_ hx hm
+    · rintro - - ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩; exact Submodule.subset_span ⟨x, hx, y, hy, by simp⟩
+    all_goals { intros; simp [add_mem, Submodule.smul_mem, *] }
 
 end LieSubmodule
 

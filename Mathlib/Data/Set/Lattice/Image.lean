@@ -169,7 +169,7 @@ theorem image2_sInter_right_subset (t : Set α) (S : Set (Set β)) (f : α → �
     image2 f t (⋂₀ S) ⊆ ⋂ s ∈ S, image2 f t s := by
   aesop
 
-theorem image2_sInter_left_subset (S : Set (Set α)) (t : Set β)  (f : α → β → γ) :
+theorem image2_sInter_left_subset (S : Set (Set α)) (t : Set β) (f : α → β → γ) :
     image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
   aesop
 
@@ -310,7 +310,7 @@ section Image
 
 theorem image_iUnion {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
-  simp only [mem_image, mem_iUnion, ← exists_and_right, ← exists_and_left, exists_swap (α := α)]
+  simp only [mem_image, mem_iUnion, ← exists_and_right, exists_swap (α := α)]
 
 theorem image_iUnion₂ (f : α → β) (s : ∀ i, κ i → Set α) :
     (f '' ⋃ (i) (j), s i j) = ⋃ (i) (j), f '' s i j := by simp_rw [image_iUnion]

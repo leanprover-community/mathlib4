@@ -71,7 +71,7 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
     _ = traceForm R L M x ⁅y, z⁆ := ?_
   · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
-  · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
+  · simp only [sub_mul, map_sub, mul_assoc]
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← Module.End.mul_eq_comp]
@@ -161,7 +161,7 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
 lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
-    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = -B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ genWeightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by

@@ -634,7 +634,7 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
 theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
   rfl
 
-theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S) :=
   Subtype.coe_injective
 
 @[simp]
@@ -649,7 +649,6 @@ def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
   invFun m := ⟨m, mem_top m⟩
   left_inv m := by simp
-  right_inv _ := rfl
 
 @[simp]
 theorem coe_topEquiv :

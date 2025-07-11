@@ -392,6 +392,9 @@ def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h 
     { l : W ⟶ s.pt // l ≫ Fork.ι s = k } :=
   ⟨Fork.IsLimit.lift hs k h, by simp⟩
 
+lemma Fork.IsLimit.mono {s : Fork f g} (hs : IsLimit s) : Mono s.ι where
+  right_cancellation _ _ h := hom_ext hs h
+
 -- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
     `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
@@ -409,6 +412,9 @@ lemma Cofork.IsColimit.π_desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k :
 def Cofork.IsColimit.desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : f ≫ k = g ≫ k) : { l : s.pt ⟶ W // Cofork.π s ≫ l = k } :=
   ⟨Cofork.IsColimit.desc hs k h, by simp⟩
+
+lemma Cofork.IsColimit.epi {s : Cofork f g} (hs : IsColimit s) : Epi s.π where
+  left_cancellation _ _ h := hom_ext hs h
 
 theorem Fork.IsLimit.existsUnique {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : k ≫ f = k ≫ g) : ∃! l : W ⟶ s.pt, l ≫ Fork.ι s = k :=
@@ -613,6 +619,21 @@ def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
   Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
 
 /--
+Given two forks with isomorphic components in such a way that the natural diagrams commute, then
+one is a limit if and only if the other one is.
+-/
+def Fork.isLimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    (c : Fork f g)
+    {f' g' : X' ⟶ Y'} (c' : Fork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) :
+    IsLimit c ≃ IsLimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)
+
+/--
 Given two forks with isomorphic components in such a way that the natural diagrams commute, then if
 one is a limit, then the other one is as well.
 -/
@@ -622,8 +643,7 @@ def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
     (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
     (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
-  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
-  (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
+  (Fork.isLimitEquivOfIsos c c' e₀ e₁ e) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
 -/
@@ -656,6 +676,33 @@ def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=
   Cofork.ext (by simp only [Cofork.ofπ_pt, Functor.const_obj_obj]; rfl) (by simp)
+
+/--
+Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
+one is a colimit if and only if the other one is.
+-/
+def Cofork.isColimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    (c : Cofork f g)
+    {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) :
+    IsColimit c ≃ IsColimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  IsColimit.equivOfNatIsoOfIso i c c' (Cofork.ext e (by rw [← comm₃, ← Category.assoc]; rfl))
+
+/--
+Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
+if one is a colimit, then the other one is as well.
+-/
+def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
+    {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by aesop_cat) : IsColimit c' :=
+  (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
 variable (f g)
 
@@ -1042,7 +1089,7 @@ variable {C} [IsSplitMono f]
 /-- A split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
 Here we build the cone, and show in `isSplitMonoEqualizes` that it is a limit cone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coneOfIsSplitMono : Fork (𝟙 Y) (retraction f ≫ f) :=
   Fork.ofι f (by simp)
@@ -1116,7 +1163,7 @@ variable {C} [IsSplitEpi f]
 /-- A split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
 Here we build the cocone, and show in `isSplitEpiCoequalizes` that it is a colimit cocone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coconeOfIsSplitEpi : Cofork (𝟙 X) (f ≫ section_ f) :=
   Cofork.ofπ f (by simp)

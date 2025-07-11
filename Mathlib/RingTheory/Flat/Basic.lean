@@ -570,7 +570,7 @@ end TensorProduct
 
 namespace Algebra.TensorProduct
 
-variable (A B : Type*) [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
+variable (A B : Type*) [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- If `A`, `B` are `R`-algebras, `R` injects into `B`,
 and `A` is a nontrivial flat `R`-algebra, then `A ⊗[R] B` is nontrivial. -/

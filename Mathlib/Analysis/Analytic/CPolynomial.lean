@@ -113,7 +113,7 @@ protected theorem hasFiniteFPowerSeriesOnBall :
     · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
     · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
 
-lemma cpolynomialAt  : CPolynomialAt 𝕜 f x :=
+lemma cpolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 

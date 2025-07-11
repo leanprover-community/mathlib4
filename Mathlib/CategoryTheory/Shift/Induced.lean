@@ -25,6 +25,8 @@ used for both quotient and localized shifts.
 
 namespace CategoryTheory
 
+open Functor
+
 variable {C D : Type _} [Category C] [Category D]
   (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
@@ -156,7 +158,7 @@ end HasShift
 
 lemma shiftFunctor_of_induced (a : A) :
     letI := HasShift.induced F A s i
-    shiftFunctor D a = s a := by
+    shiftFunctor D a = s a :=
   rfl
 
 variable (A)

@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
-import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # (Semi-)lattices
@@ -48,10 +47,6 @@ of `sup` over `inf`, on the left or on the right.
 semilattice, lattice
 
 -/
-
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
 
 universe u v w
 
@@ -129,11 +124,11 @@ theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
 
 @[simp]
 theorem sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem sup_eq_right : a ⊔ b = b ↔ a ≤ b :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem left_eq_sup : a = a ⊔ b ↔ b ≤ a :=
@@ -158,7 +153,7 @@ theorem right_lt_sup : b < a ⊔ b ↔ ¬a ≤ b :=
   le_sup_right.lt_iff_ne.trans <| not_congr right_eq_sup
 
 theorem left_or_right_lt_sup (h : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
-  h.not_le_or_not_le.symm.imp left_lt_sup.2 right_lt_sup.2
+  h.not_le_or_not_ge.symm.imp left_lt_sup.2 right_lt_sup.2
 
 theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
   constructor
@@ -227,7 +222,7 @@ theorem sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a �
   ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
 
 theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
-  hab.symm.not_le_or_not_le.imp left_lt_sup.2 right_lt_sup.2
+  hab.symm.not_le_or_not_ge.imp left_lt_sup.2 right_lt_sup.2
 
 /-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
 theorem Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → β} (hf : Monotone f)
@@ -326,11 +321,11 @@ theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
 
 @[simp]
 theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem left_eq_inf : a = a ⊓ b ↔ a ≤ b :=
@@ -593,12 +588,12 @@ theorem sup_inf_left (a b c : α) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
   le_antisymm sup_inf_le le_sup_inf
 
 theorem sup_inf_right (a b c : α) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) := by
-  simp only [sup_inf_left, sup_comm _ c, eq_self_iff_true]
+  simp only [sup_inf_left, sup_comm _ c]
 
 theorem inf_sup_left (a b c : α) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c :=
   calc
     a ⊓ (b ⊔ c) = a ⊓ (a ⊔ c) ⊓ (b ⊔ c) := by rw [inf_sup_self]
-    _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right, eq_self_iff_true]
+    _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right]
     _ = (a ⊔ a ⊓ b) ⊓ (a ⊓ b ⊔ c) := by rw [sup_inf_self]
     _ = (a ⊓ b ⊔ a) ⊓ (a ⊓ b ⊔ c) := by rw [sup_comm]
     _ = a ⊓ b ⊔ a ⊓ c := by rw [sup_inf_left]
@@ -607,7 +602,7 @@ instance OrderDual.instDistribLattice (α : Type*) [DistribLattice α] : Distrib
   le_sup_inf _ _ _ := (inf_sup_left _ _ _).le
 
 theorem inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
-  simp only [inf_sup_left, inf_comm _ c, eq_self_iff_true]
+  simp only [inf_sup_left, inf_comm _ c]
 
 theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y ⊔ z) : x ≤ y :=
   calc

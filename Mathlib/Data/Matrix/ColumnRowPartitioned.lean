@@ -129,7 +129,7 @@ lemma fromRows_inj : Function.Injective2 (@fromRows R m₁ m₂ n) := by
 
 lemma fromCols_inj : Function.Injective2 (@fromCols R m n₁ n₂) := by
   intros x1 x2 y1 y2
-  simp only [funext_iff, ← Matrix.ext_iff]
+  simp only [← Matrix.ext_iff]
   aesop
 
 @[deprecated (since := "2024-12-11")] alias fromColumns_inj := fromCols_inj
@@ -157,6 +157,14 @@ initial matrix transposed to become columns. -/
 lemma transpose_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     transpose (fromRows A₁ A₂) = fromCols (transpose A₁) (transpose A₂) := by
   ext i (j | j) <;> simp
+
+lemma fromRows_map (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) {R' : Type*} (f : R → R') :
+    (fromRows A₁ A₂).map f = fromRows (A₁.map f) (A₂.map f) := by
+  ext (_ | _) <;> rfl
+
+lemma fromCols_map (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) {R' : Type*} (f : R → R') :
+    (fromCols A₁ A₂).map f = fromCols (A₁.map f) (A₂.map f) := by
+  ext _ (_ | _) <;> rfl
 
 section Neg
 

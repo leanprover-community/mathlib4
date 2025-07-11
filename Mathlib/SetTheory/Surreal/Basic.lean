@@ -98,7 +98,7 @@ theorem numeric_rec {C : PGame → Prop}
     H _ _ _ _ h hl hr (fun i => numeric_rec H _ (hl i)) fun i => numeric_rec H _ (hr i)
 
 theorem Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : Numeric y := by
-  induction' x using PGame.moveRecOn with x IHl IHr generalizing y
+  induction x using PGame.moveRecOn generalizing y with | _ x IHl IHr
   apply Numeric.mk (fun i j => ?_) (fun i => ?_) fun j => ?_
   · rw [← lt_congr (r.moveLeftSymm i).equiv (r.moveRightSymm j).equiv]
     apply ox.left_lt_right
@@ -251,7 +251,7 @@ theorem numeric_nat : ∀ n : ℕ, Numeric n
 
 /-- Ordinal games are numeric. -/
 theorem numeric_toPGame (o : Ordinal) : o.toPGame.Numeric := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   apply numeric_of_isEmpty_rightMoves
   simpa using fun i => IH _ (Ordinal.toLeftMovesToPGame_symm_lt i)
 
@@ -351,7 +351,7 @@ instance partialOrder : PartialOrder Surreal where
   lt := (· < ·)
   le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
   le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
-  lt_iff_le_not_le := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_le PGame
+  lt_iff_le_not_ge := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_ge PGame
   le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid Surreal where
@@ -397,7 +397,7 @@ theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
 /-- A small family of surreals is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddAbove (Set.range f) := by
-  induction' f using Quotient.induction_on_pi with f
+  induction f using Quotient.induction_on_pi with | _ f
   let g : ι → PGame.{u} := Subtype.val ∘ f
   have hg (i) : (g i).Numeric := Subtype.prop _
   conv in (⟦f _⟧) =>
@@ -418,7 +418,7 @@ lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
 /-- A small family of surreals is bounded below. -/
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddBelow (Set.range f) := by
-  induction' f using Quotient.induction_on_pi with f
+  induction f using Quotient.induction_on_pi with | _ f
   let g : ι → PGame.{u} := Subtype.val ∘ f
   have hg (i) : (g i).Numeric := Subtype.prop _
   conv in (⟦f _⟧) =>

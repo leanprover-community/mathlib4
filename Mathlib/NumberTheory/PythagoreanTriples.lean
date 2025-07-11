@@ -104,15 +104,7 @@ variable (h : PythagoreanTriple x y z)
 include h
 
 theorem mul_isClassified (k : ℤ) (hc : h.IsClassified) : (h.mul k).IsClassified := by
-  obtain ⟨l, m, n, ⟨⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, co⟩⟩ := hc
-  · use k * l, m, n
-    apply And.intro _ co
-    left
-    constructor <;> ring
-  · use k * l, m, n
-    apply And.intro _ co
-    right
-    constructor <;> ring
+  obtain ⟨l, m, n, ⟨⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, co⟩⟩ := hc <;> use k * l, m, n <;> grind
 
 theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
     x % 2 = 0 ∧ y % 2 = 1 ∨ x % 2 = 1 ∧ y % 2 = 0 := by
@@ -516,7 +508,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
       coprime_sq_sub_sq_sum_of_odd_odd hmncp hm2 hn2
     have h2 : y = (m ^ 2 - n ^ 2) / 2 ∧ z = (m ^ 2 + n ^ 2) / 2 := by
       apply Rat.div_int_inj hzpos _ (h.coprime_of_coprime hc) h1.2.2.2
-      · show w = _
+      · change w = _
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by norm_num : (2 : ℤ) ≠ 0)]
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
@@ -593,7 +585,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) ∧ 0 ≤ m := by
   obtain ⟨m, n, ht1, ht2, ht3, ht4⟩ :=
     PythagoreanTriple.coprime_classification.mp (And.intro h h_coprime)
-  rcases le_or_lt 0 m with hm | hm
+  rcases le_or_gt 0 m with hm | hm
   · use m, n
     rcases ht1 with h_odd | h_even
     · apply And.intro h_odd.1

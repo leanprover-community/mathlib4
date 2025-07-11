@@ -39,7 +39,7 @@ namespace CategoryTheory
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 -- morphism levels before object levels. See note [category_theory universes].
-open Sum
+open Sum Functor
 
 section
 
@@ -188,13 +188,13 @@ theorem sum_obj_inr (F : A ⥤ B) (G : C ⥤ D) (c : C) : (F.sum G).obj (inr c) 
 
 @[simp]
 theorem sum_map_inl (F : A ⥤ B) (G : C ⥤ D) {a a' : A} (f : a ⟶ a') :
-    (F.sum G).map ((Sum.inl_ _ _).map f) = (Sum.inl_ _ _).map (F.map f) :=
-  rfl
+    (F.sum G).map ((Sum.inl_ _ _).map f) = (Sum.inl_ _ _).map (F.map f) := by
+  simp [sum]
 
 @[simp]
 theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : c ⟶ c') :
-    (F.sum G).map ((Sum.inr_ _ _).map f) = (Sum.inr_ _ _).map (G.map f) :=
-  rfl
+    (F.sum G).map ((Sum.inr_ _ _).map f) = (Sum.inr_ _ _).map (G.map f) := by
+  simp [sum]
 
 section
 
@@ -234,7 +234,7 @@ variable (F : A ⊕ B ⥤ C)
 
 /-- Any functor out of a sum is the sum of its precomposition with the inclusions. -/
 def isoSum : F ≅ (Sum.inl_ A B ⋙ F).sum' (Sum.inr_ A B ⋙ F) :=
-  sumIsoExt (Iso.refl _) (Iso.refl _)
+  sumIsoExt (inlCompSum' _ _).symm (inrCompSum' _ _).symm
 
 variable (a : A) (b : B)
 
@@ -324,11 +324,13 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 
 /-- Precomposing `swap` with the left inclusion gives the right inclusion. -/
 @[simps! hom_app inv_app]
-def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C := (Functor.inlCompSum' (inr_ _ _) (inl_ _ _)).symm
+def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C :=
+  Functor.inlCompSum' (inr_ _ _) (inl_ _ _)
 
 /-- Precomposing `swap` with the right inclusion gives the leftt inclusion. -/
 @[simps! hom_app inv_app]
-def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C := (Functor.inrCompSum' (inr_ _ _) (inl_ _ _)).symm
+def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C :=
+  Functor.inrCompSum' (inr_ _ _) (inl_ _ _)
 
 namespace Swap
 
@@ -337,8 +339,28 @@ namespace Swap
 def equivalence : C ⊕ D ≌ D ⊕ C where
   functor := swap C D
   inverse := swap D C
-  unitIso := Functor.sumIsoExt (swapCompInr D C).symm (swapCompInl D C).symm
-  counitIso := Functor.sumIsoExt (swapCompInr C D).symm (swapCompInl C D).symm
+  unitIso := Functor.sumIsoExt
+    (calc inl_ C D ⋙ 𝟭 (C ⊕ D)
+        ≅ inl_ C D := rightUnitor _
+      _ ≅ inr_ D C ⋙ swap D C := (swapCompInr D C).symm
+      _ ≅ (inl_ C D ⋙ swap C D) ⋙ swap D C := isoWhiskerRight (swapCompInl C D).symm _
+      _ ≅ inl_ C D ⋙ swap C D ⋙ swap D C := associator _ _ _)
+    (calc inr_ C D ⋙ 𝟭 (C ⊕ D)
+        ≅ inr_ C D := rightUnitor _
+      _ ≅ inl_ D C ⋙ swap D C := (swapCompInl D C).symm
+      _ ≅ (inr_ C D ⋙ swap C D) ⋙ swap D C := isoWhiskerRight (swapCompInr C D).symm _
+      _ ≅ inr_ C D ⋙ swap C D ⋙ swap D C := associator _ _ _)
+  counitIso := Functor.sumIsoExt
+    (calc inl_ D C ⋙ swap D C ⋙ swap C D
+        ≅ (inl_ D C ⋙ swap D C) ⋙ swap C D := (associator _ _ _).symm
+      _ ≅ inr_ C D ⋙ swap C D := isoWhiskerRight (swapCompInl D C) _
+      _ ≅ inl_ D C := swapCompInr C D
+      _ ≅ inl_ D C ⋙ 𝟭 (D ⊕ C) := (rightUnitor _).symm)
+    (calc inr_ D C ⋙ swap D C ⋙ swap C D
+        ≅ (inr_ D C ⋙ swap D C) ⋙ swap C D := (associator _ _ _).symm
+      _ ≅ inl_ C D ⋙ swap C D := isoWhiskerRight (swapCompInr D C) _
+      _ ≅ inr_ D C := swapCompInl C D
+      _ ≅ inr_ D C ⋙ 𝟭 (D ⊕ C) := (rightUnitor _).symm)
 
 instance isEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (equivalence C D).functor.IsEquivalence)

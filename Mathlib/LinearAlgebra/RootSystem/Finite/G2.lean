@@ -94,7 +94,7 @@ lemma not_isG2_iff_isNotG2 :
     aesop
 
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
-    (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ - P.root j) :
+    (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
     P.pairingIn ℤ i j ∈ ({-3, -1, 0, 1, 3} : Set ℤ) := by
   suffices ¬ (∀ i j, P.pairingIn ℤ i j = P.pairingIn ℤ j i ∨
                      P.pairingIn ℤ i j = 2 * P.pairingIn ℤ j i ∨

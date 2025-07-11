@@ -308,7 +308,7 @@ then there is a nontrivial linear relation amongst its elements. -/
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
     (h : finrank R M < t.card) : ∃ f : M → R, ∑ e ∈ t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
-    (mt LinearIndependent.finset_card_le_finrank h.not_le)
+    (mt LinearIndependent.finset_card_le_finrank h.not_ge)
   refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
   rw [← Finset.sum_finset_coe]; convert sum; apply Subtype.val_injective.extend_apply
 

@@ -216,6 +216,16 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   ext
   apply ConcreteCategory.congr_hom h
 
+/-- The forgetful functor from groups to monoids is fully faithful. -/
+@[to_additive fullyFaihtfulForget₂ToAddMonCat
+  "The forgetful functor from additive groups to additive monoids is fully faithful."]
+def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+@[to_additive]
+instance : (forget₂ Grp.{u} MonCat).Full :=
+  fullyFaithfulForget₂ToMonCat.full
+
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : Grp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
@@ -415,6 +425,16 @@ instance hasForgetToGroup : HasForget₂ CommGrp Grp where
 
 @[to_additive]
 instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
+
+/-- The forgetful functor from commutative groups to groups is fully faithful. -/
+@[to_additive fullyFaihtfulForget₂ToAddGrp
+  "The forgetful functor from additive commutative groups to additive groups is fully faithful."]
+def fullyFaithfulForget₂ToGrp : (forget₂ CommGrp.{u} Grp).FullyFaithful where
+  preimage f := ofHom f.hom
+
+@[to_additive]
+instance : (forget₂ CommGrp.{u} Grp).Full :=
+  fullyFaithfulForget₂ToGrp.full
 
 @[to_additive hasForgetToAddCommMonCat]
 instance hasForgetToCommMonCat : HasForget₂ CommGrp CommMonCat where

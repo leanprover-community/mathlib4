@@ -212,7 +212,7 @@ variable {I} {K : Type w₃}
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
-    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g :) :) ≪≫ inclCompMap _ _ _
+    (Functor.isoWhiskerRight (inclCompMap _ f k) (map C g :) :) ≪≫ inclCompMap _ g (f k)
 
 end
 

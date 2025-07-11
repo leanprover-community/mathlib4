@@ -62,7 +62,7 @@ theorem hasDerivAt_abs_pos {x : ℝ} (hx : 0 < x) :
 
 theorem hasStrictDerivAt_abs {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt (|·|) (SignType.sign x : ℝ) x := by
-  obtain hx | hx := hx.lt_or_lt
+  obtain hx | hx := hx.lt_or_gt
   · simpa [hx] using hasStrictDerivAt_abs_neg hx
   · simpa [hx] using hasStrictDerivAt_abs_pos hx
 

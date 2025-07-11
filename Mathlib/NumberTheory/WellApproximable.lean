@@ -145,7 +145,7 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     · rw [mem_setOf_eq, ← orderOf_inv, mul_inv_rev, inv_inv, mul_comm]
       apply han
       simpa
-    · simp only [f, Subtype.mk_eq_mk, Subtype.coe_mk, mul_inv_cancel_left]
+    · simp only [f, mul_inv_cancel_left]
   simpa only [mem_setOf_eq, Subtype.coe_mk, iUnion_coe_set] using
     hf.iUnion_comp fun b => ball (b : A) δ
 
@@ -155,7 +155,7 @@ namespace UnitAddCircle
 
 theorem mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 0 < n) :
     x ∈ approxAddOrderOf UnitAddCircle n δ ↔ ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ := by
-  simp only [mem_approx_add_orderOf_iff, mem_setOf_eq, ball, exists_prop, dist_eq_norm,
+  simp only [mem_approx_add_orderOf_iff, mem_setOf_eq, ball, dist_eq_norm,
     AddCircle.addOrderOf_eq_pos_iff hn, mul_one]
   constructor
   · rintro ⟨y, ⟨m, hm₁, hm₂, rfl⟩, hx⟩; exact ⟨m, hm₁, hm₂, hx⟩
@@ -318,7 +318,7 @@ See also `AddCircle.exists_norm_nsmul_le`. -/
 lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     [NormedAddCommGroup A] [CompactSpace A] [PreconnectedSpace A]
     [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
-    (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ/2))) :
+    (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ / 2))) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
   have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
   let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)

@@ -72,7 +72,7 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
 `deterministic f hf` to `deterministic g ⋯`. Instead one can do `rw [deterministic_congr h]`. -/
 theorem deterministic_congr {f g : α → β} {hf : Measurable f} (h : f = g) :
     deterministic f hf = deterministic g (h ▸ hf) := by
-  conv_lhs => enter [1]; rw [h]
+  grind
 
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
@@ -313,7 +313,7 @@ theorem IsMarkovKernel.comapRight (κ : Kernel α β) (hf : MeasurableEmbedding 
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
   refine ⟨fun a => ⟨?_⟩⟩
   rw [comapRight_apply' κ hf a MeasurableSet.univ]
-  simp only [Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  simp only [Set.image_univ]
   exact hκ a
 
 instance IsFiniteKernel.comapRight (κ : Kernel α β) [IsFiniteKernel κ]

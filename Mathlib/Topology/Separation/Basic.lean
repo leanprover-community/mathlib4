@@ -31,7 +31,7 @@ conditions, see the file `Mathlib/Topology/Separation/Hausdorff.lean`.
 * `T1Space`: A T₁/Fréchet space is a space where every singleton set is closed.
   This is equivalent to, for every pair `x ≠ y`, there existing an open set containing `x`
   but not `y` (`t1Space_iff_exists_open` shows that these conditions are equivalent.)
-  T₁ implies T₀ and R₀.
+  T₁ iff T₀ and R₀.
 * `R1Space`: An R₁/preregular space is a space where any two topologically distinguishable points
   have disjoint neighbourhoods. R₁ implies R₀.
 
@@ -408,7 +408,8 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ ⦃x y : X⦄, x ≠ y → ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U,
       ∀ ⦃x y : X⦄, x ≠ y → Disjoint (𝓝 x) (pure y),
       ∀ ⦃x y : X⦄, x ≠ y → Disjoint (pure x) (𝓝 y),
-      ∀ ⦃x y : X⦄, x ⤳ y → x = y] := by
+      ∀ ⦃x y : X⦄, x ⤳ y → x = y,
+      T0Space X ∧ R0Space X] := by
   tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   tfae_have 2 ↔ 3 := by
     simp only [isOpen_compl_iff]
@@ -418,7 +419,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
   tfae_have 5 ↔ 7 := by
-    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, exists_prop, and_assoc,
+    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, and_assoc,
       and_left_comm]
   tfae_have 5 ↔ 8 := by
     simp only [← principal_singleton, disjoint_principal_right]
@@ -432,6 +433,9 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 2 ↔ 10 := by
     simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]
+  tfae_have 10 ↔ 11 :=
+    ⟨fun h => ⟨⟨fun _ _ h₂ => h h₂.specializes⟩, ⟨fun _ _ h₂ => specializes_of_eq (h h₂).symm⟩⟩,
+      fun ⟨_, _⟩ _ _ h => (h.antisymm h.symm).eq⟩
   tfae_finish
 
 theorem t1Space_iff_continuous_cofinite_of : T1Space X ↔ Continuous (@CofiniteTopology.of X) :=
@@ -452,6 +456,9 @@ theorem t1Space_iff_disjoint_nhds_pure : T1Space X ↔ ∀ ⦃x y : X⦄, x ≠ 
 
 theorem t1Space_iff_specializes_imp_eq : T1Space X ↔ ∀ ⦃x y : X⦄, x ⤳ y → x = y :=
   (t1Space_TFAE X).out 0 9
+
+theorem t1Space_iff_t0Space_and_r0Space : T1Space X ↔ T0Space X ∧ R0Space X :=
+  (t1Space_TFAE X).out 0 10
 
 theorem disjoint_pure_nhds [T1Space X] {x y : X} (h : x ≠ y) : Disjoint (pure x) (𝓝 y) :=
   t1Space_iff_disjoint_pure_nhds.mp ‹_› h
@@ -476,11 +483,14 @@ theorem pure_le_nhds_iff [T1Space X] {a b : X} : pure a ≤ 𝓝 b ↔ a = b :=
 theorem nhds_le_nhds_iff [T1Space X] {a b : X} : 𝓝 a ≤ 𝓝 b ↔ a = b :=
   specializes_iff_eq
 
-instance (priority := 100) [T1Space X] : R0Space X where
-  specializes_symmetric _ _ := by rw [specializes_iff_eq, specializes_iff_eq]; exact Eq.symm
+instance (priority := 100) [T1Space X] : R0Space X :=
+  (t1Space_iff_t0Space_and_r0Space.mp ‹T1Space X›).right
 
 instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
+
+instance (priority := 80) [T0Space X] [R0Space X] : T1Space X :=
+  t1Space_iff_t0Space_and_r0Space.mpr ⟨‹T0Space X›, ‹R0Space X›⟩
 
 theorem t1Space_antitone {X} : Antitone (@T1Space X) := fun a _ h _ =>
   @T1Space.mk _ a fun x => (T1Space.t1 x).mono h
@@ -542,7 +552,7 @@ instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) T1Space.t0Space [T1Space X] : T0Space X :=
-  ⟨fun _ _ h => h.specializes.eq⟩
+  (t1Space_iff_t0Space_and_r0Space.mp ‹T1Space X›).left
 
 @[simp]
 theorem compl_singleton_mem_nhds_iff [T1Space X] {x y : X} : {x}ᶜ ∈ 𝓝 y ↔ y ≠ x :=
@@ -833,7 +843,7 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
     (update_injective x i) fun s hs ↦ ?_
   rw [update_image]
   apply isClosed_set_pi
-  simp [forall_update_iff, hs, isClosed_singleton]
+  simp [forall_update_iff, hs]
 
 /-! ### R₁ (preregular) spaces -/
 

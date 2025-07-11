@@ -222,7 +222,7 @@ theorem minFac_one : minFac 1 = 1 := by
 
 @[simp]
 theorem minFac_two : minFac 2 = 2 := by
-  simp [minFac, minFacAux]
+  simp [minFac]
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 
@@ -263,11 +263,11 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
 
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
-  · simp [n0, minFacProp, GE.ge]
+  · simp [n0, minFacProp]
   have n2 : 2 ≤ n := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
-  simp only [minFac_eq, Nat.isUnit_iff]
+  simp only [minFac_eq]
   by_cases d2 : 2 ∣ n <;> simp only [d2, ↓reduceIte]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine
@@ -280,6 +280,12 @@ theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
 theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
   let ⟨f2, fd, a⟩ := minFac_has_prop n1
   prime_def_lt'.2 ⟨f2, fun m m2 l d => not_le_of_gt l (a m m2 (d.trans fd))⟩
+
+@[simp]
+theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
+  refine ⟨?_, minFac_prime⟩
+  rintro h rfl
+  exact prime_one_false h
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
@@ -302,7 +308,7 @@ theorem le_minFac {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, Prime p → 
 
 theorem le_minFac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p → p ∣ n → m ≤ p :=
   ⟨fun h p (pp : 1 < p) d =>
-    h.elim (by rintro rfl; cases not_le_of_lt pp (le_of_dvd (by decide) d)) fun h =>
+    h.elim (by rintro rfl; cases not_le_of_gt pp (le_of_dvd (by decide) d)) fun h =>
       le_trans h <| minFac_le_of_dvd pp d,
     fun H => le_minFac.2 fun p pp d => H p pp.two_le d⟩
 
@@ -326,7 +332,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
 
 @[csimp] theorem decidablePrime_csimp :
     @decidablePrime = @decidablePrime' := by
-  funext; apply Subsingleton.elim
+  subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
   (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|
@@ -380,7 +386,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
-    exact not_lt_of_le (le_of_dvd lb h) h'
+    exact not_lt_of_ge (le_of_dvd lb h) h'
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by

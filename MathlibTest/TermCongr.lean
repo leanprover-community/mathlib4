@@ -145,7 +145,7 @@ to be definitionally equal to
 -/
 #guard_msgs in
 example {s t : α → Prop} (h : s = t) :
-    HEq (fun (n : Subtype s) => true) (fun (n : Subtype t) => true) :=
+    (fun (n : Subtype s) => true) ≍ (fun (n : Subtype t) => true) :=
   congr(fun (n : Subtype $h) => true)
 
 /--

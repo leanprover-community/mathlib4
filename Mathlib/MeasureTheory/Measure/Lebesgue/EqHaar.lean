@@ -516,7 +516,7 @@ theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r :
   simp [measureReal_def, addHaar_closedBall_eq_addHaar_ball μ x r]
 
 theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere x r) = 0 := by
-  rcases hr.lt_or_lt with (h | h)
+  rcases hr.lt_or_gt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
       measure_diff ball_subset_closedBall measurableSet_ball.nullMeasurableSet
@@ -800,7 +800,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
       ENNReal.ofReal_eq_zero, not_le, or_false, Ne, measure_preimage_add, abs_pow,
       singleton_add, mul_eq_zero]
   · simp [h''t, ENNReal.ofReal_ne_top, addHaar_smul, image_add_left, ENNReal.mul_eq_top,
-      Ne, not_false_iff, measure_preimage_add, singleton_add, or_self_iff]
+      Ne, measure_preimage_add, singleton_add]
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
 a Lebesgue density point of `s`). Then `s` has also density one at `x` with respect to any

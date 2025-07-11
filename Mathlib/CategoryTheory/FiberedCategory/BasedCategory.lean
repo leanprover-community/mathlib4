@@ -253,7 +253,7 @@ and natural transformations. -/
 @[simps]
 def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
-  toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
+  toNatTrans := Functor.whiskerLeft F.toFunctor α.toNatTrans
   isHomLift' := fun a ↦ α.isHomLift (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
@@ -261,7 +261,7 @@ functors and natural transformations. -/
 @[simps]
 def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (H : 𝒴 ⥤ᵇ 𝒵) :
     F ⋙ H ⟶ G ⋙ H where
-  toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
+  toNatTrans := Functor.whiskerRight α.toNatTrans H.toFunctor
   isHomLift' := fun _ ↦ BasedFunctor.preserves_isHomLift _ _ _
 
 end

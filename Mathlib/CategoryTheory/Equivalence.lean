@@ -141,7 +141,7 @@ lemma asNatTrans_mkHom {e f : C ≌ D} (η : e ⟶ f) :
 lemma id_asNatTrans {e : C ≌ D} : asNatTrans (𝟙 e) = 𝟙 _ := rfl
 
 @[simp, reassoc]
-lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
+lemma comp_asNatTrans {e f g : C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
     asNatTrans (α ≫ β) = asNatTrans α ≫ asNatTrans β :=
   rfl
 
@@ -149,7 +149,7 @@ lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
 lemma mkHom_id_functor {e : C ≌ D} : mkHom (𝟙 e.functor) = 𝟙 e := rfl
 
 @[simp, reassoc]
-lemma mkHom_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
+lemma mkHom_comp {e f g : C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
     mkHom (α ≫ β) = mkHom α ≫ mkHom β :=
   rfl
 

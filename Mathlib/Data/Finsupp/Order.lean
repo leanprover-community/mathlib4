@@ -6,6 +6,7 @@ Authors: Johan Commelin, Aaron Anderson
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.SMulWithZero
 
@@ -289,7 +290,7 @@ variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne, Finset.mem_union, Finset.mem_filter,
+  simp only [inf_apply, mem_support_iff, Ne,
     Finset.mem_inter]
   simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 

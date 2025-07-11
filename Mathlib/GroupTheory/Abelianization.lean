@@ -158,7 +158,6 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
 def lift : (G →* A) ≃ (Abelianization G →* A) where
   toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
-  left_inv _ := MonoidHom.ext fun _ => rfl
   right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
 
 @[simp]
@@ -219,7 +218,6 @@ end Abelianization
 
 section AbelianizationCongr
 
--- Porting note: `[Group G]` should not be necessary here
 variable {G} {H : Type v} [Group H]
 
 /-- Equivalent groups have equivalent abelianizations -/
@@ -262,7 +260,6 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun _ => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }
@@ -339,8 +336,7 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
     rw [← Subgroup.normalClosure_subset_iff]
     rintro x ⟨p, q, rfl⟩
     rw [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def]
-    simp only [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def,
-      QuotientGroup.mk_mul, QuotientGroup.mk_inv]
+    simp only [QuotientGroup.mk_mul, QuotientGroup.mk_inv]
     simp only [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm]
     apply hcomm.comm
   · intro hGN
@@ -366,7 +362,7 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgro
   apply Function.Surjective.mul_comm (f := φ) _ hH.is_comm
   rw [MulHom.coe_coe, ← MonoidHom.range_eq_top]
   -- We have to prove that `MonoidHom.range φ = ⊤`
-  simp only [φ, MonoidHom.range_eq_map, ← Subgroup.map_map]
+  simp only [MonoidHom.range_eq_map, ← Subgroup.map_map]
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
     rw [← MonoidHom.range_eq_map, MonoidHom.range_eq_top]
     exact QuotientGroup.mk'_surjective N

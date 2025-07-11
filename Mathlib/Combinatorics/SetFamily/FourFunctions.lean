@@ -13,6 +13,7 @@ import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries
@@ -83,8 +84,7 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
       = a₀ * b₁ * (c₀ * d₁) + c₀ * d₁ * (a₁ * b₀) := by ring
     _ ≤ a₀ * b₁ * (a₁ * b₀) + c₀ * d₁ * (c₀ * d₁) := mul_add_mul_le_mul_add_mul h₀₁ h₁₀
     _ = a₀ * b₀ * (a₁ * b₁) + c₀ * d₁ * (c₀ * d₁) := by ring
-    _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) :=
-        add_le_add_right (mul_le_mul h₀₀ h₁₁ (by positivity) <| by positivity) _
+    _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) := by gcongr
     _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by ring
 
 private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β) (s : Finset α) : β :=
@@ -92,7 +92,7 @@ private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β)
 
 private lemma erase_eq_iff (hs : a ∉ s) : t.erase a = s ↔ t = s ∨ t = insert a s := by
   by_cases ht : a ∈ t <;>
-  · simp [ne_of_mem_of_not_mem', erase_eq_iff_eq_insert, *]
+  · simp [erase_eq_iff_eq_insert, *]
     aesop
 
 private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
@@ -134,7 +134,7 @@ lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum
 
 lemma collapse_modular [ExistsAddOfLE β]
     (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
-    (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u →  f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
+    (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     (𝒜 ℬ : Finset (Finset α)) :
     ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → collapse 𝒜 a f₁ s * collapse ℬ a f₂ t ≤
       collapse (𝒜 ⊼ ℬ) a f₃ (s ∩ t) * collapse (𝒜 ⊻ ℬ) a f₄ (s ∪ t) := by

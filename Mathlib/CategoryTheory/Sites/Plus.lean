@@ -25,10 +25,10 @@ open CategoryTheory.Limits
 
 open Opposite
 
-universe w v u
+universe w' w v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{w'} D]
 
 noncomputable section
 
@@ -186,7 +186,7 @@ def toPlus : P ⟶ J.plusObj P where
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
-    simp only [Multiequalizer.lift_ι, Category.assoc]
+    simp only [Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
 

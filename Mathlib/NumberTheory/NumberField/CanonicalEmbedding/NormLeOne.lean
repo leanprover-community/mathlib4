@@ -257,7 +257,7 @@ theorem injective_expMap :
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=
-  continuous_iff_continuousOn_univ.mpr <| (expMap_source K) ▸ expMap.continuousOn
+  continuousOn_univ.mp <| (expMap_source K) ▸ expMap.continuousOn
 
 variable {K}
 
@@ -307,7 +307,7 @@ abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
     (.proj w)
 
-theorem hasFDerivAt_expMap (x : realSpace K): HasFDerivAt expMap (fderiv_expMap x) x := by
+theorem hasFDerivAt_expMap (x : realSpace K) : HasFDerivAt expMap (fderiv_expMap x) x := by
   simpa [expMap, fderiv_expMap, hasFDerivAt_pi', PartialHomeomorph.pi_apply,
     ContinuousLinearMap.proj_pi] using
     fun w ↦ (hasDerivAt_expMap_single w _).hasFDerivAt.comp x (hasFDerivAt_apply w x)

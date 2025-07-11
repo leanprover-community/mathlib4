@@ -44,13 +44,7 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
     apply mul_le_mul
     · apply h
       simp
-    · apply hind
-      · intro i hi
-        apply h0
-        simp [hi]
-      · intro i hi
-        apply h
-        simp [hi]
+    · grind
     · apply prod_nonneg
       simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro a ha

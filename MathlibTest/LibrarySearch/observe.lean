@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Observe
+import Mathlib.Tactic.AdaptationNote
 
 set_option linter.unusedVariables false
 

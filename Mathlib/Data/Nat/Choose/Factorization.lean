@@ -36,7 +36,7 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
   have hkn : k ≤ n := by
-    refine le_of_not_lt fun hnk => h ?_
+    refine le_of_not_gt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
   rw [← Nat.cast_le (α := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity]
@@ -59,7 +59,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   rcases em' p.Prime with hp | hp
   · exact factorization_eq_zero_of_non_prime (choose n k) hp
-  rcases lt_or_le n k with hnk | hkn
+  rcases lt_or_ge n k with hnk | hkn
   · simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn),
     ← emultiplicity_eq_zero_iff_multiplicity_eq_zero]
@@ -100,8 +100,8 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
-  rw [choose_eq_factorial_div_factorial (le_of_not_lt hnk),
-    factorization_div (factorial_mul_factorial_dvd_factorial (le_of_not_lt hnk)), Finsupp.coe_tsub,
+  rw [choose_eq_factorial_div_factorial (le_of_not_gt hnk),
+    factorization_div (factorial_mul_factorial_dvd_factorial (le_of_not_gt hnk)), Finsupp.coe_tsub,
     Pi.sub_apply, factorization_factorial_eq_zero_of_lt h, zero_tsub]
 
 /-- If a prime `p` has positive multiplicity in the `n`th central binomial coefficient,
@@ -113,7 +113,7 @@ theorem factorization_centralBinom_eq_zero_of_two_mul_lt (h : 2 * n < p) :
 /-- Contrapositive form of `Nat.factorization_centralBinom_eq_zero_of_two_mul_lt` -/
 theorem le_two_mul_of_factorization_centralBinom_pos
     (h_pos : 0 < (centralBinom n).factorization p) : p ≤ 2 * n :=
-  le_of_not_lt (pos_iff_ne_zero.mp h_pos ∘ factorization_centralBinom_eq_zero_of_two_mul_lt)
+  le_of_not_gt (pos_iff_ne_zero.mp h_pos ∘ factorization_centralBinom_eq_zero_of_two_mul_lt)
 
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :

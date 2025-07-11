@@ -15,7 +15,10 @@ computer science such as the POSIX standard.
 
 ## TODO
 
-* Show that this regular expressions and DFA/NFA's are equivalent. -/
+Currently, we don't show that regular expressions and DFA/NFA's are equivalent.
+Multiple competing PRs towards that goal are in review.
+See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
+-/
 
 open List Set
 
@@ -284,7 +287,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
+            simp only [not_true, Ne, false_and] at helem
           simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
@@ -357,9 +360,9 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | 0 => rfl
   | 1 => rfl
   | char _ => rfl
-  | R + S => by simp only [map, Function.comp_apply, map_map]
-  | R * S => by simp only [map, Function.comp_apply, map_map]
-  | star R => by simp only [map, Function.comp_apply, map_map]
+  | R + S => by simp only [map, map_map]
+  | R * S => by simp only [map, map_map]
+  | star R => by simp only [map, map_map]
 
 /-- The language of the map is the map of the language. -/
 @[simp]

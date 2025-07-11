@@ -135,7 +135,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     (f'symm : f'.NonlinearRightInverse) {ε : ℝ} {b : E} (ε0 : 0 ≤ ε) (hε : closedBall b ε ⊆ s) :
     SurjOn f (closedBall b ε) (closedBall (f b) (((f'symm.nnnorm : ℝ)⁻¹ - c) * ε)) := by
   intro y hy
-  rcases le_or_lt (f'symm.nnnorm : ℝ)⁻¹ c with hc | hc
+  rcases le_or_gt (f'symm.nnnorm : ℝ)⁻¹ c with hc | hc
   · refine ⟨b, by simp [ε0], ?_⟩
     have : dist y (f b) ≤ 0 :=
       (mem_closedBall.1 hy).trans (mul_nonpos_of_nonpos_of_nonneg (by linarith) ε0)

@@ -441,8 +441,6 @@ theorem coe_prodMap' {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D]
 def prodEquiv : (A →A[R] B) × (A →A[R] C) ≃ (A →A[R] B × C) where
   toFun f     := f.1.prod f.2
   invFun f    := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
-  left_inv f  := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 end prod
 
@@ -579,7 +577,7 @@ theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B :
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
-  simp only [Subalgebra.coe_comap, Subsemiring.coe_comap, AlgHom.coe_toRingHom]
+  simp only [Subalgebra.coe_comap]
   rw [w]
   exact f'.preimage_closure _
 

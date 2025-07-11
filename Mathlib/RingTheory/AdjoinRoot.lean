@@ -829,7 +829,7 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
           (aeval pb.gen g) := by
   simp only [quotientEquivQuotientMinpolyMap, toRingEquiv_eq_coe, symm_trans_apply,
     quotEquivQuotMap_symm_apply_mk, ofRingEquiv_symm_apply, quotientEquiv_symm_mk,
-    toRingEquiv_symm, RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
+    RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
     symm_toRingEquiv]
 
 end PowerBasis
@@ -844,11 +844,3 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
-
-variable (R) in
-theorem Polynomial.exists_dvd_map_of_isAlgebraic [CommRing R] [CommRing S] [NoZeroDivisors S]
-    [Algebra R S] [Algebra.IsAlgebraic R S] (f : S[X]) (hf : f ≠ 0) :
-    ∃ g : R[X], g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
-  have ⟨g, ne, eq⟩ := (id ⟨f, hf, by simp⟩ : IsAlgebraic S (AdjoinRoot.root f)).restrictScalars R
-  ⟨g, ne, by rwa [aeval_def, IsScalarTower.algebraMap_eq R S, ← eval₂_map, ← aeval_def,
-    AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero] at eq⟩

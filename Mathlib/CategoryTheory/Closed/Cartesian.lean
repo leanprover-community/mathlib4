@@ -109,7 +109,7 @@ def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6
     withNaryArg 4 do
       let e ← getExpr
       guard <| e.isAppOfArity' ``exp 5
-      withNaryArg 2 delab
+      withNaryArg 3 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
@@ -242,7 +242,7 @@ theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
 
 theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
     (exp.coev A).app X ≫ (pre f).app (A ⊗ X) =
-      (exp.coev B).app X ≫ (exp B).map (f ⊗ 𝟙 _) := by
+      (exp.coev B).app X ≫ (exp B).map (f ⊗ₘ 𝟙 _) := by
   rw [tensorHom_id]
   exact unit_conjugateEquiv _ _ ((tensoringLeft _).map f) X
 

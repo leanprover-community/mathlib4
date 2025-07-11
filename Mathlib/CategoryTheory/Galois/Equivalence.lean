@@ -58,14 +58,14 @@ instance : (functorToContAction F).EssSurj := by
     (FintypeCat.uSwitchEquivalence.{u₁, w}.mapContAction (Aut F')
        (fun X ↦ by
           rw [Action.isContinuous_def]
-          show Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
+          change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
               (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
           have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1
           fun_prop)
        (fun X ↦ by
           rw [Action.isContinuous_def]
-          show Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
+          change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
               (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
           have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1

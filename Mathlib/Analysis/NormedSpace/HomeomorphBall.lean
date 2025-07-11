@@ -143,7 +143,7 @@ theorem univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0
 
 @[continuity]
 theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
-  simpa [continuous_iff_continuousOn_univ] using (univBall c r).continuousOn
+  simpa [continuousOn_univ] using (univBall c r).continuousOn
 
 theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
   (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r

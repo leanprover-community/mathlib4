@@ -791,7 +791,7 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
   ext x
   by_cases hxs : x ∈ s
   · lift x to s using hxs
-    simp [Subtype.coe_injective.extend_apply]
+    simp
   · lift x to t using (h trivial).resolve_left hxs
     rw [extend_apply', Subtype.coe_injective.extend_apply]
     exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.2
@@ -865,6 +865,12 @@ protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace 
     StronglyMeasurable fun x => dist (f x) (g x) :=
   continuous_dist.comp_stronglyMeasurable (hf.prodMk hg)
 
+@[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
+protected theorem edist {_ : MeasurableSpace α} {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
+    (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
+    StronglyMeasurable fun x => edist (f x) (g x) :=
+  continuous_edist.comp_stronglyMeasurable (hf.prodMk hg)
+
 @[fun_prop, measurability]
 protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖ :=
@@ -903,7 +909,7 @@ lemma measurableSet_le (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m
 
 lemma measurableSet_lt (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) :
     MeasurableSet[m] {a | f a < g a} := by
-  simpa only [lt_iff_le_not_le] using (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
+  simpa only [lt_iff_le_not_ge] using (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
 
 lemma ae_le_trim_of_stronglyMeasurable (hm : m ≤ m₀) (hf : StronglyMeasurable[m] f)
     (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) : f ≤ᵐ[μ.trim hm] g := by

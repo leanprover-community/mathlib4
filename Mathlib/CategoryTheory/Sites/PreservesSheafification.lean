@@ -43,7 +43,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   {A B : Type*} [Category A] [Category B] (F : A ⥤ B)

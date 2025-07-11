@@ -72,7 +72,7 @@ theorem supported_eq_span_single (s : Set α) :
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
     refine sum_mem fun i il => ?_
-    rw [show single i (l i) = l i • single i 1 by simp [span]]
+    rw [show single i (l i) = l i • single i 1 by simp]
     exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
@@ -183,6 +183,10 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     (f : s →₀ M) : (supportedEquivFinsupp (R := R) s).symm f = f.extendDomain := by
   convert restrictSupportEquiv_symm_apply_coe ..
 
+@[simp] theorem supportedEquivFinsupp_symm_single (s : Set α) (i : s) (a : M) :
+    ((supportedEquivFinsupp (R := R) s).symm (single i a) : α →₀ M) = single ↑i a := by
+  classical simp
+
 section LMapDomain
 
 variable {α' : Type*} {α'' : Type*} (M R)
@@ -191,7 +195,7 @@ theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
     supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) := by
   classical
   intro l (hl : (l.support : Set α) ⊆ f ⁻¹' s)
-  show ↑(mapDomain f l).support ⊆ s
+  change ↑(mapDomain f l).support ⊆ s
   rw [← Set.image_subset_iff, ← Finset.coe_image] at hl
   exact Set.Subset.trans mapDomain_support hl
 

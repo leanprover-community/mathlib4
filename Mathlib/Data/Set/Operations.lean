@@ -75,9 +75,31 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
+/-! ### Lemmas about `mem` and `setOf` -/
+
 @[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
+/-- This lemma is intended for use with `rw` where a membership predicate is needed,
+hence the explicit argument and the equality in the reverse direction from normal.
+See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
+theorem eq_mem_setOf (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
+
+theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a := Iff.rfl
+
+/-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
+nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
+argument to `simp`. -/
+alias ⟨_root_.Membership.mem.out, _⟩ := mem_setOf
+
+theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
+
+@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
+
+@[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
+
 @[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
+
+/-! ### Operations -/
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 

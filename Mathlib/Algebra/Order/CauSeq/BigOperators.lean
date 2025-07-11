@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!
@@ -78,7 +79,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         ∑ i ∈ range K, f i * ∑ k ∈ range K, g k := by
     rw [← sum_add_distrib]; simp [(mul_add _ _ _).symm]
   have two_mul_two : (4 : α) = 2 * 2 := by norm_num
-  have hQ0 : Q ≠ 0 := fun h ↦ by simp [h, lt_irrefl] at hQε0
+  have hQ0 : Q ≠ 0 := fun h ↦ by simp [h] at hQε0
   have h2Q0 : 2 * Q ≠ 0 := mul_ne_zero two_ne_zero hQ0
   have hε : ε / (2 * P) * P + ε / (4 * Q) * (2 * Q) = ε := by
     rw [← div_div, div_mul_cancel₀ _ (Ne.symm (ne_of_lt hP0)), two_mul_two, mul_assoc, ← div_div,
@@ -177,7 +178,7 @@ lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f
 
 lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     IsCauSeq abv fun n ↦ ∑ m ∈ range n, x ^ m := by
-  have hx1' : abv x ≠ 1 := fun h ↦ by simp [h, lt_irrefl] at hx1
+  have hx1' : abv x ≠ 1 := fun h ↦ by simp [h] at hx1
   refine of_abv ?_
   simp only [abv_pow abv, geom_sum_eq hx1']
   conv in _ / _ => rw [← neg_div_neg_eq, neg_sub, neg_sub]

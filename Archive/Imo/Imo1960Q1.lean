@@ -3,7 +3,7 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Data.Nat.Digits
+import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
 # IMO 1960 Q1

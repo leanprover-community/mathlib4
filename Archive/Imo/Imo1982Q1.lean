@@ -72,7 +72,7 @@ lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   have h := hf.rel m n
   rcases h with ( hl | hr )
   · rw [hl]
-  · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; apply add_le_add_right (by norm_num)
+  · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; gcongr; norm_num
 
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   induction n with
@@ -80,7 +80,7 @@ lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   | succ n' ih =>
     calc
     ↑(n' + 1) * f m = ↑n' * f m + f m := by rw [PNat.add_coe, add_mul, PNat.val_ofNat, one_mul]
-    _ ≤ f (n' * m) + f m := add_le_add_right ih (f m)
+    _ ≤ f (n' * m) + f m := by gcongr
     _ ≤ f (n' * m + m) := hf.superadditive
     _ = f ((n' + 1) * m) := by congr; rw [add_mul, one_mul]
 

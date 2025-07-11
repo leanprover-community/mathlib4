@@ -55,7 +55,7 @@ theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a 
   induction l generalizing a b with
   | nil => simp_all [tfae_cons_cons, iff_def]
   | cons c l IH =>
-    simp only [tfae_cons_cons, getLastD_cons, tfae_singleton, and_true, chain_cons, Chain.nil] at *
+    simp only [tfae_cons_cons, getLastD_cons, chain_cons] at *
     rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩
     have := IH ⟨bc, ch⟩ (ab ∘ h_last)
     exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ getLastD_mem_cons).1 ∘ bc⟩, this⟩

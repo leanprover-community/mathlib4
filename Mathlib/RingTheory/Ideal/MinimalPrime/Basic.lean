@@ -83,10 +83,10 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
   ext p
   refine ⟨?_, ?_⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
   · refine ⟨⟨a, a.radical_le_iff.1 ha⟩, ?_⟩
-    simp only [Set.mem_setOf_eq, and_imp] at *
+    simp only [and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
   · refine ⟨⟨a, a.radical_le_iff.2 ha⟩, ?_⟩
-    simp only [Set.mem_setOf_eq, and_imp] at *
+    simp only [and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
 
 @[simp]
@@ -123,6 +123,12 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
   · exact fun H => (H.2 ⟨inferInstance, rfl.le⟩ H.1.2).antisymm H.1.2
   · rintro (rfl : J = I)
     exact ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
+
+variable (R) in
+theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :
+    minimalPrimes R = {⊥} :=
+  have := Ideal.bot_prime (α := R)
+  Ideal.minimalPrimes_eq_subsingleton_self
 
 end
 

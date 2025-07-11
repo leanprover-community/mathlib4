@@ -105,9 +105,6 @@ theorem ContinuousLinearMap.contMDiffWithinAt (L : E →L[𝕜] F) {s x} :
 theorem ContinuousLinearMap.contMDiffOn (L : E →L[𝕜] F) {s} : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n L s :=
   L.contMDiff.contMDiffOn
 
-@[deprecated (since := "2024-11-20")]
-alias ContinuousLinearMap.smooth := ContinuousLinearMap.contMDiff
-
 theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
@@ -265,8 +262,6 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
   contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
 
-@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
-
 theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
     (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
     ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
@@ -283,11 +278,3 @@ theorem ContMDiffOn.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffOn I 𝓘
 theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(𝕜) n f)
     (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
   (hf x).smul (hg x)
-
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.smul := ContMDiffWithinAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothAt.smul := ContMDiffAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.smul := ContMDiffOn.smul
-
-@[deprecated (since := "2024-11-20")] alias Smooth.smul := ContMDiff.smul

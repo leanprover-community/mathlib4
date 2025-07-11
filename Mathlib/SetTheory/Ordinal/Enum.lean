@@ -93,7 +93,7 @@ theorem range_enumOrd (hs : ¬ BddAbove s) : range (enumOrd s) = s := by
     refine ⟨sInf t, (enumOrd_le_of_forall_lt ha ?_).antisymm ?_⟩
     · intro b hb
       by_contra! hb'
-      exact hb.not_le (csInf_le' hb')
+      exact hb.not_ge (csInf_le' hb')
     · exact csInf_mem (s := t) ⟨a, (enumOrd_strictMono hs).id_le a⟩
 
 theorem enumOrd_surjective (hs : ¬ BddAbove s) {b : Ordinal} (hb : b ∈ s) :

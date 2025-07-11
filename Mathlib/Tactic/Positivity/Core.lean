@@ -131,10 +131,23 @@ lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [No
   apply Nat.cast_pos.2
   simpa using w
 
+lemma pos_of_isNat' {n : ℕ}
+    [AddMonoidWithOne A] [PartialOrder A] [AddLeftMono A] [ZeroLEOneClass A] [h'' : NeZero (1 : A)]
+    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  apply Nat.cast_pos'.2
+  simpa using w
+
 lemma nonneg_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A]
     (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg n
+
+lemma nonneg_of_isNat' {n : ℕ}
+    [AddMonoidWithOne A] [PartialOrder A] [AddLeftMono A] [ZeroLEOneClass A]
+    (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  exact Nat.cast_nonneg' n
 
 lemma nz_of_isNegNat {n : ℕ} [Ring A] [PartialOrder A] [IsStrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
@@ -187,21 +200,49 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
-      let _a ← synthInstanceQ q(Semiring $α)
-      let _a ← synthInstanceQ q(PartialOrder $α)
-      let _a ← synthInstanceQ q(IsOrderedRing $α)
-      let _a ← synthInstanceQ q(Nontrivial $α)
-      assumeInstancesCommute
-      have p : Q(NormNum.IsNat $e $lit) := p
-      haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
-      pure (.positive q(pos_of_isNat (A := $α) $p $p'))
+      -- NB. The `try` branch is actually a special case of the `catch` branch,
+      -- hence is not strictly necessary. However, this makes a small but measurable performance
+      -- difference, as synthesising the `try` classes is a bit faster.
+      try
+        let _a ← synthInstanceQ q(Semiring $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(IsOrderedRing $α)
+        let _a ← synthInstanceQ q(Nontrivial $α)
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        pure (.positive q(pos_of_isNat (A := $α) $p $p'))
+      catch e : Exception =>
+        trace[Tactic.positivity.failure] "{e.toMessageData}"
+        let _a ← synthInstanceQ q(AddMonoidWithOne $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(AddLeftMono $α)
+        let _a ← synthInstanceQ q(ZeroLEOneClass $α)
+        let _a ← synthInstanceQ q(NeZero (1 : $α))
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        pure (.positive q(pos_of_isNat' (A := $α) $p $p'))
     else
-      let _a ← synthInstanceQ q(Semiring $α)
-      let _a ← synthInstanceQ q(PartialOrder $α)
-      let _a ← synthInstanceQ q(IsOrderedRing $α)
-      assumeInstancesCommute
-      have p : Q(NormNum.IsNat $e $lit) := p
-      pure (.nonnegative q(nonneg_of_isNat $p))
+      -- NB. The `try` branch is actually a special case of the `catch` branch,
+      -- hence is not strictly necessary. However, this makes a small but measurable performance
+      -- difference, as synthesising the `try` classes is a bit faster.
+      try
+        let _a ← synthInstanceQ q(Semiring $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(IsOrderedRing $α)
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        pure (.nonnegative q(nonneg_of_isNat $p))
+      catch e : Exception =>
+        trace[Tactic.positivity.failure] "{e.toMessageData}"
+        let _a ← synthInstanceQ q(AddMonoidWithOne $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(AddLeftMono $α)
+        let _a ← synthInstanceQ q(ZeroLEOneClass $α)
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        pure (.nonnegative q(nonneg_of_isNat' $p))
   | .isNegNat _ lit p =>
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(PartialOrder $α)
@@ -447,6 +488,12 @@ elab (name := positivity) "positivity" : tactic => do
 end Positivity
 
 end Mathlib.Tactic
+
+/-!
+We set up `positivity` as a first-pass discharger for `gcongr` side goals.
+-/
+
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
 
 /-!
 We register `positivity` with the `hint` tactic.

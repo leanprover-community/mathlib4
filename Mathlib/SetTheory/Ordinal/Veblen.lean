@@ -192,7 +192,7 @@ theorem cmp_veblenWith :
   on_goal 2 => simp [(veblenWith_right_strictMono hf _).cmp_map_eq]
   all_goals
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h]
-    simp [h.cmp_eq_lt, h.cmp_eq_gt, h.ne, h.ne', (veblenWith_right_strictMono hf _).cmp_map_eq]
+    simp [h.cmp_eq_lt, h.cmp_eq_gt, (veblenWith_right_strictMono hf _).cmp_map_eq]
 
 /-- `veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a < b`
@@ -212,7 +212,7 @@ theorem veblenWith_le_veblenWith_iff :
     veblenWith f o₁ a ≤ veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a ≤ b ∨ o₁ < o₂ ∧ a ≤ veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a ≤ b := by
   rw [← not_lt, ← cmp_eq_gt_iff, cmp_veblenWith hf]
-  aesop (add simp [not_lt_of_le, lt_asymm])
+  aesop (add simp [not_lt_of_ge, lt_asymm])
 
 /-- `veblenWith f o₁ a = veblenWith f o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a = b`

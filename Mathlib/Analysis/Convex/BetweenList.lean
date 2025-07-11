@@ -126,7 +126,7 @@ lemma sbtw_iff_triplewise_and_ne_pair [IsOrderedRing R] {l : List P} :
         subst hxh hxt
         simp at hpne
     · have ht' : tail.Wbtw R := ht.imp _root_.Sbtw.wbtw
-      simp only [ht', hp, true_and, ht] at ih
+      simp only [ht', true_and, ht] at ih
       rw [pairwise_cons, ih]
       refine ⟨fun a ha' ↦ ?_, fun a ↦ ?_⟩
       · rintro rfl
@@ -287,7 +287,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
         cases tail with
         | nil => simp
         | cons head2 tail =>
-          simp only [reduceCtorEq, not_false_eq_true, getLast_cons, false_or]
+          simp only [reduceCtorEq, false_or]
           rw [pairwise_cons] at hp
           refine hp.1 ((head :: head2 :: tail).getLast hl) ?_
           simp
