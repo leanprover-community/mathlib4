@@ -606,6 +606,45 @@ open Polynomial
 
 theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
     IsCohenMacaulayRing R[X] := by
+  apply (isCohenMacaulayRing_def _).mpr (fun p hp ↦ ?_)
+  let q := p.comap C
+  let S := (Localization.AtPrime q)[X]
+  let pc := Submonoid.map Polynomial.C.toMonoidHom q.primeCompl
+  let _ : Algebra R[X] S := algebra R (Localization.AtPrime q)
+  let _ : IsLocalization pc S := {
+    map_units' x := by
+      rcases x.2 with ⟨y, mem, eq⟩
+      apply isUnit_of_mul_eq_one _ (C (Localization.mk 1 ⟨y, mem⟩))
+      simp [← eq, S, ← map_mul, ← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
+    surj' z := by
+      let f : ℕ → q.primeCompl := fun n ↦
+        (Classical.choose (Localization.mkHom_surjective (Polynomial.coeff z n))).2
+      #check ∏ n ∈ z.1.1, f n
+      sorry
+    exists_of_eq {x y} eq := by
+      have eq' (n : ℕ) : (algebraMap R (Localization.AtPrime q)) (Polynomial.coeff x n) =
+        (algebraMap R (Localization.AtPrime q)) (Polynomial.coeff y n) := by
+        simp only [algebraMap_def, coe_mapRingHom, S] at eq
+        have : coeff (map (algebraMap R (Localization.AtPrime q)) x) n =
+          coeff (map (algebraMap R (Localization.AtPrime q)) y) n := by rw [eq]
+        simpa
+      let g : ℕ → q.primeCompl := fun n ↦ Classical.choose (IsLocalization.exists_of_eq (eq' n))
+      have g_spec (n : ℕ) := Classical.choose_spec
+        (IsLocalization.exists_of_eq (M := q.primeCompl) (eq' n))
+
+
+      sorry
+  }
+  let pS := p.map (algebraMap R[X] S)
+  have disj : Disjoint (pc : Set R[X]) (p : Set R[X]) := by
+    simpa [pc, q] using Set.disjoint_image_left.mpr
+      (Set.disjoint_compl_left_iff_subset.mpr (fun _ a ↦ a))
+  have : pS.IsPrime :=  IsLocalization.isPrime_of_isPrime_disjoint pc _ _ ‹_› disj
+  have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
+    convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
+      (Localization.AtPrime pS) pS
+    exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ _ ‹_› disj).symm
+
   sorry
 
 theorem MvPolynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ):
