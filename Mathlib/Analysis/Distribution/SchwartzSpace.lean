@@ -837,8 +837,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   gcongr ?_ * C
   rw [Finset.mem_range_succ_iff] at hi
   change i ≤ (l + k, n).snd at hi
-  unfold schwartzSeminormFamily
-  grw [← one_add_le_sup_seminorm_apply le_rfl hi f x]
+  refine le_trans ?_ (one_add_le_sup_seminorm_apply le_rfl hi f x)
   rw [pow_add]
   move_mul [(1 + ‖x‖) ^ l]
   gcongr
