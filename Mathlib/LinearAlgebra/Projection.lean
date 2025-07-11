@@ -603,7 +603,7 @@ lemma range_and_ker_mem_invtSubmodule_iff_commute
 
 /-- `⅟T ∘ₗ f ∘ₗ T = f` if and only if `T (range f) = range f` and `T (ker f) = ker f`,
 for idempotent `f`. -/
-theorem _root_.Submodule.invOf_comp_linearProjOfIsCompl_comp_self_eq_linearProjOfIsCompl_iff_map_eq
+theorem invOf_comp_self_comp_eq_self_iff_map_eq
     [Invertible T] (hf : IsIdempotentElem f) :
     ⅟T ∘ₗ f ∘ₗ T = f ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
   have : ∀ f, Commute f T ↔ ⅟T ∘ₗ f ∘ₗ T = f :=
