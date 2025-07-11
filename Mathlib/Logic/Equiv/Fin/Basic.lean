@@ -239,6 +239,11 @@ theorem finSumFinEquiv_symm_apply_castAdd (x : Fin m) :
   finSumFinEquiv.symm_apply_apply (Sum.inl x)
 
 @[simp]
+theorem finSumFinEquiv_symm_apply_castSucc (x : Fin m) :
+    finSumFinEquiv.symm (Fin.castSucc x) = Sum.inl x :=
+  finSumFinEquiv_symm_apply_castAdd x
+
+@[simp]
 theorem finSumFinEquiv_symm_apply_natAdd (x : Fin n) :
     finSumFinEquiv.symm (Fin.natAdd m x) = Sum.inr x :=
   finSumFinEquiv.symm_apply_apply (Sum.inr x)
