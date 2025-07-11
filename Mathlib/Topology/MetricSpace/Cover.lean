@@ -3,9 +3,9 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Rel.Cover
 import Mathlib.Topology.MetricSpace.MetricSeparated
 import Mathlib.Topology.MetricSpace.Thickening
-import Mathlib.Topology.UniformSpace.Cover
 
 /-!
 # Covers in a metric space
