@@ -593,31 +593,35 @@ theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a
 theorem add_le_iff {a b c : Ordinal} (hb : b ≠ 0) : a + b ≤ c ↔ ∀ d < b, a + d < c := by
   simpa using (lt_add_iff hb).not
 
-theorem lt_add_iff_of_isLimit {a b c : Ordinal} (hc : IsLimit c) :
+theorem lt_add_iff_of_isSuccLimit {a b c : Ordinal} (hc : IsSuccLimit c) :
     a < b + c ↔ ∃ d < c, a < b + d := by
-  rw [lt_add_iff hc.ne_zero]
+  rw [lt_add_iff hc.ne_bot]
   constructor <;> rintro ⟨d, hd, ha⟩
   · refine ⟨_, hc.succ_lt hd, ?_⟩
     rwa [add_succ, lt_succ_iff]
   · exact ⟨d, hd, ha.le⟩
 
 @[deprecated (since := "2025-07-08")]
-alias lt_add_of_limit := lt_add_iff_of_isLimit
+alias lt_add_of_limit := lt_add_iff_of_isSuccLimit
 
-theorem add_le_iff_of_isLimit {a b c : Ordinal} (hb : IsLimit b) :
+theorem add_le_iff_of_isSuccLimit {a b c : Ordinal} (hb : IsSuccLimit b) :
     a + b ≤ c ↔ ∀ d < b, a + d ≤ c := by
-  simpa using (lt_add_iff_of_isLimit hb).not
+  simpa using (lt_add_iff_of_isSuccLimit hb).not
 
 @[deprecated (since := "2025-07-08")]
-alias add_le_of_limit := add_le_iff_of_isLimit
+alias add_le_of_limit := add_le_iff_of_isSuccLimit
 
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
-  ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_iff_of_isLimit l⟩
+  ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_iff_of_isSuccLimit l⟩
 
-theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
-  (isNormal_add_right a).isLimit
+theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
+  (isNormal_add_right a).isSuccLimit
 
-alias IsLimit.add := isLimit_add
+@[deprecated (since := "2025-07-09")]
+alias isLimit_add := isSuccLimit_add
+
+@[deprecated (since := "2025-07-09")]
+alias IsLimit.add := isSuccLimit_add
 
 theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccLimit a) (h : b < a) : IsSuccLimit (a - b) := by
   rw [isSuccLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
