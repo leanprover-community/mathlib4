@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.SuccOrder.PartialSups
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
+import Mathlib.Dynamics.MeasurePreserving.Lemmas
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
@@ -195,17 +196,9 @@ lemma birkhoffAverage_tendsto_nonpos_of_not_mem_divergentSet {f : α → α} {x 
 
 variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac) {φ : α → ℝ}
 
-lemma iterates_integrable {i : ℕ} (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) :
-    Integrable (φ ∘ f^[i]) μ := by
-  apply (integrable_map_measure _ _).mp
-  · rwa [(hf.iterate i).map_eq]
-  · rw [(hf.iterate i).map_eq]
-    exact hφ.aestronglyMeasurable
-  exact (hf.iterate i).measurable.aemeasurable
-
 lemma birkhoffSum_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffSum f φ n) μ :=
-  integrable_finset_sum _ fun _ _ ↦ iterates_integrable μ hf hφ
+  integrable_finset_sum _ fun _ _ ↦ MeasurePreserving.comp_iterate_integrable hf hφ
 
 lemma birkhoffMax_integrable (hf : MeasurePreserving f μ μ) (hφ : Integrable φ μ) {n} :
     Integrable (birkhoffMax f φ n) μ := by
