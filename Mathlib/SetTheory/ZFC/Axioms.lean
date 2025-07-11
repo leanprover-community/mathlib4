@@ -79,9 +79,10 @@ instance : Fintype set.Symbols :=
   ⟨⟨Multiset.ofList [Sum.inr ⟨2, .mem⟩], by decide⟩,
   by rintro (⟨_, ⟨⟩⟩ | ⟨_, ⟨⟩⟩); decide ⟩
 
-@[simp]
-theorem card_set : card set = 1 := by
-  simp [card, show Fintype.card set.Symbols = 1 from rfl]
+@[simp] theorem card_set_symbols : Fintype.card set.Symbols = 1 := rfl
+
+@[simp] theorem card_set : card set = 1 := by
+  simp [card]
 
 /-- A class with parameters indexed by `α` is a formula `C` with `n + 1` free variables, which
 intuitively inherently represents "`&n ∈ C`", i.e. `C` itself as a formula means that the last free
@@ -103,7 +104,7 @@ def mkC (x : set.Term (α ⊕ Fin n)) : Class α n :=
 -- instance : Coe (set.Term (α ⊕ Fin n)) (Class α n) where
 --   coe := mkC
 
-/-- Lift a class with `n` free variables to a class with `n+k` free variable. Only the hidden
+/-- Lift a class with `n` free variables to a class with `n+k` free variables. Only the hidden
 free variable (`&n` which should not be accessed) is changed. The original bounded variables
 are all lifted above `n+k`. -/
 def lift (C : Class α n) : Class α (n + k) :=
@@ -354,12 +355,12 @@ Reference: [P.3, Set Theory, Thomas Jech][Jech2003] -/
 inductive ZFC : set.Sentence → Prop
   | ext : ZFC .extensionality
   | pair : ZFC .pairing
-  | separation (C : Class (Fin 1) 0) : ZFC <| .separation C
-  | union : ZFC <| .union
-  | power : ZFC <| .powerset
-  | infinity : ZFC <| .infinity
-  | replacement (F : set.BoundedFormula (Fin 3) 0) : ZFC <| .replacement F
-  | regularity : ZFC <| .regularity
-  | choice : ZFC <| .choice
+  | separation (C : Class (Fin 1) 0) : ZFC (.separation C)
+  | union : ZFC .union
+  | power : ZFC .powerset
+  | infinity : ZFC .infinity
+  | replacement (F : set.BoundedFormula (Fin 3) 0) : ZFC (.replacement F)
+  | regularity : ZFC .regularity
+  | choice : ZFC .choice
 
 end FirstOrder.Set
