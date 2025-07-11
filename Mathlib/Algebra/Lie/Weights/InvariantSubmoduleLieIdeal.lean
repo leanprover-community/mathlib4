@@ -30,12 +30,23 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     -- APPLY INDUCTION using LieSubmodule.iSup_induction' (following Killing.lean:129)
     induction hx using LieSubmodule.iSup_induction' with
     | mem χ x_χ hx_χ =>
-      -- CASE: x_χ ∈ genWeightSpace L χ for some weight χ
-      by_cases h_zero : χ.IsZero
-      · -- SUBCASE 1: χ = 0, so x_χ ∈ H (Cartan subalgebra)
-        sorry -- Use: H preserves sl₂ subalgebras
-      · -- SUBCASE 2: χ ≠ 0, so x_χ ∈ rootSpace H χ (nonzero root)
-        sorry -- Use: invariance hq + root system reflections
+      simp at hm
+      have hm2 : m ∈ ⨆ α : {α : Weight K H L // α.toLinear ∈ q ∧ α.IsNonZero}, sl2SubalgebraOfRoot α.2.2 := by
+        exact hm
+      -- Apply nested induction on hm2: m ∈ ⨆ α, sl2SubalgebraOfRoot α.2.2
+      -- Convert LieSubalgebra supremum to LieSubmodule supremum for induction
+      have hm3 : m ∈ ⨆ α : {α : Weight K H L // α.toLinear ∈ q ∧ α.IsNonZero}, (sl2SubalgebraOfRoot α.2.2).toSubmodule := by
+        sorry
+      apply Submodule.iSup_induction (fun α => (sl2SubalgebraOfRoot α.2.2).toSubmodule) (motive := fun y => ⁅x_χ, y⁆ ∈ ⨆ α : {α : Weight K H L // α.toLinear ∈ q ∧ α.IsNonZero}, sl2SubalgebraOfRoot α.2.2) hm3
+      · -- mem case: y ∈ (sl2SubalgebraOfRoot α.2.2).toSubmodule for α with α.toLinear ∈ q ∧ α.IsNonZero
+        intro α y hy
+        sorry -- use RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+      · -- zero case: m = 0
+        simp [zero_lie]
+      · -- add case: m = y₁ + y₂
+        intro y₁ y₂ ih₁ ih₂
+        rw [lie_add]
+        exact add_mem ih₁ ih₂
     | zero =>
       -- BASE CASE: x = 0
       simp [zero_lie]
