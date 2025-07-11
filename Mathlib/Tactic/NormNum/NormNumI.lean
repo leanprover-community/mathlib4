@@ -20,7 +20,10 @@ open ComplexConjugate
 namespace Mathlib.Meta
 namespace NormNumI
 
-theorem split_I : I = ⟨0, 1⟩ := rfl
+structure IsComplex (z : ℂ) (re im : ℝ) : Prop where
+  out : z = ⟨re, im⟩
+
+theorem split_I : IsComplex I 0 1 where out := rfl
 
 theorem split_zero : (0 : ℂ) = ⟨0, 0⟩ := rfl
 
