@@ -191,8 +191,7 @@ instance : IsLocalHom (algebraMap K₀ L₀) := instIsLocalHomValuationInteger
 
 lemma algebraMap_mem_maximalIdeal_iff {x : K₀} :
     algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) ↔ x ∈ maximalIdeal K₀ := by
-  simp only [mem_maximalIdeal_iff, coe_algebraMap_valuationSubring_eq,
-    val_map_lt_one_iff vK vL]
+  simp [mem_maximalIdeal, map_mem_nonunits_iff, _root_.mem_nonunits_iff]
 
 lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
     (maximalIdeal L₀).comap (algebraMap K₀ L₀) = maximalIdeal K₀ :=
@@ -201,7 +200,8 @@ lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
 instance : Ideal.LiesOver (maximalIdeal L₀) (maximalIdeal K₀) :=
   ⟨(maximalIdeal_comap_algebraMap_eq_maximalIdeal _ _).symm⟩
 
-noncomputable instance : Algebra (ResidueField K₀) (ResidueField L₀) := inferInstance
+noncomputable instance instAlgebra_residueField :
+    Algebra (ResidueField K₀) (ResidueField L₀) := inferInstance
 
 lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
     (algebraMap (ResidueField K₀) (ResidueField L₀)) (IsLocalRing.residue K₀ x) =
