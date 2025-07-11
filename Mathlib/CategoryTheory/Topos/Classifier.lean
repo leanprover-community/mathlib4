@@ -135,15 +135,17 @@ lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
     IsPullback m (isTerminalΩ₀.from _) (c.χ m) c.truth :=
   (isTerminalΩ₀.hom_ext (c.χ₀ m) (isTerminalΩ₀.from U)) ▸ c.isPullback' m
 
+/-- The unique morphism from `U` to the terminal object `Ω₀` -/
 def uniqueToΩ₀ {c : Classifier C} (U : C) : U ⟶ c.Ω₀ :=
   isTerminalΩ₀.from U
+
+/-- The unique morphism from `U` equals the characteristic morphism of the identity on `U` -/
+lemma uniqueToΩ₀_eq_χ₀_id {c : Classifier C} (U : C) : uniqueToΩ₀ U = c.χ₀ (𝟙 U) := rfl
 
 /-- The more practical version of `uniq'` without the argument `χ₀` -/
 lemma uniq {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ c.Ω)
     (hχ' : IsPullback m (uniqueToΩ₀ _) χ' (c.truth)) : χ' = c.χ m :=
   c.uniq' m (uniqueToΩ₀ _) χ' hχ'
-
-lemma uniqueToΩ₀_eq_χ₀_id {c : Classifier C} (U : C) : uniqueToΩ₀ U = c.χ₀ (𝟙 U) := rfl
 
 end Classifier
 
