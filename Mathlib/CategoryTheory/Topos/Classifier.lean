@@ -98,7 +98,8 @@ namespace Classifier
 attribute [instance] mono_truth
 
 /-- More explicit constructor in case `Ω₀` is already known to be a terminal object. -/
-def fromTerminalΩ₀
+@[simps]
+def mkOfTerminalΩ
     (Ω₀ : C)
     (t : IsTerminal Ω₀)
     (Ω : C)
@@ -117,17 +118,19 @@ def fromTerminalΩ₀
   isPullback' m _ := isPullback m
   uniq' m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
 
+instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
+  { default := c.χ₀ (𝟙 Y),
+    uniq f :=
+      have : f ≫ c.truth = c.χ₀ (𝟙 Y) ≫ c.truth :=
+        by calc
+          _ = c.χ (𝟙 Y) := c.uniq' (𝟙 Y) f (f ≫ c.truth) (of_horiz_isIso_mono { })
+          _ = c.χ₀ (𝟙 Y) ≫ c.truth := by simp [← (c.isPullback' (𝟙 Y)).w]
+      Mono.right_cancellation _ _ this }
+
 /-- `Ω₀` is a terminal object. -/
-def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ :=
-    have : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
-      { default := c.χ₀ (𝟙 Y),
-        uniq f :=
-          have : f ≫ c.truth = c.χ₀ (𝟙 Y) ≫ c.truth :=
-            by calc
-              _ = c.χ (𝟙 Y) := c.uniq' (𝟙 Y) f (f ≫ c.truth) (of_horiz_isIso_mono { })
-              _ = c.χ₀ (𝟙 Y) ≫ c.truth := by simp [← (c.isPullback' (𝟙 Y)).w]
-          Mono.right_cancellation _ _ this }
-    IsTerminal.ofUnique c.Ω₀
+def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
+
+attribute [instance] isTerminalΩ₀
 
 /-- The more practical version of `isPullback'` where we don't need to supply the to arrow,
 since there is a unique morphism to the terminal object -/
@@ -136,16 +139,16 @@ lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
   (isTerminalΩ₀.hom_ext (c.χ₀ m) (isTerminalΩ₀.from U)) ▸ c.isPullback' m
 
 /-- The unique morphism from `U` to the terminal object `Ω₀` -/
-def uniqueToΩ₀ {c : Classifier C} (U : C) : U ⟶ c.Ω₀ :=
+def toΩ₀ {c : Classifier C} (U : C) : U ⟶ c.Ω₀ :=
   isTerminalΩ₀.from U
 
 /-- The unique morphism from `U` equals the characteristic morphism of the identity on `U` -/
-lemma uniqueToΩ₀_eq_χ₀_id {c : Classifier C} (U : C) : uniqueToΩ₀ U = c.χ₀ (𝟙 U) := rfl
+lemma toΩ₀_eq_χ₀_id {c : Classifier C} (U : C) : toΩ₀ U = c.χ₀ (𝟙 U) := rfl
 
 /-- The more practical version of `uniq'` without the argument `χ₀` -/
 lemma uniq {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ c.Ω)
-    (hχ' : IsPullback m (uniqueToΩ₀ _) χ' (c.truth)) : χ' = c.χ m :=
-  c.uniq' m (uniqueToΩ₀ _) χ' hχ'
+    (hχ' : IsPullback m (toΩ₀ _) χ' (c.truth)) : χ' = c.χ m :=
+  c.uniq' m (toΩ₀ _) χ' hχ'
 
 end Classifier
 
@@ -185,7 +188,7 @@ def χ : X ⟶ Ω C :=
 ```
 is a pullback square.
 -/
-lemma isPullback_χ : IsPullback m (Classifier.uniqueToΩ₀ U) (χ m) (truth C) :=
+lemma isPullback_χ : IsPullback m (Classifier.toΩ₀ U) (χ m) (truth C) :=
   Classifier.isPullback m
 
 /-- The diagram
@@ -200,12 +203,12 @@ lemma isPullback_χ : IsPullback m (Classifier.uniqueToΩ₀ U) (χ m) (truth C)
 commutes.
 -/
 @[reassoc]
-lemma comm : m ≫ χ m = Classifier.uniqueToΩ₀ U ≫ truth C := (isPullback_χ m).w
+lemma comm : m ≫ χ m = Classifier.toΩ₀ U ≫ truth C := (isPullback_χ m).w
 
 /-- `χ m` is the only map for which the associated square
 is a pullback square.
 -/
-lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.uniqueToΩ₀ U) χ' (truth C)) :
+lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.toΩ₀ U) χ' (truth C)) :
   χ' = χ m := Classifier.uniq m χ' hχ'
 
 instance truthIsSplitMono : IsSplitMono (truth C) :=
@@ -267,12 +270,12 @@ section RepresentableBy
 variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
 
 /-- The subobject of `𝒞.Ω` corresponding to the `truth` morphism. -/
-def truth_as_subobject : Subobject 𝒞.Ω :=
+abbrev truth_as_subobject : Subobject 𝒞.Ω :=
   Subobject.mk 𝒞.truth
 
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
-  ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, (𝒞.uniq _ _) (by
+  ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ _ (by
     convert IsPullback.of_hasPullback φ 𝒞.truth
     apply 𝒞.isTerminalΩ₀.hom_ext)⟩
 
