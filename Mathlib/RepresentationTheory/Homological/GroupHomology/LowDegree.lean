@@ -24,9 +24,16 @@ for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an e
 The file also contains an identification between the definitions in
 `RepresentationTheory/Homological/GroupHomology/Basic.lean`, `groupHomology.cycles A n`, and the
 `cyclesₙ` in this file for `n = 1, 2`, as well as an isomorphism `groupHomology.cycles A 0 ≅ A.V`.
+Moreover, we provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1, 2`.
 
-## TODO
-  * Provide API for the natural maps `cyclesₙ A → Hn A` for `n = 1, 2`.
+## Main definitions
+
+* `groupHomology.H0Iso A`: isomorphism between `H₀(G, A)` and the coinvariants `A_G` of the
+  `G`-representation on `A`.
+* `groupHomology.H1π A`: epimorphism from the 1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`)
+  to `H₁(G, A)`.
+* `groupHomology.H2π A`: epimorphism from the 2-cycles
+  (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) to `H₂(G, A)`.
 
 -/
 
@@ -532,6 +539,7 @@ def IsBoundary₂ (x : G × G →₀ A) : Prop :=
     single (g.1 * g.2.1, g.2.2) a + single (g.1, g.2.1 * g.2.2) a - single (g.1, g.2.1) a) = x
 
 end
+
 section
 
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
@@ -571,6 +579,7 @@ theorem isBoundary₂_iff (x : G × G →₀ A) :
     simp_all [sum_sum_index]
 
 end
+
 end IsBoundary
 
 section ofDistribMulAction
@@ -775,4 +784,174 @@ lemma toCycles_comp_isoCycles₂_hom :
     shortComplexH2_f]
 
 end isoCycles₂
+
+section Homology
+
+variable [DecidableEq G]
+
+section H0
+
+/-- Shorthand for the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`,
+defined as the 0th homology of the complex of inhomogeneous chains of `A`. -/
+abbrev H0 := groupHomology A 0
+
+/-- The 0th group homology of `A`, defined as the 0th homology of the complex of inhomogeneous
+chains, is isomorphic to the invariants of the representation on `A`. -/
+def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
+  (ChainComplex.isoHomologyι₀ _) ≪≫ opcyclesIso₀ A
+
+/-- The quotient map from `A` to `H₀(G, A)`. -/
+def H0π : A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
+
+instance : Epi (H0π A) := by unfold H0π; infer_instance
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H0Iso_hom :
+    π A 0 ≫ (H0Iso A).hom = (cyclesIso₀ A).hom ≫ (coinvariantsMk k G).app A := by
+  simp [H0Iso, cyclesIso₀]
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma coinvariantsMk_comp_H0Iso_inv :
+    (coinvariantsMk k G).app A ≫ (H0Iso A).inv = H0π A :=
+  (CommSq.vert_inv ⟨π_comp_H0Iso_hom A⟩).w
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma H0π_comp_H0Iso_hom :
+    H0π A ≫ (H0Iso A).hom = (coinvariantsMk k G).app A := by
+  simp [H0π]
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma cyclesIso₀_comp_H0π :
+    (cyclesIso₀ A).hom ≫ H0π A = π A 0 := by
+  simp [H0π]
+
+@[elab_as_elim]
+theorem H0_induction_on {C : H0 A → Prop} (x : H0 A)
+    (h : ∀ x : A, C (H0π A x)) : C x :=
+  groupHomology_induction_on x fun y => by simpa using h ((cyclesIso₀ A).hom y)
+
+section IsTrivial
+
+variable [A.IsTrivial]
+
+/-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
+def H0IsoOfIsTrivial :
+    H0 A ≅ A.V :=
+  ((inhomogeneousChains A).isoHomologyπ 1 0 (by simp) <| by
+    ext; simp [inhomogeneousChains.d_def, inhomogeneousChains.d_single (G := G),
+       Unique.eq_default (α := Fin 0 → G)]).symm ≪≫ cyclesIso₀ A
+
+@[simp]
+theorem H0IsoOfIsTrivial_inv_eq_π :
+    (H0IsoOfIsTrivial A).inv = H0π A := rfl
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem π_comp_H0IsoOfIsTrivial_hom :
+    π A 0 ≫ (H0IsoOfIsTrivial A).hom = (cyclesIso₀ A).hom := by
+  simp [H0IsoOfIsTrivial]
+
+end IsTrivial
+
+end H0
+
+section H1
+
+/-- Shorthand for the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`,
+defined as the 1st homology of the complex of inhomogeneous chains of `A`. -/
+abbrev H1 := groupHomology A 1
+
+/-- The quotient map from the 1-cycles of `A`, as a submodule of `G →₀ A`, to `H₁(G, A)`. -/
+def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
+  (isoCycles₁ A).inv ≫ π A 1
+
+instance : Epi (H1π A) := by unfold H1π; infer_instance
+
+variable {A}
+
+lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
+    (shortComplexH1 A).moduleCatLeftHomologyData (leftHomologyData _)
+    ((inhomogeneousChains A).sc 1).leftHomologyIso.hom
+  simp only [H1π, isoCycles₁, π, HomologicalComplex.homologyπ, homologyπ,
+    cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
+    LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
+    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+  simp [LinearMap.range_codRestrict, boundaries₁, shortComplexH1, cycles₁]
+
+lemma H1π_eq_iff (x y : cycles₁ A) :
+    H1π A x = H1π A y ↔ x.1 - y.1 ∈ boundaries₁ A := by
+  rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
+  rfl
+
+@[elab_as_elim]
+theorem H1_induction_on {C : H1 A → Prop} (x : H1 A) (h : ∀ x : cycles₁ A, C (H1π A x)) :
+    C x :=
+  groupHomology_induction_on x fun y => by simpa [H1π] using h ((isoCycles₁ A).hom y)
+
+variable (A)
+
+/-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
+chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
+def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H1Iso_hom :
+    π A 1 ≫ (H1Iso A).hom = (isoCycles₁ A).hom ≫
+      (shortComplexH1 A).moduleCatLeftHomologyData.π := by
+  simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
+
+end H1
+
+section H2
+
+/-- Shorthand for the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`,
+defined as the 2nd homology of the complex of inhomogeneous chains of `A`. -/
+abbrev H2 := groupHomology A 2
+
+/-- The quotient map from the 2-cycles of `A`, as a submodule of `G × G →₀ A`, to `H₂(G, A)`. -/
+def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
+  (isoCycles₂ A).inv ≫ π A 2
+
+instance : Epi (H2π A) := by unfold H2π; infer_instance
+
+variable {A}
+
+lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv
+    (shortComplexH2 A).moduleCatLeftHomologyData (leftHomologyData _)
+    ((inhomogeneousChains A).sc 2).leftHomologyIso.hom
+  simp only [H2π, isoCycles₂, π, HomologicalComplex.homologyπ, homologyπ,
+    cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
+    LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
+    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+  simp [LinearMap.range_codRestrict, boundaries₂, shortComplexH2, cycles₂]
+
+lemma H2π_eq_iff (x y : cycles₂ A) :
+    H2π A x = H2π A y ↔ x.1 - y.1 ∈ boundaries₂ A := by
+  rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
+  rfl
+
+@[elab_as_elim]
+theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : cycles₂ A, C (H2π A x)) :
+    C x :=
+  groupHomology_induction_on x (fun y => by simpa [H2π] using h ((isoCycles₂ A).hom y))
+
+variable (A)
+
+/-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
+chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
+def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H2Iso_hom :
+    π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
+      (shortComplexH2 A).moduleCatLeftHomologyData.π := by
+  simp [H2Iso, isoCycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]
+
+end H2
+
+end Homology
+
 end groupHomology
