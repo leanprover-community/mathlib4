@@ -38,9 +38,9 @@ In this section we define the predicate `Metric.IsSeparated` for `ε`-separated 
 other. -/
 def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < edist · ·)
 
-lemma isSeparated_iff_uniformSpaceIsSeparated :
-    IsSeparated ε s ↔ UniformSpace.IsSeparated {(x, y) | edist x y ≤ ε} s := by
-  simp [IsSeparated, UniformSpace.IsSeparated]
+lemma isSeparated_iff_relIsSeparated :
+    IsSeparated ε s ↔ Rel.IsSeparated {(x, y) | edist x y ≤ ε} s := by
+  simp [IsSeparated, Rel.IsSeparated]
 
 protected lemma IsSeparated.empty : IsSeparated ε (∅ : Set X) := pairwise_empty _
 protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton ..
