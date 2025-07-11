@@ -1521,15 +1521,3 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
     rw [← h.span_eq, coe_h, hv_coe]
 
 end OrthonormalBasis
-
-open LinearMap in
-theorem ContinuousLinearMap.IsIdempotentElem.range_eq_ker {p : E →L[𝕜] E}
-    (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
-  have hp' : IsIdempotentElem (LinearMapClass.linearMap p) :=
-    congr(LinearMapClass.linearMap $(hp.eq))
-  hp'.range_eq_ker
-
-open ContinuousLinearMap in
-theorem ContinuousLinearMap.IsIdempotentElem.isClosed_range {p : E →L[𝕜] E}
-    (hp : IsIdempotentElem p) : IsClosed (LinearMap.range p : Set E) :=
-  hp.range_eq_ker ▸ ContinuousLinearMap.isClosed_ker (1 - p)
