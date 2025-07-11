@@ -325,7 +325,7 @@ theorem outer_trim : f.outer.trim = f.outer := by
   rw [OuterMeasure.trim_eq_iInf]
   refine le_iInf fun t => le_iInf fun ht => ENNReal.le_of_forall_pos_le_add fun ε ε0 h => ?_
   rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 ε0).ne' ℕ with ⟨ε', ε'0, hε⟩
-  refine le_trans ?_ (add_le_add_left (le_of_lt hε) _)
+  grw [← hε]
   rw [← ENNReal.tsum_add]
   choose g hg using
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by

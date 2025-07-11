@@ -142,8 +142,8 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
   use δ, δ0
   intro x xK
   obtain ⟨a, δa, ha⟩ := hδ xK
-  exact (diam_mono <| image_mono <| inter_subset_inter_left D <| ball_subset_ball <|
-    coe_le_coe.2 <| Real.toNNReal_mono (le_of_lt δa)).trans ha
+  grw [← ha]
+  gcongr
 
 /-- If `oscillation f x < ε` at every `x` in a compact set `K`, then there exists `δ > 0` such
 that the oscillation of `f` on `ball x δ` is less than `ε` for every `x` in `K`. -/

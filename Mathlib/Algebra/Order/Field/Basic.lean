@@ -222,10 +222,10 @@ instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrde
     ⟨(a₁ + a₂) / 2,
       calc
         a₁ = (a₁ + a₁) / 2 := (add_self_div_two a₁).symm
-        _ < (a₁ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_left h _) zero_lt_two
+        _ < (a₁ + a₂) / 2 := by gcongr; exact zero_lt_two -- TODO: why doesn't `positivity` work?
         ,
       calc
-        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_right h _) zero_lt_two
+        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := by gcongr; exact zero_lt_two
         _ = a₂ := add_self_div_two a₂
         ⟩
 
