@@ -141,12 +141,11 @@ theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F 
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
-theorem IsPositive.conj_orthogonalProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
-    [CompleteSpace U] :
-    (U.subtypeL ∘L
-        U.orthogonalProjection ∘L T ∘L U.subtypeL ∘L U.orthogonalProjection).IsPositive := by
-  have := hT.conj_adjoint (U.subtypeL ∘L U.orthogonalProjection)
-  rwa [(orthogonalProjection_isSelfAdjoint U).adjoint_eq] at this
+theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
+    [U.HasOrthogonalProjection] :
+    (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
+  have := hT.conj_adjoint (U.starProjection)
+  rwa [(isSelfAdjoint_starProjection U).adjoint_eq] at this
 
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
     [CompleteSpace U] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
@@ -215,6 +214,26 @@ lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := b
   simpa using le_def 0 f
 
 end PartialOrder
+
+/-- A star projection operator is positive.
+
+The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
+have `StarOrderedRing (E →L[𝕜] E)`. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isStarPojection {p : E →L[𝕜] E}
+    (hp : IsStarProjection p) : p.IsPositive := by
+  refine ⟨hp.isSelfAdjoint, ?_⟩
+  rw [← hp.isIdempotentElem.eq]
+  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
+  intro x
+  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
+  exact inner_self_nonneg
+
+/-- An idempotent operator is positive if and only if it is self-adjoint. -/
+@[grind →]
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
+  ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarPojection ⟨hp, h⟩⟩
 
 end ContinuousLinearMap
 

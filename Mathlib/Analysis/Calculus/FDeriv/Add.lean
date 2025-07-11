@@ -131,7 +131,7 @@ theorem fderivWithin_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
 lemma differentiableWithinAt_smul_iff (c : R) [Invertible c] :
     DifferentiableWithinAt 𝕜 (c • f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.const_smul c⟩
-  apply (h.const_smul ⅟ c).congr_of_eventuallyEq ?_ (by simp)
+  apply (h.const_smul ⅟c).congr_of_eventuallyEq ?_ (by simp)
   filter_upwards with x using by simp
 
 /-- A version of `fderivWithin_const_smul` without differentiability hypothesis:
