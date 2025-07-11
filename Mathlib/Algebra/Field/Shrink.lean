@@ -11,9 +11,7 @@ import Mathlib.Tactic.SuppressCompilation
 # Transfer field structures from `α` to `Shrink α`
 -/
 
--- FIXME: `to_additive` is incompatible with `noncomputable section`.
--- See https://github.com/leanprover-community/mathlib4/issues/1074.
-suppress_compilation
+noncomputable section
 
 universe v
 variable {α : Type*} [Small.{v} α]
