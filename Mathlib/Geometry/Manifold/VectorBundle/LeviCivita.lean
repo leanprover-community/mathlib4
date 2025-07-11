@@ -304,30 +304,16 @@ lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tang
   simp; abel_nf
   sorry
 
--- TODO: move to Algebra/Group/TransferInstance, around line 110
-section order
+-- TODO: move to Data.Fintype.EquivFin
+/-- Choose an arbitrary linear order on a `Fintype`: this is not an instance because in most
+situations, choosing a linear order extending a given preorder, or a particular linear order
+is preferred over choosing *any* linear order. -/
+noncomputable def Fintype.instLinearOrder {α : Type*} [Fintype α] : LinearOrder α :=
+  LinearOrder.lift' _ (Fintype.equivFin α).injective
 
-variable {α β : Type*} (e : α ≃ β)
+section
 
-protected abbrev _root_.Equiv.preorder [Preorder β] : Preorder α where
-  le a b := (e a) ≤ (e b)
-  le_refl a := le_refl (e a)
-  le_trans a b c h h' := Preorder.le_trans (e a) (e b) (e c) h h'
-
-def foo {α β : Type*} {a b : α} (f : α → β) (h : Decidable (a = b)) : Decidable (f a = f b) := by
-  sorry
-
-protected noncomputable abbrev _root_.Equiv.linearOrder [instβ: LinearOrder β] : LinearOrder α where
-  toPreorder := e.preorder
-  le_antisymm a b h h' := by
-    rw [← e.left_inv a, ← e.left_inv b, _root_.Equiv.toFun_as_coe, instβ.le_antisymm _ _ h h']
-  le_total a b := instβ.le_total (e a) (e b)
-  toDecidableEq a b := by
-    rw [← e.left_inv a, ← e.left_inv b]
-    apply foo e.symm (instβ.toDecidableEq ..)
-  toDecidableLE a b := instβ.toDecidableLE ..
-
-end order
+attribute [local instance] Fintype.toOrderBot Fintype.toLocallyFiniteOrder Fintype.instLinearOrder
 
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
@@ -341,17 +327,12 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E] {X X' : Π x : M, Tangen
   letI b := Basis.ofVectorSpace ℝ E
   letI t := trivializationAt E (TangentSpace I : M → Type _) x
   have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := by infer_instance
   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := by
     by_contra!
     have : IsEmpty ↑(Basis.ofVectorSpaceIndex ℝ E) := not_nonempty_iff.mp this
     have : Subsingleton E := by
       sorry
     apply hE this
-  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) :=
-    Equiv.linearOrder (e := Fintype.equivFin ↑(Basis.ofVectorSpaceIndex ℝ E))
-  haveI : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toOrderBot _
-  haveI : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toLocallyFiniteOrder
   haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
 
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
@@ -396,10 +377,6 @@ noncomputable def existence_candidate_aux [FiniteDimensional ℝ E]
   -- otherwise, b must be non-trivial.
   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
   have : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := by infer_instance
-  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) :=
-    Equiv.linearOrder (e := Fintype.equivFin ↑(Basis.ofVectorSpaceIndex ℝ E))
-  haveI : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toOrderBot _
-  haveI : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toLocallyFiniteOrder
   haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
   letI frame := b.orthonormalFrame e
   -- The coefficient of the desired tangent vector ∇ X Y x w.r.t. s i
@@ -428,6 +405,8 @@ lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (TangentSpace I) (existence_candidate I M) e.baseSet := by
   sorry
+
+end
 
 -- deduce: this defines a covariant derivative
 
