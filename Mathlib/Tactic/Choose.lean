@@ -65,8 +65,8 @@ and `orig` otherwise. -/
 def mkFreshNameFrom (orig base : Name) : CoreM Name :=
   if orig = `_ then mkFreshUserName base else pure orig
 
-/-- Changes `(h : ∀xs, ∃a:α, p a) ⊢ g` to `(d : ∀xs, a) ⊢ (s : ∀xs, p (d xs)) → g` and
-`(h : ∀xs, p xs ∧ q xs) ⊢ g` to `(d : ∀xs, p xs) ⊢ (s : ∀xs, q xs) → g`.
+/-- Changes `(h : ∀ xs, ∃ a:α, p a) ⊢ g` to `(d : ∀ xs, a) ⊢ (s : ∀ xs, p (d xs)) → g` and
+`(h : ∀ xs, p xs ∧ q xs) ⊢ g` to `(d : ∀ xs, p xs) ⊢ (s : ∀ xs, q xs) → g`.
 `choose1` returns a tuple of
 
 - the error result (see `ElimStatus`)
@@ -75,7 +75,7 @@ def mkFreshNameFrom (orig base : Name) : CoreM Name :=
 
 If `nondep` is true and `α` is inhabited, then it will remove the dependency of `d` on
 all propositional assumptions in `xs`. For example if `ys` are propositions then
-`(h : ∀xs ys, ∃a:α, p a) ⊢ g` becomes `(d : ∀xs, a) (s : ∀xs ys, p (d xs)) ⊢ g`. -/
+`(h : ∀ xs ys, ∃ a:α, p a) ⊢ g` becomes `(d : ∀ xs, a) (s : ∀ xs ys, p (d xs)) ⊢ g`. -/
 def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
     MetaM (ElimStatus × Expr × MVarId) := do
   let (g, h) ← match h with
@@ -140,7 +140,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         | _ => pure g
         return (.success, .fvar fvar, g)
       -- TODO: support Σ, ×, or even any inductive type with 1 constructor ?
-      | _, _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
+      | _, _ => throwError "expected a term of the shape `∀ xs, ∃ a, p xs a` or `∀ xs, p xs ∧ q xs`"
 
 /-- A wrapper around `choose1` that parses identifiers and adds variable info to new variables. -/
 def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSyntax ``binderIdent) :

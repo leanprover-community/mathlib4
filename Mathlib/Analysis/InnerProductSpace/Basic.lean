@@ -309,7 +309,7 @@ variable {𝕜}
 
 @[simp]
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
-  rw [← norm_sq_eq_re_inner, (sq_nonneg _).le_iff_eq, sq_eq_zero_iff, norm_eq_zero]
+  rw [← norm_sq_eq_re_inner, (sq_nonneg _).ge_iff_eq', sq_eq_zero_iff, norm_eq_zero]
 
 @[simp]
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by

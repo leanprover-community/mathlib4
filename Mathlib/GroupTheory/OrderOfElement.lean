@@ -840,6 +840,18 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
     exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)
   rwa [zpow_eq_zpow_iff_modEq, orderOf_eq_zero_iff.2 h, Nat.cast_zero, Int.modEq_zero_iff] at hnm
 
+@[to_additive]
+lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
+    zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
+  refine ⟨fun h ↦ ?_, by rintro (rfl|rfl) <;> simp⟩
+  have hx_mem : x ∈ zpowers y := by simp [← h]
+  have hy_mem : y ∈ zpowers x := by simp [h]
+  obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp hy_mem
+  obtain ⟨l, hl⟩ := mem_zpowers_iff.mp hx_mem
+  rw [← zpow_mul] at hl
+  nth_rewrite 2 [← zpow_one x] at hl
+  have h1 := (injective_zpow_iff_not_isOfFinOrder.mpr hx) hl
+  rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
 section Finite
 variable [Finite G]
 
