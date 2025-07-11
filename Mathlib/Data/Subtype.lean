@@ -179,6 +179,14 @@ theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (
     (hf : Involutive f) : Involutive (map f h) :=
   fun x ↦ Subtype.ext (hf x)
 
+theorem map_ne {p : α → Prop} {q : β → Prop} {f g : α → β}
+    (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
+    (h₃ : ∀ a₁ a₂ : α, p a₁ → p a₂ → f a₁ ≠ g a₂)
+    (x y : Subtype p) :
+    map f h₁ x ≠ map g h₂ y := by
+  simp only [map_def, ne_eq, mk.injEq]
+  exact h₃ _ _ x.2 y.2
+
 instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) :=
   ⟨fun s t ↦ (s : α) ≈ (t : α)⟩
 
