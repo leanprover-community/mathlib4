@@ -28,30 +28,6 @@ variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
 
 namespace Subgroup
 
-@[to_additive]
-lemma zpowers_eq_zpowers_iff {x y : G} :
-    Subgroup.zpowers x = Subgroup.zpowers y ↔ x = y ∨ x⁻¹ = y := by
-  rw [iff_comm]
-  constructor
-  · rintro (rfl|rfl) <;> simp
-  intro h
-  have hx : x ∈ Subgroup.zpowers y := by simp [← h]
-  have hy : y ∈ Subgroup.zpowers x := by simp [h]
-  rw [Subgroup.mem_zpowers_iff] at hx hy
-  obtain ⟨k, rfl⟩ := hy
-  obtain ⟨l, hl⟩ := hx
-  wlog hx1 : 1 < x
-  · push_neg at hx1
-    rcases hx1.eq_or_lt with rfl|hx1
-    · simp
-    · specialize this (x := x⁻¹) (-k) (by simp [h]) (-l) (by simp [hl]) (by simp [hx1])
-      simpa [or_comm] using this
-  simp only [← zpow_mul] at hl
-  replace hl : x ^ (k * l) = x ^ (1 : ℤ) := by simp [hl]
-  rw [zpow_right_inj hx1, Int.mul_eq_one_iff_eq_one_or_neg_one] at hl
-  refine hl.imp ?_ ?_ <;>
-  simp +contextual
-
 variable (H : Subgroup G) [Nontrivial H] [hH : IsCyclic H]
 
 @[to_additive exists_neg_generator]
