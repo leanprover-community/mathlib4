@@ -1317,11 +1317,11 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
             conv_lhs => rw [← inf_sup_self (a := x) (b := y)]
             conv_rhs => rw [← inf_idem x, inf_assoc]
             exact hlc.inf (hlc.refl x) (hlc.symm h)
-          have e2 : r (x ⊓ y) y  := by
+          exact hlc.trans e1 (by
             conv_rhs => rw [← inf_sup_self (a := y) (b := x), inf_comm, sup_comm]
             conv_lhs => rw [← inf_idem y, ← inf_assoc]
             exact hlc.inf h (hlc.refl y)
-          exact hlc.trans e1 e2
+          )
       · exact ⟨fun _ _ _ _ _ => hlc.trans, fun _ _ t _ h2 =>
         ⟨hlc.inf h2 (hlc.refl t), hlc.sup h2 (hlc.refl t)⟩⟩
   mpr h :=
