@@ -123,8 +123,8 @@ the stabilizer of a point and that of its translate. -/
 def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
     MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
   toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
-  map_smul' := fun ⟨k, hk⟩ ↦ by
-    simp [← SetLike.coe_eq_coe, subgroup_smul_def, stabilizerEquivStabilizer, ← smul_assoc]
+  map_smul' _ := fun ⟨k, hk⟩ ↦ by
+    simp [← SetLike.coe_eq_coe, stabilizerEquivStabilizer, ← smul_assoc]
 
 variable {g h k : G} {a b c : α}
 variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)

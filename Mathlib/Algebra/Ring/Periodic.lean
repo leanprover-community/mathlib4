@@ -195,7 +195,7 @@ theorem periodic_with_period_zero [AddZeroClass α] (f : α → β) : Periodic f
 theorem Periodic.map_vadd_zmultiples [AddCommGroup α] (hf : Periodic f c)
     (a : AddSubgroup.zmultiples c) (x : α) : f (a +ᵥ x) = f x := by
   rcases a with ⟨_, m, rfl⟩
-  simp [AddSubgroup.vadd_def, add_comm _ x, hf.zsmul m x]
+  simp [add_comm _ x, hf.zsmul m x]
 
 theorem Periodic.map_vadd_multiples [AddCommMonoid α] (hf : Periodic f c)
     (a : AddSubmonoid.multiples c) (x : α) : f (a +ᵥ x) = f x := by
