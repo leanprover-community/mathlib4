@@ -61,10 +61,9 @@ lemma IsOrthonormalFrameOn.mono (hs : IsOrthonormalFrameOn IB F n s u) (huu' : u
   orthogonal hij hx := hs.orthogonal hij (huu' hx)
   normalised hx := hs.normalised (huu' hx)
 
--- TODO: upgrade to an orthonormal frame!
-/-- Applying the Gram-Schmidt procedure to a local frame yields another local frame. -/
+/-- Applying the Gram-Schmidt procedure to a local frame yields an orthonormal local frame. -/
 def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
-    IsLocalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
+    IsOrthonormalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
   linearIndependent := by
     intro x hx
     exact VectorBundle.gramSchmidtNormed_linearIndependent <| hs.linearIndependent hx
@@ -75,19 +74,18 @@ def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
     --  using hs.generating hx
   contMDiffOn i := gramSchmidtNormed_contMDiffOn (fun i ↦ hs.contMDiffOn i) <|
       fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
-
-/-- Applying the normalised Gram-Schmidt procedure to an orthonormal local frame yields
-another orthonormal local frame. -/
-def IsOrthonormalFrameOn.gramSchmidtNormed (hs : IsOrthonormalFrameOn IB F n s u) :
-    IsOrthonormalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u where
-  toIsLocalFrameOn := hs.toIsLocalFrameOn.gramSchmidtNormed
-  -- TODO: combine these two fields into one?
   orthogonal {_ _ x} hij hx :=
     (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).inner_eq_zero hij
   normalised := by
     intro i x hx
     exact (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).norm_eq_one i
 
+-- XXX: is this one necessary?
+/-- Applying the normalised Gram-Schmidt procedure to an orthonormal local frame yields
+another orthonormal local frame. -/
+def IsOrthonormalFrameOn.gramSchmidtNormed (hs : IsOrthonormalFrameOn IB F n s u) :
+    IsOrthonormalFrameOn IB F n (VectorBundle.gramSchmidtNormed s) u :=
+  hs.toIsLocalFrameOn.gramSchmidtNormed
 
 /-! # Determining smoothness of a section via its local frame coefficients
 
@@ -208,25 +206,20 @@ noncomputable def orthonormalFrame : ι → (x : B) → E x :=
   VectorBundle.gramSchmidtNormed (b.localFrame e)
 
 omit [IsManifold IB n B] in
-/-- An orthonormal frame w.r.t. a local trivialisation is a local frame. -/
-lemma orthonormalFrame_isLocalFrameOn : IsLocalFrameOn IB F n (b.orthonormalFrame e) e.baseSet :=
-  (b.localFrame_isLocalFrameOn_baseSet IB n e).gramSchmidtNormed
-
+variable (b e) in
 /-- An orthonormal frame w.r.t. a local trivialisation is an orthonormal local frame. -/
 lemma orthonormalFrame_isOrthonormalFrameOn :
-    IsOrthonormalFrameOn IB F n (b.orthonormalFrame e) e.baseSet := by
-  unfold Basis.orthonormalFrame
-  have aux := (b.localFrame_isLocalFrameOn_baseSet IB n e)
-  -- apply aux.gramSchmidtNormed -- need to upgrade that lemma
-  sorry
+    IsOrthonormalFrameOn IB F n (b.orthonormalFrame e) e.baseSet :=
+  (b.localFrame_isLocalFrameOn_baseSet IB n e).gramSchmidtNormed
 
 omit [IsManifold IB n B] in
 variable (b e) in
 /-- Each orthonormal frame `s^i ∈ Γ(E)` of a `C^k` vector bundle, defined by a local
 trivialisation `e`, is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_orthonormalFrame_baseSet (i : ι) :
-    CMDiff[e.baseSet] n (T% b.orthonormalFrame e i) :=
-  orthonormalFrame_isLocalFrameOn.contMDiffOn _
+    CMDiff[e.baseSet] n (T% b.orthonormalFrame e i) := by
+  apply IsLocalFrameOn.contMDiffOn
+  exact (b.orthonormalFrame_isOrthonormalFrameOn e).toIsLocalFrameOn
 
 omit [IsManifold IB n B] in
 variable (b e) in
@@ -251,5 +244,3 @@ lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
   apply localFrame_apply_of_notMem e b hx
 
 end Basis
-
-/- next lemma: uniqueness (what I need for torsion) -/
