@@ -278,14 +278,14 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
 theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
   rfl
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
 theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
@@ -398,18 +398,14 @@ theorem of_isIso_comp_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] [I
 theorem of_isIso_fac_left {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso f]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso g := by
   rw [← w] at hh
-  haveI := hh
   exact of_isIso_comp_left f g
 
 theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [IsIso g]
     [hh : IsIso h] (w : f ≫ g = h) : IsIso f := by
   rw [← w] at hh
-  haveI := hh
   exact of_isIso_comp_right f g
 
 end IsIso
-
-open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1

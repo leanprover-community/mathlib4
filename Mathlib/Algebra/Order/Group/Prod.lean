@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
+import Mathlib.Tactic.Linter.DeprecatedModule
 
-/-!
-# Products of ordered commutative groups.
--/
+deprecated_module (since := "2025-04-16")

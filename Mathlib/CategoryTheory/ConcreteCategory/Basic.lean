@@ -194,12 +194,12 @@ instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D
   forget_comp := rfl
 
 instance FullSubcategory.hasForget {C : Type u} [Category.{v} C] [HasForget.{w} C]
-    (Z : C → Prop) : HasForget (FullSubcategory Z) where
-  forget := fullSubcategoryInclusion Z ⋙ forget C
+    (P : ObjectProperty C) : HasForget P.FullSubcategory where
+  forget := P.ι ⋙ forget C
 
 instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [HasForget.{w} C]
-    (Z : C → Prop) : HasForget₂ (FullSubcategory Z) C where
-  forget₂ := fullSubcategoryInclusion Z
+    (P : ObjectProperty C) : HasForget₂ P.FullSubcategory C where
+  forget₂ := P.ι
   forget_comp := rfl
 
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
@@ -209,7 +209,7 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [HasForget.{w} 
     [Category.{v'} D] [HasForget.{w} D]
     (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) :
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, (forget D).map (map f) ≍ (forget C).map f) :
     HasForget₂ C D where
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
@@ -222,7 +222,7 @@ def HasForget₂.trans (C : Type u) [Category.{v} C] [HasForget.{w} C]
     [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
   forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
   forget_comp := by
-    show (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
+    change (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
     simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
@@ -324,12 +324,10 @@ instance toHasForget : HasForget C where
 
 end ConcreteCategory
 
-theorem forget_obj (X : C) : (forget C).obj X = ToType X := by
-  with_reducible_and_instances rfl
+theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
 @[simp]
-theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := by
-  with_reducible_and_instances rfl
+theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
@@ -456,7 +454,7 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
 instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
-    (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) (fun X Y => FC X.1 Y.1) where
+    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
   hom := hom (C := C)
   ofHom := ofHom (C := C)
   hom_ofHom := hom_ofHom (C := C)

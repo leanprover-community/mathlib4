@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -27,6 +26,7 @@ We provide
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
+
 and prove their basic properties and relationships.
 These are all easy consequences of the earlier development
 of the corresponding functors for `MonoOver`.
@@ -353,7 +353,7 @@ theorem ofLE_comp_ofLE {B : C} (X Y Z : Subobject B) (h₁ : X ≤ Y) (h₂ : Y 
 @[reassoc (attr := simp)]
 theorem ofLE_comp_ofLEMk {B A : C} (X Y : Subobject B) (f : A ⟶ B) [Mono f] (h₁ : X ≤ Y)
     (h₂ : Y ≤ mk f) : ofLE X Y h₁ ≫ ofLEMk Y f h₂ = ofLEMk X f (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ← Functor.map_comp_assoc underlying]
+  simp only [ofLEMk, ofLE, ← Functor.map_comp_assoc underlying]
   congr 1
 
 @[reassoc (attr := simp)]
@@ -366,14 +366,14 @@ theorem ofLEMk_comp_ofMkLE {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (Y
 theorem ofLEMk_comp_ofMkLEMk {B A₁ A₂ : C} (X : Subobject B) (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B)
     [Mono g] (h₁ : X ≤ mk f) (h₂ : mk f ≤ mk g) :
     ofLEMk X f h₁ ≫ ofMkLEMk f g h₂ = ofLEMk X g (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying,
+  simp only [ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying,
     assoc, Iso.hom_inv_id_assoc]
   congr 1
 
 @[reassoc (attr := simp)]
 theorem ofMkLE_comp_ofLE {B A₁ : C} (f : A₁ ⟶ B) [Mono f] (X Y : Subobject B) (h₁ : mk f ≤ X)
     (h₂ : X ≤ Y) : ofMkLE f X h₁ ≫ ofLE X Y h₂ = ofMkLE f Y (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
+  simp only [ofMkLE, ofLE, ← Functor.map_comp underlying,
     assoc]
   congr 1
 
@@ -388,7 +388,7 @@ theorem ofMkLE_comp_ofLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (X : Subo
 theorem ofMkLEMk_comp_ofMkLE {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (X : Subobject B) (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ X) :
     ofMkLEMk f g h₁ ≫ ofMkLE g X h₂ = ofMkLE f X (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
+  simp only [ofMkLE, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
     assoc, Iso.hom_inv_id_assoc]
   congr 1
 
@@ -396,7 +396,7 @@ theorem ofMkLEMk_comp_ofMkLE {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (g : A�
 theorem ofMkLEMk_comp_ofMkLEMk {B A₁ A₂ A₃ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (h : A₃ ⟶ B) [Mono h] (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ mk h) :
     ofMkLEMk f g h₁ ≫ ofMkLEMk g h h₂ = ofMkLEMk f h (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc,
+  simp only [ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc,
     Iso.hom_inv_id_assoc]
   congr 1
 
@@ -556,6 +556,39 @@ theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (underlyingIso i).inv (𝟙 _) (𝟙 _) (by simp) (by simp))) (by simp)
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
+
+lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
+    ∃ φ, IsPullback φ ((pullback f).obj y).arrow y.arrow f := by
+  obtain ⟨A, i, ⟨_, rfl⟩⟩ := mk_surjective y
+  rw [pullback_obj]
+  exists (underlyingIso (pullback.snd (mk i).arrow f)).hom ≫ pullback.fst (mk i).arrow f
+  exact IsPullback.of_iso (IsPullback.of_hasPullback (mk i).arrow f)
+        (underlyingIso (pullback.snd (mk i).arrow f)).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+        (by simp) (by simp) (by simp) (by simp)
+
+/-- For any morphism `f : X ⟶ Y` and subobject `y` of `Y`, `Subobject.pullbackπ f y` is the first
+    projection in the following pullback square:
+
+    ```
+    (Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
+             |                                            |
+    ((Subobject.pullback f).obj y).arrow               y.arrow
+             |                                            |
+             v                                            v
+             X ---------------------f-------------------> Y
+    ```
+
+    For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
+    elements of `X` that are in the preimage of `y ⊆ Y`.
+-/
+noncomputable def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
+    ((Subobject.pullback f).obj y : C) ⟶ (y : C) :=
+  (isPullback_aux f y).choose
+
+/-- This states that `pullbackπ f y` indeed forms a pullback square (see `Subobject.pullbackπ`). -/
+theorem isPullback (f : X ⟶ Y) (y : Subobject Y) :
+    IsPullback (pullbackπ f y) ((pullback f).obj y).arrow y.arrow f :=
+  (isPullback_aux f y).choose_spec
 
 end Pullback
 

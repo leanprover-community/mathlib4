@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Data.Finset.Sym
 
@@ -135,10 +134,10 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
     exact Fintype.sum_equiv e.symm _ _ (by simp)
 
 @[simp] lemma piAntidiag_empty_zero : piAntidiag (∅ : Finset ι) (0 : μ) = {0} := by
-  ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
+  ext; simp [funext_iff]
 
 @[simp] lemma piAntidiag_empty_of_ne_zero (hn : n ≠ 0) : piAntidiag (∅ : Finset ι) n = ∅ :=
-  eq_empty_of_forall_not_mem (by simp [@eq_comm _ 0, hn.symm])
+  eq_empty_of_forall_notMem (by simp [hn.symm])
 
 lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn <;> simp [*]
@@ -171,10 +170,10 @@ lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
         (pairwiseDisjoint_piAntidiag_map_addRightEmbedding hi _) := by
   ext f
   simp only [mem_piAntidiag, sum_cons, ne_eq, mem_cons, mem_disjiUnion, mem_antidiagonal, mem_map,
-    addLeftEmbedding_apply, Prod.exists]
+    Prod.exists]
   constructor
   · rintro ⟨hn, hf⟩
-    refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_not_mem hi _ _, fun j ↦ ?_⟩, by aesop⟩
+    refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_notMem hi _ _, fun j ↦ ?_⟩, by aesop⟩
     have := fun h₁ h₂ ↦ (hf j h₁).resolve_left h₂
     aesop (add simp [update])
   · rintro ⟨a, _, hn, g, ⟨rfl, hg⟩, rfl⟩
@@ -193,7 +192,7 @@ variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
-  ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
+  ext; simp [funext_iff, not_imp_comm, ← forall_and]
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -212,13 +211,12 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
     n •ℕ piAntidiag s m = {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
   ext f
   refine mem_smul_finset.trans ?_
-  simp only [mem_smul_finset, mem_filter, mem_piAntidiag, Function.Embedding.coeFn_mk, exists_prop,
-    and_assoc]
+  simp only [mem_filter, mem_piAntidiag, and_assoc]
   constructor
   · rintro ⟨f, rfl, hf, rfl⟩
     simpa [← mul_sum, hn] using hf
   rintro ⟨hfsum, hfsup, hfdvd⟩
-  have (i) : n ∣ f i := by
+  have (i : _) : n ∣ f i := by
     by_cases hi : i ∈ s
     · exact hfdvd _ hi
     · rw [not_imp_comm.1 (hfsup _) hi]

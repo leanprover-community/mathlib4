@@ -123,10 +123,6 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
       exact le_antisymm bot_le (WellFounded.min_le _ (mem_univ _))
     csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim }
 
-namespace OrderDual
-
-end OrderDual
-
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they

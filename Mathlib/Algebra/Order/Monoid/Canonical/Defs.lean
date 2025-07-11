@@ -167,21 +167,16 @@ variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 theorem one_le (a : α) : 1 ≤ a :=
   le_self_mul.trans_eq (one_mul _)
 
-@[to_additive]
-instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
-  bot := 1
-  bot_le := one_le
-
-@[to_additive] theorem bot_eq_one : (⊥ : α) = 1 := rfl
+@[to_additive] theorem isBot_one : IsBot (1 : α) := one_le
 
 end LE
 
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
-@[to_additive (attr := simp)]
+@[to_additive] -- `(attr := simp)` can not be used here because `a` can not be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
-  h.bot_lt
+  (one_le _).trans_lt h
 
 alias LT.lt.pos := pos_of_gt
 @[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
@@ -191,11 +186,30 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
-@[to_additive (attr := simp)] theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 := le_bot_iff
-@[to_additive] theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 := bot_lt_iff_ne_bot
-@[to_additive] theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a := h.bot_lt
-@[to_additive] theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := eq_bot_or_bot_lt a
-@[to_additive] lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := bot_not_mem_iff
+@[to_additive]
+theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
+
+@[to_additive (attr := simp)]
+theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
+  (one_le a).ge_iff_eq'
+
+@[to_additive]
+theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
+  (one_le a).lt_iff_ne.trans ne_comm
+
+@[to_additive]
+theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
+  one_lt_iff_ne_one.2 h
+
+@[to_additive]
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
+
+@[to_additive]
+lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+  bot_eq_one (α := α) ▸ bot_notMem_iff
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
+@[to_additive existing, deprecated (since := "2025-05-23")] alias one_not_mem_iff := one_notMem_iff
 
 alias NE.ne.pos := pos_of_ne_zero
 @[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
@@ -205,7 +219,7 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
   refine ⟨c, one_lt_iff_ne_one.2 ?_, hc.symm⟩
   rintro rfl
-  simp [hc, lt_irrefl] at h
+  simp [hc] at h
 
 @[to_additive]
 theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * c := by
@@ -295,6 +309,10 @@ instance (priority := 10) of_gt' {M : Type*} [AddZeroClass M] [Preorder M] [Cano
     [One M] {y : M}
     [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 
+theorem of_ge {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
+    {x y : M} [NeZero x] (h : x ≤ y) : NeZero y :=
+  of_pos <| lt_of_lt_of_le (pos x) h
+
 end NeZero
 
 set_option linter.deprecated false in
@@ -345,7 +363,7 @@ theorem min_one (a : α) : min a 1 = 1 :=
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
   "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
-theorem bot_eq_one' : (⊥ : α) = 1 :=
+theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 
 end CanonicallyLinearOrderedCommMonoid

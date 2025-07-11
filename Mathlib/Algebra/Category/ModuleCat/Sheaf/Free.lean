@@ -16,9 +16,9 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
 ## TODO
 
 * In case the category `C` has a terminal object `X`, promote `freeHomEquiv`
-into an adjunction between `freeFunctor` and the evaluation functor at `X`.
-(Alternatively, assuming specific universe parameters, we could show that
-`freeHomEquiv` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
+  into an adjunction between `freeFunctor` and the evaluation functor at `X`.
+  (Alternatively, assuming specific universe parameters, we could show that
+  `freeHomEquiv` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
 
 -/
 

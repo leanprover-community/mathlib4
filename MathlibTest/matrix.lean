@@ -7,6 +7,8 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Qq
 
+set_option linter.style.commandStart false
+
 open Qq
 
 variable {α β : Type} [Semiring α] [Ring β]
@@ -57,12 +59,13 @@ def mkMatrix (rows : Array (Array Term)) : Term := Unhygienic.run `(!![$[$[$rows
 def mkColumnVector (elems : Array Term) : Term := Unhygienic.run `(!![$[$elems];*])
 
 -- Check that the `!![$[$[$rows],*];*]` case can deal with empty arrays even though it uses sepBy1
-run_cmd liftTermElabM do
+run_elab do
   let e ← Term.elabTerm (mkMatrix #[]) q(Matrix (Fin 0) (Fin 0) Nat)
   Term.synthesizeSyntheticMVarsUsingDefault
   let e ← instantiateMVars e
   guard <| e == q(!![] : Matrix (Fin 0) (Fin 0) Nat)
 
+run_elab do
   let e ← Term.elabTerm (mkColumnVector #[]) q(Matrix (Fin 0) (Fin 0) Nat)
   Term.synthesizeSyntheticMVarsUsingDefault
   let e ← instantiateMVars e
@@ -75,6 +78,22 @@ end safety
 #guard !![1,2;3,4]   = of ![![1,2], ![3,4]]
 #guard !![1,2;3,4;]  = of ![![1,2], ![3,4]]
 #guard !![1,2,;3,4,] = of ![![1,2], ![3,4]]
+
+section to_expr
+
+open Lean Meta
+
+/-- info: !![1 + 1, 1 + 2; 2 + 1, 2 + 2] : Matrix (Fin 2) (Fin 2) ℕ -/
+#guard_msgs in
+#check by_elab return Matrix.mkLiteralQ !![q(1 + 1), q(1 + 2); q(2 + 1), q(2 + 2)]
+
+run_elab do
+  let x := !![1, 2; 3, 4]
+  guard (← withReducible <| isDefEq (toExpr x) q(!![1, 2; 3, 4]))
+
+end to_expr
+
+section delaborators
 
 /-- info: !![0, 1, 2; 3, 4, 5] : Matrix (Fin 2) (Fin 3) ℕ -/
 #guard_msgs in #check (!![0, 1, 2; 3, 4, 5] : Matrix (Fin 2) (Fin 3) ℕ)
@@ -90,6 +109,8 @@ end safety
 
 /-- info: !![] : Matrix (Fin 0) (Fin 0) ℕ -/
 #guard_msgs in #check (!![] : Matrix (Fin 0) (Fin 0) ℕ)
+
+end delaborators
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] := by
@@ -121,10 +142,11 @@ example {α : Type _} [CommRing α] {a b c d : α} :
   simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, of_apply,
       cons_val', cons_val_fin_one, cons_val_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
-      Fin.succ_zero_eq_one, cons_val_one, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
-      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one,
-      cons_val_succ, neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_const,
-      Finset.card_singleton, one_smul]
+      Fin.succ_zero_eq_one, cons_val_one, Fin.sum_univ_succ, Fin.coe_ofNat_eq_mod, Nat.zero_mod,
+      pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero,
+      zero_add, pow_one, cons_val_succ, neg_mul, ne_eq, Fin.succ_ne_zero, not_false_eq_true,
+      Fin.succAbove_ne_zero_zero, Finset.sum_neg_distrib, Finset.sum_const, Finset.card_singleton,
+      one_smul]
   ring
 
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
@@ -134,9 +156,10 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, of_apply,
       cons_val', cons_val_fin_one, cons_val_zero, submatrix_apply, Fin.succ_zero_eq_one,
       cons_val_one, submatrix_submatrix, det_unique, Fin.default_eq_zero, Function.comp_apply,
-      Fin.succ_one_eq_two, cons_val, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul,
-      Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one,
-      neg_mul, Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ,
+      Fin.succ_one_eq_two, cons_val, Fin.sum_univ_succ, Fin.coe_ofNat_eq_mod, Nat.zero_mod,
+      pow_zero, one_mul, Fin.zero_succAbove, Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero,
+      zero_add, pow_one, neg_mul, ne_eq, Fin.succ_ne_zero, not_false_eq_true,
+      Fin.succAbove_ne_zero_zero, Finset.sum_neg_distrib, Finset.sum_singleton, cons_val_succ,
       Fin.succ_succAbove_one, even_two, Even.neg_pow, one_pow, Finset.sum_const,
       Finset.card_singleton, one_smul]
   ring

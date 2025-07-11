@@ -76,8 +76,8 @@ private theorem mul_nonempty (a b : Nimber.{u}) :
 
 theorem exists_of_lt_mul (h : c < a * b) : ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = c := by
   rw [mul_def] at h
-  have := not_mem_of_lt_csInf' h
-  rwa [Set.not_mem_compl_iff] at this
+  have := notMem_of_lt_csInf' h
+  rwa [Set.notMem_compl_iff] at this
 
 theorem mul_le_of_forall_ne (h : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * b' ≠ c) :
     a * b ≤ c := by
@@ -288,12 +288,14 @@ theorem invAux_ne_zero (a : Nimber) : invAux a ≠ 0 := by
 
 theorem mem_invSet_of_lt_invAux (h : b < invAux a) : b ∈ invSet a := by
   rw [invAux] at h
-  have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
-  rwa [Set.not_mem_compl_iff] at this
+  have := notMem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
+  rwa [Set.notMem_compl_iff] at this
 
-theorem invAux_not_mem_invSet (a : Nimber) : invAux a ∉ invSet a := by
+theorem invAux_notMem_invSet (a : Nimber) : invAux a ∉ invSet a := by
   rw [invAux]
   exact csInf_mem (invSet_nonempty a)
+
+@[deprecated (since := "2025-05-23")] alias invAux_not_mem_invSet := invAux_notMem_invSet
 
 theorem invAux_mem_invSet_of_lt (ha : a ≠ 0) (hb : a < b) : invAux a ∈ invSet b := by
   have H := cons_mem_invSet ha hb (zero_mem_invSet b)
@@ -322,7 +324,7 @@ private theorem mul_inv_cancel_aux (a : Nimber) :
       exact H₁ _ hb H
     · rw [← mul_right_inj' (invAux_ne_zero a'), ← mul_assoc, mul_comm _ a',
         (mul_inv_cancel_aux a').2 ha', one_mul] at H
-      exact invAux_not_mem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
+      exact invAux_notMem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
   · rw [one_le_iff_ne_zero, mul_ne_zero_iff]
     exact ⟨ha₀, invAux_ne_zero a⟩
 termination_by a

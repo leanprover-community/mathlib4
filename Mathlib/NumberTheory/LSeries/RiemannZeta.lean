@@ -33,13 +33,13 @@ Euler-Mascheroni constant will follow in a subsequent PR.
   functional equation relating values at `s` and `1 - s`
 
 For special-value formulae expressing `ζ (2 * k)` and `ζ (1 - 2 * k)` in terms of Bernoulli numbers
-see `Mathlib.NumberTheory.LSeries.HurwitzZetaValues`. For computation of the constant term as
-`s → 1`, see `Mathlib.NumberTheory.Harmonic.ZetaAsymp`.
+see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of the constant term as
+`s → 1`, see `Mathlib/NumberTheory/Harmonic/ZetaAsymp.lean`.
 
 ## Outline of proofs:
 
 These results are mostly special cases of more general results for even Hurwitz zeta functions
-proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
+proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
 -/
 
 
@@ -219,9 +219,3 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
   simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
-
-/- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
-aliases for the old names -/
-section aliases
-
-end aliases

@@ -62,7 +62,7 @@ theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a�
 
 @[to_additive (attr := simp)]
 theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
-  ⟨1, by simp [MulAction.one_smul]⟩
+  ⟨1, by simp⟩
 
 @[to_additive]
 theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
@@ -273,22 +273,13 @@ def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv :=
     ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
-      simp +contextual [orbit_eq_iff.symm, eq_comm]⟩
+      simp +contextual [orbit_eq_iff.symm]⟩
 
 variable {G α}
 
 @[to_additive]
 theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
-
-@[to_additive]
-alias orbitRel_r_apply := orbitRel_apply
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated orbitRel_apply (since := "2024-10-18")] orbitRel_r_apply
-attribute [deprecated AddAction.orbitRel_apply (since := "2024-10-18")] AddAction.orbitRel_r_apply
-
 
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
@@ -466,11 +457,11 @@ This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instea
 
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
       `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
-def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
+def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
-    α ≃ Σω : Ω, { a // Quotient.mk' a = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
-    _ ≃ Σω : Ω, ω.orbit :=
+    α ≃ Σ ω : Ω, { a // Quotient.mk' a = ω } := (Equiv.sigmaFiberEquiv Quotient.mk').symm
+    _ ≃ Σ ω : Ω, ω.orbit :=
       Equiv.sigmaCongrRight fun _ =>
         Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
 
@@ -478,7 +469,7 @@ def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
       action."]
-def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out :=
+def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
       Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
@@ -541,7 +532,7 @@ lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass 
     rw [inv_smul_smul]
 
 @[to_additive (attr := simp)]
-lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
+lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α) :
     stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ <| mul_left_injective _
 
 @[to_additive (attr := simp)]

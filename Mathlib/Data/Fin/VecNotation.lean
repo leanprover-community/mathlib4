@@ -253,25 +253,24 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 
 open Lean Qq in
+/-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
+def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
+    Q(Fin $n → $α) :=
+  loop 0 (Nat.zero_le _) q(vecEmpty)
+where
+  loop (i : ℕ) (hi : i ≤ n) (rest : Q(Fin $i → $α)) : let i' : Nat := i + 1; Q(Fin $(i') → $α) :=
+    if h : i < n then
+      loop (i + 1) h q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
+    else
+      rest
+attribute [nolint docBlame] _root_.PiFin.mkLiteralQ.loop
+
+open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
-  have toTypeExpr := q(Fin $n → $eα)
-  match n with
-  | 0 => { toTypeExpr, toExpr := fun _ => q(@vecEmpty $eα) }
-  | n + 1 =>
-    { toTypeExpr, toExpr := fun v =>
-      have := PiFin.toExpr n
-      have eh : Q($eα) := toExpr (vecHead v)
-      have et : Q(Fin $n → $eα) := toExpr (vecTail v)
-      q(vecCons $eh $et) }
-
--- TODO(eric-wieser): the next decl is commented out.
-
--- /-- Convert a vector of pexprs to the pexpr constructing that vector. -/
--- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
---   | 0, v => ``(![])
---   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
+  let toTypeExpr := q(Fin $n → $eα)
+  { toTypeExpr, toExpr v := PiFin.mkLiteralQ fun i => show Q($eα) from toExpr (v i) }
 
 /-! ### `bit0` and `bit1` indices
 The following definitions and `simp` lemmas are used to allow
@@ -320,12 +319,12 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
   split_ifs with h
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp
-    · simp only [Nat.add_lt_add_iff_right, Fin.val_mk] at h
+    · simp only [Nat.add_lt_add_iff_right] at h
       simp [h]
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp at h
     · rw [not_lt, Fin.val_mk, Nat.add_le_add_iff_right] at h
-      simp [h, not_lt.2 h]
+      simp [not_lt.2 h]
 
 /-- `vecAlt0 v` gives a vector with half the length of `v`, with
 only alternate elements (even-numbered). -/
@@ -346,7 +345,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) :
   · rw [Fin.val_mk] at h
     exact (Nat.mod_eq_of_lt h).symm
   · rw [Fin.val_mk, not_lt] at h
-    simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
+    simp only [Nat.mod_eq_sub_mod h]
     refine (Nat.mod_eq_of_lt ?_).symm
     omega
 
@@ -362,7 +361,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
     split_ifs with h <;> congr
     · simp [Nat.mod_eq_of_lt, h]
     · rw [Fin.val_mk, not_lt] at h
-      simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
+      simp only [Nat.mod_add_mod,
         Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by omega)]
       refine (Nat.mod_eq_of_lt ?_).symm
       omega
@@ -394,7 +393,7 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
   · simp only [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ',
-      cons_vecAppend, Nat.add_eq, vecAlt0]
+      vecAlt0]
 
 @[simp]
 theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by

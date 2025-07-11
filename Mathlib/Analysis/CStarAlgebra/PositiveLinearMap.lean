@@ -21,7 +21,7 @@ This file develops the API for positive linear maps over C⋆-algebras.
 ## References
 
 * The proof that positive maps are bounded was taken from
-https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
+  https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
 
 open scoped NNReal
@@ -82,7 +82,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     refine ⟨4 * C, fun x ↦ ?_⟩
     obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg x
     conv_lhs => rw [hy]
-    simp only [map_sum, map_smul, NNReal.coe_add]
+    simp only [map_sum, map_smul]
     apply norm_sum_le _ _ |>.trans
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
@@ -114,7 +114,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     tendsto_pow_atTop_atTop_of_one_lt one_lt_two |>.eventually_gt_atTop _
       |>.exists
   -- But `2 ^ n ≤ ‖f (2 ^ (-n) • x n)‖ ≤ ‖f (∑' m, 2 ^ (-m) • x m)‖`, which is a contradiction.
-  apply hn.not_le
+  apply hn.not_ge
   trans ‖f ((2 : ℝ) ^ (-n : ℤ) • x n)‖
   · have := hx n |>.le
     rw [pow_mul', sq] at this
@@ -124,7 +124,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     gcongr
     exact x_summable.le_tsum n fun m _ ↦ this m
 
-instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A₂] :
+instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
     ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
@@ -132,7 +132,7 @@ instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A�
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
 
-instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A₂] :
+instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
     StarHomClass F A₁ A₂ where
   map_star f a := by
     obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a

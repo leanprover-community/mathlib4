@@ -76,7 +76,7 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ 
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
 def of_coeff (f : Γ → V →ₗ[R] W)
-    (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
+    (hf : ∀ (x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
@@ -116,7 +116,7 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     intro g' hg' hAB
     apply hg'
     simp_rw [hAB]
-    simp_all only [map_zero, HahnSeries.coeff_zero, not_true_eq_false]
+    simp_all only [map_zero, not_true_eq_false]
 
 @[simp]
 theorem compHahnSeries_add (u v : U) :

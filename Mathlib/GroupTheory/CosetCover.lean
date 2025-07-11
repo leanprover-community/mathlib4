@@ -270,7 +270,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     refine Set.iUnion_congr fun hi => ?_
     by_cases hfi : (H i).FiniteIndex <;>
       simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc,
-        f, K, hHD, ← (ht i hi _).2, hi, hfi, hkfi]
+        f, K, hHD, ← (ht i hi _).2, hfi]
   · rw [hdensity]
     refine le_of_mul_le_mul_right ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.index_ne_zero))
     rw [one_mul, mul_assoc, inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hD.index_ne_zero), mul_one,
@@ -333,7 +333,7 @@ of these subgroups has index not exceeding the number of cosets. -/
 theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
-  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
+  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_gt
   cases s.eq_empty_or_nonempty with
   | inl hs => simp only [hs, Finset.sum_empty, zero_lt_one]
   | inr hs =>
@@ -370,24 +370,27 @@ variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k 
     {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
-theorem Subspace.biUnion_ne_univ_of_top_nmem (hs : ⊤ ∉ s) :
+theorem Subspace.biUnion_ne_univ_of_top_notMem (hs : ⊤ ∉ s) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
-  have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex _
+  have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex
   have : Nontrivial (E ⧸ p) :=
     Submodule.Quotient.nontrivial_of_lt_top p (ne_of_mem_of_not_mem hp hs).lt_top
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
 
+@[deprecated (since := "2025-05-24")]
+alias Subspace.biUnion_ne_univ_of_top_nmem := Subspace.biUnion_ne_univ_of_top_notMem
+
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
     ⊤ ∈ s := by
   contrapose! hcovers
-  exact Subspace.biUnion_ne_univ_of_top_nmem hcovers
+  exact Subspace.biUnion_ne_univ_of_top_notMem hcovers
 
 @[deprecated (since := "2024-10-29")]
-alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_nmem
+alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_notMem
 @[deprecated (since := "2024-10-29")]
 alias Subspace.exists_eq_top_of_biUnion_eq_univ := Subspace.top_mem_of_biUnion_eq_univ
 

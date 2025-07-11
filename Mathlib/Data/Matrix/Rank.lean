@@ -199,9 +199,10 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
+omit [Fintype n] in
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
-theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)
-    (A : Matrix m m R) : rank (A.submatrix f e) ≤ rank A := by
+theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] [Fintype m₀] (f : n₀ → n) (e : m₀ ≃ m)
+    (A : Matrix n m R) : rank (A.submatrix f e) ≤ rank A := by
   rw [rank, rank, mulVecLin_submatrix, LinearMap.range_comp, LinearMap.range_comp,
     show LinearMap.funLeft R R e.symm = LinearEquiv.funCongrLeft R R e.symm from rfl,
     LinearEquiv.range, Submodule.map_top]
@@ -308,7 +309,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
   classical
   set w' : {i // (w i) ≠ 0} → _ := fun i ↦ (diagonal w) i
   have h : LinearIndependent R w' := by
-    have hli' := Pi.linearIndependent_single_ne_zero
+    have hli' := Pi.linearIndependent_single_of_ne_zero (R := R)
       (v := fun i : m ↦ if w i = 0 then (1 : R) else w i) (by simp [ite_eq_iff'])
     convert hli'.comp Subtype.val Subtype.val_injective
     ext ⟨j, hj⟩ k
@@ -317,7 +318,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     suffices ∀ a, diagonal w a = 0 ∨ ∃ b, w b ≠ 0 ∧ diagonal w b = diagonal w a
       by simpa [subset_antisymm_iff, subset_def, w']
     simp_rw [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
-    simp +contextual [funext_iff, diagonal, or_iff_not_imp_right]
+    simp +contextual [funext_iff, diagonal]
   rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,
     ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 

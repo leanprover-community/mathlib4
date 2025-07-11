@@ -15,7 +15,7 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 
 ## Main definition
 
- * `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
+* `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
 
 ## Tags
 
@@ -30,7 +30,7 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
-local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
+local notation "⟪" x ", " y "⟫" => inner α x y
 
 section Star
 
@@ -269,9 +269,9 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 /-- A matrix is hermitian iff the corresponding linear map is self adjoint. -/
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
-  rw [LinearMap.IsSymmetric, (WithLp.equiv 2 (n → α)).symm.surjective.forall₂]
-  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_eq_star_dotProduct, toLin'_apply,
-    Equiv.apply_symm_apply, star_mulVec]
+  rw [LinearMap.IsSymmetric, (WithLp.toLp_surjective _).forall₂]
+  simp only [toEuclideanLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
+    WithLp.ofLp_toLp, star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y
     rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]

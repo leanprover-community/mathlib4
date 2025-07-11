@@ -77,6 +77,9 @@ instance : FunLike (RingCon R) R (R → Prop) where
     rw [Setoid.ext_iff, (show ⇑x = ⇑y from h)]
     simp
 
+@[simp]
+theorem coe_mk (s : Con R) (h) : ⇑(mk s h) = s := rfl
+
 theorem rel_eq_coe : c.r = c :=
   rfl
 
@@ -122,6 +125,7 @@ theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
 theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 
 /-- Extensionality rule for congruence relations. -/
+@[ext]
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
 

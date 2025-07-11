@@ -27,7 +27,7 @@ namespace List
 
 section OrderedRing
 
-variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points in a list are weakly in that order on a line. -/
@@ -72,7 +72,8 @@ variable {R}
 @[simp] lemma wbtw_triple {p₁ p₂ p₃ : P} : [p₁, p₂, p₃].Wbtw R ↔ Wbtw R p₁ p₂ p₃ := by
   simp [List.Wbtw]
 
-@[simp] lemma sbtw_triple {p₁ p₂ p₃ : P} : [p₁, p₂, p₃].Sbtw R ↔ Sbtw R p₁ p₂ p₃ := by
+@[simp]
+lemma sbtw_triple [IsOrderedRing R] {p₁ p₂ p₃ : P} : [p₁, p₂, p₃].Sbtw R ↔ Sbtw R p₁ p₂ p₃ := by
   simp only [List.Sbtw, wbtw_triple, ne_eq, pairwise_cons, mem_cons, not_mem_nil, or_false,
     forall_eq_or_imp, forall_eq, IsEmpty.forall_iff, implies_true, Pairwise.nil, and_self, and_true]
   exact ⟨fun ⟨hw, ⟨h₁₂, h₁₃⟩, h₂₃⟩ ↦ ⟨hw, Ne.symm h₁₂, h₂₃⟩,
@@ -82,7 +83,7 @@ lemma wbtw_four {p₁ p₂ p₃ p₄ : P} : [p₁, p₂, p₃, p₄].Wbtw R ↔
     Wbtw R p₁ p₂ p₃ ∧ Wbtw R p₁ p₂ p₄ ∧ Wbtw R p₁ p₃ p₄ ∧ Wbtw R p₂ p₃ p₄ := by
   simp [List.Wbtw, triplewise_cons, and_assoc]
 
-lemma sbtw_four {p₁ p₂ p₃ p₄ : P} : [p₁, p₂, p₃, p₄].Sbtw R ↔
+lemma sbtw_four [IsOrderedRing R] {p₁ p₂ p₃ p₄ : P} : [p₁, p₂, p₃, p₄].Sbtw R ↔
     Sbtw R p₁ p₂ p₃ ∧ Sbtw R p₁ p₂ p₄ ∧ Sbtw R p₁ p₃ p₄ ∧ Sbtw R p₂ p₃ p₄ := by
   simp [List.Sbtw, List.Wbtw, triplewise_cons, Sbtw]
   aesop
@@ -93,7 +94,7 @@ protected lemma Sbtw.wbtw {l : List P} (h : l.Sbtw R) : l.Wbtw R :=
 lemma Sbtw.pairwise_ne {l : List P} (h : l.Sbtw R) : l.Pairwise (· ≠ ·) :=
   h.2
 
-lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
+lemma sbtw_iff_triplewise_and_ne_pair [IsOrderedRing R] {l : List P} :
     l.Sbtw R ↔ l.Triplewise (Sbtw R) ∧ ∀ a, l ≠ [a, a] := by
   rw [List.Sbtw]
   induction l with
@@ -125,7 +126,7 @@ lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
         subst hxh hxt
         simp at hpne
     · have ht' : tail.Wbtw R := ht.imp _root_.Sbtw.wbtw
-      simp only [ht', hp, true_and, ht] at ih
+      simp only [ht', true_and, ht] at ih
       rw [pairwise_cons, ih]
       refine ⟨fun a ha' ↦ ?_, fun a ↦ ?_⟩
       · rintro rfl
@@ -141,7 +142,7 @@ lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
       · rintro rfl
         simp at hp
 
-lemma sbtw_cons {p : P} {l : List P} :
+lemma sbtw_cons [IsOrderedRing R] {p : P} {l : List P} :
     (p :: l).Sbtw R ↔ l.Pairwise (Sbtw R p) ∧ l.Sbtw R ∧ l ≠ [p] := by
   rw [sbtw_iff_triplewise_and_ne_pair, ← not_exists, triplewise_cons]
   simp only [cons.injEq, exists_eq_left', and_assoc, and_congr_right_iff, ne_eq, and_congr_left_iff]
@@ -286,7 +287,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
         cases tail with
         | nil => simp
         | cons head2 tail =>
-          simp only [reduceCtorEq, not_false_eq_true, getLast_cons, false_or]
+          simp only [reduceCtorEq, false_or]
           rw [pairwise_cons] at hp
           refine hp.1 ((head :: head2 :: tail).getLast hl) ?_
           simp

@@ -13,16 +13,16 @@ This file defines the conversion between bilinear forms and matrices.
 
 ## Main definitions
 
- * `Matrix.toBilin` given a basis define a bilinear form
- * `Matrix.toBilin'` define the bilinear form on `n → R`
- * `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
- * `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
+* `Matrix.toBilin` given a basis define a bilinear form
+* `Matrix.toBilin'` define the bilinear form on `n → R`
+* `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
+* `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
 
 ## Notations
 
 In this file we use the following type variables:
- - `M₁` is a module over the commutative semiring `R₁`,
- - `M₂` is a module over the commutative ring `R₂`.
+- `M₁` is a module over the commutative semiring `R₁`,
+- `M₂` is a module over the commutative ring `R₂`.
 
 ## Tags
 
@@ -95,10 +95,10 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₁) : Matrix.toBilin'Aux M = Mat
 theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
   (Matrix.toLinearMap₂'_apply _ _ _).trans
-    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
+    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
-    Matrix.toBilin' M v w = dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
+    Matrix.toBilin' M v w = v ⬝ᵥ M *ᵥ w := Matrix.toLinearMap₂'_apply' _ _ _
 
 @[simp]
 theorem Matrix.toBilin'_single (M : Matrix n n R₁) (i j : n) :
@@ -196,7 +196,7 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
   (Matrix.toLinearMap₂_apply _ _ _ _ _).trans
-    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
+    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
 theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₁ M₁) :
@@ -338,8 +338,9 @@ theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nond
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
-    M.toBilin'.Nondegenerate ↔ M.Nondegenerate :=
-  ⟨fun h v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w, Matrix.Nondegenerate.toBilin'⟩
+    M.toBilin'.Nondegenerate ↔ M.Nondegenerate := by
+  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
+  exact fun v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
     (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).Nondegenerate :=
