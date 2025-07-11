@@ -107,6 +107,19 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
 
 end ValuativeTopology
 
+namespace Valued
+
+variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+  [IsUniformAddGroup R] [ValuativeTopology R]
+
+/-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
+for use in porting files from `Valued` to `ValuativeRel`. -/
+scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
+  v := ValuativeRel.valuation R
+  is_topological_valuation := ValuativeTopology.mem_nhds_iff
+
+end Valued
+
 namespace ValuativeRel
 
 @[inherit_doc]
