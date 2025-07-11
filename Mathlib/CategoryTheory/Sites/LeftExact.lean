@@ -245,10 +245,10 @@ instance preservesLimitsOfShape_presheafToSheaf
     Limits.hasLimitsOfShape_of_equivalence e
   haveI : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
     constructor
-    · show Fintype (ULift _)
+    · change Fintype (ULift _)
       infer_instance
     · intro j j'
-      show Fintype (ULift _)
+      change Fintype (ULift _)
       infer_instance
   refine @preservesLimitsOfShape_of_equiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
   constructor; intro F; constructor; intro S hS; constructor

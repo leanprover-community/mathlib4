@@ -203,7 +203,7 @@ alias cochainsMap_f_1_comp_oneCochainsLequiv := cochainsMap_f_1_comp_oneCochains
 lemma cochainsMap_f_2_comp_twoCochainsIso :
     (cochainsMap f φ).f 2 ≫ (twoCochainsIso B).hom = (twoCochainsIso A).hom ≫ fTwo f φ := by
   ext x g
-  show φ.hom (x _) = φ.hom (x _)
+  change φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
 
@@ -214,7 +214,7 @@ alias cochainsMap_f_2_comp_twoCochainsLequiv := cochainsMap_f_2_comp_twoCochains
 lemma cochainsMap_f_3_comp_threeCochainsIso :
     (cochainsMap f φ).f 3 ≫ (threeCochainsIso B).hom = (threeCochainsIso A).hom ≫ fThree f φ := by
   ext x g
-  show φ.hom (x _) = φ.hom (x _)
+  change φ.hom (x _) = φ.hom (x _)
   rcongr x
   fin_cases x <;> rfl
 
