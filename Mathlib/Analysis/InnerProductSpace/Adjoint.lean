@@ -316,6 +316,7 @@ namespace ContinuousLinearMap
 
 variable {T : E →L[𝕜] E} [CompleteSpace E]
 
+open ContinuousLinearMap in
 theorem IsIdempotentElem.adjoint_range_eq_range_of (hT : IsIdempotentElem T)
     (h : (LinearMap.range T)ᗮ = LinearMap.ker T) :
     LinearMap.range (adjoint T) = LinearMap.range T := by
@@ -340,6 +341,7 @@ theorem isStarProjection_starProjection [CompleteSpace E] (U : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] : IsStarProjection U.starProjection :=
   ⟨U.isIdempotentElem_starProjection, isSelfAdjoint_starProjection U⟩
 
+open ContinuousLinearMap in
 /-- An operator is a star projection if and only if it is an orthogonal projection. -/
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
