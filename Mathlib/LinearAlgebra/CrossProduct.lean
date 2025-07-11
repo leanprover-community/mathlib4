@@ -58,6 +58,19 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
 
 @[inherit_doc] scoped[Matrix] infixl:74 " ⨯ " => crossProduct
 
+namespace Matrix
+/-- A deprecated notation for `⨯`. -/
+scoped syntax:74 (name := «term_×₃_») term:74 " ×₃ " term:75 : term
+end Matrix
+
+@[term_elab Matrix.«term_×₃_»]
+def elabDeprecatedCross : Lean.Elab.Term.TermElab
+| `($x ×₃%$tk $y) => fun ty? => do
+  Lean.logWarningAt tk <| .tagged ``Lean.Linter.deprecatedAttr <| m!"The ×₃ notation has been deprecated"
+  Lean.Meta.Tactic.TryThis.addSuggestion tk { suggestion := "⨯" }
+  Lean.Elab.Term.elabTerm (← `($x ⨯ $y)) ty?
+| _ => fun _ => Lean.Elab.throwUnsupportedSyntax
+
 theorem cross_apply (a b : Fin 3 → R) :
     a ⨯ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl
 
