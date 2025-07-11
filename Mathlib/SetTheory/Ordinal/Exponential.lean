@@ -101,11 +101,7 @@ theorem opow_ne_zero {a : Ordinal} (b : Ordinal) (a0 : a ≠ 0) : a ^ b ≠ 0 :=
 
 @[simp]
 theorem opow_eq_zero {a b : Ordinal} : a ^ b = 0 ↔ a = 0 ∧ b ≠ 0 := by
-  obtain rfl | ha := eq_or_ne a 0
-  · obtain rfl | hb := eq_or_ne b 0
-    · simp
-    · simp [hb]
-  · simp [opow_ne_zero b ha, ha]
+  by_cases a = 0 <;> by_cases b = 0 <;> simp_all [opow_ne_zero]
 
 @[simp, norm_cast]
 theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
@@ -138,28 +134,19 @@ theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLim
   · exact isLimit_opow l.one_lt l'
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
-  rcases lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ | h₁
+  rcases (one_le_iff_pos.2 h₁).eq_or_lt' with h₁ | h₁
+  · simp_all
   · exact (opow_le_opow_iff_right h₁).2 h₂
-  · subst a
-    -- Porting note: `le_refl` is required.
-    simp only [one_opow, le_refl]
 
 theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c ≤ b ^ c := by
-  by_cases a0 : a = 0
-  -- Porting note: `le_refl` is required.
-  · subst a
-    by_cases c0 : c = 0
-    · subst c
-      simp only [opow_zero, le_refl]
-    · simp only [zero_opow c0, Ordinal.zero_le]
+  by_cases ha : a = 0
+  · by_cases c = 0 <;> simp_all
   · induction c using limitRecOn with
-    | zero => simp only [opow_zero, le_refl]
-    | succ c IH =>
-      simpa only [opow_succ] using mul_le_mul' IH ab
+    | zero => simp
+    | succ c IH => simpa using mul_le_mul' IH ab
     | isLimit c l IH =>
-      exact
-        (opow_le_of_limit a0 l).2 fun b' h =>
-          (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 a0).trans_le ab) h.le)
+      exact (opow_le_of_limit ha l).2 fun b' h ↦
+        (IH _ h).trans (opow_le_opow_right ((Ordinal.pos_iff_ne_zero.2 ha).trans_le ab) h.le)
 
 theorem opow_le_opow {a b c d : Ordinal} (hac : a ≤ c) (hbd : b ≤ d) (hc : 0 < c) : a ^ b ≤ c ^ d :=
   (opow_le_opow_left b hac).trans (opow_le_opow_right hc hbd)
@@ -287,7 +274,7 @@ theorem log_zero_left : ∀ b, log 0 b = 0 :=
 @[simp]
 theorem log_zero_right (b : Ordinal) : log b 0 = 0 := by
   obtain hb | hb := lt_or_ge 1 b
-  · rw [log_def hb, ← Ordinal.le_zero, pred_le, succ_zero]
+  · rw [log_def hb, ← Ordinal.le_zero, pred_le_iff_le_succ, succ_zero]
     apply csInf_le'
     rw [mem_setOf, opow_one]
     exact bot_lt_of_lt hb
@@ -304,7 +291,8 @@ theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
   rcases zero_or_succ_or_limit t with (h | h | h)
   · refine ((one_le_iff_ne_zero.2 hx).not_gt ?_).elim
     simpa only [h, opow_zero] using this
-  · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
+  · rw [log_def hb x, succ_pred_eq_iff_not_isSuccPrelimit, not_isSuccPrelimit_iff']
+    simpa [eq_comm] using h
   · rcases (lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
     exact h₁.not_ge.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
 

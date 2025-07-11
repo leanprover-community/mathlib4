@@ -30,7 +30,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :
 @[to_additive]
 theorem mem_list_prod {l : List (Set α)} {a : α} :
     a ∈ l.prod ↔
-      ∃ l' : List (Σs : Set α, ↥s),
+      ∃ l' : List (Σ s : Set α, ↥s),
         List.prod (l'.map fun x ↦ (Sigma.snd x : α)) = a ∧ l'.map Sigma.fst = l := by
   induction' l using List.ofFnRec with n f
   simp only [mem_prod_list_ofFn, List.exists_iff_exists_tuple, List.map_ofFn, List.ofFn_inj',

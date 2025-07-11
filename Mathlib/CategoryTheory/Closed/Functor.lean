@@ -54,7 +54,8 @@ We will show that if `C` and `D` are cartesian closed, then this morphism is an 
 `A` iff `F` is a cartesian closed functor, i.e. it preserves exponentials.
 -/
 def frobeniusMorphism (h : L ⊣ F) (A : C) : TwoSquare (tensorLeft (F.obj A)) L L (tensorLeft A) :=
-  prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft _ ((curriedTensor C).map (h.counit.app _))
+  prodComparisonNatTrans L (F.obj A) ≫
+    Functor.whiskerLeft _ ((curriedTensor C).map (h.counit.app _))
 
 /-- If `F` is full and faithful and has a left adjoint `L` which preserves binary products, then the
 Frobenius morphism is an isomorphism.
@@ -112,8 +113,8 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   apply congr_arg
   ext B
   simp only [Functor.comp_obj, curriedTensor_obj_obj, prodComparisonNatIso_inv,
-    NatTrans.comp_app, whiskerLeft_app, curriedTensor_map_app, NatIso.isIso_inv_app,
-    whiskerRight_app, IsIso.eq_inv_comp, prodComparisonNatTrans_app]
+    NatTrans.comp_app, Functor.whiskerLeft_app, curriedTensor_map_app, NatIso.isIso_inv_app,
+    Functor.whiskerRight_app, IsIso.eq_inv_comp, prodComparisonNatTrans_app]
   rw [← prodComparison_inv_natural_whiskerRight F f]
   simp
 
@@ -131,22 +132,23 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   unfold expComparison frobeniusMorphism
   have conjeq := iterated_mateEquiv_conjugateEquiv h h
     (exp.adjunction (F.obj A)) (exp.adjunction A)
-    (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L ((curriedTensor C).map (h.counit.app A)))
+    (prodComparisonNatTrans L (F.obj A) ≫
+      Functor.whiskerLeft L ((curriedTensor C).map (h.counit.app A)))
   rw [← conjeq]
   congr 1
   apply congr_arg
   ext B
   unfold mateEquiv
-  simp only [Functor.comp_obj, curriedTensor_obj_obj, Functor.id_obj, Equiv.coe_fn_mk,
-    whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app,
-    whiskerLeft_app, curriedTensor_obj_obj, whiskerRight_app, prodComparisonNatTrans_app,
-    curriedTensor_map_app, Functor.comp_map, curriedTensor_obj_map, prodComparisonNatIso_inv,
+  simp only [Functor.comp_obj, curriedTensor_obj_obj, Equiv.coe_fn_mk, Functor.whiskerRight_comp,
+    Functor.whiskerLeft_comp, assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app,
+    Functor.whiskerLeft_app, Functor.associator_hom_app, Functor.associator_inv_app,
+    Functor.whiskerRight_app, prodComparisonNatTrans_app, curriedTensor_map_app, Functor.comp_map,
+    curriedTensor_obj_map, Functor.leftUnitor_hom_app, comp_id, id_comp, prodComparisonNatIso_inv,
     NatIso.isIso_inv_app]
   rw [← F.map_comp, ← F.map_comp]
   simp only [Functor.map_comp]
   apply IsIso.eq_inv_of_inv_hom_id
-  simp only [assoc, Functor.associator_inv_app, Functor.associator_hom_app, Functor.comp_obj,
-    curriedTensor_obj_obj, curriedTensor_obj_obj, Functor.map_id, id_comp]
+  simp only [assoc]
   rw [prodComparison_natural_whiskerLeft, prodComparison_natural_whiskerRight_assoc]
   slice_lhs 2 3 => rw [← prodComparison_comp]
   simp only [assoc]

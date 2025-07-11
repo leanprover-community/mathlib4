@@ -18,7 +18,7 @@ namespace CategoryTheory.GrothendieckTopology
 
 open CategoryTheory
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits CategoryTheory.Functor
 
 open Opposite
 
@@ -55,7 +55,7 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
         PreservesLimit (W.index P).multicospan F] :
     (whiskeringLeft _ _ E).obj (J.sheafify P) ≅
     (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E := by
-  refine J.plusFunctorWhiskerLeftIso _ ≪≫ ?_ ≪≫ Functor.associator _ _ _
+  refine J.plusFunctorWhiskerLeftIso _ ≪≫ ?_ ≪≫ associator _ _ _
   refine isoWhiskerRight ?_ _
   exact J.plusFunctorWhiskerLeftIso _
 
@@ -82,10 +82,10 @@ the sheafification of `P ⋙ F`, functorially in `P`. -/
 noncomputable def sheafificationWhiskerRightIso :
     J.sheafification D ⋙ (whiskeringRight _ _ _).obj F ≅
       (whiskeringRight _ _ _).obj F ⋙ J.sheafification E := by
-  refine Functor.associator _ _ _ ≪≫ ?_
+  refine associator _ _ _ ≪≫ ?_
   refine isoWhiskerLeft (J.plusFunctor D) (J.plusFunctorWhiskerRightIso _) ≪≫ ?_
-  refine ?_ ≪≫ Functor.associator _ _ _
-  refine (Functor.associator _ _ _).symm ≪≫ ?_
+  refine ?_ ≪≫ associator _ _ _
+  refine (associator _ _ _).symm ≪≫ ?_
   exact isoWhiskerRight (J.plusFunctorWhiskerRightIso _) (J.plusFunctor E)
 
 @[simp]

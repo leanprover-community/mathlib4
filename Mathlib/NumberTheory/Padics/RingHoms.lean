@@ -399,7 +399,7 @@ theorem ker_toZModPow (n : ℕ) :
       convert appr_spec n x
       simp only [this, sub_zero, cast_zero]
     dsimp [toZModPow, toZModHom] at h
-    rw [ZMod.natCast_zmod_eq_zero_iff_dvd] at h
+    rw [ZMod.natCast_eq_zero_iff] at h
     apply eq_zero_of_dvd_of_lt h (appr_lt _ _)
   · intro h
     rw [← sub_zero x] at h
@@ -564,7 +564,7 @@ theorem limNthHom_spec (r : R) :
   use N
   intro n hn
   apply _root_.lt_trans _ hε'
-  change (padicNormE _  : ℝ) < _
+  change (padicNormE _ : ℝ) < _
   norm_cast
   exact hN _ hn
 

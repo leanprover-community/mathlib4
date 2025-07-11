@@ -347,8 +347,8 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
   obtain ⟨l, hl⟩ := l
-  suffices HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
-      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
+  suffices @insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩ ≍
+      IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩) by
     cases c
     apply eq_of_heq
     convert this <;> rw [insert_of_notMem h]

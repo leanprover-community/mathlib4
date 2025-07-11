@@ -122,8 +122,8 @@ dual order, in order to easily transfer theorems between `height` and `coheight`
 -/
 lemma coheight_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : a ≤ p.head), (p.length : ℕ∞) := by
-  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
-    RelSeries.reverse_reverse⟩
+  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, fun _ ↦ RelSeries.reverse_reverse _,
+    fun _ ↦ RelSeries.reverse_reverse _⟩
   congr! 1
 
 lemma height_le_iff {a : α} {n : ℕ∞} :
@@ -173,8 +173,8 @@ lemma coheight_eq_iSup_head_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
   change height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
   rw [height_eq_iSup_last_eq]
-  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
-    RelSeries.reverse_reverse⟩
+  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, fun _ ↦ RelSeries.reverse_reverse _,
+    fun _ ↦ RelSeries.reverse_reverse _⟩
   simp
 
 /--
@@ -385,7 +385,7 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := 
     | zero => simp
     | succ n =>
       apply le_iSup_of_le p.eraseLast.last
-      apply le_iSup_of_le (by rw [← hp]; apply RelSeries.eraseLast_last_rel_last _ (by omega))
+      apply le_iSup_of_le (by rw [← hp]; exact p.eraseLast_last_rel_last (by omega))
       rw [height_add_const]
       apply le_iSup₂_of_le p.eraseLast (by rfl) (by simp [hlen])
   · apply iSup₂_le; intro y hyx
@@ -465,7 +465,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
   mpr := fun ⟨y, hyx, hy⟩ =>
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
-lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
+lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
     n < coheight x ↔ ∃ y > x, coheight y = n :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
@@ -520,7 +520,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
       simp_all [minimal_iff_forall_lt]
     simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
     obtain ⟨p, rfl, hp⟩ := hfin (n+1)
-    use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
+    use p.eraseLast.last, p.eraseLast_last_rel_last (by omega)
     simpa [hp] using length_le_height_last (p := p.eraseLast)
 
 /-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
@@ -985,7 +985,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
         · exact p.monotone (Fin.le_last _)
         · rw [RelSeries.last] at hlast
           simp [hlast])
-      step := fun i => by simpa only [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
+      step := fun i => by simpa [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
     have hlast' : p'.last = x := by
       simp only [p', RelSeries.last, WithTop.untop_eq_iff, ← hlast]
     suffices p'.length ≤ height p'.last by

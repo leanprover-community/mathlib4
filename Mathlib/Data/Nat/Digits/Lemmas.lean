@@ -65,8 +65,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     · simp
   · cases m
     · cases hm rfl
-    rename ℕ => m
-    simp only [zero_add, digits_one, List.getLast_replicate_succ m 1]
+    simp only [zero_add, digits_one, List.getLast_replicate_succ]
     exact Nat.one_ne_zero
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_

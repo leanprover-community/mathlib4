@@ -44,19 +44,28 @@ In the following, we will construct a monoid structure on `M`.
 @[to_additive
       "The colimit of `F ⋙ forget AddMon` in the category of types.
       In the following, we will construct an additive monoid structure on `M`."]
-abbrev M :=
-  Types.Quot (F ⋙ forget MonCat)
+abbrev M := (F ⋙ forget MonCat).ColimitType
 
 /-- The canonical projection into the colimit, as a quotient type. -/
 @[to_additive "The canonical projection into the colimit, as a quotient type."]
 noncomputable abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
-  Quot.mk _
+  fun x ↦ (F ⋙ forget MonCat).ιColimitType x.1 x.2
+
+@[to_additive]
+lemma M.mk_surjective (m : M.{v, u} F) :
+    ∃ (j : J) (x : F.obj j), M.mk F ⟨j, x⟩ = m :=
+  (F ⋙ forget MonCat).ιColimitType_jointly_surjective m
 
 @[to_additive]
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
     M.mk.{v, u} F x = M.mk F y :=
-  Quot.eqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
+  Quot.eqvGen_sound (Types.FilteredColimit.eqvGen_colimitTypeRel_of_rel (F ⋙ forget MonCat) x y h)
+
+@[to_additive]
+lemma M.map_mk {j k : J} (f : j ⟶ k) (x : F.obj j) :
+    M.mk F ⟨k, F.map f x⟩ = M.mk F ⟨j, x⟩ :=
+  M.mk_eq _ _ _ ⟨k, 𝟙 _, f, by simp⟩
 
 variable [IsFiltered J]
 
@@ -135,11 +144,11 @@ noncomputable instance colimitMul : Mul (M.{v, u} F) :=
     refine Quot.lift₂ (colimitMulAux F) ?_ ?_ x y
     · intro x y y' h
       apply colimitMulAux_eq_of_rel_right
-      apply Types.FilteredColimit.rel_of_quot_rel
+      apply Types.FilteredColimit.rel_of_colimitTypeRel
       exact h
     · intro x x' y h
       apply colimitMulAux_eq_of_rel_left
-      apply Types.FilteredColimit.rel_of_quot_rel
+      apply Types.FilteredColimit.rel_of_colimitTypeRel
       exact h }
 
 /-- Multiplication in the colimit is independent of the chosen "maximum" in the filtered category.
@@ -161,47 +170,36 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
   simp_rw [MonoidHom.map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂]
 
 @[to_additive]
+lemma colimit_mul_mk_eq' {j : J} (x y : F.obj j) :
+    M.mk.{v, u} F ⟨j, x⟩ * M.mk.{v, u} F ⟨j, y⟩ = M.mk.{v, u} F ⟨j, x * y⟩ := by
+  simpa using colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
+
+@[to_additive]
 noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
   { colimitOne F,
     colimitMul F with
     one_mul := fun x => by
-      refine Quot.inductionOn x ?_
-      intro x
-      obtain ⟨j, x⟩ := x
-      rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
-        one_mul, F.map_id, id_apply]
+      obtain ⟨j, x, rfl⟩ := x.mk_surjective
+      rw [colimit_one_eq F j, colimit_mul_mk_eq', one_mul]
     mul_one := fun x => by
-      refine Quot.inductionOn x ?_
-      intro x
-      obtain ⟨j, x⟩ := x
-      rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
-        mul_one, F.map_id, id_apply] }
+      obtain ⟨j, x, rfl⟩ := x.mk_surjective
+      rw [colimit_one_eq F j, colimit_mul_mk_eq', mul_one] }
 
 @[to_additive]
 noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
   { colimitMulOneClass F with
     mul_assoc := fun x y z => by
-      refine Quot.induction_on₃ x y z ?_
-      clear x y z
-      intro x y z
-      obtain ⟨j₁, x⟩ := x
-      obtain ⟨j₂, y⟩ := y
-      obtain ⟨j₃, z⟩ := z
-      change M.mk F _ * M.mk F _ * M.mk F _ = M.mk F _ * M.mk F _
-      dsimp
-      rw [colimit_mul_mk_eq F ⟨j₁, x⟩ ⟨j₂, y⟩ (IsFiltered.max j₁ (IsFiltered.max j₂ j₃))
-          (IsFiltered.leftToMax j₁ (IsFiltered.max j₂ j₃))
-          (IsFiltered.leftToMax j₂ j₃ ≫ IsFiltered.rightToMax _ _),
-        colimit_mul_mk_eq F ⟨(IsFiltered.max j₁ (IsFiltered.max j₂ j₃)), _⟩ ⟨j₃, z⟩
-          (IsFiltered.max j₁ (IsFiltered.max j₂ j₃)) (𝟙 _)
-          (IsFiltered.rightToMax j₂ j₃ ≫ IsFiltered.rightToMax _ _),
-        colimit_mul_mk_eq.{v, u} F ⟨j₁, x⟩ ⟨IsFiltered.max j₂ j₃, _⟩ _
-          (IsFiltered.leftToMax _ _) (IsFiltered.rightToMax _ _)]
-      congr 2
-      dsimp only
-      rw [F.map_id, show ∀ x, (𝟙 (F.obj (IsFiltered.max j₁ (IsFiltered.max j₂ j₃)))) x = x
-        from fun _ => rfl, mul_assoc, MonoidHom.map_mul, F.map_comp, F.map_comp]
-      rfl }
+      obtain ⟨j₁, x₁, rfl⟩ := x.mk_surjective
+      obtain ⟨j₂, y₂, rfl⟩ := y.mk_surjective
+      obtain ⟨j₃, z₃, rfl⟩ := z.mk_surjective
+      obtain ⟨j, f₁, f₂, f₃, x, y, z, h₁, h₂, h₃⟩ :
+          ∃ (j : J) (f₁ : j₁ ⟶ j) (f₂ : j₂ ⟶ j) (f₃ : j₃ ⟶ j) (x y z : F.obj j),
+          F.map f₁ x₁ = x ∧ F.map f₂ y₂ = y ∧ F.map f₃ z₃ = z :=
+        ⟨IsFiltered.max₃ j₁ j₂ j₃, IsFiltered.firstToMax₃ _ _ _,
+          IsFiltered.secondToMax₃ _ _ _, IsFiltered.thirdToMax₃ _ _ _,
+          _, _, _, rfl, rfl, rfl⟩
+      simp only [← M.map_mk F f₁, ← M.map_mk F f₂, ← M.map_mk F f₃, h₁, h₂, h₃,
+        colimit_mul_mk_eq', mul_assoc] }
 
 /-- The bundled monoid giving the filtered colimit of a diagram. -/
 @[to_additive
@@ -217,10 +215,7 @@ noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
   { toFun := (Types.TypeMax.colimitCocone.{v, max v u, v} (F ⋙ forget MonCat)).ι.app j
     map_one' := (colimit_one_eq F j).symm
-    map_mul' x y := by
-      convert (colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 j) (𝟙 j)).symm
-      rw [F.map_id]
-      rfl }
+    map_mul' x y := by symm; apply colimit_mul_mk_eq' }
 
 @[to_additive (attr := simp)]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -245,20 +240,17 @@ The only thing left to see is that it is a monoid homomorphism.
       homomorphism."]
 noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
   ofHom
-  { toFun := (Types.TypeMax.colimitCoconeIsColimit.{v, max v u, v} (F ⋙ forget MonCat)).desc
-      ((forget MonCat).mapCocone t)
+  { toFun := (F ⋙ forget MonCat).descColimitType
+        ((F ⋙ forget MonCat).coconeTypesEquiv.symm ((forget MonCat).mapCocone t))
     map_one' := by
       rw [colimit_one_eq F IsFiltered.nonempty.some]
       exact MonoidHom.map_one _
     map_mul' x y := by
-      refine Quot.induction_on₂ x y ?_
-      clear x y
-      intro x y
-      obtain ⟨i, x⟩ := x
-      obtain ⟨j, y⟩ := y
+      obtain ⟨i, x, rfl⟩ := x.mk_surjective
+      obtain ⟨j, y, rfl⟩ := y.mk_surjective
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
-      dsimp [Types.TypeMax.colimitCoconeIsColimit]
+      dsimp
       rw [MonoidHom.map_mul, t.w_apply, t.w_apply]
       rfl }
 
@@ -266,12 +258,10 @@ noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
 @[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]
 noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
-  fac t j := MonCat.ext fun x => congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
-    (F ⋙ forget MonCat)).fac ((forget MonCat).mapCocone t) j) x
-  uniq t m h := MonCat.ext fun y => congr_fun
-      ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
-        ⇑(ConcreteCategory.hom m)
-        fun j => funext fun x => ConcreteCategory.congr_hom (h j) x) y
+  fac t j := rfl
+  uniq t m h := MonCat.ext fun y ↦ by
+    obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
+    exact ConcreteCategory.congr_hom (h j) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
@@ -306,14 +296,13 @@ noncomputable abbrev M : MonCat.{max v u} :=
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with
     mul_comm := fun x y => by
-      refine Quot.induction_on₂ x y ?_
-      clear x y
-      intro x y
-      let k := max' x.1 y.1
-      let f := IsFiltered.leftToMax x.1 y.1
-      let g := IsFiltered.rightToMax x.1 y.1
-      rw [colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) x y k f g,
-        colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) y x k g f]
+      obtain ⟨i, x, rfl⟩ := x.mk_surjective
+      obtain ⟨j, y, rfl⟩ := y.mk_surjective
+      let k := max' i j
+      let f := IsFiltered.leftToMax i j
+      let g := IsFiltered.rightToMax i j
+      rw [colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) ⟨i, x⟩ ⟨j, y⟩ k f g,
+        colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) ⟨j, y⟩ ⟨i, x⟩ k g f]
       dsimp
       rw [mul_comm] }
 
@@ -334,20 +323,9 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The proposed colimit cocone is a colimit in `CommMonCat`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommMonCat`."]
-noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
-  desc t := ofHom
-    (MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
-      ((forget₂ CommMonCat MonCat.{max v u}).mapCocone t)).hom
-  fac t j :=
-    ConcreteCategory.coe_ext <|
-      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).fac
-        ((forget CommMonCat).mapCocone t) j
-  uniq t m h :=
-    ConcreteCategory.coe_ext <|
-      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
-        ((forget CommMonCat.{max v u}).mapCocone t)
-        ⇑(ConcreteCategory.hom m) fun j => funext fun x =>
-          CategoryTheory.congr_fun (h j) x
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
+  isColimitOfReflects (forget₂ CommMonCat MonCat)
+    (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
 noncomputable instance forget₂Mon_preservesFilteredColimits :
