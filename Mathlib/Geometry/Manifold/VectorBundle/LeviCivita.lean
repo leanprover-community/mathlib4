@@ -211,8 +211,8 @@ lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
   · simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
 
 lemma isolate_aux {α : Type*} [AddCommGroup α]
-    (X Y Z A D E F : α) (h : X + Y - Z = 2 * A + D + E - F) :
-    2 * A = X + Y - Z - D - E + F := by
+    (A D E F X Y Z : α) (h : X + Y - Z = A + A + D + E - F) :
+    A + A = X + Y - Z - D - E + F := by
   trans (X + Y - Z) - D - E + F
   · rw [h]; abel
   · abel
@@ -235,19 +235,15 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   have eq3 : rhs_aux I Z X Y = B + C + F := by
     simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (cov Y Z)]
   -- add (I) and (II), subtract (III)
-  have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = 2 * A + D + E - F := by
-    rw [eq1, eq2, eq3]
-    abel_nf
-    grind [zsmul_eq_mul, Int.cast_ofNat, Int.reduceNeg, neg_smul, one_smul]
+  have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = A + A + D + E - F := by
+    rw [eq1, eq2, eq3]; abel
 
   -- solve for ⟪cov X Y, Z⟫ and obtain the claim
   simp only [leviCivita_rhs] -- - D - E + F
   ext x
-  -- sorry is because there are different "2"s here;
-  -- the first is a function M → ℝ, the second a natural number
-  have almost := isolate_aux (X := rhs_aux I X Y Z) (Y := rhs_aux I Y Z X) (Z := rhs_aux I Z X Y)
-    (A := A) (D := D) (E := E) (F := F) (h := by simp [this]; sorry)
-  sorry -- obvious: if 2 • A = stuff, A = 1/2 stuff
+  have almost := isolate_aux A D E F (rhs_aux I X Y Z) (rhs_aux I Y Z X) (rhs_aux I Z X Y)
+    (by simp [this])
+  sorry -- obvious: if A + A = stuff, A = 1/2 stuff
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
