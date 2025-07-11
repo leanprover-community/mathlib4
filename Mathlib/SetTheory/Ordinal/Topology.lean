@@ -297,16 +297,18 @@ theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S
 -- todo: prove this for a general linear `SuccOrder`.
 theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
-  constructor <;> intro h
-  · have plim : IsSuccLimit p := IsAcc.isSuccLimit h
+  constructor
+  · intro h
+    have plim := IsAcc.isSuccLimit h
     rw [accPt_iff_nhds] at *
     intro u hu
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, hpo.bot_lt⟩, plim.bot_lt⟩
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, plim.bot_lt.trans hpo⟩, plim.bot_lt⟩
     obtain ⟨x, hx⟩ := h (Ioo l (p + 1)) (Ioo_mem_nhds hl.1 (lt_add_one _))
     use ⟨x, lt_of_le_of_lt (lt_succ_iff.mp hx.1.1.2) hpo⟩
     refine ⟨?_, Subtype.coe_ne_coe.mp hx.2⟩
     exact ⟨hl.2 ⟨hx.1.1.1, by exact_mod_cast lt_succ_iff.mp hx.1.1.2⟩, hx.1.2⟩
-  · rw [accPt_iff_nhds] at *
+  · intro h
+    rw [accPt_iff_nhds] at *
     intro u hu
     by_cases ho : p + 1 < o
     · have ppos : p ≠ 0 := by
@@ -317,13 +319,16 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
         exact h.2 <| Subtype.mk_eq_mk.mpr (lt_one_iff_zero.mp h.1.1)
       have plim : IsSuccLimit p := by
         contrapose! h
-        obtain ⟨q, rfl⟩ := ((zero_or_succ_or_isSuccLimit p).resolve_left ppos).resolve_right h
-        refine ⟨Ioo ⟨q, ((lt_succ q).trans hpo)⟩ ⟨_, ho⟩,
-          Ioo_mem_nhds (lt_succ q) (lt_succ (succ q)), fun _ mem ↦ ?_⟩
-        have aux1 := Subtype.mk_lt_mk.mp mem.1.1
-        have aux2 := Subtype.mk_lt_mk.mp mem.1.2
-        rw [Subtype.mk_eq_mk]
-        exact ((succ_le_iff.mpr aux1).antisymm (le_of_lt_succ aux2)).symm
+        obtain ⟨q, hq⟩ := ((zero_or_succ_or_isSuccLimit p).resolve_left ppos).resolve_right h
+        use (Ioo ⟨q, ((hq ▸ lt_succ q).trans hpo)⟩ ⟨p + 1, ho⟩)
+        constructor
+        · exact Ioo_mem_nhds (hq ▸ lt_succ q) (lt_succ p)
+        · intro _ mem
+          have aux1 := Subtype.mk_lt_mk.mp mem.1.1
+          have aux2 := Subtype.mk_lt_mk.mp mem.1.2
+          rw [Subtype.mk_eq_mk]
+          subst hq
+          exact ((succ_le_iff.mpr aux1).antisymm (le_of_lt_succ aux2)).symm
       obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, plim.bot_lt⟩
       obtain ⟨x, hx⟩ := h (Ioo ⟨l, hl.1.trans hpo⟩ ⟨p + 1, ho⟩) (Ioo_mem_nhds hl.1 (lt_add_one p))
       use x
