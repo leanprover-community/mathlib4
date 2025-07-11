@@ -34,7 +34,7 @@ noncomputable def unitSumSubtypeNeEquiv :
     · simp [dif_neg h]
 
 @[simp]
-lemma unitSumSubtypeNeEquiv_inl (u : Unit):
+lemma unitSumSubtypeNeEquiv_inl (u : Unit) :
     unitSumSubtypeNeEquiv i₀ (.inl u) = i₀ := rfl
 
 @[simp]
