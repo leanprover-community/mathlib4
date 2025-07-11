@@ -476,7 +476,7 @@ instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> simp
 
 @[norm_cast, simp]
-lemma coe_ofNat {n : ℕ} [n.AtLeastTwo]:
+lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
     ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
@@ -1154,7 +1154,7 @@ theorem normSq_nonneg : 0 ≤ normSq a := by
 
 @[simp]
 theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
-  normSq_nonneg.le_iff_eq.trans normSq_eq_zero
+  normSq_nonneg.ge_iff_eq'.trans normSq_eq_zero
 
 instance instNontrivial : Nontrivial ℍ[R] where
   exists_pair_ne := ⟨0, 1, mt (congr_arg QuaternionAlgebra.re) zero_ne_one⟩

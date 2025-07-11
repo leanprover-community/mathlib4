@@ -232,6 +232,7 @@ instance epi_map_0_of_epi {A B : Rep k G} (f : A ⟶ B) [Epi f] :
     simp_all [cancel_epi]
 
 end H0
+
 section H1
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
@@ -312,6 +313,7 @@ lemma H1π_comp_map :
   simp [H1π, Iso.inv_comp_eq, ← cyclesMap_comp_isoCycles₁_hom_assoc]
 
 end H1
+
 section H2
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
