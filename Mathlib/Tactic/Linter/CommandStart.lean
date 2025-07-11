@@ -223,6 +223,9 @@ abbrev unlintedNodes := #[
   `Mathlib.Meta.setBuilder,
   `Mathlib.Meta.«term{_|_}»,
 
+  -- The pretty-printer lacks a few spaces.
+  ``Parser.Command.syntax,
+
   -- # misc exceptions
 
   -- We ignore literal strings.
