@@ -130,8 +130,6 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
 /-- `Ω₀` is a terminal object. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
 
-attribute [instance] isTerminalΩ₀
-
 /-- The more practical version of `isPullback'` where we don't need to supply the to arrow,
 since there is a unique morphism to the terminal object -/
 lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
