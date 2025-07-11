@@ -16,7 +16,7 @@ import Mathlib.Tactic.FinCases
 In simplicial homotopy theory, in order to prove that the connected components
 of a simplicial set `X` are contractible, it suffices to construct an extra
 degeneracy as it is defined in *Simplicial Homotopy Theory* by Goerss-Jardine p. 190.
-It consists of a series of maps `π₀ X → X _⦋0⦌` and `X _⦋n⦌ → X _⦋n + 1⦌` which
+It consists of a series of maps `π₀ X → X _⦋0⦌` and `X _⦋n⦌ → X _⦋n+1⦌` which
 behave formally like an extra degeneracy `σ (-1)`. It can be thought as a datum
 associated to the augmented simplicial set `X → π₀ X`.
 

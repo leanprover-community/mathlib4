@@ -35,9 +35,9 @@ universe u
 
 /-- An alternate definition of `Fin n` defined as an inductive type instead of a subtype of `ℕ`. -/
 inductive Fin2 : ℕ → Type
-  /-- `0` as a member of `Fin (n+1)` (`Fin 0` is empty) -/
+  /-- `0` as a member of `Fin (n + 1)` (`Fin 0` is empty) -/
   | fz {n} : Fin2 (n + 1)
-  /-- `n` as a member of `Fin (n+1)` -/
+  /-- `n` as a member of `Fin (n + 1)` -/
   | fs {n} : Fin2 n → Fin2 (n + 1)
 
 namespace Fin2

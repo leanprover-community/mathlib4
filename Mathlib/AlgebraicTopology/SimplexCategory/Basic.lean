@@ -152,7 +152,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
       | 0, 2, _ => Fin.le_trans h₁ h₂
   }
 
-/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n+1)`. -/
+/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n + 1)`. -/
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
