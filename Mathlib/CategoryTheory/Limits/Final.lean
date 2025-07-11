@@ -380,6 +380,10 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
   HasColimit.mk (colimitCoconeOfComp F (getColimitCocone (F ⋙ G)))
 
+lemma hasColimit_comp_iff :
+    HasColimit (F ⋙ G) ↔ HasColimit G :=
+  ⟨fun _ ↦ Functor.Final.hasColimit_of_comp F, fun _ ↦ inferInstance⟩
+
 theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit (F ⋙ G) H] : PreservesColimit G H where
   preserves {c} hc := by
@@ -715,6 +719,10 @@ We can't make this an instance, because `F` is not determined by the goal.
 -/
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
   HasLimit.mk (limitConeOfComp F (getLimitCone (F ⋙ G)))
+
+lemma hasLimit_comp_iff :
+    HasLimit (F ⋙ G) ↔ HasLimit G :=
+  ⟨fun _ ↦ Functor.Initial.hasLimit_of_comp F, fun _ ↦ inferInstance⟩
 
 theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesLimit (F ⋙ G) H] : PreservesLimit G H where
