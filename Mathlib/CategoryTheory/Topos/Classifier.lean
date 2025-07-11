@@ -406,8 +406,8 @@ noncomputable def classifier : Classifier C where
   Ω := Ω
   truth := h.isoΩ₀.inv ≫ h.Ω₀.arrow
   mt := terminalIsTerminal.mono_from _
-  χ₀ m := terminalIsTerminal.from _
-  χ m := h.χ m
+  χ₀ m _ := terminalIsTerminal.from _
+  χ m _ := h.χ m
   isPullback' m _ :=
     (h.isPullback m).of_iso (Iso.refl _) (Iso.refl _) h.isoΩ₀ (Iso.refl _)
       (by simp) (Subsingleton.elim _ _) (by simp) (by simp)
