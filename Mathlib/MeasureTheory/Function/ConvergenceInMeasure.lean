@@ -58,7 +58,7 @@ theorem tendstoInMeasure_iff_enorm [SeminormedAddCommGroup E] {l : Filter ι} {f
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
-  simp_rw [TendstoInMeasure, edist_dist, dist_eq_norm, ofReal_norm]
+  simp_rw [TendstoInMeasure, edist_eq_enorm_sub]
 
 theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
     {g : α → E} :
@@ -346,7 +346,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : 
   rw [one_div, ← ENNReal.inv_mul_le_iff, inv_inv]
   · convert mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top
       ((hf n).sub hg).aestronglyMeasurable ε using 6
-    simp [edist_dist, dist_eq_norm, ← ofReal_norm]
+    simp [edist_eq_enorm_sub]
   · simp [hε_top]
   · simp [hε.ne']
 
@@ -382,7 +382,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormedAddCommGroup E] {f : 
     hn.trans_lt (ENNReal.half_lt_self hδ.ne' hδ_top)
   refine ((le_of_eq ?_).trans (ae_lt_of_essSup_lt this).le).trans hε.le
   congr with x
-  simp [edist_dist, dist_eq_norm, ofReal_norm]
+  simp [edist_eq_enorm_sub]
 
 /-- Convergence in Lp implies convergence in measure. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm {l : Filter ι} (hp_ne_zero : p ≠ 0)
