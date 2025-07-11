@@ -159,7 +159,7 @@ instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
     IsOrderedAddMonoid α :=
   { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
-      exact sup_le_sup_left hbc _ }
+      grw [hbc] }
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :

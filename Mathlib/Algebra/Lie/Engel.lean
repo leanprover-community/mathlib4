@@ -119,7 +119,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     refine ⟨(Submodule.map_mono ih).trans ?_, le_sup_of_le_right ?_⟩
     · rw [Submodule.map_sup, ← Submodule.map_comp, ← Module.End.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
-      exact sup_le_sup_left coe_map_toEnd_le _
+      grw [coe_map_toEnd_le]
     · norm_cast
       gcongr
       exact le_trans (antitone_lowerCentralSeries R L M le_self_add) hIM
