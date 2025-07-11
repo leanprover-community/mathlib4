@@ -308,10 +308,6 @@ theorem conj_starProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T)
 
 end IsSelfAdjoint
 
--- don't know which file this should go in
-theorem IsIdempotentElem.star {R : Type*} [Mul R] [StarMul R] {a : R} (ha : IsIdempotentElem a) :
-    IsIdempotentElem (star a) := by simp only [IsIdempotentElem, ← star_mul, ha.eq]
-
 namespace ContinuousLinearMap
 
 variable {T : E →L[𝕜] E} [CompleteSpace E]

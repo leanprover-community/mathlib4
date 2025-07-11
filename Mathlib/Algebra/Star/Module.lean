@@ -223,3 +223,6 @@ lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R
   ⟨fun hr ↦ h <| algebraMap_star_comm r (A := A) ▸ hr.star_eq, IsSelfAdjoint.algebraMap A⟩
 
 end algebraMap
+
+theorem IsIdempotentElem.star {R : Type*} [Mul R] [StarMul R] {a : R} (ha : IsIdempotentElem a) :
+    IsIdempotentElem (star a) := by simp only [IsIdempotentElem, ← star_mul, ha.eq]
