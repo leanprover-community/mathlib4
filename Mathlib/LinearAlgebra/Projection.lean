@@ -466,6 +466,7 @@ theorem submodule_eq_bot_iff {f : M →ₗ[S] M} (hf : IsProj m f) :
 
 end IsProj
 
+open LinearMap in
 /-- Given an idempotent linear operator `p`, we have
 `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
 theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
