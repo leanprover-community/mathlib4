@@ -51,14 +51,9 @@ theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn 
   IsSimpleGroup.eq_bot_or_eq_top_of_normal H Hn
 
 @[to_additive]
-lemma Subgroup.forall_subgroup_iff {H : Subgroup G} {P : Subgroup H → Prop} :
-    (∀ H' : Subgroup H, P H') ↔ (∀ H' ≤ H, P (H'.subgroupOf H)) := by
-  simp [(MapSubtype.orderIso H).forall_congr_left]
-
-@[to_additive]
 protected lemma Subgroup.isSimpleGroup_iff {H : Subgroup G} :
     IsSimpleGroup ↥H ↔ H ≠ ⊥ ∧ ∀ H' ≤ H, (H'.subgroupOf H).Normal → H' = ⊥ ∨ H' = H := by
-  rw [isSimpleGroup_iff, H.nontrivial_iff_ne_bot, Subgroup.forall_subgroup_iff]
+  rw [isSimpleGroup_iff, H.nontrivial_iff_ne_bot, Subgroup.forall]
   simp +contextual [disjoint_of_le_iff_left_eq_bot, LE.le.ge_iff_eq]
 
 namespace IsSimpleGroup
