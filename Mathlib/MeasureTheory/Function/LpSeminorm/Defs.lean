@@ -134,6 +134,12 @@ theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : �
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.aestronglyMeasurable := MemLp.aestronglyMeasurable
 
+lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
+    [TopologicalSpace.PseudoMetrizableSpace ε] [BorelSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
+    AEMeasurable f μ :=
+  hf.aestronglyMeasurable.aemeasurable
+
 theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
   rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
