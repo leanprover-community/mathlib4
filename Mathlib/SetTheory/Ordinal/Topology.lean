@@ -186,7 +186,7 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
 @[deprecated (since := "2025-07-08")]
 alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
 
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{max u v}) :
+theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
   refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
   · rw [continuous_def]
@@ -194,7 +194,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{max
     rw [isOpen_iff] at *
     intro o ho ho'
     rcases hs _ ho (h.isSuccLimit ho') with ⟨a, ha, has⟩
-    rw [← IsNormal.bsup_eq.{u, v} h ho', lt_bsup] at ha
+    rw [← IsNormal.bsup_eq.{u, u} h ho', lt_bsup] at ha
     rcases ha with ⟨b, hb, hab⟩
     exact
       ⟨b, hb, fun c hc =>
