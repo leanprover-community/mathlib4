@@ -383,7 +383,7 @@ def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
   apply Cat.isTerminalOfUniqueOfIsDiscrete
 
 /-- The homotopy category functor preserves generic terminal objects. -/
-noncomputable def hoFunctor.terminalIso : (hoFunctor.obj (⊤_ SSet)) ≅ (⊤_ Cat) :=
+noncomputable def hoFunctor.terminalIso : hoFunctor.obj (⊤_ SSet) ≅ ⊤_ Cat :=
   hoFunctor.mapIso (terminalIsoIsTerminal stdSimplex.isTerminalObj₀) ≪≫
     (terminalIsoIsTerminal hoFunctorDeltaZeroIsTerminal).symm
 
