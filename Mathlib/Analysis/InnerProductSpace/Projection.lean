@@ -586,29 +586,6 @@ lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
   starProjection_top
 
 @[simp]
-lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    LinearMap.range U.starProjection = U := by
-  ext x
-  simp only [LinearMap.mem_range, starProjection, ContinuousLinearMap.comp_apply,
-    subtypeL_apply]
-  refine ⟨fun ⟨y, hy⟩ ↦ hy ▸ coe_mem (U.orthogonalProjection y), fun h ↦ ?_⟩
-  use x
-  simp only [orthogonalProjection_eq_self_iff, h]
-
-@[simp]
-lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
-    U.starProjection x ∈ U := by
-  simp only [starProjection, ContinuousLinearMap.coe_comp', coe_subtypeL', coe_subtype,
-    Function.comp_apply, SetLike.coe_mem]
-
-lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
-  ext
-  exact orthogonalProjection_eq_self_iff.mpr trivial
-
-lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
-  starProjection_top
-
-@[simp]
 theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 ↔ v ∈ Kᗮ := by
   refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_orthogonalProjection_of_mem_orthogonal
     (zero_mem _) ?_⟩

@@ -308,30 +308,6 @@ theorem conj_starProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T)
 
 end IsSelfAdjoint
 
-open ContinuousLinearMap in
-theorem IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
-    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
-  have := hp.isClosed_range.completeSpace_coe
-  .ofCompleteSpace _
-
-/-- `U.starProjection` is a star projection. -/
-@[simp]
-theorem isStarProjection_orthogonalProjection [CompleteSpace E] {U : Submodule 𝕜 E}
-    [U.HasOrthogonalProjection] : IsStarProjection U.starProjection :=
-  ⟨by ext; simp [Submodule.starProjection], isSelfAdjoint_starProjection U⟩
-
-/-- An operator is a star projection if and only if it is an orthogonal projection. -/
-theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
-    IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
-    p = (LinearMap.range p).starProjection := by
-  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isStarProjection_orthogonalProjection⟩
-  have := IsIdempotentElem.hasOrthogonalProjection_range hp.isIdempotentElem
-  refine ⟨this, Eq.symm ?_⟩
-  ext x
-  refine Submodule.eq_orthogonalProjection_of_mem_orthogonal (by simp) ?_
-  simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
-    using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
-
 -- don't know which file this should go in
 theorem IsIdempotentElem.star {R : Type*} [Mul R] [StarMul R] {a : R} (ha : IsIdempotentElem a) :
     IsIdempotentElem (star a) := by simp only [IsIdempotentElem, ← star_mul, ha.eq]
@@ -357,12 +333,6 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentEle
     (adjoint_range_eq_range_of h h1) (orthogonal_range T ▸ h1)))⟩
 
 end ContinuousLinearMap
-
-open ContinuousLinearMap in
-theorem IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
-    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
-  have := hp.isClosed_range.completeSpace_coe
-  .ofCompleteSpace _
 
 /-- `U.starProjection` is a star projection. -/
 @[simp]
