@@ -193,9 +193,9 @@ theorem IsTopologicalBasis.open_eq_iUnion {B : Set (Set α)} (hB : IsTopological
 
 @[elab_as_elim]
 lemma IsTopologicalBasis.isOpen_induction {P : Set α → Prop} (hB : IsTopologicalBasis B)
-    (basis : ∀ b ∈ B, P b) (iUnion : ∀ S, (∀ s ∈ S, P s) → P (⋃₀ S)) {s : Set α} (hs : IsOpen s) :
+    (basis : ∀ b ∈ B, P b) (sUnion : ∀ S, (∀ s ∈ S, P s) → P (⋃₀ S)) {s : Set α} (hs : IsOpen s) :
     P s := by
-  obtain ⟨S, hS, rfl⟩ := hB.open_eq_sUnion hs; exact iUnion _ fun b hb ↦ basis _ <| hS hb
+  obtain ⟨S, hS, rfl⟩ := hB.open_eq_sUnion hs; exact sUnion _ fun b hb ↦ basis _ <| hS hb
 
 lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologicalBasis B)
     (hs : IsOpen s) (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by
