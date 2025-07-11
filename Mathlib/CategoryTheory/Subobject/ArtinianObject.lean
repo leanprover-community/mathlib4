@@ -11,7 +11,7 @@ import Mathlib.Order.OrderIsoNat
 import Mathlib.CategoryTheory.Simple
 
 /-!
-# Noetherian objects
+# Artinian objects
 
 We shall say that an object `X` in a category `C` is Artinian
 (type class `IsArtinianObject X`) if the ordered type `Subobject X`
