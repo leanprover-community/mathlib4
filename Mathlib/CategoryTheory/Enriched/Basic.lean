@@ -422,6 +422,7 @@ variable {F} {G H : EnrichedFunctor V C D}
 
 /-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
 of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
+@[reassoc]
 theorem naturality (α : EnrichedNatTrans F G) (X Y : C) :
     (ρ_ _).inv ≫ (F.map X Y ⊗ₘ α.app Y) ≫ eComp V _ _ _ =
     (λ_ _).inv ≫ (α.app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _ := by
