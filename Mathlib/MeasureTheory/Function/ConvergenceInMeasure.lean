@@ -54,25 +54,33 @@ def TendstoInMeasure [EDist E] {_ : MeasurableSpace α} (μ : Measure α) (f : �
     (l : Filter ι) (g : α → E) : Prop :=
   ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (𝓝 0)
 
+lemma tendstoInMeasure_of_ne_top [PseudoMetricSpace E] {_ : MeasurableSpace α} {μ : Measure α}
+    {f : ι → α → E} {l : Filter ι} {g : α → E}
+    (h : ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (𝓝 0)) :
+    TendstoInMeasure μ f l g := by
+  intro ε hε
+  by_cases hε_top : ε = ∞
+  · simp only [hε_top, top_le_iff, edist_ne_top, Set.setOf_false, measure_empty]
+    exact tendsto_const_nhds
+  · exact h ε hε hε_top
+
 theorem tendstoInMeasure_iff_enorm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
-      ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
-  simp_rw [TendstoInMeasure, edist_eq_enorm_sub]
+      ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
+  simp_rw [← edist_eq_enorm_sub]
+  exact ⟨fun h ε hε hε_top ↦ h ε hε, tendstoInMeasure_of_ne_top⟩
 
 theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
   rw [tendstoInMeasure_iff_enorm]
-  refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
-  · convert h (ENNReal.ofReal ε) (ENNReal.ofReal_pos.mpr hε)
+  refine ⟨fun h ε hε ↦ ?_, fun h ε hε hε_top ↦ ?_⟩
+  · convert h (ENNReal.ofReal ε) (ENNReal.ofReal_pos.mpr hε) (by finiteness)
     rw [← ofReal_norm, ENNReal.ofReal_le_ofReal_iff (by positivity)]
-  · by_cases hε_top : ε = ∞
-    · simp only [hε_top, top_le_iff, enorm_ne_top, Set.setOf_false, measure_empty]
-      exact tendsto_const_nhds
-    · lift ε to ℝ≥0 using hε_top
-      exact mod_cast h ε (mod_cast hε)
+  · lift ε to ℝ≥0 using hε_top
+    exact mod_cast h ε (mod_cast hε)
 
 theorem tendstoInMeasure_iff_tendsto_toNNReal [EDist E] [IsFiniteMeasure μ]
     {f : ι → α → E} {l : Filter ι} {g : α → E} :
@@ -298,7 +306,7 @@ end ExistsSeqTendstoAe
 section TendstoInMeasureUnique
 
 /-- The limit in measure is ae unique. -/
-theorem tendstoInMeasure_ae_unique [MetricSpace E] {g h : α → E} {f : ι → α → E} {u : Filter ι}
+theorem tendstoInMeasure_ae_unique [EMetricSpace E] {g h : α → E} {f : ι → α → E} {u : Filter ι}
     [NeBot u] [IsCountablyGenerated u] (hg : TendstoInMeasure μ f u g)
     (hh : TendstoInMeasure μ f u h) : g =ᵐ[μ] h := by
   obtain ⟨ns, h1, h1'⟩ := hg.exists_seq_tendsto_ae'
@@ -331,10 +339,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : 
     (hp_ne_top : p ≠ ∞) (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
     {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
-  intro ε hε
-  by_cases hε_top : ε = ∞
-  · simp only [hε_top, top_le_iff, edist_ne_top, Set.setOf_false, measure_empty]
-    exact tendsto_const_nhds
+  refine tendstoInMeasure_of_ne_top fun ε hε hε_top ↦ ?_
   replace hfg := ENNReal.Tendsto.const_mul (a := 1 / ε ^ p.toReal)
     (Tendsto.ennrpow_const p.toReal hfg) (Or.inr <| by simp [hε.ne'])
   simp only [mul_zero,
@@ -368,10 +373,7 @@ Lp-convergence for all `p ≠ 0`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormedAddCommGroup E] {f : ι → α → E}
     {g : α → E} {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
-  intro δ hδ
-  by_cases hδ_top : δ = ∞
-  · simp only [hδ_top, top_le_iff, edist_ne_top, Set.setOf_false, measure_empty]
-    exact tendsto_const_nhds
+  refine tendstoInMeasure_of_ne_top fun δ hδ hδ_top ↦ ?_
   simp only [eLpNorm_exponent_top, eLpNormEssSup] at hfg
   rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro ε hε
