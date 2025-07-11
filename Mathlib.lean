@@ -3479,7 +3479,6 @@ import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Data.Set.SubtypeNeLift
 import Mathlib.Data.Set.Sups
 import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.UnionLift
@@ -3499,6 +3498,7 @@ import Mathlib.Data.String.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
+import Mathlib.Data.SubtypeNeLift
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Interval
 import Mathlib.Data.Sum.Lattice
