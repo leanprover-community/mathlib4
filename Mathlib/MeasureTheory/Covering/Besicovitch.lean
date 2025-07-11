@@ -987,7 +987,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
           let F : S i ≃ ((↑) : s' → α) '' S i := this.bijOn_image.equiv _
           exact (F.tsum_eq fun x => μ (closedBall x (r x))).symm
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by
-          congr 1; ext x; have : (x : α) ∈ s' := x.1.2; simp only [s', r, if_pos this]
+          grind
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
           haveI : Encodable (S i) := (S_count i).toEncodable
           rw [measure_iUnion]

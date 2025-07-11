@@ -41,7 +41,7 @@ theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
     RingHom.equivRatAlgHom
   rw [show (basisMatrix K) = N by
-    ext:2; simp only [N, latticeBasis_apply, integralBasis_apply,
+    ext : 2; simp only [N, latticeBasis_apply, integralBasis_apply,
     of_apply, apply_at]; rfl, ← pow_ne_zero_iff two_ne_zero]
   convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
     (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))

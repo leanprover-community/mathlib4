@@ -911,11 +911,15 @@ variable {m n : ℤ}
 
 lemma zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
-  |-(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
 
 lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
-  |-(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
+
+lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
+    StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by omega)
 
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
@@ -1094,7 +1098,9 @@ lemma inv_lt_iff_one_lt_mul₀ (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
   rw [← mul_inv_lt_iff₀ ha, one_mul]
 
 lemma one_le_div₀ (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff₀ hb, one_mul]
+lemma one_lt_div₀ (hb : 0 < b) : 1 < a / b ↔ b < a := by rw [lt_div_iff₀ hb, one_mul]
 lemma div_le_one₀ (hb : 0 < b) : a / b ≤ 1 ↔ a ≤ b := by rw [div_le_iff₀ hb, one_mul]
+lemma div_lt_one₀ (hb : 0 < b) : a / b < 1 ↔ a < b := by rw [div_lt_iff₀ hb, one_mul]
 
 /-- One direction of `le_mul_inv_iff₀` where `c` is allowed to be `0` (but `b` must be nonnegative).
 -/

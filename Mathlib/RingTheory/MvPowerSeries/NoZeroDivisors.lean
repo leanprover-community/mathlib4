@@ -60,7 +60,7 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
   intro e he
   rw [map_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hφ, ← map_zero (f := coeff R e), ← hx]
   convert (coeff_mul e x φ).symm
-  rw [Finset.sum_eq_single (e,0), coeff_zero_eq_constantCoeff]
+  rw [Finset.sum_eq_single (e, 0), coeff_zero_eq_constantCoeff]
   · rintro ⟨u, _⟩ huv _
     suffices u < e by simp only [he u this, zero_mul, map_zero]
     apply lt_of_le_of_ne

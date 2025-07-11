@@ -308,7 +308,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the vector addition on the
   Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type."]
 def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_smul_oreDiv⟩
 
 /-- Another characterization lemma for the multiplication on the Ore localizaion delivering
@@ -316,7 +316,7 @@ Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive "Another characterization lemma for the addition on the Ore localizaion delivering
   Ore witnesses and conditions bundled in a sigma type."]
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
-    Σ'r' : R, Σ's' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
+    Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/

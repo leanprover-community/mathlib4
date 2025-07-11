@@ -137,7 +137,7 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {κ : Kernel α Ω} : Indep m₁ m₂ κ 0 := by simp [Indep]
 
 @[simp] lemma indep_zero_left {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} :
-    Indep m₁ m₂ (0 : Kernel α Ω) μ  := by simp [Indep]
+    Indep m₁ m₂ (0 : Kernel α Ω) μ := by simp [Indep]
 
 @[simp] lemma iIndepSet_zero_right : iIndepSet s κ 0 := by simp [iIndepSet]
 
@@ -436,10 +436,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
       = κ a (ite (i = i) t₁ t₂) * κ a (ite (j = i) t₁ t₂) := by
     simp only [hij, Finset.prod_singleton, Finset.prod_insert, not_false_iff,
       Finset.mem_singleton]
-  rw [h1]
-  nth_rw 2 [h2]
-  nth_rw 4 [h2]
-  rw [← h_inter, ← h_prod, h_indep']
+  grind
 
 theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α}
@@ -706,15 +703,10 @@ theorem iIndepSets.piiUnionInter_of_notMem {π : ι → Set (Set Ω)} {a : ι} {
     dsimp only [f]
     rcases Finset.mem_insert.mp hn_mem_insert with hn_mem | hn_mem
     · simp [hn_mem, ht2_mem_pia]
-    · have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hn_mem)
-      simp [hn_ne_a, hn_mem, hft1_mem n hn_mem]
+    · grind
   have h_f_mem_pi : ∀ n ∈ s, f n ∈ π n := fun x hxS => h_f_mem x (by simp [hxS])
   have h_t1 : t1 = ⋂ n ∈ s, f n := by
-    suffices h_forall : ∀ n ∈ s, f n = ft1 n by
-      rw [ht1_eq]
-      ext x
-      simp_rw [Set.mem_iInter]
-      conv => lhs; intro i hns; rw [← h_forall i hns]
+    suffices h_forall : ∀ n ∈ s, f n = ft1 n by grind
     intro n hnS
     have hn_ne_a : n ≠ a := by rintro rfl; exact haS (hs_mem hnS)
     simp_rw [f, if_pos hnS, if_neg hn_ne_a]
@@ -1084,7 +1076,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
     constructor <;> intro h
     · intro i hi; simp_rw [sets_t', dif_pos hi]; exact h ⟨i, hi⟩
-    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dif_pos hi] at h; exact h
+    · grind
   replace hf_Indep := hf_Indep.congr η_eq
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :

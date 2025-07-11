@@ -759,7 +759,7 @@ lemma toRealLinearMap_apply_apply (f : C_c(α, ℝ≥0)) (x : α) :
 lemma nnrealPart_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (toReal f) = f := by ext x; simp
 
 @[simp]
-lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (- toReal f) = 0 := by ext x; simp
+lemma nnrealPart_neg_toReal_eq (f : C_c(α, ℝ≥0)) : nnrealPart (-toReal f) = 0 := by ext x; simp
 
 section toNNRealLinear
 
@@ -816,7 +816,7 @@ lemma toRealLinear_nonneg (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (g : C
 
 @[simp]
 lemma eq_toRealLinear_toReal (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) (f : C_c(α, ℝ≥0)) :
-    toRealLinear Λ (toReal f) = Λ f:= by
+    toRealLinear Λ (toReal f) = Λ f := by
   simp [toRealLinear_apply]
 
 @[simp]
