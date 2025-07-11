@@ -26,7 +26,8 @@ abbrev chosenTerminal : Cat := Cat.of (ULift (ULiftHom (Discrete Unit)))
 def chosenTerminalIsTerminal : IsTerminal chosenTerminal :=
   IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const _).obj ⟨⟨⟨⟩⟩⟩) fun _ _ ↦ rfl
 
-/-- Functors out of the chosen terminal category are equivalent to objects. -/
+/-- The type of functors out of the chosen terminal category is equivalent to the type of objects
+in the target category. TODO: upgrade to an equivalence of categories. -/
 def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal ⥤ C ≃ C where
   toFun F := F.obj ⟨⟨()⟩⟩
   invFun := (Functor.const _).obj
