@@ -14,6 +14,7 @@ import Mathlib.Combinatorics.Quiver.ReflQuiver
 https://github.com/UniMath/UniMath/blob/master/UniMath/CategoryTheory/RegularAndExact/RegularCategory.v#L319 -/
 
 set_option linter.unusedSimpArgs false
+set_option linter.style.multiGoal false
 
 universe u v
 
@@ -389,11 +390,27 @@ def regular_epi_mono_factorization_is_regular_is_monic_mor :
 
 def φ : K f ⟶ K' f := regular_epi_mono_factorization_is_regular_is_monic_mor f g
 
+/--
+Given morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, there is a canonical map
+from the kernel pair of `f ` to the kernel pair of `g`.
+-/
+def kernel_pair_map' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+  [HasPullbacks C] :
+  pullback f f ⟶ pullback g g :=
+  IsPullback.lift (IsPullback.of_hasPullback g g)
+    (pullback.fst f f ≫ f)
+    (pullback.snd f f ≫ f)
+    (by simp only [assoc, pullback.condition])
+
+def isEpi_kernel_pair_map' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+  [HasPullbacks C] : Epi (kernel_pair_map' f g) := sorry
+
 omit k₁ k₂ IsPullbacketc in
-lemma is_epi_monic_mor : Epi (φ f g) := by { sorry
-  -- have := isEpi_kernel_pair_map f g
-  -- unfold φ
-  -- unfold regular_epi_mono_factorization_is_regular_is_monic_mor
+lemma is_epi_monic_mor : Epi (φ f g) := by {
+  unfold φ
+  unfold regular_epi_mono_factorization_is_regular_is_monic_mor
+  simp only [id_eq]
+  sorry
   -- simp only [id_eq]
   --sorry
   --apply isEpi_kernel_pair_map
@@ -403,6 +420,7 @@ lemma is_epi_monic_mor : Epi (φ f g) := by { sorry
   -- unfold regular_epi_mono_factorization_epi
 
 }
+
 
 omit w k₁ k₂ IsPullbacketc [CartesianMonoidalCategory C] [RegularEpi f] in
 lemma monic_mor_pr1 :
