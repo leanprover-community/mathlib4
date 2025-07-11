@@ -407,7 +407,7 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
-variable {G₀' : Type*} [GroupWithZero G₀']
+variable {G₀ : Type*} [GroupWithZero G₀]
 
 /-- The map `withZeroUnitsEquiv` as a `MonoidWithZeroHom`. -/
 def withZeroUnitsHom [DecidablePred (fun a : G₀' ↦ a = 0)] :
