@@ -128,19 +128,20 @@ def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
     else isFalse fun hab' => hab (le_of_lt hab')
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
-This means that `a ≤ b` and there is no element in between.
+This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
 -/
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `WCovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
-/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
+/-- `CovBy a b` means that `b` covers `a`. This means that `a < b` and there is no element in
+between. This is denoted `a ⋖ b`. -/
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `CovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⋖ " => CovBy
 
 end Preorder
@@ -159,7 +160,9 @@ variable [PartialOrder α] {a b : α}
 
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
 
-alias eq_of_le_of_le := le_antisymm
+alias eq_of_le_of_ge := le_antisymm
+
+@[deprecated (since := "2025-06-07")] alias eq_of_le_of_le := eq_of_le_of_ge
 
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
@@ -174,20 +177,13 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
 
-namespace Decidable
-
-variable [DecidableLE α]
-
-lemma lt_or_eq_of_le (hab : a ≤ b) : a < b ∨ a = b :=
+-- See Note [decidable namespace]
+protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_ge hab hba)
 
-lemma eq_or_lt_of_le (hab : a ≤ b) : a = b ∨ a < b :=
-  (lt_or_eq_of_le hab).symm
+protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b ∨ a = b :=
+  ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
 
-lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b :=
-  ⟨lt_or_eq_of_le, le_of_lt_or_eq⟩
-
-end Decidable
 
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
 lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq

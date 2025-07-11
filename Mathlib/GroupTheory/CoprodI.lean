@@ -109,7 +109,7 @@ letters can come from the same summand. -/
 structure Word where
   /-- A `Word` is a `List (Σ i, M i)`, such that `1` is not in the list, and no
   two adjacent letters are from the same summand -/
-  toList : List (Σi, M i)
+  toList : List (Σ i, M i)
   /-- A reduced word does not contain `1` -/
   ne_one : ∀ l ∈ toList, Sigma.snd l ≠ 1
   /-- Adjacent letters are not from the same summand. -/
@@ -143,7 +143,7 @@ universal property of the free product, characterizing it as a categorical copro
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
-    Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
+    Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
         simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩) <;> simp
@@ -250,10 +250,10 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
   induction x using CoprodI.induction_on with
   | one => exact s.one_mem
   | of i x =>
-    simp only [lift_of, SetLike.mem_coe]
+    simp only [lift_of]
     exact h i (Set.mem_range_self x)
   | mul x y hx hy =>
-    simp only [map_mul, SetLike.mem_coe]
+    simp only [map_mul]
     exact s.mul_mem hx hy
 
 theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
@@ -524,11 +524,11 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     simp only [not_true, ne_eq, false_and, exists_prop, true_and, false_or]
     by_cases hw : ⟨j, m₁⟩ ∈ w.toList.tail
     · simp [hw, show m₁ ≠ 1 from w.ne_one _ (List.mem_of_mem_tail hw)]
-    · simp only [hw, false_or, Option.mem_def, ne_eq, and_congr_right_iff]
+    · simp only [hw, false_or, Option.mem_def, and_congr_right_iff]
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head hnil, Option.some.injEq, ne_eq]
+        simp only [List.head?_eq_head hnil, Option.some.injEq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -629,7 +629,7 @@ open Word
 
 /-- The list represented by a given `NeWord` -/
 @[simp]
-def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
+def toList : ∀ {i j} (_w : NeWord M i j), List (Σ i, M i)
   | i, _, singleton x _ => [⟨i, x⟩]
   | _, _, append w₁ _ w₂ => w₁.toList ++ w₂.toList
 
@@ -769,7 +769,7 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
   induction w with
-  | singleton => simp [mulHead, replaceHead]
+  | singleton => simp [replaceHead]
   | append _ _ _ w_ih_w₁ w_ih_w₂ =>
     specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
@@ -994,7 +994,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   clear this
   refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
-  show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
+  change Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
   let H : ι → Type _ := fun _i => FreeGroup Unit
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
@@ -1010,7 +1010,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
     · exact hYdisj hij
-  · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+  · change Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_

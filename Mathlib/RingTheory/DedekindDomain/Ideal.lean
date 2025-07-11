@@ -50,8 +50,6 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-set_option linter.style.longFile 1700
-
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
@@ -214,7 +212,7 @@ lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
   rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coe, coe_one]
   suffices Submodule.map (Algebra.linearMap R₁ K) I.num ≤ 1 from
     this <| (den_mul_self_eq_num I).symm ▸ smul_mem_pointwise_smul i I.den I.coeToSubmodule hi
-  apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top, bot_eq_zero])
+  apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top])
   rw [Ideal.one_eq_top, Submodule.map_top, one_eq_range]
 
 lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by
@@ -254,7 +252,7 @@ theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
     FractionalIdeal.mapEquiv (FractionRing.algEquiv A K)
   refine h.toEquiv.forall_congr (fun {x} => ?_)
   rw [← h.toEquiv.apply_eq_iff_eq]
-  simp [h, IsDedekindDomainInv]
+  simp [h]
 
 theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractionRing A K] (x : K)
     (hx : IsIntegral A x) (hI : IsUnit (adjoinIntegral A⁰ x hx)) : adjoinIntegral A⁰ x hx = 1 := by
@@ -492,7 +490,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   clear hi
   induction' i with i ih
   · rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
-  · show x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
+  · change x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
     rw [pow_succ']; exact x_mul_mem _ ih
 
 /-- Nonzero fractional ideals in a Dedekind domain are units.
@@ -728,17 +726,6 @@ nonrec theorem Ideal.mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) 
     simp only [hp, zero_notMem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
       not_false_eq_true, implies_true]
   · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
-
-variable (A) in
-open UniqueFactorizationMonoid in
-theorem Ideal.mem_primesOver_iff_mem_normalizedFactors {p : Ideal R} [h : p.IsMaximal]
-    [Algebra R A] [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} :
-    P ∈ p.primesOver A ↔ P ∈ normalizedFactors (Ideal.map (algebraMap R A) p) := by
-  rw [primesOver, Set.mem_setOf_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
-    liesOver_iff, under_def, and_congr_right_iff, map_le_iff_le_comap]
-  intro hP
-  refine ⟨fun h ↦ le_of_eq h, fun h' ↦ ((IsCoatom.le_iff_eq (isMaximal_def.mp h) ?_).mp h').symm⟩
-  exact comap_ne_top (algebraMap R A) (IsPrime.ne_top hP)
 
 theorem Ideal.pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti (I ^ · : ℕ → Ideal A) :=
@@ -1081,8 +1068,8 @@ def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpe
 
 /-- An ideal of `R` is not the whole ring if and only if it is contained in an element of
 `HeightOneSpectrum R` -/
-theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) : I ≠ ⊤ ↔
-    ∃ P : HeightOneSpectrum R, I ≤ P.asIdeal := by
+theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) :
+    I ≠ ⊤ ↔ ∃ P : HeightOneSpectrum R, I ≤ P.asIdeal := by
   rw [Ideal.ne_top_iff_exists_maximal]
   constructor
   · rintro ⟨M, hMmax, hIM⟩
@@ -1302,6 +1289,39 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
   omega
 
+/-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
+theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+    {a a₀ x : R} {n : ℕ} (hx : Prime x) (ha : ¬x ∣ a) (heq : a₀ = x ^ n * a) :
+    (Associates.mk (span {x})).count (Associates.mk (span {a₀})).factors = n := by
+  have hx0 : x ≠ 0 := Prime.ne_zero hx
+  classical
+  rw [count_associates_factors_eq, UniqueFactorizationMonoid.count_normalizedFactors_eq]
+  · exact (prime_span_singleton_iff.mpr hx).irreducible
+  · exact normalize_eq _
+  · simp only [span_singleton_pow, heq, dvd_span_singleton]
+    exact Ideal.mul_mem_right _ _ (mem_span_singleton_self (x ^ n))
+  · simp only [span_singleton_pow, heq, dvd_span_singleton, mem_span_singleton]
+    rw [pow_add, pow_one, mul_dvd_mul_iff_left (pow_ne_zero n hx0)]
+    exact ha
+  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot]
+    aesop
+  · exact (span_singleton_prime hx0).mpr hx
+  · simp only [ne_eq, span_singleton_eq_bot]; exact hx0
+
+/-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
+theorem Ideal.count_associates_eq' [DecidableEq (Associates (Ideal R))]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+    {a x : R} (hx : Prime x) {n : ℕ} (hle : x ^ n ∣ a) (hlt : ¬x ^ (n + 1) ∣ a) :
+    (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
+  obtain ⟨q, hq⟩ := hle
+  apply Ideal.count_associates_eq hx _ hq
+  contrapose! hlt with hdvd
+  obtain ⟨q', hq'⟩ := hdvd
+  use q'
+  rw [hq, hq']
+  ring
+
 end
 
 theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
@@ -1502,7 +1522,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
         (prime_of_normalized_factor i hi).ne_zero).irreducible ?_
       · obtain ⟨a, ha, ha'⟩ := this
         use ⟨a, ha⟩
-        simp only [Subtype.coe_mk, Subtype.mk_eq_mk, ← span_singleton_eq_span_singleton.mpr ha',
+        simp only [← span_singleton_eq_span_singleton.mpr ha',
             Ideal.span_singleton_generator]
       · exact (Submodule.IsPrincipal.mem_iff_generator_dvd i).mp
           ((show Ideal.span {r} ≤ i from dvd_iff_le.mp (dvd_of_mem_normalizedFactors hi))

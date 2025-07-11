@@ -114,7 +114,7 @@ lemma isConstant_iff_isIso_counit_app [(constantSheaf J D).Faithful] [(constantS
 A variant of `isConstant_iff_isIso_counit_app` for a general left adjoint to evaluation at a
 terminal object.
 -/
-lemma isConstant_iff_isIso_counit_app'  {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal T)
+lemma isConstant_iff_isIso_counit_app' {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal T)
     (adj : L ⊣ (sheafSections J D).obj ⟨T⟩)
     [L.Faithful] [L.Full] (F : Sheaf J D) : IsConstant J F ↔ IsIso (adj.counit.app F) :=
   (isConstant_iff_mem_essImage J hT adj F).trans (isIso_counit_app_iff_mem_essImage adj).symm

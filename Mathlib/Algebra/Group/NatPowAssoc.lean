@@ -122,7 +122,7 @@ theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc 
 
 @[simp, norm_cast]
 theorem Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
-    (n : ℤ) : ∀(m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
+    (n : ℤ) : ∀ (m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
   | 0 => by
     rw [pow_zero, npow_zero, Int.cast_one]
   | m + 1 => by

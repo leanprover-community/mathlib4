@@ -391,7 +391,7 @@ def conjugateEquiv : (l₂ ⟶ l₁) ≃ (r₁ ⟶ r₂) :=
 
 theorem conjugateEquiv_apply (α : l₂ ⟶ l₁) :
     conjugateEquiv adj₁ adj₂ α =
-      (ρ_ r₁).inv ≫ mateEquiv adj₁ adj₂ ((λ_ l₂).hom ≫ α ≫ (ρ_ l₁).inv) ≫ (λ_ r₂).hom := by
+      (ρ_ r₁).inv ≫ mateEquiv adj₁ adj₂ ((λ_ l₂).hom ≫ α ≫ (ρ_ l₁).inv) ≫ (λ_ r₂).hom :=
   rfl
 
 theorem conjugateEquiv_apply' (α : l₂ ⟶ l₁) :
@@ -403,7 +403,7 @@ theorem conjugateEquiv_apply' (α : l₂ ⟶ l₁) :
 
 theorem conjugateEquiv_symm_apply (α : r₁ ⟶ r₂) :
     (conjugateEquiv adj₁ adj₂).symm α =
-      (λ_ l₂).inv ≫ (mateEquiv adj₁ adj₂).symm ((ρ_ r₁).hom ≫ α ≫ (λ_ r₂).inv) ≫ (ρ_ l₁).hom := by
+      (λ_ l₂).inv ≫ (mateEquiv adj₁ adj₂).symm ((ρ_ r₁).hom ≫ α ≫ (λ_ r₂).inv) ≫ (ρ_ l₁).hom :=
   rfl
 
 theorem conjugateEquiv_symm_apply' (α : r₁ ⟶ r₂) :
@@ -445,7 +445,7 @@ end
 lemma mateEquiv_leftUnitor_hom_rightUnitor_inv
     {a b : B} {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) :
     mateEquiv adj adj ((λ_ _).hom ≫ (ρ_ _).inv) = (ρ_ _).hom ≫ (λ_ _).inv := by
-  simp [← cancel_mono (λ_ r).hom, ← cancel_epi (ρ_ r).inv,
+  simp [← cancel_mono (λ_ r).hom,
     ← conjugateEquiv_id adj, conjugateEquiv_apply]
 
 section
@@ -503,7 +503,7 @@ lemma conjugateEquiv_whiskerRight
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
-    {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃):
+    {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃) :
     conjugateEquiv (adj₁.comp (adj₂.comp adj₃))
       ((adj₁.comp adj₂).comp adj₃) (α_ _ _ _).hom = (α_ _ _ _).hom := by
   simp [← cancel_epi (ρ_ ((r₃ ≫ r₂) ≫ r₁)).hom, ← cancel_mono (λ_ (r₃ ≫ r₂ ≫ r₁)).inv,
@@ -638,7 +638,7 @@ isomorphism if and only if the original 2-morphism is. This explains why some Be
 theorem iterated_mateEquiv_conjugateEquiv (α : f₁ ≫ l₂ ⟶ l₁ ≫ f₂) :
     mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α) =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
-  simp only [conjugateEquiv_apply, mateEquiv_symm_apply', mateEquiv_apply']
+  simp only [conjugateEquiv_apply, mateEquiv_apply']
   dsimp [Adjunction.comp]
   bicategory
 

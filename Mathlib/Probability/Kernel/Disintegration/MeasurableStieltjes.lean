@@ -449,7 +449,7 @@ lemma stieltjesOfMeasurableRat_eq (hf : Measurable f) (a : α) (r : ℚ) :
 lemma stieltjesOfMeasurableRat_unit_prod (hf : Measurable f) (a : α) :
     stieltjesOfMeasurableRat (fun (p : Unit × α) ↦ f p.2) (hf.comp measurable_snd) ((), a)
       = stieltjesOfMeasurableRat f hf a := by
-  simp_rw [stieltjesOfMeasurableRat,IsMeasurableRatCDF.stieltjesFunction,
+  simp_rw [stieltjesOfMeasurableRat, IsMeasurableRatCDF.stieltjesFunction,
     ← IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod a]
   congr with x
   congr 1 with p : 1
