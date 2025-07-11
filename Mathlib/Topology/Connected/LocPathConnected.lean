@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Ben Eltschig
 -/
 import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.AlexandrovDiscrete
 
 /-!
 # Locally path-connected spaces
@@ -217,5 +218,15 @@ instance Sigma.locPathConnectedSpace {X : ι → Type*}
     · exact (image_mono pathComponentIn_subset).trans (u.image_preimage_subset _)
   · exact isOpenMap_sigmaMk _ <| (hu.preimage continuous_sigmaMk).pathComponentIn _
   · exact ⟨x.2, mem_pathComponentIn_self hxu, rfl⟩
+
+instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
+    LocPathConnectedSpace X := by
+  apply LocPathConnectedSpace.of_bases nhds_basis_nhdsKer_singleton
+  simp only [forall_const, IsPathConnected, mem_nhdsKer_singleton]
+  intro x
+  exists x, specializes_rfl
+  intro y hy
+  symm
+  apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
 
 end LocPathConnectedSpace

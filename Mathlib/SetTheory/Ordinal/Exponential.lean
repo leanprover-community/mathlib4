@@ -134,7 +134,7 @@ theorem isLimit_opow_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLim
   · exact isLimit_opow l.one_lt l'
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
-  rcases (one_le_iff_pos.2 h₁).eq_or_gt with h₁ | h₁
+  rcases (one_le_iff_pos.2 h₁).eq_or_lt' with h₁ | h₁
   · simp_all
   · exact (opow_le_opow_iff_right h₁).2 h₂
 

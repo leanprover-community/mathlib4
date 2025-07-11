@@ -90,7 +90,7 @@ private lemma devosMulRel_of_le (mul : #(x.1 * x.2) ≤ #(y.1 * y.2))
 private lemma devosMulRel_of_le_of_le (mul : #(x.1 * x.2) ≤ #(y.1 * y.2))
     (hadd : #y.1 + #y.2 ≤ #x.1 + #x.2) (hone : #x.1 < #y.1) : DevosMulRel x y :=
   devosMulRel_iff.2 <|
-    mul.lt_or_eq.imp_right fun h ↦ hadd.gt_or_eq.imp (And.intro h) fun h' ↦ ⟨h, h', hone⟩
+    mul.lt_or_eq.imp_right fun h ↦ hadd.lt_or_eq'.imp (And.intro h) fun h' ↦ ⟨h, h', hone⟩
 
 @[to_additive]
 private lemma wellFoundedOn_devosMulRel :
