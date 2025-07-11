@@ -33,7 +33,7 @@ In this file we construct the category of formal coproducts given a category.
 
 universe w w₁ w₂ w₃ v v₁ v₂ v₃ u u₁ u₂ u₃
 
-open Opposite
+open Opposite CategoryTheory Functor
 
 namespace CategoryTheory
 
@@ -102,16 +102,21 @@ by `PUnit`, the type with one element. -/
   obj X := ⟨PUnit, fun _ ↦ X⟩
   map f := ⟨fun _ ↦ PUnit.unit, fun _ ↦ f⟩
 
-section ofHom
+section mkOf
 
 variable {X : C} {Y : FormalCoproduct.{w} C}
 
 /-- A map `of(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
 `X ⟶ Y.obj i` in the original category. -/
-@[simps!] def ofHom.mk (i : Y.I) (f : X ⟶ Y.obj i) : (of C).obj X ⟶ Y :=
+@[simps!] def Hom.mkOf (i : Y.I) (f : X ⟶ Y.obj i) : (of C).obj X ⟶ Y :=
   ⟨fun _ ↦ i, fun _ ↦ f⟩
 
 /-- A map `of(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
+`X ⟶ Y.obj i` in the original category. -/
+def Hom.asSigma (f : (of C).obj X ⟶ Y) : Σ (i : Y.I), X ⟶ Y.obj i :=
+  ⟨f.f PUnit.unit, f.φ PUnit.unit⟩
+
+/- /-- A map `of(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
 `X ⟶ Y.obj i` in the original category. -/
 def ofHom.fst (f : (of C).obj X ⟶ Y) : Y.I :=
   f.f PUnit.unit
@@ -120,21 +125,21 @@ def ofHom.fst (f : (of C).obj X ⟶ Y) : Y.I :=
 `X ⟶ Y.obj i` in the original category. -/
 def ofHom.snd (f : (of C).obj X ⟶ Y) :
     X ⟶ Y.obj (ofHom.fst f) :=
-  f.φ PUnit.unit
+  f.φ PUnit.unit-/
 
-lemma ofHom.mk_fst_snd (f : (of C).obj X ⟶ Y) : ofHom.mk (ofHom.fst f) (ofHom.snd f) = f := by
+lemma Hom.mkOf_asSigma (f : (of C).obj X ⟶ Y) : Hom.mkOf f.asSigma.fst f.asSigma.snd = f := by
   ext <;> aesop
 
-end ofHom
+end mkOf
 
 -- This is probably some form of adjunction?
 /-- A map `of(X) ⟶ Y` is specified by an element of `Y`'s indexing set, and then a morphism
 `X ⟶ Y.obj i` in the original category. -/
 @[simps!] def ofHomEquiv (X : C) (Y : FormalCoproduct.{w} C) :
     ((of C).obj X ⟶ Y) ≃ (i : Y.I) × (X ⟶ Y.obj i) where
-  toFun f := ⟨ofHom.fst f, ofHom.snd f⟩
-  invFun f := ofHom.mk f.1 f.2
-  left_inv f := ofHom.mk_fst_snd f
+  toFun f := f.asSigma
+  invFun f := .mkOf f.1 f.2
+  left_inv f := f.mkOf_asSigma
   right_inv _ := rfl
 
 /-- `of` is fully faithful, which means that `(X ⟶ Y) ≃ (of(X) ⟶ of(Y))`. -/
@@ -214,12 +219,12 @@ def coproductCoconeIsoSelf : (cofan X.I X.toFun).pt ≅ X :=
 
 @[reassoc (attr := simp)]
 lemma inj_comp_coproductCoconeIsoSelf_hom (i : X.I) :
-    (cofan X.I X.toFun).inj i ≫ (coproductCoconeIsoSelf X).hom = ofHom.mk i (𝟙 (X.obj i)) :=
+    (cofan X.I X.toFun).inj i ≫ (coproductCoconeIsoSelf X).hom = .mkOf i (𝟙 (X.obj i)) :=
   hom_ext rfl (fun i => by aesop)
 
 @[reassoc (attr := simp)]
 lemma mk_comp_coproductCoconeIsoSelf_inv (i : X.I) :
-    ofHom.mk i (𝟙 (X.obj i)) ≫ (coproductCoconeIsoSelf X).inv = (cofan X.I X.toFun).inj i :=
+    Hom.mkOf i (𝟙 (X.obj i)) ≫ (coproductCoconeIsoSelf X).inv = (cofan X.I X.toFun).inj i :=
   (Iso.comp_inv_eq _).2 (inj_comp_coproductCoconeIsoSelf_hom _ _).symm
 
 /-- The isomorphism between the coproduct of `X.toFun` and the object `X` itself. -/
@@ -228,11 +233,11 @@ lemma mk_comp_coproductCoconeIsoSelf_inv (i : X.I) :
   coproductIsoCofan _ _ ≪≫ coproductCoconeIsoSelf X
 
 @[reassoc (attr := simp)] lemma ι_comp_coproductIsoSelf_hom (i : X.I) :
-    Sigma.ι _ i ≫ (coproductIsoSelf X).hom = ofHom.mk i (𝟙 (X.obj i)) := by
+    Sigma.ι _ i ≫ (coproductIsoSelf X).hom = .mkOf i (𝟙 (X.obj i)) := by
   simp [coproductIsoSelf]
 
 @[reassoc (attr := simp)] lemma mk_comp_coproductIsoSelf_inv (i : X.I) :
-    ofHom.mk i (𝟙 (X.obj i)) ≫ (coproductIsoSelf X).inv = Sigma.ι X.toFun i :=
+    Hom.mkOf i (𝟙 (X.obj i)) ≫ (coproductIsoSelf X).inv = Sigma.ι X.toFun i :=
   (Iso.comp_inv_eq _).2 (ι_comp_coproductIsoSelf_hom _ _).symm
 
 end Coproduct
@@ -328,23 +333,23 @@ include pb
 
 /-- The arbitrary choice of pullback is isomorphic to the explicitly constructed pullback
 `pullbackCone f g pb`. -/
-noncomputable def pullbackIsoPullbackCone : pullback f g ≅ (pullbackCone f g pb).pt :=
+noncomputable def pullbackIsoPullbackConePt : pullback f g ≅ (pullbackCone f g pb).pt :=
   limit.isoLimitCone ⟨_, isLimitPullback f g pb hpb⟩
 
-@[reassoc (attr := simp)] lemma pullbackIsoPullback_hom_fst :
-    (pullbackIsoPullbackCone f g pb hpb).hom ≫ (pullbackCone f g pb).fst = pullback.fst f g :=
+@[reassoc (attr := simp)] lemma pullbackIsoPullbackConePt_hom_fst :
+    (pullbackIsoPullbackConePt f g pb hpb).hom ≫ (pullbackCone f g pb).fst = pullback.fst f g :=
   limit.isoLimitCone_hom_π _ _
 
-@[reassoc (attr := simp)] lemma pullbackIsoPullback_inv_fst :
-    (pullbackIsoPullbackCone f g pb hpb).inv ≫ pullback.fst f g = (pullbackCone f g pb).fst :=
+@[reassoc (attr := simp)] lemma ppullbackIsoPullbackConePt_inv_fst :
+    (pullbackIsoPullbackConePt f g pb hpb).inv ≫ pullback.fst f g = (pullbackCone f g pb).fst :=
   limit.isoLimitCone_inv_π _ _
 
-@[reassoc (attr := simp)] lemma pullbackIsoPullback_hom_snd :
-    (pullbackIsoPullbackCone f g pb hpb).hom ≫ (pullbackCone f g pb).snd = pullback.snd f g :=
+@[reassoc (attr := simp)] lemma pullbackIsoPullbackConePt_hom_snd :
+    (pullbackIsoPullbackConePt f g pb hpb).hom ≫ (pullbackCone f g pb).snd = pullback.snd f g :=
   limit.isoLimitCone_hom_π _ _
 
-@[reassoc (attr := simp)] lemma pullbackIsoPullback_inv_snd :
-    (pullbackIsoPullbackCone f g pb hpb).inv ≫ pullback.snd f g = (pullbackCone f g pb).snd :=
+@[reassoc (attr := simp)] lemma pullbackIsoPullbackConePt_inv_snd :
+    (pullbackIsoPullbackConePt f g pb hpb).inv ≫ pullback.snd f g = (pullbackCone f g pb).snd :=
   limit.isoLimitCone_inv_π _ _
 
 end Pullback
@@ -372,13 +377,13 @@ of formal coproducts. -/
 variable {C A}
 
 /-- `eval(F)` preserves arbitrary coproducts. -/
-def isColimitEvalMapCocone : IsColimit (((eval.{w} C A).obj F).mapCocone (cofan.{w} J f)) where
+def isColimitEvalMapCoconeCofan : IsColimit (((eval.{w} C A).obj F).mapCocone (cofan.{w} J f)) where
   desc s := Sigma.desc fun i ↦ Sigma.ι (F.obj ∘ (f i.1).obj) i.2 ≫ s.ι.app ⟨i.1⟩
   fac s i := Sigma.hom_ext _ _ fun i ↦ by simp [cofan, Function.comp_def]
   uniq s m h := Sigma.hom_ext _ _ fun ⟨i₁, i₂⟩ ↦ by simp [← h, cofan, Function.comp_def]
 
 instance : PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) :=
-  ⟨fun hc ↦ ⟨IsColimit.ofIsoColimit (isColimitEvalMapCocone J f F)
+  ⟨fun hc ↦ ⟨IsColimit.ofIsoColimit (isColimitEvalMapCoconeCofan J f F)
     ((Cocones.functoriality _ _).mapIso ((isColimitCofan J f).uniqueUpToIso hc))⟩⟩
 
 instance : PreservesColimitsOfShape (Discrete J) ((eval.{w} C A).obj F) :=
@@ -408,13 +413,13 @@ formal coproducts. -/
 variable {C A}
 
 /-- `evalOp(F)` preserves arbitrary products. -/
-def isLimitEvalMapCone : IsLimit (((evalOp.{w} C A).obj F).mapCone (cofan.{w} J f).op) where
+def isLimitEvalMapConeCofanOp : IsLimit (((evalOp.{w} C A).obj F).mapCone (cofan.{w} J f).op) where
   lift s := Pi.lift fun i ↦ s.π.app ⟨i.1⟩ ≫ Pi.π _ i.2
-  fac s i := Pi.hom_ext _ _ fun i ↦ by simp [Pi.lift_π, cofan]
-  uniq s m h := Pi.hom_ext _ _ fun ⟨i₁, i₂⟩ ↦ by simp [Pi.lift_π, ← h, cofan]
+  fac s i := Pi.hom_ext _ _ fun i ↦ by simp [cofan]
+  uniq s m h := Pi.hom_ext _ _ fun ⟨i₁, i₂⟩ ↦ by simp [← h, cofan]
 
 instance : PreservesLimit (Discrete.functor (op ∘ f)) ((evalOp.{w} C A).obj F) :=
-  ⟨fun hc ↦ ⟨IsLimit.ofIsoLimit (isLimitEvalMapCone J f F) ((Cones.functoriality _ _).mapIso
+  ⟨fun hc ↦ ⟨IsLimit.ofIsoLimit (isLimitEvalMapConeCofanOp J f F) ((Cones.functoriality _ _).mapIso
     ((Cofan.IsColimit.op (isColimitCofan J f)).uniqueUpToIso hc))⟩⟩
 
 end HasProducts
@@ -422,7 +427,7 @@ end HasProducts
 
 /-- A family of maps with the same target can be turned into one arrow in the category of formal
 coproducts. This is used in Čech cohomology. -/
-@[simps!] def arrowOfMaps (X : C) {J : Type w} (f : (j : J) → C) (φ : (j : J) → f j ⟶ X) :
+@[simps!] def homOfPiHom (X : C) {J : Type w} (f : (j : J) → C) (φ : (j : J) → f j ⟶ X) :
     FormalCoproduct.mk _ f ⟶ (of C).obj X :=
   ⟨fun _ ↦ PUnit.unit, φ⟩
 
