@@ -28,6 +28,7 @@ Prove the fundamental theorem of concept lattices.
 ## References
 
 * [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
+* [Birkhoff, Garrett *Lattice Theory*][birkhoff1940]
 
 ## Tags
 
