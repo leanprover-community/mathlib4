@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Projection to a subspace
@@ -488,6 +489,17 @@ lemma IsIdempotentElem.ext {p q : E →ₗ[R] E} (hp : IsIdempotentElem p) (hq :
   obtain ⟨⟨v, hv⟩, ⟨w, hw⟩, rfl, _⟩ :=
     (ker p).existsUnique_add_of_isCompl hp.isProj_range.isCompl.symm x
   simp [mem_ker.mp, hv, (hk ▸ hv), (mem_range_iff hp).mp, hw, (mem_range_iff hq).mp, (hr ▸ hw)]
+
+theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddCommGroup E] [Module S E]
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
+  le_antisymm
+    (LinearMap.range_le_ker_iff.mpr hp.one_sub_mul_self)
+    fun x hx ↦ ⟨x, by simpa [sub_eq_zero, eq_comm (a := x)] using hx⟩
+
+open LinearMap in
+theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) := by
+  simpa using hp.one_sub.range_eq_ker.symm
 
 end LinearMap
 

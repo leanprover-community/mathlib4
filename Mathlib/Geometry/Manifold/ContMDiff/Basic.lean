@@ -224,7 +224,8 @@ end const
 /-- `f` is continuously differentiable if it is cont. differentiable at
 each `x ∈ mulTSupport f`. -/
 @[to_additive "`f` is continuously differentiable if it is continuously
-differentiable at each `x ∈ tsupport f`."]
+differentiable at each `x ∈ tsupport f`. See also `contMDiff_section_of_tsupport`
+for a similar result for sections of vector bundles."]
 theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
     (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
   intro x
@@ -257,6 +258,55 @@ alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
 
 @[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
 alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
+
+
+/-! ### Being `C^k` on a union of open sets can be tested on each set -/
+section contMDiff_union
+
+variable {s t : Set M}
+
+/-- If a function is `C^k` on two open sets, it is also `C^n` on their union. -/
+lemma ContMDiffOn.union_of_isOpen (hf : ContMDiffOn I I' n f s) (hf' : ContMDiffOn I I' n f t)
+    (hs : IsOpen s) (ht : IsOpen t) :
+    ContMDiffOn I I' n f (s ∪ t) := by
+  intro x hx
+  obtain (hx | hx) := hx
+  · exact (hf x hx).contMDiffAt (hs.mem_nhds hx) |>.contMDiffWithinAt
+  · exact (hf' x hx).contMDiffAt (ht.mem_nhds hx) |>.contMDiffWithinAt
+
+/-- A function is `C^k` on two open sets iff it is `C^k` on their union. -/
+lemma contMDiffOn_union_iff_of_isOpen (hs : IsOpen s) (ht : IsOpen t) :
+    ContMDiffOn I I' n f (s ∪ t) ↔ ContMDiffOn I I' n f s ∧ ContMDiffOn I I' n f t :=
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩,
+   fun ⟨hfs, hft⟩ ↦ ContMDiffOn.union_of_isOpen hfs hft hs ht⟩
+
+lemma contMDiff_of_contMDiffOn_union_of_isOpen (hf : ContMDiffOn I I' n f s)
+    (hf' : ContMDiffOn I I' n f t) (hst : s ∪ t = univ) (hs : IsOpen s) (ht : IsOpen t) :
+    ContMDiff I I' n f := by
+  rw [← contMDiffOn_univ, ← hst]
+  exact hf.union_of_isOpen hf' hs ht
+
+/-- If a function is `C^k` on open sets `s i`, it is `C^k` on their union -/
+lemma ContMDiffOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
+    (hf : ∀ i : ι, ContMDiffOn I I' n f (s i)) (hs : ∀ i, IsOpen (s i)) :
+    ContMDiffOn I I' n f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, rfl⟩, hxsi⟩
+  exact (hf i).contMDiffAt ((hs i).mem_nhds hxsi) |>.contMDiffWithinAt
+
+/-- A function is `C^k` on a union of open sets `s i` iff it is `C^k` on each `s i`. -/
+lemma contMDiffOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set M}
+    (hs : ∀ i, IsOpen (s i)) :
+    ContMDiffOn I I' n f (⋃ i, s i) ↔ ∀ i : ι, ContMDiffOn I I' n f (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
+   fun h ↦ ContMDiffOn.iUnion_of_isOpen h hs⟩
+
+lemma contMDiff_of_contMDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
+    (hf : ∀ i : ι, ContMDiffOn I I' n f (s i)) (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
+    ContMDiff I I' n f := by
+  rw [← contMDiffOn_univ, ← hs']
+  exact ContMDiffOn.iUnion_of_isOpen hf hs
+
+end contMDiff_union
 
 
 /-! ### The inclusion map from one open set to another is `C^n` -/

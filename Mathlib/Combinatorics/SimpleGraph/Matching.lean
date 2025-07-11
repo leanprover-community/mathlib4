@@ -311,9 +311,8 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c.val)).verts := Fintype.ofFinite _
   classical
   haveI : Fintype (c.val.supp) := Fintype.ofFinite _
-  simpa [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image, Nat.card_eq_fintype_card,
-    Set.toFinset_image,Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card,
-    ← Set.Nat.card_coe_set_eq] using hMmatch.even_card
+  simpa [Subgraph.induce_verts, Subgraph.verts_top, Nat.card_eq_fintype_card, Set.toFinset_card,
+    Finset.card_image_of_injective, ← Nat.card_coe_set_eq] using hMmatch.even_card
 
 end Finite
 end ConnectedComponent
@@ -547,7 +546,7 @@ def IsAlternating (G G' : SimpleGraph V) :=
 lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : G'' ≤ G) :
     G''.IsAlternating G' := fun _ _ _ hww' hvw hvw' ↦ halt hww' (h hvw) (h hvw')
 
-lemma IsAlternating.spanningCoe (halt : G.IsAlternating G') (H : Subgraph G)  :
+lemma IsAlternating.spanningCoe (halt : G.IsAlternating G') (H : Subgraph G) :
     H.spanningCoe.IsAlternating G' := by
   intro v w w' hww' hvw hvv'
   simp only [Subgraph.spanningCoe_adj] at hvw hvv'

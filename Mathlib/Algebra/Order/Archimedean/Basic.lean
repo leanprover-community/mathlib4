@@ -146,6 +146,10 @@ theorem existsUnique_sub_zpow_mem_Ioc {a : G} (ha : 1 < a) (b c : G) :
     simpa only [Equiv.neg_apply, zpow_neg, div_inv_eq_mul] using
       existsUnique_add_zpow_mem_Ioc ha b c
 
+@[to_additive]
+theorem exists_pow_lt {a : G} (ha : a < 1) (b : G) : ∃ n : ℕ, a ^ n < b :=
+  (exists_lt_pow (one_lt_inv'.mpr ha) b⁻¹).imp <| by simp
+
 end LinearOrderedCommGroup
 
 section OrderedSemiring
@@ -416,10 +420,7 @@ theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : K) <
     rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
   · rw [Rat.den_intCast, Nat.cast_one]
     exact one_ne_zero
-  · intro H
-    rw [Rat.num_natCast, Int.cast_natCast, Nat.cast_eq_zero] at H
-    subst H
-    cases n0
+  · positivity
 
 theorem exists_rat_mem_uIoo {x y : K} (h : x ≠ y) : ∃ q : ℚ, ↑q ∈ Set.uIoo x y :=
   exists_rat_btwn (min_lt_max.mpr h)
