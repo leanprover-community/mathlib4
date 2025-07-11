@@ -64,6 +64,18 @@ class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   completely_regular : ∀ (x : X), ∀ K : Set X, IsClosed K → x ∉ K →
     ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 K
 
+lemma completelyRegularSpace_iff_isOpen : CompletelyRegularSpace X ↔
+    ∀ (x : X), ∀ K : Set X, IsOpen K → x ∈ K →
+      ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 Kᶜ := by
+  conv_lhs => tactic =>
+    simp_rw +singlePass [completelyRegularSpace_iff, compl_surjective.forall, isClosed_compl_iff,
+      mem_compl_iff, not_not]
+
+lemma CompletelyRegularSpace.completely_regular_isOpen [CompletelyRegularSpace X] :
+    ∀ (x : X), ∀ K : Set X, IsOpen K → x ∈ K →
+      ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 Kᶜ :=
+  completelyRegularSpace_iff_isOpen.mp inferInstance
+
 instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] :
     RegularSpace X := by
   rw [regularSpace_iff]
@@ -112,8 +124,7 @@ lemma completelyRegularSpace_induced
 lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @CompletelyRegularSpace X (t i)) : @CompletelyRegularSpace X (⨅ i, t i) := by
   letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
-  constructor
-  simp_rw +singlePass [compl_surjective.forall, isClosed_compl_iff, mem_compl_iff, not_not]
+  rw [completelyRegularSpace_iff_isOpen]
   intro x K hK hxK
   simp_rw [← hK.mem_nhds_iff , nhds_iInf, mem_iInf, exists_finite_iff_finset,
     Finset.coe_sort_coe] at hxK; clear hK
@@ -158,7 +169,7 @@ lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
   · simp_rw [le_nhds_iff, ((nhds_basis_opens _).comap _).mem_iff, and_assoc]
     intro U hxU hU
     obtain ⟨f, hf, efx, hfU⟩ :=
-      CompletelyRegularSpace.completely_regular x Uᶜ hU.isClosed_compl (notMem_compl_iff.mpr hxU)
+      CompletelyRegularSpace.completely_regular_isOpen x U hU hxU
     conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => ext; simp [EqOn, subset_def]
     rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
