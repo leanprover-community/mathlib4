@@ -31,6 +31,6 @@ lemma partialSups_succ' {α : Type*} [SemilatticeSup α] [LinearOrder ι] [Local
 
 /-- See `partialSups_add_one` for another decomposition of `partialSups f (i + 1)`. -/
 lemma partialSups_add_one' [Add ι] [One ι] [LinearOrder ι] [OrderBot ι] [LocallyFiniteOrder ι]
-    [SuccAddOrder ι] (f : ι → α)  (i : ι) :
+    [SuccAddOrder ι] (f : ι → α) (i : ι) :
     partialSups f (i + 1) = f ⊥ ⊔ partialSups (f ∘ (fun k ↦ k + 1)) i := by
   simpa [← Order.succ_eq_add_one] using partialSups_succ' f i
