@@ -231,7 +231,7 @@ theorem Hom.comp_eq {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
 
 theorem Hom.mk_comp {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
     (α : homEquiv f ⟶ homEquiv g) (β : homEquiv g ⟶ homEquiv h) :
-    Hom.mk (α ≫ β) = (Hom.mk α ≫ Hom.mk β) := rfl
+    Hom.mk (α ≫ β) = Hom.mk α ≫ Hom.mk β := rfl
 
 @[ext] theorem Hom.ext {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α β : f ⟶ g)
     (H : Hom.base α = Hom.base β) : α = β := by cases α; cases β; cases H; rfl
