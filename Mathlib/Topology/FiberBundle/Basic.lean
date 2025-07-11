@@ -419,7 +419,7 @@ typeclass inference -/
 @[nolint unusedArguments]
 def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 
-instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
+instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹TopologicalSpace F›
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
 It is by definition equal to `Bundle.TotalSpace F Z.Fiber`. -/
