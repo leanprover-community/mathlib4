@@ -5,7 +5,7 @@ Authors: David Wärn
 -/
 import Mathlib.Data.Stream.Init
 import Mathlib.Topology.Algebra.Semigroup
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
