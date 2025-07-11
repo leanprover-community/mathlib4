@@ -177,7 +177,7 @@ elab "norm_numI" : conv => do
   unless (q(ℂ) == (← inferType z)) do throwError "{z} is not a complex number"
   have z : Q(ℂ) := z
   let ⟨a, b, pf⟩ ← normalize z
-  Conv.applySimpResult { expr := q(Complex.mk $a $b), proof? := some pf }
+  Conv.applySimpResult { expr := q(Complex.mk $a $b), proof? := some q(($pf).out) }
 
 end NormNumI
 namespace NormNum
