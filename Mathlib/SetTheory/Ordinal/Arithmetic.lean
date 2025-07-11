@@ -1184,7 +1184,7 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
-/-! ### Properties of ω -/
+/-! ### Properties of `ω` -/
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
