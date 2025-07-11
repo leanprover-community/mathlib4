@@ -619,7 +619,7 @@ private lemma isCompl_genWeightSpace_zero_posFittingComp_aux
       apply le_antisymm <| sup_le_iff.mpr
         ⟨map_posFittingComp_le _, posFittingCompOf_le_posFittingComp R L M x⟩
       rw [← posFittingComp_map_incl_sup_of_codisjoint h₁.codisjoint]
-      exact sup_le_sup_left LieSubmodule.map_incl_le _
+      grw [LieSubmodule.map_incl_le]
     rw [← h₃, ← h₄]
     apply Disjoint.isCompl_sup_right_of_isCompl_sup_left
     · rw [disjoint_iff, ← LieSubmodule.map_inf M₀ₓ.injective_incl, h₂.inf_eq_bot,

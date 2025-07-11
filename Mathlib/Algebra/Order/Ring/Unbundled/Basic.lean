@@ -393,7 +393,8 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_lt_add_left (mul_lt_mul_of_pos_right hab hd) _
+  gcongr
+  exact hd
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE R] [MulPosStrictMono R]

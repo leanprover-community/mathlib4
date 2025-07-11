@@ -76,9 +76,8 @@ decreasing_by exact h
 theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   intros a b h
   rw [lfpApprox, lfpApprox]
-  refine sSup_le_sSup ?h
-  apply sup_le_sup_right
-  simp only [exists_prop, Set.le_eq_subset, Set.setOf_subset_setOf, forall_exists_index, and_imp,
+  gcongr sSup (?_ ∪ {x})
+  simp only [exists_prop, Set.setOf_subset_setOf, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
   intros a' h'
   use a'
@@ -262,7 +261,7 @@ theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
-    gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
+    gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one f.dual x h a
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
