@@ -552,6 +552,7 @@ def IsBoundary₂ (x : G × G →₀ A) : Prop :=
     single (g.1 * g.2.1, g.2.2) a + single (g.1, g.2.1 * g.2.2) a - single (g.1, g.2.1) a) = x
 
 end
+
 section
 
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
@@ -591,6 +592,7 @@ theorem isBoundary₂_iff (x : G × G →₀ A) :
     simp_all [sum_sum_index]
 
 end
+
 end IsBoundary
 
 section ofDistribMulAction
@@ -862,7 +864,9 @@ theorem π_comp_H0IsoOfIsTrivial_hom :
   simp [H0IsoOfIsTrivial]
 
 end IsTrivial
+
 end H0
+
 section H1
 
 /-- Shorthand for the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`,
@@ -927,9 +931,9 @@ def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A
   AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicative'.symm <| Abelianization.lift {
     toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHomClass.toAddMonoidHom
       ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
-    map_one' := Multiplicative.toAdd.bijective.1 <|
+    map_one' := Multiplicative.toAdd.injective <|
       LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
-    map_mul' g h := Multiplicative.toAdd.bijective.1 <| LinearMap.ext fun a => by
+    map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
       simpa [← map_add] using ((H1π_eq_iff _ _).2 ⟨single (g, h) a, by
         simp [cycles₁IsoOfIsTrivial, sub_add_eq_add_sub, add_comm (single h a),
           d₂₁_single (A := A)]⟩).symm }
@@ -966,20 +970,20 @@ def H1AddEquivOfIsTrivial :
     H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
   LinearEquiv.toAddEquiv <| LinearEquiv.ofLinear
     (H1ToTensorOfIsTrivial A) (lift <| mkH1OfIsTrivial A)
-    (ext <| LinearMap.toAddMonoidHom_injective <|
-      AddMonoidHom.toMultiplicative'.bijective.1 <| Abelianization.hom_ext _ _ <| MonoidHom.ext
-      fun g => Multiplicative.toAdd.bijective.1 <| LinearMap.ext fun a => by
-        simp [TensorProduct.mk_apply, TensorProduct.lift.tmul, mkH1OfIsTrivial_apply,
-          H1ToTensorOfIsTrivial_H1π_single g a]) <| LinearMap.toAddMonoidHom_injective <|
-    (H1Iso A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <|
+    (ext <| LinearMap.toAddMonoidHom_injective <| by
+      ext g a
+      simp [TensorProduct.mk_apply, TensorProduct.lift.tmul, mkH1OfIsTrivial_apply,
+        H1ToTensorOfIsTrivial_H1π_single g a])
+    (LinearMap.toAddMonoidHom_injective <|
+      (H1Iso A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <|
       QuotientAddGroup.addMonoidHom_ext _ <|
-      (cycles₁IsoOfIsTrivial A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <|
-      Finsupp.addHom_ext fun _ _ => by
+      (cycles₁IsoOfIsTrivial A).symm.toLinearEquiv.toAddEquiv.comp_left_injective <| by
+        ext
         simp only [H1ToTensorOfIsTrivial, Iso.toLinearEquiv, AddMonoidHom.coe_comp,
           LinearMap.toAddMonoidHom_coe, LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap]
         change TensorProduct.lift _ (QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _)) = _
         simpa [AddSubgroup.subtype, cycles₁IsoOfIsTrivial_inv_apply (A := A),
-          -π_comp_H1Iso_inv_apply] using (π_comp_H1Iso_inv_apply A _).symm
+          -π_comp_H1Iso_inv_apply] using (π_comp_H1Iso_inv_apply A _).symm)
 
 @[simp]
 lemma H1AddEquivOfIsTrivial_single (g : G) (a : A) :
@@ -994,7 +998,9 @@ lemma H1AddEquivOfIsTrivial_symm_tmul (g : G) (a : A) :
   rfl
 
 end IsTrivial
+
 end H1
+
 section H2
 
 /-- Shorthand for the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`,
@@ -1042,6 +1048,13 @@ lemma π_comp_H2Iso_hom :
       (shortComplexH2 A).moduleCatLeftHomologyData.π := by
   simp [H2Iso, isoCycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H2Iso_inv :
+    (shortComplexH2 A).moduleCatLeftHomologyData.π ≫ (H2Iso A).inv = H2π A :=
+  (CommSq.vert_inv ⟨π_comp_H2Iso_hom A⟩).w
+
 end H2
+
 end Homology
+
 end groupHomology
