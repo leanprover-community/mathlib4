@@ -60,12 +60,12 @@ lemma fold_max_add [LinearOrder M] [Add M] [AddRightMono M] (s : Finset ι) (a :
 @[to_additive nsmul_inf']
 lemma inf'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : Finset ι)
     (f : ι → M) (n : ℕ) (hs) : s.inf' hs f ^ n = s.inf' hs fun a ↦ f a ^ n :=
-  map_finset_inf' (OrderHom.mk _ <| pow_left_mono n) hs _
+  map_finset_inf' (OrderHom.mk _ <| pow_left_monotone n) hs _
 
 @[to_additive nsmul_sup']
 lemma sup'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : Finset ι)
     (f : ι → M) (n : ℕ) (hs) : s.sup' hs f ^ n = s.sup' hs fun a ↦ f a ^ n :=
-  map_finset_sup' (OrderHom.mk _ <| pow_left_mono n) hs _
+  map_finset_sup' (OrderHom.mk _ <| pow_left_monotone n) hs _
 
 section Group
 variable [Group G] [LinearOrder G]

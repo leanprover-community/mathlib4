@@ -265,7 +265,7 @@ private theorem newton_seq_dist_aux (n : ℕ) :
   | 0 => by simp [T_pow_nonneg, mul_nonneg]
   | k + 1 =>
     have : 2 ^ n ≤ 2 ^ (n + k) := by
-      apply pow_right_mono₀
+      apply pow_right_monotone₀
       · norm_num
       · apply Nat.le_add_right
     calc
@@ -345,7 +345,7 @@ private theorem T_pos : T > 0 := by
 private theorem newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ < ‖F.eval a‖ / ‖F.derivative.eval a‖ :=
   have : 2 ≤ 2 ^ (n + 1) := by
-    have := pow_right_mono₀ (by norm_num : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
+    have := pow_right_monotone₀ (by norm_num : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
     simpa using this
   calc
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ ≤ ‖F.derivative.eval a‖ * T ^ 2 ^ (n + 1) :=

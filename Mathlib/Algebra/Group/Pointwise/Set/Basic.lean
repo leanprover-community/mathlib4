@@ -611,14 +611,14 @@ protected def monoid : Monoid (Set α) :=
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 
 -- `Set.pow_left_monotone` doesn't exist since it would syntactically be a special case of
--- `pow_left_mono`
+-- `pow_left_monotone`
 
 @[to_additive]
 protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
 @[to_additive (attr := gcongr)]
-lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ hst
+lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_monotone _ hst
 
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=

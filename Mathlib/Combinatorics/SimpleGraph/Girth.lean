@@ -44,8 +44,10 @@ lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcycl
 
 protected alias ⟨_, IsAcyclic.egirth_eq_top⟩ := egirth_eq_top
 
-lemma egirth_anti : Antitone (egirth : SimpleGraph α → ℕ∞) :=
+lemma egirth_antitone : Antitone (egirth : SimpleGraph α → ℕ∞) :=
   fun G H h ↦ iInf_mono fun a ↦ iInf₂_mono' fun w hw ↦ ⟨w.mapLe h, hw.mapLe _, by simp⟩
+
+@[deprecated (since := "2025-07-08")] alias egirth_anti := egirth_antitone
 
 lemma exists_egirth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.egirth = w.length) ↔ ¬ G.IsAcyclic := by
@@ -91,7 +93,7 @@ lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic :=
 protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
 
 lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G'.girth ≤ G.girth :=
-  ENat.toNat_le_toNat (egirth_anti hab) <| egirth_eq_top.not.mpr h
+  ENat.toNat_le_toNat (egirth_antitone hab) <| egirth_eq_top.not.mpr h
 
 lemma exists_girth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by

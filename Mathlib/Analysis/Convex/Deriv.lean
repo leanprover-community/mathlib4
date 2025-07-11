@@ -376,18 +376,20 @@ lemma ConvexOn.monotoneOn_slope_lt (hfc : ConvexOn 𝕜 s f) (hxs : x ∈ s) :
 
 /-- If `f : 𝕜 → 𝕜` is concave on `s`, then for any point `x ∈ s` the slope of the secant line of `f`
 through `x` is antitone on `s \ {x}`. -/
-lemma ConcaveOn.slope_anti (hfc : ConcaveOn 𝕜 s f) (hx : x ∈ s) :
+lemma ConcaveOn.slope_antitoneOn (hfc : ConcaveOn 𝕜 s f) (hx : x ∈ s) :
     AntitoneOn (slope f x) (s \ {x}) := by
   rw [← neg_neg f, slope_neg_fun]
   exact (ConvexOn.slope_mono hfc.neg hx).neg
 
+@[deprecated (since := "2025-07-08")] alias ConcaveOn.slope_anti := ConcaveOn.slope_antitoneOn
+
 lemma ConcaveOn.antitoneOn_slope_gt (hfc : ConcaveOn 𝕜 s f) (hxs : x ∈ s) :
     AntitoneOn (slope f x) {y ∈ s | x < y} :=
-  (hfc.slope_anti hxs).mono fun _ ⟨h1, h2⟩ ↦ ⟨h1, h2.ne'⟩
+  (hfc.slope_antitoneOn hxs).mono fun _ ⟨h1, h2⟩ ↦ ⟨h1, h2.ne'⟩
 
 lemma ConcaveOn.antitoneOn_slope_lt (hfc : ConcaveOn 𝕜 s f) (hxs : x ∈ s) :
     AntitoneOn (slope f x) {y ∈ s | y < x} :=
-  (hfc.slope_anti hxs).mono fun _ ⟨h1, h2⟩ ↦ ⟨h1, h2.ne⟩
+  (hfc.slope_antitoneOn hxs).mono fun _ ⟨h1, h2⟩ ↦ ⟨h1, h2.ne⟩
 
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 

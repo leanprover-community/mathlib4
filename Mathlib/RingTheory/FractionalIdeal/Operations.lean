@@ -451,7 +451,7 @@ theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I 
     rw [mul_comm]
     exact (mem_div_iff_of_nonzero hI).mp hy x hx
   rw [← h]
-  apply mul_left_mono I
+  apply mul_left_monotone I
   apply (le_div_iff_of_nonzero hI).mpr _
   intro y hy x hx
   rw [mul_comm]

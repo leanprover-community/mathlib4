@@ -179,7 +179,7 @@ protected theorem iInter_of_antitone_of_frequently
     {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
     (hsm : Antitone s) (hs : ∃ᶠ i in atTop, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
   rw [← compl_iff, compl_iInter]
-  exact .iUnion_of_monotone_of_frequently (compl_anti.comp hsm) <| hs.mono fun _ ↦ .compl
+  exact .iUnion_of_monotone_of_frequently (compl_antitone.comp hsm) <| hs.mono fun _ ↦ .compl
 
 protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
@@ -192,7 +192,7 @@ protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
     (hsm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
   rw [← compl_iff, compl_iInter]
-  exact .iUnion_of_monotone (compl_anti.comp hsm) fun i ↦ (hs i).compl
+  exact .iUnion_of_monotone (compl_antitone.comp hsm) fun i ↦ (hs i).compl
 
 /-!
 ### Typeclasses on `Subtype MeasurableSet`

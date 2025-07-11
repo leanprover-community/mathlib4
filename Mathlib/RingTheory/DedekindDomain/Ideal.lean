@@ -107,7 +107,7 @@ theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J =
     rw [mul_comm]
     exact (mem_div_iff_of_nonzero hI).mp hy x hx
   rw [← h]
-  apply mul_left_mono I
+  apply mul_left_monotone I
   apply (le_div_iff_of_nonzero hI).mpr _
   intro y hy x hx
   rw [mul_comm]
@@ -220,7 +220,7 @@ lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := b
   · rw [hI, num_zero_eq <| FaithfulSMul.algebraMap_injective R₁ K, zero_mul, zero_eq_bot,
       coeIdeal_bot]
   · rw [mul_comm, ← den_mul_self_eq_num']
-    exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
+    exact mul_right_monotone I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
 
 lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ :=
   lt_of_lt_of_le (coeIdeal_ne_zero.2 (hI ∘ num_eq_zero_iff.1)).bot_lt I.num_le_mul_inv
@@ -310,7 +310,7 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
     rw [eq_top_iff, ← coeIdeal_le_coeIdeal (FractionRing A), coeIdeal_top]
     calc
       (1 : FractionalIdeal A⁰ (FractionRing A)) = _ * _ * _ := ?_
-      _ ≤ _ * _ := mul_right_mono
+      _ ≤ _ * _ := mul_right_monotone
         ((P : FractionalIdeal A⁰ (FractionRing A))⁻¹ * M : FractionalIdeal A⁰ (FractionRing A)) this
       _ = M := ?_
     · rw [mul_assoc, ← mul_assoc (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne,
@@ -320,7 +320,7 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
   intro x hx
   have le_one : (M⁻¹ : FractionalIdeal A⁰ (FractionRing A)) * P ≤ 1 := by
     rw [← h.inv_mul_eq_one M'_ne]
-    exact mul_left_mono _ ((coeIdeal_le_coeIdeal (FractionRing A)).mpr hM.le)
+    exact mul_left_monotone _ ((coeIdeal_le_coeIdeal (FractionRing A)).mpr hM.le)
   obtain ⟨y, _hy, rfl⟩ := (mem_coeIdeal _).mp (le_one hx)
   -- Since `M` is strictly greater than `P`, let `z ∈ M \ P`.
   obtain ⟨z, hzM, hzp⟩ := SetLike.exists_of_lt hM
@@ -517,9 +517,9 @@ theorem mul_right_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ :
   intro I I'
   constructor
   · intro h
-    convert mul_right_mono J⁻¹ h <;> dsimp only <;>
+    convert mul_right_monotone J⁻¹ h <;> dsimp only <;>
     rw [mul_assoc, FractionalIdeal.mul_inv_cancel hJ, mul_one]
-  · exact fun h => mul_right_mono J h
+  · exact fun h => mul_right_monotone J h
 
 theorem mul_left_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ : J ≠ 0) {I I'} :
     J * I ≤ J * I' ↔ I ≤ I' := by convert mul_right_le_iff hJ using 1; simp only [mul_comm]
@@ -632,7 +632,7 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
     have hI' : (I : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hI
     have : (I : FractionalIdeal A⁰ (FractionRing A))⁻¹ * J ≤ 1 := by
       rw [← inv_mul_cancel₀ hI']
-      exact mul_left_mono _ ((coeIdeal_le_coeIdeal _).mpr h)
+      exact mul_left_monotone _ ((coeIdeal_le_coeIdeal _).mpr h)
     obtain ⟨H, hH⟩ := le_one_iff_exists_coeIdeal.mp this
     use H
     refine coeIdeal_injective (show (J : FractionalIdeal A⁰ (FractionRing A)) = ↑(I * H) from ?_)

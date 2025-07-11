@@ -124,11 +124,15 @@ theorem extentClosure_intentClosure_extentClosure (t : Set β) :
     extentClosure r (intentClosure r <| extentClosure r t) = extentClosure r t :=
   intentClosure_extentClosure_intentClosure _ t
 
-theorem intentClosure_anti : Antitone (intentClosure r) :=
+theorem intentClosure_antitone : Antitone (intentClosure r) :=
   (gc_intentClosure_extentClosure r).monotone_l
 
-theorem extentClosure_anti : Antitone (extentClosure r) :=
-  intentClosure_anti _
+@[deprecated (since := "2025-07-08")] alias intentClosure_anti := intentClosure_antitone
+
+theorem extentClosure_antitone : Antitone (extentClosure r) :=
+  intentClosure_antitone _
+
+@[deprecated (since := "2025-07-08")] alias extentClosure_anti := extentClosure_antitone
 
 /-! ### Concepts -/
 
@@ -205,9 +209,9 @@ theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
 theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← fst_subset_fst_iff, ← c.closure_snd, ← d.closure_snd]
-    exact extentClosure_anti _ h
+    exact extentClosure_antitone _ h
   · rw [← c.closure_fst, ← d.closure_fst]
-    exact intentClosure_anti _ h
+    exact intentClosure_antitone _ h
 
 @[simp]
 theorem snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by

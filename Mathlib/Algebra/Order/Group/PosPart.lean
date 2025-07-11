@@ -62,8 +62,10 @@ instance instLeOnePart : LeOnePart α where
 
 @[to_additive] lemma oneLePart_def (a : α) : a⁺ᵐ = a ⊔ 1 := rfl
 
-@[to_additive] lemma oneLePart_mono : Monotone (·⁺ᵐ : α → α) :=
+@[to_additive] lemma oneLePart_monotone : Monotone (·⁺ᵐ : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right hab _
+
+@[deprecated (since := "2025-07-08")] alias oneLePart_mono := oneLePart_monotone
 
 @[to_additive (attr := simp high)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 
@@ -143,8 +145,10 @@ lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = 
 section MulRightMono
 variable [MulRightMono α]
 
-@[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
+@[to_additive] lemma leOnePart_antitone : Antitone (leOnePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
+
+@[deprecated (since := "2025-07-08")] alias leOnePart_anti := leOnePart_antitone
 
 @[to_additive]
 lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
@@ -186,7 +190,7 @@ variable [CommGroup α] [MulLeftMono α]
 
 -- Bourbaki A.VI.12 Prop 9 c)
 @[to_additive] lemma le_iff_oneLePart_leOnePart (a b : α) : a ≤ b ↔ a⁺ᵐ ≤ b⁺ᵐ ∧ b⁻ᵐ ≤ a⁻ᵐ := by
-  refine ⟨fun h ↦ ⟨oneLePart_mono h, leOnePart_anti h⟩, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨oneLePart_monotone h, leOnePart_antitone h⟩, fun h ↦ ?_⟩
   rw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b]
   exact div_le_div'' h.1 h.2
 

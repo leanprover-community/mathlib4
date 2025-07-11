@@ -819,10 +819,10 @@ theorem preimage_rev_Ioo (i j : Fin n) : rev ⁻¹' Ioo i j = Ioo j.rev i.rev :=
 
 @[simp]
 theorem preimage_rev_uIcc (i j : Fin n) : rev ⁻¹' uIcc i j = uIcc i.rev j.rev := by
-  simp [uIcc, ← rev_anti.map_min, ← rev_anti.map_max]
+  simp [uIcc, ← rev_antitone.map_min, ← rev_antitone.map_max]
 
 @[simp]
 theorem preimage_rev_uIoo (i j : Fin n) : rev ⁻¹' uIoo i j = uIoo i.rev j.rev := by
-  simp [uIoo, ← rev_anti.map_min, ← rev_anti.map_max]
+  simp [uIoo, ← rev_antitone.map_min, ← rev_antitone.map_max]
 
 end Fin
