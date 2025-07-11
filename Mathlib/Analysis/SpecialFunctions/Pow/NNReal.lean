@@ -962,7 +962,7 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
 
-lemma rpow_add_le_rpow_two_mul_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) :
+lemma rpow_add_le_two_rpow_mul_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) :
     (a + b) ^ p ≤ 2 ^ p * (a ^ p + b ^ p) := calc
   (a + b) ^ p ≤ (2 * max a b) ^ p := by rw [two_mul]; gcongr <;> simp
   _ = 2 ^ p * (max a b) ^ p := mul_rpow_of_nonneg _ _ hp
