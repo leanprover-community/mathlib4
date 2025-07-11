@@ -161,6 +161,7 @@ theorem span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f))
       range_subset_iff.2 fun _ =>
         span_mono (image_subset_range _ _) <| mem_span_gramSchmidt _ _ le_rfl
 
+/-- If given an orthogonal set of vectors, `gramSchmidt` fixes its input. -/
 theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f i, f j⟫ = 0) :
     gramSchmidt 𝕜 f = f := by
   ext i
