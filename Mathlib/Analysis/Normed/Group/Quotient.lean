@@ -5,6 +5,8 @@ Authors: Patrick Massot, Riccardo Brasca
 -/
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
@@ -96,7 +98,7 @@ noncomputable section
 open Metric Set Topology NNReal
 
 namespace QuotientGroup
-variable {M : Type*} [SeminormedCommGroup M] {S : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
+variable {M : Type*} [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
 
 @[to_additive add_norm_aux]
 private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Quot.exists_rep x
@@ -221,6 +223,34 @@ example :
 
 example [IsClosed (S : Set M)] :
    (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
+
+/-- An isometric version of `Subgroup.quotientEquivOfEq`. -/
+@[to_additive "An isometric version of `AddSubgroup.quotientEquivOfEq`."]
+def _root_.Subgroup.quotientIsometryEquivOfEq (h : S = T) : M ⧸ S ≃ᵢ M ⧸ T where
+  __ := Subgroup.quotientEquivOfEq h
+  isometry_toFun := by subst h; rintro ⟨_⟩ ⟨_⟩; rfl
+
+/-- An isometric version of `QuotientGroup.quotientBot`. -/
+@[to_additive "An isometric version of `QuotientAddGroup.quotientBot`."]
+def quotientBotIsometryEquiv : M ⧸ (⊥ : Subgroup M) ≃ᵢ M where
+  __ := quotientBot
+  isometry_toFun : Isometry quotientBot := by
+    rw [MonoidHomClass.isometry_iff_norm]
+    rintro ⟨x⟩
+    change ‖x‖ = ‖QuotientGroup.mk x‖
+    simp [norm_mk]
+
+/-- An isometric version of `QuotientGroup.quotientQuotientEquivQuotient`. -/
+@[to_additive "An isometric version of `QuotientAddGroup.quotientQuotientEquivQuotient`."]
+def quotientQuotientIsometryEquivQuotient (h : S ≤ T) : (M ⧸ S) ⧸ T.map (mk' S) ≃ᵢ M ⧸ T where
+  __ := quotientQuotientEquivQuotient S T h
+  isometry_toFun : Isometry (quotientQuotientEquivQuotient S T h) := by
+    rw [MonoidHomClass.isometry_iff_norm]
+    refine fun x => eq_of_forall_le_iff fun r => ?_
+    simp only [le_norm_iff]
+    exact ⟨
+      fun h₁ y h₂ z h₃ => h₁ z <| by subst_vars; rfl,
+      fun h₁ y h₂ => h₁ y ((quotientQuotientEquivQuotient S T h).injective h₂) y rfl⟩
 
 end QuotientGroup
 
@@ -476,7 +506,7 @@ have quotients of rings by two-sided ideals, hence the commutativity hypotheses 
 
 section Submodule
 
-variable {R : Type*} [Ring R] [Module R M] (S : Submodule R M)
+variable {R : Type*} [Ring R] [Module R M] (S T : Submodule R M)
 
 instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
   QuotientAddGroup.instSeminormedAddCommGroup S.toAddSubgroup
@@ -517,6 +547,23 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
 instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
     [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) where
   norm_smul_le := norm_smul_le
+
+/-- An isometric version of `Submodule.quotEquivOfEq`. -/
+def Submodule.quotLIEOfEq (h : S = T) : M ⧸ S ≃ₗᵢ[R] M ⧸ T where
+  __ := Submodule.quotEquivOfEq S T h
+  norm_map' := by subst h; rintro ⟨_⟩; rfl
+
+/-- An isometric version of `Submodule.quotientQuotientEquivQuotient`. -/
+def Submodule.quotientQuotientLIEQuotient (h : S ≤ T) : (M ⧸ S) ⧸ map S.mkQ T ≃ₗᵢ[R] M ⧸ T where
+  __ := Submodule.quotientQuotientEquivQuotient S T h
+  norm_map' :=
+    (AddMonoidHomClass.isometry_iff_norm _).mp
+      (QuotientAddGroup.quotientQuotientIsometryEquivQuotient
+        ((Submodule.toAddSubgroup_le S T).mpr h)).isometry
+
+/-- An isometric version of `Submodule.quotientQuotientEquivQuotientSup`. -/
+def Submodule.quotientQuotientLIEQuotientSup : (M ⧸ S) ⧸ map S.mkQ T ≃ₗᵢ[R] M ⧸ (S ⊔ T) :=
+  (quotLIEOfEq _ _ (by simp)).trans (quotientQuotientLIEQuotient _ _ le_sup_left)
 
 end Submodule
 
