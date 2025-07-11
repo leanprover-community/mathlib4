@@ -145,13 +145,11 @@ theorem span_gramSchmidt_Iio (c : ι) (x) :
     span ℝ ((gramSchmidt s · x) '' Set.Iio c) = span ℝ ((s · x) '' Set.Iio c) :=
   InnerProductSpace.span_gramSchmidt_Iio _ _ _
 
--- variable (s) in
--- /-- `gramSchmidt` preserves the point-wise span of sections. -/
--- theorem span_gramSchmidt (x) : span ℝ (range (gramSchmidt ℝ (s · x))) = span ℝ (range (s · x)) :=
---   span_eq_span (range_subset_iff.2 fun _ ↦
---     span_mono (image_subset_range _ _) <| gramSchmidt_mem_span _ _ le_rfl) <|
---       range_subset_iff.2 fun _ ↦
---         span_mono (image_subset_range _ _) <| mem_span_gramSchmidt _ _ le_rfl
+variable (s) in
+/-- `gramSchmidt` preserves the point-wise span of sections. -/
+theorem span_gramSchmidt (x : B) :
+    span ℝ (range (gramSchmidt s · x)) = Submodule.span ℝ (range (s · x)) :=
+  InnerProductSpace.span_gramSchmidt ℝ (s · x)
 
 theorem gramSchmidt_of_orthogonal {x} (hs : Pairwise fun i j ↦ ⟪s i x, s j x⟫ = 0) :
     ∀ i₀, gramSchmidt s i₀ x = s i₀ x:= by
@@ -193,8 +191,17 @@ theorem gramSchmidt_linearIndependent {x} (h₀ : LinearIndependent ℝ (s · x)
     LinearIndependent ℝ (gramSchmidt s · x) :=
   InnerProductSpace.gramSchmidt_linearIndependent h₀
 
--- No definition `gramSchmidtBasis` for technical reasons: it would expect a `Basis` as input,
--- whereas we would want a notion "the section values `s i x` form a basis".
+/-- When the sections `s` form a basis at `x`, so do the sections `gramSchmidt s`. -/
+noncomputable def gramSchmidtBasis {x} (hs : LinearIndependent ℝ (s · x))
+    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    Basis ι ℝ (E x) :=
+  Basis.mk (gramSchmidt_linearIndependent hs)
+    ((span_gramSchmidt s x).trans (eq_top_iff'.mpr fun _ ↦ hs' trivial)).ge
+
+theorem coe_gramSchmidtBasis {x} (hs : LinearIndependent ℝ (s · x))
+    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (gramSchmidtBasis hs hs') = (gramSchmidt s · x) :=
+  Basis.coe_mk _ _
 
 noncomputable def gramSchmidtNormed [WellFoundedLT ι]
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
@@ -234,14 +241,15 @@ theorem gramSchmidtNormed_orthonormal' (x) :
 
 open Submodule Set Order
 
--- Statement needs to be changed a bit to make it type-check.
--- variable (s) in
--- theorem span_gramSchmidtNormed (t : Set ι) :
---     span ℝ (gramSchmidtNormed s '' t) = span ℝ (gramSchmidt s '' t) := sorry
+variable (s) in
+theorem span_gramSchmidtNormed (t : Set ι) (x) :
+    span ℝ ((gramSchmidtNormed s · x) '' t) = span ℝ ((gramSchmidt s · x) '' t) :=
+  InnerProductSpace.span_gramSchmidtNormed (s · x) t
 
--- theorem span_gramSchmidtNormed_range (f : ι → E) :
---     span 𝕜 (range (gramSchmidtNormed 𝕜 f)) = span 𝕜 (range (gramSchmidt 𝕜 f)) := by
---   simpa only [image_univ.symm] using span_gramSchmidtNormed f univ
+variable (s) in
+theorem span_gramSchmidtNormed_range (x) :
+    span ℝ (range (gramSchmidtNormed s · x)) = span ℝ (range (gramSchmidt s · x)) := by
+  simpa only [image_univ.symm] using span_gramSchmidtNormed s Set.univ x
 
 /-- `gramSchmidtNormed` applied to linearly independent sections at a point `x` produces
 sections which are linearly independent at `x`. -/
