@@ -227,7 +227,7 @@ variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
 -- be named `coordChange` instead?
 lemma MDifferentiableWithinAt.change_section_trivialization
     {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
-    {e' : Trivialization F TotalSpace.proj}  [MemTrivializationAtlas e']
+    {e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (hf : MDifferentiableWithinAt IM IB (π F E ∘ f) s x₀)
     (he'f : MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) s x₀)

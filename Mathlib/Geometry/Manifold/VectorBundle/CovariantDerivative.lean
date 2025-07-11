@@ -705,7 +705,7 @@ lemma extend_add [FiniteDimensional ℝ F] [T2Space M] {x : M} (v v' : V x) :
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 @[simp]
-lemma extend_smul [FiniteDimensional ℝ F] [T2Space M] {a : ℝ} (v  : V x) :
+lemma extend_smul [FiniteDimensional ℝ F] [T2Space M] {a : ℝ} (v : V x) :
   extend I F (a • v) = a • extend I F v := by simp [extend, localExtensionOn_smul]; module
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
@@ -986,6 +986,8 @@ variable (X) in
 @[simp]
 lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_zero]; simp
 
+set_option linter.style.commandStart false -- new delaborators confuse the pretty-printer
+
 variable (Y) in
 lemma torsion_add_left_apply [CompleteSpace E] {x : M}
     (hX : MDiffAt (T% X) x)
@@ -1062,6 +1064,8 @@ def torsion_tensorial [T2Space M] [IsManifold I ∞ M]
     exact cov.torsion_smul_right_apply _ hf hσ'
   · intro σ τ τ' hτ hτ'
     exact cov.torsion_add_right_apply hτ hτ'
+
+set_option linter.style.commandStart true
 
 variable (cov) in
 /-- A covariant derivation is called **torsion-free** iff its torsion tensor vanishes. -/
