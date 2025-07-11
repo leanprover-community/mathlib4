@@ -11,7 +11,7 @@ open CategoryTheory
 
 namespace Rep
 
-variable {k G : Type} [CommRing k] [Group G] [Fintype G] [Std.Commutative (· * · : G → G → G)]
+variable {k G : Type} [CommRing k] [CommGroup G] [Fintype G]
 variable (A : Rep k G)
 
 @[simps]
@@ -98,12 +98,23 @@ lemma coeff_sum_of_norm_eq_zero (x : C k n) (hx : (C k n).norm.hom x = 0) :
   rw [norm_apply] at hx
   simpa [norm, Representation.norm] using Finsupp.ext_iff.1 hx 1
 
+lemma norm_eq_zero_of_coeff_sum (x : C k n) (hx : x.linearCombination k (fun _ => (1 : k)) = 0) :
+    (C k n).norm.hom x = 0 := by
+  rw [norm_apply]
+  ext
+  simp_all
+
 lemma _root_.Fin.neg_one : -(1 : Fin (n + 1)) = Fin.last n := by
   apply add_right_cancel (b := 1)
   norm_num
 
 lemma _root_.Fin.succ_neg_one : (-(1 : Fin (n + 1))).succ = Fin.last (n + 1) := by
   rw [Fin.neg_one]
+  norm_num
+
+lemma _root_.Fin.succ_sub_one (i : Fin n) :
+    i.succ - 1 = i.castSucc := by
+  rw [sub_eq_iff_eq_add]
   norm_num
 
 @[to_additive]
@@ -138,17 +149,28 @@ lemma exactness₂ (x : C k n) (hx : (C k n).norm.hom x = 0) :
     (-Fin.partialSum (x ∘ ofAdd) ∘ Fin.succ ∘ toAdd)
   use Y
   ext i
-  refine i.rec fun i => i.induction ?_ ?_
+  refine i.rec fun i => i.cases ?_ ?_
   · simp [← ofAdd_neg, Y, equivFunOnFinite, Fin.succ_neg_one]
     rw [Fin.partialSum_last]
     rw [Fin.partialSum_of_succ_eq 0]
     · rw [norm_apply] at hx
       replace hx := Finsupp.ext_iff.1 hx 1
-      simp_all [Representation.norm, linearCombination, sum]
+      simp_all [Representation.norm, linearCombination]
+      rw [Finsupp.sum_fintype (h := by simp)] at hx
       rw [← hx]
-      sorry
+      exact Finset.sum_bijective ofAdd ofAdd.bijective (by simp) (by simp)
     · rfl
-  · sorry
+  · intro i
+    simp_all [← ofAdd_neg, Y, equivFunOnFinite, neg_add_eq_sub]
+    rw [Fin.succ_sub_one]
+    rw [sub_eq_neg_add]
+    rw [i.succ_castSucc]
+    rw [Fin.partialSum_right_neg]
+    rfl
+
+lemma exactness₃ (x : C k n) (hx : x.linearCombination k (fun _ => (1 : k)) = 0) :
+    ∃ y : C k n, (applyAsHom (C k n) (ofAdd 1)).hom y - y = x := by
+  exact exactness₂ _ _ _ (norm_eq_zero_of_coeff_sum _ _ _ hx)
 
 open ZeroObject
 
@@ -161,6 +183,65 @@ noncomputable def finiteCyclicResolution.π (g : G) :
       simp [finiteCyclicComplex, ChainComplex.of, sub_eq_add_neg, leftRegularHomEquiv]⟩
 
 open ShortComplex Representation
+
+theorem lol (g : G) (m : ℕ) :
+    (finiteCyclicComplex (leftRegular k G) g).ExactAt (m + 3) ↔
+    (finiteCyclicComplex (leftRegular k G) g).ExactAt (m + 1) := by
+  rw [HomologicalComplex.exactAt_iff' _ (m + 4) (m + 3) (m + 2) (by simp) (by simp)]
+  rw [HomologicalComplex.exactAt_iff' _ (m + 2) (m + 1) m (by simp) (by simp)]
+  sorry
+
+lemma finiteCyclicResolution.zModQuasiIsoAt (m : ℕ) :
+    QuasiIsoAt (finiteCyclicResolution.π k (ofAdd (1 : ZMod (n + 1)))) m := by
+  match m with
+  | 0 =>
+    simp [π]
+    rw [ChainComplex.quasiIsoAt₀_iff, quasiIso_iff_of_zeros' _ rfl rfl rfl]
+    constructor
+    · apply (Action.forget (ModuleCat k) _).reflects_exact_of_faithful
+      simp
+      rw [ShortComplex.moduleCat_exact_iff]
+      intro (x : _ →₀ k) hx
+      have := exactness₃ k n x (by simpa using hx)
+      rcases this with ⟨y, hy⟩
+      use y
+      simp [finiteCyclicComplex, ChainComplex.of]
+      simp [sub_eq_add_neg] at hy ⊢
+      exact hy
+    · rw [Rep.epi_iff_surjective]
+      intro x
+      use single 1 x
+      simp [finiteCyclicComplex, ChainComplex.of, finiteCyclicComplex.d,
+        ChainComplex.toSingle₀Equiv]
+  | 1 =>
+    rw [quasiIsoAt_iff_exactAt' (hL := ChainComplex.exactAt_succ_single_obj ..)]
+    rw [HomologicalComplex.exactAt_iff' _ 2 1 0 (by simp) (by simp)]
+    apply (Action.forget (ModuleCat k) _).reflects_exact_of_faithful
+    rw [ShortComplex.moduleCat_exact_iff]
+    intro (x : _ →₀ k) hx
+    have := exactness k n x (by simpa [finiteCyclicComplex, ChainComplex.of, sub_eq_add_neg] using hx)
+    clear hx
+    simp [finiteCyclicComplex, ChainComplex.of, sub_eq_add_neg]
+    exact this
+  | 2 =>
+    rw [quasiIsoAt_iff_exactAt' (hL := ChainComplex.exactAt_succ_single_obj ..)]
+    rw [HomologicalComplex.exactAt_iff' _ 3 2 1 (by simp) (by simp)]
+    apply (Action.forget (ModuleCat k) _).reflects_exact_of_faithful
+    rw [ShortComplex.moduleCat_exact_iff]
+    intro (x : _ →₀ k) hx
+    have := exactness₂ k n x (by simpa [finiteCyclicComplex, ChainComplex.of, sub_eq_add_neg] using hx)
+    clear hx
+    simp_all [finiteCyclicComplex, ChainComplex.of, sub_eq_add_neg]
+    exact this
+  | (m + 3) =>
+    rw [quasiIsoAt_iff_exactAt' (hL := ChainComplex.exactAt_succ_single_obj ..)]
+    rw [HomologicalComplex.exactAt_iff' _ (m + 4) (m + 3) (m + 2) (by simp) (by simp)]
+    have := zModQuasiIsoAt (m + 1)
+    rw [quasiIsoAt_iff_exactAt' (hL := ChainComplex.exactAt_succ_single_obj ..)] at this
+    rw [HomologicalComplex.exactAt_iff' _ (m + 2) (m + 1) m (by simp) (by simp)] at this
+    simp_all [finiteCyclicComplex, ChainComplex.of]
+    sorry
+
 
 lemma finiteCyclicResolution.quasiIsoAt (g : G) (n : ℕ) :
     QuasiIsoAt (finiteCyclicResolution.π k g) n :=
