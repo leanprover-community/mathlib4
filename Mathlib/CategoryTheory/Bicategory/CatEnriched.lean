@@ -228,7 +228,7 @@ theorem Hom.comp_eq {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
     (α : f ⟶ g) (β : g ⟶ h) : (α ≫ β) = Hom.mk (Hom.base α ≫ Hom.base β) := rfl
 
 @[simp] theorem Hom.base_comp {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
-    (α : f ⟶ g) (β : g ⟶ h) : Hom.base (α ≫ β) = (Hom.base α ≫ Hom.base β) := rfl
+    (α : f ⟶ g) (β : g ⟶ h) : Hom.base (α ≫ β) = Hom.base α ≫ Hom.base β := rfl
 
 theorem Hom.mk_comp {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
     (α : homEquiv f ⟶ homEquiv g) (β : homEquiv g ⟶ homEquiv h) :
