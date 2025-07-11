@@ -257,6 +257,35 @@ theorem gramSchmidtNormed_linearIndependent (h₀ : LinearIndependent ℝ (s · 
     LinearIndependent ℝ (gramSchmidtNormed s · x) := by
   simp [gramSchmidtNormed, InnerProductSpace.gramSchmidtNormed_linearIndependent h₀]
 
+-- TODO: comment on the different design compared to `InnerProductSpace.gramSchmidtOrthonormalBasis`
+
+/-- When the sections `s` form a basis at `x`, so do the sections `gramSchmidtNormed s`.
+
+Prefer using `gramSchmidtOrthonormalBasis` over this declaration. -/
+noncomputable def gramSchmidtNormedBasis {x} (hs : LinearIndependent ℝ (s · x))
+    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    Basis ι ℝ (E x) :=
+  Basis.mk (v := fun i ↦ gramSchmidtNormed s i x) (gramSchmidtNormed_linearIndependent hs)
+    (by rw [span_gramSchmidtNormed_range s x, span_gramSchmidt s x]; exact hs')
+
+/-- Prefer using `gramSchmidtOrthonormalBasis` over this declaration. -/
+theorem coe_gramSchmidtNormedBasis {x} (hs : LinearIndependent ℝ (s · x))
+    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (gramSchmidtNormedBasis hs hs') = (gramSchmidtNormed s · x) :=
+  Basis.coe_mk _ _
+
+noncomputable def gramSchmidtOrthonormalBasis {x} [Fintype ι]
+    (hs : LinearIndependent ℝ (s · x)) (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    OrthonormalBasis ι ℝ (E x) := by
+  apply (gramSchmidtNormedBasis hs hs').toOrthonormalBasis
+  simp only [coe_gramSchmidtNormedBasis] -- TODO: missing API!
+  apply gramSchmidtNormed_orthonormal hs
+
+theorem coe_gramSchmidtOrthonormalBasis_coe [Fintype ι] {x} (hs : LinearIndependent ℝ (s · x))
+    (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
+    (gramSchmidtOrthonormalBasis hs hs') = (gramSchmidtNormed s · x) := by
+  sorry -- TODO: make sure things work by proving this!
+
 end VectorBundle
 
 /-! The Gram-Schmidt process preserves smoothness of sections -/
