@@ -60,8 +60,8 @@ open Category Limits Functor IsPullback
 variable (C : Type u) [Category.{v} C]
 
 /-- A monomorphism `truth : Ω₀ ⟶ Ω` is a subobject classifier if, for every monomorphism
-`m : U ⟶ X` in `C`, there is a unique map `χ : X ⟶ Ω` such that for some `χ₀ : U ⟶ Ω₀`
-the following square is a pullback square:
+`m : U ⟶ X` in `C`, there is a unique map `χ : X ⟶ Ω` such that for some (necessarily unique)
+`χ₀ : U ⟶ Ω₀` the following square is a pullback square:
 ```
       U ---------m----------> X
       |                       |
