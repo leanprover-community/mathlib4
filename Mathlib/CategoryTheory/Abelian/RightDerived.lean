@@ -143,7 +143,7 @@ lemma InjectiveResolution.isoRightDerivedObj_inv_naturality
 /-- The higher derived functors vanish on injective objects. -/
 lemma Functor.isZero_rightDerived_obj_injective_succ
     (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Injective X] :
-    IsZero ((F.rightDerived (n+1)).obj X) := by
+    IsZero ((F.rightDerived (n + 1)).obj X) := by
   refine IsZero.of_iso ?_ ((InjectiveResolution.self X).isoRightDerivedObj F (n + 1))
   erw [← HomologicalComplex.exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (F.map_isZero (by apply isZero_zero))
