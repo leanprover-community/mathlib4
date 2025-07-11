@@ -90,7 +90,7 @@ This definition is primarily meant to be used in `lowerCone`, and `isLimit` belo
 @[simps]
 def projSup {ι : Type v} (Us : ι → Opens X) :
     StructuredArrow (.op <| iSup Us) (principals X) ⥤
-      (ObjectProperty.FullSubcategory fun V => ∃ i, V ≤ Us i)ᵒᵖ where
+      (OpensLeCover (X := .of X) Us)ᵒᵖ where
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := .op <| LE.le.hom <| principalOpen_le <| e.right.le
 
@@ -99,7 +99,7 @@ variable {F} in
 @[simps]
 def lowerCone
     {α : Type v} (Us : α → Opens X)
-    (S : Cone ((ObjectProperty.ι fun V => ∃ i, V ≤ Us i).op ⋙ principalsKanExtension F)) :
+    (S : Cone ((OpensLeCover.incl (X := .of X) Us).op ⋙ principalsKanExtension F)) :
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
   π := {
@@ -113,18 +113,13 @@ def lowerCone
         Category.id_comp, Functor.comp_map, Category.assoc]
       rw [← S.w ((projSup Us).map e), Category.assoc]
       congr 1
-      simp only [projSup_obj, Functor.comp_obj, Functor.op_obj, ObjectProperty.ι_obj,
-        Functor.pointwiseRightKanExtension_obj, projSup_map, homOfLE_leOfHom, Functor.comp_map,
-        Functor.op_map, Quiver.Hom.unop_op,
-        Functor.pointwiseRightKanExtension_map, limit.lift_π]
       let xx : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=
         ⟨.mk .unit, x.right, 𝟙 _⟩
       let yy : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=
         ⟨.mk .unit, y.right, .op <| LE.le.hom <| principalOpen_le e.right.le⟩
       let ee : xx ⟶ yy := { left := 𝟙 _, right := e.right }
-      exact limit.w
-        (StructuredArrow.proj (Opposite.op (principalOpen x.right)) (principals X) ⋙ F) ee
-        |>.symm
+      exact (limit.lift_π _ _).trans (limit.w
+        (StructuredArrow.proj _ (principals X) ⋙ F) ee).symm
   }
 
 /--
@@ -143,20 +138,17 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     rintro S ⟨V, i, hV⟩
     dsimp [forget, opensLeCoverCocone]
     ext ⟨_, x, f⟩
-    simp only [comp_obj, StructuredArrow.proj_obj, Category.assoc, limit.lift_π, lowerCone_pt,
-      lowerCone_π_app, const_obj_obj, projSup_obj, StructuredArrow.map_obj_right, op_obj,
-      ObjectProperty.ι_obj, pointwiseRightKanExtension_obj]
+    dsimp
+    simp only [Category.assoc, limit.lift_π, lowerCone_pt, lowerCone_π_app, const_obj_obj,
+      projSup_obj, StructuredArrow.map_obj_right, comp_obj, op_obj, pointwiseRightKanExtension_obj,
+      StructuredArrow.proj_obj]
     have e : principalOpen x ≤ V := f.unop.le
-    let VV : (ObjectProperty.FullSubcategory fun V => ∃ i, V ≤ Us i) := ⟨V, i, hV⟩
-    let xx : (ObjectProperty.FullSubcategory fun V => ∃ i, V ≤ Us i) :=
-      ⟨principalOpen x, i, le_trans e hV⟩
+    let VV : OpensLeCover Us := ⟨V, i, hV⟩
+    let xx : OpensLeCover Us := ⟨principalOpen x, i, le_trans e hV⟩
     let ee : xx ⟶ VV := e.hom
     rw [← S.w ee.op, Category.assoc]
     congr 1
-    simp only [comp_obj, op_obj, ObjectProperty.ι_obj, pointwiseRightKanExtension_obj,
-      Functor.comp_map, op_map, Quiver.Hom.unop_op,
-      pointwiseRightKanExtension_map, limit.lift_π, xx, VV]
-    congr
+    exact (limit.lift_π _ _).trans (by aesop)
   uniq := by
     intro S m hm
     dsimp
@@ -168,10 +160,10 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     · apply exists_le_of_le_sup
       exact f.unop.le
     · rw [← hm]
-      simp only [mapCone_pt, Cocone.op_pt, pointwiseRightKanExtension_obj,
-        const_obj_obj, comp_obj, op_obj, ObjectProperty.ι_obj, mapCone_π_app, Cocone.op_π,
-        NatTrans.op_app, pointwiseRightKanExtension_map, Category.assoc, limit.lift_π]
+      dsimp
+      simp only [Category.assoc]
       congr
+      apply limit.lift_π
 
 theorem isSheaf_principalsKanExtension
     {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X] (F : X ⥤ C) :

@@ -174,8 +174,9 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
   Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
-theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
-    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b)
+    (h : f.hom.toOrderHom = g.hom.toOrderHom) : f = g :=
+  ObjectProperty.hom_ext _ (SimplexCategory.Hom.ext _ _ h)
 
 /-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
 scoped macro "trunc" : tactic =>
@@ -199,18 +200,24 @@ is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
 abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
-  f
+  ObjectProperty.homMk f
 
+@[reassoc]
 lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
     (hc : c.len ≤ n := by trunc) :
     tr (f ≫ g) = tr f ≫ tr g :=
   rfl
 
+@[reassoc]
+lemma Hom.tr_comp' {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) {hb : b.len ≤ n}
+    {hc : c.len ≤ n} (g : (⟨b, hb⟩ : Truncated n) ⟶ ⟨c, hc⟩) (ha : a.len ≤ n := by trunc) :
+    tr (f ≫ g.hom) = tr f ≫ g :=
+  rfl
+
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
-  obj a := ⟨a.1, a.2.trans h⟩
-  map := id
+def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m :=
+  ObjectProperty.ιOfLE (fun _ h' ↦ h'.trans h)
 
 /-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
 def inclCompInclusion {n m : ℕ} (h : n ≤ m) :

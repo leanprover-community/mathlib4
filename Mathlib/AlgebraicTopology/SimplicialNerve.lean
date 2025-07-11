@@ -71,7 +71,7 @@ lemma Path.le {J : Type*} [LinearOrder J] {i j : J} (f : Path i j) : i ≤ j :=
   f.left_le _ f.right
 
 instance {J : Type*} [LinearOrder J] (i j : J) : Category (Path i j) :=
-  InducedCategory.category (fun f : Path i j ↦ f.I)
+  inferInstanceAs (Category (InducedCategory _ (fun f : Path i j ↦ f.I)))
 
 @[simps]
 instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) where
@@ -109,7 +109,7 @@ Composition of morphisms in `SimplicialThickening J`, as a functor `(i ⟶ j) ×
 def compFunctor {J : Type*} [LinearOrder J]
     (i j k : SimplicialThickening J) : (i ⟶ j) × (j ⟶ k) ⥤ (i ⟶ k) where
   obj x := x.1 ≫ x.2
-  map f := ⟨⟨Set.union_subset_union f.1.1.1 f.2.1.1⟩⟩
+  map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
 namespace SimplicialCategory
 
@@ -168,7 +168,7 @@ noncomputable abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
   obj I := ⟨f '' I.I, Set.mem_image_of_mem f I.left, Set.mem_image_of_mem f I.right,
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
-  map f := ⟨⟨Set.image_subset _ f.1.1⟩⟩
+  map f := ⟨⟨⟨Set.image_subset _ f.1.1.1⟩⟩⟩
 
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of

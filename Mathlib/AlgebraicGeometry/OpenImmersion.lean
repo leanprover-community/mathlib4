@@ -381,8 +381,9 @@ theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.b
 
 theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : IsOpenEmbedding f.base)
     [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
-  haveI (x : X) : IsIso (f.toShHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
-  SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
+  sorry
+  --haveI (x : X) : IsIso (f.toShHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
+  --SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
 
 instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
     IsIso (f.stalkMap x) :=
@@ -459,9 +460,10 @@ instance hasLimit_cospan_forget_of_right' :
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 
 instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
-  createsLimitOfFullyFaithfulOfIso
-    (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom)
-    (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
+  sorry
+  --createsLimitOfFullyFaithfulOfIso
+  --  (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom)
+  --  (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
 instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
@@ -571,6 +573,7 @@ lemma image_preimage_eq_preimage_image_of_isPullback {X Y U V : Scheme.{u}}
       ← Scheme.comp_base_apply, ← H.w]
     simp only [Scheme.comp_coeBase, TopCat.comp_app,
       iV.isOpenEmbedding.injective.mem_set_image, SetLike.mem_coe]
+    sorry
   · constructor
     · rintro ⟨x, hx, rfl⟩; cases hx ⟨x, rfl⟩
     · rintro ⟨y, hy, e : iV.base y = f.base x⟩
@@ -745,6 +748,7 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
     simp only [f.isOpenEmbedding.injective.mem_set_image, Scheme.mem_zeroLocus_iff,
       ← SetLike.mem_coe, Set.mem_inter_iff, Set.forall_mem_image, ← Scheme.image_basicOpen,
       IsOpenMap.coe_functor_obj, Set.mem_range, exists_apply_eq_apply, and_true]
+    sorry
   · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 

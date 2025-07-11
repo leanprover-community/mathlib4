@@ -444,23 +444,24 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
     {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
     [ConcreteCategory.{w} D FD] (f : C → D) :
     ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
-  hom := hom (C := D)
-  ofHom := ofHom (C := D)
-  hom_ofHom := hom_ofHom (C := D)
-  ofHom_hom := ofHom_hom (C := D)
-  comp_apply := ConcreteCategory.comp_apply (C := D)
-  id_apply := ConcreteCategory.id_apply (C := D)
+  hom f := hom f.hom
+  ofHom g := homMk (ofHom g)
+  hom_ofHom _ := hom_ofHom _
+  ofHom_hom _ := by ext; simp [ofHom_hom]
+  comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
+  id_apply _ := ConcreteCategory.id_apply _
 
+open ObjectProperty in
 instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
     (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
-  hom := hom (C := C)
-  ofHom := ofHom (C := C)
-  hom_ofHom := hom_ofHom (C := C)
-  ofHom_hom := ofHom_hom (C := C)
-  comp_apply := ConcreteCategory.comp_apply (C := C)
-  id_apply := ConcreteCategory.id_apply (C := C)
+  hom f := hom f.hom
+  ofHom g := homMk (ofHom g)
+  hom_ofHom _ := hom_ofHom _
+  ofHom_hom _ := by ext; simp [ofHom_hom]
+  comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
+  id_apply _ := ConcreteCategory.id_apply _
 
 end ConcreteCategory
 

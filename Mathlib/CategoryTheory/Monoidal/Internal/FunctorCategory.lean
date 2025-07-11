@@ -232,11 +232,14 @@ to a functor into the category of commutative monoid objects.
 @[simps!]
 def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D where
   obj A :=
-    { (monFunctorCategoryEquivalence C D).functor.obj A.toMon_ with
-      obj := fun X =>
+    { obj X :=
         { ((monFunctorCategoryEquivalence C D).functor.obj A.toMon_).obj X with
-          comm := { mul_comm := congr_app (IsCommMon.mul_comm A.X) X } } }
-  map f := { app := fun X => ((monFunctorCategoryEquivalence C D).functor.map f).app X }
+          comm := { mul_comm := congr_app (IsCommMon.mul_comm A.X) X } }
+      map f :=
+        CommMon_.homMk (((monFunctorCategoryEquivalence C D).functor.obj A.toMon_).map f) }
+  map f :=
+    { app X :=
+        CommMon_.homMk (((monFunctorCategoryEquivalence C D).functor.map f.hom).app X) }
 
 /-- Functor translating a functor into the category of commutative monoid objects
 to a commutative monoid object in the functor category
@@ -246,22 +249,20 @@ def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
   obj F :=
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon_.forget₂Mon_ D) with
       comm := { mul_comm := by ext X; exact IsCommMon.mul_comm (F.obj X).X } }
-  map α := (monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _)
+  map α :=
+    CommMon_.homMk ((monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _))
 
 /-- The unit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/
 @[simps!]
 def unitIso : 𝟭 (CommMon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents (fun A =>
-    { hom := .mk' { app := fun _ => 𝟙 _ }
-      inv := .mk' { app := fun _ => 𝟙 _ } })
+  NatIso.ofComponents (fun A => CommMon_.mkIso (Iso.refl _))
 
 /-- The counit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ CommMon_ D) :=
-  NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+  NatIso.ofComponents (fun A ↦ NatIso.ofComponents (fun X ↦ Iso.refl _))
 
 end CommMonFunctorCategoryEquivalence
 

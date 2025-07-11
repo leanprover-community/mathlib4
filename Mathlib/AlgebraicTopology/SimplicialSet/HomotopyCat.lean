@@ -48,30 +48,33 @@ def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
 /-- Abbreviations for face maps in the 2-truncated simplex category. -/
 abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n + 1⦌, hn'⟩ := SimplexCategory.δ i
+    (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n + 1⦌, hn'⟩ := Hom.tr (SimplexCategory.δ i)
 
 /-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
 abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
+    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := Hom.tr (SimplexCategory.σ i)
 
 @[reassoc (attr := simp)]
 lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ :=
+  InducedCategory.hom_ext (SimplexCategory.δ_comp_σ_self)
 
 @[reassoc]
 lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
-  SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
+  InducedCategory.hom_ext (SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _))
 
 @[reassoc (attr := simp)]
 lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ :=
+  InducedCategory.hom_ext (SimplexCategory.δ_comp_σ_succ)
 
 @[reassoc (attr := simp)]
-lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ' (by decide)
+lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ :=
+  InducedCategory.hom_ext (SimplexCategory.δ_comp_σ_succ' (by decide))
 
 @[reassoc]
 lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
-  SimplexCategory.δ_comp_σ_of_gt' (by decide)
+  InducedCategory.hom_ext (SimplexCategory.δ_comp_σ_of_gt' (by decide))
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
@@ -239,7 +242,8 @@ def δ2₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 2
 0th face of a 2-simplex. -/
 def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ0₂.op φ,
-    map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
+    map_map_of_eq V (InducedCategory.hom_ext
+      (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm),
     map_map_of_eq V rfl⟩
 
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
@@ -250,7 +254,9 @@ def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ �
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
-  ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
+  ⟨V.map δ2₂.op φ,
+    map_map_of_eq V (InducedCategory.hom_ext (SimplexCategory.δ_comp_δ (j := 1) le_rfl)),
+    map_map_of_eq V rfl⟩
 
 
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free

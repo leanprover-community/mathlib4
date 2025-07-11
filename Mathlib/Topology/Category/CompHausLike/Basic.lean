@@ -86,7 +86,7 @@ instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
 
 instance category : Category (CompHausLike P) :=
-  InducedCategory.category toTop
+  inferInstanceAs (Category (InducedCategory _ toTop))
 
 instance concreteCategory : ConcreteCategory (CompHausLike P) (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -148,9 +148,9 @@ variable {P}
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
   obj X :=
-    have : HasProp P' X := ⟨(h _ X.prop)⟩
+    haveI : HasProp P' X := ⟨(h _ X.prop)⟩
     CompHausLike.of _ X
-  map f := f
+  map {X Y} f := ConcreteCategory.ofHom f.hom.hom
 
 section
 
@@ -158,8 +158,8 @@ variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P
 
 /-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
-def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful where
+  preimage f := ConcreteCategory.ofHom f.hom.hom
 
 instance : (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
 
@@ -215,7 +215,7 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
 theorem isClosedMap {X Y : CompHausLike.{u} P} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
-  (hC.isCompact.image f.hom.continuous).isClosed
+  (hC.isCompact.image f.hom.hom.continuous).isClosed
 
 /-- Any continuous bijection of compact Hausdorff spaces is an isomorphism. -/
 theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Function.Bijective f) :

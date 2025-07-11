@@ -91,7 +91,7 @@ lemma isNoetherianObject_iff_isEventuallyConstant :
   · intro h F
     obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ Subobject.representative)
     refine ⟨n, fun m hm ↦ ?_⟩
-    simpa [← MonoOver.isIso_iff_isIso_left, isIso_iff_of_reflects_iso,
+    simpa [← MonoOver.isIso_iff_isIso_hom_left, isIso_iff_of_reflects_iso,
       PartialOrder.isIso_iff_eq] using hn (homOfLE hm)
 
 variable {X} in
