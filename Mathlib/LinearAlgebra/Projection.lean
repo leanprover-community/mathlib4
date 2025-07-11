@@ -189,20 +189,23 @@ theorem existsUnique_add_of_isCompl (hc : IsCompl p q) (x : E) :
   let ⟨u, hu₁, hu₂⟩ := existsUnique_add_of_isCompl_prod hc x
   ⟨u.1, u.2, hu₁, fun r s hrs => Prod.eq_iff_fst_eq_snd_eq.1 (hu₂ ⟨r, s⟩ hrs)⟩
 
-theorem linear_proj_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :
+theorem linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :
     (p.linearProjOfIsCompl q hpq x + q.linearProjOfIsCompl p hpq.symm x : E) = x := by
   dsimp only [linearProjOfIsCompl]
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
 
-lemma linearProjOfIsCompl_eq_self_sub_linear_proj (hpq : IsCompl p q) (x : E) :
+@[deprecated (since := "2025-07-11")] alias linear_proj_add_linearProjOfIsCompl_eq_self :=
+  linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self
+
+lemma linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl (hpq : IsCompl p q) (x : E) :
     (q.linearProjOfIsCompl p hpq.symm x : E) = x - (p.linearProjOfIsCompl q hpq x : E) := by
-  rw [eq_sub_iff_add_eq, linear_proj_add_linearProjOfIsCompl_eq_self]
+  rw [eq_sub_iff_add_eq, linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self]
 
 /-- projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p` -/
 @[simp] lemma linearProjOfIsCompl_eq_self_iff (hpq : IsCompl p q) (x : E) :
     (p.linearProjOfIsCompl q hpq x : E) = x ↔ x ∈ p := by
-  rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linear_proj,
+  rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl,
     coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
 
 end Submodule
@@ -584,7 +587,7 @@ lemma ker_mem_invtSubmodule_iff_conj_eq
     (f := (ker f).subtype.comp (Submodule.linearProjOfIsCompl _ _ (hf.isProj_range.isCompl.symm)))
     ⟨by simp, by simp⟩]
   simp [LinearMap.ext_iff, LinearMap.comp_apply]
-  simp [linearProjOfIsCompl_eq_self_sub_linear_proj hf.isProj_range.isCompl.symm]
+  simp [linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl hf.isProj_range.isCompl.symm]
 
 /-- Both `range f` and `ker f` are invariant under `T` if and only if `T` commutes with
 the idempotent operator `f`. -/
