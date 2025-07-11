@@ -1,6 +1,7 @@
 import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.Tactic.NormNum.NormNumI
+import Mathlib.Data.ZMod.Basic
 
 open Complex ComplexConjugate Real Qq
 
