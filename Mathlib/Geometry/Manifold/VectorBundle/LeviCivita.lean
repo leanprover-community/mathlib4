@@ -307,20 +307,27 @@ lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tang
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
-lemma congr_of_forall_product {X X' : Π x : M, TangentSpace I x}
+-- TODO: is this true if E is infinite-dimensional? trace the origin of the `Fintype` assumptions!
+lemma congr_of_forall_product [FiniteDimensional ℝ E] {X X' : Π x : M, TangentSpace I x}
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
+  classical
   ext x
   letI b := Basis.ofVectorSpace ℝ E
   letI t := trivializationAt E (TangentSpace I : M → Type _) x
   have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  -- TODO: think about this question and solve it somehow!
-  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
-  haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
-  haveI : WellFoundedLT ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
-  haveI : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
-  -- choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  have : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := by infer_instance
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry -- need to impose!
+  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    -- use Fin.instLinearOrder
+    sorry
+  haveI : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toOrderBot _
+  haveI : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
+    apply Fintype.toLocallyFiniteOrder
+  haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+
+  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let real := b.orthonormalFrame t
-  have hframe := b.orthonormalFrame_isOrthonormalFrameOn (e := t) (F := E) (IB := I) (n := 1)
+  have hframe := b.orthonormalFrame_isOrthonormalFrameOn t (F := E) (IB := I) (n := 1)
   rw [hframe.eq_iff_repr hx]
   intro i
   have h₁ : ⟪X, real i⟫ x = (hframe.repr i) X x := by
@@ -338,7 +345,8 @@ lemma congr_of_forall_product {X X' : Π x : M, TangentSpace I x}
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
 -- (probably not everywhere, as addition rules apply only for differentiable vector fields?)
-theorem isLeviCivita_uniqueness {cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _)}
+theorem isLeviCivita_uniqueness [FiniteDimensional ℝ E]
+    {cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _)}
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection) :
     -- almost, only agree on smooth functions
     cov = cov' := by
