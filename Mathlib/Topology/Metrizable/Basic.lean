@@ -16,8 +16,8 @@ open Filter Set Metric Topology
 
 namespace TopologicalSpace
 
-variable {ι X Y : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
-  [∀ i, TopologicalSpace (π i)]
+variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
+  [∀ i, TopologicalSpace (A i)]
 
 /-- A topological space is *pseudo metrizable* if there exists a pseudo metric space structure
 compatible with the topology. To endow such a space with a compatible distance, use
@@ -62,10 +62,10 @@ instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
     PseudoMetrizableSpace s :=
   IsInducing.subtypeVal.pseudoMetrizableSpace
 
-instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
-    PseudoMetrizableSpace (∀ i, π i) := by
+instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (A i)] :
+    PseudoMetrizableSpace (∀ i, A i) := by
   cases nonempty_fintype ι
-  letI := fun i => pseudoMetrizableSpacePseudoMetric (π i)
+  letI := fun i => pseudoMetrizableSpacePseudoMetric (A i)
   infer_instance
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
@@ -115,9 +115,9 @@ alias _root_.Embedding.metrizableSpace := IsEmbedding.metrizableSpace
 instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
   IsEmbedding.subtypeVal.metrizableSpace
 
-instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := by
+instance metrizableSpace_pi [∀ i, MetrizableSpace (A i)] : MetrizableSpace (∀ i, A i) := by
   cases nonempty_fintype ι
-  letI := fun i => metrizableSpaceMetric (π i)
+  letI := fun i => metrizableSpaceMetric (A i)
   infer_instance
 
 theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X}

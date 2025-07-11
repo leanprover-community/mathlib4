@@ -19,6 +19,7 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Algebra.Algebra.Spectrum.Pi
 import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
@@ -276,6 +277,7 @@ import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Periodic
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Field.Shrink
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
@@ -478,6 +480,7 @@ import Mathlib.Algebra.GroupWithZero.ProdHom
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Semiconj
+import Mathlib.Algebra.GroupWithZero.Shrink
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
