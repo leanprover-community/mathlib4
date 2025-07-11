@@ -63,7 +63,7 @@ def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
       𝓞 K ⧸ span {(p : 𝓞 K)} :=
   (quotientEquivAlgOfEq ℤ (by simp [Ideal.map_span, Polynomial.map_map])).toRingEquiv.trans
     ((quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p)) rfl).symm.trans
-      ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp) θ.isIntegral).symm.trans
+      ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm.trans
         (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))
 
 theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ[X]) :
@@ -75,7 +75,7 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
     quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe, mapEquiv_symm_apply,
     Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom]
   exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
-    quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp) θ.isIntegral Q
+    quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
 
 variable (p θ) in
 /--
