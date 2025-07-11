@@ -707,14 +707,14 @@ variable [DecidableEq G]
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def shortComplexH1Iso : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
+def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousChains A).isoSc' 2 1 0 (by simp) (by simp) ≪≫
     isoMk (chainsIso₂ A) (chainsIso₁ A) (chainsIso₀ A) (comp_d₂₁_eq A) (comp_d₁₀_eq A)
 
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
 def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
-    cyclesMapIso' (shortComplexH1Iso A) ((inhomogeneousChains A).sc 1).leftHomologyData
+    cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
       (shortComplexH1 A).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -745,14 +745,14 @@ variable [DecidableEq G]
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)` is isomorphic to the 2nd
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def shortComplexH2Iso : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
+def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousChains A).isoSc' 3 2 1 (by simp) (by simp) ≪≫
     isoMk (chainsIso₃ A) (chainsIso₂ A) (chainsIso₁ A) (comp_d₃₂_eq A) (comp_d₂₁_eq A)
 
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
 def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
-    cyclesMapIso' (shortComplexH2Iso A) ((inhomogeneousChains A).sc 2).leftHomologyData
+    cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
       (shortComplexH2 A).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
