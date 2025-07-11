@@ -207,6 +207,7 @@ variable {α β : Type*}
 
 section Disjoint
 
+section LocallyFiniteOrder
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
@@ -276,6 +277,44 @@ theorem Ioc_inr_inr : Ioc (inr b₁ : α ⊕ β) (inr b₂) = (Ioc b₁ b₂).ma
 
 theorem Ioo_inr_inr : Ioo (inr b₁ : α ⊕ β) (inr b₂) = (Ioo b₁ b₂).map Embedding.inr :=
   rfl
+
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [Preorder α] [Preorder β] [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β]
+
+instance : LocallyFiniteOrderBot (α ⊕ β) where
+  finsetIic := Sum.elim (Iic · |>.map .inl) (Iic · |>.map .inr)
+  finsetIio := Sum.elim (Iio · |>.map .inl) (Iio · |>.map .inr)
+  finset_mem_Iic := by simp
+  finset_mem_Iio := by simp
+
+variable (a : α) (b : β)
+
+theorem Iic_inl : Iic (inl a : α ⊕ β) = (Iic a).map Embedding.inl := rfl
+theorem Iic_inr : Iic (inr b : α ⊕ β) = (Iic b).map Embedding.inr := rfl
+theorem Iio_inl : Iio (inl a : α ⊕ β) = (Iio a).map Embedding.inl := rfl
+theorem Iio_inr : Iio (inr b : α ⊕ β) = (Iio b).map Embedding.inr := rfl
+
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTop
+variable [Preorder α] [Preorder β] [LocallyFiniteOrderTop α] [LocallyFiniteOrderTop β]
+
+instance : LocallyFiniteOrderTop (α ⊕ β) where
+  finsetIci := Sum.elim (Ici · |>.map .inl) (Ici · |>.map .inr)
+  finsetIoi := Sum.elim (Ioi · |>.map .inl) (Ioi · |>.map .inr)
+  finset_mem_Ici := by simp
+  finset_mem_Ioi := by simp
+
+variable (a : α) (b : β)
+
+theorem Ici_inl : Ici (inl a : α ⊕ β) = (Ici a).map Embedding.inl := rfl
+theorem Ici_inr : Ici (inr b : α ⊕ β) = (Ici b).map Embedding.inr := rfl
+theorem Ioi_inl : Ioi (inl a : α ⊕ β) = (Ioi a).map Embedding.inl := rfl
+theorem Ioi_inr : Ioi (inr b : α ⊕ β) = (Ioi b).map Embedding.inr := rfl
+
+end LocallyFiniteOrderTop
 
 end Disjoint
 
