@@ -32,7 +32,7 @@ theorem Units.neg_smul [Ring R] [AddCommGroup M] [Module R M] (u : Rˣ) (x : M) 
 @[simp]
 theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddCommMonoid M] [Module R M]
     [Invertible (2 : R)] (x : M) :
-    (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
+    (⅟2 : R) • x + (⅟2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
 
 theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
