@@ -219,7 +219,7 @@ This is a building block for showing that the `(p+1)`-th difference of a polynom
 degree `p` is zero.
 -/
 theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
-  ((fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ j) = 0 := by
+    ((fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ j) = 0 := by
   induction n generalizing j with
   | zero => contradiction
   | succ n ih =>
@@ -237,7 +237,7 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
 
 /-- The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`. -/
 theorem fwdDiff_iter_eq_factorial {n : ℕ} :
-  ((fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ n) = (fun _ ↦ (n.factorial : R))  := by
+    ((fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ n) = (fun _ ↦ (n.factorial : R))  := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -351,11 +351,9 @@ theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R) :
       (((fwdDiffₗ R R 1 ^ k) fun y ↦ ∑ i ∈ Finset.range (n + 1), a i * y ^ i) 0) := by
   conv => enter [1, 2, x]; rw [fwdDiffTab_0th_diag_poly']; simp
   have sum_extend_inner_range : ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (x + 1),
-    ↑(x.choose k) *
-      ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 =
+    ↑(x.choose k) * ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 =
     ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (p + 1),
-    ↑(x.choose k) *
-      ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 := by
+    ↑(x.choose k) * ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 := by
     apply Finset.sum_congr rfl
     intro x hx
     have sum_sum_eq_zero : ∑ k ∈ Finset.Ico (x + 1) (p + 1), ↑(x.choose k) *
