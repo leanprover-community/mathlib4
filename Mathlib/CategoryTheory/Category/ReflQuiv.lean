@@ -162,9 +162,7 @@ instance (V : Type*) [ReflQuiver V] [Unique V]
     | id =>
       apply Quotient.sound
       obtain rfl : x = y := by subsingleton
-      conv =>
-        arg 3
-        equals (𝟙rq _).toPath => congr; subsingleton
+      rw [show (Paths.of V).map default = (𝟙rq _).toPath by congr; subsingleton]
       exact .mk
     | @comp x y z f g hrec =>
         obtain rfl : x = z := by subsingleton
