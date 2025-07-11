@@ -187,7 +187,8 @@ theorem homEquiv_comp {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c
     homEquiv (f ≫ g) = homEquiv f ≫ homEquiv g := by
   unfold homEquiv
   simp only [Equiv.trans_apply]
-  rw [eHomEquiv_comp]; rfl
+  rw [eHomEquiv_comp]
+  rfl
 
 /-- The 2-cells between a parallel pair of 1-cells `f g` in `CatEnrichedOrdinary C` are defined to
 be the morphisms in the hom-categories provided by the `EnrichedCategory Cat C` structure between
