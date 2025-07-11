@@ -351,8 +351,7 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E] {X X' : Π x : M, Tangen
   haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) :=
     Equiv.linearOrder (e := Fintype.equivFin ↑(Basis.ofVectorSpaceIndex ℝ E))
   haveI : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toOrderBot _
-  haveI : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-    apply Fintype.toLocallyFiniteOrder
+  haveI : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toLocallyFiniteOrder
   haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
 
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
@@ -393,10 +392,16 @@ noncomputable def existence_candidate_aux [FiniteDimensional ℝ E]
     (x : M) → TangentSpace I x := fun x ↦
   -- Choose a trivialisation of TM near x.
   letI b := Basis.ofVectorSpace ℝ E
-  --letI t := trivializationAt E (TangentSpace I : M → Type _) x
-  -- choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
-  -- TODO: this is only a local frame; not orthonormal yet! placeholder definition!
-  letI frame := b.localFrame e
+  -- Case distinction: if E is trivial, there is only one choice anyway;
+  -- otherwise, b must be non-trivial.
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+  have : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := by infer_instance
+  haveI : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) :=
+    Equiv.linearOrder (e := Fintype.equivFin ↑(Basis.ofVectorSpaceIndex ℝ E))
+  haveI : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toOrderBot _
+  haveI : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Fintype.toLocallyFiniteOrder
+  haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+  letI frame := b.orthonormalFrame e
   -- The coefficient of the desired tangent vector ∇ X Y x w.r.t. s i
   -- is given by leviCivita_rhs X Y s i.
   ∑ i, ((leviCivita_rhs I X Y (frame i)) x) • (frame i x)
@@ -407,17 +412,9 @@ variable (M) in
 the candidate definition for the Levi-Civita connection on `TM`. -/
 noncomputable def existence_candidate [FiniteDimensional ℝ E] :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
-  fun X Y x ↦
-  -- -- Choose a trivialisation of TM near x.
-  -- letI b := Basis.ofVectorSpace ℝ E
-  letI t := trivializationAt E (TangentSpace I : M → Type _) x
-  -- -- choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
-  -- -- TODO: this is only a local frame; not orthonormal yet! placeholder definition!
-  -- letI frame := b.localFrame t
-  -- -- The coefficient of the desired tangent vector ∇ X Y x w.r.t. s i
-  -- -- is given by leviCivita_rhs X Y s i.
-  -- ∑ i, ((leviCivita_rhs I X Y (frame i)) x) • (frame i x)
-  existence_candidate_aux I X Y t x
+  -- Use the preferred trivialisation at x to write down a candidate for the existence.
+  -- to write down a candidate for the existence.
+  fun X Y x ↦ existence_candidate_aux I X Y (trivializationAt E (TangentSpace I : M → Type _) x) x
 
 variable (X Y) in
 -- The above definition behaves well: for each compatible trivialisation e,
