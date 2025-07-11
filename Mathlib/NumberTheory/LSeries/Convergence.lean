@@ -133,7 +133,7 @@ lemma LSeries.abscissaOfAbsConv_binop_le {F : (ℕ → ℂ) → (ℕ → ℂ) �
     (hF : ∀ {f g s}, LSeriesSummable f s → LSeriesSummable g s → LSeriesSummable (F f g) s)
     (f g : ℕ → ℂ) :
     abscissaOfAbsConv (F f g) ≤ max (abscissaOfAbsConv f) (abscissaOfAbsConv g) := by
-  refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun x hx ↦  hF ?_ ?_
+  refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun x hx ↦ hF ?_ ?_
   · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (ofReal_re x).symm ▸ (le_max_left ..).trans_lt hx
   · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|

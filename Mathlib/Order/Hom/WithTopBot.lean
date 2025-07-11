@@ -132,9 +132,10 @@ namespace OrderEmbedding
 variable [Preorder α] [Preorder β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[simps! -fullyApplied]
+@[simps -fullyApplied]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
-  __ := f.toEmbedding.optionMap
+  toFun := WithBot.map f
+  inj' := Option.map_injective f.injective
   map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
@@ -161,10 +162,11 @@ namespace OrderIso
 variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
-@[simps! apply]
-def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β :=
-  { e.toOrderEmbedding.withTopMap with
-    toEquiv := e.toEquiv.optionCongr }
+@[simps -fullyApplied]
+def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
+  toFun := WithTop.map e
+  __ := e.toOrderEmbedding.withTopMap
+  __ := e.toEquiv.optionCongr
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
@@ -180,9 +182,11 @@ theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
-@[simps! apply]
-def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β :=
-  { e.toOrderEmbedding.withBotMap with toEquiv := e.toEquiv.optionCongr }
+@[simps -fullyApplied]
+def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β where
+  toFun := WithBot.map e
+  __ := e.toOrderEmbedding.withBotMap
+  __ := e.toEquiv.optionCongr
 
 @[simp]
 theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=

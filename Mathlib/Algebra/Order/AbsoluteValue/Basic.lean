@@ -110,7 +110,7 @@ protected alias ⟨_, ne_zero⟩ := AbsoluteValue.ne_zero_iff
 
 @[simp]
 protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
-  (abv.nonneg x).gt_iff_ne.trans abv.ne_zero_iff
+  (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=

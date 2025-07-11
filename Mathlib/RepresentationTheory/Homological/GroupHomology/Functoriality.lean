@@ -239,6 +239,7 @@ instance epi_map_0_of_epi {A B : Rep k G} (f : A ⟶ B) [Epi f] :
     simp_all [cancel_epi]
 
 end H0
+
 section H1
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
@@ -451,6 +452,7 @@ end OfTrivial
 end CoresCoinf
 
 end H1
+
 section H2
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,

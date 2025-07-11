@@ -209,7 +209,7 @@ Bilinear and Quadratic Forms Over a Vector Space:
     Sylvester's law of inertia: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     real classification: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     complex classification: ''
-    Gram-Schmidt orthogonalisation: 'gramSchmidt_orthogonal'
+    Gram-Schmidt orthogonalisation: 'InnerProductSpace.gramSchmidt_orthogonal'
   Euclidean and Hermitian spaces:
     Euclidean vector spaces: 'InnerProductSpace'
     Hermitian vector spaces: 'InnerProductSpace'
