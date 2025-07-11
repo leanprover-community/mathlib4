@@ -91,17 +91,17 @@ theorem Ioo_mk_mk : Ioo (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioo a b).map (Embe
 end LocallyFiniteOrder
 
 section LocallyFiniteOrderBot
-variable [DecidableEq ι] [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrderBot (α i)]
+variable [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrderBot (α i)]
 
 instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Σ i, α i) where
   finsetIic := Sigma.rec fun i a => (Iic a).map (Embedding.sigmaMk i)
   finsetIio := Sigma.rec fun i a => (Iio a).map (Embedding.sigmaMk i)
   finset_mem_Iic := fun ⟨i, a⟩ ⟨j, b⟩ => by
-    obtain rfl | hij := Decidable.eq_or_ne i j
+    obtain rfl | hij := eq_or_ne i j
     · simp
     · simp [hij, le_def, hij.symm]
   finset_mem_Iio := fun ⟨i, a⟩ ⟨j, b⟩ => by
-    obtain rfl | hij := Decidable.eq_or_ne i j
+    obtain rfl | hij := eq_or_ne i j
     · simp
     · simp [hij, lt_def, hij.symm]
 
@@ -113,17 +113,17 @@ variable (i : ι) (a : α i)
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTop
-variable [DecidableEq ι] [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrderTop (α i)]
+variable [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrderTop (α i)]
 
 instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (Σ i, α i) where
   finsetIci := Sigma.rec fun i a => (Ici a).map (Embedding.sigmaMk i)
   finsetIoi := Sigma.rec fun i a => (Ioi a).map (Embedding.sigmaMk i)
   finset_mem_Ici := fun ⟨i, a⟩ ⟨j, b⟩ => by
-    obtain rfl | hij := Decidable.eq_or_ne i j
+    obtain rfl | hij := eq_or_ne i j
     · simp
     · simp [hij, le_def]
   finset_mem_Ioi := fun ⟨i, a⟩ ⟨j, b⟩ => by
-    obtain rfl | hij := Decidable.eq_or_ne i j
+    obtain rfl | hij := eq_or_ne i j
     · simp
     · simp [hij, lt_def]
 
