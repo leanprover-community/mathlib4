@@ -301,16 +301,15 @@ lemma congr_of_forall_product {X X' : Π x : M, TangentSpace I x}
   haveI : Fintype ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
   -- choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let real := b.orthonormalFrame t
-  have hframe := b.orthonormalFrame_isLocalFrameOn (e := t) (F := E) (IB := I) (n := 1)
-  have hframe' := b.orthonormalFrame_isOrthonormalFrameOn (e := t) (F := E) (IB := I) (n := 1)
+  have hframe := b.orthonormalFrame_isOrthonormalFrameOn (e := t) (F := E) (IB := I) (n := 1)
   rw [hframe.eq_iff_repr hx]
   intro i
 
   have h₁ : ⟪X, real i⟫ x = (hframe.repr i) X x := by
-    rw [hframe'.repr_eq_inner' _ hx]
+    rw [hframe.repr_eq_inner' _ hx]
     simp [real, real_inner_comm]
   have h₂ : ⟪X', real i⟫ x = (hframe.repr i) X' x := by
-    rw [hframe'.repr_eq_inner' _ hx]
+    rw [hframe.repr_eq_inner' _ hx]
     simp [real, real_inner_comm]
   -- this would work, except that h is unapplied, but my results are applied...
   --simp_rw [hframe'.repr_eq_inner' _ hx]
