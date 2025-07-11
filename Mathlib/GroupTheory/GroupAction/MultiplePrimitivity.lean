@@ -328,7 +328,7 @@ theorem isMultiplyPreprimitive_congr
       toFun x := ⟨f x.val, by
         simp [mem_ofFixingSubgroup_iff, t, hf.injective.eq_iff]
         exact x.prop⟩
-      map_smul' m x := by simp [subgroup_smul_def, map_smulₛₗ, ψ] }
+      map_smul' m x := by simp [map_smulₛₗ, ψ] }
     rw [isPreprimitive_congr (f := g)]
     · apply H.isPreprimitive_ofFixingSubgroup
       simp [← hs, t, hf.injective.injOn.encard_image]

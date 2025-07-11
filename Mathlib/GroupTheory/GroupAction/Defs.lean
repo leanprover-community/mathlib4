@@ -237,7 +237,7 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
 instance instMulAction (H : Subgroup G) : MulAction H α :=
   inferInstanceAs (MulAction H.toSubmonoid α)
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
 
 @[to_additive]
@@ -261,7 +261,7 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     dsimp at h
-    rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
+    rw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 
@@ -416,7 +416,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
     dsimp at h
-    rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
+    rw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩
