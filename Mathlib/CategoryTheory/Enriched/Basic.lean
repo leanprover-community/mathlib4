@@ -444,7 +444,7 @@ def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTr
     rw [whiskerLeft_rightUnitor_inv, Category.assoc, Iso.hom_inv_id_assoc,
       ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ 𝟙_ V),
       ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ (F.obj Y ⟶[V] G.obj Y)),
-      ← tensorHom_def_assoc, α.naturality_assoc]
+      ← tensorHom_def_assoc, GradedNatTrans.naturality_assoc α]
     simp only [Center.tensorUnit_fst]
     rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
       rightUnitor_tensor_inv, tensorHom_def', Category.assoc, comp_whiskerRight, Category.assoc,
