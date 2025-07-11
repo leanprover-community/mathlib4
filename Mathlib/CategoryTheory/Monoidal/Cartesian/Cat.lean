@@ -34,7 +34,8 @@ def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal �
   left_inv _ := by
     apply Functor.ext
     · rintro ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟨⟩⟩⟩⟩
-      simp; exact (Functor.map_id _ _).symm
+      simp only [eqToHom_refl, Category.comp_id, Category.id_comp]
+      exact (Functor.map_id _ _).symm
     · intro; rfl
   right_inv _ := rfl
 
