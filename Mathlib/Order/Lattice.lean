@@ -1335,10 +1335,6 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
       exact (h.2.2.2 (le_trans hb.1 hb.2) had).2
     have transitive: ∀ {x y z : α}, r x y → r y z → r x z := by
       intro x y z hxy hyz
-      have e2 : r ((x ⊓ y) ⊔ (y ⊔ z)) ((x ⊔ y) ⊔ (y ⊔ z)) :=
-        (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).2
-      rw [sup_comm x y, ← sup_sup_distrib_left,
-        sup_eq_right.mpr (le_trans inf_le_right le_sup_left), ← sup_assoc, sup_comm y x] at e2
       have e2' : r ((x ⊓ y) ⊓ (y ⊓ z)) ((x ⊔ y) ⊓ (y ⊓ z))  :=
         (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).1
       rw [inf_comm y z, ← inf_inf_distrib_right, inf_comm z y,
@@ -1348,7 +1344,10 @@ lemma isLatticCon_iff [Lattice α] (r : α → α → Prop) : IsLatticeCon r ↔
         by rw [sup_assoc]; exact le_sup_left⟩ (⟨inf_le_right, le_sup_right⟩)
         (h.2.2.1 (by rw [inf_assoc]; exact inf_le_of_right_le inf_le_sup)
         (by rw [sup_assoc]; exact le_sup_right) (h.2.2.1
-        (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h.2.1.mp hyz)) e2)
+        (by rw [inf_assoc]; exact inf_le_right) inf_le_sup e2' (h.2.1.mp hyz)) (by
+          conv_rhs => rw [sup_comm x y, sup_assoc, sup_sup_distrib_left, sup_comm y x]
+          conv_lhs => rw [← sup_eq_right.mpr (le_trans inf_le_right le_sup_left)]
+          exact (h.2.2.2 inf_le_sup (h.2.1.mp hxy)).2))
     { refl := h.1.refl
       symm hxy := by
         rw [h.2.1, inf_comm, sup_comm, ← h.2.1]
