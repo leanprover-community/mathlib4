@@ -731,6 +731,17 @@ theorem ContinousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space 
   rw [← Set.mem_singleton_iff, ← closure_singleton]
   exact h.mem_closure hx ht
 
+theorem ContinousWithinAt.eq_const_of_mem_closure_of_qOn [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
+    (ht : s.EqOn f (fun _ ↦ c)) : f x = c := by
+  apply ContinousWithinAt.eq_const_of_mem_closure h hx ht
+
+theorem eqOn_closure_of_eqOn_of_continuousWithinAt [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
+    (ht : s.EqOn f (fun _ ↦ c)) : (closure s).EqOn f (fun _ ↦ c) := by
+  intro x hx
+  apply ContinousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
+
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
