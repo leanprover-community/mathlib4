@@ -277,20 +277,32 @@ lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tang
   simp only [leviCivita_rhs]
   simp [rhs_aux_smulX, rhs_aux_smulY, rhs_aux_smulZ]
   ext x
-  simp only [Pi.mul_apply, /-Pi.inv_apply, Pi.ofNat_apply,-/ Pi.add_apply /-, Pi.sub_apply-/]
-  -- Only kind of true: get extra mfderiv's, which will cancel in the end...
+  simp only [Pi.mul_apply, Pi.add_apply]
   have h1 : VectorField.mlieBracket I X (f • Z) =
-      f • VectorField.mlieBracket I X Z := by
+      f • VectorField.mlieBracket I X Z + (fun x ↦ mfderiv I 𝓘(ℝ, ℝ) f x (X x)) • Z := by
     ext x
-    rw [VectorField.mlieBracket_smul_right (hf x) (hZ x)]; simp; sorry
+    rw [VectorField.mlieBracket_smul_right (hf x) (hZ x), add_comm]
+    simp
   have h2 : VectorField.mlieBracket I (f • Z) Y =
-      f • VectorField.mlieBracket I Z Y := by
+      -(fun x ↦ mfderiv I 𝓘(ℝ, ℝ) f x (Y x)) • Z + f • VectorField.mlieBracket I Z Y := by
     ext x
-    rw [VectorField.mlieBracket_smul_left (hf x) (hZ x)]; simp; sorry
-  simp [h1, h2]
-  rw [product_smul_left, product_smul_right]
-  simp only [Pi.smul_apply', smul_eq_mul]; abel_nf
-  sorry -- easy computation
+    rw [VectorField.mlieBracket_smul_left (hf x) (hZ x)]
+    simp
+  simp only [h1, Pi.smul_apply, Pi.sub_apply, Pi.add_apply, Pi.mul_apply, smul_eq_mul, h2]
+  set A := rhs_aux I X Y Z x
+  set B := rhs_aux I Y Z X x
+  set C := rhs_aux I Z X Y x
+  set D := (fun x ↦ (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)) • Z
+
+  rw [product_add_right, product_add_right]
+  -- These are all science fiction, and not fully true!
+  rw [product_smul_left, product_smul_right, product_smul_right]
+  set E := ⟪Z, VectorField.mlieBracket I X Y⟫
+  set F := ⟪Y, VectorField.mlieBracket I X Z⟫
+  set G := ⟪X, VectorField.mlieBracket I Z Y⟫
+  -- apart from science fiction mistakes, this is "an easy computation"
+  simp; abel_nf
+  sorry
 
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
