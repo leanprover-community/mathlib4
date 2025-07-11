@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
-/- This code is a Lean 4 port of "Few Digits", a Unimath implementation of regular categoris
+/- This code is a Lean 4 port of a Unimath implementation of regular categories
  by Niels van der Weide. Original source:
 https://github.com/UniMath/UniMath/blob/master/UniMath/CategoryTheory/RegularAndExact/RegularCategory.v#L319 -/
 
