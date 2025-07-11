@@ -50,16 +50,16 @@ lemma valueGroup₀_OrderEmbedding_mul (x y : valueGroup₀ f) :
 
 /-- The inclusion of `valueGroup₀ f` into `B` as an order embedding. -/
 def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o B :=
-  valueGroup₀_OrderEmbedding.trans withZeroUnits_OrderEmbedding
+  valueGroup₀_OrderEmbedding.trans OrderIso.withZeroUnits.toOrderEmbedding
 
 lemma valueGroup₀_OrderEmbedding'_apply (x : valueGroup₀ f) :
     valueGroup₀_OrderEmbedding' x =
-      withZeroUnits_OrderEmbedding (WithZero.map' (valueGroup f).subtype x) := rfl
+      OrderIso.withZeroUnits (WithZero.map' (valueGroup f).subtype x) := rfl
 
 lemma valueGroup₀_OrderEmbedding'_mul (x y : valueGroup₀ f) :
     valueGroup₀_OrderEmbedding' (x * y) =
       valueGroup₀_OrderEmbedding' x * valueGroup₀_OrderEmbedding' y := by
-  simp [valueGroup₀_OrderEmbedding'_apply, map_mul, withZeroUnits_OrderEmbedding_apply]
+  simp [valueGroup₀_OrderEmbedding'_apply, map_mul, OrderIso.withZeroUnits]
 
 instance : IsOrderedMonoid (valueGroup₀ f) where
   mul_le_mul_left := by
@@ -73,7 +73,7 @@ instance : IsOrderedMonoid (valueGroup₀ f) where
         valueGroup₀_OrderEmbedding'_mul]
       rw [mul_le_mul_left]
       · rwa [coe_le_coe] at h
-      simp [valueGroup₀_OrderEmbedding', withZeroUnits_OrderEmbedding]
+      simp [valueGroup₀_OrderEmbedding', OrderIso.withZeroUnits_apply]
 
 instance : LinearOrderedCommGroupWithZero (valueGroup₀ f) where
   zero_le_one := by simp

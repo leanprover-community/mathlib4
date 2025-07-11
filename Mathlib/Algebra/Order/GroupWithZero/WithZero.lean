@@ -95,6 +95,25 @@ between `WithZero αˣ` with `α`. -/
 @[simps!]
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
-  map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
+  map_rel_iff' {a b} := by
+    simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, withZeroUnitsEquiv_apply, recZeroCoe]
+    split
+    · exact ⟨fun _ ↦ WithZero.zero_le b, by simp⟩
+    · rcases b
+      · simpa using compareOfLessAndEq_eq_lt.mp rfl
+      rw [Units.val_le_val, ← WithZero.coe_le_coe]
+      rfl
+
+/-- Given any linearly ordered commutative group with zero `α`, this is the inclusion of
+`WithZero αˣ` into `α` as an ordered embedding. -/
+def OrderEmbedding.withZeroUnits : WithZero αˣ ↪o α := OrderIso.withZeroUnits.toOrderEmbedding
+
+@[simp]
+lemma OrderEmbedding.withZeroUnits_apply (x : WithZero αˣ) :
+    OrderEmbedding.withZeroUnits x = withZeroUnitsEquiv x := rfl
+
+lemma OrderEmbedding.withZeroUnits_mul (x y : WithZero αˣ) :
+    OrderEmbedding.withZeroUnits (x * y) = withZeroUnitsEquiv x * withZeroUnitsEquiv y := by
+  simp [map_mul]
 
 end Units

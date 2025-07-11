@@ -160,7 +160,7 @@ def restrict₀ : A →*₀ (valueGroup₀ f) where
 
 variable {f}
 
-@[simp]
+-- @[simp]
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
   by simp [restrict₀_apply, h]
@@ -169,17 +169,25 @@ lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
 lemma restrict₀_of_eq_zero {a : A} (h : f a = 0) :
     restrict₀ f a = 0 := by simp [restrict₀_apply, h]
 
-@[simp]
+@[simp 1010]
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by
   refine ⟨fun h ↦ ?_, restrict₀_of_eq_zero⟩
   · by_contra H; simp [H] at h
 
-@[simp]
 lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroHom f (restrict₀ f a) = f a := by
   simp [restrict₀_apply]
   split_ifs with h
   · simp [h]
   · rfl
+
+@[simp 1010]
+lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · apply_fun (valueGroup₀_MulWithZeroHom f) at h
+    rwa [restrict₀_eq] at h
+  · simp [h]
+    rfl
+
 
 end Restrict
 noncomputable section GroupWithZero
@@ -248,7 +256,7 @@ def restrict₀_valueGroup₀_MulEquiv : valueGroup₀ (restrict₀ f) ≃* valu
       <| by simpa [← Set.range_eq_univ] using restrict₀_range_eq_top _
 
 
-def restrict₀_valueGroup₀_hom : valueGroup₀ (restrict₀ f) →*₀ valueGroup₀ f where
+def restrict₀_valueGroup₀_MonoidWithZeroHom : valueGroup₀ (restrict₀ f) →*₀ valueGroup₀ f where
   __ := restrict₀_valueGroup₀_MulEquiv f
   map_zero' := by simp
   map_one' := by simp

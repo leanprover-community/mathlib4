@@ -24,14 +24,14 @@ image, as defined in
 valuation, rank one
 -/
 
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 noncomputable section
 
 open Function Multiplicative MonoidWithZeroHom
 
 open scoped NNReal
 
-variable {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-
+variable {R : Type*} [Ring R]
 namespace Valuation
 
 /-- A valuation has rank one if it is nontrivial and its image (defined as
@@ -73,6 +73,30 @@ theorem unit_ne_one : unit v ≠ 1 := by
 
 instance [RankOne v] : IsNontrivial v where
   exists_val_nontrivial := RankOne.nontrivial v
+
+section Restrict
+
+instance restrict_Nontrivial [v.IsNontrivial] : (v.restrict).IsNontrivial where
+  exists_val_nontrivial := by
+    obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
+    use x
+    constructor
+    · simp [hx0]
+    · rw [restrict_def]
+      intro H
+      rw [restrict₀_eq_one_iff] at H
+      tauto
+
+variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
+
+instance restrict_RankOne [RankOne v] : RankOne (v.restrict) where
+  hom := (RankOne.hom v).comp <| MonoidWithZeroHom.restrict₀_valueGroup₀_MonoidWithZeroHom (f := v)
+  strictMono' := by
+    apply (strictMono v).comp
+    sorry
+
+
+end Restrict
 
 end RankOne
 

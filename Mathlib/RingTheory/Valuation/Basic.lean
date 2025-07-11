@@ -390,7 +390,7 @@ def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
 
 open MonoidWithZeroHom in
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
-def restrict : Valuation R (MonoidWithZeroHom.valueGroup₀ v) where
+abbrev restrict : Valuation R (MonoidWithZeroHom.valueGroup₀ v) where
   __ := restrict₀ v
   map_add_le_max' x y := by
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
@@ -419,25 +419,8 @@ def restrict : Valuation R (MonoidWithZeroHom.valueGroup₀ v) where
         le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
       simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
 
-
-    -- by_cases H : v (x + y) = 0
-    -- · simp [H]
-    -- by_cases hx : v x ≠ 0
-    -- · simp [H, hx]
-    --   split_ifs with hy
-    --   · simp only [le_zero_iff, WithZero.coe_ne_zero, or_false]
-    --     apply map_add_le _ (by rfl)
-    --     simp [hy]
-    --   · simp [← Units.val_le_val]
-    -- · simp [H/- , hx -/]
-    --   split_ifs with hy
-    --   · sorry
-    --     -- simpa only [le_zero_iff, WithZero.coe_ne_zero] using
-    --     --   not_lt_zero' <| lt_of_le_of_ne (map_add_le _ (le_of_eq hx) (le_of_eq hy)) H
-    --   simp [← Units.val_le_val]
-    --   apply map_add_le
-    --   · sorry--simp [hx]
-    --   rfl
+@[simp]
+lemma restrict_def (x : R) : v.restrict x = MonoidWithZeroHom.restrict₀ v x := rfl
 
 end Group
 
