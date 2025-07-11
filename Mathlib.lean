@@ -3568,6 +3568,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Prufer
 import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Flow
+import Mathlib.Dynamics.MeasurePreserving.Lemmas
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.Newton
 import Mathlib.Dynamics.OmegaLimit
