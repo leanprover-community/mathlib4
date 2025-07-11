@@ -126,14 +126,14 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
   letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
   rw [completelyRegularSpace_iff_isOpen]
   intro x K hK hxK
-  simp_rw [← hK.mem_nhds_iff , nhds_iInf, mem_iInf, exists_finite_iff_finset,
+  simp_rw [← hK.mem_nhds_iff, nhds_iInf, mem_iInf, exists_finite_iff_finset,
     Finset.coe_sort_coe] at hxK; clear hK
   obtain ⟨I', V, hV, rfl⟩ := hxK
   simp only [mem_nhds_iff] at hV
   choose U hUV hU hxU using hV
   replace hU := fun (i : ↥I') =>
-    (ht ↑i).completely_regular x (U ↑i)ᶜ (@IsOpen.isClosed_compl X (t ↑i) _ (hU i))
-      (notMem_compl_iff.mpr (hxU i)); clear hxU
+    @CompletelyRegularSpace.completely_regular_isOpen _ (t i) (ht i) x (U i) (hU i) (hxU i)
+  clear hxU
   choose fs hfs hxfs hfsU using hU
   use I'.attach.sup fs
   constructorm* _ ∧ _
