@@ -271,7 +271,7 @@ theorem hComp_comp {a b c : CatEnrichedOrdinary C} {f₁ f₂ f₃ : a ⟶ b} {g
 theorem id_hComp {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
     hComp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
   ext
-  simp [hComp, ← heq_eq_eq]
+  simp only [hComp, Hom.base_id, base_mk, ← heq_eq_eq, eqToHom_comp_heq_iff, comp_eqToHom_heq_iff]
   rw [homEquiv_id]; simp [CatEnriched.id_hComp_heq]
 
 theorem id_hComp_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
@@ -280,7 +280,7 @@ theorem id_hComp_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ 
 theorem hComp_id {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
     hComp η (𝟙 (𝟙 b)) = eqToHom (comp_id f) ≫ η ≫ eqToHom (comp_id f').symm := by
   ext
-  simp [hComp, ← heq_eq_eq]
+  simp only [hComp, Hom.base_id, base_mk, ← heq_eq_eq, eqToHom_comp_heq_iff, comp_eqToHom_heq_iff]
   rw [homEquiv_id]; simp [CatEnriched.hComp_id_heq]
 
 theorem hComp_id_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
@@ -293,7 +293,9 @@ theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b
     hComp (hComp η θ) κ =
       eqToHom (assoc f g h) ≫ hComp η (hComp θ κ) ≫ eqToHom (assoc f' g' h').symm := by
   ext
-  simp [hComp, ← heq_eq_eq]
+  simp only [hComp, base_mk, Hom.base_comp, Hom.base_eqToHom,
+    ← heq_eq_eq, heq_eqToHom_comp_iff, heq_comp_eqToHom_iff,
+    eqToHom_comp_heq_iff, comp_eqToHom_heq_iff]
   conv => enter [1,2]; exact ((id_comp _).trans (comp_id _)).symm
   conv => enter [2,1]; exact ((id_comp _).trans (comp_id _)).symm
   iterate 4 rw [← CatEnriched.hComp_comp, id_eq_eqToHom, CatEnriched.eqToHom_hComp_eqToHom]
