@@ -20,6 +20,37 @@ TODO: add a more complete doc-string
 
 -/
 
+section -- Building continuous bilinear maps
+
+structure IsBilinearMap (R : Type*) {E F G : Type*} [Semiring R]
+  [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
+  [Module R E] [Module R F] [Module R G] (f : E → F → G) : Prop where
+  add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
+  smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
+  add_right : ∀ (x : E) (y₁ y₂ : F), f x (y₁ + y₂) = f x y₁ + f x y₂
+  smul_right : ∀ (c : R) (x : E) (y : F), f x (c • y) = c • f x y
+
+def IsBilinearMap.toLinearMap {R : Type*} {E F G : Type*} [CommSemiring R]
+    [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
+    [Module R E] [Module R F] [Module R G] {f : E → F → G} (hf : IsBilinearMap R f) :
+    E →ₗ[R] F →ₗ[R] G :=
+  LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
+
+def IsBilinearMap.toContinuousLinearMap
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] [FiniteDimensional 𝕜 F]
+    [T2Space F]
+    {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
+    {f : E → F → G} (h : IsBilinearMap 𝕜 f) : E →L[𝕜] F →L[𝕜] G :=
+  IsLinearMap.mk' (fun x : E ↦ h.toLinearMap x |>.toContinuousLinearMap)
+      (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
+end
+
 open Bundle Filter Function Topology Set
 
 open scoped Bundle Manifold ContDiff
@@ -117,6 +148,15 @@ structure IsCovariantDerivativeOn
     f X (g • σ) x = (g • f X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) g x (X x)) • σ x
   smul_const_σ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) {x}
     (hx : x ∈ s := by trivial) : f X (a • σ) x = a • f X σ x
+
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+     [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
+lemma IsCovariantDerivativeOn.smul_const_X
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    {s : Set M} (h : IsCovariantDerivativeOn F V f s) {x} (a : 𝕜)
+    (X : Π x, TangentSpace I x) (σ : Π x, V x) (hx : x ∈ s := by trivial) :
+    f (a • X) σ x = a • f X σ x :=
+  h.smulX ..
 
 @[ext]
 structure CovariantDerivative where
@@ -760,18 +800,51 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
   apply _root_.contMDiff_section_of_smul_smoothBumpFunction _ ?_ t.open_baseSet hψ.1 le_rfl
   apply contMDiffOn_localExtensionOn _ hx
 
+variable (F I) in
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
 lemma mdifferentiable_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
     [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
     MDiff (T% extend I F σ₀) :=
   contMDiff_extend σ₀ |>.mdifferentiable (by simp)
 
+omit [FiniteDimensional ℝ E] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul ℝ (V x)] in
+lemma isBilinearMap_differenceAux
+    [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
+    [ContMDiffVectorBundle ∞ F V I] {s : Set M} {cov cov'} {x : M}
+    (hcov : IsCovariantDerivativeOn F V cov s)
+    (hcov' : IsCovariantDerivativeOn F V cov' s) (hx : x ∈ s := by trivial) :
+    IsBilinearMap ℝ (fun (X₀ : TangentSpace I x) (σ₀ : V x) ↦
+      differenceAux cov cov' (extend I E X₀) (extend I F σ₀) x) where
+  add_left u v w := by
+    simp only [differenceAux, extend_add, Pi.sub_apply, hcov.addX, hcov'.addX]
+    abel
+  add_right u v w := by
+    have hv := mdifferentiable_extend I F v x
+    have hw := mdifferentiable_extend I F w x
+    simp only [differenceAux, extend_add, Pi.sub_apply]
+    rw [hcov.addσ _ hv hw, hcov'.addσ _ hv hw]
+    abel
+  smul_left a u v := by
+    unfold differenceAux
+    simp only [extend_smul, Pi.sub_apply, hcov.smul_const_X, hcov'.smul_const_X]
+    module
+  smul_right a u v := by
+    unfold differenceAux
+    simp only [extend_smul, Pi.sub_apply, hcov.smul_const_σ, hcov'.smul_const_σ]
+    module
+
 /-- The difference of two covariant derivatives, as a tensorial map -/
-noncomputable def difference
-    [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I 1 M]
-    (cov cov' : CovariantDerivative I F V) :
-    Π x : M, TangentSpace I x → V x → V x :=
-  fun x X₀ σ₀ ↦ differenceAux cov cov' (extend I E X₀) (extend I F σ₀) x
+noncomputable def difference [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
+    [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
+    [FiniteDimensional ℝ E] [ContMDiffVectorBundle ∞ F V I]
+    {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    {s : Set M} {x : M}
+    (hcov : IsCovariantDerivativeOn F V cov s)
+    (hcov' : IsCovariantDerivativeOn F V cov' s)
+    (hx : x ∈ s := by trivial) : TangentSpace I x →L[ℝ] V x →L[ℝ] V x :=
+  haveI : FiniteDimensional ℝ (TangentSpace I x) := by assumption
+  (isBilinearMap_differenceAux (F := F) hcov hcov').toContinuousLinearMap
 
 -- -- Note: we conciously register this lemma in unapplied form,
 -- -- but differenceAux_apply: this means the applied form should simplify down all the way,
@@ -785,12 +858,31 @@ noncomputable def difference
 
 -- show? the map differenceAux to difference is injective
 
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)] in
-@[simp]
-lemma difference_apply [FiniteDimensional ℝ F] [IsManifold I 1 M] [T2Space M]
-    (cov cov' : CovariantDerivative I F V) (x : M) (X₀ : TangentSpace I x) (σ₀ : V x) :
-    difference cov cov' x X₀ σ₀ =
+lemma difference_def [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
+    [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M]
+    [ContMDiffVectorBundle ∞ F V I]
+    {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    {s : Set M} {x : M}
+    (hcov : IsCovariantDerivativeOn F V cov s)
+    (hcov' : IsCovariantDerivativeOn F V cov' s)
+    (hx : x ∈ s := by trivial) (X₀ : TangentSpace I x) (σ₀ : V x) :
+    difference hcov hcov' hx X₀ σ₀ =
       cov (extend I E X₀) (extend I F σ₀) x - cov' (extend I E X₀) (extend I F σ₀) x := rfl
+
+@[simp]
+lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
+    [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M]
+    [ContMDiffVectorBundle ∞ F V I]
+    {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
+    {s : Set M} {x : M}
+    (hcov : IsCovariantDerivativeOn F V cov s)
+    (hcov' : IsCovariantDerivativeOn F V cov' s)
+    (hx : x ∈ s := by trivial) (X : Π x, TangentSpace I x) {σ : Π x, V x}
+    (hσ : MDiffAt (T% σ) x) :
+    difference hcov hcov' hx (X x) (σ x) =
+      cov X σ x - cov' X σ x :=
+  hcov.differenceAux_tensorial hcov' (mdifferentiable_extend ..) hσ (extend_apply_self _)
+    (extend_apply_self _) hx
 
 -- The classification of real connections over a trivial bundle
 section classification
@@ -806,62 +898,6 @@ theorem contDiff_extend {E : Type*}
   intro x'
   rw [← contMDiffAt_iff_contDiffAt]
   simpa [contMDiffAt_section] using contMDiff_extend (V := Trivial E E') y x'
-
-@[simps]
-noncomputable def endomorph_of_trivial_aux [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
-    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x X : E) : E' →ₗ[ℝ] E' where
-  toFun := difference cov (CovariantDerivative.trivial E E') x X
-  map_add' y y' := by
-    have A : fderiv ℝ ((extend 𝓘(ℝ, E) E' y  (x := x)) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
-        fderiv ℝ (extend 𝓘(ℝ, E) E' y (x := x)) x + fderiv ℝ (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
-      rw [fderiv_add] <;> exact (contDiff_extend x _).contDiffAt.differentiableAt (by simp)
-    have B : cov (extend 𝓘(ℝ, E) E X (x := x))
-        (extend 𝓘(ℝ, E) E' y (x := x) + extend 𝓘(ℝ, E) E' y' (x := x)) x =
-      cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y (x := x)) x +
-        cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' y' (x := x)) x := by
-      apply cov.isCovariantDerivativeOn.addσ
-      · exact (contMDiff_extend _ _).mdifferentiableAt (n := ∞) (hn := by norm_num)
-      · apply (contMDiff_extend _ _).mdifferentiableAt (n := ∞) (hn := by norm_num)
-    simp [A, B]
-    module
-  map_smul' a v := by
-    have := cov.isCovariantDerivativeOn.smul_const_σ (extend 𝓘(ℝ, E) E X (x := x))
-      (extend 𝓘(ℝ, E) E' v (x := x)) a (x := x)
-    simp [fderiv_const_smul_of_field, difference, this]
-    module
-
-@[simps!]
-noncomputable def endomorph_of_trivial_aux' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
-    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x X : E) : E' →L[ℝ] E' where
-  toLinearMap := cov.endomorph_of_trivial_aux x X
-  cont := LinearMap.continuous_of_finiteDimensional _
-
--- Not marked simp, as unfolding this is not always desirable.
-noncomputable def endomorph_of_trivial_aux'' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
-    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x : E) : E →ₗ[ℝ] E' →L[ℝ] E' where
-  toFun X := cov.endomorph_of_trivial_aux' x X
-  map_add' X Y := by
-    ext Z
-    simp [cov.isCovariantDerivativeOn.addX (extend 𝓘(ℝ, E) E X (x := x))
-      (extend 𝓘(ℝ, E) E Y (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x))]
-    module
-  map_smul' t X := by
-    ext Z
-    simp only [endomorph_of_trivial_aux'_apply, extend_smul, map_smul, RingHom.id_apply,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply]
-    -- The following lines should ideally mold into the simp call above.
-    trans t • (cov (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) x)
-      - t • (fderiv ℝ (extend 𝓘(ℝ, E)  E' Z (x := x)) x) X
-    swap; · module
-    have := cov.isCovariantDerivativeOn.smulX
-      (extend 𝓘(ℝ, E) E X (x := x)) (extend 𝓘(ℝ, E) E' Z (x := x)) (fun x ↦ t) (x := x)
-    simpa
-
-@[simps!]
-noncomputable def endomorph_of_trivial_aux''' [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
-    (cov : CovariantDerivative 𝓘(ℝ, E) E' (Bundle.Trivial E E')) (x : E) : E →L[ℝ] E' →L[ℝ] E' where
-  toLinearMap := cov.endomorph_of_trivial_aux'' x
-  cont := LinearMap.continuous_of_finiteDimensional _
 
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
@@ -880,25 +916,13 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     ∀ X : (x : E) → TangentSpace 𝓘(ℝ, E) x, ∀ σ : (x : E) → Trivial E E' x, ∀ x : E,
     MDiffAt (T% σ) x →
     cov X σ x = (CovariantDerivative.of_endomorphism A) X σ x := by
-  use cov.endomorph_of_trivial_aux'''
+  use fun x ↦ difference cov.isCovariantDerivativeOn
+    (CovariantDerivative.trivial E E').isCovariantDerivativeOn (mem_univ x)
   intro X σ x hσ
-  -- TODO: this is unfolding too much; need to fix this manually below...
-  -- think about a better design that actually works...
-  simp only [of_endomorphism, endomorph_of_trivial_aux'''_apply_apply]
-  rw [← CovariantDerivative.trivial_toFun]
-  have h₁ : cov X σ x - (trivial E E') X σ x = cov.difference (trivial E E') x (X x) (σ x) := by
-    -- Do not unfold differenceAux: we use the tensoriality of differenceAux.
-    rw [difference]
-    apply cov.isCovariantDerivativeOn.differenceAux_tensorial
-      (trivial E E').isCovariantDerivativeOn hσ ?_ (extend_apply_self (X x)).symm
-      (extend_apply_self (σ x)).symm
-    exact ((contMDiff_extend _).contMDiffAt).mdifferentiableAt (by norm_num)
-  have h₂ : cov.difference (trivial E E') x (X x) (σ x) =
-      cov (extend 𝓘(ℝ, E) E (X x)) (extend 𝓘(ℝ, E) E' (σ x)) x
-        - (fderiv ℝ (extend 𝓘(ℝ, E) E' (σ x) (x := x)) x) (X x) := by
-    simp
-  rw [← h₂, ← h₁]
-  module
+  simp only [of_endomorphism]
+  erw [difference_apply cov.isCovariantDerivativeOn
+       (CovariantDerivative.trivial E E').isCovariantDerivativeOn _ X hσ, trivial]
+  abel
 
 end classification
 
@@ -922,20 +946,20 @@ end from_trivialization
 
 section horiz
 
-def proj (cov : CovariantDerivative I F V) (e : TotalSpace F V) :
-    TangentSpace (I.prod 𝓘(ℝ, F)) e →L[ℝ] V e.proj := by
+def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
+    TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] V v.proj := by
   sorry
 
-noncomputable def horiz (cov : CovariantDerivative I F V) (e : TotalSpace F V) :
-    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) e) :=
-  LinearMap.ker (cov.proj e)
+noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
+    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
+  LinearMap.ker (cov.proj v)
 
-noncomputable def _root_.Bundle.vert (e : TotalSpace F V) :
-    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) e) :=
-  LinearMap.ker (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj e)
+noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
+    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
+  LinearMap.ker (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v)
 
-lemma horiz_vert_direct_sum (cov : CovariantDerivative I F V) (e : TotalSpace F V) :
-    IsCompl (cov.horiz e) (vert e) := by
+lemma horiz_vert_direct_sum (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
+    IsCompl (cov.horiz v) (vert v) := by
   sorry
 
 variable [IsManifold I 1 M]
