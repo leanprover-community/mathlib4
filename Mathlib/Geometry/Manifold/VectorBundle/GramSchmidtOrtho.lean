@@ -183,26 +183,18 @@ theorem gramSchmidt_ne_zero (n : ι) {x} (h₀ : LinearIndependent ℝ (s · x))
     gramSchmidt s n x ≠ 0 :=
   InnerProductSpace.gramSchmidt_ne_zero _ h₀
 
--- not needed at the moment: I want a point-wise version, along the lines
--- "if s i x is a basis, then gramSchmidt s i x is a triangular matrix"
-/-
-/-- At each point, when given a basis, `gramSchmidt` produces a triangular matrix of section
-values. -/
-theorem gramSchmidt_triangular {x} {i j : ι} (hij : i < j) (b : Basis ι ℝ (E x)) :
-    b.repr (gramSchmidt b i x) j = 0 := sorry
-     b.repr (gramSchmidt b i) j = 0 := by
-   have : gramSchmidt ℝ b i ∈ span ℝ (gramSchmidt ℝ b '' Set.Iio j) :=
-     subset_span ((Set.mem_image _ _ _).2 ⟨i, hij, rfl⟩)
-   have : gramSchmidt ℝ b i ∈ span ℝ (b '' Set.Iio j) := by rwa [← span_gramSchmidt_Iio ℝ b j]
-   have : ↑(b.repr (gramSchmidt ℝ b i)).support ⊆ Set.Iio j :=
-     Basis.repr_support_subset_of_mem_span b (Set.Iio j) this
-   exact (Finsupp.mem_supported' _ _).1 ((Finsupp.mem_supported ℝ _).2 this) j Set.notMem_Iio_self-/
+-- No version of `gramSchmidt_triangular` at the moment, for technical reasons: it would expect a
+-- `Basis` (of vectors in `E x`) as input, whereas we would want a hypothesis "the section values
+-- `s i x` form a basis" instead.
 
 /-- `gramSchmidt` produces point-wise linearly independent sections when given linearly
 independent sections. -/
 theorem gramSchmidt_linearIndependent {x} (h₀ : LinearIndependent ℝ (s · x)) :
     LinearIndependent ℝ (gramSchmidt s · x) :=
   InnerProductSpace.gramSchmidt_linearIndependent h₀
+
+-- No definition `gramSchmidtBasis` for technical reasons: it would expect a `Basis` as input,
+-- whereas we would want a notion "the section values `s i x` form a basis".
 
 noncomputable def gramSchmidtNormed [WellFoundedLT ι]
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
