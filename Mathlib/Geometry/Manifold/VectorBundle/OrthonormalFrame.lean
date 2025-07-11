@@ -48,9 +48,10 @@ variable {s : ι → (x : B) → E x} {u u' : Set B}
 variable (IB F n) in
 structure IsOrthonormalFrameOn (s : ι → (x : B) → E x) (u : Set B)
     extends IsLocalFrameOn IB F n s u where
-  /-- Any two distinct sections are point-wise orthogonal on `u`. -/
-  orthogonal {i j : ι} {x : B} : i ≠ j → x ∈ u → ⟪s i x, s j x⟫ = 0
-  normalised {i : ι} {x : B} : x ∈ u → ‖s i x‖ = 1
+  orthonormal {x} : x ∈ u → Orthonormal ℝ (s · x)
+  -- /-- Any two distinct sections are point-wise orthogonal on `u`. -/
+  -- orthogonal {i j : ι} {x : B} : i ≠ j → x ∈ u → ⟪s i x, s j x⟫ = 0
+  -- normalised {i : ι} {x : B} : x ∈ u → ‖s i x‖ = 1
 
 omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
@@ -58,8 +59,7 @@ omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
 lemma IsOrthonormalFrameOn.mono (hs : IsOrthonormalFrameOn IB F n s u) (huu' : u' ⊆ u) :
     IsOrthonormalFrameOn IB F n s u' where
   toIsLocalFrameOn := hs.toIsLocalFrameOn.mono huu'
-  orthogonal hij hx := hs.orthogonal hij (huu' hx)
-  normalised hx := hs.normalised (huu' hx)
+  orthonormal hx := hs.orthonormal (huu' hx)
 
 /-- Applying the Gram-Schmidt procedure to a local frame yields an orthonormal local frame. -/
 def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
@@ -74,11 +74,13 @@ def IsLocalFrameOn.gramSchmidtNormed (hs : IsLocalFrameOn IB F n s u) :
     --  using hs.generating hx
   contMDiffOn i := gramSchmidtNormed_contMDiffOn (fun i ↦ hs.contMDiffOn i) <|
       fun x hx ↦ (hs.linearIndependent hx).comp _ Subtype.val_injective
-  orthogonal {_ _ x} hij hx :=
-    (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).inner_eq_zero hij
-  normalised := by
-    intro i x hx
-    exact (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).norm_eq_one i
+  orthonormal hx := (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx))
+
+  -- orthogonal {_ _ x} hij hx :=
+  --   (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).inner_eq_zero hij
+  -- normalised := by
+  --   intro i x hx
+  --   exact (VectorBundle.gramSchmidtNormed_orthonormal (hs.linearIndependent hx)).norm_eq_one i
 
 -- XXX: is this one necessary?
 /-- Applying the normalised Gram-Schmidt procedure to an orthonormal local frame yields
