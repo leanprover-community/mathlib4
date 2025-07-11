@@ -658,7 +658,7 @@ theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
 theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
   uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
 
-  theorem uniqueDiffWithinAt_Ici (x : ℝ) : UniqueDiffWithinAt ℝ (Set.Ici x) x :=
+theorem uniqueDiffWithinAt_Ici (x : ℝ) : UniqueDiffWithinAt ℝ (Set.Ici x) x :=
   (uniqueDiffWithinAt_Ioi x).mono Set.Ioi_subset_Ici_self
 
 theorem uniqueDiffWithinAt_Iic (x : ℝ) : UniqueDiffWithinAt ℝ (Set.Iic x) x :=
