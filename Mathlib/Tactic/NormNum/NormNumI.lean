@@ -23,150 +23,147 @@ namespace NormNumI
 structure IsComplex (z : ℂ) (re im : ℝ) : Prop where
   out : z = ⟨re, im⟩
 
-theorem split_I : IsComplex I 0 1 where out := rfl
+theorem IsComplex.I : IsComplex I 0 1 := ⟨rfl⟩
 
-theorem split_zero : (0 : ℂ) = ⟨0, 0⟩ := rfl
+theorem IsComplex.zero : IsComplex (0 : ℂ) 0 0 := ⟨rfl⟩
 
-theorem split_one : (1 : ℂ) = ⟨1, 0⟩ := rfl
+theorem IsComplex.one : IsComplex (1 : ℂ) 1 0 := ⟨rfl⟩
 
-theorem IsComplex.add {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ}
-    (h₁ : IsComplex z₁ a₁ b₁) (h₂ : IsComplex z₂ a₂ b₂) :
-    IsComplex (z₁ + z₂) (a₁ + a₂) (b₁ + b₂) := by
-  substs h₁ h₂
-  rfl
+theorem IsComplex.add : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
+    IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ → IsComplex (z₁ + z₂) (a₁ + a₂) (b₁ + b₂)
+  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩ => ⟨rfl⟩
 
-theorem split_mul {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ} (h₁ : z₁ = ⟨a₁, b₁⟩) (h₂ : z₂ = ⟨a₂, b₂⟩) :
-    z₁ * z₂ = ⟨(a₁ * a₂ - b₁ * b₂), (a₁ * b₂ + b₁ * a₂)⟩ :=
-  Ring.mul_congr h₁ h₂ rfl
+theorem IsComplex.mul : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
+    IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ →
+      IsComplex (z₁ * z₂) (a₁ * a₂ - b₁ * b₂) (a₁ * b₂ + b₁ * a₂)
+  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩ => ⟨rfl⟩
 
-theorem split_inv {z : ℂ} {x y : ℝ} (h : z = ⟨x, y⟩) :
-    z⁻¹ = ⟨x / (x * x + y * y), - y / (x * x + y * y)⟩ := by
-  subst h
+theorem IsComplex.inv {z : ℂ} {x y : ℝ} (h : IsComplex z x y) :
+    IsComplex z⁻¹ (x / (x * x + y * y)) (- y / (x * x + y * y)) := by
+  constructor
+  obtain ⟨rfl⟩ := h
   rw [inv_def]
   exact Complex.ext (by simp [normSq_apply]; rfl) (by simp [normSq_apply, neg_div]; rfl)
 
-theorem split_neg {z : ℂ} {a b : ℝ} (h : z = ⟨a, b⟩) :
-    -z = ⟨-a, -b⟩ := by
-  subst h
-  rfl
+theorem IsComplex.neg : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (-z) (-a) (-b)
+  | _, _, _, ⟨rfl⟩ => ⟨rfl⟩
 
-theorem split_conj {w : ℂ} {a b : ℝ} (hw : w = ⟨a, b⟩) :
-    conj w = ⟨a, -b⟩ := by
-  rw [hw]
-  rfl
+theorem IsComplex.conj : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (conj z) a (-b)
+  | _, _, _, ⟨rfl⟩ => ⟨rfl⟩
 
-theorem split_num (n : ℕ) [n.AtLeastTwo] :
-    OfNat.ofNat (α := ℂ) n = ⟨OfNat.ofNat n, 0⟩ := rfl
+theorem IsComplex.ofNat (n : ℕ) [n.AtLeastTwo] :
+    IsComplex (OfNat.ofNat (α := ℂ) n) (OfNat.ofNat n) 0 := ⟨rfl⟩
 
-theorem split_scientific (m exp : ℕ) (x : Bool) :
-    (OfScientific.ofScientific m x exp : ℂ) = ⟨(OfScientific.ofScientific m x exp : ℝ), 0⟩ :=
-  rfl
+theorem IsComplex.scientific (m exp : ℕ) (x : Bool) :
+    IsComplex (OfScientific.ofScientific m x exp : ℂ) (OfScientific.ofScientific m x exp : ℝ) 0 :=
+  ⟨rfl⟩
 
-theorem eq_eq {z : ℂ} {a b a' b' : ℝ} (pf : z = ⟨a, b⟩)
-  (pf_a : a = a') (pf_b : b = b') :
-  z = ⟨a', b'⟩ := by simp_all
+theorem eq_eq {z : ℂ} {a b a' b' : ℝ} (pf : IsComplex z a b) (pf_a : a = a') (pf_b : b = b') :
+  IsComplex z a' b' := by simp_all
 
-theorem eq_of_eq_of_eq_of_eq {z w : ℂ} {az bz aw bw : ℝ} (hz : z = ⟨az, bz⟩) (hw : w = ⟨aw, bw⟩)
+theorem eq_of_eq_of_eq_of_eq {z w : ℂ} {az bz aw bw : ℝ}
+    (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
     (ha : az = aw) (hb : bz = bw) : z = w := by
-  simp [hz, hw, ha, hb]
+  simp [hz.out, hw.out, ha, hb]
 
-theorem ne_of_re_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : z = ⟨az, bz⟩) (hw : w = ⟨aw, bw⟩)
+theorem ne_of_re_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
     (ha : az ≠ aw) : z ≠ w := by
-  simp [hz, hw, ha]
+  simp [hz.out, hw.out, ha]
 
-theorem ne_of_im_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : z = ⟨az, bz⟩) (hw : w = ⟨aw, bw⟩)
+theorem ne_of_im_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
     (hb : bz ≠ bw) : z ≠ w := by
-  simp [hz, hw, hb]
+  simp [hz.out, hw.out, hb]
 
-theorem re_eq_of_eq {z : ℂ} {a b : ℝ} (hz : z = ⟨a, b⟩) : Complex.re z = a := by
-  simp [hz]
+theorem IsComplex.re_eq {z : ℂ} {a b : ℝ} (hz : IsComplex z a b) : Complex.re z = a := by
+  simp [hz.out]
 
-theorem im_eq_of_eq {z : ℂ} {a b : ℝ} (hz : z = ⟨a, b⟩) : Complex.im z = b := by
-  simp [hz]
+theorem IsComplex.im_eq {z : ℂ} {a b : ℝ} (hz : IsComplex z a b) : Complex.im z = b := by
+  simp [hz.out]
 
-theorem pow_negSucc {z w : ℂ} {a b : ℝ} {n : ℕ} {k k' : ℤ} (h : k = Int.negSucc n)
+theorem IsComplex.of_pow_negSucc {z w : ℂ} {a b : ℝ} {n : ℕ} {k k' : ℤ} (h : k = Int.negSucc n)
     (hk : NormNum.IsInt k' k)
-    (hz : (w ^ (n + 1))⁻¹ = ⟨a, b⟩) (hz' : z = w ^ (k' : ℤ)) : z = ⟨a, b⟩ := by
+    (hz : IsComplex (w ^ (n + 1))⁻¹ a b) (hz' : z = w ^ (k' : ℤ)) : IsComplex z a b := by
   obtain rfl : k' = k := by simpa using hk.out
-  simpa [h, hz'] using hz
+  constructor
+  simpa [h, hz'] using hz.out
 
-theorem pow_ofNat {z w : ℂ} {k k' : ℤ} {n : ℕ} {a b : ℝ} (hz1 : z = w ^ k)
-    (hw : w ^ n = ⟨a, b⟩) (hk' : k' = n) (hkk' : NormNum.IsInt k k') :
-    z = ⟨a, b⟩ := by
+theorem IsComplex.of_pow_ofNat {z w : ℂ} {k k' : ℤ} {n : ℕ} {a b : ℝ} (hz1 : z = w ^ k)
+    (hw : IsComplex (w ^ n) a b) (hk' : k' = n) (hkk' : NormNum.IsInt k k') :
+    IsComplex z a b := by
   obtain rfl : k = k' := by simpa using hkk'.out
-  simpa [hz1, hk'] using hw
+  constructor
+  simpa [hz1, hk'] using hw.out
 
 /-- Parsing all the basic calculation in complex. -/
-partial def parse (z : Q(ℂ)) :
-    MetaM (Σ a b : Q(ℝ),  Q($z = ⟨$a, $b⟩)) := do
+partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) := do
   match z with
   /- parse an addition: `z₁ + z₂` -/
   | ~q($z₁ + $z₂) =>
-    let ⟨a₁, b₁, pf₁⟩ ← parse z₁
-    let ⟨a₂, b₂, pf₂⟩ ← parse z₂
-    pure ⟨q($a₁ + $a₂), q($b₁ + $b₂), q(split_add $pf₁ $pf₂)⟩
+    let ⟨_a₁, _b₁, pf₁⟩ ← parse z₁
+    let ⟨_a₂, _b₂, pf₂⟩ ← parse z₂
+    pure ⟨_, _, q(.add $pf₁ $pf₂)⟩
   /- parse a multiplication: `z₁ * z₂` -/
   | ~q($z₁ * $z₂) =>
-    let ⟨a₁, b₁, pf₁⟩ ← parse z₁
-    let ⟨a₂, b₂, pf₂⟩ ← parse z₂
-    pure ⟨q($a₁ * $a₂ - $b₁ * $b₂), q($a₁ * $b₂ + $b₁ * $a₂), q(split_mul $pf₁ $pf₂)⟩
+    let ⟨_a₁, _b₁, pf₁⟩ ← parse z₁
+    let ⟨_a₂, _b₂, pf₂⟩ ← parse z₂
+    pure ⟨_, _, q(.mul $pf₁ $pf₂)⟩
   /- parse an inversion: `z⁻¹` -/
   | ~q($z⁻¹) =>
-    let ⟨x, y, pf⟩ ← parse z
-    pure ⟨q($x / ($x * $x + $y * $y)), q(-$y / ($x * $x + $y * $y)), q(split_inv $pf)⟩
+    let ⟨_x, _y, pf⟩ ← parse z
+    pure ⟨_, _, q(.inv $pf)⟩
   /- parse `z₁/z₂` -/
   | ~q($z₁ / $z₂) => do
-    let ⟨a, b, pf⟩ ← parse q($z₁ * $z₂⁻¹)
-    return ⟨q($a), q($b), q($pf)⟩
+    let ⟨_a, _b, pf⟩ ← parse q($z₁ * $z₂⁻¹)
+    return ⟨_, _, q($pf)⟩
   /- parse `-z` -/
   | ~q(-$w) => do
-    let ⟨a, b, pf⟩ ← parse w
-    return ⟨q(-$a), q(-$b), q(split_neg $pf)⟩
+    let ⟨_a, _b, pf⟩ ← parse w
+    return ⟨_, _, q(.neg $pf)⟩
   /- parse a subtraction `z₁ - z₂` -/
   | ~q($z₁ - $z₂) => parse q($z₁ + -$z₂)
   /- parse conjugate `conj z` -/
   | ~q(conj $w) =>
-    let ⟨a, b, pf⟩ ← parse w
-    return ⟨q($a), q(-$b), q(split_conj $pf)⟩
+    let ⟨_a, _b, pf⟩ ← parse w
+    return ⟨_, _, q(.conj $pf)⟩
   /- parse natural number power -/
-  | ~q(@HPow.hPow ℂ ℕ ℂ instHPow $w $n') =>
+  | ~q($w ^ ($n' : ℕ)) =>
     let ⟨n, hn⟩ ← NormNum.deriveNat q($n') q(inferInstance)
     match n.natLit! with
     | 0 =>
       let _i : $n =Q 0 := ⟨⟩
-      return ⟨q(1), q(0), q(show $w ^ $n' = _ from $(hn).out ▸ pow_zero _)⟩
+      return ⟨q(1), q(0), q(⟨show $w ^ $n' = _ from $(hn).out ▸ pow_zero _⟩)⟩
     | n + 1 =>
       parse q($w^$n * $w)
   /- parse integer power -/
-  | ~q(@HPow.hPow ℂ ℤ ℂ instHPow $w $k) =>
+  | ~q($w ^ ($k : ℤ)) =>
     let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
     match k'.intLit! with
     | Int.ofNat n =>
       let ⟨a, b, pf⟩ ← parse q(@HPow.hPow ℂ ℕ ℂ instHPow $w $n)
       let _i : $k' =Q $n := ⟨⟩
-      return ⟨a, b, q(pow_ofNat rfl $pf rfl $hm)⟩
+      return ⟨a, b, q(.of_pow_ofNat rfl $pf rfl $hm)⟩
     | Int.negSucc n =>
       let ⟨a, b, pf⟩ ← parse q(($w ^ ($n + 1))⁻¹)
       let _i : $k' =Q Int.negSucc $n := ⟨⟩
-      return ⟨a, b, q(pow_negSucc rfl $hm $pf rfl)⟩
+      return ⟨a, b, q(.of_pow_negSucc rfl $hm $pf rfl)⟩
   /- parse `(I:ℂ)` -/
   | ~q(Complex.I) =>
-    pure ⟨q(0), q(1), q(split_I)⟩
+    pure ⟨_, _, q(.I)⟩
   /- parse `(0:ℂ)` -/
   | ~q(0) =>
-    pure ⟨q(0), q(0), q(split_zero)⟩
+    pure ⟨_, _, q(.zero)⟩
   /- parse `(1:ℂ)` -/
   | ~q(1) =>
-    pure ⟨q(1), q(0), q(split_one)⟩
+    pure ⟨_, _, q(.one)⟩
   /- anything else needs to be on the list of atoms -/
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
-    return ⟨q(OfNat.ofNat $en), q(0), q(split_num $en)⟩
+    return ⟨_, _, q(.ofNat $en)⟩
   | ~q(OfScientific.ofScientific $m $x $exp) =>
-    return ⟨q(OfScientific.ofScientific $m $x $exp), q(0), q(split_scientific _ _ _)⟩
+    return ⟨_, _, q(.scientific _ _ _)⟩
   | _ => throwError "found the atom {z} which is not a numeral"
 
 /-- Using `norm_num` to normalise expressions -/
-def normalize (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q($z = ⟨$a, $b⟩)) := do
+def normalize (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) := do
   let ⟨a, b, pf⟩ ← parse z
   let ra ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) a
   let rb ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) b
@@ -219,7 +216,7 @@ such that `norm_num` successfully recognises the real part of `z`.
   haveI' : $e =Q (Complex.re $z) := ⟨⟩
   let ⟨a, _, pf⟩ ← NormNumI.parse z
   let r ← derive q($a)
-  return r.eqTrans q(NormNumI.re_eq_of_eq $pf)
+  return r.eqTrans q(($pf).re_eq)
 
 /-- The `norm_num` extension which identifies expressions of the form `Complex.im (z : ℂ)`,
 such that `norm_num` successfully recognises the imaginary part of `z`.
@@ -231,7 +228,7 @@ such that `norm_num` successfully recognises the imaginary part of `z`.
   haveI' : $e =Q (Complex.im $z) := ⟨⟩
   let ⟨_, b, pf⟩ ← NormNumI.parse z
   let r ← derive q($b)
-  return r.eqTrans q(NormNumI.im_eq_of_eq $pf)
+  return r.eqTrans q(($pf).im_eq)
 
 end NormNum
 
