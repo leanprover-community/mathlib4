@@ -108,51 +108,45 @@ section smoothness
 
 namespace IsOrthonormalFrameOn
 
+omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+variable [Fintype ι]
+
 variable (hs : IsOrthonormalFrameOn IB F n s u) {t : (x : B) → E x} {x : B}
 
 set_option linter.style.commandStart false
 
--- TODO: remove repr_eq_inner in favour of this version!
+omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsContMDiffRiemannianBundle IB n F E] in
 variable (t) in
-lemma repr_eq_inner' [Fintype ι] (hs : IsOrthonormalFrameOn IB F n s u)
-    {x} (hx : x ∈ u) (i : ι) :
+lemma repr_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : ι) :
     hs.repr i t x = ⟪s i x, t x⟫ := by
   let b := VectorBundle.gramSchmidtOrthonormalBasis (hs.linearIndependent hx) (hs.generating hx)
-  --have : hs.repr i t x = b.repr (t x) := sorry
-  have beq (i : ι) : b i = s i x := sorry
+  have beq (i : ι) : b i = s i x := by
+    simp [b, VectorBundle.gramSchmidtNormed_apply_of_orthonormal (hs.orthonormal hx) i]
+  have heq' : b.toBasis = hs.toBasisAt hx := by
+    ext i
+    simp [b, VectorBundle.gramSchmidtNormed_apply_of_orthonormal (hs.orthonormal hx) i]
   have aux := b.repr_apply_apply (t x) i
   rw [beq] at aux
-  rw [← aux]
-  simp only [IsLocalFrameOn.repr]
-  dsimp
-  simp only [hx, ↓reduceDIte]
-  --congr 3
-  --simp [beq]
-  -- missing API lemma about these basis...
-  sorry
+  simp [← aux, IsLocalFrameOn.repr, hx, ← heq']
 
-variable (t) in
-lemma repr_eq_inner (hs : IsOrthonormalFrameOn IB F n s u)
-    {x} (hx : x ∈ u) (i : ι) :
-    hs.repr i t x = ⟪s i x, t x⟫ / (‖s i x‖ ^ 2) := by
-  -- use #check OrthonormalBasis.repr_apply_apply
-  sorry
+-- This lemma would hold more generally for an *orthogonal frame*.
+-- variable (t) in
+-- lemma repr_eq_inner (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : ι) :
+--     hs.repr i t x = ⟪s i x, t x⟫ / (‖s i x‖ ^ 2) := by
+--   sorry -- need a versio of b.repr_apply_apply for *orthogonal* bases
 
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffWithinAt_repr (ht : CMDiffAt[u] n (T% t) x) (hx : x ∈ u) (i : ι) :
-    CMDiffAt[u] n (hs.repr i t) x := by
-  have aux : CMDiffAt[u] n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x :=
-    contMDiffWithinAt_aux ((hs.contMDiffOn i) x hx) ht <| (hs.linearIndependent hx).ne_zero _
-  exact aux.congr_of_mem (fun y hy ↦ hs.repr_eq_inner _ hy _) hx
+    CMDiffAt[u] n (hs.repr i t) x :=
+  ((hs.contMDiffOn i x hx).inner_bundle ht).congr_of_mem (fun _ hy ↦ hs.repr_eq_inner' _ hy _) hx
 
+omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB] in
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffAt_repr (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
-    CMDiffAt n (hs.repr i t) x := by
-  have aux : CMDiffAt n (fun x ↦ ⟪s i x, t x⟫ / (‖s i x‖ ^ 2)) x :=
-    contMDiffAt_aux ((hs.contMDiffOn i).contMDiffAt hu) ht <|
-      (hs.linearIndependent (mem_of_mem_nhds hu)).ne_zero _
-  exact aux.congr_of_eventuallyEq <|
-    Filter.eventually_of_mem hu fun x hx ↦ hs.repr_eq_inner _ hx _
+    CMDiffAt n (hs.repr i t) x :=
+  (((hs.contMDiffOn i).contMDiffAt hu).inner_bundle ht).congr_of_eventuallyEq <|
+    Filter.eventually_of_mem hu fun _ hx ↦ hs.repr_eq_inner' _ hx _
 
 -- Future: prove the same result for all local frames
 -- if `{s i}` is a local frame on `u`, and `{s' i}` are the corresponding orthogonalised frame,
@@ -168,35 +162,26 @@ lemma contMDiffOn_repr (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.repr
 
 /-- A section `s` of `V` is `C^k` at `x` iff each of its coefficients in an orthogonal
 local frame near `x` is. -/
-lemma contMDiffAt_iff_repr [Fintype ι]
-    (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.repr i t) x :=
+lemma contMDiffAt_iff_repr (hu : u ∈ 𝓝 x) :
+    CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.repr i t) x :=
   ⟨fun h i ↦ hs.contMDiffAt_repr hu h i, fun h ↦ hs.contMDiffAt_of_repr h hu⟩
 
 /-- If `{s i}` is an orthogonal local frame on `s`, a section `s` of `V` is `C^k` on `u` iff
 each of its coefficients `hs.repr i s` w.r.t. the local frame `{s i}` is. -/
-lemma contMDiffOn_iff_repr [Fintype ι] :
-    CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.repr i t) :=
+lemma contMDiffOn_iff_repr : CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.repr i t) :=
   ⟨fun h i ↦ hs.contMDiffOn_repr h i, fun hi ↦ hs.contMDiffOn_of_repr hi⟩
 
 -- unused, just stating for convenience/nice API
 include hs in
-lemma contMDiffAt_iff_repr' [Fintype ι]
-    (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (fun x ↦ ⟪s i x, t x⟫) x := by
-  trans ∀ i, CMDiffAt n (fun x ↦ ⟪s i x, t x⟫/ (‖s i x‖ ^ 2)) x
-  · rw [hs.contMDiffAt_iff_repr hu]
-    have (i : ι) := Filter.eventually_of_mem hu fun x hx ↦ (hs.repr_eq_inner t hx i)
-    exact ⟨fun h i ↦ (h i).congr_of_eventuallyEq <| Filter.EventuallyEq.symm (this i),
-      fun h i ↦ (h i).congr_of_eventuallyEq (this i)⟩
-  · peel with i
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · sorry -- similar to other direction below
-    · apply h.smul
-      refine ContMDiffAt.inv₀ ?_ ?_
-      · sorry -- rewrite ‖ ‖² = ⟨s, s⟩
-      · sorry -- neq 0
+lemma contMDiffAt_iff_repr' (hu : u ∈ 𝓝 x) :
+    CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (fun x ↦ ⟪s i x, t x⟫) x := by
+  rw [hs.contMDiffAt_iff_repr hu]
+  have (i : ι) := Filter.eventually_of_mem hu fun x hx ↦ (hs.repr_eq_inner' t hx i)
+  exact ⟨fun h i ↦ (h i).congr_of_eventuallyEq <| Filter.EventuallyEq.symm (this i),
+    fun h i ↦ (h i).congr_of_eventuallyEq (this i)⟩
 
 -- unused, just stating for convenience/nice API
-lemma contMDiffOn_iff_repr' [Fintype ι] :
+lemma contMDiffOn_iff_repr' :
     CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (fun x ↦ ⟪s i x, t x⟫) :=
   sorry -- similar to the above lemma
 
@@ -206,12 +191,9 @@ end smoothness
 
 namespace Basis
 
--- bad, for prototyping
 variable {b : Basis ι ℝ F}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
     [MemTrivializationAtlas e] {x : B} -- (hx : x ∈ e.baseSet)
-
--- noncomputable def orthonormalFrame_toBasis_at : Basis ι ℝ (E x) := sorry
 
 variable (b e) in
 /-- The orthonormal frame associated to the basis `b` and the trivialisation `e`:
@@ -243,12 +225,6 @@ lemma _root_.contMDiffAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.
   -- bug: if I change this to a by apply, and put #check after the `by`, it works, but #check' fails
   -- #check' contMDiffOn_orthonormalFrame_baseSet
   (contMDiffOn_orthonormalFrame_baseSet b e i).contMDiffAt <| e.open_baseSet.mem_nhds hx
-
--- variable (b e) in
--- @[simp]
--- lemma orthonormalFrame_apply_of_mem_baseSet {i : ι} (hx : x ∈ e.baseSet) :
---     b.orthonormalFrame e i x = b.orthonormalFrame_toBasis_at e hx i := by
---   simp [orthonormalFrame, hx]
 
 @[simp]
 lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
