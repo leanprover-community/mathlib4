@@ -140,6 +140,13 @@ def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 variable (X Y Z) in
 noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv I 𝓘(ℝ) ⟪Y, Z⟫ x (X x))
 
+omit [IsManifold I ∞ M] in
+lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
+  ext x
+  simp only [rhs_aux]
+  congr
+  exact product_swap I Z Y
+
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 variable (X Y Z Z') in
@@ -163,31 +170,27 @@ lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z))
   rw [product_add_left, mfderiv_add ((foo hY hZ) x) ((foo hY' hZ) x)]
   simp; congr
 
+omit [IsManifold I ∞ M] in
 variable (X Y Z) in
 lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
   ext x
   simp [rhs_aux]
-
-variable (X Y Z) in
-lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
-  ext x
-  simp only [rhs_aux]
-  rw [product_smul_right]
-  -- XXX: not true, the product rule gives us two terms
-  -- and there is missing API in mathlib!
-  -- only holds given enough smoothness!
-  sorry
 
 variable (X Y Z Z') in
 lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z := by
   ext x
   simp [rhs_aux]
   rw [product_smul_left]
-  -- TODO: get a second term from the product rule!
+  -- XXX: not true, the product rule gives us two terms
+  -- and there is missing API in mathlib!
+  -- only holds given enough smoothness!
   sorry
 
--- XXX: inlining rhs_aux makes things not typecheck any more!
+variable (X Y Z) in
+lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
+  rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap]
 
+-- XXX: inlining rhs_aux here makes things not typecheck any more!
 variable (X Y Z) in
 /-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
 If ∇ is a Levi-Civita connection on `TM`, then
