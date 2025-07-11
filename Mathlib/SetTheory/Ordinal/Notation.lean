@@ -269,7 +269,7 @@ theorem oadd_lt_oadd_2 {e o₁ o₂ : ONote} {n₁ n₂ : ℕ+} (h₁ : NF (oadd
     oadd e n₁ o₁ < oadd e n₂ o₂ := by
   simp only [lt_def, repr]
   refine lt_of_lt_of_le ((add_lt_add_iff_left _).2 h₁.snd'.repr_lt) (le_trans ?_ (le_add_right _ _))
-  rwa [← mul_succ,Ordinal.mul_le_mul_iff_left (opow_pos _ omega0_pos), succ_le_iff, Nat.cast_lt]
+  rwa [← mul_succ, Ordinal.mul_le_mul_iff_left (opow_pos _ omega0_pos), succ_le_iff, Nat.cast_lt]
 
 theorem oadd_lt_oadd_3 {e n a₁ a₂} (h : a₁ < a₂) : oadd e n a₁ < oadd e n a₂ := by
   rw [lt_def]; unfold repr
