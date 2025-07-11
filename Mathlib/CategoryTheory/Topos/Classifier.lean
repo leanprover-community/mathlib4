@@ -65,7 +65,7 @@ variable (C : Type u) [Category.{v} C]
 ```
       U ---------m----------> X
       |                       |
-      χ₀                      χ
+    χ₀ U                     χ m
       |                       |
       v                       v
       Ω₀ ------truth--------> Ω
@@ -82,11 +82,11 @@ structure Classifier where
   /-- The truth morphism is a monomorphism -/
   mono_truth : Mono truth
   /-- The top arrow in the pullback square -/
-  χ₀ {U X : C} (m : U ⟶ X) [Mono m] : U ⟶ Ω₀
+  χ₀ (U : C) : U ⟶ Ω₀
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
   χ {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
   /-- `χ m` and `χ₀ m` form the appropriate pullback square. -/
-  isPullback' {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (χ₀ m) (χ m) truth
+  isPullback' {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (χ₀ U) (χ m) truth
   /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square for any `χ₀'`. -/
   uniq' {U X : C} (m : U ⟶ X) [Mono m] (χ₀' : U ⟶ Ω₀) (χ' : X ⟶ Ω)
     (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
@@ -113,40 +113,34 @@ def mkOfTerminalΩ
   Ω := Ω
   truth := truth
   mono_truth := t.mono_from _
-  χ₀ _ _ := t.from _
+  χ₀ := t.from
   χ m _ := χ m
   isPullback' m _ := isPullback m
   uniq' m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
 
 instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
-  { default := c.χ₀ (𝟙 Y),
+  { default := c.χ₀ Y,
     uniq f :=
-      have : f ≫ c.truth = c.χ₀ (𝟙 Y) ≫ c.truth :=
+      have : f ≫ c.truth = c.χ₀ Y ≫ c.truth :=
         by calc
           _ = c.χ (𝟙 Y) := c.uniq' (𝟙 Y) f (f ≫ c.truth) (of_horiz_isIso_mono { })
-          _ = c.χ₀ (𝟙 Y) ≫ c.truth := by simp [← (c.isPullback' (𝟙 Y)).w]
+          _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback' (𝟙 Y)).w]
       Mono.right_cancellation _ _ this }
 
 /-- `Ω₀` is a terminal object. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
 
-/-- The more practical version of `isPullback'` where we don't need to supply the to arrow,
-since there is a unique morphism to the terminal object -/
+/-- Version of `isPullback'` where the classifier argument is implicit and we use
+`isTerminalΩ₀.from` instead of `χ₀` -/
 lemma isPullback {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] :
     IsPullback m (isTerminalΩ₀.from _) (c.χ m) c.truth :=
-  (isTerminalΩ₀.hom_ext (c.χ₀ m) (isTerminalΩ₀.from U)) ▸ c.isPullback' m
+  (isTerminalΩ₀.hom_ext (c.χ₀ U) (isTerminalΩ₀.from U)) ▸ c.isPullback' m
 
-/-- The unique morphism from `U` to the terminal object `Ω₀` -/
-def toΩ₀ {c : Classifier C} (U : C) : U ⟶ c.Ω₀ :=
-  isTerminalΩ₀.from U
-
-/-- The unique morphism from `U` equals the characteristic morphism of the identity on `U` -/
-lemma toΩ₀_eq_χ₀_id {c : Classifier C} (U : C) : toΩ₀ U = c.χ₀ (𝟙 U) := rfl
-
-/-- The more practical version of `uniq'` without the argument `χ₀` -/
+/-- Version of `uniq'` where the classifier argument is implicit and we use
+`isTerminalΩ₀.from` instead of `χ₀` -/
 lemma uniq {U X : C} {c : Classifier C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ c.Ω)
-    (hχ' : IsPullback m (toΩ₀ _) χ' (c.truth)) : χ' = c.χ m :=
-  c.uniq' m (toΩ₀ _) χ' hχ'
+    (hχ' : IsPullback m (isTerminalΩ₀.from U) χ' (c.truth)) : χ' = c.χ m :=
+  c.uniq' m (χ₀ _ U) χ' hχ'
 
 end Classifier
 
@@ -179,21 +173,21 @@ def χ : X ⟶ Ω C :=
 ```
       U ---------m----------> X
       |                       |
-      χ₀                      χ
+    χ₀ U                     χ m
       |                       |
       v                       v
       Ω₀ ------truth--------> Ω
 ```
 is a pullback square.
 -/
-lemma isPullback_χ : IsPullback m (Classifier.toΩ₀ U) (χ m) (truth C) :=
+lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
   Classifier.isPullback m
 
 /-- The diagram
 ```
       U ---------m----------> X
       |                       |
-      χ₀                      χ
+    χ₀ U                     χ m
       |                       |
       v                       v
       Ω₀ ------truth--------> Ω
@@ -201,12 +195,12 @@ lemma isPullback_χ : IsPullback m (Classifier.toΩ₀ U) (χ m) (truth C) :=
 commutes.
 -/
 @[reassoc]
-lemma comm : m ≫ χ m = Classifier.toΩ₀ U ≫ truth C := (isPullback_χ m).w
+lemma comm : m ≫ χ m = Classifier.χ₀ _ U ≫ truth C := (isPullback_χ m).w
 
 /-- `χ m` is the only map for which the associated square
 is a pullback square.
 -/
-lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.toΩ₀ U) χ' (truth C)) :
+lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) :
   χ' = χ m := Classifier.uniq m χ' hχ'
 
 instance truthIsSplitMono : IsSplitMono (truth C) :=
@@ -220,7 +214,7 @@ noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
 ```
       U ---------m----------> X
       |                       |
-      χ₀                      χ
+    χ₀ U                     χ m
       |                       |
       v                       v
       Ω₀ ------truth--------> Ω
@@ -421,7 +415,7 @@ noncomputable def classifier : Classifier C where
   Ω := Ω
   truth := h.isoΩ₀.inv ≫ h.Ω₀.arrow
   mono_truth := terminalIsTerminal.mono_from _
-  χ₀ m _ := terminalIsTerminal.from _
+  χ₀ := terminalIsTerminal.from
   χ m _ := h.χ m
   isPullback' m _ :=
     (h.isPullback m).of_iso (Iso.refl _) (Iso.refl _) h.isoΩ₀ (Iso.refl _)
