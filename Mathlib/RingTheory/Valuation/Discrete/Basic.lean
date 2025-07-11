@@ -12,8 +12,8 @@ import Mathlib.RingTheory.Valuation.Basic
 
 Given a linearly ordered commutative group with zero `Γ`, a valuation `v : A → Γ` on a ring `A` is
 *discrete*, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
-implemented as `MonoidWithZeroHom.valueGroup v`. When `Γ := ℤₘ₀` (defined in
-`Multiplicative.termℤₘ₀`), `γ` = ofAdd (-1)` and the condition of being discrete is
+implemented as `MonoidHomWithZero.valueGroup v`. When `Γ := ℤᵐ⁰`, `γ = ofAdd (-1)` and the condition
+of being discrete is
 equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to asking that
 `1 : ℤ` belongs to the image of the corresponding *additive* valuation.
 
@@ -34,6 +34,7 @@ an element `γ : Γˣ` that is `< 1` and generates the range of `v`,
 namespace Valuation
 
 open Set LinearOrderedCommGroup MonoidWithZeroHom
+open Function Multiplicative Set WithZero
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
@@ -90,6 +91,25 @@ instance [IsRankOneDiscrete v] : IsCyclic <| valueGroup v := by
 
 instance [IsRankOneDiscrete v] : Nontrivial (valueGroup v) :=
   ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
+
+instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
+  by_contra H
+  apply ((valueGroup v).nontrivial_iff_ne_bot).mp (by infer_instance)
+  apply Subgroup.closure_eq_bot_iff.mpr
+  rw [not_nontrivial_iff_subsingleton, subsingleton_iff] at H
+  intro x hx
+  specialize H ⟨x, hx⟩ ⟨1, one_mem_valueMonoid v⟩
+  simpa using H
+
+instance [IsRankOneDiscrete v] : v.IsNontrivial := by
+  constructor
+  obtain ⟨⟨γ, π, hπ⟩, hγ⟩ := (nontrivial_iff_exists_ne (1 : valueMonoid v)).mp (by infer_instance)
+  use π
+  constructor
+  · simp [hπ]
+  · rw [hπ]
+    simp only [← MonoidWithZeroHom.coe_one, ne_eq, Subtype.mk.injEq] at hγ
+    simp [hγ, Units.val_eq_one]
 
 end IsRankOneDiscrete
 
