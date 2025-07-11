@@ -539,6 +539,7 @@ def IsBoundary₂ (x : G × G →₀ A) : Prop :=
     single (g.1 * g.2.1, g.2.2) a + single (g.1, g.2.1 * g.2.2) a - single (g.1, g.2.1) a) = x
 
 end
+
 section
 
 variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
@@ -578,6 +579,7 @@ theorem isBoundary₂_iff (x : G × G →₀ A) :
     simp_all [sum_sum_index]
 
 end
+
 end IsBoundary
 
 section ofDistribMulAction
@@ -849,7 +851,9 @@ theorem π_comp_H0IsoOfIsTrivial_hom :
   simp [H0IsoOfIsTrivial]
 
 end IsTrivial
+
 end H0
+
 section H1
 
 /-- Shorthand for the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`,
@@ -898,6 +902,7 @@ lemma π_comp_H1Iso_hom :
   simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
 end H1
+
 section H2
 
 /-- Shorthand for the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`,
@@ -946,5 +951,7 @@ lemma π_comp_H2Iso_hom :
   simp [H2Iso, isoCycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
 end H2
+
 end Homology
+
 end groupHomology
