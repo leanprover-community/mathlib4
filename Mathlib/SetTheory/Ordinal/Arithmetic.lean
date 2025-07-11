@@ -524,7 +524,7 @@ theorem add_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
 alias add_le_of_limit := add_le_iff_of_isSuccLimit
 
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
-  ⟨add_left_strictMono, fun hb c ↦ by simp [upperBounds, add_le_of_isSuccLimit hb]⟩
+  ⟨add_left_strictMono, fun hb c ↦ by simp [upperBounds, add_le_iff_of_isSuccLimit hb]⟩
 
 theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
   (isNormal_add_right a).isSuccLimit
@@ -799,7 +799,7 @@ alias mul_le_of_limit := mul_le_iff_of_isSuccLimit
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
   refine IsNormal.of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
   · simpa [mul_succ] using (add_lt_add_iff_left (a * b)).2 h
-  · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_of_limit hb] using
+  · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_iff_of_isSuccLimit hb] using
       fun c hc ↦ mul_le_mul_left' hc.le a
 
 theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
