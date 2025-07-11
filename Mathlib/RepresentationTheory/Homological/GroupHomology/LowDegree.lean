@@ -536,7 +536,7 @@ variable (G) in
 /-- A term `x : A` satisfies the 0-boundary condition if there exists a finsupp
 `∑ aᵢ·gᵢ : G →₀ A` such that `∑ gᵢ⁻¹ • aᵢ - aᵢ = x`. -/
 def IsBoundary₀ (a : A) : Prop :=
-  ∃ (x : G →₀ A), x.sum (fun g a => g⁻¹ • a - a) = a
+  ∃ (x : G →₀ A), x.sum (fun g z => g⁻¹ • z - z) = a
 
 /-- A finsupp `x : G →₀ A` satisfies the 1-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ) : G × G →₀ A` such that `∑ (gᵢ⁻¹ • aᵢ)·hᵢ - aᵢ·gᵢhᵢ + aᵢ·gᵢ = x`. -/
@@ -558,7 +558,7 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
 
 variable (G) in
 theorem isBoundary₀_iff (a : A) :
-    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g a => g • a - a) = a := by
+    IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
   constructor
   · rintro ⟨x, hx⟩
     use x.sum (fun g a => single g (- (g⁻¹ • a)))
@@ -727,14 +727,14 @@ variable [DecidableEq G]
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def shortComplexH1Iso : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
+def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousChains A).isoSc' 2 1 0 (by simp) (by simp) ≪≫
     isoMk (chainsIso₂ A) (chainsIso₁ A) (chainsIso₀ A) (comp_d₂₁_eq A) (comp_d₁₀_eq A)
 
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
 def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
-    cyclesMapIso' (shortComplexH1Iso A) ((inhomogeneousChains A).sc 1).leftHomologyData
+    cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
       (shortComplexH1 A).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -765,14 +765,14 @@ variable [DecidableEq G]
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)` is isomorphic to the 2nd
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
-def shortComplexH2Iso : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
+def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousChains A).isoSc' 3 2 1 (by simp) (by simp) ≪≫
     isoMk (chainsIso₃ A) (chainsIso₂ A) (chainsIso₁ A) (comp_d₃₂_eq A) (comp_d₂₁_eq A)
 
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
 def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
-    cyclesMapIso' (shortComplexH2Iso A) ((inhomogeneousChains A).sc 2).leftHomologyData
+    cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
       (shortComplexH2 A).moduleCatLeftHomologyData
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -817,7 +817,7 @@ def H0π : A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 instance : Epi (H0π A) := by unfold H0π; infer_instance
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H0Iso_hom  :
+lemma π_comp_H0Iso_hom :
     π A 0 ≫ (H0Iso A).hom = (cyclesIso₀ A).hom ≫ (coinvariantsMk k G).app A := by
   simp [H0Iso, cyclesIso₀]
 
@@ -878,7 +878,7 @@ instance : Epi (H1π A) := by unfold H1π; infer_instance
 variable {A}
 
 lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
-  have h := leftHomologyπ_naturality'_assoc (shortComplexH1Iso A).inv
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
     (shortComplexH1 A).moduleCatLeftHomologyData (leftHomologyData _)
     ((inhomogeneousChains A).sc 1).leftHomologyIso.hom
   simp only [H1π, isoCycles₁, π, HomologicalComplex.homologyπ, homologyπ,
@@ -902,10 +902,10 @@ variable (A)
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH1Iso A) _ _)
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H1Iso_hom  :
+lemma π_comp_H1Iso_hom :
     π A 1 ≫ (H1Iso A).hom = (isoCycles₁ A).hom ≫
       (shortComplexH1 A).moduleCatLeftHomologyData.π := by
   simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
@@ -1010,7 +1010,7 @@ instance : Epi (H2π A) := by unfold H2π; infer_instance
 variable {A}
 
 lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
-  have h := leftHomologyπ_naturality'_assoc (shortComplexH2Iso A).inv
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv
     (shortComplexH2 A).moduleCatLeftHomologyData (leftHomologyData _)
     ((inhomogeneousChains A).sc 2).leftHomologyIso.hom
   simp only [H2π, isoCycles₂, π, HomologicalComplex.homologyπ, homologyπ,
@@ -1034,10 +1034,10 @@ variable (A)
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
 def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH2Iso A) _ _)
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H2Iso_hom  :
+lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
       (shortComplexH2 A).moduleCatLeftHomologyData.π := by
   simp [H2Iso, isoCycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]

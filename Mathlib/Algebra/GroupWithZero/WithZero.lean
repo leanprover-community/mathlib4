@@ -128,6 +128,12 @@ lemma lift'_zero (f : α →* β) : lift' f (0 : WithZero α) = 0 := rfl
 lemma lift'_unique (f : WithZero α →*₀ β) : f = lift' (f.toMonoidHom.comp coeMonoidHom) :=
   (lift'.apply_symm_apply f).symm
 
+lemma lift'_surjective {f : α →* β} (hf : Surjective f) :
+    Surjective (lift' f) := by
+  intro b
+  obtain ⟨a, rfl⟩ := hf b
+  exact ⟨a, by simp⟩
+
 end lift
 
 variable [MulOneClass β] [MulOneClass γ]
@@ -155,6 +161,19 @@ lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f :
   simp [Injective, WithZero.forall]
 
 alias ⟨_, map'_injective⟩ := map'_injective_iff
+
+lemma map'_surjective_iff {f : α →* β} : Surjective (map' f) ↔ Surjective f := by
+  simp only [Surjective, «forall»]
+  refine ⟨fun h b ↦ ?_, fun h ↦ ⟨⟨0, by simp⟩, fun b ↦ ?_⟩⟩
+  · obtain ⟨a, hab⟩ := h.2 b
+    induction a using WithZero.recZeroCoe <;>
+    simp at hab
+    grind
+  · obtain ⟨a, ha⟩ := h b
+    use a
+    simp [ha]
+
+alias ⟨_, map'_surjective⟩ := map'_surjective_iff
 
 end MulOneClass
 
@@ -409,7 +428,7 @@ namespace MonoidWithZeroHom
 
 protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
     [MulZeroOneClass G₀'] [Nontrivial G₀']
-    {f : G₀ →*₀ G₀'} {x : G₀}:
+    {f : G₀ →*₀ G₀'} {x : G₀} :
     f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!

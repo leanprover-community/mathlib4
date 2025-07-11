@@ -422,13 +422,13 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
   have hX_int₁ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
     ((integrable_const (max |a| |b|)).mono' hX.aestronglyMeasurable
       (by filter_upwards [ha, hb] with ω using abs_le_max_abs_abs)).const_mul (a + b)
-  have h0 : 0 ≤ - μ[X ^ 2] + (a + b) * μ[X] - a * b :=
+  have h0 : 0 ≤ -μ[X ^ 2] + (a + b) * μ[X] - a * b :=
     calc
       _ ≤ ∫ ω, (b - X ω) * (X ω - a) ∂μ := by
         apply integral_nonneg_of_ae
         filter_upwards [ha, hb] with ω ha' hb'
         exact mul_nonneg (by linarith : 0 ≤ b - X ω) (by linarith : 0 ≤ X ω - a)
-      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω - a * b ∂μ :=
+      _ = ∫ ω, -X ω ^ 2 + (a + b) * X ω - a * b ∂μ :=
         integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
       _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ _, a * b ∂μ :=
         integral_sub (by fun_prop) (integrable_const (a * b))

@@ -41,7 +41,7 @@ Expressing that a map is linear along the `i`-th coordinate when all other coord
 can be done in two (equivalent) different ways:
 
 * fixing a vector `m : ∀ (j : ι - i), M₁ j.val`, and then choosing separately the `i`-th coordinate
-* fixing a vector `m : ∀j, M₁ j`, and then modifying its `i`-th coordinate
+* fixing a vector `m : ∀ j, M₁ j`, and then modifying its `i`-th coordinate
 
 The second way is more artificial as the value of `m` at `i` is not relevant, but it has the
 advantage of avoiding subtype inclusion issues. This is the definition we use, based on

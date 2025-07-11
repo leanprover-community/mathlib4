@@ -316,7 +316,7 @@ variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
 variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
-def sigmaLcurry : (⨁ i : Σ_, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
+def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
@@ -325,7 +325,7 @@ theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) 
   sigmaCurry_apply f i j
 
 /-- `uncurry` as a linear map. -/
-def sigmaLuncurry : (⨁ (i) (j), δ i j) →ₗ[R] ⨁ i : Σ_, _, δ i.1 i.2 :=
+def sigmaLuncurry : (⨁ (i) (j), δ i j) →ₗ[R] ⨁ i : Σ _, _, δ i.1 i.2 :=
   { sigmaUncurry with map_smul' := DFinsupp.sigmaUncurry_smul }
 
 @[simp]
@@ -334,7 +334,7 @@ theorem sigmaLuncurry_apply (f : ⨁ (i) (j), δ i j) (i : ι) (j : α i) :
   sigmaUncurry_apply f i j
 
 /-- `curryEquiv` as a linear equiv. -/
-def sigmaLcurryEquiv : (⨁ i : Σ_, _, δ i.1 i.2) ≃ₗ[R] ⨁ (i) (j), δ i j :=
+def sigmaLcurryEquiv : (⨁ i : Σ _, _, δ i.1 i.2) ≃ₗ[R] ⨁ (i) (j), δ i j :=
   DFinsupp.sigmaCurryLEquiv
 
 end Sigma
