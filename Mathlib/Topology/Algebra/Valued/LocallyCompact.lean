@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
+import Mathlib.Algebra.Order.Archimedean.Submonoid
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -173,7 +174,8 @@ section CompactDVR
 
 open Valued
 
-lemma isPrincipalIdealRing_of_compactSpace [MulArchimedean Γ₀] [CompactSpace 𝒪[K]]
+lemma isPrincipalIdealRing_of_compactSpace [CompactSpace 𝒪[K]]
+    [MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀))]
     [hv : Valuation.IsNontrivial (Valued.v : Valuation K Γ₀)] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
