@@ -200,9 +200,6 @@ lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
 instance : Ideal.LiesOver (maximalIdeal L₀) (maximalIdeal K₀) :=
   ⟨(maximalIdeal_comap_algebraMap_eq_maximalIdeal _ _).symm⟩
 
-noncomputable instance instAlgebra_residueField :
-    Algebra (ResidueField K₀) (ResidueField L₀) := inferInstance
-
 lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
     (algebraMap (ResidueField K₀) (ResidueField L₀)) (IsLocalRing.residue K₀ x) =
       IsLocalRing.residue L₀ (algebraMap K₀ L₀ x) :=
