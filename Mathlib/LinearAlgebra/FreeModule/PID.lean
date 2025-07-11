@@ -136,7 +136,7 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     refine
       le_antisymm (this.trans (le_of_eq ?_)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
     rw [span_singleton_generator]
-    apply (le_trans _ this).eq_of_not_gt (hϕ ψ')
+    apply (le_trans _ this).eq_of_not_lt' (hϕ ψ')
     rw [← span_singleton_generator (ϕ.submoduleImage N)]
     exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
   · exact subset_span (mem_insert _ _)
