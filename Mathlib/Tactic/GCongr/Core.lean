@@ -488,24 +488,24 @@ partial def _root_.Lean.MVarId.gcongr
       | some hole => pure (tpl.findMVar? (· == hole)).isSome
     unless hasHole do
       try withDefault g.applyRfl; return (true, names, #[])
-      catch ex => throwError "gcongr failed, \
+      catch ex => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`\n{ex.toMessageData}"
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
-  let some (relName, lhs, rhs) := getRel rel | throwError "gcongr failed, {rel} is not a relation"
+  let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
     | if template.isNone then return (false, names, #[g])
-      throwError "gcongr failed, the head of {lhs} is not a constant"
+      throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
   let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs
     | if template.isNone then return (false, names, #[g])
-      throwError "gcongr failed, the head of {rhs} is not a constant"
+      throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
   -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
   -- `tplHead = lhsHead = rhsHead`
   let tplArgs ← if let some tpl := template then
     let some (tplHead, tplArgs) := getCongrAppFnArgs tpl
-      | throwError "gcongr failed, the head of {tpl} is not a constant"
+      | throwTacticEx `gcongr g m!"the head of {tpl} is not a constant"
     if grewriteHole.isNone then
       unless tplHead == lhsHead && tplArgs.size == lhsArgs.size do
         throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
@@ -519,7 +519,6 @@ partial def _root_.Lean.MVarId.gcongr
       return (false, names, #[g])
     pure <| Array.replicate lhsArgs.size none
   let s ← saveState
-  let mut ex? := none
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
   let key := { relName, head := lhsHead, arity := tplArgs.size }
@@ -534,11 +533,8 @@ partial def _root_.Lean.MVarId.gcongr
         (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
     catch e => pure (Except.error e)
     match gs with
-    | .error e =>
+    | .error _ =>
       -- If the `apply` fails, go on to try to apply the next matching lemma.
-      -- If all the matching lemmas fail to `apply`, we will report (somewhat arbitrarily) the
-      -- error message on the first failure, so stash that.
-      ex? := ex? <|> (some (← saveState, e))
       s.restore
     | .ok gs =>
       let some e ← getExprMVarAssignment? g | panic! "unassigned?"
@@ -585,16 +581,14 @@ partial def _root_.Lean.MVarId.gcongr
   -- report this goal back.
   if template.isNone then
     return (false, names, #[g])
-  let some (sErr, e) := ex?
-    -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
-    -- fail.
-    | throwError "gcongr failed, no @[gcongr] lemma applies for the template portion \
-        {template} and the relation {relName}"
-  -- B. If there is a template, and there was a `@[gcongr]` lemma which matched the template, but
-  -- it was not possible to `apply` that lemma, then report the error message from `apply`-ing that
-  -- lemma.
-  sErr.restore
-  throw e
+  -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
+  -- fail.
+  if lemmas.isEmpty then
+    throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
+      for relation '{relName}' and constant '{lhsHead}'."
+  else
+    throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
+      \n  attempted lemmas: {lemmas.map (·.declName)}"
 
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
 between a LHS and RHS matching the same pattern to relational subgoals between the differing
