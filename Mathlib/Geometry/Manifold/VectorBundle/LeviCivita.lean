@@ -304,6 +304,32 @@ lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tang
   simp; abel_nf
   sorry
 
+-- TODO: move to Algebra/Group/TransferInstance, around line 110
+section order
+
+variable {α β : Type*} (e : α ≃ β)
+
+protected abbrev _root_.Equiv.preorder [Preorder β] : Preorder α where
+  le a b := (e a) ≤ (e b)
+  le_refl a := le_refl (e a)
+  le_trans a b c h h' := Preorder.le_trans (e a) (e b) (e c) h h'
+
+def foo {α β : Type*} {a b : α} (f : α → β) (h : Decidable (a = b)) : Decidable (f a = f b) := by
+  sorry
+
+protected noncomputable abbrev _root_.Equiv.linearOrder [instβ: LinearOrder β] : LinearOrder α where
+  toPreorder := e.preorder
+  le_antisymm a b h h' := by
+    rw [← e.left_inv a, ← e.left_inv b, _root_.Equiv.toFun_as_coe, instβ.le_antisymm _ _ h h']
+  le_total a b := instβ.le_total (e a) (e b)
+  toDecidableEq a b := by
+    rw [← e.left_inv a, ← e.left_inv b]
+    apply foo e.symm (instβ.toDecidableEq ..)
+    -- exact Classical.propDecidable (e.invFun (
+  toDecidableLE a b := instβ.toDecidableLE ..
+
+end order
+
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
