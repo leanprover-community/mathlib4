@@ -48,6 +48,10 @@ theorem IsComplex.inv {z : ℂ} {x y : ℝ} (h : IsComplex z x y) :
 theorem IsComplex.neg : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (-z) (-a) (-b)
   | _, _, _, ⟨rfl⟩ => ⟨rfl⟩
 
+theorem IsComplex.sub : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
+    IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ → IsComplex (z₁ - z₂) (a₁ - a₂) (b₁ - b₂)
+  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩ => ⟨rfl⟩
+
 theorem IsComplex.conj : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (conj z) a (-b)
   | _, _, _, ⟨rfl⟩ => ⟨rfl⟩
 
@@ -114,7 +118,10 @@ partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) 
   | ~q(-$w) => do
     let ⟨_a, _b, pf⟩ ← parse w
     return ⟨_, _, q(.neg $pf)⟩
-  | ~q($z₁ - $z₂) => parse q($z₁ + -$z₂)
+  | ~q($z₁ - $z₂) =>
+    let ⟨_a₁, _b₁, pf₁⟩ ← parse z₁
+    let ⟨_a₂, _b₂, pf₂⟩ ← parse z₂
+    pure ⟨_, _, q(.sub $pf₁ $pf₂)⟩
   | ~q(conj $w) =>
     let ⟨_a, _b, pf⟩ ← parse w
     return ⟨_, _, q(.conj $pf)⟩
