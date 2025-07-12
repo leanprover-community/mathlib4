@@ -486,6 +486,10 @@ lemma starProjection_apply (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (v
     U.starProjection v = U.orthogonalProjection v := rfl
 
 @[simp]
+lemma coe_orthogonalProjection_apply (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (v : E) :
+     U.orthogonalProjection v = U.starProjection v := rfl
+
+@[simp]
 lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (x : E) :
     U.starProjection x ∈ U := by
   simp only [starProjection_apply, SetLike.coe_mem]
@@ -752,7 +756,7 @@ variable [K.HasOrthogonalProjection]
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
     (2 • (K.starProjection.toLinearMap) - LinearMap.id) fun x => by
-    simp [two_smul, starProjection_apply]
+    simp [two_smul, starProjection_eq_self_iff.mpr]
 
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is
 sometimes understood to mean specifically reflection in a codimension-one subspace, and sometimes
@@ -767,7 +771,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       let v := x - w
       have : ⟪v, w⟫ = 0 := starProjection_inner_eq_zero x w w.2
       convert norm_sub_eq_norm_add this using 2
-      · dsimp [reflectionLinearEquiv, v, starProjection_apply]
+      · dsimp [reflectionLinearEquiv, v, w]
         abel
       · simp only [v, add_sub_cancel] }
 
