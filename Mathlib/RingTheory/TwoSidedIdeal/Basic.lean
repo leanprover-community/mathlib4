@@ -3,8 +3,6 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-
-import Mathlib.Tactic.Abel
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.RingTheory.Congruence.Opposite
@@ -58,10 +56,10 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · have H' : a - b ∈ {x | t₁ x 0} := sub_self b ▸ t₁.sub H (t₁.refl b)
       rw [h] at H'
-      convert t₂.add H' (t₂.refl b) using 1 <;> abel
+      convert t₂.add H' (t₂.refl b) using 1 <;> grind
     · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸ t₂.sub H (t₂.refl b)
       rw [← h] at H'
-      convert t₁.add H' (t₁.refl b) using 1 <;> abel
+      convert t₁.add H' (t₁.refl b) using 1 <;> grind
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
@@ -74,8 +72,8 @@ lemma coe_mk {c : RingCon R} : (mk c : Set R) = {x | c x 0} := rfl
 lemma rel_iff (x y : R) : I.ringCon x y ↔ x - y ∈ I := by
   rw [mem_iff]
   constructor
-  · intro h; convert I.ringCon.sub h (I.ringCon.refl y); abel
-  · intro h; convert I.ringCon.add h (I.ringCon.refl y) <;> abel
+  · intro h; convert I.ringCon.sub h (I.ringCon.refl y); grind
+  · intro h; convert I.ringCon.add h (I.ringCon.refl y) <;> grind
 
 /--
 the coercion from two-sided-ideals to sets is an order embedding
@@ -155,12 +153,12 @@ def mk' (carrier : Set R)
       { refl := fun x ↦ by simpa using zero_mem
         symm := fun h ↦ by simpa using neg_mem h
         trans := fun {x y z} h1 h2 ↦ by
-          simpa only [show x - z = (x - y) + (y - z) by abel] using add_mem h1 h2 }
+          simpa only [show x - z = (x - y) + (y - z) by grind] using add_mem h1 h2 }
       mul' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
-        rw [show a * c - b * d = a * (c - d) + (a - b) * d by rw [mul_sub, sub_mul]; abel]
+        rw [show a * c - b * d = a * (c - d) + (a - b) * d by rw [mul_sub, sub_mul]; grind]
         exact add_mem (mul_mem_left h2) (mul_mem_right h1)
       add' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
-        rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
+        rw [show a + c - (b + d) = (a - b) + (c - d) by grind]
         exact add_mem h1 h2 }
 
 @[simp]

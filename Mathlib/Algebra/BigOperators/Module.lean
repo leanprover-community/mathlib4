@@ -5,7 +5,6 @@ Authors: Dylan MacKenzie
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Tactic.Abel
 
 /-!
 # Summation by parts
@@ -36,9 +35,9 @@ theorem sum_Ico_by_parts (hmn : m < n) :
   have : ∀ i, f i • G (i + 1) - f (i + 1) • G (i + 1) = -((f (i + 1) - f i) • G (i + 1)) := by
     intro i
     rw [sub_smul]
-    abel
+    grind
   simp_rw [this, sum_neg_distrib, sum_range_succ, smul_add]
-  abel
+  grind
 
 theorem sum_Ioc_by_parts (hmn : m < n) :
     ∑ i ∈ Ioc m n, f i • g i =

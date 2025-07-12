@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Bracket
-import Mathlib.Tactic.Abel
 
 /-!
 # Lie algebras
@@ -225,7 +224,7 @@ lemma lie_lie : ⁅⁅x, y⁆, m⁆ = ⁅x, ⁅y, m⁆⁆ - ⁅y, ⁅x, m⁆⁆ 
 
 theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y⁆⁆ = 0 := by
   rw [← neg_neg ⁅x, y⁆, lie_neg z, lie_skew y x, ← lie_skew, lie_lie]
-  abel
+  grind
 
 instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 
@@ -238,22 +237,22 @@ instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
       map_add' := fun m n => by
         simp only [lie_add, LinearMap.map_add]
-        abel
+        grind
       map_smul' := fun t m => by
         simp only [smul_sub, LinearMap.map_smul, lie_smul, RingHom.id_apply] }
   add_lie x y f := by
     ext n
     simp only [add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply, LinearMap.map_add]
-    abel
+    grind
   lie_add x f g := by
     ext n
     simp only [LinearMap.coe_mk, AddHom.coe_mk, lie_add, LinearMap.add_apply]
-    abel
+    grind
   leibniz_lie x y f := by
     ext n
     simp only [lie_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.map_sub, LinearMap.add_apply,
       lie_sub]
-    abel
+    grind
 
 @[simp]
 theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = ⁅x, f m⁆ - f ⁅x, m⁆ :=

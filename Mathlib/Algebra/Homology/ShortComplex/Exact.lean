@@ -9,6 +9,7 @@ import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+import Mathlib.Tactic.Abel
 
 /-!
 # Exact short complexes
@@ -666,7 +667,7 @@ def op (h : Splitting S) : Splitting S.op where
   id := Quiver.Hom.unop_inj (by
     simp only [op_X₂, Opposite.unop_op, op_X₁, op_f, op_X₃, op_g, unop_add, unop_comp,
       Quiver.Hom.unop_op, unop_id, ← h.id]
-    abel)
+    grind)
 
 /-- The splitting of the short complex `S.unop` deduced from a splitting of `S`. -/
 @[simps]

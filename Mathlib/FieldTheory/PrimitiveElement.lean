@@ -180,7 +180,7 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
     dsimp [f] at *
     simp only [← heq] at αyβ_in_K
     have β_in_K := sub_mem αxβ_in_K αyβ_in_K
-    rw [show (α + x • β) - (α + y • β) = (x - y) • β by rw [sub_smul]; abel1] at β_in_K
+    rw [show (α + x • β) - (α + y • β) = (x - y) • β by rw [sub_smul]; grind] at β_in_K
     replace β_in_K := smul_mem _ β_in_K (x := (x - y)⁻¹)
     rw [smul_smul, inv_mul_eq_div, div_self (sub_ne_zero.2 hneq), one_smul] at β_in_K
     have α_in_K : α ∈ F⟮α + x • β⟯ := by

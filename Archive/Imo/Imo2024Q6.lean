@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Data.Rat.Floor
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Abel
 
 /-!
 # IMO 2024 Q6

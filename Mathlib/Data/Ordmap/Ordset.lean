@@ -452,7 +452,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
       · rw [e]; exact Or.inl (Valid'.merge_lemma h hr₁)
       · rw [balanceL_eq_balance v.2 hr.2.2.2 H₁ H₂, balance_eq_balance' v.3 hr.3.2.2 v.2 hr.2.2.2,
           size_balance' v.2 hr.2.2.2, e, hl.2.1, hr.2.1]
-        abel
+        grind
     · rw [e, add_right_comm]; rintro ⟨⟩
   intro _ _; rw [e]; unfold delta at hr₂ ⊢; omega
 
