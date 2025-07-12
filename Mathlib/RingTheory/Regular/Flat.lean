@@ -17,27 +17,36 @@ import Mathlib.RingTheory.Regular.RegularSequence
   `N`-sequence.
 -/
 
-open RingTheory.Sequence Pointwise Module TensorProduct
+open RingTheory.Sequence Module
 
 section Flat
 
-variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
-  [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f)
+section CommSemiring
 
-include hf in
-theorem IsSMulRegular.of_flat_isBaseChange {x : R} (reg : IsSMulRegular M x) :
-    IsSMulRegular N (algebraMap R S x) := by
+variable {R S M N : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Flat R S]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+
+theorem IsSMulRegular.of_flat_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f) {x : R}
+    (reg : IsSMulRegular M x) : IsSMulRegular N (algebraMap R S x) := by
   have h := Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
   rwa [show hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x)
     from hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])] at h
 
-include hf in
+theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
+    IsSMulRegular S (algebraMap R S x) :=
+  reg.of_flat_isBaseChange (IsBaseChange.of_algebra_linearMap R S)
+
+end CommSemiring
+
+variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
+  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
+
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base
   change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is
   a weakly regular `N`-sequence. -/
-theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
-    (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
+theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange
+    {f : M →ₗ[R] N} (hf : IsBaseChange S f) {rs : List R} (reg : IsWeaklyRegular M rs) :
+    IsWeaklyRegular N (rs.map (algebraMap R S)) := by
   generalize len : rs.length = n
   induction' n with n ih generalizing M N rs
   · simp [List.length_eq_zero_iff.mp len]
@@ -53,12 +62,8 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
         IsBaseChange.of_equiv e (fun _ ↦ by simp)
       exact ⟨reg.1.of_flat_isBaseChange hf, ih hg reg.2 len⟩
 
-theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
-    IsSMulRegular S (algebraMap R S x) :=
-  reg.of_flat_isBaseChange (IsBaseChange.of_algebra_linearMap R S)
-
-theorem RingTheory.Sequence.IsWeaklyRegular.of_flat {rs : List R}
-    (reg : IsWeaklyRegular R rs) : IsWeaklyRegular S (rs.map (algebraMap R S)) :=
+theorem RingTheory.Sequence.IsWeaklyRegular.of_flat {rs : List R} (reg : IsWeaklyRegular R rs) :
+    IsWeaklyRegular S (rs.map (algebraMap R S)) :=
   reg.of_flat_isBaseChange (IsBaseChange.of_algebra_linearMap R S)
 
 end Flat
@@ -86,29 +91,37 @@ end FaithfullyFlat
 
 section IsLocalizedModule
 
-variable {R : Type*} [CommRing R] (S : Submonoid R)
-  (R' : Type*) [CommRing R'] [Algebra R R'] [IsLocalization S R']
-  {M : Type*} [AddCommGroup M] [Module R M]
-  {M' : Type*} [AddCommGroup M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
-  (f : M →ₗ[R] M') [IsLocalizedModule S f]
+section CommSemiring
 
-include S f
+variable {R : Type*} [CommSemiring R] (S : Submonoid R) (R' : Type*) [CommSemiring R']
+  [Algebra R R'] [IsLocalization S R']
 
-theorem IsSMulRegular.of_isLocalizedModule {x : R} (reg : IsSMulRegular M x) :
+include S
+
+theorem IsSMulRegular.of_isLocalizedModule {M : Type*} [AddCommMonoid M] [Module R M]
+    {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
+    (f : M →ₗ[R] M') [IsLocalizedModule S f] {x : R} (reg : IsSMulRegular M x) :
     IsSMulRegular M' (algebraMap R R' x) :=
   have : Flat R R' := IsLocalization.flat R' S
   reg.of_flat_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
 
-theorem RingTheory.Sequence.IsWeaklyRegular.of_isLocalizedModule {rs : List R}
-    (reg : IsWeaklyRegular M rs) : IsWeaklyRegular M' (rs.map (algebraMap R R')) :=
-  have : Flat R R' := IsLocalization.flat R' S
-  reg.of_flat_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
-
-omit f
-
 theorem IsSMulRegular.of_isLocalization {x : R} (reg : IsSMulRegular R x) :
     IsSMulRegular R' (algebraMap R R' x) :=
   reg.of_isLocalizedModule S R' (Algebra.linearMap R R')
+
+end CommSemiring
+
+variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
+  [IsLocalization S R']
+
+include S
+
+theorem RingTheory.Sequence.IsWeaklyRegular.of_isLocalizedModule
+    {M : Type*} [AddCommGroup M] [Module R M] {M' : Type*} [AddCommGroup M'] [Module R M']
+    [Module R' M'] [IsScalarTower R R' M'] (f : M →ₗ[R] M') [IsLocalizedModule S f] {rs : List R}
+    (reg : IsWeaklyRegular M rs) : IsWeaklyRegular M' (rs.map (algebraMap R R')) :=
+  have : Flat R R' := IsLocalization.flat R' S
+  reg.of_flat_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
 
 theorem RingTheory.Sequence.IsWeaklyRegular.of_isLocalization {rs : List R}
     (reg : IsWeaklyRegular R rs) : IsWeaklyRegular R' (rs.map (algebraMap R R')) :=
