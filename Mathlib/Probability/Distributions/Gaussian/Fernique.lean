@@ -47,7 +47,7 @@ variable {α β F : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ : Measure α} {ν : Measure β}
   {p : ℝ≥0∞}
 
-lemma MemLp.comp_fst_prod {f : α → F} (hf : MemLp f p μ) (ν : Measure β) [IsFiniteMeasure ν] :
+lemma MemLp.comp_fst {f : α → F} (hf : MemLp f p μ) (ν : Measure β) [IsFiniteMeasure ν] :
     MemLp (fun x ↦ f x.1) p (μ.prod ν) := by
   have hf' : MemLp f p (ν .univ • μ) := hf.smul_measure (by simp)
   change MemLp (f ∘ Prod.fst) p (μ.prod ν)
@@ -55,7 +55,7 @@ lemma MemLp.comp_fst_prod {f : α → F} (hf : MemLp f p μ) (ν : Measure β) [
   · simpa using hf'
   · simpa using hf'.1
 
-lemma MemLp.comp_snd_prod {f : β → F} (hf : MemLp f p ν) (μ : Measure α) [IsFiniteMeasure μ]
+lemma MemLp.comp_snd {f : β → F} (hf : MemLp f p ν) (μ : Measure α) [IsFiniteMeasure μ]
     [SFinite ν] :
     MemLp (fun x ↦ f x.2) p (μ.prod ν) := by
   have hf' : MemLp f p (μ .univ • ν) := hf.smul_measure (by simp)
@@ -77,12 +77,12 @@ section Prod
 omit [BorelSpace F] in
 lemma memLp_comp_inl_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     MemLp (fun x ↦ (L.comp (.inl ℝ E F) x.1)) p (μ.prod ν) :=
-  (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) p hp).comp_fst_prod ν
+  (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) p hp).comp_fst ν
 
 omit [BorelSpace E] in
 lemma memLp_comp_inr_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     MemLp (fun x ↦ (L.comp (.inr ℝ E F) x.2)) p (μ.prod ν) :=
-  (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) p hp).comp_snd_prod μ
+  (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) p hp).comp_snd μ
 
 lemma memLp_dual_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     MemLp L p (μ.prod ν) := by
