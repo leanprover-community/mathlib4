@@ -269,17 +269,6 @@ elab:max "MDiffAt" t:term:arg : term => do
     return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
--- FIXME: remove in favour of MDiffAt (once that one is scoped)
-elab:max "MDifferentiableAt%" t:term:arg : term => do
-  let e ← Term.elabTerm t none
-  let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
-  | _ => throwError m!"Term {e} is not a function."
-
 /-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f`,
 trying to determine `I` and `J` from the local context. -/
 elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
@@ -362,19 +351,6 @@ elab:max "CMDiff" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
   let ne ← Term.elabTerm nt wtn
-  let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
-  | _ => throwError m!"Term {e} is not a function."
-
--- TODO: remove in favour of CMDiff (after aligning their behaviour and adding a test for it!)
-elab:max "ContMDiff%" nt:term:arg t:term:arg : term => do
-  let e ← Term.elabTerm t none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
   | .forallE _ src tgt _ =>

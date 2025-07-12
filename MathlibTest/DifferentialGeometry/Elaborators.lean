@@ -265,37 +265,4 @@ info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x 
 #guard_msgs in
 #check MDiffAt (T% σ')
 
-/--
-info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun a ↦ TotalSpace.mk' E' a (s a) : E → Prop
--/
-#guard_msgs in
-#check MDifferentiableAt% (T% s)
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) m : Prop -/
-#guard_msgs in
-#check MDifferentiableAt% (T% X) m
-
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% (T% X)
-
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) m : Prop -/
-#guard_msgs in
-#check MDifferentiableAt% (T% X) m
-
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, F)) fun x ↦ TotalSpace.mk' F x (σ x) : M → Prop -/
-#guard_msgs in
-#check MDifferentiableAt% (T% σ)
-
-/--
-info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x ↦ TotalSpace.mk' E' x (σ' x) : E → Prop
--/
-#guard_msgs in
-#check MDifferentiableAt% (T% σ')
-
-/--
-info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun a ↦ TotalSpace.mk' E' a (s a) : E → Prop
--/
-#guard_msgs in
-#check MDifferentiableAt% (T% s)
-
 end differentiability
