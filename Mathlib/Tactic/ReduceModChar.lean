@@ -49,10 +49,10 @@ lemma CharP.isInt_of_mod {e' r : ℤ} {α : Type*} [Ring α] {n n' : ℕ} (inst 
     (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
   ⟨by rw [he.out, CharP.intCast_eq_intCast_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
-lemma CharP.isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {a' b b' c n n' : ℕ},
-    CharP α n → f = HPow.hPow → IsNat a a' → IsNat b b' → IsNat n n' →
-    Nat.mod (Nat.pow a' b') n' = c → IsNat (f a b) c
-  | _, _, a, _, b, _, _, n, _, rfl, ⟨h⟩, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by
+lemma CharP.isNat_pow {α} [Semiring α] : ∀ {a : α} {a' b b' c n n' : ℕ},
+    CharP α n → IsNat a a' → IsNat b b' → IsNat n n' →
+    Nat.mod (Nat.pow a' b') n' = c → IsNat (a ^ b) c
+  | _, a, _, b, _, _, n, _, ⟨h⟩, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by
     rw [h, Nat.cast_id, Nat.pow_eq, ← Nat.cast_pow, CharP.natCast_eq_natCast_mod α n]
     rfl⟩
 
@@ -72,15 +72,13 @@ mutual
       modulo `n` recursively and then calculates `a ^ b` using fast modular exponentiation. -/
   partial def normPow {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»)) (e : Q($α))
       (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
-    let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
+    let ~q($a ^ ($b : ℕ)) := e | failure
     let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
     let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
-    guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
     haveI' : $e =Q $a ^ $b := ⟨⟩
-    haveI' : $f =Q HPow.hPow := ⟨⟩
     have ⟨c, r⟩ := evalNatPowMod na nb n'
     assumeInstancesCommute
-    return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
+    return .isNat sα c q(CharP.isNat_pow $instCharP $pa $pb $pn $r)
 
   /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
       reduce it using `norm_num`. -/
@@ -116,16 +114,15 @@ be more useful by evaluating `-e` mod `n` to an actual numeral.
 @[nolint unusedHavesSuffices] -- the `=Q` is necessary for type checking
 partial def normNeg {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) :
-    MetaM Simp.Result := do
-  let .app f (b : Q($α)) ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq f q(Neg.neg (α := $α))
+    MetaM (Simp.ResultQ q($e)) := do
+  let ~q(-$b) := e | failure
   let r ← (derive (α := α) q($n - 1))
   match r with
   | .isNat sα a p => do
     have : instAddMonoidWithOne =Q $sα := ⟨⟩
     let ⟨a', pa'⟩ ← mkOfNat α sα a
     let pf : Q(-$b = $a' * $b) := q(CharP.neg_eq_sub_one_mul $n $instCharP $b $a $a' $p $pa')
-    return { expr := q($a' * $b), proof? := pf }
+    return .mk q($a' * $b) <| some q($pf)
   | .isNegNat _ _ _ =>
     throwError "normNeg: nothing useful to do in negative characteristic"
   | _ => throwError "normNeg: evaluating `{n} - 1` should give an integer result"
@@ -141,10 +138,8 @@ and `a` is a numeral, simplify this to `((n - 1) * a) * b`. -/
 @[nolint unusedHavesSuffices] -- the `=Q` is necessary for type checking
 partial def normNegCoeffMul {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) :
-    MetaM Simp.Result := do
-  let .app neg (.app (.app mul (a : Q($α))) (b : Q($α))) ← whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq neg q(Neg.neg (α := $α))
-  guard <|← withNewMCtxDepth <| isDefEq mul q(HMul.hMul (α := $α))
+    MetaM (Simp.ResultQ q($e)) := do
+  let ~q(-($a * $b)) := e | failure
   let r ← (derive (α := α) q(($n - 1) * $a))
   match r with
   | .isNat sα na np => do
@@ -152,7 +147,7 @@ partial def normNegCoeffMul {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRin
     let ⟨na', npa'⟩ ← mkOfNat α sα na
     let pf : Q(-($a * $b) = $na' * $b) :=
       q(CharP.neg_mul_eq_sub_one_mul $n $instCharP $a $b $na $na' $np $npa')
-    return { expr := q($na' * $b), proof? := pf }
+    return .mk q($na' * $b) <| some q($pf)
   | .isNegNat _ _ _ =>
     throwError "normNegCoeffMul: nothing useful to do in negative characteristic"
   | _ => throwError "normNegCoeffMul: evaluating `{n} - 1` should give an integer result"
@@ -204,14 +199,11 @@ Use `matchAndNorm (expensive := true)` to do more work in finding the characteri
 the type of `e`.
 -/
 partial def matchAndNorm (expensive := false) (e : Expr) : MetaM Simp.Result := do
-  let α ← inferType e
-  let u_succ : Level ← getLevel α
-  let (.succ u) := u_succ | throwError "expected {α} to be a `Type _`, not `Sort {u_succ}`"
-  have α : Q(Type u) := α
+  let ⟨_, α, e⟩ ← inferTypeQ' e
   match ← typeToCharP (expensive := expensive) α with
-    | (.intLike n instRing instCharP) =>
+    | .intLike n instRing instCharP =>
       -- Handle the numeric expressions first, e.g. `-5` (which shouldn't become `-1 * 5`)
-      normIntNumeral n e instRing instCharP >>= Result.toSimpResult <|>
+      normIntNumeral n e instRing instCharP >>= Result.toSimpResultQ <|>
       normNegCoeffMul n e instRing instCharP <|> -- `-(3 * X) → ((n - 1) * 3) * X`
       normNeg n e instRing instCharP -- `-X → (n - 1) * X`
 
