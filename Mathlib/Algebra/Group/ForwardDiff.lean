@@ -204,10 +204,11 @@ where the step size `h` is `1`. We prove several key results:
 * `fwdDiff_iter_pow_eq_zero_of_lt`: The `n`-th difference of `x ↦ x^j` is zero if `j < n`.
 * `fwdDiff_iter_eq_factorial`: The `n`-th difference of `x ↦ x^n` is the constant `n!`.
 * `fwdDiff_iter_succ_sum_eq_zero`: The `(d+1)`-th difference of a polynomial of degree `d` is zero.
-* `sum_fwdDiff_iter_at_zero`: **Newton's series** for a polynomial, expressing `P(x)` as a sum
+* `sum_range_choose_mul_fwdDiff_iter_at_zero`: **Newton's series**
+  for a polynomial, expressing `P(x)` as a sum
   of its forward differences at `0` weighted by binomial coefficients.
-* `sum_of_poly_sequence`: A formula for the sum of a polynomial sequence `∑_{i=0..p} P(i)`, which
-  generalizes **Faulhaber's formula**.
+* `sum_sum_range_eq_sum_range_choose_mul_fwdDiff_iter_at_zero`: A formula for the sum of a
+  polynomial sequence `∑_{i=0..p} P(i)`, which generalizes **Faulhaber's formula**.
 -/
 
 open fwdDiff
@@ -280,7 +281,7 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (a : ℕ → R):
       ((fun x : R ↦ a k) * (fun x : R ↦  x ^ k)) := by
       ext x; simp
       have : (fun x => ∑ k ∈ range (n + 1), a k * x ^ k) =
-        (∑ k ∈ range (n + 1), fun x =>  a k * x ^ k) := by
+        (∑ k ∈ range (n + 1), fun x => a k * x ^ k) := by
         ext x; simp only [Finset.sum_apply]
       simp only [this, map_sum, sum_apply]
       rfl
@@ -326,7 +327,7 @@ Any function `f` defined by a polynomial can be expressed as a sum of its forwar
 differences at `0`, weighted by binomial coefficients.
 `f(x) = ∑_{k=0..p} (p choose k) * (Δ^k f)(0)`.
 -/
-theorem sum_fwdDiff_iter_at_zero {n p : ℕ} (a : ℕ → R):
+theorem sum_range_choose_mul_fwdDiff_iter_at_zero {n p : ℕ} (a : ℕ → R):
     ∑ k ∈ Finset.range (n + 1), a k * (p ^ k) =
     ∑ k ∈ Finset.range (p + 1), p.choose k *
       ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ k ∈ Finset.range (n + 1), a k * (x ^ k)) 0 := by
@@ -345,11 +346,11 @@ theorem sum_fwdDiff_iter_at_zero {n p : ℕ} (a : ℕ → R):
 A formula for the sum of a polynomial sequence `∑_{k=0..p} P(k)`, which
 generalizes **Faulhaber's formula**.
 -/
-theorem sum_of_poly_sequence {p n : ℕ} (a : ℕ → R) :
+theorem sum_sum_range_eq_sum_range_choose_mul_fwdDiff_iter_at_zero {p n : ℕ} (a : ℕ → R) :
     ∑ k ∈ Finset.range (p + 1), (∑ m ∈ Finset.range (n + 1), a m * k ^ m) =
     ∑ k ∈ Finset.range (p + 1), ((p + 1).choose (k + 1)) *
       (((fwdDiffₗ R R 1 ^ k) fun y ↦ ∑ i ∈ Finset.range (n + 1), a i * y ^ i) 0) := by
-  conv => enter [1, 2, x]; rw [sum_fwdDiff_iter_at_zero]; simp
+  conv => enter [1, 2, x]; rw [sum_range_choose_mul_fwdDiff_iter_at_zero]; simp
   have sum_extend_inner_range : ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (x + 1),
     ↑(x.choose k) * ((fwdDiffₗ R R 1 ^ k) fun x ↦ ∑ m ∈ Finset.range (n + 1), a m * ↑x ^ m) 0 =
     ∑ x ∈ Finset.range (p + 1), ∑ k ∈ Finset.range (p + 1),
