@@ -14,29 +14,35 @@ A proof of theorems of Jordan regarding primitive permutation groups.
 
 This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-1964].
 
-- `is_two_pretransitive_weak_jordan` and `is_two_preprimitive_weak_jordan`
-are technical lemmas that prove 2-pretransitivity / 2-preprimitivity
-for some group actions (Wielandt, 13.1)
+- `MulAction.IsPreprimitive.is_two_pretransitive` and
+`MulAction.IsPreprimitive.is_two_preprimitive` are technical lemmas
+that prove 2-pretransitivity / 2-preprimitivity for some group
+primitive actions given the transitivity / primitivity of
+`ofFixingSubgroup G s` (Wielandt, 13.1)
 
-- `IsMultiplyPreprimitive_jordan` is a multiple preprimitivity criterion of Jordan (1871)
-for a preprimitive action: the hypothesis is the preprimitivity
-of the `SubMulAction` of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
+- `MulAction.IsPreprimitive.isMultiplyPreprimitive`:
+A multiple preprimitivity criterion of Jordan (1871) for a preprimitive
+action: the hypothesis is the preprimitivity of the `SubMulAction`
+of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
 
-- `Equiv.Perm.jordan_swap` proves that a primitive subgroup of a permutation group that contains a
-swapis equal to the full permutation group (Wielandt, 13.3)
+- `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isSwap_mem` :
+a primitive subgroup of a permutation group that contains a
+swap is equal to the full permutation group (Wielandt, 13.3)
 
-- `Equiv.Perm.jordan_three_cycle` proves that a primitive subgroup
-of a permutation group that contains a 3-cycle contains the alternating group (Wielandt, 13.3)
+- `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem`:
+a primitive subgroup of a permutation group that contains a 3-cycle
+contains the alternating group (Wielandt, 13.3)
 
 ## TODO
 
-- Prove `jordan_prime_cycle` that a primitive subgroup of a permutation group that contains
-a cycle of prime order contains the alternating group (Wielandt, 13.9 )
+- Prove `Equiv.Perm.subgroup_eq_top_of_isPreprimitive_of_isCycle_mem`:
+a primitive subgroup of a permutation group that contains
+a cycle of prime order contains the alternating group (Wielandt, 13.9).
 
-- Prove the stronger versions of the technical lemmas of Jordan. (Wielandt, 13.1')
+- Prove the stronger versions of the technical lemmas of Jordan (Wielandt, 13.1').
 
 - Golf the proofs of the technical lemmas (prove them at the same time, or find
-an adequate induction lemma)
+an adequate induction lemma).
 -/
 
 
@@ -124,22 +130,19 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
 
 variable [Finite α]
 
-/- -- TODO : prove :
-theorem strong_jordan_of_pretransitive (hG : IsPreprimitive G α)
-    {s : Set α} {n : ℕ } (hsn : Nat.card s = n.succ)
-    (hsn' : 1 + n.succ < fintype.card α)
+omit [Finite α] in -- to appease the linter
+proof_wanted IsPreprimitive.is_two_pretransitive'
+    (hG : IsPreprimitive G α)
+    {s : Set α} {n : ℕ } (hsn : Nat.card s = n + 1) (hsn' : n + 1 < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
-    IsMultiplyPretransitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2 :=
-  sorry
--/
+    IsMultiplyPretransitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
 open MulAction.IsPreprimitive
 
 open scoped Pointwise
 
-
 /-- A criterion due to Jordan for being 2-pretransitive (Wielandt, 13.1) -/
-theorem is_two_pretransitive_weak_jordan [DecidableEq α]
+theorem MulAction.IsPreprimitive.is_two_pretransitive [DecidableEq α]
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
@@ -259,18 +262,16 @@ theorem is_two_pretransitive_weak_jordan [DecidableEq α]
       · rw [Set.ncard_smul_set, ← two_mul, hsn]; exact hn2
       · exact fun h ↦ this (by rw [h]; trivial)
 
-/- -- TODO : prove
-theorem strong_jordan_of_preprimitive (hG : IsPreprimitive G α)
-    {s : Set α} {n : ℕ} (hsn : s.ncard = n.succ)
-    (hsn' : 1 + n.succ < Nat.card α)
+omit [Finite α] in -- to appease the linter
+proof_wanted is_two_preprimitive_strong_jordan
+    (hG : IsPreprimitive G α)
+    {s : Set α} {n : ℕ} (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
-    IsMultiplyPreprimitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2 :=
-  sorry
- -/
+    IsMultiplyPreprimitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
 /- This result is weaker than `is_two_preprimitive_jordan`
 but it is used in the inductive step of the proof. -/
-theorem is_two_preprimitive_weak_jordan
+theorem MulAction.IsPreprimitive.is_two_preprimitive_weak_jordan
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
@@ -388,7 +389,7 @@ theorem is_two_preprimitive_weak_jordan
       exact (ne_of_mem_of_not_mem' trivial this).symm
 
 /-- Jordan's multiple primitivity criterion (Wielandt, 13.3) -/
-theorem isMultiplyPreprimitive_jordan
+theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hprim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
@@ -461,7 +462,7 @@ example (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
     IsMultiplyPreprimitive G α 2 := by
-  have := isMultiplyPreprimitive_jordan hG hsn hsn' hs_prim
+  have := IsPreprimitive.isMultiplyPreprimitive hG hsn hsn' hs_prim
   apply isMultiplyPreprimitive_of_le G α this
   · simp
   rw [ENat.card_eq_coe_natCard, ENat.coe_le_coe]
@@ -519,8 +520,8 @@ theorem nontrivial_on_equiv_perm_two [Finite α] {K : Type*} [Group K] [MulActio
 
 variable [Fintype α] [DecidableEq α]
 
-theorem isPretransitive_of_cycle {g : Equiv.Perm α}
-    (hg : g ∈ G) (hgc : g.IsCycle) :
+theorem isPretransitive_of_isCycle_mem {g : Equiv.Perm α}
+    (hgc : g.IsCycle) (hg : g ∈ G) :
     IsPretransitive (fixingSubgroup G ((↑g.support : Set α)ᶜ))
       (SubMulAction.ofFixingSubgroup G ((↑g.support : Set α)ᶜ)) := by
   obtain ⟨a, _, hgc⟩ := hgc
@@ -547,9 +548,11 @@ theorem isPretransitive_of_cycle {g : Equiv.Perm α}
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
-/-- A primitive permutation group that contains a swap is the full permutation group (Jordan) -/
-theorem jordan_swap (hG : IsPreprimitive G α) (g : Equiv.Perm α)
-    (h2g : Equiv.Perm.IsSwap g) (hg : g ∈ G) : G = ⊤ := by
+/-- A primitive subgroup of `Equiv.Perm α` that contains a swap
+is the full permutation group (Jordan). -/
+theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
+    (hG : IsPreprimitive G α) (g : Equiv.Perm α) (h2g : Equiv.Perm.IsSwap g) (hg : g ∈ G) :
+    G = ⊤ := by
   classical
   rcases Nat.lt_or_ge (Nat.card α) 3 with hα3 | hα3
   · -- trivial case : Nat.card α ≤ 2
@@ -575,18 +578,18 @@ theorem jordan_swap (hG : IsPreprimitive G α) (g : Equiv.Perm α)
   suffices IsMultiplyPreprimitive G α (Nat.card α - 1) by
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
   rw [show Nat.card α - 1 = n + 2 by grind]
-  apply isMultiplyPreprimitive_jordan hG hsc
+  apply hG.isMultiplyPreprimitive hsc
   · rw [hn]; apply Nat.lt_add_one
-  have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsSwap.isCycle h2g
+  have := isPretransitive_of_isCycle_mem (Equiv.Perm.IsSwap.isCycle h2g) hg
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_two
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← Equiv.Perm.card_support_eq_two.mpr h2g]
   simp [SubMulAction.mem_ofFixingSubgroup_iff, Equiv.Perm.support]
 
-/-- A primitive permutation that contains a 3-cycle contains the alternating group (Jordan) -/
-theorem jordan_three_cycle
-    (hG : IsPreprimitive G α) {g : Equiv.Perm α}
-    (h3g : Equiv.Perm.IsThreeCycle g) (hg : g ∈ G) :
+/-- A primitive subgroup of `Equiv.Perm α` that contains a 3-cycle
+contains the alternating group (Jordan). -/
+theorem subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem
+    (hG : IsPreprimitive G α) {g : Equiv.Perm α} (h3g : Equiv.Perm.IsThreeCycle g) (hg : g ∈ G) :
     alternatingGroup α ≤ G := by
   classical
   rcases Nat.lt_or_ge (Nat.card α) 4 with hα4 | hα4
@@ -612,12 +615,12 @@ theorem jordan_three_cycle
   -- suffices : IsMultiplyPreprimitive G α (Fintype.card α - 2)
   -- apply this.left.alternatingGroup_le_of_sub_two
   rw [show Nat.card α - 2 = n + 2 by grind]
-  apply isMultiplyPreprimitive_jordan (s := (g.supportᶜ : Set α)) hG
+  apply hG.isMultiplyPreprimitive (s := (g.supportᶜ : Set α))
   · apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       Equiv.Perm.IsThreeCycle.card_support h3g, add_comm, hn]
   · rw [hn]; grind
-  have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsThreeCycle.isCycle h3g
+  have := isPretransitive_of_isCycle_mem (Equiv.Perm.IsThreeCycle.isCycle h3g) hg
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_three
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← Equiv.Perm.IsThreeCycle.card_support h3g]
@@ -625,12 +628,13 @@ theorem jordan_three_cycle
   ext x
   simp [SubMulAction.mem_ofFixingSubgroup_iff]
 
-/- -- TODO : prove
-theorem jordan_prime_cycle (hG : IsPreprimitive G α)
+/-- A primitive subgroup of `Equiv.Perm α` that contains a cycle of prime order
+contains the alternating group. -/
+proof_wanted subgroup_eq_top_of_isPreprimitive_of_isCycle_mem
+  (hG : IsPreprimitive G α)
   {p : ℕ} (hp : p.Prime) (hp' : p + 3 ≤ Nat.card α)
   {g : Perm α} (hgc : g.IsCycle) (hgp : g.support.card = p)
-  (hg : g ∈ G) : alternatingGroup α ≤ G := sorry
- -/
+  (hg : g ∈ G) : alternatingGroup α ≤ G
 
 end Equiv.Perm
 
