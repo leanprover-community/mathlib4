@@ -134,34 +134,18 @@ theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
 
-open LinearMap in
+open ContinuousLinearMap in
 /-- An idempotent operator `e` is an element in the von Neumann algebra `S`
 if and only if `range e` and `ker e` are `S.commutant` invariant subspaces. -/
 theorem mem_iff_range_and_ker_mem_invtSubmodule_commutant_of_isIdempotentElem {e : H →L[ℂ] H}
     (h : IsIdempotentElem e) (S : VonNeumannAlgebra H) :
     e ∈ S ↔ ∀ y ∈ S.commutant,
-    range e ∈ Module.End.invtSubmodule y ∧ ker e ∈ Module.End.invtSubmodule y := by
-  simp_rw [Module.End.mem_invtSubmodule, LE.le, Submodule.mem_comap,
-    ContinuousLinearMap.coe_coe, mem_ker, mem_range, forall_exists_index]
-  constructor
-  · intro he y hy
-    have : e.comp y = y.comp e := (VonNeumannAlgebra.mem_commutant_iff.mp hy) _ he
-    simp_rw [← ContinuousLinearMap.comp_apply, this, ContinuousLinearMap.comp_apply]
-    refine ⟨fun u v hv => ?_, fun x hx => by rw [hx, map_zero]⟩
-    simp_rw [← hv, ← ContinuousLinearMap.comp_apply, ← this,
-      ContinuousLinearMap.comp_apply, exists_apply_eq_apply]
-  · intro H'
-    rw [← VonNeumannAlgebra.commutant_commutant S]
-    intro m hm
-    ext x
-    obtain ⟨v, w, hvw, _⟩ := Submodule.existsUnique_add_of_isCompl
-      (IsIdempotentElem.isProj_range (congr(LinearMapClass.linearMap $h.eq))).isCompl.symm x
-    obtain ⟨y, hy⟩ := SetLike.coe_mem w
-    simp_rw [ContinuousLinearMap.coe_coe] at hy
-    simp_rw [Set.mem_union, Set.mem_star, SetLike.mem_coe, star_mem_iff, or_self] at hm
-    simp_rw [← hvw, ContinuousLinearMap.mul_apply, map_add, map_coe_ker, map_zero, zero_add]
-    obtain ⟨p, hp⟩ := @(H' _ hm).1 (e y) y rfl
-    rw [@(H' m hm).2 v (map_coe_ker _ v), zero_add, ← hy, ← ContinuousLinearMap.mul_apply e e,
-      h.eq, ← hp, ← ContinuousLinearMap.mul_apply e e, h.eq]
+    LinearMap.range e ∈ Module.End.invtSubmodule y
+      ∧ LinearMap.ker e ∈ Module.End.invtSubmodule y := by
+  simp_rw [h.range_and_ker_mem_invtSubmodule_iff_commute]
+  refine ⟨fun he y hy => mem_commutant_iff.mp hy _ he, fun H' => ?_⟩
+  rw [← commutant_commutant S, mem_commutant_iff]
+  intro m hm
+  exact (H' _ hm).symm
 
 end VonNeumannAlgebra
