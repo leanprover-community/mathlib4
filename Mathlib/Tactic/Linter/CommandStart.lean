@@ -144,10 +144,14 @@ This almost means that `L` and `M` only differ in whitespace.
 While scanning the two strings, accumulate any discrepancies --- with some heuristics to avoid
 flagging some line-breaking changes.
 (The pretty-printer does not always produce desirably formatted code.)
+
+The `rebuilt` input gets updated, matching
 -/
 partial
-def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
-  if M.trim.isEmpty then as else
+def parallelScanAux (as : Array FormatError) (rebuilt L M : String)
+    (addSpace removeSpace removeLine : String) :
+    String × Array FormatError :=
+  if M.trim.isEmpty then (rebuilt ++ L, as) else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
   -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
@@ -158,8 +162,9 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
   -- doc-strings).  In this case, we drop everything until the following line break in the
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
+  --dbg_trace (L.take 3, M.take 3)
   if L.take 3 == "/--" && M.take 3 == "/--" then
-    parallelScanAux as (L.drop 3) (M.drop 3) else
+    parallelScanAux as (rebuilt ++ "/--") (L.drop 3) (M.drop 3) addSpace removeSpace removeLine else
   if L.take 2 == "--" then
     let newL := L.dropWhile (· != '\n')
     let diff := L.length - newL.length
@@ -168,38 +173,40 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as newL.trimLeft newM.trimLeft else
+    parallelScanAux as (rebuilt ++ L.takeWhile (· != '\n') ++ newL.takeWhile (·.isWhitespace)) newL.trimLeft newM.trimLeft addSpace removeSpace removeLine else
   if L.take 2 == "-/" then
     let newL := L.drop 2 |>.trimLeft
     let newM := M.drop 2 |>.trimLeft
-    parallelScanAux as newL newM else
+    parallelScanAux as (rebuilt ++ "-/" ++ (L.drop 2).takeWhile (·.isWhitespace)) newL newM addSpace removeSpace removeLine else
   let ls := L.drop 1
   let ms := M.drop 1
   match L.get 0, M.get 0 with
   | ' ', m =>
     if m.isWhitespace then
-      parallelScanAux as ls ms.trimLeft
+      parallelScanAux as (rebuilt.push ' ') ls ms.trimLeft addSpace removeSpace removeLine
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) ls M
+      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) (rebuilt ++ removeSpace) ls M addSpace removeSpace removeLine
   | '\n', m =>
     if m.isWhitespace then
-      parallelScanAux as ls.trimLeft ms.trimLeft
+      parallelScanAux as (rebuilt ++ L.takeWhile (·.isWhitespace)) ls.trimLeft ms.trimLeft addSpace removeSpace removeLine
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) ls.trimLeft M
+      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) (rebuilt ++ removeLine ++ ls.takeWhile (·.isWhitespace)) ls.trimLeft M addSpace removeSpace removeLine
   | l, m => -- `l` is not whitespace
     if l == m then
-      parallelScanAux as ls ms
+      parallelScanAux as (rebuilt.push l) ls ms addSpace removeSpace removeLine
     else
       if m.isWhitespace then
-        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) L ms.trimLeft
+        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimLeft addSpace removeSpace removeLine
     else
       -- If this code is reached, then `L` and `M` differ by something other than whitespace.
       -- This should not happen in practice.
-      pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
+      (rebuilt, pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)"))
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
-  parallelScanAux ∅ src fmt
+  let (expected, formatErrors) := parallelScanAux ∅ "" src fmt "🐩" "🦤" "😹"
+  --dbg_trace "src:\n{src}\nfmt:\n{fmt}\nexpected:\n{expected}\n---"
+  formatErrors
 
 namespace Style.CommandStart
 
@@ -387,6 +394,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         return none
   if let some fmt := fmt then
     let st := fmt.pretty
+    let parts := st.split (·.isWhitespace) |>.filter (!·.isEmpty)
+    --for p in parts do dbg_trace "'{p}'"
+    let st := " ".intercalate parts
     let origSubstring := stx.getSubstring?.getD default
     let orig := origSubstring.toString
 

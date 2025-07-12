@@ -130,7 +130,7 @@ where
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
-
+                   --
 -- The linter skips double-quoted names.
 variable (d : Lean.Name := ``Nat) in open Nat
 
@@ -262,8 +262,7 @@ warning: extra space in the source
 This part of the code
   ':     Nat'
 should be written as
-  ': Nat
-'
+  ': Nat field2'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -301,8 +300,7 @@ warning: extra space in the source
 This part of the code
   ':     Nat'
 should be written as
-  ': Nat
-'
+  ': Nat field2'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -528,8 +526,7 @@ warning: missing space in the source
 This part of the code
   ':=trivial'
 should be written as
-  ':=
-  trivial'
+  ':= trivial'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
