@@ -488,8 +488,7 @@ open LinearMap in
 /-- Given an idempotent linear operator `p`, we have
 `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
 theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[S] M} (hp : IsIdempotentElem p) {x : M} :
-    x ∈ range p ↔ p x = x :=
-  hp.isProj_range.mem_iff_map_id
+    x ∈ range p ↔ p x = x := hp.isProj_range.mem_iff_map_id
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,
@@ -502,9 +501,8 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
 
 open LinearMap in
 -- name to match `LinearMap.IsProj.isCompl`
-lemma IsIdempotentElem.isCompl {f : E →ₗ[R] E}
-    (hf : IsIdempotentElem f) : IsCompl (range f) (ker f) :=
-  hf.isProj_range.isCompl
+lemma IsIdempotentElem.isCompl {f : E →ₗ[R] E} (hf : IsIdempotentElem f) :
+    IsCompl (range f) (ker f) := hf.isProj_range.isCompl
 
 open LinearMap in
 /-- Idempotent operators are equal when their range and kernels are. -/
@@ -587,8 +585,7 @@ lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff_isProj_conj_eq {U : Submodul
 open LinearMap in
 /-- `ker f` is invariant under `T` if and only if `f ∘ₗ T ∘ₗ f = f ∘ₗ T`,
 for idempotent `f`. -/
-lemma ker_mem_invtSubmodule_iff_conj_eq
-    (hf : IsIdempotentElem f) :
+lemma ker_mem_invtSubmodule_iff_conj_eq (hf : IsIdempotentElem f) :
     ker f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = f ∘ₗ T := by
   rw [← hf.subtype_comp_linearProjOfIsCompl_range_eq]
   nth_rw 1 [hf.subtype_comp_linearProjOfIsCompl_range_eq]
@@ -600,10 +597,8 @@ lemma ker_mem_invtSubmodule_iff_conj_eq
 
 /-- Both `range f` and `ker f` are invariant under `T` if and only if `T` commutes with
 the idempotent operator `f`. -/
-lemma range_and_ker_mem_invtSubmodule_iff_commute
-    (hf : IsIdempotentElem f) :
-    (range f ∈ Module.End.invtSubmodule T ∧ ker f ∈ Module.End.invtSubmodule T)
-      ↔ Commute f T := by
+lemma range_and_ker_mem_invtSubmodule_iff_commute (hf : IsIdempotentElem f) :
+    (range f ∈ Module.End.invtSubmodule T ∧ ker f ∈ Module.End.invtSubmodule T) ↔ Commute f T := by
   simp_rw [Commute, SemiconjBy, hf.range_mem_invtSubmodule_iff_conj_eq,
     hf.ker_mem_invtSubmodule_iff_conj_eq, ← Module.End.mul_eq_comp]
   constructor
@@ -615,8 +610,7 @@ lemma range_and_ker_mem_invtSubmodule_iff_commute
 
 /-- `⅟T ∘ₗ f ∘ₗ T = f` if and only if `T (range f) = range f` and `T (ker f) = ker f`,
 for idempotent `f`. -/
-theorem invOf_comp_self_comp_eq_self_iff_map_eq
-    [Invertible T] (hf : IsIdempotentElem f) :
+theorem invOf_comp_self_comp_eq_self_iff_map_eq [Invertible T] (hf : IsIdempotentElem f) :
     ⅟T ∘ₗ f ∘ₗ T = f ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
   have : ∀ f, Commute f T ↔ ⅟T ∘ₗ f ∘ₗ T = f :=
     fun f => Commute.symm_iff.trans ((unitOfInvertible T).commute_iff_inv_mul_cancel f)
