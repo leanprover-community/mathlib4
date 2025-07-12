@@ -173,7 +173,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n * powHalf n = 1 := by
 theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n * powHalf (n + k) = powHalf k := by
   induction k with
   | zero =>
-    simp only [add_zero, Surreal.nsmul_pow_two_powHalf, eq_self_iff_true, Surreal.powHalf_zero]
+    simp only [add_zero, Surreal.nsmul_pow_two_powHalf, Surreal.powHalf_zero]
   | succ k hk =>
     rw [← double_powHalf_succ_eq_powHalf (n + k), ← double_powHalf_succ_eq_powHalf k,
       ← mul_assoc, mul_comm (2 ^ n) 2, mul_assoc] at hk
@@ -206,7 +206,7 @@ noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
     (Localization.liftOn x fun x y => x * powHalf (Submonoid.log y)) <| by
       intro m₁ m₂ n₁ n₂ h₁
       obtain ⟨⟨n₃, y₃, hn₃⟩, h₂⟩ := Localization.r_iff_exists.mp h₁
-      simp only [Subtype.coe_mk, mul_eq_mul_left_iff] at h₂
+      simp only [mul_eq_mul_left_iff] at h₂
       cases h₂
       · obtain ⟨a₁, ha₁⟩ := n₁.prop
         obtain ⟨a₂, ha₂⟩ := n₂.prop

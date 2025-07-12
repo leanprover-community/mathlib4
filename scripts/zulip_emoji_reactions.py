@@ -118,7 +118,7 @@ for message in messages:
 
         # The maintainer merge label is different from the others, as it is not mutually exclusive
         # with them: just add or remove it manually and leave the other emojis alone.
-        if LABEL_NAME == "maintainer-merge":
+        if LABEL_NAME == "maintainer-merge" and message['display_recipient'] != 'mathlib reviewers':
             if ACTION == "labeled":
                 add_reaction('maintainer-merge', 'hammer')
             elif ACTION == "unlabeled":

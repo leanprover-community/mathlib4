@@ -48,7 +48,8 @@ variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_right (smul_le_smul_of_nonneg_left ha (sub_nonneg.2 hr)) _
+  gcongr
+  exact sub_nonneg.2 hr
 
 theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
@@ -57,7 +58,7 @@ theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < li
 omit [IsOrderedRing k] in
 theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_left (smul_le_smul_of_nonneg_left hb hr) _
+  gcongr
 
 omit [IsOrderedRing k] in
 theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
@@ -287,7 +288,7 @@ lemma slope_pos_iff_gt {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRi
 lemma pos_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
     (hb : x₀ < b) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : 0 < f b := by
-  simp_all [slope, hf]
+  simp_all [slope]
 
 lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜}

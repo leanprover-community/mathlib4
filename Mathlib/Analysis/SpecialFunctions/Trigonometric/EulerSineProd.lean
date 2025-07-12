@@ -3,7 +3,7 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.PeakFunction
 
 /-! # Euler's infinite product for the sine function
@@ -48,7 +48,7 @@ theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (Complex.cos ∘ fun y : ℂ => (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_cos (x * (2 * z))) a
-  have c := (b.comp_ofReal.div_const (2 * z)).neg
+  have c := (b.comp_ofReal.div_const (2 * z)).fun_neg
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
   exact c
 
@@ -92,7 +92,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
           ((cos x : ℂ) ^ n - (n - 1) * (sin x : ℂ) ^ 2 * (cos x : ℂ) ^ (n - 2)) x := by
     intro x _
     have c := HasDerivAt.comp (x : ℂ) (hasDerivAt_pow (n - 1) _) (Complex.hasDerivAt_cos x)
-    convert ((Complex.hasDerivAt_sin x).mul c).comp_ofReal using 1
+    convert ((Complex.hasDerivAt_sin x).fun_mul c).comp_ofReal using 1
     · ext1 y; simp only [Complex.ofReal_sin, Complex.ofReal_cos, Function.comp]
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]

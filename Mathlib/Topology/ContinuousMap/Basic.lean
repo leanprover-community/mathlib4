@@ -289,6 +289,52 @@ def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
 
 end Restrict
 
+section mkD
+
+/--
+Interpret `f : α → β` as an element of `C(α, β)`, falling back to the default value
+`default : C(α, β)` if `f` is not continuous.
+This is mainly intended to be used for `C(α, β)`-valued integration. For example, if a family of
+functions `f : ι → α → β` satisfies that `f i` is continuous for almost every `i`, you can write
+the `C(α, β)`-valued integral "`∫ i, f i`" as `∫ i, ContinuousMap.mkD (f i) 0`.
+-/
+noncomputable def mkD (f : α → β) (default : C(α, β)) : C(α, β) :=
+  open scoped Classical in
+  if h : Continuous f then ⟨_, h⟩ else default
+
+lemma mkD_of_continuous {f : α → β} {g : C(α, β)} (hf : Continuous f) :
+    mkD f g = ⟨f, hf⟩ := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous f) :
+    mkD f g = g := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
+    mkD f g x = f x := by
+  rw [mkD_of_continuous hf, coe_mk]
+
+lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g = ⟨s.restrict f, hf.restrict⟩ :=
+  mkD_of_continuous hf.restrict
+
+lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ¬ ContinuousOn f s) :
+    mkD (s.restrict f) g = g := by
+  rw [continuousOn_iff_continuous_restrict] at hf
+  exact mkD_of_not_continuous hf
+
+lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf, coe_mk, Set.restrict_apply]
+
+lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
+  mkD_of_continuous f.continuous
+
+end mkD
+
 section Gluing
 
 variable {ι : Type*} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))

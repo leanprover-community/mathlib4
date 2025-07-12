@@ -227,7 +227,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
+  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
@@ -554,7 +554,7 @@ lemma subtype_injective (s : Subgroup G) :
   Subtype.coe_injective
 
 @[to_additive (attr := simp)]
-theorem coe_subtype : ⇑ H.subtype = ((↑) : H → G) :=
+theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
   rfl
 
 @[deprecated (since := "2025-02-18")]
@@ -588,9 +588,9 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
 
 open Set
 
-/-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
+/-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
-  /-- `N` is closed under conjugation -/
+  /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
 
 attribute [class] Normal
@@ -599,9 +599,9 @@ end Subgroup
 
 namespace AddSubgroup
 
-/-- An AddSubgroup is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : G` -/
+/-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : A` -/
 structure Normal (H : AddSubgroup A) : Prop where
-  /-- `N` is closed under additive conjugation -/
+  /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
 attribute [to_additive] Subgroup.Normal
@@ -616,7 +616,7 @@ variable {H : Subgroup G}
 
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm, mul_left_comm]⟩
+  ⟨by simp [mul_comm]⟩
 
 namespace Normal
 

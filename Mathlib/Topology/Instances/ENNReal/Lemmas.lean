@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.ENNReal.BigOperators
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Order.LiminfLimsup
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.MetricSpace.Pseudo.Real
@@ -117,7 +117,7 @@ def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def ltTopHomeomorphNNReal : { a | a < ∞ } ≃ₜ ℝ≥0 := by
   refine (Homeomorph.setCongr ?_).trans neTopHomeomorphNNReal
-  simp only [mem_setOf_eq, lt_top_iff_ne_top]
+  simp only [lt_top_iff_ne_top]
 
 theorem nhds_top : 𝓝 ∞ = ⨅ (a) (_ : a ≠ ∞), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
@@ -206,7 +206,7 @@ statement works for `x = 0`.
 -/
 theorem hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
     (𝓝 x).HasBasis (· ≠ 0) (fun ε => Icc (x - ε) (x + ε)) := by
-  rcases (zero_le x).eq_or_gt with rfl | x0
+  rcases (zero_le x).eq_or_lt with rfl | x0
   · simp_rw [zero_tsub, zero_add, ← bot_eq_zero, Icc_bot, ← bot_lt_iff_ne_bot]
     exact nhds_bot_basis_Iic
   · refine (nhds_basis_Ioo' ⟨_, x0⟩ ⟨_, xt.lt_top⟩).to_hasBasis ?_ fun ε ε0 => ?_
@@ -420,7 +420,7 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
     refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
     · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
     · exact Or.inl fun h => H (pow_eq_zero h)
-    · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
+    · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, not_true, Ne,
         not_false_iff, false_and]
     · simp only [H, true_or, Ne, not_false_iff]
 
@@ -541,15 +541,13 @@ theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x 
     refine ⟨q, q + 1, (lt_add_iff_pos_right _).2 zero_lt_one, ?_, ?_⟩
     · refine fun hcon => hR ?_
       filter_upwards [hcon] with x hx using not_lt.2 (lt_of_lt_of_le hq (not_lt.1 hx)).le
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, not_exists,
-        not_forall, not_le, exists_prop] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, not_exists] at hbdd
       refine fun hcon => hbdd ↑(q + 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
   · obtain ⟨R, hR⟩ := exists_frequently_lt_of_liminf_ne_top' hf
     obtain ⟨q, hq⟩ := exists_rat_lt R
     refine ⟨q - 1, q, (sub_lt_self_iff _).2 zero_lt_one, ?_, ?_⟩
-    · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, not_exists,
-        not_forall, not_le, exists_prop] at hbdd
+    · simp only [IsBoundedUnder, IsBounded, eventually_map, not_exists] at hbdd
       refine fun hcon => hbdd ↑(q - 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
     · refine fun hcon => hR ?_
@@ -605,6 +603,15 @@ protected theorem tsum_sigma {β : α → Type*} (f : ∀ a, β a → ℝ≥0∞
 protected theorem tsum_sigma' {β : α → Type*} (f : (Σ a, β a) → ℝ≥0∞) :
     ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
   ENNReal.summable.tsum_sigma' fun _ => ENNReal.summable
+
+protected theorem tsum_biUnion' {ι : Type*} {S : Set ι} {f : α → ENNReal} {t : ι → Set α}
+    (h : S.PairwiseDisjoint t) : ∑' x : ⋃ i ∈ S, t i, f x = ∑' (i : S), ∑' (x : t i), f x := by
+  simp [← ENNReal.tsum_sigma, ← (Set.biUnionEqSigmaOfDisjoint h).tsum_eq]
+
+protected theorem tsum_biUnion {ι : Type*} {f : α → ENNReal} {t : ι → Set α}
+    (h : Set.univ.PairwiseDisjoint t) : ∑' x : ⋃ i, t i, f x = ∑' (i) (x : t i), f x := by
+  nth_rw 2 [← tsum_univ]
+  rw [← ENNReal.tsum_biUnion' h, Set.biUnion_univ]
 
 protected theorem tsum_prod {f : α → β → ℝ≥0∞} : ∑' p : α × β, f p.1 p.2 = ∑' (a) (b), f a b :=
   ENNReal.summable.tsum_prod' fun _ => ENNReal.summable
@@ -1378,7 +1385,7 @@ lemma liminf_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
     exact hi.1.trans hi.2
   have aux : ∀ᶠ i in f, (u i).toReal = ENNReal.truncateToReal b (u i) := by
     filter_upwards [le_b] with i i_le_b
-    simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
+    simp only [truncateToReal_eq_toReal b_ne_top i_le_b]
   have aux' : (f.liminf u).toReal = ENNReal.truncateToReal b (f.liminf u) := by
     rw [truncateToReal_eq_toReal b_ne_top liminf_le]
   simp_rw [liminf_congr aux, aux']
@@ -1394,7 +1401,7 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
     f.limsup (fun i ↦ (u i).toReal) = (f.limsup u).toReal := by
   have aux : ∀ᶠ i in f, (u i).toReal = ENNReal.truncateToReal b (u i) := by
     filter_upwards [le_b] with i i_le_b
-    simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
+    simp only [truncateToReal_eq_toReal b_ne_top i_le_b]
   have aux' : (f.limsup u).toReal = ENNReal.truncateToReal b (f.limsup u) := by
     rw [truncateToReal_eq_toReal b_ne_top (limsup_le_of_le ⟨0, by simp⟩ le_b)]
   simp_rw [limsup_congr aux, aux']

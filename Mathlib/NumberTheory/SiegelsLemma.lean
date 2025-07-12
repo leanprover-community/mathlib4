@@ -93,8 +93,7 @@ private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈
 
 private lemma card_T_eq [DecidableEq β] : #T = (B + 1) ^ n := by
   rw [Pi.card_Icc 0 B']
-  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_natCast_add_one, prod_const, card_univ,
-    add_pos_iff, zero_lt_one, or_true]
+  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_natCast_add_one, prod_const, card_univ]
 
 -- This lemma is necessary to be able to apply the formula #(Icc a b) = b + 1 - a
 private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
