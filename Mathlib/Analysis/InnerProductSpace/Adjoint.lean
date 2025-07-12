@@ -335,6 +335,8 @@ theorem IsStarProjection.ext_iff {S T : E →L[𝕜] E}
     ← hS.isIdempotentElem.isSelfAdjoint_iff_orthogonal_range.mp hS.isSelfAdjoint]
   simp [h]
 
+alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
+
 end ContinuousLinearMap
 
 /-- `U.starProjection` is a star projection. -/
@@ -554,6 +556,8 @@ theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
   all_goals
     simp [isStarProjection_iff, ← ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff, hS.1.eq, hS.2,
       hT.1.eq, hT.2, IsIdempotentElem, ContinuousLinearMap.ext_iff, ← Module.End.mul_apply]
+
+alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
 end LinearMap
 
