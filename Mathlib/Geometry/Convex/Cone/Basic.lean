@@ -82,7 +82,7 @@ instance : SetLike (ConvexCone R M) M where
 theorem ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
 variable (C) in
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike])]
 protected lemma smul_mem (hc : 0 < c) (hx : x ∈ C) : c • x ∈ C := C.smul_mem' hc hx
 
 variable (C) in

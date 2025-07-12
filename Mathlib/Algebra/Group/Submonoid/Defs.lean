@@ -70,7 +70,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
+attribute [aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
 section
 
@@ -110,7 +110,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by

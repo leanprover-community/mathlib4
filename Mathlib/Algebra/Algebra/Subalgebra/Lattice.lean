@@ -419,7 +419,7 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
 
