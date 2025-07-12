@@ -48,21 +48,23 @@ open scoped ENNReal NNReal Real Topology
 
 section Aux
 
-lemma norm_add_sub_norm_sub_le_two_mul {E : Type*} [SeminormedAddCommGroup E] (x y : E) :
-    ‖x + y‖ - ‖x - y‖ ≤ 2 * ‖x‖ :=
-  calc ‖x + y‖ - ‖x - y‖
-  _ = ‖x + x + y - x‖ - ‖x - y‖ := by congr; abel
-  _ ≤ ‖x + x‖ + ‖y - x‖ - ‖x - y‖ := by gcongr; rw [add_sub_assoc]; exact norm_add_le _ _
-  _ = ‖x + x‖ := by rw [norm_sub_rev]; abel
-  _ ≤ ‖x‖ + ‖x‖ := norm_add_le _ _
+@[to_additive norm_add_sub_norm_sub_le_two_mul]
+lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedCommGroup E] (x y : E) :
+    ‖x * y‖ - ‖x / y‖ ≤ 2 * ‖x‖ :=
+  calc ‖x * y‖ - ‖x / y‖
+  _ = ‖x * x * y / x‖ - ‖x / y‖ := by congr; rw [mul_assoc, mul_div_assoc, mul_div_cancel]
+  _ ≤ ‖x * x‖ + ‖y / x‖ - ‖x / y‖ := by gcongr; rw [mul_div_assoc]; exact norm_mul_le' _ _
+  _ = ‖x * x‖ := by rw [norm_div_rev]; abel
+  _ ≤ ‖x‖ + ‖x‖ := norm_mul_le' _ _
   _ = 2 * ‖x‖ := by rw [two_mul]
 
-lemma norm_add_sub_norm_sub_le_two_mul_min {E : Type*} [SeminormedAddCommGroup E] (x y : E) :
-    ‖x + y‖ - ‖x - y‖ ≤ 2 * min ‖x‖ ‖y‖ := by
+@[to_additive norm_add_sub_norm_sub_le_two_mul_min]
+lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (x y : E) :
+    ‖x * y‖ - ‖x / y‖ ≤ 2 * min ‖x‖ ‖y‖ := by
   rw [mul_min_of_nonneg _ _ (by positivity)]
-  refine le_min (norm_add_sub_norm_sub_le_two_mul x y) ?_
-  rw [norm_sub_rev, add_comm]
-  exact norm_add_sub_norm_sub_le_two_mul _ _
+  refine le_min (norm_mul_sub_norm_div_le_two_mul x y) ?_
+  rw [norm_div_rev, mul_comm]
+  exact norm_mul_sub_norm_div_le_two_mul _ _
 
 lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
 
