@@ -277,8 +277,8 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
 
 @[gcongr]
 lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (hij : i ≤ j) :
-    p.predAbove i ≤ q.predAbove j := by
-  trans p.predAbove j <;> gcongr
+    p.predAbove i ≤ q.predAbove j :=
+  (predAbove_right_monotone p hij).trans (predAbove_left_monotone j hpq)
 
 /-- `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
