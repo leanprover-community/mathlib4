@@ -316,7 +316,7 @@ theorem IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
 @[simp]
 theorem isStarProjection_orthogonalProjection [CompleteSpace E] {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] : IsStarProjection U.starProjection :=
-  ⟨by ext; simp [Submodule.starProjection_eq_self_iff.mpr], isSelfAdjoint_starProjection U⟩
+  ⟨U.isIdempotentElem_starProjection, isSelfAdjoint_starProjection U⟩
 
 /-- An operator is a star projection if and only if it is an orthogonal projection. -/
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
