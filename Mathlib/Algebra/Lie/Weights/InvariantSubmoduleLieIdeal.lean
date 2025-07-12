@@ -42,11 +42,15 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         | add m₁ m₂ _ _ ih₁ ih₂ =>
           -- m = m₁ + m₂ case
           rw [lie_add]
-          sorry
+          simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, SetLike.mem_coe]
+            at ih₁ ih₂ ⊢
+          exact add_mem ih₁ ih₂
       | zero =>
         -- x = 0 case
         simp [zero_lie]
       | add x₁ x₂ _ _ ih₁ ih₂ =>
         -- x = x₁ + x₂ case
         rw [add_lie]
-        sorry
+        simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, SetLike.mem_coe]
+          at ih₁ ih₂ ⊢
+        exact add_mem ih₁ ih₂
