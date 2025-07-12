@@ -434,44 +434,20 @@ lemma support_eq_compl_Union_open_null :
 lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
     (_ : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by
   by_contra hn
-  -- `hn : ¬ Nonempty (U ∩ μ.support)` gives `U ⊆ (μ.support)ᶜ`
-  have hsub : U ⊆ (μ.support)ᶜ := fun x hxU hxS =>
-    hn ⟨x, hxU, hxS⟩
-  -- rewrite `(μ.support)ᶜ` as the union of all open null sets
-  have hcover : U ⊆ ⋃₀ {W : Set X | IsOpen W ∧ μ W = 0} := by
-    -- first rewrite `hsub` using your lemma
-    rw [support_eq_compl_Union_open_null] at hsub
-    -- now `hsub : U ⊆ (⋃₀ {…})ᶜ` and double‐compl gives the desired cover
-    simp only [compl_compl] at hsub
-    exact hsub
-  -- 2) convert it to the Prop using the iff
-  have hIL : IsLindelof U := HereditarilyLindelof_LindelofSets U
-  -- 3) now extract a countable subcover
-  rcases (isLindelof_iff_countable_subcover.mp hIL)
-    (fun W : {W // IsOpen W ∧ μ W = 0} => W.val)
-    (fun W => W.prop.1)
-    (by simpa [support_eq_compl_Union_open_null, compl_compl,
-      ← sUnion_range (fun W : {W // IsOpen W ∧ μ W = 0} => W.val)] using hsub)
+  have : U ⊆ (μ.support)ᶜ := fun x hxU hxS => hn ⟨x, hxU, hxS⟩
+  rcases (isLindelof_iff_countable_subcover.mp <| HereditarilyLindelof_LindelofSets U)
+    (fun W : {W // IsOpen W ∧ μ W = 0} => W.val) (fun W => W.prop.1)
+    (by simpa only [← sUnion_range (fun W : { W // IsOpen W ∧ μ W = 0 } => W.val),
+      Subtype.range_coe_subtype, support_eq_compl_Union_open_null, compl_compl])
     with ⟨T, hTcount, hTcov⟩
-  -- now measure U ≤ measure of that countable union ≤ sum of μ V = 0
-  have hU_le : μ U ≤ μ (⋃ i ∈ T, i.val) :=
-    measure_mono hTcov
-
-  have h_union_le_tsum :
-    μ (⋃ i ∈ T, i.val) ≤ ∑' (i : T), μ (i.val) :=
-  measure_biUnion_le μ hTcount Subtype.val
-
-  have h_tsum_zero : ∑' (i : T), μ (i.val) = 0 := by
-    refine ENNReal.tsum_eq_zero.mpr fun i => (i.val.property.2 : μ (i.val) = 0)
-
-  -- chaining these gives `0 < μ U ≤ 0`, absurd
-  have : (0 : ℝ≥0∞) < 0 := by
+  exact (lt_self_iff_false (0 : ℝ≥0∞)).mp <| by
     calc
       0 < μ U                 := hμ
-      _ ≤ μ (⋃ i ∈ T, i.val)  := hU_le
-      _ ≤ ∑' i : T, μ (i.val) := h_union_le_tsum
-      _ = 0                   := h_tsum_zero
-  exact lt_irrefl 0 this
+      _ ≤ μ (⋃ i ∈ T, i.val)  := measure_mono hTcov
+      _ ≤ ∑' i : T, μ (i.val) := measure_biUnion_le μ hTcount Subtype.val
+      _ = 0                   := by refine ENNReal.tsum_eq_zero.mpr fun i =>
+                                    (i.val.property.2 : μ (i.val) = 0)
+
 
 
 /- This theorem says that if U has positive measure then there has to be a point in U, all of
