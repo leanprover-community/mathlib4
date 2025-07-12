@@ -29,7 +29,7 @@ coyoneda embedding. -/
 "The `AddCommGrp`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding."]
 def CommGrp.coyonedaForget :
-    coyoneda ⋙ (whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
+    coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
   NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ { hom f := ofHom f, inv f := f.hom }
 
 /-- The Hom bifunctor sending a type `X` and a commutative group `G` to the commutative group
