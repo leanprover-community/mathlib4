@@ -160,13 +160,13 @@ end Γ₂N₁
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
 @[simps! hom_app inv_app]
 def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
-  (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
+  (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
 
 namespace Γ₂N₂
 
 /-- The natural transformation `N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`. -/
 def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ :=
-  ((whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
+  ((Functor.whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
     (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans)
 
 theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :

@@ -435,7 +435,7 @@ of arbitrary suprema. -/
 instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
   ωSup c := ⨆ i, c i
   ωSup_le := fun ⟨c, _⟩ s hs => by
-    simp only [iSup_le_iff, OrderHom.coe_mk] at hs ⊢; assumption
+    simp only [iSup_le_iff] at hs ⊢; assumption
   le_ωSup := fun ⟨c, _⟩ i => by apply le_iSup_of_le i; rfl
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}

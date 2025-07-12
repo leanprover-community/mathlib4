@@ -201,7 +201,7 @@ def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
     exact (free.map_id X.toQuiv).symm
   map_comp {X Y Z} f g := by
     apply (Quotient.lift_unique _ _ _ _ _).symm
-    show FreeRefl.quotientFunctor _ ⋙ _ = _
+    change FreeRefl.quotientFunctor _ ⋙ _ = _
     rw [Cat.comp_eq_comp, ← Functor.assoc, freeReflMap_naturality, Functor.assoc,
       freeReflMap_naturality, ← Functor.assoc]
     have : freeMap (f ≫ g).toPrefunctor =
@@ -271,7 +271,7 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       conv => rhs; rw [Cat.id_eq_id]; apply Functor.comp_id
       simp only [id_comp]
       rw [Cat.comp_eq_comp, ← Functor.assoc]
-      show (Cat.FreeRefl.quotientFunctor _ ⋙ Cat.freeReflMap _) ⋙ _ = _
+      change (Cat.FreeRefl.quotientFunctor _ ⋙ Cat.freeReflMap _) ⋙ _ = _
       rw [Cat.freeReflMap_naturality, Functor.assoc]
       dsimp only [Cat.freeRefl, Cat.free_obj, Cat.of_α, of_val, forget_obj,
         adj.unit.app_toPrefunctor]

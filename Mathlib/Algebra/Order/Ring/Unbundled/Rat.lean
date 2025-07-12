@@ -89,7 +89,7 @@ protected theorem not_lt {a b : ℚ} : ¬a < b ↔ b ≤ a := by
 protected theorem lt_iff (a b : ℚ) : a < b ↔ a.num * b.den < b.num * a.den :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
-      show Rat.blt _ _ = true ↔ _
+      change Rat.blt _ _ = true ↔ _
       suffices
         (na < 0 ∧ 0 ≤ nb ∨ if na = 0 then 0 < nb else (na ≤ 0 ∨ 0 < nb) ∧ na * ↑db < nb * da) ↔
         na * db < nb * da by simpa [Rat.blt]

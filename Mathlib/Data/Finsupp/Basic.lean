@@ -1271,13 +1271,23 @@ end
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
 -- TODO: add [DecidablePred (· ∈ s)] as an assumption
-@[simps] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
+@[simps apply] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
   toFun f := subtypeDomain (· ∈ s) f.1
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩
   left_inv f :=
     letI := Classical.decPred (· ∈ s); Subtype.ext <| extendDomain_subtypeDomain f.1 f.prop
   right_inv _ := letI := Classical.decPred (· ∈ s); subtypeDomain_extendDomain _
+
+@[simp] lemma restrictSupportEquiv_symm_apply_coe (s : Set α) (M : Type*) [AddCommMonoid M]
+    [DecidablePred (· ∈ s)] (f : s →₀ M) :
+    (restrictSupportEquiv s M).symm f = f.extendDomain := by
+  rw [restrictSupportEquiv, Equiv.coe_fn_symm_mk, Subtype.coe_mk]; congr
+
+@[simp] lemma restrictSupportEquiv_symm_single (s : Set α) (M : Type*) [AddCommMonoid M]
+    (a : s) (x : M) :
+    (restrictSupportEquiv s M).symm (single a x) = single (a : α) x := by
+  classical simp
 
 /-- Given `AddCommMonoid M` and `e : α ≃ β`, `domCongr e` is the corresponding `Equiv` between
 `α →₀ M` and `β →₀ M`.

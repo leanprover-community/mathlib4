@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Differentiability of models with corners and (extended) charts
@@ -348,5 +349,33 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
     (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
+
+/-- The trivialization of the tangent bundle at a point is the manifold derivative of the
+extended chart.
+Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
+theorem TangentBundle.continuousLinearMapAt_trivializationAt
+    {x₀ x : M} (hx : x ∈ (chartAt H x₀).source) :
+    (trivializationAt E (TangentSpace I) x₀).continuousLinearMapAt 𝕜 x =
+      mfderiv I 𝓘(𝕜, E) (extChartAt I x₀) x := by
+  have : MDifferentiableAt I 𝓘(𝕜, E) (extChartAt I x₀) x := mdifferentiableAt_extChartAt hx
+  simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe] at this
+  simp [hx, mfderiv, this]
+
+/-- The inverse trivialization of the tangent bundle at a point is the manifold derivative of the
+inverse of the extended chart.
+Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
+theorem TangentBundle.symmL_trivializationAt
+    {x₀ x : M} (hx : x ∈ (chartAt H x₀).source) :
+    (trivializationAt E (TangentSpace I) x₀).symmL 𝕜 x =
+      mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x) := by
+  have : MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x) :=
+    mdifferentiableWithinAt_extChartAt_symm (by simp [hx])
+  simp? at this says
+    simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans_symm,
+      PartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+      Function.comp_apply] at this
+  simp [hx, mfderivWithin, this]
 
 end extChartAt

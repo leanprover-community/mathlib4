@@ -116,7 +116,7 @@ open scoped Function -- required for scoped `on` notation
 /-- A commuting family of symmetric linear maps on a finite dimensional inner
 product space is simultaneously diagonalizable. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
-    (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise (Commute on T)):
+    (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise (Commute on T)) :
     ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ :=
   calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=

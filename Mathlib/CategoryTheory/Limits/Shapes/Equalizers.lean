@@ -392,6 +392,9 @@ def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h 
     { l : W ⟶ s.pt // l ≫ Fork.ι s = k } :=
   ⟨Fork.IsLimit.lift hs k h, by simp⟩
 
+lemma Fork.IsLimit.mono {s : Fork f g} (hs : IsLimit s) : Mono s.ι where
+  right_cancellation _ _ h := hom_ext hs h
+
 -- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
     `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
@@ -409,6 +412,9 @@ lemma Cofork.IsColimit.π_desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k :
 def Cofork.IsColimit.desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : f ≫ k = g ≫ k) : { l : s.pt ⟶ W // Cofork.π s ≫ l = k } :=
   ⟨Cofork.IsColimit.desc hs k h, by simp⟩
+
+lemma Cofork.IsColimit.epi {s : Cofork f g} (hs : IsColimit s) : Epi s.π where
+  left_cancellation _ _ h := hom_ext hs h
 
 theorem Fork.IsLimit.existsUnique {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : k ≫ f = k ≫ g) : ∃! l : W ⟶ s.pt, l ≫ Fork.ι s = k :=
@@ -1083,7 +1089,7 @@ variable {C} [IsSplitMono f]
 /-- A split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
 Here we build the cone, and show in `isSplitMonoEqualizes` that it is a limit cone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coneOfIsSplitMono : Fork (𝟙 Y) (retraction f ≫ f) :=
   Fork.ofι f (by simp)
@@ -1157,7 +1163,7 @@ variable {C} [IsSplitEpi f]
 /-- A split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
 Here we build the cocone, and show in `isSplitEpiCoequalizes` that it is a colimit cocone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
+-- @[simps (rhsMd := semireducible)] Porting note: no semireducible
 @[simps!]
 noncomputable def coconeOfIsSplitEpi : Cofork (𝟙 X) (f ≫ section_ f) :=
   Cofork.ofπ f (by simp)

@@ -332,7 +332,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
 
 @[csimp] theorem decidablePrime_csimp :
     @decidablePrime = @decidablePrime' := by
-  funext; apply Subsingleton.elim
+  subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
   (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|

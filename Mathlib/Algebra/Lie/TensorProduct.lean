@@ -16,8 +16,6 @@ Tensor products of Lie modules carry natural Lie module structures.
 lie module, tensor product, universal property
 -/
 
-suppress_compilation
-
 universe u v w w₁ w₂ w₃
 
 variable {R : Type u} [CommRing R]
@@ -106,12 +104,7 @@ def liftLie : (M →ₗ⁅R,L⁆ N →ₗ[R] P) ≃ₗ[R] M ⊗[R] N →ₗ⁅R,
 @[simp]
 theorem coe_liftLie_eq_lift_coe (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) :
     ⇑(liftLie R L M N P f) = lift R L M N P f := by
-  suffices (liftLie R L M N P f : M ⊗[R] N →ₗ[R] P) = lift R L M N P f by
-    rw [← this, LieModuleHom.coe_toLinearMap]
-  ext m n
-  simp only [liftLie, LinearEquiv.trans_apply, LieModuleEquiv.coe_toLinearEquiv,
-    toLinearMap_maxTrivLinearMapEquivLieModuleHom, coe_maxTrivEquiv_apply,
-    toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm]
+  tauto
 
 theorem liftLie_apply (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (m : M) (n : N) :
     liftLie R L M N P f (m ⊗ₜ n) = f m n := by

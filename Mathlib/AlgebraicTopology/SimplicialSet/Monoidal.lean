@@ -25,7 +25,7 @@ open Simplicial CategoryTheory MonoidalCategory Limits
 
 namespace SSet
 
-noncomputable instance : CartesianMonoidalCategory SSet.{u} :=
+instance : CartesianMonoidalCategory SSet.{u} :=
   (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
 
 @[simp]

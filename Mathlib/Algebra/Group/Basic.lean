@@ -1062,3 +1062,37 @@ lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     rw [pow_zero, h1]
     rfl
   | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
+
+/-!
+# Instances for `grind`.
+-/
+
+open Lean
+
+variable (α : Type*)
+
+instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
+    Grind.NatModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zero_nsmul := AddMonoid.nsmul_zero
+    one_nsmul := one_nsmul
+    add_nsmul n m a := add_nsmul a n m
+    nsmul_zero := nsmul_zero
+    nsmul_add n a b := nsmul_add a b n }
+
+instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
+    Grind.IntModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zsmul := ⟨s.zsmul⟩
+    zero_zsmul := SubNegMonoid.zsmul_zero'
+    one_zsmul := one_zsmul
+    add_zsmul n m a := add_zsmul a n m
+    zsmul_zero := zsmul_zero
+    zsmul_add n a b := zsmul_add a b n
+    zsmul_natCast_eq_nsmul n a := by simp }
+
+instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :
+    Grind.AddRightCancel α where
+  add_right_cancel _ _ _ := add_right_cancel

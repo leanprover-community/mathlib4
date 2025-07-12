@@ -79,7 +79,7 @@ lemma Cotangent.exact :
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
     · congr
       refine MvPolynomial.algHom_ext fun i ↦ ?_
-      show (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
+      change (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
       simp
     · simp [aeval_val_eq_zero hx]
   · intro x hx
@@ -384,8 +384,9 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       LinearEquiv.apply_symm_apply, z]
     ext
     swap; · rfl
-    show 0 = (LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
-      (CotangentSpace.compEquiv Q P).toLinearMap) ((Q.comp P).toExtension.cotangentComplex y)
+    change 0 = (LinearMap.fst T Q.toExtension.CotangentSpace
+        (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ (CotangentSpace.compEquiv Q P).toLinearMap)
+      ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
 lemma δ_eq_δ : δ Q P = δ Q P' := by
@@ -407,7 +408,7 @@ lemma δ_map (f : Hom Q' Q) (x) :
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-  show δ _ _ ⟨_, _⟩ = δ _ _ _
+  change δ _ _ ⟨_, _⟩ = δ _ _ _
   replace hx : (1 : T) ⊗ₜ[Q'.Ring] (D S Q'.Ring) y = 0 := by
     simpa only [LinearMap.mem_ker, Extension.cotangentComplex_mk, ker, RingHom.mem_ker] using hx
   simp only [LinearMap.domRestrict_apply, Extension.Cotangent.map_mk, δ_eq_δAux]
@@ -423,7 +424,7 @@ lemma δ_comp_equiv :
 lemma exact_map_δ' (f : Hom W Q) :
     Function.Exact (Extension.H1Cotangent.map f.toExtensionHom) (δ Q P) := by
   refine (H1Cotangent.equiv (Q.comp P) W).surjective.comp_exact_iff_exact.mp ?_
-  show Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
+  change Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
     (Extension.H1Cotangent.map _)) (δ Q P)
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
