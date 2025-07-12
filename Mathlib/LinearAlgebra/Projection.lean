@@ -578,7 +578,7 @@ lemma range_mem_invtSubmodule_iff_conj_eq (hf : IsIdempotentElem f) :
     range f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
   ⟨hf.conj_eq_of_range_mem_invtSubmodule, hf.range_mem_invtSubmodule_of_conj_eq⟩
 
-lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff_isProj_conj_eq {U : Submodule R E}
+lemma _root_.LinearMap.IsProj.mem_invtSubmodule_iff_conj_eq {U : Submodule R E}
     (hf : IsProj U f) : U ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = T ∘ₗ f :=
   hf.range ▸ hf.isIdempotentElem.range_mem_invtSubmodule_iff_conj_eq
 
@@ -589,7 +589,7 @@ lemma ker_mem_invtSubmodule_iff_conj_eq (hf : IsIdempotentElem f) :
     ker f ∈ Module.End.invtSubmodule T ↔ f ∘ₗ T ∘ₗ f = f ∘ₗ T := by
   rw [← hf.subtype_comp_linearProjOfIsCompl_range_eq]
   nth_rw 1 [hf.subtype_comp_linearProjOfIsCompl_range_eq]
-  rw [IsProj.mem_invtSubmodule_iff_isProj_conj_eq
+  rw [IsProj.mem_invtSubmodule_iff_conj_eq
     (f := (ker f).subtype.comp (Submodule.linearProjOfIsCompl _ _ hf.isCompl.symm))
     ⟨by simp, by simp⟩]
   simp [LinearMap.ext_iff, LinearMap.comp_apply]
