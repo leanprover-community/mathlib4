@@ -40,6 +40,21 @@ lemma mem_invtSubmodule {p : Submodule R M} :
     p ∈ f.invtSubmodule ↔ p ≤ p.comap f :=
   Iff.rfl
 
+/-- `p` is `f` invariant if and only if `p.map f ≤ p`. -/
+theorem mem_invtSubmodule_iff_map (p : Submodule R M) :
+    p ∈ f.invtSubmodule ↔ p.map f ≤ p := Submodule.map_le_iff_le_comap.symm
+
+/-- `p` is `f` invariant if and only if `Set.MapsTo f p p`. -/
+theorem mem_invtSubmodule_iff_mapsTo (p : Submodule R M) :
+    p ∈ f.invtSubmodule ↔ Set.MapsTo f p p := by rfl
+
+alias ⟨_, _root_.Set.Mapsto.mem_invtSubmodule⟩ := mem_invtSubmodule_iff_mapsTo
+
+/-- `p` is `f.symm` invariant if and only if `p ⊆ f(p)`. -/
+lemma mem_invtSubmodule_symm_iff_le_map {p : Submodule R M} (f : M ≃ₗ[R] M) :
+    p ∈ Module.End.invtSubmodule f.symm ↔ p ≤ p.map f :=
+  (Module.End.mem_invtSubmodule_iff_map _ _).trans (f.toEquiv.symm.subset_symm_image _ _).symm
+
 namespace invtSubmodule
 
 variable {f}
