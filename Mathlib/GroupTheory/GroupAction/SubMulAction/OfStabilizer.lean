@@ -26,7 +26,7 @@ and permit to manipulate them in a relatively smooth way.
 
 * `SubMulAction.ofStabilizer a` : the action of `stabilizer G a` on `{a}ᶜ`
 
-* `SubMulAction.Enat_card_ofStabilizer_eq_add_one`, `SubMulAction.nat_card_ofStabilizer_eq`
+* `SubMulAction.ENat_card_ofStabilizer_add_one_eq`, `SubMulAction.nat_card_ofStabilizer_eq`
 compute the cardinality of the `carrier` of that action.
 
 Consider `a b : α` and `g : G` such that `hg : g • b = a`.
@@ -88,12 +88,15 @@ theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
 @[to_additive]
-lemma Enat_card_ofStabilizer_eq_add_one (a : α) :
+lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by
   dsimp only [ENat.card]
   rw [← Cardinal.mk_sum_compl {a}, map_add, add_comm, eq_comm]
   congr
   simp
+
+@[deprecated  (since := "2025-07-15")]
+alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
