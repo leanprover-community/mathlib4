@@ -84,19 +84,18 @@ theorem IsComplex.re_eq {z : ℂ} {a b : ℝ} (hz : IsComplex z a b) : Complex.r
 theorem IsComplex.im_eq {z : ℂ} {a b : ℝ} (hz : IsComplex z a b) : Complex.im z = b := by
   simp [hz.out]
 
-theorem IsComplex.of_pow_negSucc {z w : ℂ} {a b : ℝ} {n : ℕ} {k k' : ℤ} (h : k = Int.negSucc n)
-    (hk : NormNum.IsInt k' k)
-    (hz : IsComplex (w ^ (n + 1))⁻¹ a b) (hz' : z = w ^ (k' : ℤ)) : IsComplex z a b := by
-  obtain rfl : k' = k := by simpa using hk.out
+theorem IsComplex.of_pow_negSucc {w : ℂ} {a b : ℝ} {n : ℕ} {k' : ℤ}
+    (hk : NormNum.IsInt k' (Int.negSucc n)) (hz : IsComplex (w ^ (n + 1))⁻¹ a b) :
+    IsComplex (w ^ (k' : ℤ)) a b := by
   constructor
-  simpa [h, hz'] using hz.out
+  rw [hk.out, Int.cast_id, zpow_negSucc, hz.out]
 
-theorem IsComplex.of_pow_ofNat {z w : ℂ} {k k' : ℤ} {n : ℕ} {a b : ℝ} (hz1 : z = w ^ k)
-    (hw : IsComplex (w ^ n) a b) (hk' : k' = n) (hkk' : NormNum.IsInt k k') :
-    IsComplex z a b := by
-  obtain rfl : k = k' := by simpa using hkk'.out
+theorem IsComplex.of_pow_ofNat {w : ℂ} {k : ℤ} {n : ℕ} {a b : ℝ}
+    (hkk' : NormNum.IsInt k n) (hw : IsComplex (w ^ n) a b) :
+    IsComplex (w ^ k) a b := by
+  obtain rfl : k = n := by simpa using hkk'.out
   constructor
-  simpa [hz1, hk'] using hw.out
+  simpa using hw.out
 
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) := do
@@ -134,19 +133,18 @@ partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) 
     | m + 1 =>
       let ⟨a, b, pf⟩ ← parse q($w ^ $m * $w)
       let _i : $n =Q $m + 1 := ⟨⟩
-      return ⟨a, b, q(⟨show $w ^ $n' = _ from $(hn).out ▸
-        ((congr_arg _ rfl).trans (pow_succ _ _)).trans $(pf).out⟩)⟩
+      return ⟨a, b, q(⟨show $w ^ $n' = _ from $(hn).out ▸ ((pow_succ _ _)).trans $(pf).out⟩)⟩
   | ~q($w ^ ($k : ℤ)) =>
     let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
     match k'.intLit! with
     | Int.ofNat n =>
-      let ⟨a, b, pf⟩ ← parse q(@HPow.hPow ℂ ℕ ℂ instHPow $w $n)
+      let ⟨a, b, pf⟩ ← parse q($w ^ $n)
       let _i : $k' =Q $n := ⟨⟩
-      return ⟨a, b, q(.of_pow_ofNat rfl $pf rfl $hm)⟩
+      return ⟨a, b, q(.of_pow_ofNat $hm $pf)⟩
     | Int.negSucc n =>
       let ⟨a, b, pf⟩ ← parse q(($w ^ ($n + 1))⁻¹)
       let _i : $k' =Q Int.negSucc $n := ⟨⟩
-      return ⟨a, b, q(.of_pow_negSucc rfl $hm $pf rfl)⟩
+      return ⟨a, b, q(.of_pow_negSucc $hm $pf)⟩
   | ~q(Complex.I) =>
     pure ⟨_, _, q(.I)⟩
   | ~q(0) =>
