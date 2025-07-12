@@ -31,8 +31,22 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         simp [LieModule.iSup_genWeightSpace_eq_top']
       induction hx using LieSubmodule.iSup_induction' with
       | mem χ x_χ hx_χ =>
-        sorry
+        -- Apply inner induction on m ∈ ⨆ α, sl2SubmoduleOfRoot α.1
+        induction hm using LieSubmodule.iSup_induction' with
+        | mem α m_α hm_α =>
+          -- Core case: x_χ ∈ genWeightSpace L χ, m_α ∈ sl2SubmoduleOfRoot α.1
+          sorry
+        | zero =>
+          simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
+            SetLike.mem_coe, Submodule.zero_mem]
+        | add m₁ m₂ _ _ ih₁ ih₂ =>
+          -- m = m₁ + m₂ case
+          rw [lie_add]
+          sorry
       | zero =>
-        sorry
-      | add =>
+        -- x = 0 case
+        simp [zero_lie]
+      | add x₁ x₂ _ _ ih₁ ih₂ =>
+        -- x = x₁ + x₂ case
+        rw [add_lie]
         sorry
