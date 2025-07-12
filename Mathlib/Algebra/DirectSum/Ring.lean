@@ -129,7 +129,7 @@ class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   /-- On negative integers, the canonical map from ℤ to a graded ring is the negative extension of
   the canonical map from ℕ to the underlying graded semiring. -/
-  -- Porting note: -(n+1) -> Int.negSucc
+  -- Porting note: -(n + 1) -> Int.negSucc
   intCast_negSucc_ofNat : ∀ n : ℕ, intCast (Int.negSucc n) = -natCast (n + 1 : ℕ)
 
 /-- A graded version of `CommRing`. -/
