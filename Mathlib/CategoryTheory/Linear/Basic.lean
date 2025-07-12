@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.CategoryTheory.Preadditive.Basic
