@@ -285,10 +285,10 @@ theorem IsGaussian.exists_integrable_exp_sq [CompleteSpace E] (μ : Measure E) [
     _ = ‖x - y + y‖ ^ 2 := by simp
     _ ≤ (‖x - y‖  + ‖y‖) ^ 2 := by gcongr; exact norm_add_le (x - y) y
     _ = ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + 2 * ‖x - y‖ * ‖y‖ := by ring
-    _ ≤ ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + ε * ‖x - y‖ ^ 2 + (1 / ε) * ‖y‖ ^ 2 := by
+    _ ≤ ‖x - y‖ ^ 2 + ‖y‖ ^ 2 + ε * ‖x - y‖ ^ 2 + ε⁻¹ * ‖y‖ ^ 2 := by
       simp_rw [add_assoc]
       gcongr
-      exact two_mul_mul_le_mul_add_div (by positivity)
+      exact two_mul_le_add_mul_sq (by positivity)
     _ = (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by ring
   calc C' * ‖x‖ ^ 2
   _ ≤ C' * ((1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2) := by gcongr

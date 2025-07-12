@@ -90,13 +90,13 @@ lemma exists_between' {t : ℕ → ℝ} (ht_mono : StrictMono t) (ht_tendsto : T
   rw [Nat.sub_add_cancel]
   simp [hx0]
 
-lemma two_mul_mul_le_mul_add_div {a b ε : ℝ} (hε : 0 < ε) :
-    2 * a * b ≤ ε * a ^ 2 + (1 / ε) * b ^ 2 := by
+lemma two_mul_le_add_mul_sq {a b ε : ℝ} (hε : 0 < ε) :
+    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
   have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
   calc 2 * a * b
   _ = (2 * (ε * a) * b) / ε := by field_simp; ring
   _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
-  _ = ε * a ^ 2 + (1 / ε) * b ^ 2 := by field_simp; ring
+  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by field_simp; ring
 
 lemma Nat.le_two_pow (n : ℕ) : n ≤ 2 ^ n := by
   induction n with
