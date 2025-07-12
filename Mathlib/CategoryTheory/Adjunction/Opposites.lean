@@ -110,4 +110,44 @@ def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+instance IsLeftAdjoint.op {F : C ⥤ D} [F.IsLeftAdjoint] : F.op.IsRightAdjoint :=
+  ⟨F.rightAdjoint.op, ⟨.op <| .ofIsLeftAdjoint _⟩⟩
+
+instance IsRightAdjoint.op {F : C ⥤ D} [F.IsRightAdjoint] : F.op.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.op, ⟨.op <| .ofIsRightAdjoint _⟩⟩
+
+instance IsLeftAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsLeftAdjoint] : F.leftOp.IsRightAdjoint :=
+  ⟨F.rightAdjoint.rightOp, ⟨.leftOp <| .ofIsLeftAdjoint _⟩⟩
+
+-- TODO: Do we need to introduce `Adjunction.leftUnop`?
+instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint := by
+  have adj := Adjunction.ofIsRightAdjoint F
+  refine ⟨F.leftAdjoint.rightOp, ⟨NatTrans.op adj.counit, NatTrans.unop adj.unit, ?_, ?_⟩⟩
+  · rintro X
+    refine Quiver.Hom.op_inj ?_
+    simp
+  · rintro Y
+    refine Quiver.Hom.unop_inj ?_
+    simp
+
+-- TODO: Do we need to introduce `Adjunction.rightUnop`?
+instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint := by
+  have adj := Adjunction.ofIsLeftAdjoint F
+  refine ⟨F.rightAdjoint.leftOp, ⟨NatTrans.op adj.counit, NatTrans.unop adj.unit, ?_, ?_⟩⟩
+  · rintro X
+    refine Quiver.Hom.op_inj ?_
+    simp
+  · rintro Y
+    refine Quiver.Hom.unop_inj ?_
+    simp
+
+-- TODO: Do we need to introduce `Adjunction.leftOp`/`Adjunction.rightUnop`
+instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.leftOp, ⟨.rightOp <| .ofIsRightAdjoint _⟩⟩
+
+end Functor
+end CategoryTheory
