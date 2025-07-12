@@ -491,59 +491,60 @@ open Real InnerProductSpace
 
 /-- For a diameter of a sphere, the angle subtended by the diameter
 at any other point on the sphere is a right angle. -/
-theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (A B C : P) (s : Sphere P)
-    (hDiam : s.IsDiameter A C) (_ : B ≠ A) (_ : B ≠ C) :
-    ∠ A B C = π / 2 ↔ B ∈ s := by
+theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (p₁ p₂ p₃ : P) (s : Sphere P)
+    (hd : s.IsDiameter p₁ p₃) :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ s := by
   constructor
-  · intro hAngle
-    have h_perp : ⟪A -ᵥ B, C -ᵥ B⟫_ℝ = 0 :=
-      (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two (A -ᵥ B) (C -ᵥ B)).mpr hAngle
-    let O := midpoint ℝ A C
-    rw [← vsub_add_vsub_cancel A O B, ← vsub_add_vsub_cancel C O B,
+  · intro h
+    have h_perp : ⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫_ℝ = 0 :=
+      (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two (p₁ -ᵥ p₂) (p₃ -ᵥ p₂)).mpr h
+    let o := midpoint ℝ p₁ p₃
+    rw [← vsub_add_vsub_cancel p₁ o p₂, ← vsub_add_vsub_cancel p₃ o p₂,
         inner_add_left, inner_add_right, inner_add_right] at h_perp
-    have hAC_opposite : A -ᵥ O = -(C -ᵥ O) := by
+    have h_opp : p₁ -ᵥ o = -(p₃ -ᵥ o) := by
       rw [left_vsub_midpoint, right_vsub_midpoint, ← smul_neg]
       simp only [invOf_eq_inv, neg_vsub_eq_vsub_rev]
-    rw [hAC_opposite, inner_neg_left, inner_neg_left,
-        real_inner_comm (C -ᵥ O) (O -ᵥ B)] at h_perp
+    rw [h_opp, inner_neg_left, inner_neg_left,
+        real_inner_comm (p₃ -ᵥ o) (o -ᵥ p₂)] at h_perp
     ring_nf at h_perp
-    have hBO_eq_CO : dist B O = dist C O := by
-      have : ⟪B -ᵥ O, B -ᵥ O⟫_ℝ = ⟪C -ᵥ O, C -ᵥ O⟫_ℝ := by
-        rw [← inner_neg_neg (B -ᵥ O)]
+    have h_eq : dist p₂ o = dist p₃ o := by
+      have : ⟪p₂ -ᵥ o, p₂ -ᵥ o⟫_ℝ = ⟪p₃ -ᵥ o, p₃ -ᵥ o⟫_ℝ := by
+        rw [← inner_neg_neg (p₂ -ᵥ o)]
         simp only [neg_vsub_eq_vsub_rev]
         linarith
       rw [real_inner_self_eq_norm_sq, real_inner_self_eq_norm_sq,
           ← dist_eq_norm_vsub, ← dist_eq_norm_vsub] at this
       rw [← Real.sqrt_sq dist_nonneg, ← Real.sqrt_sq dist_nonneg, this,
           Real.sqrt_sq dist_nonneg, Real.sqrt_sq dist_nonneg]
-    rw [mem_sphere', dist_comm, ← hDiam.midpoint_eq_center, hBO_eq_CO,
-        show O = midpoint ℝ A C from rfl, hDiam.midpoint_eq_center,
-        dist_comm, mem_sphere'.mp hDiam.right_mem]
-  · intro hB
-    let O := s.center
-    have hO : O = midpoint ℝ A C := hDiam.midpoint_eq_center.symm
-    have hOB : dist O B = s.radius := mem_sphere'.mp hB
-    have hOC : dist O C = s.radius := mem_sphere'.mp hDiam.right_mem
-    have h_perp : ⟪A -ᵥ B, C -ᵥ B⟫_ℝ = 0 := by
-      rw [← vsub_add_vsub_cancel A O B, ← vsub_add_vsub_cancel C O B,
+    rw [mem_sphere', dist_comm, ← hd.midpoint_eq_center, h_eq,
+        show o = midpoint ℝ p₁ p₃ from rfl, hd.midpoint_eq_center,
+        dist_comm, mem_sphere'.mp hd.right_mem]
+  · intro h
+    let o := s.center
+    have h_center : o = midpoint ℝ p₁ p₃ := hd.midpoint_eq_center.symm
+    have h_mem1 : dist o p₂ = s.radius := mem_sphere'.mp h
+    have h_mem2 : dist o p₃ = s.radius := mem_sphere'.mp hd.right_mem
+    have h_perp : ⟪p₁ -ᵥ p₂, p₃ -ᵥ p₂⟫_ℝ = 0 := by
+      rw [← vsub_add_vsub_cancel p₁ o p₂, ← vsub_add_vsub_cancel p₃ o p₂,
           inner_add_left, inner_add_right, inner_add_right]
-      have hAC_opposite : A -ᵥ O = -(C -ᵥ O) := by
-        rw [hO, left_vsub_midpoint, right_vsub_midpoint, ← smul_neg]
+      have h_opp : p₁ -ᵥ o = -(p₃ -ᵥ o) := by
+        rw [h_center, left_vsub_midpoint, right_vsub_midpoint, ← smul_neg]
         simp only [invOf_eq_inv, neg_vsub_eq_vsub_rev]
-      rw [hAC_opposite, inner_neg_left, inner_neg_left,
+      rw [h_opp, inner_neg_left, inner_neg_left,
           real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
           real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
-          dist_comm, hOB, hOC, real_inner_comm (C -ᵥ O) (O -ᵥ B)]
+          dist_comm, h_mem1, h_mem2, real_inner_comm (p₃ -ᵥ o) (o -ᵥ p₂)]
       ring
-    exact (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two (A -ᵥ B) (C -ᵥ B)).mp h_perp
+    exact (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two
+          (p₁ -ᵥ p₂) (p₃ -ᵥ p₂)).mp h_perp
 
 /-- For three distinct points, the angle at the second point
 is a right angle if and only if the second point lies on the sphere having the first and third
 points as diameter endpoints. -/
-theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter (A B C : P) (hBA : B ≠ A) (hBC : B ≠ C) :
-    ∠ A B C = π / 2 ↔ B ∈ Sphere.ofDiameter A C := by
-  exact angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter A B C
-        (Sphere.ofDiameter A C) (Sphere.isDiameter_ofDiameter A C) hBA hBC
+theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter (p₁ p₂ p₃ : P) :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ Sphere.ofDiameter p₁ p₃ := by
+  exact angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter p₁ p₂ p₃
+        (Sphere.ofDiameter p₁ p₃) (Sphere.isDiameter_ofDiameter p₁ p₃)
 
 end Sphere
 
