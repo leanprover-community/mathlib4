@@ -18,15 +18,15 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
 are technical lemmas that prove 2-pretransitivity / 2-preprimitivity
 for some group actions (Wielandt, 13.1)
 
-- `is_multiply_preprimitive_jordan` is a multiple preprimitivity criterion of Jordan (1871)
+- `IsMultiplyPreprimitive_jordan` is a multiple preprimitivity criterion of Jordan (1871)
 for a preprimitive action: the hypothesis is the preprimitivity
-of the sub_mul_action of `fixing_subgroup s` (Wielandt, 13.2)
+of the `SubMulAction` of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
 
-- `jordan_swap` proves that a primitive subgroup of a permutation group that contains a
+- `Equiv.Perm.jordan_swap` proves that a primitive subgroup of a permutation group that contains a
 swapis equal to the full permutation group (Wielandt, 13.3)
 
-- `jordan_three_cycle` proves that a primitive subgroup of a permutation group that contains a
-3-cycle contains the alternating group (Wielandt, 13.3)
+- `Equiv.Perm.jordan_three_cycle` proves that a primitive subgroup
+of a permutation group that contains a 3-cycle contains the alternating group (Wielandt, 13.3)
 
 ## TODO
 
@@ -56,10 +56,6 @@ theorem ncard_pigeonhole [Finite α]
   rw [add_assoc, ncard_add_ncard_compl, h', ncard_univ, add_le_add_iff_right, ← ncard_univ]
   apply ncard_le_ncard (subset_univ _)
 
-theorem ncard_lt (h : s.ncard < Nat.card α) : s ≠ ⊤ := fun h' ↦ by
-  apply not_le.mpr h
-  rw [h', top_eq_univ, ncard_univ]
-
 theorem ncard_pigeonhole' [Finite α]
     (h' : Nat.card α ≤ s.ncard + t.ncard) (h : s ∪ t ≠ ⊤) :
     (s ∩ t).Nonempty := by
@@ -76,7 +72,8 @@ theorem ncard_pigeonhole' [Finite α]
   exact ncard_le_ncard (subset_univ _)
 
 theorem ncard_pigeonhole_compl
-    (h : s.ncard + t.ncard < Nat.card α) : (sᶜ ∩ tᶜ).Nonempty := by
+    (h : s.ncard + t.ncard < Nat.card α) :
+    (sᶜ ∩ tᶜ).Nonempty := by
   have : Finite α := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt h)
   simp only [← compl_ne_univ, compl_inter, compl_compl]
   intro H
@@ -85,7 +82,8 @@ theorem ncard_pigeonhole_compl
   exact Nat.le_add_left (Nat.card α) (s ∩ t).ncard
 
 theorem ncard_pigeonhole_compl'
-    (h : s.ncard + t.ncard < Nat.card α) : s ∪ t ≠ ⊤ := by
+    (h : s.ncard + t.ncard < Nat.card α) :
+    s ∪ t ≠ ⊤ := by
   intro h'
   apply not_le.mpr h
   rw [← ncard_univ, ← top_eq_univ, ← h']
