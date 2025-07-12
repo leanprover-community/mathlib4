@@ -533,12 +533,12 @@ def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
 
 theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction x using Quotient.inductionOn' with | _ f
   exact Quotient.sound ⟨MonoOver.pullbackId.app f⟩
 
 theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction x using Quotient.inductionOn' with | _ t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 
 theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
@@ -605,19 +605,18 @@ lemma map_mk {A X Y : C} (i : A ⟶ X) [Mono i] (f : X ⟶ Y) [Mono f] :
   rfl
 
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction x using Quotient.inductionOn' with | _ f
   exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
     (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction x using Quotient.inductionOn' with | _ t
   exact Quotient.sound ⟨(MonoOver.mapComp _ _).app t⟩
 
 lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
-    Function.Injective (Subobject.map f).obj := by
-  intro X₁ X₂ h
-  induction' X₁ using Subobject.ind with X₁ i₁ _
-  induction' X₂ using Subobject.ind with X₂ i₂ _
+    Function.Injective (Subobject.map f).obj := fun X₁ X₂ h ↦ by
+  induction X₁ using Subobject.ind
+  induction X₂ using Subobject.ind
   simp only [map_mk] at h
   exact mk_eq_mk_of_comm _ _ (isoOfMkEqMk _ _ h) (by simp [← cancel_mono f])
 
