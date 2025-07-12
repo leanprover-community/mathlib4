@@ -180,8 +180,7 @@ theorem linearProjOfIsCompl_idempotent (h : IsCompl p q) (x : E) :
     linearProjOfIsCompl p q h (linearProjOfIsCompl p q h x) = linearProjOfIsCompl p q h x :=
   linearProjOfIsCompl_apply_left h _
 
-lemma linearProjOfIsCompl_isIdempotentElem
-    (hpq : IsCompl p q) :
+lemma linearProjOfIsCompl_isIdempotentElem (hpq : IsCompl p q) :
     IsIdempotentElem (p.subtype ∘ₗ p.linearProjOfIsCompl q hpq) := by ext; simp
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
