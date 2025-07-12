@@ -16,8 +16,6 @@ is equivalent to the category of "native" bundled `R`-algebras.
 Moreover, this equivalence is compatible with the forgetful functors to `ModuleCat R`.
 -/
 
-suppress_compilation
-
 
 universe v u
 
