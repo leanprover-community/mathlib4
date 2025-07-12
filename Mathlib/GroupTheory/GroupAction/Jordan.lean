@@ -46,48 +46,32 @@ namespace Set
 
 variable {α : Type*} {s t : Set α}
 
-theorem ncard_pigeonhole [Finite α]
-    (h : Nat.card α < s.ncard + t.ncard) : (s ∩ t).Nonempty := by
-  rw [← compl_ne_univ]
-  intro h'
-  apply not_le.mpr h
-  rw [← ncard_union_add_ncard_inter]
-  apply Nat.le_of_add_le_add_right
-  rw [add_assoc, ncard_add_ncard_compl, h', ncard_univ, add_le_add_iff_right, ← ncard_univ]
-  apply ncard_le_ncard (subset_univ _)
+variable (s) in
+theorem ncard_le_card [Finite α] : s.ncard ≤ Nat.card α :=
+  ncard_univ α ▸ ncard_le_ncard s.subset_univ
 
-theorem ncard_pigeonhole' [Finite α]
-    (h' : Nat.card α ≤ s.ncard + t.ncard) (h : s ∪ t ≠ ⊤) :
+theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
+  ncard_univ α ▸ ncard_lt_ncard (ssubset_univ_iff.mpr h)
+
+theorem ncard_pigeonhole [Finite α] (h : Nat.card α < s.ncard + t.ncard) : (s ∩ t).Nonempty := by
+  rw [← ncard_union_add_ncard_inter s t] at h
+  replace h := (s ∪ t).ncard_le_card.trans_lt h
+  rwa [lt_add_iff_pos_right, ncard_pos] at h
+
+theorem ncard_pigeonhole' [Finite α] (h' : Nat.card α ≤ s.ncard + t.ncard) (h : s ∪ t ≠ univ) :
     (s ∩ t).Nonempty := by
-  rw [← ncard_pos]
-  apply Nat.lt_of_add_lt_add_right
-  rw [ncard_inter_add_ncard_union, zero_add]
-  apply lt_of_lt_of_le _ h'
-  rw [← not_le]
-  intro H
-  apply h
-  rw [top_eq_univ, eq_univ_iff_ncard]
-  apply le_antisymm _ H
-  rw [← ncard_univ]
-  exact ncard_le_ncard (subset_univ _)
+  rw [← ncard_union_add_ncard_inter s t] at h'
+  replace h := (ncard_lt_card h).trans_le h'
+  rwa [lt_add_iff_pos_right, ncard_pos] at h
 
-theorem ncard_pigeonhole_compl
-    (h : s.ncard + t.ncard < Nat.card α) :
-    (sᶜ ∩ tᶜ).Nonempty := by
-  have : Finite α := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt h)
-  simp only [← compl_ne_univ, compl_inter, compl_compl]
-  intro H
-  apply not_le.mpr h
-  rw [← ncard_inter_add_ncard_union, H, ncard_univ]
-  exact Nat.le_add_left (Nat.card α) (s ∩ t).ncard
-
-theorem ncard_pigeonhole_compl'
-    (h : s.ncard + t.ncard < Nat.card α) :
-    s ∪ t ≠ ⊤ := by
-  intro h'
-  apply not_le.mpr h
-  rw [← ncard_univ, ← top_eq_univ, ← h']
+theorem ncard_pigeonhole_compl' (h : s.ncard + t.ncard < Nat.card α) : s ∪ t ≠ univ := by
+  contrapose! h
+  rw [← ncard_univ, ← h]
   exact ncard_union_le s t
+
+theorem ncard_pigeonhole_compl (h : s.ncard + t.ncard < Nat.card α) : (sᶜ ∩ tᶜ).Nonempty := by
+  rw [← compl_union, nonempty_compl]
+  exact ncard_pigeonhole_compl' h
 
 end Set
 
