@@ -182,7 +182,7 @@ protected theorem induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbeli
     Quot.inductionOn x fun L ↦
       List.recOn L C0 fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (Cp _ _ (Cn _ (C1 x)) ih) (Cp _ _ (C1 x) ih)
 
-theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α → β) :
+theorem lift_add {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α → β) :
     lift (f + g) a = lift f a + lift g a := by
   refine FreeAbelianGroup.induction_on a ?_ ?_ ?_ ?_
   · simp only [(lift _).map_zero, zero_add]
@@ -193,12 +193,17 @@ theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α 
   · intro x y hx hy
     simp only [(lift _).map_add, hx, hy, add_add_add_comm]
 
+/-- `FreeAbelianGroup.lift` as an equivalence of groups. -/
+@[simps!]
+def liftAddEquiv {α G : Type*} [AddCommGroup G] : (α → G) ≃+ (FreeAbelianGroup α →+ G) :=
+  ⟨lift, fun _ _ ↦ by ext; simp⟩
+
 /-- If `g : FreeAbelianGroup X` and `A` is an abelian group then `liftAddGroupHom g`
 is the additive group homomorphism sending a function `X → A` to the term of type `A`
 corresponding to the evaluation of the induced map `FreeAbelianGroup X → A` at `g`. -/
 @[simps!]
 def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α → β) →+ β :=
-  AddMonoidHom.mk' (fun f ↦ lift f a) (lift.add' a)
+  AddMonoidHom.mk' (fun f ↦ lift f a) (lift_add a)
 
 theorem lift_neg' {β} [AddCommGroup β] (f : α → β) : lift (-f) = -lift f :=
   AddMonoidHom.ext fun _ ↦ (liftAddGroupHom _ _ : (α → β) →+ β).map_neg _
@@ -292,7 +297,7 @@ def seqAddGroupHom (f : FreeAbelianGroup (α → β)) : FreeAbelianGroup α →+
   AddMonoidHom.mk' (f <*> ·) fun x y ↦
     show lift (· <$> (x + y)) _ = _ by
       simp only [FreeAbelianGroup.map_add]
-      exact lift.add' f _ _
+      exact lift_add f _ _
 
 @[simp]
 theorem seq_zero (f : FreeAbelianGroup (α → β)) : f <*> 0 = 0 :=
@@ -403,7 +408,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 instance distrib : Distrib (FreeAbelianGroup α) :=
   { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
     left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
-    right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift.add'] }
+    right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift_add] }
 
 instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.distrib,
