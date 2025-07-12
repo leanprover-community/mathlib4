@@ -99,13 +99,18 @@ lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
 alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
-lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
-    Nat.card (ofStabilizer G a) = Nat.card α - 1 := by
+lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
+    Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
   dsimp only [Nat.card]
   rw [← Cardinal.mk_sum_compl {a},
     Cardinal.toNat_add Cardinal.mk_lt_aleph0 Cardinal.mk_lt_aleph0]
-  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_tsub_cancel_left]
+  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
   congr
+
+@[to_additive]
+lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
+    Nat.card (ofStabilizer G a) = Nat.card α - 1 :=
+  Nat.eq_sub_of_add_eq (nat_card_ofStabilizer_add_one_eq G a)
 
 variable {G}
 

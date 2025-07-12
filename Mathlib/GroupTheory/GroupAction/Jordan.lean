@@ -137,15 +137,14 @@ open MulAction.IsPreprimitive
 
 open scoped Pointwise
 
+
 /-- A criterion due to Jordan for being 2-pretransitive (Wielandt, 13.1) -/
 theorem is_two_pretransitive_weak_jordan [DecidableEq α]
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPretransitive G α 2 := by
-  revert α G
-  induction' n using Nat.strong_induction_on with n hrec
-  intro G α _ _ _ _ hG s hsn hsn' hs_trans
+  induction' n using Nat.strong_induction_on with n hrec generalizing α G
 
   have hs_ne_top : s ≠ ⊤ := by
     intro hs
@@ -269,43 +268,43 @@ theorem strong_jordan_of_preprimitive (hG : IsPreprimitive G α)
   sorry
  -/
 
-theorem is_two_preprimitive_weak_jordan [DecidableEq α]
+/- This result is weaker than `is_two_preprimitive_jordan`
+but it is used in the inductive step of the proof. -/
+theorem is_two_preprimitive_weak_jordan
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
-    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Nat.card α)
+    (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
     IsMultiplyPreprimitive G α 2 := by
+  classical
   induction' n using Nat.strong_induction_on with n hrec generalizing α G
 
   have hs_ne_top : s ≠ ⊤ := by
     intro hs
     rw [hs, Set.top_eq_univ, Set.ncard_univ] at hsn
-    rw [← hsn, add_lt_iff_neg_right] at hsn'
-    contradiction
+    simp only [hsn, add_lt_add_iff_left, Nat.not_ofNat_lt_one] at hsn'
 
   have hs_nonempty : s.Nonempty := by
     rw [← Set.ncard_pos, hsn]
-    exact Nat.succ_pos n
+    exact n.zero_lt_succ
 
   -- The result is assumed by induction for sets of ncard ≤ n
 
-  rcases Nat.lt_or_ge n.succ 2 with hn | hn
+  rcases Nat.lt_or_ge (n + 1) 2 with hn | hn
 
   · -- When n < 2 (imposes n = 0)
     have hn : n = 0 := by
-      rw [← le_zero_iff]
-      exact Nat.le_of_succ_le_succ (Nat.le_of_lt_succ hn)
+      rwa [Nat.succ_lt_succ_iff, Nat.lt_one_iff] at hn
 
-    simp only [hn, Set.ncard_eq_one] at hsn
+    simp only [hn, zero_add, Set.ncard_eq_one] at hsn
     obtain ⟨a, hsa⟩ := hsn
     rw [hsa] at hs_prim
 
-    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G α (a := a)]
-    · rw [is_one_preprimitive_iff (stabilizer G a) (ofStabilizer G a)]
-      exact IsPreprimitive.of_surjective
+    rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G α le_rfl (a := a)]
+    rw [is_one_preprimitive_iff (stabilizer G a) (ofStabilizer G a)]
+    exact IsPreprimitive.of_surjective
         ofFixingSubgroup_of_singleton_bijective.surjective
-    · norm_num
 
-  rcases Nat.lt_or_ge (2 * n.succ) (Nat.card α) with hn1 | hn2
+  rcases Nat.lt_or_ge (2 * (n + 1)) (Nat.card α) with hn1 | hn2
 
   · -- CASE where 2 * s.ncard < Nat.card α
     -- get a, b ∈ s, a ≠ b
@@ -321,33 +320,28 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
       apply IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter hs_prim
       apply Set.ncard_pigeonhole_compl'
       rwa [Set.ncard_smul_set, hsn, ← two_mul]
-    suffices ∃ m, m < n ∧ t.ncard = Nat.succ m by
+    suffices ∃ m, m < n ∧ t.ncard = m + 1 by
       obtain ⟨m, hmn, htm⟩ := this
       apply hrec m hmn hG htm _ ht_prim
       · apply lt_trans _ hsn'
-        rwa [add_lt_add_iff_left, Nat.succ_lt_succ_iff]
+        exact Nat.add_lt_add_right hmn 2
 
     -- from : t ⊆ s, a ∈ t, b ∉ t,
     -- deduce : 1 ≤ t.ncard < s.ncard
-    use t.ncard.pred
+    use t.ncard - 1
     suffices t.ncard ≠ 0 by
-      rw [← Nat.succ_lt_succ_iff, ← hsn, Nat.succ_pred this]
-      constructor
-      · apply Set.ncard_lt_ncard _ (Set.toFinite s)
-        constructor
-        apply Set.inter_subset_left
-        intro h
-        apply hgb
-        apply Set.inter_subset_right
-        exact h hb
-      · rfl
+      have that : t.ncard - 1 + 1 = t.ncard := Nat.succ_pred_eq_of_ne_zero this
+      simp only [Nat.lt_iff_add_one_le, that, and_true, ge_iff_le]
+      rw [Nat.le_iff_lt_add_one, ← hsn]
+      apply Set.ncard_lt_ncard _ (Set.toFinite s)
+      exact ⟨Set.inter_subset_left, fun h ↦ hgb (Set.inter_subset_right (h hb))⟩
     · apply Set.ncard_ne_zero_of_mem (a := a)
       exact ⟨ha, hga⟩
 
   · -- CASE : 2 * s.ncard ≥ Nat.card α
     have : Set.Nontrivial sᶜ := by
       rw [← Set.one_lt_encard_iff_nontrivial, ← sᶜ.toFinite.cast_ncard_eq, Nat.one_lt_cast,
-        ← Nat.add_lt_add_iff_left, Set.ncard_add_ncard_compl, add_comm, hsn]
+        ← Nat.add_lt_add_iff_left, Set.ncard_add_ncard_compl, add_comm, hsn, add_comm]
       exact hsn'
     -- get a, b ∈ sᶜ, a ≠ b
     obtain ⟨a, ha : a ∈ sᶜ, b, hb : b ∈ sᶜ, hab⟩ := this
@@ -369,21 +363,18 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
         IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter hs_prim
         (by intro h; apply this; rw [h]; trivial)
 
-    suffices ∃ m : ℕ, m < n ∧ t.ncard = Nat.succ m by
+    suffices ∃ m : ℕ, m < n ∧ t.ncard = m + 1 by
       obtain ⟨m, hmn, htm⟩ := this
-      exact hrec m hmn hG htm (by
-        apply lt_trans _ hsn'
-        rw [add_lt_add_iff_left, Nat.succ_lt_succ_iff]
-        exact hmn) ht_prim
+      exact hrec m hmn hG htm (lt_trans (Nat.add_lt_add_right hmn 2) hsn') ht_prim
 
     -- from : t ⊆ s, a ∈ t, b ∉ t,
     -- have : 1 ≤ t.ncard < s.ncard
-    use t.ncard.pred
+    use t.ncard - 1
     suffices  t.ncard ≠ 0 by
-      rw [← Nat.succ_lt_succ_iff, ← hsn, Nat.succ_pred this]
-      refine ⟨?_, rfl⟩
+      have : t.ncard - 1 + 1 = t.ncard := Nat.succ_pred_eq_of_ne_zero this
+      simp only [← Nat.add_one_le_iff, this, and_true, ge_iff_le]
+      rw [Nat.le_iff_lt_add_one, ← hsn]
       apply Set.ncard_lt_ncard _ (Set.toFinite s)
-      rw [Set.ssubset_def]
       refine ⟨Set.inter_subset_left, fun h ↦ hb ?_⟩
       suffices s = g • s by
         rw [this]
@@ -399,15 +390,15 @@ theorem is_two_preprimitive_weak_jordan [DecidableEq α]
 /-- Jordan's multiple primitivity criterion (Wielandt, 13.3) -/
 theorem isMultiplyPreprimitive_jordan
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
-    (hsn : s.ncard = n.succ) (hsn' : 1 + n.succ < Nat.card α)
+    (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hprim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
-    IsMultiplyPreprimitive G α (1 + n.succ) := by
+    IsMultiplyPreprimitive G α (n + 2) := by
   classical
   induction' n with n hrec generalizing α G
 
   · -- case n = 0
-    haveI : IsPretransitive G α := hG.toIsPretransitive
-    simp only [Set.ncard_eq_one] at hsn
+    have _ : IsPretransitive G α := hG.toIsPretransitive
+    simp only [zero_add, Set.ncard_eq_one] at hsn
     obtain ⟨a, hsa⟩ := hsn
     rw [hsa] at hprim
 
@@ -417,14 +408,12 @@ theorem isMultiplyPreprimitive_jordan
       apply IsPretransitive.of_surjective_map
         ofFixingSubgroup_of_singleton_bijective.surjective hprim.toIsPretransitive
     · intro t h
-      simp only [Nat.cast_add, Nat.cast_one,
+      rw [zero_add, Nat.cast_ofNat, ← one_add_one_eq_two,
         (ENat.add_left_injective_of_ne_top ENat.one_ne_top).eq_iff] at h
-
       obtain ⟨b, htb⟩ := Set.encard_eq_one.mp h
       obtain ⟨g, hg⟩ := exists_smul_eq G a b
       have hst : g • ({a} : Set α) = ({b} : Set α) := by
-        change (fun x => g • x) '' {a} = {b}
-        rw [Set.image_singleton, hg]
+        rw [Set.smul_set_singleton, hg]
       rw [htb]
       refine IsPreprimitive.of_surjective
         (conjMap_ofFixingSubgroup_bijective (hst := hst)).surjective
@@ -450,30 +439,36 @@ theorem isMultiplyPreprimitive_jordan
       (ofFixingSubgroup (stabilizer G a) t) :=
       IsPreprimitive.of_surjective
         ofFixingSubgroup_insert_map_bijective.surjective
-    rw [← Nat.succ_eq_one_add]
+    -- rw [← Nat.succ_eq_one_add]
     rw [isMultiplyPreprimitive_succ_iff_ofStabilizer G (a := a) _ (Nat.le_add_left 1 (n + 1))]
-    rw [show n + 2 = 1 + Nat.succ n by
-      exact Nat.succ_eq_one_add (n + 1)]
     refine hrec ht_prim ?_ ?_ hGs'
     · -- t.card = Nat.succ n
       rw [← Set.ncard_image_of_injective t Subtype.val_injective]
       apply Nat.add_right_cancel
       rw [← Set.ncard_insert_of_notMem ha', ← hst, hsn]
-    · -- 1 + n.succ < Fintype.card (SubMulAction.ofStabilizer G α a)
-      change _ < Nat.card (ofStabilizer G a).carrier
-      rw [Nat.card_coe_set_eq, ofStabilizer_carrier, ← Nat.succ_eq_one_add]
-      apply Nat.lt_of_add_lt_add_left
-      rw [Set.ncard_add_ncard_compl]
-      simpa only [Set.ncard_singleton]
+    · -- n + 2 < Nat.card (SubMulAction.ofStabilizer G α a)
+      rw [← Nat.add_lt_add_iff_right, nat_card_ofStabilizer_add_one_eq]
+      exact hsn'
   -- ∃ a t, a ∈ s ∧ s = insert a (Subtype.val '' t)
   suffices s.Nonempty by
     obtain ⟨a, ha⟩ := this
     use a, Subtype.val ⁻¹' s, ha
     ext x
-    suffices x ∈ s ↔ x = a ∨ x ∈ s ∧ ¬x = a by
-      simpa [mem_ofStabilizer_iff]
-    by_cases hx : x = a <;> simp [hx, ha]
+    by_cases hx : x = a <;> simp [hx, mem_ofStabilizer_iff, ha]
   rw [← Set.ncard_pos, hsn]; apply Nat.succ_pos
+
+example (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
+    (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
+    (hs_prim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
+    IsMultiplyPreprimitive G α 2 := by
+  have := isMultiplyPreprimitive_jordan hG hsn hsn' hs_prim
+  apply isMultiplyPreprimitive_of_le G α this
+  · simp
+  rw [ENat.card_eq_coe_natCard, ENat.coe_le_coe]
+  exact Nat.le_of_succ_le hsn'
+
+
+
 
 end Jordan
 
@@ -572,19 +567,16 @@ theorem jordan_swap (hG : IsPreprimitive G α) (g : Equiv.Perm α)
   -- important case : Nat.card α ≥ 3
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
   -- let s := (g.support : Set α)
-  have hsc : Set.ncard ((g.support)ᶜ : Set α) = n.succ := by
+  have hsc : Set.ncard ((g.support)ᶜ : Set α) = n + 1 := by
     apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       Equiv.Perm.card_support_eq_two.mpr h2g, add_comm, hn]
   apply Equiv.Perm.eq_top_of_isMultiplyPretransitive
   suffices IsMultiplyPreprimitive G α (Nat.card α - 1) by
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
-  rw [show Nat.card α - 1 = 1 + n.succ by
-    rw [add_comm, ← Nat.add_one_inj, Nat.sub_one_add_one (Nat.ne_zero_of_lt hα3),
-      hn]]
+  rw [show Nat.card α - 1 = n + 2 by grind]
   apply isMultiplyPreprimitive_jordan hG hsc
-  · rw [add_comm, hn]
-    exact Nat.lt_add_one (n.succ + 1)
+  · rw [hn]; apply Nat.lt_add_one
   have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsSwap.isCycle h2g
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_two
@@ -619,15 +611,12 @@ theorem jordan_three_cycle
     apply IsMultiplyPreprimitive.isMultiplyPretransitive
   -- suffices : IsMultiplyPreprimitive G α (Fintype.card α - 2)
   -- apply this.left.alternatingGroup_le_of_sub_two
-  have hn' : Nat.card α - 2 = 1 + n.succ := by grind
-  rw [hn']
-  refine isMultiplyPreprimitive_jordan (s := (g.supportᶜ : Set α)) hG ?_ ?_ ?_
+  rw [show Nat.card α - 2 = n + 2 by grind]
+  apply isMultiplyPreprimitive_jordan (s := (g.supportᶜ : Set α)) hG
   · apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       Equiv.Perm.IsThreeCycle.card_support h3g, add_comm, hn]
-  · rw [hn, Nat.succ_eq_add_one, add_comm, add_assoc]
-    simp only [add_lt_add_iff_left]
-    norm_num
+  · rw [hn]; grind
   have : IsPretransitive _ _ := isPretransitive_of_cycle hg <| Equiv.Perm.IsThreeCycle.isCycle h3g
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_three
@@ -646,4 +635,3 @@ theorem jordan_prime_cycle (hG : IsPreprimitive G α)
 end Equiv.Perm
 
 end Subgroups
-
