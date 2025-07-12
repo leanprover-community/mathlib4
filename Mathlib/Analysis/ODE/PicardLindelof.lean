@@ -535,10 +535,7 @@ theorem exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt
   choose α hα using this
   set α' := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then α x hx else 0 with hα'
   refine ⟨α', fun x hx ↦ ?_⟩
-  have ⟨h1, h2⟩ := hα x hx
-  refine ⟨?_, fun t ht ↦ ?_⟩
-  · simp_rw [hα', dif_pos hx, h1]
-  · simp_rw [hα', dif_pos hx, h2 t ht]
+  grind
 
 end IsPicardLindelof
 
@@ -591,9 +588,6 @@ theorem exists_eventually_eq_hasDerivAt
   · rw [Filter.prod_mem_prod_iff]
     exact ⟨closedBall_mem_nhds x₀ hr, Ioo_mem_nhds (by linarith) (by linarith)⟩
   · intro ⟨x, t⟩ ⟨hx, ht⟩
-    have ⟨h1, h2⟩ := hα x hx
-    constructor
-    · simp_rw [dif_pos hx, h1]
-    · simp_rw [dif_pos hx, h2 t ht]
+    grind
 
 end ContDiffAt
