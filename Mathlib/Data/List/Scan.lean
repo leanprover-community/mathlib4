@@ -32,14 +32,11 @@ theorem scanl_nil (b : β) : scanl f b [] = [b] :=
 
 @[simp]
 theorem scanl_ne_nil : scanl f b l ≠ [] := by
-  unfold scanl
-  split <;> simp
+  cases l <;> simp
 
 @[simp]
 theorem scanl_iff_nil : scanl f b l = [b] ↔ l = [] := by
-  constructor
-  · cases l <;> simp
-  · simp_all
+  constructor <;> cases l <;> simp
 
 @[simp]
 theorem scanl_cons : scanl f b (a :: l) = [b] ++ scanl f (f b a) l := by
@@ -109,9 +106,7 @@ theorem scanr_cons : scanr f b (a :: l) = foldr f b (a :: l) :: scanr f b l := b
 
 @[simp]
 theorem scanr_iff_nil : scanr f b l = [b] ↔ l = [] := by
-  constructor
-  · cases l <;> simp
-  · simp_all
+  constructor <;> cases l <;> simp
 
 @[simp]
 theorem length_scanr (b : β) (l : List α) : length (scanr f b l) = l.length + 1 := by
@@ -119,6 +114,10 @@ theorem length_scanr (b : β) (l : List α) : length (scanr f b l) = l.length + 
 
 theorem getElem?_scanr_zero : (scanr f b l)[0]? = foldr f b l := by
   cases l <;> simp
+
+theorem scanr_append (l₁ l₂ : List α) :
+    scanr f b (l₁ ++ l₂) = (scanr f (foldr f b l₂) l₁) ++ (scanr f b l₂).tail := by
+  induction l₁ <;> induction l₂ <;> simp [*]
 
 @[simp]
 theorem getElem_scanr_zero : (scanr f b l)[0] = foldr f b l := by
@@ -135,19 +134,19 @@ theorem drop_scanr {i : ℕ} (h : i ≤ l.length) : (scanr f b l).drop i = scanr
   induction i with
   | zero => simp
   | succ i ih =>
-      rw [← drop_drop]
-      simp [ih (by omega), tail_scanr (l := l.drop i) (by rw [length_drop]; omega)]
+    rw [← drop_drop]
+    simp [ih (by omega), tail_scanr (l := l.drop i) (by rw [length_drop]; omega)]
 
 theorem getElem_scanr {i : ℕ} (h : i < l.length + 1) :
     (scanr f b l)[i]'(by simp [h]) = foldr f b (l.drop i) := by
   induction l generalizing i with
   | nil => simp
   | cons head tail ih =>
-      obtain rfl |  h' := eq_or_ne i 0
-      · simp
-      · rw [length_cons] at h
-        obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h'
-        simp [@ih m (by omega)]
+    obtain rfl |  h' := eq_or_ne i 0
+    · simp
+    · rw [length_cons] at h
+      obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h'
+      simp [@ih m (by omega)]
 
 theorem getElem?_scanr {i : ℕ} (h : i < l.length + 1) :
     (scanr f b l)[i]? = some (foldr f b (l.drop i)) := by
