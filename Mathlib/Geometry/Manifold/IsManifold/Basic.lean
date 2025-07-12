@@ -160,7 +160,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
       Convex ℝ (range toPartialEquiv)
     else range toPartialEquiv = univ
   nonempty_interior' : (interior (range toPartialEquiv)).Nonempty
-  continuous_toFun : Continuous toFun := by aseop
+  continuous_toFun : Continuous toFun := by aesop
   continuous_invFun : Continuous invFun := by aesop
 
 lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedField 𝕜]
@@ -248,7 +248,7 @@ theorem mk_symm (e : PartialEquiv H E) (a b c d d') :
     (ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 
-@[aesop]
+@[continuity, fun_prop]
 protected theorem continuous : Continuous I :=
   I.continuous_toFun
 
@@ -258,7 +258,7 @@ protected theorem continuousAt {x} : ContinuousAt I x :=
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt I s x :=
   I.continuousAt.continuousWithinAt
 
-@[aesop]
+@[continuity, fun_prop]
 theorem continuous_symm : Continuous I.symm :=
   I.continuous_invFun
 
