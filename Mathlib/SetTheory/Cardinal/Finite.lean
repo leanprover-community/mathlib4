@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.ENat.Pow
 import Mathlib.Data.ULift
 import Mathlib.Data.ZMod.Defs
 import Mathlib.SetTheory.Cardinal.ToNat
@@ -342,6 +343,10 @@ theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsinglet
   rw [← le_one_iff_subsingleton]
   simp [card]
 
+lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α) := by
+  rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff, one_le_iff_ne_zero]
+  exact and_congr (card_le_one_iff_subsingleton α) (card_ne_zero_iff_nonempty α)
+
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
@@ -349,7 +354,31 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   simp only [ENat.card, Nat.cast_one]
 
 @[simp]
-theorem card_prod (α β : Type*) : ENat.card (α × β) = .card α * .card β := by
+theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
   simp [ENat.card]
+
+@[simp]
+lemma card_pow {α β : Type*} : card (α → β) = (card β) ^ card α := by
+  classical
+  rcases isEmpty_or_nonempty α with α_emp | α_emp
+  · simp [(card_eq_zero_iff_empty α).2 α_emp]
+  rcases finite_or_infinite α
+  · rcases finite_or_infinite β
+    · letI := Fintype.ofFinite α
+      letI := Fintype.ofFinite β
+      simp
+    · simp [top_epow ((card_ne_zero_iff_nonempty α).2 α_emp)]
+  · rw [card_eq_top_of_infinite (α := α)]
+    rcases lt_trichotomy (ENat.card β) 1 with b_0 | b_1 | b_2
+    · rw [lt_one_iff_eq_zero] at b_0
+      rw [b_0, zero_epow_top]
+      rw [card_eq_zero_iff_empty] at b_0 ⊢
+      simp [b_0]
+    · rw [b_1, one_epow, card_eq_one_iff_unique]
+      rw [card_eq_one_iff_unique] at b_1
+      exact Pi.nonemptyUnique
+    · rw [epow_top b_2, card_eq_top]
+      rw [one_lt_card_iff_nontrivial β] at b_2
+      exact Pi.infinite_of_left
 
 end ENat
