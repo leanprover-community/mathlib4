@@ -189,7 +189,6 @@ instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{
     }
   eq_of_hom f := IsDiscrete.eq_of_hom  (C := T) ((equivShrink _).symm f)
 
-
 end ShrinkHoms
 
 namespace Shrink
