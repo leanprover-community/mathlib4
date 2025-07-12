@@ -51,6 +51,9 @@ example : I ^ 2 ≠ 3 := by norm_num1
 example : 1 + I ≠ 0 := by norm_num1
 example : 1 + I ≠ 1 + 2 * I := by norm_num1
 
+-- This is already pretty slow, but is 2x slower without the `binaryRec` implementation.`
+example : I ^ 11 = -I := by norm_num
+
 example : re ((1 + 3 * I)⁻¹) = 0.1 := by norm_num1
 example : im ((1 + 3 * I)⁻¹) = -0.3 := by norm_num1
 example : 10 * re ((1 + 3 * I)⁻¹) = 1 := by norm_num1

@@ -97,6 +97,30 @@ theorem IsComplex.of_pow_ofNat {w : ℂ} {k : ℤ} {n : ℕ} {a b : ℝ}
   constructor
   simpa using hw.out
 
+theorem pow_bit_false (z : ℂ) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m := by
+  rw [Nat.bit, cond, pow_mul', sq]
+
+theorem pow_bit_true (z : ℂ) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
+  rw [Nat.bit, cond, pow_add, pow_mul', pow_one, sq]
+
+partial def parsePow (n' : ℕ) :
+    ⦃a b : Q(ℝ)⦄ → (z : Q(ℂ)) → (n : Q(ℕ)) → Q(NormNum.IsNat $n $n') →  Q(IsComplex $z $a $b) →
+    MetaM (Σ a b : Q(ℝ), Q(IsComplex ($z ^ $n) $a $b)) :=
+  n'.binaryRec'
+    (fun {a b} z n hn hz => do
+      have : $n =Q 0 := ⟨⟩
+      return ⟨q(1), q(0), q(pow_zero $z ▸ .one)⟩)
+    (fun bit (m : ℕ) h rec {a b} z n hn hz => do
+      match bit with
+      | true =>
+        have : $n =Q Nat.bit true $m := ⟨⟩
+        let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
+        return ⟨_, _, q(have hzm' := $hzm; pow_bit_true $z $m ▸ (IsComplex.mul hzm' hzm').mul $hz)⟩
+      | false =>
+        have : $n =Q Nat.bit false $m := ⟨⟩
+        let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
+        return ⟨_, _, q(have hzm' := $hzm; pow_bit_false $z $m ▸ IsComplex.mul hzm' hzm')⟩)
+
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) := do
   match z with
@@ -126,14 +150,9 @@ partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) 
     return ⟨_, _, q(.conj $pf)⟩
   | ~q($w ^ ($n' : ℕ)) =>
     let ⟨n, hn⟩ ← NormNum.deriveNat q($n') q(inferInstance)
-    match n.natLit! with
-    | 0 =>
-      let _i : $n =Q 0 := ⟨⟩
-      return ⟨q(1), q(0), q(⟨show $w ^ $n' = _ from $(hn).out ▸ pow_zero _⟩)⟩
-    | m + 1 =>
-      let ⟨a, b, pf⟩ ← parse q($w ^ $m * $w)
-      let _i : $n =Q $m + 1 := ⟨⟩
-      return ⟨a, b, q(⟨show $w ^ $n' = _ from $(hn).out ▸ ((pow_succ _ _)).trans $(pf).out⟩)⟩
+    let ⟨_, _, pf⟩ ← parse w
+    let ⟨_, _, pfp⟩ ← parsePow n.natLit! q($w) q($n') hn q($pf)
+    return ⟨_, _, q($pfp)⟩
   | ~q($w ^ ($k : ℤ)) =>
     let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
     match k'.intLit! with
