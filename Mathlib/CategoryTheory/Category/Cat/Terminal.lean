@@ -33,9 +33,17 @@ def isTerminalOfUniqueOfIsDiscrete {T : Type u} [Category.{v} T] [Unique T] [IsD
   IsTerminal.ofUniqueHom (fun X ↦ (const X).obj (default : T))
     (fun _ _ ↦ Functor.ext (by simp [eq_iff_true_of_subsingleton]))
 
+
+instance : IsDiscrete (ShrinkHoms.{u} PUnit.{u + 1}) := by sorry
+
+instance : Unique (ShrinkHoms.{u} PUnit.{u + 1}) := by sorry
+
+instance : HasTerminal Cat.{v, u} :=
+  IsTerminal.hasTerminal (X := Cat.of.{v, u} (ShrinkHoms PUnit)) isTerminalOfUniqueOfIsDiscrete
+
 /-- Any `T : Cat.{u, u}` with a unique object and discrete homs is isomorphic to `⊤_ Cat.{u, u}.` -/
 noncomputable def terminalIsoOfUniqueOfIsDiscrete
-    {T : Type u} [Category.{u} T] [Unique T] [IsDiscrete T] : ⊤_ Cat.{u, u} ≅ Cat.of T :=
+    {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T] : ⊤_ Cat.{v, u} ≅ Cat.of T :=
   terminalIsoIsTerminal isTerminalOfUniqueOfIsDiscrete
 
 /-- The discrete category on `PUnit` is terminal. -/
