@@ -3,6 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Algebra.ArithmeticGeometric
 import Mathlib.Analysis.Normed.Lp.WithLp
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
@@ -123,55 +124,6 @@ lemma ENNReal.tsum_ofReal_exp_lt_top {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (h
     simp [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
 
 end Aux
-
-section ArithmeticGeometricSequence
-
-variable {u : ℕ → ℝ} {a b : ℝ}
-
-lemma arithmeticGeometric_eq (hu : ∀ n, u (n + 1) = a * u n + b) (ha : a ≠ 1) (n : ℕ) :
-    u n = a ^ n * (u 0 - (b / (1 - a))) + b / (1 - a) := by
-  induction n with
-  | zero => simp
-  | succ n hn =>
-    rw [hu, hn, pow_succ]
-    grind
-
-open Filter in
-lemma tendsto_arithmeticGeometric_atTop (hu : ∀ n, u (n + 1) = a * u n + b) (ha : 1 < a)
-    (h0 : b / (1 - a) < u 0) :
-    Tendsto u atTop atTop := by
-  have : u = fun n ↦ a ^ n * (u 0 - (b / (1 - a))) + b / (1 - a) := by
-    ext
-    exact arithmeticGeometric_eq hu ha.ne' _
-  rw [this]
-  refine tendsto_atTop_add_const_right _ _ ?_
-  refine Tendsto.atTop_mul_const (sub_pos.mpr h0) ?_
-  exact tendsto_pow_atTop_atTop_of_one_lt ha
-
-lemma div_lt_arithmeticGeometric (hu : ∀ n, u (n + 1) = a * u n + b)
-    (ha_pos : 0 < a) (ha_ne : a ≠ 1) (h0 : b / (1 - a) < u 0) (n : ℕ) :
-    b / (1 - a) < u n := by
-  induction n with
-  | zero => exact h0
-  | succ n hn =>
-    rw [hu]
-    calc b / (1 - a)
-    _ = a * (b / (1 - a)) + b := by
-      have : 1 - a ≠ 0 := sub_ne_zero_of_ne ha_ne.symm
-      field_simp
-      ring
-    _ < a * u n + b := by gcongr
-
-lemma arithmeticGeometric_strictMono (hu : ∀ n, u (n + 1) = a * u n + b) (ha : 1 < a)
-    (h0 : b / (1 - a) < u 0) :
-    StrictMono u := by
-  refine strictMono_nat_of_lt_succ fun n ↦ ?_
-  rw [hu]
-  have h_lt : b / (1 - a) < u n := div_lt_arithmeticGeometric hu (by positivity) ha.ne' h0 n
-  rw [div_lt_iff_of_neg (sub_neg.mpr ha)] at h_lt
-  linarith
-
-end ArithmeticGeometricSequence
 
 namespace ProbabilityTheory
 
