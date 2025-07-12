@@ -72,9 +72,9 @@ variable [Monoid α] [MulAction α β] (c : α) (x y : β) [Invertible c]
 
 variable {c x y}
 
-lemma invOf_smul_eq_iff : ⅟ c • x = y ↔ x = c • y := inv_smul_eq_iff (g := unitOfInvertible c)
+lemma invOf_smul_eq_iff : ⅟c • x = y ↔ x = c • y := inv_smul_eq_iff (g := unitOfInvertible c)
 
-lemma smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟ c • y :=
+lemma smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
   smul_eq_iff_eq_inv_smul (g := unitOfInvertible c)
 
 end Monoid
