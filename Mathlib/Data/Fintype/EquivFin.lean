@@ -393,13 +393,14 @@ theorem card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α �
     have w : Function.Bijective (Function.surjInv h) := ⟨Function.injective_surjInv h, hg⟩
     h' <| h.injective_of_fintype (Equiv.ofBijective _ w).symm
 
+end Fintype
+
 /-- Choose an arbitrary linear order on a `Fintype`: this is not an instance because in most
 situations, choosing a linear order extending a given preorder, or a particular linear order
 is preferred over choosing *any* linear order. -/
-protected noncomputable def linearOrder {α : Type*} [Fintype α] : LinearOrder α :=
+protected noncomputable def Finite.linearOrder {α : Type*} [Finite α] : LinearOrder α :=
+  haveI := Fintype.ofFinite α
   LinearOrder.lift' _ (Fintype.equivFin α).injective
-
-end Fintype
 
 protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
   not_finite α
