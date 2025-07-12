@@ -402,6 +402,8 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Geometry.Manifold.VectorBundle.GramSchmidtOrtho":
+  ["Mathlib.Geometry.Manifold.VectorBundle.Riemannian"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
