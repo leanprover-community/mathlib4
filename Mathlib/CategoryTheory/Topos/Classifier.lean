@@ -127,7 +127,8 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
           _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback (𝟙 Y)).w]
       Mono.right_cancellation _ _ this }
 
-/-- `Ω₀` is a terminal object. -/
+/-- `Ω₀` is a terminal object. Prefer `c.χ₀` over `c.isTerminalΩ₀.from` as per
+instance below. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
 
 instance {c : Classifier C} : c.χ₀ = c.isTerminalΩ₀.from := rfl
@@ -388,6 +389,8 @@ noncomputable def isTerminalΩ₀ : IsTerminal (h.Ω₀ : C) :=
     rw [← cancel_mono h.Ω₀.arrow, h.uniq this,
       ← (h.isPullback (𝟙 X)).w, Category.id_comp])
 
+noncomputable def χ₀ (U : C) : U ⟶ h.Ω₀ := h.isTerminalΩ₀.from U
+
 include h in
 lemma hasTerminal : HasTerminal C := h.isTerminalΩ₀.hasTerminal
 
@@ -410,7 +413,7 @@ noncomputable def classifier : Classifier C where
     (h.isPullback m).of_iso (Iso.refl _) (Iso.refl _) h.isoΩ₀ (Iso.refl _)
       (by simp) (Subsingleton.elim _ _) (by simp) (by simp)
   uniq {U X} m _ χ₀ χ' sq := by
-    have : IsPullback m (h.isTerminalΩ₀.from U) χ' h.Ω₀.arrow :=
+    have : IsPullback m (h.χ₀ U) χ' h.Ω₀.arrow :=
       sq.of_iso (Iso.refl _) (Iso.refl _) (h.isoΩ₀.symm) (Iso.refl _)
         (by simp) (h.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
     exact h.uniq this
