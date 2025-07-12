@@ -27,7 +27,7 @@ theorem length_scanl (b : β) (l : List α) : length (scanl f b l) = l.length + 
   induction l generalizing b <;> simp_all
 
 @[simp]
-theorem scanl_nil (b : β) : scanl f b nil = [b] :=
+theorem scanl_nil (b : β) : scanl f b [] = [b] :=
   rfl
 
 @[simp]
