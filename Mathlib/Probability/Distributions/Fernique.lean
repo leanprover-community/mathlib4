@@ -48,7 +48,7 @@ open scoped ENNReal NNReal Real Topology
 
 section Aux
 
-lemma norm_add_sub_norm_sub_le_two_mul {E : Type*} [NormedAddCommGroup E] (x y : E) :
+lemma norm_add_sub_norm_sub_le_two_mul {E : Type*} [SeminormedAddCommGroup E] (x y : E) :
     ‖x + y‖ - ‖x - y‖ ≤ 2 * ‖x‖ :=
   calc ‖x + y‖ - ‖x - y‖
   _ = ‖x + x + y - x‖ - ‖x - y‖ := by congr; abel
@@ -57,16 +57,12 @@ lemma norm_add_sub_norm_sub_le_two_mul {E : Type*} [NormedAddCommGroup E] (x y :
   _ ≤ ‖x‖ + ‖x‖ := norm_add_le _ _
   _ = 2 * ‖x‖ := by rw [two_mul]
 
-lemma norm_add_sub_norm_sub_div_two_le {E : Type*} [NormedAddCommGroup E] (x y : E) :
-    (‖x + y‖ - ‖x - y‖) / 2 ≤ ‖x‖ := by
-  have := norm_add_sub_norm_sub_le_two_mul x y
-  linarith
-
-lemma norm_add_sub_norm_sub_div_two_le_min {E : Type*} [NormedAddCommGroup E] (x y : E) :
-    (‖x + y‖ - ‖x - y‖) / 2 ≤ min ‖x‖ ‖y‖ := by
-  refine le_min (norm_add_sub_norm_sub_div_two_le x y) ?_
+lemma norm_add_sub_norm_sub_le_two_mul_min {E : Type*} [SeminormedAddCommGroup E] (x y : E) :
+    ‖x + y‖ - ‖x - y‖ ≤ 2 * min ‖x‖ ‖y‖ := by
+  rw [mul_min_of_nonneg _ _ (by positivity)]
+  refine le_min (norm_add_sub_norm_sub_le_two_mul x y) ?_
   rw [norm_sub_rev, add_comm]
-  exact norm_add_sub_norm_sub_div_two_le _ _
+  exact norm_add_sub_norm_sub_le_two_mul _ _
 
 lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
 
@@ -189,7 +185,9 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
         _ = (‖p.1 + p.2‖ - ‖p.1 - p.2‖) / 2 := by field_simp
       calc b - a < ‖p.1 + p.2‖ / √2 - a := by gcongr
       _ ≤ ‖p.1 + p.2‖ / √2 - ‖p.1 - p.2‖ / √2 := by gcongr
-    _ ≤ min ‖p.1‖ ‖p.2‖ := norm_add_sub_norm_sub_div_two_le_min _ _
+    _ ≤ min ‖p.1‖ ‖p.2‖ := by
+      have := norm_add_sub_norm_sub_le_two_mul_min p.1 p.2
+      linarith
   _ = (μ.prod μ) ({x | (b - a) / √2 < ‖x‖} ×ˢ {y | (b - a) / √2 < ‖y‖}) := rfl
   _ ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2 := by rw [Measure.prod_prod, pow_two]
 
