@@ -363,10 +363,10 @@ theorem isLeviCivita_uniqueness [FiniteDimensional ℝ E]
   · exact cov.isLeviCivitaConnection_uniqueness_aux I X σ Z hcov
   · exact (cov'.isLeviCivitaConnection_uniqueness_aux I X σ Z hcov').symm
 
-variable (X Y) in
-noncomputable def existence_candidate_aux [FiniteDimensional ℝ E]
+noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    (x : M) → TangentSpace I x := fun x ↦
+    ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x :=
+  fun X Y x ↦
   -- Choose a trivialisation of TM near x.
   letI b := Basis.ofVectorSpace ℝ E
   -- Case distinction: if E is trivial, there is only one choice anyway;
@@ -383,23 +383,29 @@ variable (M) in
 -- TODO: make g part of the notation!
 /-- Given two vector fields X and Y on TM, compute
 the candidate definition for the Levi-Civita connection on `TM`. -/
-noncomputable def existence_candidate [FiniteDimensional ℝ E] :
+noncomputable def lcCandidate [FiniteDimensional ℝ E] :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   -- Use the preferred trivialisation at x to write down a candidate for the existence.
   -- to write down a candidate for the existence.
-  fun X Y x ↦ existence_candidate_aux I X Y (trivializationAt E (TangentSpace I : M → Type _) x) x
+  fun X Y x ↦ lcCandidate_aux I (trivializationAt E (TangentSpace I : M → Type _) x) X Y x
 
 variable (X Y) in
 -- The above definition behaves well: for each compatible trivialisation e,
 -- using e on e.baseSet yields the same result as above.
 lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M))
     [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) :
-  existence_candidate I M X Y x = existence_candidate_aux I X Y e x := sorry
+  lcCandidate I M X Y x = lcCandidate_aux I e X Y x := sorry
+
+-- The candidate definition is a covariant derivative on each local frame's domain.
+lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
+    IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate_aux I (M := M) e) e.baseSet := by
+  sorry
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    IsCovariantDerivativeOn E (TangentSpace I) (existence_candidate I M) e.baseSet := by
+    IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate I M) e.baseSet := by
   sorry
 
 end
@@ -413,7 +419,7 @@ noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
   -- This is the existence part of the proof: take the formula derived above
   -- and prove it satisfies all the conditions.
-  toFun := existence_candidate I M
+  toFun := lcCandidate I M
   isCovariantDerivativeOn := by
     rw [← iUnion_source_chartAt H M]
     let t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x
