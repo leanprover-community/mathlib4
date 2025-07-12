@@ -619,6 +619,7 @@ instance IsStarNormal.one_add [NonAssocSemiring R] [StarRing R] {a : R}
 instance IsStarNormal.one_sub [NonAssocRing R] [StarRing R] {a : R}
     [ha : IsStarNormal a] : IsStarNormal (1 - a) :=
   Commute.one_left (star a) |>.isStarNormal_sub
+
 namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Star (α i)] {f : ∀ i, α i}
 
