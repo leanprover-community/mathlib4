@@ -325,7 +325,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_orthogonal_range (h : IsIdempotentEle
     orthogonal_range, star_eq_adjoint, adjoint_adjoint, ← h1, Submodule.orthogonal_orthogonal]
 
 open ContinuousLinearMap in
-/-- Star projections are equal iff their range are. -/
+/-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S T : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
@@ -543,7 +543,7 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff [CompleteSpace 
   rfl
 
 open LinearMap in
-/-- Star projections are equal iff their range are. -/
+/-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
