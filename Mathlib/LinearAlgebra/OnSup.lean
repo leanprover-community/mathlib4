@@ -58,7 +58,6 @@ variable {N : Type*} [AddCommGroup N] [Module R N] {f : P →ₗ[R] N} {g : Q �
 /-- Given two linear maps `f : P →ₗ[R] N` and `g : Q →ₗ[R] N` that agree on `P ⊓ Q`, this is
 the linear map `P ⊔ Q →ₗ[R] N` that simultaneously extends `f` and `g`. -/
 noncomputable def onSup
-    -- (h : ∀ x (hP : x ∈ P) (hQ : x ∈ Q), f ⟨x, hP⟩ = g ⟨x, hQ⟩) :
     (h : f ∘ₗ inclusion inf_le_left = g ∘ₗ inclusion inf_le_right) :
     ↥(P ⊔ Q) →ₗ[R] N := by
   apply comp ((ker _).liftQ (f.coprod g) ?_) quotientCoprodAddEquiv.symm.toLinearMap
@@ -136,9 +135,7 @@ noncomputable def onSupEquiv : (↥(P ⊔ Q) →ₗ[R] N) ≃
   toFun u := ⟨⟨u.comp (inclusion le_sup_left), u.comp (inclusion le_sup_right)⟩, rfl⟩
   invFun h := onSup h.prop
   left_inv u := by
-    simp only
-    apply onSup_unique h <;>
-      ext <;> rfl
+    apply onSup_unique <;> ext <;> rfl
   right_inv h := by
     ext ⟨x, hx⟩ <;> simp
     · rw [← onSup_apply_left h.prop hx]; rfl
@@ -148,13 +145,6 @@ section Comm
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] (P Q : Submodule R M)
-
-noncomputable example : (P + Q →ₗ[R] N) ≃ₗ[R] eqLocus
-        ((lcomp R N (inclusion (inf_le_left (a := P) (b := Q)))).comp (fst R _ _))
-    ((lcomp R N (inclusion (inf_le_right (a := P) (b := Q)))).comp (snd R _ _)) :=
-  ofBijective (codRestrict _ ((lcomp R N (inclusion le_sup_left)).prod
-      (lcomp R N (inclusion le_sup_right))) (fun _ ↦ by ext; simp [inclusion_apply]))
-    (onSupEquiv M N).bijective
 
 /-- The `R`-linear equivalence between the module of linear maps `P ⊔ Q →ₗ[R] N` and the module of
   pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree on the intersection `P ⊓ Q`. -/
