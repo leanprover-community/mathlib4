@@ -105,7 +105,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             | inl h_add_zero =>
               cases h_sub_case with
               | inl h_sub_zero =>
-                -- Both components are zero, so by root pairing theory, the L_χ component is also zero
+                -- Both components are zero,
+                -- so by root pairing theory, the L_χ component is also zero
                 sorry -- Use root_add_root_mem_of_pairingIn_neg, root_sub_root_mem_of_pairingIn_pos
               | inr h_sub_in_q =>
                 -- L_{χ - α} ≠ 0 and χ - α ∈ q, so component lands in our supremum
