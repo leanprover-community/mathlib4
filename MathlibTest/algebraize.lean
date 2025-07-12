@@ -123,6 +123,23 @@ example (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.TestPr
     guard_hyp algebraizeInst_1
   trivial
 
+/- make sure the tactic is able to see through assigned metavariables -/
+example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : f.TestProperty3 → True := by
+  refine @id (?P → True) ?h
+  intro hf -- the type of this variable is `?P := f.TestProperty3`, rather than just `f.TestProperty3`
+  algebraize [f]
+  guard_hyp algebraizeInst : @Algebra.TestProperty3 A B _ _ f.toAlgebra
+  trivial
+
+/- make sure the tactic is able to see through assigned metavariables -/
+example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : f.TestProperty3 ↔ (@Algebra.TestProperty3 A B _ _ f.toAlgebra) := by
+  constructor
+  · intro hf -- the type of this variable is `?P := f.TestProperty3`, rather than just `f.TestProperty3`
+    algebraize [f]
+    guard_hyp algebraizeInst : @Algebra.TestProperty3 A B _ _ f.toAlgebra
+    exact algebraizeInst
+  · exact fun x => x.out
+
 example (n m : ℕ) (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.TestProperty4 n)
     (hg : g.TestProperty4 m) : True := by
   algebraize [f]
