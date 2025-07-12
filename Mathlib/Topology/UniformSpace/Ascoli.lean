@@ -11,7 +11,7 @@ import Mathlib.Topology.UniformSpace.Equiv
 # Ascoli Theorem
 
 In this file, we prove the general **Arzela-Ascoli theorem**, and various related statements about
-the topology of equicontinuous subsetes of `X →ᵤ[𝔖] α`, where `X` is a topological space, `𝔖` is
+the topology of equicontinuous subsets of `X →ᵤ[𝔖] α`, where `X` is a topological space, `𝔖` is
 a family of compact subsets of `X`, and `α` is a uniform space.
 
 ## Main statements
@@ -117,8 +117,7 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
     -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
     -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
-    exact hVU (prodMk_mem_compRel (prodMk_mem_compRel
-      (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
+    exact hVU <| Rel.prodMk_mem_comp (Rel.prodMk_mem_comp (Rel.symm V <| hax i) (hij a ha)) (hax j)
   -- This completes the proof.
   exact mem_of_superset
     (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
