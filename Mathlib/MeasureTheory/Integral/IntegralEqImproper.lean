@@ -538,7 +538,6 @@ theorem integrableOn_Iic_of_intervalIntegral_norm_bounded (I b : ℝ)
   refine hφ.integrable_of_integral_norm_bounded I hfi (h.mp ?_)
   filter_upwards [ha.eventually (eventually_le_atBot b)] with i hai
   rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
-  exact id
 
 /-- If `f` is integrable on intervals `Ioc (a i) b`,
 where `a i` tends to -∞, and
@@ -562,7 +561,6 @@ theorem integrableOn_Ioi_of_intervalIntegral_norm_bounded (I a : ℝ)
   filter_upwards [hb.eventually (eventually_ge_atTop a)] with i hbi
   rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i),
     inter_comm]
-  exact id
 
 /-- If `f` is integrable on intervals `Ioc a (b i)`,
 where `b i` tends to ∞, and

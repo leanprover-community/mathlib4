@@ -246,7 +246,7 @@ theorem inclusion_inj_on_objects {S T : Subgroupoid C} (h : S ≤ T) :
 theorem inclusion_faithful {S T : Subgroupoid C} (h : S ≤ T) (s t : S.objs) :
     Function.Injective fun f : s ⟶ t => (inclusion h).map f := fun ⟨f, hf⟩ ⟨g, hg⟩ => by
   -- Porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`
-  dsimp only [inclusion]; rw [Subtype.mk_eq_mk, Subtype.mk_eq_mk]; exact id
+  dsimp only [inclusion]; rw [Subtype.mk_eq_mk, Subtype.mk_eq_mk]
 
 theorem inclusion_refl {S : Subgroupoid C} : inclusion (le_refl S) = 𝟭 S.objs :=
   Functor.hext (fun _ => rfl) fun _ _ _ => HEq.refl _

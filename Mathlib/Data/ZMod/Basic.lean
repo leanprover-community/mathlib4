@@ -383,7 +383,6 @@ theorem castHom_injective : Function.Injective (ZMod.castHom (dvd_refl n) R) := 
   intro x
   obtain ⟨k, rfl⟩ := ZMod.intCast_surjective x
   rw [map_intCast, CharP.intCast_eq_zero_iff R n, CharP.intCast_eq_zero_iff (ZMod n) n]
-  exact id
 
 theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
     Function.Bijective (ZMod.castHom (dvd_refl n) R) := by

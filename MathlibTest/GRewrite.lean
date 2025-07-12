@@ -279,7 +279,6 @@ example (n : Nat) (h : p → n=1) (h' : p) : n = 1 := by
 
 example (n : Nat) (h : p → n=1) (h' : r → s) : p ∧ r → n = 1 ∧ s := by
   apply_rw [h, h']
-  exact id
 
 example (n : Nat) (h : p → n=1) (h' : r → s) : p ∧ r → n = 1 ∧ s := by
   grw [h]

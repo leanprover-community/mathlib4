@@ -972,7 +972,6 @@ theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
   intro t
   by_cases ht : (0 : β) ∈ t
   · rw [mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem ht hs]
-    exact id
   rw [mem_map_indicator_ae_iff_of_zero_notMem ht, mem_map_restrict_ae_iff hs]
   exact fun h => measure_mono_null (Set.inter_subset_left.trans Set.subset_union_left) h
 

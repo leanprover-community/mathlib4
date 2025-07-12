@@ -190,7 +190,6 @@ theorem not_subset_iff_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : ¬ x ⊆ y �
 
 theorem mem_or_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∈ y ∨ y ⊆ x := by
   rw [or_iff_not_imp_left, notMem_iff_subset hx hy]
-  exact id
 
 theorem subset_total (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ∨ y ⊆ x := by
   obtain h | h := mem_or_subset hx hy

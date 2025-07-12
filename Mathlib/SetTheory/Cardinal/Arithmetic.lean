@@ -219,7 +219,6 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     apply fun h2b => ne_of_gt _ h
     conv_rhs => left; rw [← mul_one n]
     rw [Nat.mul_lt_mul_left]
-    · exact id
     apply Nat.lt_of_succ_le h2a
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
     · rw [mul_eq_max_of_aleph0_le_left ha hb, max_eq_left hab]

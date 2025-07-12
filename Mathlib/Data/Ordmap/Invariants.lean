@@ -149,7 +149,7 @@ instance Balanced.dec : DecidablePred (@Balanced α)
 
 @[symm]
 theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=
-  Or.imp (by rw [add_comm]; exact id) And.symm
+  Or.imp (by rw [add_comm]) And.symm
 
 theorem balancedSz_zero {l : ℕ} : BalancedSz l 0 ↔ l ≤ 1 := by
   simp +contextual [BalancedSz]

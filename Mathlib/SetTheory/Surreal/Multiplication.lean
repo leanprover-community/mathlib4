@@ -111,9 +111,7 @@ lemma P2_neg_left : P2 x₁ x₂ y ↔ P2 (-x₂) (-x₁) y := by
   rw [P2, P2]
   constructor
   · rw [quot_neg_mul, quot_neg_mul, eq_comm, neg_inj, neg_equiv_neg_iff, PGame.equiv_comm]
-    exact (· ·)
   · rw [PGame.equiv_comm, neg_equiv_neg_iff, quot_neg_mul, quot_neg_mul, neg_inj, eq_comm]
-    exact (· ·)
 
 lemma P2_neg_right : P2 x₁ x₂ y ↔ P2 x₁ x₂ (-y) := by
   rw [P2, P2, quot_mul_neg, quot_mul_neg, neg_inj]
@@ -382,7 +380,6 @@ lemma mulOptionsLTMul_of_numeric (hn : (x * y).Numeric) :
     all_goals
       rw [lt_neg]
       first | rw [quot_mul_neg] | rw [quot_neg_mul]
-      exact id
 
 /-- A condition just enough to deduce P3, which will always be used with `x'` being a left
   option of `x₂`. When `y₁` is a left option of `y₂`, it can be deduced from induction hypotheses

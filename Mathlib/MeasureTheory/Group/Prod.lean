@@ -208,7 +208,7 @@ theorem measure_mul_right_ne_zero (h2s : μ s ≠ 0) (y : G) : μ ((fun x => x *
 @[to_additive]
 theorem absolutelyContinuous_map_mul_right (g : G) : μ ≪ map (· * g) μ := by
   refine AbsolutelyContinuous.mk fun s hs => ?_
-  rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
+  rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]
 
 @[to_additive]
 theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) μ := by
@@ -467,7 +467,7 @@ This should not be confused with `(measurePreserving_add_right μ g).quasiMeasur
 theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => h * g) μ μ := by
   refine ⟨measurable_mul_const g, AbsolutelyContinuous.mk fun s hs => ?_⟩
-  rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
+  rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]
 
 /-- A *right*-invariant measure is quasi-preserved by *left*-multiplication.
 This should not be confused with `(measurePreserving_mul_left μ g).quasiMeasurePreserving`. -/

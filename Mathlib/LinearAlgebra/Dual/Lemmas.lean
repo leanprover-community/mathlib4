@@ -812,7 +812,6 @@ theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nond
   · rintro ⟨x⟩
     simp only [Quotient.quot_mk_eq_mk, dualCopairing_apply, Quotient.mk_eq_zero]
     rw [← forall_mem_dualAnnihilator_apply_eq_zero_iff, SetLike.forall]
-    exact id
 
 -- Argument from https://math.stackexchange.com/a/2423263/172988
 theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
