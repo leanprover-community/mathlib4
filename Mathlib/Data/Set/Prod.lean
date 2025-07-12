@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.SProd
+import Mathlib.Tactic.Tauto
 
 /-!
 # Sets in product and pi types
@@ -606,7 +607,7 @@ theorem disjoint_diagonal_offDiag : Disjoint (diagonal α) s.offDiag :=
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   ext fun x => by
     simp only [mem_offDiag, mem_inter_iff]
-    tauto
+    grind
 
 variable {s t}
 

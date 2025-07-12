@@ -10,7 +10,6 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
 /-!

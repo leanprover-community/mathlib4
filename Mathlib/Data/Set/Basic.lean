@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Order.PropInstances
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Tauto
 import Mathlib.Util.Delaborators
 
 /-!
@@ -188,7 +187,7 @@ theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t
 
 @[deprecated forall_swap (since := "2025-06-10")]
 theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b := by
-  tauto
+  grind
 
 theorem setOf_injective : Function.Injective (@setOf α) := injective_id
 

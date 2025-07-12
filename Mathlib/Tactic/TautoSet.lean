@@ -6,6 +6,7 @@ Authors: Lenny Taelman
 
 import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.Disjoint
+import Mathlib.Tactic.Tauto
 
 /-!
 # The `tauto_set` tactic
