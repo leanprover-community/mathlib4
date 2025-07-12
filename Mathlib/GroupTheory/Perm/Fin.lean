@@ -144,8 +144,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   have jin : j ∈ Set.range ⇑(castLEEmb (n := i + 1) (by omega)) := by simp; omega
   have : (castLEEmb (by omega)).toEquivRange (castLT j (by omega)) = ⟨j, jin⟩ := by
-    simp only [coe_castLEEmb]
-    rfl
+    simpa only [coe_castLEEmb] using by rfl
   rw [cycleRange, (finRotate (i + 1)).extendDomain_apply_subtype (castLEEmb
     (by omega)).toEquivRange jin, Function.Embedding.toEquivRange_apply]
   split_ifs with ch
