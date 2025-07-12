@@ -44,6 +44,8 @@ register_option linter.style.commandStart.verbose : Bool := {
   descr := "enable the commandStart linter"
 }
 
+/-- If the command starts with one of the `SyntaxNodeKind`s in `skipped`, then the
+`commandStart` linter ignores the command. -/
 def skipped : Std.HashSet SyntaxNodeKind := Std.HashSet.emptyWithCapacity
   |>.insert ``Parser.Command.moduleDoc
   |>.insert ``Parser.Command.elab_rules
@@ -145,7 +147,15 @@ While scanning the two strings, accumulate any discrepancies --- with some heuri
 flagging some line-breaking changes.
 (The pretty-printer does not always produce desirably formatted code.)
 
-The `rebuilt` input gets updated, matching
+The `rebuilt` input gets updated, matching the input `L`, whenever `L` is preferred over `M`.
+When `M` is preferred, `rebuilt` gets appended the string
+* `addSpace`, if `L` should have an extra space;
+* `removeSpace`, if `L` should not have this space;
+* `removeLine`, if this line break should not be present.
+
+With the exception of `addSpace`, in the case in which `removeSpace` and `removeLine` consist
+of a single character, then number of characters added to `rebuilt` is the same as the number of
+characters removed from `L`.
 -/
 partial
 def parallelScanAux (as : Array FormatError) (rebuilt L M : String)
@@ -204,7 +214,7 @@ def parallelScanAux (as : Array FormatError) (rebuilt L M : String)
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
-  let (expected, formatErrors) := parallelScanAux ∅ "" src fmt "🐩" "🦤" "😹"
+  let (_expected, formatErrors) := parallelScanAux ∅ "" src fmt "🐩" "🦤" "😹"
   --dbg_trace "src:\n{src}\nfmt:\n{fmt}\nexpected:\n{expected}\n---"
   formatErrors
 
