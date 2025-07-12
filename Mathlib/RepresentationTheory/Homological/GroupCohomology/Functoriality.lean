@@ -600,7 +600,7 @@ noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat k) ℕ
 
 instance : (cochainsFunctor k G).PreservesZeroMorphisms where
 instance : (cochainsFunctor k G).Additive where
-f₂
+
 variable (k G) in
 /-- The functor sending a `G`-representation `A` to `Hⁿ(G, A)`. -/
 @[simps]

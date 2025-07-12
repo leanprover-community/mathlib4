@@ -170,7 +170,8 @@ noncomputable abbrev chainsMap₂ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleC
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂, gᵢ₃) : G × G × G →₀ A` to
 `∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂), f(gᵢ₃)) : H × H × H →₀ B`. -/
-noncomputable abbrev chainsMap₃ : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (H × H × H →₀ B) :=
+noncomputable abbrev chainsMap₃ :
+    ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (H × H × H →₀ B) :=
   ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f (Prod.map f f))
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
