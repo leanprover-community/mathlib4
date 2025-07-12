@@ -28,11 +28,11 @@ In each of these cases, the models with corners are inferred from the domain and
 The search for models with corners uses the local context and is (almost) only syntactic, hence
 hopefully fast enough to always run.
 
-Secondly, this space adds an elaborator to ease working with sections in a vector bundle,
+Secondly, this space adds an elaborator to ease working with sections in a fibre bundle,
 converting a section `s : Π x : M, Π V x` to a non-dependent function into the total space of the
 bundle.
 ```lean
--- omitted: let `V` be a vector bundle over `M`
+-- omitted: let `V` be a fibre bundle over `M`
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 
 -- outputs `fun x ↦ TotalSpace.mk' F x (σ x) : M → TotalSpace F V`
@@ -71,16 +71,28 @@ section
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
+/-- Try to infer the universe of an expression `e` -/
 def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
     if let .sort (.succ u) ← inferType e >>= instantiateMVars then
       return u
     else
       throwError m!"Could not find universe of {e}."
 
+/-- Call `mkApp` recursively with 12 arguments -/
 @[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
   mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
 
--- TODO: document this elaborator, including its algorithm
+/-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
+to a non-dependent function into the total space. This handles the cases of
+- sections of a trivial bundle
+- vector fields on a manifold (i.e., sections of the tangent bundle)
+- sections of an explicit fibre bundle
+- turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
+
+This elaborator operates purely syntactically, by analysing the local contexts for suitable
+hypothesis for the above cases. Therefore, it is (hopefully) fast enough to always run.
+-/
+-- TODO: document how this elaborator works, any gotchas, etc.
 elab "T% " t:term : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
@@ -119,9 +131,18 @@ elab "T% " t:term : term => do
   | _ => pure ()
   return e
 
--- Tests in MathlibTest/DifferentialGeometry/Elaborators.lean.
+/-- Try to find a `ModelWithCorners` instance on an expression `e`, using the local context
+to infer the expected type. This supports the following cases:
+- the model with corners on the total space of a vector bundle
+- a model with corners on a manifold
+- the trivial model `𝓘(𝕜, E)` on a normed space
+- if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
+  and if successful, return `𝓘(𝕜)`.
 
--- FIXME: better failure when trying to find a normedfield instance
+Further cases can be added as necessary.
+This implementation is not maximally robust yet, but already useful.
+-/
+-- FIXME: better failure when trying to find a `NormedField` instance
 def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
     trace[MDiffElab] m!"Searching a model for: {e}"
     if let mkApp3 (.const `Bundle.TotalSpace _) _ F V := e then
@@ -219,9 +240,9 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
 
 -- TODO: scope all these elaborators to the `Manifold` namespace
 
--- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
--- trying to determine `I` and `J` from the local context.
--- The argument x can be omitted.
+/-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
+trying to determine `I` and `J` from the local context.
+The argument x can be omitted. -/
 elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
@@ -235,8 +256,9 @@ elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
     return ← mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
   | _ => throwError m!"Term {ef} is not a function."
 
--- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
--- trying to determine `I` and `J` from the local context.
+/-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
+trying to determine `I` and `J` from the local context. -/
+-- XXX: can `x` be omitted?
 elab:max "MDiffAt" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
