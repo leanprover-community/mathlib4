@@ -155,7 +155,7 @@ theorem mem_iff_range_and_ker_mem_invtSubmodule_commutant_of_isIdempotentElem {e
     intro m hm
     ext x
     obtain ⟨v, w, hvw, _⟩ := Submodule.existsUnique_add_of_isCompl
-      (IsIdempotentElem.range_isProj (congr(LinearMapClass.linearMap $h.eq))).isCompl.symm x
+      (IsIdempotentElem.isProj_range (congr(LinearMapClass.linearMap $h.eq))).isCompl.symm x
     obtain ⟨y, hy⟩ := SetLike.coe_mem w
     simp_rw [ContinuousLinearMap.coe_coe] at hy
     simp_rw [Set.mem_union, Set.mem_star, SetLike.mem_coe, star_mem_iff, or_self] at hm
