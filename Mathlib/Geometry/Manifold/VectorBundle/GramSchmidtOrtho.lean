@@ -5,7 +5,6 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 
 /-!
 # Gram-Schmidt orthonormalisation on sections of Riemannian vector bundles
@@ -204,6 +203,8 @@ theorem coe_gramSchmidtBasis {x} (hs : LinearIndependent ℝ (s · x))
     (gramSchmidtBasis hs hs') = (gramSchmidt s · x) :=
   Basis.coe_mk _ _
 
+/-- The normalized `gramSchmidt`, i.e. each resulting section has unit length (or vanishes)
+at each point -/
 noncomputable def gramSchmidtNormed [WellFoundedLT ι]
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
   InnerProductSpace.gramSchmidtNormed ℝ (s · x) n
@@ -286,6 +287,8 @@ theorem coe_gramSchmidtNormedBasis {x} (hs : LinearIndependent ℝ (s · x))
     (gramSchmidtNormedBasis hs hs' : ι → E x) = (gramSchmidtNormed s · x) :=
   Basis.coe_mk _ _
 
+/-- If the sections `s` form a basis at `x`, the resulting sections form an orthonormal basis
+at `x` -/
 noncomputable def gramSchmidtOrthonormalBasis {x} [Fintype ι]
     (hs : LinearIndependent ℝ (s · x)) (hs' : ⊤ ≤ Submodule.span ℝ (Set.range (s · x))) :
     OrthonormalBasis ι ℝ (E x) := by
