@@ -48,7 +48,7 @@ instance : Ord ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div_left Nat.div_le_div
+attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div
 
 /-! ### `succ`, `pred` -/
 
