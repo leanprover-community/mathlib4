@@ -16,7 +16,7 @@ this is the usual left or right quotient of a group by a subgroup.
 
 ## Main definitions
 
-* `rel`: The double coset relation defined by two subgroups `H K` of `G`.
+* `setoid`: The double coset relation defined by two subgroups `H K` of `G`.
 * `DoubleCoset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
 
@@ -33,16 +33,24 @@ namespace DoubleCoset
 def doubleCoset (a : α) (s t : Set α) : Set α :=
   s * {a} * t
 
+@[deprecated (since := "2025-07-12")] alias doset := doubleCoset
+
 lemma doubleCoset_eq_image2 (a : α) (s t : Set α) :
     doubleCoset a s t = Set.image2 (· * a * ·) s t := by
   simp_rw [doubleCoset, Set.mul_singleton, ← Set.image2_mul, Set.image2_image_left]
+
+@[deprecated (since := "2025-07-12")] alias doset_eq_image2 := doubleCoset_eq_image2
 
 theorem mem_doubleCoset {s t : Set α} {a b : α} :
     b ∈ doubleCoset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y := by
   simp only [doubleCoset_eq_image2, Set.mem_image2, eq_comm]
 
+@[deprecated (since := "2025-07-12")] alias mem_doset := mem_doubleCoset
+
 theorem mem_doubleCoset_self (H K : Subgroup G) (a : G) : a ∈ doubleCoset a H K :=
   mem_doubleCoset.mpr ⟨1, H.one_mem, 1, K.one_mem, (one_mul a).symm.trans (mul_one (1 * a)).symm⟩
+
+@[deprecated (since := "2025-07-12")] alias mem_doset_self := mem_doubleCoset_self
 
 theorem doubleCoset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doubleCoset a H K) :
     doubleCoset b H K = doubleCoset a H K := by
@@ -51,6 +59,8 @@ theorem doubleCoset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doubleCos
     mul_assoc, mul_assoc, Subgroup.singleton_mul_subgroup hk, ← mul_assoc, ← mul_assoc,
     Subgroup.subgroup_mul_singleton hh]
 
+@[deprecated (since := "2025-07-12")] alias doset_eq_of_mem := doubleCoset_eq_of_mem
+
 theorem mem_doubleCoset_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doubleCoset a H K) (doubleCoset b H K)) : b ∈ doubleCoset a H K := by
   rw [Set.not_disjoint_iff] at h
@@ -58,6 +68,9 @@ theorem mem_doubleCoset_of_not_disjoint {H K : Subgroup G} {a b : G}
   obtain ⟨x, ⟨l, hl, r, hr, hrx⟩, y, hy, ⟨r', hr', rfl⟩⟩ := h
   refine ⟨y⁻¹ * l, H.mul_mem (H.inv_mem hy) hl, r * r'⁻¹, K.mul_mem hr (K.inv_mem hr'), ?_⟩
   rwa [mul_assoc, mul_assoc, eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc, eq_mul_inv_iff_mul_eq]
+
+@[deprecated (since := "2025-07-12")]
+alias mem_doset_of_not_disjoint := mem_doubleCoset_of_not_disjoint
 
 theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
     (h : ¬Disjoint (doubleCoset a H K) (doubleCoset b H K)) :
@@ -104,6 +117,8 @@ theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
 def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
   doubleCoset q.out H K
 
+@[deprecated (since := "2025-07-12")] alias quotToDoset := quotToDoubleCoset
+
 /-- Map from `G` to `H \ G / K` -/
 abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
   Quotient.mk'' a
@@ -132,6 +147,8 @@ theorem mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
   rw [eq]
   exact mem_doubleCoset.mp (h.symm ▸ mem_doubleCoset_self H K b)
 
+@[deprecated (since := "2025-07-12")] alias mk_eq_of_doset_eq := mk_eq_of_doubleCoset_eq
+
 theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
   contrapose!
@@ -147,6 +164,8 @@ theorem union_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H 
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
   simp only [h5, ← mul_assoc, one_mul, inv_mul_cancel, mul_inv_cancel_right]
 
+@[deprecated (since := "2025-07-12")] alias union_quotToDoset := union_quotToDoubleCoset
+
 theorem doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doubleCoset a H K := by
   ext x
@@ -160,6 +179,8 @@ theorem doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     refine ⟨⟨y, hy⟩, ?_⟩
     simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right]
 
+@[deprecated (since := "2025-07-12")] alias doset_union_rightCoset := doubleCoset_union_rightCoset
+
 theorem doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
     ⋃ h : H, (h * a : G) • ↑K = doubleCoset a H K := by
   ext x
@@ -171,6 +192,8 @@ theorem doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine ⟨⟨x, hx⟩, ?_⟩
     simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, inv_mul_cancel_right]
+
+@[deprecated (since := "2025-07-12")] alias doset_union_leftCoset := doubleCoset_union_leftCoset
 
 theorem left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by
