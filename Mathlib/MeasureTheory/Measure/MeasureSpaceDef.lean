@@ -427,7 +427,7 @@ lemma support_eq_compl_Union_open_null :
          mem_support_iff_forall] at *
     constructor
     · exact fun hx _ hU hμU hxx ↦ (ne_of_lt <| hx _ <| IsOpen.mem_nhds hU hxx).symm hμU
-    · intro hx U hU_nhds
+    · intro hx _ hU_nhds
       rcases (mem_nhds_iff.mp hU_nhds) with ⟨V, hV_sub, hV_open, hVₓ⟩
       exact measure_pos_of_superset hV_sub <| fun a ↦ hx V hV_open a hVₓ
 
