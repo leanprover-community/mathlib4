@@ -158,19 +158,19 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·gᵢ : G →₀ A` to `∑ φ(aᵢ)·f(gᵢ) : H →₀ B`. -/
-noncomputable abbrev f₁ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (H →₀ B) :=
+noncomputable abbrev chainsMap₁ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (H →₀ B) :=
   ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k f
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂) : G × G →₀ A` to
 `∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂)) : H × H →₀ B`. -/
-noncomputable abbrev f₂ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (H × H →₀ B) :=
+noncomputable abbrev chainsMap₂ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (H × H →₀ B) :=
   ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f f)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂, gᵢ₃) : G × G × G →₀ A` to
 `∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂), f(gᵢ₃)) : H × H × H →₀ B`. -/
-noncomputable abbrev f₃ : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (H × H × H →₀ B) :=
+noncomputable abbrev chainsMap₃ : ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (H × H × H →₀ B) :=
   ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f (Prod.map f f))
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -182,19 +182,19 @@ lemma chainsMap_f_0_comp_chainsIso₀ :
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_1_comp_chainsIso₁ :
-    (chainsMap f φ).f 1 ≫ (chainsIso₁ B).hom = (chainsIso₁ A).hom ≫ f₁ f φ := by
+    (chainsMap f φ).f 1 ≫ (chainsIso₁ B).hom = (chainsIso₁ A).hom ≫ chainsMap₁ f φ := by
   ext x
   simp [chainsMap_f, chainsIso₁]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_2_comp_chainsIso₂ :
-    (chainsMap f φ).f 2 ≫ (chainsIso₂ B).hom = (chainsIso₂ A).hom ≫ f₂ f φ := by
+    (chainsMap f φ).f 2 ≫ (chainsIso₂ B).hom = (chainsIso₂ A).hom ≫ chainsMap₂ f φ := by
   ext
   simp [chainsMap_f, chainsIso₂]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_3_comp_chainsIso₃ :
-    (chainsMap f φ).f 3 ≫ (chainsIso₃ B).hom = (chainsIso₃ A).hom ≫ f₃ f φ := by
+    (chainsMap f φ).f 3 ≫ (chainsIso₃ B).hom = (chainsIso₃ A).hom ≫ chainsMap₃ f φ := by
   ext
   simp [chainsMap_f, chainsIso₃, ← Fin.comp_tail]
 
@@ -241,8 +241,8 @@ to `(H × H →₀ B) --d₂₁--> (H →₀ B) --d₁₀--> B`. -/
 @[simps]
 noncomputable def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
-  τ₁ := f₂ f φ
-  τ₂ := f₁ f φ
+  τ₁ := chainsMap₂ f φ
+  τ₂ := chainsMap₁ f φ
   τ₃ := φ.hom
   comm₁₂ := by
     simp only [shortComplexH1]
@@ -294,12 +294,12 @@ noncomputable abbrev mapCycles₁ :
 @[reassoc, elementwise]
 lemma mapCycles₁_comp_i :
     mapCycles₁ f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
-      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ f₁ f φ := by
+      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ chainsMap₁ f φ := by
   simp
 
 @[simp]
 lemma coe_mapCycles₁ (x) :
-    (mapCycles₁ f φ x).1 = f₁ f φ x := rfl
+    (mapCycles₁ f φ x).1 = chainsMap₁ f φ x := rfl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₁_hom :
@@ -323,9 +323,9 @@ this is the induced map from the short complex
 @[simps]
 noncomputable def mapShortComplexH2 :
     shortComplexH2 A ⟶ shortComplexH2 B where
-  τ₁ := f₃ f φ
-  τ₂ := f₂ f φ
-  τ₃ := f₁ f φ
+  τ₁ := chainsMap₃ f φ
+  τ₂ := chainsMap₂ f φ
+  τ₃ := chainsMap₁ f φ
   comm₁₂ := by
     simp only [shortComplexH2]
     ext : 3
@@ -381,12 +381,12 @@ noncomputable abbrev mapCycles₂ :
 @[reassoc, elementwise]
 lemma mapCycles₂_comp_i :
     mapCycles₂ f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
-      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ f₂ f φ := by
+      (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ chainsMap₂ f φ := by
   simp
 
 @[simp]
 lemma coe_mapCycles₂ (x) :
-    (mapCycles₂ f φ x).1 = f₂ f φ x := rfl
+    (mapCycles₂ f φ x).1 = chainsMap₂ f φ x := rfl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₂_hom :
