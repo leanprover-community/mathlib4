@@ -14,7 +14,7 @@ import Mathlib.Geometry.Manifold.Traces
 This file defines custom elaborators for differential geometry, to allow for more compact notation.
 There are two classes of elaborators. The first provides more compact notation for differentiability
 and continuous differentiability on manifolds, including inference of the model with corners.
-They allow writing
+All these elaborators are scoped to the `Manifold` namespace. They allow writing
 - `MDiff f` for `MDifferentiable I J f`
 - `MDiffAt f x` for `MDifferentiableAt I J f x`
 - `MDiff[u] f` for `MDifferentiableOn I J f u`
@@ -58,7 +58,6 @@ the following.
   is correct 90% of the time)
 - fix pretty-printing: currently, the `commandStart` linter expects some different formatting
 - better error messages: forgetting e.g. the `T%` elaborator yields cryptic errors
-- make all these elaborators scoped to the `Manifold` namespace
 - further testing and fixing of edge cases
 - add test for the difference between `CMDiff` and `ContMDiff%` (and decide on one behaviour)
 - added tests for all of the above
@@ -81,6 +80,8 @@ def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
 /-- Call `mkApp` recursively with 12 arguments -/
 @[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
   mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
+
+namespace Manifold
 
 /-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
 to a non-dependent function into the total space. This handles the cases of
@@ -238,8 +239,6 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
 
     throwError "Couldn’t find models with corners"
 
--- TODO: scope all these elaborators to the `Manifold` namespace
-
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
 The argument x can be omitted. -/
@@ -358,5 +357,7 @@ elab:max "CMDiff" nt:term:arg t:term:arg : term => do
     let tgtI ← find_model tgt (src, srcI)
     return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
+
+end Manifold
 
 end
