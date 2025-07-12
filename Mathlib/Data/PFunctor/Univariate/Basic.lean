@@ -12,7 +12,7 @@ This file defines polynomial functors and the W-type construction as a polynomia
 (For the M-type construction, see `Mathlib/Data/PFunctor/Univariate/M.lean`.)
 -/
 
-universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃
+universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃ vA vB
 
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P α`, which is defined as the sigma type `Σ x, P.B x → α`.
@@ -22,7 +22,7 @@ An element of `P α` is a pair `⟨a, f⟩`, where `a` is an element of a type `
 elements of `α`.
 -/
 -- Note: `nolint checkUnivs` should not apply here, we really do want two separate universe levels
-@[pp_with_univ, nolint checkUnivs]
+@[ext, pp_with_univ, nolint checkUnivs]
 structure PFunctor where
   /-- The head type -/
   A : Type uA
@@ -136,11 +136,142 @@ theorem iget_map [DecidableEq P.A] [Inhabited α] [Inhabited β] (x : P α)
 end PFunctor
 
 /-
-Composition of polynomial functors.
+Constructions on polynomial functors.
 -/
 namespace PFunctor
 
-/-- Composition for polynomial functors -/
+section Basic
+
+/-- The zero polynomial functor, defined as `A = PEmpty` and `B _ = PEmpty` -/
+def zero : PFunctor.{uA, uB} := ⟨PEmpty, fun _ => PEmpty⟩
+
+/-- The unit polynomial functor, defined as `A = PUnit` and `B _ = PEmpty` -/
+def one : PFunctor.{uA, uB} := ⟨PUnit, fun _ => PEmpty⟩
+
+instance : Zero PFunctor.{uA, uB} where
+  zero := zero
+
+instance : One PFunctor.{uA, uB} where
+  one := one
+
+/-- The variable `y` polynomial functor, defined as `A = PUnit` and `B _ = PUnit`. -/
+def y : PFunctor.{uA, uB} :=
+  ⟨PUnit, fun _ => PUnit⟩
+
+instance : IsEmpty zero.A := inferInstanceAs (IsEmpty PEmpty)
+
+instance : IsEmpty (A 0) := inferInstanceAs (IsEmpty PEmpty)
+
+instance : Unique one.A := inferInstanceAs (Unique PUnit)
+
+instance : Unique (A 1) := inferInstanceAs (Unique PUnit)
+
+instance : Unique y.A := inferInstanceAs (Unique PUnit)
+
+@[simp] lemma zero_A : zero.A = PEmpty := rfl
+
+@[simp] lemma zero_B (a : zero.A) : zero.B a = PEmpty := PEmpty.elim a
+
+@[simp] lemma one_A : one.A = PUnit := rfl
+
+@[simp] lemma one_B (a : one.A) : one.B a = PEmpty := rfl
+
+@[simp] lemma y_A : y.A = PUnit := rfl
+
+@[simp] lemma y_B (a : y.A) : y.B a = PUnit := rfl
+
+end Basic
+
+section Monomial
+
+/-- The monomial functor `P(y) = A y^ B` for types `A` and `B`. -/
+def monomial (A : Type uA) (B : Type uB) : PFunctor.{uA, uB} :=
+  ⟨A, fun _ => B⟩
+
+@[inherit_doc] scoped[PFunctor] infixr:80 " y^" => monomial
+
+/-- The constant polynomial functor `P(y) = A` -/
+def C (A : Type uA) : PFunctor.{uA, uB} :=
+  A y^ PEmpty
+
+/-- The linear polynomial functor `P(y) = A y` -/
+def linear (A : Type uA) : PFunctor.{uA, uB} :=
+  A y^ PUnit
+
+/-- The self monomial polynomial functor `P(y) = S y^ S` -/
+def selfMonomial (S : Type uA) : PFunctor.{uA, uA} :=
+  S y^ S
+
+/-- The pure power polynomial functor `P(y) = y^ B` -/
+def purePower (B : Type uB) : PFunctor.{uA, uB} :=
+  PUnit y^ B
+
+@[simp] lemma C_zero : C PEmpty = 0 := rfl
+
+@[simp] lemma C_one : C PUnit = 1 := rfl
+
+@[simp] lemma C_A (A : Type u) : (C A).A = A := rfl
+
+@[simp] lemma C_B (A : Type u) (a : (C A).A) : (C A).B a = PEmpty := rfl
+
+@[simp] lemma linear_A (A : Type u) : (linear A).A = A := rfl
+
+@[simp] lemma linear_B (A : Type u) (a : (linear A).A) : (linear A).B a = PUnit := rfl
+
+@[simp] lemma purePower_A (B : Type u) : (purePower B).A = PUnit := rfl
+
+@[simp] lemma purePower_B (B : Type u) (a : (purePower B).A) : (purePower B).B a = B := rfl
+
+end Monomial
+
+section Coprod
+
+/-- The coproduct (sum) of two polynomial functors `P` and `Q`, can be written as `P + Q`.
+Requires the output universe level to be the same. -/
+def coprod (P : PFunctor.{uA₁, uB}) (Q : PFunctor.{uA₂, uB}) :
+    PFunctor.{max uA₁ uA₂, uB} :=
+  ⟨P.A ⊕ Q.A, Sum.elim P.B Q.B⟩
+
+instance : HAdd PFunctor.{uA₁, uB} PFunctor.{uA₂, uB} PFunctor.{max uA₁ uA₂, uB} where
+  hAdd := coprod
+
+/-- The generalized coproduct (sigma type) of an indexed family of polynomial functors.
+Requires the output universe level to be the same. -/
+def sigma {I : Type v} (F : I → PFunctor.{uA, uB}) : PFunctor.{max uA v, max uB v} :=
+  ⟨Σ i, (F i).A, fun ⟨i, a⟩ => ULift ((F i).B a)⟩
+
+end Coprod
+
+section Prod
+
+/-- The product of two polynomial functors `P` and `Q`. Can be written as `P * Q`. -/
+def prod (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) :
+    PFunctor.{max uA₁ uA₂, max uB₁ uB₂} :=
+  ⟨P.A × Q.A, fun ab => P.B ab.1 ⊕ Q.B ab.2⟩
+
+instance : HMul PFunctor.{uA₁, uB₁} PFunctor.{uA₂, uB₂} PFunctor.{max uA₁ uA₂, max uB₁ uB₂} where
+  hMul := prod
+
+/-- The generalized product (pi type) of an indexed family of polynomial functors. -/
+def pi {I : Type v} (F : I → PFunctor.{uA, uB}) : PFunctor.{max uA v, max uB v} :=
+  ⟨(i : I) → (F i).A, fun f => Σ i, (F i).B (f i)⟩
+
+end Prod
+
+section Tensor
+
+/-- The tensor or parallel product of two polynomial functors `P` and `Q`. -/
+def tensor (P : PFunctor.{uA₁, uB₁}) (Q : PFunctor.{uA₂, uB₂}) :
+    PFunctor.{max uA₁ uA₂, max uB₁ uB₂} :=
+  ⟨P.A × Q.A, fun ab => P.B ab.1 × Q.B ab.2⟩
+
+@[inherit_doc] scoped[PFunctor] infixr:80 " ⊗ " => tensor
+
+end Tensor
+
+section Comp
+
+/-- The composition of two polynomial functors `P₁` and `P₂`. -/
 def comp (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) :
     PFunctor.{max uA₁ uA₂ uB₂, max uB₁ uB₂} :=
   ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ => Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
@@ -154,6 +285,18 @@ def comp.mk (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {�
 def comp.get (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : comp P₂ P₁ α) :
     P₂ (P₁ α) :=
   ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
+
+@[inherit_doc] scoped[PFunctor] infixr:80 " ◃ " => comp
+
+end Comp
+
+section ULift
+
+/-- Lifting a polynomial functor `P` to a larger universe. -/
+protected def ulift (P : PFunctor.{uA, uB}) : PFunctor.{max uA vA, max uB vB} :=
+  ⟨ULift P.A, fun a => ULift (P.B (ULift.down a))⟩
+
+end ULift
 
 end PFunctor
 
