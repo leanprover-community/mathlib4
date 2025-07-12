@@ -202,6 +202,8 @@ noncomputable def leviCivita_rhs : M → ℝ := (1 / 2 : ℝ) • (
   + ⟪X, (VectorField.mlieBracket I Z Y)⟫
   )
 
+-- XXX: is introducing leviCivita_rhs' which is twice the previous quantity useful?
+
 variable (X Y Z) in
 lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
     ⟪cov X Y, Z⟫ + ⟪Y, cov Z X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
@@ -247,7 +249,26 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
-lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
+variable (X X' Y Z) in
+lemma leviCivita_rhs_addX' : (2 : ℝ) • leviCivita_rhs I (X + X') Y Z =
+    (2 : ℝ) • leviCivita_rhs I X Y Z + (2 : ℝ) • leviCivita_rhs I X Y Z := by
+  have : ((2 : ℝ) • (2 : ℝ)⁻¹) = 1 := by simp
+  simp only [leviCivita_rhs, one_div, ← smul_assoc, this, one_smul]
+  -- Now, continue without the scalar multiplication.
+  -- similar to the addZ proof below...
+  sorry
+
+variable (X X' Y Z) in
+lemma leviCivita_rhs_addX : leviCivita_rhs I (X + X') Y Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
+  sorry -- divide the previous equation by 2
+
+variable (X Y Z) in
+lemma leviCivita_rhs_smulX {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
+    leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z := by
+  -- TODO: do I need to assume X is differentiable?
+  sorry
+
+lemma leviCivita_rhs_addZ (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
     (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
     leviCivita_rhs I X Y (Z + Z') = leviCivita_rhs I X Y Z + leviCivita_rhs I X Y Z' := by
   -- A bit too painful, and have missing differentiability assumptions.
@@ -267,7 +288,7 @@ lemma leviCivita_rhs_add (Z Z' : Π x : M, TangentSpace I x) [CompleteSpace E]
   simp [h1, h2, rhs_aux_addX] -- rhs_aux_addY, rhs_aux_addZ
   sorry -- module
 
-lemma leviCivita_rhs_smul [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, TangentSpace I x}
+lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, TangentSpace I x}
     (hf : MDiff f) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
   simp only [leviCivita_rhs]
@@ -399,14 +420,40 @@ lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: Tang
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate_aux I (M := M) e) e.baseSet := by
-  sorry
+    IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate_aux I (M := M) e) e.baseSet where
+  addX X X' σ x := by
+    intro hx
+    unfold lcCandidate_aux
+    simp [← Finset.sum_add_distrib, ← add_smul, leviCivita_rhs_addX]
+  smulX X σ g x hx := by
+    unfold lcCandidate_aux
+    dsimp
+    have hX : MDiff (T% X) := sorry -- might need this (hopefully not!)
+    have hg : MDiff g := sorry -- might need this (hopefully not!)
+    rw [Finset.smul_sum]
+    congr; ext i
+    rw [leviCivita_rhs_smulX _ _ _ _ hg hX]
+    simp [← smul_assoc]
+  smul_const_σ X σ a x hx := by
+    unfold lcCandidate_aux
+    dsimp
+    rw [Finset.smul_sum]; congr; ext i
+    -- want leviCivita_rhs_smulY (with a constant)
+    sorry
+  addσ X σ σ' x hσ hσ' hx := by
+    unfold lcCandidate_aux
+    dsimp
+    simp [← Finset.sum_add_distrib, ← add_smul]
+    -- want leviCivita_addY
+    sorry
+  leibniz := by
+    sorry
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (TangentSpace I) (lcCandidate I M) e.baseSet := by
-  sorry
+  sorry -- need some IsCovariantDerivativeOn_congr + lemma bar
 
 end
 
