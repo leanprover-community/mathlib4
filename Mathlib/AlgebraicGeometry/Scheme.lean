@@ -413,6 +413,12 @@ def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
+/-- The spectrum of an unbundled ring as a scheme.
+
+WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` instead of
+`Spec(R)`, which is secretly `Spec(↑R)`. -/
+scoped notation3 "Spec("R")" => Spec <| .of R
+
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
@@ -555,11 +561,11 @@ lemma toOpen_eq (U) :
     (by exact StructureSheaf.toOpen R U) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
-instance {K} [Field K] : Unique (Spec (.of K)) :=
+instance {K} [Field K] : Unique Spec(K) :=
   inferInstanceAs <| Unique (PrimeSpectrum K)
 
 @[simp]
-lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
+lemma default_asIdeal {K} [Field K] : (default : Spec(K)).asIdeal = ⊥ := rfl
 
 section BasicOpen
 
