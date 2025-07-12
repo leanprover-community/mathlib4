@@ -3,11 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.Module
 
 /-!
 # Localized Module
