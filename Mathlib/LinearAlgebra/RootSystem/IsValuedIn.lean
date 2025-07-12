@@ -285,11 +285,29 @@ lemma iInf_ker_coroot'_eq :
     span R (range P.coroot') = ⊤ :=
   span_root'_eq_top P.flip
 
+lemma reflectionPerm_eq_of_pairingIn_eq_zero {S : Type*} [CommRing S] [Algebra S R]
+    [FaithfulSMul S R] [P.IsValuedIn S] (h : P.pairingIn S i j = 0) :
+    P.reflectionPerm i j = j := by
+  refine reflectionPerm_eq_of_pairing_eq_zero' ?_
+  rw [← P.algebraMap_pairingIn S, h, FaithfulSMul.algebraMap_eq_zero_iff]
+
 lemma pairingIn_eq_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
     [P.IsValuedIn S] [NoZeroSMulDivisors R M] [NeZero (2 : R)] {i j : ι} :
     P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
   simpa only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn] using
     P.pairing_eq_zero_iff
+
+/-- A version of `pairingIn_eq_zero_iff` that replaces the `NoZeroSMulDivisors R M` assumption with
+`NoZeroSMulDivisors S M` and `IsScalarTower S R M`. -/
+lemma pairingIn_eq_zero_iff' {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
+    [P.IsValuedIn S] [NeZero (2 : R)] [Module S M] [IsScalarTower S R M] [NoZeroSMulDivisors S M] :
+    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  suffices ∀ {i j : ι}, P.pairingIn S i j = 0 → P.pairingIn S j i = 0 from ⟨this, this⟩
+  intro i j h
+  have hp := P.reflectionPerm_eq_of_pairingIn_eq_zero i j h
+  rw [reflectionPerm_eq_iff_smul_root, ← P.algebraMap_pairingIn S, Algebra.algebraMap_eq_smul_one',
+    smul_assoc, one_smul]  at hp
+  exact (smul_eq_zero_iff_left (P.ne_zero i)).mp hp
 
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.
