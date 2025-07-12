@@ -240,7 +240,7 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
 theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     ((fwdDiffₗ R R 1 ^ n) fun x ↦ x ^ n) = (fun _ ↦ (n.factorial : R))  := by
   induction n with
-  | zero => simp
+  | zero => simp only [pow_zero, Module.End.one_apply, factorial_zero, cast_one]
   | succ n ih =>
     simp at ih
     rw [pow_succ, Module.End.mul_apply]
