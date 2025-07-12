@@ -66,16 +66,10 @@ lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (
   rw [norm_div_rev, mul_comm]
   exact norm_mul_sub_norm_div_le_two_mul _ _
 
-lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
-
-lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
-  suffices 2 * √2 < 3 by linarith
-  rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
-  norm_num
-
+-- todo: generalize beyond `ℝ`
 open Filter in
-lemma exists_between' {t : ℕ → ℝ} (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop)
-    (x : ℝ) :
+lemma StrictMono.exists_between_of_tendsto_atTop {t : ℕ → ℝ}
+    (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop) (x : ℝ) :
     x ≤ t 0 ∨ ∃ n, t n < x ∧ x ≤ t (n + 1) := by
   by_cases hx0 : x ≤ t 0
   · simp [hx0]
@@ -89,15 +83,6 @@ lemma exists_between' {t : ℕ → ℝ} (ht_mono : StrictMono t) (ht_tendsto : T
   convert Nat.find_spec h
   rw [Nat.sub_add_cancel]
   simp [hx0]
-
-lemma two_mul_le_add_mul_sq {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {a b ε : R} (hε : 0 < ε) :
-    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
-  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
-  calc 2 * a * b
-  _ = (2 * (ε * a) * b) / ε := by field_simp; ring
-  _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
-  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by field_simp; ring
 
 lemma Nat.le_two_pow (n : ℕ) : n ≤ 2 ^ n := by
   induction n with
@@ -123,8 +108,7 @@ end Aux
 
 namespace ProbabilityTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [SecondCountableTopology E]
-  [MeasurableSpace E] [BorelSpace E] {μ : Measure E} {a : ℝ}
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The rotation in `E × E` with angle `θ`, as a continuous linear map. -/
 noncomputable
@@ -136,10 +120,11 @@ def _root_.ContinuousLinearMap.rotation (θ : ℝ) : E × E →L[ℝ] E × E whe
   map_smul' c x := by simp [smul_comm c]
   cont := by fun_prop
 
-lemma _root_.ContinuousLinearMap.rotation_apply {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] (θ : ℝ) (x : E × E) :
+lemma _root_.ContinuousLinearMap.rotation_apply (θ : ℝ) (x : E × E) :
     ContinuousLinearMap.rotation θ x
      = (Real.cos θ • x.1 + Real.sin θ • x.2, - Real.sin θ • x.1 + Real.cos θ • x.2) := rfl
+
+variable [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {μ : Measure E} {a : ℝ}
 
 /-- If a measure `μ` is such that `μ.prod μ` is invariant by rotation of angle `-π/4` then
 `μ {x | ‖x‖ ≤ a} * μ {x | b < ‖x‖} ≤ μ {x | (b - a) / √2 < ‖x‖} ^ 2`. -/
@@ -214,12 +199,12 @@ private lemma lt_normThreshold_zero (ha_pos : 0 < a) :
   _ < a := ha_pos
 
 private lemma normThreshold_strictMono (ha_pos : 0 < a) : StrictMono (normThreshold a) :=
-  arithmeticGeometric_strictMono normThreshold_add_one one_lt_sqrt_two
+  arithmeticGeometric_strictMono normThreshold_add_one Real.one_lt_sqrt_two
     (lt_normThreshold_zero ha_pos)
 
 private lemma normThreshold_tendsto_atTop (ha_pos : 0 < a) :
     Tendsto (normThreshold a) atTop atTop :=
-  tendsto_arithmeticGeometric_atTop normThreshold_add_one one_lt_sqrt_two
+  tendsto_arithmeticGeometric_atTop normThreshold_add_one Real.one_lt_sqrt_two
     (lt_normThreshold_zero ha_pos)
 
 private lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
@@ -293,13 +278,11 @@ lemma measure_gt_normThreshold_le_exp [IsProbabilityMeasure μ]
     · simp [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hc_lt, hc_one_sub_lt_top]
   refine (measure_gt_normThreshold_le_rpow h_rot ha_gt n).trans_eq ?_
   congr
-  rw [← Real.log_inv, mul_comm (Real.log _), ← Real.log_rpow,
-    Real.exp_log, ← ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity),
+  rw [← Real.log_inv, mul_comm (Real.log _), ← Real.log_rpow (by positivity),
+    Real.exp_log (by positivity), ← ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity),
     ENNReal.toReal_div, inv_div, ← ENNReal.toReal_div, ENNReal.ofReal_toReal]
   · norm_cast
   · exact ENNReal.div_ne_top (by finiteness) (lt_trans (by simp) ha_gt).ne'
-  · positivity
-  · positivity
 
 /-- A quantity that appears in exponentials in the proof of Fernique's theorem. -/
 private noncomputable def logRatio (c : ℝ≥0∞) : ℝ :=
@@ -437,8 +420,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter]
       rw [mul_comm]
       field_simp [C]
-      congr
-      ext
+      congr with x
       simp
   by_cases ha : μ {x | ‖x‖ ≤ a} = 1
   · simp [c, ha] at ht_int_zero ⊢
@@ -461,7 +443,8 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     simp only [Set.mem_univ, Set.mem_union, Metric.mem_closedBall, dist_zero_right, Set.mem_iUnion,
       Set.mem_diff, not_le, true_iff]
     simp_rw [and_comm (b := t _ < ‖x‖)]
-    exact exists_between' (normThreshold_strictMono ha_pos) (normThreshold_tendsto_atTop ha_pos) _
+    exact (normThreshold_strictMono ha_pos).exists_between_of_tendsto_atTop
+      (normThreshold_tendsto_atTop ha_pos) _
   rw [← setLIntegral_univ, h_iUnion]
   have : ∫⁻ x in closedBall 0 (t 0) ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n),
         .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
