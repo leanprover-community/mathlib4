@@ -97,13 +97,13 @@ elab "T% " t:term : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
   match etype with
-  | .forallE x base (mkApp3 (.const `Bundle.Trivial _) E E' _) _ =>
+  | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
     trace[TotalSpaceMk] "Section of a trivial bundle"
     if E == base then
       return ← withLocalDecl x BinderInfo.default base fun x ↦ do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
         mkLambdaFVars #[x] body
-  | .forallE x base (mkApp12 (.const `TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
+  | .forallE x base (mkApp12 (.const ``TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
     trace[TotalSpaceMk] "Vector field"
     return ← withLocalDecl x BinderInfo.default base fun x ↦ do
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
@@ -145,11 +145,11 @@ This implementation is not maximally robust yet, but already useful.
 -- FIXME: better failure when trying to find a `NormedField` instance
 def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
     trace[MDiffElab] m!"Searching a model for: {e}"
-    if let mkApp3 (.const `Bundle.TotalSpace _) _ F V := e then
-      if let mkApp12 (.const `TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
+    if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
+      if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
         trace[MDiffElab] m!"This is the total space of the tangent bundle of {M}"
         let srcIT : Term ← PrettyPrinter.delab I
-        let resTerm : Term ← `(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
+        let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
         let res ← Term.elabTerm resTerm none
         trace[MDiffElab] m!"Found model: {res}"
         return res
@@ -162,7 +162,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         for decl in ← getLocalHyps do
           let decltype ← inferType decl >>= instantiateMVars
           match decltype with
-          | mkApp4 (.const `NormedSpace _) K' E _ _ =>
+          | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
             if E == F then
               K := K'
               trace[MDiffElab] m!"{F} is a normed field over {K}"
@@ -175,7 +175,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         let kT : Term ← PrettyPrinter.delab K
         let srcIT : Term ← PrettyPrinter.delab srcI
         let FT : Term ← PrettyPrinter.delab F
-        let iTerm : Term ← `(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
+        let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
         let I ← Term.elabTerm iTerm none
         trace[MDiffElab] m!"Found model: {I}"
         return I
@@ -190,12 +190,12 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
     for decl in ← getLocalHyps do
       let decltype ← inferType decl >>= instantiateMVars
       match decltype with
-      | mkApp4 (.const `ChartedSpace _) H' _ M _ =>
+      | mkApp4 (.const ``ChartedSpace _) H' _ M _ =>
         if M == e then
           H := H'
           trace[MDiffElab] m!"H is: {H}"
           Hok := true
-      | mkApp4 (.const `NormedSpace _) K' E _ _ =>
+      | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
         if E == e then
           K := K'
           trace[MDiffElab] m!"Field is: {K}"
@@ -206,15 +206,15 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
     if Kok then
       let eT : Term ← PrettyPrinter.delab e
       let eK : Term ← PrettyPrinter.delab K
-      let iTerm : Term ← `(𝓘($eK, $eT))
+      let iTerm : Term ← ``(𝓘($eK, $eT))
       let I ← Term.elabTerm iTerm none
       trace[MDiffElab] m!"Found model: {I}"
       return I
       -- let uK ← K.getUniverse
-      -- let normedFieldK ← synthInstance (.app (.const `NontriviallyNormedField [uK]) K)
+      -- let normedFieldK ← synthInstance (.app (.const ``NontriviallyNormedField [uK]) K)
       -- trace[MDiffElab] m!"NontriviallyNormedField instance is: {normedFieldK}"
       -- let ue ← e.getUniverse
-      -- let normedGroupE ← synthInstance (.app (.const `NormedAddCommGroup  [ue]) e)
+      -- let normedGroupE ← synthInstance (.app (.const ``NormedAddCommGroup  [ue]) e)
       -- trace[MDiffElab] m!"NormedAddCommGroup  instance is: {normedGroupE}"
       -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
       --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
@@ -222,7 +222,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       for decl in ← getLocalHyps do
         let decltype ← inferType decl >>= instantiateMVars
         match decltype with
-        | mkApp7 (.const `ModelWithCorners  _) _ _ _ _ _ H' _ =>
+        | mkApp7 (.const ``ModelWithCorners  _) _ _ _ _ _ H' _ =>
           if H' == H then
             trace[MDiffElab] m!"Found model: {decl}"
             return decl
@@ -316,7 +316,7 @@ elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
 trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let wtn ← Term.elabTerm (← ``(WithTop ℕ∞)) none
   let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
@@ -331,7 +331,7 @@ trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let wtn ← Term.elabTerm (← ``(WithTop ℕ∞)) none
   let ne ← Term.elabTermEnsuringType nt wtn
   let _estype ← inferType es >>= instantiateMVars
   let eftype ← inferType ef >>= instantiateMVars
