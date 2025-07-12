@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological group with zero
@@ -126,14 +127,25 @@ theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0
 
 end Inv₀
 
+section GroupWithZero
+
+variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀]
+
 /-- If `G₀` is a group with zero with topology such that `x ↦ x⁻¹` is continuous at all nonzero
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
-theorem Units.isEmbedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
-    IsEmbedding (val : G₀ˣ → G₀) :=
+theorem Units.isEmbedding_val₀ : IsEmbedding (val : G₀ˣ → G₀) :=
   embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono fun _ ↦ IsUnit.ne_zero
 
 @[deprecated (since := "2024-10-26")]
 alias Units.embedding_val₀ := Units.isEmbedding_val₀
+
+/-- If a group with zero has continuous inversion, then its group of units is homeomorphic to
+the set of nonzero elements. -/
+noncomputable def unitsHomeomorphNeZero : G₀ˣ ≃ₜ {g : G₀ // g ≠ 0} :=
+  Units.isEmbedding_val₀.toHomeomorph.trans <| show _ ≃ₜ {g | _} from .setCongr <|
+    Set.ext fun x ↦ (Units.exists_iff_ne_zero (p := (· = x))).trans <| by simp
+
+end GroupWithZero
 
 section NhdsInv
 
