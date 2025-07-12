@@ -249,7 +249,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
       ext x;
       simp only [fwdDiffₗ_apply, nsmul_eq_mul, sum_apply, Pi.mul_apply, Pi.natCast_apply,
         fwdDiff, add_pow, one_pow, Finset.sum_range_succ, Nat.choose_self, cast_one, mul_one,
-        add_sub_assoc, sub_self, add_zero, ]
+        add_sub_assoc, sub_self, add_zero]
       simp only [choose_succ_self_right, cast_add, cast_one, mul_comm]
     rw [this, map_sum, Nat.factorial_succ, Nat.cast_mul]; ext x
     rw [funext_iff] at ih
@@ -271,11 +271,13 @@ A polynomial `P(x) = ∑_{k=0..n} aₖ xᵏ` has `Δ^[n+1] P = 0`.
 -/
 theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (a : ℕ → R):
     ((fwdDiffₗ R R 1 ^ (n + 1)) fun x ↦ ∑ k ∈ Finset.range (n + 1), a k * (x ^ k)) = 0 := by
-  induction' n with n ih
-  · unfold fwdDiffₗ
+  induction n with
+  | zero =>
+    unfold fwdDiffₗ
     simp; ext x
     simp only [Pi.zero_apply]
-  · rw [pow_succ, Module.End.mul_apply]
+  | succ n ih =>
+    rw [pow_succ, Module.End.mul_apply]
     have : ((fwdDiffₗ R R 1 ^ (n + 1)) (fun x => ∑ k ∈ range (n + 1), a k * x ^ k)) =
       ∑ k ∈ range (n + 1), (fwdDiffₗ R R 1 ^ (n + 1))
       ((fun x : R ↦ a k) * (fun x : R ↦  x ^ k)) := by
@@ -284,7 +286,7 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (a : ℕ → R):
         (∑ k ∈ range (n + 1), fun x => a k * x ^ k) := by
         ext x; simp only [Finset.sum_apply]
       simp only [this, map_sum, sum_apply]
-      rfl
+      congr 1
     rw [this] at ih
     have : ((fwdDiffₗ R R 1) fun x ↦ ∑ k ∈ range (n + 1 + 1), a k * x ^ k) =
       ∑ k ∈ range (n + 1 + 1), a k • (fun x : R ↦  (x + 1) ^ k) -
@@ -300,7 +302,7 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (a : ℕ → R):
     simp only [fwdDiff_iter_const_smul, Pi.sub_apply, Pi.add_apply, sum_apply, Pi.smul_apply,
       smul_eq_mul]
     rw [← add_sub, ← coe_fwdDiffₗ_pow]
-    have :  ((fwdDiffₗ R R 1 ^ (n + 1)) fun x => x ^ (n + 1)) (x + 1) =
+    have : ((fwdDiffₗ R R 1 ^ (n + 1)) fun x => x ^ (n + 1)) (x + 1) =
         ((fwdDiffₗ R R 1 ^ (n + 1)) fun x => (x + 1) ^ (n + 1)) x := by
       simp only [coe_fwdDiffₗ_pow, fwdDiff_iter_eq_sum_shift, fwdDiff_iter_eq_sum_shift,
         Int.reduceNeg, nsmul_eq_mul, mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
