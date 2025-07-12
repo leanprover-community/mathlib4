@@ -215,6 +215,26 @@ lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := b
 
 end PartialOrder
 
+/-- A star projection operator is positive.
+
+The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
+have `StarOrderedRing (E →L[𝕜] E)`. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isStarPojection {p : E →L[𝕜] E}
+    (hp : IsStarProjection p) : p.IsPositive := by
+  refine ⟨hp.isSelfAdjoint, ?_⟩
+  rw [← hp.isIdempotentElem.eq]
+  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
+  intro x
+  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
+  exact inner_self_nonneg
+
+/-- An idempotent operator is positive if and only if it is self-adjoint. -/
+@[grind →]
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
+  ⟨fun h => h.isSelfAdjoint, fun h => IsPositive.of_isStarPojection ⟨hp, h⟩⟩
+
 end ContinuousLinearMap
 
 namespace LinearMap
@@ -238,13 +258,17 @@ theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive
   rw [inner_re_symm]
   exact hT.re_inner_nonneg_left x
 
-lemma isPositive_toContinuousLinearMap_iff [CompleteSpace E] (T : E →ₗ[𝕜] E) :
+lemma isPositive_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
+    have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toContinuousLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 
-lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff [CompleteSpace E] (T : E →L[𝕜] E) :
+lemma _root_.ContinuousLinearMap.isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
+    have := FiniteDimensional.complete 𝕜 E
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
+  intro
   simp [ContinuousLinearMap.IsPositive, IsPositive, isSelfAdjoint_toLinearMap_iff T,
     ContinuousLinearMap.reApplyInnerSelf]
 

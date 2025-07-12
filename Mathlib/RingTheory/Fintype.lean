@@ -45,7 +45,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
       apply_fun (ringEquivOfPrime R Nat.prime_three h).symm at H
       simp only [map_ofNat, map_zero] at H
       replace H : ((2 : ℕ) : ZMod 3) = 0 := H
-      rw [natCast_zmod_eq_zero_iff_dvd] at H
+      rw [natCast_eq_zero_iff] at H
       norm_num at H
     · intro h
       simp only [mem_insert, mem_singleton, zero_eq_neg] at h

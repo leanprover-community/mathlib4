@@ -16,20 +16,17 @@ and outputs a set of orthogonal vectors which have the same span.
 
 ## Main results
 
-- `gramSchmidt` : the Gram-Schmidt process
-- `gramSchmidt_orthogonal` :
-  `gramSchmidt` produces an orthogonal system of vectors.
-- `span_gramSchmidt` :
-  `gramSchmidt` preserves span of vectors.
-- `gramSchmidt_ne_zero` :
-  If the input vectors of `gramSchmidt` are linearly independent,
+- `gramSchmidt`: the Gram-Schmidt process
+- `gramSchmidt_orthogonal`: `gramSchmidt` produces an orthogonal system of vectors.
+- `span_gramSchmidt`: `gramSchmidt` preserves span of vectors.
+- `gramSchmidt_linearIndependent`: if the input vectors of `gramSchmidt` are linearly independent,
+  then so are the output vectors.
+- `gramSchmidt_ne_zero`: if the input vectors of `gramSchmidt` are linearly independent,
   then the output vectors are non-zero.
-- `gramSchmidt_basis` :
-  The basis produced by the Gram-Schmidt process when given a basis as input.
-- `gramSchmidtNormed` :
-  the normalized `gramSchmidt` (i.e each vector in `gramSchmidtNormed` has unit length.)
-- `gramSchmidt_orthonormal` :
-  `gramSchmidtNormed` produces an orthornormal system of vectors.
+- `gramSchmidtBasis`: the basis produced by the Gram-Schmidt process when given a basis as input
+- `gramSchmidtNormed`:
+  the normalized `gramSchmidt` process, i.e each vector in `gramSchmidtNormed` has unit length
+- `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthornormal system of vectors.
 - `gramSchmidtOrthonormalBasis`: orthonormal basis constructed by the Gram-Schmidt process from
   an indexed set of vectors of the right size
 -/
@@ -43,6 +40,8 @@ variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT
 attribute [local instance] IsWellOrder.toHasWellFounded
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
+namespace InnerProductSpace
 
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
@@ -171,8 +170,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise fun i j => ⟪f 
     rw [Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
       apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
-      rw [mem_orthogonal_singleton_iff_inner_left]
-      rw [← mem_orthogonal_singleton_iff_inner_right]
+      rw [mem_orthogonal_singleton_iff_inner_left, ← mem_orthogonal_singleton_iff_inner_right]
       exact this (gramSchmidt_mem_span 𝕜 f (le_refl j))
     rw [isOrtho_span]
     rintro u ⟨k, hk, rfl⟩ v (rfl : v = f i)
@@ -231,8 +229,7 @@ theorem coe_gramSchmidtBasis (b : Basis ι 𝕜 E) : (gramSchmidtBasis b : ι �
   Basis.coe_mk _ _
 
 variable (𝕜) in
-/-- the normalized `gramSchmidt`
-(i.e each vector in `gramSchmidtNormed` has unit length.) -/
+/-- the normalized `gramSchmidt` (i.e each vector in `gramSchmidtNormed` has unit length.) -/
 noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
   (‖gramSchmidt 𝕜 f n‖ : 𝕜)⁻¹ • gramSchmidt 𝕜 f n
 
@@ -254,7 +251,7 @@ theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidt
 /-- **Gram-Schmidt Orthonormalization**:
 `gramSchmidtNormed` applied to a linearly independent set of vectors produces an orthornormal
 system of vectors. -/
-theorem gramSchmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
+theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
   unfold Orthonormal
   constructor
@@ -265,15 +262,22 @@ theorem gramSchmidt_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f)
     repeat' right
     exact gramSchmidt_orthogonal 𝕜 f hij
 
+@[deprecated (since := "2025-07-10")] alias gramSchmidt_orthonormal := gramSchmidtNormed_orthonormal
+
 /-- **Gram-Schmidt Orthonormalization**:
 `gramSchmidtNormed` produces an orthornormal system of vectors after removing the vectors which
 become zero in the process. -/
-theorem gramSchmidt_orthonormal' (f : ι → E) :
+theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
     Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i := by
   refine ⟨fun i => gramSchmidtNormed_unit_length' i.prop, ?_⟩
   rintro i j (hij : ¬_)
   rw [Subtype.ext_iff] at hij
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
+
+@[deprecated (since := "2025-07-10")]
+alias gramSchmidt_orthonormal' := gramSchmidtNormed_orthonormal'
+
+open Submodule Set Order
 
 theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
     span 𝕜 (gramSchmidtNormed 𝕜 f '' s) = span 𝕜 (gramSchmidt 𝕜 f '' s) := by
@@ -300,12 +304,12 @@ size of the index set is the dimension of `E`, produce an orthonormal basis for 
 with the orthonormal set produced by the Gram-Schmidt orthonormalization process on the elements of
 `ι` for which this process gives a nonzero number. -/
 noncomputable def gramSchmidtOrthonormalBasis : OrthonormalBasis ι 𝕜 E :=
-  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
+  ((gramSchmidtNormed_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
     (v := gramSchmidtNormed 𝕜 f) h).choose
 
 theorem gramSchmidtOrthonormalBasis_apply {f : ι → E} {i : ι} (hi : gramSchmidtNormed 𝕜 f i ≠ 0) :
     gramSchmidtOrthonormalBasis h f i = gramSchmidtNormed 𝕜 f i :=
-  ((gramSchmidt_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
+  ((gramSchmidtNormed_orthonormal' f).exists_orthonormalBasis_extension_of_card_eq
     (v := gramSchmidtNormed 𝕜 f) h).choose_spec i hi
 
 theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
@@ -358,3 +362,5 @@ theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
   exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f _) _).symm
 
 end OrthonormalBasis
+
+end InnerProductSpace

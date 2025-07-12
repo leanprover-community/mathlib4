@@ -48,7 +48,7 @@ inductive Key where
 
 /-
 At the root, `.const` is the most common key, and it is very uncommon
-to get the same contant name with a different arity.
+to get the same constant name with a different arity.
 So for performance, we just use `hash name` to hash `.const name _`.
 -/
 private nonrec def Key.hash : Key → UInt64
