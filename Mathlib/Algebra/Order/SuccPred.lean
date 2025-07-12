@@ -28,9 +28,13 @@ currently set the other way around.
 class SuccAddOrder (α : Type*) [Preorder α] [Add α] [One α] extends SuccOrder α where
   succ_eq_add_one (x : α) : succ x = x + 1
 
+attribute [instance low] SuccAddOrder.toSuccOrder
+
 /-- A typeclass for `pred x = x - 1`. -/
 class PredSubOrder (α : Type*) [Preorder α] [Sub α] [One α] extends PredOrder α where
   pred_eq_sub_one (x : α) : pred x = x - 1
+
+attribute [instance low] PredSubOrder.toPredOrder
 
 variable {α : Type*} {x y : α}
 
