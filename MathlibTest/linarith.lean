@@ -295,7 +295,7 @@ in several places used off-the-shelf library lemmas requiring low-level typeclas
 After a tweak to rely only on custom `linarith` clones of these lemmas taking high-level typeclasses,
 this now (November 2024) takes 1647 heartbeats (63 ms on a good laptop). -/
 set_option maxHeartbeats 2000 in
-example {K : Type*} [Field K] [LinearOrder K] [IsOrderedRing K] {x y : K}
+example {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
     (h : x + y = 10) (h' : x + 2 * y ≤ 18) (h : x < 2) : False := by
   linarith (config := {discharger := testSorryTac})
 

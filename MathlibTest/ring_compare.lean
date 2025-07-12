@@ -31,7 +31,7 @@ example : x + y + 1 < y + 4 + x := by ring_lt
 end Nat
 
 section LinearOrderedField
-variable {K : Type*} [Field K] [LinearOrder K] [IsOrderedRing K] {x y : K}
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
 
 example : (0:K) ≤ 0 := by ring_le
 example : 3 ≤ (3:K) := by ring_le
@@ -77,7 +77,7 @@ error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsOrderedRing K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 1 + x + y ≤ 3 + y
 -/
@@ -89,7 +89,7 @@ error: comparison failed, LHS is larger
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsOrderedRing K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 4 + x + y ≤ 3 + x + y
 -/
@@ -101,7 +101,7 @@ error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsOrderedRing K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 1 + x + y < 3 + y
 -/
@@ -113,7 +113,7 @@ error: comparison failed, LHS is at least as large
 K : Type u_1
 inst✝² : Field K
 inst✝¹ : LinearOrder K
-inst✝ : IsOrderedRing K
+inst✝ : IsStrictOrderedRing K
 x y : K
 ⊢ 4 + x + y < 4 + x + y
 -/
