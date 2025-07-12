@@ -165,6 +165,7 @@ This is a class so typeclass inference can deduce this automatically.
 class _root_.IsCkConnection (cov : CovariantDerivative I F V) (k : ℕ∞) [IsManifold I 1 M] where
   regularity : ∀ {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x},
     CMDiff (k + 1) (T% σ) → ContMDiff I (I.prod 𝓘(𝕜, E)) k (T% X) →
+    -- TODO: CMDiff does not work here!
     ContMDiff% k (T% (cov X σ))
 
 -- future: if g is a C^k metric on a manifold M, the corresponding Levi-Civita connection
