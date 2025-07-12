@@ -4129,6 +4129,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.LinearAlgebra.Projectivization.Cardinality
 import Mathlib.LinearAlgebra.Projectivization.Constructions
+import Mathlib.LinearAlgebra.Projectivization.GLAction
 import Mathlib.LinearAlgebra.Projectivization.Independence
 import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
@@ -4639,6 +4640,7 @@ import Mathlib.NumberTheory.MaricaSchoenheim
 import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+import Mathlib.NumberTheory.ModularForms.Cusps
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
