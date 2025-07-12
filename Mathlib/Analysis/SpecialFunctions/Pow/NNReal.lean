@@ -966,7 +966,7 @@ lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 
     (a + b) ^ p ≤ 2 ^ p * (a ^ p + b ^ p) := calc
   (a + b) ^ p ≤ (2 * max a b) ^ p := by rw [two_mul]; gcongr <;> simp
   _ = 2 ^ p * (max a b) ^ p := mul_rpow_of_nonneg _ _ hp
-  _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [rpow_max hp]
+  _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [max_rpow hp]
   _ ≤ 2 ^ p * (a ^ p + b ^ p) := by gcongr; apply max_le_add_of_nonneg <;> simp
 
 end ENNReal
