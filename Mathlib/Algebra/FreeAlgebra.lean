@@ -444,14 +444,7 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
     FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X) :=
   AlgEquiv.ofAlgHom (lift R fun x ↦ (MonoidAlgebra.of R (FreeMonoid X)) (FreeMonoid.of x))
     ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
-    (by
-      apply MonoidAlgebra.algHom_ext; intro x
-      refine FreeMonoid.recOn x ?_ ?_
-      · simp
-        rfl
-      · intro x y ih
-        simp at ih
-        simp [ih])
+    (by aesop)
     (by
       ext
       simp)

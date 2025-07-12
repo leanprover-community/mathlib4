@@ -101,12 +101,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       by_cases hp : p a
       · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
         simp [hp, count_dedup]
-      · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
-        split_ifs at ha' with ha
-        · simp only [ha.symm, mem_filter, mem_dedup, mem_cons, true_or, hp,
-            and_false, false_and, reduceCtorEq] at ha'
-        · exact ha'.2.symm
+      · exact _root_.trans (List.sum_eq_zero fun n hn => by aesop) (by simp [hp])
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
     (l.dedup.map fun x => l.count x).sum = l.length := by

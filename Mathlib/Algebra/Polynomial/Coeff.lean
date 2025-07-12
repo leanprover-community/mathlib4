@@ -50,9 +50,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
 theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
-  contrapose! hi
-  simp [hi]
+  aesop
 
 open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by

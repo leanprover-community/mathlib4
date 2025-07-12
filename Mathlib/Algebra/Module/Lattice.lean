@@ -87,10 +87,7 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
     exact Submodule.fg_span (Set.toFinite (a • (s : Set V)))
   span_eq_top := by
     rw [Submodule.coe_pointwise_smul, ← Submodule.smul_span, IsLattice.span_eq_top]
-    ext x
-    refine ⟨fun _ ↦ trivial, fun _ ↦ ?_⟩
-    rw [show x = a • a⁻¹ • x by simp]
-    exact Submodule.smul_mem_pointwise_smul _ _ _ (by trivial)
+    aesop
 
 lemma of_le_of_isLattice_of_fg {M N : Submodule R V} (hle : M ≤ N) [IsLattice A M]
     (hfg : N.FG) : IsLattice A N :=

@@ -463,11 +463,7 @@ def centerToCentroidCenter :
 
 instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
   coe f := f.val.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr with x
-    exact congrFun h x
+  coe_injective' f g h := by aesop
 
 lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroidCenter z) a = z * a := rfl
