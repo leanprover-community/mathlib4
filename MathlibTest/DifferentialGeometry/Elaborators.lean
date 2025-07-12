@@ -44,6 +44,45 @@ variable {σ : Π x : M, V x}
 #guard_msgs in
 #check T% σ
 
+set_option linter.style.commandStart true
+
+-- TODO: investigate this!
+/--
+error: Application type mismatch: In the application
+  MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) Set.univ
+the argument
+  Set.univ
+has type
+  Set.{?u.13540} ?m.13541 : Type ?u.13540
+but is expected to have type
+  Set.{u_4} M : Type u_4
+-/
+#guard_msgs in
+example {x : M} : MDiffAt[Set.univ] (T% σ) x := sorry
+
+-- Interaction with auto-implicits.
+/--
+error: Application type mismatch: In the application
+  MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) Set.univ
+the argument
+  Set.univ
+has type
+  Set.{?u.17364} ?m.17365 : Type ?u.17364
+but is expected to have type
+  Set.{u_4} M : Type u_4
+-/
+#guard_msgs in
+set_option autoImplicit true in
+example : MDiffAt[Set.univ] (T% σ) x := sorry
+
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+example {x : M} : MDiffAt[(Set.univ : Set M)] (T% σ) x := sorry
+
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+example {u : Set M} {x : M} : CMDiffAt[u] 2 (T% σ) x := sorry
+
 -- Note how the name of the bound variable `x` resp. `y` is preserved.
 /-- info: fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
