@@ -171,17 +171,14 @@ lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
   · rwa [Submodule.subsingleton_quotient_iff_eq_top, LinearMap.range_eq_top] at h
   have : Subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R')) := by
     refine subsingleton_of_forall_eq 0 fun y ↦ ?_
-    induction y with
-    | zero => rfl
-    | add a b e₁ e₂ => rwa [e₁, zero_add]
-    | tmul x y =>
-      obtain ⟨x, rfl⟩ := R'.mkQ_surjective x
-      obtain ⟨y, rfl⟩ := R'.mkQ_surjective y
-      obtain ⟨s, hs⟩ : ∃ s, 1 ⊗ₜ[R] s = x ⊗ₜ[R] y := by
-        use x * y
-        trans x ⊗ₜ 1 * 1 ⊗ₜ y
-        · simp [h₁]
-        · simp
-      have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R S)⟩
-      rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
+    tensor_induction y with x y
+    obtain ⟨x, rfl⟩ := R'.mkQ_surjective x
+    obtain ⟨y, rfl⟩ := R'.mkQ_surjective y
+    obtain ⟨s, hs⟩ : ∃ s, 1 ⊗ₜ[R] s = x ⊗ₜ[R] y := by
+      use x * y
+      trans x ⊗ₜ 1 * 1 ⊗ₜ y
+      · simp [h₁]
+      · simp
+    have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R S)⟩
+    rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
   cases false_of_nontrivial_of_subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R'))
