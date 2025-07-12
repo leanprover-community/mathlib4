@@ -129,6 +129,9 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
 lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
   rw [← not_iff_not, Fin.not_le, Fin.not_le, lt_sub_iff]
 
+lemma sub_le_right {n : ℕ} (i : Fin n) : n - i.1 ≤ n := by
+  simp
+
 @[simp]
 lemma lt_one_iff {n : ℕ} (x : Fin (n + 2)) : x < 1 ↔ x = 0 := by
   simp [lt_iff_val_lt_val]
@@ -160,6 +163,12 @@ lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
 
 lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
   rw [rev_eq_iff, rev_add, rev_rev]
+
+lemma lt_add_one_of_lt {n : ℕ} [NeZero n] {a b : Fin n} (hab : a < b) : a < a + 1 := by
+  have : a.1 + 1 < n := by omega
+  simp only [lt_def, val_add, coe_ofNat_eq_mod, Nat.add_mod_mod, Nat.mod_eq_of_lt this,
+    gt_iff_lt]
+  omega
 
 lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
   rw [← rev_lt_rev, Iff.comm, ← rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
