@@ -149,3 +149,27 @@ def positive : ProperCone R E where
 
 end PositiveCone
 end ProperCone
+
+/-!
+### Topological properties of convex cones
+
+This section proves topological results about convex cones.
+
+#### TODO
+
+This result generalises to G-submodules.
+-/
+
+namespace ConvexCone
+variable {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup M] [Module 𝕜 M] [TopologicalSpace M]
+  {s : Set M}
+
+-- This is necessary for the proof below but triggers the `unusedSectionVars` linter.
+-- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M]
+
+/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
+doesn't support that use case. See
+https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
+proof_wanted isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set M)
+
+end ConvexCone
