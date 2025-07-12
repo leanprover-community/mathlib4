@@ -29,7 +29,7 @@ namespace QuadraticModuleCat
 open QuadraticForm
 
 instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
-  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R)) 
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     fun X Y ↦ ofIso <| tensorComm X.form Y.form
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a braided functor. -/
