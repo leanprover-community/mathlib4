@@ -178,12 +178,12 @@ lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0
 lemma X_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P x * Q z = Q x * P z := by
   rcases h with ⟨u, rfl⟩
   simp only [Units.smul_def, smul_fin3_ext]
-  ring1
+  grind
 
 lemma Y_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P y * Q z = Q y * P z := by
   rcases h with ⟨u, rfl⟩
   simp only [Units.smul_def, smul_fin3_ext]
-  ring1
+  grind
 
 lemma not_equiv_of_Z_eq_zero_left {P Q : Fin 3 → R} (hPz : P z = 0) (hQz : Q z ≠ 0) : ¬P ≈ Q :=
   fun h => hQz <| (Z_eq_zero_of_equiv h).mp hPz
@@ -205,8 +205,8 @@ lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠
 
 lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x / P z, P y / P z, 1] :=
   equiv_of_X_eq_of_Y_eq hPz one_ne_zero
-    (by linear_combination (norm := (matrix_simp; ring1)) -P x * div_self hPz)
-    (by linear_combination (norm := (matrix_simp; ring1)) -P y * div_self hPz)
+    (by linear_combination (norm := (matrix_simp; grind)) -P x * div_self hPz)
+    (by linear_combination (norm := (matrix_simp; grind)) -P y * div_self hPz)
 
 lemma X_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P x * Q z = Q x * P z ↔ P x / P z = Q x / Q z :=
@@ -236,7 +236,7 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
 
 lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 3 =
     W.toAffine.polynomial.evalEval (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial]; ring1))
+  linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial]; grind))
     P y ^ 2 / P z ^ 2 * div_self hPz + W.a₁ * P x * P y / P z ^ 2 * div_self hPz
       + W.a₃ * P y / P z * div_self (pow_ne_zero 2 hPz) - W.a₂ * P x ^ 2 / P z ^ 2 * div_self hPz
       - W.a₄ * P x / P z * div_self (pow_ne_zero 2 hPz) - W.a₆ * div_self (pow_ne_zero 3 hPz)
@@ -257,7 +257,7 @@ lemma equation_iff (P : Fin 3 → R) : W'.Equation P ↔
 lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u • P) ↔ W'.Equation P :=
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
-    linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 3 * hP
+    linear_combination (norm := (simp only [smul_fin3_ext]; grind)) u ^ 3 * hP
   ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
@@ -294,7 +294,7 @@ lemma polynomialX_eq : W'.polynomialX =
     C W'.a₁ * Y * Z - (C 3 * X ^ 2 + C (2 * W'.a₂) * X * Z + C W'.a₄ * Z ^ 2) := by
   rw [polynomialX, polynomial]
   pderiv_simp
-  ring1
+  grind
 
 lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
     W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z + W'.a₄ * P z ^ 2) := by
@@ -303,7 +303,7 @@ lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
 
 lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialX / P z ^ 2 = W.toAffine.polynomialX.evalEval (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [eval_polynomialX, Affine.evalEval_polynomialX]; ring1))
+  linear_combination (norm := (rw [eval_polynomialX, Affine.evalEval_polynomialX]; grind))
     W.a₁ * P y / P z * div_self hPz - 2 * W.a₂ * P x / P z * div_self hPz
       - W.a₄ * div_self (pow_ne_zero 2 hPz)
 
@@ -317,7 +317,7 @@ lemma polynomialY_eq : W'.polynomialY =
     C 2 * Y * Z + C W'.a₁ * X * Z + C W'.a₃ * Z ^ 2 := by
   rw [polynomialY, polynomial]
   pderiv_simp
-  ring1
+  grind
 
 lemma eval_polynomialY (P : Fin 3 → R) :
     eval P W'.polynomialY = 2 * P y * P z + W'.a₁ * P x * P z + W'.a₃ * P z ^ 2 := by
@@ -326,7 +326,7 @@ lemma eval_polynomialY (P : Fin 3 → R) :
 
 lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialY / P z ^ 2 = W.toAffine.polynomialY.evalEval (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [eval_polynomialY, Affine.evalEval_polynomialY]; ring1))
+  linear_combination (norm := (rw [eval_polynomialY, Affine.evalEval_polynomialY]; grind))
     2 * P y / P z * div_self hPz + W.a₁ * P x / P z * div_self hPz
       + W.a₃ * div_self (pow_ne_zero 2 hPz)
 
@@ -341,7 +341,7 @@ lemma polynomialZ_eq : W'.polynomialZ =
       - (C W'.a₂ * X ^ 2 + C (2 * W'.a₄) * X * Z + C (3 * W'.a₆) * Z ^ 2) := by
   rw [polynomialZ, polynomial]
   pderiv_simp
-  ring1
+  grind
 
 lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
     P y ^ 2 + W'.a₁ * P x * P y + 2 * W'.a₃ * P y * P z
@@ -353,7 +353,7 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
 theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W'.polynomial =
     P x * eval P W'.polynomialX + P y * eval P W'.polynomialY + P z * eval P W'.polynomialZ := by
   rw [eval_polynomial, eval_polynomialX, eval_polynomialY, eval_polynomialZ]
-  ring1
+  grind
 
 variable (W') in
 /-- The proposition that a projective point representative `(x, y, z)` on a Weierstrass curve `W` is

@@ -8,7 +8,6 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
 
 /-!
 # Sums of binomial coefficients
@@ -82,7 +81,7 @@ theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
     rw [mem_range] at hm
     simp [show n + m = n - m + 2 * m by omega, pow_add]
   rw [neg_pow, this]
-  ring
+  grind
 
 namespace Nat
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
@@ -59,13 +58,13 @@ theorem doubleFactorial_two_mul : ∀ n : ℕ, (2 * n)‼ = 2 ^ n * n !
   | n + 1 => by
     rw [mul_add, mul_one, doubleFactorial_add_two, factorial, pow_succ, doubleFactorial_two_mul _,
       succ_eq_add_one]
-    ring
+    grind
 
 theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i ∈ Finset.range n, 2 * (i + 1)
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, ← doubleFactorial_eq_prod_even _, mul_comm (2 * n)‼,
-      (by ring : 2 * (n + 1) = 2 * n + 2)]
+      (by grind : 2 * (n + 1) = 2 * n + 2)]
     rfl
 
 theorem doubleFactorial_eq_prod_odd :
@@ -73,7 +72,7 @@ theorem doubleFactorial_eq_prod_odd :
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, ← doubleFactorial_eq_prod_odd _, mul_comm (2 * n + 1)‼,
-      (by ring : 2 * (n + 1) + 1 = 2 * n + 1 + 2)]
+      (by grind : 2 * (n + 1) + 1 = 2 * n + 1 + 2)]
     rfl
 
 end Nat

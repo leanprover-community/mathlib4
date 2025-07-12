@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Order.Circular
+import Mathlib.Tactic.Ring
 
 /-!
 # Reducing to an interval modulo its length
@@ -882,7 +883,7 @@ theorem toIcoMod_eq_add_fract_mul (a b : α) :
     toIcoMod hp a b = a + Int.fract ((b - a) / p) * p := by
   rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
   field_simp
-  ring
+  grind
 
 theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p := by
   simp [toIcoMod_eq_add_fract_mul]
@@ -891,7 +892,7 @@ theorem toIocMod_eq_sub_fract_mul (a b : α) :
     toIocMod hp a b = a + p - Int.fract ((a + p - b) / p) * p := by
   rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
   field_simp
-  ring
+  grind
 
 theorem toIcoMod_zero_one (b : α) : toIcoMod (zero_lt_one' α) 0 b = Int.fract b := by
   simp [toIcoMod_eq_add_fract_mul]

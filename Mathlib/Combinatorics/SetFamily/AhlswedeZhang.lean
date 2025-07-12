@@ -10,7 +10,6 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
@@ -70,7 +69,7 @@ private lemma binomial_sum_eq (h : n < m) :
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'
   have : (m.choose i : ℚ) ≠ 0 := cast_ne_zero.2 (choose_pos h₂.le).ne'
   field_simp
-  ring
+  grind
 
 private lemma Fintype.sum_div_mul_card_choose_card :
     ∑ s : Finset α, (card α / ((card α - #s) * (card α).choose #s) : ℚ) =

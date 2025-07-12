@@ -12,7 +12,6 @@ import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.GCongr
 
 /-!
@@ -73,19 +72,19 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
     (h₀₁ : a₀ * b₁ ≤ c₀ * d₁) (h₁₁ : a₁ * b₁ ≤ c₁ * d₁) :
     (a₀ + a₁) * (b₀ + b₁) ≤ (c₀ + c₁) * (d₀ + d₁) := by
   calc
-    _ = a₀ * b₀ + (a₀ * b₁ + a₁ * b₀) + a₁ * b₁ := by ring
+    _ = a₀ * b₀ + (a₀ * b₁ + a₁ * b₀) + a₁ * b₁ := by grind
     _ ≤ c₀ * d₀ + (c₀ * d₁ + c₁ * d₀) + c₁ * d₁ := add_le_add_three h₀₀ ?_ h₁₁
-    _ = (c₀ + c₁) * (d₀ + d₁) := by ring
+    _ = (c₀ + c₁) * (d₀ + d₁) := by grind
   obtain hcd | hcd := (mul_nonneg hc₀ hd₁).eq_or_lt'
   · rw [hcd] at h₀₁ h₁₀
     rw [h₀₁.antisymm, h₁₀.antisymm, add_zero] <;> positivity
   refine le_of_mul_le_mul_right ?_ hcd
   calc (a₀ * b₁ + a₁ * b₀) * (c₀ * d₁)
-      = a₀ * b₁ * (c₀ * d₁) + c₀ * d₁ * (a₁ * b₀) := by ring
+      = a₀ * b₁ * (c₀ * d₁) + c₀ * d₁ * (a₁ * b₀) := by grind
     _ ≤ a₀ * b₁ * (a₁ * b₀) + c₀ * d₁ * (c₀ * d₁) := mul_add_mul_le_mul_add_mul h₀₁ h₁₀
-    _ = a₀ * b₀ * (a₁ * b₁) + c₀ * d₁ * (c₀ * d₁) := by ring
+    _ = a₀ * b₀ * (a₁ * b₁) + c₀ * d₁ * (c₀ * d₁) := by grind
     _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) := by gcongr
-    _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by ring
+    _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by grind
 
 private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β) (s : Finset α) : β :=
   ∑ t ∈ 𝒜 with t.erase a = s, f t

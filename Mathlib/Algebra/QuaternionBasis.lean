@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Quaternion
-import Mathlib.Tactic.Ring
 
 /-!
 # Basis on a quaternion-like algebra

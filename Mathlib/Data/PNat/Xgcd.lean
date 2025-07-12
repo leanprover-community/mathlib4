@@ -3,7 +3,6 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Tactic.Ring
 import Mathlib.Data.PNat.Prime
 
 /-!
@@ -120,7 +119,7 @@ def succ₂ (t : ℕ × ℕ) : ℕ × ℕ :=
   ⟨t.1.succ, t.2.succ⟩
 
 theorem v_eq_succ_vp : u.v = succ₂ u.vp := by
-  ext <;> dsimp [v, vp, w, z, a, b, succ₂] <;> ring_nf
+  ext <;> dsimp [v, vp, w, z, a, b, succ₂] <;> grind
 
 /-- `IsSpecial` holds if the matrix has determinant one. -/
 def IsSpecial : Prop :=
@@ -135,8 +134,8 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   let ⟨wp, x, y, zp, ap, bp⟩ := u
   constructor <;> intro h <;> simp only [w, succPNat, succ_eq_add_one, z] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
-  · simp_all [← h]; ring
-  · simp [Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
+  · simp_all [← h]; grind
+  · simp [Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; grind
 
 /-- `IsReduced` holds if the two entries in the vector are the
 same.  The reduction algorithm will produce a system with this
@@ -197,9 +196,9 @@ theorem flip_v : (flip u).v = u.v.swap := by
   dsimp [v]
   ext
   · simp only
-    ring
+    grind
   · simp only
-    ring
+    grind
 
 /-- Properties of division with remainder for a / b. -/
 theorem rq_eq : u.r + (u.bp + 1) * u.q = u.ap + 1 :=
@@ -241,7 +240,7 @@ theorem finish_isReduced : u.finish.IsReduced := by
 theorem finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
   dsimp [IsSpecial, finish] at hs ⊢
   rw [add_mul _ _ u.y, add_comm _ (u.x * u.y), ← hs]
-  ring
+  grind
 
 theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
   let ha : u.r + u.b * u.q = u.a := u.rq_eq
@@ -250,10 +249,10 @@ theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
   · change (u.wp + 1) * u.b + ((u.wp + 1) * u.qp + u.x) * u.b = u.w * u.a + u.x * u.b
     have : u.wp + 1 = u.w := rfl
     rw [this, ← ha, u.qp_eq hr]
-    ring
+    grind
   · change u.y * u.b + (u.y * u.qp + u.z) * u.b = u.y * u.a + u.z * u.b
     rw [← ha, u.qp_eq hr]
-    ring
+    grind
 
 /-- This is the main reduction step, which is used when u.r ≠ 0, or
 equivalently b does not divide a. -/
@@ -272,7 +271,7 @@ theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
 theorem step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
   dsimp [IsSpecial, step] at hs ⊢
   rw [mul_add, mul_comm u.y u.x, ← hs]
-  ring
+  grind
 
 /-- The reduction step does not change the product vector. -/
 theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
@@ -281,10 +280,10 @@ theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
   ext
   · change ((u.y * u.q + u.z) * u.b + u.y * (u.r - 1 + 1) : ℕ) = u.y * u.a + u.z * u.b
     rw [← ha, hr]
-    ring
+    grind
   · change ((u.w * u.q + u.x) * u.b + u.w * (u.r - 1 + 1) : ℕ) = u.w * u.a + u.x * u.b
     rw [← ha, hr]
-    ring
+    grind
 
 /-- We can now define the full reduction function, which applies
 step as long as possible, and then applies finish. Note that the
@@ -422,10 +421,10 @@ theorem gcd_props :
   · exact eq hb''
   have hza' : (z * a' : ℕ) = x * b' + 1 := by
     rw [ha', hb', mul_add, mul_add, mul_comm (z : ℕ), hdet']
-    ring
+    grind
   have hwb' : (w * b' : ℕ) = y * a' + 1 := by
     rw [ha', hb', mul_add, mul_add, hdet']
-    ring
+    grind
   constructor
   · apply eq
     rw [succPNat_coe, Nat.succ_eq_add_one, mul_coe, hza']
@@ -435,7 +434,7 @@ theorem gcd_props :
   rw [ha'', hb'']
   repeat rw [← @mul_assoc]
   rw [hza', hwb']
-  constructor <;> ring
+  constructor <;> grind
 
 theorem gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩

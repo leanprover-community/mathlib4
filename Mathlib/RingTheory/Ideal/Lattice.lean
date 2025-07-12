@@ -5,7 +5,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.Tactic.Ring
 
 /-!
 # The lattice of ideals in a ring

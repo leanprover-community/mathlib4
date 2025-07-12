@@ -5,7 +5,6 @@ Authors: Patrick Stevens, Thomas Browning
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -65,7 +64,7 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
   calc
     (n + 1) * (2 * (n + 1)).choose (n + 1) = (2 * n + 2).choose (n + 1) * (n + 1) := mul_comm _ _
     _ = (2 * n + 1).choose n * (2 * n + 2) := by rw [choose_succ_right_eq, choose_mul_succ_eq]
-    _ = 2 * ((2 * n + 1).choose n * (n + 1)) := by ring
+    _ = 2 * ((2 * n + 1).choose n * (n + 1)) := by grind
     _ = 2 * ((2 * n + 1).choose n * (2 * n + 1 - n)) := by rw [two_mul n, add_assoc,
                                                                Nat.add_sub_cancel_left]
     _ = 2 * ((2 * n).choose n * (2 * n + 1)) := by rw [choose_mul_succ_eq]
