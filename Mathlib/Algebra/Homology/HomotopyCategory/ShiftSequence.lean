@@ -165,10 +165,10 @@ lemma liftCycles_shift_homologyπ
         simp only [next] at hj hj'
         obtain rfl : i' = i + n := by omega
         obtain rfl : j' = j + n := by omega
-        dsimp at hf ⊢
-        simp only [Linear.comp_units_smul] at hf
-        apply (one_smul (M := ℤˣ) _).symm.trans _
-        rw [← Int.units_mul_self n.negOnePow, mul_smul, comp_id, hf, smul_zero]) ≫
+        simp_all only [shiftFunctor_obj_X', shiftFunctor_obj_d',
+          Linear.comp_units_smul, shiftFunctor_obj_X, shiftFunctorObjXIso,
+          XIsoOfEq_rfl, Iso.refl_hom, comp_id]
+        exact (smul_eq_zero_iff_eq n.negOnePow).mp hf) ≫
         K.homologyπ i' ≫
           ((HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftIso n i i' hi').inv.app K := by
   simp only [liftCycles, homologyπ,

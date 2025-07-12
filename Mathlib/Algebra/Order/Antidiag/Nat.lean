@@ -216,8 +216,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
-    ext ⟨p, hp⟩
-    refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
+    grind
   rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this

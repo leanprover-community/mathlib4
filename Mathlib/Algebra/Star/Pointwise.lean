@@ -126,6 +126,6 @@ end Set
 @[simp]
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
-  ext x
-  simp only [Set.mem_star, SetLike.mem_coe]
-  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩
+  ext
+  simp only [Set.instInvolutiveStar, Set.mem_star, SetLike.mem_coe]
+  exact star_mem_iff

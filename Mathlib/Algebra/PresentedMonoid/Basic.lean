@@ -134,9 +134,7 @@ theorem ext {M : Type*} [Monoid M] (rels : FreeMonoid α → FreeMonoid α → P
     {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) :
     φ = ψ := by
   apply MonoidHom.eq_of_eqOn_denseM (closure_range_of _)
-  apply eqOn_range.mpr
-  ext
-  rw [Function.comp_apply]
-  exact hx _
+  simp only [eqOn_range]
+  exact (eqOn_univ (⇑φ ∘ of rels) (⇑ψ ∘ of rels)).mp fun ⦃x⦄ a ↦ hx x
 
 end PresentedMonoid

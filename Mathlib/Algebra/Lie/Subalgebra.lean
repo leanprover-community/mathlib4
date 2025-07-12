@@ -314,9 +314,8 @@ theorem rangeRestrict_apply (x : L) : f.rangeRestrict x = ⟨f x, f.mem_range_se
 
 theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
-  rw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
-  use x
-  simp only [rangeRestrict_apply]
+  simp only [rangeRestrict_apply, Subtype.mk.injEq]
+  exact hy
 
 /-- A Lie algebra is equivalent to its range under an injective Lie algebra morphism. -/
 noncomputable def equivRangeOfInjective (h : Function.Injective f) : L ≃ₗ⁅R⁆ f.range :=

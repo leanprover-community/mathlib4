@@ -146,11 +146,7 @@ lemma quasiIso_opMap_iff (φ : S₁ ⟶ S₂) :
   have γ : HomologyMapData φ S₁.homologyData S₂.homologyData := default
   rw [γ.left.quasiIso_iff, γ.op.right.quasiIso_iff]
   dsimp
-  constructor
-  · intro h
-    apply isIso_of_op
-  · intro h
-    infer_instance
+  exact isIso_op_iff γ.left.φH
 
 lemma quasiIso_opMap (φ : S₁ ⟶ S₂) [QuasiIso φ] :
     QuasiIso (opMap φ) := by

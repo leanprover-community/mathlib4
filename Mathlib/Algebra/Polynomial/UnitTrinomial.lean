@@ -80,11 +80,9 @@ theorem trinomial_natTrailingDegree (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
       ((Finset.le_inf fun i h => ?_).antisymm <|
           trailingDegree_le_of_ne_zero <| by rwa [trinomial_trailing_coeff' hkm hmn]).symm
   replace h := support_trinomial' k m n u v w h
-  rw [mem_insert, mem_insert, mem_singleton] at h
-  rcases h with (rfl | rfl | rfl)
-  · exact le_rfl
-  · exact WithTop.coe_le_coe.mpr hkm.le
-  · exact WithTop.coe_le_coe.mpr (hkm.trans hmn).le
+  simp_all only [ne_eq, mem_insert, mem_singleton, ENat.some_eq_coe, Nat.cast_le,
+    ge_iff_le]
+  grind
 
 theorem trinomial_leadingCoeff (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
     (trinomial k m n u v w).leadingCoeff = w := by
@@ -224,10 +222,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
-  · intro h
-    have := h.1
-    rw [add_comm, add_lt_add_iff_right] at this
-    exact asymm this hmn
+  · grind
   · exact fun h => h.1.ne rfl
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) key
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) (hkm.trans hmn)

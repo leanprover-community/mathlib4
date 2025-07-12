@@ -476,10 +476,10 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
           congr! 1; ext; simp only [mem_filter, mem_product, hs, and_comm]
         _ = ∑ p ∈ s, f p.1 * g p.2 :=
           sum_subset (filter_subset _ _) fun p hps hp => by
-            simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
-            by_cases h1 : f p.1 = 0
-            · rw [h1, zero_mul]
-            · rw [hp hps h1, mul_zero]
+            simp_all only [Prod.forall, mem_support_iff, ne_eq, mem_filter,
+              true_and, not_and, Decidable.not_not]
+            exact mul_eq_zero_of_ne_zero_imp_eq_zero hp
+
 
 @[simp]
 theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
@@ -575,10 +575,7 @@ theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
     swap
     · simp_rw [Finsupp.sum, mul_zero, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
-      simp_rw [ite_eq_right_iff]
-      rintro g'' _hg'' rfl
-      exfalso
-      exact h ⟨_, rfl⟩
+      grind
 
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a ∈ f.support, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
@@ -604,10 +601,7 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
     swap
     · simp_rw [Finsupp.sum, zero_mul, ite_self, Finset.sum_const_zero]
     · apply Finset.sum_eq_zero
-      simp_rw [ite_eq_right_iff]
-      rintro g'' _hg'' rfl
-      exfalso
-      exact h ⟨_, rfl⟩
+      grind
 
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by

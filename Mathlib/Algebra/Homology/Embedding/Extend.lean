@@ -140,11 +140,7 @@ lemma isZero_extend_X' (i' : ι') (hi' : e.r i' = none) :
 
 lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     IsZero ((K.extend e).X i') :=
-  K.isZero_extend_X' e i' (by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
-    · exact hi'
-    · exfalso
-      exact hi' _ (e.f_eq_of_r_eq_some hi))
+  K.isZero_extend_X' e i' (ComplexShape.Embedding.r_eq_none e i' hi')
 
 instance : (K.extend e).IsStrictlySupported e where
   isZero i' hi' := K.isZero_extend_X e i' hi'
@@ -240,7 +236,8 @@ lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
-  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+  · simp_all only [not_exists, zero_f]
+    exact extendMap_f_eq_zero 0 e i' hi'
 
 /-- The canonical isomorphism `K.op.extend e.op ≅ (K.extend e).op`. -/
 noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=

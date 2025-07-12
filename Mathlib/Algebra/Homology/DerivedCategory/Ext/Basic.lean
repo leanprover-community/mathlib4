@@ -190,10 +190,13 @@ lemma mk₀_bijective : Function.Bijective (mk₀ (X := X) (Y := Y)) := by
   have he : e.toFun = mk₀ := by
     ext f : 1
     dsimp [e]
-    apply homEquiv.injective
-    apply (Equiv.apply_symm_apply _ _).trans
-    symm
-    apply SmallShiftedHom.equiv_mk₀
+    ext
+    simp_all only [Int.cast_ofNat_Int, mk₀_hom]
+    exact
+      Equiv.apply_symm_apply homEquiv
+        (ShiftedHom.mk₀ 0
+          (of_eq_true (Eq.trans (congrArg (fun x ↦ x = 0) (CharP.cast_eq_zero ℤ 0)) (eq_self 0)))
+          ((singleFunctor C 0).map f))
   rw [← he]
   exact e.bijective
 

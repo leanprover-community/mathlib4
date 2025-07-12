@@ -182,10 +182,8 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
   intro m hm
   by_contra! hc
   have h := support_sub σ f g hm
-  simp only [mem_support_iff, Ne, coeff_sub, sub_eq_zero] at hm
-  rcases Finset.mem_union.1 h with cf | cg
-  · exact hm (hf m cf hc)
-  · exact hm (hg m cg hc)
+  simp_all only [mem_support_iff, ne_eq, coeff_sub, Finset.mem_union]
+  grind
 
 end DegreeOf
 

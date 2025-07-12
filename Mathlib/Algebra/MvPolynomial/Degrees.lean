@@ -311,12 +311,11 @@ theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) 
   apply Nat.le_antisymm (degreeOf_mul_X_self j f)
   have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) :=
     Finset.comp_sup_eq_sup_comp_of_nonempty @Nat.succ_le_succ (support_nonempty.mpr h)
-  simp only [degreeOf_eq_sup, support_mul_X, this]
-  apply Finset.sup_le
-  intro x hx
-  simp only [Finset.sup_map, bot_eq_zero', add_pos_iff, zero_lt_one, or_true, Finset.le_sup_iff]
-  use x
-  simpa using mem_support_iff.mp hx
+  simp only [degreeOf_eq_sup, support_mul_X, this, Finset.sup_map, Finset.sup_le_iff,
+    mem_support_iff, ne_eq, Nat.bot_eq_zero, lt_add_iff_pos_left, add_pos_iff,
+    zero_lt_one, or_true, Finset.le_sup_iff, comp_apply, addRightEmbedding_apply,
+    coe_add, Pi.add_apply, single_eq_same, add_le_add_iff_right]
+  grind
 
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
