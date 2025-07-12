@@ -84,7 +84,7 @@ def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
     simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
   tensor_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
-  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
+  tensorHom_comp_tensorHom f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
   whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
   id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
   triangle X Y := F.map_injective <| by cases fData; aesop_cat
