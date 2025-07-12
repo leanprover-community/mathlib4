@@ -237,14 +237,14 @@ end Mono
 
 section Empty
 
-theorem thin_of_isSeparating_empty (h : IsSeparating (∅ : Set C)) : Quiver.IsThin C := fun _ _ =>
-  ⟨fun _ _ => h _ _ fun _ => False.elim⟩
+theorem thin_of_isSeparating_empty (h : IsSeparating (∅ : Set C)) : Quiver.IsThin C :=
+  ⟨fun _ _ => ⟨fun _ _ => h _ _ fun _ => False.elim⟩⟩
 
 theorem isSeparating_empty_of_thin [Quiver.IsThin C] : IsSeparating (∅ : Set C) :=
   fun _ _ _ _ _ => Subsingleton.elim _ _
 
 theorem thin_of_isCoseparating_empty (h : IsCoseparating (∅ : Set C)) : Quiver.IsThin C :=
-  fun _ _ => ⟨fun _ _ => h _ _ fun _ => False.elim⟩
+  ⟨fun _ _ => ⟨fun _ _ => h _ _ fun _ => False.elim⟩⟩
 
 theorem isCoseparating_empty_of_thin [Quiver.IsThin C] : IsCoseparating (∅ : Set C) :=
   fun _ _ _ _ _ => Subsingleton.elim _ _
