@@ -9,10 +9,10 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 /-!
 # Theorems about invertible elements in a `GroupWithZero`
 
-We intentionally keep imports minimal here as this file is used by `Mathlib.Tactic.NormNum`.
+We intentionally keep imports minimal here as this file is used by `Mathlib/Tactic/NormNum.lean`.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -22,7 +22,7 @@ theorem Invertible.ne_zero [MulZeroOneClass α] (a : α) [Nontrivial α] [Invert
   fun ha =>
   zero_ne_one <|
     calc
-      0 = ⅟ a * a := by simp [ha]
+      0 = ⅟a * a := by simp [ha]
       _ = 1 := invOf_mul_self
 
 instance (priority := 100) Invertible.toNeZero [MulZeroOneClass α] [Nontrivial α] (a : α)
@@ -34,7 +34,7 @@ variable [MonoidWithZero α]
 
 /-- A variant of `Ring.inverse_unit`. -/
 @[simp]
-theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟ x :=
+theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟x :=
   Ring.inverse_unit (unitOfInvertible _)
 
 end MonoidWithZero
@@ -47,7 +47,7 @@ def invertibleOfNonzero {a : α} (h : a ≠ 0) : Invertible a :=
   ⟨a⁻¹, inv_mul_cancel₀ h, mul_inv_cancel₀ h⟩
 
 @[simp]
-theorem invOf_eq_inv (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
+theorem invOf_eq_inv (a : α) [Invertible a] : ⅟a = a⁻¹ :=
   invOf_eq_right_inv (mul_inv_cancel₀ (Invertible.ne_zero a))
 
 @[simp]
@@ -79,7 +79,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
-    ⅟ (a / b) = b / a :=
+    ⅟(a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
 
 end GroupWithZero

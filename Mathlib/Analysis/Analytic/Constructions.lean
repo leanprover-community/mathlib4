@@ -149,6 +149,10 @@ theorem AnalyticAt.fun_neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z �
 theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   hf.fun_neg
 
+@[simp] lemma analyticAt_neg : AnalyticAt 𝕜 (-f) x ↔ AnalyticAt 𝕜 f x where
+  mp hf := by simpa using hf.neg
+  mpr := .neg
+
 @[deprecated (since := "2025-03-11")] alias AnalyticAt.neg' := AnalyticAt.fun_neg
 
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
@@ -466,7 +470,7 @@ lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
     ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
       fun i ↦ Finset.single_le_sum (fun j _ ↦ (C_pos j).le) (Finset.mem_univ _)⟩
   apply le_radius_of_bound _ D (fun n ↦ ?_)
-  rcases le_or_lt ((r' : ℝ)^n) 0 with hr' | hr'
+  rcases le_or_gt ((r' : ℝ)^n) 0 with hr' | hr'
   · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by positivity) hr') D_nonneg
   · simp only [pi]
     rw [← le_div_iff₀ hr', ContinuousMultilinearMap.opNorm_pi,
@@ -1012,7 +1016,7 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticAt.fun_zpow {f : E → 𝕝} {z : E} {n : ℤ}  (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+lemma AnalyticAt.fun_zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
@@ -1035,7 +1039,7 @@ lemma AnalyticOn.fun_zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : Analyt
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ}  (h₁f : AnalyticOn 𝕜 f s)
+lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
     AnalyticOn 𝕜 (f ^ n) s := by
   exact fun_zpow h₁f h₂f

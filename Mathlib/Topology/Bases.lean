@@ -158,7 +158,7 @@ theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis
     IsTopologicalBasis (s \ {∅}) :=
   isTopologicalBasis_of_isOpen_of_nhds (fun _ hu ↦ h.isOpen hu.1) fun a _ ha hu ↦
     have ⟨t, hts, ht⟩ := h.isOpen_iff.mp hu a ha
-    ⟨t, ⟨hts, ne_of_mem_of_not_mem' ht.1 <| not_mem_empty _⟩, ht⟩
+    ⟨t, ⟨hts, ne_of_mem_of_not_mem' ht.1 <| notMem_empty _⟩, ht⟩
 
 protected theorem IsTopologicalBasis.mem_nhds {a : α} {s : Set α} {b : Set (Set α)}
     (hb : IsTopologicalBasis b) (hs : s ∈ b) (ha : a ∈ s) : s ∈ 𝓝 a :=
@@ -190,6 +190,12 @@ theorem IsTopologicalBasis.open_eq_iUnion {B : Set (Set α)} (hB : IsTopological
   ⟨↥({ s ∈ B | s ⊆ u }), (↑), by
     rw [← sUnion_eq_iUnion]
     apply hB.open_eq_sUnion' ou, fun s => And.left s.2⟩
+
+@[elab_as_elim]
+lemma IsTopologicalBasis.isOpen_induction {P : Set α → Prop} (hB : IsTopologicalBasis B)
+    (basis : ∀ b ∈ B, P b) (sUnion : ∀ S, (∀ s ∈ S, P s) → P (⋃₀ S)) {s : Set α} (hs : IsOpen s) :
+    P s := by
+  obtain ⟨S, hS, rfl⟩ := hB.open_eq_sUnion hs; exact sUnion _ fun b hb ↦ basis _ <| hS hb
 
 lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologicalBasis B)
     (hs : IsOpen s) (h : ∀ U ∈ B, U ⊆ s → U ⊆ t) : s ⊆ t := by
@@ -570,9 +576,9 @@ theorem isTopologicalBasis_subtype
   h.isInducing ⟨rfl⟩
 
 section
-variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
-lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → π i) := by
+lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, X i) → X i) := by
   classical
   refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
   rintro _ ⟨U, s, hU, rfl⟩
@@ -581,7 +587,7 @@ lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → �
   by_cases hi : i ∈ s
   · rw [eval_image_pi (mod_cast hi) h]
     exact hU _ hi
-  · rw [eval_image_pi_of_not_mem (mod_cast hi), if_pos h]
+  · rw [eval_image_pi_of_notMem (mod_cast hi), if_pos h]
     exact isOpen_univ
 
 end
@@ -681,8 +687,8 @@ instance {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableT
 
 section Pi
 
-instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
-    [∀ i, FirstCountableTopology (π i)] : FirstCountableTopology (∀ i, π i) :=
+instance {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
+    [∀ i, FirstCountableTopology (X i)] : FirstCountableTopology (∀ i, X i) :=
   ⟨fun f => by rw [nhds_pi]; infer_instance⟩
 
 end Pi
@@ -714,7 +720,7 @@ variable (α)
 theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
-  refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
+  refine ⟨_, ?_, notMem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
   exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
 
 /-- A countable topological basis of `α`. -/
@@ -727,8 +733,10 @@ theorem countable_countableBasis [SecondCountableTopology α] : (countableBasis 
 instance encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) :=
   (countable_countableBasis α).toEncodable
 
-theorem empty_nmem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
+theorem empty_notMem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
   (exists_countable_basis α).choose_spec.2.1
+
+@[deprecated (since := "2025-05-24")] alias empty_nmem_countableBasis := empty_notMem_countableBasis
 
 theorem isBasis_countableBasis [SecondCountableTopology α] :
     IsTopologicalBasis (countableBasis α) :=
@@ -746,7 +754,7 @@ theorem isOpen_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
 
 theorem nonempty_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
     (hs : s ∈ countableBasis α) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_nmem_countableBasis α
+  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_notMem_countableBasis α
 
 variable (α)
 
@@ -802,8 +810,8 @@ instance {β : Type*} [TopologicalSpace β] [SecondCountableTopology α] [Second
   ((isBasis_countableBasis α).prod (isBasis_countableBasis β)).secondCountableTopology <|
     (countable_countableBasis α).image2 (countable_countableBasis β) _
 
-instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ a, TopologicalSpace (π a)]
-    [∀ a, SecondCountableTopology (π a)] : SecondCountableTopology (∀ a, π a) :=
+instance {ι : Type*} {X : ι → Type*} [Countable ι] [∀ a, TopologicalSpace (X a)]
+    [∀ a, SecondCountableTopology (X a)] : SecondCountableTopology (∀ a, X a) :=
   secondCountableTopology_iInf fun _ => secondCountableTopology_induced _ _ _
 
 -- see Note [lower instance priority]
@@ -873,7 +881,7 @@ variable {ι : Type*} {E : ι → Type*} [∀ i, TopologicalSpace (E i)]
 topological bases on each of the parts of the space. -/
 theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
     (hs : ∀ i, IsTopologicalBasis (s i)) :
-    IsTopologicalBasis (⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' s i) := by
+    IsTopologicalBasis (⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σ i, E i))) '' s i) := by
   refine .of_hasBasis_nhds fun a ↦ ?_
   rw [Sigma.nhds_eq]
   convert (((hs a.1).nhds_hasBasis).map _).to_image_id
@@ -881,8 +889,8 @@ theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
 
 /-- A countable disjoint union of second countable spaces is second countable. -/
 instance [Countable ι] [∀ i, SecondCountableTopology (E i)] :
-    SecondCountableTopology (Σi, E i) := by
-  let b := ⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' countableBasis (E i)
+    SecondCountableTopology (Σ i, E i) := by
+  let b := ⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σ i, E i))) '' countableBasis (E i)
   have A : IsTopologicalBasis b := IsTopologicalBasis.sigma fun i => isBasis_countableBasis _
   have B : b.Countable := countable_iUnion fun i => (countable_countableBasis _).image _
   exact A.secondCountableTopology B
@@ -941,8 +949,8 @@ theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBa
     have x_in_W : x ∈ W := y_in_U
     have W_open : IsOpen W := U_open.preimage h'.continuous
     obtain ⟨Z, Z_in_V, x_in_Z, Z_in_W⟩ := hV.exists_subset_of_mem_open x_in_W W_open
-    have πZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
-    exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, πZ_in_U⟩
+    have XZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
+    exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, XZ_in_U⟩
 
 @[deprecated (since := "2024-10-22")]
 alias IsTopologicalBasis.quotientMap := IsTopologicalBasis.isQuotientMap

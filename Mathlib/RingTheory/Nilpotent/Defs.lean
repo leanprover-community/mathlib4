@@ -12,8 +12,8 @@ import Mathlib.Data.Nat.Lattice
 # Definition of nilpotent elements
 
 This file defines the notion of a nilpotent element and proves the immediate consequences.
-For results that require further theory, see `Mathlib.RingTheory.Nilpotent.Basic`
-and `Mathlib.RingTheory.Nilpotent.Lemmas`.
+For results that require further theory, see `Mathlib/RingTheory/Nilpotent/Basic.lean`
+and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 ## Main definitions
 

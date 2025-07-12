@@ -15,7 +15,7 @@ locally path-connected, sequential and in particular compactly generated.
 
 See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 
-Adapted from `Mathlib.Topology.Compactness.CompactlyGeneratedSpace`.
+Adapted from `Mathlib/Topology/Compactness/CompactlyGeneratedSpace.lean`.
 
 ## TODO
 * All locally path-connected first-countable spaces are delta-generated - in particular, all normed
@@ -73,7 +73,7 @@ class DeltaGeneratedSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   le_deltaGenerated : t ≤ deltaGenerated X
 
 lemma eq_deltaGenerated [DeltaGeneratedSpace X] : tX = deltaGenerated X :=
-  eq_of_le_of_le DeltaGeneratedSpace.le_deltaGenerated deltaGenerated_le
+  eq_of_le_of_ge DeltaGeneratedSpace.le_deltaGenerated deltaGenerated_le
 
 /-- A subset of a delta-generated space is open iff its preimage is open for every
   continuous map from ℝⁿ to X. -/

@@ -60,7 +60,7 @@ variable [RingHomIsometric σ₂₃]
 
 theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f‖ ≤ C :=
-  f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (mul_nonneg h0 (norm_nonneg _)) <| hC x
+  f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (by positivity) <| hC x
 
 
 theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
@@ -300,7 +300,7 @@ variable (Eₗ) {𝕜 E Fₗ Gₗ}
 /-- Apply `L(x,-)` pointwise to bilinear maps, as a continuous bilinear map -/
 @[simps! apply]
 def precompR (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ :=
-  (compL 𝕜 Eₗ Fₗ Gₗ).comp L
+  compL 𝕜 Eₗ Fₗ Gₗ ∘L L
 
 /-- Apply `L(-,y)` pointwise to bilinear maps, as a continuous bilinear map -/
 def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ :=
@@ -312,7 +312,7 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
-    _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg L)
+    _ ≤ 1 * ‖L‖ := by gcongr; apply norm_compL_le
     _ = ‖L‖ := by rw [one_mul]
 
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
@@ -364,15 +364,15 @@ is the product of the norms. -/
 @[simp]
 theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
   refine le_antisymm ?_ ?_
-  · refine opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
+  · refine opNorm_le_bound _ (by positivity) fun x => ?_
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := by gcongr; apply le_opNorm
       _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
-  · obtain hf | hf := (norm_nonneg f).eq_or_gt
+  · obtain hf | hf := (norm_nonneg f).eq_or_lt'
     · simp [hf]
     · rw [← le_div_iff₀ hf]
-      refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
+      refine opNorm_le_bound _ (by positivity) fun x => ?_
       rw [div_mul_eq_mul_div, le_div_iff₀ hf]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm

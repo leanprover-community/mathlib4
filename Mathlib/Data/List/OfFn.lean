@@ -54,20 +54,11 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
   · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
     congr
 
-/-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
-theorem ofFn_add {m n} (f : Fin (m + n) → α) :
-    List.ofFn f =
-      (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
-  induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
-    rfl
-  · rw [ofFn_succ', ofFn_succ', IH, append_concat]
-    rfl
-
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
     List.ofFn (Fin.append a b) = List.ofFn a ++ List.ofFn b := by
-  simp_rw [ofFn_add, Fin.append_left, Fin.append_right]
+  simp_rw [ofFn_add]
+  simp [Fin.append_left', Fin.append_right]
 
 /-- This breaks a list of `m*n` items into `m` groups each containing `n` elements. -/
 theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
@@ -77,9 +68,9 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
   induction' m with m IH
-  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, flatten]
+  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero]
   · simp_rw [ofFn_succ', succ_mul]
-    simp [flatten_concat, ofFn_add, IH]
+    simp [ofFn_add, IH]
     rfl
 
 /-- This breaks a list of `m*n` items into `n` groups each containing `m` elements. -/
@@ -123,7 +114,7 @@ theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
   | 0, c => by rw [ofFn_zero, replicate_zero]
-  | n+1, c => by rw [replicate, ← ofFn_const n]; simp
+  | n + 1, c => by rw [replicate, ← ofFn_const n]; simp
 
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
@@ -135,7 +126,7 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
   simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
-    (Fin.rightInverse_cast length_ofFn).surjective.forall, Fin.forall_iff, Fin.cast_mk,
+    Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
@@ -173,7 +164,7 @@ lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
-def equivSigmaTuple : List α ≃ Σn, Fin n → α where
+def equivSigmaTuple : List α ≃ Σ n, Fin n → α where
   toFun l := ⟨l.length, l.get⟩
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
@@ -203,7 +194,7 @@ theorem forall_iff_forall_tuple {P : List α → Prop} :
 
 /-- `Fin.sigma_eq_iff_eq_comp_cast` may be useful to work with the RHS of this expression. -/
 theorem ofFn_inj' {m n : ℕ} {f : Fin m → α} {g : Fin n → α} :
-    ofFn f = ofFn g ↔ (⟨m, f⟩ : Σn, Fin n → α) = ⟨n, g⟩ :=
+    ofFn f = ofFn g ↔ (⟨m, f⟩ : Σ n, Fin n → α) = ⟨n, g⟩ :=
   Iff.symm <| equivSigmaTuple.symm.injective.eq_iff.symm
 
 /-- Note we can only state this when the two functions are indexed by defeq `n`. -/

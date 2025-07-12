@@ -86,6 +86,10 @@ export InvolutiveStar (star_involutive)
 theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
   star_involutive _
 
+lemma star_mem_iff {S : Type*} [SetLike S R] [InvolutiveStar R] [StarMemClass S R]
+    {s : S} {x : R} : star x ∈ s ↔ x ∈ s :=
+  ⟨fun h => star_star x ▸ star_mem h, fun h => star_mem h⟩
+
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
 
@@ -316,8 +320,8 @@ def starRingEnd : R →+* R := @starRingAut R _ _
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
 
 /-- This is not a simp lemma, since we usually want simp to keep `starRingEnd` bundled.
- For example, for complex conjugation, we don't want simp to turn `conj x`
- into the bare function `star x` automatically since most lemmas are about `conj x`. -/
+For example, for complex conjugation, we don't want simp to turn `conj x`
+into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute due to report by linter:
@@ -396,7 +400,6 @@ the statement only requires `[Star R] [Star A] [SMul R A]`.
 If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
 star algebra.
 -/
-
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
   /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
@@ -480,16 +483,16 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
 
 protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
     Invertible (star r) where
-  invOf := Star.star (⅟ r)
+  invOf := Star.star (⅟r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 
 theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
-    [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
-  have : star (⅟ r) = star (⅟ r) * ((star r) * ⅟ (star r)) := by
+    [Invertible (star r)] : star (⅟r) = ⅟(star r) := by
+  have : star (⅟r) = star (⅟r) * ((star r) * ⅟(star r)) := by
     simp only [mul_invOf_self, mul_one]
   rw [this, ← mul_assoc]
-  have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
+  have : (star (⅟r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
   rw [this, star_one, one_mul]
 
 

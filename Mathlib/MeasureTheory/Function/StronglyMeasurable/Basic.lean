@@ -131,7 +131,7 @@ private lemma simpleFuncAux_eq_of_lt : ∀ n > m, simpleFuncAux f g n (g m) = f 
   | _, .refl => by simp [simpleFuncAux]
   | _, Nat.le.step (m := n) hmn => by
     obtain hnm | hnm := eq_or_ne (g n) (g m) <;>
-      simp [simpleFuncAux, Set.piecewise_eq_of_not_mem , hnm.symm, simpleFuncAux_eq_of_lt _ hmn]
+      simp [simpleFuncAux, Set.piecewise_eq_of_notMem , hnm.symm, simpleFuncAux_eq_of_lt _ hmn]
 
 private lemma simpleFuncAux_eventuallyEq : ∀ᶠ n in atTop, simpleFuncAux f g n (g m) = f (g m) :=
   eventually_atTop.2 ⟨_, simpleFuncAux_eq_of_lt⟩
@@ -263,7 +263,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
   have h_fs_t_compl : ∀ n, ∀ x, x ∉ t → fs n x = 0 := by
     intro n x hxt
     rw [SimpleFunc.restrict_apply _ ((hS_meas n).inter ht)]
-    refine Set.indicator_of_not_mem ?_ _
+    refine Set.indicator_of_notMem ?_ _
     simp [hxt]
   refine ⟨fs, ?_, fun x => ?_⟩
   · simp_rw [SimpleFunc.support_eq, ← Finset.mem_coe]
@@ -555,10 +555,12 @@ variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M] {m : Meas
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.stronglyMeasurable_prod' (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
-  induction' l with f l ihl; · exact stronglyMeasurable_one
-  rw [List.forall_mem_cons] at hl
-  rw [List.prod_cons]
-  exact hl.1.mul (ihl hl.2)
+  induction l with
+  | nil => exact stronglyMeasurable_one
+  | cons f l ihl =>
+    rw [List.forall_mem_cons] at hl
+    rw [List.prod_cons]
+    exact hl.1.mul (ihl hl.2)
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
@@ -742,7 +744,7 @@ protected theorem piecewise {m : MeasurableSpace α} [TopologicalSpace β] {s : 
   by_cases hx : x ∈ s
   · simpa [@Set.piecewise_eq_of_mem _ _ _ _ _ (fun _ => Classical.propDecidable _) _ hx,
       hx] using hf.tendsto_approx x
-  · simpa [@Set.piecewise_eq_of_not_mem _ _ _ _ _ (fun _ => Classical.propDecidable _) _ hx,
+  · simpa [@Set.piecewise_eq_of_notMem _ _ _ _ _ (fun _ => Classical.propDecidable _) _ hx,
       hx] using hg.tendsto_approx x
 
 /-- this is slightly different from `StronglyMeasurable.piecewise`. It can be used to show
@@ -789,7 +791,7 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
   ext x
   by_cases hxs : x ∈ s
   · lift x to s using hxs
-    simp [Subtype.coe_injective.extend_apply]
+    simp
   · lift x to t using (h trivial).resolve_left hxs
     rw [extend_apply', Subtype.coe_injective.extend_apply]
     exact fun ⟨y, hy⟩ ↦ hxs <| hy ▸ y.2
@@ -863,6 +865,12 @@ protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace 
     StronglyMeasurable fun x => dist (f x) (g x) :=
   continuous_dist.comp_stronglyMeasurable (hf.prodMk hg)
 
+@[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
+protected theorem edist {_ : MeasurableSpace α} {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
+    (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
+    StronglyMeasurable fun x => edist (f x) (g x) :=
+  continuous_edist.comp_stronglyMeasurable (hf.prodMk hg)
+
 @[fun_prop, measurability]
 protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖ :=
@@ -879,9 +887,9 @@ Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma prove
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop, measurability]
-protected theorem enorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β]
-    {f : α → β} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
-  (ENNReal.continuous_coe.comp_stronglyMeasurable hf.nnnorm).measurable
+protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+    {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
+  (continuous_enorm.comp_stronglyMeasurable hf).measurable
 
 @[deprecated (since := "2025-01-21")] alias ennnorm := StronglyMeasurable.enorm
 
@@ -901,7 +909,7 @@ lemma measurableSet_le (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m
 
 lemma measurableSet_lt (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) :
     MeasurableSet[m] {a | f a < g a} := by
-  simpa only [lt_iff_le_not_le] using (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
+  simpa only [lt_iff_le_not_ge] using (hf.measurableSet_le hg).inter (hg.measurableSet_le hf).compl
 
 lemma ae_le_trim_of_stronglyMeasurable (hm : m ≤ m₀) (hf : StronglyMeasurable[m] f)
     (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) : f ≤ᵐ[μ.trim hm] g := by
@@ -945,7 +953,7 @@ theorem stronglyMeasurable_in_set {m : MeasurableSpace α} [TopologicalSpace β]
     rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_mem hx]
   have hg_zero : ∀ x ∉ s, ∀ n, g_seq_s n x = 0 := by
     intro x hx n
-    rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_not_mem hx]
+    rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_notMem hx]
   refine ⟨g_seq_s, fun x => ?_, hg_zero⟩
   by_cases hx : x ∈ s
   · simp_rw [hg_eq x hx]
@@ -985,7 +993,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
             exact MeasurableSet.empty
           ext1 y
           simp only [mem_inter_iff, mem_preimage, mem_singleton_iff, mem_compl_iff,
-            mem_empty_iff_false, iff_false, not_and, not_not_mem]
+            mem_empty_iff_false, iff_false, not_and, not_notMem]
           refine Function.mtr fun hys => ?_
           rw [hg_seq_zero y hys n]
           exact Ne.symm hx

@@ -162,8 +162,8 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
       · simp_rw [det_fderivPolarCoordSymm]; rfl
       exacts [polarCoord.symm.injOn, measurableSet_Ioi.prod measurableSet_Ioo]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal p.1 • f (polarCoord.symm p) := by
-      refine setLIntegral_congr_fun polarCoord.open_target.measurableSet ?_
-      filter_upwards with _ hx using by rw [abs_of_pos hx.1]
+      refine setLIntegral_congr_fun polarCoord.open_target.measurableSet (fun x hx ↦ ?_)
+      rw [abs_of_pos hx.1]
 
 end Real
 
@@ -286,8 +286,7 @@ theorem lintegral_comp_pi_polarCoord_symm (f : (ι → ℝ × ℝ) → ℝ≥0�
   convert (lintegral_image_eq_lintegral_abs_det_fderiv_mul volume measurableSet_pi_polarCoord_target
     (fun p _ ↦ (hasFDerivAt_pi_polarCoord_symm p).hasFDerivWithinAt)
       injOn_pi_polarCoord_symm f).symm using 1
-  refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target ?_
-  filter_upwards with x hx
+  refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target (fun x hx ↦ ?_)
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦
     abs_nonneg _), abs_fst_of_mem_pi_polarCoord_target hx]
 

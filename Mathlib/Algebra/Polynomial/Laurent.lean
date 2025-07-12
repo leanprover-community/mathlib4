@@ -223,7 +223,7 @@ instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   mul_invOf_self := by rw [← T_add, add_neg_cancel, T_zero]
 
 @[simp]
-theorem invOf_T (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) :=
+theorem invOf_T (n : ℤ) : ⅟(T n : R[T;T⁻¹]) = T (-n) :=
   rfl
 
 theorem isUnit_T (n : ℤ) : IsUnit (T n : R[T;T⁻¹]) :=
@@ -255,7 +255,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   simp_rw [Finsupp.single_apply, Finset.sum_ite_eq']
   split_ifs with h
   · rfl
-  · exact Finsupp.not_mem_support_iff.mp h
+  · exact Finsupp.notMem_support_iff.mp h
 
 /-- To prove something about Laurent polynomials, it suffices to show that
 * the condition is closed under taking sums, and
@@ -396,7 +396,7 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
       refine hf (f.erase a) ?_
-      simp only [fs, Finset.erase_eq_of_not_mem as, Polynomial.support_erase,
+      simp only [fs, Finset.erase_eq_of_notMem as, Polynomial.support_erase,
         Finset.erase_insert_eq_erase]
     rw [← monomial_add_erase f a, Finset.map_insert, ← this, map_add, Polynomial.toLaurent_C_mul_T,
       support_add_eq, Finset.insert_eq]
@@ -575,12 +575,7 @@ theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) =
 
 @[simp]
 theorem eval₂_C_mul_T (r : R) (n : ℤ) : eval₂ f x (C r * T n) = f r * (x ^ n).val := by
-  by_cases hn : 0 ≤ n
-  · lift n to ℕ using hn
-    rw [map_mul, eval₂_C, eval₂_T_n, zpow_natCast, Units.val_pow_eq_pow_val]
-  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
-    rw [map_mul, eval₂_C, eval₂_T_neg_n, zpow_neg, zpow_natCast, ← inv_pow,
-      Units.val_pow_eq_pow_val]
+  simp
 
 end CommSemiring
 

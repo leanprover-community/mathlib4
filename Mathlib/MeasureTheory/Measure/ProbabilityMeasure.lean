@@ -21,36 +21,36 @@ case of the topology of weak convergence of finite measures.
 ## Main definitions
 
 The main definitions are
- * the type `MeasureTheory.ProbabilityMeasure Ω` with the topology of convergence in
-   distribution (a.k.a. convergence in law, weak convergence of measures);
- * `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`: Interpret a probability measure as
-   a finite measure;
- * `MeasureTheory.FiniteMeasure.normalize`: Normalize a finite measure to a probability measure
-   (returns junk for the zero measure).
- * `MeasureTheory.ProbabilityMeasure.map`: The push-forward `f* μ` of a probability measure
-   `μ` on `Ω` along a measurable function `f : Ω → Ω'`.
+* the type `MeasureTheory.ProbabilityMeasure Ω` with the topology of convergence in
+  distribution (a.k.a. convergence in law, weak convergence of measures);
+* `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`: Interpret a probability measure as
+  a finite measure;
+* `MeasureTheory.FiniteMeasure.normalize`: Normalize a finite measure to a probability measure
+  (returns junk for the zero measure).
+* `MeasureTheory.ProbabilityMeasure.map`: The push-forward `f* μ` of a probability measure
+  `μ` on `Ω` along a measurable function `f : Ω → Ω'`.
 
 ## Main results
 
- * `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto`: Convergence of
-   probability measures is characterized by the convergence of expected values of all bounded
-   continuous random variables. This shows that the chosen definition of topology coincides with
-   the common textbook definition of convergence in distribution, i.e., weak convergence of
-   measures. A similar characterization by the convergence of expected values (in the
-   `MeasureTheory.lintegral` sense) of all bounded continuous nonnegative random variables is
-   `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto`.
- * `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`: The convergence of finite
-   measures to a nonzero limit is characterized by the convergence of the probability-normalized
-   versions and of the total masses.
- * `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
-   push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
-   continuous.
- * `MeasureTheory.ProbabilityMeasure.t2Space`: The topology of convergence in distribution is
-   Hausdorff on Borel spaces where indicators of closed sets have continuous decreasing
-   approximating sequences (in particular on any pseudo-metrizable spaces).
+* `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto`: Convergence of
+  probability measures is characterized by the convergence of expected values of all bounded
+  continuous random variables. This shows that the chosen definition of topology coincides with
+  the common textbook definition of convergence in distribution, i.e., weak convergence of
+  measures. A similar characterization by the convergence of expected values (in the
+  `MeasureTheory.lintegral` sense) of all bounded continuous nonnegative random variables is
+  `MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto`.
+* `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`: The convergence of finite
+  measures to a nonzero limit is characterized by the convergence of the probability-normalized
+  versions and of the total masses.
+* `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
+  push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
+  continuous.
+* `MeasureTheory.ProbabilityMeasure.t2Space`: The topology of convergence in distribution is
+  Hausdorff on Borel spaces where indicators of closed sets have continuous decreasing
+  approximating sequences (in particular on any pseudo-metrizable spaces).
 
 TODO:
- * Probability measures form a convex space.
+* Probability measures form a convex space.
 
 ## Implementation notes
 
@@ -391,7 +391,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
   · simp
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
   simp only [normalize, dif_neg mass_nonzero]
-  simp [ProbabilityMeasure.coe_mk, toMeasure_smul, mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
+  simp [toMeasure_smul, mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
   apply eq_of_forall_apply_eq
@@ -454,8 +454,7 @@ theorem tendsto_testAgainstNN_of_tendsto_normalize_testAgainstNN_of_tendsto_mass
     (mass_lim : Tendsto (fun i ↦ (μs i).mass) F (𝓝 μ.mass)) (f : Ω →ᵇ ℝ≥0) :
     Tendsto (fun i ↦ (μs i).testAgainstNN f) F (𝓝 (μ.testAgainstNN f)) := by
   by_cases h_mass : μ.mass = 0
-  · simp only [μ.mass_zero_iff.mp h_mass, zero_testAgainstNN_apply, zero_mass,
-      eq_self_iff_true] at mass_lim ⊢
+  · simp only [μ.mass_zero_iff.mp h_mass, zero_testAgainstNN_apply, zero_mass] at mass_lim ⊢
     exact tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
   simp_rw [fun i ↦ (μs i).testAgainstNN_eq_mass_mul f, μ.testAgainstNN_eq_mass_mul f]
   rw [ProbabilityMeasure.tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds] at μs_lim

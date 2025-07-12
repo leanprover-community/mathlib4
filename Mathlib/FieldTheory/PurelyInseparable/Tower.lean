@@ -71,12 +71,12 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     by_cases hs : i ∈ l.support
     · convert pow_mem (hf i) (q ^ (n - f i)) using 1
       rw [← pow_mul, ← pow_add, Nat.add_sub_of_le (Finset.le_sup hs)]
-    exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs, zero_pow this]⟩
+    exact ⟨0, by rw [map_zero, Finsupp.notMem_support_iff.1 hs, zero_pow this]⟩
   choose lF hlF using hf
   let lF₀ := Finsupp.onFinset l.support lF fun i ↦ by
     contrapose!
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
-    rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
+    rw [hlF, Finsupp.notMem_support_iff.1 hs, zero_pow this]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
     rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl

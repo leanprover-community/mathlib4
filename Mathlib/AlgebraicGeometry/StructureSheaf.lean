@@ -96,7 +96,7 @@ variable {R}
 `r / s` in each of the stalks (which are localizations at various prime ideals).
 -/
 def IsFraction {U : Opens (PrimeSpectrum.Top R)} (f : ∀ x : U, Localizations R x) : Prop :=
-  ∃ r s : R, ∀ x : U, ¬s ∈ x.1.asIdeal ∧ f x * algebraMap _ _ s = algebraMap _ _ r
+  ∃ r s : R, ∀ x : U, s ∉ x.1.asIdeal ∧ f x * algebraMap _ _ s = algebraMap _ _ r
 
 theorem IsFraction.eq_mk' {U : Opens (PrimeSpectrum.Top R)} {f : ∀ x : U, Localizations R x}
     (hf : IsFraction f) :
@@ -146,7 +146,7 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)} (f : ∀ x : U,
       ∀ x : U,
         ∃ (V : _) (_ : x.1 ∈ V) (i : V ⟶ U),
           ∃ r s : R,
-            ∀ y : V, ¬s ∈ y.1.asIdeal ∧ f (i y : U) * algebraMap _ _ s = algebraMap _ _ r :=
+            ∀ y : V, s ∉ y.1.asIdeal ∧ f (i y : U) * algebraMap _ _ s = algebraMap _ _ r :=
   rfl
 
 /-- The functions satisfying `isLocallyFraction` form a subring.
@@ -639,7 +639,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   obtain ⟨c, hc⟩ := hn
   have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
-  -- We claim that `(f * c) / h ^ (n+1)` is our desired representation
+  -- We claim that `(f * c) / h ^ (n + 1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
   rw [op_comp, Functor.map_comp, ConcreteCategory.comp_apply, ← s_eq, res_const]
   -- Note that the last rewrite here generated an additional goal, which was a parameter
@@ -787,7 +787,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   rw [Finsupp.linearCombination_apply_of_mem_supported R b_supp] at hb
   dsimp at hb
   -- Finally, we have all the ingredients.
-  -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n+1)`
+  -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n + 1)`
   use
     IsLocalization.mk' (Localization.Away f) (∑ i ∈ t, b i * a i)
       (⟨f ^ (n + 1), n + 1, rfl⟩ : Submonoid.powers _)

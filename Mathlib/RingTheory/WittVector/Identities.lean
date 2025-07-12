@@ -52,7 +52,7 @@ variable (p R)
 
 theorem coeff_p_pow [CharP R p] (i : ℕ) : ((p : 𝕎 R) ^ i).coeff i = 1 := by
   induction' i with i h
-  · simp only [one_coeff_zero, Ne, pow_zero]
+  · simp only [one_coeff_zero, pow_zero]
   · rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP,
       verschiebung_coeff_succ, h, one_pow]
 
@@ -122,7 +122,7 @@ theorem mul_pow_charP_coeff_succ [CharP R p] (x : 𝕎 R) {m n : ℕ} :
     (x * p ^ n).coeff (m + n) = x.coeff m ^ (p ^ n) := by
   induction' n with n ih generalizing m
   · simp
-  · rw [pow_succ, ← mul_assoc, ← add_assoc,mul_charP_coeff_succ, pow_succ, pow_mul]
+  · rw [pow_succ, ← mul_assoc, ← add_assoc, mul_charP_coeff_succ, pow_succ, pow_mul]
     congr
     exact ih
 
@@ -187,12 +187,11 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
   · rw [iterate_add_apply]
   · rw [mul_comm]
 
--- Porting note: `ring_nf` doesn't handle powers yet; needed to add `Nat.pow_succ` rewrite
 theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
     (frobenius^[i] x).coeff k = x.coeff k ^ p ^ i := by
   induction' i with i ih
   · simp
-  · rw [iterate_succ_apply', coeff_frobenius_charP, ih, Nat.pow_succ]
+  · rw [iterate_succ_apply', coeff_frobenius_charP, ih]
     ring_nf
 
 /-- This is a slightly specialized form of [Hazewinkel, *Witt Vectors*][Haze09] 6.2 equation 5. -/

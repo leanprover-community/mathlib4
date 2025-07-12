@@ -369,10 +369,7 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
   convert μ.addHaar_preimage_linearEquiv (b.equiv b₀ (Equiv.refl ι)) (fundamentalDomain b₀)
   · rw [Set.eq_preimage_iff_image_eq (LinearEquiv.bijective _), map_fundamentalDomain,
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
-  · rw [← LinearMap.det_toMatrix b₀, Basis.equiv_symm, Equiv.refl_symm, Basis.det_apply]
-    congr
-    ext
-    simp [Basis.toMatrix_apply, LinearMap.toMatrix_apply, LinearEquiv.coe_coe, Basis.equiv_apply]
+  · simp
 
 theorem measureReal_fundamentalDomain
     [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
@@ -406,7 +403,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
       (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr ?_)).symm
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
-    exact linearIndependent_iff_not_mem_span.mp b.linearIndependent i
+    exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
   simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_diff, Set.mem_setOf_eq,
     mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
@@ -570,7 +567,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
     -- not ℚ-linear independent by showing that `v ∈ span ℚ e`.
     rw [LinearIndepOn, LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn,
-      linearIndepOn_id_insert (Set.not_mem_of_mem_diff hv), not_and, not_not]
+      linearIndepOn_id_insert (Set.notMem_of_mem_diff hv), not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ ZSpan.fract e (n • v)`

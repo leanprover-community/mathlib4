@@ -16,7 +16,7 @@ import Mathlib.Data.ENat.Lattice
 
 If the constant coefficient of a formal (univariate) power series is invertible,
 then this formal power series is invertible.
-(See the discussion in `Mathlib.RingTheory.MvPowerSeries.Inverse` for
+(See the discussion in `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` for
 the construction.)
 
 Formal (univariate) power series over a local ring form a local ring.
@@ -68,11 +68,11 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   · aesop
   · aesop
   · rintro ⟨i, j⟩ _hij
-    obtain H | H := le_or_lt n j
+    obtain H | H := le_or_gt n j
     · aesop
     rw [if_pos H, if_pos]
     · rfl
-    refine ⟨?_, fun hh ↦ H.not_le ?_⟩
+    refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
     · rintro ⟨⟩
       simpa [Finsupp.single_eq_same] using le_of_lt H
     · simpa [Finsupp.single_eq_same] using hh ()
@@ -155,7 +155,7 @@ theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
 @[simp]
 theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
-  MvPowerSeries.invOfUnit_eq _ _
+  rfl
 
 @[simp]
 theorem invOfUnit_eq' (φ : k⟦X⟧) (u : Units k) (h : constantCoeff k φ = u) :
@@ -327,7 +327,7 @@ instance : NormalizationMonoid k⟦X⟧ where
     simp only [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
-      Units.ext_iff, val_unitOfInvertible, Units.val_mul, divXPowOrder_mul_divXPowOrder]
+      Units.ext_iff, Units.val_mul, divXPowOrder_mul_divXPowOrder]
   normUnit_coe_units := by
     intro u
     set u₀ := u.1 with hu

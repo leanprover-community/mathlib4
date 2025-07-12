@@ -21,15 +21,15 @@ be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 ## Main definitions
 
- * `WeierstrassCurve.Jacobian.negY`: the `Y`-coordinate of `-P`.
- * `WeierstrassCurve.Jacobian.dblZ`: the `Z`-coordinate of `2 • P`.
- * `WeierstrassCurve.Jacobian.dblX`: the `X`-coordinate of `2 • P`.
- * `WeierstrassCurve.Jacobian.negDblY`: the `Y`-coordinate of `-(2 • P)`.
- * `WeierstrassCurve.Jacobian.dblY`: the `Y`-coordinate of `2 • P`.
- * `WeierstrassCurve.Jacobian.addZ`: the `Z`-coordinate of `P + Q`.
- * `WeierstrassCurve.Jacobian.addX`: the `X`-coordinate of `P + Q`.
- * `WeierstrassCurve.Jacobian.negAddY`: the `Y`-coordinate of `-(P + Q)`.
- * `WeierstrassCurve.Jacobian.addY`: the `Y`-coordinate of `P + Q`.
+* `WeierstrassCurve.Jacobian.negY`: the `Y`-coordinate of `-P`.
+* `WeierstrassCurve.Jacobian.dblZ`: the `Z`-coordinate of `2 • P`.
+* `WeierstrassCurve.Jacobian.dblX`: the `X`-coordinate of `2 • P`.
+* `WeierstrassCurve.Jacobian.negDblY`: the `Y`-coordinate of `-(2 • P)`.
+* `WeierstrassCurve.Jacobian.dblY`: the `Y`-coordinate of `2 • P`.
+* `WeierstrassCurve.Jacobian.addZ`: the `Z`-coordinate of `P + Q`.
+* `WeierstrassCurve.Jacobian.addX`: the `X`-coordinate of `P + Q`.
+* `WeierstrassCurve.Jacobian.negAddY`: the `Y`-coordinate of `-(P + Q)`.
+* `WeierstrassCurve.Jacobian.addY`: the `Y`-coordinate of `P + Q`.
 
 ## Implementation notes
 

@@ -22,7 +22,7 @@ Finally, we use this to show unique factorization domains are integrally closed.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Rational_root_theorem
+* https://en.wikipedia.org/wiki/Rational_root_theorem
 -/
 
 

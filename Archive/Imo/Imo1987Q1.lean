@@ -40,13 +40,13 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
       setProdEquivSigma _
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
-      (sigmaCongrRight fun x => Equiv.setCongr <| by simp only [SetCoe.forall]; dsimp; simp)
+      (sigmaCongrRight fun x => Equiv.setCongr <| by simp only [SetCoe.forall]; simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 
 theorem card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
   simp only [card_congr (fixedPointsEquiv α), card_sigma, card_perm]
-  have (x) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
+  have (x : _) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
     ext; simp
   simp [this]
 
@@ -79,7 +79,7 @@ def fixedPointsEquiv' :
     ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
       ⟨p.1.1, p.2⟩⟩
   left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
-    simp only [mem_fiber, Fin.val_mk] at hσ
+    simp only [mem_fiber] at hσ
     subst k; rfl
   right_inv := fun ⟨⟨x, σ⟩, h⟩ => rfl
 

@@ -12,7 +12,7 @@ import Mathlib.Topology.LocallyConstant.Algebra
 # Preliminaries for Nöbeling's theorem
 
 This file constructs basic objects and results concerning them that are needed in the proof of
-Nöbeling's theorem, which is in `Mathlib.Topology.Category.Profinite.Nobeling.Induction`.
+Nöbeling's theorem, which is in `Mathlib/Topology/Category/Profinite/Nobeling/Induction.lean`.
 See the section docstrings for more information.
 
 ## Proof idea
@@ -30,9 +30,11 @@ For `i : I`, let `e C i : LocallyConstant C ℤ` denote the map `fun f ↦ (if f
 The basis will consist of products `e C iᵣ * ⋯ * e C i₁` with `iᵣ > ⋯ > i₁` which cannot be written
 as linear combinations of lexicographically smaller products. We call this set `GoodProducts C`.
 
-What is proved by ordinal induction (in `Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit` and
-`Mathlib.Topology.Category.Profinite.Nobeling.Successor`) is that this set is linearly independent.
-The fact that it spans is proved directly in `Mathlib.Topology.Category.Profinite.Nobeling.Span`.
+What is proved by ordinal induction (in
+`Mathlib/Topology/Category/Profinite/Nobeling/ZeroLimit.lean` and
+`Mathlib/Topology/Category/Profinite/Nobeling/Successor.lean`) is that this set is linearly
+independent. The fact that it spans is proved directly in
+`Mathlib/Topology/Category/Profinite/Nobeling/Span.lean`.
 
 ## References
 
@@ -204,7 +206,7 @@ def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompac
   map h := @CompHausLike.ofHom _ _ _ (_) (_) (_) (_) (_) (_) (_) (_)
     ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
   map_id J := by simp only [projRestricts_eq_id C (· ∈ (unop J))]; rfl
-  map_comp _ _ := by dsimp; rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
+  map_comp _ _ := by rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
 
 /-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
@@ -215,7 +217,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app := fun s ↦ TopCat.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj, Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe,
+      simp only [Functor.const_obj_obj,
         Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
         (leOfHom h.unop)]
       rfl }
@@ -345,7 +347,7 @@ theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
   dsimp [eval] at h
   by_contra! hne
-  cases hne.lt_or_lt with
+  cases hne.lt_or_gt with
   | inl h' => apply hb; rw [← h]; exact Submodule.subset_span ⟨a, h', rfl⟩
   | inr h' => apply ha; rw [h]; exact Submodule.subset_span ⟨b, h', rfl⟩
 
@@ -624,7 +626,7 @@ theorem isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : l.isGood (π C (ord I · < o₁))) : l.isGood (π C (ord I · < o₂)) := by
   intro hl'
   apply hl
-  rwa [eval_πs_image' C h (prop_of_isGood  C _ hl), ← eval_πs' C h (prop_of_isGood  C _ hl),
+  rwa [eval_πs_image' C h (prop_of_isGood C _ hl), ← eval_πs' C h (prop_of_isGood C _ hl),
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C h)] at hl'
 
 end Products

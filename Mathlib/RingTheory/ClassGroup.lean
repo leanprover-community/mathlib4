@@ -12,13 +12,14 @@ This file defines the ideal class group `ClassGroup R` of fractional ideals of `
 inside its field of fractions.
 
 ## Main definitions
- - `toPrincipalIdeal` sends an invertible `x : K` to an invertible fractional ideal
- - `ClassGroup` is the quotient of invertible fractional ideals modulo `toPrincipalIdeal.range`
- - `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
+
+- `toPrincipalIdeal` sends an invertible `x : K` to an invertible fractional ideal
+- `ClassGroup` is the quotient of invertible fractional ideals modulo `toPrincipalIdeal.range`
+- `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
 
 ## Main results
- - `ClassGroup.mk0_eq_mk0_iff` shows the equivalence with the "classical" definition,
-   where `I ~ J` iff `x I = y J` for `x y ≠ (0 : R)`
+- `ClassGroup.mk0_eq_mk0_iff` shows the equivalence with the "classical" definition,
+  where `I ~ J` iff `x I = y J` for `x y ≠ (0 : R)`
 
 ## Implementation details
 
@@ -44,8 +45,8 @@ irreducible_def toPrincipalIdeal : Kˣ →* (FractionalIdeal R⁰ K)ˣ :=
         simp only [spanSingleton_one, Units.mul_inv', spanSingleton_mul_spanSingleton], by
         simp only [spanSingleton_one, Units.inv_mul', spanSingleton_mul_spanSingleton]⟩
     map_mul' := fun x y =>
-      ext (by simp only [Units.val_mk, Units.val_mul, spanSingleton_mul_spanSingleton])
-    map_one' := ext (by simp only [spanSingleton_one, Units.val_mk, Units.val_one]) }
+      ext (by simp only [Units.val_mul, spanSingleton_mul_spanSingleton])
+    map_one' := ext (by simp only [spanSingleton_one, Units.val_one]) }
 
 variable {R K}
 

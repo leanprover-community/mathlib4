@@ -6,7 +6,6 @@ Authors: Anne Baanen, Paul Lezeau
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-import Mathlib.Data.ZMod.Defs
 import Mathlib.Order.Atoms
 import Mathlib.Order.Hom.Bounded
 /-!
@@ -68,7 +67,7 @@ theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (h
       c 1 = p ∧ StrictMono c ∧ ∀ {r : Associates M}, r ≤ p ^ n ↔ ∃ i, r = c i := by
   refine ⟨fun i => p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y => ⟨fun h => ?_, ?_⟩⟩
   · dsimp only
-    rw [Fin.val_one', Nat.mod_eq_of_lt, pow_one]
+    rw [Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt, pow_one]
     exact Nat.lt_succ_of_le (Nat.one_le_iff_ne_zero.mpr hn)
   · exact Associates.dvdNotUnit_iff_lt.mp
         ⟨pow_ne_zero n hp.ne_zero, p ^ (m - n : ℕ),
@@ -111,7 +110,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   rcases n with - | n
   · contradiction
   obtain ⟨i, rfl⟩ := h₂.1 (dvd_trans hp' hr)
-  refine congr_arg c (eq_of_ge_of_not_gt ?_ fun hi => ?_)
+  refine congr_arg c (eq_of_le_of_not_lt' ?_ fun hi => ?_)
   · rw [Fin.le_iff_val_le_val, Fin.val_one, Nat.succ_le_iff, ← Fin.val_zero (n.succ + 1), ←
       Fin.lt_iff_val_lt_val, Fin.pos_iff_ne_zero]
     rintro rfl
@@ -121,7 +120,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   refine
     not_irreducible_of_not_unit_dvdNotUnit
       (DvdNotUnit.not_unit
-        (Associates.dvdNotUnit_iff_lt.2 (h₁ (show (0 : Fin (n + 2)) < j from ?_))))
+        (Associates.dvdNotUnit_iff_lt.2 (h₁ (show (0 : Fin (n + 2)) < j.castSucc from ?_))))
       ?_ hp.irreducible
   · simpa using Fin.lt_def.mp hi
   · refine Associates.dvdNotUnit_iff_lt.2 (h₁ ?_)
@@ -176,6 +175,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     · exact H
     · exact Nat.succ_le_succ_iff.mp a.2
 
+open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
@@ -364,7 +364,7 @@ def mkFactorOrderIsoOfFactorDvdEquiv {m : M} {n : N} {d : { l : M // l ∣ m } �
   map_rel_iff' := by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Associates.mk_le_mk_iff_dvd, hd,
-        Subtype.coe_mk, associatesEquivOfUniqueUnits_apply, out_dvd_iff, mk_out]
+        associatesEquivOfUniqueUnits_apply, out_dvd_iff, mk_out]
 
 variable [UniqueFactorizationMonoid M] [UniqueFactorizationMonoid N]
 
