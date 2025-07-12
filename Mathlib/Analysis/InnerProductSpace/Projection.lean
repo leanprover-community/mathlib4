@@ -573,9 +573,11 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
 @[deprecated  (since := "2025-07-07")] alias orthogonalProjection_minimal := starProjection_minimal
 
 /-- The orthogonal projections onto equal subspaces are coerced back to the same point in `E`. -/
+@[deprecated "As there are no subtypes causing dependent type issues, there is no need for this
+result as `simp` will suffice" (since := "12-07-2025")]
 theorem eq_starProjection_of_eq_submodule {K' : Submodule 𝕜 E} [K'.HasOrthogonalProjection]
     (h : K = K') (u : E) : K.starProjection u = K'.starProjection u := by
-  subst h; rfl
+  simp [h]
 
 @[deprecated  (since := "2025-07-07")] alias eq_orthogonalProjection_of_eq_submodule :=
   eq_starProjection_of_eq_submodule
@@ -725,8 +727,8 @@ theorem smul_starProjection_singleton {v : E} (w : E) :
 theorem starProjection_singleton {v : E} (w : E) :
     (𝕜 ∙ v).starProjection w = (⟪v, w⟫ / ((‖v‖ ^ 2 : ℝ) : 𝕜)) • v := by
   by_cases hv : v = 0
-  · rw [hv, eq_starProjection_of_eq_submodule (Submodule.span_zero_singleton 𝕜)]
-    simp
+  · rw [hv]
+    simp [Submodule.span_zero_singleton 𝕜]
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((𝕜 ∙ v).starProjection w) =
