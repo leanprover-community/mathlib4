@@ -423,21 +423,15 @@ open Set
 lemma support_eq_compl_Union_open_null :
   μ.support = (⋃₀ {U : Set X | IsOpen U ∧ μ U = 0})ᶜ  := by
     ext x
+    simp only [mem_compl_iff, mem_sUnion, mem_setOf_eq, not_exists, not_and, and_imp,
+         mem_support_iff_forall] at *
     constructor
-    · intro hx
-      simp only [mem_compl_iff, mem_sUnion, mem_setOf_eq, not_exists, not_and, and_imp]
-      intro U hU hμU
-      rw [mem_support_iff_forall] at hx
-      intro hxx
-      apply (ne_of_lt <| hx U <| IsOpen.mem_nhds hU hxx).symm hμU
-    · intro hx
-      rw [mem_support_iff_forall]
-      simp only [mem_compl_iff, mem_sUnion, mem_setOf_eq, not_exists, not_and, and_imp] at hx
-      intros U hU_nhds
+    · exact fun hx _ hU hμU hxx ↦ (ne_of_lt <| hx _ <| IsOpen.mem_nhds hU hxx).symm hμU
+    · intro hx U hU_nhds
       rcases (mem_nhds_iff.mp hU_nhds) with ⟨V, hV_sub, hV_open, hVₓ⟩
       exact measure_pos_of_superset hV_sub <| fun a ↦ hx V hV_open a hVₓ
 
-lemma exists_mem_support_of_open_pos [SecondCountableTopology X] {U : Set X}
+lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
     (_ : IsOpen U) (hμ : 0 < μ U) : (U ∩ μ.support).Nonempty := by
   by_contra hn
   -- `hn : ¬ Nonempty (U ∩ μ.support)` gives `U ⊆ (μ.support)ᶜ`
@@ -450,23 +444,15 @@ lemma exists_mem_support_of_open_pos [SecondCountableTopology X] {U : Set X}
     -- now `hsub : U ⊆ (⋃₀ {…})ᶜ` and double‐compl gives the desired cover
     simp only [compl_compl] at hsub
     exact hsub
-  -- 1) get the class­‐instance
-  have hLS : LindelofSpace U := inferInstance
   -- 2) convert it to the Prop using the iff
-  have hIL : IsLindelof U :=
-    (isLindelof_iff_LindelofSpace.2 hLS)
-
+  have hIL : IsLindelof U := HereditarilyLindelof_LindelofSets U
   -- 3) now extract a countable subcover
   rcases (isLindelof_iff_countable_subcover.mp hIL)
     (fun W : {W // IsOpen W ∧ μ W = 0} => W.val)
     (fun W => W.prop.1)
-    (by simpa [ support_eq_compl_Union_open_null
-        , compl_compl
-        , ← sUnion_range (fun W : {W // IsOpen W ∧ μ W = 0} => W.val)
-        ]
-    using hsub)
+    (by simpa [support_eq_compl_Union_open_null, compl_compl,
+      ← sUnion_range (fun W : {W // IsOpen W ∧ μ W = 0} => W.val)] using hsub)
     with ⟨T, hTcount, hTcov⟩
-
   -- now measure U ≤ measure of that countable union ≤ sum of μ V = 0
   have hU_le : μ U ≤ μ (⋃ i ∈ T, i.val) :=
     measure_mono hTcov
