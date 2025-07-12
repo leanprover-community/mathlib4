@@ -11,12 +11,59 @@ import Mathlib.Geometry.Manifold.Traces
 /-!
 # Elaborators for differential geometry
 
-TODO: add a more complete doc-string
+This file defines custom elaborators for differential geometry, to allow for more compact notation.
+There are two classes of elaborators. The first provides more compact notation for differentiability
+and continuous differentiability on manifolds, including inference of the model with corners.
+They allow writing
+- `MDiff f` for `MDifferentiable I J f`
+- `MDiffAt f x` for `MDifferentiableAt I J f x`
+- `MDiff[u] f` for `MDifferentiableOn I J f u`
+- `MDiffAt[u] f` for `DifferentiableWithinAt I J f u x`
+- `CMDiff n f` for `ContMDiff I J n f`
+- `CMDiffAt n f x` for `ContMDiffAt I J n f x`
+- `CMDiff[u] n f` for `ContMDiffOn I J n f u`
+- `CMDiffAt[u] n f` for `ContMDiffWithinAt I J n f u x`.
+
+In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
+The search for models with corners uses the local context and is (almost) only syntactic, hence
+hopefully fast enough to always run.
+
+Secondly, this space adds an elaborator to ease working with sections in a vector bundle,
+converting a section `s : Π x : M, Π V x` to a non-dependent function into the total space of the
+bundle.
+```lean
+-- omitted: let `V` be a vector bundle over `M`
+variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
+
+-- outputs `fun x ↦ TotalSpace.mk' F x (σ x) : M → TotalSpace F V`
+#check T% σ
+
+-- outputs `fun x ↦ TotalSpace.mk' E' x (σ' x) : E → TotalSpace E' (Trivial E E')`
+-- Note how the name of the bound variable `x` is preserved.
+#check T% σ'
+
+-- outputs `fun a ↦ TotalSpace.mk' E' a (s a) : E → TotalSpace E' (Trivial E E')`
+#check T% s
+```
+
+These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
+
+**Warning.** These elaborators are a proof of concept; the implementation should be considered a
+prototype. Don't rewrite all of mathlib to use it just yet. Notable bugs and limitations include
+the following.
+
+## TODO
+- extend the feature to infer e.g. models with corners on product manifolds
+  (this has to make a guess, hence cannot always be correct: but it could make the guess that
+  is correct 90% of the time)
+- fix pretty-printing: currently, the `commandStart` linter expects some different formatting
+- better error messages: forgetting e.g. the `T%` elaborator yields cryptic errors
+- further testing and fixing of edge cases
+- added tests for all of the above
 
 -/
 
 open scoped Bundle Manifold ContDiff
-
 
 section
 open Lean Meta Elab Tactic
@@ -31,6 +78,7 @@ def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
 @[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
   mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
 
+-- TODO: document this elaborator, including its algorithm
 elab "T% " t:term : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
