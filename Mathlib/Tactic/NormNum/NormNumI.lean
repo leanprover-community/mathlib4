@@ -208,7 +208,6 @@ such that `norm_num` successfully recognises both the real and imaginary parts o
   let ⟨ba, ra⟩ ← withTraceNode `debug (fun x =>
     return m!"{exceptEmoji x} norm_numI.evalComplexEq: z = {az} + {bz}i {q($az = $aw)}") do
     deriveBool q($az = $aw)
-  trace[debug] "norm_numI.evalComplexEq output: {ba} {ra}"
   match ba with
   | true =>
     let ⟨bb, rb⟩ ← deriveBool q($bz = $bw)
