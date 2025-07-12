@@ -480,7 +480,8 @@ partial def _root_.Lean.MVarId.gcongr
   for lem in (gcongrExt.getState (← getEnv)).getD key #[] ++ getTransLemma? key do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
-      Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
+      Except.ok <$> withReducibleAndInstances
+        (g.apply (← mkConstWithFreshMVarLevels lem.declName) { synthAssignedInstances := false })
     catch e => pure (Except.error e)
     match gs with
     | .error e =>
