@@ -339,7 +339,7 @@ lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i
 
 local instance {n : ℕ} {i : Fin n} : NeZero (n - i.1) := neZero_iff.mpr (by omega)
 
-lemma castLT_sub_nezero {n : ℕ} {i j : Fin n}(hij : i < j) :
+lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
   simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
