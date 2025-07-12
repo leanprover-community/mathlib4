@@ -130,6 +130,8 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
 /-- `Ω₀` is a terminal object. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
 
+instance {c : Classifier C} : c.χ₀ = c.isTerminalΩ₀.from := rfl
+
 end Classifier
 
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
