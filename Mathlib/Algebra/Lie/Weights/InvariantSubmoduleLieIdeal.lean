@@ -44,7 +44,48 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
             genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
             genWeightSpace L χ := by
-            sorry -- Use weight space decomposition of Lie bracket
+              -- m_α ∈ sl2SubmoduleOfRoot α.1 = rootSpace H α ⊔ rootSpace H (-α) ⊔ rootSpace H 0
+              -- Use weight space decomposition: [L_χ, L_β] ⊆ L_{χ+β}
+              rw [sl2SubmoduleOfRoot] at hm_α
+              simp only [rootSpace] at hm_α
+              -- Decompose m_α using the structure A ⊔ B ⊔ C = (A ⊔ B) ⊔ C
+              -- First decompose: m_α ∈ (genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)) ⊔
+              --  genWeightSpace L 0
+              obtain ⟨m_αneg, hm_αneg, m_zero, hm_zero, hm_eq⟩ := Submodule.mem_sup.mp hm_α
+              -- Then decompose: m_αneg ∈ genWeightSpace L α.1 ⊔ genWeightSpace L (-α.1)
+              obtain ⟨m_pos, hm_pos, m_neg, hm_neg, hm_αneg_eq⟩ := Submodule.mem_sup.mp hm_αneg
+
+              -- Substitute: m_α = m_pos + m_neg + m_zero
+              rw [← hm_eq, ← hm_αneg_eq, lie_add, lie_add]
+
+              -- Show each bracket component is in the target supremum
+              apply add_mem
+              · apply add_mem
+                · -- ⁅x_χ, m_pos⁆ where m_pos ∈ genWeightSpace L α.1
+                  have h_pos : ⁅x_χ, m_pos⁆ ∈ genWeightSpace L (χ.toLinear + α.1.toLinear) := by
+                    exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_pos
+                  -- Show this is in the first component of the supremum
+                  apply Submodule.mem_sup_left
+                  apply Submodule.mem_sup_left
+                  exact h_pos
+                · -- ⁅x_χ, m_neg⁆ where m_neg ∈ genWeightSpace L (-α.1)
+                  have h_neg : ⁅x_χ, m_neg⁆ ∈ genWeightSpace L (χ.toLinear + (-α.1).toLinear) := by
+                    exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_neg
+                  -- Convert χ + (-α) = χ - α
+                  have h_eq : χ.toLinear + (-α.1).toLinear = χ.toLinear - α.1.toLinear := by
+                    simp [sub_eq_add_neg]
+                  rw [h_eq] at h_neg
+                  -- Show this is in the second component of the supremum
+                  apply Submodule.mem_sup_left
+                  apply Submodule.mem_sup_right
+                  exact h_neg
+              · -- ⁅x_χ, m_zero⁆ where m_zero ∈ genWeightSpace L 0
+                have h_zero : ⁅x_χ, m_zero⁆ ∈ genWeightSpace L (χ.toLinear + (0 : H →ₗ[K] K)) := by
+                  exact LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ hm_zero
+                rw [add_zero] at h_zero
+                -- Show this is in the third component of the supremum
+                apply Submodule.mem_sup_right
+                exact h_zero
 
           -- Case analysis based on invariance of q
           by_cases h_chi_in_q : χ.toLinear ∈ q
