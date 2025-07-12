@@ -818,7 +818,7 @@ alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 theorem map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
 
-theorem coe_untopD_le (y : WithTop α) (a : α) : y.untopD a ≤ y :=  by cases y <;> simp
+theorem coe_untopD_le (y : WithTop α) (a : α) : y.untopD a ≤ y := by cases y <;> simp
 
 @[deprecated (since := "2025-02-11")]
 alias coe_untop'_le := coe_untopD_le
@@ -1058,7 +1058,7 @@ lemma WithTop.le_ofDual_iff {x : WithBot α} {y : WithTop αᵒᵈ} :
 
 @[simp]
 lemma WithTop.ofDual_le_ofDual_iff {x y : WithTop αᵒᵈ} :
-    WithTop.ofDual x ≤ WithTop.ofDual y ↔ y ≤ x :=  by cases x <;> cases y <;> simp
+    WithTop.ofDual x ≤ WithTop.ofDual y ↔ y ≤ x := by cases x <;> cases y <;> simp
 
 end LE
 

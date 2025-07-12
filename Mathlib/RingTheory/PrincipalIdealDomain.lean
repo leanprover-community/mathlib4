@@ -217,7 +217,7 @@ instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) :=
 
 theorem associated_gcd_gcd [IsDomain R] [GCDMonoid R] :
     Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
-  gcd_greatest_associated (gcd_dvd_left _ _ ) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
+  gcd_greatest_associated (gcd_dvd_left _ _) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
 
 end IsBezout
 

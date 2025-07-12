@@ -75,7 +75,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
       (Nat.card {I : (Ideal (𝓞 K))⁰ //
         absNorm (I : Ideal (𝓞 K)) ≤ s ∧ ClassGroup.mk0 I = C} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K) /
-            (torsionOrder K *  Real.sqrt |discr K|))) := by
+            (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
   have h₁ : ∀ s : ℝ,
     {x | x ∈ toMixed K ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm (toMixed K x) ≤ s} =
@@ -87,7 +87,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
     (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
       (toMixed K).toLinearMap)
     (F := fun x ↦ mixedEmbedding.norm (toMixed K x))
-    (X := (toMixed K)⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
+    (X := (toMixed K) ⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
     (isBounded_normLeOne K) ?_ ?_).mul (tendsto_const_nhds
       (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
     (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))
@@ -122,10 +122,10 @@ theorem tendsto_norm_le_div_atTop₀ :
     Tendsto (fun s : ℝ ↦
       (Nat.card {I : (Ideal (𝓞 K))⁰ // absNorm (I : Ideal (𝓞 K)) ≤ s} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-            (torsionOrder K *  Real.sqrt |discr K|))) := by
+            (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
   convert Filter.Tendsto.congr' ?_
-    (tendsto_finset_sum Finset.univ (fun C _  ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
+    (tendsto_finset_sum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]
     ring
   · filter_upwards [eventually_ge_atTop 0] with s hs
@@ -144,7 +144,7 @@ The limit of the number of integral ideals of norm `≤ s` divided by `s` when `
 theorem tendsto_norm_le_div_atTop :
     Tendsto (fun s : ℝ ↦ (Nat.card {I : Ideal (𝓞 K) // absNorm I ≤ s} : ℝ) / s) atTop
       (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-        (torsionOrder K *  Real.sqrt |discr K|))) := by
+        (torsionOrder K * Real.sqrt |discr K|))) := by
   have := (tendsto_norm_le_div_atTop₀ K).add tendsto_inv_atTop_zero
   rw [add_zero] at this
   apply this.congr'

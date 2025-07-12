@@ -663,7 +663,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   by_cases hp : p = ⊥
   · subst hp
     simp only [Ideal.map_bot, Ideal.mul_eq_bot] at hP
-    obtain (rfl|rfl) := hP
+    obtain (rfl | rfl) := hP
     · rw [← Ideal.zero_eq_bot, zero_dvd_iff]
       exact differentIdeal_ne_bot
     · obtain rfl := hxQ

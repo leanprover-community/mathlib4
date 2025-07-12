@@ -115,7 +115,7 @@ lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i
   simp [contra, hij, hij.symm]
 
 lemma cartanMatrix_eq_neg_chainTopCoeff [Finite ι] [IsDomain R] {i j : b.support} (hij : i ≠ j) :
-    b.cartanMatrix i j = - P.chainTopCoeff j i := by
+    b.cartanMatrix i j = -P.chainTopCoeff j i := by
   rw [cartanMatrix, cartanMatrixIn_def, ← neg_eq_iff_eq_neg, ← b.chainTopCoeff_eq_of_ne hij.symm]
 
 lemma cartanMatrix_apply_eq_zero_iff [Finite ι] [IsDomain R] {i j : b.support} (hij : i ≠ j) :

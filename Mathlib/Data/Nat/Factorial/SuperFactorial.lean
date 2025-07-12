@@ -29,7 +29,7 @@ def superFactorial : ℕ → ℕ
   | succ n => factorial n.succ * superFactorial n
 
 /-- `sf` notation for superfactorial -/
-scoped notation "sf" n:60 => Nat.superFactorial n
+scoped notation "sf " n:60 => Nat.superFactorial n
 
 section SuperFactorial
 
@@ -83,7 +83,7 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
       simp [hn]
 
 theorem superFactorial_two_mul : ∀ n : ℕ,
-    sf (2 * n) = (∏ i ∈ range n, (2 * i + 1) !) ^ 2 * 2 ^ n * n !
+    sf (2 * n) = (∏ i ∈ range n, (2 * i + 1)!) ^ 2 * 2 ^ n * n !
   | 0 => rfl
   | (n + 1) => by
     simp only [prod_range_succ, mul_pow, mul_add, mul_one, superFactorial_succ,
@@ -91,11 +91,11 @@ theorem superFactorial_two_mul : ∀ n : ℕ,
     ring
 
 theorem superFactorial_four_mul (n : ℕ) :
-    sf (4 * n) = ((∏ i ∈ range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
+    sf (4 * n) = ((∏ i ∈ range (2 * n), (2 * i + 1)!) * 2 ^ n) ^ 2 * (2 * n)! :=
   calc
-    sf (4 * n) = (∏ i ∈ range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
+    sf (4 * n) = (∏ i ∈ range (2 * n), (2 * i + 1)!) ^ 2 * 2 ^ (2 * n) * (2 * n)! := by
       rw [← superFactorial_two_mul, ← mul_assoc, Nat.mul_two]
-    _ = ((∏ i ∈ range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
+    _ = ((∏ i ∈ range (2 * n), (2 * i + 1)!) * 2 ^ n) ^ 2 * (2 * n)! := by
       rw [pow_mul', mul_pow]
 
 private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
