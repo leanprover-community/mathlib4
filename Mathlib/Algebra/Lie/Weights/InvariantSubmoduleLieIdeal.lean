@@ -35,7 +35,43 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
         induction hm using LieSubmodule.iSup_induction' with
         | mem α m_α hm_α =>
           -- Core case: x_χ ∈ genWeightSpace L χ, m_α ∈ sl2SubmoduleOfRoot α.1
-          sorry
+          -- By definition of sl2SubmoduleOfRoot, [x_χ, m_α] ∈ L_{χ + α} ⊕ L_{χ - α} ⊕ L_χ
+          -- Since q is invariant, either L_{χ + α} = 0 or χ ∈ q (similarly for L_{χ - α})
+          -- Using root pairing theory to determine which components are non-zero
+
+          -- First, decompose the Lie bracket by weight spaces
+          have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
+            genWeightSpace L (χ.toLinear + α.1.toLinear) ⊔
+            genWeightSpace L (χ.toLinear - α.1.toLinear) ⊔
+            genWeightSpace L χ := by
+            sorry -- Use weight space decomposition of Lie bracket
+
+          -- Case analysis based on invariance of q
+          by_cases h_chi_in_q : χ.toLinear ∈ q
+          · -- Case: χ ∈ q, so L_χ ⊆ ⨆ α ∈ q, sl2SubmoduleOfRoot α
+            sorry -- Use that χ ∈ q implies the result is in our supremum
+          · -- Case: χ ∉ q, use invariance and root pairing
+            -- Since q is invariant, either L_{χ + α} = 0 or χ + α ∈ q
+            have h_add_case : genWeightSpace L (χ.toLinear + α.1.toLinear) = ⊥ ∨
+                             (χ.toLinear + α.1.toLinear) ∈ q := by
+              sorry -- Use RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+            have h_sub_case : genWeightSpace L (χ.toLinear - α.1.toLinear) = ⊥ ∨
+                             (χ.toLinear - α.1.toLinear) ∈ q := by
+              sorry -- Use RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
+
+            -- If both L_{χ + α} = L_{χ - α} = 0, then pairing is zero and L_χ component vanishes
+            cases h_add_case with
+            | inl h_add_zero =>
+              cases h_sub_case with
+              | inl h_sub_zero =>
+                -- Both components are zero, so by root pairing theory, the L_χ component is also zero
+                sorry -- Use root_add_root_mem_of_pairingIn_neg, root_sub_root_mem_of_pairingIn_pos
+              | inr h_sub_in_q =>
+                -- L_{χ - α} ≠ 0 and χ - α ∈ q, so component lands in our supremum
+                sorry
+            | inr h_add_in_q =>
+              -- L_{χ + α} ≠ 0 and χ + α ∈ q, so component lands in our supremum
+              sorry
         | zero =>
           simp only [LieSubmodule.iSup_toSubmodule, Submodule.carrier_eq_coe, lie_zero,
             SetLike.mem_coe, Submodule.zero_mem]
