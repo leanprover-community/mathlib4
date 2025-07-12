@@ -143,7 +143,7 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
   rfl
 
 theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
-  (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
+  .of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
 
 theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
   (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
