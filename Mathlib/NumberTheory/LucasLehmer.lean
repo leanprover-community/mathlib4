@@ -385,7 +385,7 @@ lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
 -- Show that `X p` has characteristic `p`, so that we can apply the binomial theorem.
 instance : CharP (X q) q where
   cast_eq_zero_iff x := by
-    convert ZMod.natCast_zmod_eq_zero_iff_dvd _ _
+    convert ZMod.natCast_eq_zero_iff _ _
     exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
@@ -426,7 +426,7 @@ lemma two_mul_ω_pow [Fact (Prime q)] (odd : Odd (q : ℕ))
 /-- If 3 is not a square and 2 is square then $\omega^{(q+1)/2}=-1$. -/
 lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
     (leg3 : legendreSym q 3 = -1)
-    (leg2: legendreSym q 2 = 1) :
+    (leg2 : legendreSym q 2 = 1) :
     (ω : X q) ^ (((q : ℕ) + 1)/ 2) = -1 := by
   have pow2 : (2 : ZMod q) ^ (((q : ℕ) + 1) / 2) = 2 := by
     obtain ⟨_, _⟩ := odd
@@ -458,7 +458,7 @@ lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
 /-- The final evaluation needed to establish the Lucas-Lehmer necessity. -/
 lemma ω_pow_trace [Fact (Prime q)] (odd : Odd (q : ℕ))
     (leg3 : legendreSym q 3 = -1)
-    (leg2: legendreSym q 2 = 1)
+    (leg2 : legendreSym q 2 = 1)
     (hq4 : 4 ∣ (q : ℕ) + 1) :
     (ω : X q) ^ (((q : ℕ) + 1)/ 4) + (ωb : X q) ^ (((q : ℕ) + 1)/ 4) = 0 := by
   have : (ω : X q) ^ (((q : ℕ) + 1) / 2) * ωb ^ (((q : ℕ) + 1) / 4)
