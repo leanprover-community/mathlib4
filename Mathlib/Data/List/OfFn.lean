@@ -114,7 +114,7 @@ theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
   | 0, c => by rw [ofFn_zero, replicate_zero]
-  | n+1, c => by rw [replicate, ← ofFn_const n]; simp
+  | n + 1, c => by rw [replicate, ← ofFn_const n]; simp
 
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
@@ -164,7 +164,7 @@ lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
-def equivSigmaTuple : List α ≃ Σn, Fin n → α where
+def equivSigmaTuple : List α ≃ Σ n, Fin n → α where
   toFun l := ⟨l.length, l.get⟩
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
@@ -194,7 +194,7 @@ theorem forall_iff_forall_tuple {P : List α → Prop} :
 
 /-- `Fin.sigma_eq_iff_eq_comp_cast` may be useful to work with the RHS of this expression. -/
 theorem ofFn_inj' {m n : ℕ} {f : Fin m → α} {g : Fin n → α} :
-    ofFn f = ofFn g ↔ (⟨m, f⟩ : Σn, Fin n → α) = ⟨n, g⟩ :=
+    ofFn f = ofFn g ↔ (⟨m, f⟩ : Σ n, Fin n → α) = ⟨n, g⟩ :=
   Iff.symm <| equivSigmaTuple.symm.injective.eq_iff.symm
 
 /-- Note we can only state this when the two functions are indexed by defeq `n`. -/

@@ -125,10 +125,8 @@ section BPosAndNeOne
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 include b_pos b_ne_one
 
-private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0 := by linarith
-  have b_ne_minus_one : b ≠ -1 := by linarith
-  simp [b_ne_one, b_ne_zero, b_ne_minus_one]
+private theorem log_b_ne_zero : log b ≠ 0 :=
+  log_ne_zero_of_pos_of_ne_one b_pos b_ne_one
 
 @[simp]
 theorem logb_rpow : logb b (b ^ x) = x := by
@@ -596,7 +594,7 @@ then `P` is true for all `x ≥ x₀`. -/
 lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
     (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
     (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
-      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
+      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n + 1) * x₀), P z)) :
     ∀ x ≥ x₀, P x := by
   suffices ∀ n : ℕ, ∀ x ∈ Set.Ico x₀ (r ^ (n + 1) * x₀), P x by
     intro x hx

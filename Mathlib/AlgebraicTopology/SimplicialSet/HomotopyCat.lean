@@ -52,7 +52,7 @@ abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
 
 /-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
 abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
+    (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
 
 @[reassoc (attr := simp)]
 lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
@@ -195,7 +195,7 @@ end
 
 section
 
-private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
+private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl

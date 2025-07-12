@@ -710,7 +710,7 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
 set_option maxHeartbeats 210000 in
 -- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a dedekind domain with `J ≤ I` and `J' ≤ I'`.
-If `I/J = I'/J'` in the group of fractional ideals (i.e. ` I * J' = I' * J`),
+If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
 noncomputable
 def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)

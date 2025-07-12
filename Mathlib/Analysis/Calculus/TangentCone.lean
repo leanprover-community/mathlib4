@@ -658,6 +658,12 @@ theorem uniqueDiffWithinAt_Ioi (a : ℝ) : UniqueDiffWithinAt ℝ (Ioi a) a :=
 theorem uniqueDiffWithinAt_Iio (a : ℝ) : UniqueDiffWithinAt ℝ (Iio a) a :=
   uniqueDiffWithinAt_convex (convex_Iio a) (by simp) (by simp)
 
+theorem uniqueDiffWithinAt_Ici (x : ℝ) : UniqueDiffWithinAt ℝ (Ici x) x :=
+  (uniqueDiffWithinAt_Ioi x).mono Set.Ioi_subset_Ici_self
+
+theorem uniqueDiffWithinAt_Iic (x : ℝ) : UniqueDiffWithinAt ℝ (Iic x) x :=
+  (uniqueDiffWithinAt_Iio x).mono Set.Iio_subset_Iic_self
+
 /-- In one dimension, a point is a point of unique differentiability of a set
 iff it is an accumulation point of the set. -/
 theorem uniqueDiffWithinAt_iff_accPt {s : Set 𝕜} {x : 𝕜} :

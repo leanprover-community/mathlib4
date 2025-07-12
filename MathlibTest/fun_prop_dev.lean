@@ -346,7 +346,7 @@ example : Con (fun fx : (α ->> β)×α => fx.1 fx.2) := by fun_prop
 def iterate (n : Nat) (f : α → α) (x : α) : α :=
   match n with
   | 0 => x
-  | n+1 => iterate n f (f x)
+  | n + 1 => iterate n f (f x)
 
 theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
   induction n <;> (simp [iterate]; fun_prop)

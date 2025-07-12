@@ -88,7 +88,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   rw [← lie_skew, neg_mem_iff (G := L), mem_engel_iff] at hy
   rcases hy with ⟨n, hn⟩
   rw [mem_engel_iff]
-  use n+1
+  use n + 1
   rw [pow_succ, Module.End.mul_apply]
   exact hn
 

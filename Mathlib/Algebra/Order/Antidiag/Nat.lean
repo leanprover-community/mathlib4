@@ -3,9 +3,9 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -82,14 +82,10 @@ theorem finMulAntidiag_zero_right (d : ℕ) :
 
 theorem finMulAntidiag_one {d : ℕ} :
     finMulAntidiag d 1 = {fun _ => 1} := by
-  ext f
-  simp only [mem_finMulAntidiag, mem_singleton]
-  constructor
-  · intro ⟨hf, _⟩; ext i
-    rw [← Nat.dvd_one, ← hf]
-    exact dvd_prod_of_mem f (mem_univ _)
-  · rintro rfl
-    simp only [prod_const_one, ne_eq, one_ne_zero, not_false_eq_true, and_self]
+  ext
+  simp only [mem_finMulAntidiag, prod_eq_one_iff, mem_univ, forall_const, ne_eq, one_ne_zero,
+    not_false_eq_true, and_true, mem_singleton]
+  grind
 
 theorem finMulAntidiag_zero_left {n : ℕ} (hn : n ≠ 1) :
     finMulAntidiag 0 n = ∅ := by
