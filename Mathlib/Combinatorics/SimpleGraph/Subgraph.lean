@@ -897,21 +897,9 @@ theorem map_subgraphOfAdj (f : G →g G') {v w : V} (hvw : G.Adj v w) :
   ext
   · simp only [Subgraph.map_verts, subgraphOfAdj_verts, Set.mem_image, Set.mem_insert_iff,
       Set.mem_singleton_iff]
-    constructor
-    · rintro ⟨u, rfl | rfl, rfl⟩ <;> simp
-    · rintro (rfl | rfl)
-      · use v
-        simp
-      · use w
-        simp
+    grind
   · simp only [Relation.Map, Subgraph.map_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
-    constructor
-    · rintro ⟨a, b, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl, rfl⟩ <;> simp
-    · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-      · use v, w
-        simp
-      · use w, v
-        simp
+    grind
 
 theorem neighborSet_subgraphOfAdj_subset {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u ⊆ {v, w} :=
