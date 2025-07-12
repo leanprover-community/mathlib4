@@ -115,8 +115,8 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
     { toFun := fun x => f.map ((toEnd M) x)
       map_one' := f.map_id _
       map_mul' := fun x y => f.map_comp y x }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 theorem mapHom_id : mapHom M M (MonoidHom.id M) = 𝟭 _ :=
   rfl
