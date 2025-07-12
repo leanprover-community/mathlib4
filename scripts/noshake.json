@@ -50,6 +50,8 @@
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
   "Mathlib.Geometry.Manifold.Instances.Real",
+  "Mathlib.Geometry.Manifold.Elaborators",
+  "Mathlib.Geometry.Manifold.Traces",
   "Mathlib.Init",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
   "Mathlib.LinearAlgebra.Matrix.Notation",
