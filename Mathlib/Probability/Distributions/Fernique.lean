@@ -66,10 +66,9 @@ lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (
   rw [norm_div_rev, mul_comm]
   exact norm_mul_sub_norm_div_le_two_mul _ _
 
--- todo: generalize beyond `ℝ`
 open Filter in
-lemma StrictMono.exists_between_of_tendsto_atTop {t : ℕ → ℝ}
-    (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop) (x : ℝ) :
+lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {t : ℕ → β}
+    (ht_mono : StrictMono t) (ht_tendsto : Tendsto t atTop atTop) (x : β) :
     x ≤ t 0 ∨ ∃ n, t n < x ∧ x ≤ t (n + 1) := by
   by_cases hx0 : x ≤ t 0
   · simp [hx0]
@@ -77,6 +76,7 @@ lemma StrictMono.exists_between_of_tendsto_atTop {t : ℕ → ℝ}
   have h : ∃ n, x ≤ t n := by
     simp only [tendsto_atTop_atTop_iff_of_monotone ht_mono.monotone] at ht_tendsto
     exact ht_tendsto x
+  classical
   have h' m := Nat.find_min h (m := m)
   simp only [not_le] at h' hx0
   refine ⟨Nat.find h - 1, h' _ (by simp [hx0]), ?_⟩
@@ -84,7 +84,7 @@ lemma StrictMono.exists_between_of_tendsto_atTop {t : ℕ → ℝ}
   rw [Nat.sub_add_cancel]
   simp [hx0]
 
-lemma Nat.le_two_pow (n : ℕ) : n ≤ 2 ^ n := by
+lemma Nat.le_two_pow_self (n : ℕ) : n ≤ 2 ^ n := by
   induction n with
   | zero => simp
   | succ n hn =>
@@ -535,7 +535,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
   -- `⊢ ∫⁻ x, ENNReal.ofReal (rexp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ < ∞`
   refine (lintegral_exp_mul_sq_norm_le h_rot le_rfl ha_gt).trans_lt ?_
   refine ENNReal.add_lt_top.mpr ⟨ENNReal.ofReal_lt_top, ?_⟩
-  refine ENNReal.tsum_ofReal_exp_lt_top ?_ (fun i ↦ mod_cast Nat.le_two_pow i)
+  refine ENNReal.tsum_ofReal_exp_lt_top ?_ (fun i ↦ mod_cast Nat.le_two_pow_self i)
   refine mul_neg_of_neg_of_pos (by simp) (Real.log_pos ?_)
   change 1 < (c / (1 - c)).toReal
   simp only [ENNReal.toReal_div, one_lt_div_iff, ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hc_lt,
