@@ -5783,6 +5783,7 @@ import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.CollectSigns
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeDegree
 import Mathlib.Tactic.CongrExclamation
@@ -6003,6 +6004,7 @@ import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.UnifyDenoms
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
