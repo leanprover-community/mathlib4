@@ -108,7 +108,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
       · subsingleton
       · apply ih; simpa using hl
 
-@[simp default+1] -- Raise priority above `length_injective_iff`.
+@[simp default + 1] -- Raise priority above `length_injective_iff`.
 lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
   length_injective_iff.mpr inferInstance
 

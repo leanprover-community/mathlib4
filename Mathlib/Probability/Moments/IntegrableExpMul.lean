@@ -75,7 +75,7 @@ lemma integrable_exp_mul_of_le_of_le {a b : ℝ}
 /-- If `ω ↦ exp (u * X ω)` is integrable at `u` and `-u`, then it is integrable on `[-u, u]`. -/
 lemma integrable_exp_mul_of_abs_le
     (hu_int_pos : Integrable (fun ω ↦ exp (u * X ω)) μ)
-    (hu_int_neg : Integrable (fun ω ↦ exp (- u * X ω)) μ)
+    (hu_int_neg : Integrable (fun ω ↦ exp (-u * X ω)) μ)
     (htu : |t| ≤ |u|) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
   refine integrable_exp_mul_of_le_of_le (a := -|u|) (b := |u|) ?_ ?_ ?_ ?_
@@ -169,7 +169,7 @@ lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + 
 /-- If `ω ↦ exp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ exp (t * |X ω|)` is
 integrable. -/
 lemma integrable_exp_mul_abs (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) :
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) :
     Integrable (fun ω ↦ exp (t * |X ω|)) μ := by
   have h := integrable_exp_mul_abs_add (t := t) (μ := μ) (X := X) (v := 0) ?_ ?_
   · simpa using h
@@ -190,7 +190,7 @@ lemma integrable_exp_abs_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((
 /-- If `ω ↦ exp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ exp (|t| * |X ω|)` is
 integrable. -/
 lemma integrable_exp_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) :
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) :
     Integrable (fun ω ↦ exp (|t| * |X ω|)) μ := by
   rcases le_total 0 t with ht_nonneg | ht_nonpos
   · simp_rw [abs_of_nonneg ht_nonneg]
@@ -362,7 +362,7 @@ lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
 integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_abs_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) {p : ℝ} (hp : 0 ≤ p) :
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ |X ω| ^ p) μ := by
   have h := integrable_rpow_abs_mul_exp_of_integrable_exp_mul (μ := μ) (X := X) ht (v := 0) ?_ ?_ hp
   · simpa using h
@@ -373,7 +373,7 @@ lemma integrable_rpow_abs_of_integrable_exp_mul (ht : t ≠ 0)
 integrable for all `n : ℕ`. That is, all moments of `X` are finite. -/
 lemma integrable_pow_abs_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) (n : ℕ) :
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n) μ := by
   convert integrable_rpow_abs_of_integrable_exp_mul ht ht_int_pos ht_int_neg
     (by positivity : 0 ≤ (n : ℝ)) with ω
@@ -383,7 +383,7 @@ lemma integrable_pow_abs_of_integrable_exp_mul (ht : t ≠ 0)
 integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) {p : ℝ} (hp : 0 ≤ p) :
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ X ω ^ p) μ := by
   have h := integrable_rpow_mul_exp_of_integrable_exp_mul (μ := μ) (X := X) ht (v := 0) ?_ ?_ hp
   · simpa using h
@@ -394,7 +394,7 @@ lemma integrable_rpow_of_integrable_exp_mul (ht : t ≠ 0)
 integrable for all `n : ℕ`. -/
 lemma integrable_pow_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) (n : ℕ) :
+    (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n) μ := by
   convert integrable_rpow_of_integrable_exp_mul ht ht_int_pos ht_int_neg
     (by positivity : 0 ≤ (n : ℝ)) with ω

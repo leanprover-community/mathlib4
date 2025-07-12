@@ -134,7 +134,7 @@ lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X �
 
 lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
     Continuous (mgf X μ) := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   convert continuousOn_mgf
   symm
   rw [interior_eq_univ]

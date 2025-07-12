@@ -738,7 +738,7 @@ theorem linearDepOn_iff : ¬LinearIndepOn R v s ↔
 
 @[deprecated (since := "2025-02-15")] alias linearDependent_comp_subtype := linearDepOn_iff
 
-theorem linearIndepOn_iff_disjoint: LinearIndepOn R v s ↔
+theorem linearIndepOn_iff_disjoint : LinearIndepOn R v s ↔
       Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.linearCombination R v) := by
   rw [linearIndepOn_iff, LinearMap.disjoint_ker]
 

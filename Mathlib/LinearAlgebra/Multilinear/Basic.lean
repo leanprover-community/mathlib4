@@ -41,7 +41,7 @@ Expressing that a map is linear along the `i`-th coordinate when all other coord
 can be done in two (equivalent) different ways:
 
 * fixing a vector `m : ∀ (j : ι - i), M₁ j.val`, and then choosing separately the `i`-th coordinate
-* fixing a vector `m : ∀j, M₁ j`, and then modifying its `i`-th coordinate
+* fixing a vector `m : ∀ j, M₁ j`, and then modifying its `i`-th coordinate
 
 The second way is more artificial as the value of `m` at `i` is not relevant, but it has the
 advantage of avoiding subtype inclusion issues. This is the definition we use, based on
@@ -811,7 +811,7 @@ theorem comp_compMultilinearMap (g : M₃ →ₗ[R] M₄) (g' : M₂ →ₗ[R] M
 
 /-- The two types of composition are associative. -/
 theorem compMultilinearMap_compLinearMap
-    (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂) (f' : ∀ i, M₁' i →ₗ[R] M₁ i):
+    (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂) (f' : ∀ i, M₁' i →ₗ[R] M₁ i) :
     g.compMultilinearMap (f.compLinearMap f') = (g.compMultilinearMap f).compLinearMap f' := rfl
 
 @[simp]
@@ -1334,7 +1334,7 @@ theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁
 
 @[deprecated (since := "2024-11-03")] protected alias map_sub := MultilinearMap.map_update_sub
 
-lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i)  :
+lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i) :
     f (update x i v) = f x - f (update x i (x i - v)) := by
   rw [map_update_sub, update_eq_self, sub_sub_cancel]
 

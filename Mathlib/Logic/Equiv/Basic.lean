@@ -373,7 +373,7 @@ def sigmaSubtypeEquivOfSubset {α} (p : α → Type v) (q : α → Prop) (h : �
 def sigmaSubtypeFiberEquiv {α β : Type*} (f : α → β) (p : β → Prop) (h : ∀ x, p (f x)) :
     (Σ y : Subtype p, { x : α // f x = y }) ≃ α :=
   calc
-    _ ≃ Σy : β, { x : α // f x = y } := sigmaSubtypeEquivOfSubset _ p fun _ ⟨x, h'⟩ => h' ▸ h x
+    _ ≃ Σ y : β, { x : α // f x = y } := sigmaSubtypeEquivOfSubset _ p fun _ ⟨x, h'⟩ => h' ▸ h x
     _ ≃ α := sigmaFiberEquiv f
 
 /-- If for each `x` we have `p x ↔ q (f x)`, then `Σ y : {y // q y}, f ⁻¹' {y}` is equivalent
@@ -381,7 +381,7 @@ to `{x // p x}`. -/
 def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Prop} {q : β → Prop}
     (h : ∀ x, p x ↔ q (f x)) : (Σ y : Subtype q, { x : α // f x = y }) ≃ Subtype p :=
   calc
-    (Σy : Subtype q, { x : α // f x = y }) ≃ Σy :
+    (Σ y : Subtype q, { x : α // f x = y }) ≃ Σ y :
         Subtype q, { x : Subtype p // Subtype.mk (f x) ((h x).1 x.2) = y } := by {
           apply sigmaCongrRight
           intro y
@@ -483,7 +483,7 @@ def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b :
 
 @[simp]
 lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
-    (s: {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
+    (s : {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
     sigmaSigmaSubtypeEq a b s = cast (congrArg₂ γ s.2.1 s.2.2) s.1.2.2 := by
   simp [sigmaSigmaSubtypeEq]
 
