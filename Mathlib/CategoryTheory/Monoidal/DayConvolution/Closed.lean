@@ -22,7 +22,7 @@ the Day convolution monoidal structure.
 constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
 
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory.MonoidalCategory
 open scoped ExternalProduct
