@@ -1330,7 +1330,7 @@ noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 
 @[simp]
-lemma coe_unionEqSigmaOfDisjoint_symm {α β : Type*} {t : α → Set β}
+lemma coe_unionEqSigmaOfDisjoint_symm_apply {α β : Type*} {t : α → Set β}
     (h : Pairwise (Disjoint on t)) (x : (i : α) × t i) :
     ((Set.unionEqSigmaOfDisjoint h).symm x : β) = x.2 := by
   rfl
