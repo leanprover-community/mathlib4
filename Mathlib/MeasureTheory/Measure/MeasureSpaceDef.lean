@@ -444,10 +444,9 @@ lemma exists_mem_support_of_open_pos [HereditarilyLindelofSpace X] {U : Set X}
     calc
       0 < μ U                 := hμ
       _ ≤ μ (⋃ i ∈ T, i.val)  := measure_mono hTcov
-      _ ≤ ∑' i : T, μ (i.val) := measure_biUnion_le μ hTcount Subtype.val
+      _ ≤ ∑' i : T, μ (i.val) := measure_biUnion_le μ hTcount (·.1)
       _ = 0                   := by refine ENNReal.tsum_eq_zero.mpr fun i =>
                                     (i.val.property.2 : μ (i.val) = 0)
-
 
 
 /- This theorem says that if U has positive measure then there has to be a point in U, all of
