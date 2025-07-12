@@ -36,9 +36,9 @@ section set_options
 set_option quotPrecheck false
 local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (WithLp.toLp 2 x) (WithLp.toLp 2 y)
 
-open Matrix
+open Matrix InnerProductSpace
 
-open scoped Matrix ComplexOrder
+open scoped ComplexOrder
 
 variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 

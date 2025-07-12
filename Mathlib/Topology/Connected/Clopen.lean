@@ -562,7 +562,7 @@ theorem isPreconnected_of_forall_constant {s : Set α}
 theorem preconnectedSpace_of_forall_constant
     (hs : ∀ f : α → Bool, Continuous f → ∀ x y, f x = f y) : PreconnectedSpace α :=
   ⟨isPreconnected_of_forall_constant fun f hf x _ y _ =>
-      hs f (continuous_iff_continuousOn_univ.mpr hf) x y⟩
+      hs f (continuousOn_univ.mp hf) x y⟩
 
 theorem preconnectedSpace_iff_clopen :
     PreconnectedSpace α ↔ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by

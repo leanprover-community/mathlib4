@@ -194,7 +194,7 @@ noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
 
 theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
     (X n - ∑ i ∈ range n, C ((p : R) ^ i) *
-      xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
+      xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟ p : R) ^ n) := by
   rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
 
 @[simp]
@@ -269,7 +269,7 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
     bind₁ (W_ R) (xInTermsOfW p R n) = X n := by
   induction n using Nat.strongRecOn with | ind n H => ?_
   rw [xInTermsOfW_eq, map_mul, map_sub, bind₁_X_right, algHom_C, map_sum,
-    show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
+    show X n = (X n * C ((p : R) ^ n)) * C ((⅟ p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
   rw [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm,

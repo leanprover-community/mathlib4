@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 
 /-!
 # Extremally disconnected spaces

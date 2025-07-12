@@ -3,8 +3,8 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Small.Group
-import Mathlib.Algebra.Small.Ring
+import Mathlib.Algebra.Group.Shrink
+import Mathlib.Algebra.Ring.Shrink
 
 /-!
 # Transfer module and algebra structures from `α` to `Shrink α`.

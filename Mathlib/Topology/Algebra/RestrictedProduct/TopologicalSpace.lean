@@ -493,7 +493,7 @@ theorem continuous_dom_pi {n : Type*} [Fintype n] {X : Type*}
   have hS : cofinite ≤ 𝓟 S := by
     rw [le_principal_iff]
     change ∀ᶠ i in cofinite, ∀ j : n, x j i ∈ C j i
-    simp [- eventually_cofinite]
+    simp [-eventually_cofinite]
   let x' (j : n) : Πʳ i : ι, [A j i, C j i]_[𝓟 S] := .mk (fun i ↦ x j i) (fun i hi ↦ hi _)
   have hxx' : Pi.map (fun j ↦ inclusion _ _ hS) x' = x := rfl
   simp_rw [← hxx', nhds_pi, Pi.map_apply, nhds_eq_map_inclusion (hCopen _), ← map_piMap_pi_finite,

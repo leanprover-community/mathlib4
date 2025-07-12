@@ -160,9 +160,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
-  simp only [get_eq_get_toList]
-  congr <;> simp
+  simp [get_eq_get_toList]
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by

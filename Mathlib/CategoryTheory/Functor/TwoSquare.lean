@@ -132,8 +132,8 @@ scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
 @[simps!]
 def vComp (w : TwoSquare T L R B) (w' : TwoSquare B L' R'' B'') :
     TwoSquare T (L ⋙ L') (R ⋙ R'') B'' :=
-  .mk _ _ _ _ <| (associator _ _ _).hom ≫ (whiskerRight w.natTrans R'') ≫
-    (associator _ _ _).inv ≫ (whiskerLeft L w'.natTrans) ≫ (associator _ _ _).hom
+  .mk _ _ _ _ <| (associator _ _ _).inv ≫ whiskerRight w.natTrans R'' ≫
+    (associator _ _ _).hom ≫ whiskerLeft L w'.natTrans ≫ (associator _ _ _).inv
 
 /-- Notation for the vertical composition of 2-squares. -/
 scoped infixr:80 " ≫ᵥ " => vComp -- type as \gg\_v

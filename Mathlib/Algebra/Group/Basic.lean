@@ -1074,21 +1074,21 @@ variable (α : Type*)
 instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
     Grind.NatModule α :=
   { s with
-    hMul := s.nsmul
-    zero_hmul := AddMonoid.nsmul_zero
-    one_hmul := one_nsmul
-    add_hmul n m a := add_nsmul a n m
-    hmul_zero := nsmul_zero
-    hmul_add n a b := nsmul_add a b n }
+    nsmul := ⟨s.nsmul⟩
+    zero_nsmul := AddMonoid.nsmul_zero
+    one_nsmul := one_nsmul
+    add_nsmul n m a := add_nsmul a n m
+    nsmul_zero := nsmul_zero
+    nsmul_add n a b := nsmul_add a b n }
 
 instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
     Grind.IntModule α :=
   { s with
-    hmulNat := ⟨s.nsmul⟩
-    hmulInt := ⟨s.zsmul⟩
-    zero_hmul := SubNegMonoid.zsmul_zero'
-    one_hmul := one_zsmul
-    add_hmul n m a := add_zsmul a n m
-    hmul_zero := zsmul_zero
-    hmul_add n a b := zsmul_add a b n
-    hmul_nat n a := by simp }
+    nsmul := ⟨s.nsmul⟩
+    zsmul := ⟨s.zsmul⟩
+    zero_zsmul := SubNegMonoid.zsmul_zero'
+    one_zsmul := one_zsmul
+    add_zsmul n m a := add_zsmul a n m
+    zsmul_zero := zsmul_zero
+    zsmul_add n a b := zsmul_add a b n
+    zsmul_natCast_eq_nsmul n a := by simp }

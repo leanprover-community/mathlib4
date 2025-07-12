@@ -168,6 +168,33 @@ theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
   · rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
     ring
 
+@[simp]
+theorem ofDigits_append_zero {b : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ [0]) = ofDigits b l := by
+  rw [ofDigits_append, ofDigits_singleton, mul_zero, add_zero]
+
+@[simp]
+theorem ofDigits_replicate_zero {b k : ℕ} : ofDigits b (List.replicate k 0) = 0 := by
+  induction k with
+  | zero => rfl
+  | succ k ih => simp [List.replicate, ofDigits_cons, ih]
+
+@[simp]
+theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
+    ofDigits b (l ++ List.replicate k 0) = ofDigits b l := by
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+  simp only [List.reverse_cons]
+  rw [ofDigits_append]
+  simp
+
+theorem ofDigits_reverse_zero_cons {b : ℕ} (l : List ℕ) :
+    ofDigits b (0 :: l).reverse = ofDigits b l.reverse := by
+  simp only [List.reverse_cons, ofDigits_append_zero]
+
 @[norm_cast]
 theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
     ((ofDigits b L : ℕ) : α) = ofDigits (b : α) L := by
@@ -368,18 +395,18 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 
+theorem digits_base_mul {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    b.digits (b * m) = 0 :: b.digits m := by
+  rw [digits_def' hb (by positivity)]
+  simp [mul_div_right m (by positivity)]
+
 theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     digits b (b ^ k * m) = List.replicate k 0 ++ digits b m := by
   induction k generalizing m with
   | zero => simp
   | succ k ih =>
-    have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
-    let h1 := digits_def' hb hmb
-    have h2 : m = m * b / b :=
-      Nat.eq_div_of_mul_eq_left (ne_zero_of_lt hb) rfl
-    simp only [mul_mod_left, ← h2] at h1
-    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
-    ring_nf
+    rw [pow_succ', mul_assoc, digits_base_mul hb (by positivity), ih hm]
+    rfl
 
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by

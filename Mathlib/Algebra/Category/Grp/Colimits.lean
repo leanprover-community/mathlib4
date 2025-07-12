@@ -128,12 +128,7 @@ def quotUliftToQuot [DecidableEq J] : Quot (F ⋙ uliftFunctor.{u'}) →+ Quot F
   rw [AddSubgroup.closure_le]
   intro _ hx
   obtain ⟨j, j', u, a, rfl⟩ := hx
-  rw [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single,
-    DFinsupp.sumAddHom_single]
-  change Quot.ι F j' (F.map u (AddEquiv.ulift a)) - _ = _
-  rw [Quot.map_ι]
-  dsimp
-  rw [sub_self]
+  simp
 
 lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
     quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
@@ -288,12 +283,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     cokernel f ≅ AddCommGrp.of (H ⧸ AddMonoidHom.range f.hom) where
   hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
-        dsimp only [hom_comp, hom_ofHom]
-        apply Quotient.sound
-        apply leftRel_apply.mpr
-        fconstructor
-        · exact -x
-        · simp only [add_zero, AddMonoidHom.map_neg]
+        simp
   inv := ofHom <|
     QuotientAddGroup.lift _ (cokernel.π f).hom <| by
       rintro _ ⟨x, rfl⟩

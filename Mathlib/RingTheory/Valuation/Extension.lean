@@ -23,7 +23,7 @@ A motivation for choosing the more flexible `Valuation.Equiv` rather than strict
 to allow for possible normalization. As an example, consider a finite extension `K` of `ℚ_[p]`,
 which is a discretely valued field. We may choose the valuation on `K` to be either:
 
-1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤₘ₀`) or
+1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤᵐ⁰`) or
 
 2. the valuation where `p` is mapped to one.
 
