@@ -5,6 +5,8 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+import Mathlib.Geometry.Manifold.Elaborators
 
 /-!
 # Gram-Schmidt orthonormalization on sections of Riemannian vector bundles
@@ -14,7 +16,6 @@ for sections of Riemannian vector bundles: this produces a system of sections wh
 with respect to the bundle metric. If the initial sections were linearly independent (resp.
 formed a basis) at the point, so do the normalized sections.
 
-# TODO
 If the bundle metric is `C^k`, then the procedure preserves regularity of sections:
 if all sections are `C^k`, so are their normalized versions.
 
@@ -83,8 +84,7 @@ theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [O
   apply InnerProductSpace.gramSchmidt_bot
 
 @[simp]
-theorem gramSchmidt_zero (n : ι) :
-    gramSchmidt (0 : ι → (x : B) → E x) n = 0 := by
+theorem gramSchmidt_zero (n : ι) : gramSchmidt (0 : ι → (x : B) → E x) n = 0 := by
   ext x
   simpa using InnerProductSpace.gramSchmidt_zero ..
 
@@ -166,8 +166,6 @@ theorem coe_gramSchmidtBasis (hs : LinearIndependent ℝ (s · x))
     (gramSchmidtBasis hs hs') = (gramSchmidt s · x) :=
   Basis.coe_mk _ _
 
-/-- The normalized `gramSchmidt`, i.e. each resulting section has unit length (or vanishes)
-at each point -/
 noncomputable def gramSchmidtNormed
     (s : ι → (x : B) → E x) (n : ι) : (x : B) → E x := fun x ↦
   InnerProductSpace.gramSchmidtNormed ℝ (s · x) n
@@ -268,3 +266,133 @@ theorem gramSchmidtOrthonormalBasis_apply_of_orthonormal [Fintype ι]
   simp [gramSchmidtNormed_apply_of_orthonormal hs]
 
 end VectorBundle
+
+/-! The Gram-Schmidt process preserves smoothness of sections -/
+section smoothness
+
+-- Let `V` be a smooth vector bundle with a `C^n` Riemannian structure over a `C^k` manifold `B`.
+variable
+  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
+  {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
+  [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
+  [IsContMDiffRiemannianBundle IB n F E]
+
+variable {n : WithTop ℕ∞}
+
+-- TODO: fix pretty-printing of the new differential geometry elaborators!
+set_option linter.style.commandStart false
+
+variable [IsContMDiffRiemannianBundle IB n F E]
+
+section helper
+
+variable {s t : (x : B) → E x} {u : Set B} {x : B}
+
+-- TODO: give a much better name!
+lemma contMDiffWithinAt_aux
+    (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
+    CMDiffAt[u] n (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
+  have := (hs.inner_bundle ht).smul ((hs.inner_bundle hs).inv₀ (inner_self_ne_zero.mpr hs'))
+  apply this.congr
+  · intro y hy
+    congr
+    simp [inner_self_eq_norm_sq_to_K]
+  · congr
+    rw [← real_inner_self_eq_norm_sq]
+
+lemma contMDiffAt_aux (hs : CMDiffAt n (T% s) x) (ht : CMDiffAt n (T% t) x) (hs' : s x ≠ 0) :
+    CMDiffAt n (fun x ↦ ⟪s x, t x⟫ / (‖s x‖ ^ 2)) x := by
+  rw [← contMDiffWithinAt_univ] at hs ht ⊢
+  exact contMDiffWithinAt_aux hs ht hs'
+
+def ContMDiffWithinAt.orthogonalProjection
+    (hs : CMDiffAt[u] n (T% s) x) (ht : CMDiffAt[u] n (T% t) x) (hs' : s x ≠ 0) :
+    -- TODO: leaving out the type ascription yields a horrible error message, add test and fix!
+    letI S : (x : B) → E x := fun x ↦ (Submodule.span ℝ {s x}).orthogonalProjection (t x);
+    CMDiffAt[u] n (T% S) x := by
+  simp_rw [Submodule.orthogonalProjection_singleton]
+  exact (contMDiffWithinAt_aux hs ht hs').smul_section hs
+
+lemma contMDiffWithinAt_inner (hs : CMDiffAt[u] n (T% s) x) (hs' : s x ≠ 0) :
+    CMDiffAt[u] n (‖s ·‖) x := by
+  let F (x) := ⟪s x, s x⟫
+  have aux : CMDiffAt[u] n (Real.sqrt ∘ F) x := by
+    have h1 : CMDiffAt[(F '' u)] n (Real.sqrt) (F x) := by
+      apply ContMDiffAt.contMDiffWithinAt
+      rw [contMDiffAt_iff_contDiffAt]
+      exact Real.contDiffAt_sqrt (by simp [F, hs'])
+    exact h1.comp x (hs.inner_bundle hs) (Set.mapsTo_image _ u)
+  convert aux
+  simp [F, ← norm_eq_sqrt_real_inner]
+
+end helper
+
+variable {s : ι → (x : B) → E x} {u : Set B} {x : B} {i : ι}
+
+attribute [local instance] IsWellOrder.toHasWellFounded
+
+lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
+    {i : ι} (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
+  simp_rw [VectorBundle.gramSchmidt_def]
+  apply (hs i).sub_section
+  apply ContMDiffWithinAt.sum_section
+  intro i' hi'
+  let aux : { x // x ∈ Set.Iic i' } → { x // x ∈ Set.Iic i } :=
+    fun ⟨x, hx⟩ ↦ ⟨x, hx.trans (Finset.mem_Iio.mp hi').le⟩
+  have : LinearIndependent ℝ ((fun x_1 ↦ s x_1 x) ∘ @Subtype.val ι fun x ↦ x ∈ Set.Iic i') := by
+    apply hs'.comp aux
+    intro ⟨x, hx⟩ ⟨x', hx'⟩ h
+    simp_all only [Subtype.mk.injEq, aux]
+  apply ContMDiffWithinAt.orthogonalProjection (gramSchmidt_contMDiffWithinAt hs this) (hs i)
+  apply VectorBundle.gramSchmidt_ne_zero_coe _ this
+termination_by i
+decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
+
+lemma gramSchmidt_contMDiffAt (hs : ∀ i, CMDiffAt n (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiffAt n (T% (VectorBundle.gramSchmidt s i)) x :=
+  contMDiffWithinAt_univ.mpr <| gramSchmidt_contMDiffWithinAt (fun i ↦ hs i) hs'
+
+lemma gramSchmidt_contMDiffOn (hs : ∀ i, CMDiff[u] n (T% (s i)))
+    (hs' : ∀ x ∈ u, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiff[u] n (T% (VectorBundle.gramSchmidt s i)) :=
+  fun x hx ↦ gramSchmidt_contMDiffWithinAt (fun i ↦ hs i x hx) (hs' _ hx)
+
+lemma gramSchmidt_contMDiff (hs : ∀ i, CMDiff n (T% (s i)))
+    (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiff n (T% (VectorBundle.gramSchmidt s i)) :=
+  fun x ↦ gramSchmidt_contMDiffAt (fun i ↦ hs i x) (hs' x)
+
+lemma gramSchmidtNormed_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiffAt[u] n (T% (VectorBundle.gramSchmidtNormed s i)) x := by
+  have : CMDiffAt[u] n (T%
+      (fun x ↦ ‖VectorBundle.gramSchmidt s i x‖⁻¹ • VectorBundle.gramSchmidt s i x)) x := by
+    refine ContMDiffWithinAt.smul_section ?_ (gramSchmidt_contMDiffWithinAt hs hs')
+    refine ContMDiffWithinAt.inv₀ ?_ ?_
+    · refine contMDiffWithinAt_inner (gramSchmidt_contMDiffWithinAt hs hs') ?_
+      simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
+    · simpa using InnerProductSpace.gramSchmidt_ne_zero_coe i hs'
+  exact this.congr (fun y hy ↦ by congr) (by congr)
+
+lemma gramSchmidtNormed_contMDiffAt (hs : ∀ i, CMDiffAt n (T% (s i)) x)
+    (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι)))
+    : CMDiffAt n (T% (VectorBundle.gramSchmidtNormed s i)) x :=
+  contMDiffWithinAt_univ.mpr <| gramSchmidtNormed_contMDiffWithinAt (fun i ↦ hs i) hs'
+
+lemma gramSchmidtNormed_contMDiffOn (hs : ∀ i, CMDiff[u] n (T% (s i)))
+    (hs' : ∀ x ∈ u, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiff[u] n (T% (VectorBundle.gramSchmidtNormed s i)) :=
+  fun x hx ↦ gramSchmidtNormed_contMDiffWithinAt (fun i ↦ hs i x hx) (hs' _ hx)
+
+lemma gramSchmidtNormed_contMDiff (hs : ∀ i, CMDiff n (T% (s i)))
+    (hs' : ∀ x, LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
+    CMDiff n (T% (VectorBundle.gramSchmidtNormed s i)) :=
+  fun x ↦ gramSchmidtNormed_contMDiffAt (fun i ↦ hs i x) (hs' x)
+
+end smoothness
