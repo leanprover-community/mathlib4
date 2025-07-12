@@ -416,6 +416,8 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Geometry.Manifold.Elaborators":
+  ["Mathlib.Geometry.Manifold.ContMDiff.Defs", "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
