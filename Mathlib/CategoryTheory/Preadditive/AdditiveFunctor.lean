@@ -7,6 +7,8 @@ import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+import Mathlib.CategoryTheory.Conj
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Additive Functors
@@ -46,8 +48,20 @@ namespace Functor
 
 section
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
-  [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
+variable {C D E : Type*} [Category C] [Category D] [Category E] [Preadditive E]
+
+instance (f : C ⥤ D) : ((whiskeringLeft C D E).obj f).Additive where
+instance (e : C ≌ D) : (e.congrLeft (E := E)).functor.Additive where
+
+variable [Preadditive D]
+
+instance (f : D ⥤ E) [f.Additive] : ((whiskeringRight C D E).obj f).Additive where
+  map_add {_ _ _ _} := by ext; simp [whiskeringRight, Additive.map_add]
+
+instance (e : D ≌ E) [e.functor.Additive] : (e.congrRight (E := C)).functor.Additive :=
+  inferInstanceAs ((whiskeringRight ..).obj e.functor).Additive
+
+variable [Preadditive C] (F : C ⥤ D) [F.Additive]
 
 @[simp]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
@@ -330,5 +344,41 @@ theorem AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
 end Exact
 
 end Preadditive
+
+/-- `homEquiv` as a ring hom between endomorphism rings. -/
+@[simps!] noncomputable def Functor.FullyFaithful.ringEquivEnd {C D} [Category C] [Category D]
+    [Preadditive C] [Preadditive D] {f : C ⥤ D} (hf : f.FullyFaithful) (X : C) [f.Additive] :
+    End X ≃+* End (f.obj X) :=
+  { hf.mulEquivEnd X with map_add' _ _ := by simp; exact map_add f }
+
+namespace Equivalence
+
+universe uC vC uC' vC' uD vD uD' vD'
+
+variable {C : Type uC} [Category.{vC} C] [Preadditive C]
+variable {C' : Type uC'} [Category.{vC'} C'] [Preadditive C']
+variable {D : Type uD} [Category.{vD} D] [Preadditive D]
+variable {D' : Type uD'} [Category.{vD'} D'] [Preadditive D']
+variable {f : C ⥤ D} {g : C' ⥤ D'}
+variable {e : C ≌ C'} {e' : D ≌ D'} [e'.functor.Additive]
+
+/--
+Suppose we have categories `C, C', D, D'` such that the diagram of functors
+```
+C ===== f =====> D
+||e            ||e'
+||             ||
+C' ==== g ====> D'
+```
+commutes where `e` and `e'` are equivalence of categories with `e'` additive.
+
+Then we have an isomorphism of endomorphism rings `End f ≃+* End g'` and
+-/
+@[simps!]
+noncomputable def endRingEquiv (sq₀ : f ⋙ e'.functor ≅ e.functor ⋙ g) : End f ≃+* End g :=
+  (e'.congrRight.fullyFaithfulFunctor.ringEquivEnd f).trans <| sq₀.conjRingEquiv.trans
+    (e.congrLeft.fullyFaithfulInverse.ringEquivEnd g).symm
+
+end Equivalence
 
 end CategoryTheory
