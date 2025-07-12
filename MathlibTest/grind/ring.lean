@@ -13,14 +13,14 @@ axiom Real : Type
 notation "ℝ" => Real
 @[instance] axiom Real.field : Field ℝ
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
-@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsOrderedRing ℝ
 
 example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by grind
 example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by grind
 example {α} [CommRing α] (x : α) : x ^ 2 = x * x := by grind
-example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsOrderedRing α] (a b c : α) :
   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by grind
-example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsOrderedRing α] (a b c : α) :
   b ^ 2 - 4 * a * c = 4 * a * 0 + b * b - 4 * a * c := by grind
 example {α} [CommRing α] (a b c d e : α) :
   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by grind
