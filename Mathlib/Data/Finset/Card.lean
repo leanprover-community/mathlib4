@@ -283,7 +283,7 @@ theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
 
 theorem card_filter_eq_iff {p : α → Prop} [DecidablePred p] :
     #(s.filter p) = #s ↔ ∀ x ∈ s, p x := by
-  rw [(card_filter_le s p).eq_iff_not_lt, not_lt, eq_iff_card_le_of_subset (filter_subset p s),
+  rw [← (card_filter_le s p).ge_iff_eq, eq_iff_card_le_of_subset (filter_subset p s),
     filter_eq_self]
 
 alias ⟨filter_card_eq, _⟩ := card_filter_eq_iff
@@ -660,7 +660,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
-  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).le_iff_eq.trans (card_eq_one.trans ⟨?_, ?_⟩)
+  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).ge_iff_eq'.trans (card_eq_one.trans ⟨?_, ?_⟩)
   · rintro ⟨y, rfl⟩
     simp
   · exact fun h => ⟨x, eq_singleton_iff_unique_mem.2 ⟨hx, fun y hy => h _ hy _ hx⟩⟩
