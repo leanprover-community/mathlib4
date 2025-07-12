@@ -77,7 +77,7 @@ theorem sum_lt_half_of_not_tendsto
     · simp only [one_div, inv_nonneg, Nat.cast_nonneg]
     · exact le_rfl
   rw [h0, ← summable_iff_not_tendsto_nat_atTop_of_nonneg hf, summable_iff_vanishing] at h
-  obtain ⟨s, h⟩ := h (Set.Ioo (-1) (1 / 2)) (isOpen_Ioo.mem_nhds (by norm_num))
+  obtain ⟨s, h⟩ := h (Set.Ioo (-1) (1 / 2)) (isOpen_Ioo.mem_nhds (by simp))
   obtain ⟨k, hk⟩ := exists_nat_subset_range s
   use k
   intro x
@@ -218,7 +218,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   have h3 :=
     calc
       (#U' : ℝ) ≤ x * ∑ p ∈ P, 1 / (p : ℝ) := card_le_mul_sum
-      _ < x * (1 / 2) := mul_lt_mul_of_pos_left (h1 x) (by norm_num [x])
+      _ < x * (1 / 2) := mul_lt_mul_of_pos_left (h1 x) (by simp [x])
       _ = x / 2 := mul_one_div (x : ℝ) 2
   have h4 :=
     calc
