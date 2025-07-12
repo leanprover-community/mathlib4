@@ -16,6 +16,9 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi`: Intersecting Chords Theorem (Freek No. 55).
 * `mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero`: Intersecting Secants Theorem.
+* `Sphere.power`: The power of a point with respect to a sphere.
+* `Sphere.mul_dist_eq_abs_power`: The product of distances equals the absolute value of power.
+
 -/
 
 
@@ -72,9 +75,16 @@ This section develops some results on spheres in Euclidean affine spaces.
 -/
 
 
-open InnerProductGeometry
+open InnerProductGeometry EuclideanGeometry
 
 variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
+
+/-- The power of a point with respect to a sphere. For a point and a sphere,
+this is defined as the square of the distance from the point to the center
+minus the square of the radius. This value is positive if the point is outside
+the sphere, negative if inside, and zero if on the sphere. -/
+def Sphere.power (s : Sphere P) (p : P) : ℝ :=
+  dist p s.center ^ 2 - s.radius ^ 2
 
 /-- If `P` is a point on the line `AB` and `Q` is equidistant from `A` and `B`, then
 `AP * BP = abs (BQ ^ 2 - PQ ^ 2)`. -/
@@ -121,5 +131,132 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
   refine mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, ?_, hab₁⟩ ⟨k₂, ?_, hcd₁⟩ <;> by_contra hnot <;>
     simp_all only [one_smul]
   exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
+
+/-- A point lies on the sphere if and only if its power with respect to
+the sphere is zero. -/
+theorem Sphere.power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+  s.power p = 0 ↔ p ∈ s := by
+  simp only [Sphere.power, mem_sphere, sub_eq_zero]
+  constructor
+  · intro hp
+    rw [← Real.sqrt_sq dist_nonneg, hp, Real.sqrt_sq hr]
+  · intro hp
+    rw [hp]
+
+/-- The power of a point is positive if and only if the point lies outside the sphere. -/
+theorem Sphere.power_pos_iff_dist_center_gt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
+  s.power p > 0 ↔ dist p s.center > s.radius := by
+  simp only [Sphere.power, gt_iff_lt, sub_pos]
+  constructor
+  · intro hp
+    by_contra h
+    push_neg at h
+    have h_sq_le : dist p s.center ^ 2 ≤ s.radius ^ 2 := by
+      apply sq_le_sq'
+      · calc -s.radius
+        ≤ 0 := neg_nonpos.mpr hr
+        _ ≤ dist p s.center := dist_nonneg
+      · exact h
+    linarith
+  · intro hp
+    exact sq_lt_sq' (by linarith [hr]) hp
+
+/-- The power of a point is negative if and only if the point lies inside the sphere. -/
+theorem Sphere.power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 < s.radius) :
+  s.power p < 0 ↔ dist p s.center < s.radius := by
+  simp only [Sphere.power, sub_neg]
+  constructor
+  · intro hp
+    by_contra h
+    push_neg at h
+    have h_sq_le : s.radius ^ 2 ≤ dist p s.center ^ 2 := by
+      by_cases h_eq : s.radius = dist p s.center
+      · rw [← h_eq]
+      · have h_lt : s.radius < dist p s.center := lt_of_le_of_ne h h_eq
+        have h_sq_lt : s.radius ^ 2 < dist p s.center ^ 2 := by
+          apply sq_lt_sq'
+          · linarith [hr]
+          · exact h_lt
+        exact le_of_lt h_sq_lt
+    linarith
+  · intro hp
+    have h_nonneg : 0 ≤ dist p s.center := by exact dist_nonneg
+    have h_sq_lt : dist p s.center ^ 2 < s.radius ^ 2 := by
+      apply sq_lt_sq'
+      · linarith
+      · exact hp
+    linarith
+
+/-- For a point outside the sphere, the product of distances to two intersection
+points on a line through the point equals the power of the point. -/
+theorem Sphere.mul_dist_eq_power_of_dist_center_gt_radius {s : Sphere P} {p a b : P}
+    (hr : 0 ≤ s.radius)
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hp_outside : dist p s.center > s.radius) :
+    dist p a * dist p b = s.power p := by
+  have hq : dist a s.center = dist b s.center := by
+    rw [mem_sphere.mp ha, mem_sphere.mp hb]
+  rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq, mem_sphere.mp hb]
+  have h_neg_diff : s.radius ^ 2 - dist p s.center ^ 2 < 0 := by
+    simp only [sub_neg]
+    exact sq_lt_sq' (by linarith [hr]) hp_outside
+  simp only [abs_of_neg h_neg_diff, Sphere.power]
+  ring
+
+/-- For a point inside the sphere, the product of distances to two intersection
+points on a line through the point equals the negative of the power of the point. -/
+theorem Sphere.mul_dist_eq_neg_power_of_dist_center_lt_radius {s : Sphere P} {p a b : P}
+    (hr : 0 < s.radius)
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hp_inside : dist p s.center < s.radius) :
+    dist p a * dist p b = -s.power p := by
+  have hq : dist a s.center = dist b s.center := by
+    rw [mem_sphere.mp ha, mem_sphere.mp hb]
+  rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq, mem_sphere.mp hb]
+  have h_pos_diff : s.radius ^ 2 - dist p s.center ^ 2 > 0 := by
+    simp only [sub_pos]
+    exact sq_lt_sq' (
+      by calc -s.radius
+      < 0 := by linarith [hr]
+      _ ≤ dist p s.center := dist_nonneg) hp_inside
+  simp only [abs_of_pos h_pos_diff, Sphere.power]
+  ring
+
+/-- For a point on the sphere, the product of distances to two other intersection
+points on a line through the point is zero. -/
+theorem Sphere.mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hp_on : p ∈ s) :
+    dist p a * dist p b = 0 := by
+  have hq : dist a s.center = dist b s.center := by
+    rw [mem_sphere.mp ha, mem_sphere.mp hb]
+  rw [dist_comm p a, dist_comm p b, mul_dist_eq_abs_sub_sq_dist hp hq,
+      mem_sphere.mp hb, mem_sphere.mp hp_on, sub_self, abs_zero]
+
+/-- The product of distances from any point to two intersection points on a line
+through the point equals the absolute value of the point's power with respect to the sphere. -/
+theorem Sphere.mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
+    (hr : 0 ≤ s.radius)
+    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (ha : a ∈ s) (hb : b ∈ s) :
+    dist p a * dist p b = |s.power p| := by
+  by_cases h1 : dist p s.center > s.radius
+  · rw [abs_of_pos, Sphere.mul_dist_eq_power_of_dist_center_gt_radius hr hp ha hb h1]
+    exact (Sphere.power_pos_iff_dist_center_gt_radius hr).mpr h1
+  · by_cases h2 : dist p s.center < s.radius
+    · have hr_pos : 0 < s.radius := by
+        rcases le_iff_eq_or_lt.mp hr with h_eq | h_lt
+        · exfalso; rw [← h_eq] at h2; exact lt_irrefl 0 (dist_nonneg.trans_lt h2)
+        · exact h_lt
+      rw [abs_of_neg, ← Sphere.mul_dist_eq_neg_power_of_dist_center_lt_radius hr_pos hp ha hb h2]
+      exact (Sphere.power_neg_iff_dist_center_lt_radius hr_pos).mpr h2
+    · have hp_on : p ∈ s := by
+        rw [mem_sphere]
+        exact le_antisymm (le_of_not_gt h1) (le_of_not_gt h2)
+      have h_power_zero : s.power p = 0 := (Sphere.power_eq_zero_iff_mem_sphere hr).mpr hp_on
+      rw [h_power_zero, abs_zero, Sphere.mul_dist_eq_zero_of_mem_sphere hp ha hb hp_on]
 
 end EuclideanGeometry
