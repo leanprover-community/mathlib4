@@ -245,11 +245,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
   simp only [mem_kstar, mem_iSup, mem_pow]
-  constructor
-  · rintro ⟨S, rfl, hS⟩
-    exact ⟨_, S, rfl, rfl, hS⟩
-  · rintro ⟨_, S, rfl, rfl, hS⟩
-    exact ⟨S, rfl, hS⟩
+  grind
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
