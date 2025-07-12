@@ -124,26 +124,12 @@ instance IsLeftAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsLeftAdjoint] : F.leftOp.I
   ⟨F.rightAdjoint.rightOp, ⟨.leftOp <| .ofIsLeftAdjoint _⟩⟩
 
 -- TODO: Do we need to introduce `Adjunction.leftUnop`?
-instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint := by
-  have adj := Adjunction.ofIsRightAdjoint F
-  refine ⟨F.leftAdjoint.rightOp, ⟨NatTrans.op adj.counit, NatTrans.unop adj.unit, ?_, ?_⟩⟩
-  · rintro X
-    refine Quiver.Hom.op_inj ?_
-    simp
-  · rintro Y
-    refine Quiver.Hom.unop_inj ?_
-    simp
+instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).IsLeftAdjoint
 
 -- TODO: Do we need to introduce `Adjunction.rightUnop`?
-instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint := by
-  have adj := Adjunction.ofIsLeftAdjoint F
-  refine ⟨F.rightAdjoint.leftOp, ⟨NatTrans.op adj.counit, NatTrans.unop adj.unit, ?_, ?_⟩⟩
-  · rintro X
-    refine Quiver.Hom.op_inj ?_
-    simp
-  · rintro Y
-    refine Quiver.Hom.unop_inj ?_
-    simp
+instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).IsRightAdjoint
 
 -- TODO: Do we need to introduce `Adjunction.leftOp`/`Adjunction.rightUnop`
 instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
