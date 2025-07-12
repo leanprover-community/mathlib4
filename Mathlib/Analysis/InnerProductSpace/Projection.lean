@@ -560,16 +560,6 @@ lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjectio
 lemma starProjection_orthogonal' (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     Uᗮ.starProjection = 1 - U.starProjection := starProjection_orthogonal U
 
-lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
-  ext
-  simp only [starProjection, ContinuousLinearMap.comp_apply,
-    orthogonalProjection_orthogonal]
-  rfl
-
-lemma starProjection_orthogonal' (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    Uᗮ.starProjection = 1 - U.starProjection := starProjection_orthogonal U
-
 /-- The orthogonal projection of `y` on `U` minimizes the distance `‖y - x‖` for `x ∈ U`. -/
 theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (y : E) :
     ‖y - U.starProjection y‖ = ⨅ x : U, ‖y - x‖ := by
@@ -605,18 +595,18 @@ theorem starProjection_eq_self_iff {v : E} : K.starProjection v = v ↔ v ∈ K 
 variable (K) in
 @[simp]
 lemma isIdempotentElem_starProjection : IsIdempotentElem K.starProjection :=
-  ContinuousLinearMap.ext fun x ↦ orthogonalProjection_eq_self_iff.mpr <| by simp
+  ContinuousLinearMap.ext fun x ↦ starProjection_eq_self_iff.mpr <| by simp
 
 @[simp]
 lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     LinearMap.range U.starProjection = U := by
   ext x
   exact ⟨fun ⟨y, hy⟩ ↦ hy ▸ coe_mem (U.orthogonalProjection y),
-    fun h ↦ ⟨x, orthogonalProjection_eq_self_iff.mpr h⟩⟩
+    fun h ↦ ⟨x, starProjection_eq_self_iff.mpr h⟩⟩
 
 lemma starProjection_top : (⊤ : Submodule 𝕜 E).starProjection = ContinuousLinearMap.id 𝕜 E := by
   ext
-  exact orthogonalProjection_eq_self_iff.mpr trivial
+  exact starProjection_eq_self_iff.mpr trivial
 
 lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
   starProjection_top
@@ -640,7 +630,7 @@ lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
   rw [(isIdempotentElem_starProjection U).ker_eq_range, ← starProjection_orthogonal',
     range_starProjection]
 
-theorem _root_.LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
+theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection] [(p.map f.toLinearMap).HasOrthogonalProjection]
     (x : E) : f (p.starProjection x) = (p.map f.toLinearMap).starProjection (f x) := by
@@ -1587,15 +1577,3 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
     rw [← h.span_eq, coe_h, hv_coe]
 
 end OrthonormalBasis
-
-open LinearMap in
-theorem ContinuousLinearMap.IsIdempotentElem.range_eq_ker {p : E →L[𝕜] E}
-    (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
-  have hp' : IsIdempotentElem (LinearMapClass.linearMap p) :=
-    congr(LinearMapClass.linearMap $(hp.eq))
-  hp'.range_eq_ker
-
-open ContinuousLinearMap in
-theorem ContinuousLinearMap.IsIdempotentElem.isClosed_range {p : E →L[𝕜] E}
-    (hp : IsIdempotentElem p) : IsClosed (LinearMap.range p : Set E) :=
-  hp.range_eq_ker ▸ ContinuousLinearMap.isClosed_ker (1 - p)
