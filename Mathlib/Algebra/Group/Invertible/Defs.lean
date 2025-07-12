@@ -11,7 +11,7 @@ import Mathlib.Algebra.Group.Defs
 This file defines a typeclass `Invertible a` for elements `a` with a two-sided
 multiplicative inverse.
 
-The intent of the typeclass is to provide a way to write e.g. `⅟ 2` in a ring
+The intent of the typeclass is to provide a way to write e.g. `⅟2` in a ring
 like `ℤ[1/2]` where some inverses exist but there is no general `⁻¹` operator;
 or to specify that a field has characteristic `≠ 2`.
 It is the `Type`-valued analogue to the `Prop`-valued `IsUnit`.
@@ -21,14 +21,14 @@ For constructions of the invertible element given a characteristic, see
 
 ## Notation
 
-* `⅟ a` is `Invertible.invOf a`, the inverse of `a`
+* `⅟a` is `Invertible.invOf a`, the inverse of `a`
 
 ## Implementation notes
 
 The `Invertible` class lives in `Type`, not `Prop`, to make computation easier.
 If multiplication is associative, `Invertible` is a subsingleton anyway.
 
-The `simp` normal form tries to normalize `⅟ a` to `a ⁻¹`. Otherwise, it pushes
+The `simp` normal form tries to normalize `⅟a` to `a ⁻¹`. Otherwise, it pushes
 `⅟` inside the expression as much as possible.
 
 Since `Invertible a` is not a `Prop` (but it is a `Subsingleton`), we have to be careful about
@@ -152,12 +152,12 @@ instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible
     congr
     exact left_inv_eq_right_inv hba hac⟩
 
-/-- If `a` is invertible and `a = b`, then `⅟ a = ⅟ b`. -/
+/-- If `a` is invertible and `a = b`, then `⅟a = ⅟b`. -/
 @[congr]
 theorem Invertible.congr [Monoid α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
-    ⅟ a = ⅟ b := by subst h; congr; apply Subsingleton.allEq
+    ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
 
-/-- If `r` is invertible and `s = r` and `si = ⅟ r`, then `s` is invertible with `⅟ s = si`. -/
+/-- If `r` is invertible and `s = r` and `si = ⅟r`, then `s` is invertible with `⅟s = si`. -/
 def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si : α) (hs : s = r)
     (hsi : si = ⅟r) : Invertible s where
   invOf := si
@@ -199,7 +199,7 @@ theorem invOf_invOf [Monoid α] (a : α) [Invertible a] [Invertible (⅟a)] : �
 theorem invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟a = ⅟b ↔ a = b :=
   ⟨invertible_unique _ _, invertible_unique _ _⟩
 
-/-- `⅟ b * ⅟ a` is the inverse of `a * b` -/
+/-- `⅟b * ⅟a` is the inverse of `a * b` -/
 def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Invertible (a * b) :=
   ⟨⅟b * ⅟a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
 
@@ -218,22 +218,22 @@ variable [Monoid α] {a b c : α} [Invertible c]
 
 variable (c) in
 theorem mul_left_inj_of_invertible : a * c = b * c ↔ a = b :=
-  ⟨fun h => by simpa using congr_arg (· * ⅟ c) h, congr_arg (· * _)⟩
+  ⟨fun h => by simpa using congr_arg (· * ⅟c) h, congr_arg (· * _)⟩
 
 variable (c) in
 theorem mul_right_inj_of_invertible : c * a = c * b ↔ a = b :=
-  ⟨fun h => by simpa using congr_arg (⅟ c * ·) h, congr_arg (_ * ·)⟩
+  ⟨fun h => by simpa using congr_arg (⅟c * ·) h, congr_arg (_ * ·)⟩
 
-theorem invOf_mul_eq_iff_eq_mul_left : ⅟ c * a = b ↔ a = c * b := by
+theorem invOf_mul_eq_iff_eq_mul_left : ⅟c * a = b ↔ a = c * b := by
   rw [← mul_right_inj_of_invertible (c := c), mul_invOf_cancel_left]
 
-theorem mul_left_eq_iff_eq_invOf_mul : c * a = b ↔ a = ⅟ c * b := by
-  rw [← mul_right_inj_of_invertible (c := ⅟ c), invOf_mul_cancel_left]
+theorem mul_left_eq_iff_eq_invOf_mul : c * a = b ↔ a = ⅟c * b := by
+  rw [← mul_right_inj_of_invertible (c := ⅟c), invOf_mul_cancel_left]
 
-theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟ c = b ↔ a = b * c := by
+theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
   rw [← mul_left_inj_of_invertible (c := c), invOf_mul_cancel_right]
 
-theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟ c := by
-  rw [← mul_left_inj_of_invertible (c := ⅟ c), mul_invOf_cancel_right]
+theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
+  rw [← mul_left_inj_of_invertible (c := ⅟c), mul_invOf_cancel_right]
 
 end

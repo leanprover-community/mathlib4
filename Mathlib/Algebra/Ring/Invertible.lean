@@ -37,12 +37,12 @@ theorem pos_of_invertible_cast [NonAssocSemiring R] [Nontrivial R] (n : ℕ) [In
   Nat.zero_lt_of_ne_zero fun h => Invertible.ne_zero (n : R) (h ▸ Nat.cast_zero)
 
 theorem invOf_add_invOf [Semiring R] (a b : R) [Invertible a] [Invertible b] :
-    ⅟ a + ⅟ b = ⅟ a * (a + b) * ⅟ b := by
+    ⅟a + ⅟b = ⅟a * (a + b) * ⅟b := by
   rw [mul_add, invOf_mul_self, add_mul, one_mul, mul_assoc, mul_invOf_self, mul_one, add_comm]
 
 /-- A version of `inv_sub_inv'` for `invOf`. -/
 theorem invOf_sub_invOf [Ring R] (a b : R) [Invertible a] [Invertible b] :
-    ⅟ a - ⅟ b = ⅟ a * (b - a) * ⅟ b := by
+    ⅟a - ⅟b = ⅟a * (b - a) * ⅟b := by
   rw [mul_sub, invOf_mul_self, sub_mul, one_mul, mul_assoc, mul_invOf_self, mul_one]
 
 /-- A version of `inv_add_inv'` for `Ring.inverse`. -/
