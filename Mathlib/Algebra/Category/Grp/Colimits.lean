@@ -126,9 +126,7 @@ def quotUliftToQuot [DecidableEq J] : Quot (F ⋙ uliftFunctor.{u'}) →+ Quot F
   refine QuotientAddGroup.lift (Relations (F ⋙ uliftFunctor))
     (DFinsupp.sumAddHom (fun j ↦ (Quot.ι _ j).comp AddEquiv.ulift.toAddMonoidHom)) ?_
   rw [AddSubgroup.closure_le]
-  intro _ hx
-  obtain ⟨j, j', u, a, rfl⟩ := hx
-  simp
+  aesop_cat
 
 lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
     quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
