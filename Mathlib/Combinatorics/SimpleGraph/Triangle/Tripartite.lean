@@ -193,8 +193,8 @@ lemma map_toTriangle_disjoint [ExplicitDisjoint t] :
   have := ne_of_apply_ne _ h'
   simp only [Ne, Prod.mk_inj, not_and] at this
   simp only [toTriangle_apply, in₀, in₁, in₂, Set.mem_inter_iff, mem_insert, mem_singleton,
-    mem_coe, and_imp, Sum.forall, or_false, forall_eq, false_or, eq_self_iff_true, imp_true_iff,
-    true_and, and_true, Set.Subsingleton]
+    mem_coe, and_imp, Sum.forall,
+    Set.Subsingleton]
   suffices ¬ (a = x ∧ b = y) ∧ ¬ (a = x ∧ c = z) ∧ ¬ (b = y ∧ c = z) by aesop
   refine ⟨?_, ?_, ?_⟩
   · rintro ⟨rfl, rfl⟩

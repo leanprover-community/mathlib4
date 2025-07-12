@@ -218,7 +218,7 @@ example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i ∈ s, f i
 
 def dontUnfoldMe : Nat → List Bool → Nat
   | 0, _ => 0
-  | n+1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
+  | n + 1, l => dontUnfoldMe n (true::l) + dontUnfoldMe n (false::l)
 
 -- times out if a certain reducibility setting in `gcongr`'s implementation is not correct
 example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
@@ -257,5 +257,9 @@ example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ a + 1
 example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b)  : b < a + 1 → 0 < 0 + 1 := by gcongr
 example {a b : ℕ} (h1 : a ≤ 0) (_h2 : 0 ≤ b) : b < a + 1 → b < 0 + 1 := by gcongr
 example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b < a + 1 → 0 < a + 1 := by gcongr
+
+/-! Test that `gcongr` with a pattern doesn't complain about type class inference problems. -/
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ 0 + 1 := by gcongr ?_ ≤ ?_ + _
 
 end GCongrTests
