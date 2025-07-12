@@ -94,10 +94,7 @@ protected theorem lt_iff (a b : ℚ) : a < b ↔ a.num * b.den < b.num * a.den :
         (na < 0 ∧ 0 ≤ nb ∨ if na = 0 then 0 < nb else (na ≤ 0 ∨ 0 < nb) ∧ na * ↑db < nb * da) ↔
         na * db < nb * da by simpa [Rat.blt]
       split_ifs with h
-      · suffices 0 < nb ↔ 0 < nb * da by simpa [h]
-        refine ⟨(Int.mul_pos · (by omega)), ?_⟩
-        contrapose!
-        exact (Int.mul_nonpos_of_nonpos_of_nonneg · (by omega))
+      · simp_all
       · constructor
         · refine (·.elim ?_ And.right)
           rintro ⟨hna, nb0⟩
@@ -167,19 +164,9 @@ instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
-protected lemma le_def : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
-  rw [← num_divInt_den q, ← num_divInt_den p]
-  conv_rhs => simp only [num_divInt_den]
-  exact Rat.divInt_le_divInt (mod_cast p.pos) (mod_cast q.pos)
+protected lemma le_def : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := Rat.le_iff p q
 
-protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
-  rw [lt_iff_le_and_ne, Rat.le_def]
-  suffices p ≠ q ↔ p.num * q.den ≠ q.num * p.den by
-    constructor <;> intro h
-    · exact lt_iff_le_and_ne.mpr ⟨h.left, this.mp h.right⟩
-    · have tmp := lt_iff_le_and_ne.mp h
-      exact ⟨tmp.left, this.mpr tmp.right⟩
-  exact not_iff_not.mpr eq_iff_mul_eq_mul
+protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := Rat.lt_iff p q
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]

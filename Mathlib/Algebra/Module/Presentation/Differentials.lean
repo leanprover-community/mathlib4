@@ -64,12 +64,8 @@ sequence shall follow from the exactness of the second which is
 /-- Same as `comm₂₃` below, but here we have not yet constructed `differentialsSolution`. -/
 lemma comm₂₃' : pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =
     Finsupp.linearCombination S (fun g ↦ D _ _ (pres.val g)) := by
-  ext g
-  dsimp
-  rw [Basis.repr_symm_apply, Finsupp.linearCombination_single,
-    Finsupp.linearCombination_single, one_smul, one_smul,
-    Generators.cotangentSpaceBasis_apply]
-  simp [Generators.toExtension]
+  ext
+  simp
 
 /-- The canonical map `(σ →₀ S) →ₗ[S] pres.toExtension.Cotangent`. -/
 noncomputable def hom₁ : (σ →₀ S) →ₗ[S] pres.toExtension.Cotangent :=

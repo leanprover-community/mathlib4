@@ -130,10 +130,9 @@ theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
-  rw [funext_iff]
-  intro
-  rw [leval_apply, smeval_def, eval_eq_sum]
-  rfl
+  ext x
+  simp_all only [leval_apply]
+  exact eval_eq_smeval r x
 
 theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
     leval r = smeval.linearMap R r := by
@@ -293,11 +292,7 @@ theorem smeval_commute_left (hc : Commute x y) : Commute (p.smeval x) y := by
     refine Commute.smul_left ?_ a
     induction n with
     | zero => simp only [npow_zero, Commute.one_left]
-    | succ n ih =>
-      refine (commute_iff_eq (x ^ (n + 1)) y).mpr ?_
-      rw [commute_iff_eq (x ^ n) y] at ih
-      rw [pow_succ, ← mul_assoc, ← ih]
-      exact Commute.right_comm hc (x ^ n)
+    | succ n ih => exact Commute.pow_left hc (n + 1)
 
 theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) := by
   induction p using Polynomial.induction_on' with

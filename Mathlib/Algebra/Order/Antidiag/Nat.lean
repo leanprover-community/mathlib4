@@ -138,11 +138,7 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     simp only [ite_true, and_true]
     rw [← Finset.mul_prod_erase (h := mem_univ i),
       ← Finset.mul_prod_erase (a := i')]
-    · rw [if_neg hi_ne, if_pos rfl, if_pos rfl, prod_eq_one]
-      · exact ⟨by ring, hn⟩
-      intro j hj
-      simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      rw [if_neg hj.1, if_neg hj.2]
+    · simp_all
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 
 lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
@@ -220,8 +216,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
-    ext ⟨p, hp⟩
-    refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
+    grind
   rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this

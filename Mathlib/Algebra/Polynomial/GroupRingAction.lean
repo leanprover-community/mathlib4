@@ -29,13 +29,8 @@ variable {M} in
 -- to avoid a spurious lambda-expression that complicates rewriting with this lemma.
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :
     HSMul.hSMul m = map (MulSemiringAction.toRingHom M R m) := by
-  suffices DistribMulAction.toAddMonoidHom R[X] m =
-      (mapRingHom (MulSemiringAction.toRingHom M R m)).toAddMonoidHom by
-    ext1 r
-    exact DFunLike.congr_fun this r
-  ext n r : 2
-  change m • monomial n r = map (MulSemiringAction.toRingHom M R m) (monomial n r)
-  rw [Polynomial.map_monomial, Polynomial.smul_monomial, MulSemiringAction.toRingHom_apply]
+  ext
+  simp
 
 noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
   { Polynomial.distribMulAction with

@@ -279,10 +279,7 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
   by_cases h1 : i = k
   · subst h1
     simp [hij]
-  by_cases h2 : j = k
-  · subst h2
-    simp [hij]
-  simp [h1, h2]
+  simp_all
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]

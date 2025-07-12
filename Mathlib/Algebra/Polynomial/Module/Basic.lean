@@ -145,10 +145,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
     split_ifs
     exacts [rfl, zero_add 0]
   · rw [monomial_smul_single, single_apply, coeff_monomial, ite_smul, zero_smul]
-    by_cases h : i ≤ n
-    · simp_rw [eq_tsub_iff_add_eq_of_le h, if_pos h]
-    · rw [if_neg h, if_neg]
-      omega
+    grind
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
