@@ -154,7 +154,7 @@ end CatEnriched
 end
 
 section
-variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory Cat.{v',u'} C]
+variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory Cat.{v', u'} C]
 
 /-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
 This converts it to a strict bicategory where `Category (X ⟶ Y)` is `(X ⟶[Cat] Y)`. -/
