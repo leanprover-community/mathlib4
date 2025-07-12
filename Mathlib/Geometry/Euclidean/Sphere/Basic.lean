@@ -7,6 +7,7 @@ import Mathlib.Analysis.Convex.StrictConvexBetween
 import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.Normed.Affine.Convex
 import Mathlib.Geometry.Euclidean.Basic
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Spheres
@@ -485,6 +486,8 @@ lemma isDiameter_iff_mem_and_mem_and_wbtw :
   have hd := hr.dist_add_dist
   rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd
   exact isDiameter_iff_mem_and_mem_and_dist.2 ⟨h₁, h₂, hd⟩
+
+open Real InnerProductSpace
 
 /-- For a diameter of a sphere, the angle subtended by the diameter
 at any other point on the sphere is a right angle. -/
