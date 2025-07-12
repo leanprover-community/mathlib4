@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Iterate
-import Aesop
 import Mathlib.Tactic.Inhabit
 
 /-!
@@ -19,7 +18,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
 
-lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
+lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by grind
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=

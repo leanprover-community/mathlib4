@@ -3,7 +3,6 @@ Copyright (c) 2025 Joseph Myers, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yaël Dillies
 -/
-import Aesop
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.MkIffOfInductiveProp
 
@@ -32,7 +31,7 @@ attribute [simp] Triplewise.nil
 variable {a b c : α} {l l₁ l₂ : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
 
 lemma triplewise_cons : (a :: l).Triplewise p ↔ l.Pairwise (p a) ∧ l.Triplewise p := by
-  rw [triplewise_iff]; aesop
+  rw [triplewise_iff]; grind
 
 variable (a b p)
 
@@ -95,7 +94,7 @@ lemma triplewise_append : (l₁ ++ l₂).Triplewise p ↔ l₁.Triplewise p ∧ 
   | nil => simp
   | cons h t ih =>
     simp [triplewise_cons, ih, pairwise_append]
-    aesop
+    grind
 
 lemma triplewise_reverse : l.reverse.Triplewise p ↔ l.Triplewise fun a b c ↦ p c b a := by
   induction l with
