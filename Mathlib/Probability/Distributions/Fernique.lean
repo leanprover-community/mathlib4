@@ -83,17 +83,14 @@ lemma exists_between' {t : ℕ → ℝ} (ht_mono : StrictMono t) (ht_tendsto : T
   · simp [hx0]
   simp only [hx0, false_or]
   have h : ∃ n, x ≤ t n := by
-    simp [tendsto_atTop_atTop_iff_of_monotone ht_mono.monotone] at ht_tendsto
+    simp only [tendsto_atTop_atTop_iff_of_monotone ht_mono.monotone] at ht_tendsto
     exact ht_tendsto x
-  have h' := Nat.find_spec h
-  have h'' m := Nat.find_min h (m := m)
-  simp only [not_le] at h'' hx0
-  refine ⟨Nat.find h - 1, ?_, ?_⟩
-  · refine h'' _ ?_
-    simp [hx0]
-  · convert h'
-    rw [Nat.sub_add_cancel]
-    simp [hx0]
+  have h' m := Nat.find_min h (m := m)
+  simp only [not_le] at h' hx0
+  refine ⟨Nat.find h - 1, h' _ (by simp [hx0]), ?_⟩
+  convert Nat.find_spec h
+  rw [Nat.sub_add_cancel]
+  simp [hx0]
 
 lemma two_mul_mul_le_mul_add_div {a b ε : ℝ} (hε : 0 < ε) :
     2 * a * b ≤ ε * a ^ 2 + (1 / ε) * b ^ 2 := by
