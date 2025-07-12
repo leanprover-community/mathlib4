@@ -88,7 +88,7 @@ structure Classifier where
   /-- `χ₀ U` and `χ m` form the appropriate pullback square. -/
   isPullback {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (χ₀ U) (χ m) truth
   /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square for any `χ₀'`. -/
-  uniq {U X : C} (m : U ⟶ X) [Mono m] {χ₀' : U ⟶ Ω₀} (χ' : X ⟶ Ω)
+  uniq {U X : C} (m : U ⟶ X) [Mono m] {χ₀' : U ⟶ Ω₀} {χ' : X ⟶ Ω}
     (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
 
 variable {C}
@@ -123,7 +123,7 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
     uniq f :=
       have : f ≫ c.truth = c.χ₀ Y ≫ c.truth :=
         by calc
-          _ = c.χ (𝟙 Y) := c.uniq (𝟙 Y) (f ≫ c.truth) (of_horiz_isIso_mono { })
+          _ = c.χ (𝟙 Y) := c.uniq (𝟙 Y) (of_horiz_isIso_mono { })
           _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback (𝟙 Y)).w]
       Mono.right_cancellation _ _ this }
 
@@ -192,7 +192,7 @@ lemma comm : m ≫ χ m = Classifier.χ₀ _ U ≫ truth C := (isPullback_χ m).
 is a pullback square.
 -/
 lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) :
-  χ' = χ m := Classifier.uniq _ m χ' hχ'
+  χ' = χ m := Classifier.uniq _ m hχ'
 
 instance truthIsSplitMono : IsSplitMono (truth C) :=
   Classifier.isTerminalΩ₀.isSplitMono_from _
@@ -258,7 +258,7 @@ abbrev truth_as_subobject : Subobject 𝒞.Ω :=
 
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
-  ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ _ (by
+  ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ (by
     convert IsPullback.of_hasPullback φ 𝒞.truth)⟩
 
 @[simp]
@@ -270,7 +270,7 @@ lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
     𝒞.χ ((Subobject.pullback φ).obj 𝒞.truth_as_subobject).arrow = φ := by
   obtain ⟨Z, i, _, rfl⟩ := 𝒞.surjective_χ φ
-  refine (𝒞.uniq _ _ (?_ : IsPullback _ (𝒞.χ₀ _) _ _)).symm
+  refine (𝒞.uniq _ (?_ : IsPullback _ (𝒞.χ₀ _) _ _)).symm
   refine (IsPullback.of_hasPullback 𝒞.truth (𝒞.χ i)).flip.of_iso
     (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
     ?_ (𝒞.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
@@ -389,6 +389,7 @@ noncomputable def isTerminalΩ₀ : IsTerminal (h.Ω₀ : C) :=
     rw [← cancel_mono h.Ω₀.arrow, h.uniq this,
       ← (h.isPullback (𝟙 X)).w, Category.id_comp])
 
+/-- The unique map to the terminal object. -/
 noncomputable def χ₀ (U : C) : U ⟶ h.Ω₀ := h.isTerminalΩ₀.from U
 
 include h in
