@@ -489,18 +489,10 @@ variable {G : Subgroup (Perm α)}
 
 theorem eq_s2_of_nontrivial [Finite α] (hα : Nat.card α ≤ 2) (hG : Nontrivial G) :
     G = (⊤ : Subgroup (Perm α)) := by
-  classical
-  have _ : Fintype α := Fintype.ofFinite α
-  have _ : Fintype G := Fintype.ofFinite G
-  apply Subgroup.eq_top_of_card_eq
-  simp only [Nat.card_eq_fintype_card]
-  apply le_antisymm
-  · apply Fintype.card_subtype_le
-  · rw [Fintype.card_equiv (Equiv.cast rfl)]
-    trans (2 : ℕ).factorial
-    · rw [← Nat.card_eq_fintype_card]
-      exact Nat.factorial_le hα
-    · simpa [Nat.factorial_two, ← Fintype.one_lt_card_iff_nontrivial] using hG
+  apply Subgroup.eq_top_of_le_card
+  rw [Nat.card_perm]
+  apply (Nat.factorial_le hα).trans
+  rwa [Nat.factorial_two, Nat.succ_le, one_lt_card_iff_ne_bot, ← nontrivial_iff_ne_bot]
 
 theorem nontrivial_on_equiv_perm_two [Finite α] {K : Type*} [Group K] [MulAction K α]
     (hα : Nat.card α = 2) (hK : fixedPoints K α ≠ .univ) :
