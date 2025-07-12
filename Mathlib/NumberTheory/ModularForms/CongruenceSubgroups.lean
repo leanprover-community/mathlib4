@@ -322,11 +322,11 @@ lemma finiteIndex_conjGL (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] (g : GL (Fi
   let t := (toConjAct <| g.map <| Rat.castHom ℝ)⁻¹
   let G := Γ.map (mapGL ℝ)
   let A := MonoidHom.range (mapGL ℝ : SL(2, ℤ) →* _)
-  suffices (t • G ⊓ A).relindex A ≠ 0 by rwa [conjGL, index_comap, ← inf_relindex_right]
-  apply relindex_ne_zero_trans (K := t • A ⊓ A)
+  suffices (t • G ⊓ A).relIndex A ≠ 0 by rwa [conjGL, index_comap, ← inf_relIndex_right]
+  apply relIndex_ne_zero_trans (K := t • A ⊓ A)
   · -- Show that `[ (t • A ⊓ A) : (t • G ⊓ A)] < ∞`.
-    apply relindex_inter_ne_zero
-    rw [relindex_pointwise_smul, ← index_comap,
+    apply relIndex_inter_ne_zero
+    rw [relIndex_pointwise_smul, ← index_comap,
       comap_map_eq_self_of_injective mapGL_injective]
     exact FiniteIndex.index_ne_zero
   · -- Show that `[A : (t • A ⊓ A)] < ∞` (note this is independent of `Γ`)
