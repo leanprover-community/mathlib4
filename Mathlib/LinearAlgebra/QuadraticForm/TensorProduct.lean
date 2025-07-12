@@ -107,7 +107,7 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
   aesop
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    polarBilin (Q₁.tmul Q₂) = ⅟ (2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) := by
+    polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) := by
   simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinForm.tmul, tmul_smul,
     ← smul_tmul', map_nsmul, associated_tmul]
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
