@@ -293,7 +293,7 @@ theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
 theorem _root_.isSelfAdjoint_starProjection
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     IsSelfAdjoint U.starProjection :=
-  U.orthogonalProjection_isSymmetric.isSelfAdjoint
+  U.starProjection_isSymmetric.isSelfAdjoint
 
 @[deprecated (since := "2025-07-05")] alias _root_.orthogonalProjection_isSelfAdjoint :=
   isSelfAdjoint_starProjection
@@ -316,7 +316,7 @@ theorem IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
 
 /-- `U.starProjection` is a star projection. -/
 @[simp]
-theorem isStarProjection_starProjection [CompleteSpace E] (U : Submodule 𝕜 E)
+theorem isStarProjection_starProjection [CompleteSpace E] {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] : IsStarProjection U.starProjection :=
   ⟨U.isIdempotentElem_starProjection, isSelfAdjoint_starProjection U⟩
 
@@ -324,11 +324,11 @@ theorem isStarProjection_starProjection [CompleteSpace E] (U : Submodule 𝕜 E)
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
     p = (LinearMap.range p).starProjection := by
-  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isStarProjection_starProjection _⟩
+  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isStarProjection_starProjection⟩
   have := IsIdempotentElem.hasOrthogonalProjection_range hp.isIdempotentElem
   refine ⟨this, Eq.symm ?_⟩
   ext x
-  refine Submodule.eq_orthogonalProjection_of_mem_orthogonal (by simp) ?_
+  refine Submodule.eq_starProjection_of_mem_orthogonal (by simp) ?_
   simpa [p.orthogonal_range, hp.isSelfAdjoint.isSymmetric]
     using congr($(hp.isIdempotentElem.mul_one_sub_self) x)
 
