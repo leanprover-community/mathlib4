@@ -11,10 +11,7 @@ import Mathlib.Algebra.Ring.InjSurj
 /-!
 # Transfer algebraic structures across `Equiv`s
 
-In this file we prove theorems of the following form: if `β` has a
-group structure and `α ≃ β` then `α` has a group structure, and
-similarly for monoids, semigroups, rings, integral domains, fields and
-so on.
+This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 
 ### Implementation details
 
