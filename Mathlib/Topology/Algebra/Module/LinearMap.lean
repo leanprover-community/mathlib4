@@ -1142,6 +1142,17 @@ namespace ContinuousLinearMap
 variable {R M : Type*} [Ring R] [TopologicalSpace M]
   [AddCommGroup M] [Module R M] [IsTopologicalAddGroup M]
 
+omit [IsTopologicalAddGroup M] in
+/-- Idempotent operators are equal iff their range and kernels are. -/
+lemma IsIdempotentElem.ext_iff {p q : M →L[R] M}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    p = q ↔ range p = range q ∧ ker p = ker q := by
+  simpa using LinearMap.IsIdempotentElem.ext_iff
+    congr(LinearMapClass.linearMap $hp.eq)
+    congr(LinearMapClass.linearMap $hq.eq)
+
+alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
+
 theorem IsIdempotentElem.range_eq_ker
     {p : M →L[R] M} (hp : IsIdempotentElem p) :
     LinearMap.range p = LinearMap.ker (1 - p) :=
