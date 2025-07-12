@@ -257,8 +257,8 @@ elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
   | _ => throwError m!"Term {ef} is not a function."
 
 /-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
-trying to determine `I` and `J` from the local context. -/
--- XXX: can `x` be omitted?
+trying to determine `I` and `J` from the local context.
+The argument `x` can be omitted. -/
 elab:max "MDiffAt" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
@@ -280,8 +280,8 @@ elab:max "MDifferentiableAt%" t:term:arg : term => do
     return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
--- `MDiff[s] f` elaborates to `MDifferentiableOn I J f`, trying to determine `I` and `J` from the
--- local context.
+/-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f`,
+trying to determine `I` and `J` from the local context. -/
 elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
   let es ← Term.elabTerm s none
   let et ← Term.elabTerm t none
@@ -295,8 +295,8 @@ elab:max "MDiff[" s:term:arg "]" t:term:arg : term => do
     return ← mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
   | _ => throwError m!"Term {et} is not a function."
 
--- `MDiff f` elaborates to `MDifferentiable I J f`,
--- trying to determine `I` and `J` from the local context.
+/-- `MDiff f` elaborates to `MDifferentiable I J f`,
+trying to determine `I` and `J` from the local context. -/
 elab:max "MDiff" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
@@ -307,7 +307,9 @@ elab:max "MDiff" t:term:arg : term => do
     return ← mkAppM ``MDifferentiable #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
--- `CMDiffAt[s] n f` elaborates to `ContMDiffWithinAt I J n f s`
+-- TODO: say something about the expected type of `n` being in ℕ or WithTop ℕ∞!
+/-- `CMDiffAt[s] n f` elaborates to `ContMDiffWithinAt I J n f s`,
+trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
@@ -323,7 +325,8 @@ elab:max "CMDiffAt[" s:term:arg "]" nt:term:arg f:term:arg : term => do
     return ← mkAppM ``ContMDiffWithinAt #[srcI, tgtI, ne, ef, es]
   | _ => throwError m!"Term {ef} is not a function."
 
--- `CMDiffAt n f` elaborates to `ContMDiffAt I J n f s`
+/-- `CMDiffAt n f` elaborates to `ContMDiffAt I J n f s`
+trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
@@ -336,7 +339,8 @@ elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
     return ← mkAppM ``ContMDiffAt #[srcI, tgtI, ne, e]
   | _ => throwError m!"Term {e} is not a function."
 
--- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`
+/-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`,
+trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
@@ -352,7 +356,8 @@ elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
     return ← mkAppM ``ContMDiffOn #[srcI, tgtI, ne, ef, es]
   | _ => throwError m!"Term {ef} is not a function."
 
--- `CMDiff n f` elaborates to `ContMDiff I J n f`
+/-- `CMDiff n f` elaborates to `ContMDiff I J n f`,
+trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiff" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
