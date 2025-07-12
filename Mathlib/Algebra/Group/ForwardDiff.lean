@@ -246,7 +246,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     rw [pow_succ, Module.End.mul_apply]
     have : ((fwdDiffₗ R R 1) fun x ↦ x ^ (n + 1)) =
         ∑ k ∈ Finset.range (n + 1), (n + 1).choose k • fun x : R ↦ x ^ k := by
-      ext x;
+      ext x
       simp only [fwdDiffₗ_apply, nsmul_eq_mul, sum_apply, Pi.mul_apply, Pi.natCast_apply,
         fwdDiff, add_pow, one_pow, Finset.sum_range_succ, Nat.choose_self, cast_one, mul_one,
         add_sub_assoc, sub_self, add_zero]
