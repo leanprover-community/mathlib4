@@ -6498,6 +6498,7 @@ import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
+import Mathlib.Topology.Separation.AlexandrovDiscrete
 import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.Topology.Separation.Connected
