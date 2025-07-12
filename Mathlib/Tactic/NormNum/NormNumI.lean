@@ -131,8 +131,11 @@ partial def parse (z : Q(ℂ)) : MetaM (Σ a b : Q(ℝ), Q(IsComplex $z $a $b)) 
     | 0 =>
       let _i : $n =Q 0 := ⟨⟩
       return ⟨q(1), q(0), q(⟨show $w ^ $n' = _ from $(hn).out ▸ pow_zero _⟩)⟩
-    | n + 1 =>
-      parse q($w^$n * $w)
+    | m + 1 =>
+      let ⟨a, b, pf⟩ ← parse q($w ^ $m * $w)
+      let _i : $n =Q $m + 1 := ⟨⟩
+      return ⟨a, b, q(⟨show $w ^ $n' = _ from $(hn).out ▸
+        ((congr_arg _ rfl).trans (pow_succ _ _)).trans $(pf).out⟩)⟩
   | ~q($w ^ ($k : ℤ)) =>
     let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
     match k'.intLit! with
