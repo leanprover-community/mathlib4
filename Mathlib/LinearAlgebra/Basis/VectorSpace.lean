@@ -154,7 +154,7 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
   exact Basis.mk_apply _ _ _
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
+theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
   funext fun x => ofVectorSpace_apply_self K V x
 
 theorem ofVectorSpaceIndex.linearIndependent :

@@ -502,7 +502,7 @@ theorem toAddSubgroup_closure (S : Set G) :
 
 theorem _root_.AddSubgroup.toSubgroup_closure {A : Type*} [AddGroup A] (S : Set A) :
     (AddSubgroup.closure S).toSubgroup = Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
-  Subgroup.toAddSubgroup.injective (Subgroup.toAddSubgroup_closure _ ).symm
+  Subgroup.toAddSubgroup.injective (Subgroup.toAddSubgroup_closure _).symm
 
 theorem toAddSubgroup'_closure {A : Type*} [AddGroup A] (S : Set (Multiplicative A)) :
     (closure S).toAddSubgroup' = AddSubgroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
