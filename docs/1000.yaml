@@ -396,10 +396,6 @@ Q401319:
 Q401905:
   title: Skorokhod's representation theorem
 
-Q420714:
-  title: Akra–Bazzi theorem
-  decl: AkraBazziRecurrence.isBigO_asympBound
-
 Q422187:
   title: Myhill–Nerode theorem
   decl: Language.isRegular_iff_finite_range_leftQuotient
