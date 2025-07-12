@@ -166,7 +166,7 @@ noncomputable abbrev cochainsMap₁ :
   ModuleCat.ofHom <| φ.hom.hom.compLeft G ∘ₗ LinearMap.funLeft k A f
 
 @[deprecated (since := "2025-07-12")] alias f₁ := cochainsMap₁
-@[deprecated (since := "2025-06-25")] alias fOne := f₁
+@[deprecated (since := "2025-06-25")] noncomputable alias fOne := f₁
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H → A` to `(g₁, g₂ : G × G) ↦ φ (x (f g₁, f g₂))`. -/
@@ -175,7 +175,7 @@ noncomputable abbrev cochainsMap₂ :
   ModuleCat.ofHom <| φ.hom.hom.compLeft (G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f f)
 
 @[deprecated (since := "2025-07-12")] alias f₂ := cochainsMap₂
-@[deprecated (since := "2025-06-25")] alias fTwo := f₂
+@[deprecated (since := "2025-06-25")] noncomputable alias fTwo := f₂
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H × H → A` to
@@ -186,7 +186,7 @@ noncomputable abbrev cochainsMap₃ :
     φ.hom.hom.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
 
 @[deprecated (since := "2025-07-12")] alias f₃ := cochainsMap₃
-@[deprecated (since := "2025-06-25")] alias fThree := f₃
+@[deprecated (since := "2025-06-25")] noncomputable alias fThree := f₃
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_0_comp_cochainsIso₀ :
@@ -600,7 +600,7 @@ noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat k) ℕ
 
 instance : (cochainsFunctor k G).PreservesZeroMorphisms where
 instance : (cochainsFunctor k G).Additive where
-
+f₂
 variable (k G) in
 /-- The functor sending a `G`-representation `A` to `Hⁿ(G, A)`. -/
 @[simps]
