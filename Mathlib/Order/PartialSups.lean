@@ -36,11 +36,11 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 
 open Finset
 
-variable {α ι : Type*}
+variable {α β ι : Type*}
 
 section SemilatticeSup
 
-variable [SemilatticeSup α]
+variable [SemilatticeSup α] [SemilatticeSup β]
 
 section Preorder
 
@@ -146,6 +146,10 @@ theorem partialSups_bot [PartialOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
   -- should we add a lemma `Finset.Iic_bot`?
   suffices Iic (⊥ : ι) = {⊥} by simp only [this, sup'_singleton]
   simp only [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
+
+lemma comp_partialSups {F : Type*} [Preorder ι] [LocallyFiniteOrderBot ι] [FunLike F α β]
+    [SupHomClass F α β] (f : ι → α) (g : F) : partialSups (g ∘ f) = g ∘ partialSups f := by
+  funext _; simp [partialSups]
 
 /-!
 ### Functions out of `ℕ`
