@@ -131,7 +131,6 @@ instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp
 instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint :=
   inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).IsRightAdjoint
 
--- TODO: Do we need to introduce `Adjunction.leftOp`/`Adjunction.rightUnop`
 instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
   ⟨F.leftAdjoint.leftOp, ⟨.rightOp <| .ofIsRightAdjoint _⟩⟩
 
