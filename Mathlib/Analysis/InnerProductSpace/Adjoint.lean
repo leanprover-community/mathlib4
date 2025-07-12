@@ -288,6 +288,8 @@ theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
     (hA : (A : E →ₗ[𝕜] E).IsSymmetric) : IsSelfAdjoint A := by
   rwa [← ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric] at hA
 
+/-- The orthogonal projection is self-adjoint. -/
+@[simp]
 theorem _root_.isSelfAdjoint_starProjection
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     IsSelfAdjoint U.starProjection :=
