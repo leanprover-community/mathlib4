@@ -33,8 +33,7 @@ import Mathlib.RingTheory.Trace.Quotient
 
 universe u
 
-attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
-  Ideal.Quotient.field
+attribute [local instance] Ideal.Quotient.field
 
 variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
@@ -647,10 +646,6 @@ lemma pow_sub_one_dvd_differentIdeal_aux
 lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} [p.IsMaximal] (P : Ideal B) (e : ℕ) (hp : p ≠ ⊥)
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
-  have : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
-    IsIntegralClosure.isLocalization _ (FractionRing A) _ _
-  have : FiniteDimensional (FractionRing A) (FractionRing B) :=
-    Module.Finite_of_isLocalization A B _ _ A⁰
   by_cases he : e = 0
   · rw [he, pow_zero]; exact one_dvd _
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
@@ -673,9 +668,6 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
       exact Ideal.mul_le_left)
   let K := FractionRing A
   let L := FractionRing B
-  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
-    IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
   rw [Ideal.dvd_iff_le]
   intro H
   replace H := (mul_le_mul_right' H Q).trans_eq hP
