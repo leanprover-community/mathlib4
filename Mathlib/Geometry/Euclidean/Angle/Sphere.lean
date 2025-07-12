@@ -392,3 +392,66 @@ theorem concyclic_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
   · exact Or.inr hc
 
 end EuclideanGeometry
+
+namespace EuclideanGeometry
+
+open EuclideanGeometry Real InnerProductSpace
+
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+
+/- **Thales' Theorem (iff form)**: Given a diameter AC of a sphere,
+the angle ∠ABC is a right angle if and only if B lies on the sphere. -/
+theorem thales_theorem_iff (A B C : P) (s : Sphere P)
+    (hDiam : s.IsDiameter A C) (hBA : B ≠ A) (hBC : B ≠ C) :
+    ∠ A B C = π / 2 ↔ B ∈ s := by
+  constructor
+  · intro hAngle
+    have h_perp : ⟪A -ᵥ B, C -ᵥ B⟫_ℝ = 0 :=
+      (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two (A -ᵥ B) (C -ᵥ B)).mpr hAngle
+    let O := midpoint ℝ A C
+    rw [← vsub_add_vsub_cancel A O B, ← vsub_add_vsub_cancel C O B,
+        inner_add_left, inner_add_right, inner_add_right] at h_perp
+    have hAC_opposite : A -ᵥ O = -(C -ᵥ O) := by
+      rw [left_vsub_midpoint, right_vsub_midpoint, ← smul_neg]
+      simp only [invOf_eq_inv, neg_vsub_eq_vsub_rev]
+    rw [hAC_opposite, inner_neg_left, inner_neg_left,
+        real_inner_comm (C -ᵥ O) (O -ᵥ B)] at h_perp
+    ring_nf at h_perp
+    have hBO_eq_CO : dist B O = dist C O := by
+      have : ⟪B -ᵥ O, B -ᵥ O⟫_ℝ = ⟪C -ᵥ O, C -ᵥ O⟫_ℝ := by
+        rw [← inner_neg_neg (B -ᵥ O)]
+        simp only [neg_vsub_eq_vsub_rev]
+        linarith
+      rw [real_inner_self_eq_norm_sq, real_inner_self_eq_norm_sq,
+          ← dist_eq_norm_vsub, ← dist_eq_norm_vsub] at this
+      rw [← Real.sqrt_sq dist_nonneg, ← Real.sqrt_sq dist_nonneg, this,
+          Real.sqrt_sq dist_nonneg, Real.sqrt_sq dist_nonneg]
+    rw [mem_sphere', dist_comm, ← hDiam.midpoint_eq_center, hBO_eq_CO,
+        show O = midpoint ℝ A C from rfl, hDiam.midpoint_eq_center,
+        dist_comm, mem_sphere'.mp hDiam.right_mem]
+  · intro hB
+    let O := s.center
+    have hO : O = midpoint ℝ A C := hDiam.midpoint_eq_center.symm
+    have hOB : dist O B = s.radius := mem_sphere'.mp hB
+    have hOC : dist O C = s.radius := mem_sphere'.mp hDiam.right_mem
+    have h_perp : ⟪A -ᵥ B, C -ᵥ B⟫_ℝ = 0 := by
+      rw [← vsub_add_vsub_cancel A O B, ← vsub_add_vsub_cancel C O B,
+          inner_add_left, inner_add_right, inner_add_right]
+      have hAC_opposite : A -ᵥ O = -(C -ᵥ O) := by
+        rw [hO, left_vsub_midpoint, right_vsub_midpoint, ← smul_neg]
+        simp only [invOf_eq_inv, neg_vsub_eq_vsub_rev]
+      rw [hAC_opposite, inner_neg_left, inner_neg_left,
+          real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
+          real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
+          dist_comm, hOB, hOC, real_inner_comm (C -ᵥ O) (O -ᵥ B)]
+      ring
+    exact (InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two (A -ᵥ B) (C -ᵥ B)).mp h_perp
+
+/-- **Thales' Theorem (iff form, diameter version)**: The angle ∠ABC is a right angle
+if and only if B lies on the sphere with diameter AC. -/
+theorem thales_theorem_diameter_iff (A B C : P) (hBA : B ≠ A) (hBC : B ≠ C) :
+    ∠ A B C = π / 2 ↔ B ∈ Sphere.ofDiameter A C := by
+  exact thales_theorem_iff A B C (Sphere.ofDiameter A C) (Sphere.isDiameter_ofDiameter A C) hBA hBC
+
+end EuclideanGeometry
