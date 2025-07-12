@@ -314,7 +314,7 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
     constructor
     · intro h'
       simp [tsub_eq_zero_iff_le] at h'
-      exact eq_of_le_of_le h h'
+      exact eq_of_le_of_ge h h'
     · intro h'
       simp only [h', ENNReal.coe_one, tsub_self]
   · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq, ne_eq,
