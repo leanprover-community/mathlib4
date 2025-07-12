@@ -547,7 +547,7 @@ def IsAlternating (G G' : SimpleGraph V) :=
 lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : G'' ≤ G) :
     G''.IsAlternating G' := fun _ _ _ hww' hvw hvw' ↦ halt hww' (h hvw) (h hvw')
 
-lemma IsAlternating.spanningCoe (halt : G.IsAlternating G') (H : Subgraph G)  :
+lemma IsAlternating.spanningCoe (halt : G.IsAlternating G') (H : Subgraph G) :
     H.spanningCoe.IsAlternating G' := by
   intro v w w' hww' hvw hvv'
   simp only [Subgraph.spanningCoe_adj] at hvw hvv'
