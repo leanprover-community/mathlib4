@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Shashank Kirtania. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Shashank Kirtania
+-/
 import Mathlib.Tactic.ComputeDegree
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
@@ -66,39 +71,65 @@ partial def isExplicitPolynomial (e : Expr) : MetaM Bool := do
       return false
 
 /-- Attempts to compute the degree of an explicit polynomial expression.
-This is a simplified version that only handles very simple cases. -/
+Uses the compute_degree tactic's internal logic to leverage existing degree computation. -/
 def computeDegree (poly : Expr) : MetaM (Option (Expr × Expr)) := do
   -- Check if polynomial is explicit enough
   unless (← isExplicitPolynomial poly) do
     return none
 
-  -- For now, let's just handle the simplest cases
-  match poly.getAppFnArgs with
-  | (``Polynomial.C, #[_, _, _coeff]) =>
-    -- degree (C a) = ⊥
-    let bot := mkApp (mkConst ``WithBot.bot [levelZero]) (mkConst ``Nat)
-    let degreeType := mkApp (mkConst ``WithBot [levelZero]) (mkConst ``Nat)
-    let proof ← mkFreshExprMVar (mkApp3 (mkConst ``Eq [levelOne]) degreeType
-      (mkApp (mkConst ``Polynomial.degree) poly) bot)
-    return some (bot, proof)
-  | (``Polynomial.X, #[_ringType, _inst]) =>
-    -- degree X = 1
-    let one := mkApp2 (mkConst ``WithBot.some [levelZero]) (mkConst ``Nat)
-      (mkApp (mkConst ``Nat.succ) (mkConst ``Nat.zero))
-    let degreeType := mkApp (mkConst ``WithBot [levelZero]) (mkConst ``Nat)
-    let proof ← mkFreshExprMVar (mkApp3 (mkConst ``Eq [levelOne]) degreeType
-      (mkApp (mkConst ``Polynomial.degree) poly) one)
-    return some (one, proof)
-  | _ =>
-    return none
+  -- Try to compute using compute_degree's internal logic
+  -- Create a fresh metavariable for the degree
+  let degreeType := mkApp (mkConst ``WithBot [levelZero]) (mkConst ``Nat)
+  let degreeMVar ← mkFreshExprMVar degreeType
 
-/-- Similar to computeDegree but for natDegree. -/
+  -- Create the goal `Polynomial.degree poly = ?deg`
+  let degreeApp := mkApp (mkConst ``Polynomial.degree) poly
+  let goal := mkApp3 (mkConst ``Eq [levelOne]) degreeType degreeApp degreeMVar
+
+  -- Create a goal MVarId and try to solve it using compute_degree's logic
+  let goalMVar ← mkFreshExprMVar goal
+  goalMVar.mvarId!.withContext do
+    try
+      -- Use the same logic as compute_degree tactic
+      let twoH := Mathlib.Tactic.ComputeDegree.twoHeadsArgs goal
+      let lem := Mathlib.Tactic.ComputeDegree.dispatchLemma twoH
+
+      -- Apply the selected lemma
+      let newGoals ← goalMVar.mvarId!.applyConst lem
+
+      -- Try to solve the subgoals using splitApply and try_rfl
+      let mut remainingGoals := newGoals
+      let mut staticGoals := []
+
+      -- Apply splitApply logic
+      while remainingGoals.length > 0 do
+        let (newRemaining, newStatic) ←
+          Mathlib.Tactic.ComputeDegree.splitApply remainingGoals staticGoals
+        remainingGoals := newRemaining
+        staticGoals := newStatic
+
+      -- Try to close remaining goals with rfl
+      let finalGoals ← Mathlib.Tactic.ComputeDegree.try_rfl staticGoals
+
+      -- If we have no remaining goals, we succeeded
+      if finalGoals.isEmpty then
+        let computedDegree ← instantiateMVars degreeMVar
+        let proof ← instantiateMVars goalMVar
+        return some (computedDegree, proof)
+      else
+        return none
+    catch _ =>
+      return none
+
+/-- Similar to computeDegree but for natDegree.
+For now, this is a simplified version that handles basic cases. -/
 def computeNatDegree (poly : Expr) : MetaM (Option (Expr × Expr)) := do
   -- Check if polynomial is explicit enough
   unless (← isExplicitPolynomial poly) do
     return none
 
-  -- For now, let's just handle the simplest cases
+  -- For now, let's handle the simplest cases directly
+  -- In the future, this could be extended to call compute_degree tactic
   match poly.getAppFnArgs with
   | (``Polynomial.C, #[_, _, _coeff]) =>
     -- natDegree (C a) = 0
