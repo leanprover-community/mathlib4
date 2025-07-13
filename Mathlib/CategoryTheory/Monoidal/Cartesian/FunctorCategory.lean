@@ -180,7 +180,7 @@ noncomputable def tensorObjComp (F G : D ⥤ C) (H : C ⥤ E) [PreservesFinitePr
 @[simps]
 protected def RepresentableBy.tensorObj {F : Cᵒᵖ ⥤ Type v} {G : Cᵒᵖ ⥤ Type v} {X Y : C}
     (h₁ : F.RepresentableBy X) (h₂ : G.RepresentableBy Y) : (F ⊗ G).RepresentableBy (X ⊗ Y) where
-  homEquiv {I} := homToProd.trans (h₁.homEquiv.prodCongr h₂.homEquiv)
+  homEquiv {I} := homEquivToProd.trans (h₁.homEquiv.prodCongr h₂.homEquiv)
   homEquiv_comp {I W} f g := by
     refine Prod.ext ?_ ?_
     · change h₁.homEquiv ((f ≫ g) ≫ fst X Y) = F.map f.op (h₁.homEquiv (g ≫ fst X Y))
