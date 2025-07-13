@@ -14,7 +14,7 @@ of requiring self adjointness in the definition.
 
 ## Main definitions
 
-* `LinearMap.IsPositive` : a linear map is positive if it is self adjoint and
+* `LinearMap.IsPositive` : a linear map is positive if it is symmetric and
   `∀ x, 0 ≤ re ⟪T x, x⟫`.
 * `ContinuousLinearMap.IsPositive` : a continuous linear map is positive if it is self adjoint and
   `∀ x, 0 ≤ re ⟪T x, x⟫`.
