@@ -69,12 +69,13 @@ theorem coeff_eq_ncoeff (A : VertexOperator R V)
   simp [ncoeff]
 
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : -n - 1 < HahnSeries.order (A x)) : (A [[n]]) x = 0 := by
+    (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A [[n]]) x = 0 := by
   simp only [ncoeff, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : n < HahnSeries.order (A x)) : HVertexOperator.coeff A n x = 0 := by
+    (h : n < HahnSeries.order ((HahnModule.of R).symm (A x))) :
+    HVertexOperator.coeff A n x = 0 := by
   rw [coeff_eq_ncoeff, ncoeff_eq_zero_of_lt_order A (-n - 1) x]
   omega
 
@@ -256,16 +257,30 @@ theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
       ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
   rw [binomCompLeft, coeff_apply_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
   exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
-/-!
+
+-- TODO : replace 2nd term on right with a version of Ring.choose that takes integer inputs.
 theorem binomCompLeft_one_left_nat_coeff (n : ℕ) (g : ℤ ×ₗ ℤ) :
     (binomCompLeft 1 B n).coeff g =
-      ∑ i ≤ n, (Int.negOnePow i) • (hasseDeriv i B).coeff ((ofLex g).1 - i) := by
+      (Int.negOnePow (n - (ofLex g).2)) •
+      (if (ofLex g).2 ≤ n then Ring.choose (n : ℤ) (n - (ofLex g).2).toNat else 0) •
+      B.coeff ((ofLex g).1 - n + (ofLex g).2) := by
   ext v
   rw [show g = toLex ((ofLex g).1, (ofLex g).2) by rfl, binomCompLeft_apply_coeff]
-  simp only [coeff_apply_apply, one_apply, Equiv.symm_apply_apply, LinearMap.zero_apply,
-    HahnModule.of_symm_zero, Prod.mk.eta, toLex_ofLex, HahnSeries.coeff_zero]
--/
-
+  simp only [coeff_apply_apply, one_apply, Equiv.symm_apply_apply, Prod.mk.eta, toLex_ofLex]
+  rw [finsum_eq_single _ ((n : ℤ) - (ofLex g).2).toNat]
+  · by_cases h : (ofLex g).2 - n + (n - (ofLex g).2).toNat = 0
+    · rw [h, HahnSeries.coeff_single_same 0]
+      have : (n - (ofLex g).2).toNat = n - (ofLex g).2 := by omega
+      have hng : (ofLex g).2 ≤ n := by omega
+      simp only [this, hng, ↓reduceIte]
+      congr 1
+      simp only [zsmul_eq_mul, Module.End.mul_apply, Module.End.intCast_apply, coeff_apply_apply]
+      abel_nf
+    · rw [HahnSeries.coeff_single_of_ne h]
+      simp [show ¬ (ofLex g).2 ≤ n by omega]
+  · intro i hi
+    have : (ofLex g).2 - n + i ≠ 0 := by omega
+    rw [HahnSeries.coeff_single_of_ne this, smul_zero, smul_zero]
 
 /-- `(X - Y)^n B(Y) A(X)` as a linear map from `V` to `V((Y))((X))` -/
 def binomCompRight (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
@@ -311,7 +326,6 @@ lemma Commute_iff :
 lemma commute_symm : Commute A B ↔ Commute B A := by
   rw [Commute_iff, Commute_iff]
   exact ⟨fun h m n ↦ (h n m).symm, fun h m n ↦ (h n m).symm⟩
-
 
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
@@ -363,21 +377,21 @@ open HVertexOperator
 /-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y) dx` at
 `x = 0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials
 (i.e., in the domain where `x` is big). -/
-noncomputable def resProdLeft (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+noncomputable def resProdLeft (m : ℤ) (A B : VertexOperator R V) : VertexOperator R V :=
   LexResRight (binomCompLeft A B m) (-1 : ℤ)
 
 theorem coeff_resProdLeft_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) :
-    (A.resProdLeft B m).coeff n v =
+    (A.resProdLeft m B).coeff n v =
       ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
         (coeff A (-1 - m + i)) ((coeff B (n - i)) v) := by
   dsimp only [resProdLeft, LexResRight, Int.reduceNeg, coeff_of_coeff]
   rw [binomCompLeft_apply_coeff]
 
 theorem resProdLeft_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
-    ((A.resProdLeft B m)[[n]]) v =
+    ((A.resProdLeft m B)[[n]]) v =
       ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
         (A[[m - i]] • (B[[n + i]] • v)) := by
-  have : (A.resProdLeft B m)[[n]] = (A.resProdLeft B m).coeff (-n - 1) := rfl
+  have : (A.resProdLeft m B)[[n]] = (A.resProdLeft m B).coeff (-n - 1) := rfl
   rw [this, coeff_resProdLeft_apply]
   refine finsum_congr ?_
   intro i
@@ -385,24 +399,102 @@ theorem resProdLeft_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) 
   · rw [coeff_eq_ncoeff, show (-(-1 - m + i) - 1) = (m - i) by omega]
   · rw [coeff_eq_ncoeff, show -(-n - 1 - i) - 1 = n + i by omega, Module.End.smul_def]
 
+theorem finite_supp_ncoeff_ncoeff (m n : ℤ) (A B : VertexOperator R V) (v : V) :
+    (Function.support fun (i : ℕ) ↦ (Int.negOnePow i) • Ring.choose n i •
+      (ncoeff A (n - i)) ((ncoeff B (-m - 1 + i)) v)).Finite := by
+  refine BddAbove.finite <| bddAbove_def.mpr ?_
+  use (-((HahnModule.of R).symm (B v)).order + m).toNat
+  intro j hj
+  contrapose! hj
+  suffices (ncoeff B (-m - 1 + j)) v = 0 by simp [this]
+  have (i : ℕ) := ncoeff_eq_zero_of_lt_order B (-m - 1 + i) v
+  apply this j
+  omega
+
+@[simp]
+theorem resProdLeft_add_right (n : ℤ) (A B C : VertexOperator R V) :
+    A.resProdLeft n (B + C) = A.resProdLeft n B + A.resProdLeft n C := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_add, Pi.add_apply,
+    Module.End.smul_def, LinearMap.add_apply, smul_add, HahnModule.of_symm_add,
+    HahnSeries.coeff_add']
+  exact finsum_add_distrib (finite_supp_ncoeff_ncoeff m n A B v)
+    (finite_supp_ncoeff_ncoeff m n A C v)
+
+@[simp]
+theorem resProdLeft_add_left (n : ℤ) (A B C : VertexOperator R V) :
+    (A + B).resProdLeft n C = A.resProdLeft n C + B.resProdLeft n C := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_add, Pi.add_apply,
+    Module.End.smul_def, LinearMap.add_apply, smul_add, HahnModule.of_symm_add,
+    HahnSeries.coeff_add']
+  exact finsum_add_distrib (finite_supp_ncoeff_ncoeff m n A C v)
+    (finite_supp_ncoeff_ncoeff m n B C v)
+
+@[simp]
+theorem resProdLeft_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
+    A.resProdLeft n (r • B) = r • (A.resProdLeft n B) := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_smul,
+    Pi.smul_apply, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
+    HahnSeries.coeff_smul']
+  simp_rw [smul_comm _ r]
+  rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
+
+@[simp]
+theorem resProdLeft_smul_left (n : ℤ) (A B : VertexOperator R V) (r : R) :
+    (r • A).resProdLeft n B = r • (A.resProdLeft n B) := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_smul,
+    Pi.smul_apply, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
+    HahnSeries.coeff_smul']
+  simp_rw [smul_comm _ r]
+  rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
+
+@[simp]
+theorem resProdLeft_ne_neg_one_one_left {n : ℤ} (hn : n ≠ -1) (A : VertexOperator R V) :
+    resProdLeft n 1 A = 0 := by
+  ext
+  rw [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff]
+  refine finsum_eq_zero_of_forall_eq_zero ?_
+  intro i
+  by_cases h : n ≥ 0
+  · by_cases hni : n < i
+    · set m : ℕ := n.toNat
+      have : n = m := by omega
+      have hmi : m < i := by omega
+      rw [this, Ring.choose_eq_nat_choose, (Nat.choose_eq_zero_iff).mpr hmi]
+      simp
+    · rw [one_ncoeff_ne_neg_one (by omega)]
+      simp
+  · rw [one_ncoeff_ne_neg_one (by omega)]
+    simp
+
+@[simp]
+theorem resProdLeft_neg_one_one_left (A : VertexOperator R V) : resProdLeft (-1 : ℤ) 1 A  = A := by
+  ext
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff]
+  rw [finsum_eq_single _ 0 fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
+  simp
+
 /-- The right side of the `m`-th residue product, given by the residue of `(x-y)^m B(x)A(y) dx` at
 `x = 0`, where we formally expand `(x-y)^m` as `(-y)^m(1-x/y)^m` using binomials (i.e., in the
 domain where `x` is big). -/
-noncomputable def resProdRight (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+noncomputable def resProdRight (m : ℤ) (A B : VertexOperator R V) : VertexOperator R V :=
   LexResLeft (-1 : ℤ) (binomCompRight A B m)
 
 theorem coeff_resProdRight_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) :
-    (A.resProdRight B m).coeff n v =
+    (A.resProdRight m B).coeff n v =
       (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
         (coeff B (n - m + i)) ((coeff A (-1 - i)) v) := by
   dsimp only [resProdRight, LexResLeft, Int.reduceNeg, coeff_of_coeff]
   simp only [LinearMap.coe_mk, AddHom.coe_mk, coeff_of_coeff, binomCompRight_apply_coeff]
 
 theorem resProdRight_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
-    ((A.resProdRight B m)[[n]]) v =
+    ((A.resProdRight m B)[[n]]) v =
       (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
         (B[[m + n - i]] • (A[[i]] • v)) := by
-  have : (A.resProdRight B m)[[n]] = (A.resProdRight B m).coeff (-n - 1) := rfl
+  have : (A.resProdRight m B)[[n]] = (A.resProdRight m B).coeff (-n - 1) := rfl
   rw [this, coeff_resProdRight_apply]
   congr 1
   refine finsum_congr ?_
@@ -411,35 +503,128 @@ theorem resProdRight_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V)
   · rw [coeff_eq_ncoeff, show -(-n - 1 - m + i) - 1 = (m + n - i) by omega]
   · rw [coeff_eq_ncoeff, show -((-1 : ℤ) - i) - 1 = i by omega, Module.End.smul_def]
 
-/-- The the `m`-th residue product of vertex operators. -/
-noncomputable def resProd (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  resProdLeft A B m + resProdRight A B m
+theorem finite_supp_ncoeff_ncoeff_right (m n : ℤ) (A B : VertexOperator R V) (v : V) :
+    (Function.support fun (i : ℕ) ↦ (Int.negOnePow i) • Ring.choose n i •
+      (ncoeff B (n + (-m - 1) - i)) ((ncoeff A i) v)).Finite := by
+  refine BddAbove.finite <| bddAbove_def.mpr ?_
+  use (-((HahnModule.of R).symm (A v)).order - 1).toNat
+  intro j hj
+  contrapose! hj
+  suffices (ncoeff A j) v = 0 by simp [this]
+  apply ncoeff_eq_zero_of_lt_order A j v
+  omega
 
+@[simp]
+theorem resProdRight_add_right (n : ℤ) (A B C : VertexOperator R V) :
+    A.resProdRight n (B + C) = A.resProdRight n B + A.resProdRight n C := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_add, Pi.add_apply,
+    Module.End.smul_def, LinearMap.add_apply, HahnModule.of_symm_add, HahnSeries.coeff_add']
+  rw [← smul_add]
+  congr 1
+  simp only [smul_add]
+  exact finsum_add_distrib (M := V) (finite_supp_ncoeff_ncoeff_right m n A B v)
+    (finite_supp_ncoeff_ncoeff_right m n A C v)
 
+@[simp]
+theorem resProdRight_add_left (n : ℤ) (A B C : VertexOperator R V) :
+    (A + B).resProdRight n C = A.resProdRight n C + B.resProdRight n C := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_add, Pi.add_apply,
+    Module.End.smul_def, LinearMap.add_apply, HahnModule.of_symm_add, HahnSeries.coeff_add']
+  rw [← smul_add]
+  congr 1
+  simp only [smul_add]
+  exact finsum_add_distrib (M := V) (finite_supp_ncoeff_ncoeff_right m n A C v)
+    (finite_supp_ncoeff_ncoeff_right m n B C v)
 
-/-!
-theorem subLeft_smul_HComp_one_left_eq (A : VertexOperator R V) {m : ℤ} {k n : ℕ} :
-    HVertexOperator.coeff ((subLeft R ^ k) • comp (1 : VertexOperator R V) A)
-      (toLex (m, Int.negSucc n)) = 0 := by
-  induction k generalizing m n with
-  | zero => simp
-  | succ k ih => simp [pow_succ', mul_smul, ih]
+@[simp]
+theorem resProdRight_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
+    A.resProdRight n (r • B) = r • (A.resProdRight n B) := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_smul,
+    Pi.smul_apply, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
+    HahnSeries.coeff_smul']
+  rw [smul_comm]
+  congr 1
+  simp_rw [smul_comm _ r]
+  rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff_right m n A B v)]
 
-theorem res_prod_left_one_nat (A : VertexOperator R V) (m : ℕ) : res_prod_left 1 A m = 0 := by
+@[simp]
+theorem resProdRight_smul_left (n : ℤ) (A B : VertexOperator R V) (r : R) :
+    (r • A).resProdRight n B = r • (A.resProdRight n B) := by
+  ext v m
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_smul,
+    Pi.smul_apply, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
+    HahnSeries.coeff_smul']
+  rw [smul_comm]
+  congr 1
+  simp_rw [smul_comm _ r]
+  rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff_right m n A B v)]
+
+@[simp]
+theorem resProdRight_one_left (n : ℤ) (A : VertexOperator R V) :
+    resProdRight n 1 A  = 0 := by
   ext
-  rw [res_prod_left, ResRight, zpow_natCast, of_coeff_apply, Equiv.symm_apply_apply,
-    show -1 = Int.negSucc 0 by exact rfl]
-  simp_rw [subLeft_smul_HComp_one_left_eq]
-  simp
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff]
+  rw [smul_eq_zero_of_right]
+  · simp
+  · refine finsum_eq_zero_of_forall_eq_zero ?_
+    intro i
+    rw [one_ncoeff_ne_neg_one (by omega)]
+    simp
 
+/-- The the `m`-th residue product of vertex operators, as a bilinear map. -/
+@[simps]
+def resProd (m : ℤ) :
+    VertexOperator R V →ₗ[R] VertexOperator R V →ₗ[R] VertexOperator R V where
+  toFun A := {
+    toFun B := resProdLeft m A B - resProdRight m A B
+    map_add' B C := by ext; simp; abel
+    map_smul' r B := by ext; simp [smul_sub] }
+  map_add' A B := by ext; simp; abel
+  map_smul' r A := by ext; simp [smul_sub]
 
-theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) = A := by
-  ext x n
+theorem resProd_neg_one_one_left (A : VertexOperator R V) : resProd (-1 : ℤ) 1 A = A := by
+  rw [resProd_apply_apply, resProdLeft_neg_one_one_left, resProdRight_one_left, sub_zero]
 
-  sorry
+theorem resProd_ne_neg_one_one_left {n : ℤ} (hn : n ≠ -1) (A : VertexOperator R V) :
+    resProd n 1 A = 0 := by
+  simp [hn]
+
+theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
+    resProd n A 1 = 0 := by
+  ext v m
+  rw [resProd_apply_apply, ← coeff_apply_apply, ← coeff_apply_apply, coeff_eq_ncoeff,
+    map_sub, Pi.sub_apply, LinearMap.sub_apply, resProdLeft_apply_ncoeff]
+  rw [finsum_eq_single _ m.toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
+  by_cases h : m ≥ 0
+  · rw [show -m - 1 + m.toNat = -1 by omega, one_ncoeff_neg_one, resProdRight_apply_ncoeff]
+    rw [finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
+    by_cases hmn : m ≤ n
+    · have : n + (-m - 1) - (n - m).toNat = -1 := by omega
+      have hmn1 : (n - m).toNat = n - m.toNat := by omega
+      rw [this, one_ncoeff_neg_one, LinearMap.map_zero, Pi.zero_apply, LinearMap.zero_apply,
+        sub_eq_zero, ← smul_assoc (n : ℤ).negOnePow]
+      congr 2
+      · rw [Units.ext_iff, Units.val_smul, Units.smul_def, zsmul_eq_mul', Int.cast_eq,
+          ← Units.val_mul, ← Int.negOnePow_sub]
+        simp [h, hmn]
+      · rw [Ring.choose_eq_nat_choose, Ring.choose_eq_nat_choose]
+        refine Int.ofNat_inj.mpr ?_
+        rw [← Nat.choose_symm (by omega), hmn1]
+      · simp [h, hmn]
+    · rw [Ring.choose_eq_nat_choose, Ring.choose_eq_nat_choose, Nat.choose_eq_zero_of_lt (by omega),
+        one_ncoeff_ne_neg_one (by omega)]
+      simp
+  · rw [one_ncoeff_ne_neg_one (by omega), resProdRight_apply_ncoeff]
+    rw [finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
+    rw [Ring.choose_eq_nat_choose n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
+    simp
 
 --residue products with 1, interaction with Hasse derivatives.
 
+/-!
 /-- A(x)B(y)C(z) - B(y)A(x)C(z) = C(z)A(x)B(y) - C(z)B(y)A(x). For any integers k,l,m, and any
 n satisfying (k₀ - k) + (l₀ - l) + (m₀ - m) - 1 ≤ n, the previous equation times
 (x-y)^m(y-z)^l(x-z)^k(y-z)^n holds.  Here, k₀ is locality order of AC, l₀ is order of BC, m₀ is

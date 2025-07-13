@@ -278,7 +278,7 @@ theorem Jacobi (A : Γ → V →ₗ[R] V) (B : Γ₁ → V →ₗ[R] V) (C : Γ�
 
 /-- The associator on functions on a triple product. -/
 @[simps!]
-def assoc_equiv : ((Γ × Γ₁) × Γ₂ → V →ₗ[R] W) ≃ₗ[R] (Γ × (Γ₁ × Γ₂) → V →ₗ[R] W) where
+def assocEquiv : ((Γ × Γ₁) × Γ₂ → V →ₗ[R] W) ≃ₗ[R] (Γ × (Γ₁ × Γ₂) → V →ₗ[R] W) where
   toFun A g := A ((g.1, g.2.1), g.2.2)
   map_add' A B := by ext; simp
   map_smul' r A := by ext; simp

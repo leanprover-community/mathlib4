@@ -161,15 +161,23 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 
 @[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
 @[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
+@[simp] theorem of_sub {V} [AddCommGroup V] [SMul R V] (x y : HahnSeries Γ V) :
+    of R (x - y) = of R x - of R y := rfl
 
 @[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
-  (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+    (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+@[simp] theorem of_symm_sub {V} [AddCommGroup V] [SMul R V] (x y : HahnModule Γ R V) :
+    (of R).symm (x - y) = (of R).symm x - (of R).symm y := rfl
 
 @[simp] theorem of_nsmul (n : ℕ) (x : HahnSeries Γ V) :
-  (of R) (n • x) = n • (of R) x := rfl
+    (of R) (n • x) = n • (of R) x := rfl
 @[simp] theorem of_symm_nsmul (n : ℕ) (x : HahnModule Γ R V) :
-  (of R).symm (n • x) = n • (of R).symm x := rfl
+    (of R).symm (n • x) = n • (of R).symm x := rfl
+@[simp] theorem of_zsmul {V} [AddCommGroup V] [SMul R V] (n : ℤ) (x : HahnSeries Γ V) :
+    (of R) (n • x) = n • (of R) x := rfl
+@[simp] theorem of_symm_zsmul {V} [AddCommGroup V] [SMul R V] (n : ℤ) (x : HahnModule Γ R V) :
+    (of R).symm (n • x) = n • (of R).symm x := rfl
 
 instance instBaseSMulZeroClass [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=

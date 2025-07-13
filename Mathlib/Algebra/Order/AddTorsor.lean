@@ -6,7 +6,7 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Data.Prod.RevLex
-import Mathlib.GroupTheory.GroupAction.Equiv
+import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Ordered scalar multiplication and vector addition
@@ -217,7 +217,8 @@ notation:25 (name := «OrderedMulActionEquivIdLocal≺») X " ≃o[" M:25 "] " Y
 where `φ : M ≃ N`, where `M` and `N` act additively on `X` and `Y` respectively
 
 We use the same notation as for multiplicative actions, as conflicts are unlikely. -/
-notation:25 (name := «OrderedAddActionEquivLocal≺») X " ≃oₑ[" φ:25 "] " Y:0 => AddActionEquiv φ X Y
+notation:25 (name := «OrderedAddActionEquivLocal≺») X " ≃oₑ[" φ:25 "] " Y:0 =>
+  OrderedAddActionEquiv φ X Y
 
 /-- Ordered `M`-equivariant equivalences `X ≃ Y` with respect to the additive action of `M`.
 This is the same as `X ≃oₑ[Equiv.refl M] Y`.
