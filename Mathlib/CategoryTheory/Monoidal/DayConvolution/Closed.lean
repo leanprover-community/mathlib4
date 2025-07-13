@@ -227,8 +227,8 @@ lemma coev_app_comp_π (c j : C) :
       (H.obj c) (ℌ.π c) (ℌ.hπ c),
     Limits.Wedge.IsLimit.lift_ι]
 
-lemma coev_naturality_app {G' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
-    (ℌ' : DayConvolutionInternalHom F (F ⊛ G') H) :
+lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
+    (ℌ' : DayConvolutionInternalHom F (F ⊛ G') H') :
     η ≫ ℌ'.coev_app =
     ℌ.coev_app ≫ ℌ.map (DayConvolution.map (𝟙 _) η) ℌ' := by
   ext c
