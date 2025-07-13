@@ -429,7 +429,8 @@ lemma Iio_inr : Iio (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iio b)).ma
 
 end LocallyFiniteOrderBot
 
--- TODO: there is a diamond here
+/-- TODO: `LocallyFiniteOrder.toLocallyFiniteOrderBot` is probably a bad instance, as it forms
+a diamond with this instance, and constructs data from data. We should consider removing it. -/
 example [Fintype α] [Preorder α] [Preorder β] [OrderBot α] [OrderBot β] [OrderTop α]
     [LocallyFiniteOrder α] [LocallyFiniteOrder β] :
     LocallyFiniteOrder.toLocallyFiniteOrderBot = instLocallyFiniteOrderBot (α := α) (β := β) := by
