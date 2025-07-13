@@ -305,22 +305,49 @@ theorem ForgetEnrichment.homOf_homTo {X Y : ForgetEnrichment W C} (f : X ⟶ Y) 
 
 /-- The identity in the "underlying" category of an enriched category. -/
 @[simp]
-theorem forgetEnrichment_id (X : ForgetEnrichment W C) :
+theorem ForgetEnrichment.homTo_id (X : ForgetEnrichment W C) :
     ForgetEnrichment.homTo W (𝟙 X) = eId W (ForgetEnrichment.to W X : C) :=
   Category.id_comp _
 
 @[simp]
-theorem forgetEnrichment_id' (X : C) :
-    ForgetEnrichment.homOf W (eId W X) = 𝟙 (ForgetEnrichment.of W X : C) :=
-  (forgetEnrichment_id W (ForgetEnrichment.of W X)).symm
+theorem ForgetEnrichment.homOf_eid (X : C) :
+    ForgetEnrichment.homOf W (eId W X) = 𝟙 (of W X : C) :=
+  (homTo_id W (ForgetEnrichment.of W X)).symm
 
 /-- Composition in the "underlying" category of an enriched category. -/
 @[simp]
-theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    ForgetEnrichment.homTo W (f ≫ g) =
-      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ₘ ForgetEnrichment.homTo W g)) ≫
-        eComp W _ _ _ :=
+theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    homTo W (f ≫ g) = ((λ_ (𝟙_ W)).inv ≫ (homTo W f ⊗ₘ homTo W g)) ≫ eComp W _ _ _ :=
   rfl
+
+theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
+    homOf W f ≫ homOf W g = homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) :=
+  rfl
+
+/-- The isomorphism in `ForgetEnrichment W C` induced by a `W`-enriched iso in `C`. -/
+@[simps]
+def ForgetEnrichment.isoOf {X Y : C} (I : EnrichedIso W X Y) :
+    ForgetEnrichment.of W X ≅ ForgetEnrichment.of W Y where
+  hom := homOf W I.hom
+  inv := homOf W I.inv
+  hom_inv_id := by simp [homOf_comp, congr_arg (homOf W) I.hom_inv]
+  inv_hom_id := by simp [homOf_comp, congr_arg (homOf W) I.inv_hom]
+
+/-- The `W`-enriched isomorphism in `C` associated to an iso `X ≅ Y` in `ForgetEnrichment W C`. -/
+def ForgetEnrichment.isoTo {X Y : ForgetEnrichment W C} (I : X ≅ Y) :
+    EnrichedIso W (ForgetEnrichment.to W X) (ForgetEnrichment.to W Y) where
+  hom := homTo W I.hom
+  inv := homTo W I.inv
+  hom_inv := by
+    rw [← Category.assoc, ← homTo_comp, congr_arg (homTo W) I.hom_inv_id, homTo_id]
+  inv_hom := by
+    rw [← Category.assoc, ← homTo_comp, congr_arg (homTo W) I.inv_hom_id, homTo_id]
+
+/-- The type equivalence between isos in `ForgetEnrichment W C` and `W`-enriched isos in `C`. -/
+def ForgetEnrichment.equivIsoEnrichedIso (X Y : ForgetEnrichment W C) :
+    (X ≅ Y) ≃ EnrichedIso W (ForgetEnrichment.to W X) (ForgetEnrichment.to W Y) where
+  toFun := ForgetEnrichment.isoTo W
+  invFun := ForgetEnrichment.isoOf W (X := ForgetEnrichment.to W X) (Y := ForgetEnrichment.to W Y)
 
 end
 
@@ -388,7 +415,7 @@ def EnrichedFunctor.forget {C : Type u₁} {D : Type u₂} [EnrichedCategory W C
     dsimp
     apply_fun ForgetEnrichment.homTo W
     · simp only [Iso.cancel_iso_inv_left, Category.assoc, tensor_comp,
-        ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, forgetEnrichment_comp]
+        ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, ForgetEnrichment.homTo_comp]
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 

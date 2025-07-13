@@ -196,6 +196,7 @@ def EnrichedIso.iso {X Y : C} (I : EnrichedIso V X Y) : X ≅ Y where
 
 /-- The type of `V`-enriched isomorphisms is equivalent to the type of isomorphisms in a
 `V`-enriched ordinary category. -/
+@[simps]
 def EnrichedIso.equivIso (X Y : C) : EnrichedIso V X Y ≃ (X ≅ Y) where
   toFun := iso V
   invFun := ofIso V
