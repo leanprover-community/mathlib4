@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Charlie Conneen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Charlie Conneen, Pablo Donato
+Authors: Charlie Conneen, Pablo Donato, Klaus Gy
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
@@ -130,6 +130,9 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
 /-- `Ω₀` is a terminal object. Prefer `c.χ₀` over `c.isTerminalΩ₀.from` as per
 instance below. -/
 def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
+
+@[simp]
+lemma isTerminalFrom_eq_χ₀ (c : Classifier C) : c.isTerminalΩ₀.from = c.χ₀ := rfl
 
 end Classifier
 
