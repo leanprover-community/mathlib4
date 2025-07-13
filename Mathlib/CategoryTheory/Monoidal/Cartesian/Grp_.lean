@@ -104,7 +104,7 @@ lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y
 /-- The yoneda embedding for `Grp_C` is fully faithful. -/
 def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
   preimage {G H} α :=
-    Grp_.homMk' (yonedaMonFullyFaithful.preimage ((whiskerRight α (forget₂ Grp MonCat))))
+    Grp_.homMk' (yonedaMonFullyFaithful.preimage ((Functor.whiskerRight α (forget₂ Grp MonCat))))
   map_preimage {G H} α := by
     ext X : 3
     exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon_) (Y := H.toMon_)
