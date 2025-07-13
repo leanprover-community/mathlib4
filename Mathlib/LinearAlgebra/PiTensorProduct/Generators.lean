@@ -87,16 +87,8 @@ lemma ext_of_span_eq_top
   induction n generalizing ι with
   | zero =>
     ext x
-    have : IsEmpty ι := by
-      rw [Nat.card_eq_zero] at hι
-      obtain (_ | h) := hι
-      · assumption
-      · exfalso
-        rw [← not_finite_iff_infinite] at h
-        exact h inferInstance
-    obtain rfl : x = fun i ↦ @g i (by apply isEmptyElim) := by
-      ext i
-      apply @isEmptyElim (a := i) _ _
+    have : IsEmpty ι := (Nat.card_eq_zero.1 hι).resolve_right <| Finite.not_infinite ‹_›
+    obtain rfl : x = fun i ↦ @g i (isEmptyElim i) := Subsingleton.elim _ _
     apply h
   | succ n hn =>
     classical
@@ -119,8 +111,7 @@ lemma ext_of_span_eq_top
       simp only [lift.equiv_symm_apply]
       convert h (Function.subtypeNeLift i₀ j g₀) using 1
       all_goals
-        simp only [equivTensorPiTensorComplSingleton_tprod,
-          Function.subtypeNeLift_self]
+        simp only [equivTensorPiTensorComplSingleton_tprod, Function.subtypeNeLift_self]
         congr
         ext ⟨x, hx⟩
         congr
