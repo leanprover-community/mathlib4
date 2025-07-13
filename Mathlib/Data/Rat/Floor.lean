@@ -129,8 +129,7 @@ theorem isInt_intFloor_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
   rintro ⟨inv, rfl⟩
   constructor
   simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
-  rw [← ceil_intCast_div_natCast n d]
-  simp only [Int.cast_natCast]
+  rw [← ceil_intCast_div_natCast n d, Int.cast_natCast]
   rw [@negOfNat_eq (toNat _), ofNat_eq_coe,
     natCast_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg)),
     ← Int.cast_natCast n, ceil_intCast_div_natCast n d, neg_neg, ← ofNat_eq_coe, ← negOfNat_eq,
