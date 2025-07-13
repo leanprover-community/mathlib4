@@ -74,14 +74,6 @@ theorem isPositive_iff_complex (T : E' →ₗ[ℂ] E') :
   simp_rw [IsPositive, forall_and, LinearMap.isSymmetric_iff_inner_map_self_real,
     conj_eq_iff_re, re_to_complex, Complex.coe_algebraMap]
 
-open scoped ComplexOrder in
-theorem isPositive_iff_complex' (T : E' →ₗ[ℂ] E') :
-    IsPositive T ↔ ∀ x, 0 ≤ ⟪T x, x⟫_ℂ := by
-  rw [isPositive_iff_complex]
-  simp [Complex.nonneg_iff, @eq_comm ℝ 0, Complex.im_eq_zero_iff_isSelfAdjoint]
-  simp_rw [← Complex.conj_eq_iff_re, isSelfAdjoint_iff, and_comm]
-  rfl
-
 end Complex
 
 theorem IsPositive.isSelfAdjoint [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
@@ -352,7 +344,7 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
 
 lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
-lemma coe_le_iff (f g : E →L[𝕜] E) :
+lemma coe_le_coe_iff (f g : E →L[𝕜] E) :
     (f : E →ₗ[𝕜] E) ≤ g ↔ f ≤ g :=
   isPositive_toLinearMap_iff (g - f)
 
