@@ -130,9 +130,9 @@ theorem isInt_intFloor_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
   constructor
   simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
   rw [← ceil_intCast_div_natCast n d]
-  simp only [Rat.cast_div, cast_intCast, cast_natCast, Int.cast_natCast]
+  simp only [Int.cast_natCast]
   rw [@negOfNat_eq (toNat _), ofNat_eq_coe,
-    ofNat_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg)),
+    natCast_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg)),
     ← Int.cast_natCast n, ceil_intCast_div_natCast n d, neg_neg, ← ofNat_eq_coe, ← negOfNat_eq,
     ← floor_intCast_div_natCast (.negOfNat n) d, ← floor_cast (α := α), Rat.cast_div,
     cast_intCast, cast_natCast]
@@ -181,10 +181,10 @@ theorem isNat_intCeil_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     IsNNRat r n d → IsNat ⌈r⌉ (-(-n / d) : ℤ).toNat := by
   rintro ⟨inv, rfl⟩
   constructor
-  simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
+  simp only [invOf_eq_inv, ← div_eq_mul_inv]
   rw [← ceil_intCast_div_natCast n d, ← ceil_cast (α := α), Rat.cast_div,
     cast_intCast, cast_natCast, Int.cast_natCast,
-    Int.ofNat_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg))]
+    Int.natCast_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg))]
 
 theorem isInt_intCeil_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
     IsRat r (.negOfNat n) d → IsInt ⌈r⌉ (.negOfNat (n / d)) := by
