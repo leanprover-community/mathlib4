@@ -53,7 +53,7 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
   /-- The underlying function between the affine spaces `P1` and `P2`. -/
   toFun : P1 → P2
   /-- The linear map between the corresponding vector spaces `V1` and `V2`.
-  This represents how differences of points under the affine map act. -/
+  This represents how the affine map acts on differences of points. -/
   linear : V1 →ₗ[k] V2
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 
