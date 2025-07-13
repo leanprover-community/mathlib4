@@ -96,6 +96,8 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
 instance {α : Type u} [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
   (equivShrink α).symm.nontrivial
 
+#check instNontrivialShrink
+
 section
 
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=

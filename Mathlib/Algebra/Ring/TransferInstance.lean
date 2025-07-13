@@ -12,11 +12,6 @@ import Mathlib.Algebra.Ring.InjSurj
 # Transfer algebraic structures across `Equiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
-
-### Implementation details
-
-When adding new definitions that transfer type-classes across an equivalence, please use
-`abbrev`. See note [reducible non-instances].
 -/
 
 assert_not_exists Field Module
