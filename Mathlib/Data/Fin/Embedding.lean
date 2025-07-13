@@ -156,7 +156,7 @@ lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
   simp [natAdd_castLEEmb]
   ext y
   exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; omega,
-    fun xin ↦ ⟨subNat (m := m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
+    fun xin ↦ ⟨subNat (m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
 end SuccAbove
