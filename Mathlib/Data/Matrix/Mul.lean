@@ -604,6 +604,44 @@ lemma row_vecMulVec [Mul α] (w : m → α) (v : n → α) (i : m) :
 lemma col_vecMulVec [Mul α] (w : m → α) (v : n → α) (j : n) :
     (vecMulVec w v).col j = MulOpposite.op (v j) • w := rfl
 
+@[simp] theorem zero_vecMulVec [MulZeroClass α] (v : n → α) : vecMulVec (0 : m → α) v = 0 :=
+  ext fun _ _ => zero_mul _
+
+@[simp] theorem vecMulVec_zero [MulZeroClass α] (w : m → α) : vecMulVec w (0 : m → α) = 0 :=
+  ext fun _ _ => mul_zero _
+
+theorem add_vecMulVec [Mul α] [Add α] [RightDistribClass α] (w₁ w₂ : m → α) (v : n → α) :
+    vecMulVec (w₁ + w₂) v = vecMulVec w₁ v + vecMulVec w₂ v :=
+  ext fun _ _ => add_mul _ _ _
+
+theorem vecMulVec_add [Mul α] [Add α] [LeftDistribClass α] (w : m → α) (v₁ v₂ : n → α) :
+    vecMulVec w (v₁ + v₂) = vecMulVec w v₁ + vecMulVec w v₂  :=
+  ext fun _ _ => mul_add _ _ _
+
+theorem neg_vecMulVec [Mul α] [HasDistribNeg α] (w : m → α) (v : n → α) :
+    vecMulVec (-w) v = -vecMulVec w v :=
+  ext fun _ _ => neg_mul _ _
+
+theorem vecMulVec_neg [Mul α] [HasDistribNeg α] (w : m → α) (v : n → α) :
+    vecMulVec w (-v) = -vecMulVec w v :=
+  ext fun _ _ => mul_neg _ _
+
+theorem smul_vecMulVec [Mul α] [SMul R α] [IsScalarTower R α α] (r : R) (w : m → α) (v : n → α) :
+    vecMulVec (r • w) v = r • vecMulVec w v :=
+  ext fun _ _ => smul_mul_assoc _ _ _
+
+theorem vecMulVec_smul [Mul α] [SMul R α] [SMulCommClass R α α] (r : R) (w : m → α) (v : n → α) :
+    vecMulVec w (r • v) = r • vecMulVec w v :=
+  ext fun _ _ => mul_smul_comm _ _ _
+
+theorem vecMulVec_smul' [Semigroup α] (w : m → α) (r : α) (v : n → α) :
+    vecMulVec w (r • v) = vecMulVec (MulOpposite.op r • w) v :=
+  ext fun _ _ => mul_assoc _ _ _ |>.symm
+
+theorem transpose_vecMulVec [CommMagma α] (w : m → α) (v : n → α) :
+    (vecMulVec w v)ᵀ = vecMulVec v w :=
+  ext fun _ _ => mul_comm _ _
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
@@ -785,6 +823,22 @@ theorem mul_mul_apply [Fintype n] (A B C : Matrix n n α) (i j : n) :
   simp only [mul_apply, dotProduct, mulVec]
   rfl
 
+theorem vecMul_vecMulVec [Fintype m] (u v : m → α) (w : n → α) :
+      u ᵥ* vecMulVec v w = (u ⬝ᵥ v) • w := by
+  ext i
+  simp [vecMul, dotProduct, vecMulVec, Finset.sum_mul, mul_assoc]
+
+theorem vecMulVec_mulVec [Fintype n] (u : m → α) (v w : n → α) :
+      vecMulVec u v *ᵥ w = MulOpposite.op (v ⬝ᵥ w) • u := by
+  ext i
+  simp [mulVec, dotProduct, vecMulVec, Finset.mul_sum, mul_assoc]
+
+theorem vecMulVec_mul_vecMulVec [Fintype m] (u : l → α) (v w : m → α) (x : n → α) :
+      vecMulVec u v * vecMulVec w x = vecMulVec u ((v ⬝ᵥ w) • x) := by
+  ext i j
+  simp_rw [mul_apply, dotProduct, vecMulVec, Pi.smul_apply, of_apply, mul_assoc, ← Finset.mul_sum,
+    smul_eq_mul, Finset.sum_mul, mul_assoc]
+
 end NonUnitalSemiring
 
 section NonAssocSemiring
@@ -897,6 +951,14 @@ theorem sub_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
     (x - y) ᵥ* A = x ᵥ* A - y ᵥ* A := by
   ext
   apply sub_dotProduct
+
+theorem sub_vecMulVec (w₁ w₂ : m → α) (v : n → α) :
+    vecMulVec (w₁ - w₂) v = vecMulVec w₁ v - vecMulVec w₂ v :=
+  ext fun _ _ => sub_mul _ _ _
+
+theorem vecMulVec_sub (w : m → α) (v₁ v₂ : n → α) :
+    vecMulVec w (v₁ - v₂) = vecMulVec w v₁ - vecMulVec w v₂  :=
+  ext fun _ _ => mul_sub _ _ _
 
 end NonUnitalNonAssocRing
 

@@ -111,6 +111,10 @@ theorem vecMul_conjTranspose [Fintype n] [StarRing α] (A : Matrix m n α) (x : 
 
 end NonUnitalSemiring
 
+theorem conjTranspose_vecMulVec [Mul α] [StarMul α] (w : m → α) (v : n → α) :
+    (vecMulVec w v)ᴴ = vecMulVec (star v) (star w) :=
+  ext fun _ _ => star_mul _ _
+
 section ConjTranspose
 
 open Matrix
