@@ -110,9 +110,8 @@ variable
 
 variable (F G) in
 lemma hexagon_forward (H : C ⥤ V)
-    [DayConvolution F G] [DayConvolution G H]
-    [DayConvolution F (G ⊛ H)] [DayConvolution (F ⊛ G) H]
-    [DayConvolution F (G ⊗ H)] [DayConvolution (G ⊗ H) F]
+    [DayConvolution F G] [DayConvolution G H] [DayConvolution F (G ⊛ H)]
+    [DayConvolution (F ⊛ G) H] [DayConvolution (G ⊗ H) F]
     [DayConvolution H F] [DayConvolution G (H ⊛ F)] [DayConvolution (G ⊛ H) F]
     [DayConvolution G F] [DayConvolution (G ⊛ F) H] [DayConvolution F H]
     [DayConvolution G (F ⊛ H)] :
