@@ -122,10 +122,9 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
   -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `j.Component`.
-  refine ⟨l.pmap f hf, ?_, ?_⟩
-  · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
-    exact zag_of_zag_obj (ConnectedComponents.ι _) h
-  · grind
+  refine ⟨l.pmap f hf, ?_, by grind⟩
+  refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
+  exact zag_of_zag_obj (ConnectedComponents.ι _) h
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
 category structure.
