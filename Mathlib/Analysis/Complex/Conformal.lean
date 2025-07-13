@@ -208,28 +208,22 @@ def LinearMap.complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) 
   map_add' := ℓ.map_add
   map_smul' := real_linearMap_map_smul_complex h
 
-/--
-The function underlying `ℓ.toComplexOfMapI` is the function unerlying `ℓ`.
--/
 @[simp]
-lemma LinearMap.coe_toComplexOfMapI (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) :
-    ℓ.toComplexOfMapI h = (ℓ : ℂ → E) := by rfl
+lemma LinearMap.coe_complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) :
+    ℓ.complexOfReal h = (ℓ : ℂ → E) := by rfl
 
 /--
 Using the helper lemma `differentiableAt_complex_iff_differentiableAt_real`, construct a continueous
 complex- linear map from a continueous real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
 -/
-def ContinuousLinearMap.toComplexOfMapI (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →L[ℂ] E where
+def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →L[ℂ] E where
   toFun := ℓ
   map_add' := ℓ.map_add
   map_smul' := real_linearMap_map_smul_complex h
 
-/--
-The function underlying `ℓ.toComplexOfMapI` is the function unerlying `ℓ`.
--/
 @[simp]
-lemma ContinuousLinearMap.coe_toComplexOfMapI (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) :
-    ℓ.toComplexOfMapI h = (ℓ : ℂ → E) := by rfl
+lemma ContinuousLinearMap.coe_complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) :
+    ℓ.complexOfReal h = (ℓ : ℂ → E) := by rfl
 
 /--
 The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
@@ -247,7 +241,7 @@ theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
     simp
   · intro ⟨h₁, h₂⟩
     apply (differentiableWithinAt_iff_restrictScalars ℝ h₁ hs).2
-    use (fderivWithin ℝ f s x).toComplexOfMapI h₂
+    use (fderivWithin ℝ f s x).complexOfReal h₂
     rfl
 
 /--
@@ -257,7 +251,7 @@ derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 theorem fDerivWithin_complex_eq_toComplexOfMapI_fderivWithin_real
     (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) (hs : UniqueDiffWithinAt ℝ s x) :
-    fderivWithin ℂ f s x = (fderivWithin ℝ f s x).toComplexOfMapI h₂ := by
+    fderivWithin ℂ f s x = (fderivWithin ℝ f s x).complexOfReal h₂ := by
   have := ((differentiableWithinAt_complex_iff_differentiableWithinAt_real hs).2
       ⟨h₁, h₂⟩).restrictScalars_fderivWithin ℝ hs
   have := coe_restrictScalars' (fderivWithin ℂ f s x) (R := ℝ)
@@ -274,7 +268,7 @@ theorem differentiableAt_complex_iff_differentiableAt_real :
   refine ⟨fun h ↦ by simp [h.restrictScalars ℝ, h.fderiv_restrictScalars ℝ], ?_⟩
   intro ⟨h₁, h₂⟩
   apply (differentiableAt_iff_restrictScalars ℝ h₁).2
-  use (fderiv ℝ f x).toComplexOfMapI h₂
+  use (fderiv ℝ f x).complexOfReal h₂
   rfl
 
 /--
@@ -283,7 +277,7 @@ derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
 theorem fderiv_complex_eq_toComplexOfMapI_fderiv_real (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
-    fderiv ℂ f x = (fderiv ℝ f x).toComplexOfMapI h₂ := by
+    fderiv ℂ f x = (fderiv ℝ f x).complexOfReal h₂ := by
   have := (differentiableAt_complex_iff_differentiableAt_real.2 ⟨h₁, h₂⟩).fderiv_restrictScalars ℝ
   apply DFunLike.ext'
   simp_all
