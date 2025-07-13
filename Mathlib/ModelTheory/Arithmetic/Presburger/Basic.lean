@@ -77,7 +77,7 @@ instance : SMul ℕ (presburger.Term α) where
 @[simp] theorem succ_nsmul {n : ℕ} : (n + 1) • t = n • t + t := rfl
 
 /-- Summation over a finite set of terms in Presburger arithmetic.
-  
+
   It is defined via choice, and therefore the result only makes sense when the structure satisfies
   commutativity (see `realize_finsum`). -/
 noncomputable def finsum {β : Type*} [Fintype β] (f : β → presburger.Term α) : presburger.Term α :=
