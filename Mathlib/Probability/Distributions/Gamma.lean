@@ -65,8 +65,8 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, gammaPDF a r y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · simp only [gammaPDF_eq, ENNReal.ofReal_eq_zero]
-    filter_upwards with a (_ : a < _)
+  · intro a (_ : a < _)
+    simp only [gammaPDF_eq, ENNReal.ofReal_eq_zero]
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
@@ -101,10 +101,10 @@ lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫⁻ x, gammaPDF a r x = 1 := by
   have leftSide : ∫⁻ x in Iio 0, gammaPDF a r x = 0 := by
     rw [setLIntegral_congr_fun measurableSet_Iio
-      (ae_of_all _ (fun x (hx : x < 0) ↦ gammaPDF_of_neg hx)), lintegral_zero]
+      (fun x (hx : x < 0) ↦ gammaPDF_of_neg hx), lintegral_zero]
   have rightSide : ∫⁻ x in Ici 0, gammaPDF a r x =
       ∫⁻ x in Ici 0, ENNReal.ofReal (r ^ a / Gamma a * x ^ (a - 1) * exp (-(r * x))) :=
-    setLIntegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ gammaPDF_of_nonneg))
+    setLIntegral_congr_fun measurableSet_Ici (fun _ ↦ gammaPDF_of_nonneg)
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
   · simp_rw [integral_Ici_eq_integral_Ioi, mul_assoc]

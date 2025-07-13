@@ -70,13 +70,13 @@ theorem Ioc_filter_dvd_card : #{x ∈ Ioc a b | r ∣ x} = max (⌊b / (r : ℚ)
 if `a ≤ b`. -/
 theorem Ico_filter_modEq_card (v : ℤ) :
     #{x ∈ Ico a b | x ≡ v [ZMOD r]} = max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
-  simp [Ico_filter_modEq_eq, Ico_filter_dvd_eq, toNat_eq_max, hr]
+  simp [Ico_filter_modEq_eq, Ico_filter_dvd_eq, hr]
 
 /-- There are `⌊(b - v) / r⌋ - ⌊(a - v) / r⌋` numbers congruent to `v` mod `r` in `(a, b]`,
 if `a ≤ b`. -/
 theorem Ioc_filter_modEq_card (v : ℤ) :
     #{x ∈ Ioc a b | x ≡ v [ZMOD r]} = max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
-  simp [Ioc_filter_modEq_eq, Ioc_filter_dvd_eq, toNat_eq_max, hr]
+  simp [Ioc_filter_modEq_eq, Ioc_filter_dvd_eq, hr]
 
 end Int
 
