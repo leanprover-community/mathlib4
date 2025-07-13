@@ -410,7 +410,7 @@ theorem invEmbedding_comp (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 
 /-- Equivalence between the disjoint union of the blocks (each of them seen as
 `Fin (c.blocksFun i)`) with `Fin n`. -/
-def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
+def blocksFinEquiv : (Σ i : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
   toFun x := c.embedding x.1 x.2
   invFun j := ⟨c.index j, c.invEmbedding j⟩
   left_inv x := by
