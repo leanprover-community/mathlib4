@@ -203,7 +203,7 @@ lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I �
 Using the helper lemma `differentiableAt_complex_iff_differentiableAt_real`, construct a complex-
 linear map from a real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
 -/
-def LinearMap.toComplexOfMapI (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →ₗ[ℂ] E where
+def LinearMap.complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →ₗ[ℂ] E where
   toFun := ℓ
   map_add' := ℓ.map_add
   map_smul' := real_linearMap_map_smul_complex h
@@ -232,7 +232,7 @@ lemma ContinuousLinearMap.coe_toComplexOfMapI (ℓ : ℂ →L[ℝ] E) (h : ℓ I
     ℓ.toComplexOfMapI h = (ℓ : ℂ → E) := by rfl
 
 /--
-The Cauchy-Riemann Equation: A real-differentiable function `f` on `ℂ` is complex-differentiable
+The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
 within `s` if the derivative `fderivWithin ℝ f s x` maps `I` to I • (fderivWithin ℝ f s x) 1`.
 -/
 theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
@@ -269,8 +269,8 @@ The Cauchy-Riemann Equation: A real-differentiable function `f` on `ℂ` is comp
 the derivative `fderiv ℝ f x` maps `I` to I • (fderiv ℝ f x) 1`.
 -/
 theorem differentiableAt_complex_iff_differentiableAt_real :
-    (DifferentiableAt ℂ f x) ↔ (DifferentiableAt ℝ f x) ∧
-      (fderiv ℝ f x I = I • fderiv ℝ f x 1) := by
+    DifferentiableAt ℂ f x ↔ DifferentiableAt ℝ f x ∧
+      fderiv ℝ f x I = I • fderiv ℝ f x 1 := by
   refine ⟨fun h ↦ by simp [h.restrictScalars ℝ, h.fderiv_restrictScalars ℝ], ?_⟩
   intro ⟨h₁, h₂⟩
   apply (differentiableAt_iff_restrictScalars ℝ h₁).2
@@ -281,7 +281,7 @@ theorem differentiableAt_complex_iff_differentiableAt_real :
 In cases where the Cauchy-Riemann Equation guarantees complex differentiability, the complex
 derivative equals `ContinuousLinearMap.toComplexOfMapI` of the real derivative.
 -/
-theorem fDeriv_complex_eq_toComplexOfMapI_fderiv_real (h₁ : DifferentiableAt ℝ f x)
+theorem fderiv_complex_eq_toComplexOfMapI_fderiv_real (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
     fderiv ℂ f x = (fderiv ℝ f x).toComplexOfMapI h₂ := by
   have := (differentiableAt_complex_iff_differentiableAt_real.2 ⟨h₁, h₂⟩).fderiv_restrictScalars ℝ
