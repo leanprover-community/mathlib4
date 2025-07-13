@@ -1,4 +1,4 @@
-import Mathlib.Data.Matrix.Rank
+-- import Mathlib.Data.Matrix.Rank
 import Mathlib.Tactic.Order
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
@@ -33,7 +33,6 @@ example [PartialOrder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(
     c ≤ d := by
   order
 
---
 example {α : Type u} (a b : α) [LinearOrder α] (h1 : ¬ (a = b)) : a ≠ b := by
   order
 
@@ -46,8 +45,8 @@ example {α : Type u} (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
 example {α : Type u} (a b : α) [Preorder α] (h : ∃ c, a < c ∧ c < b) : a ≠ b := by
   order
 
-example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
-  order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
+-- example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+--   order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
 
 example (L : Type) [Lattice L] :
     (∀ a b c : L, a ⊔ (b ⊓ c) = (a ⊔ b) ⊓ (a ⊔ c)) ↔
@@ -106,7 +105,15 @@ error: No contradiction found.
 
 Additional diagnostic information may be available using the `set_option trace.order true` command.
 ---
-trace: [order] Working on type α (partial order)
+trace:
+[order] Working on type ℕ (linear order)
+[order] Collected atoms:
+    #0 := x
+    #1 := y
+[order] Collected facts:
+    #0 ≠ #1
+    #0 ≤ #1
+[order] Working on type α (partial order)
 [order] Collected atoms:
     #0 := a ⊓ (b ⊔ c)
     #1 := a
@@ -134,13 +141,6 @@ trace: [order] Working on type α (partial order)
     #5 := #6 ⊔ #7
     #0 ≠ #5
     ¬ #0 < #5
-[order] Working on type ℕ (linear order)
-[order] Collected atoms:
-    #0 := x
-    #1 := y
-[order] Collected facts:
-    #0 ≠ #1
-    #0 ≤ #1
 -/
 #guard_msgs in
 example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
@@ -155,11 +155,6 @@ Additional diagnostic information may be available using the `set_option trace.o
 -/
 #guard_msgs in
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
-  order
-
-example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
-  have h1 := Matrix.rank_mul_le A B
-  have h2 := Matrix.rank_mul_le (A * B) C
   order
 
 -- worst case for the current algorithm

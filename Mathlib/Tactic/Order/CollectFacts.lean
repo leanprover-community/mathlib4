@@ -88,12 +88,21 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
 
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-def collectFactsImp : CollectFactsM Unit := do
+partial def collectFactsImp (only? : Bool) (hyps : Array Expr) :
+    CollectFactsM Unit := do
   let ctx ← getLCtx
-  for ldecl in ctx do
-    if ldecl.isImplementationDetail then
-      continue
-    processExpr ldecl.toExpr
+  for expr in hyps do
+    processExpr expr
+  let goalDecl := Option.get! <| ctx.findDecl? fun ldecl =>
+    if ldecl.userName.getRoot == `_order_goal then
+      .some ldecl
+    else .none
+  processExpr goalDecl.toExpr
+  if !only? then
+    for ldecl in ctx do
+      if ldecl.isImplementationDetail || ldecl.fvarId == goalDecl.fvarId then
+        continue
+      processExpr ldecl.toExpr
 where
   /-- Extracts facts and atoms from the expression. -/
   processExpr (expr : Expr) : CollectFactsM Unit := do
@@ -101,25 +110,25 @@ where
     if !(← isProp type) then
       return
     let ⟨u, type, expr⟩ ← inferTypeQ expr
-    let _ : u =QL 0 := ⟨⟩
+    have : u =QL 0 := ⟨⟩
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
-        let xIdx ← addAtom α x
-        let yIdx ← addAtom α y
+        let xIdx := ← addAtom α x
+        let yIdx := ← addAtom α y
         addFact α <| .eq xIdx yIdx expr
     | ~q(@LE.le $α $inst $x $y) =>
-      let xIdx ← addAtom α x
-      let yIdx ← addAtom α y
+      let xIdx := ← addAtom α x
+      let yIdx := ← addAtom α y
       addFact α <| .le xIdx yIdx expr
     | ~q(@LT.lt $α $inst $x $y) =>
-      let xIdx ← addAtom α x
-      let yIdx ← addAtom α y
+      let xIdx := ← addAtom α x
+      let yIdx := ← addAtom α y
       addFact α <| .lt xIdx yIdx expr
     | ~q(@Ne ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
-        let xIdx ← addAtom α x
-        let yIdx ← addAtom α y
+        let xIdx := ← addAtom α x
+        let yIdx := ← addAtom α y
         addFact α <| .ne xIdx yIdx expr
     | ~q(Not $p) =>
       match p with
@@ -142,8 +151,9 @@ where
 /-- Collects facts from the local context. For each occurring type `α`, the returned map contains
 a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
 atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
-def collectFacts : MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := do
-  let res := (← collectFactsImp.run ∅).snd
+def collectFacts (only? : Bool) (hyps : Array Expr) :
+    MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := do
+  let res := (← (collectFactsImp only? hyps).run ∅).snd
   return res.map fun _ (atomToIdx, facts) =>
     let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := ∅) fun acc _ value =>
       acc.insert value.fst value.snd
