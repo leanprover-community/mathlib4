@@ -352,6 +352,10 @@ instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
 
 lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
 
+lemma coe_le_iff (f g : E →L[𝕜] E) :
+    (f : E →ₗ[𝕜] E) ≤ g ↔ f ≤ g :=
+  isPositive_toLinearMap_iff (g - f)
+
 lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def 0 f
 
