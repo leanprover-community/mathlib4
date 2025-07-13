@@ -45,8 +45,8 @@ open Finsupp FreeAbelianGroup
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
     Finsupp.toFreeAbelianGroup.comp (Finsupp.singleAddHom x) =
-      (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) := by
-  ext; simp
+      (smulAddHom ℤ (FreeAbelianGroup X)).flip (of x) :=
+  AddMonoidHom.ext <| toFreeAbelianGroup_single _
 
 @[simp]
 theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
