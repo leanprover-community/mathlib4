@@ -74,6 +74,8 @@ abbrev Wedge := Multifork (multicospanIndexEnd F)
 
 namespace Wedge
 
+variable {F}
+
 /-- A variant of `CategoryTheory.Limits.Cones.ext` specialized to produce
 isomorphisms of wedges. -/
 @[simps!]
@@ -83,8 +85,6 @@ def ext {W₁ W₂ : Wedge F} (e : W₁.pt ≅ W₂.pt)
     match j with
     | .left _ => he _
     | .right f => by simpa using (he f.left) =≫ _)
-
-variable {F}
 
 section Constructor
 
