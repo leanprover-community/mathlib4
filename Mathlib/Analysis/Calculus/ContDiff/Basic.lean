@@ -1301,7 +1301,7 @@ theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : m + 1 ≤
 
 theorem ContDiffAt.fderiv_right_succ (hf : ContDiffAt 𝕜 (n + 1) f x₀) :
     ContDiffAt 𝕜 n (fderiv 𝕜 f) x₀ :=
-  ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id (le_refl (n+1))
+  ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id (le_refl (n + 1))
 
 theorem ContDiffAt.iteratedFDeriv_right {i : ℕ} (hf : ContDiffAt 𝕜 n f x₀)
     (hmn : m + i ≤ n) : ContDiffAt 𝕜 m (iteratedFDeriv 𝕜 i f) x₀ := by
@@ -1318,7 +1318,7 @@ protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F}
 protected theorem ContDiff.fderiv_succ {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 (n + 1) <| Function.uncurry f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) :=
-  contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl (n+1))
+  contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl (n + 1))
 
 /-- `fderiv 𝕜 f` is smooth. -/
 theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :

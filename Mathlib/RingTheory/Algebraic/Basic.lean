@@ -362,13 +362,13 @@ theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 
-lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
+lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟x) := by
   obtain ⟨p, hp, hp'⟩ := h
   refine ⟨p.reverse, by simpa using hp, ?_⟩
   rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
 
 lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
-    IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
+    IsAlgebraic R (⅟x) ↔ IsAlgebraic R x :=
   ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
 
 lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :

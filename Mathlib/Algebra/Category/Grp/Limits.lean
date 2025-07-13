@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Category.MonCat.Limits
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 

@@ -52,7 +52,7 @@ abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
 
 /-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
 abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
+    (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
 
 @[reassoc (attr := simp)]
 lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :

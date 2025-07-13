@@ -302,7 +302,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
   · simp only [hi, nsmul_one, sum_const, pow_zero, card_univ, cast_card_eq_zero]
   classical
     have hiq : ¬q - 1 ∣ i := by contrapose! h; exact Nat.le_of_dvd (Nat.pos_of_ne_zero hi) h
-    let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.ext⟩
+    let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.val_injective⟩
     have : univ.map φ = univ \ {0} := by
       ext x
       simpa only [mem_map, mem_univ, Function.Embedding.coeFn_mk, true_and, mem_sdiff,
@@ -752,7 +752,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     constructor
     · rintro ⟨y, rfl⟩
       rw [← pow_two, ← pow_mul, hodd]
-      apply_fun Units.val using Units.ext
+      apply_fun Units.val using Units.val_injective
       push_cast
       exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h

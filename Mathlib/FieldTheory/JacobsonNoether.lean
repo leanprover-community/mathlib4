@@ -118,9 +118,9 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     change a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(a * x - x * a) ^ n b ≠ 0`.
-  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n + 1] b = 0 := by
+  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n+1] b = 0 := by
     obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
-    have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n + 1] b = 0 := ⟨p ^ m,
+    have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n+1] b = 0 := ⟨p ^ m,
       ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (Nat.le_add_right _ _), Pi.zero_apply]⟩⟩
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩

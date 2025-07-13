@@ -193,7 +193,7 @@ where
   drop (dropped rest : List Key) (n : Nat) : (List Key × List Key) := Id.run do
     match n with
     | 0 => (dropped, rest)
-    | n+1 =>
+    | n + 1 =>
       let key :: rest := rest | panic! "too few keys"
       drop (key :: dropped) rest (n + key.arity)
 

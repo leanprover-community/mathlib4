@@ -723,7 +723,7 @@ variable {x : α} {y : β} {s : σ} (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
-    replicate (n+1) val = val ::ᵥ (replicate n val) :=
+    replicate (n + 1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 section Append

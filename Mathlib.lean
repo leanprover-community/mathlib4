@@ -19,6 +19,7 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Algebra.Algebra.Spectrum.Pi
 import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
@@ -93,6 +94,7 @@ import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgCat.Monoidal
 import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.Algebra.Category.CommAlgCat.FiniteType
+import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
@@ -121,6 +123,7 @@ import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Category.Grp.Subobject
 import Mathlib.Algebra.Category.Grp.Ulift
+import Mathlib.Algebra.Category.Grp.Yoneda
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.GrpWithZero
@@ -185,6 +188,7 @@ import Mathlib.Algebra.Category.MonCat.Colimits
 import Mathlib.Algebra.Category.MonCat.FilteredColimits
 import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.MonCat.Limits
+import Mathlib.Algebra.Category.MonCat.Yoneda
 import Mathlib.Algebra.Category.Ring.Adjunctions
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
@@ -275,6 +279,7 @@ import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Periodic
 import Mathlib.Algebra.Field.Power
 import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Field.Shrink
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
@@ -477,6 +482,7 @@ import Mathlib.Algebra.GroupWithZero.ProdHom
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Semiconj
+import Mathlib.Algebra.GroupWithZero.Shrink
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
@@ -1945,6 +1951,7 @@ import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.Bicategory.CatEnriched
 import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Bicategory.Extension
@@ -2352,6 +2359,7 @@ import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -3542,9 +3550,6 @@ import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.AnalyticManifold
-import Mathlib.Deprecated.Cardinal.Continuum
-import Mathlib.Deprecated.Cardinal.Finite
-import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RingHom
 import Mathlib.Dynamics.BirkhoffSum.Average
@@ -5114,6 +5119,7 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.RepresentationTheory.Induced
 import Mathlib.RepresentationTheory.Invariants
@@ -5628,6 +5634,7 @@ import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Extension
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
+import Mathlib.RingTheory.Valuation.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.LocalSubring
 import Mathlib.RingTheory.Valuation.Minpoly
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity

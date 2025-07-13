@@ -35,7 +35,7 @@ explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
 all coincide: see `valueMonoid_eq_valueGroup` for an equality as submonoids and
 `valueMonoid_eq_valueGroup'` for an equality as subsets.
 * When `B` is a *commutative* group with zero, `MonoidWithZeroHom.valueGroup` can be
-explicitly described as the elements that are ratios of terms in `range f` , see
+explicitly described as the elements that are ratios of terms in `range f`, see
 `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`.
 
 ## Implementation details

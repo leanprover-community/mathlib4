@@ -27,7 +27,7 @@ open scoped Topology
 
 universe u v
 
-variable {ι α β R S : Type*} {π : ι → Type*}
+variable {ι α β R S : Type*} {X : ι → Type*}
 
 section LiminfLimsupAdd
 

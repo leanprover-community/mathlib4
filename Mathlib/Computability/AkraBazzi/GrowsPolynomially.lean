@@ -216,7 +216,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
                         _ ≤ ((1 : ℝ)/(2 : ℝ)) * (2 : ℝ) ^ n * max n₀ 2 := by gcongr; norm_num
                         _ ≤ _ := by rw [mul_assoc]; gcongr; exact_mod_cast hz.1
           case ub =>
-            have h₁ : (2 : ℝ)^n = ((1 : ℝ)/(2 : ℝ)) * (2 : ℝ)^(n+1) := by
+            have h₁ : (2 : ℝ)^n = ((1 : ℝ)/(2 : ℝ)) * (2 : ℝ)^(n + 1) := by
               rw [one_div, pow_add, pow_one]
               ring
             rw [h₁, mul_assoc]

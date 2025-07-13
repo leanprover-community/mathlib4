@@ -142,7 +142,7 @@ lemma liftHomotopyZeroSucc_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : Proj
     (w : f.f (n + 1) = P.complex.d (n + 1) n ≫ g + g' ≫ Q.complex.d (n + 2) (n + 1)) :
     liftHomotopyZeroSucc f n g g' w ≫ Q.complex.d (n + 3) (n + 2) =
       f.f (n + 2) - P.complex.d _ _ ≫ g' :=
-  (Q.exact_succ (n+1)).liftFromProjective_comp  _ _
+  (Q.exact_succ (n + 1)).liftFromProjective_comp  _ _
 
 /-- Any lift of the zero morphism is homotopic to zero. -/
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}

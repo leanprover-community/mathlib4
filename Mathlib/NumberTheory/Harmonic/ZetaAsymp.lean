@@ -70,7 +70,7 @@ section s_eq_one
 -/
 
 lemma term_one {n : ℕ} (hn : 0 < n) :
-    term n 1 = (log (n + 1) - log n) -  1 / (n + 1) := by
+    term n 1 = (log (n + 1) - log n) - 1 / (n + 1) := by
   have hv : ∀ x ∈ uIcc (n : ℝ) (n + 1), 0 < x := by
     intro x hx
     rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx

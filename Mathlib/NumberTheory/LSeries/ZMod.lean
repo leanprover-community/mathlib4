@@ -222,7 +222,7 @@ theorem LFunction_one_sub (Φ : ZMod N → ℂ) {s : ℂ}
       (cexp (π * I * s / 2) * LFunction (𝓕 Φ) s
        + cexp (-π * I * s / 2) * LFunction (𝓕 fun x ↦ Φ (-x)) s) := by
   rw [LFunction]
-  have (j : ZMod N) :  Φ j * hurwitzZeta (toAddCircle j) (1 - s) = Φ j *
+  have (j : ZMod N) : Φ j * hurwitzZeta (toAddCircle j) (1 - s) = Φ j *
       ((2 * π) ^ (-s) * Gamma s * (cexp (-π * I * s / 2) *
       expZeta (toAddCircle j) s + cexp (π * I * s / 2) * expZeta (-toAddCircle j) s)) := by
     rcases eq_or_ne j 0 with rfl | hj

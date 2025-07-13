@@ -137,7 +137,7 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {κ : Kernel α Ω} : Indep m₁ m₂ κ 0 := by simp [Indep]
 
 @[simp] lemma indep_zero_left {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} :
-    Indep m₁ m₂ (0 : Kernel α Ω) μ  := by simp [Indep]
+    Indep m₁ m₂ (0 : Kernel α Ω) μ := by simp [Indep]
 
 @[simp] lemma iIndepSet_zero_right : iIndepSet s κ 0 := by simp [iIndepSet]
 

@@ -455,7 +455,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : WithTop ℕ∞}
     have I₁ : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ :=
       integrable_fourierPowSMulRight L (hf n hn.le) h'f
     have I₂ : Integrable (fun v ↦ ‖v‖ * ‖fourierPowSMulRight L f v n‖) μ := by
-      apply ((hf (n+1) (ENat.add_one_natCast_le_withTop_of_lt hn)).const_mul
+      apply ((hf (n + 1) (ENat.add_one_natCast_le_withTop_of_lt hn)).const_mul
           ((2 * π * ‖L‖) ^ n)).mono'
         (continuous_norm.aestronglyMeasurable.mul (h'f.fourierPowSMulRight L n).norm)
       filter_upwards with v

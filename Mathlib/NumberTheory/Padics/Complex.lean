@@ -140,7 +140,7 @@ instance : Algebra ℚ_[p] ℂ_[p] where
 instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
 @[simp, norm_cast]
-lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p])  := by
+lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p]) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]) n, coe_eq]
 
 /-- The valuation of `p : ℂ_[p]` is `1/p`. -/
@@ -164,7 +164,7 @@ lemma rankOne_hom_eq :
 
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation. -/
-instance : NormedField ℂ_[p] :=  Valued.toNormedField _ _
+instance : NormedField ℂ_[p] := Valued.toNormedField _ _
 
 theorem norm_def : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
 

@@ -223,7 +223,7 @@ instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   mul_invOf_self := by rw [← T_add, add_neg_cancel, T_zero]
 
 @[simp]
-theorem invOf_T (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) :=
+theorem invOf_T (n : ℤ) : ⅟(T n : R[T;T⁻¹]) = T (-n) :=
   rfl
 
 theorem isUnit_T (n : ℤ) : IsUnit (T n : R[T;T⁻¹]) :=

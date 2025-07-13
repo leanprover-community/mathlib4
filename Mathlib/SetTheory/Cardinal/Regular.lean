@@ -56,7 +56,7 @@ theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
   rw [Cardinal.lt_ord, card_zero]
   exact H.pos
 
-theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
+theorem isRegular_cof {o : Ordinal} (h : IsSuccLimit o) : IsRegular o.cof :=
   ⟨aleph0_le_cof.2 h, (cof_cof o).ge⟩
 
 /-- If `c` is a regular cardinal, then `c.ord.toType` has a least element. -/
@@ -76,7 +76,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         have αe := Cardinal.mk_out (succ c)
         set α := (succ c).out
         rcases ord_eq α with ⟨r, wo, re⟩
-        have := isLimit_ord (h.trans (le_succ _))
+        have := isSuccLimit_ord (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
         rw [← Se]
@@ -210,8 +210,8 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-        ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
-  | isLimit b hb H =>
+        ((isSuccLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
+  | limit b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
     have : ⨆ a : Iio b, _ = _ :=

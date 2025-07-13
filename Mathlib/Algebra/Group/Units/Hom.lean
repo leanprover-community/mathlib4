@@ -108,8 +108,7 @@ variable {M}
 theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 
 @[to_additive]
-theorem coeHom_injective : Function.Injective (coeHom M) :=
-  Units.ext
+theorem coeHom_injective : Function.Injective (coeHom M) := Units.val_injective
 
 section DivisionMonoid
 

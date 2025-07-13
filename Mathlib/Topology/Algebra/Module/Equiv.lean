@@ -104,7 +104,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
-      Continuous.comp (continuous_apply (π := φ) i) <|
+      Continuous.comp (continuous_apply (A := φ) i) <|
         @continuous_subtype_val _ _ fun x =>
           x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
   continuous_invFun :=

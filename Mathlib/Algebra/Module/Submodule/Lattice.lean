@@ -101,7 +101,7 @@ theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b
 -- FIXME: we default PUnit to PUnit.{1} here without the explicit universe annotation
 /-- The bottom submodule is linearly equivalent to punit as an `R`-module. -/
 @[simps]
-def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
+def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v + 1} where
   toFun _ := PUnit.unit
   invFun _ := 0
   map_add' _ _ := rfl

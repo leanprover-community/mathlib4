@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
+import Mathlib.Data.Rel
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.ContinuousOn
@@ -35,6 +36,7 @@ But it makes a more systematic use of the filter library.
 -/
 
 open Set Filter Topology
+open scoped Uniformity
 
 universe u v ua ub uc ud
 
@@ -43,7 +45,13 @@ universe u v ua ub uc ud
 -/
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
-open Uniformity
+
+open scoped Rel in
+lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {s : Rel α β}
+    {t : Rel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
+  conv =>
+    arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
+  exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
 
 section UniformSpace
 

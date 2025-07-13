@@ -3,8 +3,8 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+import Mathlib.Algebra.Module.Shrink
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Logic.Small.Basic
 import Mathlib.RingTheory.Ideal.Defs
 
@@ -380,7 +380,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
 
 protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
-  let eI := Shrink.linearEquiv I R
+  let eI := Shrink.linearEquiv R I
   let eR := Shrink.linearEquiv R R
   obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
