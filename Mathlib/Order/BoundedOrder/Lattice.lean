@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.BoundedOrder.Basic
 import Mathlib.Order.Lattice
+import Mathlib.Tactic.Order
 
 /-!
 # Bounded lattices
