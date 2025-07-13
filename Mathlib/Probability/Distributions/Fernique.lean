@@ -178,7 +178,7 @@ private lemma normThreshold_strictMono (ha_pos : 0 < a) : StrictMono (normThresh
 
 private lemma normThreshold_tendsto_atTop (ha_pos : 0 < a) :
     Tendsto (normThreshold a) atTop atTop :=
-  tendsto_arithmeticGeometric_atTop normThreshold_add_one Real.one_lt_sqrt_two
+  tendsto_arithmeticGeometric_atTop_of_one_lt normThreshold_add_one Real.one_lt_sqrt_two
     (lt_normThreshold_zero ha_pos)
 
 private lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ (n + 1) - 1) := by
