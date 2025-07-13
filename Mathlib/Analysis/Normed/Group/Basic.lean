@@ -622,13 +622,9 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul]
 lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E) :
-    ‖u * v‖ - ‖u / v‖ ≤ 2 * ‖v‖ :=
-  calc ‖u * v‖ - ‖u / v‖
-  _ = ‖u / v * v * v‖ - ‖u / v‖ := by congr; rw [div_mul_cancel]
-  _ ≤ ‖v * v‖ + ‖u / v‖ - ‖u / v‖ := by rw [add_comm, mul_assoc]; gcongr; exact norm_mul_le' _ _
-  _ = ‖v * v‖ := by abel
-  _ ≤ ‖v‖ + ‖v‖ := norm_mul_le' _ _
-  _ = 2 * ‖v‖ := by rw [two_mul]
+    ‖u * v‖ - ‖u / v‖ ≤ 2 * ‖v‖ := by
+  simpa [- tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
+    using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
 lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (u v : E) :
