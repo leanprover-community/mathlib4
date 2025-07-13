@@ -213,7 +213,7 @@ theorem cot_series_rep' (hz : x ∈ ℂ_ℤ ) : π * cot (π * x) - 1 / x =
   apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm hz)).mpr
     (tendsto_logDeriv_euler_cot_sub hz)
 
-/-- The cotangent infinte sum representation. -/
+/-- The cotangent infinite sum representation. -/
 theorem cot_series_rep (hz : x ∈ ℂ_ℤ ) :
     π * cot (π * x) = 1 / x + ∑' n : ℕ+, (1 / (x - n) + 1 / (x + n)) := by
   have h0 := tsum_pnat_eq_tsum_succ fun n ↦ 1 / (x - n) + 1 / (x + n)
