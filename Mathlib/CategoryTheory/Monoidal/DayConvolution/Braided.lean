@@ -97,9 +97,85 @@ lemma braiding_naturality_left (η : F ⟶ G) (H : C ⥤ V)
   ext ⟨_, _⟩
   simp
 
-lemma hexagon_forward {H : C ⥤ V} : 
-    (associator F G H).hom ≫ (braiding F (G ⊗ H)).hom ≫ (α_ G H F).hom =
-      ((braiding F G).hom ▷ H) ≫ (α_ G H F).hom ≫ (G ◁ (braiding F H).hom) := by
+variable
+  [∀ (v : V) (d : C),
+    Limits.PreservesColimitsOfShape (CostructuredArrow (tensor C) d) (tensorLeft v)]
+  [∀ (v : V) (d : C),
+    Limits.PreservesColimitsOfShape (CostructuredArrow (tensor C) d) (tensorRight v)]
+
+variable (F G) in
+lemma hexagon_forward (H : C ⥤ V)
+    [DayConvolution F G] [DayConvolution G H]
+    [DayConvolution F (G ⊛ H)] [DayConvolution (F ⊛ G) H]
+    [DayConvolution F (G ⊗ H)] [DayConvolution (G ⊗ H) F]
+    [DayConvolution H F] [DayConvolution G (H ⊛ F)] [DayConvolution (G ⊛ H) F]
+    [DayConvolution G F] [DayConvolution (G ⊛ F) H] [DayConvolution F H]
+    [DayConvolution G (F ⊛ H)] :
+    (associator F G H).hom ≫ (braiding F (G ⊛ H)).hom ≫ (associator G H F).hom =
+    (DayConvolution.map (braiding F G).hom (𝟙 H)) ≫ (associator G F H).hom ≫
+      (DayConvolution.map (𝟙 G) (braiding F H).hom) := by
+  apply Functor.hom_ext_of_isLeftKanExtension ((F ⊛ G) ⊛ H) (unit _ H)
+  apply Functor.hom_ext_of_isLeftKanExtension ((F ⊛ G) ⊠ H)
+    (ExternalProduct.extensionUnitLeft (F ⊛ G) (unit F G) H)
+  ext ⟨⟨x, y⟩, z⟩
+  dsimp
+  simp only [whiskerLeft_id, Category.comp_id, associator_hom_unit_unit_assoc,
+    externalProductBifunctor_obj_obj, tensor_obj, NatTrans.naturality_assoc,
+    NatTrans.naturality, unit_app_comp_braiding_hom_assoc,
+    BraidedCategory.braiding_tensor_left_hom, Functor.map_comp, Category.assoc,
+    Iso.map_hom_inv_id, BraidedCategory.braiding_naturality_right_assoc,
+    BraidedCategory.braiding_tensor_right_hom, Iso.map_inv_hom_id_assoc,
+    Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, unit_app_map_app_assoc,
+    NatTrans.id_app, tensorHom_id]
+  simp only [← comp_whiskerRight_assoc, ← whiskerLeft_comp_assoc,
+    unit_app_comp_braiding_hom]
+  simp only [whiskerLeft_comp, ← Functor.map_comp, Category.assoc,
+    Functor.comp_obj, tensor_obj, comp_whiskerRight,
+    whiskerRight_comp_unit_app_assoc, NatTrans.naturality_assoc,
+    NatTrans.naturality, associator_hom_unit_unit_assoc,
+    externalProductBifunctor_obj_obj, unit_app_map_app_assoc, NatTrans.id_app,
+    id_tensorHom]
+  rw [← BraidedCategory.hexagon_reverse, ← whiskerLeft_comp_assoc]
+  haveI := unit_app_comp_braiding_hom F H x z =≫ (H ⊛ F).map (β_ z x).inv
+  dsimp at this
+  simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
+  rw [← this, whiskerLeft_comp_assoc]
+  simp [← Functor.map_comp]
+
+variable (F G) in
+lemma hexagon_reverse (H : C ⥤ V)
+    [DayConvolution F G] [DayConvolution G H] [DayConvolution F (G ⊛ H)]
+    [DayConvolution (F ⊛ G) H] [DayConvolution H (F ⊛ G)] [DayConvolution H F]
+    [DayConvolution (H ⊛ F) G] [DayConvolution H G] [DayConvolution F (H ⊛ G)]
+    [DayConvolution F H] [DayConvolution (F ⊛ H) G] :
+    (associator F G H).inv ≫ (braiding (F ⊛ G) H).hom ≫ (associator H F G).inv =
+    (DayConvolution.map (𝟙 F) (braiding G H).hom) ≫ (associator F H G).inv ≫
+      (DayConvolution.map (braiding F H).hom (𝟙 G)) := by
+  apply Functor.hom_ext_of_isLeftKanExtension (F ⊛ G ⊛ H) (unit _ _)
+  apply Functor.hom_ext_of_isLeftKanExtension (F ⊠ (G ⊛ H))
+    (ExternalProduct.extensionUnitRight (G ⊛ H) (unit G H) F)
+  ext ⟨x, y, z⟩
+  dsimp
+  simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp,
+    Iso.inv_hom_id, associator_inv_unit_unit_assoc,
+    externalProductBifunctor_obj_obj, tensor_obj, NatTrans.naturality_assoc,
+    NatTrans.naturality, unit_app_comp_braiding_hom_assoc,
+    BraidedCategory.braiding_tensor_right_hom, Functor.map_comp, Category.assoc,
+    Iso.map_inv_hom_id, Category.comp_id,
+    BraidedCategory.braiding_naturality_left_assoc,
+    BraidedCategory.braiding_tensor_left_hom, Iso.map_hom_inv_id_assoc,
+    Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, unit_app_map_app_assoc,
+    NatTrans.id_app, id_tensorHom]
+  simp only [← comp_whiskerRight_assoc, ← whiskerLeft_comp_assoc,
+    unit_app_comp_braiding_hom]
+  simp [← Functor.map_comp]
+  congr 2
+  rw [← BraidedCategory.hexagon_forward, ← comp_whiskerRight_assoc]
+  haveI := unit_app_comp_braiding_hom F H x z =≫ (H ⊛ F).map (β_ z x).inv
+  dsimp at this
+  simp only [Category.assoc, Iso.map_hom_inv_id, Category.comp_id] at this
+  rw [← this, comp_whiskerRight_assoc]
+  simp [← Functor.map_comp]
 
 end
 
