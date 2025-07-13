@@ -55,11 +55,11 @@ def internalHomDiagramFunctor (F : C ⥤ V) : (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C 
         simpa [-NatTrans.naturality] using congr_arg (ihom (F.obj (unop j))).map
           (η.naturality <| k ◁ f) }
 
-/-- `DayConvolutionInternalHom F H` asserts that `H` is an
-internal hom functor of `F` for the Day convolution monoidal structure.
+/-- `DayConvolutionInternalHom F G H` asserts that `H` is the value at `G` of
+an internal hom functor of `F` for the Day convolution monoidal structure.
 This is phrased as the data of a limit `CategoryTheory.Limits.Wedge`
-(i.e an end) on `internalHomDiagramFunctor F|>.obj G|>.obj c` for every `G` and
-`c`, with tip `(H.obj G).obj c` and two compatibility conditions asserting that
+(i.e an end) on `internalHomDiagramFunctor F|>.obj G|>.obj c` and
+`c`, with tip `(H.obj G).obj c` and a compatibility condition asserting that
 the functoriality of `H` identifies to the functoriality of ends. -/
 structure DayConvolutionInternalHom (F : C ⥤ V) (G : C ⥤ V) (H : C ⥤ V) where
   /-- The canonical projections maps -/
@@ -80,13 +80,6 @@ structure DayConvolutionInternalHom (F : C ⥤ V) (G : C ⥤ V) (H : C ⥤ V) wh
   obj_map_comp_π {c c' : C} (f : c ⟶ c') (j : C) :
     H.map f ≫ π c' j =
     π c j ≫ (ihom (F.obj j)).map (G.map (j ◁ f))
-  -- /-- The functoriality of `H` in its first variable identifies (through
-  -- `Limits.Wedge.IsLimit.hom_ext`) with the functoriality on ends
-  -- induced by functoriality of `internalHomDiagramFunctor F`. -/
-  -- map_app_comp_π {G G' : C ⥤ V} (η : G ⟶ G') (c j : C) :
-  --   (H.map η).app c ≫ π G' c j =
-  --   π G c j ≫ (ihom (F.obj j)).map (η.app (j ⊗ c))
-
 
 namespace DayConvolutionInternalHom
 
@@ -99,8 +92,8 @@ variable {F : C ⥤ V} {G : C ⥤ V} {H : C ⥤ V}
 /-- If we have a map `G ⟶ G'` and a `DayConvolutionInternalHom F G' H'`, then
 there is a unique map `H ⟶ H'` induced by functoriality of ends and functoriality
 of `internalHomDiagramFunctor F`. -/
-def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V} (f : G ⟶ G')
-    (ℌ' : DayConvolutionInternalHom F G' H') :
+def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
+    (f : G ⟶ G') (ℌ' : DayConvolutionInternalHom F G' H') :
     H ⟶ H' where
   app c := Limits.Wedge.IsLimit.lift (ℌ'.isLimitWedge c)
     (fun j ↦ (ℌ.π c j) ≫
