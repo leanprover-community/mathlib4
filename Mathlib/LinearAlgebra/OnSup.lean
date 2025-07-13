@@ -153,8 +153,8 @@ noncomputable example : (P + Q →ₗ[R] N) ≃ₗ[R] eqLocus
       (lcomp R N (inclusion le_sup_right))) (fun _ ↦ by ext; simp [inclusion_apply]))
     (onSupEquiv M N).bijective
 
-/-- The `R`-linear equivalence between the module of linear maps `↥(P ⊔ Q) →ₗ[R] N` and the module of
-  pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree on the intersection `P ⊓ Q`. -/
+/-- The `R`-linear equivalence between the module of linear maps `↥(P ⊔ Q) →ₗ[R] N` and the module
+of pairs of linear maps `(P →ₗ[R] N) × (Q →ₗ[R] N))` that agree on the intersection `P ⊓ Q`. -/
 noncomputable def onSupLinearEquiv : (↥(P ⊔ Q) →ₗ[R] N) ≃ₗ[R] eqLocus
     ((lcomp R N (inclusion (inf_le_left (a := P) (b := Q)))).comp (fst R _ _))
     ((lcomp R N (inclusion (inf_le_right (a := P) (b := Q)))).comp (snd R _ _)) := {
