@@ -82,7 +82,7 @@ theorem mem_kleinFour_of_order_two_pow (hα4 : Nat.card α = 4) {g : Perm α}
   by_cases h4 : 4 ∈ g.cycleType
   · exfalso
     suffices g.cycleType = {4} by
-      rw [this, ← Units.eq_iff] at hg0 ; norm_num at hg0
+      rw [this, ← Units.eq_iff] at hg0; norm_num at hg0
     rw [← Multiset.cons_erase h4]
     apply symm
     rw [Multiset.singleton_eq_cons_iff]
@@ -101,14 +101,14 @@ theorem mem_kleinFour_of_order_two_pow (hα4 : Nat.card α = 4) {g : Perm α}
         Multiset.card_replicate] at hg0
       -- prove : Multiset.card g.cycleType ≤ 2
       have hk2 : Multiset.card g.cycleType ≤ 2 := by
-        rw [this] at hg4 ; rw [Multiset.sum_replicate] at hg4
+        rw [this, Multiset.sum_replicate] at hg4
         apply Nat.le_of_mul_le_mul_left
         · rw [Nat.mul_comm 2]
           exact hg4
         norm_num
       rcases Nat.eq_or_lt_of_le hk2 with hk2 | hk1
       · -- g.cycleType.card = 2
-        rw [hk2] at this ;
+        rw [hk2] at this
         simp only [this, Multiset.replicate_succ, Multiset.empty_eq_zero,
           Multiset.cons_ne_zero, Multiset.insert_eq_cons, false_or,
           Multiset.replicate_zero, Multiset.cons_zero]
