@@ -88,8 +88,7 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
 
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-partial def collectFactsImp (only? : Bool) (hyps : Array Expr) :
-    CollectFactsM Unit := do
+partial def collectFactsImp (only? : Bool) (hyps : Array Expr) : CollectFactsM Unit := do
   let ctx ← getLCtx
   for expr in hyps do
     processExpr expr
