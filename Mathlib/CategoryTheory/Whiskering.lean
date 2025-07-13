@@ -122,6 +122,11 @@ def FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
         simp only [map_comp, map_preimage]
         apply f.naturality }
 
+/-- Given a natural isomorphism between `F ⋙ H` and `G ⋙ H` for a fully faithful functor `H`, we
+can 'cancel' it to give a natural iso between `F` and `G`. -/
+def cancelRight {F G : C ⥤ D} {H : D ⥤ E} (hH : H.FullyFaithful) (comp_iso : F ⋙ H ≅ G ⋙ H) :
+    F ≅ G := (hH.whiskeringRight C).preimageIso comp_iso
+
 theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (𝟭 _) = 𝟭 _ :=
   rfl
 
