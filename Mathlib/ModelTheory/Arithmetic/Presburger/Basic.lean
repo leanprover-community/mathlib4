@@ -3,6 +3,7 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.ModelTheory.Semantics
 
 /-!
@@ -53,9 +54,9 @@ def succ (t : presburger.Term α) := Functions.apply₁ presburgerFunc.succ t
 instance : Add (presburger.Term α) where
   add := Functions.apply₂ .add
 
-private def natCast : ℕ → presburger.Term α
+protected def natCast : ℕ → presburger.Term α
 | 0 => 0
-| n + 1 => succ (natCast n)
+| n + 1 => succ (presburger.natCast n)
 
 instance : NatCast (presburger.Term α) where
   natCast := presburger.natCast
@@ -64,9 +65,9 @@ instance : NatCast (presburger.Term α) where
 
 @[simp] theorem natCast_succ {n : ℕ} : NatCast.natCast (n + 1) = succ (n : presburger.Term α) := rfl
 
-private def nsmul : ℕ → presburger.Term α → presburger.Term α
+protected def nsmul : ℕ → presburger.Term α → presburger.Term α
 | 0, _ => 0
-| n + 1, t => nsmul n t + t
+| n + 1, t => presburger.nsmul n t + t
 
 instance : SMul ℕ (presburger.Term α) where
   smul := presburger.nsmul
@@ -131,9 +132,7 @@ end
   induction l with
   | nil => rfl
   | cons =>
-    haveI : Std.Associative (· + · : M → M → M) := ⟨add_assoc⟩
-    haveI : Std.Commutative (· + · : M → M → M) := ⟨add_comm⟩
     rw [List.nodup_cons, ←List.mem_toFinset] at hnodup
-    simp [*, Finset.fold_insert (op := (· + ·)) hnodup.1]
+    simp [*, Finset.fold_insert (β := M) (op := (· + ·)) hnodup.1]
 
 end FirstOrder.Language.presburger
