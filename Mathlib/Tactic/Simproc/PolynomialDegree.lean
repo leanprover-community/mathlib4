@@ -60,10 +60,7 @@ partial def isExplicitPolynomial (e : Expr) : MetaM Bool := do
     return true
   | _ =>
     -- Check if it's a numeral
-    if e.numeral?.isSome then
-      return true
-    else
-      return false
+    return e.numeral?.isSome
 
 /-- Attempts to compute the degree of an explicit polynomial expression.
 This is a simplified version that only handles very simple cases. -/
