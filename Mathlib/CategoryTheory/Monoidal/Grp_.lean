@@ -30,8 +30,8 @@ section
 class Grp_Class (X : C) extends Mon_Class X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
-  left_inv' : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
-  right_inv' : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
+  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
+  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
 
 namespace Mon_Class
 
@@ -42,11 +42,7 @@ end Mon_Class
 
 namespace Grp_Class
 
-@[reassoc (attr := simp)]
-theorem left_inv (X : C) [Grp_Class X] : lift ι (𝟙 X) ≫ μ = toUnit _ ≫ η := left_inv'
-
-@[reassoc (attr := simp)]
-theorem right_inv (X : C) [Grp_Class X] : lift (𝟙 X) ι ≫ μ = toUnit _ ≫ η := right_inv'
+attribute [reassoc (attr := simp)] left_inv right_inv
 
 @[simps inv]
 instance : Grp_Class (𝟙_ C) where
@@ -178,10 +174,14 @@ theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
   rw [← lift_fst_snd, ← lift_lift_assoc (fst A A ≫ _), lift_comp_inv_left, lift_comp_one_left,
     lift_comp_inv_left, comp_toUnit_assoc]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [Grp_Class A] :
     (ι[A] ⊗ₘ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
+
+@[reassoc]
+lemma mul_inv_rev [BraidedCategory C] (G : C) [Grp_Class G] :
+    μ ≫ ι = (ι[G] ⊗ₘ ι) ≫ (β_ _ _).hom ≫ μ := by simp [tensorHom_inv_inv_mul]
 
 /-- The map `(· * f)`. -/
 @[simps]
@@ -343,10 +343,10 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
     { F.mapMon.obj A.toMon_ with
       grp :=
       { inv := F.map ι[A.X]
-        left_inv' := by
+        left_inv := by
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
-        right_inv' := by
+        right_inv := by
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
   map f := F.mapMon.map f
@@ -374,8 +374,8 @@ theorem comp_mapGrp_mul (A : Grp_ C) :
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]
 noncomputable def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp)
+    (by simp))
 
 /-- The composition functor is also the composition on group objects. -/
 @[simps!]

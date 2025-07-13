@@ -16,7 +16,6 @@ We gather results about the summability of Eisenstein series, particularly
 the summability of the Eisenstein series summands, which are used in the proof of the
 boundedness of Eisenstein series at infinity.
 -/
-
 noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
@@ -31,6 +30,23 @@ lemma norm_eq_max_natAbs (x : Fin 2 → ℤ) : ‖x‖ = max (x 0).natAbs (x 1).
   rw [← coe_nnnorm, ← NNReal.coe_natCast, NNReal.coe_inj, Nat.cast_max]
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simp only [pi_nnnorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
+
+lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y, x]‖ := by
+  simp [EisensteinSeries.norm_eq_max_natAbs, max_comm]
+
+theorem abs_le_left_of_norm (m n : ℤ) : |n| ≤ ‖![n, m]‖ := by
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero,
+    Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
+  left
+  rw [Int.abs_eq_natAbs]
+  exact Preorder.le_refl _
+
+theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero,
+    Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
+  right
+  rw [Int.abs_eq_natAbs]
+  exact Preorder.le_refl _
 
 section bounding_functions
 
@@ -130,6 +146,29 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
   exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
 
+lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
+  refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
+  rw [isLittleO_const_left]
+  exact Or.inr
+    (tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real)
+
+lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
+    (fun (c : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
+  apply IsTheta.add_isLittleO
+  · simp_rw [mul_comm]
+    apply Asymptotics.IsTheta.const_mul_left hz Int.cast_complex_isTheta_cast_real
+  · simp only [isLittleO_const_left, Int.cast_eq_zero,
+      tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real, or_true]
+
+lemma linear_inv_isBigO_right (c : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
+  (linear_isTheta_right c z).inv.isBigO
+
+lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
+    (fun (c : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
+  (linear_isTheta_left d hz).inv.isBigO
+
 end bounding_functions
 
 /-- The function `ℤ ^ 2 → ℝ` given by `x ↦ ‖x‖ ^ (-k)` is summable if `2 < k`. We prove this by
@@ -142,7 +181,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
     suffices Summable fun n : ℕ ↦ ∑' (_ : box (α := ℤ × ℤ) n), (n : ℝ) ^ (-k) by
       refine this.congr fun n ↦ tsum_congr fun p ↦ ?_
       simp only [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
-        Matrix.cons_val_one, Matrix.head_cons]
+        Matrix.cons_val_one]
     simp only [tsum_fintype, univ_eq_attach, sum_const, card_attach, nsmul_eq_mul]
     apply ((Real.summable_nat_rpow.mpr (by linarith : 1 - k < -1)).mul_left
       8).of_norm_bounded_eventually_nat
@@ -150,5 +189,37 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
     rw [Int.card_box hn.ne', Real.norm_of_nonneg (by positivity), sub_eq_add_neg,
       Real.rpow_add (Nat.cast_pos.mpr hn), Real.rpow_one, Nat.cast_mul, Nat.cast_ofNat, mul_assoc]
   · exact fun n ↦ Real.rpow_nonneg (norm_nonneg _) _
+
+/-- If the inverse of a function `isBigO` to `(|(n : ℝ)| ^ a)⁻¹` for `1 < a`, then the function is
+Summable. -/
+lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpace α]
+    {f : ℤ → α} {a : ℝ} (hab : 1 < a)
+    (hf : (fun n ↦ (f n)⁻¹) =O[cofinite] fun n ↦ (|(n : ℝ)| ^ a)⁻¹) :
+    Summable fun n ↦ (f n)⁻¹ :=
+  summable_of_isBigO
+    ((Real.summable_abs_int_rpow hab).congr fun b ↦ Real.rpow_neg (abs_nonneg ↑b) a) hf
+
+/-- For `z : ℂ` the function `d : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
+lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
+    Summable fun d : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
+  apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
+  lift k to ℕ using (by omega)
+  simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
+  apply (linear_inv_isBigO_right c z).abs_right.pow
+
+/-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
+lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :
+    Summable fun c : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
+  apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
+  lift k to ℕ using (by omega)
+  simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
+  apply (linear_inv_isBigO_left d hz).abs_right.pow
+
+lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
+    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹  := by
+  apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
+  simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
+  simpa [sub_eq_add_neg] using (linear_inv_isBigO_right c₂ z).mul
+    (linear_inv_isBigO_right c₁ z).comp_neg_int
 
 end EisensteinSeries

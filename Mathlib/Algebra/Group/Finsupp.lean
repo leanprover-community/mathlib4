@@ -32,14 +32,8 @@ lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ 
 
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
-  le_antisymm support_zipWith fun a ha =>
-    (Finset.mem_union.1 ha).elim
-      (fun ha => by
-        have : a ∉ g₂.support := disjoint_left.1 h ha
-        simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, add_zero] )
-      fun ha => by
-      have : a ∉ g₁.support := disjoint_right.1 h ha
-      simp only [mem_support_iff, not_not] at *; simpa only [add_apply, this, zero_add]
+  le_antisymm support_zipWith fun a ha => by
+    cases (Finset.mem_union_of_disjoint h).mp ha <;> simp_all
 
 instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
@@ -100,8 +94,7 @@ def embDomain.addMonoidHom (f : ι ↪ F) : (ι →₀ M) →+ F →₀ M where
     by_cases h : b ∈ Set.range f
     · rcases h with ⟨a, rfl⟩
       simp
-    · simp only [Set.mem_range, not_exists, coe_add, Pi.add_apply,
-        embDomain_notin_range _ _ _ h, add_zero]
+    · simp only [coe_add, Pi.add_apply, embDomain_notin_range _ _ _ h, add_zero]
 
 @[simp]
 lemma embDomain_add (f : ι ↪ F) (v w : ι →₀ M) :

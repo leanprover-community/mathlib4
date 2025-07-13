@@ -43,7 +43,7 @@ lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
   congr 1
   ext i j
   simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotient_apply, LinearMap.mul_apply', RingHom.toAddMonoidHom_eq_coe,
+    basisQuotient_apply, LinearMap.mul_apply',
     AddMonoidHom.mapMatrix_apply, AddMonoidHom.coe_coe, Matrix.map_apply, ← map_mul,
     basisQuotient_repr]
 

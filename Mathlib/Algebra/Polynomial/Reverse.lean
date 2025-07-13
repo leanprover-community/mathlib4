@@ -35,12 +35,7 @@ def revAtFun (N i : ℕ) : ℕ :=
 
 theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   unfold revAtFun
-  split_ifs with h j
-  · exact tsub_tsub_cancel_of_le h
-  · exfalso
-    apply j
-    exact Nat.sub_le N i
-  · rfl
+  grind
 
 theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
   intro a b hab
@@ -198,9 +193,9 @@ section Eval₂
 variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
-    (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f := by
+    (hf : f.natDegree ≤ N) : eval₂ i (⅟x) (reflect N f) * x ^ N = eval₂ i x f := by
   refine
-    induction_with_natDegree_le (fun f => eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f) _ ?_ ?_
+    induction_with_natDegree_le (fun f => eval₂ i (⅟x) (reflect N f) * x ^ N = eval₂ i x f) _ ?_ ?_
       ?_ f hf
   · simp
   · intro n r _ hnN
@@ -211,13 +206,13 @@ theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ)
     simp [*, add_mul]
 
 theorem eval₂_reflect_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
-    (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) = 0 ↔ eval₂ i x f = 0 := by
+    (hf : f.natDegree ≤ N) : eval₂ i (⅟x) (reflect N f) = 0 ↔ eval₂ i x f = 0 := by
   conv_rhs => rw [← eval₂_reflect_mul_pow i x N f hf]
   constructor
   · intro h
     rw [h, zero_mul]
   · intro h
-    rw [← mul_one (eval₂ i (⅟ x) _), ← one_pow N, ← mul_invOf_self x, mul_pow, ← mul_assoc, h,
+    rw [← mul_one (eval₂ i (⅟x) _), ← one_pow N, ← mul_invOf_self x, mul_pow, ← mul_assoc, h,
       zero_mul]
 
 end Eval₂
@@ -338,12 +333,12 @@ section Eval₂
 variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
-    eval₂ i (⅟ x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
+    eval₂ i (⅟x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
   eval₂_reflect_mul_pow i _ _ f le_rfl
 
 @[simp]
 theorem eval₂_reverse_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
-    eval₂ i (⅟ x) (reverse f) = 0 ↔ eval₂ i x f = 0 :=
+    eval₂ i (⅟x) (reverse f) = 0 ↔ eval₂ i x f = 0 :=
   eval₂_reflect_eq_zero_iff i x _ _ le_rfl
 
 end Eval₂

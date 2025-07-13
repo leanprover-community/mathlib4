@@ -354,7 +354,7 @@ theorem isCompactElement_iff (s : Opens α) :
       H (fun i => U i) (fun i => (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
     refine ⟨t, Set.Subset.trans ht ?_⟩
     simp only [Set.iUnion_subset_iff]
-    show ∀ i ∈ t, U i ≤ t.sup U
+    change ∀ i ∈ t, U i ≤ t.sup U
     exact fun i => Finset.le_sup
 
 /-- The preimage of an open set, as an open set. -/

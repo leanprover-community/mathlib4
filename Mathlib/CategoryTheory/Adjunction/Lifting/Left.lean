@@ -194,10 +194,10 @@ lemma isRightAdjoint_triangle_lift_monadic (U : B ⥤ C) [MonadicRightAdjoint U]
       infer_instance
     refine ((Adjunction.ofIsRightAdjoint
       (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight ?_).isRightAdjoint
-    exact isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
+    exact Functor.isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
   let this : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
     refine ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight ?_).isRightAdjoint
-    exact isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
+    exact Functor.isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
   let this : ∀ X, RegularEpi ((Monad.adj (monadicAdjunction U).toMonad).counit.app X) := by
     intro X
     simp only [Monad.adj_counit]

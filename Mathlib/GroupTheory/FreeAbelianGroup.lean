@@ -137,11 +137,11 @@ protected theorem ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) =
 
 theorem map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianGroup α) (f : α → β)
     (g : β →+ γ) : g (lift f a) = lift (g ∘ f) a := by
-  show (g.comp (lift f)) a = lift (g ∘ f) a
+  change (g.comp (lift f)) a = lift (g ∘ f) a
   apply lift.unique
   intro a
-  show g ((lift f) (of a)) = g (f a)
-  simp only [(· ∘ ·), lift.of]
+  change g ((lift f) (of a)) = g (f a)
+  simp only [lift.of]
 
 end lift
 

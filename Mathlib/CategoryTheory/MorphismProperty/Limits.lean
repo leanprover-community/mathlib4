@@ -237,7 +237,7 @@ instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
     [P.IsStableUnderBaseChange] : P.HasOfPostcompProperty (MorphismProperty.monomorphisms C) where
   of_postcomp {X Y Z} f g (hg : Mono g) hcomp := by
     have : f = (asIso (pullback.fst (f ≫ g) g)).inv ≫ pullback.snd (f ≫ g) g := by
-      simp [Iso.eq_inv_comp, ← cancel_mono g, pullback.condition]
+      simp [← cancel_mono g, pullback.condition]
     rw [this, cancel_left_of_respectsIso (P := P)]
     exact P.pullback_snd _ _ hcomp
 
@@ -350,6 +350,12 @@ instance IsStableUnderCobaseChange.inf {P Q : MorphismProperty C} [IsStableUnder
     [IsStableUnderCobaseChange Q] :
     IsStableUnderCobaseChange (P ⊓ Q) where
   of_isPushout hp hg := ⟨of_isPushout hp hg.left, of_isPushout hp hg.right⟩
+
+instance : (⊤ : MorphismProperty C).IsStableUnderBaseChange where
+  of_isPullback _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).IsStableUnderCobaseChange where
+  of_isPushout _ _ := trivial
 
 end
 
@@ -470,9 +476,9 @@ lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.F
   have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
   have h₂' : IsColimit (c₂.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₂).symm h₂
   have : h₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι)) =
-      h₁'.desc (Cocone.mk c₂.pt (whiskerLeft _ f ≫ (c₂.whisker F).ι)) :=
+      h₁'.desc (Cocone.mk c₂.pt (Functor.whiskerLeft _ f ≫ (c₂.whisker F).ι)) :=
     h₁'.hom_ext (fun j ↦ by
-      have := h₁'.fac (Cocone.mk c₂.pt (whiskerLeft F f ≫ whiskerLeft F c₂.ι)) j
+      have := h₁'.fac (Cocone.mk c₂.pt (Functor.whiskerLeft F f ≫ Functor.whiskerLeft F c₂.ι)) j
       dsimp at this ⊢
       simp [this])
   rw [this]
@@ -802,7 +808,7 @@ theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
 theorem universally_inf (P Q : MorphismProperty C) :
     (P ⊓ Q).universally = P.universally ⊓ Q.universally := by
   ext X Y f
-  show _ ↔ _ ∧ _
+  change _ ↔ _ ∧ _
   simp_rw [universally, ← forall_and]
   rfl
 

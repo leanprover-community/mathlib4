@@ -57,7 +57,7 @@ universe w v u
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 variable {C : Type u} [Category.{v} C]
 
