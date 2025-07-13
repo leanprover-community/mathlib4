@@ -6,7 +6,12 @@ Authors: Christopher Hoskin
 
 import Mathlib.Order.Lattice
 
---import Mathlib.Order.Lattice
+/-!
+# Distributive, Standard and Neutral elements
+
+TODO: Consider merging this into `Order.Lattice`.
+
+-/
 
 
 variable {α β : Type*}
