@@ -298,7 +298,6 @@ inductive Result' where
   | isNegNNRat (inst : Expr) (q : Rat) (n d proof : Expr)
   deriving Inhabited
 
-
 section
 set_option linter.unusedVariables false
 

@@ -78,7 +78,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isNNRat_eq_false $pa $pb $r)
     else
       failure --TODO: nonzero characteristic ≠
-  let ratArm (dα : Q(DivisionRing $α)) := do
+  let rec ratArm (dα : Q(DivisionRing $α)) := do
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
     if qa = qb then
       haveI' : $na =Q $nb := ⟨⟩

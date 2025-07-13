@@ -173,6 +173,7 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
 def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
     (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
+-- see note [norm_num lemma function equality]
 theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb nc : ℕ} {da db dc k : ℕ} :
     f = HAdd.hAdd → IsNNRat a na da → IsNNRat b nb db →
     Nat.add (Nat.mul na db) (Nat.mul nb da) = Nat.mul k nc →
@@ -192,7 +193,6 @@ theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
   simp only [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
-
 
 -- TODO: clean up and move it somewhere in mathlib? It's a bit much for this file
 -- see note [norm_num lemma function equality]
@@ -266,7 +266,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         (q(Eq.refl $t1) : Expr)
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
       return .isNNRat' dsα qc nc dc q(isNNRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+    let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
       haveI' : $e =Q $a + $b := ⟨⟩
       haveI' : $f =Q HAdd.hAdd := ⟨⟩
       let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
