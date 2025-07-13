@@ -277,6 +277,45 @@ theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Mo
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
 
+theorem ofIsCompl_range_left_subtype (hpq : IsCompl p q) :
+    range (ofIsCompl hpq p.subtype 0) = p := by
+  ext; simp [ofIsCompl]
+
+theorem ofIsCompl_range_right_subtype (hpq : IsCompl p q) :
+    range (ofIsCompl hpq 0 q.subtype) = q := by
+  ext; simp [ofIsCompl]
+
+theorem ofIsCompl_ker_left_subtype (hpq : IsCompl p q) :
+    ker (ofIsCompl hpq p.subtype 0) = q := by
+  ext; simp [ofIsCompl]
+
+theorem ofIsCompl_ker_right_subtype (hpq : IsCompl p q) :
+    ker (ofIsCompl hpq 0 q.subtype) = p := by
+  ext; simp [ofIsCompl]
+
+theorem ofIsCompl_left_subtype_isIdempotentElem (hpq : IsCompl p q) :
+    IsIdempotentElem (ofIsCompl hpq p.subtype 0) := by
+  ext; simp [ofIsCompl]
+
+theorem ofIsCompl_right_subtype_isIdempotentElem (hpq : IsCompl p q) :
+    IsIdempotentElem (ofIsCompl hpq 0 q.subtype) := by
+  ext; simp [ofIsCompl]
+
+theorem ofIsCompl_def (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
+    ofIsCompl hpq φ ψ = (φ ∘ₗ p.linearProjOfIsCompl q hpq)
+      + (ψ ∘ₗ q.linearProjOfIsCompl p hpq.symm) := by
+  ext x
+  obtain ⟨a, b, rfl, _⟩ := existsUnique_add_of_isCompl hpq x
+  simp
+
+theorem ofIsCompl_left_subtype_eq (hpq : IsCompl p q) :
+    ofIsCompl hpq p.subtype 0 = p.subtype ∘ₗ p.linearProjOfIsCompl q hpq := by
+  simp [ofIsCompl_def]
+
+theorem ofIsCompl_right_subtype_eq (hpq : IsCompl p q) :
+    ofIsCompl hpq 0 q.subtype = q.subtype ∘ₗ q.linearProjOfIsCompl p hpq.symm := by
+  simp [ofIsCompl_def]
+
 section
 
 variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
@@ -504,6 +543,7 @@ open LinearMap in
 lemma IsIdempotentElem.isCompl {f : E →ₗ[R] E} (hf : IsIdempotentElem f) :
     IsCompl (range f) (ker f) := hf.isProj_range.isCompl
 
+open LinearMap in
 /-- Idempotent operators are equal iff their range and kernels are. -/
 lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
