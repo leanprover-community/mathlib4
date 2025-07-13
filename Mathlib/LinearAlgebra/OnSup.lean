@@ -121,10 +121,7 @@ theorem onSup_unique
     {u : ↥(P ⊔ Q) →ₗ[R] N}
     (huf : u.comp (inclusion le_sup_left) = f) (hug : u.comp (inclusion le_sup_right) = g) :
     onSup h = u := by
-  ext ⟨x, hx⟩ <;>
-    simp only [huf, hug, ← onSup_apply_left h, ← onSup_apply_right h,
-      coe_comp, Function.comp_apply] <;>
-    congr
+  ext : 1 <;> simp [huf, hug, onSup_comp_left, onSup_comp_right]
 
 variable (M N Y)
 
