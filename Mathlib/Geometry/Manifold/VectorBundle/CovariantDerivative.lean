@@ -352,33 +352,86 @@ lemma convexCombination'_isRegular [IsManifold I 1 M] {ι : Type*} {s : Finset �
 -- Future: prove a version with a locally finite sum, and deduce that C^k connections always
 -- exist (using a partition of unity argument)
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+section trivial_bundle
 
-variable (E E') in
-/-- The trivial connection on a trivial bundle, given by the directional derivative -/
+omit [IsManifold I 0 M] in
+lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x) :
+    mfderiv I 𝓘(𝕜, F) (a • s) x v = a • mfderiv I 𝓘(𝕜, F) s x v := by
+  by_cases hs : MDifferentiableAt% s x
+  · have hs' := hs.const_smul a
+    suffices
+      (fderivWithin 𝕜 ((a • s) ∘ (chartAt H x).symm ∘ I.symm) (range I) (I ((chartAt H x) x))) v =
+       a • (fderivWithin 𝕜 (s ∘ (chartAt H x).symm ∘ I.symm) (range I)
+       (I ((chartAt H x) x))) v by simpa [mfderiv, hs, hs']
+    change fderivWithin 𝕜 (a • (s ∘ ↑(chartAt H x).symm ∘ ↑I.symm)) _ _ _ = _
+    rw [fderivWithin_const_smul_field _ I.uniqueDiffWithinAt_image ]
+    rfl
+  · by_cases ha : a = 0
+    · have : a • s = 0 := by ext; simp [ha]
+      rw [this, ha]
+      change (mfderiv I 𝓘(𝕜, F) (fun _ ↦ 0) x) v = _
+      simp
+    have hs' : ¬ MDifferentiableAt I 𝓘(𝕜, F) (a • s) x :=
+      fun h ↦ hs (by simpa [ha] using h.const_smul a⁻¹)
+    rw [mfderiv_zero_of_not_mdifferentiableAt hs, mfderiv_zero_of_not_mdifferentiableAt hs']
+    simp
+    rfl
+
+lemma mfderiv_smul {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
+    (hs : MDiffAt s x) (v : TangentSpace I x) :
+    letI dsxv : 𝕜 := mfderiv I 𝓘(𝕜, 𝕜) s x v
+    letI dfxv : F := mfderiv I 𝓘(𝕜, F) f x v
+    mfderiv I 𝓘(𝕜, F) (s • f) x v = (s x) • dfxv + dsxv • f x := by
+  sorry
+
+variable (I M F) in
 @[simps]
-noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
-  (Bundle.Trivial E E') where
-  toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
+noncomputable def trivial : CovariantDerivative I F (Trivial M F) where
+  toFun X s := fun x ↦ mfderiv I 𝓘(𝕜, F) s x (X x)
   isCovariantDerivativeOn :=
   { addX X X' σ x _ := by simp
     smulX X σ c' x _ := by simp
     addσ X σ σ' x hσ hσ' hx := by
-      rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
-      rw [fderiv_add hσ hσ']
+      rw [mdifferentiableAt_section] at hσ hσ'
+      -- TODO: specialize mdifferentiableAt_section to trivial bundles?
+      change MDifferentiableAt I 𝓘(𝕜, F) σ x at hσ
+      change MDifferentiableAt I 𝓘(𝕜, F) σ' x at hσ'
+      rw [mfderiv_add hσ hσ']
       rfl
-    smul_const_σ X σ a x hx := by simp [fderiv_const_smul_of_field a]
+    smul_const_σ X σ a x hx := by
+      rw [mfderiv_const_smul]
     leibniz X σ f x hσ hf hx := by
-      have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
-        fderiv_smul (by simp_all) (by simp_all)
-      simp [this, bar]
-      rfl }
+      rw [mdifferentiableAt_section] at hσ
+      exact mfderiv_smul hσ hf (X x) }
+end trivial_bundle
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+
+-- variable (E E') in
+-- /-- The trivial connection on a trivial bundle, given by the directional derivative -/
+-- @[simps]
+-- noncomputable def trivial : CovariantDerivative 𝓘(𝕜, E) E'
+--   (Bundle.Trivial E E') where
+--   toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
+--   isCovariantDerivativeOn :=
+--   { addX X X' σ x _ := by simp
+--     smulX X σ c' x _ := by simp
+--     addσ X σ σ' x hσ hσ' hx := by
+--       rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
+--       rw [fderiv_add hσ hσ']
+--       rfl
+--     smul_const_σ X σ a x hx := by simp [fderiv_const_smul_of_field a]
+--     leibniz X σ f x hσ hf hx := by
+--       have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
+--         fderiv_smul (by simp_all) (by simp_all)
+--       simp [this, bar]
+--       rfl }
 
 -- TODO: does it make sense to speak of analytic connections? if so, change the definition of
 -- regularity and use ∞ from `open scoped ContDiff` instead.
 
 /-- The trivial connection on the trivial bundle is smooth -/
-lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial E E') (⊤ : ℕ∞) where
+lemma trivial_isSmooth : IsCkConnection (𝕜 := 𝕜) (trivial 𝓘(𝕜, E) E E') (⊤ : ℕ∞) where
   regularity {X σ} hX hσ := by
     -- except for local trivialisations, contDiff_infty_iff_fderiv covers this well
     simp only [trivial]
@@ -832,12 +885,13 @@ lemma exists_endomorph [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
     MDiffAt (T% σ) x →
     cov X σ x = (CovariantDerivative.of_endomorphism A) X σ x := by
   use fun x ↦ difference cov.isCovariantDerivativeOn
-    (CovariantDerivative.trivial E E').isCovariantDerivativeOn (mem_univ x)
+    (CovariantDerivative.trivial 𝓘(ℝ, E) E E').isCovariantDerivativeOn (mem_univ x)
   intro X σ x hσ
   simp only [of_endomorphism]
   erw [difference_apply cov.isCovariantDerivativeOn
-       (CovariantDerivative.trivial E E').isCovariantDerivativeOn _ X hσ, trivial]
-  abel
+       (CovariantDerivative.trivial 𝓘(ℝ, E) E E').isCovariantDerivativeOn _ X hσ, trivial]
+  simp only [mfderiv_eq_fderiv]
+  module
 
 end classification
 
