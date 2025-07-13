@@ -483,13 +483,17 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
 open LinearMap in
-/-- Idempotent operators are equal when their range and kernels are. -/
-lemma IsIdempotentElem.ext {p q : E →ₗ[R] E} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
-    (hr : range p = range q) (hk : ker p = ker q) : p = q := by
+/-- Idempotent operators are equal iff their range and kernels are. -/
+lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    p = q ↔ range p = range q ∧ ker p = ker q := by
+  refine ⟨fun h => ⟨congrArg range h, congrArg ker h⟩, fun ⟨hr, hk⟩ => ?_⟩
   ext x
   obtain ⟨⟨v, hv⟩, ⟨w, hw⟩, rfl, _⟩ :=
     (ker p).existsUnique_add_of_isCompl hp.isProj_range.isCompl.symm x
   simp [mem_ker.mp, hv, (hk ▸ hv), (mem_range_iff hp).mp, hw, (mem_range_iff hq).mp, (hr ▸ hw)]
+
+alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
 
 theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
