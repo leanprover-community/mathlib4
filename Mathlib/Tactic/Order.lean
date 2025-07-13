@@ -267,13 +267,12 @@ elab "order" : tactic => focus do
       let mut graph ← Graph.constructLeGraph idxToAtom.size processedFacts
       graph ← updateGraphWithNltInfSup graph idxToAtom processedFacts
       if orderType == .pre then
-        if let some pf ← findContradictionWithNle graph idxToAtom processedFacts then
-          g.assign pf
-          return
-      else
-        if let some pf ← findContradictionWithNe graph idxToAtom processedFacts then
-          g.assign pf
-          return
+        let some pf ← findContradictionWithNle graph idxToAtom processedFacts | continue
+        g.assign pf
+        return
+      if let some pf ← findContradictionWithNe graph idxToAtom processedFacts then
+        g.assign pf
+        return
       -- if fast procedure failed and order is linear, we try `omega`
       if orderType == .lin then
         let .succ u ← getLevel type | throwError "Unexpected Prop"

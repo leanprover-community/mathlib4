@@ -1,8 +1,5 @@
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Tactic.Order
-import Mathlib.Util.CountHeartbeats
-
-universe u
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
   order
@@ -46,6 +43,9 @@ example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < 
   order
 
 example [Preorder α] (a b : α) (h1 : a < b) : b > a := by
+  order
+
+example [Preorder α] (a b : α) (h1 : a > b) : b < a := by
   order
 
 example [PartialOrder α] [OrderTop α] (a : α) (h1 : ⊤ ≤ a) : a = ⊤ := by
@@ -267,41 +267,3 @@ example {α : Type*} [LinearOrder α]
     (c4 : x₀ ⊔ y₀ ≥ t)
     : False := by
   order
-
--- #count_heartbeats in
--- example
---     (x₀ x₁ y₀ y₁ z₀ z₁ t f : ℤ)
---     (htf : f < t)
---     (hxf : x₀ ⊓ x₁ ≤ f)
---     (hyf : y₀ ⊓ y₁ ≤ f)
---     (hzf : z₀ ⊓ z₁ ≤ f)
---     (c1 : x₁ ⊔ y₁ ⊔ z₁ ≥ t)
---     (c2 : x₁ ⊔ y₁ ⊔ z₀ ≥ t)
---     (c3 : x₁ ⊔ y₀ ⊔ z₁ ≥ t)
---     (c4 : x₁ ⊔ y₀ ⊔ z₀ ≥ t)
---     (c5 : x₀ ⊔ y₁ ⊔ z₁ ≥ t)
---     (c6 : x₀ ⊔ y₁ ⊔ z₀ ≥ t)
---     (c7 : x₀ ⊔ y₀ ⊔ z₁ ≥ t)
---     (c8 : x₀ ⊔ y₀ ⊔ z₀ ≥ t)
---     : False := by
---   omega
-
--- set_option trace.profiler true
-
--- #count_heartbeats in
--- example {α : Type*} [LinearOrder α]
---     (x₀ x₁ y₀ y₁ z₀ z₁ t f : α)
---     (htf : f < t)
---     (hxf : x₀ ⊓ x₁ ≤ f)
---     (hyf : y₀ ⊓ y₁ ≤ f)
---     (hzf : z₀ ⊓ z₁ ≤ f)
---     (c1 : x₁ ⊔ y₁ ⊔ z₁ ≥ t)
---     (c2 : x₁ ⊔ y₁ ⊔ z₀ ≥ t)
---     (c3 : x₁ ⊔ y₀ ⊔ z₁ ≥ t)
---     (c4 : x₁ ⊔ y₀ ⊔ z₀ ≥ t)
---     (c5 : x₀ ⊔ y₁ ⊔ z₁ ≥ t)
---     (c6 : x₀ ⊔ y₁ ⊔ z₀ ≥ t)
---     (c7 : x₀ ⊔ y₀ ⊔ z₁ ≥ t)
---     (c8 : x₀ ⊔ y₀ ⊔ z₀ ≥ t)
---     : False := by
---   order
