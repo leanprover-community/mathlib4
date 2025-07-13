@@ -317,8 +317,7 @@ theorem nextCoeff_C_eq_zero (c : R) : nextCoeff (C c) = 0 := by
 theorem nextCoeff_of_natDegree_pos (hp : 0 < p.natDegree) :
     nextCoeff p = p.coeff (p.natDegree - 1) := by
   rw [nextCoeff, if_neg]
-  contrapose! hp
-  simpa
+  order
 
 variable {p q : R[X]} {ι : Type*}
 

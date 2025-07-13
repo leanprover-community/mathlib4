@@ -161,7 +161,7 @@ See `natDegree_ne_zero_induction_on` for a similar statement involving no explic
 theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree p)
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
     (hadd : ∀ {p} {a}, 0 < degree p → P p → P (p + C a)) : P p :=
-  recOnHorner p (fun h => by rw [degree_zero] at h; exact absurd h (by decide))
+  recOnHorner p (fun h => by rw [degree_zero] at h; order)
     (fun p a heq0 _ ih h0 =>
       (have : 0 < degree p :=
         (lt_of_not_ge fun h =>

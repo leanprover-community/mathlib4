@@ -470,7 +470,7 @@ variable (p q)
 instance : Zero (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := 0
       map_zero' := Pi.zero_apply _
-      add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
+      add_le_max' := fun r s => by simp only [Pi.zero_apply]; order
       neg' := fun _ => rfl }⟩
 
 @[simp, norm_cast]
@@ -584,7 +584,7 @@ instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun x y => by
         by_cases hx : x = 0
         · simp_rw [if_pos hx, hx, zero_add]
-          exact le_max_of_le_right (le_refl _)
+          order
         · simp_rw [if_neg hx]
           split_ifs <;> simp
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩

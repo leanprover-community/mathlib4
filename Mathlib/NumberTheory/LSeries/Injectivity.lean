@@ -202,11 +202,11 @@ lemma LSeries_sub_eventuallyEq_zero_of_LSeries_eventually_eq {f g : ℕ → ℂ}
   have Hf : LSeriesSummable f x := by
     refine LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (ofReal_re x).symm ▸ hyf₁.trans_le (EReal.coe_le_coe_iff.mpr ?_)
-    exact (le_max_left _ yg).trans <| (le_max_right x₀ _).trans hx
+    order
   have Hg : LSeriesSummable g x := by
     refine LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (ofReal_re x).symm ▸ hyg₁.trans_le (EReal.coe_le_coe_iff.mpr ?_)
-    exact (le_max_right yf _).trans <| (le_max_right x₀ _).trans hx
+    order
   rw [LSeries_sub Hf Hg, hx₀ x <| (le_max_left ..).trans hx, sub_self, Pi.zero_apply]
 
 open Filter in

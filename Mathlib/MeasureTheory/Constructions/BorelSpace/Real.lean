@@ -505,7 +505,7 @@ private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ 
     · simp [h1]
     · rw [bot_mul_coe_of_neg h2]
     · rw [bot_mul_coe_of_pos]
-      exact lt_of_le_of_ne (not_lt.mp h2) (Ne.symm h1)
+      order
   have h2 : Measurable fun (p : ℝ) ↦ if p = 0 then (0 : EReal) else if p < 0 then ⊤ else ⊥ := by
     refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
     exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const

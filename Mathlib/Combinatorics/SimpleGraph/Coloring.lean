@@ -428,8 +428,7 @@ theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) {n : ℕ
 theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber := by
   obtain (hc | hc) := eq_or_ne G.chromaticNumber ⊤
-  · rw [hc]
-    exact le_top
+  · order
   · have hc' := hc
     rw [chromaticNumber_ne_top_iff_exists] at hc'
     obtain ⟨n, c⟩ := hc'

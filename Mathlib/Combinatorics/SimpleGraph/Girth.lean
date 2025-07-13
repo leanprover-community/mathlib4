@@ -59,8 +59,7 @@ lemma exists_egirth_eq_length :
 lemma three_le_egirth : 3 ≤ G.egirth := by
   by_cases h : G.IsAcyclic
   · rw [← egirth_eq_top] at h
-    rw [h]
-    apply le_top
+    order
   · rw [← exists_egirth_eq_length] at h
     have ⟨_, _, _⟩ := h
     simp_all only [Nat.cast_inj, Nat.ofNat_le_cast, Walk.IsCycle.three_le_length]

@@ -423,10 +423,7 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
   · refine le_of_eq ?_
     simp_rw [h1, one_div_one, ENNReal.rpow_one]
     exact lintegral_add_left' hf _
-  have hp1_lt : 1 < p := by
-    refine lt_of_le_of_ne hp1 ?_
-    symm
-    exact h1
+  have hp1_lt : 1 < p := by order
   have hpq := Real.HolderConjugate.conjExponent hp1_lt
   by_cases h0 : (∫⁻ a, (f + g) a ^ p ∂μ) = 0
   · rw [h0, @ENNReal.zero_rpow_of_pos (1 / p) (by simp [lt_of_lt_of_le zero_lt_one hp1])]

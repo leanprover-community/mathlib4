@@ -145,8 +145,7 @@ theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) �
 private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
   suffices order (φ + ψ) = order φ by
-    rw [le_inf_iff, this]
-    exact ⟨le_rfl, le_of_lt H⟩
+    order
   rw [order_eq]
   constructor
   · intro i hi

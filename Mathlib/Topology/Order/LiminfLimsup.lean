@@ -332,7 +332,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         exact fun x hx ↦ f_decr hx.le
       · exact IsBounded.isBoundedUnder f_decr bdd_above
     have I : f m < F.liminf f := h'l ⟨l_m, m_lt.le⟩
-    exact lt_irrefl _ (B.trans_lt I)
+    order
 
 /-- A continuous antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsup` to the `Filter.liminf` of the images (if the filter is bounded from above and

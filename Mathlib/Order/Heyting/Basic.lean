@@ -993,8 +993,7 @@ protected abbrev Function.Injective.generalizedHeytingAlgebra [Max α] [Min α] 
     __ := ‹HImp α›
     le_top := fun a => by
       change f _ ≤ _
-      rw [map_top]
-      exact le_top,
+      order,
     le_himp_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
       rw [map_himp, map_inf, le_himp_iff] }
@@ -1011,8 +1010,7 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Max α] [Min α
     __ := ‹SDiff α›
     bot_le := fun a => by
       change f _ ≤ _
-      rw [map_bot]
-      exact bot_le,
+      order,
     sdiff_le_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
       rw [map_sdiff, map_sup, sdiff_le_iff] }
@@ -1029,8 +1027,7 @@ protected abbrev Function.Injective.heytingAlgebra [Max α] [Min α] [Top α] [B
     __ := ‹HasCompl α›
     bot_le := fun a => by
       change f _ ≤ _
-      rw [map_bot]
-      exact bot_le,
+      order,
     himp_bot := fun a => hf <| by rw [map_himp, map_compl, map_bot, himp_bot] }
 
 -- See note [reducible non-instances]
@@ -1045,8 +1042,7 @@ protected abbrev Function.Injective.coheytingAlgebra [Max α] [Min α] [Top α] 
     __ := ‹HNot α›
     le_top := fun a => by
       change f _ ≤ _
-      rw [map_top]
-      exact le_top,
+      order,
     top_sdiff := fun a => hf <| by rw [map_sdiff, map_hnot, map_top, top_sdiff'] }
 
 -- See note [reducible non-instances]

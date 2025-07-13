@@ -136,7 +136,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     have hxy : ∀ y : E, y ∈ Metric.ball x r → ‖y - x‖ < 1 := by
       intro y hy
       rw [Metric.mem_ball, dist_eq_norm] at hy
-      exact lt_of_lt_of_le hy (min_le_left _ _)
+      order
     have hxyε : ∀ y : E, y ∈ Metric.ball x r → ε * ‖y - x‖ < ε := by
       intro y hy
       exact (mul_lt_iff_lt_one_right hε.lt).mpr (hxy y hy)
@@ -324,7 +324,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     specialize this ε hε
     rw [eventually_curry_iff] at this
     simp only at this
-    exact (eventually_const.mp this).mono (by simp only [imp_self, forall_const])
+    exact (eventually_const.mp this).mono (by order)
   -- With the new quantifier in hand, we can perform the famous `ε/3` proof. Specifically,
   -- we will break up the limit (the difference functions minus the derivative go to 0) into 3:
   --   * The difference functions of the `f n` converge *uniformly* to the difference functions

@@ -73,9 +73,7 @@ theorem hasConstantSpeedOnWith_iff_ordered :
   · rw [eVariationOn.subsingleton, ENNReal.ofReal_of_nonpos]
     · exact mul_nonpos_of_nonneg_of_nonpos l.prop (sub_nonpos_of_le yx)
     · rintro z ⟨zs, xz, zy⟩ w ⟨ws, xw, wy⟩
-      cases le_antisymm (zy.trans yx) xz
-      cases le_antisymm (wy.trans yx) xw
-      rfl
+      order
 
 theorem hasConstantSpeedOnWith_iff_variationOnFromTo_eq :
     HasConstantSpeedOnWith f s l ↔ LocallyBoundedVariationOn f s ∧

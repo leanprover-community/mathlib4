@@ -148,7 +148,7 @@ theorem blockTriangular_single {i j : m} (hij : b i ≤ b j) (c : R) :
   intro r s hrs
   apply single_apply_of_ne
   rintro ⟨rfl, rfl⟩
-  exact (hij.trans_lt hrs).false
+  order
 
 @[deprecated (since := "2025-05-05")] alias blockTriangular_stdBasisMatrix := blockTriangular_single
 

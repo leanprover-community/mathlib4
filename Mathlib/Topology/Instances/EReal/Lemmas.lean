@@ -458,7 +458,7 @@ private lemma continuousAt_mul_top_top :
     rcases p_in_prod with ⟨⟨p1_gt_x, p1_pos⟩, p2_gt_1⟩
     have := mul_le_mul_of_nonneg_left (le_of_lt p2_gt_1) (le_of_lt p1_pos)
     rw [mul_one p.1] at this
-    exact lt_of_lt_of_le p1_gt_x this
+    order
   · exact IsOpen.prod isOpen_Ioi isOpen_Ioi
   · simp
   · rw [Set.mem_Ioi, ← EReal.coe_one]; exact EReal.coe_lt_top 1

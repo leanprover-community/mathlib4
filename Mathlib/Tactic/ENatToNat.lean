@@ -27,7 +27,7 @@ attribute [enat_to_nat_top] ENat.coe_ne_top ENat.top_ne_coe ENat.coe_lt_top top_
 attribute [enat_to_nat_top] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_top ENat.top_mul
 
 @[enat_to_nat_top] lemma not_lt_top (x : ENat) :
-    ¬(⊤ < x) := by cases x <;> simp
+    ¬(⊤ < x) := by order
 
 @[enat_to_nat_coe] lemma coe_add (m n : ℕ) :
     (m : ENat) + (n : ENat) = ((m + n : ℕ) : ENat) := rfl

@@ -172,7 +172,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
   replace sSup : sSup s = k := eq_iff_le_not_lt.mpr ⟨sSup', h⟩
   obtain ⟨x, hxs, hkx⟩ := hk s hemp hdir sSup.symm.le
   obtain hxk := hbelow x hxs
-  exact hxk.ne (hxk.le.antisymm hkx)
+  order
 
 theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
     (h : ∀ x ∈ s, IsCompactElement (f x)) : IsCompactElement (s.sup f) := by
@@ -241,7 +241,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
     rwa [← htsup]
   · obtain ⟨t, ⟨hts, htsup⟩⟩ := h (sSup s) s (by rfl)
     have : sSup s = t.sup id := by
-      suffices t.sup id ≤ sSup s by apply le_antisymm <;> assumption
+      suffices t.sup id ≤ sSup s by order
       simp only [id, Finset.sup_le_iff]
       intro x hx
       exact le_sSup _ _ (hts hx)

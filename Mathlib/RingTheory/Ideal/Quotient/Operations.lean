@@ -145,7 +145,7 @@ lemma injective_lift_iff {I : Ideal R} [I.IsTwoSided]
   rw [injective_iff_ker_eq_bot, ker_quotient_lift, map_eq_bot_iff_le_ker, mk_ker]
   constructor
   · exact fun h ↦ le_antisymm h H
-  · rintro rfl; rfl
+  · order
 
 lemma ker_Pi_Quotient_mk {ι : Type*} (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
     ker (Pi.ringHom fun i : ι ↦ Quotient.mk (I i)) = ⨅ i, I i := by

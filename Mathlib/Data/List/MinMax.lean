@@ -174,8 +174,8 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     rw [← apply_ite, ← apply_ite]
     dsimp
     split_ifs <;> try rfl
-    · exact absurd (lt_trans ‹f a < f m› ‹_›) ‹_›
-    · cases (‹f a < f tl›.gt_or_lt _).elim ‹_› ‹_›
+    · order
+    · order
 
 theorem argmin_cons (f : α → β) (a : α) (l : List α) :
     argmin f (a :: l) =

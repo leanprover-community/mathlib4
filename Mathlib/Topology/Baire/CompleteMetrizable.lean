@@ -44,8 +44,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     refine ⟨y, min (min (δ / 2) r) (B (n + 1)), ?_, ?_, fun z hz => ⟨?_, ?_⟩⟩
     · show 0 < min (min (δ / 2) r) (B (n + 1))
       exact lt_min (lt_min (ENNReal.half_pos δpos) rpos) (Bpos (n + 1))
-    · show min (min (δ / 2) r) (B (n + 1)) ≤ B (n + 1)
-      exact min_le_right _ _
+    · order
     · show z ∈ closedBall x δ
       calc
         edist z x ≤ edist z y + edist y x := edist_triangle _ _ _

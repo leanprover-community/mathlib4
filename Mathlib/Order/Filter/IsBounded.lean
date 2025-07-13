@@ -288,7 +288,7 @@ lemma IsCobounded.of_frequently_ge [LinearOrder α] {l : α} (freq_ge : ∃ᶠ x
   · exact ⟨l, fun x _ ↦ lbot x⟩
   refine ⟨l', fun u hu ↦ ?_⟩
   obtain ⟨w, l_le_w, w_le_u⟩ := (freq_ge.and_eventually hu).exists
-  exact hl'.le.trans (l_le_w.trans w_le_u)
+  order
 
 /-- In linear orders, frequent boundedness from above implies coboundedness for `≥`. -/
 lemma IsCobounded.of_frequently_le [LinearOrder α] {u : α} (freq_le : ∃ᶠ r in f, r ≤ u) :

@@ -213,7 +213,7 @@ protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ℝ≥0∞) :
       ∫⁻ p, f p := by
   rw [← (volume_preserving_equiv_real_prod.symm).lintegral_comp_emb
     measurableEquivRealProd.symm.measurableEmbedding, ← lintegral_comp_polarCoord_symm]
-  simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
+  order
 
 end Complex
 

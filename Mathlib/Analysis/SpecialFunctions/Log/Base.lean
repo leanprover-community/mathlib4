@@ -355,7 +355,7 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
   intro ha
   rw [logb_le_iff_le_rpow_of_base_lt_one b_pos b_lt_one]
   · tauto
-  · exact lt_of_lt_of_le zero_lt_one ha
+  · order
 
 end BPosAndBLtOne
 

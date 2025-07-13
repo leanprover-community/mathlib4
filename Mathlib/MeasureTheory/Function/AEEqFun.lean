@@ -506,20 +506,17 @@ theorem coeFn_sup (f g : α →ₘ[μ] β) : ⇑(f ⊔ g) =ᵐ[μ] fun x => f x 
 protected theorem le_sup_left (f g : α →ₘ[μ] β) : f ≤ f ⊔ g := by
   rw [← coeFn_le]
   filter_upwards [coeFn_sup f g] with _ ha
-  rw [ha]
-  exact le_sup_left
+  order
 
 protected theorem le_sup_right (f g : α →ₘ[μ] β) : g ≤ f ⊔ g := by
   rw [← coeFn_le]
   filter_upwards [coeFn_sup f g] with _ ha
-  rw [ha]
-  exact le_sup_right
+  order
 
 protected theorem sup_le (f g f' : α →ₘ[μ] β) (hf : f ≤ f') (hg : g ≤ f') : f ⊔ g ≤ f' := by
   rw [← coeFn_le] at hf hg ⊢
   filter_upwards [hf, hg, coeFn_sup f g] with _ haf hag ha_sup
-  rw [ha_sup]
-  exact sup_le haf hag
+  order
 
 end Sup
 
@@ -535,20 +532,17 @@ theorem coeFn_inf (f g : α →ₘ[μ] β) : ⇑(f ⊓ g) =ᵐ[μ] fun x => f x 
 protected theorem inf_le_left (f g : α →ₘ[μ] β) : f ⊓ g ≤ f := by
   rw [← coeFn_le]
   filter_upwards [coeFn_inf f g] with _ ha
-  rw [ha]
-  exact inf_le_left
+  order
 
 protected theorem inf_le_right (f g : α →ₘ[μ] β) : f ⊓ g ≤ g := by
   rw [← coeFn_le]
   filter_upwards [coeFn_inf f g] with _ ha
-  rw [ha]
-  exact inf_le_right
+  order
 
 protected theorem le_inf (f' f g : α →ₘ[μ] β) (hf : f' ≤ f) (hg : f' ≤ g) : f' ≤ f ⊓ g := by
   rw [← coeFn_le] at hf hg ⊢
   filter_upwards [hf, hg, coeFn_inf f g] with _ haf hag ha_inf
-  rw [ha_inf]
-  exact le_inf haf hag
+  order
 
 end Inf
 

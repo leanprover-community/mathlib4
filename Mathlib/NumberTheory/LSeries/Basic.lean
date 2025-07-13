@@ -124,7 +124,7 @@ lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.r
     ‖term f s' n‖ ≤ ‖term f s n‖ := by
   simp only [norm_term_eq]
   split
-  · next => rfl
+  · order
   · next hn => gcongr; exact Nat.one_le_cast.mpr <| Nat.one_le_iff_ne_zero.mpr hn
 
 section positivity
@@ -321,7 +321,7 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeries
   have := h.le_tsum n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
     div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
-  exact (this.trans_lt hn).false.elim
+  order
 
 open Filter in
 /-- If the `LSeries` of `f` is summable at `s`, then `f = O(n^(re s))`. -/

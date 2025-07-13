@@ -488,8 +488,7 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
     _ ≤ ∑ s, d s := Finset.sum_le_sum fun s _ => h s
     _ ≤ d.sum fun _ e => e := by
       rw [Finsupp.sum_fintype]
-      intros
-      rfl
+      order
     _ ≤ f.totalDegree := le_totalDegree hd
 
 theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ}
@@ -500,7 +499,7 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
       rw [mem_support_iff] at h
       refine not_not.mp (mt h ?_)
       exact lt_irrefl _
-    · exact lt_of_le_of_lt (Nat.zero_le _) h
+    · order
 
 theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
     p.totalDegree = 0 ↔ p = C (p.coeff 0) := by

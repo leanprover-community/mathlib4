@@ -140,8 +140,7 @@ instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
   rw [hy]
   refine sup_mem ha (I.lower (le_inf hb ?_) hxy)
-  rw [hy]
-  exact le_sup_right
+  order
 
 end DistribLattice
 

@@ -942,7 +942,7 @@ theorem IsPrime.le_of_pow_le {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^
     I ≤ P := by
   by_cases hn : n = 0
   · rw [hn, pow_zero, one_eq_top] at h
-    exact fun ⦃_⦄ _ ↦ h Submodule.mem_top
+    order
   · exact (pow_le_iff hn).mp h
 
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :

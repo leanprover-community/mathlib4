@@ -197,8 +197,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F] [LinearOrderedCom
       · exact continuous_subtype_val
       · simp [hy.le]
     · refine IsOpen.mem_nhds ((Valued.isOpen_sphere _ ?_).preimage ?_) ?_
-      · simp only [not_lt] at hy
-        exact (hx.trans_le hy).ne'
+      · order
       · exact continuous_subtype_val
       · simp
   -- For each element of the valuation ring that is bigger than our threshold element above,

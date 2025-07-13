@@ -195,12 +195,10 @@ theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteM
     rw [← @measure_univ_eq_zero, ← h, meas_s_ne_zero]
   apply IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set (fund_dom_s := fund_dom_s)
     (meas_V := MeasurableSet.univ)
-  · rw [← h]
-    exact meas_s_ne_zero
+  · rwa [← h]
   · rw [← h]
     simp
-  · rw [← h]
-    convert finiteCovol.ne
+  · exact finiteCovol.ne
 
 end mulInvariantMeasure
 
@@ -298,8 +296,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
   have c_ne_top : c ≠ ∞ := by
     contrapose! h𝓕_finite
     have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right)
-    rw [h𝓕_finite] at this
-    exact top_unique this
+    order
   set μ := c • haarMeasure K
   have hμK : μ K = c := by simp [μ, haarMeasure_self]
   haveI : SigmaFinite μ := by
@@ -310,8 +307,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
     (meas_V := K.isCompact.measurableSet) (μ := μ)
   · exact K.interior_nonempty
   · exact hμK
-  · rw [hμK]
-    exact c_ne_top
+  · rwa [hμK]
 
 end haarMeasure
 

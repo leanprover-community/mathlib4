@@ -524,8 +524,7 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
     simp only [min_def, max_def']
     split_ifs with h₁ h₂ h₃ h₄
     · simp [γ.extend_of_le_zero h₁]
-    · congr
-      linarith
+    · order
     · have h₄ : t₁ ≤ 0 := le_of_lt (by simpa using h₂)
       simp [γ.extend_of_le_zero h₄, γ.extend_of_le_zero h₁]
     all_goals rfl

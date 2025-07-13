@@ -234,7 +234,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   rw [this]
   · intro h2f; rw [lintegral_congr_ae]
     filter_upwards [h2f] with x hx
-    rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
+    rw [ofReal_toReal]; order
   · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.enorm.lintegral_prod_right'
 
 theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :

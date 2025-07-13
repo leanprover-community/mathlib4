@@ -59,7 +59,7 @@ private lemma farFromTriangleFree_graph [Fintype G] [DecidableEq G] (hε : ε * 
   refine farFromTriangleFree _ ?_
   simp_rw [card_triangleIndices, mul_comm_div, Nat.cast_pow, Nat.cast_add]
   ring_nf
-  simpa only [mul_comm] using hε
+  order
 
 end Corners
 

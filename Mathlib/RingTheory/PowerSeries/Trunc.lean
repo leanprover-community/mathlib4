@@ -91,8 +91,7 @@ theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [← not_le] at h
-    contradiction
+  · order
   · rfl
 
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :

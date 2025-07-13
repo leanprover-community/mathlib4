@@ -53,8 +53,7 @@ theorem absNorm_under_eq_sInf :
       refine Set.eq_empty_of_forall_notMem ?_
       intro x ⟨hx₁, hx₂⟩
       rw [← cast_natCast, cast_mem_ideal_iff, h, natCast_dvd_natCast, Nat.zero_dvd] at hx₂
-      rw [Nat.pos_iff_ne_zero] at hx₁
-      exact hx₁ hx₂
+      order
     rw [h, this, Nat.sInf_empty]
   · have h₁ : absNorm (under ℤ I) ∈ {d : ℕ | 0 < d ∧ ↑d ∈ I} :=
       ⟨Nat.pos_of_ne_zero h, absNorm_under_mem I⟩

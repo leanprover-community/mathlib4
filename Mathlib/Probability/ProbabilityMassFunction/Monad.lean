@@ -161,7 +161,7 @@ theorem toOuterMeasure_bind_apply :
     _ = ∑' (a) (b), p a * if b ∈ s then f a b else 0 := ENNReal.tsum_comm
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := tsum_congr fun _ => ENNReal.tsum_mul_left
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 :=
-      (tsum_congr fun a => (congr_arg fun x => p a * x) <| tsum_congr fun b => by split_ifs <;> rfl)
+      (tsum_congr fun a => (congr_arg fun x => p a * x) <| tsum_congr fun b => by order)
     _ = ∑' a, p a * (f a).toOuterMeasure s :=
       tsum_congr fun a => by simp only [toOuterMeasure_apply, Set.indicator_apply]
 

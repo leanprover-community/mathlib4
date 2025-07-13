@@ -683,7 +683,7 @@ lemma IsMaximumClique.isMaximalClique [Fintype α] (s : Finset α) (M : G.IsMaxi
       have hle : #t.toFinset ≤ #s := M.maximum t.toFinset (by simp [Set.coe_toFinset, ht])
       have hlt : #s < #t.toFinset :=
         card_lt_card (ssubset_of_ne_of_subset ne (Set.subset_toFinset.mpr hsub))
-      exact lt_irrefl _ (lt_of_lt_of_le hlt hle) ⟩
+      order ⟩
 
 lemma maximumClique_card_eq_cliqueNum [Fintype α] (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by

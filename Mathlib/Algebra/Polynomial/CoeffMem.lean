@@ -63,7 +63,7 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
         simp only [sup_le_iff]
         refine ⟨one_le_mul le_sup_left le_sup_left, ?_, mul_le_mul' le_sup_right le_sup_right⟩
         rw [Submodule.sup_mul, one_mul]
-        exact le_sup_of_le_left le_sup_right
+        order
       _ = spanCoeffs(q) ^ (deg(r) + 1) * spanCoeffs(p) := by rw [pow_succ, mul_assoc]
       _ ≤ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by gcongr; exacts [le_sup_left, deg_r_lt_deg_p]
     refine ⟨add_mem ?_ ?_, ?_⟩

@@ -323,7 +323,7 @@ def SignType.sign : α →o SignType :=
   ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
-    · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
+    · order
     · cases h₂ (h₁.trans_le h)
     · cases h₄ (h.trans_lt h₃)⟩
 
@@ -368,8 +368,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
-  cases h
-  exact (le_of_not_gt h_1).eq_of_not_lt h_2
+  order
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
   sign_eq_zero_iff.not
@@ -453,7 +452,7 @@ variable [AddGroup α] [Preorder α] [DecidableLT α]
 theorem Left.sign_neg [AddLeftStrictMono α] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]
   split_ifs with h h'
-  · exact False.elim (lt_asymm h h')
+  · order
   · simp
   · simp
   · simp
@@ -462,7 +461,7 @@ theorem Right.sign_neg [AddRightStrictMono α] (a : α) :
     sign (-a) = -sign a := by
   simp_rw [sign_apply, Right.neg_pos_iff, Right.neg_neg_iff]
   split_ifs with h h'
-  · exact False.elim (lt_asymm h h')
+  · order
   · simp
   · simp
   · simp

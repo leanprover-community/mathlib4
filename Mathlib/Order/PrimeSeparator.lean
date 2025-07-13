@@ -110,7 +110,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   calc
     c₁ ⊓ c₂ ≤ (b₁ ⊔ a₁) ⊓ (b₂ ⊔ a₂) := inf_le_inf cba₁ cba₂
     _       ≤ (b  ⊔ a₁) ⊓ (b  ⊔ a₂) := by
-      apply inf_le_inf <;> apply sup_le_sup_right; exact le_sup_left; exact le_sup_right
+      order
     _       = b ⊔ (a₁ ⊓ a₂) := (sup_inf_left b a₁ a₂).symm
   -- Note that c₁ ⊓ c₂ ∈ F, since c₁ and c₂ are both in F and F is a filter.
   -- Since F is an upper set, it now follows that b ⊔ (a₁ ⊓ a₂) ∈ F.

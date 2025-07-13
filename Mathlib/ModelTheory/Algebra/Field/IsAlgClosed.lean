@@ -161,7 +161,7 @@ theorem ACF_categorical {p : ℕ} (κ : Cardinal) (hκ : ℵ₀ < κ) :
   refine languageEquivEquivRingEquiv.symm ?_
   apply Classical.choice
   refine IsAlgClosed.ringEquiv_of_equiv_of_char_eq p ?_ ?_
-  · rw [hM]; exact hκ
+  · order
   · rw [← Cardinal.eq, hM, hN]
 
 theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :

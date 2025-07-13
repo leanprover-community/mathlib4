@@ -143,8 +143,7 @@ theorem eqId_iff_len_eq : A.EqId ↔ A.1.unop.len = Δ.unop.len := by
 theorem eqId_iff_len_le : A.EqId ↔ Δ.unop.len ≤ A.1.unop.len := by
   rw [eqId_iff_len_eq]
   constructor
-  · intro h
-    rw [h]
+  · order
   · exact le_antisymm (len_le_of_epi (inferInstance : Epi A.e))
 
 theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by

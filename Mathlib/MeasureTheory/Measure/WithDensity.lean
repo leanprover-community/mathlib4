@@ -478,8 +478,7 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable₀ (μ : Measure �
     _ = ∫⁻ a, (f' * g) a ∂μ := by
       apply lintegral_withDensity_eq_lintegral_mul_non_measurable _ hf.measurable_mk
       filter_upwards [h'f, hf.ae_eq_mk]
-      intro x hx h'x
-      rwa [← h'x]
+      order
     _ = ∫⁻ a, (f * g) a ∂μ := by
       apply lintegral_congr_ae
       filter_upwards [hf.ae_eq_mk]

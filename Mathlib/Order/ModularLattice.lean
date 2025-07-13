@@ -206,7 +206,7 @@ theorem eq_of_le_of_inf_le_of_le_sup (hxy : x ≤ y) (hinf : y ⊓ z ≤ x) (hsu
     x = y := by
   refine hxy.antisymm ?_
   rw [← inf_eq_right, sup_inf_assoc_of_le _ hxy] at hsup
-  rwa [← hsup, sup_le_iff, and_iff_right rfl.le, inf_comm]
+  order
 
 theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z) (hsup : y ⊔ z ≤ x ⊔ z) :
     x = y :=

@@ -71,7 +71,7 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     _   ≤ max (f (-x)) (f (x + y)) := hna (-x) (x + y)
     _   < max (f y) (f y) := by
       rw [max_self, map_neg_eq_map]
-      exact max_lt h_lt <| lt_of_le_of_ne h1 h
+      order
     _   = f y := max_self (f y)
 
 lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
@@ -85,7 +85,7 @@ lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     _   ≤ max (f (x + y)) (f (-y)) := hna (x + y) (-y)
     _   < max (f x) (f x) := by
       rw [max_self, map_neg_eq_map]
-      apply max_lt (lt_of_le_of_ne h1 h) h_lt
+      order
     _   = f x := max_self (f x)
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
@@ -95,9 +95,9 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     f (x + y) = max (f x) (f y) := by
   rcases hne.lt_or_gt with h_lt | h_lt
   · rw [add_eq_right_of_lt hna h_lt]
-    exact (max_eq_right_of_lt h_lt).symm
+    order
   · rw [add_eq_left_of_lt hna h_lt]
-    exact (max_eq_left_of_lt h_lt).symm
+    order
 
 omit [Semiring R] in
 /-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty multiset

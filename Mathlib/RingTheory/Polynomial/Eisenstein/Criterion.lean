@@ -195,7 +195,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       · exact hfP _ (coe_lt_degree.mpr hn')
       · rw [f.coeff_eq_zero_of_natDegree_lt]
         · exact P.zero_mem
-        · simp [Nat.lt_iff_le_and_ne, ← Nat.not_lt, hn', Ne.symm hn]
+        · order
   · rw [modByMonic_X, map_C, ne_eq, C_eq_zero, Ideal.Quotient.eq_zero_iff_mem,
       ← coeff_zero_eq_eval_zero]
     convert h0

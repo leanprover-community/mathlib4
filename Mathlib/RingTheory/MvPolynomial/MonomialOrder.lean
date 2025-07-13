@@ -310,7 +310,7 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
   apply m.toSyn.injective
   apply le_antisymm
   · apply le_trans degree_add_le
-    simp only [sup_le_iff, le_refl, true_and, le_of_lt h]
+    order
   · apply le_degree
     rw [mem_support_iff, coeff_add, m.coeff_eq_zero_of_lt h, add_zero,
       ← leadingCoeff, leadingCoeff_ne_zero_iff]

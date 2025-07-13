@@ -607,7 +607,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                     rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; norm_num
                  _ = (2 * c₁⁻¹) * c₁ * (1/2) := by ring
                  _ ≤ C * c₁ * (1 - ε n) := by gcongr
-                                              · rw [hC]; exact le_max_left _ _
+                                              · order
                                               · exact le_of_lt <| h_smoothing_gt_half n hn
         _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 

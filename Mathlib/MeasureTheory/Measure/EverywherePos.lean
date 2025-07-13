@@ -264,7 +264,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     contrapose! H
     simpa [mem_smul_set_iff_inv_smul_mem] using H
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
-  exact lt_irrefl _ (C.le.trans_lt this)
+  order
 
 /-- **Halmos' theorem: Haar measure is completion regular.** More precisely, any finite measure
 set can be approximated from inside by a level set of a continuous function with compact support. -/

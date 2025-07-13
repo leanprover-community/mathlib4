@@ -133,7 +133,7 @@ lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
   by_contra! H
   have : y ∈ Ici x := H.le
   rw [h, mem_singleton_iff] at this
-  exact lt_irrefl y (this.le.trans_lt H)
+  order
 
 @[simp]
 theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by

@@ -699,7 +699,7 @@ lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} 
   apply disjoint_openCell_of_ne
   intro
   simp_all only [Sigma.mk.inj_iff]
-  exact (lt_self_iff_false m).mp (ENat.coe_lt_coe.1 (hln.trans_le hnm))
+  order
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 lemma RelCWComplex.disjoint_skeleton_openCell [RelCWComplex C D] {n : ℕ∞} {m : ℕ}

@@ -548,7 +548,7 @@ theorem one_sub_inv_two : (1 : ℝ≥0∞) - 2⁻¹ = 2⁻¹ := by
 private lemma exists_lt_mul_left {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ a' < a, c < a' * b := by
   obtain ⟨a', hc, ha'⟩ := exists_between (ENNReal.div_lt_of_lt_mul hc)
   exact ⟨_, ha', (ENNReal.div_lt_iff (.inl <| by rintro rfl; simp at *)
-    (.inr <| by rintro rfl; simp at *)).1 hc⟩
+    (.inr <| by order)).1 hc⟩
 
 private lemma exists_lt_mul_right {a b c : ℝ≥0∞} (hc : c < a * b) : ∃ b' < b, c < a * b' := by
   simp_rw [mul_comm a] at hc ⊢; exact exists_lt_mul_left hc
@@ -693,8 +693,7 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
     constructor
     · apply lt_of_lt_of_le _ hn
       exact ENNReal.zpow_pos (zero_lt_one.trans hy).ne' h'y _
-    · apply lt_trans h'n _
-      exact ENNReal.zpow_lt_top (zero_lt_one.trans hy).ne' h'y _
+    · order
 
 @[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by

@@ -281,7 +281,7 @@ end Prime
 theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine binaryRec ?_ ?_
-  · exact fun h => False.elim <| h rfl
+  · order
   · intro b n ih h
     by_cases hn : n = 0
     · subst hn

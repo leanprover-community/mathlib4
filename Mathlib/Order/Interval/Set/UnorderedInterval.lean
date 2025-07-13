@@ -296,7 +296,7 @@ lemma eq_of_notMem_uIoc_of_notMem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
-    exact absurd hb (not_le_of_gt ‹c < b›)|exact absurd ha (not_le_of_gt ‹c < a›)
+    exact absurd hb (not_le_of_gt ‹c < b›)|order
 
 @[deprecated (since := "2025-05-23")]
 alias eq_of_not_mem_uIoc_of_not_mem_uIoc := eq_of_notMem_uIoc_of_notMem_uIoc

@@ -1139,8 +1139,7 @@ theorem PosDef.anisotropic {Q : QuadraticMap R₂ M N} (hQ : Q.PosDef) : Q.Aniso
   fun x hQx => by_contradiction fun hx =>
     lt_irrefl (0 : N) <| by
       have := hQ _ hx
-      rw [hQx] at this
-      exact this
+      order
 
 theorem posDef_of_nonneg {Q : QuadraticMap R₂ M N} (h : ∀ x, 0 ≤ Q x) (h0 : Q.Anisotropic) :
     PosDef Q :=

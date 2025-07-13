@@ -402,7 +402,7 @@ noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSerie
     split_ifs with h
     · simp [h, coeff_apply]
     · simp only [coeff_apply, ite_eq_right_iff]
-      exact fun a_1 ↦ False.elim (h a_1)
+      order
   map_add' := by
     intros
     ext

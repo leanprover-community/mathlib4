@@ -118,7 +118,7 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
   rw [← Ne] at hp0
   refine ⟨hfq_m, ?_⟩
   by_cases hp_top : p = ∞
-  · have hq_top : q = ∞ := by rwa [hp_top, top_le_iff] at hpq
+  · have hq_top : q = ∞ := by order
     rw [hp_top]
     rwa [hq_top] at hfq_lt_top
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0 hp_top
@@ -131,8 +131,7 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
   have hq0 : q ≠ 0 := by
     by_contra hq_eq_zero
     have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
-    rw [hp_eq_zero, ENNReal.toReal_zero] at hp_pos
-    exact (lt_irrefl _) hp_pos
+    contradiction
   have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   rw [eLpNorm_eq_eLpNorm' hq0 hq_top] at hfq_lt_top

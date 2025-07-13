@@ -41,7 +41,7 @@ theorem house_eq_sup' (α : K) :
 
 theorem house_sum_le_sum_house {ι : Type*} (s : Finset ι) (α : ι → K) :
     house (∑ i ∈ s, α i) ≤ ∑ i ∈ s, house (α i) := by
-  simp only [house, map_sum]; apply norm_sum_le_of_le; intros; rfl
+  simp only [house, map_sum]; apply norm_sum_le_of_le; order
 
 theorem house_nonneg (α : K) : 0 ≤ house α := norm_nonneg _
 

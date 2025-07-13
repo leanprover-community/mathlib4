@@ -145,16 +145,14 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
-        · exfalso
-          exact h₁ (lt_of_le_of_lt h h₂)
+        · order
         · rfl⟩
     let p₂ : B ⟶ Y := ofHom
       ⟨fun b => if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
-        · exfalso
-          exact h₁ (h.trans h₂)
+        · order
         · rfl⟩
     have h : p₁ m = p₂ m := by
       congr
@@ -164,8 +162,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
       change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
-      · exfalso
-        exact h₂ (le_of_lt h₁)
+      · order
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
     simp [Y, p₁, p₂, ConcreteCategory.hom_ofHom] at h
@@ -191,8 +188,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl
-        exfalso
-        simp at h
+        order
       have H : f (φ b) ≤ f (φ a) := f.hom.monotone (le_of_lt h)
       simpa only [hφ] using H⟩
 

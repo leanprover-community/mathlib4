@@ -791,7 +791,7 @@ lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α
     refine le_iSup_of_le (Encodable.encode q) ?_
     rw [ennrealRatEmbed_encode q]
     exact le_iSup_of_le (le_of_lt q_lt) le_rfl
-  exact lt_irrefl _ (lt_of_le_of_lt this lt_q)
+  order
 
 lemma iSup_coe_eapprox (hf : Measurable f) : ⨆ n, ⇑(eapprox f n) = f := by
   simpa [funext_iff] using iSup_eapprox_apply hf
@@ -847,14 +847,12 @@ theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞
     f.lintegral μ = ∑ x ∈ s, x * μ (f ⁻¹' {x}) := by
   refine Finset.sum_bij_ne_zero (fun r _ _ => r) ?_ ?_ ?_ ?_
   · simpa only [forall_mem_range, mul_ne_zero_iff, and_imp]
-  · intros
-    assumption
+  · order
   · intro b _ hb
     refine ⟨b, ?_, hb, rfl⟩
     rw [mem_range, ← preimage_singleton_nonempty]
     exact nonempty_of_measure_ne_zero (mul_ne_zero_iff.1 hb).2
-  · intros
-    rfl
+  · order
 
 theorem lintegral_eq_of_subset' (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞} (hs : f.range \ {0} ⊆ s) :
     f.lintegral μ = ∑ x ∈ s, x * μ (f ⁻¹' {x}) :=

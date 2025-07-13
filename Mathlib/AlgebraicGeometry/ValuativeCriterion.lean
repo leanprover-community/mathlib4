@@ -327,10 +327,7 @@ lemma IsProper.eq_valuativeCriterion :
     @IsProper = ValuativeCriterion ⊓ @QuasiCompact ⊓ @QuasiSeparated ⊓ @LocallyOfFiniteType := by
   rw [isProper_eq, IsSeparated.eq_valuativeCriterion, ValuativeCriterion.eq,
     UniversallyClosed.eq_valuativeCriterion]
-  simp_rw [inf_assoc]
-  ext X Y f
-  change _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
-  tauto
+  order
 
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]

@@ -94,7 +94,7 @@ theorem recEmptyOption_of_card_pos {P : Type u → Sort v}
           recEmptyOption finChoice congr empty option (ULift.{u} <| Fin (card α - 1))) := by
   conv => lhs; unfold recEmptyOption
   split
-  · exact absurd (‹_› ▸ h) (card α).lt_irrefl
+  · order
   · rcases Nat.succ.inj <| (card α).succ_pred_eq_of_pos h |>.trans ‹_› with rfl; rfl
 
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.recOn`.

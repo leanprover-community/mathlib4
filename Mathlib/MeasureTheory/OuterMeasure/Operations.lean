@@ -38,7 +38,7 @@ variable {α β : Type*} {m : OuterMeasure α}
 instance instZero : Zero (OuterMeasure α) :=
   ⟨{  measureOf := fun _ => 0
       empty := rfl
-      mono := by intro _ _ _; exact le_refl 0
+      mono := by order
       iUnion_nat := fun _ _ => zero_le _ }⟩
 
 @[simp]

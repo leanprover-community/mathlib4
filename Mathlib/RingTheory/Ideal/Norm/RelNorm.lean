@@ -174,8 +174,7 @@ theorem spanNorm_mul_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨
   rw [hI, Ideal.top_mul]
   rcases eq_bot_or_top (spanNorm R J) with hJ | hJ
   · rw [hJ, spanNorm_eq_bot_iff.mp hJ, mul_bot, spanNorm_bot]
-  rw [hJ]
-  exact le_top
+  order
 
 variable [IsDedekindDomain R] [IsDedekindDomain S]
 

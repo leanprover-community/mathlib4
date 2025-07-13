@@ -126,7 +126,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
       exact fun h1 h2 ↦ ⟨h1, h2.trans hq.le⟩
     suffices (κ a).real (s ×ˢ Iic (q : ℝ)) = 0 by
       rw [measureReal_eq_zero_iff] at this
-      simpa [measure_ne_top] using this
+      order
     rw [← hf.setIntegral a hs q]
     simp [hρ_zero]
   have h : ∫⁻ b in s, ENNReal.ofReal (stieltjesOfMeasurableRat f hf.measurable (a, b) x) ∂(ν a)

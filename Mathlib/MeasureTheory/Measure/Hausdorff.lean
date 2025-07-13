@@ -598,7 +598,7 @@ theorem hausdorffMeasure_mono {d₁ d₂ : ℝ} (h : d₁ ≤ d₂) (s : Set X) 
   rcases h.eq_or_lt with (rfl | h); · exact le_rfl
   rcases hausdorffMeasure_zero_or_top h s with hs | hs
   · rw [hs]; exact zero_le _
-  · rw [hs]; exact le_top
+  · order
 
 variable (X) in
 theorem noAtoms_hausdorff {d : ℝ} (hd : 0 < d) : NoAtoms (hausdorffMeasure d : Measure X) := by

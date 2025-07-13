@@ -226,8 +226,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hi' : ¬m = -i ^ 2 := by
     by_contra h1
     have hit : -i ^ 2 ≤ 0 := neg_nonpos.mpr (sq_nonneg i)
-    rw [← h1] at hit
-    apply absurd h4 (not_lt.mpr hit)
+    order
   replace hi : m = i ^ 2 := Or.resolve_right hi hi'
   rw [mul_comm] at hs
   rw [Int.gcd_comm] at hcp
@@ -281,7 +280,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩
-  apply absurd (not_le_of_gt hic) (not_not.mpr hic')
+  order
 
 end Fermat42
 

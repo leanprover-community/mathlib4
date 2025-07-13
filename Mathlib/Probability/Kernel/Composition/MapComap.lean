@@ -178,7 +178,7 @@ theorem sum_comap_seq (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable 
   ext a s hs
   rw [Kernel.sum_apply, comap_apply' κ hg a s, Measure.sum_apply _ hs, ← measure_sum_seq κ,
     Measure.sum_apply _ hs]
-  simp_rw [comap_apply' _ hg _ s]
+  order
 
 instance IsMarkovKernel.comap (κ : Kernel α β) [IsMarkovKernel κ] (hg : Measurable g) :
     IsMarkovKernel (comap κ g hg) :=

@@ -113,8 +113,7 @@ theorem MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt (hf : Meromorph
   · rw [meromorphicNFAt_iff_analyticAt_or] at hf
     rcases hf with h | ⟨_, h₃f, _⟩
     · exact h
-    · by_contra h'
-      exact lt_irrefl 0 (lt_of_le_of_lt h₂f h₃f)
+    · order
   · rw [h₂f.meromorphicOrderAt_eq]
     simp
 

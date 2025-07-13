@@ -804,8 +804,7 @@ theorem inter_nonempty_of_nonempty_of_sup_direction_eq_top {s₁ s₂ : AffineSu
   by_contra h
   rw [Set.not_nonempty_iff_eq_empty] at h
   have hlt := sup_direction_lt_of_nonempty_of_inter_empty h1 h2 h
-  rw [hd] at hlt
-  exact not_top_lt hlt
+  order
 
 /-- If the directions of two nonempty affine subspaces are complements of each other, they intersect
 in exactly one point. -/

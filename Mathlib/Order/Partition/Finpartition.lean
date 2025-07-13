@@ -297,8 +297,7 @@ instance : Min (Finpartition a) :=
         rintro _ x₁ y₁ hx₁ hy₁ rfl _ h x₂ y₂ hx₂ hy₂ rfl
         rcases eq_or_ne x₁ x₂ with (rfl | xdiff)
         · refine Disjoint.mono inf_le_right inf_le_right (Q.disjoint hy₁ hy₂ ?_)
-          intro t
-          simp [t] at h
+          order
         exact Disjoint.mono inf_le_left inf_le_left (P.disjoint hx₁ hx₂ xdiff))
       (by
         rw [sup_image, id_comp, sup_product_left]
@@ -702,7 +701,7 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
             obtain ⟨R, hR, rfl⟩ := hy
             suffices h' : Q = R by
               subst h'
-              exact of_eq_true (eq_self {i ∈ s | ∀ t ∈ F, t ∈ Q ↔ i ∈ t})
+              order
             rw [id, mem_filter] at hz1 hz2
             rw [mem_powerset] at hQ hR
             ext i

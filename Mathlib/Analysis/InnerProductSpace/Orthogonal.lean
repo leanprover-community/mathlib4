@@ -180,7 +180,7 @@ theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
       exact bot_orthogonal_eq_top⟩
   intro h
   have : K ⊓ Kᗮ = ⊥ := K.orthogonal_disjoint.eq_bot
-  rwa [h, inf_comm, top_inf_eq] at this
+  order
 
 /-- The closure of a submodule has the same orthogonal complement and the submodule itself. -/
 @[simp]

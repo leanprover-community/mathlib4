@@ -293,7 +293,7 @@ theorem encard_diff_le_aux {B₁ B₂ : Set α}
   obtain (he | hinf | ⟨e, he, hcard⟩) :=
     (B₂ \ B₁).eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt
   · rw [exch.antichain hB₂ hB₁ (diff_eq_empty.mp he)]
-  · exact le_top.trans_eq hinf.symm
+  · order
   obtain ⟨f, hf, hB'⟩ := exch B₂ B₁ hB₂ hB₁ e he
   have : encard (insert f (B₂ \ {e}) \ B₁) < encard (B₂ \ B₁) := by
     rw [insert_diff_of_mem _ hf.1, diff_diff_comm]; exact hcard

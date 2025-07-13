@@ -670,7 +670,7 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
           x0.trans
             (eq_of_xn_modEq_lem3 _ (Nat.pos_of_ne_zero npos) (Nat.succ_pos _) (le_trans ij j2n)
               (_root_.ne_of_lt ij') fun ⟨_, n1, _, i2⟩ => by
-              rw [n1, i2] at ij'; exact absurd ij' (by decide))
+              order)
       else _root_.ne_of_lt (eq_of_xn_modEq_lem3 a1 (Nat.pos_of_ne_zero npos) ij' j2n jn ntriv) h
 
 theorem eq_of_xn_modEq {i j n} (i2n : i ≤ 2 * n) (j2n : j ≤ 2 * n)
@@ -687,7 +687,7 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
   (le_or_gt j (2 * n)).imp
     (fun j2n : j ≤ 2 * n =>
       eq_of_xn_modEq a1 j2n i2n h fun _ n1 =>
-        ⟨fun _ i2 => by rw [n1, i2] at hin; exact absurd hin (by decide), fun _ i0 =>
+        ⟨fun _ i2 => by order, fun _ i0 =>
           _root_.ne_of_gt ipos i0⟩)
     fun j2n : 2 * n < j =>
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
