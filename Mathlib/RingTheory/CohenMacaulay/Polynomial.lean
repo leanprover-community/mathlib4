@@ -32,11 +32,13 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     use 0, []
     simpa using IsRegular.nil _ _ ) ne with ⟨rs, reg, mem, len⟩
   rw [← len] at cm
-  have : IsRegular (Localization.AtPrime p) (rs.map (algebraMap R (Localization.AtPrime p))) := by
+  have reg : IsRegular (Localization.AtPrime p)
+    (rs.map (algebraMap R (Localization.AtPrime p))) := by
     constructor
-    · let _ : Module.Flat R (Localization.AtPrime p) := by
-
-        sorry
+    · let _ : Module.Flat R (Localization.AtPrime p) :=
+        let _ : Module.Free R (AddMonoidAlgebra R ℕ) := Module.Free.finsupp R R ℕ
+        let _ : Module.Free R R[X] := Module.Free.of_equiv (Polynomial.toFinsuppIsoLinear R).symm
+        Module.Flat.trans R R[X] (Localization.AtPrime p)
       exact IsWeaklyRegular.of_flat reg.1
     · simp only [smul_eq_mul, mul_top]
       apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
@@ -47,9 +49,10 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       rw [IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, ← Ideal.mem_comap,
         Polynomial.algebraMap_eq, max]
       exact mem s smem
+  --rw [isCohenMacaulayLocalRing_def, depth_eq_sSup_length_regular]
   by_cases eq0 : p.map (Polynomial.mapRingHom (IsLocalRing.residue R)) = ⊥
   · have eq : p = q := le_antisymm (by simpa [← ker, ← Ideal.map_eq_bot_iff_le_ker]) qle
-    have ht1 : p.height = (maximalIdeal R).height := sorry
+    --have ht1 : p.height = (maximalIdeal R).height := sorry
 
     sorry
   · have prin : (p.map (Polynomial.mapRingHom (IsLocalRing.residue R))).IsPrincipal := inferInstance
@@ -60,6 +63,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       apply Polynomial.leadingCoeff_ne_zero.mpr
       by_contra zero
       simp [hg, zero] at eq0
+
     sorry
 
 theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
