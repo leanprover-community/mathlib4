@@ -3,9 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Prime.Int
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Prime ideals in ℕ and ℤ
@@ -70,15 +74,28 @@ theorem Ideal.map_comap_natCastRingHom_int {I : Ideal ℤ} :
     (mem_comap.mpr <| show (n.natAbs : ℤ) ∈ I from n.sign_mul_self ▸ mul_mem_left _ _ hn)
 
 theorem Ideal.isPrime_int_iff {P : Ideal ℤ} :
-    P.IsPrime ↔ P = ⊥ ∨ ∃ p : ℕ, p.Prime ∧ P = span {(p : ℤ)} := by
-  refine .symm ⟨?_, fun h ↦ ?_⟩
-  · rintro (rfl | ⟨p, hp, rfl⟩)
-    · exact bot_prime
-    rwa [span_singleton_prime (by simp [hp.ne_zero]), ← Nat.prime_iff_prime_int]
-  rw [← P.map_comap_natCastRingHom_int]
-  obtain hP | hP := isPrime_nat_iff.mp (h.comap (Nat.castRingHom ℤ))
-  · exact .inl (by rw [hP, map_bot])
-  have ⟨p, hp, hP⟩ := hP.resolve_left fun hP ↦ by
-    rw [← P.map_comap_natCastRingHom_int, hP, Nat.maximalIdeal_eq_span_two_three, map_span] at h
-    exact h.one_notMem (Set.image_pair .. ▸ mem_span_pair.mpr ⟨-1, 1, rfl⟩)
-  exact .inr ⟨p, hp, by rw [hP, map_span, Set.image_singleton, Nat.coe_castRingHom]⟩
+    P.IsPrime ↔ P = ⊥ ∨ ∃ p : ℕ, p.Prime ∧ P = span {(p : ℤ)} :=
+  isPrime_iff_of_isPrincipalIdealRing_of_noZeroDivisors.trans <| or_congr_right
+  ⟨fun ⟨p, hp, eq⟩ ↦ ⟨_, Int.prime_iff_natAbs_prime.mp hp, eq.trans
+    p.span_natAbs.symm⟩, fun ⟨_p, hp, eq⟩ ↦ ⟨_, Nat.prime_iff_prime_int.mp hp, eq⟩⟩
+
+theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
+  refine le_antisymm (iSup_le fun s ↦ le_of_not_gt fun hs ↦ ?_) ?_
+  · replace hs : 2 < s.length := ENat.coe_lt_coe.mp (WithBot.coe_lt_coe.mp hs)
+    let s := s.take ⟨3, by omega⟩
+    have : NeZero s.length := ⟨three_ne_zero⟩
+    have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)
+    obtain hmax | ⟨p, hp, hsp⟩ := (Ideal.isPrime_nat_iff.mp (s 1).2).resolve_left h1.ne'
+    · exact (le_maximalIdeal_of_isPrime (s 2).asIdeal).not_gt (hmax.symm.trans_lt (s.step 1))
+    obtain hmax | ⟨q, hq, hsq⟩ :=
+      (Ideal.isPrime_nat_iff.mp (s 2).2).resolve_left (h1.trans (s.step 1)).ne'
+    · exact (le_maximalIdeal_of_isPrime (s 3).asIdeal).not_gt (hmax.symm.trans_lt (s.step 2))
+    · exact hq.not_isUnit <| (Ideal.span_singleton_lt_span_singleton.mp
+        ((hsp.symm.trans_lt (s.step 1)).trans_eq hsq)).isUnit_of_irreducible_right hp
+  · refine le_iSup_of_le ⟨2, ![⊥, ⟨_, (span_singleton_prime two_ne_zero).mpr <| Nat.prime_iff.mp
+      Nat.prime_two⟩, ⟨_, (maximalIdeal.isMaximal ℕ).isPrime⟩], fun i ↦ ?_⟩ le_rfl
+    fin_cases i
+    · exact bot_lt_iff_ne_bot.mpr (Ideal.span_singleton_eq_bot.not.mpr two_ne_zero)
+    · simp_rw [Nat.maximalIdeal_eq_span_two_three]
+      exact SetLike.lt_iff_le_and_exists.mpr ⟨Ideal.span_mono (by simp),
+        3, Ideal.subset_span (by simp), Ideal.mem_span_singleton.not.mpr <| by norm_num⟩
