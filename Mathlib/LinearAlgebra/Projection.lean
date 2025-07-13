@@ -593,7 +593,7 @@ open Submodule LinearMap
 variable {E R : Type*} [Ring R] [AddCommGroup E] [Module R E] {T f : E →ₗ[R] E}
 
 lemma subtype_comp_linearProjOfIsCompl_range_eq (hf : IsIdempotentElem f) :
-    (range f).subtype.comp (Submodule.linearProjOfIsCompl _ _ hf.isCompl) = f := by
+    (range f).subtype ∘ₗ (Submodule.linearProjOfIsCompl _ _ hf.isCompl) = f := by
   ext x
   obtain ⟨⟨u, hu⟩, ⟨v, hv⟩, rfl, _⟩ :=
     Submodule.existsUnique_add_of_isCompl hf.isCompl x
