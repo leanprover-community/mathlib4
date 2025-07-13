@@ -249,7 +249,7 @@ elab "order" : tactic => focus do
   g.withContext do
     let TypeToAtoms ← collectFacts
     for (type, (idxToAtom, facts)) in TypeToAtoms do
-      let .some orderType ← findBestOrderInstance type | continue
+      let some orderType ← findBestOrderInstance type | continue
       trace[order] "Working on type {← ppExpr type} ({orderType})"
       let atomsMsg := String.intercalate "\n" <| Array.toList <|
         ← idxToAtom.toArray.sortDedup.mapM
@@ -294,7 +294,7 @@ elab "order" : tactic => focus do
           return
         catch _ => pure ()
     throwError ("No contradiction found.\n\n" ++
-        "Additional diagnostic information may be available using " ++
-        "the `set_option trace.order true` command.")
+      "Additional diagnostic information may be available using " ++
+      "the `set_option trace.order true` command.")
 
 end Mathlib.Tactic.Order
