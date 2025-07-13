@@ -21,50 +21,102 @@ open RingTheory.Sequence IsLocalRing Polynomial Ideal
 lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     [IsCohenMacaulayLocalRing R] (p : Ideal R[X]) [p.IsPrime] (max : p.comap C = maximalIdeal R) :
     IsCohenMacaulayLocalRing (Localization.AtPrime p) := by
+  apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth
   let q := (maximalIdeal R).map C
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
   have ker : RingHom.ker (Polynomial.mapRingHom (IsLocalRing.residue R)) = q := by
     simpa only [residue, ker_mapRingHom, q] using congrArg (Ideal.map C) (Quotient.mkₐ_ker R _)
   have cm := (isCohenMacaulayLocalRing_def R).mp ‹_›
   have ne := (depth_ne_top (ModuleCat.of R R)).lt_top
-  rw [depth_eq_sSup_length_regular] at cm ne
+  rw [depth_eq_sSup_length_regular] at cm ne ⊢
   rcases @ENat.sSup_mem_of_nonempty_of_lt_top _ (by
     use 0, []
     simpa using IsRegular.nil _ _ ) ne with ⟨rs, reg, mem, len⟩
   rw [← len] at cm
-  have reg : IsRegular (Localization.AtPrime p)
-    (rs.map (algebraMap R (Localization.AtPrime p))) := by
-    constructor
-    · let _ : Module.Flat R (Localization.AtPrime p) :=
-        let _ : Module.Free R (AddMonoidAlgebra R ℕ) := Module.Free.finsupp R R ℕ
-        let _ : Module.Free R R[X] := Module.Free.of_equiv (Polynomial.toFinsuppIsoLinear R).symm
-        Module.Flat.trans R R[X] (Localization.AtPrime p)
-      exact IsWeaklyRegular.of_flat reg.1
-    · simp only [smul_eq_mul, mul_top]
-      apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
-      simp only [span_le, List.mem_map]
-      intro r ⟨s, smem, eq⟩
-      rw [← eq, IsScalarTower.algebraMap_eq R R[X], RingHom.comp_apply]
-      apply Ideal.mem_comap.mp
-      rw [IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, ← Ideal.mem_comap,
-        Polynomial.algebraMap_eq, max]
-      exact mem s smem
-  --rw [isCohenMacaulayLocalRing_def, depth_eq_sSup_length_regular]
+  simp only [← maximalIdeal_height_eq_ringKrullDim, WithBot.coe_inj] at cm
+  have mem' : ∀ a ∈ (rs.map (algebraMap R (Localization.AtPrime p))),
+    a ∈ maximalIdeal (Localization.AtPrime p) := by
+    simp only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    intro r hr
+    rw [IsScalarTower.algebraMap_eq R R[X], RingHom.comp_apply]
+    apply Ideal.mem_comap.mp
+    rw [IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, ← Ideal.mem_comap,
+      Polynomial.algebraMap_eq, max]
+    exact mem r hr
+  let _ : Module.Free R R[X] :=
+    let _ : Module.Free R (AddMonoidAlgebra R ℕ) := Module.Free.finsupp R R ℕ
+    Module.Free.of_equiv (Polynomial.toFinsuppIsoLinear R).symm
+  let _ : Module.Flat R (Localization.AtPrime p) := Module.Flat.trans R R[X] _
+  rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, WithBot.coe_le_coe]
   by_cases eq0 : p.map (Polynomial.mapRingHom (IsLocalRing.residue R)) = ⊥
-  · have eq : p = q := le_antisymm (by simpa [← ker, ← Ideal.map_eq_bot_iff_le_ker]) qle
-    --have ht1 : p.height = (maximalIdeal R).height := sorry
-
-    sorry
+  · have reg : IsRegular (Localization.AtPrime p)
+      (rs.map (algebraMap R (Localization.AtPrime p))) := by
+      refine ⟨IsWeaklyRegular.of_flat reg.1, ?_⟩
+      simp only [smul_eq_mul, mul_top]
+      apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
+      simpa only [span_le] using mem'
+    have eq : p = q := le_antisymm (by simpa [← ker, ← Ideal.map_eq_bot_iff_le_ker]) qle
+    have ht1 : p.height ≤ (maximalIdeal R).height := sorry
+    apply le_trans ht1 (le_sSup _)
+    use (rs.map (algebraMap R (Localization.AtPrime p))), reg
+    simpa [cm] using mem'
   · have prin : (p.map (Polynomial.mapRingHom (IsLocalRing.residue R))).IsPrincipal := inferInstance
     rcases prin with ⟨g, hg⟩
-    have : ((C g.leadingCoeff⁻¹) * g).Monic := by
-      simp only [Monic, leadingCoeff_mul, leadingCoeff_C]
-      apply inv_mul_cancel₀
+    have ne0 : g.leadingCoeff ≠ 0 := by
       apply Polynomial.leadingCoeff_ne_zero.mpr
       by_contra zero
       simp [hg, zero] at eq0
+    have mong : ((C g.leadingCoeff⁻¹) * g).Monic := by
+      simp only [Monic, leadingCoeff_mul, leadingCoeff_C]
+      apply inv_mul_cancel₀ ne0
+    have : C g.leadingCoeff⁻¹ * g ∈ lifts (IsLocalRing.residue R) :=
+      Polynomial.map_surjective _ IsLocalRing.residue_surjective _
+    have hg' : Ideal.map (mapRingHom (IsLocalRing.residue R)) p =
+      Submodule.span (IsLocalRing.ResidueField R)[X] {C g.leadingCoeff⁻¹ * g} := by
+      rw [hg]
+      apply span_singleton_eq_span_singleton.mpr
+      have : IsUnit (C g.leadingCoeff⁻¹) := by
+        rw [isUnit_C, isUnit_iff_exists_inv]
+        use g.leadingCoeff
+        exact inv_mul_cancel₀ ne0
+      use this.unit
+      simp [mul_comm]
+    rcases Polynomial.lifts_and_natDegree_eq_and_monic this mong with ⟨f, hf, deg, monf⟩
+    have fmem : f ∈ p := by
 
-    sorry
+      sorry
+    have reg'' : IsWeaklyRegular R[X] (rs.map (algebraMap R R[X])) := IsWeaklyRegular.of_flat reg.1
+    have reg' : IsWeaklyRegular R[X] ((rs.map (algebraMap R R[X])) ++ [f]) := by
+      refine ⟨fun i hi ↦ ?_⟩
+      simp only [List.length_append, List.length_cons, List.length_nil, zero_add,
+        Nat.lt_succ] at hi
+      rw [List.take_append_of_le_length hi]
+      rcases lt_or_eq_of_le hi with lt|eq
+      · simpa only [← List.getElem_append_left' lt [f]] using reg''.1 i lt
+      · rw [List.getElem_concat_length eq, List.take_of_length_le (ge_of_eq eq), smul_eq_mul,
+          mul_top, ← map_ofList]
+        apply isSMulRegular_of_smul_eq_zero_imp_eq_zero (fun x eq0 ↦ ?_)
+
+        sorry
+    have mem'' : ∀ r ∈ (((rs.map (algebraMap R R[X])) ++ [f]).map
+      (algebraMap R[X] (Localization.AtPrime p))), r ∈ maximalIdeal (Localization.AtPrime p) := by
+      intro r hr
+      simp only [List.map_append, List.map_map, List.map_cons, List.map_nil, List.mem_append,
+        List.mem_map, Function.comp_apply, List.mem_cons, List.not_mem_nil, or_false,
+        ← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq] at hr
+      rcases hr with isrs|isf
+      · exact mem' _ (List.mem_map.mpr isrs)
+      · simpa only [isf, ← mem_comap, IsLocalization.AtPrime.comap_maximalIdeal _ p]
+    have reg : IsRegular (Localization.AtPrime p)
+      (((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p))) := by
+      refine ⟨IsWeaklyRegular.of_flat reg', ?_⟩
+      simp only [smul_eq_mul, mul_top]
+      apply (ne_top_of_le_ne_top (b := maximalIdeal _) IsPrime.ne_top' _).symm
+      simpa only [span_le] using mem''
+    have ht2 : p.height ≤ (maximalIdeal R).height + 1 := sorry
+    apply le_trans ht2 (le_sSup _)
+    use ((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p)), reg
+    simpa [cm] using mem''
 
 theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
     IsCohenMacaulayRing R[X] := by
