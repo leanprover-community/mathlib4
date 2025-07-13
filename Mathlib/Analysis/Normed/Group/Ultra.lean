@@ -7,7 +7,7 @@ import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -293,7 +293,7 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
   inhabit ι
   induction s using Multiset.induction_on with
   | empty => simp
-  | @cons a t hM =>
+  | cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases hMa : ‖f M‖ ≤ ‖f a‖
       · refine ⟨a, by simp, ?_⟩

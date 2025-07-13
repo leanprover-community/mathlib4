@@ -56,6 +56,16 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
+/-- Parses an optional `--repo` option. -/
+def parseRepo (args : List String) : IO (Option String × List String) := do
+  if let arg :: args := args then
+    if arg.startsWith "--" then
+      if let some repo := arg.dropPrefix? "--repo=" then
+        return (some repo.toString, args)
+      else
+        throw <| IO.userError s!"unknown option: {arg}"
+  return (none, args)
+
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
@@ -67,6 +77,7 @@ def main (args : List String) : IO Unit := do
     Process.exit 0
   CacheM.run do
 
+  let (repo?, args) ← parseRepo args
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
@@ -82,11 +93,12 @@ def main (args : List String) : IO Unit := do
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
-    getFiles hashMap force force goodCurl decompress
+    getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
-    putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+    let repo := repo?.getD MATHLIBREPO
+    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
   | "get"  :: args => get args
   | "get!" :: args => get args (force := true)

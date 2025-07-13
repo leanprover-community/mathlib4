@@ -27,7 +27,7 @@ open Polynomial
 --   rw_search
 
 
--- All rewrite-only lemmas from `Mathlib.Algebra.Polynomial.Degree.Definitions`,
+-- All rewrite-only lemmas from `Mathlib/Algebra/Polynomial/Degree/Definitions.lean`,
 -- whose statements are equalities.
 -- TODO: `rw_search` should handle `iff` as well.
 

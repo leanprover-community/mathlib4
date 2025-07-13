@@ -18,7 +18,7 @@ It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 /-!
 #  The "minImports" linter
@@ -100,7 +100,7 @@ macro "#import_bumps" : command => `(
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.minImports (← getOptions) do
+    unless getLinterValue linter.minImports (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
@@ -130,7 +130,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- `impMods` is the syntax for the modules imported in the current file
       let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
       for i in currentlyUnneededImports do
-        match impMods.find? (·.getId == i) with
+        match impMods.raw.find? (·.getId == i) with
           | some impPos => logWarningAt impPos m!"unneeded import '{i}'"
           | _ => dbg_trace f!"'{i}' not found"  -- this should be unreachable
       -- if the linter found new imports that should be added (likely to *reduce* the dependencies)
@@ -138,7 +138,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
         -- format the imports prepending `import ` to each module name
         let withImport := (newImps.toArray.qsort Name.lt).map (s!"import {·}")
         -- log a warning at the first `import`, if there is one.
-        logWarningAt ((impMods.find? (·.isOfKind `import)).getD default)
+        logWarningAt ((impMods.raw.find? (·.isOfKind `import)).getD default)
           m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
     let newImports := getIrredundantImports env (← getAllImports stx id)
@@ -155,7 +155,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
       -- to make `test` files more stable, we suppress the exact count of import changes if
       -- the `linter.minImports.increases` option is `false`
-      let byCount :=  if Linter.getLinterValue linter.minImports.increases (← getOptions) then
+      let byCount :=  if getLinterValue linter.minImports.increases (← getLinterOptions) then
                       m!"by {newCumulImps - oldCumulImps} "
                     else
                       m!""

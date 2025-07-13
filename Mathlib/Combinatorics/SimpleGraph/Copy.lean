@@ -194,8 +194,6 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   .ofEquiv {f : G →g H // Injective f} {
     toFun f := ⟨f.1, f.2⟩
     invFun f := ⟨f.1, f.2⟩
-    left_inv _ := rfl
-    right_inv _ := rfl
   }
 
 end Copy
@@ -256,9 +254,18 @@ lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A
 
 alias IsContained.trans_le' := IsContained.mono_left
 
-/-- If `A ≃g B`, then `A` is contained in `C` if and only if `B` is contained in `C`. -/
-theorem isContained_congr (e : A ≃g B) : A ⊑ C ↔ B ⊑ C :=
-  ⟨.trans ⟨e.symm.toCopy⟩, .trans ⟨e.toCopy⟩⟩
+/-- If `A ≃g H` and `B ≃g G` then `A` is contained in `B` if and only if `H` is contained
+in `G`. -/
+theorem isContained_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A ⊑ B ↔ H ⊑ G :=
+  ⟨.trans' ⟨e₂.toCopy⟩ ∘ .trans ⟨e₁.symm.toCopy⟩, .trans' ⟨e₂.symm.toCopy⟩ ∘ .trans ⟨e₁.toCopy⟩⟩
+
+lemma isContained_congr_left (e₁ : A ≃g B) : A ⊑ C ↔ B ⊑ C := isContained_congr e₁ .refl
+
+alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
+
+lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr .refl e₂
+
+alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
@@ -295,15 +302,24 @@ abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A ⊑ B
 
 lemma not_free : ¬A.Free B ↔ A ⊑ B := not_not
 
-/-- If `A ≃g B`, then `C` is `A`-free if and only if `C` is `B`-free. -/
-theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := (isContained_congr e).not
+/-- If `A ≃g H` and `B ≃g G` then `B` is `A`-free if and only if `G` is `H`-free. -/
+theorem free_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A.Free B ↔ H.Free G :=
+  (isContained_congr e₁ e₂).not
+
+lemma free_congr_left (e₁ : A ≃g B) : A.Free C ↔ B.Free C := free_congr e₁ .refl
+
+alias ⟨_, Free.congr_left⟩ := free_congr_left
+
+lemma free_congr_right (e₂ : B ≃g C) : A.Free B ↔ A.Free C := free_congr .refl e₂
+
+alias ⟨_, Free.congr_right⟩ := free_congr_right
 
 lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [← edgeSet_nonempty] at h
   intro ⟨f, hf⟩
   absurd f.map_mem_edgeSet h.choose_spec
   rw [edgeSet_bot]
-  exact Set.not_mem_empty (h.choose.map f)
+  exact Set.notMem_empty (h.choose.map f)
 
 end Free
 
@@ -390,7 +406,7 @@ noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : �
   exact { default := ⟨default, isEmptyElim⟩, uniq := fun _ ↦ Subsingleton.elim _ _ }
 
 @[simp] lemma labelledCopyCount_eq_zero : G.labelledCopyCount H = 0 ↔ H.Free G := by
-  simp [labelledCopyCount, IsContained, Fintype.card_eq_zero_iff, isEmpty_subtype]
+  simp [labelledCopyCount, Fintype.card_eq_zero_iff]
 
 @[simp] lemma labelledCopyCount_pos : 0 < G.labelledCopyCount H ↔ H ⊑ G := by
   simp [labelledCopyCount, IsContained, Fintype.card_pos_iff]
@@ -414,7 +430,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective
   simpa [-Copy.range_toSubgraph] using Copy.range_toSubgraph.symm
 
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
-  simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph, card_pos,
+  simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph,
     filter_eq_empty_iff]
 
 @[simp] lemma copyCount_pos : 0 < G.copyCount H ↔ H ⊑ G := by
@@ -433,7 +449,7 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
       Adj := ⊥
       adj_sub := False.elim
       edge_vert := False.elim }
-  simp only [eq_singleton_iff_unique_mem, mem_filter, mem_univ, Subgraph.coe_bot, true_and,
+  simp only [eq_singleton_iff_unique_mem, mem_filter, mem_univ, true_and,
     Nonempty.forall]
   refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
     Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩
@@ -498,8 +514,8 @@ private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
 `Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
 lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := by
   simp only [killCopies_of_ne_bot hH, Set.disjoint_left, isContained_iff_exists_iso_subgraph,
-    @forall_swap _ G.Subgraph, Set.iUnion_singleton_eq_range, deleteEdges_eq_self, Set.mem_iUnion,
-    Set.mem_range, not_exists, not_nonempty_iff, Nonempty.forall, Free]
+    @forall_swap _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
+    not_exists, not_nonempty_iff, Nonempty.forall, Free]
   exact forall_congr' fun G' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
     (Subgraph.edgeSet_subset _ <| (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
 
@@ -554,10 +570,10 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #(G.killCopies H).edgeFinset := ?_
   · simp only [Set.toFinset_card]
     rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
-  simp only [killCopies_of_ne_bot, hH, Ne, not_false_iff, Set.iUnion_singleton_eq_range,
-    Set.toFinset_card, Fintype.card_ofFinset, edgeSet_deleteEdges]
-  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range, coe_sdiff,
-    Set.coe_toFinset, coe_filter, Set.sep_mem_eq, Set.iUnion_subtype, ← Fintype.card_coe,
+  simp only [killCopies_of_ne_bot, hH, Ne, not_false_iff,
+    Set.toFinset_card, edgeSet_deleteEdges]
+  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
+    Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
     ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
     Fintype.card_ofFinset, f]
 

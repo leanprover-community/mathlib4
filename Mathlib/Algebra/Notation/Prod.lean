@@ -40,7 +40,7 @@ theorem snd_one : (1 : M × N).2 = 1 :=
 theorem one_eq_mk : (1 : M × N) = (1, 1) :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mk_one_one : ((1 : M), (1 : N)) = 1 := rfl
 
 @[to_additive (attr := simp)]
@@ -157,11 +157,8 @@ lemma pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c := rfl
 @[to_additive existing (attr := simp) (reorder := 6 7) smul_snd]
 lemma pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c := rfl
 
-/- Note that the `c` arguments to this lemmas cannot be in the more natural right-most positions due
-to limitations in `to_additive` and `to_additive_reorder`, which will silently fail to reorder more
-than two adjacent arguments -/
-@[to_additive existing (attr := simp) (reorder := 6 7) smul_mk]
-lemma pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) := rfl
+@[to_additive existing (attr := simp) (reorder := 6 7 8) smul_mk]
+lemma pow_mk (a : α) (b : β) (c : E) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) := rfl
 
 @[to_additive existing (reorder := 6 7) smul_def]
 lemma pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) := rfl

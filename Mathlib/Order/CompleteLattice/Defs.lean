@@ -370,6 +370,12 @@ theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
 theorem iInf_lt_iff {f : ι → α} : iInf f < a ↔ ∃ i, f i < a :=
   sInf_lt_iff.trans exists_range_iff
 
+theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
+  simp [lt_iSup_iff]
+
+theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃ i ∈ s, f i < a := by
+  simp [iInf_lt_iff]
+
 end CompleteLinearOrder
 
 end

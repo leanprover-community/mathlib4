@@ -45,7 +45,7 @@ in which case `piContent μ` is known to be a true measure (see `piContent_eq_me
 infinite product measure
 -/
 
-open MeasureTheory ProbabilityTheory Finset Filter Preorder MeasurableEquiv
+open ProbabilityTheory Finset Filter Preorder MeasurableEquiv
 
 open scoped ENNReal Topology
 
@@ -81,9 +81,7 @@ theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : Measura
     piContent μ s = Measure.pi μ s := by
   let e : @Finset.univ ι _ ≃ ι :=
     { toFun i := i
-      invFun i := ⟨i, mem_univ i⟩
-      left_inv := fun _ ↦ rfl
-      right_inv := fun _ ↦ rfl }
+      invFun i := ⟨i, mem_univ i⟩ }
   have : s = cylinder univ (MeasurableEquiv.piCongrLeft X e ⁻¹' s) := rfl
   nth_rw 1 [this]
   rw [piContent_cylinder _ (hs.preimage (by fun_prop)), ← Measure.pi_map_piCongrLeft e,
@@ -169,7 +167,7 @@ are constant then their composition-product is the product measure. -/
 theorem partialTraj_const_restrict₂ {a b : ℕ} :
     (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ Ioc_subset_Iic_self) =
     const _ (Measure.pi (fun i : Ioc a b ↦ μ i)) := by
-  obtain hab | hba := lt_or_le a b
+  obtain hab | hba := lt_or_ge a b
   · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le.2 hab) <;> ext1 x₀
     · rw [partialTraj_succ_self, ← map_comp_right, map_apply, prod_apply, map_apply, const_apply,
         const_apply, Measure.map_piSingleton, restrict₂_comp_IicProdIoc, Measure.map_snd_prod,
@@ -287,7 +285,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   -- first restricting to `tₙ` and then mapping by `gₙ`
   have r_comp_f n : (s n).restrict ∘ f = (g n) ∘ (fun (x : Π i : u, X i) i ↦ x i) := by
     ext x i
-    simp only [Function.comp_apply, Finset.restrict, subset_refl, Set.coe_inclusion,
+    simp only [Function.comp_apply, Finset.restrict,
       Equiv.piCongrLeft_apply, Equiv.coe_fn_symm_mk, f, aux, g, t]
     rw [dif_pos (Set.mem_iUnion.2 ⟨n, i.2⟩)]
   -- `Bₙ` is the same as `Aₙ` but in the product indexed by `u`

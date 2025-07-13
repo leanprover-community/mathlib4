@@ -242,6 +242,26 @@ lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
 
 end LE
 
+section LE
+variable {ι : Sort*} {α : Type*} [LE α] {P : ι → Prop} {f : ι → α} {i j : ι}
+
+/-- `MinimalFor P f i` means that `f i` is minimal over all `i` satisfying `P`. -/
+def MinimalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
+
+/-- `MaximalFor P f i` means that `f i` is maximal over all `i` satisfying `P`. -/
+def MaximalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
+
+lemma MinimalFor.prop (h : MinimalFor P f i) : P i := h.1
+lemma MaximalFor.prop (h : MaximalFor P f i) : P i := h.1
+
+lemma MinimalFor.le_of_le (h : MinimalFor P f i) (hj : P j) (hji : f j ≤ f i) : f i ≤ f j :=
+  h.2 hj hji
+
+lemma MaximalFor.le_of_le (h : MaximalFor P f i) (hj : P j) (hij : f i ≤ f j) : f j ≤ f i :=
+  h.2 hj hij
+
+end LE
+
 /-! ### Upper and lower sets -/
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
@@ -271,6 +291,38 @@ structure LowerSet (α : Type*) [LE α] where
   lower' : IsLowerSet carrier
 
 extend_docs LowerSet before "The type of lower sets of an order."
+
+/-- An upper set relative to a predicate `P` is a set such that all elements satisfy `P` and
+any element greater than one of its members and satisfying `P` is also a member. -/
+def IsRelUpperSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, a ≤ b → P b → b ∈ s
+
+/-- A lower set relative to a predicate `P` is a set such that all elements satisfy `P` and
+any element less than one of its members and satisfying `P` is also a member. -/
+def IsRelLowerSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, b ≤ a → P b → b ∈ s
+
+@[inherit_doc IsRelUpperSet]
+structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
+  /-- The carrier of a `RelUpperSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelUpperSet` is an upper set relative to `P`.
+
+  Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead. -/
+  isRelUpperSet' : IsRelUpperSet carrier P
+
+extend_docs RelUpperSet before "The type of upper sets of an order relative to `P`."
+
+@[inherit_doc IsRelLowerSet]
+structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
+  /-- The carrier of a `RelLowerSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelLowerSet` is a lower set relative to `P`.
+
+  Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead. -/
+  isRelLowerSet' : IsRelLowerSet carrier P
+
+extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 

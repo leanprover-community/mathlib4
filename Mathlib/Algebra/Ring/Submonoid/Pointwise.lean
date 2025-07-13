@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Nat.Cast.Basic
@@ -26,6 +25,7 @@ Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.mulOneClass`
 * `AddSubmonoid.semigroup`
 * `AddSubmonoid.monoid`
+
 which is available globally to match the monoid structure implied by `Submodule.idemSemiring`.
 
 ## Implementation notes

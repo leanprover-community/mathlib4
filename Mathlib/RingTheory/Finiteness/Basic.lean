@@ -109,7 +109,7 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     | empty =>
       rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
       exact h₁ _
-    | insert _ ih =>
+    | insert _ _ _ ih =>
       rw [Finset.coe_insert, Submodule.span_insert]
       exact h₂ _ _ (h₁ _) ih
 
@@ -126,7 +126,7 @@ lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
   refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
-  · show Submodule.span A s ≤ S
+  · change Submodule.span A s ≤ S
     have := Submodule.span_le.mp e.le
     rwa [Submodule.span_le]
   · rw [← e]

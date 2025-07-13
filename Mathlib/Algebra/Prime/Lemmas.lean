@@ -106,14 +106,7 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
 theorem prime_pow_succ_dvd_mul {M : Type*} [CancelCommMonoidWithZero M] {p x y : M} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
-  intro hy
-  induction i generalizing x with
-  | zero => rw [pow_one] at hxy ⊢; exact (h.dvd_or_dvd hxy).resolve_right hy
-  | succ i ih =>
-    rw [pow_succ'] at hxy ⊢
-    obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
-    rw [mul_assoc] at hxy
-    exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
+  exact fun a ↦ Prime.pow_dvd_of_dvd_mul_right h (i + 1) a hxy
 
 section CancelCommMonoidWithZero
 
@@ -130,10 +123,13 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
     (fun ⟨d, hd⟩ => Or.inl ⟨d, by simp [*, pow_succ, mul_comm, mul_left_comm, mul_assoc]⟩)
     fun ⟨d, hd⟩ => Or.inr ⟨d, by simp [*, pow_succ, mul_comm, mul_left_comm, mul_assoc]⟩
 
-theorem Prime.not_square (hp : Prime p) : ¬IsSquare p :=
-  hp.irreducible.not_square
+theorem Prime.not_isSquare (hp : Prime p) : ¬IsSquare p :=
+  hp.irreducible.not_isSquare
 
-theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_square ha
+@[deprecated (since := "2025-04-17")]
+alias Prime.not_square := Prime.not_isSquare
+
+theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_isSquare ha
 
 theorem not_prime_pow {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
   not_irreducible_pow hn hp.irreducible

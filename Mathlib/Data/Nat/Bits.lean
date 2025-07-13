@@ -63,7 +63,7 @@ lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
   induction n
   case zero => simp
-  case succ n ih => simp [← Nat.add_assoc, Bool.xor_not, ih]
+  case succ n ih => simp [← Nat.add_assoc, ih]
 
 @[simp]
 lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
@@ -103,7 +103,7 @@ attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm
 lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
-    simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
+    simp only [bodd_succ, div2_succ, Nat.mul_comm]
     refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
@@ -121,8 +121,8 @@ lemma bit_zero : bit false 0 = 0 :=
   rfl
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
- and adds the bit `b` as the least significant bit each time.
- Returns the corresponding natural number -/
+and adds the bit `b` as the least significant bit each time.
+Returns the corresponding natural number -/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftLeft' b m n)

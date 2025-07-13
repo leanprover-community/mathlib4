@@ -49,6 +49,13 @@ section toExpr
 
 open Lean Qq
 
+open Qq in
+/-- `Matrix.mkLiteralQ !![a, b; c, d]` produces the term `q(!![$a, $b; $c, $d])`. -/
+def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
+    Q(Matrix (Fin $m) (Fin $n) $α) :=
+  let elems := PiFin.mkLiteralQ (α := q(Fin $n → $α)) fun i => PiFin.mkLiteralQ fun j => elems i j
+  q(Matrix.of $elems)
+
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
 prevent immediate decay to a function. -/
 protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
@@ -167,21 +174,21 @@ section DotProduct
 variable [AddCommMonoid α] [Mul α]
 
 @[simp]
-theorem dotProduct_empty (v w : Fin 0 → α) : dotProduct v w = 0 :=
+theorem dotProduct_empty (v w : Fin 0 → α) : v ⬝ᵥ w = 0 :=
   Finset.sum_empty
 
 @[simp]
 theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
-    dotProduct (vecCons x v) w = x * vecHead w + dotProduct v (vecTail w) := by
+    vecCons x v ⬝ᵥ w = x * vecHead w + v ⬝ᵥ vecTail w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
 @[simp]
 theorem dotProduct_cons (v : Fin n.succ → α) (x : α) (w : Fin n → α) :
-    dotProduct v (vecCons x w) = vecHead v * x + dotProduct (vecTail v) w := by
+    v ⬝ᵥ vecCons x w = vecHead v * x + vecTail v ⬝ᵥ w := by
   simp [dotProduct, Fin.sum_univ_succ, vecHead, vecTail]
 
 theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
-    dotProduct (vecCons x v) (vecCons y w) = x * y + dotProduct v w := by simp
+    vecCons x v ⬝ᵥ vecCons y w = x * y + v ⬝ᵥ w := by simp
 
 end DotProduct
 
@@ -199,7 +206,7 @@ theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
 theorem replicateCol_cons (x : α) (u : Fin m → α) :
     replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
   ext i j
-  refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
+  refine Fin.cases ?_ ?_ i <;> simp
 
 @[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
 
@@ -319,7 +326,7 @@ theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : A *ᵥ v = 
 
 @[simp]
 theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : n' → α) :
-    (of <| vecCons v A) *ᵥ w = vecCons (dotProduct v w) (of A *ᵥ w) := by
+    (of <| vecCons v A) *ᵥ w = vecCons (v ⬝ᵥ w) (of A *ᵥ w) := by
   ext i
   refine Fin.cases ?_ ?_ i <;> simp [mulVec]
 
@@ -456,7 +463,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
                       b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                      a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ]
+  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
@@ -470,7 +477,7 @@ theorem mul_fin_three [AddCommMonoid α] [Mul α]
        a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
   ext i j
   fin_cases i <;> fin_cases j
-    <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, ← add_assoc]
+    <;> simp [Matrix.mul_apply, Fin.sum_univ_succ, ← add_assoc]
 
 theorem vec2_eq {a₀ a₁ b₀ b₁ : α} (h₀ : a₀ = b₀) (h₁ : a₁ = b₁) : ![a₀, a₁] = ![b₀, b₁] := by
   subst_vars
@@ -517,3 +524,10 @@ theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 
 end Vec2AndVec3
 
 end Matrix
+
+@[simp]
+lemma injective_pair_iff_ne {α : Type*} {x y : α} :
+    Function.Injective ![x, y] ↔ x ≠ y := by
+  refine ⟨fun h ↦ ?_, fun h a b h' ↦ ?_⟩
+  · simpa using h.ne Fin.zero_ne_one
+  · fin_cases a <;> fin_cases b <;> aesop

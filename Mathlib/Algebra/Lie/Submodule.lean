@@ -398,8 +398,7 @@ instance : SupSet (LieSubmodule R L M) where
         | empty =>
           replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
-        | insert hqt ih =>
-          rename_i q t
+        | insert q t hqt ih =>
           rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]
@@ -465,31 +464,49 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {motive : (x : M) �
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, add _ _ _ _ Cx Cy⟩
 
--- TODO(Yaël): turn around
-theorem disjoint_iff_toSubmodule :
-    Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := by
+variable {N N'}
+
+@[simp] lemma disjoint_toSubmodule :
+    Disjoint (N : Submodule R M) (N' : Submodule R M) ↔ Disjoint N N' := by
   rw [disjoint_iff, disjoint_iff, ← toSubmodule_inj, inf_toSubmodule, bot_toSubmodule,
     ← disjoint_iff]
 
+@[deprecated disjoint_toSubmodule (since := "2025-04-03")]
+theorem disjoint_iff_toSubmodule :
+    Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := disjoint_toSubmodule.symm
+
 @[deprecated (since := "2024-12-30")] alias disjoint_iff_coe_toSubmodule := disjoint_iff_toSubmodule
 
-theorem codisjoint_iff_toSubmodule :
-    Codisjoint N N' ↔ Codisjoint (N : Submodule R M) (N' : Submodule R M) := by
+@[simp] lemma codisjoint_toSubmodule :
+    Codisjoint (N : Submodule R M) (N' : Submodule R M) ↔ Codisjoint N N' := by
   rw [codisjoint_iff, codisjoint_iff, ← toSubmodule_inj, sup_toSubmodule,
     top_toSubmodule, ← codisjoint_iff]
+
+@[deprecated codisjoint_toSubmodule (since := "2025-04-03")]
+theorem codisjoint_iff_toSubmodule :
+    Codisjoint N N' ↔ Codisjoint (N : Submodule R M) (N' : Submodule R M) :=
+  codisjoint_toSubmodule.symm
 
 @[deprecated (since := "2024-12-30")]
 alias codisjoint_iff_coe_toSubmodule := codisjoint_iff_toSubmodule
 
+@[simp] lemma isCompl_toSubmodule :
+    IsCompl (N : Submodule R M) (N' : Submodule R M) ↔ IsCompl N N' := by
+  simp [isCompl_iff]
+
+@[deprecated isCompl_toSubmodule (since := "2025-04-03")]
 theorem isCompl_iff_toSubmodule :
-    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
-  simp only [isCompl_iff, disjoint_iff_toSubmodule, codisjoint_iff_toSubmodule]
+    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := isCompl_toSubmodule.symm
 
 @[deprecated (since := "2024-12-30")] alias isCompl_iff_coe_toSubmodule := isCompl_iff_toSubmodule
 
+@[simp] lemma iSupIndep_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    iSupIndep (fun i ↦ (N i : Submodule R M)) ↔ iSupIndep N := by
+  simp [iSupIndep_def, ← disjoint_toSubmodule]
+
+@[deprecated iSupIndep_toSubmodule (since := "2025-04-03")]
 theorem iSupIndep_iff_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
-    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := by
-  simp [iSupIndep_def, disjoint_iff_toSubmodule]
+    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := iSupIndep_toSubmodule.symm
 
 @[deprecated (since := "2024-12-30")]
 alias iSupIndep_iff_coe_toSubmodule := iSupIndep_iff_toSubmodule
@@ -500,9 +517,13 @@ alias independent_iff_toSubmodule := iSupIndep_iff_toSubmodule
 @[deprecated (since := "2024-12-30")]
 alias independent_iff_coe_toSubmodule := independent_iff_toSubmodule
 
-theorem iSup_eq_top_iff_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
-    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
+@[simp] lemma iSup_toSubmodule_eq_top {ι : Sort*} {N : ι → LieSubmodule R L M} :
+    ⨆ i, (N i : Submodule R M) = ⊤ ↔ ⨆ i, N i = ⊤ := by
   rw [← iSup_toSubmodule, ← top_toSubmodule (L := L), toSubmodule_inj]
+
+@[deprecated iSup_toSubmodule_eq_top (since := "2025-04-03")]
+theorem iSup_eq_top_iff_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
+    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := iSup_toSubmodule_eq_top.symm
 
 @[deprecated (since := "2024-12-30")]
 alias iSup_eq_top_iff_coe_toSubmodule := iSup_eq_top_iff_toSubmodule
@@ -517,6 +538,8 @@ instance : AddCommMonoid (LieSubmodule R L M) where
   add_zero := sup_bot_eq
   add_comm := sup_comm
   nsmul := nsmulRec
+
+variable (N N')
 
 @[simp]
 theorem add_eq_sup : N + N' = N ⊔ N' :=
@@ -534,9 +557,7 @@ nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [e
 
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L (⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨_, hx⟩
-  simp only [mem_bot, mk_eq_zero, mem_top, iff_true]
-  exact hx
+  subsingleton
 
 instance : IsModularLattice (LieSubmodule R L M) where
   sup_inf_le_assoc_of_le _ _ := by
@@ -849,7 +870,7 @@ theorem map_comp
     {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
     N.map (g.comp f) = (N.map f).map g :=
   SetLike.coe_injective <| by
-    simp only [← Set.image_comp, coe_map, LinearMap.coe_comp, LieModuleHom.coe_comp]
+    simp only [← Set.image_comp, coe_map, LieModuleHom.coe_comp]
 
 @[simp]
 theorem map_id : N.map LieModuleHom.id = N := by ext; simp
@@ -1054,9 +1075,7 @@ variable [LieAlgebra R L] [LieModule R L M]
 This is the Lie subalgebra version of `Submodule.topEquiv`. -/
 def LieSubalgebra.topEquiv : (⊤ : LieSubalgebra R L) ≃ₗ⁅R⁆ L :=
   { (⊤ : LieSubalgebra R L).incl with
-    invFun := fun x ↦ ⟨x, Set.mem_univ x⟩
-    left_inv := fun x ↦ by ext; rfl
-    right_inv := fun _ ↦ rfl }
+    invFun := fun x ↦ ⟨x, Set.mem_univ x⟩ }
 
 @[simp]
 theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalgebra.topEquiv x = x :=
