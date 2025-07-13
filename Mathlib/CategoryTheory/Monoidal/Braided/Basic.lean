@@ -718,8 +718,8 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
 @[reassoc]
 lemma tensorμ_tensorHom_μ_μ_μ (F : C ⥤ D) [F.LaxBraided] (W X Y Z : C) :
     tensorμ (F.obj W) (F.obj X) (F.obj Y) (F.obj Z) ≫
-      (μ F W Y ⊗ₘ μ F X Z) ≫ μ F (W ⊗ Y) (X ⊗ Z)
-      = (μ F W X ⊗ₘ μ F Y Z) ≫ μ F (W ⊗ X) (Y ⊗ Z) ≫ F.map (tensorμ W X Y Z) := by
+      (μ F W Y ⊗ₘ μ F X Z) ≫ μ F (W ⊗ Y) (X ⊗ Z) =
+      (μ F W X ⊗ₘ μ F Y Z) ≫ μ F (W ⊗ X) (Y ⊗ Z) ≫ F.map (tensorμ W X Y Z) := by
   rw [tensorHom_def]
   simp only [tensorμ, Category.assoc]
   rw [whiskerLeft_μ_μ,
