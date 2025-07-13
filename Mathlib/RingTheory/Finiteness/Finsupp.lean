@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
@@ -115,12 +115,31 @@ theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.F
 
 end Submodule
 
-section
+variable {R V} [Semiring R] [AddCommMonoid V] [Module R V] {ι : Type*} [_root_.Finite ι]
 
-variable {R V} [Semiring R] [AddCommMonoid V] [Module R V]
-
-instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
+instance Module.Finite.finsupp [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=
   Module.Finite.equiv (Finsupp.linearEquivFunOnFinite R V ι).symm
 
-end
+variable (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
+
+instance [∀ (i : ι), Module.Finite R (M i)] :
+    Module.Finite R (Π₀ (i : ι), M i) := by
+  classical
+  have h : ∀ (i : ι), Module.Finite R (M i) := inferInstance
+  choose n s gen using
+    (fun i ↦ Submodule.fg_iff_exists_fin_generating_family.mp (Module.finite_def.mp (h i)))
+  rw [Module.finite_def, Submodule.fg_iff_exists_finite_generating_family]
+  use (i : ι) × Fin (n i), inferInstance, fun x ↦ by exact DFinsupp.single x.1 (s x.1 x.2)
+  refine Submodule.eq_top_iff'.mpr (fun x ↦ (DFinsupp.induction x (by simp)
+    (fun i _ _ _ _ hf ↦ (Submodule.add_mem _ ?_ hf))))
+  have sub : ⇑(DFinsupp.lsingle i (M := M) (R := R)) '' (Set.range (s i)) ⊆
+      (Set.range fun (x : (i : ι) × (Fin (n i))) ↦ DFinsupp.single x.fst (s x.fst x.snd)) := by
+    intro _
+    simp only [DFinsupp.lsingle_apply, Set.mem_image, Set.mem_range, exists_exists_eq_and,
+      Sigma.exists, forall_exists_index]
+    intro a _
+    use i, a
+  refine Submodule.span_mono sub ?_
+  rw [← Submodule.map_span, gen i]
+  simp
