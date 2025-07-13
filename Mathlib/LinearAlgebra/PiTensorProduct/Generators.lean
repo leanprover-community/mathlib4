@@ -70,12 +70,12 @@ lemma equivTensorPiTensorComplSingleton_symm_tmul (i₀ : ι)
 
 end equivTensorPiTensorComplSingleto
 
-variable {R} {ι : Type*} [Finite ι] {M : ι → Type*} {N : Type*}
+variable {R} {ι : Type*} [Finite ι] {M : ι → Type*} {N : Type*} {γ : ι → Type*}
 
 section AddCommMonoid
 variable
   [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [AddCommMonoid N] [Module R N]
-  {γ : ι → Type*} {g : ⦃i : ι⦄ → (j : γ i) → M i}
+  {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
@@ -83,11 +83,9 @@ lemma ext_of_span_eq_top
     (h : ∀ (j : (i : ι) → γ i),
       φ (tprod _ (fun i ↦ g (j i))) = φ' (tprod _ (fun i ↦ g (j i)))) :
     φ = φ' := by
-  obtain ⟨n, hn⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
-  revert ι
-  induction n with
+  obtain ⟨n, hι⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
+  induction n generalizing ι with
   | zero =>
-    intro ι _ M _ _ γ g _ φ φ' h hι
     ext x
     have : IsEmpty ι := by
       rw [Nat.card_eq_zero] at hι
@@ -102,7 +100,6 @@ lemma ext_of_span_eq_top
     apply h
   | succ n hn =>
     classical
-    intro ι _ M _ _ γ g hg φ φ' h hι
     have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
     have i₀ : ι := Classical.arbitrary _
     let e := equivTensorPiTensorComplSingleton R M i₀
@@ -145,7 +142,7 @@ end AddCommMonoid
 
 variable
   [CommRing R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [AddCommMonoid N] [Module R N]
-  {γ : ι → Type*} {g : ⦃i : ι⦄ → (j : γ i) → M i}
+  {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
 lemma submodule_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) :
