@@ -133,9 +133,7 @@ instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
 theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B) = e₂ ↔ e₁ = e₂ :=
   toBialgHom_injective.eq_iff
 
-@[simp]
-theorem coe_mk {f h h₀ h₁ h₂ h₃ h₄ h₅ h₆} :
-    (⟨⟨⟨⟨⟨f, h⟩, h₀⟩, h₁, h₂⟩, h₃, h₄, h₅⟩, h₆⟩ : A ≃ₐc[R] B) = f := rfl
+@[simp] lemma coe_mk (e : A ≃ₗc[R] B) (h) : mk e h = e := rfl
 
 end
 
@@ -279,8 +277,6 @@ lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEqu
 
 @[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
-
-@[simp] lemma coe_mk (e : A ≃ₗc[R] B) (h) : mk e h = e := rfl
 
 /-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
