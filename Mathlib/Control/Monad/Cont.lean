@@ -63,8 +63,7 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
-/-- Run a continuation computation by providing a continuation function.
-This is just the identity function since `ContT r m α` is defined as a function type. -/
+/-- Run a continuation computation by providing a continuation function. -/
 def run : ContT r m α → (α → m r) → m r :=
   id
 
