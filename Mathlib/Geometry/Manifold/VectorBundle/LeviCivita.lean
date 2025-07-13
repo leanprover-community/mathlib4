@@ -149,13 +149,6 @@ lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
-variable (X Y Z Z') in
-lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
-  rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
-  unfold rhs_aux
-  ext x
-  rw [product_add_right, mfderiv_add ((foo hY hZ) x) ((foo hY hZ') x)]; simp; congr
-
 omit [IsManifold I ∞ M] in
 variable (X X' Y Z) in
 lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
@@ -170,6 +163,13 @@ lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z))
   rw [product_add_left, mfderiv_add ((foo hY hZ) x) ((foo hY' hZ) x)]
   simp; congr
 
+variable (X Y Z Z') in
+lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
+  rhs_aux I X Y (Z + Z') = rhs_aux I X Y Z + rhs_aux I X Y Z' := by
+  unfold rhs_aux
+  ext x
+  rw [product_add_right, mfderiv_add ((foo hY hZ) x) ((foo hY hZ') x)]; simp; congr
+
 omit [IsManifold I ∞ M] in
 variable (X Y Z) in
 lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
@@ -177,18 +177,19 @@ lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I 
   simp [rhs_aux]
 
 variable (X Y Z Z') in
-lemma rhs_aux_smulY (f : M → ℝ) : rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z := by
+lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    letI A (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
+    rhs_aux I X (f • Y) Z = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
   ext x
-  simp [rhs_aux]
-  rw [product_smul_left]
-  -- XXX: not true, the product rule gives us two terms
-  -- and there is missing API in mathlib!
-  -- only holds given enough smoothness!
-  sorry
+  rw [rhs_aux, product_smul_left, mfderiv_smul (foo hY hZ x) (hf x)]
+  congr
 
 variable (X Y Z) in
-lemma rhs_aux_smulZ (f : M → ℝ) : rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z := by
-  rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap]
+lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    letI A (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
+    rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
+  rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap, product_swap]
+  exacts [hf, hZ, hY]
 
 -- XXX: inlining rhs_aux here makes things not typecheck any more!
 variable (X Y Z) in
@@ -259,7 +260,8 @@ lemma leviCivita_rhs_addX' : (2 : ℝ) • leviCivita_rhs I (X + X') Y Z =
   sorry
 
 variable (X X' Y Z) in
-lemma leviCivita_rhs_addX : leviCivita_rhs I (X + X') Y Z = leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
+lemma leviCivita_rhs_addX : leviCivita_rhs I (X + X') Y Z =
+    leviCivita_rhs I X Y Z + leviCivita_rhs I X' Y Z := by
   sorry -- divide the previous equation by 2
 
 variable (X Y Z) in
@@ -292,7 +294,7 @@ lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} {Z' : Π x : M, Tan
     (hf : MDiff f) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
   simp only [leviCivita_rhs]
-  simp [rhs_aux_smulX, rhs_aux_smulY, rhs_aux_smulZ]
+  simp [rhs_aux_smulX]--, rhs_aux_smulY, rhs_aux_smulZ]
   ext x
   simp only [Pi.mul_apply, Pi.add_apply]
   have h1 : VectorField.mlieBracket I X (f • Z) =
