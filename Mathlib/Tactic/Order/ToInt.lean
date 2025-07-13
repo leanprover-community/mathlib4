@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Order.CollectFacts
--- import Mathlib.Data.Fin.Tuple.Basic
 import Batteries.Data.List.Pairwise
 import Mathlib.Tactic.GeneralizeProofs
 
@@ -38,30 +37,20 @@ theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j �
     simp [li]
   use fun i ↦ (this i).choose
   intro i j
-  simp
+  simp only [Fin.getElem_fin, Int.ofNat_le]
   by_cases h_eq : val i = val j
   · simp [h_eq]
   generalize_proofs _ hi hj
-  constructor
-  · intro h
-    rw [← hi.choose_spec, ← hj.choose_spec] at h h_eq
-    contrapose! h
-    have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
-        (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
-    rw [List.pairwise_iff_get] at this
-    specialize this hj.choose hi.choose (by simpa)
-    simp at this
-    apply lt_of_le_of_ne this
-    symm
-    exact h_eq
-  · intro h
-    rw [← hi.choose_spec, ← hj.choose_spec] at h_eq ⊢
-    have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
-        (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
-    rw [List.pairwise_iff_get] at this
-    specialize this hi.choose hj.choose
-      (by apply lt_of_le_of_ne h; contrapose! h_eq; simp [h_eq])
-    simpa using this
+  rw [← hi.choose_spec, ← hj.choose_spec] at h_eq
+  conv => lhs; rw [← hi.choose_spec, ← hj.choose_spec]
+  have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
+      (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
+  rw [List.pairwise_iff_get] at this
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    exact lt_of_le_of_ne (by simpa using (this hj.choose hi.choose (by simpa)))
+      (fun h ↦ h_eq (h.symm))
+  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose! h_eq; simp [h_eq])
 
 /-- Auxiliary definition used by the `order` tactic to transfer facts in a linear order to `ℤ`. -/
 noncomputable def toInt (k : Fin n) : ℤ :=
