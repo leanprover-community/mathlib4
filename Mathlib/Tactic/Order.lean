@@ -289,7 +289,7 @@ def elabOrderArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToS
 open Syntax in
 elab_rules : tactic
   | `(tactic| order_core $[only%$o]? $[[$args,*]]?) => withMainContext do
-    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabOrderArg `linarith)
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabOrderArg `order)
     commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args
 
 /-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
