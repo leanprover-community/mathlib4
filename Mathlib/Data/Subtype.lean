@@ -179,11 +179,17 @@ theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (
     (hf : Involutive f) : Involutive (map f h) :=
   fun x ↦ Subtype.ext (hf x)
 
+theorem map_eq {p : α → Prop} {q : β → Prop} {f g : α → β}
+    (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
+    (x y : Subtype p) :
+    map f h₁ x = map g h₂ y ↔ f x = g y :=
+  ⟨congr_arg Subtype.val, (Subtype.ext ·)⟩
+
 theorem map_ne {p : α → Prop} {q : β → Prop} {f g : α → β}
     (h₁ : ∀ a : α, p a → q (f a)) (h₂ : ∀ a : α, p a → q (g a))
     (x y : Subtype p) :
     map f h₁ x ≠ map g h₂ y ↔ f x ≠ g y :=
-  .not ⟨congr_arg Subtype.val, (Subtype.ext ·)⟩
+  map_eq h₁ h₂ x y |>.not
 
 instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) :=
   ⟨fun s t ↦ (s : α) ≈ (t : α)⟩
