@@ -245,55 +245,56 @@ local instance : Ord (Nat × Expr) where
 or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
 elab "order" : tactic => focus do
   let g ← getMainGoal
-  let .some g ← g.falseOrByContra | return
-  setGoals [g]
+  let some g ← g.falseOrByContra | return
   g.withContext do
-  let TypeToAtoms ← collectFacts
-  for (type, (idxToAtom, facts)) in TypeToAtoms do
-    let .some orderType ← findBestOrderInstance type | continue
-    trace[order] "Working on type {← ppExpr type} ({orderType})"
+    let TypeToAtoms ← collectFacts
+    for (type, (idxToAtom, facts)) in TypeToAtoms do
+      let .some orderType ← findBestOrderInstance type | continue
+      trace[order] "Working on type {← ppExpr type} ({orderType})"
       let atomsMsg := String.intercalate "\n" <| Array.toList <|
         ← idxToAtom.toArray.sortDedup.mapM
           fun ⟨idx, atom⟩ => do return s!"#{idx} := {← ppExpr atom}"
       trace[order] "Collected atoms:\n{atomsMsg}"
       let factsMsg := String.intercalate "\n" (facts.map toString).toList
       trace[order] "Collected facts:\n{factsMsg}"
-    let facts ← replaceBotTop facts idxToAtom
-    let processedFacts : Array AtomicFact ← match orderType with
-    | .pre => preprocessFactsPreorder facts
-    | .part => preprocessFactsPartial facts idxToAtom
-    | .lin => preprocessFactsLinear facts idxToAtom
-    let mut graph ← Graph.constructLeGraph idxToAtom.size processedFacts
-    graph ← updateGraphWithNltInfSup graph idxToAtom processedFacts
-    if orderType == .pre then
-      if let .some pf ← findContradictionWithNle graph idxToAtom processedFacts then
-        g.assign pf
-        return
-    else
-      if let .some pf ← findContradictionWithNe graph idxToAtom processedFacts then
-        g.assign pf
-        return
-    -- if fast procedure failed and order is linear, we try `omega`
-    if orderType == .lin then
-      let .succ u ← getLevel type | throwError "Unexpected Prop"
-      let type : Q(Type u) := type
-      let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
-      let (_, factsNat) ← translateToInt type instLinearOrder idxToAtom facts
-      let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
-        match factNat with
-        | .eq _ _ proof => some proof
-        | .ne _ _ proof => some proof
-        | .le _ _ proof => some proof
-        | .nle _ _ proof => some proof
-        | .lt _ _ proof => some proof
-        | .nlt _ _ proof => some proof
-        | _ => none
-      try
-        Omega.omega factsExpr.toList g
-        return
-      catch _ => pure ()
-  throwError ("No contradiction found.\n\n" ++
-      "Additional diagnostic information may be available using " ++
-      "the `set_option trace.order true` command.")
+      let facts ← replaceBotTop facts idxToAtom
+      let processedFacts : Array AtomicFact ← match orderType with
+      | .pre => preprocessFactsPreorder facts
+      | .part => preprocessFactsPartial facts idxToAtom
+      | .lin => preprocessFactsLinear facts idxToAtom
+      let factsMsg := String.intercalate "\n" (processedFacts.map toString).toList
+      trace[order] "Processed facts:\n{factsMsg}"
+      let mut graph ← Graph.constructLeGraph idxToAtom.size processedFacts
+      graph ← updateGraphWithNltInfSup graph idxToAtom processedFacts
+      if orderType == .pre then
+        if let some pf ← findContradictionWithNle graph idxToAtom processedFacts then
+          g.assign pf
+          return
+      else
+        if let some pf ← findContradictionWithNe graph idxToAtom processedFacts then
+          g.assign pf
+          return
+      -- if fast procedure failed and order is linear, we try `omega`
+      if orderType == .lin then
+        let .succ u ← getLevel type | throwError "Unexpected Prop"
+        let type : Q(Type u) := type
+        let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
+        let (_, factsNat) ← translateToInt type instLinearOrder idxToAtom facts
+        let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
+          match factNat with
+          | .eq _ _ proof => some proof
+          | .ne _ _ proof => some proof
+          | .le _ _ proof => some proof
+          | .nle _ _ proof => some proof
+          | .lt _ _ proof => some proof
+          | .nlt _ _ proof => some proof
+          | _ => none
+        try
+          Omega.omega factsExpr.toList g
+          return
+        catch _ => pure ()
+    throwError ("No contradiction found.\n\n" ++
+        "Additional diagnostic information may be available using " ++
+        "the `set_option trace.order true` command.")
 
 end Mathlib.Tactic.Order

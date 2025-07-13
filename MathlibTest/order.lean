@@ -105,12 +105,33 @@ trace:
     #7 := #1 ⊓ #4
     #5 := #6 ⊔ #7
     ¬ #0 ≤ #5
+[order] Processed facts:
+    #3 ≤ #2
+    #4 ≤ #2
+    #2 := #3 ⊔ #4
+    #0 ≤ #1
+    #0 ≤ #2
+    #0 := #1 ⊓ #2
+    #6 ≤ #1
+    #6 ≤ #3
+    #6 := #1 ⊓ #3
+    #7 ≤ #1
+    #7 ≤ #4
+    #7 := #1 ⊓ #4
+    #6 ≤ #5
+    #7 ≤ #5
+    #5 := #6 ⊔ #7
+    #0 ≠ #5
+    ¬ #0 < #5
 [order] Working on type ℕ (linear order)
 [order] Collected atoms:
     #0 := x
     #1 := y
 [order] Collected facts:
     #0 < #1
+[order] Processed facts:
+    #0 ≠ #1
+    #0 ≤ #1
 -/
 #guard_msgs in
 example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
