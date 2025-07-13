@@ -242,7 +242,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let rec
   /-- Main part of `evalAdd`. -/
   core : MetaM (Result e) := do
-    let intArm (rα : Q(Ring $α)) := do
+    let rec intArm (rα : Q(Ring $α)) := do
       haveI' : $e =Q $a + $b := ⟨⟩
       let ⟨za, na, pa⟩ ← ra.toInt _; let ⟨zb, nb, pb⟩ ← rb.toInt _
       haveI' : $f =Q HAdd.hAdd := ⟨⟩
@@ -250,7 +250,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c := mkRawIntLit zc
       haveI' : Int.add $na $nb =Q $c := ⟨⟩
       return .isInt rα c zc q(isInt_add (f := $f) (.refl $f) $pa $pb (.refl $c))
-    let nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
+    let rec nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
       haveI' : $e =Q $a + $b := ⟨⟩
       haveI' : $f =Q HAdd.hAdd := ⟨⟩
       let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
@@ -467,14 +467,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let rec
   /-- Main part of `evalMul`. -/
   core : MetaM (Result e) := do
-    let intArm (rα : Q(Ring $α)) := do
+    let rec intArm (rα : Q(Ring $α)) := do
       assumeInstancesCommute
       let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
       let zc := za * zb
       have c := mkRawIntLit zc
       haveI' : Int.mul $na $nb =Q $c := ⟨⟩
       return .isInt rα c zc q(isInt_mul (f := $f) (.refl $f) $pa $pb (.refl $c))
-    let nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
+    let rec nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
       assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
       let qc := qa * qb
@@ -488,7 +488,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have t2 : Q(ℕ) := mkRawNatLit dd
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
       return .isNNRat' dsα qc nc dc q(isNNRat_mul (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+    let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
       assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
       let qc := qa * qb
