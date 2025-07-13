@@ -402,6 +402,10 @@ lemma isCohenMacaulayLocalRing_def [IsLocalRing R] : IsCohenMacaulayLocalRing R 
     ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R) :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
+lemma isCohenMacaulayLocalRing_of_ringKrullDim_le_depth [IsLocalRing R] [IsNoetherianRing R]
+    (le : ringKrullDim R ≤ IsLocalRing.depth (ModuleCat.of R R)) : IsCohenMacaulayLocalRing R :=
+  (isCohenMacaulayLocalRing_def _).mpr (le_antisymm le (depth_le_ringKrullDim _))
+
 --may be able to remove noetherian condition here by modify `IsLocalRing.depth_eq_of_ringEquiv`
 lemma isCohenMacaulayLocalRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
     [IsNoetherianRing R] (e : R ≃+* R') [CM : IsCohenMacaulayLocalRing R] :
