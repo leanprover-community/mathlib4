@@ -84,14 +84,6 @@ lemma StrictMono.exists_between_of_tendsto_atTop {β : Type*} [LinearOrder β] {
   rw [Nat.sub_add_cancel]
   simp [hx0]
 
-lemma Nat.le_two_pow_self (n : ℕ) : n ≤ 2 ^ n := by
-  induction n with
-  | zero => simp
-  | succ n hn =>
-    rw [pow_succ, mul_two]
-    gcongr
-    exact Nat.one_le_two_pow
-
 lemma ENNReal.tsum_ofReal_exp_lt_top {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : ∀ i, i ≤ f i) :
     ∑' i, .ofReal (rexp (c * f i)) < ∞ := by
   calc ∑' i, .ofReal (rexp (c * f i))
@@ -535,7 +527,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
   -- `⊢ ∫⁻ x, ENNReal.ofReal (rexp (logRatio c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ < ∞`
   refine (lintegral_exp_mul_sq_norm_le h_rot le_rfl ha_gt).trans_lt ?_
   refine ENNReal.add_lt_top.mpr ⟨ENNReal.ofReal_lt_top, ?_⟩
-  refine ENNReal.tsum_ofReal_exp_lt_top ?_ (fun i ↦ mod_cast Nat.le_two_pow_self i)
+  refine ENNReal.tsum_ofReal_exp_lt_top ?_ (fun i ↦ mod_cast (Nat.lt_pow_self (by simp)).le)
   refine mul_neg_of_neg_of_pos (by simp) (Real.log_pos ?_)
   change 1 < (c / (1 - c)).toReal
   simp only [ENNReal.toReal_div, one_lt_div_iff, ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hc_lt,
