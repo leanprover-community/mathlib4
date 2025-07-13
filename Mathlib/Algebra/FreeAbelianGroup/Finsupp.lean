@@ -74,10 +74,6 @@ namespace FreeAbelianGroup
 open Finsupp
 
 @[simp]
-theorem toFinsupp_of (x : X) : toFinsupp (of x) = Finsupp.single x 1 := by
-  simp only [toFinsupp, lift.of]
-
-@[simp]
 theorem toFinsupp_toFreeAbelianGroup (f : X →₀ ℤ) :
     FreeAbelianGroup.toFinsupp (Finsupp.toFreeAbelianGroup f) = f := by
   rw [← AddMonoidHom.comp_apply, toFinsupp_comp_toFreeAbelianGroup, AddMonoidHom.id_apply]
