@@ -144,12 +144,12 @@ theorem next_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
 theorem next_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) : next (x :: z :: l) x h = z :=
   next_cons_cons_eq' l x x z h rfl
 
-theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
-    (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
-    next (y :: l) x h = next l x (by simpa [hy] using h) := by
-  rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
-  · assumption
-  · rwa [getLast_cons] at hx
+theorem next_ne_head_ne_getLast (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
+    (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _))
+    (h' : x ∈ l := (eq_or_mem_of_mem_cons h).resolve_left hy) :
+    next (y :: l) x h = next l x h' := by
+  rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne _ _ _ _ h']
+  rwa [getLast_cons (ne_nil_of_mem h')] at hx
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
@@ -258,7 +258,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
       · exact hx'
       · simp [getLast_eq_getElem]
       · exact hn.of_cons
-    · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
+    · rw [next_ne_head_ne_getLast _ _ _ _ hx']
       · simp only [getElem_cons_succ]
         rw [next_getElem (y::l), ← getElem_cons_succ (a := x)]
         · congr
@@ -271,7 +271,6 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
-      · rw [getElem_cons_succ]; exact get_mem _ _
 
 @[deprecated (since := "2025-02-15")] alias next_get := next_getElem
 
